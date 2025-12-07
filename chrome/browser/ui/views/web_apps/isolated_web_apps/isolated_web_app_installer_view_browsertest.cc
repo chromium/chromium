@@ -23,8 +23,6 @@
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_model.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.h"
 #include "chrome/browser/ui/views/web_apps/isolated_web_apps/test_isolated_web_app_installer_model_observer.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
@@ -33,6 +31,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/types/source.h"
+#include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
@@ -40,9 +40,9 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/test/test_browser_dialog_mac.h"
@@ -86,13 +86,14 @@ const TestParam kTestParam[] = {
 };
 
 SignedWebBundleMetadata CreateTestMetadata() {
-  IconBitmaps icons;
-  AddGeneratedIcon(&icons.any, 32, SK_ColorBLUE);
+  DialogImageInfo image_info;
+  image_info.is_maskable = true;
+  AddGeneratedIcon(&image_info.bitmaps, 32, SK_ColorBLUE);
   return SignedWebBundleMetadata::CreateForTesting(
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
           web_package::SignedWebBundleId::CreateRandomForProxyMode()),
       IwaSourceBundleProdMode(base::FilePath()), u"Test Isolated Web App",
-      base::Version("0.0.1"), icons);
+      *IwaVersion::Create("0.0.1"), std::move(image_info));
 }
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -189,9 +190,9 @@ class NamedWidgetUiPixelTest : public MixinBasedUiBrowserTest {
   // Stores the current widgets in |widgets_|.
   void UpdateWidgets() {
     widgets_.clear();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
-      views::Widget::GetAllChildWidgets(root_window, &widgets_);
+      widgets_.merge(views::Widget::GetAllChildWidgets(root_window));
     }
 #else
     widgets_ = views::test::WidgetTest::GetAllWidgets();

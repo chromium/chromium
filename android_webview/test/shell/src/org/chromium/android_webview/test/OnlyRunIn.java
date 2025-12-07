@@ -23,12 +23,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.TYPE})
 public @interface OnlyRunIn {
-    public enum ProcessMode {
+    enum ProcessMode {
         SINGLE_PROCESS,
         MULTI_PROCESS,
         SINGLE_AND_MULTI_PROCESS,
         EITHER_PROCESS,
     }
 
-    public ProcessMode value();
+    ProcessMode value();
 }

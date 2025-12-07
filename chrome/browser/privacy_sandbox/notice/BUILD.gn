@@ -1,0 +1,254 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//testing/test.gni")
+
+mojom("notice_mojom") {
+  sources = [ "notice.mojom" ]
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+  generate_java = true
+}
+
+source_set("notice_definitions") {
+  sources = [ "notice_definitions.cc" ]
+  public = [ "notice_definitions.h" ]
+  deps = [ "//base" ]
+}
+
+source_set("core") {
+  sources = [
+    "notice_model.cc",
+    "notice_storage.cc",
+  ]
+  public = [
+    "notice_model.h",
+    "notice_storage.h",
+  ]
+  deps = [
+    ":notice_definitions",
+    ":notice_mojom",
+    "//base",
+    "//base/version_info",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/privacy_sandbox:features",
+  ]
+  public_deps = [ ":notice_mojom" ]
+}
+
+source_set("interfaces") {
+  public = [
+    "desktop_view_manager_interface.h",
+    "notice_service_interface.h",
+  ]
+  deps = [
+    ":notice_mojom",
+    "//components/keyed_service/core",
+  ]
+}
+
+source_set("catalog") {
+  sources = [ "notice_catalog.cc" ]
+  public = [ "notice_catalog.h" ]
+  deps = [
+    ":core",
+    ":notice_definitions",
+    ":notice_mojom",
+    "//base",
+    "//chrome/browser/privacy_sandbox:headers",
+  ]
+}
+
+source_set("factory") {
+  public = [ "notice_service_factory.h" ]
+  deps = [
+    ":interfaces",
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("notice") {
+  sources = [
+    "notice_service.cc",
+    "notice_service.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+
+  public_deps = [
+    ":catalog",
+    ":core",
+    ":factory",
+    ":interfaces",
+  ]
+
+  if (!is_android) {
+    deps += [ ":desktop_view_manager" ]
+  }
+}
+
+# (Desktop Only)
+if (!is_android) {
+  source_set("desktop_entrypoint_handlers_helper") {
+    sources = [ "desktop_entrypoint_handlers_helper.cc" ]
+    public = [ "desktop_entrypoint_handlers_helper.h" ]
+    deps = [
+      "//chrome/browser/search",
+      "//chrome/common",
+      "//extensions/browser",
+    ]
+  }
+
+  source_set("desktop_view_manager") {
+    sources = [ "desktop_view_manager.cc" ]
+    public = [
+      "desktop_view_manager.h",
+      "desktop_view_manager_test_peer.h",
+    ]
+    deps = [
+      ":core",
+      ":desktop_entrypoint_handlers_helper",
+      ":interfaces",
+      ":notice_mojom",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/privacy_sandbox",
+      "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/signin",
+      "//chrome/common",
+      "//components/privacy_sandbox:features",
+      "//components/regional_capabilities",
+      "//components/search_engines:search_engines_switches",
+      "//components/tabs:public",
+      "//components/web_modal",
+      "//content/public/browser",
+    ]
+  }
+}
+
+test("fuzz_tests") {
+  sources = [ "notice_storage_fuzztest.cc" ]
+  fuzztests = [
+    "PrivacySandboxNoticeStorageFuzzTest.CheckConvertsV1SchemaSuccessfully",
+  ]
+  deps = [
+    ":core",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mocks/mock_notice_catalog.cc",
+    "mocks/mock_notice_catalog.h",
+    "mocks/mock_notice_service.cc",
+    "mocks/mock_notice_service.h",
+    "mocks/mock_notice_storage.cc",
+    "mocks/mock_notice_storage.h",
+  ]
+  deps = [
+    ":catalog",
+    ":core",
+    ":interfaces",
+    ":notice_mojom",
+    "//base",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//testing/gmock",
+  ]
+
+  # (Desktop Only)
+  if (!is_android) {
+    sources += [
+      "mocks/mock_desktop_view_manager.cc",
+      "mocks/mock_desktop_view_manager.h",
+      "mocks/mock_desktop_view_manager_observer.cc",
+      "mocks/mock_desktop_view_manager_observer.h",
+    ]
+    deps += [ ":desktop_view_manager" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "histograms_unittest.cc",
+    "notice_catalog_unittest.cc",
+    "notice_model_unittest.cc",
+    "notice_service_unittest.cc",
+    "notice_storage_unittest.cc",
+  ]
+  data = [ "//tools/metrics/histograms/metadata/privacy/histograms.xml" ]
+  deps = [
+    ":catalog",
+    ":core",
+    ":notice",
+    ":test_support",
+    "//base/test:test_support",
+    "//base/version_info",
+    "//chrome/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/privacy_sandbox:features",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  # (Desktop Only)
+  if (!is_android) {
+    sources += [ "desktop_view_manager_unittest.cc" ]
+    deps += [ ":desktop_view_manager" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "notice_service_browsertest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":catalog",
+    ":core",
+    ":interfaces",
+    ":notice",
+    ":test_support",
+    "//chrome/browser",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/test:test_support_ui_android" ]
+  }
+
+  if (!is_android) {
+    deps += [
+      ":desktop_view_manager",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/privacy_sandbox",
+      "//chrome/browser/ui/signin",
+      "//chrome/test:test_support_ui",
+    ]
+  }
+}

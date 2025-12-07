@@ -38,6 +38,7 @@ These options are supported:
   allowfullscreen
   allowpaymentrequest
   allow-{featurename} - Adds {featurename} to the "allow" attribute
+  disallow-{featurename} - Adds {featurename} to the "allow" attribute but sets its allowlist to 'none'
   sandbox-{flagname} - Adds {flagname} to the "sandbox" attribute
   with-shared-worker - Creates a shared worker in each frame.
   with-worker - Creates a dedicated worker in each frame.
@@ -169,7 +170,10 @@ function applyFrameOptions(element, options) {
       sandboxArguments.push(option.slice(8));
     }
     if (option.startsWith("allow-")) {
-      allowFeatures.push(option.slice(6))
+      allowFeatures.push(option.slice(6));
+    }
+    if (option.startsWith("disallow-")) {
+      allowFeatures.push(option.slice(9) + " 'none';");
     }
   }
   if (sandbox) {

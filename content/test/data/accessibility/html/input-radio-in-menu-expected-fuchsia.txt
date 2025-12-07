@@ -10,10 +10,10 @@ UNKNOWN focusable has_input_focus
 ++++++++++UNKNOWN label='Radio1 '
 ++++++++UNKNOWN hidden
 ++++++++++RADIO_BUTTON focusable label='Radio2' actions='{DEFAULT}' checked_state='UNCHECKED'
-++++++++++STATIC_TEXT hidden label='Radio2'
+++++++++++STATIC_TEXT hidden
 ++++++UNKNOWN
 ++++++++UNKNOWN hidden
 ++++++++++RADIO_BUTTON focusable label='Radio3' actions='{DEFAULT}' checked_state='UNCHECKED'
-++++++++++STATIC_TEXT hidden label='Radio3'
+++++++++++STATIC_TEXT hidden
 ++++++++RADIO_BUTTON focusable actions='{DEFAULT}' checked_state='UNCHECKED'
 ++++++++RADIO_BUTTON focusable actions='{DEFAULT}' checked_state='CHECKED'

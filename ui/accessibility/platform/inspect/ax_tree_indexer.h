@@ -7,6 +7,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,15 +20,15 @@ namespace ui {
  * tree the node is placed at.
  *
  * GetDOMId returns DOM id by an accessible node;
- * ChildrenContainer returns accessible children for an accessible node;
+ * GetChildren returns accessible children for an accessible node;
  * Compare is the Compare named requirements, used to compare two nodes.
  */
-template <typename AccessibilityObject,
-          std::string (*GetDOMId)(const AccessibilityObject),
-          typename ChildrenContainer,
-          ChildrenContainer (*GetChildren)(const AccessibilityObject),
-          typename Compare = std::less<AccessibilityObject>>
-class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer final {
+template <
+    typename AccessibilityObject,
+    std::string (*GetDOMId)(const AccessibilityObject),
+    std::vector<AccessibilityObject> (*GetChildren)(const AccessibilityObject),
+    typename Compare = std::less<AccessibilityObject>>
+class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer {
  public:
   explicit AXTreeIndexer(const AccessibilityObject node) {
     int counter = 0;
@@ -36,7 +37,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer final {
   virtual ~AXTreeIndexer() {}
 
   // Returns a line index in the formatted tree the node is placed at.
-  std::string IndexBy(const AccessibilityObject node) const {
+  virtual std::string IndexBy(const AccessibilityObject node) const {
     std::string line_index = ":unknown";
     auto iter = node_to_identifier_.find(node);
     if (iter != node_to_identifier_.end()) {
@@ -54,7 +55,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer final {
         return item.first;
       }
     }
-    return nullptr;
+    return AccessibilityObject();
   }
 
  private:
@@ -65,8 +66,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer final {
 
     node_to_identifier_.insert({node, {line_index, id}});
 
-    auto children = GetChildren(node);
-    for (auto child : children) {
+    for (auto child : GetChildren(node)) {
       Build(child, counter);
     }
   }
@@ -80,7 +80,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXTreeIndexer final {
     std::string id;
   };
 
-  // Map between accessible objects and their identificators which can be a line
+  // Map between accessible objects and their identifiers which can be a line
   // index the object is placed at in an accessible tree or its DOM id
   // attribute.
   std::map<const AccessibilityObject, NodeIdentifier, Compare>

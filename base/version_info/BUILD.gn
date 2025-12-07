@@ -16,11 +16,9 @@ static_library("version_info") {
   deps = [
     "//base:sanitizer_buildflags",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
   ]
 
   public_deps = [
-    ":channel",
     ":generate_version_info",
     "//base",
   ]
@@ -37,11 +35,6 @@ static_library("version_string") {
   if (use_unofficial_version_number) {
     defines = [ "USE_UNOFFICIAL_VERSION_NUMBER" ]
   }
-}
-
-source_set("channel") {
-  sources = [ "channel.h" ]
-  public_deps = [ "//base" ]
 }
 
 process_version("generate_version_info") {

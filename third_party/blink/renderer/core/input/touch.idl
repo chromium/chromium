@@ -40,5 +40,5 @@
     readonly attribute float radiusX;
     readonly attribute float radiusY;
     readonly attribute float rotationAngle;
-    [HighEntropy=Direct, Measure] readonly attribute float force;
+    [Measure] readonly attribute float force;
 };

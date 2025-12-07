@@ -1,0 +1,85 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "bwg_coordinator.h",
+    "bwg_coordinator.mm",
+    "bwg_mediator.h",
+    "bwg_mediator.mm",
+    "bwg_mediator_delegate.h",
+    "bwg_promo_scene_agent.h",
+    "bwg_promo_scene_agent.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/feature_engagement/public",
+    "//components/prefs",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled",
+    "//ios/chrome/browser/intelligence/bwg/metrics",
+    "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
+    "//ios/chrome/browser/intelligence/bwg/ui",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/ui_bundled:promos",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/public/provider/chrome/browser/bwg:bwg_api",
+    "//ios/web/public",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "bwg_promo_scene_agent_unittest.mm",
+    "gemini_coordinator_unittest.mm",
+  ]
+
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app:app_internal",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/application_delegate:test_support",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/fullscreen/ui_bundled/test",
+    "//ios/chrome/browser/intelligence/bwg/utils:constants",
+    "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/optimization_guide/model",
+    "//ios/chrome/browser/optimization_guide/model:unit_tests",
+    "//ios/chrome/browser/promos_manager/model:constants",
+    "//ios/chrome/browser/promos_manager/model:features",
+    "//ios/chrome/browser/promos_manager/model:test_support",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+  ]
+}

@@ -11,6 +11,8 @@
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -37,6 +39,12 @@ class LogoutConfirmationDialog;
 class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
  public:
   enum class Source { kShelfExitButton, kCloseAllWindows };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    // Will be called right before the logout confirmation dialog is shown.
+    virtual void OnLogoutConfirmationStarted() = 0;
+  };
 
   LogoutConfirmationController();
 
@@ -65,6 +73,9 @@ class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
   // Called by the |dialog_| when it is closed.
   void OnDialogClosed();
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Overrides the internal clock for testing. This doesn't take the ownership
   // of the clock. |clock| must outlive the LogoutConfirmationController
   // instance.
@@ -92,6 +103,8 @@ class ASH_EXPORT LogoutConfirmationController : public SessionObserver {
   base::OneShotTimer logout_timer_;
 
   int confirm_logout_count_for_test_ = 0;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace ash

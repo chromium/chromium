@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 #define CHROME_BROWSER_EXTENSIONS_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 
+#include "base/auto_reset.h"
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -16,7 +17,10 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class BrowserContextKeyedServiceFactory;
 
@@ -57,7 +61,9 @@ class ManifestV2ExperimentManager : public KeyedService,
     // Any other state. This includes e.g. extensions that are disabled, but for
     // other reasons.
     kOther = 3,
-    kMaxValue = kOther,
+    // The extension is disabled, and may not be re-enabled by the user.
+    kHardDisabled = 4,
+    kMaxValue = kHardDisabled,
   };
 
   // Possible actions taken by the user on an MV2 extension.
@@ -94,6 +100,9 @@ class ManifestV2ExperimentManager : public KeyedService,
       Manifest::Type manifest_type,
       mojom::ManifestLocation manifest_location,
       const HashedExtensionId& hashed_id);
+
+  // Returns true if Chrome should disallow enabling the given `extension`.
+  bool ShouldBlockExtensionEnable(const Extension& extension);
 
   // Returns true if the notice for `extension_id` has been acknowledged by the
   // user during the current MV2 deprecation `experiment_stage_`.

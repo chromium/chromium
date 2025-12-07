@@ -9,8 +9,7 @@
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
-
-#include "ash/components/arc/mojom/app.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 
 class Profile;
 

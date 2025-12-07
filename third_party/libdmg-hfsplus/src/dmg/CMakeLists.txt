@@ -1,0 +1,56 @@
+find_package(OpenSSL 1.1)
+INCLUDE(FindZLIB)
+INCLUDE(FindBZip2)
+INCLUDE(FindLibLZMA)
+INCLUDE(FindLZFSE)
+
+IF(NOT ZLIB_FOUND)
+	message(FATAL_ERROR "zlib is required for dmg!")
+ENDIF(NOT ZLIB_FOUND)
+IF(NOT BZIP2_FOUND)
+	message(FATAL_ERROR "bzip2 is required for dmg!")
+ENDIF(NOT BZIP2_FOUND)
+IF(LIBLZMA_FOUND)
+	add_definitions(-DHAVE_LIBLZMA)
+	include_directories(${LIBLZMA_INCLUDE_DIR})
+	link_directories(${LIBLZMA_LIBRARIES})
+ENDIF(LIBLZMA_FOUND)
+IF(LZFSE_FOUND)
+	add_definitions(-DHAVE_LZFSE)
+	include_directories(${LZFSE_INCLUDE_DIR})
+	link_directories(${LZFSE_LIBRARY})
+ENDIF(LZFSE_FOUND)
+
+include_directories(${ZLIB_INCLUDE_DIR})
+link_directories(${ZLIB_LIBRARIES})
+include_directories(${BZIP2_INCLUDE_DIR})
+link_directories(${BZIP2_LIBRARIES})
+
+link_directories(${PROJECT_BINARY_DIR}/common ${PROJECT_BINARY_DIR}/hfs)
+
+add_library(dmg adc.c attribution.c checksum.c compress.c dmgfile.c dmglib.c filevault.c io.c partition.c resources.c udif.c ../includes/dmg/adc.h ../includes/dmg/attribution.h ../includes/dmg/dmg.h ../includes/dmg/dmgfile.h ../includes/dmg/dmglib.h ../includes/dmg/filevault.h)
+
+IF(OPENSSL_FOUND)
+	add_definitions(-DHAVE_CRYPT)
+	include_directories(${OPENSSL_INCLUDE_DIR})
+	target_link_libraries(dmg ${OPENSSL_CRYPTO_LIBRARY} $<$<BOOL:${OPENSSL_USE_STATIC_LIBS}>:${CMAKE_DL_LIBS}>)
+	IF(WIN32)
+		TARGET_LINK_LIBRARIES(dmg gdi32)
+	ENDIF(WIN32)
+ENDIF(OPENSSL_FOUND)
+
+target_link_libraries(dmg common hfs z bz2 pthread)
+IF(LIBLZMA_FOUND)
+	target_link_libraries(dmg ${LIBLZMA_LIBRARIES})
+ENDIF(LIBLZMA_FOUND)
+IF(LZFSE_FOUND)
+	target_link_libraries(dmg ${LZFSE_LIBRARY})
+ENDIF(LZFSE_FOUND)
+
+add_executable(dmg-bin dmg.c)
+target_link_libraries (dmg-bin dmg)
+
+set_target_properties(dmg-bin PROPERTIES OUTPUT_NAME "dmg")
+
+install(TARGETS dmg-bin DESTINATION bin)
+

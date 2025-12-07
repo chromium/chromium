@@ -19,6 +19,7 @@
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/model/type_entities_count.h"
 #include "components/sync/nigori/nigori_sync_bridge.h"
+#include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/data_type_state_helper.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -31,8 +32,8 @@ namespace {
 
 // TODO(mamir): remove those and adjust the code accordingly. Similarly in
 // tests.
-const char kNigoriStorageKey[] = "NigoriStorageKey";
-const char kRawNigoriClientTagHash[] = "NigoriClientTagHash";
+constexpr char kNigoriStorageKey[] = "NigoriStorageKey";
+constexpr char kRawNigoriClientTagHash[] = "NigoriClientTagHash";
 
 }  // namespace
 
@@ -42,8 +43,7 @@ NigoriDataTypeProcessor::~NigoriDataTypeProcessor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void NigoriDataTypeProcessor::ConnectSync(
-    std::unique_ptr<CommitQueue> worker) {
+void NigoriDataTypeProcessor::ConnectSync(std::unique_ptr<CommitQueue> worker) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "Successfully connected Encryption Keys";
 
@@ -132,7 +132,7 @@ void NigoriDataTypeProcessor::OnUpdateReceived(
     return;
   }
 
-  // TODO(crbug.com/40860698): validate incoming updates, e.g. |gc_directive|
+  // TODO(crbug.com/40860698): validate incoming updates, e.g. `gc_directive`
   // must be empty for Nigori.
   std::optional<ModelError> error;
 
@@ -209,7 +209,7 @@ void NigoriDataTypeProcessor::StorePendingInvalidations(
   data_type_state_.mutable_invalidations()->Assign(
       invalidations_to_store.begin(), invalidations_to_store.end());
   // ApplyIncrementalSyncChanges does actually query and persist the
-  // |data_type_state_|.
+  // `data_type_state_`.
   bridge_->ApplyIncrementalSyncChanges(/*data=*/std::nullopt);
 }
 
@@ -250,25 +250,28 @@ void NigoriDataTypeProcessor::OnSyncStopping(
       ClearMetadataAndReset();
       model_ready_to_sync_ = false;
 
-      // The model is immediately ready to sync again (with the same |bridge_|).
+      // The model is immediately ready to sync again (with the same `bridge_`).
       ModelReadyToSync(bridge_, NigoriMetadataBatch());
       break;
     }
   }
 }
 
-void NigoriDataTypeProcessor::HasUnsyncedData(
-    base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(entity_ && entity_->RequiresCommitRequest());
+void NigoriDataTypeProcessor::GetUnsyncedDataCount(
+    base::OnceCallback<void(size_t)> callback) {
+  std::move(callback).Run(/*count=*/static_cast<size_t>(
+      entity_ && entity_->RequiresCommitRequest()));
 }
 
 void NigoriDataTypeProcessor::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(model_ready_to_sync_);
+  CHECK(bridge_);
 
   std::unique_ptr<EntityData> entity_data = bridge_->GetDataForDebugging();
   if (!entity_data) {
-    std::move(callback).Run(syncer::NIGORI, base::Value::List());
+    std::move(callback).Run(base::Value::List());
     return;
   }
 
@@ -295,7 +298,7 @@ void NigoriDataTypeProcessor::GetAllNodesForDebugging(
 
   base::Value::List all_nodes;
   all_nodes.Append(std::move(root_node));
-  std::move(callback).Run(syncer::NIGORI, std::move(all_nodes));
+  std::move(callback).Run(std::move(all_nodes));
 }
 
 void NigoriDataTypeProcessor::GetTypeEntitiesCountForDebugging(
@@ -339,8 +342,10 @@ void NigoriDataTypeProcessor::ModelReadyToSync(
     metadata.set_client_tag_hash(kRawNigoriClientTagHash);
     entity_ = ProcessorEntity::CreateFromMetadata(kNigoriStorageKey,
                                                   std::move(metadata));
-  } else {
+  }
+  if (!entity_) {
     // First time syncing or persisted data are corrupted; initialize metadata.
+    data_type_state_ = sync_pb::DataTypeState();
     data_type_state_.mutable_progress_marker()->set_data_type_id(
         sync_pb::EntitySpecifics::kNigoriFieldNumber);
   }
@@ -458,8 +463,8 @@ void NigoriDataTypeProcessor::ConnectIfReady() {
   data_type_state_.set_cache_guid(activation_request_.cache_guid);
 
   // Cache GUID verification earlier above guarantees the user is the same.
-  data_type_state_.set_authenticated_account_id(
-      activation_request_.authenticated_account_id.ToString());
+  data_type_state_.set_authenticated_obfuscated_gaia_id(
+      activation_request_.authenticated_gaia_id.ToString());
 
   auto activation_response = std::make_unique<DataTypeActivationResponse>();
   activation_response->data_type_state = data_type_state_;
@@ -504,7 +509,7 @@ void NigoriDataTypeProcessor::ClearMetadataIfStopped() {
 void NigoriDataTypeProcessor::ReportBridgeErrorForTest() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!model_error_.has_value());
-  ReportError(ModelError(FROM_HERE, "Reported error for test"));
+  ReportError({FROM_HERE, ModelError::Type::kNigoriInvalidSpecifics});
 }
 
 }  // namespace syncer

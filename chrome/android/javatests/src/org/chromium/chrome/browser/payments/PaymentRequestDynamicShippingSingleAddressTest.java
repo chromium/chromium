@@ -62,7 +62,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testAddressNotSelected() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         Assert.assertEquals(
@@ -75,7 +75,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testSelectValidAddressAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
@@ -109,7 +109,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testSelectValidAddressEditItAndPay() throws TimeoutException, InterruptedException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
@@ -153,7 +153,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @Feature({"Payments"})
     public void testSelectValidAddressEditItAndCancelAndPay()
             throws TimeoutException, InterruptedException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
@@ -197,7 +197,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testAddInvalidAddressAndCancel() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         // Check that there is a selected payment method (makes sure we are not ready to pay because
@@ -227,7 +227,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testAddAddressAndPay() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -268,7 +268,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testQuickAddAddressAndCloseShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -279,12 +279,12 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getShippingAddressSectionForTest()
                             .findViewById(R.id.payments_add_option_button)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.close_button)
                             .performClick();
@@ -304,7 +304,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testQuickCloseAndAddAddressShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -315,12 +315,12 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.close_button)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getShippingAddressSectionForTest()
                             .findViewById(R.id.payments_add_option_button)
                             .performClick();
@@ -336,7 +336,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testQuickAddAddressAndCancelShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -347,12 +347,12 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getShippingAddressSectionForTest()
                             .findViewById(R.id.payments_add_option_button)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.button_secondary)
                             .performClick();
@@ -372,7 +372,7 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
     @MediumTest
     @Feature({"Payments"})
     public void testQuickCancelAndAddAddressShouldNotCrash() throws TimeoutException {
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "buyWithMethods([{supportedMethods: 'https://bobpay.test'}]);",
                 mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
@@ -383,12 +383,12 @@ public class PaymentRequestDynamicShippingSingleAddressTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getDialogForTest()
                             .findViewById(R.id.button_secondary)
                             .performClick();
                     mPaymentRequestTestRule
-                            .getPaymentRequestUI()
+                            .getPaymentRequestUi()
                             .getShippingAddressSectionForTest()
                             .findViewById(R.id.payments_add_option_button)
                             .performClick();

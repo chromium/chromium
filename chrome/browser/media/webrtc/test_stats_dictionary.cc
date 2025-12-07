@@ -65,8 +65,7 @@ TestStatsDictionary::TestStatsDictionary(TestStatsReportDictionary* report,
 TestStatsDictionary::TestStatsDictionary(
     const TestStatsDictionary& other) = default;
 
-TestStatsDictionary::~TestStatsDictionary() {
-}
+TestStatsDictionary::~TestStatsDictionary() = default;
 
 bool TestStatsDictionary::IsBoolean(const std::string& key) const {
   bool value;

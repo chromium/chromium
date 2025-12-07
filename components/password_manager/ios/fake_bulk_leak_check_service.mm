@@ -5,6 +5,7 @@
 #import "components/password_manager/ios/fake_bulk_leak_check_service.h"
 
 #import "base/task/sequenced_task_runner.h"
+#import "base/time/time.h"
 
 namespace password_manager {
 
@@ -50,6 +51,11 @@ void FakeBulkLeakCheckService::RemoveObserver(Observer* obs) {
   observers_.RemoveObserver(obs);
 }
 
+void FakeBulkLeakCheckService::SetStateToBufferedState() {
+  state_ = buffered_state_;
+  NotifyStateChanged();
+}
+
 #pragma mark - Setters
 
 void FakeBulkLeakCheckService::SetBufferedState(
@@ -63,11 +69,6 @@ void FakeBulkLeakCheckService::NotifyStateChanged() {
   for (Observer& obs : observers_) {
     obs.OnStateChanged(state_);
   }
-}
-
-void FakeBulkLeakCheckService::SetStateToBufferedState() {
-  state_ = buffered_state_;
-  NotifyStateChanged();
 }
 
 }  // namespace password_manager

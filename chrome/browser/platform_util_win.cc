@@ -28,7 +28,6 @@
 #include "chrome/browser/platform_util_internal.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/win/shell.h"
-#include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 using content::BrowserThread;
@@ -95,16 +94,6 @@ void OpenExternalOnWorkerThread(const GURL& url) {
   std::string escaped_url = url.spec();
   escaped_url.insert(0, "\"");
   escaped_url += "\"";
-
-  // According to Mozilla in uriloader/exthandler/win/nsOSHelperAppService.cpp:
-  // "Some versions of windows (Win2k before SP3, Win XP before SP1) crash in
-  // ShellExecute on long URLs (bug 161357 on bugzilla.mozilla.org). IE 5 and 6
-  // support URLS of 2083 chars in length, 2K is safe."
-  //
-  // It may be possible to increase this. https://crbug.com/727909
-  const size_t kMaxUrlLength = 2048;
-  if (escaped_url.length() > kMaxUrlLength)
-    return;
 
   // Specify %windir%\system32 as the CWD so that any new proc spawned does not
   // inherit this proc's CWD. Without this, uninstalls may be broken by a

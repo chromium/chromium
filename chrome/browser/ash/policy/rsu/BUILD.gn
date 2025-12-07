@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("rsu") {
   sources = [
@@ -31,7 +31,6 @@ source_set("unit_tests") {
   deps = [
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/attestation:test_support",
     "//chrome/browser/ash/policy/rsu",
     "//chrome/browser/ash/settings:test_support",
@@ -40,6 +39,7 @@ source_set("unit_tests") {
     "//components/policy/core/common:test_support",
     "//components/policy/proto",
     "//components/prefs",
+    "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

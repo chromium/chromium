@@ -1,0 +1,129 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module input.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "third_party/blink/public/mojom/input/input_event_result.mojom";
+import "third_party/blink/public/mojom/input/input_handler.mojom";
+import "third_party/blink/public/mojom/widget/platform_widget.mojom";
+[EnableIf=is_android]
+import "ui/events/mojom/motion_event_android.mojom";
+
+// This struct is useful for sending information relevant to handling input on
+// Viz from browser. This is only set when `InputOnViz` flag is enabled and a
+// layer tree frame sink for renderer is being requested. Design doc for
+// InputVizard project for moving touch input to viz on Android:
+// https://docs.google.com/document/d/1mcydbkgFCO_TT9NuFE962L8PLJWT2XOfXUAPO88VuKE
+
+struct RenderInputRouterConfig {
+  pending_remote<blink.mojom.RenderInputRouterClient> rir_client;
+  // This id allows Viz to use the same RenderWidgetHostInputEventRouter for
+  // non-root layer tree frame sinks under the same WebContents in browser to
+  // mirror 1:1 relationship between RenderWidgetHostInputEventRouter and
+  // WebContentsImpl.
+  mojo_base.mojom.UnguessableToken grouping_id;
+  // Force zoom enable feature for accessbility.
+  bool force_enable_zoom = false;
+};
+
+struct TouchTransferState {
+  // Timestamp of the touch down event on which touch transfer was requested.
+  // The value is obtained from |MotionEvent.getDownTime| Android API which
+  // gives the timestamp in milliseconds.
+  mojo_base.mojom.TimeTicks down_time_ms;
+
+  // FrameSinkId of root widget which was being touched at the time of transfer.
+  viz.mojom.FrameSinkId root_widget_frame_sink_id;
+
+  // Y offset to be added to points received from Android to get coordinates
+  // relative to root widget. This will be used to account for top controls
+  // height when creating MotionEventAndroid on Viz side.
+  float web_contents_y_offset_pix;
+
+  // Device scale factor being used to create MotionEventAndroid objects for
+  // converting device pixels to device independent pixels.
+  float dip_scale;
+
+  // A touch sequence that Browser would have handled, and should be returned to
+  // Browser if it were a new sequence.
+  // With Android 15 QPR2 update, the touches are always split across windows:
+  // https://cs.android.com/android/_/android/platform/frameworks/native/+/a3fe664ce5d4931e2717a1ed48c8ea8e66b03ac8
+  // What it means for Chrome is the pointer downs hit Browser process instead
+  // of coming directly to Viz. They need to be transferred individually to Viz.
+  bool browser_would_have_handled = false;
+
+  // Down event that resulted in transfer of touch sequence, the event is only
+  // present when InputOnViz feature's `kForwardEventsSeenOnBrowserToViz` param
+  // is enabled.
+  [EnableIf=is_android]
+  ui.mojom.CachedMotionEventAndroid? down_event;
+};
+
+// Implemented by Viz, an interface between Browser and Viz. It defines methods
+// used to communicate input event handling related state from Browser to Viz.
+[DirectReceiver]
+interface RenderInputRouterDelegate {
+  // Send |TouchTransferState| from Browser upon a successful touch transfer.
+  // Viz needs this to do input handling on it's side.
+  StateOnTouchTransfer(TouchTransferState state);
+
+  // Notifies RenderInputRouter corresponding to |frame_sink_id| on the
+  // VizCompositor thread of changes to |force_enable_zoom| state for
+  // Accessibility.
+  ForceEnableZoomStateChanged(bool force_enable_zoom,
+                              viz.mojom.FrameSinkId frame_sink_id);
+
+  // Stops any ongoing flings for |frame_sink_id| on VizCompositorThread.
+  StopFlingingOnViz(viz.mojom.FrameSinkId frame_sink_id);
+
+  // Notifies RenderInputRouter on the VizCompositor thread (corresponding to
+  // |frame_sink_id|) to restart its input event ack timer. This might be called
+  // when the user has decided to wait in case of an unresponsive renderer or if
+  // the renderer becomes visible again.
+  RestartInputEventAckTimeoutIfNecessary(
+    viz.mojom.FrameSinkId frame_sink_id);
+
+  // Notifies RenderInputRouter on the VizCompositor thread (corresponding to
+  // |frame_sink_id|) of any visibility changes to its corresponding page.
+  NotifyVisibilityChanged(viz.mojom.FrameSinkId frame_sink_id, bool is_hidden);
+
+  // Generates a synthetic touch cancel, which results in touch events being
+  // dropped if there was an active touch sequence on Viz.
+  ResetGestureDetection(viz.mojom.FrameSinkId root_widget_frame_sink_id);
+};
+
+// Implemented by the browser, this interface defines methods that will be
+// invoked to keep the browser notified of input event handling on the
+// VizCompositor thread.
+interface RenderInputRouterDelegateClient {
+  // Notifies InputEventObservers in the browser of input events being handled
+  // on Viz (with InputVizard).
+  NotifyObserversOfInputEvent(blink.mojom.Event event,
+                              bool dispatched_to_renderer);
+
+  // Notifies InputEventObservers in the browser of input event acks being
+  // handled on Viz (with InputVizard).
+  NotifyObserversOfInputEventAcks(blink.mojom.InputEventResultSource ack_source,
+      blink.mojom.InputEventResultState ack_result, blink.mojom.Event event);
+
+  // Notifies the browser of an invalid input event source being seen on
+  // the VizCompositor thread when handling input.
+  OnInvalidInputEventSource();
+
+  // Sends |DidOverscrollParams| to the browser to allow overscroll effect to
+  // request input back if it ends up consuming the input sequence.
+  StateOnOverscrollTransfer(
+    blink.mojom.DidOverscrollParams? overscroll);
+
+  // Notifies browser that the renderer is responsive after being unresponsive
+  // or has turned unresonsive to input events. For the latter, it also passes
+  // over the timestamp when an input event timed out without getting an ack
+  // from the renderer.
+  RendererInputResponsivenessChanged(
+    bool is_responsive,
+    mojo_base.mojom.TimeTicks? ack_timeout_ts);
+};

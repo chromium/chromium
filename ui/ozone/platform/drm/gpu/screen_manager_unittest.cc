@@ -2,18 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/drm/gpu/screen_manager.h"
+
 #include <drm_fourcc.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <xf86drm.h>
 #include <xf86drmMode.h>
+
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "build/chromeos_buildflags.h"
+#include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/display/manager/test/fake_display_snapshot.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/gpu_fence.h"
@@ -27,15 +32,17 @@
 #include "ui/ozone/platform/drm/gpu/drm_window.h"
 #include "ui/ozone/platform/drm/gpu/fake_drm_device.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_controller.h"
-#include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 namespace ui {
 namespace {
 
+using ::testing::AllOf;
 using ::testing::Eq;
+using ::testing::Field;
 using ::testing::Matcher;
 using ::testing::Pointee;
 using ::testing::Property;
+using ::testing::SizeIs;
 using ::testing::UnorderedElementsAre;
 
 constexpr drmModeModeInfo ConstructMode(uint16_t hdisplay, uint16_t vdisplay) {
@@ -52,6 +59,53 @@ Matcher<const CrtcController&> EqualsCrtcConnectorIds(uint32_t crtc,
                                                       uint32_t connector) {
   return AllOf(Property(&CrtcController::crtc, Eq(crtc)),
                Property(&CrtcController::connector, Eq(connector)));
+}
+
+// TODO(b/364634013): Create a test util file for ozone/drm and de-deuplicate
+// EqTileProperty().
+testing::Matcher<TileProperty> EqTileProperty(const TileProperty& expected) {
+  return AllOf(Field(&TileProperty::group_id, Eq(expected.group_id)),
+               Field(&TileProperty::scale_to_fit_display,
+                     Eq(expected.scale_to_fit_display)),
+               Field(&TileProperty::tile_size, Eq(expected.tile_size)),
+               Field(&TileProperty::tile_layout, Eq(expected.tile_layout)),
+               Field(&TileProperty::location, Eq(expected.location)));
+}
+
+std::unique_ptr<HardwareDisplayControllerInfo> GetDisplayInfo(
+    uint32_t connector_id,
+    uint32_t crtc_id,
+    uint8_t index,
+    const std::optional<TileProperty>& tile_property = std::nullopt) {
+  // Initialize a list of display modes.
+  constexpr size_t kNumModes = 5;
+  drmModeModeInfo modes[kNumModes] = {
+      {.hdisplay = 640, .vdisplay = 400},
+      {.hdisplay = 640, .vdisplay = 480},
+      {.hdisplay = 800, .vdisplay = 600},
+      {.hdisplay = 1024, .vdisplay = 768},
+      // Last mode, which should be the largest, is the native mode.
+      {.hdisplay = 1920, .vdisplay = 1080}};
+
+  // Initialize a connector.
+  ScopedDrmConnectorPtr connector(DrmAllocator<drmModeConnector>());
+  connector->connector_id = connector_id;
+  connector->connection = DRM_MODE_CONNECTED;
+  connector->count_props = 0;
+  connector->count_modes = kNumModes;
+  connector->modes = DrmAllocator<drmModeModeInfo>(kNumModes);
+  UNSAFE_TODO(std::memcpy(connector->modes, &modes[0],
+                          kNumModes * sizeof(drmModeModeInfo)));
+
+  // Initialize a CRTC.
+  ScopedDrmCrtcPtr crtc(DrmAllocator<drmModeCrtc>());
+  crtc->crtc_id = crtc_id;
+  crtc->mode_valid = 1;
+  crtc->mode = UNSAFE_TODO(connector->modes[kNumModes - 1]);
+
+  return std::make_unique<HardwareDisplayControllerInfo>(
+      std::move(connector), std::move(crtc), index,
+      /*edid_parser=*/std::nullopt, tile_property);
 }
 
 }  // namespace
@@ -175,8 +229,9 @@ class ScreenManagerTest : public testing::Test {
       uint64_t format_modifier,
       const gfx::Size& size) {
     std::vector<uint64_t> modifiers;
-    if (format_modifier != DRM_FORMAT_MOD_NONE)
+    if (format_modifier != DRM_FORMAT_MOD_NONE) {
       modifiers.push_back(format_modifier);
+    }
     auto buffer = drm_->gbm_device()->CreateBufferWithModifiers(
         format, size, GBM_BO_USE_SCANOUT, modifiers);
     return DrmFramebuffer::AddFramebuffer(drm_, buffer.get(), size, modifiers);
@@ -807,12 +862,13 @@ TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
   HardwareDisplayController* controller =
       screen_manager_->GetDisplayController(GetPrimaryBounds());
   for (const auto& crtc : controller->crtc_controllers()) {
-    if (crtc->crtc() == primary_crtc_id)
+    if (crtc->crtc() == primary_crtc_id) {
       EXPECT_EQ(kDefaultMode.clock, crtc->mode().clock);
-    else if (crtc->crtc() == secondary_crtc_id)
+    } else if (crtc->crtc() == secondary_crtc_id) {
       EXPECT_EQ(secondary_mode.clock, crtc->mode().clock);
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   }
 }
 
@@ -2081,14 +2137,7 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcs) {
 }
 
 // TODO(b/322831691): Deterministic failure.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
-  DISABLED_ReplaceDisplayControllersCrtcsNonexistent
-#else
-#define MAYBE_ReplaceDisplayControllersCrtcsNonexistent \
-  ReplaceDisplayControllersCrtcsNonexistent
-#endif
-TEST_F(ScreenManagerTest, MAYBE_ReplaceDisplayControllersCrtcsNonexistent) {
+TEST_F(ScreenManagerTest, DISABLED_ReplaceDisplayControllersCrtcsNonexistent) {
   // Initializes 2 CRTC-Connector pairs.
   InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
   uint32_t crtc_id = drm_->crtc_property(0).id;
@@ -2206,4 +2255,207 @@ TEST_F(ScreenManagerTest, ReplaceDisplayControllersCrtcsComplex) {
               UnorderedElementsAre(
                   Pointee(EqualsCrtcConnectorIds(crtc_3, connector_2))));
 }
+
+TEST_F(ScreenManagerTest, TileDisplay) {
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
+  InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+
+  uint32_t crtc_id_1 = drm_->crtc_property(0).id;
+  uint32_t connector_id_1 = drm_->connector_property(0).id;
+  uint32_t crtc_id_2 = drm_->crtc_property(1).id;
+  uint32_t connector_id_2 = drm_->connector_property(1).id;
+
+  TileProperty primary_tile_prop = {.group_id = 1,
+                                    .scale_to_fit_display = true,
+                                    .tile_size = gfx::Size(3840, 4320),
+                                    .tile_layout = gfx::Size(2, 1),
+                                    .location = gfx::Point(0, 0)};
+  std::unique_ptr<ui::HardwareDisplayControllerInfo> primary_info =
+      GetDisplayInfo(connector_id_1, crtc_id_1, /*index=*/1, primary_tile_prop);
+
+  TileProperty nonprimary_tile_prop = primary_tile_prop;
+  nonprimary_tile_prop.location = gfx::Point(1, 0);
+  primary_info->AcquireNonprimaryTileInfo(GetDisplayInfo(
+      connector_id_2, crtc_id_2, /*index=*/2, nonprimary_tile_prop));
+
+  std::unique_ptr<display::FakeDisplaySnapshot> snapshot =
+      display::FakeDisplaySnapshot::Builder()
+          .SetId(kPrimaryDisplayId)
+          .SetBaseConnectorId(primary_info->connector()->connector_id)
+          .SetNativeMode(gfx::Size(3840, 4320))
+          .SetCurrentMode(gfx::Size(3840, 4320))
+          .Build();
+
+  DrmDisplay drm_display(drm_.get(), primary_info.get(), *snapshot);
+
+  screen_manager_->AddDisplayControllersForDisplay(drm_display);
+
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id_1, connector_id_1, gfx::Point(0, 0),
+      std::make_unique<drmModeModeInfo>(
+          drmModeModeInfo{.hdisplay = 3840, .vdisplay = 4320}));
+  ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset}));
+
+  HardwareDisplayController* hdc = screen_manager_->GetDisplayController(
+      // This is the full tile composited size.
+      gfx::Rect(0, 0, 3840 * 2, 4320));
+  ASSERT_NE(hdc, nullptr);
+  ASSERT_TRUE(hdc->IsTiled());
+  EXPECT_THAT(hdc->GetTileProperty(),
+              Optional(EqTileProperty(primary_tile_prop)));
+
+  EXPECT_THAT(
+      hdc->crtc_controllers(),
+      UnorderedElementsAre(
+          Pointee(
+              AllOf(Property(&CrtcController::crtc, Eq(crtc_id_1)),
+                    Property(&CrtcController::connector, Eq(connector_id_1)),
+                    Property(&CrtcController::is_tiled, Eq(true)),
+                    Property(&CrtcController::tile_property,
+                             Optional(EqTileProperty(primary_tile_prop))))),
+          Pointee(AllOf(
+              Property(&CrtcController::crtc, Eq(crtc_id_2)),
+              Property(&CrtcController::connector, Eq(connector_id_2)),
+              Property(&CrtcController::is_tiled, Eq(true)),
+              Property(&CrtcController::tile_property,
+                       Optional(EqTileProperty(nonprimary_tile_prop)))))));
+}
+
+TEST_F(ScreenManagerTest, PartialTiledCrtcRemovalRemovesAllTiledControllers) {
+  std::vector<CrtcState> crtc_states = {
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}},
+      {.planes = {{.formats = {DRM_FORMAT_XRGB8888}}}}};
+  InitializeDrmState(drm_.get(), crtc_states, /*is_atomic=*/true);
+
+  uint32_t crtc_id_1 = drm_->crtc_property(0).id;
+  uint32_t connector_id_1 = drm_->connector_property(0).id;
+  uint32_t crtc_id_2 = drm_->crtc_property(1).id;
+  uint32_t connector_id_2 = drm_->connector_property(1).id;
+
+  TileProperty primary_tile_prop = {.group_id = 1,
+                                    .scale_to_fit_display = true,
+                                    .tile_size = gfx::Size(3840, 4320),
+                                    .tile_layout = gfx::Size(2, 1),
+                                    .location = gfx::Point(0, 0)};
+  std::unique_ptr<ui::HardwareDisplayControllerInfo> primary_info =
+      GetDisplayInfo(connector_id_1, crtc_id_1, /*index=*/1, primary_tile_prop);
+
+  TileProperty nonprimary_tile_prop = primary_tile_prop;
+  nonprimary_tile_prop.location = gfx::Point(1, 0);
+  primary_info->AcquireNonprimaryTileInfo(GetDisplayInfo(
+      connector_id_2, crtc_id_2, /*index=*/2, nonprimary_tile_prop));
+
+  std::unique_ptr<display::FakeDisplaySnapshot> snapshot =
+      display::FakeDisplaySnapshot::Builder()
+          .SetId(kPrimaryDisplayId)
+          .SetBaseConnectorId(primary_info->connector()->connector_id)
+          .SetNativeMode(gfx::Size(3840, 4320))
+          .SetCurrentMode(gfx::Size(3840, 4320))
+          .Build();
+
+  DrmDisplay drm_display(drm_.get(), primary_info.get(), *snapshot);
+
+  screen_manager_->AddDisplayControllersForDisplay(drm_display);
+
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id_1, connector_id_1, gfx::Point(0, 0),
+      std::make_unique<drmModeModeInfo>(
+          drmModeModeInfo{.hdisplay = 3840, .vdisplay = 4320}));
+  ASSERT_TRUE(screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset}));
+
+  const gfx::Rect display_bounds = gfx::Rect(0, 0, 3840 * 2, 4320);
+  HardwareDisplayController* hdc =
+      screen_manager_->GetDisplayController(display_bounds);
+  // This is the full tile composited size.
+  ASSERT_NE(hdc, nullptr);
+  ASSERT_TRUE(hdc->IsTiled());
+
+  // Remove the non-primary CRTC, it should remove the entire controller from
+  // the ScreenManager.
+  ScreenManager::CrtcsWithDrmList controllers_to_remove;
+  controllers_to_remove.emplace_back(crtc_id_2, drm_);
+  screen_manager_->RemoveDisplayControllers(controllers_to_remove);
+  ASSERT_EQ(screen_manager_->GetDisplayController(display_bounds), nullptr);
+}
+
+TEST_F(ScreenManagerTest, DetachPlanesFromAllControllersSuccess) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kCommitModeset});
+
+  int last_commit_count = drm_->get_commit_modeset_count();
+  ASSERT_TRUE(screen_manager_->DetachPlanesFromAllControllers());
+  EXPECT_EQ(drm_->get_commit_modeset_count(), last_commit_count + 1);
+}
+
+TEST_F(ScreenManagerTest, DetachPlanesFromAllControllersCommitFailed) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kCommitModeset});
+
+  drm_->set_modeset_expectation(false);
+  int last_commit_count = drm_->get_commit_modeset_count();
+  ASSERT_FALSE(screen_manager_->DetachPlanesFromAllControllers());
+  EXPECT_EQ(drm_->get_commit_modeset_count(), last_commit_count + 1);
+}
+
+TEST_F(ScreenManagerTest, UpdateControllerToWindowMappingWithoutMaster) {
+  InitializeDrmStateWithDefault(drm_.get(), /*is_atomic=*/true);
+  uint32_t crtc_id = drm_->crtc_property(0).id;
+  uint32_t connector_id = drm_->connector_property(0).id;
+
+  auto window = std::make_unique<DrmWindow>(1, device_manager_.get(),
+                                            screen_manager_.get());
+  window->Initialize();
+  window->SetBounds(GetPrimaryBounds());
+  screen_manager_->AddWindow(1, std::move(window));
+
+  screen_manager_->AddDisplayController(drm_, crtc_id, connector_id);
+  std::vector<ControllerConfigParams> controllers_to_enable;
+  controllers_to_enable.emplace_back(
+      kPrimaryDisplayId, drm_, crtc_id, connector_id,
+      GetPrimaryBounds().origin(),
+      std::make_unique<drmModeModeInfo>(kDefaultMode));
+  screen_manager_->ConfigureDisplayControllers(
+      controllers_to_enable, {display::ModesetFlag::kTestModeset,
+                              display::ModesetFlag::kCommitModeset});
+
+  ASSERT_NE(screen_manager_->GetWindow(1)->GetController(), nullptr);
+  ASSERT_TRUE(screen_manager_->GetWindow(1)
+                  ->GetController()
+                  ->GetDrmDevice()
+                  ->DropMaster());
+  screen_manager_->UpdateControllerToWindowMapping();
+  EXPECT_EQ(screen_manager_->GetWindow(1)->GetController(), nullptr);
+
+  window = screen_manager_->RemoveWindow(1);
+  window->Shutdown();
+}
+
 }  // namespace ui

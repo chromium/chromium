@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
@@ -24,182 +20,20 @@
 
 namespace blink {
 
-AudioWorkletProcessor* AudioWorkletProcessor::Create(
-    ExecutionContext* context,
-    ExceptionState& exception_state) {
-  AudioWorkletGlobalScope* global_scope = To<AudioWorkletGlobalScope>(context);
-  DCHECK(global_scope);
-  DCHECK(global_scope->IsContextThread());
+namespace {
+using BackingArrayBuffers =
+    HeapVector<HeapVector<TraceWrapperV8Reference<v8::ArrayBuffer>>>;
 
-  // Get the stored initialization parameter from the global scope.
-  std::unique_ptr<ProcessorCreationParams> params =
-      global_scope->GetProcessorCreationParams();
+// An AudioPort is an array of one or more AudioBus objects, which is
+// represented by:
+// Vector<scoped_refptr<AudioBus>> or TraceWrapperV8Reference<v8::Array>.
+// An AudioBus can contain one or more AudioChannels, that are represented
+// with a Float32Array (V8) or an AudioFloatArray (Web Audio).
 
-  // `params` can be null if there's no matching AudioWorkletNode instance.
-  // (e.g. invoking AudioWorkletProcessor directly in AudioWorkletGlobalScope)
-  if (!params) {
-    exception_state.ThrowTypeError(
-        "Illegal invocation of AudioWorkletProcessor constructor.");
-    return nullptr;
-  }
-  auto* port = MakeGarbageCollected<MessagePort>(*global_scope);
-  port->Entangle(std::move(params->PortChannel()));
-  return MakeGarbageCollected<AudioWorkletProcessor>(global_scope,
-                                                     params->Name(), port);
-}
-
-AudioWorkletProcessor::AudioWorkletProcessor(
-    AudioWorkletGlobalScope* global_scope,
-    const String& name,
-    MessagePort* port)
-    : global_scope_(global_scope), processor_port_(port), name_(name) {
-  InstanceCounters::IncrementCounter(
-      InstanceCounters::kAudioWorkletProcessorCounter);
-}
-
-AudioWorkletProcessor::~AudioWorkletProcessor() {
-  InstanceCounters::DecrementCounter(
-      InstanceCounters::kAudioWorkletProcessorCounter);
-}
-
-bool AudioWorkletProcessor::Process(
-    const Vector<scoped_refptr<AudioBus>>& inputs,
-    Vector<scoped_refptr<AudioBus>>& outputs,
-    const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map) {
-  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
-               "AudioWorkletProcessor::Process");
-
-  DCHECK(global_scope_->IsContextThread());
-  DCHECK(!hasErrorOccurred());
-
-  ScriptState* script_state =
-      global_scope_->ScriptController()->GetScriptState();
-  ScriptState::Scope scope(script_state);
-  v8::Isolate* isolate = script_state->GetIsolate();
-  v8::Local<v8::Context> context = script_state->GetContext();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
-  AudioWorkletProcessorDefinition* definition =
-      global_scope_->FindDefinition(Name());
-
-  // 1st JS arg `inputs_`. Compare `inputs` and `inputs_`. Then allocates the
-  // data container if necessary.
-  if (!PortTopologyMatches(isolate, context, inputs, inputs_)) {
-    bool inputs_cloned_successfully =
-        ClonePortTopology(isolate, context, inputs, inputs_,
-                          input_array_buffers_);
-    DCHECK(inputs_cloned_successfully);
-    if (!inputs_cloned_successfully) {
-      return false;
-    }
-  }
-  DCHECK(!inputs_.IsEmpty());
-  DCHECK(inputs_.Get(isolate)->IsArray());
-  DCHECK_EQ(inputs_.Get(isolate)->Length(), inputs.size());
-  DCHECK_EQ(input_array_buffers_.size(), inputs.size());
-
-  // Copies `inputs` to the internal `input_array_buffers_`.
-  CopyPortToArrayBuffers(isolate, inputs, input_array_buffers_);
-
-  // 2nd JS arg `outputs_`. Compare `outputs` and `outputs_`. Then allocates the
-  // data container if necessary.
-  if (!PortTopologyMatches(isolate, context, outputs, outputs_)) {
-    bool outputs_cloned_successfully =
-        ClonePortTopology(isolate, context, outputs, outputs_,
-                          output_array_buffers_);
-    DCHECK(outputs_cloned_successfully);
-    if (!outputs_cloned_successfully) {
-      return false;
-    }
-  } else {
-    // The reallocation was not needed, so the arrays need to be zeroed before
-    // passing them to the author script.
-    ZeroArrayBuffers(isolate, output_array_buffers_);
-  }
-  DCHECK(!outputs_.IsEmpty());
-  DCHECK(outputs_.Get(isolate)->IsArray());
-  DCHECK_EQ(outputs_.Get(isolate)->Length(), outputs.size());
-  DCHECK_EQ(output_array_buffers_.size(), outputs.size());
-
-  // 3rd JS arg `params_`. Compare `param_value_map` and `params_`. Then
-  // allocates the data container if necessary.
-  if (!ParamValueMapMatchesToParamsObject(isolate, context, param_value_map,
-                                          params_)) {
-    bool params_cloned_successfully =
-        CloneParamValueMapToObject(isolate, context, param_value_map, params_);
-    DCHECK(params_cloned_successfully);
-    if (!params_cloned_successfully) {
-      return false;
-    }
-  }
-  DCHECK(!params_.IsEmpty());
-  DCHECK(params_.Get(isolate)->IsObject());
-
-  // Copies `param_value_map` to the internal `params_` object. This operation
-  // could fail if the getter of parameterDescriptors is overridden by user code
-  // and returns incompatible data. (crbug.com/1151069)
-  if (!CopyParamValueMapToObject(isolate, context, param_value_map, params_)) {
-    SetErrorState(AudioWorkletProcessorErrorState::kProcessError);
-    return false;
-  }
-
-  // Performs the user-defined AudioWorkletProcessor.process() function.
-  v8::TryCatch try_catch(isolate);
-  try_catch.SetVerbose(true);
-  ScriptValue result;
-  {
-    TRACE_EVENT0(
-        TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
-        "AudioWorkletProcessor::Process (author script execution)");
-    if (!definition->ProcessFunction()
-             ->Invoke(this, ScriptValue(isolate, inputs_.Get(isolate)),
-                      ScriptValue(isolate, outputs_.Get(isolate)),
-                      ScriptValue(isolate, params_.Get(isolate)))
-             .To(&result)) {
-      SetErrorState(AudioWorkletProcessorErrorState::kProcessError);
-      return false;
-    }
-  }
-  DCHECK(!try_catch.HasCaught());
-
-  // Copies the resulting output from author script to `outputs`.
-  CopyArrayBuffersToPort(isolate, output_array_buffers_, outputs);
-
-  // Return the value from the user-supplied `.process()` function. It is
-  // used to maintain the lifetime of the node and the processor.
-  return result.V8Value()->IsTrue();
-}
-
-void AudioWorkletProcessor::SetErrorState(
-    AudioWorkletProcessorErrorState error_state) {
-  error_state_ = error_state;
-}
-
-AudioWorkletProcessorErrorState AudioWorkletProcessor::GetErrorState() const {
-  return error_state_;
-}
-
-bool AudioWorkletProcessor::hasErrorOccurred() const {
-  return error_state_ != AudioWorkletProcessorErrorState::kNoError;
-}
-
-MessagePort* AudioWorkletProcessor::port() const {
-  return processor_port_.Get();
-}
-
-void AudioWorkletProcessor::Trace(Visitor* visitor) const {
-  visitor->Trace(global_scope_);
-  visitor->Trace(processor_port_);
-  visitor->Trace(inputs_);
-  visitor->Trace(outputs_);
-  visitor->Trace(params_);
-  visitor->Trace(input_array_buffers_);
-  visitor->Trace(output_array_buffers_);
-  ScriptWrappable::Trace(visitor);
-}
-
-bool AudioWorkletProcessor::PortTopologyMatches(
+// Returns true if the topology of two AudioPorts match. The first AudioPort
+// is given from AudioWorkletHandler (Blink) and the second AudioPort is from
+// AudioWorkletProcessor (V8).
+bool PortTopologyMatches(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     const Vector<scoped_refptr<AudioBus>>& audio_port_1,
@@ -261,10 +95,12 @@ bool AudioWorkletProcessor::PortTopologyMatches(
   return true;
 }
 
-bool AudioWorkletProcessor::FreezeAudioPort(
-    v8::Isolate* isolate,
-    v8::Local<v8::Context> context,
-    v8::Local<v8::Array>& audio_port_array) {
+// Freezes an AudioPort. After this operation the AudioPort will be locked and
+// cannot be altered. Returns false only if any V8 operation throws an
+// exception.
+bool FreezeAudioPort(v8::Isolate* isolate,
+                     v8::Local<v8::Context> context,
+                     v8::Local<v8::Array>& audio_port_array) {
   v8::TryCatch try_catch(isolate);
 
   bool port_frozen;
@@ -291,12 +127,17 @@ bool AudioWorkletProcessor::FreezeAudioPort(
   return true;
 }
 
-bool AudioWorkletProcessor::ClonePortTopology(
-    v8::Isolate* isolate,
-    v8::Local<v8::Context> context,
-    const Vector<scoped_refptr<AudioBus>>& audio_port_1,
-    TraceWrapperV8Reference<v8::Array>& audio_port_2,
-    BackingArrayBuffers& array_buffers) {
+// Clones the topology of `audio_port_1` and builds a new AudioPort to
+// `audio_port_2`. This call makes memory allocation and it should be avoided
+// in the hot audio stack as much as possible. If `array_buffers` is a valid
+// pointer, fill in `array_buffers` with new backing ArrayBuffers of
+// `audio_port_2`. Returns false only if any v8 operation throws an
+// exception.
+bool ClonePortTopology(v8::Isolate* isolate,
+                       v8::Local<v8::Context> context,
+                       const Vector<scoped_refptr<AudioBus>>& audio_port_1,
+                       TraceWrapperV8Reference<v8::Array>& audio_port_2,
+                       BackingArrayBuffers& array_buffers) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
                "AudioWorkletProcessor::Process (clone topology)");
 
@@ -352,10 +193,11 @@ bool AudioWorkletProcessor::ClonePortTopology(
   return true;
 }
 
-void AudioWorkletProcessor::CopyPortToArrayBuffers(
-      v8::Isolate* isolate,
-      const Vector<scoped_refptr<AudioBus>>& audio_port,
-      BackingArrayBuffers& array_buffers) {
+// Copies an AudioPort to a BackingArrayBuffers. The size of two args must
+// be identical.
+void CopyPortToArrayBuffers(v8::Isolate* isolate,
+                            const Vector<scoped_refptr<AudioBus>>& audio_port,
+                            BackingArrayBuffers& array_buffers) {
   DCHECK_EQ(audio_port.size(), array_buffers.size());
 
   for (uint32_t bus_index = 0; bus_index < audio_port.size(); ++bus_index) {
@@ -367,16 +209,18 @@ void AudioWorkletProcessor::CopyPortToArrayBuffers(
       auto backing_store = array_buffers[bus_index][channel_index]
                                .Get(isolate)
                                ->GetBackingStore();
-      memcpy(backing_store->Data(), audio_bus->Channel(channel_index)->Data(),
-             bus_length * sizeof(float));
+      UNSAFE_TODO(memcpy(backing_store->Data(),
+                         audio_bus->Channel(channel_index)->Data(),
+                         bus_length * sizeof(float)));
     }
   }
 }
 
-void AudioWorkletProcessor::CopyArrayBuffersToPort(
-    v8::Isolate* isolate,
-    const BackingArrayBuffers& array_buffers,
-    Vector<scoped_refptr<AudioBus>>& audio_port) {
+// Copies a BackingArrayBuffers to an AudioPort. The size of two args must
+// be identical.
+void CopyArrayBuffersToPort(v8::Isolate* isolate,
+                            const BackingArrayBuffers& array_buffers,
+                            Vector<scoped_refptr<AudioBus>>& audio_port) {
   DCHECK_EQ(array_buffers.size(), audio_port.size());
 
   for (uint32_t bus_index = 0; bus_index < audio_port.size(); ++bus_index) {
@@ -391,30 +235,33 @@ void AudioWorkletProcessor::CopyArrayBuffersToPort(
       // An ArrayBuffer might be transferred. So we need to check the byte
       // length and silence the output buffer if needed.
       if (backing_store->ByteLength() == bus_length) {
-        memcpy(audio_bus->Channel(channel_index)->MutableData(),
-               backing_store->Data(), bus_length);
+        UNSAFE_TODO(memcpy(audio_bus->Channel(channel_index)->MutableData(),
+                           backing_store->Data(), bus_length));
       } else {
-        memset(audio_bus->Channel(channel_index)->MutableData(), 0, bus_length);
+        UNSAFE_TODO(memset(audio_bus->Channel(channel_index)->MutableData(), 0,
+                           bus_length));
       }
     }
   }
 }
 
-void AudioWorkletProcessor::ZeroArrayBuffers(
-    v8::Isolate* isolate,
-    const BackingArrayBuffers& array_buffers) {
-  for (uint32_t bus_index = 0; bus_index < array_buffers.size(); ++bus_index) {
-    for (uint32_t channel_index = 0;
-         channel_index < array_buffers[bus_index].size(); ++channel_index) {
-      auto backing_store = array_buffers[bus_index][channel_index]
-                               .Get(isolate)
-                               ->GetBackingStore();
-      memset(backing_store->Data(), 0, backing_store->ByteLength());
+// Fills a given BackingArrayBuffers with zeros.
+void ZeroArrayBuffers(v8::Isolate* isolate,
+                      const BackingArrayBuffers& array_buffers) {
+  for (const auto& array_buffer : array_buffers) {
+    for (uint32_t channel_index = 0; channel_index < array_buffer.size();
+         ++channel_index) {
+      auto backing_store =
+          array_buffer[channel_index].Get(isolate)->GetBackingStore();
+      UNSAFE_TODO(
+          memset(backing_store->Data(), 0, backing_store->ByteLength()));
     }
   }
 }
 
-bool AudioWorkletProcessor::ParamValueMapMatchesToParamsObject(
+// Returns true if the structure of `param_value_map` matches `params` object
+// and the underlying ArrayBuffers are not transferred.
+bool ParamValueMapMatchesToParamsObject(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map,
@@ -436,7 +283,8 @@ bool AudioWorkletProcessor::ParamValueMapMatchesToParamsObject(
     // AudioWorkletHandler.
     unsigned array_size = 1;
     for (unsigned k = 1; k < param_float_array->size(); ++k) {
-      if (param_float_array->Data()[k] != param_float_array->Data()[0]) {
+      if (UNSAFE_TODO(param_float_array->Data()[k]) !=
+          param_float_array->Data()[0]) {
         array_size = param_float_array->size();
         break;
       }
@@ -463,7 +311,9 @@ bool AudioWorkletProcessor::ParamValueMapMatchesToParamsObject(
   return true;
 }
 
-bool AudioWorkletProcessor::CloneParamValueMapToObject(
+// Clones the structure of `param_value_map` to a given v8::Object, which
+// is an associated array of Float32Arrays.
+bool CloneParamValueMapToObject(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map,
@@ -485,7 +335,8 @@ bool AudioWorkletProcessor::CloneParamValueMapToObject(
     // AudioWorkletHandler.
     unsigned array_size = 1;
     for (unsigned k = 1; k < param_float_array->size(); ++k) {
-      if (param_float_array->Data()[k] != param_float_array->Data()[0]) {
+      if (UNSAFE_TODO(param_float_array->Data()[k]) !=
+          param_float_array->Data()[0]) {
         array_size = param_float_array->size();
         break;
       }
@@ -515,7 +366,9 @@ bool AudioWorkletProcessor::CloneParamValueMapToObject(
   return true;
 }
 
-bool AudioWorkletProcessor::CopyParamValueMapToObject(
+// Copies the content of float arrays from `param_value_map` to `params`
+// v8::Object.
+bool CopyParamValueMapToObject(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
     const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map,
@@ -540,17 +393,208 @@ bool AudioWorkletProcessor::CopyParamValueMapToObject(
     size_t array_length = float32_array->Length();
 
     // The `float32_array` is neither 1 nor 128 frames, or the array buffer is
-    // trasnferred/detached, do not proceed.
+    // transferred/detached, do not proceed.
     if ((array_length != 1 && array_length != param_array->size()) ||
         float32_array->Buffer()->ByteLength() == 0) {
       return false;
     }
 
-    memcpy(float32_array->Buffer()->GetBackingStore()->Data(),
-           param_array->Data(), array_length * sizeof(float));
+    UNSAFE_TODO(memcpy(float32_array->Buffer()->GetBackingStore()->Data(),
+                       param_array->Data(), array_length * sizeof(float)));
   }
 
   return true;
+}
+
+}  // namespace
+
+AudioWorkletProcessor* AudioWorkletProcessor::Create(
+    ExecutionContext* context,
+    ExceptionState& exception_state) {
+  AudioWorkletGlobalScope* global_scope = To<AudioWorkletGlobalScope>(context);
+  DCHECK(global_scope);
+  DCHECK(global_scope->IsContextThread());
+
+  // Get the stored initialization parameter from the global scope.
+  std::unique_ptr<ProcessorCreationParams> params =
+      global_scope->GetProcessorCreationParams();
+
+  // `params` can be null if there's no matching AudioWorkletNode instance.
+  // (e.g. invoking AudioWorkletProcessor directly in AudioWorkletGlobalScope)
+  if (!params) {
+    exception_state.ThrowTypeError(
+        "Illegal invocation of AudioWorkletProcessor constructor.");
+    return nullptr;
+  }
+  auto* port = MakeGarbageCollected<MessagePort>(*global_scope);
+  port->Entangle(std::move(params->PortChannel()));
+  return MakeGarbageCollected<AudioWorkletProcessor>(global_scope,
+                                                     params->Name(), port);
+}
+
+AudioWorkletProcessor::AudioWorkletProcessor(
+    AudioWorkletGlobalScope* global_scope,
+    const String& name,
+    MessagePort* port)
+    : global_scope_(global_scope), processor_port_(port), name_(name) {
+  InstanceCounters::IncrementCounter(
+      InstanceCounters::kAudioWorkletProcessorCounter);
+}
+
+AudioWorkletProcessor::~AudioWorkletProcessor() {
+  InstanceCounters::DecrementCounter(
+      InstanceCounters::kAudioWorkletProcessorCounter);
+}
+
+bool AudioWorkletProcessor::Process(
+    const Vector<scoped_refptr<AudioBus>>& inputs,
+    Vector<scoped_refptr<AudioBus>>& outputs,
+    const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
+               "AudioWorkletProcessor::Process");
+
+  DCHECK(global_scope_->IsContextThread());
+  DCHECK(!hasErrorOccurred());
+
+  ScriptState* script_state =
+      global_scope_->ScriptController()->GetScriptState();
+  ScriptState::Scope scope(script_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+  v8::MicrotasksScope microtasks_scope(
+      isolate, ToMicrotaskQueue(script_state),
+      v8::MicrotasksScope::kDoNotRunMicrotasks);
+
+  // 1st JS arg `inputs_`. Compare `inputs` and `inputs_`. Then allocates the
+  // data container if necessary.
+  if (!PortTopologyMatches(isolate, context, inputs, inputs_)) {
+    bool inputs_cloned_successfully = ClonePortTopology(
+        isolate, context, inputs, inputs_, input_array_buffers_);
+    DCHECK(inputs_cloned_successfully);
+    if (!inputs_cloned_successfully) {
+      return false;
+    }
+  }
+  DCHECK(!inputs_.IsEmpty());
+  DCHECK(inputs_.Get(isolate)->IsArray());
+  DCHECK_EQ(inputs_.Get(isolate)->Length(), inputs.size());
+  DCHECK_EQ(input_array_buffers_.size(), inputs.size());
+
+  // Copies `inputs` to the internal `input_array_buffers_`.
+  CopyPortToArrayBuffers(isolate, inputs, input_array_buffers_);
+
+  // 2nd JS arg `outputs_`. Compare `outputs` and `outputs_`. Then allocates the
+  // data container if necessary.
+  if (!PortTopologyMatches(isolate, context, outputs, outputs_)) {
+    bool outputs_cloned_successfully = ClonePortTopology(
+        isolate, context, outputs, outputs_, output_array_buffers_);
+    DCHECK(outputs_cloned_successfully);
+    if (!outputs_cloned_successfully) {
+      return false;
+    }
+  } else {
+    // The reallocation was not needed, so the arrays need to be zeroed before
+    // passing them to the author script.
+    ZeroArrayBuffers(isolate, output_array_buffers_);
+  }
+  DCHECK(!outputs_.IsEmpty());
+  DCHECK(outputs_.Get(isolate)->IsArray());
+  DCHECK_EQ(outputs_.Get(isolate)->Length(), outputs.size());
+  DCHECK_EQ(output_array_buffers_.size(), outputs.size());
+
+  // 3rd JS arg `params_`. Compare `param_value_map` and `params_`. Then
+  // allocates the data container if necessary.
+  if (!ParamValueMapMatchesToParamsObject(isolate, context, param_value_map,
+                                          params_)) {
+    bool params_cloned_successfully =
+        CloneParamValueMapToObject(isolate, context, param_value_map, params_);
+    DCHECK(params_cloned_successfully);
+    if (!params_cloned_successfully) {
+      return false;
+    }
+  }
+  DCHECK(!params_.IsEmpty());
+  DCHECK(params_.Get(isolate)->IsObject());
+
+  // Copies `param_value_map` to the internal `params_` object. This operation
+  // could fail if the getter of parameterDescriptors is overridden by user code
+  // and returns incompatible data. (crbug.com/1151069)
+  if (!CopyParamValueMapToObject(isolate, context, param_value_map, params_)) {
+    SetErrorState(AudioWorkletProcessorErrorState::kProcessError);
+    return false;
+  }
+
+  // Performs the user-defined AudioWorkletProcessor.process() function.
+  v8::TryCatch try_catch(isolate);
+  try_catch.SetVerbose(true);
+  ScriptValue result;
+  {
+    TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
+                 "AudioWorkletProcessor::Process (author script execution)");
+
+    v8::Local<v8::Value> processor_v8 =
+        ToV8Traits<AudioWorkletProcessor>::ToV8(script_state, this);
+    v8::Local<v8::Value> process_v8_value;
+    if (!processor_v8.As<v8::Object>()
+             ->Get(context, V8AtomicString(isolate, "process"))
+             .ToLocal(&process_v8_value) ||
+        !process_v8_value->IsFunction()) {
+      SetErrorState(
+          AudioWorkletProcessorErrorState::kProcessMethodUndefinedError);
+      return false;
+    }
+    if (!cached_process_callback_ ||
+        cached_process_callback_->CallbackObject() != process_v8_value)
+        [[unlikely]] {
+      cached_process_callback_ = V8BlinkAudioWorkletProcessCallback::Create(
+          process_v8_value.As<v8::Function>());
+    }
+    if (!cached_process_callback_
+             ->Invoke(this, ScriptValue(isolate, inputs_.Get(isolate)),
+                      ScriptValue(isolate, outputs_.Get(isolate)),
+                      ScriptValue(isolate, params_.Get(isolate)))
+             .To(&result)) {
+      SetErrorState(AudioWorkletProcessorErrorState::kProcessError);
+      return false;
+    }
+  }
+  DCHECK(!try_catch.HasCaught());
+
+  // Copies the resulting output from author script to `outputs`.
+  CopyArrayBuffersToPort(isolate, output_array_buffers_, outputs);
+
+  // Return the value from the user-supplied `.process()` function. It is
+  // used to maintain the lifetime of the node and the processor.
+  return result.V8Value()->IsTrue();
+}
+
+void AudioWorkletProcessor::SetErrorState(
+    AudioWorkletProcessorErrorState error_state) {
+  error_state_ = error_state;
+}
+
+AudioWorkletProcessorErrorState AudioWorkletProcessor::GetErrorState() const {
+  return error_state_;
+}
+
+bool AudioWorkletProcessor::hasErrorOccurred() const {
+  return error_state_ != AudioWorkletProcessorErrorState::kNoError;
+}
+
+MessagePort* AudioWorkletProcessor::port() const {
+  return processor_port_.Get();
+}
+
+void AudioWorkletProcessor::Trace(Visitor* visitor) const {
+  visitor->Trace(global_scope_);
+  visitor->Trace(processor_port_);
+  visitor->Trace(cached_process_callback_);
+  visitor->Trace(inputs_);
+  visitor->Trace(outputs_);
+  visitor->Trace(params_);
+  visitor->Trace(input_array_buffers_);
+  visitor->Trace(output_array_buffers_);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

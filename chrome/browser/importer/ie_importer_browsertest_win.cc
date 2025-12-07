@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <objbase.h>
 
 #include <unknwn.h>
@@ -43,14 +38,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/ie_importer_utils_win.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/importer_test_registry_overrider_win.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/search_engines/template_url.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -144,11 +139,12 @@ bool CreateOrderBlob(const base::FilePath& favorites_folder,
 
     blob.resize(blob.size() + 8);
     uint32_t total_size = id_list_size + 8;
-    memcpy(&blob[blob.size() - 8], &total_size, 4);
+    UNSAFE_TODO(memcpy(&blob[blob.size() - 8], &total_size, 4));
     uint32_t sort_index = i;
-    memcpy(&blob[blob.size() - 4], &sort_index, 4);
+    UNSAFE_TODO(memcpy(&blob[blob.size() - 4], &sort_index, 4));
     blob.resize(blob.size() + id_list_size);
-    memcpy(&blob[blob.size() - id_list_size], id_list, id_list_size);
+    UNSAFE_TODO(
+        memcpy(&blob[blob.size() - id_list_size], id_list, id_list_size));
     ILFree(id_list_full);
   }
 
@@ -235,18 +231,20 @@ class TestObserver : public ProfileWriter,
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
-  void ImportItemStarted(importer::ImportItem item) override {}
-  void ImportItemEnded(importer::ImportItem item) override {}
+  void ImportItemStarted(user_data_importer::ImportItem item) override {}
+  void ImportItemEnded(user_data_importer::ImportItem item) override {}
   void ImportEnded() override {
     std::move(quit_closure_).Run();
-    if (importer_items_ & importer::FAVORITES) {
+    if (importer_items_ & user_data_importer::FAVORITES) {
       EXPECT_EQ(std::size(kIEBookmarks), bookmark_count_);
       EXPECT_EQ(std::size(kIEFaviconGroup), favicon_count_);
     }
-    if (importer_items_ & importer::HISTORY)
+    if (importer_items_ & user_data_importer::HISTORY) {
       EXPECT_EQ(2u, history_count_);
-    if (importer_items_ & importer::HOME_PAGE)
+    }
+    if (importer_items_ & user_data_importer::HOME_PAGE) {
       EXPECT_EQ(1u, homepage_count_);
+    }
   }
 
   // ProfileWriter:
@@ -283,15 +281,16 @@ class TestObserver : public ProfileWriter,
     EXPECT_EQ(history::SOURCE_IE_IMPORTED, visit_source);
   }
 
-  void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const std::u16string& top_level_folder_name) override {
+  void AddBookmarks(
+      const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
+      const std::u16string& top_level_folder_name) override {
     ASSERT_LE(bookmark_count_ + bookmarks.size(), std::size(kIEBookmarks));
     // Importer should import the IE Favorites folder the same as the list,
     // in the same order.
     for (size_t i = 0; i < bookmarks.size(); ++i) {
-      EXPECT_NO_FATAL_FAILURE(
-          TestEqualBookmarkEntry(bookmarks[i],
-                                 kIEBookmarks[bookmark_count_])) << i;
+      EXPECT_NO_FATAL_FAILURE(TestEqualBookmarkEntry(
+          bookmarks[i], UNSAFE_TODO(kIEBookmarks[bookmark_count_])))
+          << i;
       ++bookmark_count_;
     }
   }
@@ -299,10 +298,12 @@ class TestObserver : public ProfileWriter,
   void AddFavicons(const favicon_base::FaviconUsageDataList& usage) override {
     // Importer should group the favicon information for each favicon URL.
     for (size_t i = 0; i < std::size(kIEFaviconGroup); ++i) {
-      GURL favicon_url(kIEFaviconGroup[i].favicon_url);
+      GURL favicon_url(UNSAFE_TODO(kIEFaviconGroup[i]).favicon_url);
       std::set<GURL> urls;
-      for (size_t j = 0; j < std::size(kIEFaviconGroup[i].site_url); ++j)
-        urls.insert(GURL(kIEFaviconGroup[i].site_url[j]));
+      for (size_t j = 0;
+           j < std::size(UNSAFE_TODO(kIEFaviconGroup[i]).site_url); ++j) {
+        urls.insert(GURL(UNSAFE_TODO(kIEFaviconGroup[i].site_url[j])));
+      }
 
       SCOPED_TRACE(testing::Message() << "Expected Favicon: " << favicon_url);
 
@@ -326,7 +327,7 @@ class TestObserver : public ProfileWriter,
   }
 
  private:
-  ~TestObserver() override {}
+  ~TestObserver() override = default;
 
   size_t bookmark_count_;
   size_t history_count_;
@@ -348,8 +349,8 @@ class MalformedFavoritesRegistryTestObserver
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
-  void ImportItemStarted(importer::ImportItem item) override {}
-  void ImportItemEnded(importer::ImportItem item) override {}
+  void ImportItemStarted(user_data_importer::ImportItem item) override {}
+  void ImportItemEnded(user_data_importer::ImportItem item) override {}
   void ImportEnded() override {
     std::move(quit_closure_).Run();
     EXPECT_EQ(std::size(kIESortedBookmarks), bookmark_count_);
@@ -363,20 +364,21 @@ class MalformedFavoritesRegistryTestObserver
                       history::VisitSource visit_source) override {}
   void AddKeywords(TemplateURLService::OwnedTemplateURLVector template_urls,
                    bool unique_on_host_and_path) override {}
-  void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const std::u16string& top_level_folder_name) override {
+  void AddBookmarks(
+      const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
+      const std::u16string& top_level_folder_name) override {
     ASSERT_LE(bookmark_count_ + bookmarks.size(),
               std::size(kIESortedBookmarks));
     for (size_t i = 0; i < bookmarks.size(); ++i) {
-      EXPECT_NO_FATAL_FAILURE(
-          TestEqualBookmarkEntry(bookmarks[i],
-                                 kIESortedBookmarks[bookmark_count_])) << i;
+      EXPECT_NO_FATAL_FAILURE(TestEqualBookmarkEntry(
+          bookmarks[i], UNSAFE_TODO(kIESortedBookmarks[bookmark_count_])))
+          << i;
       ++bookmark_count_;
     }
   }
 
  private:
-  ~MalformedFavoritesRegistryTestObserver() override {}
+  ~MalformedFavoritesRegistryTestObserver() override = default;
 
   size_t bookmark_count_;
   base::OnceClosure quit_closure_;
@@ -445,10 +447,9 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
       L"SubFolder",     L"WithPortAndQuery.url", L"a",
       L"SubFolder.url",
   };
-  ASSERT_TRUE(
-      CreateOrderBlob(base::FilePath(path), L"",
-                      std::vector<std::wstring>(
-                          root_links, root_links + std::size(root_links))));
+  ASSERT_TRUE(CreateOrderBlob(
+      base::FilePath(path), L"",
+      std::vector<std::wstring>(std::begin(root_links), std::end(root_links))));
 
   // Sets up a special history link.
   Microsoft::WRL::ComPtr<IUrlHistoryStg2> url_history_stg2;
@@ -470,15 +471,17 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporter) {
   ExternalProcessImporterHost* host = new ExternalProcessImporterHost;
   base::RunLoop loop;
   TestObserver* observer = new TestObserver(
-      importer::HISTORY | importer::FAVORITES, loop.QuitWhenIdleClosure());
+      user_data_importer::HISTORY | user_data_importer::FAVORITES,
+      loop.QuitWhenIdleClosure());
   host->set_observer(observer);
 
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_IE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_IE;
   source_profile.source_path = temp_dir_.GetPath();
 
-  host->StartImportSettings(source_profile, browser()->profile(),
-                            importer::HISTORY | importer::FAVORITES, observer);
+  host->StartImportSettings(
+      source_profile, browser()->profile(),
+      user_data_importer::HISTORY | user_data_importer::FAVORITES, observer);
   loop.Run();
 
   // Cleans up.
@@ -538,8 +541,8 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
     ASSERT_EQ(ERROR_SUCCESS,
               key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));
     ASSERT_EQ(ERROR_SUCCESS,
-              key.WriteValue(L"Order", kBadBinary[i].data, kBadBinary[i].length,
-                             REG_BINARY));
+              key.WriteValue(L"Order", UNSAFE_TODO(kBadBinary[i]).data,
+                             UNSAFE_TODO(kBadBinary[i]).length, REG_BINARY));
 
     // Starts to import the above settings.
     // Deletes itself.
@@ -549,15 +552,12 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest,
         new MalformedFavoritesRegistryTestObserver(loop.QuitWhenIdleClosure());
     host->set_observer(observer);
 
-    importer::SourceProfile source_profile;
-    source_profile.importer_type = importer::TYPE_IE;
+    user_data_importer::SourceProfile source_profile;
+    source_profile.importer_type = user_data_importer::TYPE_IE;
     source_profile.source_path = temp_dir_.GetPath();
 
-    host->StartImportSettings(
-        source_profile,
-        browser()->profile(),
-        importer::FAVORITES,
-        observer);
+    host->StartImportSettings(source_profile, browser()->profile(),
+                              user_data_importer::FAVORITES, observer);
     loop.Run();
   }
 }
@@ -567,8 +567,8 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporterHomePageTest) {
   // Deletes itself.
   ExternalProcessImporterHost* host = new ExternalProcessImporterHost;
   base::RunLoop loop;
-  TestObserver* observer =
-      new TestObserver(importer::HOME_PAGE, loop.QuitWhenIdleClosure());
+  TestObserver* observer = new TestObserver(user_data_importer::HOME_PAGE,
+                                            loop.QuitWhenIdleClosure());
   host->set_observer(observer);
 
   std::wstring key_path(importer::GetIESettingsKey());
@@ -577,14 +577,11 @@ IN_PROC_BROWSER_TEST_F(IEImporterBrowserTest, IEImporterHomePageTest) {
             key.Create(HKEY_CURRENT_USER, key_path.c_str(), KEY_WRITE));
   key.WriteValue(L"Start Page", L"http://www.test.com/");
 
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_IE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_IE;
   source_profile.source_path = temp_dir_.GetPath();
 
-  host->StartImportSettings(
-      source_profile,
-      browser()->profile(),
-      importer::HOME_PAGE,
-      observer);
+  host->StartImportSettings(source_profile, browser()->profile(),
+                            user_data_importer::HOME_PAGE, observer);
   loop.Run();
 }

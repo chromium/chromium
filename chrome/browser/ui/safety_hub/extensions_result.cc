@@ -4,18 +4,18 @@
 
 #include "chrome/browser/ui/safety_hub/extensions_result.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_safety_check_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
-#include "chrome/browser/ui/safety_hub/safety_hub_service.h"
+#include "chrome/browser/ui/safety_hub/safety_hub_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,10 +42,9 @@ SafetyHubExtensionsResult& SafetyHubExtensionsResult::operator=(
 SafetyHubExtensionsResult::~SafetyHubExtensionsResult() = default;
 
 // static
-std::optional<std::unique_ptr<SafetyHubService::Result>>
-SafetyHubExtensionsResult::GetResult(
-    Profile* profile,
-    bool only_unpublished_extensions = false) {
+std::optional<std::unique_ptr<SafetyHubResult>>
+SafetyHubExtensionsResult::GetResult(Profile* profile,
+                                     bool only_unpublished_extensions = false) {
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
   std::set<extensions::ExtensionId> triggering_extensions;
@@ -66,8 +65,7 @@ SafetyHubExtensionsResult::GetResult(
       triggering_extensions, only_unpublished_extensions);
 }
 
-std::unique_ptr<SafetyHubService::Result> SafetyHubExtensionsResult::Clone()
-    const {
+std::unique_ptr<SafetyHubResult> SafetyHubExtensionsResult::Clone() const {
   return std::make_unique<SafetyHubExtensionsResult>(*this);
 }
 
@@ -142,8 +140,8 @@ bool SafetyHubExtensionsResult::WarrantsNewMenuNotification(
   if (!is_unpublished_extensions_only_) {
     return false;
   }
-  return !base::ranges::includes(previous_triggering_extensions,
-                                 triggering_extensions_);
+  return !std::ranges::includes(previous_triggering_extensions,
+                                triggering_extensions_);
 }
 
 std::u16string SafetyHubExtensionsResult::GetNotificationString() const {

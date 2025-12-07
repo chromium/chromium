@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -99,6 +100,14 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXInspectScenario {
   // Scripting instructions.
   std::vector<AXScriptInstruction> script_instructions;
 
+  // Whether to enable accessibility tree dumping in events tests (normally
+  // events tests only show events).
+  bool events_tree_dump_enabled = false;
+
+  // A pattern to match for dumping only a subtree. When set, only the subtree
+  // starting from the first node matching this pattern will be dumped.
+  std::string subtree_pattern;
+
  private:
   enum Directive {
     // No directive.
@@ -130,14 +139,18 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXInspectScenario {
 
     // Node filter directives, see AXNodeFilter.
     kNodeFilter,
+
+    // Events tree dump directive to enable accessibility tree dumping in events
+    // tests.
+    kEventsTreeDump,
   };
 
   // Parses directives from the given line.
   static Directive ParseDirective(const std::string& directive_prefix,
-                                  const std::string& directive);
+                                  std::string_view directive);
 
   // Adds a given directive into a scenario.
-  void ProcessDirective(Directive directive, const std::string& value);
+  void ProcessDirective(Directive directive, std::string_view value);
 };
 
 }  // namespace ui

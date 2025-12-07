@@ -11,15 +11,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_icon_loader.h"
-#include "chrome/browser/browser_process.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -75,10 +76,12 @@ void RemoveDictionaryPath(base::Value::Dict& dict, std::string_view path) {
 // static
 const char KioskAppDataBase::kKeyApps[] = "apps";
 
-KioskAppDataBase::KioskAppDataBase(const std::string& dictionary_name,
+KioskAppDataBase::KioskAppDataBase(PrefService* local_state,
+                                   const std::string& dictionary_name,
                                    const std::string& app_id,
                                    const AccountId& account_id)
-    : dictionary_name_(dictionary_name),
+    : local_state_(CHECK_DEREF(local_state)),
+      dictionary_name_(dictionary_name),
       app_id_(app_id),
       account_id_(account_id) {}
 
@@ -126,36 +129,39 @@ bool KioskAppDataBase::LoadFromDictionary(const base::Value::Dict& dict) {
   return true;
 }
 
-void KioskAppDataBase::DecodeIcon(KioskAppIconLoader::ResultCallback callback) {
+void KioskAppDataBase::DecodeIcon(DecodeIconCallback callback) {
   DLOG_IF(ERROR, icon_path_.empty()) << "Icon path is empty";
-  kiosk_app_icon_loader_ =
-      std::make_unique<KioskAppIconLoader>(std::move(callback));
-  kiosk_app_icon_loader_->Start(icon_path_);
+  kiosk_app_icon_loader_ = std::make_unique<KioskAppIconLoader>();
+  // `Unretained` is safe because deleting `kiosk_app_icon_loader_` disables the
+  // callback.
+  kiosk_app_icon_loader_->Start(
+      icon_path_, base::BindOnce(&KioskAppDataBase::OnIconDecoded,
+                                 base::Unretained(this), std::move(callback)));
 }
 
 void KioskAppDataBase::SaveIcon(const SkBitmap& icon,
                                 const base::FilePath& cache_dir) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::vector<unsigned char> image_data;
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(icon, false, &image_data)) {
+  std::optional<std::vector<uint8_t>> image_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(icon, /*discard_transparency=*/false);
+  if (!image_data) {
     LOG(ERROR) << "Failed to encode kiosk icon";
     return;
   }
 
   const base::FilePath icon_path =
       cache_dir.AppendASCII(app_id_).AddExtension(kIconFileExtension);
-  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
-                             base::BindOnce(&SaveIconToLocalOnBlockingPool,
-                                            icon_path, std::move(image_data)));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&SaveIconToLocalOnBlockingPool, icon_path,
+                     std::move(image_data).value()));
 
   icon_path_ = icon_path;
 }
 
-void KioskAppDataBase::ClearCache() {
+void KioskAppDataBase::ClearCache() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  PrefService* local_state = g_browser_process->local_state();
-
-  ScopedDictPrefUpdate dict_update(local_state, dictionary_name());
+  ScopedDictPrefUpdate dict_update(&local_state_.get(), dictionary_name());
 
   const std::string app_key =
       std::string(KioskAppDataBase::kKeyApps) + '.' + app_id_;
@@ -166,6 +172,12 @@ void KioskAppDataBase::ClearCache() {
         FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
         base::GetDeleteFileCallback(icon_path_));
   }
+}
+
+void KioskAppDataBase::OnIconDecoded(DecodeIconCallback callback,
+                                     std::optional<gfx::ImageSkia> result) {
+  kiosk_app_icon_loader_.reset();
+  std::move(callback).Run(result);
 }
 
 }  // namespace ash

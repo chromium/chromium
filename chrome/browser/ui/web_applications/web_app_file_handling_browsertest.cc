@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -11,14 +10,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -32,6 +28,7 @@
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -57,9 +54,10 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/volume.h"
+#include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #endif
 
 namespace web_app {
@@ -249,11 +247,16 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
 
     content::TestNavigationObserver navigation_observer(expected_launch_url);
     navigation_observer.StartWatchingNewWebContents();
-    content::WebContents* web_contents =
-        apps::AppServiceProxyFactory::GetForProfile(profile)
-            ->BrowserAppLauncher()
-            ->LaunchAppWithParamsForTesting(std::move(params));
 
+    web_app::WebAppProvider* provider =
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile);
+    base::test::TestFuture<base::WeakPtr<Browser>,
+                           base::WeakPtr<content::WebContents>,
+                           apps::LaunchContainer>
+        future;
+    provider->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                    future.GetCallback());
+    auto* web_contents = future.template Get<1>().get();
     navigation_observer.Wait();
     AttachTestConsumer(web_contents);
     return web_contents;
@@ -383,7 +386,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
     auto result = content::EvalJs(web_contents_.get(),
                                   "window.history.replaceState(null, '', "
                                   "window.location.href + '#foo');");
-    EXPECT_TRUE(result.error.empty());
+    EXPECT_TRUE(result.is_ok());
     navigation_observer.Wait();
   }
 
@@ -456,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   const GURL origin = GetSecureAppURL().DeprecatedGetOriginAsURL();
 
   EXPECT_EQ(ApiApprovalState::kRequiresPrompt,
-            registrar().GetAppFileHandlerApprovalState(app_id()));
+            registrar().GetAppFileHandlerUserApprovalState(app_id()));
   provider()->sync_bridge_unsafe().SetAppFileHandlerApprovalState(
       app_id(), ApiApprovalState::kAllowed);
 
@@ -471,7 +474,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
             registrar().GetAppById(app_id())->file_handler_approval_state());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // End-to-end test to ensure the file handler is registered on ChromeOS when the
 // extension system is initialized. Gives more coverage than the unit tests.
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, IsFileHandlerOnChromeOS) {
@@ -492,6 +495,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, IsFileHandlerOnChromeOS) {
 // inodes).
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        HandlerForNonNativeFiles) {
+  // TODO(https://crbug.com/40804030): Remove this when updated to use MV3.
+  extensions::ScopedTestMV2Enabler mv2_enabler_;
+
   InstallFileHandlingPWA();
   base::WeakPtr<file_manager::Volume> fsp_volume =
       file_manager::test::InstallFileSystemProviderChromeApp(profile());

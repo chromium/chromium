@@ -8,24 +8,19 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 
-namespace {
+namespace os_crypt {
 
-// OSCrypt has a setting that determines whether a backend will be used.
-// The presense of this file in the file system means that the backend
-// should be ignored. It's absence means we should use the backend.
-constexpr const char kPreferenceFileName[] = "Disable Local Encryption";
+namespace {
 
 bool ReadBackendUse(const base::FilePath& user_data_dir, bool* use) {
   if (user_data_dir.empty())
     return false;
-  base::FilePath pref_path = user_data_dir.Append(kPreferenceFileName);
+  base::FilePath pref_path = user_data_dir.Append(kBackendPreferenceFileName);
   *use = !base::PathExists(pref_path);
   return true;
 }
 
 }  // namespace
-
-namespace os_crypt {
 
 SelectedLinuxBackend SelectBackend(const std::string& type,
                                    bool use_backend,
@@ -64,6 +59,7 @@ SelectedLinuxBackend SelectBackend(const std::string& type,
     case base::nix::DESKTOP_ENVIRONMENT_UKUI:
     case base::nix::DESKTOP_ENVIRONMENT_UNITY:
     case base::nix::DESKTOP_ENVIRONMENT_XFCE:
+    case base::nix::DESKTOP_ENVIRONMENT_COSMIC:
       return SelectedLinuxBackend::GNOME_LIBSECRET;
     // KDE3 didn't use DBus, which our KWallet store uses.
     case base::nix::DESKTOP_ENVIRONMENT_KDE3:
@@ -71,16 +67,6 @@ SelectedLinuxBackend SelectBackend(const std::string& type,
     case base::nix::DESKTOP_ENVIRONMENT_OTHER:
       return SelectedLinuxBackend::BASIC_TEXT;
   }
-}
-
-bool WriteBackendUse(const base::FilePath& user_data_dir, bool use) {
-  if (user_data_dir.empty())
-    return false;
-  base::FilePath pref_path = user_data_dir.Append(kPreferenceFileName);
-  if (use)
-    return base::DeleteFile(pref_path);
-  FILE* f = base::OpenFile(pref_path, "w");
-  return f != nullptr && base::CloseFile(f);
 }
 
 bool GetBackendUse(const base::FilePath& user_data_dir) {

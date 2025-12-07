@@ -1,0 +1,19 @@
+Name: LeakCanary Object Watcher for Android - Auto installing
+Short Name: leakcanary-object-watcher-android
+URL: https://repo.maven.apache.org/maven2/com/squareup/leakcanary/leakcanary-object-watcher-android/3.0-alpha-8/leakcanary-object-watcher-android-3.0-alpha-8.aar
+Version: 3.0-alpha-8
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+LeakCanary
+
+See also: https://github.com/square/leakcanary/
+
+
+Local Modifications:
+No modifications.

@@ -27,7 +27,7 @@ WebMainRunnerImpl::~WebMainRunnerImpl() {
   }
 }
 
-int WebMainRunnerImpl::Initialize(WebMainParams params) {
+void WebMainRunnerImpl::Initialize(WebMainParams params) {
   ////////////////////////////////////////////////////////////////////////
   // ContentMainRunnerImpl::Initialize()
   //
@@ -36,8 +36,7 @@ int WebMainRunnerImpl::Initialize(WebMainParams params) {
 
   ios_global_state::CreateParams create_params;
   create_params.install_at_exit_manager = params.register_exit_manager;
-  create_params.argc = params.argc;
-  create_params.argv = params.argv;
+  create_params.args = std::move(params.args);
   ios_global_state::Create(create_params);
   web::WebThreadImpl::CreateTaskExecutor();
 
@@ -66,6 +65,9 @@ int WebMainRunnerImpl::Initialize(WebMainParams params) {
   main_loop_->Init();
   main_loop_->EarlyInitialization();
   main_loop_->CreateMainMessageLoop();
+}
+
+int WebMainRunnerImpl::Startup() {
   main_loop_->CreateStartupTasks();
   int result_code = main_loop_->GetResultCode();
   if (result_code > 0) {

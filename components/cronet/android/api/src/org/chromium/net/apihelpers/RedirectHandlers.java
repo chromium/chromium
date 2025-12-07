@@ -4,7 +4,7 @@
 
 package org.chromium.net.apihelpers;
 
-/** Utility class for standard {@link RedirectHandler} implementations. * */
+/** Utility class for standard {@link RedirectHandler} implementations. */
 public class RedirectHandlers {
     /** Returns a redirect handler that never follows redirects. */
     public static RedirectHandler neverFollow() {

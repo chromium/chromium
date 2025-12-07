@@ -14,6 +14,7 @@
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -33,8 +34,8 @@ SetPrioritySignalsOverrideBindings::~SetPrioritySignalsOverrideBindings() =
 
 void SetPrioritySignalsOverrideBindings::AttachToContext(
     v8::Local<v8::Context> context) {
-  v8::Local<v8::External> v8_this =
-      v8::External::New(v8_helper_->isolate(), this);
+  v8::Local<v8::External> v8_this = v8::External::New(
+      v8_helper_->isolate(), this, gin::kSetPrioritySignalsOverrideBindingsTag);
   v8::Local<v8::Function> v8_function =
       v8::Function::New(
           context,
@@ -62,7 +63,8 @@ void SetPrioritySignalsOverrideBindings::SetPrioritySignalsOverride(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   SetPrioritySignalsOverrideBindings* bindings =
       static_cast<SetPrioritySignalsOverrideBindings*>(
-          v8::External::Cast(*args.Data())->Value());
+          v8::External::Cast(*args.Data())
+              ->Value(gin::kSetPrioritySignalsOverrideBindingsTag));
   AuctionV8Helper* v8_helper = bindings->v8_helper_;
 
   AuctionV8Helper::TimeLimitScope time_limit_scope(v8_helper->GetTimeLimit());

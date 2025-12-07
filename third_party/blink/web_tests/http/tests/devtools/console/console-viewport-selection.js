@@ -132,25 +132,6 @@ import * as Console from 'devtools/panels/console/console.js';
       next();
     },
 
-    function testSelectAll(next) {
-      viewport.forceScrollItemToBeFirst(0);
-
-      // Set some initial selection in console.
-      var base = consoleView.itemElement(messagesCount - 2).element();
-      var extent = consoleView.itemElement(messagesCount - 1).element();
-      window.getSelection().setBaseAndExtent(base, 0, extent, 0);
-
-      // Try to select all messages.
-      document.execCommand('selectAll');
-
-      var text = viewport.selectedText();
-      var count = text ? text.split('\n').length : 0;
-      TestRunner.addResult(
-          count === messagesCount ? 'Selected all ' + count + ' messages.' :
-                                    'Selected ' + count + ' messages instead of ' + messagesCount);
-      next();
-    },
-
     function testSelectWithNonTextNodeContainer(next) {
       viewport.forceScrollItemToBeFirst(0);
 

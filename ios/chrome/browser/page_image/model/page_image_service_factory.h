@@ -5,26 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_PAGE_IMAGE_MODEL_PAGE_IMAGE_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PAGE_IMAGE_MODEL_PAGE_IMAGE_SERVICE_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace page_image_service {
 class ImageService;
 }  // namespace page_image_service
 
 // Factory for the components ImageService service which fetches salient images.
-class PageImageServiceFactory : public BrowserStateKeyedServiceFactory {
+class PageImageServiceFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static page_image_service::ImageService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static page_image_service::ImageService* GetForProfile(ProfileIOS* profile);
   static PageImageServiceFactory* GetInstance();
-
-  PageImageServiceFactory(const PageImageServiceFactory&) = delete;
-  PageImageServiceFactory& operator=(const PageImageServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<PageImageServiceFactory>;
@@ -32,9 +26,9 @@ class PageImageServiceFactory : public BrowserStateKeyedServiceFactory {
   PageImageServiceFactory();
   ~PageImageServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PAGE_IMAGE_MODEL_PAGE_IMAGE_SERVICE_FACTORY_H_

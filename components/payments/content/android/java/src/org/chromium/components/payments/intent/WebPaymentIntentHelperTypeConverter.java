@@ -7,11 +7,15 @@ package org.chromium.components.payments.intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.Contract;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.OptimizeAsNonNull;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
+import org.chromium.payments.mojom.PaymentHandlerMethodData;
+import org.chromium.payments.mojom.PaymentHandlerModifier;
 import org.chromium.payments.mojom.PaymentItem;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
@@ -29,34 +33,36 @@ import java.util.Map;
  * This class defines the utility functions that convert the payment info types in
  * org.chromium.payments.mojom to their counterparts in WebPaymentIntentHelperType.
  */
+@NullMarked
 public final class WebPaymentIntentHelperTypeConverter {
-    @Nullable
-    public static WebPaymentIntentHelperType.PaymentCurrencyAmount fromMojoPaymentCurrencyAmount(
-            @Nullable PaymentCurrencyAmount currencyAmount) {
+
+    @Contract("!null -> !null")
+    public static WebPaymentIntentHelperType.@Nullable PaymentCurrencyAmount
+            fromMojoPaymentCurrencyAmount(@Nullable PaymentCurrencyAmount currencyAmount) {
         if (currencyAmount == null) return null;
         return new WebPaymentIntentHelperType.PaymentCurrencyAmount(
                 /* currency= */ currencyAmount.currency, /* value= */ currencyAmount.value);
     }
 
-    @Nullable
-    public static WebPaymentIntentHelperType.PaymentItem fromMojoPaymentItem(
+    @Contract("!null -> !null")
+    public static WebPaymentIntentHelperType.@Nullable PaymentItem fromMojoPaymentItem(
             @Nullable PaymentItem item) {
         if (item == null) return null;
         return new WebPaymentIntentHelperType.PaymentItem(
                 fromMojoPaymentCurrencyAmount(item.amount));
     }
 
-    @Nullable
-    public static WebPaymentIntentHelperType.PaymentDetailsModifier fromMojoPaymentDetailsModifier(
-            @Nullable PaymentDetailsModifier detailsModifier) {
+    @Contract("!null -> !null")
+    public static WebPaymentIntentHelperType.@Nullable PaymentDetailsModifier
+            fromMojoPaymentDetailsModifier(@Nullable PaymentDetailsModifier detailsModifier) {
         if (detailsModifier == null) return null;
         return new WebPaymentIntentHelperType.PaymentDetailsModifier(
                 fromMojoPaymentItem(detailsModifier.total),
                 fromMojoPaymentMethodData(detailsModifier.methodData));
     }
 
-    @Nullable
-    public static WebPaymentIntentHelperType.PaymentMethodData fromMojoPaymentMethodData(
+    @Contract("!null -> !null")
+    public static WebPaymentIntentHelperType.@Nullable PaymentMethodData fromMojoPaymentMethodData(
             @Nullable PaymentMethodData methodData) {
         if (methodData == null) return null;
         return new WebPaymentIntentHelperType.PaymentMethodData(
@@ -64,9 +70,10 @@ public final class WebPaymentIntentHelperTypeConverter {
                 /* stringifiedData= */ methodData.stringifiedData);
     }
 
-    @Nullable
-    public static Map<String, WebPaymentIntentHelperType.PaymentMethodData>
-            fromMojoPaymentMethodDataMap(@Nullable Map<String, PaymentMethodData> methodDataMap) {
+    @Contract("!null -> !null")
+    public static @Nullable
+            Map<String, WebPaymentIntentHelperType.PaymentMethodData> fromMojoPaymentMethodDataMap(
+                    @Nullable Map<String, PaymentMethodData> methodDataMap) {
         if (methodDataMap == null) return null;
         Map<String, WebPaymentIntentHelperType.PaymentMethodData> compatibleMethodDataMap =
                 new HashMap<>();
@@ -79,10 +86,11 @@ public final class WebPaymentIntentHelperTypeConverter {
         return compatibleMethodDataMap;
     }
 
-    @Nullable
-    public static Map<String, WebPaymentIntentHelperType.PaymentDetailsModifier>
-            fromMojoPaymentDetailsModifierMap(
-                    @Nullable Map<String, PaymentDetailsModifier> modifiers) {
+    @Contract("!null -> !null")
+    public static @Nullable
+            Map<String, WebPaymentIntentHelperType.PaymentDetailsModifier>
+                    fromMojoPaymentDetailsModifierMap(
+                            @Nullable Map<String, PaymentDetailsModifier> modifiers) {
         if (modifiers == null) return null;
         Map<String, WebPaymentIntentHelperType.PaymentDetailsModifier> compatibleModifiers =
                 new HashMap<>();
@@ -95,8 +103,8 @@ public final class WebPaymentIntentHelperTypeConverter {
         return compatibleModifiers;
     }
 
-    @Nullable
-    public static List<WebPaymentIntentHelperType.PaymentItem> fromMojoPaymentItems(
+    @Contract("!null -> !null")
+    public static @Nullable List<WebPaymentIntentHelperType.PaymentItem> fromMojoPaymentItems(
             @Nullable List<PaymentItem> paymentItems) {
         if (paymentItems == null) return null;
         List<WebPaymentIntentHelperType.PaymentItem> compatiblePaymentItems = new ArrayList<>();
@@ -107,9 +115,9 @@ public final class WebPaymentIntentHelperTypeConverter {
         return compatiblePaymentItems;
     }
 
-    @Nullable
-    public static WebPaymentIntentHelperType.PaymentShippingOption fromMojoPaymentShippingOption(
-            @Nullable PaymentShippingOption shippingOption) {
+    @Contract("!null -> !null")
+    public static WebPaymentIntentHelperType.@Nullable PaymentShippingOption
+            fromMojoPaymentShippingOption(@Nullable PaymentShippingOption shippingOption) {
         if (shippingOption == null) return null;
         return new WebPaymentIntentHelperType.PaymentShippingOption(
                 shippingOption.id,
@@ -118,9 +126,10 @@ public final class WebPaymentIntentHelperTypeConverter {
                 shippingOption.selected);
     }
 
-    @Nullable
-    public static List<WebPaymentIntentHelperType.PaymentShippingOption> fromMojoShippingOptionList(
-            @Nullable List<PaymentShippingOption> shippingOptions) {
+    @Contract("!null -> !null")
+    public static @Nullable
+            List<WebPaymentIntentHelperType.PaymentShippingOption> fromMojoShippingOptionList(
+                    @Nullable List<PaymentShippingOption> shippingOptions) {
         if (shippingOptions == null) return null;
         List<WebPaymentIntentHelperType.PaymentShippingOption> shippingOptionList =
                 new ArrayList<>();
@@ -131,8 +140,8 @@ public final class WebPaymentIntentHelperTypeConverter {
         return shippingOptionList;
     }
 
-    @Nullable
-    public static WebPaymentIntentHelperType.PaymentOptions fromMojoPaymentOptions(
+    @Contract("!null -> !null")
+    public static WebPaymentIntentHelperType.@Nullable PaymentOptions fromMojoPaymentOptions(
             @Nullable PaymentOptions paymentOptions) {
         if (paymentOptions == null) return null;
         String shippingType = null;
@@ -157,8 +166,42 @@ public final class WebPaymentIntentHelperTypeConverter {
                 shippingType);
     }
 
-    @Nullable
-    private static Bundle fromMojoShippingAddressErrors(@Nullable AddressErrors addressErrors) {
+    @Contract("!null -> !null")
+    @OptimizeAsNonNull
+    private static WebPaymentIntentHelperType.PaymentHandlerModifier fromMojoPaymentHandlerModifier(
+            PaymentHandlerModifier handlerModifier) {
+        return new WebPaymentIntentHelperType.PaymentHandlerModifier(
+                fromMojoPaymentCurrencyAmount(handlerModifier.total),
+                fromMojoPaymentHandlerMethodData(handlerModifier.methodData));
+    }
+
+    @Contract("!null -> !null")
+    @OptimizeAsNonNull
+    private static List<WebPaymentIntentHelperType.PaymentHandlerModifier>
+            fromMojoPaymentHandlerModifierList(List<PaymentHandlerModifier> modifiers) {
+        List<WebPaymentIntentHelperType.PaymentHandlerModifier> compatibleModifiers =
+                new ArrayList<>();
+        PaymentHandlerModifier element = null;
+        for (int i = 0; i < modifiers.size(); i++) {
+            element = modifiers.get(i);
+            if (element != null) {
+                compatibleModifiers.add(fromMojoPaymentHandlerModifier(element));
+            }
+        }
+        return compatibleModifiers;
+    }
+
+    private static WebPaymentIntentHelperType.@Nullable PaymentHandlerMethodData
+            fromMojoPaymentHandlerMethodData(@Nullable PaymentHandlerMethodData methodData) {
+        if (methodData == null) return null;
+        return new WebPaymentIntentHelperType.PaymentHandlerMethodData(
+                /* methodName= */ methodData.methodName,
+                /* stringifiedData= */ methodData.stringifiedData);
+    }
+
+    @Contract("!null -> !null")
+    private static @Nullable Bundle fromMojoShippingAddressErrors(
+            @Nullable AddressErrors addressErrors) {
         if (addressErrors == null) return null;
         Bundle bundle = new Bundle();
         putIfNonEmpty("addressLine", addressErrors.addressLine, bundle);
@@ -184,8 +227,8 @@ public final class WebPaymentIntentHelperTypeConverter {
      * @param update The mojo PaymentRequestDetailsUpdate to be converted.
      * @return The converted update.
      */
-    @Nullable
-    public static WebPaymentIntentHelperType.PaymentRequestDetailsUpdate
+    @Contract("!null -> !null")
+    public static WebPaymentIntentHelperType.@Nullable PaymentRequestDetailsUpdate
             fromMojoPaymentRequestDetailsUpdate(@Nullable PaymentRequestDetailsUpdate update) {
         if (update == null) return null;
         return new WebPaymentIntentHelperType.PaymentRequestDetailsUpdate(
@@ -194,7 +237,9 @@ public final class WebPaymentIntentHelperTypeConverter {
                 update.shippingOptions == null
                         ? null
                         : fromMojoShippingOptionList(Arrays.asList(update.shippingOptions)),
-                // update.modifiers is intentionally redacted.
+                update.modifiers == null
+                        ? null
+                        : fromMojoPaymentHandlerModifierList(Arrays.asList(update.modifiers)),
                 update.error,
                 update.stringifiedPaymentMethodErrors,
                 fromMojoShippingAddressErrors(update.shippingAddressErrors));

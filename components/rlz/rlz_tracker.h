@@ -10,12 +10,12 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "rlz/lib/rlz_lib.h"
 
 namespace base {
@@ -78,6 +78,12 @@ class RLZTracker {
   static rlz_lib::AccessPoint ChromeAppList();
 #endif  // !BUILDFLAG(IS_IOS)
 
+  // Records enterprise-related events.
+  static void RecordEnterpriseEnrollment();
+  static void RecordEnterpriseUnenrollment();
+  static void RecordEnterpriseEnrolledActivate();
+  static void RecordEnterpriseEnrolledFirstSearch();
+
   // Gets the HTTP header value that can be added to requests from the
   // specific access point.  The string returned is of the form:
   //
@@ -94,7 +100,7 @@ class RLZTracker {
   // Invoked during shutdown to clean up any state created by RLZTracker.
   static void CleanupRlz();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Clears all product state. Should be called when turning RLZ off. On other
   // platforms, this is done by product uninstaller.
   static void ClearRlzState();
@@ -188,6 +194,12 @@ class RLZTracker {
   // to allow tests to override how the scheduling is done.
   virtual bool ScheduleRecordFirstSearch(rlz_lib::AccessPoint point);
 
+  // Schedules a call to RecordEnterpriseEvent().
+  void ScheduleRecordEnterpriseEvent(rlz_lib::Event event_id);
+
+  // Records enterprise-related events.
+  void RecordEnterpriseEvent(rlz_lib::Event event_id);
+
   // Schedules a call to rlz_lib::SendFinancialPing(). This method is virtual
   // to allow tests to override how the scheduling is done.
   virtual void ScheduleFinancialPing();
@@ -204,7 +216,7 @@ class RLZTracker {
                                  const std::u16string& lang,
                                  const std::u16string& referral);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Implementation called from ClearRlzState static method.
   void ClearRlzStateImpl();
 
@@ -252,6 +264,10 @@ class RLZTracker {
   bool omnibox_used_;
   bool homepage_used_;
   bool app_list_used_;
+  bool enterprise_enrollment_recorded_;
+  bool enterprise_unenrollment_recorded_;
+  bool enterprise_enrolled_activate_recorded_;
+  bool enterprise_enrolled_first_search_recorded_;
 
 #if !BUILDFLAG(IS_IOS)
   // Sets to true when we have attempted to record that user has performed a
@@ -277,6 +293,8 @@ class RLZTracker {
   // occur in the correct sequence, especially in tests.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<RLZTracker> weak_ptr_factory_{this};
 };
 
 }  // namespace rlz

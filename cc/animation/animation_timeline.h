@@ -42,6 +42,11 @@ class CC_ANIMATION_EXPORT AnimationTimeline
 
   int id() const { return id_; }
 
+  using IdToAnimationMap = std::unordered_map<int, scoped_refptr<Animation>>;
+  const IdToAnimationMap& animations() const {
+    return id_to_animation_map_.Read(*this);
+  }
+
   // Parent AnimationHost.
   AnimationHost* animation_host() {
     DCHECK(IsOwnerThread() || InProtectedSequence());
@@ -94,8 +99,6 @@ class CC_ANIMATION_EXPORT AnimationTimeline
   ~AnimationTimeline() override;
 
   // A list of all animations which this timeline owns.
-  using IdToAnimationMap = std::unordered_map<int, scoped_refptr<Animation>>;
-
   ProtectedSequenceWritable<IdToAnimationMap> id_to_animation_map_;
 
  private:

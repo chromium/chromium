@@ -9,6 +9,10 @@
 
 #include "ios/web/public/init/web_main_parts.h"
 
+namespace display {
+class ScopedNativeScreen;
+}  // namespace display
+
 namespace web {
 class ShellBrowserState;
 
@@ -25,6 +29,7 @@ class ShellWebMainParts : public WebMainParts {
 
  private:
   std::unique_ptr<ShellBrowserState> browser_state_;
+  std::unique_ptr<display::ScopedNativeScreen> screen_;
 };
 
 }  // namespace web

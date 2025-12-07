@@ -21,6 +21,7 @@
 #include "third_party/blink/public/common/messaging/transferable_message.h"
 #include "third_party/blink/public/common/messaging/transferable_message_mojom_traits.h"
 #include "third_party/blink/public/common/messaging/web_message_port.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom.h"
 #include "third_party/blink/public/mojom/messaging/transferable_message.mojom.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -39,7 +40,7 @@ base::android::ScopedJavaLocalRef<jobjectArray> CreateJavaMessagePort(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ToTypedJavaArrayOfObjects(
-      env, base::make_span(j_descriptors),
+      env, base::span(j_descriptors),
       org_chromium_content_browser_AppWebMessagePort_clazz(env));
 }
 
@@ -98,8 +99,8 @@ AppWebMessagePort::~AppWebMessagePort() {
 // JNI
 void AppWebMessagePort::PostMessage(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_message_payload,
-    const base::android::JavaParamRef<jobjectArray>& j_ports) {
+    const base::android::JavaRef<jobject>& j_message_payload,
+    const base::android::JavaRef<jobjectArray>& j_ports) {
   DCHECK(runner_->BelongsToCurrentThread());
   DCHECK(descriptor_.IsValid());
   DCHECK(connector_);
@@ -114,10 +115,10 @@ void AppWebMessagePort::PostMessage(
   transferable_message.ports =
       blink::MessagePortChannel::CreateFromHandles(Release(env, j_ports));
   // As the message is posted from an Android app and not from another renderer,
-  // set the agent cluster ID to the embedder's, and nullify its parent task ID.
+  // set the agent cluster ID to the embedder's, and nullify its task state ID.
   transferable_message.sender_agent_cluster_id =
       blink::WebMessagePort::GetEmbedderAgentClusterID();
-  transferable_message.parent_task_id = std::nullopt;
+  transferable_message.task_state_id = std::nullopt;
 
   mojo::Message mojo_message =
       blink::mojom::TransferableMessage::SerializeAsMessage(
@@ -207,7 +208,7 @@ void AppWebMessagePort::GiveDisentangledHandleIfNeeded() {
   connector_.reset();
 }
 
-base::android::ScopedJavaLocalRef<jobjectArray>
+static base::android::ScopedJavaLocalRef<jobjectArray>
 JNI_AppWebMessagePort_CreatePair(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   blink::MessagePortDescriptorPair port_pair;
@@ -218,3 +219,5 @@ JNI_AppWebMessagePort_CreatePair(JNIEnv* env) {
 }
 
 }  // namespace content::android
+
+DEFINE_JNI(AppWebMessagePort)

@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
@@ -60,11 +59,6 @@ class StartupTabProvider {
   // configuration where it must be passed explicitly.
   virtual StartupTabs GetNewTabPageTabs(const base::CommandLine& command_line,
                                         Profile* profile) const = 0;
-
-  // Returns the Incompatible Applications settings subpage if any incompatible
-  // applications exist.
-  virtual StartupTabs GetPostCrashTabs(
-      bool has_incompatible_applications) const = 0;
 
   // Returns the URLs given via the command line arguments to be opened at
   // launching.
@@ -135,11 +129,6 @@ class StartupTabProviderImpl : public StartupTabProvider {
   // explicitly specified. Session Restore does not expect the NTP to be passed.
   static StartupTabs GetNewTabPageTabsForState(const SessionStartupPref& pref);
 
-  // Determines if the Incompatible Applications settings subpage should be
-  // shown.
-  static StartupTabs GetPostCrashTabsForState(
-      bool has_incompatible_applications);
-
 #if !BUILDFLAG(IS_ANDROID)
   // Determines if the what's new page should be shown.
   static StartupTabs GetNewFeaturesTabsForState(bool whats_new_enabled);
@@ -152,10 +141,6 @@ class StartupTabProviderImpl : public StartupTabProvider {
       const GURL& ntp_url,
       const StartupTabs& other_startup_tabs);
 #endif
-
-  // In branded Windows builds, adds the URL for the Incompatible Applications
-  // subpage of the Chrome settings.
-  static void AddIncompatibleApplicationsUrl(StartupTabs* tabs);
 
   // Gets the URL for the page which offers to reset the user's profile
   // settings.
@@ -171,8 +156,6 @@ class StartupTabProviderImpl : public StartupTabProvider {
                                  Profile* profile) const override;
   StartupTabs GetNewTabPageTabs(const base::CommandLine& command_line,
                                 Profile* profile) const override;
-  StartupTabs GetPostCrashTabs(
-      bool has_incompatible_applications) const override;
   StartupTabs GetCommandLineTabs(const base::CommandLine& command_line,
                                  const base::FilePath& cur_dir,
                                  Profile* profile) const override;
@@ -203,7 +186,7 @@ class StartupTabProviderImpl : public StartupTabProvider {
   // can't parse the URL. In that case we return an empty one. `maybe_profile`
   // should be provided for better accuracy in the parsing.
   static ParsedCommandLineTabArg ParseTabFromCommandLineArg(
-      base::FilePath::StringPieceType arg,
+      base::FilePath::StringViewType arg,
       const base::FilePath& cur_dir,
       Profile* maybe_profile);
 };

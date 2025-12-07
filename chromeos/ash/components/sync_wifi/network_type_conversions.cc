@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/sync_wifi/network_type_conversions.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -74,8 +76,7 @@ std::string SecurityTypeStringFromProto(
       return shill::kSecurityClassWep;
     default:
       // Only PSK and WEP secured networks are supported by sync.
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -88,8 +89,7 @@ sync_pb::WifiConfigurationSpecifics_SecurityType SecurityTypeProtoFromMojo(
       return sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_WEP;
     default:
       // Only PSK and WEP secured networks are supported by sync.
-      NOTREACHED_IN_MIGRATION();
-      return sync_pb::WifiConfigurationSpecifics::SECURITY_TYPE_NONE;
+      NOTREACHED();
   }
 }
 
@@ -211,8 +211,7 @@ network_config::mojom::SecurityType MojoSecurityTypeFromProto(
       return network_config::mojom::SecurityType::kWepPsk;
     default:
       // Only PSK and WEP secured networks are supported by sync.
-      NOTREACHED_IN_MIGRATION();
-      return network_config::mojom::SecurityType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -336,12 +335,14 @@ network_config::mojom::ConfigPropertiesPtr MojoNetworkConfigFromProto(
     config->name_servers_config_type = onc::network_config::kIPConfigTypeDHCP;
   }
 
-  if (specifics.has_proxy_configuration() &&
-      specifics.proxy_configuration().proxy_option() !=
-          sync_pb::WifiConfigurationSpecifics_ProxyConfiguration::
-              PROXY_OPTION_UNSPECIFIED) {
-    config->proxy_settings =
-        MojoProxySettingsFromProto(specifics.proxy_configuration());
+  if (base::FeatureList::IsEnabled(features::kWifiSyncApplyProxyConfigs)) {
+    if (specifics.has_proxy_configuration() &&
+        specifics.proxy_configuration().proxy_option() !=
+            sync_pb::WifiConfigurationSpecifics_ProxyConfiguration::
+                PROXY_OPTION_UNSPECIFIED) {
+      config->proxy_settings =
+          MojoProxySettingsFromProto(specifics.proxy_configuration());
+    }
   }
 
   return config;

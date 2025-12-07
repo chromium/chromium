@@ -5,6 +5,7 @@
 #include "remoting/protocol/fractional_input_filter.h"
 
 #include "base/containers/span.h"
+#include "remoting/protocol/coordinate_converter.h"
 #include "remoting/protocol/protocol_mock_objects.h"
 #include "remoting/protocol/test_event_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -70,34 +71,17 @@ MouseEvent MouseMoveEvent(int id, float x, float y) {
 }  // namespace
 
 class FractionalInputFilterTest : public testing::Test {
- public:
-  FractionalInputFilterTest() : filter_(&mock_stub_) {}
-
  protected:
-  FractionalInputFilter filter_;
   MockInputStub mock_stub_;
+  CoordinateConverter converter_;
+  FractionalInputFilter filter_{&mock_stub_, &converter_};
 };
 
 TEST_F(FractionalInputFilterTest, MouseEventCalculation) {
-  filter_.set_video_layout(BuildLayout(kSimpleLayout));
-
-  EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(0, 0)));
-  filter_.InjectMouseEvent(MouseMoveEvent(1, 0.0, 0.0));
-
-  EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(100, 50)));
-  filter_.InjectMouseEvent(MouseMoveEvent(1, 0.5, 0.5));
-
-  EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(199, 99)));
-  filter_.InjectMouseEvent(MouseMoveEvent(1, 1.0, 1.0));
-
-  EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(200, 100)));
-  filter_.InjectMouseEvent(MouseMoveEvent(2, 0.0, 0.0));
+  converter_.set_video_layout(BuildLayout(kSimpleLayout));
 
   EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(350, 200)));
   filter_.InjectMouseEvent(MouseMoveEvent(2, 0.5, 0.5));
-
-  EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(499, 299)));
-  filter_.InjectMouseEvent(MouseMoveEvent(2, 1.0, 1.0));
 }
 
 TEST_F(FractionalInputFilterTest, MouseEventNoCoordinatesIsPassedThrough) {
@@ -110,14 +94,14 @@ TEST_F(FractionalInputFilterTest, MouseEventNoCoordinatesIsPassedThrough) {
 }
 
 TEST_F(FractionalInputFilterTest, MouseEventInvalidScreenIsDropped) {
-  filter_.set_video_layout(BuildLayout(kSimpleLayout));
+  converter_.set_video_layout(BuildLayout(kSimpleLayout));
 
   EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
   filter_.InjectMouseEvent(MouseMoveEvent(9, 0.5, 0.5));
 }
 
 TEST_F(FractionalInputFilterTest, TouchEventCalculation) {
-  filter_.set_video_layout(BuildLayout(kSimpleLayout));
+  converter_.set_video_layout(BuildLayout(kSimpleLayout));
 
   TouchEvent event;
   TouchEventPoint* p = event.add_touch_points();
@@ -149,7 +133,7 @@ TEST_F(FractionalInputFilterTest, TouchEventNoCoordinatesPassedThrough) {
 }
 
 TEST_F(FractionalInputFilterTest, TouchEventInvalidScreenIsDropped) {
-  filter_.set_video_layout(BuildLayout(kSimpleLayout));
+  converter_.set_video_layout(BuildLayout(kSimpleLayout));
 
   TouchEvent event;
   TouchEventPoint* p = event.add_touch_points();
@@ -162,8 +146,8 @@ TEST_F(FractionalInputFilterTest, TouchEventInvalidScreenIsDropped) {
 }
 
 TEST_F(FractionalInputFilterTest, FallbackUsedIfNoScreenId) {
-  filter_.set_video_layout(BuildLayout(kSimpleLayout));
-  filter_.set_fallback_geometry(
+  converter_.set_video_layout(BuildLayout(kSimpleLayout));
+  converter_.set_fallback_geometry(
       webrtc::DesktopRect::MakeXYWH(200, 100, 300, 200));
 
   EXPECT_CALL(mock_stub_, InjectMouseEvent(EqualsMouseMoveEvent(350, 200)));
@@ -171,8 +155,8 @@ TEST_F(FractionalInputFilterTest, FallbackUsedIfNoScreenId) {
 }
 
 TEST_F(FractionalInputFilterTest, EventWithNoScreenIdAndNoFallbackIsDropped) {
-  filter_.set_video_layout(BuildLayout(kSimpleLayout));
-  filter_.set_fallback_geometry({});
+  converter_.set_video_layout(BuildLayout(kSimpleLayout));
+  converter_.set_fallback_geometry({});
 
   EXPECT_CALL(mock_stub_, InjectMouseEvent(_)).Times(0);
   filter_.InjectMouseEvent(MouseMoveEvent(0, 0.5, 0.5));

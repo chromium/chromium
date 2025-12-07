@@ -1,0 +1,433 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+group("internal") {
+  public_deps = [
+    ":comments_internal",
+    ":core_internal",
+    ":messaging_internal",
+  ]
+}
+
+static_library("core_internal") {
+  visibility = [
+    ":*",
+    "//chrome/browser",
+    "//chrome/browser/collaboration:*",
+    "//chrome/test:*",
+    "//ios/chrome/browser/collaboration/model",
+    "//ios/chrome/browser/data_sharing/model",
+  ]
+
+  sources = [
+    "collaboration_controller.cc",
+    "collaboration_controller.h",
+    "collaboration_service_impl.cc",
+    "collaboration_service_impl.h",
+    "empty_collaboration_service.cc",
+    "empty_collaboration_service.h",
+    "metrics.cc",
+    "metrics.h",
+  ]
+
+  deps = [
+    "//components/data_sharing/public:group_data",
+    "//components/data_sharing/public:logger",
+    "//components/sync/service",
+    "//ui/base",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/collaboration/public",
+    "//components/collaboration/public:prefs",
+    "//components/data_sharing/public",
+    "//components/keyed_service/core",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/collaboration_service_android.cc",
+      "android/collaboration_service_android.h",
+    ]
+
+    deps += [
+      ":core_jni_headers",
+      "//components/collaboration/public:conversion_utils",
+      "//components/collaboration/public:core_jni_headers",
+      "//components/data_sharing/public:android_utils",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
+  }
+}
+
+source_set("collaboration_finder") {
+  sources = [
+    "collaboration_finder_impl.cc",
+    "collaboration_finder_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
+  ]
+}
+
+static_library("comments_internal") {
+  sources = [
+    "comments/comments_service_impl.cc",
+    "comments/comments_service_impl.h",
+    "comments/empty_comments_service.cc",
+    "comments/empty_comments_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/collaboration/public:comments_public",
+    "//components/keyed_service/core",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/comments/comments_service_bridge.cc",
+      "android/comments/comments_service_bridge.h",
+    ]
+
+    deps += [
+      ":comments_jni_headers",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
+  }
+}
+
+static_library("messaging_internal") {
+  sources = [
+    "messaging/configuration.cc",
+    "messaging/configuration.h",
+    "messaging/data_sharing_change_notifier.cc",
+    "messaging/data_sharing_change_notifier.h",
+    "messaging/data_sharing_change_notifier_impl.cc",
+    "messaging/data_sharing_change_notifier_impl.h",
+    "messaging/instant_message_processor.h",
+    "messaging/instant_message_processor_impl.cc",
+    "messaging/instant_message_processor_impl.h",
+    "messaging/messaging_backend_service_impl.cc",
+    "messaging/messaging_backend_service_impl.h",
+    "messaging/storage/collaboration_message_util.cc",
+    "messaging/storage/collaboration_message_util.h",
+    "messaging/storage/empty_messaging_backend_database.cc",
+    "messaging/storage/empty_messaging_backend_database.h",
+    "messaging/storage/messaging_backend_database.cc",
+    "messaging/storage/messaging_backend_database.h",
+    "messaging/storage/messaging_backend_database_impl.cc",
+    "messaging/storage/messaging_backend_database_impl.h",
+    "messaging/storage/messaging_backend_store.h",
+    "messaging/storage/messaging_backend_store_impl.cc",
+    "messaging/storage/messaging_backend_store_impl.h",
+    "messaging/tab_group_change_notifier.cc",
+    "messaging/tab_group_change_notifier.h",
+    "messaging/tab_group_change_notifier_impl.cc",
+    "messaging/tab_group_change_notifier_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/collaboration/internal/messaging/storage/protocol",
+    "//components/collaboration/public:empty_messaging_backend_service",
+    "//components/collaboration/public:messaging_public",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
+    "//components/sqlite_proto",
+    "//components/strings",
+    "//components/url_formatter",
+    "//google_apis",
+    "//sql",
+    "//ui/base",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/messaging/conversion_utils.cc",
+      "android/messaging/conversion_utils.h",
+      "android/messaging/messaging_backend_service_bridge.cc",
+      "android/messaging/messaging_backend_service_bridge.h",
+    ]
+
+    deps += [
+      ":messaging_jni_headers",
+      "//components/data_sharing/public:android_utils",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
+  }
+}
+
+group("unit_tests") {
+  testonly = true
+
+  visibility = [ "//components/collaboration:unit_tests" ]
+
+  deps = [
+    ":collaboration_finder_unit_tests",
+    ":comments_unit_tests",
+    ":core_unit_tests",
+    ":messaging_unit_tests",
+  ]
+}
+
+source_set("core_unit_tests") {
+  testonly = true
+
+  visibility = [ ":*" ]
+
+  sources = [
+    "collaboration_controller_unittest.cc",
+    "collaboration_service_impl_unittest.cc",
+    "empty_collaboration_service_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    "//base/test:test_support",
+    "//components/collaboration:test_support",
+    "//components/data_sharing:test_support",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync:test_support",
+    "//testing/gtest",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
+
+source_set("comments_unit_tests") {
+  testonly = true
+
+  visibility = [ ":*" ]
+
+  sources = [
+    "comments/comments_service_impl_unittest.cc",
+    "comments/empty_comments_service_unittest.cc",
+  ]
+
+  deps = [
+    ":comments_internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/collaboration/public:comments_public",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    sources += [ "android/comments/comments_service_bridge_unittest.cc" ]
+    deps += [
+      ":comments_native_j_unittests_jni_headers",
+      ":comments_native_java_unittests_java",
+      "//components/collaboration:test_support",
+      "//testing/gmock",
+    ]
+  }
+}
+
+source_set("messaging_unit_tests") {
+  testonly = true
+  sources = [
+    "messaging/data_sharing_change_notifier_impl_unittest.cc",
+    "messaging/instant_message_processor_impl_unittest.cc",
+    "messaging/messaging_backend_service_impl_unittest.cc",
+    "messaging/storage/messaging_backend_database_impl_unittest.cc",
+    "messaging/storage/messaging_backend_store_impl_unittest.cc",
+    "messaging/tab_group_change_notifier_impl_unittest.cc",
+  ]
+  deps = [
+    ":messaging_internal",
+    "//base",
+    "//base/test:test_support",
+    "//components/collaboration:test_support",
+    "//components/collaboration/internal/messaging/storage/protocol",
+    "//components/collaboration/public:messaging_public",
+    "//components/data_sharing:test_support",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/tab_groups",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    sources +=
+        [ "android/messaging/messaging_backend_service_bridge_unittest.cc" ]
+
+    deps += [
+      ":messaging_native_j_unittests_jni_headers",
+      ":messaging_native_java_unittests_java",
+      "//components/collaboration:test_support",
+      "//components/collaboration/public:messaging_public",
+      "//components/data_sharing/public",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
+  }
+}
+
+source_set("collaboration_finder_unit_tests") {
+  testonly = true
+
+  sources = [ "collaboration_finder_impl_unittest.cc" ]
+
+  deps = [
+    ":collaboration_finder",
+    "//base/test:test_support",
+    "//components/data_sharing:test_support",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
+    "//testing/gtest",
+  ]
+}
+
+if (is_android) {
+  java_group("java") {
+    visibility = [ "//chrome/android:*" ]
+    deps = [
+      ":comments_java",
+      ":core_java",
+      ":messaging_java",
+    ]
+  }
+
+  android_library("core_java") {
+    visibility = [ ":*" ]
+    srcjar_deps = [ ":core_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationServiceImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("comments_java") {
+    visibility = [ ":*" ]
+    srcjar_deps = [ ":comments_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsServiceBridge.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/collaboration/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("messaging_java") {
+    visibility = [ ":*" ]
+    srcjar_deps = [ ":messaging_jni_headers" ]
+    sources = [
+      "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendServiceBridge.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/bridge/ConversionUtils.java",
+    ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  android_library("comments_native_java_unittests_java") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsServiceBridgeUnitTestCompanion.java" ]
+    deps = [
+      ":comments_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//components/collaboration/public:comments_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:url_java",
+    ]
+
+    srcjar_deps = [ ":comments_native_j_unittests_jni_headers" ]
+  }
+
+  generate_jni("comments_native_j_unittests_jni_headers") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsServiceBridgeUnitTestCompanion.java" ]
+  }
+
+  android_library("messaging_native_java_unittests_java") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendServiceBridgeUnitTestCompanion.java" ]
+    deps = [
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//components/collaboration/internal:messaging_java",
+      "//components/collaboration/public:messaging_java",
+      "//components/data_sharing/public:public_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/signin/public/android:java",
+      "//components/tab_groups:tab_groups_java",
+      "//google_apis/gaia/android:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:url_java",
+    ]
+
+    srcjar_deps = [ ":messaging_native_j_unittests_jni_headers" ]
+  }
+
+  generate_jni("messaging_native_j_unittests_jni_headers") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendServiceBridgeUnitTestCompanion.java" ]
+  }
+
+  generate_jni("core_jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/collaboration/CollaborationServiceImpl.java" ]
+  }
+
+  generate_jni("comments_jni_headers") {
+    visibility = [ ":*" ]
+
+    sources = [ "android/java/src/org/chromium/components/collaboration/comments/CommentsServiceBridge.java" ]
+  }
+
+  generate_jni("messaging_jni_headers") {
+    visibility = [ ":*" ]
+
+    sources = [
+      "android/java/src/org/chromium/components/collaboration/messaging/MessagingBackendServiceBridge.java",
+      "android/java/src/org/chromium/components/collaboration/messaging/bridge/ConversionUtils.java",
+    ]
+  }
+}

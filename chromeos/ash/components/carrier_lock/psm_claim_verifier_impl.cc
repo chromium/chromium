@@ -4,7 +4,11 @@
 
 #include "chromeos/ash/components/carrier_lock/psm_claim_verifier_impl.h"
 
+#include <optional>
+#include <string>
+
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
 #include "url/gurl.h"
@@ -162,7 +166,7 @@ void PsmClaimVerifierImpl::SendOprfRequest() {
 }
 
 void PsmClaimVerifierImpl::OnCheckMembershipOprfDone(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   simple_url_loader_.reset();
 
   if (!response_body) {
@@ -204,7 +208,7 @@ void PsmClaimVerifierImpl::OnCheckMembershipOprfDone(
 }
 
 void PsmClaimVerifierImpl::OnCheckMembershipQueryDone(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   simple_url_loader_.reset();
 
   if (!response_body) {

@@ -24,18 +24,17 @@ class BrowsingDataModelAndroid {
 
   base::android::ScopedJavaLocalRef<jobject> GetBrowsingDataInfo(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jbrowser_context_handle,
-      const base::android::JavaParamRef<jobject>& map,
+      const base::android::JavaRef<jobject>& jbrowser_context_handle,
+      const base::android::JavaRef<jobject>& map,
       bool fetch_important);
 
-  void RemoveBrowsingData(
-      JNIEnv* env,
-      const jstring host,
-      const base::android::JavaParamRef<jobject>& java_callback);
+  void RemoveBrowsingData(JNIEnv* env,
+                          const base::android::JavaRef<jstring>& host,
+                          const base::android::JavaRef<jobject>& java_callback);
 
   // Destroys the BrowsingDataModelAndroid object. This needs to be called on
   // the java side when the object is not in use anymore.
-  void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
+  void Destroy(JNIEnv* env);
 
  private:
   std::unique_ptr<BrowsingDataModel> browsing_data_model_;

@@ -13,6 +13,7 @@
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
@@ -150,7 +151,7 @@ class VirtualKeyboardTest : public WebEngineBrowserTest {
   std::optional<MockVirtualKeyboardControllerCreator> controller_creator_;
   std::unique_ptr<MockVirtualKeyboardController> controller_;
 
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
 };
 
 // Verifies that RequestShow() is not called redundantly if the virtual

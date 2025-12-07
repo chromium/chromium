@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <utility>
@@ -14,7 +15,6 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "components/bookmarks/browser/bookmark_undo_provider.h"
@@ -306,8 +306,8 @@ BookmarkReorderOperation::BookmarkReorderOperation(
     : BookmarkUndoOperation(bookmark_model),
       parent_id_(parent->id()) {
   ordered_bookmarks_.resize(parent->children().size());
-  base::ranges::transform(parent->children(), ordered_bookmarks_.begin(),
-                          &BookmarkNode::id);
+  std::ranges::transform(parent->children(), ordered_bookmarks_.begin(),
+                         &BookmarkNode::id);
 }
 
 BookmarkReorderOperation::~BookmarkReorderOperation() = default;
@@ -348,10 +348,7 @@ void BookmarkUndoService::StartObservingBookmarkModel(BookmarkModel* model) {
 }
 
 void BookmarkUndoService::Shutdown() {
-  // After `RemoveAllObservations` call below - this instance won't be notified
-  // of `BookmarkModel` destruction. Undo operations keep a pointer to
-  // `BookmarkModel` - delete them to avoid dangling pointers.
-  undo_manager_.RemoveAllOperations();
+  undo_manager_.Shutdown();
   scoped_observation_.Reset();
 }
 
@@ -392,6 +389,14 @@ void BookmarkUndoService::OnWillReorderBookmarkNode(const BookmarkNode* node) {
   BookmarkModel* model = scoped_observation_.GetSource();
   std::unique_ptr<UndoOperation> op(new BookmarkReorderOperation(model, node));
   undo_manager()->AddUndoOperation(std::move(op));
+}
+
+void BookmarkUndoService::ExtensiveBookmarkChangesBeginning() {
+  undo_manager()->SuspendUndoTracking();
+}
+
+void BookmarkUndoService::ExtensiveBookmarkChangesEnded() {
+  undo_manager()->ResumeUndoTracking();
 }
 
 void BookmarkUndoService::GroupedBookmarkChangesBeginning() {

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
 
 #include <limits>
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_data.h"
@@ -30,7 +26,7 @@ namespace {
 std::unique_ptr<JPEGImageDecoder> CreateJPEGDecoder(size_t max_decoded_bytes) {
   return std::make_unique<JPEGImageDecoder>(
       ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
-      max_decoded_bytes);
+      cc::AuxImage::kDefault, max_decoded_bytes);
 }
 
 std::unique_ptr<ImageDecoder> CreateJPEGDecoder() {
@@ -92,8 +88,10 @@ void ReadYUV(size_t max_decoded_bytes,
 
   void* planes[3];
   planes[0] = planes_data.get();
-  planes[1] = static_cast<char*>(planes[0]) + row_bytes[0] * y_size.height();
-  planes[2] = static_cast<char*>(planes[1]) + row_bytes[1] * u_size.height();
+  planes[1] = UNSAFE_TODO(static_cast<char*>(planes[0]) +
+                          row_bytes[0] * y_size.height());
+  planes[2] = UNSAFE_TODO(static_cast<char*>(planes[1]) +
+                          row_bytes[1] * u_size.height());
 
   decoder->SetImagePlanes(
       std::make_unique<ImagePlanes>(planes, row_bytes, kGray_8_SkColorType));
@@ -106,7 +104,7 @@ void ReadYUV(size_t max_decoded_bytes,
 
 void TestJpegBppHistogram(const char* image_name,
                           const char* histogram_name = nullptr,
-                          base::HistogramBase::Sample sample = 0) {
+                          base::HistogramBase::Sample32 sample = 0) {
   TestBppHistogram(CreateJPEGDecoder, "Jpeg", image_name, histogram_name,
                    sample);
 }
@@ -528,7 +526,7 @@ TEST(JPEGImageDecoderTest, PartialDataWithoutSize) {
   constexpr size_t kDataLengthWithoutSize = 4;
   ASSERT_LT(kDataLengthWithoutSize, full_data.size());
   scoped_refptr<SharedBuffer> partial_data =
-      SharedBuffer::Create(full_data.data(), kDataLengthWithoutSize);
+      SharedBuffer::Create(base::span(full_data).first(kDataLengthWithoutSize));
 
   std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder();
   decoder->SetData(partial_data.get(), false);
@@ -552,8 +550,8 @@ TEST(JPEGImageDecoderTest, PartialRgbDecodeBlocksYuvDecoding) {
   }
 
   const size_t kJustEnoughDataToStartHeaderParsing = (full_data.size() + 1) / 2;
-  auto partial_data = SharedBuffer::Create(full_data.data(),
-                                           kJustEnoughDataToStartHeaderParsing);
+  auto partial_data = SharedBuffer::Create(
+      base::span(full_data).first(kJustEnoughDataToStartHeaderParsing));
   ASSERT_TRUE(partial_data);
 
   auto decoder = CreateJPEGDecoder();
@@ -588,7 +586,10 @@ TEST(JPEGImageDecoderTest, Gainmap) {
 
   // Ensure that the extracted gainmap image contains an appropriately-sized
   // image.
-  auto gainmap_decoder = CreateJPEGDecoder();
+  auto gainmap_decoder = std::make_unique<JPEGImageDecoder>(
+      ImageDecoder::kAlphaNotPremultiplied, ColorBehavior::kTransformToSRGB,
+      cc::AuxImage::kGainmap, ImageDecoder::kNoDecodedImageByteLimit);
+
   gainmap_decoder->SetData(gainmap_data.get(), true);
   ASSERT_TRUE(gainmap_decoder->IsSizeAvailable());
   EXPECT_FALSE(gainmap_decoder->Failed());
@@ -678,6 +679,28 @@ TEST(JPEGImageDecoderTest, BppHistogramInvalid) {
 
 TEST(JPEGImageDecoderTest, BppHistogramGrayscale) {
   TestJpegBppHistogram("/images/resources/cs-uma-grayscale.jpg");
+}
+
+// Decode a JPEG with C2PA metadata, and verify that it is detected correctly
+TEST(JPEGImageDecoderTest, c2paManifestPresent) {
+  scoped_refptr<SharedBuffer> test_data = ReadFileToSharedBuffer(
+      "/images/resources/jpeg-with-c2pa-adobe-20220124-C.jpg");
+  ASSERT_TRUE(test_data.get());
+
+  std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
+  test_decoder->SetData(test_data.get(), true);
+  EXPECT_TRUE(test_decoder->HasC2PAManifest());
+}
+
+// Decode a JPEG without C2PA metadata, verify that none is found
+TEST(JPEGImageDecoderTest, c2paManifestNotPresent) {
+  scoped_refptr<SharedBuffer> test_data =
+      ReadFileToSharedBuffer("/images/resources/gracehopper.jpg");
+  ASSERT_TRUE(test_data.get());
+
+  std::unique_ptr<ImageDecoder> test_decoder = CreateJPEGDecoder();
+  test_decoder->SetData(test_data.get(), true);
+  EXPECT_FALSE(test_decoder->HasC2PAManifest());
 }
 
 }  // namespace blink

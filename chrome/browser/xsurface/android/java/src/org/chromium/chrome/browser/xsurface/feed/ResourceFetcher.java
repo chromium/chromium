@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.xsurface.feed;
 
-import androidx.annotation.Nullable;
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
@@ -13,12 +14,13 @@ import java.util.List;
  *
  * Interface to provide network fetching.
  */
+@NullMarked
 public interface ResourceFetcher {
     /**
      * Represents the key portion of an http header field. Header keys should be compared
      * case-insensitively.
      */
-    public class Header {
+    class Header {
         public String name;
         public String value;
 
@@ -29,7 +31,8 @@ public interface ResourceFetcher {
     }
 
     /** Data structure to encapsulate the fetch request. */
-    public class Request {
+    @SuppressWarnings("NullAway") // Uninitialized non-null fields.
+    class Request {
         /** Uri of the resource to be fetched. */
         public String uri;
 
@@ -40,32 +43,29 @@ public interface ResourceFetcher {
         public List<Header> headers;
 
         /** Post data that needs to be sent along with the POST request. */
-        public @Nullable byte[] postData;
+        public byte @Nullable [] postData;
     }
 
     /** Data structure to encapsulate the fetch response. */
-    public interface Response {
+    interface Response {
         /** Whether the request was successful. */
-        public boolean getSuccess();
+        boolean getSuccess();
 
         /** HTTP status code. */
-        public int getStatusCode();
+        int getStatusCode();
 
         /** List of headers for this response. */
-        public List<Header> getHeaders();
+        @Nullable List<Header> getHeaders();
 
         /** Raw data received. */
-        public byte[] getRawData();
+        byte @Nullable [] getRawData();
     }
 
     /** Notify that a request has responded. */
-    public interface ResponseCallback {
-        public void onResponse(Response response);
+    interface ResponseCallback {
+        void onResponse(Response response);
     }
 
-    /**
-     * Fetches a given url resource.
-     * Can be called from any thread.
-     */
-    public void fetch(Request request, ResponseCallback responseCallback);
+    /** Fetches a given url resource. Can be called from any thread. */
+    void fetch(Request request, ResponseCallback responseCallback);
 }

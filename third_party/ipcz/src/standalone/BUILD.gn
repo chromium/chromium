@@ -8,6 +8,7 @@ source_set("standalone") {
   public = [
     "base/logging.h",
     "base/stack_trace.h",
+    "base/unsafe_buffers.h",
   ]
 
   sources = [

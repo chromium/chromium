@@ -5,20 +5,20 @@
 # This is more akin to a .pyl/JSON file, so it's expected to be long.
 # pylint: disable=too-many-lines
 
+import dataclasses
 import functools
-from typing import List
+from typing import Any
 
 from gpu_tests import common_browser_args as cba
+from gpu_tests import common_typing as ct
 from gpu_tests import pixel_test_pages
 from gpu_tests.util import host_information
-
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
 
 
 # Can be changed to functools.cache on Python 3.9+.
 @functools.lru_cache(maxsize=None)
-def _GetWebGpuCacheTestBrowserArgs() -> List[str]:
-  browser_args = cba.ENABLE_WEBGPU_FOR_TESTING + [
+def _GetWebGpuCacheTestBrowserArgs() -> list[str]:
+  browser_args = [
       cba.ENABLE_EXPERIMENTAL_WEB_PLATFORM_FEATURES,
       '--enable-features=WebGPUBlobCache',
   ]
@@ -38,11 +38,23 @@ class WebGpuCacheTracingTest():
   first_load_page: str
   # List of URLs that should be both re-navigated and/or reloaded in a
   # restarted browser to expect some cache condition.
-  cache_pages: List[str]
+  cache_pages: list[str]
   # Additional arguments to start the browser with. Defaults to the return value
   # of _GetWebGpuCacheTestBrowserArgs().
-  browser_args: List[str] = dataclasses.field(
+  browser_args: list[str] = dataclasses.field(
       default_factory=_GetWebGpuCacheTestBrowserArgs)
+
+
+@dataclasses.dataclass
+class SimpleTracingTest:
+  # The name of the test, including the prefix.
+  name: str
+  # The URL to load.
+  url: str
+  # Additional args to start the browser with.
+  browser_args: list[str] = ct.EmptyList()
+  # Additional test harness arguments.
+  other_args: dict[str, Any] = ct.EmptyDict()
 
 
 # Inherits from PixelTestPages since a number of trace tests are just
@@ -70,7 +82,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
   ]
 
   @staticmethod
-  def WebGpuLoadReloadCachingTests(prefix: str) -> List[WebGpuCacheTracingTest]:
+  def WebGpuLoadReloadCachingTests(prefix: str) -> list[WebGpuCacheTracingTest]:
     # WebGPU load and reload caching tests.
     #   These tests load the |first_load_url|, records the number of cache
     #   entries written, then both re-navigates and restarts the browser for
@@ -152,7 +164,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
     ]
 
   @staticmethod
-  def WebGpuIncognitoCachingTests(prefix: str) -> List[WebGpuCacheTracingTest]:
+  def WebGpuIncognitoCachingTests(prefix: str) -> list[WebGpuCacheTracingTest]:
     # WebGPU incognito mode caching tests
     #   These tests load the |first_load_url| (which runs the same WebGPU code
     #   multiple times) in incognito mode, verifies that the pages had some
@@ -176,7 +188,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
 
   @staticmethod
   def WebGpuDifferentOriginCachingTests(
-      prefix: str) -> List[WebGpuCacheTracingTest]:
+      prefix: str) -> list[WebGpuCacheTracingTest]:
     # WebGPU different origin caching tests
     #   These tests load the |first_load_url| on the default origin, making sure
     #   that the load populates on-disk entries. The tests then restart the
@@ -197,7 +209,7 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
 
   @staticmethod
   def WebGpuCrossOriginCacheMissTests(
-      prefix: str) -> List[WebGpuCacheTracingTest]:
+      prefix: str) -> list[WebGpuCacheTracingTest]:
     # WebGPU cross origin cache miss tests.
     #   These tests load the |first_load_url| and ensure that the load
     #   populates on-disk entries. The tests then restart the browser for
@@ -217,4 +229,31 @@ class TraceTestPages(pixel_test_pages.PixelTestPages):
                              'testId=compute-test&hostname=localhost'),
             cache_pages=TraceTestPages.COMPUTE_CACHE_PAGES,
         ),
+    ]
+
+  @staticmethod
+  def RootSwapChainTests(prefix: str) -> list[SimpleTracingTest]:
+    return [
+        # Check that the root swap chain claims to be opaque. A root swap chain
+        # with a premultiplied alpha mode has a large negative battery impact
+        # (even if all the pixels are opaque).
+        SimpleTracingTest(name=f'{prefix}_IsOpaque',
+                          url='wait_for_compositing.html',
+                          other_args={
+                              'has_alpha': False,
+                          }),
+    ]
+
+  @staticmethod
+  def MediaFoundationD3D11VideoCaptureTests(
+      prefix: str) -> list[SimpleTracingTest]:
+    return [
+        # Check what MediaFoundationD3D11VideoCapture works
+        SimpleTracingTest(
+            name=f'{prefix}_MediaFoundationD3D11VideoCapture',
+            url='media_foundation_d3d11_video_capture.html',
+            browser_args=[
+                '--use-fake-ui-for-media-stream',
+                '--enable-features=MediaFoundationD3D11VideoCapture',
+            ]),
     ]

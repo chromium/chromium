@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -56,13 +57,17 @@ class CORE_EXPORT CSSValuePair : public CSSValue {
     if (identical_values_policy_ == kDropIdenticalValues && first == second) {
       return first;
     }
-    return first + ' ' + second;
+    return StrCat({first, " ", second});
   }
 
   bool Equals(const CSSValuePair& other) const {
     return base::ValuesEquivalent(first_, other.first_) &&
            base::ValuesEquivalent(second_, other.second_) &&
            identical_values_policy_ == other.identical_values_policy_;
+  }
+  unsigned CustomHash() const {
+    return HashInts(identical_values_policy_,
+                    HashInts(first_->Hash(), second_->Hash()));
   }
 
   void TraceAfterDispatch(blink::Visitor*) const;

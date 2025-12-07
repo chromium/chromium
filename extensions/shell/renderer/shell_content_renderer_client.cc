@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "components/nacl/common/buildflags.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -21,11 +20,6 @@
 #include "extensions/shell/renderer/shell_extensions_renderer_client.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
-#if BUILDFLAG(ENABLE_NACL)
-#include "components/nacl/common/nacl_constants.h"
-#include "components/nacl/renderer/nacl_helper.h"
-#endif
-
 using blink::WebFrame;
 using blink::WebString;
 using content::RenderThread;
@@ -36,8 +30,6 @@ ShellContentRendererClient::ShellContentRendererClient() = default;
 ShellContentRendererClient::~ShellContentRendererClient() = default;
 
 void ShellContentRendererClient::RenderThreadStarted() {
-  RenderThread* thread = RenderThread::Get();
-
   extensions_client_.reset(CreateExtensionsClient());
   ExtensionsClient::Set(extensions_client_.get());
 
@@ -49,24 +41,15 @@ void ShellContentRendererClient::RenderThreadStarted() {
       std::make_unique<ShellExtensionsRendererAPIProvider>());
   ExtensionsRendererClient::Set(extensions_renderer_client_.get());
   extensions_renderer_client_->RenderThreadStarted();
-
-  thread->AddObserver(extensions_renderer_client_->GetDispatcher());
 }
 
 void ShellContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
-  Dispatcher* dispatcher = extensions_renderer_client_->GetDispatcher();
+  Dispatcher* dispatcher = extensions_renderer_client_->dispatcher();
   // ExtensionFrameHelper destroys itself when the RenderFrame is destroyed.
   new ExtensionFrameHelper(render_frame, dispatcher);
 
   dispatcher->OnRenderFrameCreated(render_frame);
-
-  // TODO(jamescook): Do we need to add a new PepperHelper(render_frame) here?
-  // It doesn't seem necessary for either Pepper or NaCl.
-  // http://crbug.com/403004
-#if BUILDFLAG(ENABLE_NACL)
-  new nacl::NaClHelper(render_frame);
-#endif
 }
 
 bool ShellContentRendererClient::OverrideCreatePlugin(
@@ -75,13 +58,6 @@ bool ShellContentRendererClient::OverrideCreatePlugin(
     blink::WebPlugin** plugin) {
   // Allow the content module to create the plugin.
   return false;
-}
-
-blink::WebPlugin* ShellContentRendererClient::CreatePluginReplacement(
-    content::RenderFrame* render_frame,
-    const base::FilePath& plugin_path) {
-  // Don't provide a custom "failed to load" plugin.
-  return nullptr;
 }
 
 void ShellContentRendererClient::WillSendRequest(
@@ -95,27 +71,15 @@ void ShellContentRendererClient::WillSendRequest(
   // TODO(jamescook): Cause an error for bad extension scheme requests?
 }
 
-bool ShellContentRendererClient::IsExternalPepperPlugin(
-    const std::string& module_name) {
-#if BUILDFLAG(ENABLE_NACL)
-  // TODO(bbudge) remove this when the trusted NaCl plugin has been removed.
-  // We must defer certain plugin events for NaCl instances since we switch
-  // from the in-process to the out-of-process proxy after instantiating them.
-  return module_name == nacl::kNaClPluginName;
-#else
-  return false;
-#endif
-}
-
 void ShellContentRendererClient::RunScriptsAtDocumentStart(
     content::RenderFrame* render_frame) {
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentStart(
+  extensions_renderer_client_->dispatcher()->RunScriptsAtDocumentStart(
       render_frame);
 }
 
 void ShellContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {
-  extensions_renderer_client_->GetDispatcher()->RunScriptsAtDocumentEnd(
+  extensions_renderer_client_->dispatcher()->RunScriptsAtDocumentEnd(
       render_frame);
 }
 

@@ -56,7 +56,9 @@ class ActiveContextualPanelTabHelperObservationForwarderTest
   web::FakeWebState* AddWebStateToList(bool activate) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web::FakeWebState* web_state_ptr = web_state.get();
-    std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
+    std::map<ContextualPanelItemType,
+             raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+        models;
     ContextualPanelTabHelper::CreateForWebState(web_state_ptr, models);
     web_state_list_.InsertWebState(
         std::move(web_state),
@@ -190,7 +192,9 @@ TEST_F(ActiveContextualPanelTabHelperObservationForwarderTest,
   auto replacement_web_state = std::make_unique<web::FakeWebState>();
 
   web::FakeWebState* web_state_c = replacement_web_state.get();
-  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
+  std::map<ContextualPanelItemType,
+           raw_ptr<ContextualPanelModel, DanglingUntriaged>>
+      models;
   ContextualPanelTabHelper::CreateForWebState(web_state_c, models);
   std::unique_ptr<web::WebState> detached_web_state =
       web_state_list_.ReplaceWebStateAt(

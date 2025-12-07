@@ -4,7 +4,7 @@
   manipulating DOM elements.
 - `AutofillAgent` is instantiated per `content::RenderFrame`.
 - `AutofillAgent` owns `PasswordAutofillAgent` and
-  `PasswortGenerationAgent`.
+  `PasswordGenerationAgent`.
 
 # Terminology
 
@@ -38,9 +38,11 @@ element inside its DOM. Examples include
 
 - `<form id=f><input id=t></form>`
 - `<form id=f></form><input id=t form=f>`
+- `<div><form id=f></div><input id=t>`
 
-In both examples, the form control element `t` is associated with the form
-element `f`.
+In all examples, the form control element `t` is associated with the form
+element `f`. The third example is invalid HTML but [explicitly supported by
+the HTML spec](form-element-pointer).
 
 Form association is an HTML concept independent of Autofill. We refer to
 the spec section about form-[associated] elements for more detail.
@@ -66,8 +68,11 @@ association in the following ways:
 - It extends to contenteditables: we treat a contenteditable like a form with a
   single field.
 
-A [connected] form control element `t` is *owned* by a top-most form
-element `f` iff
+A form control `t` is *accessible* if it is [connected] and outside of the
+[user-agent tree].
+
+A form control element `t` is *owned* by a top-most form element `f` iff
+`t` is accessible and
 
 - `t` is [associated] with `f` or a descendant of `f`, or
 - `t` is a [shadow-including] descendant of `f` and `t` and `f` are not in the
@@ -78,8 +83,9 @@ Note that allowing `t` to be [associated] with a descendant of `f` instead of
 nested forms within the same DOM tree. In that case, `t` may be associated with
 any form, but we want its *owning* form to always be a top-level form.
 
-A [connected] form control element `t` is *unowned* iff no top-most form
-element owns `t`. That is, to be explicit, `t` is unowned iff
+A form control element `t` is *unowned* iff `t` is accessible and no top-most
+form element owns `t`. That is, to be explicit, `t` is unowned iff `t` is
+accessible and
 
 - `t` is not [associated] with any form element or
 - `t` has no [shadow-including] form element ancestor in another [node tree].
@@ -88,7 +94,7 @@ We refer to the collection of unowned form controls as the *unowned form* and, i
 a slight abuse of terminology, say that the unowned form *owns* the unowned form
 controls. The unowned form is represented by the null `WebFormElement`.
 
-A [connected] [contenteditable] is *owned* by itself iff it is not a form
+A [contenteditable] is *owned* by itself iff it is accessible, not a form
 element, not a form control element, and its parent is not [editable].
 
 Ownership determines the relationship between `FormData` objects (representing a
@@ -99,7 +105,7 @@ contenteditable).
 Note: The term [form owner] used in the HTML spec about form-[associated]
 elements is unrelated to Autofill's concept of ownership.
 
-**WARNING:** Autofill code shall only call `GetOwningForm()` and
+**WARNING:** Autofill code shall only call `GetOwningFormForAutofill()` and
 `GetOwnedFormControls()` to determine the owner/ownee relationship between forms
 and form controls. A presubmit script warns when code uses the Blink-analogues
 to these functions.
@@ -111,7 +117,9 @@ to these functions.
 [node tree]: https://dom.spec.whatwg.org/#concept-node-tree
 [document tree]: https://dom.spec.whatwg.org/#document-trees
 [shadow tree]: https://dom.spec.whatwg.org/#shadow-trees
+[user-agent tree]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/dom/node.h;l=470;drc=1a905e1bd6df3f3e52374e08c885f586dfc07348
 [contenteditable]: https://html.spec.whatwg.org/index.html#attr-contenteditable
 [editable]: https://w3c.github.io/editing/docs/execCommand/#editable
 [shadow DOM]: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM
 [form-associated custom elements]: https://web.dev/articles/more-capable-form-controls
+[form-element-pointer]: https://html.spec.whatwg.org/multipage/parsing.html#form-element-pointer

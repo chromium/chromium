@@ -57,8 +57,8 @@ export class DoodleShareDialogElement extends CrLitElement {
     };
   }
 
-  override title: string;
-  url: Url = {url: ''};
+  override accessor title: string = '';
+  accessor url: Url = {url: ''};
 
   protected onFacebookClick_() {
     const url = 'https://www.facebook.com/dialog/share' +

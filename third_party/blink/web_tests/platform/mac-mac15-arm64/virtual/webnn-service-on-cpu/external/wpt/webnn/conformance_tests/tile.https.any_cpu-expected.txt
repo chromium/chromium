@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] [required] tile float32 0D scalar tensor by repetitions=[]
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model compilation error."
+Harness: the test ran to completion.
+

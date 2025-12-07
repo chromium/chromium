@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webcodecs/image_decoder_external.h"
 
 #include "base/logging.h"
@@ -89,10 +84,10 @@ class ArrayBufferContentsSegmentReader : public SegmentReader {
                                     contents_.DataLength()))) {}
 
   size_t size() const override { return segment_reader_->size(); }
-  size_t GetSomeData(const char*& data, size_t position) const override {
-    return segment_reader_->GetSomeData(data, position);
+  base::span<const uint8_t> GetSomeData(size_t position) const override {
+    return segment_reader_->GetSomeData(position);
   }
-  sk_sp<SkData> GetAsSkData() const override {
+  sk_sp<const SkData> GetAsSkData() const override {
     return segment_reader_->GetAsSkData();
   }
 
@@ -170,10 +165,10 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   DCHECK(init->hasData());
   DCHECK(init->data());
 
-  constexpr char kNoneOption[] = "none";
   auto color_behavior = ColorBehavior::kTag;
-  if (init->colorSpaceConversion() == kNoneOption)
+  if (init->colorSpaceConversion() == V8ColorSpaceConversion::Enum::kNone) {
     color_behavior = ColorBehavior::kIgnore;
+  }
 
   auto desired_size = SkISize::MakeEmpty();
   if (init->hasDesiredWidth() && init->hasDesiredHeight())
@@ -203,7 +198,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
       return;
     }
 
-    decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
+    decoder_ = std::make_unique<SequenceBound<ImageDecoderCore>>(
         decode_task_runner_, mime_type_, /*data=*/nullptr,
         /*data_complete=*/false, color_behavior, desired_size,
         animation_option_);
@@ -223,28 +218,21 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   base::span<const uint8_t> array_span;
   switch (init->data()->GetContentType()) {
     case V8ImageBufferSource::ContentType::kArrayBufferAllowShared:
-      if (auto* data_ptr = init->data()->GetAsArrayBufferAllowShared()) {
-        if (!data_ptr->IsDetached()) {
-          array_span = base::span<const uint8_t>(
-              reinterpret_cast<const uint8_t*>(data_ptr->DataMaybeShared()),
-              data_ptr->ByteLength());
+      if (auto* buffer = init->data()->GetAsArrayBufferAllowShared()) {
+        if (!buffer->IsDetached()) {
+          array_span = buffer->ByteSpanMaybeShared();
         }
       }
       break;
     case V8ImageBufferSource::ContentType::kArrayBufferViewAllowShared:
-      if (auto* data_ptr =
-              init->data()->GetAsArrayBufferViewAllowShared().Get()) {
-        if (!data_ptr->IsDetached()) {
-          array_span =
-              base::span<const uint8_t>(reinterpret_cast<const uint8_t*>(
-                                            data_ptr->BaseAddressMaybeShared()),
-                                        data_ptr->byteLength());
+      if (auto* view = init->data()->GetAsArrayBufferViewAllowShared().Get()) {
+        if (!view->IsDetached()) {
+          array_span = view->ByteSpanMaybeShared();
         }
       }
       break;
     case V8ImageBufferSource::ContentType::kReadableStream:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   auto buffer_contents =
@@ -277,7 +265,7 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   construction_succeeded_ = true;
   data_complete_ = true;
   completed_property_->ResolveWithUndefined();
-  decoder_ = std::make_unique<WTF::SequenceBound<ImageDecoderCore>>(
+  decoder_ = std::make_unique<SequenceBound<ImageDecoderCore>>(
       decode_task_runner_, mime_type_, std::move(segment_reader),
       data_complete_, color_behavior, desired_size, animation_option_);
 
@@ -429,28 +417,27 @@ void ImageDecoderExternal::OnStateChange() {
   DCHECK(!closed_);
   DCHECK(consumer_);
 
-  const char* buffer;
-  size_t available;
   while (!internal_data_complete_) {
-    auto result = consumer_->BeginRead(&buffer, &available);
+    base::span<const char> buffer;
+    auto result = consumer_->BeginRead(buffer);
     if (result == BytesConsumer::Result::kShouldWait)
       return;
 
-    std::unique_ptr<uint8_t[]> data;
+    Vector<uint8_t> data;
     if (result == BytesConsumer::Result::kOk) {
-      if (available > 0) {
-        data.reset(new uint8_t[available]);
-        memcpy(data.get(), buffer, available);
-        bytes_read_ += available;
+      if (!buffer.empty()) {
+        data.ReserveInitialCapacity(static_cast<wtf_size_t>(buffer.size()));
+        data.AppendSpan(buffer);
+        bytes_read_ += buffer.size();
       }
-      result = consumer_->EndRead(available);
+      result = consumer_->EndRead(buffer.size());
     }
 
     const bool data_complete = result == BytesConsumer::Result::kDone ||
                                result == BytesConsumer::Result::kError;
-    if (available > 0 || data_complete != internal_data_complete_) {
+    if (!buffer.empty() || data_complete != internal_data_complete_) {
       decoder_->AsyncCall(&ImageDecoderCore::AppendData)
-          .WithArgs(available, std::move(data), data_complete);
+          .WithArgs(std::move(data), data_complete);
       // Note: Requiring a selected track to DecodeMetadata() means we won't
       // resolve completed if all data comes in while there's no selected
       // track. This is intentional since if we resolve completed while there's
@@ -530,7 +517,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     ++num_submitted_decodes_;
     decoder_->AsyncCall(&ImageDecoderCore::Decode)
         .WithArgs(request->frame_index, request->complete_frames_only,
-                  WTF::CrossThreadUnretained(request->abort_flag.get()))
+                  CrossThreadUnretained(request->abort_flag.get()))
         .Then(CrossThreadBindOnce(&ImageDecoderExternal::OnDecodeReady,
                                   MakeUnwrappingCrossThreadHandle(
                                       decode_weak_factory_.GetWeakCell())));
@@ -555,7 +542,7 @@ void ImageDecoderExternal::MaybeSatisfyPendingDecodes() {
     } else if (request->range_error_message) {
       ScriptState::Scope scope(script_state_);
       request->resolver->Reject(V8ThrowException::CreateRangeError(
-          script_state_->GetIsolate(), *request->range_error_message));
+          script_state_->GetIsolate(), request->range_error_message));
     } else {
       request->resolver->Resolve(request->result);
     }

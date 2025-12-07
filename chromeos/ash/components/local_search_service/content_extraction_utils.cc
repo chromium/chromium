@@ -3,21 +3,22 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/local_search_service/content_extraction_utils.h"
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
 #include "base/check.h"
-#include "base/containers/contains.h"
-#include "base/containers/flat_set.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/i18n/case_conversion.h"
+#include "base/i18n/transliterator.h"
 #include "base/i18n/unicodestring.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 
 namespace ash::local_search_service {
 
@@ -25,32 +26,22 @@ namespace {
 
 using string_matching::TokenizedString;
 
-std::unique_ptr<icu::Transliterator> CreateDiacriticRemover() {
-  UErrorCode status = U_ZERO_ERROR;
-  UParseError parse_error;
-
+std::unique_ptr<base::i18n::Transliterator> CreateDiacriticRemover() {
   // Adds a rule to remove diacritic from text. Adds a few characters that are
   // not handled by ICU (ł > l; ø > o; đ > d).
-  return base::WrapUnique(icu::Transliterator::createFromRules(
-      UNICODE_STRING_SIMPLE("RemoveDiacritic"),
-      icu::UnicodeString::fromUTF8("::NFD; ::[:Nonspacing Mark:] Remove; "
-                                   "::NFC; ł > l; ø > o; đ > d;"),
-      UTRANS_FORWARD, parse_error, status));
+  return base::i18n::CreateTransliteratorFromRules(
+      "RemoveDiacritic",
+      "::NFD; ::[:Nonspacing Mark:] Remove;::NFC; ł > l; ø > o; đ > d;");
 }
 
-std::unique_ptr<icu::Transliterator> CreateHyphenRemover() {
-  UErrorCode status = U_ZERO_ERROR;
-  UParseError parse_error;
-
+std::unique_ptr<base::i18n::Transliterator> CreateHyphenRemover() {
   // Hyphen characters list is taken from here: http://jkorpela.fi/dashes.html
   // U+002D(-), U+007E(~), U+058A(֊), U+05BE(־), U+1806(᠆), U+2010(‐),
   // U+2011(‑), U+2012(‒), U+2013(–), U+2014(—), U+2015(―), U+2053(⁓),
   // U+207B(⁻), U+208B(₋), U+2212(−), U+2E3A(⸺ ), U+2E3B(⸻  ), U+301C(〜),
   // U+3030(〰), U+30A0(゠), U+FE58(﹘), U+FE63(﹣), U+FF0D(－).
-  return base::WrapUnique(icu::Transliterator::createFromRules(
-      UNICODE_STRING_SIMPLE("RemoveHyphen"),
-      icu::UnicodeString::fromUTF8("::[-~֊־᠆‐‑‒–—―⁓⁻₋−⸺⸻〜〰゠﹘﹣－] Remove;"),
-      UTRANS_FORWARD, parse_error, status));
+  return base::i18n::CreateTransliteratorFromRules(
+      "RemoveHyphen", "::[-~֊־᠆‐‑‒–—―⁓⁻₋−⸺⸻〜〰゠﹘﹣－] Remove;");
 }
 
 }  // namespace
@@ -106,12 +97,12 @@ std::vector<Token> ExtractContent(const std::string& content_id,
 }
 
 bool IsNonLatinLocale(const std::string& locale) {
-  static const base::NoDestructor<base::flat_set<std::string>>
-      non_latin_locales({"am", "ar", "be", "bg", "bn", "el", "fa", "gu",
-                         "hi", "hy", "iw", "ja", "ka", "kk", "km", "kn",
-                         "ko", "ky", "lo", "mk", "ml", "mn", "mr", "my",
-                         "pa", "ru", "sr", "ta", "te", "th", "uk", "zh"});
-  return base::Contains(*non_latin_locales, locale.substr(0, 2));
+  static constexpr auto kNonLatinLocales =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"am", "ar", "be", "bg", "bn", "el", "fa", "gu", "hi", "hy", "iw",
+           "ja", "ka", "kk", "km", "kn", "ko", "ky", "lo", "mk", "ml", "mn",
+           "mr", "my", "pa", "ru", "sr", "ta", "te", "th", "uk", "zh"});
+  return kNonLatinLocales.contains(locale.substr(0, 2));
 }
 
 bool IsStopword(const std::u16string& word, const std::string& locale) {
@@ -122,8 +113,8 @@ bool IsStopword(const std::u16string& word, const std::string& locale) {
     return false;
 
   // A set of stopwords in English. This set is taken from NLTK library.
-  static const base::NoDestructor<base::flat_set<std::string>>
-      english_stopwords(
+  static constexpr auto kEnglishStopWords =
+      base::MakeFixedFlatSet<std::string_view>(
           {"i",         "me",         "my",        "myself",  "we",
            "our",       "ours",       "ourselves", "you",     "you're",
            "you've",    "you'll",     "you'd",     "your",    "yours",
@@ -160,27 +151,26 @@ bool IsStopword(const std::u16string& word, const std::string& locale) {
            "needn",     "needn't",    "shan",      "shan't",  "shouldn",
            "shouldn't", "wasn",       "wasn't",    "weren",   "weren't",
            "won",       "won't",      "wouldn",    "wouldn't"});
-  return base::Contains(*english_stopwords, base::UTF16ToUTF8(word));
+  return kEnglishStopWords.contains(base::UTF16ToUTF8(word));
 }
 
 std::u16string Normalizer(const std::u16string& word, bool remove_hyphen) {
   // Case folding.
-  icu::UnicodeString source = icu::UnicodeString::fromUTF8(
-      base::UTF16ToUTF8(base::i18n::FoldCase(word)));
+  std::u16string case_folded = base::i18n::FoldCase(word);
 
   // Removes diacritic.
-  static base::NoDestructor<std::unique_ptr<icu::Transliterator>>
+  static base::NoDestructor<std::unique_ptr<base::i18n::Transliterator>>
       diacritic_remover(CreateDiacriticRemover());
-  (*diacritic_remover)->transliterate(source);
+  std::u16string diacritic_removed =
+      (*diacritic_remover)->Transliterate(case_folded);
 
   // Removes hyphen.
   if (remove_hyphen) {
-    static base::NoDestructor<std::unique_ptr<icu::Transliterator>>
+    static base::NoDestructor<std::unique_ptr<base::i18n::Transliterator>>
         hyphen_remover(CreateHyphenRemover());
-    (*hyphen_remover)->transliterate(source);
+    return (*hyphen_remover)->Transliterate(diacritic_removed);
   }
-
-  return base::i18n::UnicodeStringToString16(source);
+  return diacritic_removed;
 }
 
 }  // namespace ash::local_search_service

@@ -17,7 +17,6 @@
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "third_party/skia/include/docs/SkPDFDocument.h"
-#include "ui/gfx/image/buffer_w_stream.h"
 
 namespace chromeos {
 
@@ -129,7 +128,7 @@ bool ConvertJpgImagesToPdf(const std::vector<std::string>& jpg_images,
 
 bool ConvertJpgImagesToPdf(const std::vector<std::vector<uint8_t>>& jpg_images,
                            std::vector<uint8_t>* output) {
-  gfx::BufferWStream output_stream;
+  SkDynamicMemoryWStream output_stream;
   sk_sp<SkDocument> pdf_doc = SkPDF::MakeDocument(&output_stream);
   DCHECK(pdf_doc);
 
@@ -154,7 +153,7 @@ bool ConvertJpgImagesToPdf(const std::vector<std::vector<uint8_t>>& jpg_images,
   }
 
   pdf_doc->close();
-  *output = output_stream.TakeBuffer();
+  *output = output_stream.detachAsVector();
   return true;
 }
 

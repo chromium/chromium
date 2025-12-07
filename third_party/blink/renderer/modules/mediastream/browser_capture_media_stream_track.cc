@@ -6,8 +6,8 @@
 
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/token.h"
 #include "base/types/expected.h"
 #include "base/uuid.h"
@@ -27,8 +27,6 @@
 namespace blink {
 
 namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
 
 using ApplySubCaptureTargetResult =
     BrowserCaptureMediaStreamTrack::ApplySubCaptureTargetResult;
@@ -52,7 +50,7 @@ void RaiseApplySubCaptureTargetException(
     ScriptPromiseResolverWithTracker<ApplySubCaptureTargetResult, IDLUndefined>*
         resolver,
     DOMExceptionCode exception_code,
-    const WTF::String& exception_text,
+    const String& exception_text,
     ApplySubCaptureTargetResult result) {
   resolver->Reject<DOMException>(
       MakeGarbageCollected<DOMException>(exception_code, exception_text),
@@ -94,11 +92,6 @@ void ResolveApplySubCaptureTargetPromiseHelper(
           ApplySubCaptureTargetResult::kRejectedWithNotImplemented);
       return;
     case media::mojom::ApplySubCaptureTargetResult::kNonIncreasingVersion:
-      // This should rarely happen, as the browser process would issue
-      // a BadMessage in this case. But if that message has to hop from
-      // the IO thread to the UI thread, it could theoretically happen
-      // that Blink receives this callback before being killed, so we
-      // can't quite DCHECK this.
       RaiseApplySubCaptureTargetException(
           resolver, DOMExceptionCode::kAbortError, "Non-increasing version.",
           ApplySubCaptureTargetResult::kNonIncreasingVersion);
@@ -110,34 +103,8 @@ void ResolveApplySubCaptureTargetPromiseHelper(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
-
-base::expected<MediaStreamVideoSource*, DOMException*> GetNativeVideoSource(
-    MediaStreamComponent* const component) {
-  if (!component) {
-    return base::unexpected(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, "Missing component."));
-  }
-
-  MediaStreamSource* const source = component->Source();
-  if (!source) {
-    return base::unexpected(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, "Missing source."));
-  }
-
-  CHECK_EQ(source->GetType(), MediaStreamSource::kTypeVideo);
-
-  MediaStreamVideoSource* const native_source =
-      MediaStreamVideoSource::GetVideoSource(source);
-  if (!native_source) {
-    return base::unexpected(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kUnknownError, "Missing native source."));
-  }
-  return native_source;
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -160,41 +127,10 @@ BrowserCaptureMediaStreamTrack::BrowserCaptureMediaStreamTrack(
                            ready_state,
                            std::move(callback)) {}
 
-#if !BUILDFLAG(IS_ANDROID)
 void BrowserCaptureMediaStreamTrack::Trace(Visitor* visitor) const {
   visitor->Trace(pending_promises_);
   MediaStreamTrackImpl::Trace(visitor);
 }
-
-void BrowserCaptureMediaStreamTrack::SendWheel(
-    double relative_x,
-    double relative_y,
-    int wheel_delta_x,
-    int wheel_delta_y,
-    base::OnceCallback<void(DOMException*)> callback) {
-  const base::expected<MediaStreamVideoSource*, DOMException*> native_source =
-      GetNativeVideoSource(Component());
-  if (!native_source.has_value()) {
-    std::move(callback).Run(native_source.error());
-    return;
-  }
-  native_source.value()->SendWheel(relative_x, relative_y, wheel_delta_x,
-                                   wheel_delta_y, std::move(callback));
-}
-
-void BrowserCaptureMediaStreamTrack::SetZoomLevel(
-    int zoom_level,
-    base::OnceCallback<void(DOMException*)> callback) {
-  const base::expected<MediaStreamVideoSource*, DOMException*> native_source =
-      GetNativeVideoSource(Component());
-  if (!native_source.has_value()) {
-    std::move(callback).Run(native_source.error());
-    return;
-  }
-  native_source.value()->SetZoomLevel(zoom_level, std::move(callback));
-}
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 ScriptPromise<IDLUndefined> BrowserCaptureMediaStreamTrack::cropTo(
     ScriptState* script_state,
@@ -240,7 +176,7 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   CHECK(type == SubCaptureTarget::Type::kCropTarget ||
         type == SubCaptureTarget::Type::kRestrictionTarget);
 
-  const std::string metric_name_prefix =
+  const String metric_name_prefix =
       (type == SubCaptureTarget::Type::kCropTarget)
           ? "Media.RegionCapture.CropTo"
           : "Media.ElementCapture.RestrictTo";
@@ -256,14 +192,6 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
     resolver->SetResultSuffix("Result2");
   }
   auto promise = resolver->Promise();
-
-#if BUILDFLAG(IS_ANDROID)
-  resolver->Reject<DOMException>(
-      MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
-                                         "Not supported on Android."),
-      ApplySubCaptureTargetResult::kUnsupportedPlatform);
-  return promise;
-#else
 
   const std::optional<base::Token> token =
       IdStringToToken(target ? target->GetId() : String());
@@ -297,12 +225,12 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
     return promise;
   }
 
-  // TODO(crbug.com/1332628): Instead of using GetNextSubCaptureTargetVersion(),
+  // TODO(crbug.com/40227755): Instead of using GetNextCaptureVersion(),
   // move the ownership of the Promises from this->pending_promises_ into
   // native_source.
-  const std::optional<uint32_t> optional_sub_capture_target_version =
-      native_source->GetNextSubCaptureTargetVersion();
-  if (!optional_sub_capture_target_version.has_value()) {
+  const std::optional<media::CaptureVersion> optional_capture_version =
+      native_source->GetNextCaptureVersion();
+  if (!optional_capture_version.has_value()) {
     resolver->Reject<DOMException>(
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kOperationError,
@@ -310,69 +238,62 @@ BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
         ApplySubCaptureTargetResult::kInvalidTarget);
     return promise;
   }
-  const uint32_t sub_capture_target_version =
-      optional_sub_capture_target_version.value();
 
-  pending_promises_.Set(sub_capture_target_version,
+  const media::CaptureVersion capture_version = *optional_capture_version;
+
+  pending_promises_.Set(capture_version,
                         MakeGarbageCollected<PromiseInfo>(resolver));
 
   // Register for a one-off notification when the first frame cropped
   // to the new crop-target is observed.
-  native_track->AddSubCaptureTargetVersionCallback(
-      sub_capture_target_version,
-      WTF::BindOnce(
-          &BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved,
-          WrapWeakPersistent(this), sub_capture_target_version));
+  native_track->AddCaptureVersionCallback(
+      capture_version,
+      BindOnce(&BrowserCaptureMediaStreamTrack::OnCaptureVersionObserved,
+               WrapWeakPersistent(this), capture_version));
 
   native_source->ApplySubCaptureTarget(
-      type, token.value(), sub_capture_target_version,
-      WTF::BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
-                    WrapWeakPersistent(this), sub_capture_target_version));
+      type, token.value(), capture_version.sub_capture,
+      BindOnce(&BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess,
+               WrapWeakPersistent(this), capture_version));
 
   return promise;
-#endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void BrowserCaptureMediaStreamTrack::OnResultFromBrowserProcess(
-    uint32_t sub_capture_target_version,
+    media::CaptureVersion capture_version,
     media::mojom::ApplySubCaptureTargetResult result) {
   DCHECK(IsMainThread());
-  DCHECK_GT(sub_capture_target_version, 0u);
 
-  const auto iter = pending_promises_.find(sub_capture_target_version);
+  const PromiseMapIterator iter = pending_promises_.find(capture_version);
   if (iter == pending_promises_.end()) {
     return;
   }
-  PromiseInfo* const info = iter->value;
 
-  DCHECK(!info->result.has_value()) << "Invoked twice.";
+  PromiseInfo* const info = iter->value;
+  CHECK(!info->result.has_value()) << "Invoked twice.";
   info->result = result;
-
-  MaybeFinalizeCropPromise(iter);
+  MaybeFinalizeSubCapturePromise(iter);
 }
 
-void BrowserCaptureMediaStreamTrack::OnSubCaptureTargetVersionObserved(
-    uint32_t sub_capture_target_version) {
+void BrowserCaptureMediaStreamTrack::OnCaptureVersionObserved(
+    media::CaptureVersion capture_version) {
   DCHECK(IsMainThread());
-  DCHECK_GT(sub_capture_target_version, 0u);
 
-  const auto iter = pending_promises_.find(sub_capture_target_version);
+  const PromiseMapIterator iter = pending_promises_.find(capture_version);
   if (iter == pending_promises_.end()) {
     return;
   }
+
   PromiseInfo* const info = iter->value;
-
-  DCHECK(!info->sub_capture_target_version_observed) << "Invoked twice.";
-  info->sub_capture_target_version_observed = true;
-
-  MaybeFinalizeCropPromise(iter);
+  CHECK(!info->capture_version_observed) << "Invoked twice.";
+  info->capture_version_observed = true;
+  MaybeFinalizeSubCapturePromise(iter);
 }
 
-void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
-    BrowserCaptureMediaStreamTrack::PromiseMapIterator iter) {
+void BrowserCaptureMediaStreamTrack::MaybeFinalizeSubCapturePromise(
+    PromiseMapIterator iter) {
   DCHECK(IsMainThread());
-  CHECK_NE(iter, pending_promises_.end(), base::NotFatalUntil::M130);
+  CHECK_NE(iter, pending_promises_.end());
 
   PromiseInfo* const info = iter->value;
 
@@ -383,9 +304,9 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   const media::mojom::ApplySubCaptureTargetResult result = info->result.value();
 
   // Failure can be reported immediately, but success is only reported once
-  // the new sub-capture-target-version is observed.
+  // the new capture-version is observed.
   if (result == media::mojom::ApplySubCaptureTargetResult::kSuccess &&
-      !info->sub_capture_target_version_observed) {
+      !info->capture_version_observed) {
     return;
   }
 
@@ -396,7 +317,7 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
     MediaStreamTrackPlatform* const native_track =
         MediaStreamTrackPlatform::GetTrack(WebMediaStreamTrack(Component()));
     if (native_track) {
-      native_track->RemoveSubCaptureTargetVersionCallback(iter->key);
+      native_track->RemoveCaptureVersionCallback(iter->key);
     }
   }
 
@@ -406,6 +327,5 @@ void BrowserCaptureMediaStreamTrack::MaybeFinalizeCropPromise(
   pending_promises_.erase(iter);
   ResolveApplySubCaptureTargetPromiseHelper(resolver, result);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace blink

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
 
@@ -16,4 +17,5 @@ import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebact
  * This class is intended to be empty. Try to avoid adding code here, put it in
  * {@link TwaSplashController} or other specialized class.
  */
+@NullMarked
 public class TranslucentCustomTabActivity extends CustomTabActivity {}

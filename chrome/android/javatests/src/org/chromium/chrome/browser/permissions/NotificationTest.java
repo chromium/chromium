@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
@@ -37,8 +38,9 @@ public class NotificationTest {
     @Test
     @MediumTest
     @Feature({"Notifications"})
+    @DisableFeatures("PermissionsAndroidClapperLoud")
     public void testNotificationDialog() throws Exception {
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter(
                         "request-callback-granted", mPermissionRule.getActivity());

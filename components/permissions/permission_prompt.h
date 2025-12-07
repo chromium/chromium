@@ -12,7 +12,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "components/permissions/features.h"
-#include "components/permissions/permission_ui_selector.h"
+#include "components/permissions/permission_uma_util.h"
+#include "components/permissions/prediction_service/permission_ui_selector.h"
+#include "components/permissions/resolvers/permission_prompt_options.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -53,11 +55,11 @@ class PermissionPrompt {
   // be persisted in the per-tab UI state.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // These pointers should not be stored as the actual request objects may be
     // deleted upon navigation and so on.
-    virtual const std::vector<raw_ptr<PermissionRequest, VectorExperimental>>&
+    virtual const std::vector<std::unique_ptr<PermissionRequest>>&
     Requests() = 0;
 
     // Get the single origin for the current set of requests.
@@ -72,6 +74,11 @@ class PermissionPrompt {
     virtual void Deny() = 0;
     virtual void Dismiss() = 0;
     virtual void Ignore() = 0;
+
+    virtual void SetPromptOptions(PromptOptions prompt_options) = 0;
+
+    virtual GeolocationAccuracy GetInitialGeolocationAccuracySelection()
+        const = 0;
 
     // Called to explicitly finalize the request, if
     // |ShouldFinalizeRequestAfterDecided| returns false.
@@ -134,6 +141,8 @@ class PermissionPrompt {
     // Recreate the UI view because the UI flavor needs to change. Returns true
     // iff successful.
     virtual bool RecreateView() = 0;
+
+    virtual const PermissionPrompt* GetCurrentPrompt() const = 0;
   };
 
   typedef base::RepeatingCallback<
@@ -144,7 +153,7 @@ class PermissionPrompt {
   static std::unique_ptr<PermissionPrompt> Create(
       content::WebContents* web_contents,
       Delegate* delegate);
-  virtual ~PermissionPrompt() {}
+  virtual ~PermissionPrompt() = default;
 
   // Updates where the prompt should be anchored. ex: fullscreen toggle.
   // Returns true, if the update was successful, and false if the caller should

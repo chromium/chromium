@@ -1,0 +1,34 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/enterprise/buildflags/buildflags.gni")
+
+static_library("signin") {
+  sources = [ "enterprise_identity_service.cc" ]
+
+  public = [ "enterprise_identity_service.h" ]
+
+  deps = [
+    "//base",
+    "//components/signin/public/identity_manager",
+  ]
+
+  public_deps = [ "//components/keyed_service/core" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "enterprise_identity_service_unittest.cc" ]
+
+  deps = [
+    ":signin",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "extensions/common/error_utils.h"
@@ -35,7 +36,7 @@ testing::AssertionResult RunManifestVersionSuccess(
     std::string_view expected_warning = "",
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS,
     ManifestLocation manifest_location = ManifestLocation::kInternal) {
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension = Extension::Create(
       base::FilePath(), manifest_location, manifest, custom_flag, &error);
   if (!extension) {
@@ -73,7 +74,7 @@ testing::AssertionResult RunManifestVersionSuccess(
 testing::AssertionResult RunManifestVersionFailure(
     base::Value::Dict manifest,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension =
       Extension::Create(base::FilePath(), ManifestLocation::kInternal, manifest,
                         custom_flag, &error);
@@ -88,7 +89,7 @@ testing::AssertionResult RunCreationWithFlags(
     mojom::ManifestLocation location,
     Manifest::Type expected_type,
     Extension::InitFromValueFlags custom_flag = Extension::NO_FLAGS) {
-  std::string error;
+  std::u16string error;
   scoped_refptr<const Extension> extension = Extension::Create(
       base::FilePath(), location, manifest, custom_flag, &error);
   if (!extension) {
@@ -119,7 +120,7 @@ TEST(ExtensionTest, ExtensionManifestVersions) {
     return manifest;
   };
 
-  const Manifest::Type kType = Manifest::TYPE_EXTENSION;
+  const Manifest::Type kType = Manifest::Type::kExtension;
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(2), kType, 2));
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3));
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(4), kType, 4,
@@ -166,7 +167,7 @@ TEST(ExtensionTest, PlatformAppManifestVersions) {
     return manifest;
   };
 
-  const Manifest::Type kType = Manifest::TYPE_PLATFORM_APP;
+  const Manifest::Type kType = Manifest::Type::kPlatformApp;
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(2), kType, 2));
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3));
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(4), kType, 4,
@@ -206,7 +207,7 @@ TEST(ExtensionTest, HostedAppManifestVersions) {
     return manifest;
   };
 
-  const Manifest::Type kType = Manifest::TYPE_HOSTED_APP;
+  const Manifest::Type kType = Manifest::Type::kHostedApp;
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(2), kType, 2));
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3));
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(4), kType, 4,
@@ -234,7 +235,7 @@ TEST(ExtensionTest, UserScriptManifestVersions) {
     return manifest;
   };
 
-  const Manifest::Type kType = Manifest::TYPE_USER_SCRIPT;
+  const Manifest::Type kType = Manifest::Type::kUserScript;
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(2), kType, 2));
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(3), kType, 3));
   EXPECT_TRUE(RunManifestVersionSuccess(get_manifest(4), kType, 4,
@@ -258,10 +259,10 @@ TEST(ExtensionTest, LoginScreenFlag) {
                       .Set("manifest_version", 2);
 
   EXPECT_TRUE(RunCreationWithFlags(manifest, ManifestLocation::kExternalPolicy,
-                                   Manifest::TYPE_EXTENSION,
+                                   Manifest::Type::kExtension,
                                    Extension::NO_FLAGS));
   EXPECT_TRUE(RunCreationWithFlags(manifest, ManifestLocation::kExternalPolicy,
-                                   Manifest::TYPE_LOGIN_SCREEN_EXTENSION,
+                                   Manifest::Type::kLoginScreenExtension,
                                    Extension::FOR_LOGIN_SCREEN));
 }
 

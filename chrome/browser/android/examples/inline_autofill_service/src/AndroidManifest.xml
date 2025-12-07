@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2025 The Chromium Authors
+  Use of this source code is governed by a BSD-style license that can be
+  found in the LICENSE file.-->
+
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.chromium.example.autofill_service"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+  <application
+      android:allowBackup="true"
+      android:icon="@mipmap/ic_launcher"
+      android:label="@string/app_name"
+      android:roundIcon="@mipmap/ic_launcher_round"
+      android:supportsRtl="true"
+      android:theme="@style/Theme.ChromiumInlineSuggestionsAutofillService">
+    <activity
+        android:name="org.chromium.example.autofill_service.MainActivity"
+        android:exported="true"
+        android:theme="@style/Theme.ChromiumInlineSuggestionsAutofillService">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+
+    <service
+        android:name="org.chromium.example.autofill_service.fill_service.InlineFillService"
+        android:exported="true"
+        android:label="@string/service_name"
+        android:permission="android.permission.BIND_AUTOFILL_SERVICE">
+      <intent-filter>
+        <action android:name="android.service.autofill.AutofillService" />
+      </intent-filter>
+      <meta-data
+          android:name="android.autofill"
+          android:resource="@xml/autofill_service_config"/>
+    </service>
+
+    <activity
+        android:name="org.chromium.example.autofill_service.SettingsActivity"
+        android:exported="true"
+        android:label="Autofill Settings" />
+
+    <activity
+        android:name="org.chromium.example.autofill_service.fill_service.helpers.AttributionDialogActivity"
+        android:label="Autofill Attribution"
+        android:theme="@android:style/Theme.Material.Light.Dialog.NoActionBar" />
+
+  </application>
+
+  <uses-permission android:name="android.permission.READ_USER_DICTIONARY"/>
+  <queries>
+    <!-- To query Chrome Canary: -->
+    <package android:name="com.chrome.canary" />
+
+    <!-- To query Chrome Dev: -->
+    <package android:name="com.chrome.dev" />
+
+    <!-- To query Chrome Beta: -->
+    <package android:name="com.chrome.beta" />
+
+    <!-- To query Chrome Developer Build: -->
+    <package android:name="com.google.android.apps.chrome" />
+
+    <!-- To query Chromium Builds: -->
+    <package android:name="org.chromium.chrome" />
+
+    <!-- To query Chrome Stable: -->
+    <package android:name="com.android.chrome" />
+  </queries>
+</manifest>

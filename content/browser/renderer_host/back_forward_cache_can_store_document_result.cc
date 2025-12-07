@@ -5,17 +5,18 @@
 #include "content/browser/renderer_host/back_forward_cache_can_store_document_result.h"
 
 #include <inttypes.h>
+
 #include <cstdint>
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/debug_utils.h"
 #include "content/public/browser/disallow_activation_reason.h"
-#include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
+#include "third_party/blink/public/mojom/script_source_location.mojom.h"
 
 namespace content {
 
@@ -32,19 +33,11 @@ std::string DescribeFeatures(BlockListedFeatures blocklisted_features) {
   return base::JoinString(features, ", ");
 }
 
-std::vector<std::string> FeaturesToStringVector(
-    BlockListedFeatures blocklisted_features) {
-  std::vector<std::string> features;
-  for (WebSchedulerTrackedFeature feature : blocklisted_features) {
-    features.push_back(blink::scheduler::FeatureToShortString(feature));
-  }
-  return features;
-}
-
 const char* BrowsingInstanceSwapResultToString(
     std::optional<ShouldSwapBrowsingInstance> reason) {
-  if (!reason)
+  if (!reason) {
     return "no BI swap result";
+  }
   switch (reason.value()) {
     case ShouldSwapBrowsingInstance::kYes_ForceSwap:
       return "forced BI swap";
@@ -203,9 +196,18 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
       return ProtoEnum::UNKNOWN;
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
+      return ProtoEnum::CACHE_CONTROL_NO_STORE_DEVICE_BOUND_SESSION_TERMINATED;
+    case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
+      return ProtoEnum::CACHE_LIMIT_PRUNED_ON_MODERATE_MEMORY_PRESSURE;
+    case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
+      return ProtoEnum::CACHE_LIMIT_PRUNED_ON_CRITICAL_MEMORY_PRESSURE;
+    case Reason::kSharedWorkerMessage:
+      return ProtoEnum::SHARED_WORKER_MESSAGE;
+    case Reason::kSharedWorkerWithNoActiveClient:
+      return ProtoEnum::SHARED_WORKER_WITH_NO_ACTIVE_CLIENT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ProtoEnum::UNKNOWN;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -227,8 +229,7 @@ bool BackForwardCacheCanStoreDocumentResult::operator==(
          disabled_reasons() == other.disabled_reasons() &&
          browsing_instance_swap_result() ==
              other.browsing_instance_swap_result() &&
-         disallow_activation_reasons() == other.disallow_activation_reasons() &&
-         ax_events() == other.ax_events();
+         disallow_activation_reasons() == other.disallow_activation_reasons();
 }
 
 bool BackForwardCacheCanStoreDocumentResult::HasNotRestoredReason(
@@ -239,6 +240,17 @@ bool BackForwardCacheCanStoreDocumentResult::HasNotRestoredReason(
 void BackForwardCacheCanStoreDocumentResult::AddNotRestoredReason(
     BackForwardCacheMetrics::NotRestoredReason reason) {
   not_restored_reasons_.Put(reason);
+
+  // `NoDueToFeatures()` will update the map if it's `kBlocklistedFeatures`.
+  if (reason !=
+      BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures) {
+    std::string nrr_report_str = NotRestoredReasonToReportString(reason);
+    if (!reason_to_source_map_.contains(nrr_report_str)) {
+      // Initialize a vector to indicate the reason doesn't have source
+      // location.
+      reason_to_source_map_[nrr_report_str];
+    }
+  }
 }
 
 bool BackForwardCacheCanStoreDocumentResult::CanStore() const {
@@ -307,33 +319,15 @@ std::string DisallowActivationReasonsToString(
 }  // namespace
 
 std::string BackForwardCacheCanStoreDocumentResult::ToString() const {
-  if (CanStore())
+  if (CanStore()) {
     return "Yes";
+  }
   std::vector<std::string> reason_strs;
   for (BackForwardCacheMetrics::NotRestoredReason reason :
        not_restored_reasons_) {
     reason_strs.push_back(NotRestoredReasonToString(reason));
   }
   return "No: " + base::JoinString(reason_strs, ", ");
-}
-
-std::unordered_set<std::string>
-BackForwardCacheCanStoreDocumentResult::GetStringReasons() const {
-  // Use unordered_set to avoid duplicate items.
-  std::unordered_set<std::string> reason_strs;
-  for (BackForwardCacheMetrics::NotRestoredReason reason :
-       not_restored_reasons_) {
-    switch (reason) {
-      case Reason::kBlocklistedFeatures:
-        for (auto feature : FeaturesToStringVector(blocklisted_features())) {
-          reason_strs.insert(feature);
-        }
-        break;
-      default:
-        reason_strs.insert(NotRestoredReasonToReportString(reason));
-    }
-  }
-  return reason_strs;
 }
 
 std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
@@ -371,6 +365,10 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "cache limit";
     case Reason::kForegroundCacheLimit:
       return "foreground cache limit";
+    case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
+      return "Cache limit pruned on moderate memory pressure";
+    case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
+      return "Cache limit pruned on critical memory pressure";
     case Reason::kJavaScriptExecution:
       return "JavaScript execution";
     case Reason::kRendererProcessKilled:
@@ -463,6 +461,13 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Android WebView safe browsing allowlist changed";
     case Reason::kWebViewDocumentStartJavascriptChanged:
       return "Android WebView document start script changed";
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
+      return "A device bound session was terminated on a cached page with "
+             "Cache-Control: no-store";
+    case Reason::kSharedWorkerMessage:
+      return "Pages with shared worker in bfcache received a message";
+    case Reason::kSharedWorkerWithNoActiveClient:
+      return "SharedWorker has no active clients";
   }
 }
 
@@ -474,7 +479,10 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     // If you ever add a new one, you have to add it to the spec as well.
     // https://html.spec.whatwg.org/#nrr-details-reason
     case Reason::kNotPrimaryMainFrame:
-      return "not-main-frame";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "masked"
+                 : "not-main-frame";
     case Reason::kRelatedActiveContentsExist:
       return "non-trivial-browsing-context-group";
     case Reason::kSchemeNotHTTPOrHTTPS:
@@ -486,25 +494,43 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
       // reported.
       return "Blocklisted feature";
     case Reason::kHTTPMethodNotGET:
-      return "response-method-not-get";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "request-method-not-get"
+                 : "response-method-not-get";
     case Reason::kSubframeIsNavigating:
-      return "frame-navigating";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "masked"
+                 : "frame-navigating";
     case Reason::kTimeout:
-      return "timeout";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "masked"
+                 : "timeout";
     case Reason::kServiceWorkerVersionActivation:
-      return "serviceworker-version-activation";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "serviceworker-version-activated"
+                 : "serviceworker-version-activation";
     case Reason::kSessionRestored:
       return "session-restored";
     case Reason::kServiceWorkerPostMessage:
       return "serviceworker-postmessage";
     case Reason::kEnteredBackForwardCacheBeforeServiceWorkerHostAdded:
-      return "serviceworker-added-after-bfcache";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "serviceworker-added"
+                 : "serviceworker-added-after-bfcache";
     case Reason::kServiceWorkerClaim:
-      return "serviceworker-claim";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "serviceworker-claimed"
+                 : "serviceworker-claim";
     case Reason::kNavigationCancelledWhileRestoring:
       return "navigation-canceled";
     case Reason::kServiceWorkerUnregistration:
-      return "serviceworker-unregistration";
+      return "serviceworker-unregistered";
     case Reason::kErrorDocument:
     case Reason::kHTTPStatusNotOK:
       return "response-status-not-ok";
@@ -517,17 +543,28 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kNetworkRequestDatapipeDrainedAsBytesConsumer:
       return "outstanding-network-request";
     case Reason::kBroadcastChannelOnMessage:
-      return "broadcast-channel-on-message";
+      return "broadcastchannel-message";
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
+    case Reason::kCacheControlNoStoreDeviceBoundSessionTerminated:
       return "response-cache-control-no-store";
     case Reason::kCookieDisabled:
-      return "cookie-disabled";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "masked"
+                 : "cookie-disabled";
     case Reason::kHTTPAuthRequired:
       return "response-auth-required";
     case Reason::kCookieFlushed:
-      return "cookie-removed";
+      return base::FeatureList::IsEnabled(
+                 blink::features::kBackForwardCacheUpdateNotRestoredReasonsName)
+                 ? "masked"
+                 : "cookie-removed";
+    case Reason::kSharedWorkerMessage:
+      return "sharedworker-message";
+    case Reason::kSharedWorkerWithNoActiveClient:
+      return "sharedworker-with-no-active-client";
     case Reason::kDisableForRenderFrameHostCalled:
       return DisabledReasonsToString(disabled_reasons_,
                                      /*for_not_restored_reasons=*/true);
@@ -535,6 +572,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kCacheFlushed:
     case Reason::kCacheLimit:
     case Reason::kForegroundCacheLimit:
+    case Reason::kCacheLimitPrunedOnModerateMemoryPressure:
+    case Reason::kCacheLimitPrunedOnCriticalMemoryPressure:
     case Reason::kHaveInnerContents:
     case Reason::kJavaScriptExecution:
     case Reason::kBackForwardCacheDisabledByLowMemory:
@@ -575,12 +614,26 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToFeatures(
   AddNotRestoredReason(
       BackForwardCacheMetrics::NotRestoredReason::kBlocklistedFeatures);
   for (const auto& [k, v] : map) {
-    if (blocking_details_map_.contains(k)) {
-      for (auto& details : map[k]) {
-        blocking_details_map_[k].push_back(std::move(details));
+    // Populate `blocking_details_map_`.
+    for (auto& details : map[k]) {
+      blocking_details_map_[k].push_back(details.Clone());
+    }
+
+    // Populate `reason_to_source_map_`.
+    std::string nrr_report_str = blink::scheduler::FeatureToShortString(k);
+    for (auto& details : map[k]) {
+      if (details->source) {
+        CHECK_GT(details->source->line_number, 0U);
+        CHECK_GT(details->source->column_number, 0U);
+        reason_to_source_map_[nrr_report_str].push_back(
+            blink::mojom::ScriptSourceLocation::New(
+                details->source->url, details->source->function_name,
+                details->source->line_number, details->source->column_number));
+      } else {
+        // Initialize empty vector to indicate the reason doesn't involve source
+        // location.
+        reason_to_source_map_[nrr_report_str];
       }
-    } else {
-      blocking_details_map_[k] = std::move(map[k]);
     }
   }
 }
@@ -614,17 +667,6 @@ void BackForwardCacheCanStoreDocumentResult::NoDueToDisallowActivation(
   disallow_activation_reasons_.insert(reason);
 }
 
-void BackForwardCacheCanStoreDocumentResult::NoDueToAXEvents(
-    const std::vector<ui::AXEvent>& events) {
-  DCHECK(base::FeatureList::IsEnabled(features::kEvictOnAXEvents));
-  for (auto& event : events) {
-    ax_events_.insert(event.event_type);
-  }
-  AddNotRestoredReason(
-      BackForwardCacheMetrics::NotRestoredReason::kIgnoreEventAndEvict);
-  disallow_activation_reasons_.insert(DisallowActivationReasonId::kAXEvent);
-}
-
 void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
     const BackForwardCacheCanStoreDocumentResult& other) {
   not_restored_reasons_.PutAll(other.not_restored_reasons_);
@@ -633,34 +675,32 @@ void BackForwardCacheCanStoreDocumentResult::AddReasonsFrom(
       blocking_details_map_[k].push_back(details.Clone());
     }
   }
+  for (const auto& [k, v] : other.reason_to_source_map()) {
+    if (v.empty()) {
+      // Initialize empty vector.
+      reason_to_source_map_[k];
+    } else {
+      for (const auto& source : v) {
+        reason_to_source_map_[k].push_back(source.Clone());
+      }
+    }
+  }
   for (const auto& reason : other.disabled_reasons()) {
     disabled_reasons_.insert(reason);
   }
-  if (other.browsing_instance_swap_result_)
+  if (other.browsing_instance_swap_result_) {
     browsing_instance_swap_result_ = other.browsing_instance_swap_result_;
+  }
   for (const auto reason : other.disallow_activation_reasons()) {
     disallow_activation_reasons_.insert(reason);
-  }
-  for (const auto event : other.ax_events()) {
-    ax_events_.insert(event);
   }
 }
 
 BackForwardCacheCanStoreDocumentResult::
     BackForwardCacheCanStoreDocumentResult() = default;
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(
-    BackForwardCacheCanStoreDocumentResult& other)
-    : not_restored_reasons_(other.not_restored_reasons_),
-      disabled_reasons_(other.disabled_reasons_),
-      browsing_instance_swap_result_(other.browsing_instance_swap_result_),
-      disallow_activation_reasons_(other.disallow_activation_reasons_),
-      ax_events_(other.ax_events_) {
-  // Manually copy `blocking_details_map_`.
-  for (const auto& [k, v] : other.blocking_details_map()) {
-    for (const auto& details : v) {
-      blocking_details_map_[k].push_back(details.Clone());
-    }
-  }
+    BackForwardCacheCanStoreDocumentResult& other) {
+  AddReasonsFrom(other);
 }
 BackForwardCacheCanStoreDocumentResult::BackForwardCacheCanStoreDocumentResult(
     BackForwardCacheCanStoreDocumentResult&&) = default;

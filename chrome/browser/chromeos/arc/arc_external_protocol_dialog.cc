@@ -4,25 +4,25 @@
 
 #include "chrome/browser/chromeos/arc/arc_external_protocol_dialog.h"
 
+#include <algorithm>
 #include <map>
 
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_navigation_throttle.h"
+#include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #include "components/sharing_message/sharing_target_device_info.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
@@ -37,10 +37,6 @@
 #include "ui/color/color_id.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
-#endif
 
 using content::WebContents;
 
@@ -110,8 +106,10 @@ bool MaybeAddDevicesAndShowPicker(
     bool stay_in_chrome,
     bool show_remember_selection,
     IntentPickerResponseWithDevices callback) {
-  Browser* browser =
-      web_contents ? chrome::FindBrowserWithTab(web_contents) : nullptr;
+  ash::BrowserDelegate* browser =
+      web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
+                         web_contents)
+                   : nullptr;
   if (!browser) {
     return false;
   }
@@ -141,7 +139,7 @@ bool MaybeAddDevicesAndShowPicker(
   IntentPickerTabHelper::ShowOrHideIcon(
       web_contents,
       bubble_type == apps::IntentPickerBubbleType::kExternalProtocol);
-  browser->window()->ShowIntentPickerBubble(
+  browser->GetBrowser().window()->ShowIntentPickerBubble(
       std::move(app_info), stay_in_chrome, show_remember_selection, bubble_type,
       initiating_origin,
       base::BindOnce(std::move(callback), std::move(devices), bubble_type));
@@ -381,8 +379,8 @@ void HandleDeviceSelection(WebContents* web_contents,
   }
 
   const auto it =
-      base::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
-  CHECK(it != devices.end(), base::NotFatalUntil::M130);
+      std::ranges::find(devices, device_guid, &SharingTargetDeviceInfo::guid);
+  CHECK(it != devices.end());
   const SharingTargetDeviceInfo& device = *it;
 
   ClickToCallUiController::GetOrCreateFromWebContents(web_contents)
@@ -495,15 +493,10 @@ void OnIntentPickerClosed(
   // http(s) request (via AppsNavigationThrottle), the UI here shouldn't stay in
   // the omnibox since the decision should be taken right away in a kind of
   // blocking fashion.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
-#endif
 
   if (web_contents) {
-    if (intent_picker_type == apps::IntentPickerBubbleType::kClickToCall) {
-      ClickToCallUiController::GetOrCreateFromWebContents(web_contents.get())
-          ->OnIntentPickerClosed();
-    } else {
+    if (intent_picker_type != apps::IntentPickerBubbleType::kClickToCall) {
       IntentPickerTabHelper::ShowOrHideIcon(web_contents.get(),
                                             /*should_show_icon=*/false);
     }
@@ -514,12 +507,10 @@ void OnIntentPickerClosed(
     DCHECK(!should_persist);
     HandleDeviceSelection(web_contents.get(), devices, selected_app_package,
                           url);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (context) {
       apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
           context, entry_type, reason, should_persist);
     }
-#endif
     return;
   }
 
@@ -558,12 +549,9 @@ void OnIntentPickerClosed(
       break;
     case apps::IntentPickerCloseReason::PREFERRED_APP_FOUND:
       // We shouldn't be here if a preferred app was found.
-      NOTREACHED_IN_MIGRATION();
-      return;  // no UMA recording.
+      NOTREACHED();
     case apps::IntentPickerCloseReason::STAY_IN_CHROME:
-      LOG(ERROR) << "Chrome is not a valid option for external protocol URLs";
-      NOTREACHED_IN_MIGRATION();
-      return;  // no UMA recording.
+      NOTREACHED() << "Chrome is not a valid option for external protocol URLs";
     case apps::IntentPickerCloseReason::ERROR_BEFORE_PICKER:
       // This can happen since an error could occur right before invoking
       // Show() on the bubble's UI code.
@@ -580,12 +568,10 @@ void OnIntentPickerClosed(
       break;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (context) {
     apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
         context, entry_type, reason, should_persist);
   }
-#endif
 }
 
 // Called when ARC returned activity icons for the |handlers|.
@@ -615,9 +601,10 @@ void OnAppIconsReceived(
                           handler.package_name, handler.name);
   }
 
-  Browser* browser =
-      web_contents ? chrome::FindBrowserWithTab(web_contents.get()) : nullptr;
-
+  ash::BrowserDelegate* browser =
+      web_contents ? ash::BrowserController::GetInstance()->GetBrowserForTab(
+                         web_contents.get())
+                   : nullptr;
   if (!browser) {
     return std::move(handled_cb).Run(false);
   }
@@ -680,16 +667,13 @@ void OnUrlHandlerList(
   GetActionResult result;
   if (HandleUrl(web_contents, url, handlers, handlers.size(), &result,
                 safe_to_bypass_ui, mojo_delegate.get())) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     auto* context = web_contents ? web_contents->GetBrowserContext() : nullptr;
-
     if (context && result == GetActionResult::HANDLE_URL_IN_ARC) {
       apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
           context, apps::PickerEntryType::kArc,
           apps::IntentPickerCloseReason::PREFERRED_APP_FOUND,
           /*should_persist=*/false);
     }
-#endif
     return std::move(handled_cb).Run(/*handled=*/true);
   }
 

@@ -19,7 +19,7 @@ namespace syncer {
 // implementation, and can guarantee the lifetime constraints.
 class ForwardingDataTypeProcessor : public DataTypeProcessor {
  public:
-  // |processor| must not be null and must outlive this object.
+  // `processor` must not be null and must outlive this object.
   explicit ForwardingDataTypeProcessor(DataTypeProcessor* processor);
 
   ForwardingDataTypeProcessor(const ForwardingDataTypeProcessor&) = delete;
@@ -42,7 +42,7 @@ class ForwardingDataTypeProcessor : public DataTypeProcessor {
       UpdateResponseDataList updates,
       std::optional<sync_pb::GarbageCollectionDirective> gc_directive) override;
   void StorePendingInvalidations(
-      std::vector<sync_pb::DataTypeState::Invalidation> invalidations_to_store)
+      std::vector<sync_pb::DataTypeState_Invalidation> invalidations_to_store)
       override;
 
  private:

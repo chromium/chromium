@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0">
+  <style>
+    body,html{
+      height: 100%;
+    }
+    button {
+      width: 100px;
+    }
+    li {
+      /* Make the <li> element actionable in APC */
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <button id="clickable" aria-label="clickable">Clickable</button>
+  <button disabled id="disabled">Disabled</button>
+  <button style="position: absolute;top:150vh" id="offscreen">Offscreen</button>
+  <button style="position: fixed;top:200vh" id="offscreenfixed">Offscreen</button>
+  <div style="position: absolute;top:200vh">
+    <a href="#" id="offscreenInline">Offscreen Inline</a>
+  </div>
+  <p id="text">Some text</p>
+  <ul>
+    <li>
+      <input id="checkbox" type="checkbox" value="Checkbox">
+      <label id="checkbox-label" for="checkbox">Label for the checkbox</label>
+    </li>
+  </ul>
+</body>
+<script>
+  let button_clicked = false;
+  let button_click_count = null;
+  let button_right_clicked = false;
+  let button_right_click_count = null;
+  let button_mouse_down = false;
+  let button_mouse_up = false;
+  let button_pointer_down = false;
+  let button_pointer_up = false;
+  let offscreen_button_clicked = false;
+  let offscreen_inline_clicked = false;
+
+  const button = document.getElementById('clickable');
+  button.addEventListener('click', (event) => {
+      button_clicked = true;
+      button_click_count = event.detail;
+  });
+  button.addEventListener('mousedown', (event) => {
+    button_mouse_down = true;
+  });
+  button.addEventListener('mouseup', (event) => {
+    button_mouse_up = true;
+  });
+  button.addEventListener('pointerdown', (event) => {
+    button_pointer_down = true;
+  });
+  button.addEventListener('pointerup', (event) => {
+    button_pointer_up = true;
+  });
+  button.addEventListener("auxclick", (event) => {
+    button_right_clicked = event.button == 2;
+    button_right_click_count = event.detail;
+  });
+
+  const offscreen_button = document.getElementById('offscreen');
+  offscreen_button.addEventListener('click', (event) => {
+    offscreen_button_clicked = true;
+  });
+
+  const offscreen_inline = document.getElementById('offscreenInline');
+  offscreen_inline.addEventListener('click', (event) => {
+    offscreen_inline_clicked = true;
+  });
+
+  let mouse_event_log = [];
+  let mouse_event_timestamps = [];
+
+  // Log all mouse events in the format: Event[Element#ID]
+  const log_handler = e => {
+    mouse_event_log.push(`${e.type}[${e.target.tagName}#${e.target.id}]`);
+    mouse_event_timestamps.push(performance.now());
+  };
+
+  document.addEventListener('click', log_handler);
+  document.addEventListener('mousedown', log_handler);
+  document.addEventListener('mouseup', log_handler);
+  document.addEventListener('mousemove', log_handler);
+
+  // GlicActorControllerUiTest crashes on Mac if we allow it to open the
+  // context menu.
+  document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+  });
+
+  function expect_single_left_click() {
+    return button_clicked &&
+           button_click_count == 1 &&
+           button_mouse_down && button_mouse_up &&
+           button_pointer_down && button_pointer_up;
+  }
+  function expect_double_left_click() {
+    return button_clicked &&
+           button_click_count == 2 &&
+           button_mouse_down && button_mouse_up &&
+           button_pointer_down && button_pointer_up;
+  }
+  function expect_single_right_click() {
+    return button_right_clicked &&
+           button_right_click_count == 1 &&
+           button_mouse_down && button_mouse_up &&
+           button_pointer_down && button_pointer_up;
+  }
+  function expect_double_right_click() {
+    return button_right_clicked &&
+           button_right_click_count == 2 &&
+           button_mouse_down && button_mouse_up &&
+           button_pointer_down && button_pointer_up;
+  }
+  </script>
+
+</html>

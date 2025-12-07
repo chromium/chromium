@@ -21,7 +21,6 @@ limitations under the License.
 #include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow/lite/c/c_api_types.h"
 #include "tensorflow_lite_support/cc/common.h"
-#include "tensorflow_lite_support/cc/port/integral_types.h"
 #include "tensorflow_lite_support/cc/task/audio/proto/audio_classifier_options.pb.h"
 #include "tensorflow_lite_support/cc/task/audio/proto/class_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/audio/proto/classifications_proto_inc.h"

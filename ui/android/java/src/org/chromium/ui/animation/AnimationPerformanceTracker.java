@@ -6,18 +6,19 @@ package org.chromium.ui.animation;
 
 import android.os.SystemClock;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Helper class for monitoring animation performance. Each {@link AnimationPerformanceTracker} can
  * track a single animation at a time and can supply results to multiple {@link Listeners}.
  */
+@NullMarked
 public class AnimationPerformanceTracker {
     /** Tracks metrics about animation performance. */
     public static class AnimationMetrics {
-        private long mStartTimeMs;
+        private final long mStartTimeMs;
         private long mLastFrameTimeMs;
         private long mFirstFrameTimeMs;
         private long mFirstFrameLatencyMs;
@@ -104,9 +105,10 @@ public class AnimationPerformanceTracker {
     public interface Listener {
         /**
          * Called when the animation ends.
+         *
          * @param metrics The {@link AnimationMetrics} for the completed animation.
          */
-        public void onAnimationEnd(AnimationMetrics metrics);
+        void onAnimationEnd(AnimationMetrics metrics);
     }
 
     private final ObserverList<Listener> mListeners = new ObserverList<>();

@@ -1,0 +1,13 @@
+This is a wdspec test.
+[FAIL] test_navigator_online
+  assert False
+[FAIL] test_window_offline_online_events
+  asyncio.exceptions.CancelledError
+[ERROR] test_websocket_disconnected
+  In-test skip decorators are disallowed, please use WPT metadata to ignore tests.
+[ERROR] test_service_worker_fetch
+  In-test skip decorators are disallowed, please use WPT metadata to ignore tests.
+[ERROR] test_service_worker_websocket_disconnected
+  In-test skip decorators are disallowed, please use WPT metadata to ignore tests.
+Harness: the test ran to completion.
+

@@ -12,7 +12,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/url_formatter/url_formatter.h"
-#import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -42,7 +42,7 @@ constexpr char kDestinationText[] = "bar!";
 constexpr char kGenericText[] = "A generic page";
 
 // Label for the button in the form.
-NSString* kSubmitButtonLabel = @"submit";
+NSString* const kSubmitButtonLabel = @"submit";
 
 // Html form template with a submission button named "submit".
 constexpr char kFormHtmlTemplate[] =
@@ -137,7 +137,7 @@ void TestFormResponseProvider::GetResponseHeadersAndBody(
     *response_body = request.method + std::string(" ") + request.body;
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -155,7 +155,7 @@ id<GREYMatcher> GoButtonMatcher() {
 
 // Matcher for the resend POST button in the repost warning dialog.
 id<GREYMatcher> ResendPostButtonMatcher() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
+  return chrome_test_util::AlertItemWithAccessibilityLabelId(
       IDS_HTTP_POST_WARNING_RESEND);
 }
 
@@ -373,8 +373,14 @@ id<GREYMatcher> ResendPostButtonMatcher() {
 
     [ChromeEarlGrey
         waitForSufficientlyVisibleElementWithMatcher:ResendPostButtonMatcher()];
-    [[EarlGrey selectElementWithMatcher:ElementToDismissAlert(@"Cancel")]
-        performAction:grey_tap()];
+
+    if (@available(iOS 26, *)) {
+      [ChromeEarlGreyUI
+          dismissByTappingOnTheWindowOfPopover:ResendPostButtonMatcher()];
+    } else {
+      [[EarlGrey selectElementWithMatcher:ElementToDismissAlert(@"Cancel")]
+          performAction:grey_tap()];
+    }
   }
 
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -560,14 +566,9 @@ id<GREYMatcher> ResendPostButtonMatcher() {
     // Wait for the accessory icon to appear.
     [ChromeEarlGrey waitForKeyboardToAppear];
 
-    if (@available(iOS 16, *)) {
-      // TODO(crbug.com/40227513): Move this logic into EG.
-      XCUIApplication* app = [[XCUIApplication alloc] init];
-      [[[app keyboards] buttons][@"go"] tap];
-    } else {
-      [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
-          performAction:grey_tap()];
-    }
+    // There's currently no EG API to tap 'go' on the keyboard.
+    XCUIApplication* app = [[XCUIApplication alloc] init];
+    [[[app keyboards] buttons][@"go"] tap];
   }
 }
 

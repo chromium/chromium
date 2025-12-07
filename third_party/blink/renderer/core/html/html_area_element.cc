@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_map_element.h"
@@ -28,8 +29,10 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
-#include "third_party/blink/renderer/platform/graphics/path.h"
+#include "third_party/blink/renderer/platform/geometry/path.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -43,7 +46,7 @@ float ClampCoordinate(double value) {
 }
 
 HTMLAreaElement::HTMLAreaElement(Document& document)
-    : HTMLAnchorElement(html_names::kAreaTag, document), shape_(kRect) {}
+    : HTMLAnchorElementBase(html_names::kAreaTag, document), shape_(kRect) {}
 
 // An explicit empty destructor should be in html_area_element.cc, because
 // if an implicit destructor is used or an empty destructor is defined in
@@ -77,7 +80,7 @@ void HTMLAreaElement::ParseAttribute(
              params.name == html_names::kAccesskeyAttr) {
     // Do nothing.
   } else {
-    HTMLAnchorElement::ParseAttribute(params);
+    HTMLAnchorElementBase::ParseAttribute(params);
   }
 }
 
@@ -99,12 +102,14 @@ PhysicalRect HTMLAreaElement::ComputeAbsoluteRect(
   PhysicalOffset abs_pos = container_object->LocalToAbsolutePoint(
       PhysicalOffset(), kIgnoreTransforms);
 
-  Path path = GetPath(container_object);
-  path.Translate(gfx::Vector2dF(abs_pos));
+  const Path path = PathBuilder(GetPath(container_object))
+                        .Translate(gfx::Vector2dF(abs_pos))
+                        .Finalize();
   return PhysicalRect::EnclosingRect(path.BoundingRect());
 }
 
-Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
+Path HTMLAreaElement::GetPath(const LayoutObject* container_object,
+                              const gfx::Vector2dF& path_offset) const {
   if (!container_object)
     return Path();
 
@@ -114,8 +119,11 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     Path path;
     // No need to zoom because it is already applied in
     // container_object->PhysicalBorderBoxRect().
-    if (const auto* box = DynamicTo<LayoutBox>(container_object))
-      path.AddRect(gfx::RectF(box->PhysicalBorderBoxRect()));
+    if (const auto* box = DynamicTo<LayoutBox>(container_object)) {
+      auto box_rect = gfx::RectF(box->PhysicalBorderBoxRect());
+      box_rect.Offset(path_offset);
+      path = Path::MakeRect(box_rect);
+    }
     path_ = nullptr;
     return path;
   }
@@ -130,23 +138,27 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
     switch (shape_) {
       case kPoly:
         if (coords_.size() >= 6) {
+          PathBuilder builder;
+
           int num_points = coords_.size() / 2;
-          path.MoveTo(gfx::PointF(ClampCoordinate(coords_[0]),
-                                  ClampCoordinate(coords_[1])));
+          builder.MoveTo(gfx::PointF(ClampCoordinate(coords_[0]),
+                                     ClampCoordinate(coords_[1])));
           for (int i = 1; i < num_points; ++i) {
-            path.AddLineTo(gfx::PointF(ClampCoordinate(coords_[i * 2]),
+            builder.LineTo(gfx::PointF(ClampCoordinate(coords_[i * 2]),
                                        ClampCoordinate(coords_[i * 2 + 1])));
           }
-          path.CloseSubpath();
-          path.SetWindRule(RULE_EVENODD);
+          builder.Close();
+          builder.SetWindRule(RULE_EVENODD);
+
+          path = builder.Finalize();
         }
         break;
       case kCircle:
         if (coords_.size() >= 3 && coords_[2] > 0) {
           float r = ClampCoordinate(coords_[2]);
-          path.AddEllipse(gfx::PointF(ClampCoordinate(coords_[0]),
-                                      ClampCoordinate(coords_[1])),
-                          r, r);
+          path = Path::MakeEllipse(gfx::PointF(ClampCoordinate(coords_[0]),
+                                               ClampCoordinate(coords_[1])),
+                                   r, r);
         }
         break;
       case kRect:
@@ -155,25 +167,26 @@ Path HTMLAreaElement::GetPath(const LayoutObject* container_object) const {
           float y0 = ClampCoordinate(coords_[1]);
           float x1 = ClampCoordinate(coords_[2]);
           float y1 = ClampCoordinate(coords_[3]);
-          path.AddRect(gfx::PointF(x0, y0), gfx::PointF(x1, y1));
+          path = Path::MakeRect(gfx::PointF(x0, y0), gfx::PointF(x1, y1));
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     // Cache the original path, not depending on containerObject.
     path_ = std::make_unique<Path>(path);
   }
 
-  // Zoom the path into coordinates of the container object.
+  // Zoom/offset the path into coordinates of the container object.
   float zoom_factor = container_object->StyleRef().EffectiveZoom();
-  if (zoom_factor != 1.0f) {
-    AffineTransform zoom_transform;
-    zoom_transform.Scale(zoom_factor);
-    path.Transform(zoom_transform);
+  if (zoom_factor != 1.0f || !path_offset.IsZero()) {
+    const auto transform =
+        AffineTransform::Translation(path_offset.x(), path_offset.y())
+            .Scale(zoom_factor);
+    path = PathBuilder(path).Transform(transform).Finalize();
   }
+
   return path;
 }
 
@@ -184,27 +197,32 @@ HTMLImageElement* HTMLAreaElement::ImageElement() const {
   return nullptr;
 }
 
-bool HTMLAreaElement::IsKeyboardFocusable(
+bool HTMLAreaElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  // Explicitly skip over the HTMLAnchorElement's keyboard focus behavior.
-  return Element::IsKeyboardFocusable(update_behavior);
+  // Explicitly skip over the HTMLAnchorElementBase's keyboard focus behavior.
+  return Element::IsKeyboardFocusableSlow(update_behavior);
 }
 
-bool HTMLAreaElement::IsFocusable(UpdateBehavior update_behavior) const {
-  // Explicitly skip over the HTMLAnchorElement's mouse focus behavior.
-  return HTMLElement::IsFocusable(update_behavior);
+FocusableState HTMLAreaElement::IsFocusableState(
+    UpdateBehavior update_behavior) const {
+  // Explicitly skip over the HTMLAnchorElementBase's mouse focus behavior.
+  return HTMLElement::IsFocusableState(update_behavior);
 }
 
 bool HTMLAreaElement::IsFocusableStyle(UpdateBehavior update_behavior) const {
-  if (HTMLImageElement* image = ImageElement()) {
-    // TODO(crbug.com/1444450): Why is this not just image->IsFocusableStyle()?
-    if (LayoutObject* layout_object = image->GetLayoutObject()) {
-      const ComputedStyle& style = layout_object->StyleRef();
-      return !style.IsInert() && style.Visibility() == EVisibility::kVisible &&
-             SupportsFocus(update_behavior) && Element::tabIndex() >= 0;
-    }
+  HTMLImageElement* image = ImageElement();
+  if (!image) {
+    return false;
   }
-  return false;
+  LayoutObject* layout_object = image->GetLayoutObject();
+  if (!layout_object) {
+    return false;
+  }
+  const ComputedStyle& style = layout_object->StyleRef();
+  // TODO(crbug.com/40911863): Why is this not just image->IsFocusableStyle()?
+  return !style.IsInert() && style.Visibility() == EVisibility::kVisible &&
+         Element::tabIndex() >= 0 &&
+         SupportsFocus(update_behavior) != FocusableState::kNotFocusable;
 }
 
 void HTMLAreaElement::SetFocused(bool should_be_focused,
@@ -212,7 +230,7 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
   if (IsFocused() == should_be_focused)
     return;
 
-  HTMLAnchorElement::SetFocused(should_be_focused, focus_type);
+  HTMLAnchorElementBase::SetFocused(should_be_focused, focus_type);
 
   HTMLImageElement* image_element = ImageElement();
   if (!image_element)
@@ -221,27 +239,6 @@ void HTMLAreaElement::SetFocused(bool should_be_focused,
   LayoutObject* layout_object = image_element->GetLayoutObject();
   if (auto* layout_image = DynamicTo<LayoutImage>(layout_object))
     layout_image->AreaElementFocusChanged(this);
-}
-
-Element* HTMLAreaElement::interestTargetElement() {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
-
-  if (!IsInTreeScope()) {
-    return nullptr;
-  }
-
-  return GetElementAttribute(html_names::kInteresttargetAttr);
-}
-
-AtomicString HTMLAreaElement::interestAction() const {
-  CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
-  const AtomicString& attribute_value =
-      FastGetAttribute(html_names::kInterestactionAttr);
-  if (attribute_value && !attribute_value.IsNull() &&
-      !attribute_value.empty()) {
-    return attribute_value;
-  }
-  return g_empty_atom;
 }
 
 void HTMLAreaElement::UpdateSelectionOnFocus(

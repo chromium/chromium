@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] [constant] Test building a constant with int64 data type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type int64 for constant, must be one of [float32, float16, int32, uint32, int8, uint8, int4, uint4]."
+[FAIL] [constant] Test building a constant with uint64 data type
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint64 for constant, must be one of [float32, float16, int32, uint32, int8, uint8, int4, uint4]."
+[FAIL] [constant] Test building a scalar constant with max safe integer as BigInt
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type int64 for constant, must be one of [float32, float16, int32, uint32, int8, uint8, int4, uint4]."
+[FAIL] [constant] Test building a scalar constant with max uint64 as BigInt
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint64 for constant, must be one of [float32, float16, int32, uint32, int8, uint8, int4, uint4]."
+Harness: the test ran to completion.
+

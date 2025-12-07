@@ -7,30 +7,31 @@
 #include <optional>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/common/tutorial_registry.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace {
@@ -64,10 +65,12 @@ std::optional<std::string> ToString(
 // ChromeUserEducationDelegate -------------------------------------------------
 
 ChromeUserEducationDelegate::ChromeUserEducationDelegate() {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  profile_manager_observation_.Observe(profile_manager);
-  for (Profile* profile : profile_manager->GetLoadedProfiles()) {
-    OnProfileAdded(profile);
+  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
+  user_manager_observation_.Observe(user_manager);
+  for (user_manager::User* user : user_manager->GetLoggedInUsers()) {
+    if (user->GetProfilePrefs()) {
+      OnUserProfileCreated(*user);
+    }
   }
 }
 
@@ -76,13 +79,13 @@ ChromeUserEducationDelegate::~ChromeUserEducationDelegate() = default;
 std::optional<ui::ElementIdentifier>
 ChromeUserEducationDelegate::GetElementIdentifierForAppId(
     const std::string& app_id) const {
-  if (!strcmp(file_manager::kFileManagerSwaAppId, app_id.c_str())) {
+  if (app_id == file_manager::kFileManagerSwaAppId) {
     return ash::kFilesAppElementId;
   }
-  if (!strcmp(web_app::kHelpAppId, app_id.c_str())) {
+  if (app_id == ash::kHelpAppId) {
     return ash::kExploreAppElementId;
   }
-  if (!strcmp(web_app::kOsSettingsAppId, app_id.c_str())) {
+  if (app_id == ash::kOsSettingsAppId) {
     return ash::kSettingsAppElementId;
   }
   return std::nullopt;
@@ -179,16 +182,25 @@ bool ChromeUserEducationDelegate::IsRunningTutorial(
       .IsRunningTutorial(ToString(tutorial_id));
 }
 
-void ChromeUserEducationDelegate::OnProfileAdded(Profile* profile) {
+void ChromeUserEducationDelegate::OnUserProfileCreated(
+    const user_manager::User& user) {
   // NOTE: User eduction in Ash is currently only supported for the primary
   // user profile. This is a self-imposed restriction.
-  if (!IsPrimaryProfile(profile)) {
+  if (!user_manager::UserManager::Get()->IsPrimaryUser(&user)) {
+    return;
+  }
+
+  // User education is only supported for regular users.
+  if (user.GetType() != user_manager::UserType::kRegular) {
     return;
   }
 
   // Since we only currently support the primary user profile, we can stop
-  // observing the profile manager once it has been added.
-  profile_manager_observation_.Reset();
+  // observing the user manager once it has been added.
+  user_manager_observation_.Reset();
+
+  Profile* profile = GetProfile(user.GetAccountId());
+  CHECK(!profile->IsOffTheRecord());
 
   // Register tutorial dependencies.
   RegisterChromeHelpBubbleFactories(
@@ -208,8 +220,4 @@ void ChromeUserEducationDelegate::OnProfileAdded(Profile* profile) {
         },
         weak_ptr_factory_.GetWeakPtr()));
   }
-}
-
-void ChromeUserEducationDelegate::OnProfileManagerDestroying() {
-  profile_manager_observation_.Reset();
 }

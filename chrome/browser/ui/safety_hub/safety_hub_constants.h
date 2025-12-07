@@ -37,12 +37,6 @@ extern const char kExpirationKey[];
 extern const char kLifetimeKey[];
 // Key of the revoked chooser permissions in the |UnusedSitePermissions| object.
 extern const char kSafetyHubChooserPermissionsData[];
-// Key of the expiration time for an abusive notification permission object.
-// Indicates the time after which the associated origin and permissions are no
-// longer shown in the UI.
-extern const char kAbusiveRevocationExpirationKey[];
-// Key of the lifetime for an abusive notification permission object.
-extern const char kAbusiveRevocationLifetimeKey[];
 
 // Key of the base::Value dictionary we assign to the
 // REVOKED_ABUSIVE_NOTIFICATION_PERMISSION value.
@@ -69,6 +63,10 @@ extern const char kSafetyHubPasswordCheckOriginsKey[];
 // like: kSafetyHubCompromiedPasswordOriginsCount: 2
 extern const char kSafetyHubCompromiedPasswordOriginsCount[];
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// Name of the histogram which logs how many times the blocklist is checked
+// during an auto-revocation run.
+extern const char kBlocklistCheckCountHistogramName[];
 
 // State that a top card in the Safety Hub page can be in. This enum should
 // remain sorted from the "worst" state (warning) to the "best" state (safe).

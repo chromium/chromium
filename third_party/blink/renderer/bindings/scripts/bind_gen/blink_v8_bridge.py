@@ -5,6 +5,7 @@
 import web_idl
 
 from . import name_style
+from .union_name_mapper import UnionNameMapper
 from .code_node import FormatNode
 from .code_node import Likeliness
 from .code_node import SymbolDefinitionNode
@@ -37,6 +38,9 @@ def blink_class_name(idl_definition):
             idl_definition.element_type.
             type_name_with_extended_attribute_key_values)
     elif isinstance(idl_definition, web_idl.Union):
+        # See if there are overrides.
+        if class_name := UnionNameMapper.instance().class_name(idl_definition):
+            return class_name
         # Technically this name is not guaranteed to be unique because
         # (X or sequence<Y or Z>) and (X or Y or sequence<Z>) have the same
         # name, but it's highly unlikely to cause a conflict in the actual use
@@ -223,7 +227,7 @@ def blink_type_info(idl_type):
                         clear_member_var_fmt="{} = false")
 
     if real_type.is_numeric:
-        return TypeInfo(numeric_type(real_type),
+        return TypeInfo(numeric_type(real_type.keyword_typename),
                         const_ref_fmt="{}",
                         clear_member_var_fmt="{} = 0")
 
@@ -271,15 +275,27 @@ def blink_type_info(idl_type):
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
 
-    if real_type.is_any or real_type.is_object:
+    if real_type.is_any:
         return TypeInfo("ScriptValue",
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         has_null_value=True,
                         is_traceable=True)
 
+    if real_type.is_object:
+        return TypeInfo("ScriptObject",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=True,
+                        is_traceable=True)
+
     if real_type.is_undefined:
-        assert False, "Blink does not support/accept IDL undefined type."
+        return TypeInfo("ToV8UndefinedGenerator",
+                        ref_fmt="{}&",
+                        const_ref_fmt="const {}&",
+                        has_null_value=False,
+                        is_traceable=False,
+                        clear_member_var_fmt="")
 
     if real_type.type_definition_object:
         typename = blink_class_name(real_type.type_definition_object)
@@ -360,13 +376,12 @@ def blink_type_info(idl_type):
                             clear_member_var_fmt="{}.clear()")
 
     if real_type.is_promise:
-        if "IDLTypeImplementedAsV8Promise" in real_type.extended_attributes:
-            type_name = "v8::Local<v8::Promise>"
-        else:
-            type_name = "ScriptPromiseUntyped"
+        type_name = "ScriptPromise<{}>".format(
+            native_value_tag(real_type.result_type))
         return TypeInfo(type_name,
-                        ref_fmt="{}&",
-                        const_ref_fmt="const {}&",
+                        member_fmt="Member{}",
+                        ref_fmt="Member{}&",
+                        const_ref_fmt="const Member{}&",
                         is_traceable=True)
 
     if real_type.is_union:
@@ -391,7 +406,10 @@ def blink_type_info(idl_type):
         if inner_type.has_null_value:
             return inner_type
         if inner_type.is_heap_vector_type:
-            return TypeInfo(inner_type.typename,
+            # Since the type is Member<>, we need to used GCedHeapVector<T>
+            # as inner type as we require MakeGarbageCollected() for the
+            # vector type.
+            return TypeInfo("GCed{}".format(inner_type.typename),
                             member_fmt="Member<{}>",
                             ref_fmt="{}*",
                             const_ref_fmt="const {}*",
@@ -441,11 +459,13 @@ def _pass_as_span_conversion_arguments(idl_type):
     ) < 2, "Unions of typed arrays of different types are not supported with [PassAsSpan]"
     native_type = None
     if typed_arrays:
-        native_type = typed_array_element_type(list(typed_arrays)[0])
+        typed_array_type = typed_array_element_type(list(typed_arrays)[0])
+        native_type = numeric_type(typed_array_type)
         if sequence_types:
-            types_are_compatible = numeric_type(
-                list(sequence_types)[0]) == native_type
-            assert types_are_compatible, "Sequence and typed array types are incompatible"
+            seq_element_type = list(sequence_types)[0].keyword_typename
+            types_are_compatible = seq_element_type == typed_array_type
+            assert types_are_compatible, "Sequence and typed array types are incompatible (%s vs %s)" % (
+                seq_element_type, typed_array_type)
     else:
         assert (not sequence_types
                 ), "Plain sequence<> types are not supported with [PassAsSpan]"
@@ -480,7 +500,8 @@ def _native_value_tag_impl(idl_type):
         return "PassAsSpan<{}>".format(", ".join(conversion_arguments))
 
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
-            or real_type.is_any or real_type.is_object or real_type.is_bigint):
+            or real_type.is_any or real_type.is_object or real_type.is_bigint
+            or real_type.is_undefined):
         return "IDL{}".format(
             idl_type.type_name_with_extended_attribute_key_values)
 
@@ -498,9 +519,6 @@ def _native_value_tag_impl(idl_type):
 
     if real_type.is_symbol:
         assert False, "Blink does not support/accept IDL symbol type."
-
-    if real_type.is_undefined:
-        assert False, "Blink does not support/accept IDL undefined type."
 
     if real_type.type_definition_object:
         return blink_class_name(real_type.type_definition_object)
@@ -522,7 +540,8 @@ def _native_value_tag_impl(idl_type):
             _native_value_tag_impl(real_type.value_type))
 
     if real_type.is_promise:
-        return "IDLPromise"
+        return "IDLPromise<{}>".format(
+            _native_value_tag_impl(real_type.result_type))
 
     if real_type.is_union:
         return blink_class_name(real_type.union_definition_object)
@@ -553,6 +572,15 @@ def make_blink_to_v8_value(
 
     T = TextNode
     F = FormatNode
+
+    if "NodeWrapInOwnContext" in idl_type.effective_annotations:
+        assert native_value_tag(idl_type, argument=argument) == "Node"
+        execution_context = blink_value_expr + "->GetExecutionContext()"
+        creation_context_script_state = _format(
+            "{_1} && {_1} != ToExecutionContext({_2}) ? "
+            "ToScriptState({_1}, {_2}->World()) : {_2}",
+            _1=execution_context,
+            _2=creation_context_script_state)
 
     def create_definition(symbol_node):
         binds = {
@@ -686,6 +714,11 @@ def make_default_value_expr(idl_type, default_value):
             initializer_expr = "${isolate}, v8::Null(${isolate})"
             initializer_deps = ["isolate"]
             assignment_value = "ScriptValue::CreateNull(${isolate})"
+            assignment_deps = ["isolate"]
+        elif type_info.typename == "ScriptObject":
+            initializer_expr = "${isolate}, v8::Null(${isolate})"
+            initializer_deps = ["isolate"]
+            assignment_value = "ScriptObject::CreateNull(${isolate})"
             assignment_deps = ["isolate"]
         elif idl_type.unwrap().is_union:
             initializer_expr = "nullptr"
@@ -822,8 +855,7 @@ def make_v8_to_blink_value(blink_var_name,
                 v8_value_expr,
                 "${exception_state}",
             ]
-        if "StringContext" in idl_type.effective_annotations:
-            arguments.append("${execution_context_of_document_tree}")
+
         blink_value_expr = _format("NativeValueTraits<{_1}>::{_2}({_3})",
                                    _1=native_value_tag(
                                        idl_type,
@@ -917,8 +949,6 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
         "${isolate}", v8_array,
         str(v8_array_start_index), "${exception_state}"
     ]
-    if "StringContext" in idl_type.element_type.effective_annotations:
-        arguments.append("${execution_context_of_document_tree}")
     text = _format(
         pattern,
         _1=blink_var_name,
@@ -940,24 +970,24 @@ def typed_array_element_type(idl_type):
     assert isinstance(idl_type, web_idl.IdlType), type(idl_type)
     assert idl_type.is_typed_array_type
     element_type_map = {
-        'Int8Array': 'int8_t',
-        'Int16Array': 'int16_t',
-        'Int32Array': 'int32_t',
-        'BigInt64Array': 'int64_t',
-        'Uint8Array': 'uint8_t',
-        'Uint16Array': 'uint16_t',
-        'Uint32Array': 'uint32_t',
-        'BigUint64Array': 'uint64_t',
-        'Uint8ClampedArray': 'uint8_t',
-        'Float32Array': 'float',
-        'Float64Array': 'double',
+        'Int8Array': 'byte',
+        'Int16Array': 'short',
+        'Int32Array': 'long',
+        'BigInt64Array': 'long long',
+        'Uint8Array': 'octet',
+        'Uint16Array': 'unsigned short',
+        'Uint32Array': 'unsigned long',
+        'BigUint64Array': 'unsigned long long',
+        'Uint8ClampedArray': 'octet',
+        'Float16Array': 'unsigned short',
+        'Float32Array': 'unrestricted float',
+        'Float64Array': 'unrestricted double',
     }
     return element_type_map.get(idl_type.keyword_typename)
 
 
-def numeric_type(idl_type):
-    assert isinstance(idl_type, web_idl.IdlType)
-    assert idl_type.is_numeric
+def numeric_type(type_keyword):
+    assert isinstance(type_keyword, str)
     type_map = {
         "byte": "int8_t",
         "octet": "uint8_t",
@@ -972,4 +1002,4 @@ def numeric_type(idl_type):
         "double": "double",
         "unrestricted double": "double",
     }
-    return type_map.get(idl_type.keyword_typename)
+    return type_map[type_keyword]

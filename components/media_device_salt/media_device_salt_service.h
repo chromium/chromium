@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -24,7 +25,6 @@ class PrefService;
 namespace media_device_salt {
 
 BASE_DECLARE_FEATURE(kMediaDeviceIdPartitioning);
-BASE_DECLARE_FEATURE(kMediaDeviceIdRandomSaltsPerStorageKey);
 
 class MediaDeviceIDSalt;
 

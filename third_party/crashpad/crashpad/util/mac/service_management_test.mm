@@ -56,7 +56,7 @@ void ExpectProcessIsRunning(pid_t pid, std::string& last_arg) {
         break;
       }
       if (inner_tries > 0) {
-        SleepNanoseconds(1E6);  // 1 millisecond
+        SleepNanoseconds(1E7);  // 10 milliseconds
       }
     } while (inner_tries--);
     ASSERT_TRUE(success);
@@ -120,8 +120,11 @@ TEST(ServiceManagement, SubmitRemoveJob) {
     NSDictionary* job_dictionary_ns = @{
       @LAUNCH_JOBKEY_LABEL : @"org.chromium.crashpad.test.service_management",
       @LAUNCH_JOBKEY_RUNATLOAD : @YES,
-      @LAUNCH_JOBKEY_PROGRAMARGUMENTS :
-          @[ @"/bin/sh", @"-c", shell_script_ns, ],
+      @LAUNCH_JOBKEY_PROGRAMARGUMENTS : @[
+        @"/bin/sh",
+        @"-c",
+        shell_script_ns,
+      ],
     };
     CFDictionaryRef job_dictionary_cf =
         base::apple::NSToCFPtrCast(job_dictionary_ns);

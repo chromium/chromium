@@ -40,8 +40,6 @@ class ASH_PUBLIC_EXPORT ImeControllerClient {
   // accelerator (e.g. pressing Alt + Search), or from the debug UI (i.e.
   // toggling the caps lock button), propagate the change to the client without
   // sending a change notification back.
-  // TODO(crbug.com/40537240): Ideally this interaction should only be to
-  // disable the caps lock.
   virtual void SetCapsLockEnabled(bool enabled) = 0;
 
   // Overrides the keyboard keyset (emoji, handwriting or voice). If keyset is

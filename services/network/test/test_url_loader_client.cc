@@ -43,6 +43,10 @@ void TestURLLoaderClient::OnReceiveResponse(
   response_body_ = std::move(body);
   if (quit_closure_for_on_start_loading_response_body_)
     std::move(quit_closure_for_on_start_loading_response_body_).Run();
+
+  if (response_received_callback_) {
+    std::move(response_received_callback_).Run();
+  }
 }
 
 void TestURLLoaderClient::OnReceiveRedirect(
@@ -162,6 +166,16 @@ void TestURLLoaderClient::OnMojoDisconnect() {
   has_received_disconnect_ = true;
   if (quit_closure_for_disconnect_)
     std::move(quit_closure_for_disconnect_).Run();
+}
+
+void TestURLLoaderClient::SetResponseReceivedCallback(
+    base::OnceClosure response_received_callback) {
+  response_received_callback_ = std::move(response_received_callback);
+}
+
+base::WeakPtr<mojom::URLLoaderClient>
+TestURLLoaderClient::GetSyncClientWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace network

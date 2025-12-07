@@ -64,7 +64,7 @@ class CastMirroringServiceHost final : public MirroringServiceHost,
              mojo::PendingRemote<mojom::CastMessageChannel> outbound_channel,
              mojo::PendingReceiver<mojom::CastMessageChannel> inbound_channel,
              const std::string& sink_name) override;
-  std::optional<int> GetTabSourceId() const override;
+  std::optional<content::FrameTreeNodeId> GetTabSourceId() const override;
 
   void GetMirroringStats(
       base::OnceCallback<void(const base::Value)> json_stats_cb) override;

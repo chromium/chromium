@@ -24,7 +24,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     function testConsoleLogAndReturnMessageLocation(next) {
       ConsoleTestRunner.waitUntilNthMessageReceivedPromise(2)
         .then(() => ConsoleTestRunner.dumpConsoleMessages())
-        .then(() => Console.ConsoleView.ConsoleView.clearConsole())
+        .then(() => Console.ConsoleView.ConsoleView.instance().clearConsole())
         .then(() => next());
 
       createSnippetPromise('console.log(239);42')
@@ -36,7 +36,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     function testSnippetSyntaxError(next) {
       ConsoleTestRunner.waitUntilNthMessageReceivedPromise(1)
         .then(() => ConsoleTestRunner.dumpConsoleMessages())
-        .then(() => Console.ConsoleView.ConsoleView.clearConsole())
+        .then(() => Console.ConsoleView.ConsoleView.instance().clearConsole())
         .then(() => next());
 
       createSnippetPromise('\n }')
@@ -48,7 +48,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     function testConsoleErrorHighlight(next) {
       ConsoleTestRunner.waitUntilNthMessageReceivedPromise(4)
         .then(() => ConsoleTestRunner.dumpConsoleMessages())
-        .then(() => Console.ConsoleView.ConsoleView.clearConsole())
+        .then(() => Console.ConsoleView.ConsoleView.instance().clearConsole())
         .then(() => next());
 
       createSnippetPromise(`

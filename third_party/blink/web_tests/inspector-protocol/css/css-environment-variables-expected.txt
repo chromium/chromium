@@ -1,0 +1,25 @@
+Tests CSS.getEnvironmentVariables
+env(): {
+    id : <number>
+    result : {
+        environmentVariables : {
+            keyboard-inset-bottom : <string>
+            keyboard-inset-height : <string>
+            keyboard-inset-left : <string>
+            keyboard-inset-right : <string>
+            keyboard-inset-top : <string>
+            keyboard-inset-width : <string>
+            preferred-text-scale : <string>
+            safe-area-inset-bottom : <string>
+            safe-area-inset-left : <string>
+            safe-area-inset-right : <string>
+            safe-area-inset-top : <string>
+            safe-area-max-inset-bottom : <string>
+            safe-area-max-inset-left : <string>
+            safe-area-max-inset-right : <string>
+            safe-area-max-inset-top : <string>
+        }
+    }
+    sessionId : <string>
+}
+

@@ -5,29 +5,33 @@
 package org.chromium.components.signin.test.util;
 
 import android.accounts.Account;
-import android.accounts.AuthenticatorDescription;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.GuardedBy;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerDelegate;
 import org.chromium.components.signin.AccountManagerDelegateException;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.AuthException;
+import org.chromium.components.signin.PlatformAccount;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.Tribool;
 import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthErrorState;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 /**
  * The FakeAccountManagerDelegate is intended for testing components that use AccountManagerFacade.
@@ -39,15 +43,17 @@ import java.util.UUID;
  * (including confirming them), and handling of placeholder auth tokens.
  */
 public class FakeAccountManagerDelegate implements AccountManagerDelegate {
+    // Prefix used to define the capability name for querying Identity services.
+    private static final String ACCOUNT_CAPABILITY_NAME_PREFIX = "accountcapabilities/";
+
     /** Converts an email to a fake gaia Id. */
-    public static String toGaiaId(String email) {
-        return "gaia-id-" + email.replace("@", "_at_");
+    public static GaiaId toGaiaId(String email) {
+        return new GaiaId("gaia-id-" + email.replace("@", "_at_"));
     }
 
-    private final Object mLock = new Object();
-
-    @GuardedBy("mLock")
-    private final Set<AccountHolder> mAccounts = new LinkedHashSet<>();
+    private final Set<AccountHolder> mAccounts = Collections.synchronizedSet(new LinkedHashSet<>());
+    private final Set<PlatformAccount> mPlatformAccounts =
+            Collections.synchronizedSet(new LinkedHashSet<>());
 
     private AccountsChangeObserver mObserver;
 
@@ -57,7 +63,7 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
 
     @Nullable
     @Override
-    public String getAccountGaiaId(String accountEmail) {
+    public GaiaId getAccountGaiaId(String accountEmail) {
         @Nullable AccountHolder accountHolder = tryGetAccountHolder(accountEmail);
         return accountHolder != null ? accountHolder.getAccountInfo().getGaiaId() : null;
     }
@@ -69,31 +75,43 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
 
     @Override
     public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
-        ArrayList<Account> result = new ArrayList<>();
-        synchronized (mLock) {
-            for (AccountHolder ah : mAccounts) {
-                result.add(ah.getAccount());
-            }
+        assert !SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
+        synchronized (mAccounts) {
+            return mAccounts.stream().map((ah) -> ah.getAccount()).toArray(Account[]::new);
         }
-        return result.toArray(new Account[0]);
     }
 
     /** Adds an AccountHolder. */
-    public void addAccount(AccountInfo accountInfo) {
-        synchronized (mLock) {
-            boolean added = mAccounts.add(new AccountHolder(accountInfo));
-            assert added : "Account already added";
+    public PlatformAccount addAccount(AccountInfo accountInfo) {
+        boolean added = false;
+        FakePlatformAccount account = new FakePlatformAccount(accountInfo);
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            added = mPlatformAccounts.add(account);
+        } else {
+            added = mAccounts.add(new AccountHolder(accountInfo));
         }
+        assert added : "Account already added";
         callOnCoreAccountInfoChanged();
+        return account;
     }
 
     /** Removes an AccountHolder. */
     public void removeAccount(CoreAccountId accountId) {
-        synchronized (mLock) {
-            @Nullable AccountHolder accountHolder = tryGetAccountHolder(accountId);
-            if (accountHolder == null || !mAccounts.remove(accountHolder)) {
-                throw new IllegalArgumentException(
-                        String.format("Can't find the account: %s", accountId.getId()));
+        if (SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled()) {
+            synchronized (mPlatformAccounts) {
+                @Nullable PlatformAccount account = tryGetPlatformAccount(accountId);
+                if (account == null || !mPlatformAccounts.remove(account)) {
+                    throw new IllegalArgumentException(
+                            String.format("Can't find the account: %s", accountId.getId()));
+                }
+            }
+        } else {
+            synchronized (mAccounts) {
+                @Nullable AccountHolder accountHolder = tryGetAccountHolder(accountId);
+                if (accountHolder == null || !mAccounts.remove(accountHolder)) {
+                    throw new IllegalArgumentException(
+                            String.format("Can't find the account: %s", accountId.getId()));
+                }
             }
         }
         callOnCoreAccountInfoChanged();
@@ -106,29 +124,34 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public AccessTokenData getAuthToken(Account account, String scope) throws AuthException {
+    public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
         AccountHolder accountHolder = tryGetAccountHolder(account.name);
         if (accountHolder == null) {
             throw new AuthException(
-                    AuthException.NONTRANSIENT,
-                    "Cannot get auth token for unknown account '" + account + "'");
+                    "Error while getting token for scope '" + scope + "'",
+                    new IllegalStateException(
+                            "Cannot get auth token for unknown account '" + account + "'"),
+                    new GoogleServiceAuthError(GoogleServiceAuthErrorState.USER_NOT_SIGNED_UP));
         }
-        synchronized (mLock) {
-            if (accountHolder.getAuthToken(scope) == null) {
-                accountHolder.updateAuthToken(scope, UUID.randomUUID().toString());
-            }
-        }
-        return accountHolder.getAuthToken(scope);
+        return accountHolder.getAccessTokenOrGenerateNew(scope);
     }
 
     @Override
-    public void invalidateAuthToken(String authToken) {
+    public AccessTokenData getAccessTokenForPlatformAccount(
+            PlatformAccount account, String authTokenScopes) throws AuthException {
+        FakePlatformAccount platformAccount = (FakePlatformAccount) account;
+        assert platformAccount != null;
+        return platformAccount.getAccessTokenOrGenerateNew(authTokenScopes);
+    }
+
+    @Override
+    public void invalidateAccessToken(String authToken) {
         if (authToken == null) {
             throw new IllegalArgumentException("AuthToken can not be null");
         }
-        synchronized (mLock) {
+        synchronized (mAccounts) {
             for (AccountHolder ah : mAccounts) {
-                if (ah.removeAuthToken(authToken)) {
+                if (ah.removeAccessToken(authToken)) {
                     break;
                 }
             }
@@ -136,26 +159,28 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     @Override
-    public AuthenticatorDescription[] getAuthenticatorTypes() {
-        AuthenticatorDescription googleAuthenticator =
-                new AuthenticatorDescription(AccountUtils.GOOGLE_ACCOUNT_TYPE, "p1", 0, 0, 0, 0);
-
-        return new AuthenticatorDescription[] {googleAuthenticator};
-    }
-
-    @Override
-    public boolean hasFeature(Account account, String feature) {
-        // Account features aren't supported in FakeAccountManagerDelegate.
-        return false;
+    public void invalidateAccessTokenForPlatformAccount(String authToken) throws AuthException {
+        if (authToken == null) {
+            throw new IllegalArgumentException("AuthToken can not be null");
+        }
+        synchronized (mPlatformAccounts) {
+            for (PlatformAccount account : mPlatformAccounts) {
+                FakePlatformAccount fakePlatformAccount = (FakePlatformAccount) account;
+                if (fakePlatformAccount.removeAccessToken(authToken)) {
+                    break;
+                }
+            }
+        }
     }
 
     @Override
     public @CapabilityResponse int hasCapability(Account account, String capability) {
-        return hasFeature(account, capability) ? CapabilityResponse.YES : CapabilityResponse.NO;
+        return CapabilityResponse.NO;
     }
 
     @Override
-    public void createAddAccountIntent(Callback<Intent> callback) {
+    public void createAddAccountIntent(
+            @Nullable String prefilledEmail, Callback<@Nullable Intent> callback) {
         ThreadUtils.assertOnUiThread();
         ThreadUtils.postOnUiThread(callback.bind(null));
     }
@@ -173,9 +198,19 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
         callback.onResult(null);
     }
 
+    /** Returns the list of PlatformAccounts added to the AccountManagerDelegate */
+    @Override
+    public List<PlatformAccount> getPlatformAccountsSynchronous()
+            throws AccountManagerDelegateException {
+        assert SigninFeatureMap.sMigrateAccountManagerDelegate.isEnabled();
+        synchronized (mPlatformAccounts) {
+            return new ArrayList<>(mPlatformAccounts);
+        }
+    }
+
     // TODO(crbug.com/40274844): Remove this method after migrating the interface to CoreAccountId.
     private @Nullable AccountHolder tryGetAccountHolder(String accountEmail) {
-        synchronized (mLock) {
+        synchronized (mAccounts) {
             return mAccounts.stream()
                     .filter(
                             accountHolder ->
@@ -186,13 +221,46 @@ public class FakeAccountManagerDelegate implements AccountManagerDelegate {
     }
 
     private @Nullable AccountHolder tryGetAccountHolder(CoreAccountId accountId) {
-        synchronized (mLock) {
+        synchronized (mAccounts) {
             return mAccounts.stream()
                     .filter(
                             accountHolder ->
                                     accountId.equals(accountHolder.getAccountInfo().getId()))
                     .findFirst()
                     .orElse(null);
+        }
+    }
+
+    /** Returns the PlatformAccounts associated with specified CoreAccountId. */
+    private @Nullable PlatformAccount tryGetPlatformAccount(CoreAccountId accountId) {
+        synchronized (mPlatformAccounts) {
+            return mPlatformAccounts.stream()
+                    .filter(account -> Objects.equals(account.getId(), accountId.getId()))
+                    .findFirst()
+                    .orElse(null);
+        }
+    }
+
+    @Override
+    @CapabilityResponse
+    public int fetchCapability(PlatformAccount account, String capability) {
+        FakePlatformAccount platformAccount = (FakePlatformAccount) account;
+
+        @Tribool
+        int hasCapability =
+                platformAccount
+                        .getAccountInfo()
+                        .getAccountCapabilities()
+                        .getCapabilityByName(ACCOUNT_CAPABILITY_NAME_PREFIX + capability);
+
+        switch (hasCapability) {
+            case Tribool.TRUE:
+                return CapabilityResponse.YES;
+            case Tribool.FALSE:
+                return CapabilityResponse.NO;
+            case Tribool.UNKNOWN:
+            default:
+                return CapabilityResponse.EXCEPTION;
         }
     }
 }

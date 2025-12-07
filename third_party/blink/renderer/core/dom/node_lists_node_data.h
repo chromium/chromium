@@ -63,9 +63,9 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
   struct NodeListAtomicCacheMapEntryHashTraits
       : HashTraits<std::pair<CollectionType, AtomicString>> {
     static unsigned GetHash(const NamedNodeListKey& entry) {
-      return WTF::GetHash(entry.second == CSSSelector::UniversalSelectorAtom()
-                              ? g_star_atom
-                              : entry.second) +
+      return blink::GetHash(entry.second == CSSSelector::UniversalSelectorAtom()
+                                ? g_star_atom
+                                : entry.second) +
              entry.first;
     }
     static constexpr bool kSafeToCompareToEmptyOrDeleted =
@@ -110,6 +110,14 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData> {
 
   template <typename T>
   T* Cached(CollectionType collection_type) {
+    auto it = atomic_name_caches_.find(NamedNodeListKey(
+        collection_type, CSSSelector::UniversalSelectorAtom()));
+    return static_cast<T*>(it != atomic_name_caches_.end() ? &*it->value
+                                                           : nullptr);
+  }
+
+  template <typename T>
+  const T* Cached(CollectionType collection_type) const {
     auto it = atomic_name_caches_.find(NamedNodeListKey(
         collection_type, CSSSelector::UniversalSelectorAtom()));
     return static_cast<T*>(it != atomic_name_caches_.end() ? &*it->value
@@ -200,6 +208,13 @@ inline Collection* ContainerNode::EnsureCachedCollection(
 template <typename Collection>
 inline Collection* ContainerNode::CachedCollection(CollectionType type) {
   NodeListsNodeData* node_lists = NodeLists();
+  return node_lists ? node_lists->Cached<Collection>(type) : nullptr;
+}
+
+template <typename Collection>
+inline const Collection* ContainerNode::CachedCollection(
+    CollectionType type) const {
+  const NodeListsNodeData* node_lists = NodeLists();
   return node_lists ? node_lists->Cached<Collection>(type) : nullptr;
 }
 

@@ -18,15 +18,18 @@
   <script>
     const link = document.getElementById("link");
     testSoftNavigation({
+      testName: "Test that a text LCP followup by an animaged image "
+        + " properly queues a soft navigation entry",
       addContent: async () => {
         const main = document.getElementById("main");
         main.removeChild(document.getElementsByTagName("div")[0]);
-        await addImageToMain("anim-gr.png");
+        const img = new Image(500, 500);
+        img.src = "/images/anim-gr.png?" + Math.random();
+        img.id = "imagelcp";
+        img.setAttribute("elementtiming", "imagelcp");
+        main.appendChild(img);
       },
-      link: link,
-      test: "Test that a text LCP followup by a smaller soft navigation image"
-        + " LCP properly queues an LCP entry"});
+    });
   </script>
 </body>
 </html>
-

@@ -6,7 +6,6 @@
 
 MockSafeBrowsingDatabaseManager::MockSafeBrowsingDatabaseManager()
     : safe_browsing::TestSafeBrowsingDatabaseManager(
-          base::SequencedTaskRunner::GetCurrentDefault(),
           base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 MockSafeBrowsingDatabaseManager::~MockSafeBrowsingDatabaseManager() = default;
@@ -17,6 +16,11 @@ bool MockSafeBrowsingDatabaseManager::CheckBrowseUrl(
     Client* client,
     safe_browsing::CheckBrowseUrlType check_type) {
   CHECK(client);
+
+  if (SimulateSafeSynchronousResponse()) {
+    return true;
+  }
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone,
@@ -37,4 +41,11 @@ void MockSafeBrowsingDatabaseManager::OnCheckBrowseURLDone(
   CHECK(client);
   client->OnCheckBrowseUrlResult(gurl, urls_threat_type_[gurl.spec()],
                                  safe_browsing::ThreatMetadata());
+}
+
+MockSafeBrowsingDatabaseManager::ScopedSimulateSafeSynchronousResponse
+MockSafeBrowsingDatabaseManager::CreateSimulateSafeSynchronousResponseScope(
+    bool simulate_safe_synchronous_response) {
+  return base::AutoReset<bool>(&simulate_safe_synchronous_response_,
+                               simulate_safe_synchronous_response);
 }

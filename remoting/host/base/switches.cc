@@ -30,8 +30,10 @@ const char kProcessTypeXSessionChooser[] = "xsession_chooser";
 const char kEvaluateCapabilitySwitchName[] = "evaluate-type";
 
 #if BUILDFLAG(IS_LINUX)
-const char kEnableUtempter[] = "enable-utempter";
+const char kEnableWtmpdb[] = "enable-wtmpdb";
 #endif
+
+const char kEnableCorpMessaging[] = "enable-corp-messaging";
 
 #if BUILDFLAG(IS_WIN)
 const char kEvaluateD3D[] = "d3d-support";

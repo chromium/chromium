@@ -13,7 +13,6 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/diagnostics/diagnostics_test.h"
 #include "chrome/browser/diagnostics/recon_diagnostics.h"
 #include "chrome/browser/diagnostics/sqlite_diagnostics.h"
@@ -25,15 +24,15 @@ namespace diagnostics {
 // This is the count of diagnostic tests on each platform.  This should
 // only be used by testing code.
 #if BUILDFLAG(IS_WIN)
-const int DiagnosticsModel::kDiagnosticsTestCount = 18;
-#elif BUILDFLAG(IS_MAC)
-const int DiagnosticsModel::kDiagnosticsTestCount = 15;
-#elif BUILDFLAG(IS_POSIX)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-const int DiagnosticsModel::kDiagnosticsTestCount = 19;
-#else
 const int DiagnosticsModel::kDiagnosticsTestCount = 17;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_MAC)
+const int DiagnosticsModel::kDiagnosticsTestCount = 14;
+#elif BUILDFLAG(IS_POSIX)
+#if BUILDFLAG(IS_CHROMEOS)
+const int DiagnosticsModel::kDiagnosticsTestCount = 18;
+#else
+const int DiagnosticsModel::kDiagnosticsTestCount = 16;
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -53,7 +52,7 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
   DiagnosticsModelImpl(const DiagnosticsModelImpl&) = delete;
   DiagnosticsModelImpl& operator=(const DiagnosticsModelImpl&) = delete;
 
-  ~DiagnosticsModelImpl() override {}
+  ~DiagnosticsModelImpl() override = default;
 
   int GetTestRunCount() const override { return tests_run_; }
 
@@ -137,7 +136,7 @@ class DiagnosticsModelWin : public DiagnosticsModelImpl {
     tests_.push_back(MakeVersionTest());
     tests_.push_back(MakeUserDirTest());
     tests_.push_back(MakeLocalStateFileTest());
-    tests_.push_back(MakeDictonaryDirTest());
+    tests_.push_back(MakeDictionaryDirTest());
     tests_.push_back(MakeResourcesFileTest());
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
@@ -149,7 +148,6 @@ class DiagnosticsModelWin : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteFaviconsDbTest());
     tests_.push_back(MakeSqliteHistoryDbTest());
     tests_.push_back(MakeSqliteTopSitesDbTest());
-    tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
   }
 
   DiagnosticsModelWin(const DiagnosticsModelWin&) = delete;
@@ -163,7 +161,7 @@ class DiagnosticsModelMac : public DiagnosticsModelImpl {
     tests_.push_back(MakeInstallTypeTest());
     tests_.push_back(MakeUserDirTest());
     tests_.push_back(MakeLocalStateFileTest());
-    tests_.push_back(MakeDictonaryDirTest());
+    tests_.push_back(MakeDictionaryDirTest());
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
     tests_.push_back(MakeLocalStateTest());
@@ -174,7 +172,6 @@ class DiagnosticsModelMac : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteFaviconsDbTest());
     tests_.push_back(MakeSqliteHistoryDbTest());
     tests_.push_back(MakeSqliteTopSitesDbTest());
-    tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
   }
 
   DiagnosticsModelMac(const DiagnosticsModelMac&) = delete;
@@ -189,7 +186,7 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
     tests_.push_back(MakeVersionTest());
     tests_.push_back(MakeUserDirTest());
     tests_.push_back(MakeLocalStateFileTest());
-    tests_.push_back(MakeDictonaryDirTest());
+    tests_.push_back(MakeDictionaryDirTest());
     tests_.push_back(MakeResourcesFileTest());
     tests_.push_back(MakeDiskSpaceTest());
     tests_.push_back(MakePreferencesTest());
@@ -201,8 +198,7 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
     tests_.push_back(MakeSqliteFaviconsDbTest());
     tests_.push_back(MakeSqliteHistoryDbTest());
     tests_.push_back(MakeSqliteTopSitesDbTest());
-    tests_.push_back(MakeSqliteWebDatabaseTrackerDbTest());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     tests_.push_back(MakeSqliteNssCertDbTest());
     tests_.push_back(MakeSqliteNssKeyDbTest());
 #endif

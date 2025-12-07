@@ -19,7 +19,8 @@ namespace content {
 
 class SkiaBenchmarking : public gin::Wrappable<SkiaBenchmarking> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kSkiaBenchmarking};
 
   SkiaBenchmarking(const SkiaBenchmarking&) = delete;
   SkiaBenchmarking& operator=(const SkiaBenchmarking&) = delete;
@@ -29,11 +30,12 @@ class SkiaBenchmarking : public gin::Wrappable<SkiaBenchmarking> {
   // Wrapper around SkGraphics::Init that can be invoked multiple times.
   static void Initialize();
 
- private:
+  // Make public for cppgc::MakeGarbageCollected.
   SkiaBenchmarking();
   ~SkiaBenchmarking() override;
 
-  // gin::Wrappable.
+ private:
+  // gin::WrappableBase.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -72,6 +74,8 @@ class SkiaBenchmarking : public gin::Wrappable<SkiaBenchmarking> {
   // Takes a base64 encoded SKP and returns
   // { 'width': {Number}, 'height': {Number} }
   void GetInfo(gin::Arguments* args);
+
+  const gin::WrapperInfo* wrapper_info() const override;
 };
 
 }  // namespace content

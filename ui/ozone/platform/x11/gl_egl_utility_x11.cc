@@ -6,10 +6,6 @@
 
 #include "ui/base/x/x11_gl_egl_utility.h"
 #include "ui/base/x/x11_util.h"
-#include "ui/gfx/gpu_extra_info.h"
-#include "ui/gfx/linux/gpu_memory_buffer_support_x11.h"
-#include "ui/gl/gl_implementation.h"
-#include "ui/gl/gl_utils.h"
 
 namespace ui {
 
@@ -25,21 +21,6 @@ void GLEGLUtilityX11::GetAdditionalEGLAttributes(
 void GLEGLUtilityX11::ChooseEGLAlphaAndBufferSize(EGLint* alpha_size,
                                                   EGLint* buffer_size) {
   ChoosePlatformCustomAlphaAndBufferSize(alpha_size, buffer_size);
-}
-
-void GLEGLUtilityX11::CollectGpuExtraInfo(
-    bool enable_native_gpu_memory_buffers,
-    gfx::GpuExtraInfo& gpu_extra_info) const {
-  // TODO(crbug.com/40110388): Enable by default.
-  if (enable_native_gpu_memory_buffers) {
-    gpu_extra_info.gpu_memory_buffer_support_x11 =
-        ui::GpuMemoryBufferSupportX11::GetInstance()->supported_configs();
-  }
-
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
-    // ANGLE does not yet support EGL_EXT_image_dma_buf_import[_modifiers].
-    gpu_extra_info.gpu_memory_buffer_support_x11.clear();
-  }
 }
 
 bool GLEGLUtilityX11::HasVisualManager() {

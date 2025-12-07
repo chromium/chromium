@@ -18,7 +18,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/common/file_system/file_system_util.h"
@@ -51,8 +50,7 @@ void QuotaBackendImpl::ReserveQuota(const url::Origin& origin,
   }
   DCHECK(quota_manager_proxy_.get());
   quota_manager_proxy_->GetUsageAndQuota(
-      blink::StorageKey::CreateFirstParty(origin),
-      FileSystemTypeToQuotaStorageType(type), file_task_runner_,
+      blink::StorageKey::CreateFirstParty(origin), file_task_runner_,
       base::BindOnce(&QuotaBackendImpl::DidGetUsageAndQuotaForReserveQuota,
                      weak_ptr_factory_.GetWeakPtr(),
                      QuotaReservationInfo(origin, type, delta),
@@ -144,7 +142,6 @@ void QuotaBackendImpl::ReserveQuotaInternal(const QuotaReservationInfo& info) {
   DCHECK(quota_manager_proxy_.get());
   auto bucket = BucketLocator::ForDefaultBucket(
       blink::StorageKey::CreateFirstParty(info.origin));
-  bucket.type = FileSystemTypeToQuotaStorageType(info.type);
   quota_manager_proxy_->NotifyBucketModified(
       QuotaClientType::kFileSystem, bucket, info.delta, base::Time::Now(),
       base::SequencedTaskRunner::GetCurrentDefault(), base::DoNothing());

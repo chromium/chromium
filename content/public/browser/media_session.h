@@ -16,6 +16,7 @@ namespace content {
 
 class BrowserContext;
 class WebContents;
+class RenderFrameHost;
 
 // MediaSession manages the media session and audio focus for a given
 // WebContents. There is only one MediaSession per WebContents.
@@ -36,6 +37,11 @@ class MediaSession : public media_session::mojom::MediaSession {
 
   // Returns the source identity for the given BrowserContext.
   CONTENT_EXPORT static const base::UnguessableToken& GetSourceId(
+      BrowserContext* browser_context);
+
+  // Similar to GetSourceId, returns the source identity, but iff it is
+  // already set by GetSourceId. Otherwise, nullptr.
+  CONTENT_EXPORT static const base::UnguessableToken* MaybeGetSourceId(
       BrowserContext* browser_context);
 
   CONTENT_EXPORT static WebContents* GetWebContentsFromRequestId(
@@ -67,6 +73,26 @@ class MediaSession : public media_session::mojom::MediaSession {
   // default value. This will only have any effect if audio focus grouping is
   // supported.
   virtual void SetAudioFocusGroupId(const base::UnguessableToken& group_id) = 0;
+
+  // Returns the `RenderFrameHost` for the currently MediaSession routed
+  // service, if the routed service exists, otherwise returns the top most frame
+  // with an active media player.
+  virtual RenderFrameHost* GetRoutedFrame() = 0;
+
+  // Returns the current media session info synchronously for a one-off request.
+  virtual media_session::mojom::MediaSessionInfoPtr
+  GetMediaSessionInfoSync() = 0;
+
+  // Returns the current media session position for a one-off request.
+  virtual std::optional<media_session::MediaPosition>
+  GetMediaSessionPosition() = 0;
+
+  // Returns the current media session metadata for a one-off request.
+  virtual const media_session::MediaMetadata& GetMediaSessionMetadata() = 0;
+
+  // Report to all players that information related to automatic picture in
+  // picture has changed.
+  virtual void ReportAutoPictureInPictureInfoChanged() = 0;
 
   // media_session.mojom.MediaSession overrides -------------------------------
 

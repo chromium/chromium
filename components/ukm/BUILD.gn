@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 
 component("ukm_recorder") {
@@ -21,7 +20,6 @@ component("ukm_recorder") {
     "scheme_constants.cc",
     "scheme_constants.h",
     "ukm_consent_state.h",
-    "ukm_entry_filter.h",
     "ukm_recorder_impl.cc",
     "ukm_recorder_impl.h",
     "ukm_recorder_observer.cc",
@@ -128,7 +126,7 @@ static_library("test_support") {
     "//base",
     "//components/metrics:test_support",
     "//components/prefs:test_support",
-    "//testing/gtest:gtest",
+    "//testing/gtest",
   ]
 }
 
@@ -157,6 +155,7 @@ source_set("unit_tests") {
     "//components/variations",
     "//net:test_support",
     "//services/metrics",
+    "//services/metrics/public/cpp:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
     "//third_party/zlib/google:compression_utils",
@@ -166,10 +165,8 @@ source_set("unit_tests") {
     deps += [
       "//chromeos/components/kiosk:test_support",
       "//chromeos/components/mgs:test_support",
+      "//components/user_manager:test_support",
     ]
-  }
-  if (is_chromeos_ash) {
-    deps += [ "//components/user_manager:test_support" ]
   }
 }
 

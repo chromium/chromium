@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "content/public/test/browser_task_environment.h"

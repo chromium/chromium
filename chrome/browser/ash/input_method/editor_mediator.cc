@@ -12,8 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "base/strings/utf_offset_string_conversions.h"
 #include "chrome/browser/ash/input_method/editor_consent_enums.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/ash/input_method/editor_metrics_enums.h"
@@ -22,11 +21,15 @@
 #include "chrome/browser/ash/input_method/editor_text_query_from_manta.h"
 #include "chrome/browser/ash/input_method/editor_text_query_from_memory.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
+#include "chrome/browser/ash/input_method/editor_transition_enums.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
-#include "chromeos/components/editor_menu/public/cpp/editor_helpers.h"
-#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_consent_status.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_helpers.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_mode.h"
+#include "chromeos/ash/components/editor_menu/public/cpp/editor_text_selection_mode.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
@@ -36,7 +39,41 @@ namespace {
 
 constexpr std::u16string_view kAnnouncementViewName = u"Orca";
 
+std::optional<orca::mojom::ContextPtr> CreateContext(const std::u16string& text,
+                                                     gfx::Range range) {
+  std::vector<size_t> offsets = {range.start(), range.end()};
+
+  const std::string text_utf8 =
+      base::UTF16ToUTF8AndAdjustOffsets(text, &offsets);
+
+  // In some rare cases such as crbug.com/425874277, the utf16 to utf8 conversion is not
+  // successful.
+  if (offsets[0] == std::u16string::npos ||
+      offsets[1] == std::u16string::npos) {
+    LOG(ERROR) << "The selection range is not valid";
+    return std::nullopt;
+  }
+
+  auto context = orca::mojom::Context::New();
+
+  context->surrounding_text = orca::mojom::SurroundingText::New(
+      text_utf8, gfx::Range(offsets[0], offsets[1]));
+
+  return context;
 }
+
+crosapi::mojom::MagicBoostController::TransitionAction
+ConvertToMagicBoostTransitionAction(EditorNoticeTransitionAction action) {
+  switch (action) {
+    case EditorNoticeTransitionAction::kDoNothing:
+      return crosapi::mojom::MagicBoostController::TransitionAction::kDoNothing;
+    case EditorNoticeTransitionAction::kShowEditorPanel:
+      return crosapi::mojom::MagicBoostController::TransitionAction::
+          kShowEditorPanel;
+  }
+}
+
+}  // namespace
 
 EditorMediator::EditorMediator(
     Profile* profile,
@@ -54,8 +91,7 @@ EditorMediator::EditorMediator(
           std::make_unique<EditorConsentStore>(profile->GetPrefs(),
                                                metrics_recorder_.get())),
       announcer_(kAnnouncementViewName) {
-  editor_context_.OnTabletModeUpdated(
-      display::Screen::GetScreen()->InTabletMode());
+  editor_context_.OnTabletModeUpdated(display::Screen::Get()->InTabletMode());
 }
 
 EditorMediator::~EditorMediator() = default;
@@ -82,12 +118,6 @@ void EditorMediator::ResetEditorConnections() {
         editor_service_connector_.get());
     panel_manager_.BindEditorClient();
   }
-}
-
-void EditorMediator::BindEditorPanelManager(
-    mojo::PendingReceiver<crosapi::mojom::EditorPanelManager>
-        pending_receiver) {
-  panel_manager_.BindReceiver(std::move(pending_receiver));
 }
 
 void EditorMediator::OnContextUpdated() {
@@ -194,7 +224,8 @@ size_t EditorMediator::GetSelectedTextLength() {
   return surrounding_text_.selection_range.length();
 }
 
-void EditorMediator::OnEditorModeChanged(const EditorMode& mode) {
+void EditorMediator::OnEditorModeChanged(
+    chromeos::editor_menu::EditorMode mode) {
   panel_manager_.NotifyEditorModeChanged(mode);
 }
 
@@ -213,75 +244,86 @@ void EditorMediator::HandleTrigger(
                                query_context_->freeform_text}
           : EditorQueryContext{preset_query_id, freeform_text};
 
-  bool can_fallback_to_center_position =
-      base::FeatureList::IsEnabled(ash::features::kOrcaArc) &&
-      editor_context_.app_type() == chromeos::AppType::ARC_APP;
-
   switch (GetEditorMode()) {
-    case EditorMode::kRewrite:
+    case chromeos::editor_menu::EditorMode::kRewrite:
       mako_bubble_coordinator_.LoadEditorUI(
-          profile_, MakoEditorMode::kRewrite, can_fallback_to_center_position,
+          profile_, MakoEditorMode::kRewrite,
+          /*can_fallback_to_center_position=*/true,
+          /*feedback_enabled=*/CanAccessFeedback(),
           active_query_context.preset_query_id,
           active_query_context.freeform_text);
       query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
-    case EditorMode::kWrite:
+    case chromeos::editor_menu::EditorMode::kWrite:
       mako_bubble_coordinator_.LoadEditorUI(
-          profile_, MakoEditorMode::kWrite, can_fallback_to_center_position,
+          profile_, MakoEditorMode::kWrite,
+          /*can_fallback_to_center_position=*/true,
+          /*feedback_enabled=*/CanAccessFeedback(),
           active_query_context.preset_query_id,
           active_query_context.freeform_text);
       query_context_ = std::nullopt;
       metrics_recorder_->LogEditorState(EditorStates::kNativeRequest);
       break;
-    case EditorMode::kConsentNeeded:
+    case chromeos::editor_menu::EditorMode::kConsentNeeded:
       query_context_ = EditorQueryContext(/*preset_query_id=*/preset_query_id,
                                           /*freeform_text=*/freeform_text);
-      if (chromeos::features::IsMagicBoostEnabled()) {
-        crosapi::CrosapiManager::Get()
-            ->crosapi_ash()
-            ->magic_boost_controller_ash()
-            ->ShowDisclaimerUi(
-                /*display_id=*/display::Screen::GetScreen()
-                    ->GetPrimaryDisplay()
-                    .id(),
-                /*action=*/
-                crosapi::mojom::MagicBoostController::TransitionAction::
-                    kShowEditorPanel,
-                /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
-      } else {
-        mako_bubble_coordinator_.LoadConsentUI(profile_);
-      }
+      ShowNotice(EditorNoticeTransitionAction::kShowEditorPanel);
       metrics_recorder_->LogEditorState(EditorStates::kConsentScreenImpression);
       break;
-    case EditorMode::kHardBlocked:
-    case EditorMode::kSoftBlocked:
+    case chromeos::editor_menu::EditorMode::kHardBlocked:
+    case chromeos::editor_menu::EditorMode::kSoftBlocked:
       mako_bubble_coordinator_.CloseUI();
   }
 }
 
+void EditorMediator::ShowNotice(
+    EditorNoticeTransitionAction transition_action) {
+  if (chromeos::MagicBoostState::Get()->IsUserEligibleForGenAIFeatures()) {
+    ash::MagicBoostControllerAsh::Get()->ShowDisclaimerUi(
+        /*display_id=*/display::Screen::Get()->GetPrimaryDisplay().id(),
+        /*action=*/
+        ConvertToMagicBoostTransitionAction(transition_action),
+        /*opt_in_features=*/OptInFeatures::kOrcaAndHmr);
+    return;
+  }
+
+  if (IsServiceConnected()) {
+    service_connection_->system_actuator()->SetNoticeTransitionAction(
+        transition_action);
+  }
+
+  mako_bubble_coordinator_.LoadConsentUI(profile_);
+}
+
 void EditorMediator::CacheContext() {
-  GetTextFieldContextualInfo(
-      base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+  OnTextFieldContextualInfoChanged(GetTextFieldContextualInfo());
 
   mako_bubble_coordinator_.CacheContextCaretBounds();
 
-  size_t selected_length =
+  size_t non_whitespace_selected_text_length =
       chromeos::editor_helpers::NonWhitespaceAndSymbolsLength(
           surrounding_text_.text, surrounding_text_.selection_range);
-  editor_context_.OnTextSelectionLengthChanged(selected_length);
 
-  if (IsServiceConnected()) {
+  auto context =
+      CreateContext(surrounding_text_.text, surrounding_text_.selection_range);
+
+  EditorTextSelection text_selection = {
+      .is_valid_selection = (context != std::nullopt),
+      .non_whitespace_selected_text_length =
+          non_whitespace_selected_text_length,
+  };
+
+  editor_context_.OnTextSelectionChanged(text_selection);
+
+  if (IsServiceConnected() && context.has_value()) {
     service_connection_->editor_event_proxy()->OnSurroundingTextChanged(
-        surrounding_text_.text, surrounding_text_.selection_range);
+        std::move(context.value()));
   }
 }
 
 void EditorMediator::FetchAndUpdateInputContextForTesting() {
-  GetTextFieldContextualInfo(
-      base::BindOnce(&EditorMediator::OnTextFieldContextualInfoChanged,
-                     weak_ptr_factory_.GetWeakPtr()));
+  OnTextFieldContextualInfoChanged(GetTextFieldContextualInfo());
 }
 
 EditorMediator::ServiceConnection::ServiceConnection(
@@ -349,14 +391,28 @@ bool EditorMediator::IsAllowedForUse() {
   return editor_switch_->IsAllowedForUse();
 }
 
-EditorMode EditorMediator::GetEditorMode() const {
+bool EditorMediator::CanAccessFeedback() {
+  return editor_switch_->IsFeedbackEnabled();
+}
+
+bool EditorMediator::CanShowNoticeBanner() const {
+  return editor_switch_->CanShowNoticeBanner();
+}
+
+chromeos::editor_menu::EditorMode EditorMediator::GetEditorMode() const {
   if (editor_mode_override_for_testing_.has_value()) {
     return *editor_mode_override_for_testing_;
   }
   return editor_switch_->GetEditorMode();
 }
 
-ConsentStatus EditorMediator::GetConsentStatus() const {
+chromeos::editor_menu::EditorTextSelectionMode
+EditorMediator::GetEditorTextSelectionMode() const {
+  return editor_switch_->GetEditorTextSelectionMode();
+}
+
+chromeos::editor_menu::EditorConsentStatus EditorMediator::GetConsentStatus()
+    const {
   return consent_store_->GetConsentStatus();
 }
 
@@ -394,7 +450,8 @@ bool EditorMediator::SetTextQueryProviderResponseForTesting(
   return true;
 }
 
-void EditorMediator::OverrideEditorModeForTesting(EditorMode editor_mode) {
+void EditorMediator::OverrideEditorModeForTesting(
+    chromeos::editor_menu::EditorMode editor_mode) {
   editor_mode_override_for_testing_ = editor_mode;
 }
 

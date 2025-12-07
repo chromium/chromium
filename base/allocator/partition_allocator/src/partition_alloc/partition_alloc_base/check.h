@@ -14,17 +14,22 @@
 #include "partition_alloc/partition_alloc_base/log_message.h"
 #include "partition_alloc/partition_alloc_base/strings/cstring_builder.h"
 
+#if PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+#include "partition_alloc/partition_alloc_base/strings/safe_sprintf.h"
+#endif  // PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+
 #define PA_STRINGIFY_IMPL(s) #s
 #define PA_STRINGIFY(s) PA_STRINGIFY_IMPL(s)
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
 //
 // CHECK dies with a fatal error if its condition is not true. It is not
-// controlled by NDEBUG, so the check will be executed regardless of compilation
-// mode.
+// controlled by PA_BUILDFLAG(IS_DEBUG), so the check will be executed
+// regardless of compilation mode.
 //
-// DCHECK, the "debug mode" check, is enabled depending on NDEBUG and
-// DCHECK_ALWAYS_ON, and its severity depends on DCHECK_IS_CONFIGURABLE.
+// DCHECK, the "debug mode" check, is enabled depending on
+// PA_BUILDFLAG(IS_DEBUG) and PA_BUILDFLAG(DCHECK_ALWAYS_ON), and its severity
+// depends on PA_BUILDFLAG(DCHECK_IS_CONFIGURABLE).
 //
 // (D)PCHECK is like (D)CHECK, but includes the system error code (c.f.
 // perror(3)).
@@ -141,9 +146,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NotImplemented
 
 }  // namespace check_error
 
-#if defined(OFFICIAL_BUILD) && !defined(NDEBUG)
+#if defined(OFFICIAL_BUILD) && PA_BUILDFLAG(IS_DEBUG)
 #error "Debug builds are not expected to be optimized as official builds."
-#endif  // defined(OFFICIAL_BUILD) && !defined(NDEBUG)
+#endif  // defined(OFFICIAL_BUILD) && BUILDFLAG(IS_DEBUG)
 
 #if defined(OFFICIAL_BUILD) && !PA_BUILDFLAG(DCHECKS_ARE_ON)
 
@@ -225,6 +230,17 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NotImplemented
       ::partition_alloc::internal::logging::RawCheckFailure( \
           "Check failed: " #condition "\n");                 \
   } while (0)
+
+#if PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+template <typename... Args>
+[[noreturn]] void RawCheckFailureFormat(const char* fmt, Args... args) {
+  constexpr size_t kRawCheckFailureFormatBufferSize = 256u;
+  char buffer[kRawCheckFailureFormatBufferSize];
+  (void)::partition_alloc::internal::base::strings::SafeSPrintf(buffer, fmt,
+                                                                args...);
+  ::partition_alloc::internal::logging::RawCheckFailure(buffer);
+}
+#endif  // PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
 
 }  // namespace partition_alloc::internal::logging
 

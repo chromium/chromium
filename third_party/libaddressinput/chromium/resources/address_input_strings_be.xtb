@@ -18,7 +18,7 @@
 <translation id="5327248766486351172">Імя</translation>
 <translation id="5937097533660449554">Вобласць</translation>
 <translation id="6132429659673988671">Прыгарад</translation>
-<translation id="6207937957461833379">Краіна або рэгіён</translation>
+<translation id="6207937957461833379">Краіна/рэгіён</translation>
 <translation id="6247152910634872706">Арганізацыя</translation>
 <translation id="6271429879296260742">PIN-код</translation>
 <translation id="6282194474023008486">Паштовы індэкс</translation>
@@ -27,7 +27,7 @@
 <translation id="6735419622867539268"><ph name="FIELD_VALUE" /> не прызнаецца вядомым значэннем для гэтага поля.</translation>
 <translation id="6768780634682399515">Eircode</translation>
 <translation id="6777217372746654521">Замест адраса ўведзены нумар абанементнай паштовай скрыні. Вызначыце фактычны адрас.</translation>
-<translation id="6839929833149231406">Вобласць</translation>
+<translation id="6839929833149231406">Рэгіён</translation>
 <translation id="684852933191805996">Раён</translation>
 <translation id="6970216967273061347">Раён</translation>
 <translation id="7087282848513945231">Акруга</translation>
@@ -36,11 +36,11 @@
 <translation id="7602447984296396718">Гэты паштовы індэкс, здаецца, не адпавядае астатняй частцы гэтага адраса.</translation>
 <translation id="7738983109397305830">Гэты паштовы індэкс, здаецца, не адпавядае астатняй частцы гэтага адраса. Не ведаеце індэкс? Знайсці яго можна <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="777702478322588152">Прэфектура</translation>
-<translation id="7805765407568469194">Вёска/мястэчка</translation>
+<translation id="7805765407568469194">Вёска/горад</translation>
 <translation id="8184169487503545976">Гэты фармат паштовага індэкса не прызнаецца.</translation>
 <translation id="820600307078153032">Няправільны фармат паштовага індэкса. Прыклад правільнага напісання: <ph name="EXAMPLE" />.</translation>
 <translation id="8446364922515257065">До/Сі</translation>
-<translation id="8449204988444194299">Горад</translation>
+<translation id="8449204988444194299">Горад з паштовым аддзяленнем</translation>
 <translation id="8471101563037901452">Гэты паштовы індэкс, здаецца, не адпавядае астатняй частцы гэтага адраса. Вы не ведаеце ваш паштовы індэкс? Знайдзіце яго <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="9104066683700680171">Гэты паштовы індэкс, здаецца, не адпавядае астатняй частцы адраса.</translation>
 <translation id="9207002871037636573">Трэба ўказаць паштовы індэкс, напрыклад <ph name="EXAMPLE" />.</translation>

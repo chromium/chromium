@@ -8,13 +8,9 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
-#include "base/feature_list.h"
+#include "base/check.h"
 #include "base/no_destructor.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/nearby/nearby_process_manager_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_impl.h"
 #include "chrome/browser/nearby_sharing/power_client_chromeos.h"
@@ -22,6 +18,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/nearby_connections_manager_impl.h"
 #include "components/cross_device/logging/logging.h"
@@ -60,28 +57,20 @@ bool NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
     return false;
   }
 
-  if (!base::FeatureList::IsEnabled(features::kNearbySharing)) {
+  // Nearby Share is supported only for the primary user.
+  const auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  auto* user_manager = user_manager::UserManager::Get();
+  if (!user || !user_manager->IsPrimaryUser(user)) {
     return false;
   }
 
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile) {
+  // Guest/kiosk users cannot use Nearby Share.
+  if (!user->HasGaiaAccount()) {
     return false;
   }
 
-  // Guest/incognito/signin profiles cannot use Nearby Share.
-  if (ash::ProfileHelper::IsSigninProfile(profile) ||
-      profile->IsOffTheRecord()) {
-    return false;
-  }
-
-  // Likewise, kiosk users are ineligible.
-  if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
-    return false;
-  }
-
-  // Nearby Share is not supported for secondary profiles.
-  return ash::ProfileHelper::IsPrimaryProfile(profile);
+  return true;
 }
 
 // static
@@ -121,12 +110,17 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  // GetForBrowserContext() must be called after the initialization of
+  // Profile initialization, because the service depends on its preferences.
+  auto* user =
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(context);
+  CHECK(user->is_profile_created());
+
   Profile* profile = Profile::FromBrowserContext(context);
 
   ash::nearby::NearbyProcessManager* process_manager =
       ash::nearby::NearbyProcessManagerFactory::GetForProfile(profile);
 
-  PrefService* pref_service = profile->GetPrefs();
   NotificationDisplayService* notification_display_service =
       NotificationDisplayServiceFactory::GetForProfile(profile);
 
@@ -138,7 +132,7 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
       << __func__ << ": creating NearbySharingService for primary profile";
 
   return std::make_unique<NearbySharingServiceImpl>(
-      pref_service, notification_display_service, profile,
+      *user, profile, notification_display_service,
       std::move(nearby_connections_manager), process_manager,
       std::make_unique<PowerClientChromeos>(),
       std::make_unique<WifiNetworkConfigurationHandler>());
@@ -147,12 +141,4 @@ NearbySharingServiceFactory::BuildServiceInstanceForBrowserContext(
 void NearbySharingServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   RegisterNearbySharingPrefs(registry);
-}
-
-bool NearbySharingServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  return true;
-}
-
-bool NearbySharingServiceFactory::ServiceIsNULLWhileTesting() const {
-  return true;
 }

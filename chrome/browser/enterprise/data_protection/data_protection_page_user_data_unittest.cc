@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_page_user_data.h"
 
+#include "base/strings/stringprintf.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
@@ -35,21 +36,31 @@ class DataProtectionPageUserDataTest
   std::unique_ptr<content::WebContents> web_contents_;
 };
 
-std::unique_ptr<safe_browsing::RTLookupResponse> BuildDummyResponse(
-    const char* watermark_text,
-    bool allow_screenshot) {
-  auto rt_lookup_response = std::make_unique<safe_browsing::RTLookupResponse>();
-  auto* threat_info = rt_lookup_response->add_threat_info();
+void AddDummyMatchedRule(safe_browsing::RTLookupResponse& rt_lookup_response,
+                         const char* watermark_text,
+                         bool allow_screenshot) {
+  int count = rt_lookup_response.threat_info().size();
+  auto* threat_info = rt_lookup_response.add_threat_info();
   threat_info->set_verdict_type(
       safe_browsing::RTLookupResponse::ThreatInfo::WARN);
   auto* matched_url_navigation_rule =
       threat_info->mutable_matched_url_navigation_rule();
-  matched_url_navigation_rule->set_rule_id("test rule id");
-  matched_url_navigation_rule->set_rule_name("test rule name");
-  matched_url_navigation_rule->set_matched_url_category("test rule category");
+  matched_url_navigation_rule->set_rule_id(
+      base::StringPrintf("test rule id-%d", count));
+  matched_url_navigation_rule->set_rule_name(
+      base::StringPrintf("test rule name-%d", count));
+  matched_url_navigation_rule->set_matched_url_category(
+      base::StringPrintf("test rule category-%d", count));
   matched_url_navigation_rule->mutable_watermark_message()
       ->set_watermark_message(watermark_text);
   matched_url_navigation_rule->set_block_screenshot(!allow_screenshot);
+}
+
+std::unique_ptr<safe_browsing::RTLookupResponse> BuildDummyResponse(
+    const char* watermark_text,
+    bool allow_screenshot) {
+  auto rt_lookup_response = std::make_unique<safe_browsing::RTLookupResponse>();
+  AddDummyMatchedRule(*rt_lookup_response, watermark_text, allow_screenshot);
   return rt_lookup_response;
 }
 
@@ -75,9 +86,9 @@ TEST_F(DataProtectionPageUserDataTest, TestCreateForPage) {
             safe_browsing::RTLookupResponse::ThreatInfo::WARN);
 
   const auto& ud_rule = ud_threat_info.matched_url_navigation_rule();
-  ASSERT_EQ(ud_rule.rule_id(), "test rule id");
-  ASSERT_EQ(ud_rule.rule_name(), "test rule name");
-  ASSERT_EQ(ud_rule.matched_url_category(), "test rule category");
+  ASSERT_EQ(ud_rule.rule_id(), "test rule id-0");
+  ASSERT_EQ(ud_rule.rule_name(), "test rule name-0");
+  ASSERT_EQ(ud_rule.matched_url_category(), "test rule category-0");
 }
 
 TEST_F(DataProtectionPageUserDataTest, NoRTURLLookupResponse) {
@@ -163,4 +174,19 @@ TEST_F(DataProtectionPageUserDataTest, MergedScreenshotState) {
   ASSERT_FALSE(ud->settings().allow_screenshots);
 }
 
+TEST_F(DataProtectionPageUserDataTest,
+       MultipleMatchedRulesWithDifferentSubactions) {
+  auto rt_lookup_response = std::make_unique<safe_browsing::RTLookupResponse>();
+  AddDummyMatchedRule(*rt_lookup_response, "example", true);
+  AddDummyMatchedRule(*rt_lookup_response, "", false);
+
+  content::Page& page = web_contents_->GetPrimaryPage();
+  enterprise_data_protection::DataProtectionPageUserData::
+      UpdateRTLookupResponse(page, std::string(),
+                             std::move(rt_lookup_response));
+  auto* ud =
+      enterprise_data_protection::DataProtectionPageUserData::GetForPage(page);
+  ASSERT_NE(ud->settings().watermark_text.find("example"), std::string::npos);
+  ASSERT_FALSE(ud->settings().allow_screenshots);
+}
 }  // namespace enterprise_data_protection

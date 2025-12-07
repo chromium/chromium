@@ -10,13 +10,13 @@
 #include <string_view>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/common/interest_group/test/interest_group_test_utils.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -24,6 +24,9 @@
 namespace blink {
 
 namespace {
+
+using ::blink::IgExpectEqualsForTesting;
+using ::blink::IgExpectNotEqualsForTesting;
 
 const char kOrigin1[] = "https://origin1.test/";
 const char kOrigin2[] = "https://origin2.test/";
@@ -47,17 +50,21 @@ InterestGroup CreateInterestGroup() {
 // deserialization to succeed. Expects the deserialization to succeed, and to be
 // the same as the original group. Also makes sure the input InterestGroup is
 // not equal to the output of CreateInterestGroup(), to verify that
-// IsEqualForTesting() is checking whatever was modified in the input group.
+// IgExpect[Not]EqualsForTesting() is checking whatever was modified in the
+// input group.
 //
 // Arguments is not const because SerializeAndDeserialize() doesn't take a
 // const input value, as serializing some object types is destructive.
 void SerializeAndDeserializeAndCompare(InterestGroup& interest_group) {
-  ASSERT_FALSE(interest_group.IsEqualForTesting(CreateInterestGroup()));
+  IgExpectNotEqualsForTesting(/*actual=*/interest_group,
+                              /*not_expected=*/CreateInterestGroup());
+  ASSERT_FALSE(testing::Test::HasFailure());
 
   InterestGroup interest_group_clone;
   ASSERT_TRUE(mojo::test::SerializeAndDeserialize<blink::mojom::InterestGroup>(
       interest_group, interest_group_clone));
-  EXPECT_TRUE(interest_group.IsEqualForTesting(interest_group_clone));
+  IgExpectEqualsForTesting(/*actual=*/interest_group_clone,
+                           /*expected=*/interest_group);
 }
 
 // A variant of SerializeAndDeserializeAndCompare() that expects serialization
@@ -71,7 +78,9 @@ void SerializeAndDeserializeAndCompare(InterestGroup& interest_group) {
 // renderer-side logic, but InterestGroup::IsValid() still needs to be checked.
 void SerializeAndDeserializeExpectFailure(InterestGroup& interest_group,
                                           std::string_view tag = "") {
-  ASSERT_FALSE(interest_group.IsEqualForTesting(CreateInterestGroup()));
+  IgExpectNotEqualsForTesting(/*actual=*/interest_group,
+                              /*not_expected=*/CreateInterestGroup());
+  ASSERT_FALSE(testing::Test::HasFailure());
 
   InterestGroup interest_group_clone;
   EXPECT_FALSE(mojo::test::SerializeAndDeserialize<blink::mojom::InterestGroup>(
@@ -232,12 +241,6 @@ TEST(InterestGroupMojomTraitsTest,
 
 TEST(InterestGroupMojomTraitsTest,
      SerializeAndDeserializeCrossOriginTrustedBiddingSignalsUrl) {
-  // Like with everything here, the negative test is in
-  // validate_blink_interest_group_test.cc
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgePermitCrossOriginTrustedSignals);
-
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.trusted_bidding_signals_url =
       GURL("https://cross-origin.test/");
@@ -285,6 +288,23 @@ TEST(InterestGroupMojomTraitsTest,
       url::Origin::Create(GURL("http://example.test"));
   SerializeAndDeserializeExpectFailure(interest_group,
                                        "trustedBiddingSignalsCoordinator");
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeViewAndClickCountsProviders) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.view_and_click_counts_providers = {
+      {url::Origin::Create(GURL("https://example.test"))}};
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeInvalidViewAndClickCountsProviders) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.view_and_click_counts_providers = {
+      {url::Origin::Create(GURL("http://example.test"))}};
+  SerializeAndDeserializeExpectFailure(interest_group,
+                                       "viewAndClickCountsProviders");
 }
 
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeUserBiddingSignals) {
@@ -444,6 +464,22 @@ TEST(InterestGroupMojomTraitsTest,
   SerializeAndDeserializeAndCompare(interest_group);
 }
 
+TEST(InterestGroupMojomTraitsTest,
+     SerializeAndDeserializeAdsWithCreativeScanningMetadata) {
+  InterestGroup interest_group = CreateInterestGroup();
+  interest_group.ads.emplace();
+  interest_group.ads->emplace_back(GURL(kUrl1),
+                                   /*metadata=*/std::nullopt);
+  interest_group.ads->emplace_back(GURL(kUrl2),
+                                   /*metadata=*/"[]");
+  interest_group.ads->emplace_back(GURL("https://example.org/"),
+                                   /*metadata=*/"[]");
+  interest_group.ads.value()[0].creative_scanning_metadata = "hi";
+  interest_group.ads.value()[1].creative_scanning_metadata = "there";
+  interest_group.ads.value()[2].creative_scanning_metadata = std::nullopt;
+  SerializeAndDeserializeAndCompare(interest_group);
+}
+
 TEST(InterestGroupMojomTraitsTest, SerializeAndDeserializeAdComponents) {
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.ad_components.emplace();
@@ -548,8 +584,13 @@ TEST(InterestGroupMojomTraitsTest,
   SerializeAndDeserializeAndCompare(interest_group);
 
   interest_group.auction_server_request_flags = {
+      blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals};
+  SerializeAndDeserializeAndCompare(interest_group);
+
+  interest_group.auction_server_request_flags = {
       blink::AuctionServerRequestFlagsEnum::kOmitAds,
-      blink::AuctionServerRequestFlagsEnum::kIncludeFullAds};
+      blink::AuctionServerRequestFlagsEnum::kIncludeFullAds,
+      blink::AuctionServerRequestFlagsEnum::kOmitUserBiddingSignals};
   SerializeAndDeserializeAndCompare(interest_group);
 }
 

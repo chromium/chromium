@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.metrics;
 import android.app.ActivityManager;
 import android.app.usage.UsageStatsManager;
 import android.content.Context;
-import android.os.Build;
 import android.os.Process;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
@@ -21,9 +20,15 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /** Utilities to support startup metrics - Android version. */
 @JNINamespace("chrome::android")
+@NullMarked
 public class UmaUtils {
     /** Observer for this class. */
     public interface Observer {
@@ -34,7 +39,7 @@ public class UmaUtils {
         void onHasComeToForegroundWithNative();
     }
 
-    private static Observer sObserver;
+    private static @Nullable Observer sObserver;
 
     /** Sets the observer. */
     public static void setObserver(Observer observer) {
@@ -63,9 +68,8 @@ public class UmaUtils {
 
     /**
      * App standby bucket status, used for UMA reporting. Enum values correspond to the return
-     * values of {@link UsageStatsManager#getAppStandbyBucket}.
-     * These values are persisted to logs. Entries should not be renumbered and
-     * numeric values should never be reused.
+     * values of {@link UsageStatsManager#getAppStandbyBucket}. These values are persisted to logs.
+     * Entries should not be renumbered and numeric values should never be reused.
      */
     @IntDef({
         StandbyBucketStatus.ACTIVE,
@@ -73,19 +77,19 @@ public class UmaUtils {
         StandbyBucketStatus.FREQUENT,
         StandbyBucketStatus.RARE,
         StandbyBucketStatus.RESTRICTED,
-        StandbyBucketStatus.UNSUPPORTED,
         StandbyBucketStatus.EXEMPTED,
         StandbyBucketStatus.NEVER,
         StandbyBucketStatus.OTHER,
         StandbyBucketStatus.COUNT
     })
+    @Retention(RetentionPolicy.SOURCE)
     private @interface StandbyBucketStatus {
         int ACTIVE = 0;
         int WORKING_SET = 1;
         int FREQUENT = 2;
         int RARE = 3;
         int RESTRICTED = 4;
-        int UNSUPPORTED = 5;
+        // Deprecated: int UNSUPPORTED = 5;
         int EXEMPTED = 6;
         int NEVER = 7;
         int OTHER = 8;
@@ -169,7 +173,6 @@ public class UmaUtils {
 
     /** Records various levels of background restrictions imposed by android on chrome. */
     public static void recordBackgroundRestrictions() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
         Context context = ContextUtils.getApplicationContext();
         ActivityManager activityManager =
                 (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
@@ -202,8 +205,6 @@ public class UmaUtils {
     }
 
     private static @StandbyBucketStatus int getStandbyBucket(Context context) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return StandbyBucketStatus.UNSUPPORTED;
-
         UsageStatsManager usageStatsManager =
                 (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
         int standbyBucket = usageStatsManager.getAppStandbyBucket();

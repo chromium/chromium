@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
@@ -19,7 +20,6 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/enclave/types.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_pb {
 class WebauthnCredentialSpecifics;
@@ -63,24 +63,24 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) ErrorResponse {
 // one is for the GetAssertion.
 // Returns one of: A successful response, or a struct containing details of
 //                 the error.
-absl::variant<AuthenticatorGetAssertionResponse, ErrorResponse>
-    COMPONENT_EXPORT(DEVICE_FIDO)
-        ParseGetAssertionResponse(cbor::Value response_value,
-                                  base::span<const uint8_t> credential_id);
+std::variant<AuthenticatorGetAssertionResponse, ErrorResponse> COMPONENT_EXPORT(
+    DEVICE_FIDO)
+    ParseGetAssertionResponse(cbor::Value response_value,
+                              base::span<const uint8_t> credential_id);
 
 // Parses a decrypted registration command response from the enclave.
 // If there are multiple request responses in the array, it assumes the last
 // one is for the MakeCredential.
 // Returns one of: A pair containing the response and the new passkey entity,
 //                 a struct containing details of the error.
-absl::variant<std::pair<AuthenticatorMakeCredentialResponse,
-                        sync_pb::WebauthnCredentialSpecifics>,
-              ErrorResponse>
+std::variant<std::pair<AuthenticatorMakeCredentialResponse,
+                       sync_pb::WebauthnCredentialSpecifics>,
+             ErrorResponse>
     COMPONENT_EXPORT(DEVICE_FIDO)
         ParseMakeCredentialResponse(cbor::Value response,
                                     const CtapMakeCredentialRequest& request,
                                     int32_t wrapped_secret_version,
-                                    bool user_verified);
+                                    UserPresentAndVerifiedBits up_and_uv);
 
 // Returns a CBOR value with the provided GetAssertion request and associated
 // passkey. The return value can be serialized into a Command request according
@@ -124,6 +124,16 @@ void COMPONENT_EXPORT(DEVICE_FIDO) BuildCommandRequestBody(
     base::span<const uint8_t, crypto::kSHA256Length> handshake_hash,
     base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
         complete_callback);
+
+// Returns a copy of the enclave `request` with its sensitive information (such
+// as end-to-end encryption secrets) removed.
+cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
+    RedactEnclaveRequest(const cbor::Value& request);
+
+// Returns a copy of the enclave `response` with its sensitive information (such
+// as prf outputs) removed.
+cbor::Value COMPONENT_EXPORT(DEVICE_FIDO)
+    RedactEnclaveResponse(const cbor::Value& response);
 
 }  // namespace enclave
 

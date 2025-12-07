@@ -6,10 +6,16 @@
 #define NET_SOCKET_TLS_STREAM_ATTEMPT_H_
 
 #include <memory>
+#include <optional>
+#include <string_view>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "base/types/expected.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -20,8 +26,9 @@
 
 namespace net {
 
-class TcpStreamAttempt;
+struct ServiceEndpoint;
 class SSLClientSocket;
+class TcpStreamAttempt;
 
 // Represents a single TLS connection attempt.
 class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
@@ -29,30 +36,47 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   // Timeout for the TLS handshake. The timeout is the same as SSLConnectJob.
   static constexpr base::TimeDelta kTlsHandshakeTimeout = base::Seconds(30);
 
-  // An interface that provides a SSLConfig to TlsStreamAttempt lazily.
-  class NET_EXPORT_PRIVATE SSLConfigProvider {
-   public:
-    SSLConfigProvider() = default;
-    virtual ~SSLConfigProvider() = default;
-
-    SSLConfigProvider(const SSLConfigProvider&) = delete;
-    SSLConfigProvider& operator=(const SSLConfigProvider&) = delete;
-
-    // Returns OK when a SSLConfig is immediately available. `callback` is never
-    // invoked. Otherwise, returns ERR_IO_PENDING when `this` can't provide a
-    // SSLConfig immediately. `callback` is invoked when a SSLConfig is ready.
-    virtual int WaitForSSLConfigReady(CompletionOnceCallback callback) = 0;
-
-    // Returns a SSLConfig. Should be called only after WaitForSSLConfigReady()
-    // returns OK or the callback is invoked.
-    virtual SSLConfig GetSSLConfig() = 0;
+  // Represents an error of getting a SSLConfig for an attempt.
+  enum class GetServiceEndpointError {
+    // The attempt should abort. Currently this happens when we start an attempt
+    // without waiting for HTTPS RR and the DNS resolution resulted in making
+    // the attempt SVCB-reliant.
+    kAbort,
   };
 
-  // `params` and `ssl_config_provider` must outlive `this`.
+  // An interface to interact with TlsStreamAttempt.
+  class NET_EXPORT_PRIVATE Delegate {
+   public:
+    Delegate() = default;
+    virtual ~Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    // Called when TCP handshake completes.
+    virtual void OnTcpHandshakeComplete() = 0;
+
+    // Returns `OK` and ignores `callback` when the attempt can start TLS
+    // handshake immediately. Otherwise, returns `ERR_IO_PENDING` when `this`
+    // can't provide a ServiceEndpoint for TLS handshake immediately. `callback`
+    // is invoked when a ServiceEndpoint is ready.
+    virtual int WaitForTlsHandshakeReady(CompletionOnceCallback callback) = 0;
+
+    // Returns a ServiceEndpoint for TLS handshake. Should be called only after
+    // WaitForTlsHandshakeReady() returns `OK` or the callback is invoked.
+    virtual base::expected<ServiceEndpoint, GetServiceEndpointError>
+    GetServiceEndpointForTlsHandshake() = 0;
+  };
+
+  // `params` must outlive `this`. `base_ssl_config` contains the base SSL
+  // configuration. Some additional configuration (things that depend on
+  // ServiceEndpoint) is applied within TlsStreamAttempt.
   TlsStreamAttempt(const StreamAttemptParams* params,
                    IPEndPoint ip_endpoint,
+                   perfetto::Track track,
                    HostPortPair host_port_pair,
-                   SSLConfigProvider* ssl_config_provider);
+                   SSLConfig base_ssl_config,
+                   Delegate* delegate);
 
   TlsStreamAttempt(const TlsStreamAttempt&) = delete;
   TlsStreamAttempt& operator=(const TlsStreamAttempt&) = delete;
@@ -61,12 +85,10 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   // StreamAttempt implementations:
   LoadState GetLoadState() const override;
+  base::Value::Dict GetInfoAsValue() const override;
   scoped_refptr<SSLCertRequestInfo> GetCertRequestInfo() override;
 
-  // Set a callback that will be invoked after the TCP handshake completes.
-  // Note that the callback won't be called and discarded immediately when
-  // `this` has already completed the TCP handshake.
-  void SetTcpHandshakeCompletionCallback(CompletionOnceCallback callback);
+  bool IsTcpHandshakeCompleted() { return tcp_handshake_completed_; }
 
   bool IsTlsHandshakeStarted() { return tls_handshake_started_; }
 
@@ -78,6 +100,8 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
     kTlsAttempt,
     kTlsAttemptComplete,
   };
+
+  static std::string_view StateToString(State state);
 
   // StreamAttempt methods:
   int StartInternal() override;
@@ -93,17 +117,36 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
 
   void OnTlsHandshakeTimeout();
 
+  void MaybeRecordTlsHandshakeEnd(int rv);
+
+  void ResetStateForRestart();
+
   State next_state_ = State::kNone;
   const HostPortPair host_port_pair_;
-  raw_ptr<SSLConfigProvider> ssl_config_provider_;
+  const SSLConfig base_ssl_config_;
+  const raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<TcpStreamAttempt> nested_attempt_;
-  CompletionOnceCallback tcp_handshake_completion_callback_;
 
+  bool tcp_handshake_completed_ = false;
   bool tls_handshake_started_ = false;
   base::OneShotTimer tls_handshake_timeout_timer_;
   std::unique_ptr<SSLClientSocket> ssl_socket_;
   scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info_;
+
+  std::optional<SSLConfig> ssl_config_;
+  std::optional<std::vector<uint8_t>> ech_retry_configs_;
+  // Set to true when the TlsStreamAttempt retries itself after receiving a
+  // certificate error when sending TLS Trust Anchor IDs. Used to ensure that we
+  // only retry once per connection attempt.
+  bool retried_for_trust_anchor_ids_ = false;
+  // Used for metrics. Set to true when the initial connection attempt used a
+  // service endpoint that advertised trust anchor IDs and ECH, respectively,
+  // whether or not sufficient features were enabled to use them.
+  bool trust_anchor_ids_from_dns_ = false;
+  bool is_ech_capable_ = false;
+
+  base::WeakPtrFactory<TlsStreamAttempt> weak_ptr_factory_{this};
 };
 
 }  // namespace net

@@ -9,13 +9,14 @@
 #include "components/lookalikes/core/safety_tip_test_utils.h"
 #include "components/lookalikes/core/safety_tips_config.h"
 #include "components/url_formatter/spoof_checks/common_words/common_words_util.h"
+#include "components/url_formatter/spoof_checks/idn_spoof_checker.h"
+#include "components/url_formatter/spoof_checks/top_domains/test_domains_trie.h"
 #include "components/url_formatter/spoof_checks/top_domains/test_top_bucket_domains.h"
 #include "components/version_info/channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace test {
 #include "components/url_formatter/spoof_checks/common_words/common_words_test-inc.cc"
-#include "components/url_formatter/spoof_checks/top_domains/test_domains-trie-inc.cc"
 }  // namespace test
 
 using lookalikes::ComboSquattingParams;
@@ -30,17 +31,14 @@ using version_info::Channel;
 namespace {
 // Tests lists for Combo Squatting. Some of these entries are intended to test
 // for various edge cases and aren't realistic for production.
-constexpr std::pair<const char*, const char*> kBrandNames[] = {
-    {"google", "google"},
-    {"youtube", "youtube"},
-    {"sample", "sarnple"},
-    {"example", "exarnple"},
-    {"vices", "vices"}};
-const char* const kPopularKeywords[] = {
+constexpr std::string_view kBrandNames[][2] = {{"google", "google"},
+                                               {"youtube", "youtube"},
+                                               {"sample", "sarnple"},
+                                               {"example", "exarnple"},
+                                               {"vices", "vices"}};
+constexpr std::string_view kPopularKeywords[] = {
     "online", "login", "account", "arnple", "services", "test", "security"};
-const ComboSquattingParams kComboSquattingParams{
-    kBrandNames, std::size(kBrandNames), kPopularKeywords,
-    std::size(kPopularKeywords)};
+const ComboSquattingParams kComboSquattingParams{kBrandNames, kPopularKeywords};
 
 }  // namespace
 
@@ -53,7 +51,7 @@ std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
     case TargetEmbeddingType::kSafetyTip:
       return "kSafetyTip";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // These tests do not use the production top domain list. This is to avoid
@@ -65,9 +63,10 @@ class LookalikeUrlUtilTest : public testing::Test {
   void SetUp() override {
     // Use test top domain lists instead of the actual list.
     url_formatter::IDNSpoofChecker::HuffmanTrieParams trie_params{
-        test::kTopDomainsHuffmanTree, sizeof(test::kTopDomainsHuffmanTree),
-        test::kTopDomainsTrie, test::kTopDomainsTrieBits,
-        test::kTopDomainsRootPosition};
+        url_formatter::kTestTopDomainsHuffmanTree,
+        url_formatter::kTestTopDomainsTrie,
+        url_formatter::kTestTopDomainsTrieBits,
+        url_formatter::kTestTopDomainsRootPosition};
     url_formatter::IDNSpoofChecker::SetTrieParamsForTesting(trie_params);
 
     // Use test top bucket domain skeletons instead of the actual list.

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 import("//components/captive_portal/core/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 static_library("security_interstitial_page") {
@@ -67,20 +68,20 @@ static_library("security_interstitial_page") {
     ":proto",
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//components/captive_portal/core",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
+    "//components/guest_view/buildflags",
     "//components/history/core/browser",
     "//components/keyed_service/core",
     "//components/network_time",
-    "//components/omnibox/common:common",
+    "//components/omnibox/common",
     "//components/pref_registry",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/resources",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/security_interstitials/core:core",
+    "//components/security_interstitials/core",
     "//components/security_interstitials/core:insecure_form_util",
     "//components/security_interstitials/core:unsafe_resource",
     "//components/ssl_errors",
@@ -92,8 +93,7 @@ static_library("security_interstitial_page") {
     "//content/public/browser",
     "//content/public/common",
     "//crypto",
-    "//services/cert_verifier/public/mojom",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/protobuf:protobuf_lite",
     "//third_party/re2",
   ]
@@ -123,7 +123,9 @@ static_library("security_interstitial_page") {
     ]
     deps +=
         [ "//components/security_interstitials/content/android:jni_headers" ]
-  } else {
+  }
+
+  if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
 }
@@ -146,14 +148,13 @@ source_set("unit_tests") {
     ":security_interstitial_page",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/captive_portal/content",
     "//components/captive_portal/core:test_support",
     "//components/embedder_support",
     "//components/network_time",
     "//components/network_time:network_time_test_support",
     "//components/prefs:test_support",
-    "//components/security_interstitials/core:core",
+    "//components/security_interstitials/core",
     "//components/version_info",
     "//content/public/browser",
     "//content/public/common",

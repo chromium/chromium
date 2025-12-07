@@ -9,8 +9,10 @@ import plistlib
 import struct
 import subprocess
 import time
-from typing import Tuple, List
+import logging
+from typing import Tuple, List, Set
 
+import constants
 import shard_util
 import test_runner
 import test_runner_errors
@@ -22,8 +24,54 @@ import xcode_util
 GENERATE_COMPILED_GTESTS_FILE_TEST_ARG = (
     '--write-compiled-tests-json-to-writable-path')
 
+# crbug.com/407529445: longest filter length before we get
+# "Argument list too long" error. It's only an educated guess and the number
+# can be adjusted any time as needed
+MAX_GTEST_FILTER_LENGTH = 4000
 
-def get_gtest_filter(included, excluded):
+
+def group_gtest_filter(
+    tests: List[str],
+    non_grouped_suites: Set[str],
+    no_grouping_limit: int = MAX_GTEST_FILTER_LENGTH) -> List[str]:
+  """
+    Groups a list of tests based on their test suites,
+    ignoring non_grouped_suites
+
+    Args:
+        tests: A list of tests
+          (e.g., ["A.B", "A.C", "B.A", "B.B", "C.A", "C.D", "C.E"]).
+        non_grouped_suites: tests under non_grouped_suites will not be grouped.
+        no_grouping_limit: if the number of tests is smaller than the limit,
+          then there's no need to group the tests.
+
+    Returns:
+        A list of grouped test patterns for all but the tests
+          in non_grouped_suites, followed by the individual tests of
+          non_grouped_suites.
+        (e.g., ["A.*", "B.*", "C.A", "C.D", "C.E"]).
+  """
+  if not tests or len(tests) <= no_grouping_limit:
+    return tests
+
+  non_grouped_tests = []
+  test_suites = set()
+  result = []
+
+  for test in tests:
+    test_suite = test.split(".")[0]
+    if test_suite in non_grouped_suites:
+      non_grouped_tests.append(test)
+    else:
+      test_suites.add(test_suite)
+
+  for test_suite in sorted(list(test_suites)):
+    result.append(f"{test_suite}.*")
+  result.extend(non_grouped_tests)
+  return result
+
+
+def get_gtest_filter(included, excluded, crashed):
   """Returns the GTest filter to filter the given test cases.
 
   If only included or excluded is provided, uses GTest filter inclusion or
@@ -33,6 +81,7 @@ def get_gtest_filter(included, excluded):
   Args:
     included: List of test cases to be included.
     excluded: List of test cases to be excluded.
+    crashed: List of test cases that crashed in the previous run
 
   Returns:
     A string which can be supplied to --gtest_filter.
@@ -41,6 +90,16 @@ def get_gtest_filter(included, excluded):
   if included and excluded:
     included = list(set(included) - set(excluded))
     excluded = []
+
+  # Group tests based on their test suites to reduce the length of gtest_filter.
+  # A better solution might be to use test-launcher-filter-file
+  non_grouped_suites = set()
+  if crashed:
+    for test in crashed:
+      test_suite = test.split(".")[0]
+      non_grouped_suites.add(test_suite)
+  excluded = group_gtest_filter(excluded, non_grouped_suites)
+
   # A colon-separated list of tests cases.
   # e.g. a:b:c matches a, b, c.
   # e.g. -a:b:c matches everything except a, b, c.
@@ -93,11 +152,12 @@ class GTestsApp(object):
     test_app: full path to an app.
   """
 
-  def __init__(self, test_app, **kwargs):
+  def __init__(self, test_app, platform_type, **kwargs):
     """Initialize Egtests.
 
     Args:
       test_app: (str) full path to egtests app.
+      platform_type: (IOSPlatformType) iOS-based platform being targeted.
       (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
@@ -119,6 +179,7 @@ class GTestsApp(object):
       raise test_runner.AppNotFoundError(test_app)
     self.test_app_path = test_app
     self.project_path = os.path.dirname(self.test_app_path)
+    self.platform_type = platform_type
     self.test_args = kwargs.get('test_args') or []
     self.env_vars = {}
     for env_var in kwargs.get('env_vars') or []:
@@ -130,6 +191,7 @@ class GTestsApp(object):
     self.included_tests = kwargs.get('included_tests') or []
     # This may be modified between test launches.
     self.excluded_tests = kwargs.get('excluded_tests') or []
+    self.crashed_tests = kwargs.get('crashed_tests') or []
     self.disabled_tests = []
     self.module_name = os.path.splitext(os.path.basename(test_app))[0]
     self.release = kwargs.get('release')
@@ -165,6 +227,7 @@ class GTestsApp(object):
     # Write data in temp xctest run file.
     with open(xctestrun, "wb") as f:
       plistlib.dump(self.fill_xctestrun_node(), f)
+
     return xctestrun
 
   @staticmethod
@@ -174,6 +237,15 @@ class GTestsApp(object):
     if count == 0:
       return name
     return name.replace('/', '.', count - 1)
+
+  @property
+  def xcode_platform_dir_name(self):
+    """Returns the directory name under __PLATFORMS__ corresponding to the
+    current target platform.
+    """
+    if self.platform_type == constants.IOSPlatformType.TVOS:
+      return 'AppleTVSimulator.platform'
+    return 'iPhoneSimulator.platform'
 
   def fill_xctestrun_node(self):
     """Fills only required nodes for egtests in xctestrun file.
@@ -200,11 +272,17 @@ class GTestsApp(object):
         'TestHostBundleIdentifier': get_bundle_id(self.test_app_path),
         'TestingEnvironmentVariables': {
             'DYLD_LIBRARY_PATH':
-                '%s:__PLATFORMS__/iPhoneSimulator.platform/Developer/Library' %
-                dyld_path,
+                ':'.join([
+                    dyld_path,
+                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+                    'Library'
+                ]),
             'DYLD_FRAMEWORK_PATH':
-                '%s:__PLATFORMS__/iPhoneSimulator.platform/'
-                'Developer/Library/Frameworks' % dyld_path,
+                ':'.join([
+                    dyld_path,
+                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+                    'Library/Frameworks'
+                ]),
         }
     }
 
@@ -218,7 +296,8 @@ class GTestsApp(object):
     gtest_filter = []
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
+                                      self.crashed_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [el for el in self.test_args
                         if not el.startswith('--gtest_filter=')]
@@ -292,13 +371,14 @@ class EgtestsApp(GTestsApp):
   """
 
   def __init__(self, egtests_app: str, all_eg_test_names: List[Tuple[str, str]],
-               **kwargs):
+               platform_type: constants.IOSPlatformType, **kwargs):
     """Initialize Egtests.
 
     Args:
       egtests_app: (str) full path to egtests app.
       all_eg_test_names: (list) list in the form [(TestCase, testMethod)]
         which contains all the test methods present in the EG test app binary.
+      platform_type: (IOSPlatformType) iOS-based platform being targeted.
       (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
@@ -320,7 +400,7 @@ class EgtestsApp(GTestsApp):
     Raises:
       AppNotFoundError: If the given app does not exist
     """
-    super(EgtestsApp, self).__init__(egtests_app, **kwargs)
+    super(EgtestsApp, self).__init__(egtests_app, platform_type, **kwargs)
     self.all_eg_test_names = all_eg_test_names
     self.record_video_option = kwargs.get('record_video_option')
 
@@ -342,6 +422,17 @@ class EgtestsApp(GTestsApp):
   def _additional_inserted_libs(self):
     """Returns additional libraries to add to inserted_libs."""
     libs = []
+
+    # Do not insert libXCTestBundleInject.dylib if running EG2 or XCUITest
+    # tests (which set self.host_app_path), this is no longer needed and
+    # broken as of Xcode16 Beta4.
+    # However, it is still needed for unit tests which are run as XCTests
+    # (and in this case without the GTest framework). See crbug.com/361610467
+    # for more details.
+    if not self.host_app_path:
+      libs.append(f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+                  'usr/lib/libXCTestBundleInject.dylib')
+
     for child in os.listdir(self.test_app_path):
       if child.startswith('libclang_rt.asan'):
         libs.append(os.path.join('@executable_path', child))
@@ -383,7 +474,7 @@ class EgtestsApp(GTestsApp):
       # Module data specific to EG2 tests
       module_data['IsUITestBundle'] = True
       module_data['IsXCTRunnerHostedTestBundle'] = True
-      module_data['SystemAttachmentLifetime'] = 'keepAlways'
+      module_data['SystemAttachmentLifetime'] = 'deleteOnSuccess'
       if self.record_video_option is not None:
         # Currently the enum only supports recording on failed tests,
         # but can be extended to support more cases if needed,
@@ -412,6 +503,8 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
   """XCTest hosted unit tests to run on devices.
 
   This is for the XCTest framework hosted unit tests running on devices.
+
+  Note: running on devices is only supported on iOS, not tvOS, at the moment.
 
   Stores data about tests:
     tests_app: full path to tests app.
@@ -445,7 +538,13 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
     test_args.append('--enable-run-ios-unittests-with-xctest')
     kwargs['test_args'] = test_args
 
-    super(DeviceXCTestUnitTestsApp, self).__init__(tests_app, **kwargs)
+    super(DeviceXCTestUnitTestsApp,
+          self).__init__(tests_app, constants.IOSPlatformType.IPHONEOS,
+                         **kwargs)
+
+  @property
+  def xcode_platform_dir_name(self):
+    return 'iPhoneOS.platform'
 
   def fill_xctestrun_node(self):
     """Fills only required nodes for XCTest hosted unit tests in xctestrun file.
@@ -482,7 +581,8 @@ class DeviceXCTestUnitTestsApp(GTestsApp):
           {'EnvironmentVariables': self.env_vars})
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
+                                      self.crashed_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [
           el for el in self.test_args if not el.startswith('--gtest_filter=')
@@ -514,11 +614,12 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     excluded_tests: List of tests not to run.
   """
 
-  def __init__(self, tests_app, **kwargs):
+  def __init__(self, tests_app, platform_type, **kwargs):
     """Initialize the class.
 
     Args:
       tests_app: (str) full path to tests app.
+      platform_type: (IOSPlatformType) iOS-based platform being targeted.
       (Following are potential args in **kwargs)
       included_tests: (list) Specific tests to run
          E.g.
@@ -537,7 +638,8 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
     test_args = list(kwargs.get('test_args') or [])
     test_args.append('--enable-run-ios-unittests-with-xctest')
     kwargs['test_args'] = test_args
-    super(SimulatorXCTestUnitTestsApp, self).__init__(tests_app, **kwargs)
+    super(SimulatorXCTestUnitTestsApp, self).__init__(tests_app, platform_type,
+                                                      **kwargs)
 
   def fill_xctestrun_node(self):
     """Fills only required nodes for XCTest hosted unit tests in xctestrun file.
@@ -557,15 +659,15 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
                 '%s' % self.test_app_path,
             'TestingEnvironmentVariables': {
                 'DYLD_INSERT_LIBRARIES':
-                    '__PLATFORMS__/iPhoneSimulator.platform/Developer/usr/lib/'
-                    'libXCTestBundleInject.dylib',
+                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+                    'usr/lib/libXCTestBundleInject.dylib',
                 'DYLD_LIBRARY_PATH':
-                    '__PLATFORMS__/iPhoneSimulator.platform/Developer/Library',
+                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
+                    'Library',
                 'DYLD_FRAMEWORK_PATH':
-                    '__PLATFORMS__/iPhoneSimulator.platform/Developer/'
+                    f'__PLATFORMS__/{self.xcode_platform_dir_name}/Developer/'
                     'Library/Frameworks',
-                'XCInjectBundleInto':
-                    '__TESTHOST__/%s' % self.module_name
+                'XCInjectBundleInto': '__TESTHOST__/%s' % self.module_name
             }
         }
     }
@@ -575,7 +677,8 @@ class SimulatorXCTestUnitTestsApp(GTestsApp):
           {'EnvironmentVariables': self.env_vars})
 
     if self.included_tests or self.excluded_tests:
-      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests)
+      gtest_filter = get_gtest_filter(self.included_tests, self.excluded_tests,
+                                      self.crashed_tests)
       # Removed previous gtest-filter if exists.
       self.test_args = [
           el for el in self.test_args if not el.startswith('--gtest_filter=')

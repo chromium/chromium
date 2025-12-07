@@ -51,18 +51,21 @@ def _GetDirAbove(dirname: str):
 
 SOURCE_DIR = _GetDirAbove('testing')
 
+# //third_party imports.
 sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
-sys.path.append(os.path.join(SOURCE_DIR, 'build'))
+import jinja2
+
+# //third_party/blink/renderer/bindings/scripts imports.
 sys.path.append(
     os.path.join(SOURCE_DIR, 'third_party/blink/renderer/bindings/scripts/'))
-
-import jinja2
 import web_idl
 
 
 class SwiftExpression:
   """Generic type for representing a Swift type."""
 
+  # Overridden by subclasses.
+  # pylint: disable=no-self-use
   def fuzzilli_repr(self) -> str:
     """Returns the Fuzzilli representation of this expression.
 
@@ -70,6 +73,7 @@ class SwiftExpression:
         the string representation of this expression.
     """
     raise Exception('Not implemented.')
+  # pylint: enable=no-self-use
 
 
 class SwiftNil(SwiftExpression):
@@ -94,7 +98,7 @@ class LiteralList(SwiftExpression):
   values: List[SwiftExpression]
 
   def fuzzilli_repr(self) -> str:
-    values = ", ".join([v.fuzzilli_repr() for v in self.values])
+    values = ', '.join([v.fuzzilli_repr() for v in self.values])
     return f'[{values}]'
 
 
@@ -139,8 +143,8 @@ class ILType(SwiftExpression):
     return ILType(property='nothing')
 
   @staticmethod
-  def anything() -> ILType:
-    return ILType(property='anything')
+  def jsAnything() -> ILType:
+    return ILType(property='jsAnything')
 
   @staticmethod
   def undefined() -> ILType:
@@ -242,7 +246,7 @@ SIMPLE_TYPE_TO_ILTYPE = {
     'void': ILType.undefined(),
     'object': ILType.object(),
     'undefined': ILType.undefined(),
-    'any': ILType.anything(),
+    'any': ILType.jsAnything(),
     'byte': ILType.integer(),
     'octet': ILType.integer(),
     'short': ILType.integer(),
@@ -264,18 +268,18 @@ SIMPLE_TYPE_TO_ILTYPE = {
     'ArrayBuffer': ILType.jsArrayBuffer(),
     'ArrayBufferView': ILType.jsDataView(),
     'SharedArray': ILType.jsSharedArrayBuffer(),
-    'Int8Array': ILType.jsTypedArray('Uint8Array'),
-    'Int16Array': ILType.jsTypedArray("Int16Array"),
-    'Int32Array': ILType.jsTypedArray("Int32Array"),
-    'Uint8Array': ILType.jsTypedArray("Uint8Array"),
-    'Uint16Array': ILType.jsTypedArray("Uint16Array"),
-    'Uint32Array': ILType.jsTypedArray("Uint32Array"),
-    'Uint8ClampedArray': ILType.jsTypedArray("Uint8ClampedArray"),
-    'BigInt64Array': ILType.jsTypedArray("BigInt64Array"),
-    'BigUint64Array': ILType.jsTypedArray("BigUint64Array"),
-    'Float16Array': ILType.jsTypedArray("Float16Array"),
-    'Float32Array': ILType.jsTypedArray("Float32Array"),
-    'Float64Array': ILType.jsTypedArray("Float64Array"),
+    'Int8Array': ILType.jsTypedArray('Int8Array'),
+    'Int16Array': ILType.jsTypedArray('Int16Array'),
+    'Int32Array': ILType.jsTypedArray('Int32Array'),
+    'Uint8Array': ILType.jsTypedArray('Uint8Array'),
+    'Uint16Array': ILType.jsTypedArray('Uint16Array'),
+    'Uint32Array': ILType.jsTypedArray('Uint32Array'),
+    'Uint8ClampedArray': ILType.jsTypedArray('Uint8ClampedArray'),
+    'BigInt64Array': ILType.jsTypedArray('BigInt64Array'),
+    'BigUint64Array': ILType.jsTypedArray('BigUint64Array'),
+    'Float16Array': ILType.jsTypedArray('Float16Array'),
+    'Float32Array': ILType.jsTypedArray('Float32Array'),
+    'Float64Array': ILType.jsTypedArray('Float64Array'),
     'DataView': ILType.jsDataView(),
 }
 
@@ -322,6 +326,7 @@ class ObjectGroup(SwiftExpression):
   instanceType: ILType
   properties: Dict[str, ILType]
   methods: Dict[str, ILType]
+  parent: Optional[str] = None
 
 
 def idl_type_to_iltype(idl_type: web_idl.idl_type.IdlType) -> ILType:
@@ -345,7 +350,7 @@ def idl_type_to_iltype(idl_type: web_idl.idl_type.IdlType) -> ILType:
     return functools.reduce(ILType.__or__, members)
   if isinstance(idl_type, web_idl.idl_type.NullableType):
     return idl_type_to_iltype(idl_type.inner_type)
-  if isinstance(idl_type, web_idl.idl_type._ArrayLikeType):
+  if web_idl.idl_type.IsArrayLike(idl_type):
     return ILType.iterable()
   if isinstance(idl_type, web_idl.idl_type.PromiseType):
     return ILType.jsPromise()
@@ -369,7 +374,7 @@ def parse_args(
   # before plain arguments, which doesn't really make sense in JS.
   rev_args = []
   has_seen_plain = False
-  for arg in args:
+  for arg in reversed(args):
     if arg.is_optional:
       if has_seen_plain:
         rev_args.append(ParameterType.plain(idl_type_to_iltype(arg.idl_type)))
@@ -401,7 +406,6 @@ def parse_operation(
   ret = idl_type_to_iltype(op.return_type)
   return SignatureType(args=parse_args(op.arguments), ret=ret)
 
-
 def parse_interface(
     interface: Union[web_idl.interface.Interface,
                      web_idl.callback_interface.CallbackInterface]
@@ -427,11 +431,45 @@ def parse_interface(
   obj = ILType.object(group=interface.identifier,
                       props=list(attributes.keys()),
                       methods=list(methods.keys()))
+  parent = None
+  if hasattr(interface, 'inherited') and interface.inherited:
+    parent = interface.inherited.identifier
   group = ObjectGroup(name=interface.identifier,
                       instanceType=ILType.refType(f'js{interface.identifier}'),
                       properties=attributes,
-                      methods=methods)
+                      methods=methods,
+                      parent=parent)
   return obj, group
+
+
+def sort_object_groups(
+    groups: Sequence[Union[web_idl.interface.Interfaces,
+                           web_idl.dictionary.Dictionary]]
+) -> Sequence[web_idl.interface.Interfaces]:
+  """Sorts the object groups given their dependencies to each others.
+
+  Args:
+      ifaces: the objects (either interface of dictionary)
+
+  Returns:
+      the sorted groups
+  """
+  ids = {i.identifier: i for i in groups}
+  inserted = set()
+  sorted_groups = []
+
+  def add_iface(interface: web_idl.interface.Interface):
+    if interface.identifier in inserted:
+      return
+    if hasattr(interface, 'inherited') and interface.inherited:
+      assert interface.inherited.identifier in ids
+      add_iface(interface.inherited)
+    sorted_groups.append(interface)
+    inserted.add(interface.identifier)
+
+  for interface in groups:
+    add_iface(interface)
+  return sorted_groups
 
 
 def parse_constructors(
@@ -507,10 +545,14 @@ def parse_dictionary(
   obj = ILType.object(group=f'{dictionary.identifier}',
                       props=list(props.keys()),
                       methods=[])
+  parent = None
+  if hasattr(dictionary, 'inherited') and dictionary.inherited:
+    parent = dictionary.inherited.identifier
   group = ObjectGroup(name=f'{dictionary.identifier}',
                       instanceType=ILType.refType(f'js{dictionary.identifier}'),
                       properties=props,
-                      methods={})
+                      methods={},
+                      parent=parent)
   return obj, group
 
 
@@ -521,18 +563,18 @@ def main():
   parser.add_argument('-p',
                       '--path',
                       required=True,
-                      help="Path to the web_idl_database.")
+                      help='Path to the web_idl_database.')
   parser.add_argument('-o',
                       '--outfile',
                       required=True,
-                      help="Path to the output profile.")
+                      help='Path to the output profile.')
 
   args = parser.parse_args()
   database = web_idl.Database.read_from_file(args.path)
-
   template_dir = os.path.dirname(os.path.abspath(__file__))
   environment = jinja2.Environment(loader=jinja2.FileSystemLoader(template_dir))
   environment.filters['parse_interface'] = parse_interface
+  environment.filters['sort_object_groups'] = sort_object_groups
   environment.filters['parse_constructors'] = parse_constructors
   environment.filters['parse_operation'] = parse_operation
   environment.filters['parse_dictionary'] = parse_dictionary
@@ -545,5 +587,5 @@ def main():
     f.write(template.render(context))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   main()

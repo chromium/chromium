@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_APP_STARTUP_CHROME_MAIN_STARTER_H_
 #define IOS_CHROME_APP_STARTUP_CHROME_MAIN_STARTER_H_
 
-#include <memory>
-
 #import <UIKit/UIKit.h>
+
+#include <memory>
 
 class IOSChromeMain;
 

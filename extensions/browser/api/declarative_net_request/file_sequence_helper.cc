@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/declarative_net_request/file_sequence_helper.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <set>
 #include <utility>
@@ -19,7 +20,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -52,13 +52,17 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
   IndexHelper& operator=(const IndexHelper&) = delete;
 
   // Starts indexing rulesets. Must be called on the extension file task runner.
+  // TODO(crbug.com/380434972): Kick off content verification job to guard
+  // against the possibility that the extension's ruleset JSON files were
+  // corrupted.
   void Start(uint8_t parse_flags) {
     DCHECK(GetExtensionFileTaskRunner()->RunsTasksInCurrentSequence());
 
     std::vector<RulesetInfo*> rulesets_to_index;
     for (auto& ruleset : data_.rulesets) {
-      if (ruleset.did_load_successfully())
+      if (ruleset.did_load_successfully()) {
         continue;
+      }
 
       rulesets_to_index.push_back(&ruleset);
     }
@@ -101,11 +105,17 @@ class IndexHelper : public base::RefCountedThreadSafe<IndexHelper> {
     bool indexing_success = result.status == IndexStatus::kSuccess;
     bool is_reindexing = ruleset->expected_checksum().has_value();
     if (indexing_success) {
-      // If this is the first time that the ruleset is being indexed, or if the
-      // ruleset's version has updated, then take note of the new checksum.
-      bool update_checksum =
-          !is_reindexing || ruleset->load_ruleset_result() ==
-                                LoadRulesetResult::kErrorVersionMismatch;
+      // Update the checksum if either:
+      // - this is the first time that the ruleset is being indexed and there's
+      //   no expected checksum.
+      // - there is a checksum mismatch between indexing and what's in prefs.
+      //   Use the checksum that was just derived from reindexing.
+      // - the ruleset's version has updated, so the old checksum is invalid
+      bool update_checksum = !is_reindexing ||
+                             ruleset->load_ruleset_result() ==
+                                 LoadRulesetResult::kErrorChecksumMismatch ||
+                             ruleset->load_ruleset_result() ==
+                                 LoadRulesetResult::kErrorVersionMismatch;
       if (update_checksum) {
         ruleset->set_new_checksum(result.ruleset_checksum);
 
@@ -160,8 +170,7 @@ UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return UpdateDynamicRulesStatus::kSuccess;
+  NOTREACHED();
 }
 
 // Helper to create the new list of dynamic rules. Returns false on failure and
@@ -218,7 +227,7 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
 
   if (base::FeatureList::IsEnabled(
           extensions_features::kDeclarativeNetRequestSafeRuleLimits)) {
-    size_t unsafe_rule_count = base::ranges::count_if(
+    size_t unsafe_rule_count = std::ranges::count_if(
         *new_rules,
         [](const dnr_api::Rule& rule) { return !IsRuleSafe(rule); });
     if (unsafe_rule_count > rule_limit.unsafe_rule_count) {
@@ -228,7 +237,7 @@ bool GetNewDynamicRules(const FileBackedRulesetSource& source,
     }
   }
 
-  size_t regex_rule_count = base::ranges::count_if(
+  size_t regex_rule_count = std::ranges::count_if(
       *new_rules,
       [](const dnr_api::Rule& rule) { return !!rule.condition.regex_filter; });
   if (regex_rule_count > rule_limit.regex_rule_count) {
@@ -258,8 +267,9 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
   DCHECK_EQ(source.indexed_path().DirName(), source.json_path().DirName());
 
   std::set<int> rule_ids_to_add;
-  for (const dnr_api::Rule& rule : rules_to_add)
+  for (const dnr_api::Rule& rule : rules_to_add) {
     rule_ids_to_add.insert(rule.id);
+  }
 
   std::vector<dnr_api::Rule> new_rules;
   if (!GetNewDynamicRules(source, std::move(rule_ids_to_remove),
@@ -289,7 +299,7 @@ bool UpdateAndIndexDynamicRules(const FileBackedRulesetSource& source,
 
   // Treat rules which exceed the regex memory limit as errors if these are new
   // rules. Just surface an error for the first such rule.
-  for (auto warning : info.rule_ignored_warnings()) {
+  for (const auto& warning : info.rule_ignored_warnings()) {
     if (!base::Contains(rule_ids_to_add, warning.rule_id)) {
       // Any rule added earlier which is ignored now (say due to exceeding the
       // regex memory limit), will be silently ignored.
@@ -379,9 +389,12 @@ void RulesetInfo::CreateVerifiedMatcher() {
 }
 
 LoadRequestData::LoadRequestData(ExtensionId extension_id,
-                                 base::Version extension_version)
+                                 base::Version extension_version,
+                                 LoadRulesetRequestSource request_source)
     : extension_id(std::move(extension_id)),
-      extension_version(std::move(extension_version)) {}
+      extension_version(std::move(extension_version)),
+      request_source(request_source),
+      load_request_id(base::Token::CreateRandom()) {}
 LoadRequestData::~LoadRequestData() = default;
 LoadRequestData::LoadRequestData(LoadRequestData&&) = default;
 LoadRequestData& LoadRequestData::operator=(LoadRequestData&&) = default;

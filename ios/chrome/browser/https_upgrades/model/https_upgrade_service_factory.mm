@@ -4,17 +4,14 @@
 
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_factory.h"
 
-#import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/web/public/browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-HttpsUpgradeService* HttpsUpgradeServiceFactory::GetForBrowserState(
-    web::BrowserState* browser_state) {
-  return static_cast<HttpsUpgradeService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+HttpsUpgradeService* HttpsUpgradeServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<HttpsUpgradeService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -24,26 +21,16 @@ HttpsUpgradeServiceFactory* HttpsUpgradeServiceFactory::GetInstance() {
 }
 
 HttpsUpgradeServiceFactory::HttpsUpgradeServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "HttpsUpgradeService",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("HttpsUpgradeService",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(ios::HostContentSettingsMapFactory::GetInstance());
 }
 
-HttpsUpgradeServiceFactory::~HttpsUpgradeServiceFactory() {}
+HttpsUpgradeServiceFactory::~HttpsUpgradeServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
-HttpsUpgradeServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+HttpsUpgradeServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<HttpsUpgradeServiceImpl>(
-      ChromeBrowserState::FromBrowserState(context));
-}
-
-web::BrowserState* HttpsUpgradeServiceFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
-}
-
-bool HttpsUpgradeServiceFactory::ServiceIsNULLWhileTesting() const {
-  return false;
+      profile->IsOffTheRecord(),
+      ios::HostContentSettingsMapFactory::GetForProfile(profile));
 }

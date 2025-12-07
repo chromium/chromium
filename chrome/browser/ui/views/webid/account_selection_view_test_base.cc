@@ -4,18 +4,31 @@
 
 #include "chrome/browser/ui/views/webid/account_selection_view_test_base.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
+#include "chrome/browser/ui/webid/identity_ui_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/test/test_event.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/test/views_test_utils.h"
+
+namespace webid {
+
+const std::vector<content::IdentityRequestDialogDisclosureField>
+    kDefaultDisclosureFields = {
+        content::IdentityRequestDialogDisclosureField::kName,
+        content::IdentityRequestDialogDisclosureField::kEmail,
+        content::IdentityRequestDialogDisclosureField::kPicture};
 
 AccountSelectionViewTestBase::AccountSelectionViewTestBase() = default;
 
 AccountSelectionViewTestBase::~AccountSelectionViewTestBase() = default;
 
-std::u16string AccountSelectionViewTestBase::GetHoverButtonTitle(
+std::u16string_view AccountSelectionViewTestBase::GetHoverButtonTitle(
     HoverButton* account) {
   return account->title()->GetText();
 }
@@ -40,27 +53,39 @@ views::View* AccountSelectionViewTestBase::GetHoverButtonSecondaryView(
   return account->secondary_view();
 }
 
-content::IdentityRequestAccount
+IdentityRequestAccountPtr
 AccountSelectionViewTestBase::CreateTestIdentityRequestAccount(
     const std::string& account_suffix,
+    IdentityProviderDataPtr idp,
     content::IdentityRequestAccount::LoginState login_state,
     std::optional<base::Time> last_used_timestamp) {
-  return content::IdentityRequestAccount(
-      std::string(kIdBase) + account_suffix,
-      std::string(kEmailBase) + account_suffix,
-      std::string(kNameBase) + account_suffix,
-      std::string(kGivenNameBase) + account_suffix, GURL(),
-      /*login_hints=*/std::vector<std::string>(),
-      /*domain_hints=*/std::vector<std::string>(),
-      /*labels=*/std::vector<std::string>(), login_state,
-      /*browser_trusted_login_state=*/
-      content::IdentityRequestAccount::LoginState::kSignUp,
-      last_used_timestamp);
+  std::string display_identifier =
+      std::string(kDisplayIdentifierBase) + account_suffix;
+  std::string display_name = std::string(kDisplayNameBase) + account_suffix;
+  std::string name = std::string(kNameBase) + account_suffix;
+  std::string email = std::string(kEmailBase) + account_suffix;
+  IdentityRequestAccountPtr account =
+      base::MakeRefCounted<content::IdentityRequestAccount>(
+          std::string(kIdBase) + account_suffix, display_identifier,
+          display_name, email, name,
+          std::string(kGivenNameBase) + account_suffix, GURL(), "", "",
+          /*login_hints=*/std::vector<std::string>(),
+          /*domain_hints=*/std::vector<std::string>(),
+          /*labels=*/std::vector<std::string>(), login_state,
+          /*browser_trusted_login_state=*/
+          content::IdentityRequestAccount::LoginState::kSignUp,
+          last_used_timestamp);
+  if (login_state == content::IdentityRequestAccount::LoginState::kSignUp) {
+    account->fields = idp->disclosure_fields;
+  }
+  account->identity_provider = std::move(idp);
+  return account;
 }
 
-std::vector<content::IdentityRequestAccount>
+std::vector<IdentityRequestAccountPtr>
 AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
     const std::vector<std::string>& account_suffixes,
+    IdentityProviderDataPtr idp,
     const std::vector<content::IdentityRequestAccount::LoginState>&
         login_states,
     const std::vector<std::optional<base::Time>>& last_used_timestamps) {
@@ -70,7 +95,7 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
   if (!last_used_timestamps.empty()) {
     CHECK_EQ(account_suffixes.size(), last_used_timestamps.size());
   }
-  std::vector<content::IdentityRequestAccount> accounts;
+  std::vector<IdentityRequestAccountPtr> accounts;
   size_t idx = 0;
   for (const std::string& account_suffix : account_suffixes) {
     content::IdentityRequestAccount::LoginState login_state =
@@ -80,24 +105,26 @@ AccountSelectionViewTestBase::CreateTestIdentityRequestAccounts(
     std::optional<base::Time> last_used_timestamp =
         last_used_timestamps.empty() ? std::nullopt : last_used_timestamps[idx];
     accounts.push_back(CreateTestIdentityRequestAccount(
-        account_suffix, login_state, last_used_timestamp));
+        account_suffix, idp, login_state, last_used_timestamp));
     ++idx;
   }
   return accounts;
 }
 
 content::ClientMetadata AccountSelectionViewTestBase::CreateTestClientMetadata(
-    const std::string& terms_of_service_url) {
+    const std::string& terms_of_service_url,
+    const std::string& privacy_policy_url,
+    const std::string& rp_brand_icon_url) {
   return content::ClientMetadata(GURL(terms_of_service_url),
-                                 GURL(kPrivacyPolicyUrl),
-                                 GURL(kRpBrandIconUrl));
+                                 GURL(privacy_policy_url),
+                                 GURL(rp_brand_icon_url), gfx::Image());
 }
 
 std::vector<std::string> AccountSelectionViewTestBase::GetChildClassNames(
     views::View* parent) {
   std::vector<std::string> child_class_names;
   for (views::View* child_view : parent->children()) {
-    child_class_names.push_back(child_view->GetClassName());
+    child_class_names.emplace_back(child_view->GetClassName());
   }
   return child_class_names;
 }
@@ -115,7 +142,8 @@ views::View* AccountSelectionViewTestBase::GetViewWithClassName(
 
 void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
     views::View* row,
-    const std::string& account_suffix) {
+    const std::string& account_suffix,
+    bool has_display_identifier) {
   std::vector<raw_ptr<views::View, VectorExperimental>> row_children =
       row->children();
   ASSERT_EQ(row_children.size(), 2u);
@@ -134,18 +162,25 @@ void AccountSelectionViewTestBase::CheckNonHoverableAccountRow(
             views::BoxLayout::Orientation::kVertical);
   std::vector<raw_ptr<views::View, VectorExperimental>> text_view_children =
       text_view->children();
-  ASSERT_EQ(text_view_children.size(), 2u);
+  unsigned int expected_children = has_display_identifier ? 2u : 1u;
+  ASSERT_EQ(text_view_children.size(), expected_children);
 
-  std::string expected_name(std::string(kNameBase) + account_suffix);
+  std::string expected_display_name(std::string(kDisplayNameBase) +
+                                    account_suffix);
   views::StyledLabel* name_view =
       static_cast<views::StyledLabel*>(text_view_children[0]);
   ASSERT_TRUE(name_view);
-  EXPECT_EQ(name_view->GetText(), base::UTF8ToUTF16(expected_name));
+  EXPECT_EQ(name_view->GetText(), base::UTF8ToUTF16(expected_display_name));
 
-  std::string expected_email(std::string(kEmailBase) + account_suffix);
-  views::Label* email_view = static_cast<views::Label*>(text_view_children[1]);
-  ASSERT_TRUE(email_view);
-  EXPECT_EQ(email_view->GetText(), base::UTF8ToUTF16(expected_email));
+  if (has_display_identifier) {
+    std::string expected_display_identifier(
+        std::string(kDisplayIdentifierBase) + account_suffix);
+    views::Label* display_identifier_view =
+        static_cast<views::Label*>(text_view_children[1]);
+    ASSERT_TRUE(display_identifier_view);
+    EXPECT_EQ(display_identifier_view->GetText(),
+              base::UTF8ToUTF16(expected_display_identifier));
+  }
 }
 
 void AccountSelectionViewTestBase::CheckHoverableAccountRows(
@@ -159,67 +194,96 @@ void AccountSelectionViewTestBase::CheckHoverableAccountRows(
   // `accounts_index` to the first unused index in `accounts`, or to
   // `accounts.size()` if done.
   for (const auto& account_suffix : account_suffixes) {
-    if (std::string(accounts[accounts_index]->GetClassName()) == "Separator") {
+    if (accounts[accounts_index]->GetClassName() == "Separator") {
       ++accounts_index;
     }
-    ASSERT_STREQ("HoverButton", accounts[accounts_index]->GetClassName());
-    HoverButton* account_row =
-        static_cast<HoverButton*>(accounts[accounts_index++]);
-    ASSERT_TRUE(account_row);
+    CheckHoverableAccountRow(accounts[accounts_index++], account_suffix,
+                             /*has_display_identifier=*/true, expect_idp,
+                             is_modal_dialog);
+  }
+}
 
-    // Check for account name in title.
-    EXPECT_EQ(GetHoverButtonTitle(account_row),
-              base::UTF8ToUTF16(kNameBase + account_suffix));
+void AccountSelectionViewTestBase::CheckHoverableAccountRow(
+    views::View* account,
+    const std::string& account_suffix,
+    bool has_display_identifier,
+    bool expect_idp,
+    bool is_modal_dialog,
+    bool is_disabled) {
+  // RunScheduledLayout() is needed due to widget auto-resize.
+  views::test::RunScheduledLayout(account);
 
-    // Check for account email in subtitle.
+  ASSERT_EQ("HoverButton", account->GetClassName());
+  HoverButton* account_row = static_cast<HoverButton*>(account);
+  ASSERT_TRUE(account_row);
+
+  // Check for the title, which is the display name if the account is not
+  // filtered out and the display identifier otherwise.
+  EXPECT_EQ(GetHoverButtonTitle(account_row),
+            (is_disabled && has_display_identifier)
+                ? base::UTF8ToUTF16(kDisplayIdentifierBase + account_suffix)
+                : base::UTF8ToUTF16(kDisplayNameBase + account_suffix));
+
+  if (!is_disabled) {
+    if (has_display_identifier) {
+      // Check for account display identifier in subtitle.
+      EXPECT_EQ(GetHoverButtonSubtitle(account_row)->GetText(),
+                base::UTF8ToUTF16(std::string(kDisplayIdentifierBase) +
+                                  account_suffix));
+    } else {
+      EXPECT_EQ(nullptr, GetHoverButtonSubtitle(account_row));
+    }
+    EXPECT_TRUE(account_row->GetEnabled());
+  } else {
+    // Check that the subtitle says that the account is disabled.
     EXPECT_EQ(GetHoverButtonSubtitle(account_row)->GetText(),
-              base::UTF8ToUTF16(std::string(kEmailBase) + account_suffix));
+              u"You can't sign in using this account");
+    EXPECT_FALSE(account_row->GetEnabled());
+  }
+  if (is_disabled || has_display_identifier) {
     // The subtitle has changed style, so AutoColorReadabilityEnabled should be
     // set.
     EXPECT_TRUE(
         GetHoverButtonSubtitle(account_row)->GetAutoColorReadabilityEnabled());
+  }
 
-    // Check for account icon.
-    views::View* icon_view = GetHoverButtonIconView(account_row);
-    EXPECT_TRUE(icon_view);
+  // Check for account icon.
+  views::View* icon_view = GetHoverButtonIconView(account_row);
+  EXPECT_TRUE(icon_view);
+  EXPECT_EQ(icon_view->GetClassName(), "AccountImageView");
 
-    // Check for the IDP eTLD+1 in footer. This is not passed to the method but
-    // in our tests they all start with 'idp'.
-    if (expect_idp) {
-      EXPECT_TRUE(
-          GetHoverButtonFooter(account_row)->GetText().starts_with(u"idp"));
-    } else {
-      EXPECT_FALSE(GetHoverButtonFooter(account_row));
-    }
-    EXPECT_EQ(icon_view->size(),
-              is_modal_dialog ? gfx::Size(kModalAvatarSize, kModalAvatarSize)
-              : expect_idp    ? gfx::Size(kDesiredAvatarSize + kIdpBadgeOffset,
-                                          kDesiredAvatarSize + kIdpBadgeOffset)
-                           : gfx::Size(kDesiredAvatarSize, kDesiredAvatarSize));
+  // Check for the IDP eTLD+1 in footer. This is not passed to the method but
+  // in our tests they all start with 'idp'.
+  if (expect_idp) {
+    EXPECT_TRUE(
+        GetHoverButtonFooter(account_row)->GetText().starts_with(u"idp"));
+  } else {
+    EXPECT_FALSE(GetHoverButtonFooter(account_row));
+  }
+  EXPECT_EQ(
+      icon_view->size(),
+      is_modal_dialog
+          ? gfx::Size(webid::kModalAvatarSize, webid::kModalAvatarSize)
+      // Height is increased by 2 * offset so that the account icon is centered.
+      : expect_idp
+          ? gfx::Size(webid::kDesiredAvatarSize + webid::kIdpBadgeOffset,
+                      webid::kDesiredAvatarSize + 2 * webid::kIdpBadgeOffset)
+          : gfx::Size(webid::kDesiredAvatarSize, webid::kDesiredAvatarSize));
 
+  if (is_modal_dialog) {
     // Check for arrow icon in secondary view.
-    if (is_modal_dialog) {
-      views::ImageView* arrow_icon_view = static_cast<views::ImageView*>(
-          GetHoverButtonSecondaryView(account_row));
-      EXPECT_TRUE(arrow_icon_view);
-    } else {
-      EXPECT_FALSE(GetHoverButtonSecondaryView(account_row));
-    }
-    if (expect_idp) {
-      std::vector<raw_ptr<views::View, VectorExperimental>> icon_children =
-          icon_view->children();
-      ASSERT_EQ(icon_children.size(), 2u);
-      EXPECT_STREQ(icon_children[0]->GetClassName(), "AccountImageView");
-      EXPECT_EQ(icon_children[0]->size(),
-                gfx::Size(kDesiredAvatarSize + kIdpBadgeOffset,
-                          kDesiredAvatarSize + kIdpBadgeOffset));
-      EXPECT_STREQ(icon_children[1]->GetClassName(), "BoxLayoutView");
-      ASSERT_EQ(icon_children[1]->children().size(), 1u);
-      views::View* brand_icon_image_view = icon_children[1]->children()[0];
-      EXPECT_STREQ(brand_icon_image_view->GetClassName(), "BrandIconImageView");
-    } else {
-      EXPECT_STREQ(icon_view->GetClassName(), "AccountImageView");
-    }
+    AccountHoverButtonSecondaryView* secondary_view =
+        static_cast<AccountHoverButtonSecondaryView*>(
+            GetHoverButtonSecondaryView(account_row));
+    EXPECT_TRUE(secondary_view);
+
+    // Check that arrow icon can be replaced with a spinner.
+    secondary_view->ReplaceWithSpinner();
+    views::Throbber* spinner_view =
+        static_cast<views::Throbber*>(secondary_view->children()[0]);
+    EXPECT_TRUE(spinner_view);
+  } else {
+    EXPECT_FALSE(GetHoverButtonSecondaryView(account_row));
   }
 }
 
@@ -245,3 +309,5 @@ void AccountSelectionViewTestBase::CheckDisclosureText(
 
   EXPECT_EQ(disclosure_label->GetText(), expected_disclosure_text);
 }
+
+}  // namespace webid

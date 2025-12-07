@@ -12,8 +12,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "services/device/geolocation/network_location_provider.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
 #include "services/device/public/cpp/device_features.h"
@@ -23,11 +26,48 @@
 
 namespace device {
 
+namespace {
+
+std::string_view LocationProviderManagerModeAsString(
+    mojom::LocationProviderManagerMode mode) {
+  switch (mode) {
+    case mojom::LocationProviderManagerMode::kNetworkOnly:
+      return "kNetworkOnly";
+    case mojom::LocationProviderManagerMode::kPlatformOnly:
+      return "kPlatformOnly";
+    case mojom::LocationProviderManagerMode::kCustomOnly:
+      return "kCustomOnly";
+    case mojom::LocationProviderManagerMode::kHybridPlatform:
+      return "kHybridPlatform";
+    case mojom::LocationProviderManagerMode::kHybridPlatform2:
+      return "kHybridPlatform2";
+    case mojom::LocationProviderManagerMode::kHybridFallbackNetwork:
+      return "kHybridFallbackNetwork";
+  }
+  NOTREACHED() << "LocationProviderManagerModeAsString: Unexpected mode: ";
+}
+
+}  // namespace
+
 using ::device::mojom::LocationProviderManagerMode::kCustomOnly;
 using ::device::mojom::LocationProviderManagerMode::kHybridFallbackNetwork;
 using ::device::mojom::LocationProviderManagerMode::kHybridPlatform;
+using ::device::mojom::LocationProviderManagerMode::kHybridPlatform2;
 using ::device::mojom::LocationProviderManagerMode::kNetworkOnly;
 using ::device::mojom::LocationProviderManagerMode::kPlatformOnly;
+
+enum class LocationProviderManagerSource {
+  // NOTE: Do not renumber these as that would confuse interpretation of
+  // previously logged data. When making changes, also update the enum list
+  // in tools/metrics/histograms/metadata/geolocation/enums.xml to keep it in
+  // sync.
+  kNetworkProvider = 0,
+  kPlatformProvider = 1,
+  kCustomProvider = 2,
+
+  // NOTE: Add entries only immediately above this line.
+  kMaxValue = kCustomProvider,
+};
 
 LocationProviderManager::LocationProviderManager(
     CustomLocationProviderCallback custom_location_provider_getter,
@@ -48,8 +88,8 @@ LocationProviderManager::LocationProviderManager(
       internals_updated_closure_(std::move(internals_updated_closure)),
       network_request_callback_(std::move(network_request_callback)),
       network_response_callback_(std::move(network_response_callback)) {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, default to using the platform location provider.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On Android and iOS, default to using the platform location provider.
   provider_manager_mode_ = kPlatformOnly;
 #elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   // On Ash / Lacros / Linux, default to using the network location provider.
@@ -58,6 +98,10 @@ LocationProviderManager::LocationProviderManager(
   // On macOS / Windows platforms, use the mode specified by the feature flag.
   provider_manager_mode_ = features::kLocationProviderManagerParam.Get();
 #endif
+  GEOLOCATION_LOG(DEBUG) << "LocationProviderManager::LocationProviderManager: "
+                            "provider_manager_mode_ is initialized to "
+                         << LocationProviderManagerModeAsString(
+                                provider_manager_mode_);
 }
 
 LocationProviderManager::~LocationProviderManager() {
@@ -106,6 +150,7 @@ void LocationProviderManager::StartProvider(bool enable_high_accuracy) {
         break;
       case kPlatformOnly:
       case kHybridPlatform:
+      case kHybridPlatform2:
         platform_location_provider_->StartProvider(enable_high_accuracy_);
     }
   }
@@ -122,6 +167,19 @@ void LocationProviderManager::StopProvider() {
   platform_location_provider_.reset();
   custom_location_provider_.reset();
   is_running_ = false;
+
+  // Disable any fallback mechanisms by resetting `provider_manager_mode_ ` when
+  // stopping the provider. This allows new location requests to attempt using
+  // the preferred provider (configured by Finch or Chrome flags). Currently
+  // implemented only for macOS; add other platforms here if they support
+  // fallback.
+#if BUILDFLAG(IS_MAC)
+  provider_manager_mode_ = features::kLocationProviderManagerParam.Get();
+  GEOLOCATION_LOG(DEBUG) << "LocationProviderManager::StopProvider: Resetting "
+                            "provider_manager_mode_ to "
+                         << LocationProviderManagerModeAsString(
+                                provider_manager_mode_);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void LocationProviderManager::RegisterProvider(LocationProvider& provider) {
@@ -164,6 +222,7 @@ bool LocationProviderManager::InitializeProvider() {
       break;
     case kPlatformOnly:
     case kHybridPlatform:
+    case kHybridPlatform2:
       platform_location_provider_ = NewSystemLocationProvider();
       if (!platform_location_provider_) {
         return false;
@@ -184,9 +243,39 @@ void LocationProviderManager::OnLocationUpdate(
 
   switch (provider_manager_mode_) {
     case kHybridPlatform:
-    // TODO(crbug.com/346842084): kHybridPlatform mode currently behaves the
-    // same as kPlatformOnly. fallback mechanism will not be added until
-    // platform provider is fully evaluated.
+    case kHybridPlatform2:
+      platform_location_provider_result_ = new_result.Clone();
+      if (new_result->is_error()) {
+        GEOLOCATION_LOG(DEBUG) << base::StringPrintf(
+            "LocationProviderManager::OnLocationUpdate: Error code %d is "
+            "received when in %s mode.",
+            (int)new_result->get_error()->error_code,
+            LocationProviderManagerModeAsString(provider_manager_mode_));
+
+        // Initiate fallback to network provider if:
+        // 1. The current mode is `kHybridPlatform2`, OR
+        // 2. The current mode is `kHybridPlatform` and the error is
+        // `kWifiDisabled`.
+        if (provider_manager_mode_ == kHybridPlatform2 ||
+            (provider_manager_mode_ == kHybridPlatform &&
+             new_result->get_error()->error_code ==
+                 device::mojom::GeopositionErrorCode::kWifiDisabled)) {
+          provider_manager_mode_ = kHybridFallbackNetwork;
+          platform_location_provider_->StopProvider();
+          platform_location_provider_.reset();
+          network_location_provider_ =
+              NewNetworkLocationProvider(url_loader_factory_, api_key_);
+          RegisterProvider(*network_location_provider_.get());
+          network_location_provider_->StartProvider(enable_high_accuracy_);
+          // Notify GeolocationProviderImpl of the location provider manager
+          // mode change.
+          internals_updated_closure_.Run();
+          // Skip location update and wait for the network location provider to
+          // provide an update.
+          return;
+        }
+      }
+      break;
     case kPlatformOnly:
       platform_location_provider_result_ = new_result.Clone();
       break;
@@ -199,12 +288,31 @@ void LocationProviderManager::OnLocationUpdate(
       break;
   }
 
+  if (new_result->is_position()) {
+    base::UmaHistogramEnumeration("Geolocation.LocationProviderManager.Mode",
+                                  provider_manager_mode_);
+
+    LocationProviderManagerSource source;
+    if (provider == network_location_provider_.get()) {
+      source = LocationProviderManagerSource::kNetworkProvider;
+    } else if (provider == platform_location_provider_.get()) {
+      source = LocationProviderManagerSource::kPlatformProvider;
+    } else if (provider == custom_location_provider_.get()) {
+      source = LocationProviderManagerSource::kCustomProvider;
+    } else {
+      NOTREACHED();
+    }
+    base::UmaHistogramEnumeration("Geolocation.LocationProviderManager.Source",
+                                  source);
+  }
+
   location_update_callback_.Run(this, std::move(new_result));
 }
 
 const mojom::GeopositionResult* LocationProviderManager::GetPosition() {
   switch (provider_manager_mode_) {
     case kHybridPlatform:
+    case kHybridPlatform2:
     case kPlatformOnly:
       return platform_location_provider_result_.get();
     case kNetworkOnly:
@@ -222,8 +330,12 @@ void LocationProviderManager::FillDiagnostics(
         mojom::GeolocationDiagnostics::ProviderState::kStopped;
     return;
   }
+
+  diagnostics.location_provider_manager_mode = provider_manager_mode_;
+
   switch (provider_manager_mode_) {
     case kHybridPlatform:
+    case kHybridPlatform2:
     case kPlatformOnly:
       return platform_location_provider_->FillDiagnostics(diagnostics);
     case kNetworkOnly:

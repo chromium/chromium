@@ -15,6 +15,7 @@ class RawRead
     void Reset();
     size_t Read(size_t Size);
     void Read(byte *SrcData,size_t Size);
+    void Compact();
     byte   Get1();
     ushort Get2();
     uint   Get4();

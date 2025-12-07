@@ -21,18 +21,19 @@ namespace {
 const V8PrivateProperty::SymbolKey kV8ProxyTargetToV8WrapperKey;
 
 const WrapperTypeInfo kWrapperTypeInfoBody{
-    gin::kEmbedderBlink,
+    {gin::kEmbedderBlink},
     /*install_interface_template_func=*/nullptr,
     /*install_context_dependent_props_func=*/nullptr,
     "ObservableArrayExoticObject",
     /*parent_class=*/nullptr,
-    kDOMWrappersTag,
-    kDOMWrappersTag,
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kObservableArrayExoticObjectTag),
+    static_cast<v8::CppHeapPointerTag>(
+        ScriptWrappableArrayTag::kV8ObservableArraySpeechRecognitionPhraseTag),
     WrapperTypeInfo::kWrapperTypeNoPrototype,
     // v8::Proxy (without an internal field) is used as a (pseudo) wrapper.
     WrapperTypeInfo::kNoInternalFieldClassId,
-    WrapperTypeInfo::kNotInheritFromActiveScriptWrappable,
-    WrapperTypeInfo::kIdlObservableArray,
+    WrapperTypeInfo::kIdlOtherType,
 };
 
 }  // namespace
@@ -40,7 +41,7 @@ const WrapperTypeInfo kWrapperTypeInfoBody{
 namespace bindings {
 
 ObservableArrayBase::ObservableArrayBase(
-    ScriptWrappable* platform_object,
+    GarbageCollectedMixin* platform_object,
     ObservableArrayExoticObject* observable_array_exotic_object)
     : platform_object_(platform_object),
       observable_array_exotic_object_(observable_array_exotic_object) {
@@ -56,9 +57,9 @@ v8::Local<v8::Object> ObservableArrayBase::GetProxyHandlerObject(
       v8_function_template->GetFunction(v8_context).ToLocalChecked();
   v8::Local<v8::Object> v8_object =
       v8_function->NewInstance(v8_context).ToLocalChecked();
-  CHECK(
-      v8_object->SetPrototype(v8_context, v8::Null(script_state->GetIsolate()))
-          .ToChecked());
+  CHECK(v8_object
+            ->SetPrototypeV2(v8_context, v8::Null(script_state->GetIsolate()))
+            .ToChecked());
   return v8_object;
 }
 
@@ -149,8 +150,7 @@ v8::Local<v8::Object> ObservableArrayExoticObject::AssociateWithWrapper(
     v8::Local<v8::Object> wrapper) {
   // The proxy object does not have an internal field and cannot be associated
   // with a Blink object directly.
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 }  // namespace blink

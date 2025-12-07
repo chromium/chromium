@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_sets.h"
 
 #include <cmath>
+#include <optional>
 
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
@@ -100,7 +96,7 @@ bool IsPositiveFiniteAspectRatio(double aspect_ratio) {
 // |vertices| must have 1 or 2 elements. Otherwise, behavior is undefined.
 // This function is called when |point| has already been determined to be
 // outside a polygon and |vertices| is the vertex or side closest to |point|.
-Point GetClosestPointToVertexOrSide(const Vector<Point> vertices,
+Point GetClosestPointToVertexOrSide(const Vector<Point>& vertices,
                                     const Point& point) {
   DCHECK(!vertices.empty());
   // If only a single vertex closest to |point|, return that vertex.
@@ -128,10 +124,6 @@ Point& Point::operator=(const Point& other) = default;
 
 bool Point::operator==(const Point& other) const {
   return height_ == other.height_ && width_ == other.width_;
-}
-
-bool Point::operator!=(const Point& other) const {
-  return !(*this == other);
 }
 
 bool Point::IsApproximatelyEqualTo(const Point& other) const {
@@ -363,10 +355,8 @@ Point ResolutionSet::SelectClosestPointToIdeal(
       return ClosestPointTo(Point(ideal_height, ideal_width));
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return Point(-1, -1);
 }
 
 Point ResolutionSet::SelectClosestPointToIdealAspectRatio(
@@ -407,7 +397,7 @@ Point ResolutionSet::ClosestPointTo(const Point& point) const {
   DCHECK_GE(vertices.size(), 1U);
   Point best_candidate(0, 0);
   double best_distance = HUGE_VAL;
-  for (WTF::wtf_size_t i = 0; i < vertices.size(); ++i) {
+  for (wtf_size_t i = 0; i < vertices.size(); ++i) {
     Point candidate = Point::ClosestPointInSegment(
         point, vertices[i], vertices[(i + 1) % vertices.size()]);
     double distance = Point::SquareEuclideanDistance(point, candidate);
@@ -535,7 +525,7 @@ void ResolutionSet::TryAddVertex(Vector<Point>* vertices,
   // This is to prevent duplicates in case an aspect ratio intersects a width
   // or height right on a vertex.
   if (vertices->empty() ||
-      (*(vertices->end() - 1) != point && *vertices->begin() != point)) {
+      (vertices->back() != point && vertices->front() != point)) {
     vertices->push_back(point);
   }
 }
@@ -590,6 +580,43 @@ DiscreteSet<bool> RescaleSetFromConstraint(
     return DiscreteSet<bool>({true});
 
   return DiscreteSet<bool>::EmptySet();
+}
+
+NumericRangeWithBoolSupportSet<double>
+DoubleRangeWithBoolSupportSetFromConstraint(
+    const DoubleOrBooleanConstraint& constraint) {
+  if (!constraint.HasMandatory()) {
+    return NumericRangeWithBoolSupportSet<double>();
+  }
+
+  std::optional<double> max, min;
+  std::optional<bool> support;
+
+  if (constraint.HasMax()) {
+    max = constraint.Max();
+    support = true;
+  }
+  if (constraint.HasMin()) {
+    min = constraint.Min();
+    support = true;
+  }
+  if (constraint.HasExact()) {
+    if ((max && *max < constraint.Exact()) ||
+        (min && *min > constraint.Exact())) {
+      return NumericRangeWithBoolSupportSet<double>::EmptySet();
+    }
+    max = min = constraint.Exact();
+    support = true;
+  }
+  if (constraint.HasExactBoolean()) {
+    if (support.has_value() && *support != constraint.ExactBoolean()) {
+      return NumericRangeWithBoolSupportSet<double>::EmptySet();
+    }
+    support = constraint.ExactBoolean();
+  }
+
+  return NumericRangeWithBoolSupportSet<double>(std::move(min), std::move(max),
+                                                std::move(support));
 }
 
 }  // namespace media_constraints

@@ -66,11 +66,11 @@ TEST_F(UntrustedAnnotatorPageHandlerImplTest, SetTool) {
   expected_tool.size = 5;
   expected_tool.type = AnnotatorToolType::kPen;
   EXPECT_CALL(annotator(), SetTool)
-      .WillOnce(testing::Invoke([&](annotator::mojom::AnnotatorToolPtr tool) {
+      .WillOnce([&](annotator::mojom::AnnotatorToolPtr tool) {
         EXPECT_EQ(tool->size, expected_tool.size);
         EXPECT_EQ(tool->tool, expected_tool.GetToolString());
         EXPECT_EQ(tool->color, expected_tool.GetColorHexString());
-      }));
+      });
 
   handler().SetTool(expected_tool);
   annotator().FlushReceiverForTesting();

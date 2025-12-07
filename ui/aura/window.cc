@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/aura/window.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <sstream>
 #include <utility>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
@@ -22,12 +20,11 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "components/viz/common/features.h"
@@ -61,6 +58,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_target_iterator.h"
@@ -160,7 +158,7 @@ class ScopedCursorHider {
       client::CursorClient* cursor_client = client::GetCursorClient(window_);
       if (cursor_client) {
         const display::Display& display =
-            display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
+            display::Screen::Get()->GetDisplayNearestWindow(window_);
         cursor_client->SetDisplay(display);
         cursor_client->ShowCursor();
       }
@@ -255,18 +253,19 @@ Window::~Window() {
   if (frame_sink_id_.is_valid() && !embeds_external_client_) {
     auto* context_factory = Env::GetInstance()->context_factory();
     auto* host_frame_sink_manager = context_factory->GetHostFrameSinkManager();
-    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_, this);
+    host_frame_sink_manager->InvalidateFrameSinkId(frame_sink_id_, this, {});
   }
 }
 
 void Window::Init(ui::LayerType layer_type) {
+  CHECK(!layer()) << "Window is already initialized";
+
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
 
   SetLayer(std::make_unique<ui::Layer>(layer_type));
   layer()->SetVisible(false);
   layer()->set_delegate(this);
   UpdateLayerName();
-  layer()->SetFillsBoundsOpaquely(!transparent_);
   Env::GetInstance()->NotifyWindowInitialized(this);
 }
 
@@ -326,15 +325,19 @@ bool Window::GetTransparent() const {
 }
 
 void Window::SetTransparent(bool transparent) {
+  CHECK(layer());
   if (transparent == transparent_)
     return;
   transparent_ = transparent;
-  if (layer())
+
+  if (layer()->type() != ui::LAYER_SOLID_COLOR) {
     layer()->SetFillsBoundsOpaquely(!transparent_);
+  }
   TriggerChangedCallback(&transparent_);
 }
 
 void Window::SetFillsBoundsCompletely(bool fills_bounds) {
+  CHECK(layer());
   layer()->SetFillsBoundsCompletely(fills_bounds);
 }
 
@@ -358,7 +361,9 @@ const WindowTreeHost* Window::GetHost() const {
 }
 
 void Window::Show() {
-  DCHECK_EQ(visible_, layer()->GetTargetVisibility());
+  CHECK(layer());
+  CHECK_EQ(visible_, layer()->GetTargetVisibility());
+
   // It is not allowed that a window is visible but the layers alpha is fully
   // transparent since the window would still be considered to be active but
   // could not be seen.
@@ -367,11 +372,15 @@ void Window::Show() {
 }
 
 void Window::Hide() {
+  CHECK(layer());
+
   // RootWindow::OnVisibilityChanged will call ReleaseCapture.
   SetVisibleInternal(false);
 }
 
 bool Window::IsVisible() const {
+  CHECK(layer());
+
   // Layer visibility can be inconsistent with window visibility, for example
   // when a Window is hidden, we want this function to return false immediately
   // after, even though the client may decide to animate the hide effect (and
@@ -410,6 +419,7 @@ gfx::Rect Window::GetActualBoundsInRootWindow() const {
 }
 
 const gfx::Transform& Window::transform() const {
+  CHECK(layer());
   return layer()->transform();
 }
 
@@ -440,6 +450,7 @@ gfx::Rect Window::GetActualBoundsInScreen() const {
 }
 
 void Window::SetTransform(const gfx::Transform& transform) {
+  CHECK(layer());
   WindowOcclusionTracker::ScopedPause pause_occlusion_tracking;
   for (WindowObserver& observer : observers_)
     observer.OnWindowTargetTransformChanging(this, transform);
@@ -462,6 +473,7 @@ std::unique_ptr<WindowTargeter> Window::SetEventTargeter(
 }
 
 void Window::SetBounds(const gfx::Rect& new_bounds) {
+  CHECK(layer());
   if (parent_ && parent_->layout_manager()) {
     parent_->layout_manager()->SetChildBounds(this, new_bounds);
   } else {
@@ -479,6 +491,7 @@ void Window::SetBounds(const gfx::Rect& new_bounds) {
 
 void Window::SetBoundsInScreen(const gfx::Rect& new_bounds_in_screen,
                                const display::Display& dst_display) {
+  CHECK(layer());
   if (auto* screen_position_client =
           aura::client::GetScreenPositionClient(GetRootWindow())) {
     screen_position_client->SetBounds(this, new_bounds_in_screen, dst_display);
@@ -492,10 +505,12 @@ gfx::Rect Window::GetTargetBounds() const {
 }
 
 void Window::ScheduleDraw() {
+  CHECK(layer());
   layer()->ScheduleDraw();
 }
 
 void Window::SchedulePaintInRect(const gfx::Rect& rect) {
+  CHECK(layer());
   layer()->SchedulePaint(rect);
 }
 
@@ -715,6 +730,8 @@ bool Window::HasObserver(const WindowObserver* observer) const {
 }
 
 void Window::SetEventTargetingPolicy(EventTargetingPolicy policy) {
+  CHECK(layer());
+
   // If the event targeting is blocked on the window, do not allow change event
   // targeting policy until all event targeting blockers are removed from the
   // window.
@@ -794,7 +811,7 @@ Window* Window::GetEventHandlerForPoint(const gfx::Point& local_point) {
           return match;
         break;
       case EventTargetingPolicy::kNone:
-        NOTREACHED_IN_MIGRATION();  // This case is handled early on.
+        NOTREACHED();  // This case is handled early on.
     }
   }
 
@@ -1127,8 +1144,8 @@ void Window::RemoveChildImpl(Window* child, Window* new_parent) {
   if (child->OwnsLayer())
     layer()->Remove(child->layer());
   child->parent_ = nullptr;
-  auto i = base::ranges::find(children_, child);
-  CHECK(i != children_.end(), base::NotFatalUntil::M130);
+  auto i = std::ranges::find(children_, child);
+  CHECK(i != children_.end());
   children_.erase(i);
   child->OnParentChanged();
   if (layout_manager_)
@@ -1160,9 +1177,9 @@ void Window::StackChildRelativeTo(Window* child,
     return;
 
   const size_t child_i =
-      base::ranges::find(children_, child) - children_.begin();
+      std::ranges::find(children_, child) - children_.begin();
   const size_t target_i =
-      base::ranges::find(children_, target) - children_.begin();
+      std::ranges::find(children_, target) - children_.begin();
 
   DCHECK_LT(child_i, children_.size()) << "Child was not in list of children!";
   DCHECK_LT(target_i, children_.size())
@@ -1375,8 +1392,6 @@ std::unique_ptr<cc::LayerTreeFrameSink> Window::CreateLayerTreeFrameSink() {
       frame_sink_id_, std::move(sink_receiver), std::move(client_remote));
 
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
-  params.gpu_memory_buffer_manager =
-      Env::GetInstance()->context_factory()->GetGpuMemoryBufferManager();
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
   auto frame_sink =
@@ -1512,6 +1527,14 @@ void Window::NotifyResizeLoopEnded() {
     observer.OnResizeLoopEnded(this);
 }
 
+void Window::NotifyMoveLoopStarted() {
+  observers_.Notify(&WindowObserver::OnMoveLoopStarted, this);
+}
+
+void Window::NotifyMoveLoopEnded() {
+  observers_.Notify(&WindowObserver::OnMoveLoopEnded, this);
+}
+
 void Window::OnPaintLayer(const ui::PaintContext& context) {
   Paint(context);
 }
@@ -1539,13 +1562,13 @@ void Window::OnLayerBoundsChanged(const gfx::Rect& old_bounds,
 
   // Trigger the changed notification for each of the bounds "properties".
   if (old_bounds.x() != bounds_.x())
-    TriggerChangedCallback(&bounds_ + kBoundsX);
+    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsX));
   if (old_bounds.y() != bounds_.y())
-    TriggerChangedCallback(&bounds_ + kBoundsY);
+    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsY));
   if (old_bounds.width() != bounds_.width())
-    TriggerChangedCallback(&bounds_ + kBoundsWidth);
+    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsWidth));
   if (old_bounds.height() != bounds_.height())
-    TriggerChangedCallback(&bounds_ + kBoundsHeight);
+    TriggerChangedCallback(UNSAFE_TODO(&bounds_ + kBoundsHeight));
 }
 
 void Window::OnLayerOpacityChanged(ui::PropertyChangeReason reason) {
@@ -1857,6 +1880,8 @@ bool Window::GetVisible() const {
 }
 
 void Window::SetVisible(bool visible) {
+  CHECK(layer());
+
   if (visible == IsVisible())
     return;
   if (visible)

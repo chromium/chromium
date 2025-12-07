@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
@@ -13,18 +13,17 @@
 class SupervisedUserSettingsServiceFactoryTest : public PlatformTest {
  protected:
   SupervisedUserSettingsServiceFactoryTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()) {}
+      : profile_(TestProfileIOS::Builder().Build()) {}
 
-  // ChromeBrowserState needs thread.
+  // ProfileIOS needs thread.
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
 };
 
 // Tests that SupervisedUserSettingsServiceFactory creates
 // SupervisedUserSettingsService.
 TEST_F(SupervisedUserSettingsServiceFactoryTest, CreateService) {
   supervised_user::SupervisedUserSettingsService* service =
-      SupervisedUserSettingsServiceFactory::GetForBrowserState(
-          browser_state_.get());
+      SupervisedUserSettingsServiceFactory::GetForProfile(profile_.get());
   ASSERT_TRUE(service);
 }

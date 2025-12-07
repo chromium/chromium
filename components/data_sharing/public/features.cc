@@ -5,16 +5,98 @@
 #include "components/data_sharing/public/features.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 
 namespace data_sharing::features {
+namespace {
+const char kDataSharingDefaultUrl[] = "https://www.google.com/chrome/tabshare/";
+const char kLearnMoreSharedTabGroupPageDefaultUrl[] =
+    "https://support.google.com/chrome/?p=chrome_collaboration";
+const char kLearnAboutBlockedAccountsDefaultUrl[] =
+    "https://support.google.com/accounts/answer/6388749";
+const char kActivityLogsDefaultUrl[] =
+    "https://myactivity.google.com/product/"
+    "chrome_shared_tab_group_activity?utm_source=chrome_collab";
+
+}  // namespace
+
+BASE_FEATURE(kCollaborationEntrepriseV2, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataSharingFeature,
              "DataSharing",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDataSharingAccountDataMigration,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDataSharingJoinOnly, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDataSharingNonProductionEnvironment,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSharedDataTypesKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDataSharingEnableUpdateChromeUI,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsDataSharingFunctionalityEnabled() {
+  return base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingFeature) ||
+         base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingJoinOnly);
+}
+
+bool ShouldInterceptUrlForVersioning() {
+  return !base::FeatureList::IsEnabled(
+             data_sharing::features::kSharedDataTypesKillSwitch) ||
+         base::FeatureList::IsEnabled(
+             data_sharing::features::kDataSharingEnableUpdateChromeUI);
+}
+
 constexpr base::FeatureParam<std::string> kDataSharingURL(
     &kDataSharingFeature,
     "data_sharing_url",
-    /*default_value=*/"https://www.chromium.org/data_sharing/");
+    kDataSharingDefaultUrl);
+
+constexpr base::FeatureParam<ServerEnvironment>::Option
+    kServerEnvironmentOptions[] = {
+        {ServerEnvironment::kProduction, "production"},
+        {ServerEnvironment::kStaging, "staging"},
+        {ServerEnvironment::kAutopush, "autopush"}};
+
+constexpr base::FeatureParam<ServerEnvironment> kServerEnvironment(
+    &kDataSharingNonProductionEnvironment,
+    "server_environment",
+    ServerEnvironment::kAutopush,
+    &kServerEnvironmentOptions);
+
+ServerEnvironment GetServerEnvironment() {
+  if (base::FeatureList::IsEnabled(kDataSharingNonProductionEnvironment)) {
+    return kServerEnvironment.Get();
+  } else {
+    return ServerEnvironment::kProduction;
+  }
+}
+
+constexpr base::FeatureParam<std::string> kLearnMoreSharedTabGroupPageURL(
+    &kDataSharingFeature,
+    "learn_more_shared_tab_group_page_url",
+    kLearnMoreSharedTabGroupPageDefaultUrl);
+
+constexpr base::FeatureParam<std::string> kLearnAboutBlockedAccountsURL(
+    &kDataSharingFeature,
+    "learn_about_blocked_accounts_url",
+    kLearnAboutBlockedAccountsDefaultUrl);
+
+constexpr base::FeatureParam<std::string> kActivityLogsURL(
+    &kDataSharingFeature,
+    "activity_logs_url",
+    kActivityLogsDefaultUrl);
+
+constexpr base::FeatureParam<base::TimeDelta>
+    kDataSharingGroupDataPeriodicPollingInterval(
+        &kDataSharingFeature,
+        "data_sharing_group_data_periodic_polling_interval",
+        base::Days(1));
 
 }  // namespace data_sharing::features

@@ -28,6 +28,7 @@
 #include "google_apis/drive/request_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/mime_util.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"

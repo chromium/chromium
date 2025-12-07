@@ -8,34 +8,98 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill/address_editor_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_dialog_controller.h"
 #include "chrome/browser/ui/autofill/edit_address_profile_view.h"
+#include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/views/autofill/address_editor_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace autofill {
 
-AutofillBubbleBase* ShowEditAddressProfileDialogView(
+namespace {
+
+class AutofillBubbleUI : public AutofillBubbleBase {
+ public:
+  AutofillBubbleUI(std::unique_ptr<views::Widget> dialog,
+                   EditAddressProfileView* profile_view);
+  AutofillBubbleUI(const AutofillBubbleUI&) = delete;
+  AutofillBubbleUI& operator=(const AutofillBubbleUI&) = delete;
+  ~AutofillBubbleUI() override;
+
+ private:
+  // Overrides from AutofillBubbleBase:
+  void Hide() override;
+  bool IsMouseHovered() const override;
+
+  void CloseWidget(views::Widget::ClosedReason closed_reason);
+
+  std::unique_ptr<views::Widget> dialog_;
+  raw_ptr<EditAddressProfileView> profile_view_ = nullptr;
+};
+
+AutofillBubbleUI::AutofillBubbleUI(std::unique_ptr<views::Widget> dialog,
+                                   EditAddressProfileView* profile_view)
+    : dialog_(std::move(dialog)), profile_view_(profile_view) {
+  dialog_->MakeCloseSynchronous(
+      base::BindOnce(&AutofillBubbleUI::CloseWidget, base::Unretained(this)));
+}
+
+AutofillBubbleUI::~AutofillBubbleUI() = default;
+
+void AutofillBubbleUI::Hide() {
+  dialog_->Close();
+}
+
+bool AutofillBubbleUI::IsMouseHovered() const {
+  // The edit view is not part of the bubbles managed by `BubbleManager`.
+  NOTREACHED();
+}
+
+void AutofillBubbleUI::CloseWidget(views::Widget::ClosedReason closed_reason) {
+  // We need to hold the dialog here so it remains alive long enough for the
+  // stack to be cleaned up from the WidgetClosed() call. This keeps potential
+  // dangling pointer checks from triggering as the stack unwinds.
+  auto dialog = std::move(dialog_);
+  profile_view_->WidgetClosed();
+  dialog.reset();
+}
+
+}  // namespace
+
+std::unique_ptr<AutofillBubbleBase> ShowEditAddressProfileDialogView(
     content::WebContents* web_contents,
     EditAddressProfileDialogController* controller) {
-  EditAddressProfileView* dialog = new EditAddressProfileView(controller);
+  auto* dialog = new EditAddressProfileView(controller);
   dialog->ShowForWebContents(web_contents);
-  constrained_window::ShowWebModalDialogViews(dialog, web_contents);
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(web_contents);
+  auto widget =
+      tab_interface->GetTabFeatures()
+          ->tab_dialog_manager()
+          ->CreateAndShowDialog(
+              dialog, std::make_unique<tabs::TabDialogManager::Params>());
   dialog->RequestFocus();
-  return dialog;
+  return std::make_unique<AutofillBubbleUI>(std::move(widget), dialog);
 }
 
 EditAddressProfileView::EditAddressProfileView(
@@ -43,8 +107,13 @@ EditAddressProfileView::EditAddressProfileView(
     : controller_(controller) {
   DCHECK(controller);
 
-  SetButtons(ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  // TODO(crbug.com/338254375): Remove the following line once this is the
+  // default state for widgets.
+  SetOwnershipOfNewWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk) |
+             static_cast<int>(ui::mojom::DialogButton::kCancel));
+  SetModalType(ui::mojom::ModalType::kChild);
   SetShowCloseButton(false);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
@@ -64,8 +133,8 @@ EditAddressProfileView::EditAddressProfileView(
 
   SetProperty(views::kElementIdentifierKey, kTopViewId);
   SetTitle(controller_->GetWindowTitle());
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL));
 }
@@ -103,24 +172,20 @@ void EditAddressProfileView::ShowForWebContents(
   }
 }
 
-void EditAddressProfileView::Hide() {
-  controller_ = nullptr;
-  GetWidget()->Close();
-}
-
 views::View* EditAddressProfileView::GetInitiallyFocusedView() {
   return address_editor_view_ ? address_editor_view_->initial_focus_view()
                               : nullptr;
 }
 
-void EditAddressProfileView::WindowClosing() {
+void EditAddressProfileView::WidgetClosed() {
   if (controller_) {
-    controller_->OnDialogClosed(
-        decision_,
-        decision_ == AutofillClient::AddressPromptUserDecision::kEditAccepted
-            ? base::optional_ref(address_editor_view_->GetAddressProfile())
-            : std::nullopt);
-    controller_ = nullptr;
+    std::exchange(controller_, nullptr)
+        ->OnDialogClosed(
+            decision_,
+            decision_ ==
+                    AutofillClient::AddressPromptUserDecision::kEditAccepted
+                ? base::optional_ref(address_editor_view_->GetAddressProfile())
+                : std::nullopt);
   }
 }
 
@@ -139,7 +204,7 @@ void EditAddressProfileView::OnUserDecision(
 }
 
 void EditAddressProfileView::UpdateActionButtonState(bool is_valid) {
-  SetButtonEnabled(ui::DIALOG_BUTTON_OK, is_valid);
+  SetButtonEnabled(ui::mojom::DialogButton::kOk, is_valid);
 }
 
 bool EditAddressProfileView::OnAcceptButtonClicked() {

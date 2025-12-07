@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
@@ -19,52 +20,37 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/passwords/password_generation_popup_controller.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_observer.h"
 #include "chrome/browser/ui/passwords/password_generation_popup_view.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
-#include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/input/native_web_keyboard_event.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
-#include "components/password_manager/core/common/password_manager_pref_names.h"
-#include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/text_utils.h"
 
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "components/signin/public/base/consent_level.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 using autofill::SuggestionHidingReason;
 using autofill::password_generation::PasswordGenerationType;
-#if !BUILDFLAG(IS_ANDROID)
-using password_manager::features::kPasswordGenerationExperimentVariationParam;
-using password_manager::features::PasswordGenerationVariation;
-using password_manager::prefs::kPasswordGenerationNudgePasswordDismissCount;
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-namespace {
-#if !BUILDFLAG(IS_ANDROID)
-constexpr int kMaxAllowedAmountOfNudgePasswordPopupRejections = 4;
-#endif  // !BUILDFLAG(IS_ANDROID)
-}  // namespace
 
 // Handles registration for key events with RenderFrameHost.
 class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
@@ -110,8 +96,7 @@ PasswordGenerationPopupControllerImpl::GetOrCreate(
     const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
     PasswordGenerationPopupObserver* observer,
     content::WebContents* web_contents,
-    content::RenderFrameHost* frame,
-    PrefService* pref_service) {
+    content::RenderFrameHost* frame) {
   if (previous.get() && previous->element_bounds() == bounds &&
       previous->web_contents() == web_contents &&
       previous->driver_.get() == driver.get() &&
@@ -124,8 +109,8 @@ PasswordGenerationPopupControllerImpl::GetOrCreate(
   }
 
   PasswordGenerationPopupControllerImpl* controller =
-      new PasswordGenerationPopupControllerImpl(
-          bounds, ui_data, driver, observer, web_contents, frame, pref_service);
+      new PasswordGenerationPopupControllerImpl(bounds, ui_data, driver,
+                                                observer, web_contents, frame);
   return controller->GetWeakPtr();
 }
 
@@ -135,14 +120,12 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
     const base::WeakPtr<password_manager::PasswordManagerDriver>& driver,
     PasswordGenerationPopupObserver* observer,
     content::WebContents* web_contents,
-    content::RenderFrameHost* frame,
-    PrefService* pref_service)
+    content::RenderFrameHost* frame)
     : content::WebContentsObserver(web_contents),
       view_(nullptr),
       form_data_(ui_data.form_data),
       driver_(driver),
       observer_(observer),
-      pref_service_(pref_service),
       form_signature_(autofill::CalculateFormSignature(form_data_)),
       field_signature_(autofill::CalculateFieldSignatureByNameAndType(
           ui_data.generation_element,
@@ -154,20 +137,14 @@ PasswordGenerationPopupControllerImpl::PasswordGenerationPopupControllerImpl(
                          web_contents->GetNativeView()),
       state_(kOfferGeneration),
       key_press_handler_manager_(new KeyPressRegistrator(frame)) {
-#if !BUILDFLAG(IS_ANDROID)
   // There may not always be a ZoomController, e.g. in tests.
   if (auto* zoom_controller =
           zoom::ZoomController::FromWebContents(web_contents)) {
     zoom_observation_.Observe(zoom_controller);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID)
   help_text_ = l10n_util::GetStringUTF16(
       IDS_PASSWORD_GENERATION_PROMPT_GOOGLE_PASSWORD_MANAGER);
-#else
-  help_text_ = l10n_util::GetStringUTF16(IDS_PASSWORD_GENERATION_PROMPT);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 PasswordGenerationPopupControllerImpl::
@@ -180,24 +157,16 @@ PasswordGenerationPopupControllerImpl::GetWeakPtr() {
 
 bool PasswordGenerationPopupControllerImpl::HandleKeyPressEvent(
     const input::NativeWebKeyboardEvent& event) {
-  bool nudge_password_enabled = false;
-  // Password generation experiments are defined for Desktop only.
-#if !BUILDFLAG(IS_ANDROID)
-  nudge_password_enabled = ShouldShowNudgePassword();
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
     case ui::VKEY_DOWN:
-      if (nudge_password_enabled) {
-        SelectElement(
-            cancel_button_selected()
-                ? PasswordGenerationPopupElement::kNudgePasswordAcceptButton
-                : PasswordGenerationPopupElement::kNudgePasswordCancelButton);
-        return true;
+      if (!IsSelectable()) {
+        return false;
       }
 
-      SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
+      SelectElement(cancel_button_selected()
+                        ? PasswordGenerationPopupElement::kAcceptButton
+                        : PasswordGenerationPopupElement::kCancelButton);
       return true;
     case ui::VKEY_ESCAPE:
       HideImpl();
@@ -218,12 +187,11 @@ bool PasswordGenerationPopupControllerImpl::IsVisible() const {
 
 bool PasswordGenerationPopupControllerImpl::PossiblyAcceptSelectedElement() {
   switch (selected_element_) {
-    case PasswordGenerationPopupElement::kUseStrongPassword:
-    case PasswordGenerationPopupElement::kNudgePasswordAcceptButton:
+    case PasswordGenerationPopupElement::kAcceptButton:
       PasswordAccepted();
       return true;
-    case PasswordGenerationPopupElement::kNudgePasswordCancelButton:
-      HideImpl();
+    case PasswordGenerationPopupElement::kCancelButton:
+      PasswordRejected();
       return true;
     default:
       return false;
@@ -240,29 +208,14 @@ void PasswordGenerationPopupControllerImpl::SelectElement(
     return;
   }
 
-  if (element == PasswordGenerationPopupElement::kNone) {
-    driver_->ClearPreviewedForm();
-  } else {
-    driver_->PreviewGenerationSuggestion(current_generated_password_);
-  }
-
   selected_element_ = element;
-  view_->PasswordSelectionUpdated();
-  view_->NudgePasswordSelectionUpdated();
+  view_->ButtonSelectionUpdated();
 }
 
 void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
   if (state_ != kOfferGeneration) {
     return;
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (kPasswordGenerationExperimentVariationParam.Get() ==
-          PasswordGenerationVariation::kNudgePassword &&
-      pref_service_) {
-    pref_service_->SetInteger(kPasswordGenerationNudgePasswordDismissCount, 0);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtr<PasswordGenerationPopupControllerImpl> weak_this = GetWeakPtr();
   if (driver_) {
@@ -277,6 +230,14 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     driver_->FocusNextFieldAfterPasswords();
     weak_this->HideImpl();
   }
+}
+
+void PasswordGenerationPopupControllerImpl::PasswordRejected() {
+  CHECK_EQ(state_, kOfferGeneration);
+  if (driver_) {
+    driver_->GeneratedPasswordRejected();
+  }
+  HideImpl();
 }
 
 void PasswordGenerationPopupControllerImpl::GeneratePasswordValue(
@@ -321,15 +282,15 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
     }
   }
 
-  // In `kNudgePassword` Desktop experiment password is previewed straight away
-  // in offer generation state.
-#if !BUILDFLAG(IS_ANDROID)
-  if (state == kOfferGeneration &&
-      kPasswordGenerationExperimentVariationParam.Get() ==
-          PasswordGenerationVariation::kNudgePassword) {
+  // Preview password on show in generation state.
+  if (state_ == kOfferGeneration) {
     driver_->PreviewGenerationSuggestion(current_generated_password_);
+
+    // For the screen reader users, move the focus to the accept button on show.
+    if (ui::AXPlatform::GetInstance().IsScreenReaderActive()) {
+      SelectElement(PasswordGenerationPopupElement::kAcceptButton);
+    }
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (observer_) {
     observer_->OnPopupShown(state_);
@@ -365,7 +326,6 @@ void PasswordGenerationPopupControllerImpl::PrimaryPageChanged(
   HideImpl();
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void PasswordGenerationPopupControllerImpl::OnZoomControllerDestroyed(
     zoom::ZoomController* zoom_controller) {
   zoom_observation_.Reset();
@@ -375,19 +335,8 @@ void PasswordGenerationPopupControllerImpl::OnZoomChanged(
     const zoom::ZoomController::ZoomChangedEventData& data) {
   HideImpl();
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 void PasswordGenerationPopupControllerImpl::Hide(SuggestionHidingReason) {
-#if !BUILDFLAG(IS_ANDROID)
-  if (ShouldShowNudgePassword()) {
-    pref_service_->SetInteger(
-        kPasswordGenerationNudgePasswordDismissCount,
-        pref_service_->GetInteger(
-            kPasswordGenerationNudgePasswordDismissCount) +
-            1);
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   HideImpl();
 }
 
@@ -397,15 +346,6 @@ void PasswordGenerationPopupControllerImpl::ViewDestroyed() {
   HideImpl();
 }
 
-void PasswordGenerationPopupControllerImpl::SelectionCleared() {
-  SelectElement(PasswordGenerationPopupElement::kNone);
-}
-
-void PasswordGenerationPopupControllerImpl::SetSelected() {
-  SelectElement(PasswordGenerationPopupElement::kUseStrongPassword);
-}
-
-#if !BUILDFLAG(IS_ANDROID)
 std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
   content::WebContents* web_contents = GetWebContents();
   if (!web_contents) {
@@ -422,17 +362,6 @@ std::u16string PasswordGenerationPopupControllerImpl::GetPrimaryAccountEmail() {
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email);
 }
-
-bool PasswordGenerationPopupControllerImpl::ShouldShowNudgePassword() const {
-  return state_ == kOfferGeneration &&
-         kPasswordGenerationExperimentVariationParam.Get() ==
-             PasswordGenerationVariation::kNudgePassword &&
-         pref_service_ &&
-         pref_service_->GetInteger(
-             kPasswordGenerationNudgePasswordDismissCount) <
-             kMaxAllowedAmountOfNudgePasswordPopupRejections;
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 gfx::NativeView PasswordGenerationPopupControllerImpl::container_view() const {
   return controller_common_.container_view;
@@ -482,19 +411,12 @@ PasswordGenerationPopupControllerImpl::state() const {
   return state_;
 }
 
-bool PasswordGenerationPopupControllerImpl::password_selected() const {
-  return selected_element_ ==
-         PasswordGenerationPopupElement::kUseStrongPassword;
-}
-
 bool PasswordGenerationPopupControllerImpl::accept_button_selected() const {
-  return selected_element_ ==
-         PasswordGenerationPopupElement::kNudgePasswordAcceptButton;
+  return selected_element_ == PasswordGenerationPopupElement::kAcceptButton;
 }
 
 bool PasswordGenerationPopupControllerImpl::cancel_button_selected() const {
-  return selected_element_ ==
-         PasswordGenerationPopupElement::kNudgePasswordCancelButton;
+  return selected_element_ == PasswordGenerationPopupElement::kCancelButton;
 }
 
 const std::u16string& PasswordGenerationPopupControllerImpl::password() const {
@@ -506,28 +428,6 @@ std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() const {
     return l10n_util::GetStringUTF16(
         IDS_PASSWORD_GENERATION_EDITING_SUGGESTION);
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordGenerationExperiment)) {
-    switch (kPasswordGenerationExperimentVariationParam.Get()) {
-      case PasswordGenerationVariation::kTrustedAdvice:
-        return l10n_util::GetStringUTF16(
-            IDS_PASSWORD_GENERATION_SUGGESTION_TRUSTED_ADVICE);
-      case PasswordGenerationVariation::kSafetyFirst:
-        return l10n_util::GetStringUTF16(
-            IDS_PASSWORD_GENERATION_SUGGESTION_SAFETY_FIRST);
-      case PasswordGenerationVariation::kTrySomethingNew:
-        return l10n_util::GetStringUTF16(
-            IDS_PASSWORD_GENERATION_SUGGESTION_TRY_SOMETHING_NEW);
-      case PasswordGenerationVariation::kConvenience:
-        return l10n_util::GetStringUTF16(
-            IDS_PASSWORD_GENERATION_SUGGESTION_CONVENIENCE);
-      default:
-        break;
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   return l10n_util::GetStringUTF16(
       current_generated_password_.size() >=

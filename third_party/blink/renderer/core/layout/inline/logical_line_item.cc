@@ -121,11 +121,13 @@ void LogicalLineItems::MoveInBlockDirection(LayoutUnit delta,
 }
 
 void LogicalLineItem::Trace(Visitor* visitor) const {
+  visitor->Trace(inline_item);
   visitor->Trace(shape_result);
   visitor->Trace(layout_result);
   visitor->Trace(layout_object);
   visitor->Trace(out_of_flow_positioned_box);
   visitor->Trace(unpositioned_float);
+  visitor->Trace(fit_text_scale);
 }
 
 void LogicalLineItems::Trace(Visitor* visitor) const {

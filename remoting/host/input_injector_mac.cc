@@ -21,6 +21,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -315,7 +316,7 @@ void InputInjectorMac::Core::InjectTextEvent(const TextEvent& event) {
   }
 
   while (grapheme_iterator.Advance()) {
-    std::u16string_view grapheme = grapheme_iterator.GetStringView();
+    std::u16string_view grapheme = grapheme_iterator.GetString();
 
     if (grapheme.length() == 1 && grapheme[0] == '\n') {
       // On Mac, the return key sends "\r" rather than "\n", so handle it

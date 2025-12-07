@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_
 #define ASH_SYSTEM_PRIVACY_HUB_PRIVACY_HUB_NOTIFICATION_H_
 
+#include <array>
 #include <optional>
 #include <set>
 #include <string>

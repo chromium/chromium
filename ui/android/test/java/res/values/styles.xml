@@ -18,4 +18,30 @@ found in the LICENSE file.
   <style name="StyleIntoTextAppearance">
     <item name="android:textAppearance">@style/StyleWithLeading</item>
   </style>
+
+  <style name="ThemeOverlay.BlackPrimary" parent="">
+    <item name="colorPrimary">@android:color/black</item>
+  </style>
+
+  <style name="ThemeOverlay.WhitePrimary" parent="">
+    <item name="colorPrimary">@android:color/white</item>
+  </style>
+
+  <style name="ThemeOverlay.BluePrimary" parent="">
+    <item name="colorPrimary">@android:color/holo_blue_light</item>
+    <item name="android:textColorHighlight">@android:color/holo_blue_light</item>
+  </style>
+
+  <style name="ThemeOverlay.WhitePrimary.WithTextColor">
+    <item name="android:textColorHighlight">@android:color/white</item>
+  </style>
+
+  <style name="ThemeOverlay.TextLarge.SizeOnly" parent="">
+    <item name="textLargeSize">@dimen/text_size_large</item>
+  </style>
+
+  <style name="ThemeOverlay.TextLarge.Medium" parent="">
+    <item name="textLargeSize">@dimen/text_size_large_desktop</item>
+    <item name="textLargeLeading">@dimen/text_size_large_leading_desktop</item>
+  </style>
 </resources>

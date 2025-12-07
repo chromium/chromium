@@ -21,6 +21,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
@@ -50,7 +52,7 @@ void EnableEsbAndShowSettings(content::WebContents* web_contents) {
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   SetSafeBrowsingState(profile->GetPrefs(),
                        SafeBrowsingState::ENHANCED_PROTECTION,
-                       /*is_esb_enabled_in_sync=*/false);
+                       /*is_esb_enabled_by_account_integration=*/false);
   if (!chrome::FindBrowserWithTab(web_contents)) {
     return;
   }
@@ -96,7 +98,7 @@ void TailoredSecurityUnconsentedModal::ShowForWebContents(
 TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
 
   SetTitle(IDS_TAILORED_SECURITY_UNCONSENTED_MODAL_TITLE);
   auto* bodyLabel = AddChildView(std::make_unique<views::Label>(
@@ -108,10 +110,10 @@ TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
       ChromeLayoutProvider::Get()->GetInsetsMetric(views::INSETS_DIALOG)));
   set_fixed_width(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
-  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+  SetButtonLabel(ui::mojom::DialogButton::kOk,
                  l10n_util::GetStringUTF16(
                      IDS_TAILORED_SECURITY_UNCONSENTED_ACCEPT_BUTTON));
-  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+  SetButtonLabel(ui::mojom::DialogButton::kCancel,
                  l10n_util::GetStringUTF16(
                      IDS_TAILORED_SECURITY_UNCONSENTED_CANCEL_BUTTON));
 
@@ -132,8 +134,9 @@ TailoredSecurityUnconsentedModal::TailoredSecurityUnconsentedModal(
 TailoredSecurityUnconsentedModal::~TailoredSecurityUnconsentedModal() = default;
 
 bool TailoredSecurityUnconsentedModal::IsDialogButtonEnabled(
-    ui::DialogButton button) const {
-  return (button == ui::DIALOG_BUTTON_OK || button == ui::DIALOG_BUTTON_CANCEL);
+    ui::mojom::DialogButton button) const {
+  return (button == ui::mojom::DialogButton::kOk ||
+          button == ui::mojom::DialogButton::kCancel);
 }
 
 bool TailoredSecurityUnconsentedModal::ShouldShowCloseButton() const {
@@ -145,8 +148,9 @@ void TailoredSecurityUnconsentedModal::AddedToWidget() {
       IdentityManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
   if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin))
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
+  }
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   gfx::ImageSkia header_image =

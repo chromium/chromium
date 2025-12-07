@@ -5,6 +5,7 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_NT_TYPES_H_
 #define SANDBOX_WIN_SRC_SANDBOX_NT_TYPES_H_
 
+#include "base/compiler_specific.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {
@@ -39,10 +40,10 @@ struct NtExports {
   RtlDestroyHeapFunction                 RtlDestroyHeap;
   RtlFreeHeapFunction                    RtlFreeHeap;
   RtlNtStatusToDosErrorFunction          RtlNtStatusToDosError;
-  _strnicmpFunction                      _strnicmp;
-  strlenFunction                         strlen;
-  wcslenFunction                         wcslen;
-  memcpyFunction                         memcpy;
+  UNSAFE_BUFFER_USAGE _strnicmpFunction  _strnicmp;
+  UNSAFE_BUFFER_USAGE strlenFunction     strlen;
+  UNSAFE_BUFFER_USAGE wcslenFunction     wcslen;
+  UNSAFE_BUFFER_USAGE memcpyFunction     memcpy;
 };
 // clang-format on
 

@@ -4,11 +4,10 @@ This directory contains files for managing ChromeOS users. Historically,
 the code manages both user and user sessions. There is an on-going effort
 to move user session related code into //components/session_manager.
 
-UserManager is the interface for managing ChromeOS users. UserManagerBase
-is a base implementation of the interface. Finally, the concrete instance
-used is ChromeUserManagerImpl derived from UserManagerBase.
+UserManager is the interface for managing ChromeOS users. UserManagerImpl
+is the production implementation of the interface.
 
-ChromeUserManagerImpl is created at the PreProfileInit stage and destroyed at
+UserManagerImpl is created at the PreProfileInit stage and destroyed at
 the PostMainMessageLoopRun stage, via
 BrowserProcessPlatformPart::InitializeUserManager() and
 BrowserProcessPlatformPart::DestroyUserManager.

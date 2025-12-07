@@ -49,3 +49,28 @@ export function assertNotReached(message: string = 'Unreachable code hit'):
     never {
   assert(false, message);
 }
+
+/**
+ * Statically and dynamically assert that a code should not be reached.
+ *
+ * For example, handling all the values of enum with a switch() like this:
+ *
+ *   function getValueFromEnum(value: SomeEnum): number {
+ *     switch (value) {
+ *       case ENUM_FIRST_OF_TWO:
+ *         return 1;
+ *       case ENUM_LAST_OF_TWO:
+ *         return 2;
+ *       default:
+ *         assertNotReachedCase(value);
+ *     }
+ *   }
+ *
+ * Helper function that should be preferred over assertNotReached in switch/case
+ * statements referring to enums, because it results in a build time error if the
+ * 'case' statements are not exhaustive. At runtime it behaves identically to
+ * assertNotReached.
+ */
+export function assertNotReachedCase(_param: never, message?: string): never {
+  assertNotReached(message);
+}

@@ -4,8 +4,9 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import '../settings_shared.css.js';
 import '../controls/settings_toggle_button.js';
+import '../icons.html.js';
+import '../settings_shared.css.js';
 
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -47,8 +48,8 @@ export class SettingsDoNotTrackToggleElement extends PolymerElement {
     };
   }
 
-  prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
-  private showDialog_: boolean;
+  declare prefs: {enable_do_not_track: chrome.settingsPrivate.PrefObject};
+  declare private showDialog_: boolean;
 
   private onDomChange_() {
     if (this.showDialog_) {

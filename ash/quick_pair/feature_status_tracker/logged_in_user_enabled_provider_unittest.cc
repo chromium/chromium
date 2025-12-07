@@ -32,7 +32,7 @@ class LoggedInUserEnabledProviderTest : public AshTestBase {
 
  protected:
   void Login(user_manager::UserType user_type) {
-    SimulateUserLogin(kUserEmail, user_type);
+    SimulateUserLogin({kUserEmail, user_type});
   }
 
   std::unique_ptr<LoggedInUserEnabledProvider> provider_;
@@ -55,7 +55,7 @@ TEST_F(LoggedInUserEnabledProviderTest, LockAndUnlock) {
 }
 
 TEST_F(LoggedInUserEnabledProviderTest, Kiosk) {
-  Login(user_manager::UserType::kKioskApp);
+  Login(user_manager::UserType::kKioskChromeApp);
   EXPECT_FALSE(provider_->is_enabled());
 }
 

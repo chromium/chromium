@@ -8,16 +8,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(AssertionsTest, Assertions) {
   DCHECK(true);
 #if DCHECK_IS_ON()
   EXPECT_DEATH_IF_SUPPORTED(DCHECK(false), "");
-  EXPECT_DEATH_IF_SUPPORTED(DCHECK_AT(false, __FILE__, __LINE__), "");
+  EXPECT_DEATH_IF_SUPPORTED(DCHECK_AT(false, base::Location::Current()), "");
 #else
   DCHECK(false);
-  DCHECK_AT(false, __FILE__, __LINE__);
+  DCHECK_AT(false, base::Location::Current());
 #endif
 
   CHECK(true);
@@ -36,4 +36,4 @@ TEST(AssertionsTest, Assertions) {
   EXPECT_DEATH_IF_SUPPORTED(SECURITY_CHECK(false), "");
 }
 
-}  // namespace WTF
+}  // namespace blink

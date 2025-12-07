@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "build/build_config.h"
+#include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 
 class GURL;
@@ -60,9 +62,6 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
 #if defined(USE_AURA)
     HTML = 1 << 5,
 #endif
-#if BUILDFLAG(IS_CHROMEOS)
-    DATA_TRANSFER_ENDPOINT = 1 << 6,
-#endif
   };
 
   OSExchangeData();
@@ -104,9 +103,9 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   //            the order of enumeration in our IEnumFORMATETC implementation!
   //            This comes into play when selecting the best (most preferable)
   //            data type for insertion into a DropTarget.
-  void SetString(const std::u16string& data);
+  void SetString(std::u16string_view data);
   // A URL can have an optional title in some exchange formats.
-  void SetURL(const GURL& url, const std::u16string& title);
+  void SetURL(const GURL& url, std::u16string_view title);
   // A full path to a file.
   void SetFilename(const base::FilePath& path);
   // Full path to one or more files. See also SetFilenames() in Provider.
@@ -122,9 +121,13 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   // GetString() returns the plain text representation of the pasteboard
   // contents.
   std::optional<std::u16string> GetString() const;
-  using UrlInfo = OSExchangeDataProvider::UrlInfo;
-  std::optional<UrlInfo> GetURLAndTitle(FilenameToURLPolicy policy) const;
-  std::optional<std::vector<GURL>> GetURLs(FilenameToURLPolicy policy) const;
+  // Gets the URL and title from the drag data.
+  // Returns an empty vector if no valid URL/title data is present.
+  // TODO(http://crbug.com/41011768): Remove this method to merge these together
+  // as GetURLs().
+  std::vector<ClipboardUrlInfo> GetURLsAndTitles(
+      FilenameToURLPolicy policy) const;
+  std::vector<ui::ClipboardUrlInfo> GetURLs(FilenameToURLPolicy policy) const;
   // Return information about the contained files, if any.
   std::optional<std::vector<FileInfo>> GetFilenames() const;
   std::optional<base::Pickle> GetPickledData(

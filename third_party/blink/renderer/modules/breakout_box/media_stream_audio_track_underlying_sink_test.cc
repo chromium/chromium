@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "media/base/limits.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
@@ -37,16 +38,6 @@
 
 using testing::_;
 using testing::StrictMock;
-
-namespace WTF {
-template <>
-struct CrossThreadCopier<
-    std::unique_ptr<blink::WritableStreamTransferringOptimizer>> {
-  STATIC_ONLY(CrossThreadCopier);
-  using Type = std::unique_ptr<blink::WritableStreamTransferringOptimizer>;
-  static Type Copy(Type pointer) { return pointer; }
-};
-}  // namespace WTF
 
 namespace blink {
 
@@ -103,8 +94,9 @@ class MediaStreamAudioTrackUnderlyingSinkTest : public testing::Test {
     AudioDataInit* init = AudioDataInit::Create();
     init->setFormat(V8AudioSampleFormat::Enum::kF32);
     init->setSampleRate(31600.0f);
-    init->setNumberOfFrames(316u);
-    init->setNumberOfChannels(26u);  // This maps to CHANNEL_LAYOUT_UNSUPPORTED
+    init->setNumberOfFrames(media::limits::kMaxSamplesPerPacket +
+                            1);  // Invalid frame count.
+    init->setNumberOfChannels(1u);
     init->setTimestamp(1u);
     init->setData(
         MakeGarbageCollected<AllowSharedBufferSource>(DOMArrayBuffer::Create(
@@ -185,25 +177,31 @@ TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteInvalidDataFails) {
                   v8::Integer::New(script_state->GetIsolate(), 0));
 
   // Writing something that is not an AudioData to the sink should fail.
-  DummyExceptionStateForTesting dummy_exception_state;
-  sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
-  EXPECT_TRUE(dummy_exception_state.HadException());
+  {
+    DummyExceptionStateForTesting dummy_exception_state;
+    sink->write(script_state, v8_integer, nullptr, dummy_exception_state);
+    EXPECT_TRUE(dummy_exception_state.HadException());
+  }
 
   // Writing a null value to the sink should fail.
-  dummy_exception_state.ClearException();
-  EXPECT_FALSE(dummy_exception_state.HadException());
-  sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
-              nullptr, dummy_exception_state);
-  EXPECT_TRUE(dummy_exception_state.HadException());
+  {
+    DummyExceptionStateForTesting dummy_exception_state;
+    EXPECT_FALSE(dummy_exception_state.HadException());
+    sink->write(script_state, ScriptValue::CreateNull(v8_scope.GetIsolate()),
+                nullptr, dummy_exception_state);
+    EXPECT_TRUE(dummy_exception_state.HadException());
+  }
 
   // Writing a closed AudioData to the sink should fail.
-  dummy_exception_state.ClearException();
-  AudioData* audio_data = nullptr;
-  auto chunk = CreateAudioData(script_state, &audio_data);
-  audio_data->close();
-  EXPECT_FALSE(dummy_exception_state.HadException());
-  sink->write(script_state, chunk, nullptr, dummy_exception_state);
-  EXPECT_TRUE(dummy_exception_state.HadException());
+  {
+    DummyExceptionStateForTesting dummy_exception_state;
+    AudioData* audio_data = nullptr;
+    auto chunk = CreateAudioData(script_state, &audio_data);
+    audio_data->close();
+    EXPECT_FALSE(dummy_exception_state.HadException());
+    sink->write(script_state, chunk, nullptr, dummy_exception_state);
+    EXPECT_TRUE(dummy_exception_state.HadException());
+  }
 }
 
 TEST_F(MediaStreamAudioTrackUnderlyingSinkTest, WriteToAbortedSinkFails) {

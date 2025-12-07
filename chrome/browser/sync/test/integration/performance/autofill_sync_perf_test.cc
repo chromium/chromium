@@ -11,8 +11,8 @@
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/performance/sync_timing_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/sync/engine/cycle/sync_cycle_context.h"
 #include "content/public/test/browser_test.h"
@@ -172,7 +172,7 @@ const std::string AutofillProfileSyncPerfTest::NextName() {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillProfileSyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumProfiles) + "_profiles");
@@ -229,7 +229,7 @@ const std::string AutocompleteSyncPerfTest::NextName() {
 }
 
 IN_PROC_BROWSER_TEST_F(AutocompleteSyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumKeys) + "_keys");

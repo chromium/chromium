@@ -39,6 +39,7 @@ goog.inherits(
  * Redraw the ellipse.  Called when the coordinate system is changed.
  * @protected
  * @override
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.graphics.ext.Ellipse.prototype.redraw = function() {
   'use strict';

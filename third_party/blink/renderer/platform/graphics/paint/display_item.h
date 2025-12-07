@@ -7,11 +7,12 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_client_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -21,10 +22,6 @@
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #endif
-
-namespace WTF {
-class String;
-}  // namespace WTF
 
 namespace blink {
 
@@ -177,9 +174,9 @@ class PLATFORM_EXPORT DisplayItem {
 
     // The no-argument version is for operator<< which is used in DCHECK and
     // unit tests.
-    WTF::String ToString() const;
+    String ToString() const;
     // This version will output the debug name of the client.
-    WTF::String ToString(const PaintArtifact&) const;
+    String ToString(const PaintArtifact&) const;
 
     const DisplayItemClientId client_id;
     const Type type;
@@ -283,9 +280,9 @@ class PLATFORM_EXPORT DisplayItem {
   bool IsSubsequenceTombstone() const {
     return !is_not_tombstone_ && client_id_ == kInvalidDisplayItemClientId;
   }
-  static WTF::String TypeAsDebugString(DisplayItem::Type);
-  WTF::String AsDebugString(const PaintArtifact&) const;
-  WTF::String IdAsString(const PaintArtifact&) const;
+  static String TypeAsDebugString(DisplayItem::Type);
+  String AsDebugString(const PaintArtifact&) const;
+  String IdAsString(const PaintArtifact&) const;
   void PropertiesAsJSON(JSONObject&, const PaintArtifact&) const;
 #endif
 
@@ -352,10 +349,6 @@ inline bool operator==(const DisplayItem::Id& a, const DisplayItem::Id& b) {
          a.fragment == b.fragment;
 }
 
-inline bool operator!=(const DisplayItem::Id& a, const DisplayItem::Id& b) {
-  return !(a == b);
-}
-
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, DisplayItem::Type);
 // These are mainly for DCHECK and unit tests. They don't output debug names of
 // DisplayItemClients. Use the argumented version of DisplayItem::Id::ToString()
@@ -363,14 +356,10 @@ PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, DisplayItem::Type);
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem::Id&);
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const DisplayItem&);
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct HashTraits<blink::DisplayItem::Id::HashKey>
-    : GenericHashTraits<blink::DisplayItem::Id::HashKey> {
-  using Key = blink::DisplayItem::Id::HashKey;
+struct HashTraits<DisplayItem::Id::HashKey>
+    : GenericHashTraits<DisplayItem::Id::HashKey> {
+  using Key = DisplayItem::Id::HashKey;
   static constexpr bool kEmptyValueIsZero = true;
   static void ConstructDeletedValue(Key& slot) {
     const_cast<wtf_size_t&>(slot.fragment) = kNotFound;
@@ -378,14 +367,14 @@ struct HashTraits<blink::DisplayItem::Id::HashKey>
   static bool IsDeletedValue(const Key& id) { return id.fragment == kNotFound; }
 
   static unsigned GetHash(const Key& id) {
-    unsigned hash = WTF::GetHash(id.client_id);
-    WTF::AddIntToHash(hash, id.type);
-    WTF::AddIntToHash(hash, id.fragment);
+    unsigned hash = blink::GetHash(id.client_id);
+    AddIntToHash(hash, id.type);
+    AddIntToHash(hash, id.fragment);
     return hash;
   }
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_H_

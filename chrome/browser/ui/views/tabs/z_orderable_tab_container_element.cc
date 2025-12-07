@@ -30,9 +30,9 @@ float ZOrderableTabContainerElement::CalculateZValue(views::View* child) {
   TabGroupHighlight* highlight = views::AsViewClass<TabGroupHighlight>(child);
   DCHECK_EQ(1, !!tab + !!header + !!underline + !!highlight);
 
-  // Construct a bitfield that encodes |child|'s z-value. Higher-order bits
+  // Construct a bitfield that encodes `child`'s z-value. Higher-order bits
   // encode more important properties - see usage below for details on each.
-  // The lowest-order |num_bits_reserved_for_tab_style_z_value| bits are
+  // The lowest-order `num_bits_reserved_for_tab_style_z_value` bits are
   // reserved for the factors considered by TabStyle, e.g. selection and hover
   // state.
   constexpr int num_bits_reserved_for_tab_style_z_value =
@@ -46,12 +46,14 @@ float ZOrderableTabContainerElement::CalculateZValue(views::View* child) {
   unsigned int z_value = 0;
 
   // The active tab is always on top.
-  if (tab && tab->IsActive())
+  if (tab && tab->IsActive()) {
     z_value |= kActiveTab;
+  }
 
   // Group headers and underlines are painted above non-active tabs.
-  if (header || underline)
+  if (header || underline) {
     z_value |= kGroupView;
+  }
 
   // The non-active tabs are painted next. They are ordered by their selected
   // or hovered state, which is animated and thus real-valued.

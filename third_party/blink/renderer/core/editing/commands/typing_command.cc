@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/editing/commands/typing_command.h"
 
+#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -115,6 +116,7 @@ DispatchEventResult DispatchTextInputEvent(LocalFrame* frame,
 }
 
 PlainTextRange GetSelectionOffsets(const SelectionInDOMTree& selection) {
+  TRACE_EVENT0("blink", "GetSelectionOffsets");
   const EphemeralRange range = selection.ComputeRange();
   if (range.IsNull())
     return PlainTextRange();
@@ -194,8 +196,9 @@ TypingCommand::TypingCommand(Document& document,
                              const String& text_to_insert,
                              Options options,
                              TextGranularity granularity,
-                             TextCompositionType composition_type)
-    : CompositeEditCommand(document),
+                             TextCompositionType composition_type,
+                             DataTransfer* data_transfer)
+    : CompositeEditCommand(document, data_transfer),
       command_type_(command_type),
       text_to_insert_(text_to_insert),
       open_for_more_typing_(true),
@@ -219,6 +222,7 @@ void TypingCommand::DeleteSelection(Document& document, Options options) {
   if (TypingCommand* last_typing_command =
           LastTypingCommandIfStillOpenForTyping(frame)) {
     UpdateSelectionIfDifferentFromCurrentSelection(last_typing_command, frame);
+    last_typing_command->input_type_ = InputEvent::InputType::kNone;
 
     // InputMethodController uses this function to delete composition
     // selection.  It won't be aborted.
@@ -265,6 +269,7 @@ void TypingCommand::DeleteKeyPressed(Document& document,
         UpdateSelectionIfDifferentFromCurrentSelection(last_typing_command,
                                                        frame);
         EditingState editing_state;
+        last_typing_command->input_type_ = InputEvent::InputType::kNone;
         last_typing_command->DeleteKeyPressed(granularity, options & kKillRing,
                                               &editing_state);
         return;
@@ -378,7 +383,9 @@ void TypingCommand::InsertText(
     EditingState* editing_state,
     TextCompositionType composition_type,
     const bool is_incremental_insertion,
-    InputEvent::InputType input_type) {
+    InputEvent::InputType input_type,
+    DataTransfer* data_transfer) {
+  TRACE_EVENT0("blink", "TypingCommand::InsertText");
   DCHECK(!document.NeedsLayoutTreeUpdate());
   LocalFrame* frame = document.GetFrame();
   DCHECK(frame);
@@ -455,7 +462,7 @@ void TypingCommand::InsertText(
 
   TypingCommand* command = MakeGarbageCollected<TypingCommand>(
       document, kInsertText, new_text, options, TextGranularity::kCharacter,
-      composition_type);
+      composition_type, data_transfer);
   const SelectionInDOMTree& current_selection =
       frame->Selection().GetSelectionInDOMTree();
   bool change_selection =
@@ -488,6 +495,7 @@ bool TypingCommand::InsertLineBreak(Document& document) {
           LastTypingCommandIfStillOpenForTyping(document.GetFrame())) {
     EditingState editing_state;
     EventQueueScope event_queue_scope;
+    last_typing_command->input_type_ = InputEvent::InputType::kNone;
     last_typing_command->InsertLineBreak(&editing_state);
     return !editing_state.IsAborted();
   }
@@ -502,6 +510,7 @@ bool TypingCommand::InsertParagraphSeparatorInQuotedContent(
           LastTypingCommandIfStillOpenForTyping(document.GetFrame())) {
     EditingState editing_state;
     EventQueueScope event_queue_scope;
+    last_typing_command->input_type_ = InputEvent::InputType::kNone;
     last_typing_command->InsertParagraphSeparatorInQuotedContent(
         &editing_state);
     return !editing_state.IsAborted();
@@ -517,6 +526,7 @@ bool TypingCommand::InsertParagraphSeparator(Document& document) {
           LastTypingCommandIfStillOpenForTyping(document.GetFrame())) {
     EditingState editing_state;
     EventQueueScope event_queue_scope;
+    last_typing_command->input_type_ = InputEvent::InputType::kNone;
     last_typing_command->InsertParagraphSeparator(&editing_state);
     return !editing_state.IsAborted();
   }
@@ -588,7 +598,7 @@ void TypingCommand::DoApply(EditingState* editing_state) {
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 InputEvent::InputType TypingCommand::GetInputType() const {
@@ -793,19 +803,16 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
 
   // The selection is updated prior to the removal of the element
   // that makes the node empty. (see crbug.com/40876506)
-  if (RuntimeEnabledFeatures::
-          HandleSelectionChangeOnDeletingEmptyElementEnabled()) {
-    LocalFrame* const frame = GetDocument().GetFrame();
-    const SelectionInDOMTree& new_selection =
-        SelectionInDOMTree::Builder()
-            .Collapse(Position::FirstPositionInNode(*root))
-            .Build();
-    frame->Selection().SetSelection(
-        new_selection, SetSelectionOptions::Builder()
-                           .SetIsDirectional(SelectionIsDirectional())
-                           .Build());
-    SetEndingSelection(SelectionForUndoStep::From(new_selection));
-  }
+  LocalFrame* const frame = GetDocument().GetFrame();
+  const SelectionInDOMTree& new_selection =
+      SelectionInDOMTree::Builder()
+          .Collapse(Position::FirstPositionInNode(*root))
+          .Build();
+  frame->Selection().SetSelection(
+      new_selection, SetSelectionOptions::Builder()
+                         .SetIsDirectional(SelectionIsDirectional())
+                         .Build());
+  SetEndingSelection(SelectionForUndoStep::From(new_selection));
 
   RemoveAllChildrenIfPossible(root, editing_state);
   if (editing_state->IsAborted() || root->firstChild())
@@ -814,18 +821,6 @@ bool TypingCommand::MakeEditableRootEmpty(EditingState* editing_state) {
   AddBlockPlaceholderIfNeeded(root, editing_state);
   if (editing_state->IsAborted())
     return false;
-
-  // If the feature to handle selection change on deleting an empty element is
-  // not enabled, manually set the ending selection. Otherwise, the selection is
-  // already handled by the feature.
-  if (!(RuntimeEnabledFeatures::
-            HandleSelectionChangeOnDeletingEmptyElementEnabled())) {
-    const SelectionInDOMTree& selection =
-        SelectionInDOMTree::Builder()
-            .Collapse(Position::FirstPositionInNode(*root))
-            .Build();
-    SetEndingSelection(SelectionForUndoStep::From(selection));
-  }
 
   return true;
 }
@@ -882,8 +877,7 @@ void TypingCommand::DeleteKeyPressed(TextGranularity granularity,
   }
 
   if (!EndingSelection().IsCaret()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // After breaking out of an empty mail blockquote, we still want continue
@@ -1069,8 +1063,7 @@ void TypingCommand::ForwardDeleteKeyPressed(TextGranularity granularity,
   }
 
   if (!EndingSelection().IsCaret()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   smart_delete_ = false;
@@ -1205,8 +1198,7 @@ void TypingCommand::UpdatePreservesTypingStyle(CommandType command_type) {
       preserves_typing_style_ = false;
       return;
   }
-  NOTREACHED_IN_MIGRATION();
-  preserves_typing_style_ = false;
+  NOTREACHED();
 }
 
 bool TypingCommand::IsTypingCommand() const {

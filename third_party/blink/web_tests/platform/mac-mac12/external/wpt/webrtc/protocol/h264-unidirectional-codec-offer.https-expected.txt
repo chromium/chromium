@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Offering a recvonly codec on a sendrecv transceiver
+  assert_equals: Two codecs are offered (H264, VP8). expected 2 but got 1
+[PRECONDITION_FAILED] Offer to send a sendonly H264 codec on a sendonly transceiver
+  There are no sendonly H264 codecs available in getCapabilities.
+Harness: the test ran to completion.
+

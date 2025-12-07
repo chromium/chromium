@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/chunked_data_pipe_upload_data_stream.h"
 
 #include "base/check_op.h"
@@ -88,8 +83,8 @@ int ChunkedDataPipeUploadDataStream::InitInternal(
 
 int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
                                                   int buf_len) {
-  DCHECK(!buf_);
-  DCHECK(buf);
+  CHECK(!buf_);
+  CHECK(buf);
   DCHECK_GT(buf_len, 0);
 
   // If there was an error either passed to the ReadCallback or as a result of
@@ -123,9 +118,8 @@ int ChunkedDataPipeUploadDataStream::ReadInternal(net::IOBuffer* buf,
   size_t num_bytes = base::checked_cast<size_t>(buf_len);
   if (size_ && num_bytes > *size_ - bytes_read_)
     num_bytes = *size_ - bytes_read_;
-  MojoResult rv = data_pipe_->ReadData(
-      MOJO_READ_DATA_FLAG_NONE,
-      base::as_writable_bytes(buf->span()).first(num_bytes), num_bytes);
+  MojoResult rv = data_pipe_->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                       buf->first(num_bytes), num_bytes);
   if (rv == MOJO_RESULT_OK) {
     bytes_read_ += num_bytes;
     // Not needed for correctness, but this allows the consumer to send the
@@ -224,7 +218,7 @@ void ChunkedDataPipeUploadDataStream::OnSizeReceived(int32_t status,
 }
 
 void ChunkedDataPipeUploadDataStream::OnHandleReadable(MojoResult result) {
-  DCHECK(buf_);
+  CHECK(buf_);
 
   // Final result of the Read() call, to be passed to the consumer.
   // Swap out |buf_| and |buf_len_|
@@ -279,7 +273,8 @@ void ChunkedDataPipeUploadDataStream::WriteToCacheIfNeeded(net::IOBuffer* buf,
     cache_state_ = CacheState::kExhausted;
     return;
   }
-  cache_.insert(cache_.end(), buf->data(), buf->data() + num_bytes);
+  auto to_write = buf->first(num_bytes);
+  cache_.insert(cache_.end(), to_write.begin(), to_write.end());
 }
 
 int ChunkedDataPipeUploadDataStream::ReadFromCacheIfNeeded(net::IOBuffer* buf,
@@ -291,8 +286,8 @@ int ChunkedDataPipeUploadDataStream::ReadFromCacheIfNeeded(net::IOBuffer* buf,
 
   int read_size =
       std::min(static_cast<int>(cache_.size() - bytes_read_), buf_len);
-  DCHECK_GT(read_size, 0);
-  memcpy(buf->data(), &cache_[bytes_read_], read_size);
+  buf->span().copy_prefix_from(base::as_byte_span(cache_).subspan(
+      bytes_read_, base::checked_cast<size_t>(read_size)));
   bytes_read_ += read_size;
   return read_size;
 }

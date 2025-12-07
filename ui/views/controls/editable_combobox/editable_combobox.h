@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -15,8 +16,9 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/combobox_model.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -33,7 +35,6 @@ class Range;
 }  // namespace gfx
 
 namespace ui {
-class ComboboxModel;
 class Event;
 class MenuModel;
 }  // namespace ui
@@ -93,11 +94,13 @@ class VIEWS_EXPORT EditableCombobox : public View,
 
   void SetModel(std::unique_ptr<ui::ComboboxModel> model);
 
-  const std::u16string& GetText() const;
-  void SetText(const std::u16string& text);
+  std::u16string_view GetText() const;
+  void SetText(std::u16string_view text);
 
-  const std::u16string& GetPlaceholderText() const;
-  void SetPlaceholderText(const std::u16string& text);
+  void SetInvalid(bool invalid);
+
+  std::u16string_view GetPlaceholderText() const;
+  void SetPlaceholderText(std::u16string_view text);
 
   const gfx::FontList& GetFontList() const;
 
@@ -131,6 +134,10 @@ class VIEWS_EXPORT EditableCombobox : public View,
 
   Button* GetArrowButtonForTesting() { return arrow_; }
 
+  // View:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
+
  private:
   friend class EditableComboboxTest;
   friend class EditablePasswordComboboxTest;
@@ -146,13 +153,14 @@ class VIEWS_EXPORT EditableCombobox : public View,
   void OnItemSelected(size_t index);
 
   // Notifies listener of new content and updates the menu items to show.
-  void HandleNewContent(const std::u16string& new_content);
+  void HandleNewContent(std::u16string_view new_content);
 
   // Toggles the dropdown menu in response to |event|.
   void ArrowButtonPressed(const ui::Event& event);
 
   // Shows the drop-down menu.
-  void ShowDropDownMenu(ui::MenuSourceType source_type = ui::MENU_SOURCE_NONE);
+  void ShowDropDownMenu(
+      ui::mojom::MenuSourceType source_type = ui::mojom::MenuSourceType::kNone);
 
   // Recalculates the extra insets of the textfield based on the size of the
   // controls container.

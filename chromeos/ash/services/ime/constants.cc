@@ -6,7 +6,6 @@
 
 #include <string.h>
 
-#include "base/files/file_util.h"
 #include "build/branding_buildflags.h"
 
 #define FPL FILE_PATH_LITERAL
@@ -35,8 +34,6 @@ const base::FilePath::CharType kUserInputMethodsDirPath[] =
 const base::FilePath::CharType kLanguageDataDirName[] =
     FILE_PATH_LITERAL("data");
 #endif
-
-const char kGoogleKeyboardDownloadDomain[] = "dl.google.com";
 
 }  // namespace ime
 }  // namespace ash

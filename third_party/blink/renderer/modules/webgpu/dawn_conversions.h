@@ -15,20 +15,21 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 // This file provides helpers for converting WebGPU objects, descriptors,
 // and enums from Blink to Dawn types.
 
 namespace blink {
 
-class GPUImageCopyTexture;
-class GPUImageDataLayout;
+class ExceptionState;
+class GPUTexelCopyBufferLayout;
+class GPUTexelCopyTextureInfo;
 class V8UnionGPUAutoLayoutModeOrGPUPipelineLayout;
 
 // These conversions are used multiple times and are declared here. Conversions
 // used only once, for example for object construction, are defined
 // individually.
-wgpu::TextureFormat AsDawnType(SkColorType color_type);
 wgpu::PipelineLayout AsDawnType(
     V8UnionGPUAutoLayoutModeOrGPUPipelineLayout* webgpu_layout);
 
@@ -46,12 +47,13 @@ bool ConvertToDawn(const V8GPUOrigin3D* in,
 bool ConvertToDawn(const V8GPUOrigin2D* in,
                    wgpu::Origin2D* out,
                    ExceptionState&);
-bool ConvertToDawn(const GPUImageCopyTexture* in,
-                   wgpu::ImageCopyTexture* out,
+bool ConvertToDawn(const GPUTexelCopyTextureInfo* in,
+                   wgpu::TexelCopyTextureInfo* out,
                    ExceptionState&);
 
-const char* ValidateTextureDataLayout(const GPUImageDataLayout* webgpu_layout,
-                                      wgpu::TextureDataLayout* layout);
+const char* ValidateTexelCopyBufferLayout(
+    const GPUTexelCopyBufferLayout* webgpu_layout,
+    wgpu::TexelCopyBufferLayout* layout);
 
 // WebGPU objects are converted to Dawn objects by getting the opaque handle
 // which can be passed to Dawn.
@@ -77,10 +79,10 @@ std::unique_ptr<TypeOfDawnType<WebGPUType>[]> AsDawnType(
       std::make_unique<DawnType[]>(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     if (webgpu_objects[i]) {
-      dawn_objects[i] = AsDawnType(webgpu_objects[i].Get());
+      UNSAFE_TODO(dawn_objects[i]) = AsDawnType(webgpu_objects[i].Get());
     } else {
       // Construct a default object if it is null
-      dawn_objects[i] = {};
+      UNSAFE_TODO(dawn_objects[i]) = {};
     }
   }
   return dawn_objects;
@@ -95,12 +97,13 @@ bool ConvertToDawn(const HeapVector<Member<WebGPUType>>& in,
   *out = std::make_unique<DawnType[]>(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     if (in[i]) {
-      if (!ConvertToDawn(in[i].Get(), &(*out)[i], exception_state)) {
+      if (!ConvertToDawn(in[i].Get(), UNSAFE_TODO(&(*out)[i]),
+                         exception_state)) {
         return false;
       }
     } else {
       // Construct a default object if it is null
-      (*out)[i] = {};
+      UNSAFE_TODO((*out)[i]) = {};
     }
   }
   return true;

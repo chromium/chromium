@@ -25,7 +25,12 @@ import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowInsets;
+import android.view.WindowInsetsController;
 import android.webkit.JavascriptInterface;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
@@ -45,12 +50,11 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwSettings;
-import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.AwViewAndroidDelegate;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.android_webview.test.TestAwContentsClient.OnDownloadStartHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
-import org.chromium.base.BaseFeatures;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.Log;
@@ -58,10 +62,10 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
@@ -106,7 +110,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
     @Test
     @SmallTest
@@ -210,21 +214,22 @@ public class AwContentsTest extends AwParameterizedTest {
                     awContents.invokeZoomPicker();
                     awContents.onResume();
                     awContents.stopLoading();
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    awContents.requestFocus();
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().requestFocus();
                     awContents.isMultiTouchZoomSupported();
                     awContents.setOverScrollMode(View.OVER_SCROLL_NEVER);
                     awContents.pauseTimers();
-                    awContents.onContainerViewScrollChanged(200, 200, 100, 100);
-                    awContents.computeScroll();
-                    awContents.onMeasure(100, 100);
-                    awContents.onDraw(new Canvas());
+                    awContents.getViewMethods().onContainerViewScrollChanged(200, 200, 100, 100);
+                    awContents.getViewMethods().computeScroll();
+                    awContents.getViewMethods().onMeasure(100, 100);
+                    Canvas canvas = new Canvas();
+                    awContents.getViewMethods().onDraw(canvas);
                     awContents.getMostRecentProgress();
-                    Assert.assertEquals(0, awContents.computeHorizontalScrollOffset());
+                    Assert.assertEquals(
+                            0, awContents.getViewMethods().computeHorizontalScrollOffset());
                     Assert.assertEquals(0, awContents.getContentWidthCss());
-                    awContents.onKeyUp(
-                            KeyEvent.KEYCODE_BACK,
-                            new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU));
+                    KeyEvent event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MENU);
+                    awContents.getViewMethods().onKeyUp(KeyEvent.KEYCODE_BACK, event);
                 });
     }
 
@@ -289,20 +294,20 @@ public class AwContentsTest extends AwParameterizedTest {
                     AwSettings awSettings = awContents.getSettings();
 
                     Assert.assertEquals(
-                            awContents.getEffectiveBackgroundColorForTesting(), Color.WHITE);
+                            Color.WHITE, awContents.getEffectiveBackgroundColorForTesting());
 
                     awSettings.setForceDarkMode(AwSettings.FORCE_DARK_ON);
                     Assert.assertTrue(awSettings.isForceDarkApplied());
                     Assert.assertEquals(
-                            awContents.getEffectiveBackgroundColorForTesting(), Color.BLACK);
+                            Color.BLACK, awContents.getEffectiveBackgroundColorForTesting());
 
                     awContents.setBackgroundColor(Color.RED);
                     Assert.assertEquals(
-                            awContents.getEffectiveBackgroundColorForTesting(), Color.RED);
+                            Color.RED, awContents.getEffectiveBackgroundColorForTesting());
 
                     awContents.destroy();
                     Assert.assertEquals(
-                            awContents.getEffectiveBackgroundColorForTesting(), Color.RED);
+                            Color.RED, awContents.getEffectiveBackgroundColorForTesting());
                 });
     }
 
@@ -461,7 +466,7 @@ public class AwContentsTest extends AwParameterizedTest {
                             awContents.getFavicon() != null
                                     && !awContents.getFavicon().sameAs(defaultFavicon));
 
-            final Object originalFaviconSource = (new URL(faviconUrl)).getContent();
+            final Object originalFaviconSource = new URL(faviconUrl).getContent();
             final Bitmap originalFavicon =
                     BitmapFactory.decodeStream((InputStream) originalFaviconSource);
             Assert.assertNotNull(originalFavicon);
@@ -572,7 +577,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
     static class JavaScriptObject {
 
-        private CallbackHelper mCallbackHelper;
+        private final CallbackHelper mCallbackHelper;
 
         public JavaScriptObject(CallbackHelper callbackHelper) {
             mCallbackHelper = callbackHelper;
@@ -1124,7 +1129,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
     public void testHardwareRenderingSmokeTestVulkanWhereSupported() throws Throwable {
         // Manually curated list.
         final String[] supportedModels = {
@@ -1262,7 +1266,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
         // This test is specifically about relative file urls
         awSettings.setAllowFileAccess(true);
-        awSettings.setAllowFileAccessFromFileURLs(true);
+        awSettings.setAllowFileAccessFromFileUrls(true);
 
         // This test runs some javascript to verify if it passes
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
@@ -1661,13 +1665,12 @@ public class AwContentsTest extends AwParameterizedTest {
             return mTasks.size();
         }
 
-        private List<Pair<Runnable, Long>> mTasks = new ArrayList<Pair<Runnable, Long>>();
+        private final List<Pair<Runnable, Long>> mTasks = new ArrayList<Pair<Runnable, Long>>();
     }
 
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearDrawFunctorInBackground() throws Throwable {
         mActivityTestRule.startBrowserProcess();
 
@@ -1684,7 +1687,7 @@ public class AwContentsTest extends AwParameterizedTest {
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
 
                     // Delayed release task.
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
@@ -1694,7 +1697,7 @@ public class AwContentsTest extends AwParameterizedTest {
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
                     Assert.assertFalse(awContents.hasDrawFunctor());
 
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
                     Assert.assertFalse(awContents.hasDrawFunctor());
 
                     // Metrics task will not report histograms because we went back to foreground in
@@ -1720,7 +1723,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearDrawFunctorInBackgroundMultipleTransitions() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwContents.resetRecordMemoryForTesting();
@@ -1737,13 +1739,13 @@ public class AwContentsTest extends AwParameterizedTest {
                 () -> {
                     var postTask = new FakePostDelayedTask();
                     awContents.setPostDelayedTaskForTesting(postTask);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
 
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
 
                     postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS / 2);
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
                     postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS / 2);
 
@@ -1753,8 +1755,8 @@ public class AwContentsTest extends AwParameterizedTest {
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
 
                     // Multiple transitions do not post multiple tasks.
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
 
                     // Functor is reclaimed after enough continuous time in background.
@@ -1780,59 +1782,6 @@ public class AwContentsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @MediumTest
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
-    public void testDoeNotClearDrawFunctorInBackground() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Load a page to ensure that at least one draw has happened.
-        doHardwareRenderingSmokeTest(testView);
-        Assert.assertTrue(awContents.hasDrawFunctor());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var postTask = new FakePostDelayedTask();
-                    awContents.setPostDelayedTaskForTesting(postTask);
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
-
-                    // Background cleanup task is posted even when the feature is disabled.
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.FUNCTOR_RECLAIM_DELAY_MS);
-                    // But the functor is not cleared.
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-
-                    // Metrics task.
-                    var histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectAnyRecord(AwContents.PSS_HISTOGRAM)
-                                    .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
-
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-                });
-
-        // Rendering still works.
-        doHardwareRenderingSmokeTest(testView, 42, 42, 42);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-                });
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    @Features.EnableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
     public void testClearFunctorOnBackgroundMemorySignal() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         AwContents.resetRecordMemoryForTesting();
@@ -1852,7 +1801,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
                     // Not required to happen in background, but this is how the notification is
                     // dispatched in real code.
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.INVISIBLE);
                     Assert.assertTrue(awContents.hasDrawFunctor());
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
 
@@ -1870,7 +1819,7 @@ public class AwContentsTest extends AwParameterizedTest {
                     Assert.assertEquals(1, postTask.getPendingTasksCount());
                     histograms.assertExpected();
 
-                    awContents.onWindowVisibilityChanged(View.VISIBLE);
+                    awContents.getViewMethods().onWindowVisibilityChanged(View.VISIBLE);
                     Assert.assertFalse(awContents.hasDrawFunctor());
                 });
 
@@ -1880,86 +1829,6 @@ public class AwContentsTest extends AwParameterizedTest {
                 () -> {
                     Assert.assertTrue(awContents.hasDrawFunctor());
                 });
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    @Features.DisableFeatures({AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND})
-    public void testMetricsRecordingIsThrottled() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Load a page to ensure that at least one draw has happened.
-        doHardwareRenderingSmokeTest(testView);
-        Assert.assertTrue(awContents.hasDrawFunctor());
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    var postTask = new FakePostDelayedTask();
-                    awContents.setPostDelayedTaskForTesting(postTask);
-
-                    // Not required to happen in background, but this is how the notification is
-                    // dispatched in real code.
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
-                    awContents.onTrimMemory(ComponentCallbacks2.TRIM_MEMORY_BACKGROUND);
-                    Assert.assertTrue(awContents.hasDrawFunctor());
-
-                    // Metrics task.
-                    var histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectAnyRecord(AwContents.PSS_HISTOGRAM)
-                                    .expectAnyRecord(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    Assert.assertEquals(2, postTask.getPendingTasksCount());
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
-
-                    postTask.fastForwardBy(
-                            AwContents.FUNCTOR_RECLAIM_DELAY_MS
-                                    - AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(1, postTask.getPendingTasksCount());
-
-                    // Metrics are not recorded this time, not enough time has passed.
-                    histograms =
-                            HistogramWatcher.newBuilder()
-                                    .expectNoRecords(AwContents.PSS_HISTOGRAM)
-                                    .expectNoRecords(AwContents.PRIVATE_DIRTY_HISTOGRAM)
-                                    .build();
-                    postTask.fastForwardBy(AwContents.METRICS_COLLECTION_DELAY_MS);
-                    Assert.assertEquals(0, postTask.getPendingTasksCount());
-                    histograms.assertExpected();
-                });
-    }
-
-    // Disables hardware acceleration and ensures that there is no crash in the code that adds and
-    // removes frame metrics listener. This code should do nothing when hardware acceleration is
-    // disabled.
-    @Test
-    @DisableHardwareAcceleration
-    @SmallTest
-    @Feature({"AndroidWebView"})
-    @Features.EnableFeatures({BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS})
-    public void testNoCrashWithoutHardwareAcceleration() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        AwContents.resetRecordMemoryForTesting();
-
-        AwTestContainerView testView =
-                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
-        final AwContents awContents = testView.getAwContents();
-
-        // Frame metrics listener is detached when AwContents becomes invisible.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    awContents.onWindowVisibilityChanged(View.INVISIBLE);
-                });
-
-        Assert.assertFalse(testView.isBackedByHardwareView());
     }
 
     @Test
@@ -1995,7 +1864,84 @@ public class AwContentsTest extends AwParameterizedTest {
                         0);
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher("Input.ToolType.Android", 20);
-        Assert.assertFalse(awContents.onTouchEvent(event));
+        Assert.assertFalse(awContents.getViewMethods().onTouchEvent(event));
         watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    public void testBottomInsets() throws Exception {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView containerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwContents awContents = containerView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+        mActivityTestRule.loadDataSync(
+                awContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                "<html><body><input id='in' /></body></html>",
+                "text/html",
+                false);
+
+        Assert.assertEquals(
+                0, awContents.getViewAndroidDelegateForTesting().getViewportInsetBottom());
+        mActivityTestRule.executeJavaScriptAndWaitForResult(
+                awContents, mContentsClient, "document.getElementById('in').focus()");
+        // Element is focused but the keyboard won't show without user interaction. Force show it
+        // using the WindowInsetsController.
+        WindowInsetsController controller = containerView.getRootView().getWindowInsetsController();
+        Assert.assertNotNull(controller);
+        controller.show(WindowInsets.Type.ime());
+        CriteriaHelper.pollUiThread(
+                () -> awContents.getViewAndroidDelegateForTesting().getViewportInsetBottom() > 0,
+                "Viewport bottom inset was not updated after the soft keyboard was displayed.");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
+    public void testInsetsAreUpdatedInScrollView() {
+        mActivityTestRule.startBrowserProcess();
+        AwTestContainerView containerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(mContentsClient);
+        AwViewAndroidDelegate viewAndroidDelegate =
+                containerView.getAwContents().getViewAndroidDelegateForTesting();
+        AtomicInteger oldInset = new AtomicInteger();
+        int scrollAmount = 2000;
+        ScrollView scrollView = new ScrollView(mActivityTestRule.getActivity());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.getActivity().removeAllViews();
+                    int width = mActivityTestRule.getActivity().getRootLayoutWidth();
+
+                    // Create a ScrollView containing both a FrameLayout and an AwTestContainerView
+                    // inside a LinearLayout. The FrameLayout acts as a spacer pushing the WebView
+                    // off-screen then we scroll the ScrollView by 2000dp to bring the WebView into
+                    // view. We expect to see the bottom inset reduce by 2000dp.
+                    FrameLayout spacer = new FrameLayout(mActivityTestRule.getActivity());
+                    LinearLayout container = new LinearLayout(mActivityTestRule.getActivity());
+                    container.setOrientation(LinearLayout.VERTICAL);
+                    container.addView(spacer, new LinearLayout.LayoutParams(width, 2000, 1));
+                    container.addView(containerView, new LinearLayout.LayoutParams(width, 4000, 1));
+                    scrollView.addView(container, new FrameLayout.LayoutParams(width, 6000));
+                    mActivityTestRule.getActivity().addView(scrollView);
+                });
+
+        // This sets up the base inset for when the view is added to the activity's hierarchy.
+        containerView.getAwContents().getDisplayCutoutController().recalculateBottomImeInset();
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    oldInset.set(viewAndroidDelegate.getViewportInsetBottom());
+                    return oldInset.get() != 0;
+                });
+
+        // Scroll by scroll amount and wait for the update to take effect.
+        scrollView.scrollBy(0, scrollAmount);
+        CriteriaHelper.pollUiThread(
+                () -> viewAndroidDelegate.getViewportInsetBottom() == oldInset.get() - scrollAmount,
+                "Insets never updated after scroll");
     }
 }

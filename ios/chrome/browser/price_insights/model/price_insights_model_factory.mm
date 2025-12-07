@@ -5,15 +5,14 @@
 #import "ios/chrome/browser/price_insights/model/price_insights_model_factory.h"
 
 #import "base/no_destructor.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-PriceInsightsModel* PriceInsightsModelFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<PriceInsightsModel*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+PriceInsightsModel* PriceInsightsModelFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<PriceInsightsModel>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -23,14 +22,11 @@ PriceInsightsModelFactory* PriceInsightsModelFactory::GetInstance() {
 }
 
 PriceInsightsModelFactory::PriceInsightsModelFactory()
-    : BrowserStateKeyedServiceFactory(
-          "PriceInsightsModel",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("PriceInsightsModel") {}
 
 PriceInsightsModelFactory::~PriceInsightsModelFactory() {}
 
 std::unique_ptr<KeyedService>
-PriceInsightsModelFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
+PriceInsightsModelFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
   return std::make_unique<PriceInsightsModel>();
 }

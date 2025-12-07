@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/byte_count.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -16,6 +17,7 @@
 #include "components/performance_manager/graph/node_base.h"
 #include "components/performance_manager/graph/node_inline_data.h"
 #include "components/performance_manager/public/graph/worker_node.h"
+#include "components/performance_manager/resource_attribution/cpu_measurement_data.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -28,9 +30,11 @@ class ProcessNodeImpl;
 class WorkerNodeImpl
     : public PublicNodeImpl<WorkerNodeImpl, WorkerNode>,
       public TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver>,
-      public SupportsNodeInlineData<execution_context::WorkerExecutionContext,
-                                    // Keep this last to avoid merge conflicts.
-                                    NodeAttachedDataStorage> {
+      public SupportsNodeInlineData<
+          execution_context::WorkerExecutionContext,
+          resource_attribution::SharedCPUTimeResultData,
+          // Keep this last to avoid merge conflicts.
+          NodeAttachedDataStorage> {
  public:
   static const char kDefaultPriorityReason[];
 
@@ -55,8 +59,8 @@ class WorkerNodeImpl
   const GURL& GetURL() const override;
   const url::Origin& GetOrigin() const override;
   const PriorityAndReason& GetPriorityAndReason() const override;
-  uint64_t GetResidentSetKbEstimate() const override;
-  uint64_t GetPrivateFootprintKbEstimate() const override;
+  base::ByteCount GetResidentSetEstimate() const override;
+  base::ByteCount GetPrivateFootprintEstimate() const override;
 
   // Invoked when a frame starts/stops being a client of this worker.
   void AddClientFrame(FrameNodeImpl* frame_node);
@@ -68,8 +72,8 @@ class WorkerNodeImpl
 
   // Setters are not thread safe.
   void SetPriorityAndReason(const PriorityAndReason& priority_and_reason);
-  void SetResidentSetKbEstimate(uint64_t rss_estimate);
-  void SetPrivateFootprintKbEstimate(uint64_t pmf_estimate);
+  void SetResidentSetEstimate(base::ByteCount rss_estimate);
+  void SetPrivateFootprintEstimate(base::ByteCount pmf_estimate);
 
   // Invoked when the worker script was fetched and the final response URL is
   // available.
@@ -83,15 +87,16 @@ class WorkerNodeImpl
   NodeSetView<WorkerNodeImpl*> client_workers() const;
   NodeSetView<WorkerNodeImpl*> child_workers() const;
 
-  base::WeakPtr<WorkerNodeImpl> GetWeakPtrOnUIThread();
   base::WeakPtr<WorkerNodeImpl> GetWeakPtr();
 
  private:
   friend class WorkerNodeImplDescriber;
 
-  void OnJoiningGraph() override;
-  void OnBeforeLeavingGraph() override;
-  void RemoveNodeAttachedData() override;
+  // NodeBase:
+  void OnInitializingProperties() override;
+  void OnInitializingEdges() override;
+  void OnUninitializingEdges() override;
+  void CleanUpNodeState() override;
 
   // Rest of WorkerNode implementation. These are private so that users of the
   // impl use the private getters rather than the public interface.
@@ -139,20 +144,18 @@ class WorkerNodeImpl
   // distinction between client workers and child workers.
   NodeSet child_workers_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  uint64_t resident_set_kb_estimate_ = 0;
+  base::ByteCount resident_set_estimate_;
 
-  uint64_t private_footprint_kb_estimate_ = 0;
+  base::ByteCount private_footprint_estimate_;
 
   // Worker priority information. Set via ExecutionContextPriorityDecorator.
   ObservedProperty::NotifiesOnlyOnChangesWithPreviousValue<
       PriorityAndReason,
-      const PriorityAndReason&,
       &WorkerNodeObserver::OnPriorityAndReasonChanged>
       priority_and_reason_ GUARDED_BY_CONTEXT(sequence_checker_){
           PriorityAndReason(base::TaskPriority::LOWEST,
                             kDefaultPriorityReason)};
 
-  base::WeakPtr<WorkerNodeImpl> weak_this_;
   base::WeakPtrFactory<WorkerNodeImpl> weak_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
 };

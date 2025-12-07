@@ -10,7 +10,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
               "builder_group": "chromium.build.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -40,7 +39,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-fyi-archive",
               "builder_group": "chromium.build.fyi",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -70,7 +68,8 @@
           "builder": "Mac Tests Siso FYI",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/build/Mac Tests Siso FYI/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

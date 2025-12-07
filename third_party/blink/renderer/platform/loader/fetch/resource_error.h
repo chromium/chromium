@@ -151,9 +151,6 @@ class PLATFORM_EXPORT ResourceError final {
 inline bool operator==(const ResourceError& a, const ResourceError& b) {
   return ResourceError::Compare(a, b);
 }
-inline bool operator!=(const ResourceError& a, const ResourceError& b) {
-  return !(a == b);
-}
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const ResourceError&);
 

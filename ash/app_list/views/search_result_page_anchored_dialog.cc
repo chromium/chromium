@@ -14,7 +14,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
-#include "ui/views/window/non_client_view.h"
+#include "ui/views/window/frame_view.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {

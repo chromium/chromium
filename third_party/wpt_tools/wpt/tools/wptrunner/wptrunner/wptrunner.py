@@ -85,16 +85,20 @@ def get_loader(test_paths: wptcommandline.TestPaths,
     include = kwargs["include"]
     if kwargs["include_file"]:
         include = include or []
-        include.extend(testloader.read_include_from_file(kwargs["include_file"]))
+        include.extend(testloader.read_test_prefixes_from_file(kwargs["include_file"]))
+    exclude = kwargs["exclude"]
+    if kwargs["exclude_file"]:
+        exclude = exclude or []
+        exclude.extend(testloader.read_test_prefixes_from_file(kwargs["exclude_file"]))
     if test_groups:
         include = testloader.update_include_for_groups(test_groups, include)
 
     if kwargs["tags"] or kwargs["exclude_tags"]:
         test_filters.append(testloader.TagFilter(kwargs["tags"], kwargs["exclude_tags"]))
 
-    if include or kwargs["exclude"] or kwargs["include_manifest"] or kwargs["default_exclude"]:
+    if include or exclude or kwargs["include_manifest"] or kwargs["default_exclude"]:
         manifest_filters.append(testloader.TestFilter(include=include,
-                                                      exclude=kwargs["exclude"],
+                                                      exclude=exclude,
                                                       manifest_path=kwargs["include_manifest"],
                                                       test_manifests=test_manifests,
                                                       explicit=kwargs["default_exclude"]))
@@ -160,6 +164,25 @@ def list_tests(test_paths, product, **kwargs):
 
     for test in test_loader.test_ids:
         print(test)
+
+
+def list_tests_json(test_paths, product, **kwargs):
+    env.do_delayed_imports(logger, test_paths)
+
+    _, test_loader = get_loader(test_paths, product, **kwargs)
+
+    tests = {}
+    targets = [(test_loader.tests, False),
+               (test_loader.disabled_tests, True)]
+    for subsuite in test_loader.subsuites:
+        tests[subsuite] = {}
+        for test_type in test_loader.test_types:
+            tests[subsuite][test_type] = {}
+            for target, disabled in targets:
+                for test in target[subsuite][test_type]:
+                    tests[subsuite][test_type][test.id] = {"disabled": disabled,
+                                                           "expected": test.expected()}
+    print(json.dumps(tests, indent=2))
 
 
 def get_pause_after_test(test_loader, **kwargs):
@@ -258,24 +281,21 @@ def run_test_iteration(test_status, test_loader, test_queue_builder,
                 logger.test_end(test.id, status="SKIP", subsuite=subsuite_name)
                 test_status.skipped += 1
 
-            if test_type == "testharness":
-                for test in test_loader.tests[subsuite_name][test_type]:
-                    skip_reason = None
-                    if test.testdriver and not executor_cls.supports_testdriver:
-                        skip_reason = "Executor does not support testdriver.js"
-                    elif test.jsshell and not executor_cls.supports_jsshell:
-                        skip_reason = "Executor does not support jsshell"
-                    if skip_reason:
-                        logger.test_start(test.id, subsuite=subsuite_name)
-                        logger.test_end(test.id,
-                                        status="SKIP",
-                                        subsuite=subsuite_name,
-                                        message=skip_reason)
-                        test_status.skipped += 1
-                    else:
-                        tests_to_run[(subsuite_name, test_type)].append(test)
-            else:
-                tests_to_run[(subsuite_name, test_type)] = test_loader.tests[subsuite_name][test_type]
+            for test in test_loader.tests[subsuite_name][test_type]:
+                skip_reason = None
+                if getattr(test, "testdriver", False) and not executor_cls.supports_testdriver:
+                    skip_reason = "Executor does not support testdriver.js"
+                elif test_type == "testharness" and test.jsshell and not executor_cls.supports_jsshell:
+                    skip_reason = "Executor does not support jsshell"
+                if skip_reason:
+                    logger.test_start(test.id, subsuite=subsuite_name)
+                    logger.test_end(test.id,
+                                    status="SKIP",
+                                    subsuite=subsuite_name,
+                                    message=skip_reason)
+                    test_status.skipped += 1
+                else:
+                    tests_to_run[(subsuite_name, test_type)].append(test)
 
     unexpected_fail_tests = defaultdict(list)
     unexpected_pass_tests = defaultdict(list)
@@ -298,6 +318,7 @@ def run_test_iteration(test_status, test_loader, test_queue_builder,
                             test_loader.subsuites,
                             kwargs["run_by_dir"])
 
+        test_environment.reset()
         with ManagerGroup("web-platform-tests",
                           test_queue_builder,
                           test_implementations,
@@ -311,6 +332,8 @@ def run_test_iteration(test_status, test_loader, test_queue_builder,
                           kwargs["restart_on_new_group"],
                           recording=recording,
                           max_restarts=kwargs["max_restarts"],
+                          max_restart_backoff=kwargs["max_restart_backoff"],
+                          update_status_on_crash=kwargs["update_status_on_crash"]
                           ) as manager_group:
             try:
                 handle_interrupt_signals()
@@ -456,7 +479,8 @@ def run_tests(config, product, test_paths, **kwargs):
                                  kwargs["enable_webtransport_h3"],
                                  mojojs_path,
                                  inject_script,
-                                 kwargs["suppress_handler_traceback"]) as test_environment:
+                                 kwargs["suppress_handler_traceback"],
+                                 kwargs["ws_extra"]) as test_environment:
             recording.set(["startup", "ensure_environment"])
             try:
                 test_environment.ensure_started()
@@ -544,14 +568,14 @@ def check_stability(**kwargs):
                                      **kwargs)
 
 
-def start(**kwargs):
+def start(**kwargs: Any) -> int:
     assert logger is not None
 
     logged_critical = wptlogging.LoggedAboveLevelHandler("CRITICAL")
     handler = handlers.LogLevelFilter(logged_critical, "CRITICAL")
     logger.add_handler(handler)
 
-    rv = False
+    rv = 0
     try:
         if kwargs["list_test_groups"]:
             list_test_groups(**kwargs)
@@ -559,13 +583,22 @@ def start(**kwargs):
             list_disabled(**kwargs)
         elif kwargs["list_tests"]:
             list_tests(**kwargs)
+        elif kwargs["list_tests_json"]:
+            list_tests_json(**kwargs)
         elif kwargs["verify"] or kwargs["stability"]:
-            rv = check_stability(**kwargs) or logged_critical.has_log
+            rv = check_stability(**kwargs) or 0
         else:
-            rv = not run_tests(**kwargs)[0] or logged_critical.has_log
+            rv = int(not run_tests(**kwargs)[0])
     finally:
         logger.shutdown()
         logger.remove_handler(handler)
+
+    # Reserve everything above 64 for our global usage.
+    assert 0 <= rv < 64, "Exit codes above 64 are reserved"
+    if logged_critical.has_log:
+        print("Did log critical")
+        rv = 64
+
     return rv
 
 

@@ -20,8 +20,6 @@
     <div id="columns3" class="test" style="-webkit-columns: 10px auto;"></div>
     <div id="columns4" class="test" style="-webkit-columns: auto;"></div>
     <div id="columns5" class="test" style="-webkit-columns: auto 2;"></div>
-    <div id="columns6" class="test" style="-webkit-column-width: 10px; -webkit-column-count: 2;"></div>
-    <div id="columns7" class="test" style="-webkit-column-width: auto; -webkit-column-count: auto;"></div>
     <div id="columns8" class="test" style="-webkit-columns: foo;"></div>
     <div id="columns9" class="test" style="-webkit-column-width: 10px;"></div>
     <script>
@@ -37,8 +35,6 @@
       shouldBeEqualToString('webkitColumnsValue("columns3")', '10px');
       shouldBeEqualToString('webkitColumnsValue("columns4")', 'auto');
       shouldBeEqualToString('webkitColumnsValue("columns5")', '2');
-      shouldBeEqualToString('webkitColumnsValue("columns6")', '10px 2');
-      shouldBeEqualToString('webkitColumnsValue("columns7")', 'auto');
       debug("NOTE: 'foo' is an illegal CSS value for '-webkit-columns'.");
       shouldBeEqualToString('webkitColumnsValue("columns8")', "");
       debug("NOTE: If only few longhand properties are specified, getPropertyValue for shorthand property returns empty string.")

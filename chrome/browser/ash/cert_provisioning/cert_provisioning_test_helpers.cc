@@ -9,6 +9,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/time/time.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -89,7 +90,7 @@ scoped_refptr<net::X509Certificate> CertificateHelperForTesting::AddCert(
       *platform_keys_service_,
       GetAttributeForKey(
           GetPlatformKeysTokenId(cert_scope),
-          chromeos::platform_keys::GetSubjectPublicKeyInfoBlob(cert),
+          chromeos::platform_keys::GetSubjectPublicKeyInfo(cert),
           chromeos::platform_keys::KeyAttributeType::kCertificateProvisioningId,
           _))
       .WillRepeatedly(
@@ -131,7 +132,7 @@ const net::CertificateList& CertificateHelperForTesting::GetCerts() const {
 
 namespace {
 const char kTestUserEmail[] = "user@gmail.com";
-const char kTestUserGaiaId[] = "test_gaia_id";
+const GaiaId::Literal kTestUserGaiaId("test_gaia_id");
 }  // namespace
 
 ProfileHelperForTesting::ProfileHelperForTesting()

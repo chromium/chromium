@@ -6,8 +6,11 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/memory/raw_span.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
@@ -24,10 +27,7 @@ namespace mp2t {
 
 struct EsParserMpeg1Audio::Mpeg1AudioFrame {
   // Pointer to the ES data.
-  const uint8_t* data;
-
-  // Frame size.
-  int size;
+  base::raw_span<const uint8_t> data;
 
   // Number of samples in the frame.
   int sample_count;
@@ -52,9 +52,11 @@ bool EsParserMpeg1Audio::ParseFromEsQueue() {
   Mpeg1AudioFrame mpeg1audio_frame;
   while (LookForMpeg1AudioFrame(&mpeg1audio_frame)) {
     // Update the audio configuration if needed.
-    DCHECK_GE(mpeg1audio_frame.size, MPEG1AudioStreamParser::kHeaderSize);
-    if (!UpdateAudioConfiguration(mpeg1audio_frame.data))
+    DCHECK_GE(mpeg1audio_frame.data.size(),
+              MPEG1AudioStreamParser::kHeaderSize);
+    if (!UpdateAudioConfiguration(mpeg1audio_frame.data)) {
       return false;
+    }
 
     // Get the PTS & the duration of this access unit.
     TimingDesc current_timing_desc =
@@ -78,8 +80,7 @@ bool EsParserMpeg1Audio::ParseFromEsQueue() {
     // TODO(wolenetz/acolwell): Validate and use a common cross-parser TrackId
     // type and allow multiple audio tracks. See https://crbug.com/341581.
     scoped_refptr<StreamParserBuffer> stream_parser_buffer =
-        StreamParserBuffer::CopyFrom(mpeg1audio_frame.data,
-                                     mpeg1audio_frame.size, is_key_frame,
+        StreamParserBuffer::CopyFrom(mpeg1audio_frame.data, is_key_frame,
                                      DemuxerStream::AUDIO, kMp2tAudioTrackId);
     stream_parser_buffer->set_timestamp(current_pts);
     stream_parser_buffer->set_duration(frame_duration);
@@ -104,21 +105,22 @@ void EsParserMpeg1Audio::ResetInternal() {
 
 bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
     Mpeg1AudioFrame* mpeg1audio_frame) {
-  int es_size;
-  const uint8_t* es;
-  es_queue_->Peek(&es, &es_size);
+  int es_size = es_queue_->Data().size();
+  base::span<const uint8_t> es = es_queue_->Data();
 
   int max_offset = es_size - MPEG1AudioStreamParser::kHeaderSize;
   if (max_offset <= 0)
     return false;
 
   for (int offset = 0; offset < max_offset; offset++) {
-    const uint8_t* cur_buf = &es[offset];
+    base::span<const uint8_t> cur_buf =
+        es.subspan(base::checked_cast<size_t>(offset));
     if (cur_buf[0] != 0xff)
       continue;
 
     int remaining_size = es_size - offset;
-    DCHECK_GE(remaining_size, MPEG1AudioStreamParser::kHeaderSize);
+    DCHECK_GE(base::checked_cast<size_t>(remaining_size),
+              MPEG1AudioStreamParser::kHeaderSize);
     MPEG1AudioStreamParser::Header header;
     if (!MPEG1AudioStreamParser::ParseHeader(
             media_log_, &mp3_parse_error_limit_, cur_buf, &header)) {
@@ -141,17 +143,17 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
     }
 
     es_queue_->Pop(offset);
-    es_queue_->Peek(&mpeg1audio_frame->data, &es_size);
+    mpeg1audio_frame->data =
+        es_queue_->Data().first(base::checked_cast<size_t>(header.frame_size));
+    es_size = es_queue_->Data().size();
     mpeg1audio_frame->queue_offset = es_queue_->head();
-    mpeg1audio_frame->size = header.frame_size;
     mpeg1audio_frame->sample_count = header.sample_count;
-    DVLOG(LOG_LEVEL_ES)
-        << "MPEG1 audio syncword @ pos=" << mpeg1audio_frame->queue_offset
-        << " frame_size=" << mpeg1audio_frame->size;
-    DVLOG(LOG_LEVEL_ES)
-        << "MPEG1 audio header: "
-        << base::HexEncode(mpeg1audio_frame->data,
-                           MPEG1AudioStreamParser::kHeaderSize);
+    DVLOG(LOG_LEVEL_ES) << "MPEG1 audio syncword @ pos="
+                        << mpeg1audio_frame->queue_offset
+                        << " frame_size=" << mpeg1audio_frame->data.size();
+    DVLOG(LOG_LEVEL_ES) << "MPEG1 audio header: "
+                        << base::HexEncode(mpeg1audio_frame->data.first(
+                               MPEG1AudioStreamParser::kHeaderSize));
     return true;
   }
 
@@ -160,7 +162,7 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
 }
 
 bool EsParserMpeg1Audio::UpdateAudioConfiguration(
-    const uint8_t* mpeg1audio_header) {
+    base::span<const uint8_t> mpeg1audio_header) {
   MPEG1AudioStreamParser::Header header;
   if (!MPEG1AudioStreamParser::ParseHeader(media_log_, &mp3_parse_error_limit_,
                                            mpeg1audio_header, &header)) {
@@ -203,7 +205,7 @@ bool EsParserMpeg1Audio::UpdateAudioConfiguration(
 void EsParserMpeg1Audio::SkipMpeg1AudioFrame(
     const Mpeg1AudioFrame& mpeg1audio_frame) {
   DCHECK_EQ(mpeg1audio_frame.queue_offset, es_queue_->head());
-  es_queue_->Pop(mpeg1audio_frame.size);
+  es_queue_->Pop(base::checked_cast<int>(mpeg1audio_frame.data.size()));
 }
 
 }  // namespace mp2t

@@ -1,0 +1,3 @@
+Tests setting headers via Fetch.continueRequest for navigation requests.
+HTTP_X_DEVTOOLS_TEST: foo HTTP_X_DEVTOOLS_TEST_2: HTTP_COOKIE: bar=bazz HTTP_REFERER: http://google.com/
+

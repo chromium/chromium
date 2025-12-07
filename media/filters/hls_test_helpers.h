@@ -21,8 +21,6 @@ class MockDataSource : public CrossOriginDataSource {
   ~MockDataSource() override;
   MockDataSource();
   // Mocked methods from CrossOriginDataSource
-  MOCK_METHOD(bool, IsCorsCrossOrigin, (), (const, override));
-  MOCK_METHOD(bool, HasAccessControl, (), (const, override));
   MOCK_METHOD(const std::string&, GetMimeType, (), (const, override));
   MOCK_METHOD(void,
               Initialize,
@@ -30,11 +28,12 @@ class MockDataSource : public CrossOriginDataSource {
               (override));
 
   // Mocked methods from DataSource
-  MOCK_METHOD(
-      void,
-      Read,
-      (int64_t position, int size, uint8_t* data, DataSource::ReadCB read_cb),
-      (override));
+  MOCK_METHOD(void,
+              Read,
+              (int64_t position,
+               base::span<uint8_t> data,
+               DataSource::ReadCB read_cb),
+              (override));
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void, Abort, (), (override));
   MOCK_METHOD(bool, GetSize, (int64_t * size_out), (override));
@@ -46,10 +45,7 @@ class MockDataSource : public CrossOriginDataSource {
   MOCK_METHOD(int64_t, GetMemoryUsage, (), (override));
   MOCK_METHOD(void, SetPreload, (DataSource::Preload preload), (override));
   MOCK_METHOD(GURL, GetUrlAfterRedirects, (), (const, override));
-  MOCK_METHOD(void,
-              OnBufferingHaveEnough,
-              (bool must_cancel_netops),
-              (override));
+  MOCK_METHOD(void, StopPreloading, (), (override));
   MOCK_METHOD(void,
               OnMediaPlaybackRateChanged,
               (double playback_rate),
@@ -151,8 +147,10 @@ class MockHlsRenditionHost : public HlsRenditionHost {
 
   MOCK_METHOD(void,
               UpdateRenditionManifestUri,
-              (std::string, GURL, base::OnceCallback<void(bool)>),
+              (std::string, GURL, HlsDemuxerStatusCallback),
               (override));
+
+  MOCK_METHOD(void, Quit, (HlsDemuxerStatus), (override));
 
   MOCK_METHOD(void,
               ReadStream,
@@ -169,7 +167,7 @@ class MockHlsRenditionHost : public HlsRenditionHost {
 
 class MockHlsRendition : public HlsRendition {
  public:
-  MockHlsRendition();
+  explicit MockHlsRendition(GURL uri = GURL("https://hls.io/manifest.m3u8"));
   ~MockHlsRendition() override;
 
   MOCK_METHOD(void,
@@ -187,8 +185,14 @@ class MockHlsRendition : public HlsRendition {
   MOCK_METHOD(void, Stop, (), (override));
   MOCK_METHOD(void,
               UpdatePlaylist,
-              (scoped_refptr<hls::MediaPlaylist>, std::optional<GURL>),
+              (scoped_refptr<hls::MediaPlaylist>),
               (override));
+  MOCK_METHOD(void, MockUpdatePlaylistURI, (const GURL&), ());
+  void UpdatePlaylistURI(const GURL& playlist_uri) override;
+  const GURL& MediaPlaylistUri() const override;
+
+ private:
+  GURL uri_;
 };
 
 class StringHlsDataSourceStreamFactory {
@@ -210,7 +214,7 @@ class MockDataSourceFactory
  public:
   ~MockDataSourceFactory() override;
   MockDataSourceFactory();
-  void CreateDataSource(GURL uri, DataSourceCb cb) override;
+  void CreateDataSource(GURL uri, bool ignore_cache, DataSourceCb cb) override;
   void AddReadExpectation(size_t from, size_t to, int response);
   testing::NiceMock<MockDataSource>* PregenerateNextMock();
 
@@ -242,6 +246,10 @@ class MockHlsNetworkAccess : public HlsNetworkAccess {
                HlsDataSourceProvider::ReadCb cb));
   MOCK_METHOD(void, AbortPendingReads, (base::OnceClosure cb));
 };
+
+MATCHER_P(SpanSizeEq, expected, "") {
+  return arg.size() == base::checked_cast<size_t>(expected);
+}
 
 }  // namespace media
 

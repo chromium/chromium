@@ -7,6 +7,7 @@ desc: |-
   Leaving it unset lets the host decide whether PIN and/or pairing authentications can be used.
 
   Note: If the setting results in no mutually supported authentication methods by both the host and the client, then the connection will be rejected.
+default: null
 example_value: true
 features:
   dynamic_refresh: true
@@ -17,6 +18,8 @@ items:
   value: true
 - caption: Disallows the remote access host to use PIN and pairing authentications when accepting client connections
   value: false
+- caption: Allows the remote access host to decide
+  value: null
 owners:
 - file://remoting/OWNERS
 - jamiewalch@chromium.org

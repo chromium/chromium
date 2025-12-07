@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_METRICS_REPORTER_MOCK_METRICS_REPORTER_H_
 
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
 
 class MockMetricsReporter : public MetricsReporter {
@@ -15,6 +14,7 @@ class MockMetricsReporter : public MetricsReporter {
   ~MockMetricsReporter() override;
 
   MOCK_METHOD(void, Mark, (const std::string&));
+  MOCK_METHOD(void, Mark, (const std::string&, base::TimeTicks));
   MOCK_METHOD(void,
               Measure,
               (const std::string&, MetricsReporter::MeasureCallback));
@@ -26,6 +26,11 @@ class MockMetricsReporter : public MetricsReporter {
   MOCK_METHOD(void,
               HasMark,
               (const std::string&, MetricsReporter::HasMarkCallback));
+  MOCK_METHOD(void,
+              Measure,
+              (const std::string&,
+               base::TimeTicks,
+               MetricsReporter::MeasureCallback));
   MOCK_METHOD(bool, HasLocalMark, (const std::string&));
   MOCK_METHOD(void, ClearMark, (const std::string&));
 };

@@ -96,7 +96,7 @@ base::FilePath ValidateAndCreateRestorePath(std::string_view line) {
   }
 
   // Pop the first part.
-  parts = parts.subspan(1);
+  parts = parts.subspan<1>();
   if (parts.empty()) {
     LOG(ERROR) << "Extracted path is just the root path";
     return base::FilePath();

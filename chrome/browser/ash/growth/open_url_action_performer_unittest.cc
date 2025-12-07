@@ -11,6 +11,7 @@
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -42,13 +43,7 @@ class TestNewWindowDelegateImpl : public ash::TestNewWindowDelegate {
 
 class OpenUrlActionPerformerTest : public testing::Test {
  public:
-  OpenUrlActionPerformerTest() {
-    auto new_window_delegate = std::make_unique<TestNewWindowDelegateImpl>();
-    new_window_delegate_ = new_window_delegate.get();
-    new_window_delegate_provider_ =
-        std::make_unique<ash::TestNewWindowDelegateProvider>(
-            std::move(new_window_delegate));
-  }
+  OpenUrlActionPerformerTest() = default;
   OpenUrlActionPerformerTest(const OpenUrlActionPerformerTest&) = delete;
   OpenUrlActionPerformerTest& operator=(const OpenUrlActionPerformerTest&) =
       delete;
@@ -79,12 +74,13 @@ class OpenUrlActionPerformerTest : public testing::Test {
     return true;
   }
 
- protected:
-  std::unique_ptr<ash::TestNewWindowDelegateProvider>
-      new_window_delegate_provider_;
-  raw_ptr<TestNewWindowDelegateImpl> new_window_delegate_ = nullptr;
+  TestNewWindowDelegateImpl& new_window_delegate() {
+    return new_window_delegate_;
+  }
 
  private:
+  TestNewWindowDelegateImpl new_window_delegate_;
+
   content::BrowserTaskEnvironment task_environment_;
 
   base::RunLoop action_success_run_loop_;
@@ -96,12 +92,14 @@ class OpenUrlActionPerformerTest : public testing::Test {
       action_failed_run_loop_.QuitClosure();
 
   std::unique_ptr<OpenUrlActionPerformer> action_;
+  growth::CampaignsLogger logger_;
 };
 
 TEST_F(OpenUrlActionPerformerTest, TestValidOpenUrlParams) {
   const auto validOpenUrlParam =
       base::StringPrintf(kOpenUrlParamTemplate, kValidUrl, 0);
-  auto value = base::JSONReader::Read(validOpenUrlParam);
+  auto value = base::JSONReader::Read(validOpenUrlParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),
@@ -110,12 +108,13 @@ TEST_F(OpenUrlActionPerformerTest, TestValidOpenUrlParams) {
           base::Unretained(this)));
 
   EXPECT_TRUE(VerifyActionResult(/*success=*/true));
-  EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL(kValidUrl));
+  EXPECT_EQ(new_window_delegate().last_opened_url_, GURL(kValidUrl));
 }
 
 TEST_F(OpenUrlActionPerformerTest, TestInvalidOpenUrlParams) {
   auto* const invalidOpenUrlParam = "{}";
-  auto value = base::JSONReader::Read(invalidOpenUrlParam);
+  auto value = base::JSONReader::Read(invalidOpenUrlParam,
+                                      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(value.has_value());
   action().Run(
       /*campaign_id=*/1, /*group_id=*/std::nullopt, &value->GetDict(),

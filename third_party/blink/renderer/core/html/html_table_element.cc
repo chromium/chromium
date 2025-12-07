@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -183,7 +184,8 @@ HTMLTableRowElement* HTMLTableElement::insertRow(
   if (index < -1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The index provided (" + String::Number(index) + ") is less than -1.");
+        StrCat({"The index provided (", String::Number(index),
+                ") is less than -1."}));
     return nullptr;
   }
 
@@ -198,9 +200,9 @@ HTMLTableRowElement* HTMLTableElement::insertRow(
         if (i != index) {
           exception_state.ThrowDOMException(
               DOMExceptionCode::kIndexSizeError,
-              "The index provided (" + String::Number(index) +
-                  ") is greater than the number of rows in the table (" +
-                  String::Number(i) + ").");
+              StrCat({"The index provided (", String::Number(index),
+                      ") is greater than the number of rows in the table (",
+                      String::Number(i), ")."}));
           return nullptr;
         }
         break;
@@ -233,7 +235,8 @@ void HTMLTableElement::deleteRow(int index, ExceptionState& exception_state) {
   if (index < -1) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The index provided (" + String::Number(index) + ") is less than -1.");
+        StrCat({"The index provided (", String::Number(index),
+                ") is less than -1."}));
     return;
   }
 
@@ -253,9 +256,9 @@ void HTMLTableElement::deleteRow(int index, ExceptionState& exception_state) {
   if (!row) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The index provided (" + String::Number(index) +
-            ") is greater than the number of rows in the table (" +
-            String::Number(i) + ").");
+        StrCat({"The index provided (", String::Number(index),
+                ") is greater than the number of rows in the table (",
+                String::Number(i), ")."}));
     return;
   }
   row->remove(exception_state);
@@ -307,7 +310,7 @@ static bool GetBordersFromFrameAttributeValue(const AtomicString& value,
 void HTMLTableElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == html_names::kWidthAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value,
                          kAllowPercentageValues, kDontAllowZeroValues);
@@ -328,8 +331,12 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
         style, CSSPropertyID::kBorderRightWidth, width,
         CSSPrimitiveValue::UnitType::kPixels);
   } else if (name == html_names::kBordercolorAttr) {
-    if (!value.empty())
-      AddHTMLColorToStyle(style, CSSPropertyID::kBorderColor, value);
+    if (!value.empty()) {
+      AddHTMLColorToStyle(style, CSSPropertyID::kBorderLeftColor, value);
+      AddHTMLColorToStyle(style, CSSPropertyID::kBorderRightColor, value);
+      AddHTMLColorToStyle(style, CSSPropertyID::kBorderBottomColor, value);
+      AddHTMLColorToStyle(style, CSSPropertyID::kBorderTopColor, value);
+    }
   } else if (name == html_names::kBgcolorAttr) {
     AddHTMLColorToStyle(style, CSSPropertyID::kBackgroundColor, value);
   } else if (name == html_names::kBackgroundAttr) {
@@ -517,8 +524,7 @@ HTMLTableElement::CellBorders HTMLTableElement::GetCellBorders() const {
         return kSolidBorders;
       return kInsetBorders;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kNoBorders;
+  NOTREACHED();
 }
 
 CSSPropertyValueSet* HTMLTableElement::CreateSharedCellStyle() {

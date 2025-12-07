@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -16,6 +18,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
@@ -28,6 +31,7 @@
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -60,6 +64,15 @@ namespace guest_os {
 
 namespace {
 
+// Returns the current locale and fallbacks for it (in this order).
+std::vector<std::string> GetFallbackLocales() {
+  std::vector<std::string> locales = l10n_util::GetParentLocales(
+      l10n_util::NormalizeLocale(g_browser_process->GetApplicationLocale()));
+  // We use an empty locale as fallback.
+  locales.push_back(std::string());
+  return locales;
+}
+
 void Launch(vm_tools::apps::VmType vm_type,
             std::string app_id,
             Profile* profile,
@@ -76,9 +89,11 @@ void Launch(vm_tools::apps::VmType vm_type,
       break;
 
     case VmType::BOREALIS:
-      borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
-          app_id, {url.spec()}, borealis::BorealisLaunchSource::kAppUrlHandler,
-          base::DoNothing());
+      borealis::BorealisServiceFactory::GetForProfile(profile)
+          ->AppLauncher()
+          .Launch(app_id, {url.spec()},
+                  borealis::BorealisLaunchSource::kAppUrlHandler,
+                  base::DoNothing());
       break;
 
     default:
@@ -99,7 +114,7 @@ bool AppHandlesProtocol(const GuestOsRegistryService::Registration& app,
       !borealis::IsExternalURLAllowed(url)) {
     return false;
   }
-  return base::Contains(app.MimeTypes(), "x-scheme-handler/" + url.scheme());
+  return base::Contains(app.MimeTypes(), "x-scheme-handler/" + url.GetScheme());
 }
 
 // This prefix is used when generating the crostini app list id.
@@ -250,7 +265,7 @@ template <typename List>
 static std::string Join(const List& list);
 
 static std::string ToString(bool b) {
-  return b ? "true" : "false";
+  return base::ToString(b);
 }
 
 static std::string ToString(int i) {
@@ -496,16 +511,8 @@ std::string GuestOsRegistryService::Registration::GetLocalizedString(
     return std::string();
   }
 
-  std::string current_locale =
-      l10n_util::NormalizeLocale(g_browser_process->GetApplicationLocale());
-  std::vector<std::string> locales;
-  l10n_util::GetParentLocales(current_locale, &locales);
-  // We use an empty locale as fallback.
-  locales.push_back(std::string());
-
-  for (const std::string& locale : locales) {
-    const std::string* value = dict->FindString(locale);
-    if (value) {
+  for (const std::string& locale : GetFallbackLocales()) {
+    if (const std::string* value = dict->FindString(locale)) {
       return *value;
     }
   }
@@ -522,16 +529,8 @@ std::set<std::string> GuestOsRegistryService::Registration::GetLocalizedList(
     return {};
   }
 
-  std::string current_locale =
-      l10n_util::NormalizeLocale(g_browser_process->GetApplicationLocale());
-  std::vector<std::string> locales;
-  l10n_util::GetParentLocales(current_locale, &locales);
-  // We use an empty locale as fallback.
-  locales.push_back(std::string());
-
-  for (const std::string& locale : locales) {
-    const base::Value::List* list = dict->FindList(locale);
-    if (list) {
+  for (const std::string& locale : GetFallbackLocales()) {
+    if (const base::Value::List* list = dict->FindList(locale)) {
       return ListToStringSet(list);
     }
   }
@@ -569,9 +568,10 @@ GuestOsRegistryService::GetEnabledApps() const {
       crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
   bool plugin_vm_enabled =
       plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
-  bool borealis_enabled = borealis::BorealisService::GetForProfile(profile_)
-                              ->Features()
-                              .IsEnabled();
+  bool borealis_enabled =
+      borealis::BorealisServiceFactory::GetForProfile(profile_)
+          ->Features()
+          .IsEnabled();
   if (!crostini_enabled && !plugin_vm_enabled && !borealis_enabled) {
     return {};
   }
@@ -678,8 +678,7 @@ base::FilePath GuestOsRegistryService::GetIconPath(
     case ui::kScaleFactorNone:
       return app_path.AppendASCII("icon.svg");
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::FilePath();
+      NOTREACHED();
   }
 }
 

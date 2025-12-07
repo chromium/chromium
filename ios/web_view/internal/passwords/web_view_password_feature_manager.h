@@ -12,15 +12,13 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
-class PrefService;
-
 namespace ios_web_view {
 // An //ios/web_view implementation of password_manager::PasswordFeatureManager.
 class WebViewPasswordFeatureManager
     : public password_manager::PasswordFeatureManager {
  public:
-  WebViewPasswordFeatureManager(PrefService* pref_service,
-                                const syncer::SyncService* sync_service);
+  explicit WebViewPasswordFeatureManager(
+      const syncer::SyncService* sync_service);
 
   WebViewPasswordFeatureManager(const WebViewPasswordFeatureManager&) = delete;
   WebViewPasswordFeatureManager& operator=(
@@ -29,16 +27,7 @@ class WebViewPasswordFeatureManager
   ~WebViewPasswordFeatureManager() override = default;
 
   bool IsGenerationEnabled() const override;
-  bool IsOptedInForAccountStorage() const override;
-  bool ShouldShowAccountStorageOptIn() const override;
-  bool ShouldShowAccountStorageReSignin(
-      const GURL& current_page_url) const override;
-
-  bool ShouldShowAccountStorageBubbleUi() const override;
-
-  password_manager::PasswordForm::Store GetDefaultPasswordStore()
-      const override;
-  bool IsDefaultPasswordStoreSet() const override;
+  bool IsAccountStorageEnabled() const override;
 
   password_manager::features_util::PasswordAccountStorageUsageLevel
   ComputePasswordAccountStorageUsageLevel() const override;
@@ -46,7 +35,6 @@ class WebViewPasswordFeatureManager
   bool IsBiometricAuthenticationBeforeFillingEnabled() const override;
 
  private:
-  const raw_ptr<PrefService> pref_service_;
   const raw_ptr<const syncer::SyncService> sync_service_;
 };
 }  // namespace ios_web_view

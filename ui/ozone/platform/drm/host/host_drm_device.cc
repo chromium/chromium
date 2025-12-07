@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "ui/display/types/display_configuration_params.h"
 #include "ui/display/types/display_snapshot.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
@@ -27,8 +28,7 @@ HostDrmDevice::HostDrmDevice(DrmCursor* cursor) : cursor_(cursor) {}
 
 HostDrmDevice::~HostDrmDevice() {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  for (GpuThreadObserver& observer : gpu_thread_observers_)
-    observer.OnGpuThreadRetired();
+  gpu_thread_observers_.Notify(&GpuThreadObserver::OnGpuThreadRetired);
 }
 
 void HostDrmDevice::OnDrmServiceStarted() {
@@ -37,8 +37,7 @@ void HostDrmDevice::OnDrmServiceStarted() {
 
   connected_ = true;
 
-  for (GpuThreadObserver& observer : gpu_thread_observers_)
-    observer.OnGpuThreadReady();
+  gpu_thread_observers_.Notify(&GpuThreadObserver::OnGpuThreadReady);
 
   DCHECK(cursor_proxy_)
       << "We should have already created a cursor proxy previously";
@@ -139,14 +138,16 @@ void HostDrmDevice::GpuConfigureNativeDisplays(
     // recursive calls to ConfigureDisplaysTask::Run() in cases in which the GPU
     // process crashes repeatedly.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), false));
+        FROM_HERE, base::BindOnce(std::move(callback), config_requests, false));
   }
 }
 
 bool HostDrmDevice::GpuTakeDisplayControl() {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
+  if (!IsConnected()) {
+    LOG(WARNING) << __func__ << " GPU service not connected.";
     return false;
+  }
   auto callback =
       base::BindOnce(&HostDrmDevice::GpuTakeDisplayControlCallback, this);
 
@@ -157,8 +158,10 @@ bool HostDrmDevice::GpuTakeDisplayControl() {
 
 bool HostDrmDevice::GpuRelinquishDisplayControl() {
   DCHECK_CALLED_ON_VALID_THREAD(on_ui_thread_);
-  if (!IsConnected())
+  if (!IsConnected()) {
+    LOG(WARNING) << __func__ << " GPU service not connected.";
     return false;
+  }
   auto callback =
       base::BindOnce(&HostDrmDevice::GpuRelinquishDisplayControlCallback, this);
 
@@ -349,8 +352,7 @@ void HostDrmDevice::OnGpuServiceLaunched(
     OnGpuServiceLost();
 
   drm_device_.Bind(std::move(drm_device));
-  for (GpuThreadObserver& observer : gpu_thread_observers_)
-    observer.OnGpuProcessLaunched();
+  gpu_thread_observers_.Notify(&GpuThreadObserver::OnGpuProcessLaunched);
 
   // Create two DeviceCursor connections: one for the UI thread and one for the
   // IO thread.
@@ -374,8 +376,7 @@ void HostDrmDevice::OnGpuServiceLost() {
   connected_ = false;
   drm_device_.reset();
   // TODO(rjkroege): OnGpuThreadRetired is not currently used.
-  for (GpuThreadObserver& observer : gpu_thread_observers_)
-    observer.OnGpuThreadRetired();
+  gpu_thread_observers_.Notify(&GpuThreadObserver::OnGpuThreadRetired);
 }
 
 }  // namespace ui

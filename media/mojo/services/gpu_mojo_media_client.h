@@ -46,7 +46,7 @@ struct VideoDecoderTraits {
   // Android uses this twice.
   GetCommandBufferStubCB get_command_buffer_stub_cb;
 
-  mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder;
+  mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder;
 
   VideoDecoderTraits(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -55,7 +55,7 @@ struct VideoDecoderTraits {
       const gfx::ColorSpace* target_color_space,
       GetConfigCacheCB get_cached_configs_cb,
       GetCommandBufferStubCB get_command_buffer_stub_cb,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder);
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder);
   ~VideoDecoderTraits();
 };
 
@@ -109,9 +109,9 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
       scoped_refptr<base::SequencedTaskRunner> task_runner) final;
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   void NotifyDecoderSupportKnown(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-      base::OnceCallback<void(
-          mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) final;
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)> cb)
+      final;
 #endif  // BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
   std::unique_ptr<VideoDecoder> CreateVideoDecoder(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
@@ -119,8 +119,7 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
-      final;
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder) final;
   std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* interface_provider) final;
 
@@ -144,7 +143,7 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
   // Queries the platform decoder type.
   virtual VideoDecoderType GetPlatformDecoderImplementationType() = 0;
 
-#if BUILDFLAG(USE_VAAPI) || BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
   // Ensures that the platform video decoder supported configurations are known.
   // When they are, |cb| is called with a PendingRemote that corresponds to the
   // same connection as |oop_video_decoder| (which may be |oop_video_decoder|
@@ -158,9 +157,9 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient : public MojoMediaClient {
   // This function is thread- and sequence-safe. |cb| is always called on the
   // same sequence as NotifyPlatformDecoderSupport().
   virtual void NotifyPlatformDecoderSupport(
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder,
-      base::OnceCallback<
-          void(mojo::PendingRemote<stable::mojom::StableVideoDecoder>)> cb) = 0;
+      mojo::PendingRemote<mojom::VideoDecoder> oop_video_decoder,
+      base::OnceCallback<void(mojo::PendingRemote<mojom::VideoDecoder>)>
+          cb) = 0;
 #endif
 
   // ------------------- [ Optional implementations below ] -------------------

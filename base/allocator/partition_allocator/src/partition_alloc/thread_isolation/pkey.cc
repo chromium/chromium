@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "partition_alloc/thread_isolation/pkey.h"
 
 #if PA_BUILDFLAG(ENABLE_PKEYS)
@@ -61,7 +66,8 @@ void Wrpkru(uint32_t pkru) {
   asm volatile(".byte 0x0f,0x01,0xef\n" : : "a"(pkru), "c"(0), "d"(0));
 }
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
+    PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 LiftPkeyRestrictionsScope::LiftPkeyRestrictionsScope()
     : saved_pkey_value_(kDefaultPkeyValue) {
@@ -83,7 +89,8 @@ LiftPkeyRestrictionsScope::~LiftPkeyRestrictionsScope() {
   }
 }
 
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
+        // PA_BUILDFLAG(ENABLE_PARTITION_LOCK_REENTRANCY_CHECK)
 
 }  // namespace partition_alloc::internal
 

@@ -3,3 +3,4 @@ file://base/metrics/OWNERS
 per-file first_web_contents_profiler*=file://components/startup_metric_utils/OWNERS
 per-file process_memory_metrics_emitter*=file://services/resource_coordinator/memory_instrumentation/OWNERS
 per-file process_memory_metrics_emitter*=file://chrome/browser/performance_manager/OWNERS
+per-file family_link_user_metrics_provider*=file://components/supervised_user/OWNERS

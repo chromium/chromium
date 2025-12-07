@@ -5,9 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_EXCEPTION_CONTEXT_H_
 
+#include <variant>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
-#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -34,13 +35,6 @@ class PLATFORM_EXPORT ExceptionContext final {
       case v8::ExceptionContext::kAttributeGet:
       case v8::ExceptionContext::kAttributeSet:
       case v8::ExceptionContext::kOperation:
-        DCHECK(class_name);
-        DCHECK(property_name);
-        break;
-      case v8::ExceptionContext::kConstructor:
-      case v8::ExceptionContext::kNamedEnumerator:
-        DCHECK(class_name);
-        break;
       case v8::ExceptionContext::kIndexedGetter:
       case v8::ExceptionContext::kIndexedDescriptor:
       case v8::ExceptionContext::kIndexedSetter:
@@ -53,9 +47,12 @@ class PLATFORM_EXPORT ExceptionContext final {
       case v8::ExceptionContext::kNamedDefiner:
       case v8::ExceptionContext::kNamedDeleter:
       case v8::ExceptionContext::kNamedQuery:
-        // Named and indexed property interceptors go through the constructor
-        // variant that takes a const String&, never this one.
-        NOTREACHED_IN_MIGRATION();
+        DCHECK(class_name);
+        DCHECK(property_name);
+        break;
+      case v8::ExceptionContext::kConstructor:
+      case v8::ExceptionContext::kNamedEnumerator:
+        DCHECK(class_name);
         break;
       case v8::ExceptionContext::kUnknown:
         break;
@@ -63,18 +60,10 @@ class PLATFORM_EXPORT ExceptionContext final {
 #endif  // DCHECK_IS_ON()
   }
 
-  ExceptionContext(v8::ExceptionContext type, const char* class_name)
-      : ExceptionContext(type, class_name, nullptr) {}
-
-  // Named and indexed property interceptors have a dynamic property name. This
-  // variant ensures that the string backing that property name remains alive
-  // for the lifetime of the ExceptionContext.
-  ExceptionContext(v8::ExceptionContext type,
-                   const char* class_name,
-                   const String& property_name)
-      : type_(type),
-        class_name_(class_name),
-        property_name_string_(property_name) {}
+  constexpr ExceptionContext()
+      : type_(v8::ExceptionContext::kUnknown),
+        class_name_(nullptr),
+        property_name_(nullptr) {}
 
   ExceptionContext(const ExceptionContext&) = default;
   ExceptionContext(ExceptionContext&&) = default;
@@ -85,27 +74,12 @@ class PLATFORM_EXPORT ExceptionContext final {
 
   v8::ExceptionContext GetType() const { return type_; }
   const char* GetClassName() const { return class_name_; }
-  String GetPropertyName() const {
-    DCHECK(!property_name_ || property_name_string_.IsNull());
-    return property_name_ ? String(property_name_)
-                          : property_name_string_;
-  }
-  int16_t GetArgumentIndex() const { return argument_index_; }
-
-  // This is used for a performance hack to reduce the number of construction
-  // and destruction times of ExceptionContext when iterating over properties.
-  // Only the generated bindings code is allowed to use this hack.
-  void ChangePropertyNameAsOptimizationHack(const char* property_name) {
-    DCHECK(property_name_string_.IsNull());
-    property_name_ = property_name;
-  }
+  const char* GetPropertyName() const { return property_name_; }
 
  private:
   v8::ExceptionContext type_;
-  int16_t argument_index_ = 0;
   const char* class_name_ = nullptr;
   const char* property_name_ = nullptr;
-  String property_name_string_;
 };
 
 }  // namespace blink

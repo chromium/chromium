@@ -5,15 +5,17 @@
 #include "chrome/browser/ui/views/page_info/about_this_site_side_panel_coordinator.h"
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/page_info/page_info_features.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/page_info/about_this_site_side_panel.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/page_info/about_this_site_side_panel_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/browser/ui/views/page_info/web_view_side_panel_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "components/page_info/core/about_this_site_service.h"
@@ -25,6 +27,9 @@
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/vector_icons.h"
+
+constexpr char kStaticLoadingScreenURL[] =
+    "https://www.gstatic.com/diner/chrome/atp_loading.html";
 
 namespace {
 content::OpenURLParams CreateOpenUrlParams(const GURL& url) {
@@ -78,13 +83,15 @@ void AboutThisSideSidePanelCoordinator::RegisterEntry(
   if (!registry->GetEntryForKey(
           SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite))) {
     auto entry = std::make_unique<SidePanelEntry>(
-        SidePanelEntry::Id::kAboutThisSite,
+        SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView,
             base::Unretained(this)),
         base::BindRepeating(
             &AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        /*more_info_callback=*/base::NullCallback(),
+        /*default_content_width_callback=*/base::NullCallback());
     registry->Register(std::move(entry));
   }
 }
@@ -104,8 +111,8 @@ void AboutThisSideSidePanelCoordinator::RegisterEntryAndShow(
     about_this_site_side_panel_view_->OpenUrl(last_url_info_->url_params);
   }
 
-  if (side_panel_ui->GetCurrentEntryId() !=
-      SidePanelEntry::Id::kAboutThisSite) {
+  if (!side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kAboutThisSite))) {
     side_panel_ui->Show(SidePanelEntry::Id::kAboutThisSite);
   }
 }
@@ -134,8 +141,8 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
   // Update the SidePanel when a user navigates to another url with the
   // correct Diner URL.
   if (about_this_site_side_panel_view_ &&
-      side_panel_ui->GetCurrentEntryId() ==
-          SidePanelEntry::Id::kAboutThisSite) {
+      side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kAboutThisSite))) {
     page_info::AboutThisSiteService::OnSameTabNavigation();
     RegisterEntryAndShow(
         page_info::AboutThisSiteService::CreateMoreAboutUrlForNavigation(
@@ -144,8 +151,8 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
 
   // If the about this site side panel is no longer being shown and the view is
   // cached, then we will remove the cached view since it shows the wrong page.
-  if (side_panel_ui->GetCurrentEntryId() !=
-          SidePanelEntry::Id::kAboutThisSite &&
+  if (!side_panel_ui->IsSidePanelEntryShowing(
+          SidePanelEntryKey(SidePanelEntry::Id::kAboutThisSite)) &&
       about_this_site_side_panel_view_) {
     auto* entry = registry->GetEntryForKey(
         SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
@@ -155,7 +162,8 @@ void AboutThisSideSidePanelCoordinator::DidFinishNavigation(
 }
 
 std::unique_ptr<views::View>
-AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
+AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView(
+    SidePanelEntryScope& scope) {
   DCHECK(GetBrowserView());
   DCHECK(last_url_info_);
   if (registered_but_not_shown_) {
@@ -163,8 +171,9 @@ AboutThisSideSidePanelCoordinator::CreateAboutThisSiteWebView() {
     registered_but_not_shown_ = false;
   }
 
-  auto side_panel_view_ =
-      std::make_unique<AboutThisSiteSidePanelView>(web_contents());
+  auto side_panel_view_ = std::make_unique<WebViewSidePanelView>(
+      web_contents(), kStaticLoadingScreenURL,
+      page_info::AboutThisSiteRenderModeParameterName);
   side_panel_view_->OpenUrl(last_url_info_->url_params);
   about_this_site_side_panel_view_ = side_panel_view_->AsWeakPtr();
   return side_panel_view_;
@@ -182,7 +191,7 @@ SidePanelUI* AboutThisSideSidePanelCoordinator::GetSidePanelUI() {
 
 GURL AboutThisSideSidePanelCoordinator::GetOpenInNewTabUrl() {
   DCHECK(last_url_info_.has_value());
-  DCHECK(!base::Contains(last_url_info_.value().new_tab_url.query_piece(),
+  DCHECK(!base::Contains(last_url_info_.value().new_tab_url.query(),
                          page_info::AboutThisSiteRenderModeParameterName));
   return last_url_info_.value().new_tab_url;
 }

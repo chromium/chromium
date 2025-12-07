@@ -9,25 +9,19 @@
 namespace blink {
 
 WGSLLanguageFeatures::WGSLLanguageFeatures(
-    const std::vector<wgpu::WGSLFeatureName>& features) {
+    const std::vector<wgpu::WGSLLanguageFeatureName>& features) {
   for (const auto& dawn_feature : features) {
-    V8WGSLFeatureName v8_feature{
-        V8WGSLFeatureName::Enum::kPointerCompositeAccess};
-    if (FromDawnEnum(dawn_feature, &v8_feature)) {
-      features_.insert(v8_feature.AsString());
+    if (const char* feature = FromDawnEnum(dawn_feature)) {
+      features_.insert(feature);
     }
   }
-}
-
-bool WGSLLanguageFeatures::has(const String& feature) const {
-  return features_.Contains(feature);
 }
 
 bool WGSLLanguageFeatures::hasForBinding(
     ScriptState* script_state,
     const String& feature,
     ExceptionState& exception_state) const {
-  return has(feature);
+  return features_.Contains(feature);
 }
 
 WGSLLanguageFeatures::IterationSource::IterationSource(
@@ -41,8 +35,7 @@ WGSLLanguageFeatures::IterationSource::IterationSource(
 
 bool WGSLLanguageFeatures::IterationSource::FetchNextItem(
     ScriptState* script_state,
-    String& value,
-    ExceptionState& exception_state) {
+    String& value) {
   if (iter_ == features_.end()) {
     return false;
   }

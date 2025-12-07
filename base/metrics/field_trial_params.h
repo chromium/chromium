@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_METRICS_FIELD_TRIAL_PARAMS_H_
 #define BASE_METRICS_FIELD_TRIAL_PARAMS_H_
 
@@ -15,13 +10,47 @@
 #include <string>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 
 namespace base {
+
+namespace internal {
+
+BASE_EXPORT bool IsFeatureParamWithCacheEnabled();
+
+// A traits struct to manage the type for the default value in the following
+// FeatureParam<> template. `std::string` needs to use a string literal instead
+// of `std::string` to realize compile time construction.
+template <typename T>
+struct FeatureParamTraits {
+  using DefaultValueType = T;
+  using CacheStorageType = T;
+  static CacheStorageType ToCacheStorageType(const T& value) { return value; }
+  static constexpr T FromCacheStorageType(const CacheStorageType& storage) {
+    return storage;
+  }
+};
+
+template <>
+struct FeatureParamTraits<std::string> {
+  using DefaultValueType = const char*;
+  using CacheStorageType = NoDestructor<std::string>;
+  static CacheStorageType ToCacheStorageType(const std::string& value) {
+    return CacheStorageType(value);
+  }
+  static constexpr std::string FromCacheStorageType(
+      const CacheStorageType& storage) {
+    return *storage;
+  }
+};
+
+}  // namespace internal
 
 // Key-value mapping type for field trial parameters.
 typedef std::map<std::string, std::string> FieldTrialParams;
@@ -29,10 +58,206 @@ typedef std::map<std::string, std::string> FieldTrialParams;
 // Param string decoding function for AssociateFieldTrialParamsFromString().
 typedef std::string (*FieldTrialParamsDecodeStringFunc)(const std::string& str);
 
+// Shared declaration for various FeatureParam<T> types.
+//
+// This template is defined for the following types T:
+//   bool
+//   int
+//   size_t
+//   double
+//   std::string
+//   enum types
+//   base::TimeDelta
+//
+// Attempting to use it with any other type is a compile error.
+//
+// Getting a param value from a FeatureParam<T> will have the same semantics as
+// GetFieldTrialParamValueByFeature(), see that function's comments for details.
+// `cache_getter` is used to provide a dedicated getter that is used to give a
+// local cache to the FeatureParam. Usually, this is automatically generated and
+// provided via BASE_FEATURE_PARAM() or BASE_FEATURE_ENUM_PARAM() macro.
+//
+// Example to declares a double-valued parameter.
+//
+//     constexpr FeatureParam<double> kAssistantTriggerThreshold = {
+//         &kAssistantFeature, "trigger_threshold", 0.10};
+//
+// Equivalent using the caching macro (see base/feature_list.h):
+//
+//     BASE_FEATURE_PARAM(double, kAssistantTriggerThreshold,
+//                        &kAssistantFeature, "trigger_threshold", 0.10);
+//
+// If the feature is not enabled, the parameter is not set, or set to an invalid
+// value, then Get() will return the default value.
+template <typename T, bool IsEnum = std::is_enum_v<T>>
+struct FeatureParam {
+  using DefaultValueType =
+      typename internal::FeatureParamTraits<T>::DefaultValueType;
+
+  // Prevent use of FeatureParam<> with unsupported types (e.g. void*). Uses T
+  // in its definition so that evaluation is deferred until the template is
+  // instantiated.
+  static_assert(std::is_same_v<bool, T> || std::is_same_v<int, T> ||
+                    std::is_same_v<size_t, T> || std::is_same_v<double, T> ||
+                    std::is_same_v<std::string, T> ||
+                    std::is_same_v<base::TimeDelta, T>,
+                "Unsupported FeatureParam<> type");
+
+  constexpr FeatureParam(const Feature* feature,
+                         const char* name,
+                         DefaultValueType default_value,
+                         T (*cache_getter)(const FeatureParam<T>*) = nullptr)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        cache_getter(cache_getter) {}
+
+  // Calling Get() or GetWithoutCache() will activate the field trial associated
+  // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
+  BASE_EXPORT T Get() const {
+    if (internal::IsFeatureParamWithCacheEnabled() && cache_getter) {
+      return cache_getter(this);
+    }
+    return GetWithoutCache();
+  }
+  BASE_EXPORT T GetWithoutCache() const;
+
+  // RAW_PTR_EXCLUSION: Using raw_ptr here would make FeatureParam lose its
+  // trivial destructor, causing it to be classified as a non-trivial class
+  // member in contexts where it's included. This can complicate code and
+  // impact performance. base::Features are expected to be globals with
+  // static lifetime, so this is pretty much always safe.
+  RAW_PTR_EXCLUSION const Feature* const feature;
+  const char* const name;
+  const DefaultValueType default_value;
+  T (*const cache_getter)(const FeatureParam<T>*);
+};
+
+// Declarations for GetWithoutCache() specializations and explicit
+// instantiations for the FeatureParam<> to ensure instantiating them
+// in the base components to export them.
+template <>
+bool FeatureParam<bool>::GetWithoutCache() const;
+template struct FeatureParam<bool>;
+template struct internal::FeatureParamTraits<bool>;
+
+template <>
+int FeatureParam<int>::GetWithoutCache() const;
+template struct FeatureParam<int>;
+template struct internal::FeatureParamTraits<int>;
+
+template <>
+size_t FeatureParam<size_t>::GetWithoutCache() const;
+template struct FeatureParam<size_t>;
+template struct internal::FeatureParamTraits<size_t>;
+
+template <>
+double FeatureParam<double>::GetWithoutCache() const;
+template struct FeatureParam<double>;
+template struct internal::FeatureParamTraits<double>;
+
+template <>
+std::string FeatureParam<std::string>::GetWithoutCache() const;
+template struct FeatureParam<std::string>;
+
+template <>
+TimeDelta FeatureParam<TimeDelta>::GetWithoutCache() const;
+template struct FeatureParam<TimeDelta>;
+template struct internal::FeatureParamTraits<TimeDelta>;
+
+// Feature param declaration for an enum, with associated options. Example:
+//
+//     constexpr FeatureParam<ShapeEnum>::Option kShapeParamOptions[] = {
+//         {SHAPE_CIRCLE, "circle"},
+//         {SHAPE_CYLINDER, "cylinder"},
+//         {SHAPE_PAPERCLIP, "paperclip"}};
+//     constexpr FeatureParam<ShapeEnum> kAssistantShapeParam = {
+//         &kAssistantFeature, "shape", SHAPE_CIRCLE, &kShapeParamOptions};
+//
+// With this declaration, the parameter may be set to "circle", "cylinder", or
+// "paperclip", and that will be translated to one of the three enum values. By
+// default, or if the param is set to an unknown value, the parameter will be
+// assumed to be SHAPE_CIRCLE.
+template <typename Enum>
+struct FeatureParam<Enum, true> {
+  struct Option {
+    constexpr Option(Enum value, const char* name) : value(value), name(name) {}
+
+    const Enum value;
+    const char* const name;
+  };
+
+  template <size_t option_count>
+  constexpr FeatureParam(
+      const Feature* feature,
+      const char* name,
+      const Enum default_value,
+      const std::array<Option, option_count>& options_array,
+      Enum (*cache_getter)(const FeatureParam<Enum>*) = nullptr)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        options(options_array),
+        cache_getter(cache_getter) {
+    static_assert(option_count >= 1, "FeatureParam<enum> has no options");
+  }
+
+  template <size_t option_count>
+  constexpr FeatureParam(
+      const Feature* feature,
+      const char* name,
+      const Enum default_value,
+      const Option (*options_array)[option_count],
+      Enum (*cache_getter)(const FeatureParam<Enum>*) = nullptr)
+      : feature(feature),
+        name(name),
+        default_value(default_value),
+        options(*options_array),
+        cache_getter(cache_getter) {
+    static_assert(option_count >= 1, "FeatureParam<enum> has no options");
+  }
+
+  // Calling Get() or GetWithoutCache() will activate the field trial associated
+  // with |feature|. See GetFieldTrialParamValueByFeature() for more details.
+  Enum Get() const {
+    if (internal::IsFeatureParamWithCacheEnabled() && cache_getter) {
+      return cache_getter(this);
+    }
+    return GetWithoutCache();
+  }
+  Enum GetWithoutCache() const {
+    return GetFieldTrialParamByFeatureAsEnum(*feature, name, default_value,
+                                             options);
+  }
+
+  // Returns the param-string for the given enum value.
+  std::string GetName(Enum value) const {
+    for (const auto& option : options) {
+      if (value == option.value) {
+        return option.name;
+      }
+    }
+    NOTREACHED();
+  }
+
+  const raw_ptr<const base::Feature> feature;
+  const char* const name;
+  const Enum default_value;
+  const raw_span<const Option> options;
+  Enum (*const cache_getter)(const FeatureParam<Enum>*);
+};
+
 // Unescapes special characters from the given string. Used in
 // AssociateFieldTrialParamsFromString() as one of the feature params decoding
 // functions.
 BASE_EXPORT std::string UnescapeValue(const std::string& value);
+
+// Logs a warning that a feature param expected to map to an enum was an unknown
+// non-empty value.
+BASE_EXPORT void LogInvalidEnumValue(const Feature& feature,
+                                     const std::string& param_name,
+                                     const std::string& value_as_string,
+                                     int default_value_as_int);
 
 // Associates the specified set of key-value |params| with the field trial
 // specified by |trial_name| and |group_name|. Fails and returns false if the
@@ -88,6 +313,14 @@ BASE_EXPORT std::string GetFieldTrialParamValueByFeature(
     const base::Feature& feature,
     const std::string& param_name);
 
+// Same as GetFieldTrialParamValueByFeature(). But internally relies on
+// GetFieldTrialParamsByFeature to handle empty values in the map, and returns
+// |default_value| only if |param_name| is not found in the map.
+BASE_EXPORT std::string GetFieldTrialParamByFeatureAsString(
+    const base::Feature& feature,
+    const std::string& param_name,
+    const std::string& default_value);
+
 // Same as GetFieldTrialParamValueByFeature(). On top of that, it converts the
 // string value into an int using base::StringToInt() and returns it, if
 // successful. Otherwise, it returns |default_value|. If the string value is not
@@ -124,235 +357,29 @@ BASE_EXPORT base::TimeDelta GetFieldTrialParamByFeatureAsTimeDelta(
     const std::string& param_name,
     base::TimeDelta default_value);
 
-// Shared declaration for various FeatureParam<T> types.
-//
-// This template is defined for the following types T:
-//   bool
-//   int
-//   double
-//   std::string
-//   enum types
-//   base::TimeDelta
-//
-// See the individual definitions below for the appropriate interfaces.
-// Attempting to use it with any other type is a compile error.
-//
-// Getting a param value from a FeatureParam<T> will have the same semantics as
-// GetFieldTrialParamValueByFeature(), see that function's comments for details.
-template <typename T, bool IsEnum = std::is_enum_v<T>>
-struct FeatureParam {
-  // Prevent use of FeatureParam<> with unsupported types (e.g. void*). Uses T
-  // in its definition so that evaluation is deferred until the template is
-  // instantiated.
-  static_assert(!std::is_same_v<T, T>, "unsupported FeatureParam<> type");
-};
-
-// Declares a string-valued parameter. Example:
-//
-//     constexpr FeatureParam<string> kAssistantName = {
-//         &kAssistantFeature, "assistant_name", "HAL"};
-//
-// If the feature is not enabled, the parameter is not set, or set to the empty
-// string, then Get() will return the default value.
-template <>
-struct FeatureParam<std::string> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         const char* default_value)
-      : feature(feature), name(name), default_value(default_value) {}
-
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
-  BASE_EXPORT std::string Get() const;
-
-  // RAW_PTR_EXCLUSION: #global-scope,
-  RAW_PTR_EXCLUSION const Feature* const feature;
-  const char* const name;
-  const char* const default_value;
-};
-
-// Declares a double-valued parameter. Example:
-//
-//     constexpr FeatureParam<double> kAssistantTriggerThreshold = {
-//         &kAssistantFeature, "trigger_threshold", 0.10};
-//
-// If the feature is not enabled, the parameter is not set, or set to an invalid
-// double value, then Get() will return the default value.
-template <>
-struct FeatureParam<double> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         double default_value)
-      : feature(feature), name(name), default_value(default_value) {}
-
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
-  BASE_EXPORT double Get() const;
-
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const Feature* const feature;
-  const char* const name;
-  const double default_value;
-};
-
-// Declares an int-valued parameter. Example:
-//
-//     constexpr FeatureParam<int> kAssistantParallelism = {
-//         &kAssistantFeature, "parallelism", 4};
-//
-// If the feature is not enabled, the parameter is not set, or set to an invalid
-// int value, then Get() will return the default value.
-template <>
-struct FeatureParam<int> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         int default_value)
-      : feature(feature), name(name), default_value(default_value) {}
-
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
-  BASE_EXPORT int Get() const;
-
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const Feature* const feature;
-  const char* const name;
-  const int default_value;
-};
-
-// Declares a bool-valued parameter. Example:
-//
-//     constexpr FeatureParam<int> kAssistantIsHelpful = {
-//         &kAssistantFeature, "is_helpful", true};
-//
-// If the feature is not enabled, the parameter is not set, or set to value
-// other than "true" or "false", then Get() will return the default value.
-template <>
-struct FeatureParam<bool> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         bool default_value)
-      : feature(feature), name(name), default_value(default_value) {}
-
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
-  BASE_EXPORT bool Get() const;
-
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const Feature* const feature;
-  const char* const name;
-  const bool default_value;
-};
-
-// Declares an TimeDelta-valued parameter. Example:
-//
-//     constexpr base::FeatureParam<base::TimeDelta> kPerAgentDelay{
-//         &kPerAgentSchedulingExperiments, "delay", base::TimeDelta()};
-//
-// If the feature is not enabled, the parameter is not set, or set to an
-// invalid value (as defined by base::TimeDeltaFromString()), then Get() will
-// return the default value.
-template <>
-struct FeatureParam<base::TimeDelta> {
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         base::TimeDelta default_value)
-      : feature(feature), name(name), default_value(default_value) {}
-
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
-  BASE_EXPORT base::TimeDelta Get() const;
-
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const Feature* const feature;
-  const char* const name;
-  const base::TimeDelta default_value;
-};
-
-BASE_EXPORT void LogInvalidEnumValue(const Feature& feature,
-                                     const std::string& param_name,
-                                     const std::string& value_as_string,
-                                     int default_value_as_int);
-
-// Feature param declaration for an enum, with associated options. Example:
-//
-//     constexpr FeatureParam<ShapeEnum>::Option kShapeParamOptions[] = {
-//         {SHAPE_CIRCLE, "circle"},
-//         {SHAPE_CYLINDER, "cylinder"},
-//         {SHAPE_PAPERCLIP, "paperclip"}};
-//     constexpr FeatureParam<ShapeEnum> kAssistantShapeParam = {
-//         &kAssistantFeature, "shape", SHAPE_CIRCLE, &kShapeParamOptions};
-//
-// With this declaration, the parameter may be set to "circle", "cylinder", or
-// "paperclip", and that will be translated to one of the three enum values. By
-// default, or if the param is set to an unknown value, the parameter will be
-// assumed to be SHAPE_CIRCLE.
+// Same as GetFieldTrialParamValueByFeature(). On top of that, it converts the
+// string value into an Enum and returns it, if successful. Otherwise, it
+// returns `default_value`. If the string value is not empty and the conversion
+// does not succeed, it produces a warning to LOG.
 template <typename Enum>
-struct FeatureParam<Enum, true> {
-  struct Option {
-    constexpr Option(Enum value, const char* name) : value(value), name(name) {}
-
-    const Enum value;
-    const char* const name;
-  };
-
-  template <size_t option_count>
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         const Enum default_value,
-                         const std::array<Option, option_count>& options)
-      : feature(feature),
-        name(name),
-        default_value(default_value),
-        options(options.data()),
-        option_count(option_count) {
-    static_assert(option_count >= 1, "FeatureParam<enum> has no options");
-  }
-
-  template <size_t option_count>
-  constexpr FeatureParam(const Feature* feature,
-                         const char* name,
-                         const Enum default_value,
-                         const Option (*options)[option_count])
-      : feature(feature),
-        name(name),
-        default_value(default_value),
-        options(*options),
-        option_count(option_count) {
-    static_assert(option_count >= 1, "FeatureParam<enum> has no options");
-  }
-
-  // Calling Get() will activate the field trial associated with |feature|. See
-  // GetFieldTrialParamValueByFeature() for more details.
-  Enum Get() const {
-    std::string value = GetFieldTrialParamValueByFeature(*feature, name);
-    if (value.empty())
-      return default_value;
-    for (size_t i = 0; i < option_count; ++i) {
-      if (value == options[i].name)
-        return options[i].value;
-    }
-    LogInvalidEnumValue(*feature, name, value, static_cast<int>(default_value));
+Enum GetFieldTrialParamByFeatureAsEnum(
+    const Feature& feature,
+    const std::string& param_name,
+    Enum default_value,
+    base::span<const typename FeatureParam<Enum, true>::Option> options) {
+  std::string value = GetFieldTrialParamValueByFeature(feature, param_name);
+  if (value.empty()) {
     return default_value;
   }
-
-  // Returns the param-string for the given enum value.
-  std::string GetName(Enum value) const {
-    for (size_t i = 0; i < option_count; ++i) {
-      if (value == options[i].value)
-        return options[i].name;
+  for (const auto& option : options) {
+    if (value == option.name) {
+      return option.value;
     }
-    NOTREACHED_IN_MIGRATION();
-    return "";
   }
-
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const base::Feature* const feature;
-  const char* const name;
-  const Enum default_value;
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const Option* const options;
-  const size_t option_count;
-};
+  LogInvalidEnumValue(feature, param_name, value,
+                      static_cast<int>(default_value));
+  return default_value;
+}
 
 }  // namespace base
 

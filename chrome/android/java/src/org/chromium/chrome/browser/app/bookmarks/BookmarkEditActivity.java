@@ -4,28 +4,33 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
-import android.content.res.Resources;
-import android.os.Bundle;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
+import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpenerImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
-import org.chromium.chrome.browser.bookmarks.BookmarkMoveSnackbarManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkTextInputLayout;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.BookmarkViewUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties;
@@ -34,15 +39,14 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowViewBinder;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.url_formatter.UrlFormatter;
+import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.url.GURL;
@@ -50,31 +54,30 @@ import org.chromium.url.GURL;
 /** The activity that enables the user to modify the title, url and parent folder of a bookmark. */
 // TODO(crbug.com/40269559): Separate the activity from its view.
 // TODO(crbug.com/40269559): Add a coordinator/mediator for business logic.
+@NullMarked
 public class BookmarkEditActivity extends SnackbarActivity {
     /** The intent extra specifying the ID of the bookmark to be edited. */
     public static final String INTENT_BOOKMARK_ID = "BookmarkEditActivity.BookmarkId";
 
-    /** The code when starting the folder move activity for a result. */
-    static final int MOVE_REQUEST_CODE = 15;
-
     private static final String TAG = "BookmarkEdit";
 
-    private final SelectionDelegate mEmptySelectionDelegate = new SelectionDelegate();
+    private BookmarkModel mModel;
+    private Profile mProfile;
+    private BookmarkUiPrefs mBookmarkUiPrefs;
+    private BookmarkManagerOpener mBookmarkManagerOpener;
+    private BookmarkId mBookmarkId;
+    private PropertyModel mFolderSelectRowModel;
 
     private ImprovedBookmarkRowCoordinator mFolderSelectRowCoordinator;
-    private BookmarkModel mModel;
-    private BookmarkId mBookmarkId;
-    private boolean mInFolderSelect;
+    private ImprovedBookmarkRow mFolderSelectRow;
     private BookmarkTextInputLayout mTitleEditText;
     private BookmarkTextInputLayout mUrlEditText;
-    private MenuItem mDeleteButton;
-    private BookmarkUiPrefs mBookmarkUiPrefs;
+    private @Nullable MenuItem mDeleteButton;
     private FrameLayout mFolderPickerRowContainer;
-    private ImprovedBookmarkRow mFolderSelectRow;
-    private PropertyModel mFolderSelectRowModel;
-    private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
 
-    private BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
+    private @Nullable EdgeToEdgePadAdjuster mEdgeToEdgePadAdjuster;
+
+    private final BookmarkUiPrefs.Observer mBookmarkUiPrefsObserver =
             new BookmarkUiPrefs.Observer() {
                 @Override
                 public void onBookmarkRowDisplayPrefChanged(
@@ -83,26 +86,25 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 }
             };
 
-    private BookmarkModelObserver mBookmarkModelObserver =
+    private final BookmarkModelObserver mBookmarkModelObserver =
             new BookmarkModelObserver() {
                 @Override
                 public void bookmarkModelChanged() {
                     if (mModel.doesBookmarkExist(mBookmarkId)) {
                         updateViewContent(true);
-                    } else if (!mInFolderSelect) {
-                        // This happens either when the user clicks delete button or partner
-                        // bookmark is removed in background.
+                    } else {
                         finish();
                     }
                 }
             };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Profile profile = getProfileProvider().getOriginalProfile();
+    @Initializer
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
+        mProfile = profile;
         mModel = BookmarkModel.getForProfile(profile);
+        mBookmarkManagerOpener = new BookmarkManagerOpenerImpl();
         mBookmarkId =
                 BookmarkId.getBookmarkIdFromString(getIntent().getStringExtra(INTENT_BOOKMARK_ID));
         mModel.addObserver(mBookmarkModelObserver);
@@ -112,19 +114,13 @@ public class BookmarkEditActivity extends SnackbarActivity {
             return;
         }
 
-        mBookmarkMoveSnackbarManager =
-                new BookmarkMoveSnackbarManager(
-                        /* context= */ this,
-                        mModel,
-                        getSnackbarManager(),
-                        IdentityServicesProvider.get().getIdentityManager(profile));
         setContentView(R.layout.bookmark_edit);
         mTitleEditText = findViewById(R.id.title_text);
         mUrlEditText = findViewById(R.id.url_text);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         View shadow = findViewById(R.id.shadow);
         View scrollView = findViewById(R.id.scroll_view);
@@ -144,7 +140,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
         mBookmarkUiPrefs = new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         mBookmarkUiPrefs.addObserver(mBookmarkUiPrefsObserver);
 
-        Resources res = getResources();
         mFolderSelectRowCoordinator =
                 new ImprovedBookmarkRowCoordinator(
                         this,
@@ -155,29 +150,29 @@ public class BookmarkEditActivity extends SnackbarActivity {
                                 ImageFetcherFactory.createImageFetcher(
                                         ImageFetcherConfig.DISK_CACHE_ONLY,
                                         profile.getProfileKey()),
-                                new LargeIconBridge(profile),
-                                BookmarkUtils.getRoundedIconGenerator(
-                                        this, BookmarkRowDisplayPref.VISUAL),
-                                BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                                BookmarkUtils.getFaviconDisplaySize(res)),
+                                BookmarkViewUtils.getRoundedIconGenerator(
+                                        this, BookmarkRowDisplayPref.VISUAL)),
                         mModel,
                         mBookmarkUiPrefs,
                         ShoppingServiceFactory.getForProfile(profile));
 
         mFolderPickerRowContainer = findViewById(R.id.folder_row_container);
-
+        mEdgeToEdgePadAdjuster =
+                EdgeToEdgeControllerFactory.createForViewAndObserveSupplier(
+                        scrollView, getEdgeToEdgeSupplier());
         updateViewContent(false);
     }
 
     /**
      * @param modelChanged Whether this view update is due to a model change in background.
      */
+    @Initializer
     private void updateViewContent(boolean modelChanged) {
-        BookmarkItem bookmarkItem = mModel.getBookmarkById(mBookmarkId);
+        BookmarkItem bookmarkItem = assumeNonNull(mModel.getBookmarkById(mBookmarkId));
         // While the user is editing the bookmark, do not override user's input.
         if (!modelChanged) {
-            mTitleEditText.getEditText().setText(bookmarkItem.getTitle());
-            mUrlEditText.getEditText().setText(bookmarkItem.getUrl().getSpec());
+            assumeNonNull(mTitleEditText.getEditText()).setText(bookmarkItem.getTitle());
+            assumeNonNull(mUrlEditText.getEditText()).setText(bookmarkItem.getUrl().getSpec());
         }
         mTitleEditText.setEnabled(bookmarkItem.isEditable());
         mUrlEditText.setEnabled(bookmarkItem.isUrlEditable());
@@ -215,7 +210,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
     @Override
     protected void onStop() {
         if (mModel.doesBookmarkExist(mBookmarkId)) {
-            final GURL originalUrl = mModel.getBookmarkById(mBookmarkId).getUrl();
+            BookmarkItem bookmarkItem = assumeNonNull(mModel.getBookmarkById(mBookmarkId));
+            final GURL originalUrl = bookmarkItem.getUrl();
             final String title = mTitleEditText.getTrimmedText();
             final String url = mUrlEditText.getTrimmedText();
 
@@ -223,7 +219,7 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 mModel.setBookmarkTitle(mBookmarkId, title);
             }
 
-            if (!mUrlEditText.isEmpty() && mModel.getBookmarkById(mBookmarkId).isUrlEditable()) {
+            if (!mUrlEditText.isEmpty() && bookmarkItem.isUrlEditable()) {
                 GURL fixedUrl = UrlFormatter.fixupUrl(url);
                 if (fixedUrl.isValid() && !fixedUrl.equals(originalUrl)) {
                     mModel.setBookmarkUrl(mBookmarkId, fixedUrl);
@@ -240,8 +236,8 @@ public class BookmarkEditActivity extends SnackbarActivity {
         if (mBookmarkUiPrefs != null) {
             mBookmarkUiPrefs.removeObserver(mBookmarkUiPrefsObserver);
         }
-        if (mBookmarkMoveSnackbarManager != null) {
-            mBookmarkMoveSnackbarManager.destroy();
+        if (mEdgeToEdgePadAdjuster != null) {
+            mEdgeToEdgePadAdjuster.destroy();
         }
         super.onDestroy();
     }
@@ -257,12 +253,16 @@ public class BookmarkEditActivity extends SnackbarActivity {
     }
 
     @VisibleForTesting
-    MenuItem getDeleteButton() {
+    @Nullable MenuItem getDeleteButton() {
         return mDeleteButton;
     }
 
+    ScrollView getScrollViewForTesting() {
+        return findViewById(R.id.scroll_view);
+    }
+
     private void updateFolderPickerRow(@BookmarkRowDisplayPref int displayPref) {
-        BookmarkItem bookmarkItem = mModel.getBookmarkById(mBookmarkId);
+        BookmarkItem bookmarkItem = assumeNonNull(mModel.getBookmarkById(mBookmarkId));
         mFolderSelectRowModel =
                 mFolderSelectRowCoordinator.createBasePropertyModel(bookmarkItem.getParentId());
 
@@ -272,7 +272,9 @@ public class BookmarkEditActivity extends SnackbarActivity {
                 ImprovedBookmarkRowProperties.END_IMAGE_VISIBILITY, ImageVisibility.DRAWABLE);
         mFolderSelectRowModel.set(
                 ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER,
-                () -> mBookmarkMoveSnackbarManager.startFolderPickerAndObserveResult(mBookmarkId));
+                () ->
+                        mBookmarkManagerOpener.startFolderPickerActivity(
+                                /* context= */ this, mProfile, mBookmarkId));
 
         mFolderSelectRow =
                 ImprovedBookmarkRow.buildView(this, displayPref == BookmarkRowDisplayPref.VISUAL);

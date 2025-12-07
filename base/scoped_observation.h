@@ -41,7 +41,7 @@ namespace base {
 // `observer.h`:
 //   class Observer {
 //    public:
-//     virtual ~Observer() {}
+//     virtual ~Observer() = default;
 //
 //     virtual void OnEvent() {}
 //   };
@@ -124,6 +124,10 @@ class ScopedObservation {
     DCHECK(source);
     return source_ == source;
   }
+
+  // Gets a pointer to the observer that observes the source.
+  Observer* GetObserver() { return observer_; }
+  const Observer* GetObserver() const { return observer_; }
 
   // Gets a pointer to the observed source, or nullptr if no source is being
   // observed.

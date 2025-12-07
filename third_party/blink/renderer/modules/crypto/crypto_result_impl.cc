@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/modules/crypto/crypto_result_impl.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
@@ -117,20 +119,16 @@ void CryptoResultImpl::CompleteWithError(WebCryptoErrorType error_type,
         resolver_script_state->GetIsolate(),
         static_cast<DOMExceptionCode>(exception_code), error_details));
   } else {
-    NOTREACHED_IN_MIGRATION();
-    resolver_->Reject(V8ThrowDOMException::CreateOrDie(
-        resolver_script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
-        error_details));
+    NOTREACHED();
   }
   ClearResolver();
 }
 
-void CryptoResultImpl::CompleteWithBuffer(const void* bytes,
-                                          unsigned bytes_size) {
+void CryptoResultImpl::CompleteWithBuffer(base::span<const uint8_t> bytes) {
   if (!resolver_)
     return;
 
-  auto* buffer = DOMArrayBuffer::Create(bytes, bytes_size);
+  auto* buffer = DOMArrayBuffer::Create(bytes);
   if (type_ == ResolverType::kTyped) {
     resolver_->DowncastTo<DOMArrayBuffer>()->Resolve(buffer);
   } else {
@@ -141,33 +139,27 @@ void CryptoResultImpl::CompleteWithBuffer(const void* bytes,
   ClearResolver();
 }
 
-void CryptoResultImpl::CompleteWithJson(const char* utf8_data,
-                                        unsigned length) {
+void CryptoResultImpl::CompleteWithJson(std::string_view utf8_data) {
   if (!resolver_)
     return;
 
   ScriptState* script_state = resolver_->GetScriptState();
-  v8::Isolate* isolate = script_state->GetIsolate();
   ScriptState::Scope scope(script_state);
 
-  if (length > v8::String::kMaxLength) {
+  if (utf8_data.size() > v8::String::kMaxLength) {
     // TODO(crbug.com/1316976): this should probably raise an exception instead.
     LOG(FATAL) << "Result string is longer than v8::String::kMaxLength";
   }
 
-  v8::Local<v8::String> json_string =
-      v8::String::NewFromUtf8(isolate, utf8_data, v8::NewStringType::kNormal,
-                              length)
-          .ToLocalChecked();
-
-  v8::TryCatch exception_catcher(isolate);
-  v8::Local<v8::Value> json_dictionary;
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  v8::Local<v8::Value> json_dictionary =
+      FromJSONString(script_state, String::FromUTF8(utf8_data));
   CHECK_EQ(type_, ResolverType::kAny);
-  if (v8::JSON::Parse(script_state->GetContext(), json_string)
-          .ToLocal(&json_dictionary))
+  if (try_catch.HasCaught()) {
+    resolver_->Reject(try_catch.Exception());
+  } else {
     resolver_->DowncastTo<IDLAny>()->Resolve(json_dictionary);
-  else
-    resolver_->Reject(exception_catcher.Exception());
+  }
   ClearResolver();
 }
 
@@ -210,15 +202,7 @@ void CryptoResultImpl::CompleteWithKeyPair(const WebCryptoKey& public_key,
   key_pair.Add("privateKey", MakeGarbageCollected<CryptoKey>(private_key));
 
   CHECK_EQ(type_, ResolverType::kAny);
-  resolver_->DowncastTo<IDLAny>()->Resolve(key_pair.V8Value());
-  ClearResolver();
-}
-
-void CryptoResultImpl::CompleteWithError(ExceptionState& exception_state) {
-  if (!resolver_)
-    return;
-
-  resolver_->Reject(exception_state);
+  resolver_->DowncastTo<IDLAny>()->Resolve(key_pair.V8Object());
   ClearResolver();
 }
 

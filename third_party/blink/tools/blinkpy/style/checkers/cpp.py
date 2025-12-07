@@ -39,15 +39,12 @@ import math  # for log
 import os
 import os.path
 import re
-import six
 import sre_compile
 import unicodedata
 
 from blinkpy.common.system.filesystem import FileSystem
 
 from functools import total_ordering
-
-xrange = six.moves.xrange
 
 # Headers that we consider STL headers.
 _STL_HEADERS = frozenset([
@@ -620,8 +617,8 @@ def is_cpp_string(line):
     """
 
     line = line.replace(r'\\', 'XX')  # after this, \\" does not match to \"
-    return (
-        (line.count('"') - line.count(r'\"') - line.count("'\"'")) & 1) == 1
+    return ((line.count('"') - line.count(r'\"') - line.count("'\"'"))
+            & 1) == 1
 
 
 def cleanse_raw_strings(raw_lines):
@@ -873,7 +870,7 @@ def check_for_copyright(lines, error):
 
     # We'll say it should occur by line 10. Don't forget there's a
     # dummy line at the front.
-    for line in xrange(1, min(len(lines), 11)):
+    for line in range(1, min(len(lines), 11)):
         if re.search(r'Copyright', lines[line], re.I):
             break
     else:  # means no copyright line was found
@@ -957,7 +954,7 @@ def check_for_unicode_replacement_characters(lines, error):
       error: The function to call with any errors found.
     """
     for line_number, line in enumerate(lines):
-        if u'\ufffd' in line:
+        if '\ufffd' in line:
             error(
                 line_number, 'readability/utf8', 5,
                 'Line contains invalid UTF-8 (or Unicode replacement character).'
@@ -1081,6 +1078,7 @@ class _ClassState(object):
 
 
 class _FileState(object):
+
     def __init__(self, clean_lines, file_extension):
         self._clean_lines = clean_lines
         if file_extension in ['m', 'mm']:
@@ -1300,7 +1298,7 @@ def detect_functions(clean_lines, line_number, function_state, error):
         return
 
     joined_line = ''
-    for start_line_number in xrange(line_number, clean_lines.num_lines()):
+    for start_line_number in range(line_number, clean_lines.num_lines()):
         start_line = clean_lines.elided[start_line_number]
         joined_line += ' ' + start_line.lstrip()
         body_match = search(r'{|;', start_line)
@@ -1545,7 +1543,7 @@ def get_line_width(line):
       The width of the line in column positions, accounting for Unicode
       combining characters and wide characters.
     """
-    if isinstance(line, six.text_type):
+    if isinstance(line, str):
         width = 0
         for c in unicodedata.normalize('NFC', line):
             if unicodedata.east_asian_width(c) in ('W', 'F'):
@@ -1727,8 +1725,8 @@ def check_redundant_virtual(clean_lines, linenum, error):
     # that this is rare.
     end_position = Position(-1, -1)
     start_col = len(virtual.group(2))
-    for start_line in xrange(linenum, min(linenum + 3,
-                                          clean_lines.num_lines())):
+    for start_line in range(linenum, min(linenum + 3,
+                                         clean_lines.num_lines())):
         line = clean_lines.elided[start_line][start_col:]
         parameter_list = match(r'^([^(]*)\(', line)
         if parameter_list:
@@ -1744,8 +1742,8 @@ def check_redundant_virtual(clean_lines, linenum, error):
 
     # Look for "override" or "final" after the parameter list
     # (possibly on the next few lines).
-    for i in xrange(end_position.row,
-                    min(end_position.row + 3, clean_lines.num_lines())):
+    for i in range(end_position.row,
+                   min(end_position.row + 3, clean_lines.num_lines())):
         line = clean_lines.elided[i][end_position.column:]
         override_or_final = search(r'\b(override|final)\b', line)
         if override_or_final:
@@ -1912,9 +1910,10 @@ def check_language(filename, clean_lines, line_number, file_extension,
                 'Using deprecated casting style.  '
                 'Use static_cast<%s>(...) instead' % matched.group(1))
 
-    check_c_style_cast(
-        line_number, line, clean_lines.raw_lines[line_number], 'static_cast',
-        r'\((int|float|double|bool|char|u?int(16|32|64))\)', error)
+    check_c_style_cast(line_number, line, clean_lines.raw_lines[line_number],
+                       'static_cast',
+                       r'\((int|float|double|bool|char|u?int(16|32|64))\)',
+                       error)
     # This doesn't catch all cases.  Consider (const char * const)"hello".
     check_c_style_cast(line_number, line, clean_lines.raw_lines[line_number],
                        'reinterpret_cast', r'\((\w+\s?\*+\s?)\)', error)
@@ -1962,8 +1961,8 @@ def check_language(filename, clean_lines, line_number, file_extension,
     if matched and not match(r"^''|-?[0-9]+|0x[0-9A-Fa-f]$", matched.group(2)):
         error(
             line_number, 'runtime/memset', 4,
-            'Did you mean "memset(%s, 0, %s)"?' % (matched.group(1),
-                                                   matched.group(2)))
+            'Did you mean "memset(%s, 0, %s)"?' %
+            (matched.group(1), matched.group(2)))
 
     # Detect variable-length arrays.
     matched = match(r'\s*(.+::)?(\w+) [a-z]\w*\[(.+)];', line)
@@ -2169,7 +2168,7 @@ def check_for_toFoo_definition(filename, pattern, error):
     def grep(lines, pattern, error):
         matches = []
         function_state = None
-        for line_number in xrange(lines.num_lines()):
+        for line_number in range(lines.num_lines()):
             line = (lines.elided[line_number]).rstrip()
             try:
                 if pattern in line:
@@ -2332,8 +2331,8 @@ def check_c_style_cast(line_number, line, raw_line, cast_type, pattern, error):
     # At this point, all that should be left is actual casts.
     error(
         line_number, 'readability/casting', 4,
-        'Using C-style cast.  Use %s<%s>(...) instead' % (cast_type,
-                                                          matched.group(1)))
+        'Using C-style cast.  Use %s<%s>(...) instead' %
+        (cast_type, matched.group(1)))
 
 
 _HEADERS_CONTAINING_TEMPLATES = (
@@ -2541,7 +2540,7 @@ def check_for_include_what_you_use(filename, clean_lines, include_state,
     required = {}
     # Example of required: { '<functional>': (1219, 'less<>') }
 
-    for line_number in xrange(clean_lines.num_lines()):
+    for line_number in range(clean_lines.num_lines()):
         line = clean_lines.elided[line_number]
         if not line or line[0] == '#':
             continue
@@ -2585,8 +2584,8 @@ def check_for_include_what_you_use(filename, clean_lines, include_state,
     # include_state is modified during iteration, so we iterate over a copy of
     # the keys.
     for header in list(include_state):  # NOLINT
-        (same_module, common_path) = files_belong_to_same_module(
-            abs_filename, header)
+        (same_module,
+         common_path) = files_belong_to_same_module(abs_filename, header)
         fullpath = common_path + header
         if same_module and update_include_state(fullpath, include_state):
             header_found = True
@@ -2663,8 +2662,8 @@ def _process_lines(filename, file_extension, lines, error, min_confidence):
              last element being empty if the file is terminated with a newline.
       error: A callable to which errors are reported, which takes 4 arguments:
     """
-    lines = (['// marker so line numbers and indices both start at 1'] + lines
-             + ['// marker so line numbers end in a known way'])
+    lines = (['// marker so line numbers and indices both start at 1'] +
+             lines + ['// marker so line numbers end in a known way'])
 
     include_state = _IncludeState()
     function_state = _FunctionState(min_confidence)
@@ -2678,7 +2677,7 @@ def _process_lines(filename, file_extension, lines, error, min_confidence):
         check_for_header_guard(filename, clean_lines, error)
 
     file_state = _FileState(clean_lines, file_extension)
-    for line in xrange(clean_lines.num_lines()):
+    for line in range(clean_lines.num_lines()):
         process_line(filename, file_extension, clean_lines, line,
                      include_state, function_state, class_state, file_state,
                      error)

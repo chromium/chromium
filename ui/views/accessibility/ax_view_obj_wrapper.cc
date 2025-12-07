@@ -19,8 +19,9 @@ namespace views {
 
 AXViewObjWrapper::AXViewObjWrapper(AXAuraObjCache* aura_obj_cache, View* view)
     : AXAuraObjWrapper(aura_obj_cache), view_(view) {
-  if (view->GetWidget())
+  if (view->GetWidget()) {
     aura_obj_cache_->GetOrCreate(view->GetWidget());
+  }
   observation_.Observe(view);
 }
 
@@ -29,14 +30,16 @@ AXViewObjWrapper::~AXViewObjWrapper() = default;
 AXAuraObjWrapper* AXViewObjWrapper::GetParent() {
   if (view_->parent()) {
     if (view_->parent()->GetViewAccessibility().GetChildTreeID() !=
-        ui::AXTreeIDUnknown())
+        ui::AXTreeIDUnknown()) {
       return nullptr;
+    }
 
     return aura_obj_cache_->GetOrCreate(view_->parent());
   }
 
-  if (view_->GetWidget())
+  if (view_->GetWidget()) {
     return aura_obj_cache_->GetOrCreate(view_->GetWidget());
+  }
 
   return nullptr;
 }
@@ -46,21 +49,28 @@ void AXViewObjWrapper::GetChildren(
   const ViewAccessibility& view_accessibility = view_->GetViewAccessibility();
 
   // Ignore this view's descendants if it has a child tree.
-  if (view_accessibility.GetChildTreeID() != ui::AXTreeIDUnknown())
+  if (view_accessibility.GetChildTreeID() != ui::AXTreeIDUnknown()) {
     return;
+  }
 
   if (view_accessibility.IsLeaf()) {
     return;
   }
 
-  // TODO(dtseng): Need to handle |Widget| child of |View|.
-  for (View* child : view_->children()) {
-    if (child->GetVisible())
-      out_children->push_back(aura_obj_cache_->GetOrCreate(child));
+  const auto& virtual_children = view_accessibility.virtual_children();
+  if (!virtual_children.empty()) {
+    for (const auto& child : virtual_children) {
+      out_children->push_back(child->GetOrCreateWrapper(aura_obj_cache_));
+    }
+    return;
   }
 
-  for (const auto& child : view_accessibility.virtual_children())
-    out_children->push_back(child->GetOrCreateWrapper(aura_obj_cache_));
+  // TODO(dtseng): Need to handle |Widget| child of |View|.
+  for (View* child : view_->children()) {
+    if (child->GetVisible()) {
+      out_children->push_back(aura_obj_cache_->GetOrCreate(child));
+    }
+  }
 }
 
 void AXViewObjWrapper::Serialize(ui::AXNodeData* out_node_data) {

@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 
-#include <string>
-
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -58,19 +56,14 @@ bool ShouldShowDeviceSelectorView(
     global_media_controls::mojom::DeviceService* device_service,
     const std::string& item_id,
     const base::WeakPtr<media_message_center::MediaNotificationItem>& item,
-
     MediaItemUIDeviceSelectorDelegate* selector_delegate) {
-  if (!device_service || !selector_delegate || !profile || !item) {
+  if (!device_service || !selector_delegate || !profile || !item ||
+      !media_router::MediaRouterEnabled(profile)) {
     return false;
   }
 
   auto source_type = item->GetSourceType();
   if (source_type == media_message_center::SourceType::kCast) {
-    return false;
-  }
-  if (!media_router::GlobalMediaControlsCastStartStopEnabled(profile) &&
-      !base::FeatureList::IsEnabled(
-          media::kGlobalMediaControlsSeamlessTransfer)) {
     return false;
   }
   // Hide device selector view if the local media session has started Remote
@@ -90,15 +83,13 @@ HostAndClientPair CreateHostAndClient(
   mojo::PendingRemote<global_media_controls::mojom::DeviceListHost> host;
   mojo::PendingRemote<global_media_controls::mojom::DeviceListClient> client;
   auto client_receiver = client.InitWithNewPipeAndPassReceiver();
-  if (media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
-    if (item->GetSourceType() ==
-        media_message_center::SourceType::kLocalMediaSession) {
-      device_service->GetDeviceListHostForSession(
-          id, host.InitWithNewPipeAndPassReceiver(), std::move(client));
-    } else {
-      device_service->GetDeviceListHostForPresentation(
-          host.InitWithNewPipeAndPassReceiver(), std::move(client));
-    }
+  if (item->GetSourceType() ==
+      media_message_center::SourceType::kLocalMediaSession) {
+    device_service->GetDeviceListHostForSession(
+        id, host.InitWithNewPipeAndPassReceiver(), std::move(client));
+  } else {
+    device_service->GetDeviceListHostForPresentation(
+        host.InitWithNewPipeAndPassReceiver(), std::move(client));
   }
   HostAndClientPair host_and_client;
   host_and_client.host = std::move(host);
@@ -253,14 +244,11 @@ std::unique_ptr<global_media_controls::MediaItemUIFooter> BuildFooter(
     Profile* profile,
     std::optional<media_message_center::MediaColorTheme> media_color_theme) {
   // Show a footer view for a Cast item.
-  if (item->GetSourceType() == media_message_center::SourceType::kCast &&
-      media_router::GlobalMediaControlsCastStartStopEnabled(profile)) {
+  if (item->GetSourceType() == media_message_center::SourceType::kCast) {
     auto media_cast_item =
         static_cast<CastMediaNotificationItem*>(item.get())->GetWeakPtr();
 #if BUILDFLAG(IS_CHROMEOS)
-    if (base::FeatureList::IsEnabled(
-            media::kGlobalMediaControlsCrOSUpdatedUI) &&
-        media_color_theme.has_value()) {
+    if (media_color_theme.has_value()) {
       return std::make_unique<MediaItemUICastFooterView>(
           base::BindRepeating(&CastMediaNotificationItem::StopCasting,
                               media_cast_item),
@@ -308,16 +296,19 @@ media_message_center::MediaColorTheme GetMediaColorTheme() {
   theme.secondary_foreground_color_id = ui::kColorSysOnSurfaceSubtle;
 
   // Colors for the play/pause button.
-  theme.play_button_foreground_color_id = ui::kColorSysOnTonalContainer;
-  theme.play_button_container_color_id = ui::kColorSysSurfaceVariant;
+  theme.play_button_foreground_color_id = ui::kColorSysOnPrimary;
+  theme.play_button_container_color_id = ui::kColorSysPrimary;
   theme.pause_button_foreground_color_id = ui::kColorSysOnTonalContainer;
   theme.pause_button_container_color_id = ui::kColorSysTonalContainer;
 
   // Colors for the progress view.
-  theme.playing_progress_foreground_color_id = ui::kColorSysOnTonalContainer;
-  theme.playing_progress_background_color_id = ui::kColorSysTonalContainer;
-  theme.paused_progress_foreground_color_id = ui::kColorSysNeutralOutline;
-  theme.paused_progress_background_color_id = ui::kColorSysSurfaceVariant;
+  theme.playing_progress_foreground_color_id = ui::kColorSysPrimary;
+  theme.playing_progress_background_color_id =
+      ui::kColorSysStateDisabledContainer;
+  theme.paused_progress_foreground_color_id =
+      ui::kColorSysStateDisabledContainer;
+  theme.paused_progress_background_color_id =
+      ui::kColorSysStateDisabledContainer;
 
   theme.background_color_id = ui::kColorSysSurface2;
   theme.device_selector_border_color_id = ui::kColorSysDivider;

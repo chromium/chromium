@@ -7,10 +7,8 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
 #include <string>
-#include <unordered_map>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -24,10 +22,7 @@
 #include "media/base/decryptor.h"
 #include "media/base/media_export.h"
 #include "media/cdm/json_web_key.h"
-
-namespace crypto {
-class SymmetricKey;
-}
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace media {
 
@@ -48,6 +43,9 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   // ContentDecryptionModule implementation.
   void SetServerCertificate(const std::vector<uint8_t>& certificate,
                             std::unique_ptr<SimpleCdmPromise> promise) override;
+  void GetStatusForPolicy(
+      HdcpVersion min_hdcp_version,
+      std::unique_ptr<KeyStatusCdmPromise> promise) override;
   void CreateSessionAndGenerateRequest(
       CdmSessionType session_type,
       EmeInitDataType init_data_type,
@@ -121,32 +119,6 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
                     bool key_added,
                     std::unique_ptr<SimpleCdmPromise> promise);
 
-  // TODO(fgalligan): Remove this and change KeyMap to use crypto::SymmetricKey
-  // as there are no decryptors that are performing an integrity check.
-  // Helper class that manages the decryption key.
-  class DecryptionKey {
-   public:
-    explicit DecryptionKey(const std::string& secret);
-
-    DecryptionKey(const DecryptionKey&) = delete;
-    DecryptionKey& operator=(const DecryptionKey&) = delete;
-
-    ~DecryptionKey();
-
-    // Creates the encryption key.
-    bool Init();
-
-    const std::string& secret() { return secret_; }
-    crypto::SymmetricKey* decryption_key() { return decryption_key_.get(); }
-
-   private:
-    // The base secret that is used to create the decryption key.
-    const std::string secret_;
-
-    // The key used to decrypt the data.
-    std::unique_ptr<crypto::SymmetricKey> decryption_key_;
-  };
-
   // Keep track of the keys for a key ID. If multiple sessions specify keys
   // for the same key ID, then the last key inserted is used. The structure is
   // optimized so that Decrypt() has fast access, at the cost of slow deletion
@@ -155,8 +127,8 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
 
   // Key ID <-> SessionIdDecryptionKeyMap map.
   using KeyIdToSessionKeysMap =
-      std::unordered_map<std::string,
-                         std::unique_ptr<SessionIdDecryptionKeyMap>>;
+      absl::flat_hash_map<std::string,
+                          std::unique_ptr<SessionIdDecryptionKeyMap>>;
 
   ~AesDecryptor() override;
 
@@ -166,9 +138,9 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
                         const std::string& key_id,
                         const std::string& key_string);
 
-  // Gets a DecryptionKey associated with |key_id|. The AesDecryptor still owns
-  // the key. Returns NULL if no key is associated with |key_id|.
-  DecryptionKey* GetKey_Locked(const std::string& key_id) const
+  // Gets a decryption key associated with |key_id|. The AesDecryptor still owns
+  // the key. Returns an empty span if no corresponding key exists.
+  base::span<const uint8_t> GetKey_Locked(const std::string& key_id) const
       EXCLUSIVE_LOCKS_REQUIRED(key_map_lock_);
 
   // Determines if |key_id| is already specified for |session_id|.
@@ -196,8 +168,7 @@ class MEDIA_EXPORT AesDecryptor : public ContentDecryptionModule,
   // AesDecryptor only supports temporary sessions, ClearKeyPersistentSessionCdm
   // uses this class to also support persistent sessions, so save the
   // CdmSessionType for each session.
-  std::map<std::string, CdmSessionType> open_sessions_;
-
+  absl::flat_hash_map<std::string, CdmSessionType> open_sessions_;
   CallbackRegistry<EventCB::RunType> event_callbacks_;
 };
 

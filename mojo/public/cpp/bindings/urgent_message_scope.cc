@@ -4,14 +4,13 @@
 
 #include "mojo/public/cpp/bindings/urgent_message_scope.h"
 
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace mojo {
 
 namespace {
 // `UrgentMessageScope` is stack allocated and should never cross tasks, so
 // using thread local is good enough to avoid collisions.
-ABSL_CONST_INIT thread_local bool is_in_urgent_message_scope = false;
+constinit thread_local bool is_in_urgent_message_scope = false;
 }  // namespace
 
 UrgentMessageScope::UrgentMessageScope()

@@ -20,6 +20,10 @@ class TestRestrictedUDPSocket : public mojom::RestrictedUDPSocket {
   TestRestrictedUDPSocket& operator=(const TestRestrictedUDPSocket&) = delete;
 
   // mojom::RestrictedUDPSocket:
+  void JoinGroup(const net::IPAddress& group_address,
+                 JoinGroupCallback callback) override;
+  void LeaveGroup(const net::IPAddress& group_address,
+                  LeaveGroupCallback callback) override;
   void ReceiveMore(uint32_t num_additional_datagrams) override;
   void Send(base::span<const uint8_t> data, SendCallback callback) override;
   void SendTo(base::span<const uint8_t> data,

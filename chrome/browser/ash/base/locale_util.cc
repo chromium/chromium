@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/base/locale_util.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -11,6 +13,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -50,6 +53,7 @@ struct SwitchLanguageData {
   const bool enable_locale_keyboard_layouts;
   const bool login_layouts_only;
   raw_ptr<Profile, DanglingUntriaged> profile;
+  bool keep_cached_fonts = false;
 };
 
 // Runs on ThreadPool thread under PostTaskAndReply().
@@ -108,10 +112,13 @@ void FinishSwitchLanguage(std::unique_ptr<SwitchLanguageData> data) {
     }
   }
 
-  // The font clean up of ResourceBundle should be done on UI thread, since the
-  // cached fonts are thread unsafe.
-  ui::ResourceBundle::GetSharedInstance().ReloadFonts();
-  gfx::PlatformFontSkia::ReloadDefaultFont();
+  if (!data->keep_cached_fonts) {
+    // The font clean up of ResourceBundle should be done on UI thread, since
+    // the cached fonts are thread unsafe.
+    ui::ResourceBundle::GetSharedInstance().ReloadFonts();
+    gfx::PlatformFontSkia::ReloadDefaultFont();
+  }
+
   if (!data->callback.is_null())
     std::move(data->callback).Run(data->result);
 }
@@ -148,6 +155,24 @@ void SwitchLanguage(const std::string& locale,
   auto data = std::make_unique<SwitchLanguageData>(
       locale, enable_locale_keyboard_layouts, login_layouts_only,
       std::move(callback), profile);
+
+  // Skip resource reloading if requested locale matches the loaded one.
+  if (const auto& loaded_locale =
+          ui::ResourceBundle::GetSharedInstance().GetLoadedLocale();
+      loaded_locale == locale) {
+    // Use resolved locale to match `ResourceBundle::LoadLocaleResources`
+    // behavior. And skip reloading if locale is resolved successfully.
+    if (std::optional<std::string> resolved_locale =
+            l10n_util::CheckAndResolveLocale(
+                locale, l10n_util::CheckLocaleMode::kUseKnownLocalesList)) {
+      data->result.loaded_locale = std::move(*resolved_locale);
+      data->result.success = true;
+      data->keep_cached_fonts = true;
+      FinishSwitchLanguage(std::move(data));
+      return;
+    }
+  }
+
   // USER_BLOCKING because it blocks startup on ChromeOS. crbug.com/968554
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},

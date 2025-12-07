@@ -5,8 +5,8 @@
 #include "components/exo/wayland/zaura_shell.h"
 
 #include <aura-shell-server-protocol.h>
-
 #include <sys/socket.h>
+
 #include <memory>
 #include <vector>
 
@@ -34,7 +34,6 @@
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/display/screen.h"
@@ -42,6 +41,7 @@
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/corewm/tooltip_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -78,7 +78,7 @@ class TestAuraSurface : public AuraSurface {
   MOCK_METHOD(void,
               OnTooltipShown,
               (Surface * surface,
-               const std::u16string& text,
+               std::u16string_view text,
                const gfx::Rect& bounds),
               (override));
   MOCK_METHOD(void, OnTooltipHidden, (Surface * surface), (override));
@@ -162,12 +162,12 @@ class MockSurfaceDelegate : public SurfaceDelegate {
 class ZAuraSurfaceTest : public test::ExoTestBase,
                          public ::wm::ActivationChangeObserver {
  public:
-  ZAuraSurfaceTest() {}
+  ZAuraSurfaceTest() = default;
 
   ZAuraSurfaceTest(const ZAuraSurfaceTest&) = delete;
   ZAuraSurfaceTest& operator=(const ZAuraSurfaceTest&) = delete;
 
-  ~ZAuraSurfaceTest() override {}
+  ~ZAuraSurfaceTest() override = default;
 
   // test::ExoTestBase overrides:
   void SetUp() override {
@@ -294,8 +294,8 @@ TEST_F(ZAuraSurfaceTest,
   auto widget = CreateOpaqueWidget(gfx::Rect(0, 0, 10, 10));
   widget->GetNativeWindow()->layer()->SetOpacity(0.0f);
 
-  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
-      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+  gfx::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      gfx::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
   ui::LayerAnimatorTestController test_controller(
       ui::LayerAnimator::CreateImplicitAnimator());
   ui::ScopedLayerAnimationSettings layer_animation_settings(
@@ -537,7 +537,7 @@ class MockSurfaceObserver : public SurfaceObserver {
   MOCK_METHOD(void,
               OnTooltipShown,
               (Surface * surface,
-               const std::u16string& text,
+               std::u16string_view text,
                const gfx::Rect& bounds),
               (override));
   MOCK_METHOD(void, OnTooltipHidden, (Surface * surface), (override));
@@ -567,7 +567,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromCursor) {
   auto* generator = GetEventGenerator();
   generator->MoveMouseTo(mouse_position);
 
-  const char* text = "my tooltip";
+  static constexpr char16_t kText[] = u"my tooltip";
   gfx::Rect expected_tooltip_position =
       gfx::Rect(mouse_position, gfx::Size(77, kTooltipExpectedHeight));
   views::corewm::TooltipAura::AdjustToCursor(&expected_tooltip_position);
@@ -575,9 +575,9 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromCursor) {
                                     surface->window()->GetToplevelWindow(),
                                     &expected_tooltip_position);
 
-  EXPECT_CALL(observer, OnTooltipShown(surface, base::UTF8ToUTF16(text),
+  EXPECT_CALL(observer, OnTooltipShown(surface, std::u16string_view(kText),
                                        expected_tooltip_position));
-  aura_surface->ShowTooltip(text, gfx::Point(),
+  aura_surface->ShowTooltip(kText, gfx::Point(),
                             ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR,
                             base::TimeDelta(), base::TimeDelta());
 
@@ -600,7 +600,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromKeyboard) {
   MockSurfaceObserver observer;
   surface->AddSurfaceObserver(&observer);
 
-  const char* text = "my tooltip";
+  static constexpr char16_t kText[] = u"my tooltip";
   gfx::Point anchor_point = surface->window()->bounds().bottom_center();
   gfx::Size expected_tooltip_size = gfx::Size(77, kTooltipExpectedHeight);
   // Calculate expected tooltip position. For keyboard tooltip, it should be
@@ -609,17 +609,16 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipFromKeyboard) {
   gfx::Rect expected_tooltip_position =
       gfx::Rect(anchor_point, expected_tooltip_size);
   expected_tooltip_position.Offset(-expected_tooltip_size.width() / 2, 0);
-  gfx::Rect display_bounds(display::Screen::GetScreen()
-                               ->GetDisplayNearestPoint(anchor_point)
-                               .bounds());
+  gfx::Rect display_bounds(
+      display::Screen::Get()->GetDisplayNearestPoint(anchor_point).bounds());
   expected_tooltip_position.AdjustToFit(display_bounds);
   aura::Window::ConvertRectToTarget(surface->window(),
                                     surface->window()->GetToplevelWindow(),
                                     &expected_tooltip_position);
 
-  EXPECT_CALL(observer, OnTooltipShown(surface, base::UTF8ToUTF16(text),
+  EXPECT_CALL(observer, OnTooltipShown(surface, std::u16string_view(kText),
                                        expected_tooltip_position));
-  aura_surface->ShowTooltip(text, anchor_point,
+  aura_surface->ShowTooltip(kText, anchor_point,
                             ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD,
                             base::TimeDelta(), base::TimeDelta());
 
@@ -650,7 +649,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromCursor) {
   auto* generator = GetEventGenerator();
   generator->MoveMouseTo(mouse_position);
 
-  const char* text = "my tooltip";
+  static constexpr char16_t kText[] = u"my tooltip";
   // Size of the tooltip depends on the text to show.
   gfx::Rect expected_tooltip_position =
       gfx::Rect(mouse_position, gfx::Size(77, kTooltipExpectedHeight));
@@ -659,9 +658,9 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromCursor) {
                                     surface->window()->GetToplevelWindow(),
                                     &expected_tooltip_position);
 
-  EXPECT_CALL(observer, OnTooltipShown(surface, base::UTF8ToUTF16(text),
+  EXPECT_CALL(observer, OnTooltipShown(surface, std::u16string_view(kText),
                                        expected_tooltip_position));
-  aura_surface->ShowTooltip(text, gfx::Point(),
+  aura_surface->ShowTooltip(kText, gfx::Point(),
                             ZAURA_SURFACE_TOOLTIP_TRIGGER_CURSOR,
                             base::TimeDelta(), base::TimeDelta());
 
@@ -684,7 +683,7 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromKeyboard) {
   MockSurfaceObserver observer;
   surface->AddSurfaceObserver(&observer);
 
-  const char* text = "my tooltip";
+  static constexpr char16_t kText[] = u"my tooltip";
   gfx::Point anchor_point = surface->window()->bounds().bottom_center();
   gfx::Size expected_tooltip_size = gfx::Size(77, kTooltipExpectedHeight);
   // Calculate expected tooltip position. For keyboard tooltip, it should be
@@ -693,17 +692,16 @@ TEST_F(ZAuraSurfaceCustomTest, ShowTooltipOnMenuFromKeyboard) {
   gfx::Rect expected_tooltip_position =
       gfx::Rect(anchor_point, expected_tooltip_size);
   expected_tooltip_position.Offset(-expected_tooltip_size.width() / 2, 0);
-  gfx::Rect display_bounds(display::Screen::GetScreen()
-                               ->GetDisplayNearestPoint(anchor_point)
-                               .bounds());
+  gfx::Rect display_bounds(
+      display::Screen::Get()->GetDisplayNearestPoint(anchor_point).bounds());
   expected_tooltip_position.AdjustToFit(display_bounds);
   aura::Window::ConvertRectToTarget(surface->window(),
                                     surface->window()->GetToplevelWindow(),
                                     &expected_tooltip_position);
 
-  EXPECT_CALL(observer, OnTooltipShown(surface, base::UTF8ToUTF16(text),
+  EXPECT_CALL(observer, OnTooltipShown(surface, std::u16string_view(kText),
                                        expected_tooltip_position));
-  aura_surface->ShowTooltip(text, anchor_point,
+  aura_surface->ShowTooltip(kText, anchor_point,
                             ZAURA_SURFACE_TOOLTIP_TRIGGER_KEYBOARD,
                             base::TimeDelta(), base::TimeDelta());
 
@@ -751,7 +749,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
   }
 
   void UpdateDisplayOutput() {
-    auto display_list = display::Screen::GetScreen()->GetAllDisplays();
+    auto display_list = display::Screen::Get()->GetAllDisplays();
     auto iter = output_holder_list_.begin();
     while (iter != output_holder_list_.end()) {
       auto* out_ptr = (*iter)->output.get();
@@ -782,8 +780,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
   }
 
   MockAuraOutput* GetPrimaryAuraOutput() {
-    return GetAuraOutput(
-        display::Screen::GetScreen()->GetPrimaryDisplay().id());
+    return GetAuraOutput(display::Screen::Get()->GetPrimaryDisplay().id());
   }
 
   MockAuraOutput* GetAuraOutput(int64_t display_id) {
@@ -791,8 +788,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
   }
 
   WaylandDisplayHandler* GetPrimaryDisplayHandler() {
-    return GetOutputHolder(
-               display::Screen::GetScreen()->GetPrimaryDisplay().id())
+    return GetOutputHolder(display::Screen::Get()->GetPrimaryDisplay().id())
         ->handler.get();
   }
 
@@ -813,7 +809,7 @@ class ZAuraOutputTest : public test::ExoTestBase {
   };
 
   OutputHolder* GetOutputHolder(int64_t display_id) {
-    auto iter = base::ranges::find_if(
+    auto iter = std::ranges::find_if(
         output_holder_list_,
         [display_id](const std::unique_ptr<OutputHolder>& holder) {
           return holder->output->id() == display_id;
@@ -892,7 +888,7 @@ TEST_F(ZAuraOutputTest, SendLogicalTransform) {
 // properly regardless of which one is destroyed first.
 TEST_F(ZAuraOutputTest, DestroyAuraOutput) {
   auto* output_holder =
-      GetOutputHolder(display::Screen::GetScreen()->GetPrimaryDisplay().id());
+      GetOutputHolder(display::Screen::Get()->GetPrimaryDisplay().id());
 
   EXPECT_EQ(1u, GetPrimaryDisplayHandler()->CountObserversForTesting());
   output_holder->aura_output.reset();

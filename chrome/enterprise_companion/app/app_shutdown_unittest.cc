@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
@@ -22,10 +23,15 @@
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/enterprise_companion/test/test_utils.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
+
+namespace policy {
+enum class PolicyFetchReason;
+}  // namespace policy
 
 namespace enterprise_companion {
 namespace {
@@ -35,11 +41,11 @@ constexpr int32_t kIpcCallerNotAllowedExitCode = 42;
 
 class MockEnterpriseCompanionService final : public EnterpriseCompanionService {
  public:
-  MockEnterpriseCompanionService() = default;
-  ~MockEnterpriseCompanionService() override = default;
-
   MOCK_METHOD(void, Shutdown, (base::OnceClosure callback), (override));
-  MOCK_METHOD(void, FetchPolicies, (StatusCallback callback), (override));
+  MOCK_METHOD(void,
+              FetchPolicies,
+              (policy::PolicyFetchReason reason, StatusCallback callback),
+              (override));
 };
 
 }  // namespace
@@ -79,9 +85,9 @@ class AppShutdownTest : public ::testing::Test {
                          ".service"});
 #elif BUILDFLAG(IS_LINUX)
     return base::GetTempDirForTesting()
-        .AppendASCII(base::StrCat({"ChromeEnterpriseCompanionTest",
-                                   base::UnguessableToken::Create().ToString(),
-                                   ".service.sk"}))
+        .AppendUTF8(base::StrCat({"ChromeEnterpriseCompanionTest",
+                                  base::UnguessableToken::Create().ToString(),
+                                  ".service.sk"}))
         .AsUTF8Unsafe();
 #elif BUILDFLAG(IS_WIN)
     return base::UTF8ToWide(
@@ -99,7 +105,9 @@ TEST_F(AppShutdownTest, ServiceReachable) {
   base::RunLoop start_run_loop;
   std::unique_ptr<mojom::EnterpriseCompanion> stub =
       CreateEnterpriseCompanionServiceStub(
-          std::move(mock_service_), {.server_name = server_name_},
+          std::move(mock_service_),
+          {server_name_,
+           named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
           base::BindRepeating([](const named_mojo_ipc_server::ConnectionInfo&) {
             return true;
           }),
@@ -115,7 +123,9 @@ TEST_F(AppShutdownTest, UntrustedCallerRejected) {
   base::RunLoop start_run_loop;
   std::unique_ptr<mojom::EnterpriseCompanion> stub =
       CreateEnterpriseCompanionServiceStub(
-          std::move(mock_service_), {.server_name = server_name_},
+          std::move(mock_service_),
+          {server_name_,
+           named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
           base::BindRepeating([](const named_mojo_ipc_server::ConnectionInfo&) {
             return false;
           }),

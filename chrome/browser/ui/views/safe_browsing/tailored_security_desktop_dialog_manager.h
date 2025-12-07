@@ -12,12 +12,12 @@ class Browser;
 namespace safe_browsing {
 
 // UMA histogram names for the dialogs.
-const char kDisabledDialogOutcome[] =
+inline constexpr char kDisabledDialogOutcome[] =
     "SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogDisabledOutcome";
-const char kEnabledDialogOutcome[] =
+inline constexpr char kEnabledDialogOutcome[] =
     "SafeBrowsing.TailoredSecurity.ConsentedDesktopDialogEnabledOutcome";
 
-static constexpr char kTailoredSecurityNoticeDialog[] =
+inline constexpr char kTailoredSecurityNoticeDialog[] =
     "TailoredSecurityNoticeDialog";
 
 class TailoredSecurityDesktopDialogManager {
@@ -28,12 +28,17 @@ class TailoredSecurityDesktopDialogManager {
   // Creates and shows a dialog for when Tailored Security is enabled. If this
   // manager has opened any other dialogs, calling this method will close those
   // dialogs.
-  void ShowEnabledDialogForBrowser(Browser* browser);
+  void ShowEnabledDialogForBrowser(
+      Browser* browser,
+      base::OnceCallback<void()> on_destroyed_callback);
 
   // Creates and shows a dialog for when Tailored Security is disabled. If this
   // manager has opened any other dialogs, calling this method will close those
-  // dialogs.
-  void ShowDisabledDialogForBrowser(Browser* browser);
+  // dialogs. Upon closing a dialog, on_destroyed_callback will run. This is
+  // needed to relenquish the queue handle.
+  void ShowDisabledDialogForBrowser(
+      Browser* browser,
+      base::OnceCallback<void()> on_destroyed_callback);
 
  private:
   // When the manager opens a dialog, the manager stores the callback to close

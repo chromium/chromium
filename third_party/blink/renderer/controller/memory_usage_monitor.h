@@ -20,9 +20,6 @@ namespace blink {
 
 // nan means data not available.
 struct MemoryUsage {
-  double v8_bytes = std::numeric_limits<double>::quiet_NaN();
-  double partition_alloc_bytes = std::numeric_limits<double>::quiet_NaN();
-  double blink_gc_bytes = std::numeric_limits<double>::quiet_NaN();
   double private_footprint_bytes = std::numeric_limits<double>::quiet_NaN();
   double swap_bytes = std::numeric_limits<double>::quiet_NaN();
   double vm_size_bytes = std::numeric_limits<double>::quiet_NaN();

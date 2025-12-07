@@ -6,15 +6,15 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/ranges/algorithm.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/user_action.h"
 
 namespace base {
 namespace {
@@ -23,6 +23,12 @@ LazyInstance<std::vector<ActionCallback>>::DestructorAtExit g_callbacks =
     LAZY_INSTANCE_INITIALIZER;
 LazyInstance<scoped_refptr<SingleThreadTaskRunner>>::DestructorAtExit
     g_task_runner = LAZY_INSTANCE_INITIALIZER;
+
+void DispatchAction(const std::string& action, TimeTicks action_time) {
+  for (const ActionCallback& callback : g_callbacks.Get()) {
+    callback.Run(action, action_time);
+  }
+}
 
 }  // namespace
 
@@ -40,8 +46,8 @@ void RecordComputedActionSince(const std::string& action,
 }
 
 void RecordComputedActionAt(const std::string& action, TimeTicks action_time) {
-  TRACE_EVENT_INSTANT1("ui", "UserEvent", TRACE_EVENT_SCOPE_GLOBAL, "action",
-                       action);
+  trace_event::EmitUserActionEvent(action, action_time);
+
   if (!g_task_runner.Get()) {
     DCHECK(g_callbacks.Get().empty());
     return;
@@ -49,13 +55,11 @@ void RecordComputedActionAt(const std::string& action, TimeTicks action_time) {
 
   if (!g_task_runner.Get()->BelongsToCurrentThread()) {
     g_task_runner.Get()->PostTask(
-        FROM_HERE, BindOnce(&RecordComputedActionAt, action, action_time));
+        FROM_HERE, BindOnce(&DispatchAction, action, action_time));
     return;
   }
 
-  for (const ActionCallback& callback : g_callbacks.Get()) {
-    callback.Run(action, action_time);
-  }
+  DispatchAction(action, action_time);
 }
 
 void AddActionCallback(const ActionCallback& callback) {
@@ -69,9 +73,10 @@ void RemoveActionCallback(const ActionCallback& callback) {
   DCHECK(g_task_runner.Get());
   DCHECK(g_task_runner.Get()->BelongsToCurrentThread());
   std::vector<ActionCallback>* callbacks = g_callbacks.Pointer();
-  const auto i = ranges::find(*callbacks, callback);
-  if (i != callbacks->end())
+  const auto i = std::ranges::find(*callbacks, callback);
+  if (i != callbacks->end()) {
     callbacks->erase(i);
+  }
 }
 
 void SetRecordActionTaskRunner(
@@ -82,8 +87,9 @@ void SetRecordActionTaskRunner(
 }
 
 scoped_refptr<SingleThreadTaskRunner> GetRecordActionTaskRunner() {
-  if (g_task_runner.IsCreated())
+  if (g_task_runner.IsCreated()) {
     return g_task_runner.Get();
+  }
   return nullptr;
 }
 

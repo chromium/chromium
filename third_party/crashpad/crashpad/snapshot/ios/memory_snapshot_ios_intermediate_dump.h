@@ -15,10 +15,11 @@
 #ifndef CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 #define CRASHPAD_SNAPSHOT_IOS_INTERMEDIATE_DUMP_MEMORY_SNAPSHOT_IOS_INTERMEDIATEDUMP_H_
 
+#include <mach/mach.h>
+
 #include <vector>
 
 #include "snapshot/memory_snapshot.h"
-#include "util/misc/address_types.h"
 #include "util/misc/initialization_state_dcheck.h"
 
 namespace crashpad {
@@ -39,6 +40,7 @@ class MemorySnapshotIOSIntermediateDump final : public MemorySnapshot {
   //! \brief Initializes the object.
   //!
   //! \param[in] address The base address of the memory region to snapshot.
+  //! \param[in] data The destination address where the snapshot will be stored.
   //! \param[in] size The size of the memory region to snapshot.
   void Initialize(vm_address_t address, vm_address_t data, vm_size_t size);
 

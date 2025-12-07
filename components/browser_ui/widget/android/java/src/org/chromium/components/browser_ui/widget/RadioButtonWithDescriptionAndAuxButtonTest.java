@@ -37,9 +37,9 @@ public class RadioButtonWithDescriptionAndAuxButtonTest {
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private class AuxButtonClickedListener
+    private static class AuxButtonClickedListener
             implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
-        private CallbackHelper mCallbackHelper = new CallbackHelper();
+        private final CallbackHelper mCallbackHelper = new CallbackHelper();
         private int mClickedId;
 
         AuxButtonClickedListener() {}

@@ -5,7 +5,7 @@
 import("//chrome/common/features.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_win || is_mac || is_linux || is_chromeos_lacros)
+assert(is_win || is_mac || is_linux)
 
 build_webui("build") {
   grd_prefix = "browser_switch"
@@ -13,7 +13,7 @@ build_webui("build") {
     "browser_switch.html",
     "internals/browser_switch_internals.html",
   ]
-  non_web_component_files = [
+  ts_files = [
     "app.html.ts",
     "app.ts",
     "browser_switch_proxy.ts",

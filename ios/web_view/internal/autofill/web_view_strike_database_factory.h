@@ -10,7 +10,7 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
-namespace autofill {
+namespace strike_database {
 class StrikeDatabase;
 }
 
@@ -21,7 +21,7 @@ class WebViewBrowserState;
 // ios_web_view::WebViewBrowserState.
 class WebViewStrikeDatabaseFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static autofill::StrikeDatabase* GetForBrowserState(
+  static strike_database::StrikeDatabase* GetForBrowserState(
       WebViewBrowserState* browser_state);
   static WebViewStrikeDatabaseFactory* GetInstance();
 

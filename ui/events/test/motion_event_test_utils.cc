@@ -39,6 +39,12 @@ MockMotionEvent::MockMotionEvent(Action action)
 }
 
 MockMotionEvent::MockMotionEvent(Action action,
+                                 base::TimeTicks time,
+                                 const PointerProperties& pointer,
+                                 base::TimeTicks down_time)
+    : MotionEventGeneric(action, time, pointer), cached_down_time_(down_time) {}
+
+MockMotionEvent::MockMotionEvent(Action action,
                                  TimeTicks time,
                                  float x0,
                                  float y0)
@@ -91,6 +97,10 @@ MockMotionEvent::MockMotionEvent(const MockMotionEvent& other)
 MockMotionEvent::~MockMotionEvent() {
 }
 
+base::TimeTicks MockMotionEvent::GetRawDownTime() const {
+  return cached_down_time_;
+}
+
 MockMotionEvent& MockMotionEvent::PressPoint(float x, float y) {
   UpdatePointersAndID();
   PushPointer(x, y);
@@ -108,7 +118,7 @@ MockMotionEvent& MockMotionEvent::MovePoint(size_t index, float x, float y) {
   DCHECK_LT(index, GetPointerCount());
   PointerProperties& p = pointer(index);
   float dx = x - p.x;
-  float dy = x - p.y;
+  float dy = y - p.y;
   p.x = x;
   p.y = y;
   p.raw_x += dx;
@@ -205,6 +215,10 @@ MockMotionEvent& MockMotionEvent::SetPrimaryPointerId(int id) {
 
 MotionEvent::Classification MockMotionEvent::GetClassification() const {
   return gesture_classification_;
+}
+
+bool MockMotionEvent::IsLatestEventTimeResampled() const {
+  return is_latest_event_time_resampled_;
 }
 
 std::string ToString(const MotionEvent& event) {

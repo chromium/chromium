@@ -5,16 +5,20 @@
 #ifndef CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_COMMON_H_
 #define CHROME_BROWSER_ASH_CERT_PROVISIONING_CERT_PROVISIONING_COMMON_H_
 
+#include <stdint.h>
+
 #include <optional>
 #include <string>
 
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
+#include "components/invalidation/invalidation_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "net/cert/x509_certificate.h"
 
@@ -45,7 +49,12 @@ BASE_DECLARE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting);
 // Used for both DeleteVaKey and DeleteVaKeysByPrefix
 using DeleteVaKeyCallback = base::OnceCallback<void(bool)>;
 
-const char kKeyNamePrefix[] = "cert-provis-";
+inline constexpr char kKeyNamePrefix[] = "cert-provis-";
+
+// GCP number to be used for certificates invalidations. Certificates are
+// considered critical to receive invalidation.
+inline constexpr int64_t kCertProvisioningInvalidationProjectNumber =
+    invalidation::kCriticalInvalidationsProjectNumber;
 
 // The type for variables containing an error from DM Server response.
 using CertProvisioningResponseErrorType =
@@ -155,13 +164,14 @@ using CertProfileId = std::string;
 // Names of CertProfile fields in a base::Value representation. Must be in sync
 // with policy schema definitions in RequiredClientCertificateForDevice.yaml and
 // RequiredClientCertificateForUser.yaml.
-const char kCertProfileIdKey[] = "cert_profile_id";
-const char kCertProfileNameKey[] = "name";
-const char kCertProfileRenewalPeroidSec[] = "renewal_period_seconds";
-const char kCertProfilePolicyVersionKey[] = "policy_version";
-const char kCertProfileProtocolVersion[] = "protocol_version";
-const char kCertProfileIsVaEnabledKey[] = "enable_remote_attestation_check";
-const char kCertProfileKeyType[] = "key_algorithm";
+inline constexpr char kCertProfileIdKey[] = "cert_profile_id";
+inline constexpr char kCertProfileNameKey[] = "name";
+inline constexpr char kCertProfileRenewalPeroidSec[] = "renewal_period_seconds";
+inline constexpr char kCertProfilePolicyVersionKey[] = "policy_version";
+inline constexpr char kCertProfileProtocolVersion[] = "protocol_version";
+inline constexpr char kCertProfileIsVaEnabledKey[] =
+    "enable_remote_attestation_check";
+inline constexpr char kCertProfileKeyType[] = "key_algorithm";
 
 // The version of the certificate provisioning protocol between ChromeOS client
 // and device management server.
@@ -176,6 +186,19 @@ enum class ProtocolVersion {
   kDynamic = 2,
 };
 
+// The type of key the device should generate.
+// The values must match the description in
+// RequiredClientCertificateForDevice.yaml and
+// RequiredClientCertificateForUser.yaml.
+// They are also used in serialization so they should not be renumbered.
+enum class KeyType {
+  // 2048-bit RSA keys.
+  kRsa = 1,
+  // Elliptic-curve keys using the P-256 curve.
+  kEc = 2,
+  kMaxValue = KeyType::kEc
+};
+
 struct CertProfile {
   static std::optional<CertProfile> MakeFromValue(
       const base::Value::Dict& value);
@@ -185,6 +208,7 @@ struct CertProfile {
   CertProfile(CertProfileId profile_id,
               std::string name,
               std::string policy_version,
+              KeyType key_type,
               bool is_va_enabled,
               base::TimeDelta renewal_period,
               ProtocolVersion protocol_version);
@@ -198,6 +222,7 @@ struct CertProfile {
   // Human-readable name (UTF-8).
   std::string name;
   std::string policy_version;
+  KeyType key_type;
   bool is_va_enabled = true;
   // Default renewal period 0 means that a certificate will be renewed only
   // after the previous one has expired (0 seconds before it is expires).
@@ -207,10 +232,9 @@ struct CertProfile {
   // IMPORTANT:
   // Increment this when you add/change any member in CertProfile (and update
   // all functions that fail to compile because of it).
-  static constexpr int kVersion = 6;
+  static constexpr int kVersion = 7;
 
-  bool operator==(const CertProfile& other) const;
-  bool operator!=(const CertProfile& other) const;
+  friend bool operator==(const CertProfile&, const CertProfile&) = default;
 };
 
 struct CertProfileComparator {

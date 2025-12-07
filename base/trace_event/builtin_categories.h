@@ -2,417 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef BASE_TRACE_EVENT_BUILTIN_CATEGORIES_H_
 #define BASE_TRACE_EVENT_BUILTIN_CATEGORIES_H_
-
-#include <cstddef>
-#include <iterator>
 
 #include "base/base_export.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/tracing_buildflags.h"
 #include "build/build_config.h"
-
-// List of builtin category names. If you want to use a new category name in
-// your code and you get a static assert, this is the right place to register
-// the name. If the name is going to be used only for testing, please add it to
-// |kCategoriesForTesting| instead.
-//
-// Since spaces aren't allowed, use '_' to separate words in category names
-// (e.g., "content_capture").
-//
-// Parameter |X| must be a *macro* that takes a single |name| string argument,
-// denoting a category name.
-#define INTERNAL_TRACE_LIST_BUILTIN_CATEGORIES(X)                        \
-  /* These entries must go first to be consistent with the               \
-   * CategoryRegistry::kCategory* consts.*/                              \
-  X("tracing_categories_exhausted._must_increase_kMaxCategories")        \
-  X("tracing_already_shutdown")                                          \
-  X("__metadata")                                                        \
-  /* The rest of the list is in alphabetical order */                    \
-  X("accessibility")                                                     \
-  X("AccountFetcherService")                                             \
-  X("android.adpf")                                                      \
-  X("android.ui.jank")                                                   \
-  X("android_webview")                                                   \
-  X("android_webview.timeline")                                          \
-  /* Actions on Google Hardware, used in Google-internal code. */        \
-  X("aogh")                                                              \
-  X("audio")                                                             \
-  X("base")                                                              \
-  X("benchmark")                                                         \
-  X("blink")                                                             \
-  X("blink.animations")                                                  \
-  X("blink.bindings")                                                    \
-  X("blink.console")                                                     \
-  X("blink.net")                                                         \
-  X("blink.resource")                                                    \
-  X("blink.user_timing")                                                 \
-  X("blink.worker")                                                      \
-  X("blink_style")                                                       \
-  X("Blob")                                                              \
-  X("browser")                                                           \
-  X("browsing_data")                                                     \
-  X("CacheStorage")                                                      \
-  X("Calculators")                                                       \
-  X("CameraStream")                                                      \
-  X("cppgc")                                                             \
-  X("camera")                                                            \
-  X("cast_app")                                                          \
-  X("cast_perf_test")                                                    \
-  X("cast.mdns")                                                         \
-  X("cast.mdns.socket")                                                  \
-  X("cast.stream")                                                       \
-  X("cc")                                                                \
-  X("cc.debug")                                                          \
-  X("cdp.perf")                                                          \
-  X("chromeos")                                                          \
-  X("cma")                                                               \
-  X("compositor")                                                        \
-  X("content")                                                           \
-  X("content_capture")                                                   \
-  X("interactions")                                                      \
-  X("delegated_ink_trails")                                              \
-  X("device")                                                            \
-  X("devtools")                                                          \
-  X("devtools.contrast")                                                 \
-  X("devtools.timeline")                                                 \
-  X("disk_cache")                                                        \
-  X("download")                                                          \
-  X("download_service")                                                  \
-  X("drm")                                                               \
-  X("drmcursor")                                                         \
-  X("dwrite")                                                            \
-  X("evdev")                                                             \
-  X("event")                                                             \
-  X("exo")                                                               \
-  X("extensions")                                                        \
-  X("explore_sites")                                                     \
-  X("FileSystem")                                                        \
-  X("file_system_provider")                                              \
-  X("fledge")                                                            \
-  X("fonts")                                                             \
-  X("GAMEPAD")                                                           \
-  X("gpu")                                                               \
-  X("gpu.angle")                                                         \
-  X("gpu.angle.texture_metrics")                                         \
-  X("gpu.capture")                                                       \
-  X("graphics.pipeline")                                                 \
-  X("headless")                                                          \
-  /* Traces for //components/history. */                                 \
-  X("history")                                                           \
-  X("hwoverlays")                                                        \
-  X("identity")                                                          \
-  X("ime")                                                               \
-  X("IndexedDB")                                                         \
-  X("input")                                                             \
-  X("input.scrolling")                                                   \
-  X("io")                                                                \
-  X("ipc")                                                               \
-  X("Java")                                                              \
-  X("jni")                                                               \
-  X("jpeg")                                                              \
-  X("latency")                                                           \
-  X("latencyInfo")                                                       \
-  X("leveldb")                                                           \
-  X("loading")                                                           \
-  X("log")                                                               \
-  X("login")                                                             \
-  X("media")                                                             \
-  X("media_router")                                                      \
-  X("memory")                                                            \
-  X("midi")                                                              \
-  X("mojom")                                                             \
-  X("mus")                                                               \
-  X("native")                                                            \
-  X("navigation")                                                        \
-  X("navigation.debug")                                                  \
-  X("net")                                                               \
-  X("network.scheduler")                                                 \
-  X("netlog")                                                            \
-  X("offline_pages")                                                     \
-  X("omnibox")                                                           \
-  X("oobe")                                                              \
-  X("openscreen")                                                        \
-  X("ozone")                                                             \
-  X("partition_alloc")                                                   \
-  X("passwords")                                                         \
-  X("p2p")                                                               \
-  X("page-serialization")                                                \
-  X("paint_preview")                                                     \
-  X("pepper")                                                            \
-  X("PlatformMalloc")                                                    \
-  X("power")                                                             \
-  X("ppapi")                                                             \
-  X("ppapi_proxy")                                                       \
-  X("print")                                                             \
-  X("raf_investigation")                                                 \
-  X("rail")                                                              \
-  X("renderer")                                                          \
-  X("renderer_host")                                                     \
-  X("renderer.scheduler")                                                \
-  X("resources")                                                         \
-  X("RLZ")                                                               \
-  X("ServiceWorker")                                                     \
-  X("SiteEngagement")                                                    \
-  X("safe_browsing")                                                     \
-  X("scheduler")                                                         \
-  X("scheduler.long_tasks")                                              \
-  X("screenlock_monitor")                                                \
-  X("segmentation_platform")                                             \
-  X("sequence_manager")                                                  \
-  X("service_manager")                                                   \
-  X("sharing")                                                           \
-  X("shell")                                                             \
-  X("shutdown")                                                          \
-  X("skia")                                                              \
-  X("sql")                                                               \
-  X("stadia_media")                                                      \
-  X("stadia_rtc")                                                        \
-  X("startup")                                                           \
-  X("sync")                                                              \
-  X("system_apps")                                                       \
-  X("test_gpu")                                                          \
-  X("toplevel")                                                          \
-  X("toplevel.flow")                                                     \
-  X("ui")                                                                \
-  X("v8")                                                                \
-  X("v8.execute")                                                        \
-  X("v8.wasm")                                                           \
-  X("ValueStoreFrontend::Backend")                                       \
-  X("views")                                                             \
-  X("views.frame")                                                       \
-  X("viz")                                                               \
-  X("vk")                                                                \
-  X("wakeup.flow")                                                       \
-  X("wayland")                                                           \
-  X("webaudio")                                                          \
-  X("webengine.fidl")                                                    \
-  X("weblayer")                                                          \
-  X("WebCore")                                                           \
-  X("webnn")                                                             \
-  X("webrtc")                                                            \
-  X("webrtc_stats")                                                      \
-  X("xr")                                                                \
-  X(TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy"))                 \
-  X(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))                      \
-  X(TRACE_DISABLED_BY_DEFAULT("audio"))                                  \
-  X(TRACE_DISABLED_BY_DEFAULT("audio.latency"))                          \
-  X(TRACE_DISABLED_BY_DEFAULT("audio-worklet"))                          \
-  X(TRACE_DISABLED_BY_DEFAULT("base"))                                   \
-  X(TRACE_DISABLED_BY_DEFAULT("blink.debug"))                            \
-  X(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"))               \
-  X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"))               \
-  X(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"))                    \
-  X(TRACE_DISABLED_BY_DEFAULT("blink.image_decoding"))                   \
-  X(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("identifiability"))                        \
-  X(TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"))       \
-  X(TRACE_DISABLED_BY_DEFAULT("cc"))                                     \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug"))                               \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.cdp-perf"))                      \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items"))                 \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.lcd_text"))                      \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.picture"))                       \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"))              \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.now"))                 \
-  X(TRACE_DISABLED_BY_DEFAULT("content.verbose"))                        \
-  X(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("cppgc"))                                  \
-  X(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"))                    \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                      \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))                \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.inputs"))               \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking")) \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers"))               \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))              \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.stack"))                \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"))                \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown"))             \
-  X(TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown-sources"))     \
-  X(TRACE_DISABLED_BY_DEFAULT("file"))                                   \
-  X(TRACE_DISABLED_BY_DEFAULT("fonts"))                                  \
-  X(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"))                          \
-  X(TRACE_DISABLED_BY_DEFAULT("gpu.dawn"))                               \
-  X(TRACE_DISABLED_BY_DEFAULT("gpu.debug"))                              \
-  X(TRACE_DISABLED_BY_DEFAULT("gpu.decoder"))                            \
-  X(TRACE_DISABLED_BY_DEFAULT("gpu.device"))                             \
-  X(TRACE_DISABLED_BY_DEFAULT("gpu.graphite.dawn"))                      \
-  X(TRACE_DISABLED_BY_DEFAULT("gpu.service"))                            \
-  X(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"))                         \
-  X(TRACE_DISABLED_BY_DEFAULT("histogram_samples"))                      \
-  X(TRACE_DISABLED_BY_DEFAULT("java-heap-profiler"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("layer-element"))                          \
-  X(TRACE_DISABLED_BY_DEFAULT("layout_shift.debug"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("lifecycles"))                             \
-  X(TRACE_DISABLED_BY_DEFAULT("loading"))                                \
-  X(TRACE_DISABLED_BY_DEFAULT("mediastream"))                            \
-  X(TRACE_DISABLED_BY_DEFAULT("memory-infra"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats"))             \
-  X(TRACE_DISABLED_BY_DEFAULT("mojom"))                                  \
-  X(TRACE_DISABLED_BY_DEFAULT("net"))                                    \
-  X(TRACE_DISABLED_BY_DEFAULT("network"))                                \
-  X(TRACE_DISABLED_BY_DEFAULT("paint-worklet"))                          \
-  X(TRACE_DISABLED_BY_DEFAULT("power"))                                  \
-  X(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"))               \
-  X(TRACE_DISABLED_BY_DEFAULT("sequence_manager"))                       \
-  X(TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"))                 \
-  X(TRACE_DISABLED_BY_DEFAULT("sequence_manager.verbose_snapshots"))     \
-  X(TRACE_DISABLED_BY_DEFAULT("skia"))                                   \
-  X(TRACE_DISABLED_BY_DEFAULT("skia.gpu"))                               \
-  X(TRACE_DISABLED_BY_DEFAULT("skia.gpu.cache"))                         \
-  X(TRACE_DISABLED_BY_DEFAULT("skia.shaders"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("skottie"))                                \
-  X(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"))                         \
-  X(TRACE_DISABLED_BY_DEFAULT("system_power"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("system_stats"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("thread_pool_diagnostics"))                \
-  X(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("user_action_samples"))                    \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.compile"))                             \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.cpu_profiler"))                        \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.gc"))                                  \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.gc_stats"))                            \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.ic_stats"))                            \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.inspector"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.runtime"))                             \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats"))                       \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats_sampling"))              \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.stack_trace"))                         \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.turbofan"))                            \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.wasm.detailed"))                       \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.wasm.turbofan"))                       \
-  X(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"))                \
-  X(TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"))                 \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"))                 \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"))               \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"))                   \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.overdraw"))                           \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.quads"))                              \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"))                    \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"))                   \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.triangles"))                          \
-  X(TRACE_DISABLED_BY_DEFAULT("viz.visual_debugger"))                    \
-  X(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"))                     \
-  X(TRACE_DISABLED_BY_DEFAULT("webgpu"))                                 \
-  X(TRACE_DISABLED_BY_DEFAULT("webnn"))                                  \
-  X(TRACE_DISABLED_BY_DEFAULT("webrtc"))                                 \
-  X(TRACE_DISABLED_BY_DEFAULT("worker.scheduler"))                       \
-  X(TRACE_DISABLED_BY_DEFAULT("xr.debug"))
-
-#define INTERNAL_TRACE_LIST_BUILTIN_CATEGORY_GROUPS(X)                        \
-  X("android_webview,toplevel")                                               \
-  X("android_webview.timeline,android.ui.jank")                               \
-  X("base,toplevel")                                                          \
-  X("benchmark,drm")                                                          \
-  X("benchmark,latencyInfo,rail")                                             \
-  X("benchmark,latencyInfo,rail,input.scrolling")                             \
-  X("benchmark,loading")                                                      \
-  X("benchmark,rail")                                                         \
-  X("benchmark,uma")                                                          \
-  X("benchmark,ui")                                                           \
-  X("benchmark,viz")                                                          \
-  X("benchmark,viz," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"))     \
-  X("blink,benchmark")                                                        \
-  X("blink,benchmark,rail," TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))  \
-  X("blink,blink.resource")                                                   \
-  X("blink,blink_style")                                                      \
-  X("blink,devtools.timeline")                                                \
-  X("blink,loading")                                                          \
-  X("blink,rail")                                                             \
-  X("blink.animations,devtools.timeline,benchmark,rail")                      \
-  X("blink.user_timing,rail")                                                 \
-  X("browser,content,navigation")                                             \
-  X("browser,navigation")                                                     \
-  X("browser,navigation,benchmark")                                           \
-  X("browser,startup")                                                        \
-  X("category1,category2")                                                    \
-  X("cc,benchmark")                                                           \
-  X("cc,benchmark,input,input.scrolling")                                     \
-  X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
-  X("cc,input")                                                               \
-  X("cc,raf_investigation")                                                   \
-  X("cc," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))                     \
-  X("cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))     \
-  X("content,navigation")                                                     \
-  X("devtools.timeline,rail")                                                 \
-  X("drm,hwoverlays")                                                         \
-  X("dwrite,fonts")                                                           \
-  X("fonts,ui")                                                               \
-  X("gpu,benchmark")                                                          \
-  X("gpu,benchmark,android_webview")                                          \
-  X("gpu,benchmark,webview")                                                  \
-  X("gpu,login")                                                              \
-  X("gpu,startup")                                                            \
-  X("gpu,toplevel.flow")                                                      \
-  X("gpu.angle,startup")                                                      \
-  X("inc2,inc")                                                               \
-  X("inc,inc2")                                                               \
-  X("input,benchmark")                                                        \
-  X("input,benchmark,devtools.timeline")                                      \
-  X("input,benchmark,devtools.timeline,latencyInfo")                          \
-  X("input,benchmark,latencyInfo")                                            \
-  X("input,latency")                                                          \
-  X("input,rail")                                                             \
-  X("input,input.scrolling")                                                  \
-  X("input,views")                                                            \
-  X("interactions,input.scrolling")                                           \
-  X("interactions,startup")                                                   \
-  X("ipc,security")                                                           \
-  X("ipc,toplevel")                                                           \
-  X("Java,devtools," TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))          \
-  X("loading,interactions")                                                   \
-  X("loading,rail")                                                           \
-  X("loading,rail,devtools.timeline")                                         \
-  X("login,screenlock_monitor")                                               \
-  X("media,gpu")                                                              \
-  X("media,rail")                                                             \
-  X("navigation,benchmark,rail")                                              \
-  X("navigation,rail")                                                        \
-  X("renderer,benchmark,rail")                                                \
-  X("renderer,benchmark,rail,input.scrolling")                                \
-  X("renderer,webkit")                                                        \
-  X("renderer_host,navigation")                                               \
-  X("renderer_host," TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"))        \
-  X("scheduler,devtools.timeline,loading")                                    \
-  X("shutdown,viz")                                                           \
-  X("startup,benchmark,rail")                                                 \
-  X("startup,rail")                                                           \
-  X("toplevel,Java")                                                          \
-  X("toplevel,viz")                                                           \
-  X("ui,input")                                                               \
-  X("ui,latency")                                                             \
-  X("ui,toplevel")                                                            \
-  X("v8," TRACE_DISABLED_BY_DEFAULT("v8.compile"))                            \
-  X("v8,devtools.timeline")                                                   \
-  X("v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile"))          \
-  X("viz,android.adpf")                                                       \
-  X("viz,benchmark")                                                          \
-  X("viz,benchmark,graphics.pipeline")                                        \
-  X("viz,benchmark,input.scrolling")                                          \
-  X("viz,input.scrolling")                                                    \
-  X("wakeup.flow,toplevel.flow")                                              \
-  X("WebCore,benchmark,rail")                                                 \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug") "," TRACE_DISABLED_BY_DEFAULT(      \
-      "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")) \
-  X(TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items") "," \
-      TRACE_DISABLED_BY_DEFAULT("cc.debug.picture") "," \
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))                 \
-  X(TRACE_DISABLED_BY_DEFAULT("v8.inspector") "," TRACE_DISABLED_BY_DEFAULT(  \
-      "v8.stack_trace"))
-
-#define INTERNAL_TRACE_INIT_CATEGORY_NAME(name) name,
-
-#define INTERNAL_TRACE_INIT_CATEGORY(name) {0, 0, name},
 
 PERFETTO_DEFINE_TEST_CATEGORY_PREFIXES("cat",
                                        "foo",
@@ -425,175 +21,578 @@ PERFETTO_DEFINE_TEST_CATEGORY_PREFIXES("cat",
                                        TRACE_DISABLED_BY_DEFAULT("Testing"),
                                        TRACE_DISABLED_BY_DEFAULT("NotTesting"));
 
-#define INTERNAL_CATEGORY(X) perfetto::Category(X),
-#define INTERNAL_CATEGORY_GROUP(X) perfetto::Category::Group(X),
-
-// Define a Perfetto TrackEvent data source using the list of categories defined
-// above. See https://perfetto.dev/docs/instrumentation/track-events.
+// List of builtin category names. If you want to use a new category name in
+// your code and you get a static assert, this is the right place to register
+// the name.
+// See https://perfetto.dev/docs/instrumentation/track-events.
+//
+// Naming Convention: Follow the `namespace.category(.sub_category)(.debug)`
+// naming convention for new categories.
+// Example: `base.scheduling`, `base.scheduling.debug`
+//
+// Be specific, avoid generic categories. Categories such as `toplevel` become
+// junk drawers for many trace events, eventually making them too heavy and
+// noisy for specific purposes.
+//
+// Prefer using ".debug" suffix along with "debug" tag over the legacy
+// `DISABLED_BY_DEFAULT()` when creating new debug categories.
+// Example: perfetto::Category("cc.debug").SetTags("debug")
+// `TRACE_DISABLED_BY_DEFAULT("my_category")` adds
+// `disabled-by-default-my_category` prefix and “slow” tag to the category,
+// but it doesn’t align with the naming convention, and makes the call sites
+// more cluttered compared to the ".debug" suffix.
+// Both "slow" and "debug" tags are disabled by default.
+//
+// Document Categories: Document new categories using `.SetDescription()` and
+// optionally identify a suitable owner in comments.
+// Use generic tags such as "navigation" to document and group categories.
+// Add the "debug" tag for debug categories.
+//
+// Avoid emitting events to multiple categories (category groups): Category
+// groups need to be defined for each combination that’s used in chrome, which
+// can lead to combinatorial explosion. They often indicate an issue with how
+// existing categories are organized, or are used to group a list of
+// categories into another one, such as “devtools.timeline”. Prefer leveraging
+// tags to group a set of categories under a common tag instead.
+//
+// clang-format off
 PERFETTO_DEFINE_CATEGORIES_IN_NAMESPACE_WITH_ATTRS(
     base,
     BASE_EXPORT,
-    INTERNAL_TRACE_LIST_BUILTIN_CATEGORIES(INTERNAL_CATEGORY)
-        INTERNAL_TRACE_LIST_BUILTIN_CATEGORY_GROUPS(INTERNAL_CATEGORY_GROUP));
+    /* The rest of the list is in alphabetical order */
+    perfetto::Category("__metadata"),
+    perfetto::Category("accessibility"),
+    perfetto::Category("AccountFetcherService"),
+    perfetto::Category("actor").SetDescription(
+      "Events for the Actor component."),
+    perfetto::Category("android.adpf"),
+    perfetto::Category("android.ui.jank"),
+    perfetto::Category("android_webview"),
+    perfetto::Category("android_webview.timeline"),
+    perfetto::Category("aogh").SetDescription(
+      "Actions on Google Hardware, used in Google-internal code."),
+    perfetto::Category("audio").SetTags("audio"),
+    perfetto::Category("base").SetTags("toplevel"),
+    perfetto::Category("benchmark").SetTags("input"),
+    perfetto::Category("tracing.background").SetDescription(
+      "Events related to background tracing, scenarios and triggers."),
+    perfetto::Category("blink").SetTags("javascript", "rendering"),
+    perfetto::Category("blink.animations"),
+    perfetto::Category("blink.bindings"),
+    perfetto::Category("blink.console"),
+    perfetto::Category("blink.net"),
+    perfetto::Category("blink.resource"),
+    perfetto::Category("blink.task_attribution").SetDescription(
+      "Traces for Task Attribution, blink's internal mechanism for propagating "
+      "task state information across tasks and microtasks"),
+    perfetto::Category("blink.user_timing"),
+    perfetto::Category("blink.worker"),
+    perfetto::Category("blink_style"),
+    perfetto::Category("Blob"),
+    perfetto::Category("base.power").SetDescription(
+      "Events about global system power and battery/thermal state.")
+      .SetTags("toplevel"),
+    perfetto::Category("browser").SetTags("navigation"),
+    perfetto::Category("browsing_data"),
+    perfetto::Category("CacheStorage"),
+    perfetto::Category("Calculators"),
+    perfetto::Category("CameraStream"),
+    perfetto::Category("camera"),
+    perfetto::Category("cast_app"),
+    perfetto::Category("cast_perf_test"),
+    perfetto::Category("cast.mdns"),
+    perfetto::Category("cast.mdns.socket"),
+    perfetto::Category("cast.stream"),
+    perfetto::Category("cc").SetTags("rendering"),
+    perfetto::Category("cc.debug").SetTags("debug"),
+    perfetto::Category("cdp.perf"),
+    perfetto::Category("chromeos"),
+    perfetto::Category("cma"),
+    perfetto::Category("compositor"),
+    // Config categories do not emit trace events, but are used to configure
+    // enabling additional information at runtime, which then is emitted in
+    // other trace events.
+    perfetto::Category("config.scheduler.record_task_post_time").SetDescription(
+      "Controls details emitted by TaskAnnotator::EmitTaskTimingDetails"),
+    perfetto::Category("content"),
+    perfetto::Category("content.fedcm").SetDescription(
+        "Traces for the Federated Credential Management API"),
+    perfetto::Category("content_capture"),
+    perfetto::Category("cronet"),
+    perfetto::Category("interactions"),
+    perfetto::Category("delegated_ink_trails"),
+    perfetto::Category("device"),
+    perfetto::Category("devtools"),
+    perfetto::Category("devtools.contrast"),
+    perfetto::Category("devtools.timeline"),
+    perfetto::Category("disk_cache"),
+    perfetto::Category("download"),
+    perfetto::Category("download_service"),
+    perfetto::Category("drm"),
+    perfetto::Category("drmcursor"),
+    perfetto::Category("dwrite"),
+    perfetto::Category("evdev").SetTags("input"),
+    perfetto::Category("event"),
+    perfetto::Category("exo"),
+    perfetto::Category("extensions"),
+    perfetto::Category("extensions.content_verifier.debug").SetDescription(
+      "Traces for the extension file (content) verification process at "
+      "//extensions/browser/content_verifier.").SetTags("debug"),
+    perfetto::Category("explore_sites"),
+    perfetto::Category("FileSystem"),
+    perfetto::Category("file_system_provider"),
+    perfetto::Category("fledge"),
+    perfetto::Category("fonts"),
+    perfetto::Category("GAMEPAD"),
+    perfetto::Category("gpu").SetTags("rendering"),
+    perfetto::Category("gpu.angle"),
+    perfetto::Category("gpu.angle.texture_metrics"),
+    perfetto::Category("gpu.capture").SetTags("video"),
+    perfetto::Category("graphics.pipeline"),
+    perfetto::Category("headless"),
+    perfetto::Category("history").SetDescription(
+      "Traces for //components/history."),
+    perfetto::Category("hwoverlays"),
+    perfetto::Category("identity"),
+    perfetto::Category("ime"),
+    perfetto::Category("IndexedDB"),
+    perfetto::Category("input").SetTags("input"),
+    perfetto::Category("input.scrolling").SetTags("input"),
+    perfetto::Category("io"),
+    perfetto::Category("ipc").SetTags("ipc"),
+    perfetto::Category("Java"),
+    perfetto::Category("jni"),
+    perfetto::Category("jpeg"),
+    perfetto::Category("latency"),
+    perfetto::Category("latencyInfo"),
+    perfetto::Category("leveldb"),
+    perfetto::Category("loading").SetTags("navigation"),
+    perfetto::Category("log"),
+    perfetto::Category("login"),
+    perfetto::Category("media").SetTags("video"),
+    perfetto::Category("mediastream").SetTags("audio"),
+    perfetto::Category("media_router"),
+    perfetto::Category("memory"),
+    perfetto::Category("midi"),
+    perfetto::Category("mojom").SetTags("ipc"),
+    perfetto::Category("mojom.flow").SetDescription(
+        "Includes flow events related to mojom. Notably, records flows between "
+        "senders and receivers.").SetTags("ipc"),
+    perfetto::Category("mus"),
+    perfetto::Category("native"),
+    perfetto::Category("navigation").SetTags("navigation"),
+    perfetto::Category("navigation.debug").SetTags("debug"),
+    perfetto::Category("net").SetTags("navigation"),
+    perfetto::Category("net.stream").SetDescription(
+        "Includes events related to creating HTTP streams to serve requests."),
+    perfetto::Category("network.scheduler"),
+    perfetto::Category("netlog").SetTags("navigation").SetDescription(
+      "NetLog events and metadata. Describes the operation of the //net "
+      "network stack, e.g. HTTP requests, TLS, DNS, connections, sockets, "
+      "etc."),
+    perfetto::Category("offline_pages"),
+    perfetto::Category("omnibox"),
+    perfetto::Category("oobe"),
+    perfetto::Category("openscreen"),
+
+    perfetto::Category("optimization_guide").SetDescription(
+        "Includes events related to processing hints and machine learning "
+        "models by the Optimization Guide component."),
+    perfetto::Category("optimization_guide.debug").SetTags("debug"),
+    perfetto::Category("ozone"),
+    perfetto::Category("partition_alloc"),
+    perfetto::Category("passwords"),
+    perfetto::Category("p2p").SetTags("audio"),
+    perfetto::Category("page-serialization"),
+    perfetto::Category("paint_preview"),
+    perfetto::Category("pepper"),
+    perfetto::Category("performance_scenarios").SetDescription(
+        "Includes events when processes enter and leave states defined in "
+        "//components/performance_manager/scenario_api/"
+        "performance_scenarios.h. For each scenario type, events for "
+        "ScenarioScope::kCurrentProcess are emitted to an async track under "
+        "each process track, and events for ScenarioScope::kGlobal are emitted "
+        "to global async tracks."),
+    perfetto::Category("performance_manager.cpu_metrics").SetDescription(
+      "Events reporting cpu metrics computed in performance_manager"),
+    perfetto::Category("performance_manager.graph").SetDescription(
+      "Describes the performance manager graph structure with frames, pages, "
+      "processes, etc. and their properties.").SetTags("toplevel"),
+    perfetto::Category("persistent_cache"),
+    perfetto::Category("PlatformMalloc"),
+    perfetto::Category("ppapi"),
+    perfetto::Category("ppapi_proxy"),
+    perfetto::Category("print"),
+    perfetto::Category("raf_investigation"),
+    perfetto::Category("rail"),
+    perfetto::Category("renderer"),
+    perfetto::Category("renderer_host"),
+    perfetto::Category("renderer.scheduler"),
+    perfetto::Category("resources"),
+    perfetto::Category("RLZ"),
+    perfetto::Category("ServiceWorker"),
+    perfetto::Category("SiteEngagement"),
+    perfetto::Category("safe_browsing"),
+    perfetto::Category("scheduler").SetTags("scheduling"),
+    perfetto::Category("scheduler.flow").SetDescription(
+        "Includes flow events related to scheduling dependency. Notably, "
+        "records flows between tasks running in the thread pool on the same "
+        "sequence."),
+    perfetto::Category("scheduler.long_tasks"),
+    perfetto::Category("screenlock_monitor"),
+    perfetto::Category("segmentation_platform"),
+    perfetto::Category("sequence_manager").SetTags("scheduling"),
+    perfetto::Category("service_manager"),
+    perfetto::Category("sharing"),
+    perfetto::Category("shell"),
+    perfetto::Category("shutdown"),
+    perfetto::Category("skia"),
+    perfetto::Category("sql"),
+    perfetto::Category("stadia_media"),
+    perfetto::Category("stadia_rtc"),
+    perfetto::Category("startup"),
+    perfetto::Category("sync"),
+    perfetto::Category("system_apps"),
+    perfetto::Category("test_gpu"),
+    perfetto::Category("toplevel").SetTags("scheduling", "toplevel"),
+    perfetto::Category("toplevel.flow").SetTags("scheduling", "toplevel"),
+    perfetto::Category("ui").SetTags("rendering"),
+    perfetto::Category("v8"),
+    perfetto::Category("v8.execute"),
+    perfetto::Category("v8.wasm"),
+    perfetto::Category("ValueStoreFrontend::Backend"),
+    perfetto::Category("views").SetTags("rendering"),
+    perfetto::Category("views.frame"),
+    perfetto::Category("viz").SetTags("rendering"),
+    perfetto::Category("vk"),
+    perfetto::Category("wakeup.flow").SetTags("scheduling"),
+    perfetto::Category("waap").SetDescription(
+      "Includes events related to WaaP (Webium-as-a-Product) UI experiments as "
+      "described in //chrome/browser/waap."),
+    perfetto::Category("wayland"),
+    perfetto::Category("webaudio").SetTags("audio"),
+    perfetto::Category("webengine.fidl"),
+    perfetto::Category("WebCore"),
+    perfetto::Category("webnn"),
+    perfetto::Category("webrtc").SetTags("audio", "video"),
+    perfetto::Category("webrtc_stats"),
+    perfetto::Category("xr"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("android_view_hierarchy"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("animation-worklet"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("audio"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("audio.latency"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("audio-worklet"))
+        .SetTags("audio", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("base"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.display_lock"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.debug.layout.trees"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.feature_usage"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.image_decoding"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("blink.invalidation"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("identifiability"))
+        .SetTags("slow"),
+    perfetto::Category(
+        TRACE_DISABLED_BY_DEFAULT("identifiability.high_entropy_api"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug")).SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.cdp-perf"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.lcd_text"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.picture"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.now"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("content.verbose"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cpu_profiler"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("cpu_profiler.debug"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("crypto.dpapi"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.screenshot"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.inputs"))
+        .SetTags("slow"),
+    perfetto::Category(
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.timeline.stack"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown"))
+        .SetTags("slow"),
+    perfetto::Category(
+        TRACE_DISABLED_BY_DEFAULT("devtools.v8-source-rundown-sources"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("file")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("fonts")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.dawn")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.debug")).SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.decoder"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.device"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.graphite.dawn"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.service"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("gpu.vulkan.vma"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("histogram_samples"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("java-heap-profiler"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("layer-element"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("layout_shift.debug"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("lifecycles"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("loading")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("mediastream"))
+        .SetTags("audio", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("memory-infra"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("memory-infra.v8.code_stats"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("mojom")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("navigation")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("net")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("netlog.sensitive")).SetTags(
+      "navigation", "sensitive", "slow").SetDescription(
+      "NetLog events and metadata, including sensitive information such as "
+      "hostnames, URLs, HTTP headers and other identifiable information. "
+      "Describes the operation of the //net network stack, e.g. HTTP requests, "
+      "TLS, DNS, connections, sockets, etc."),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("network")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("paint-worklet"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("power"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("system_metrics"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler.debug"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("sequence_manager"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("sequence_manager.debug"))
+        .SetTags("debug"),
+    perfetto::Category(
+        TRACE_DISABLED_BY_DEFAULT("sequence_manager.verbose_snapshots"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.gpu"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.gpu.cache"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skia.shaders"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("skottie"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("SyncFileSystem"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("system_power"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("thread_pool_diagnostics"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"))
+        .SetTags("ipc", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("user_action_samples"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.compile"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.inspector"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats_sampling"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"))
+        .SetTags("video", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("display.framedisplayed"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.gpu_composite_time"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"))
+        .SetTags("debug"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.overdraw"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.quads"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.surface_lifetime"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.triangles"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("viz.visual_debugger"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"))
+        .SetTags("audio", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webgpu")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webnn")).SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("webrtc"))
+        .SetTags("audio", "video", "slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("worker.scheduler"))
+        .SetTags("slow"),
+    perfetto::Category(TRACE_DISABLED_BY_DEFAULT("xr.debug")).SetTags("debug"),
+    perfetto::Category::Group("android_webview,toplevel"),
+    perfetto::Category::Group("android_webview.timeline,android.ui.jank"),
+    perfetto::Category::Group("base,toplevel"),
+    perfetto::Category::Group("benchmark,drm"),
+    perfetto::Category::Group("benchmark,latencyInfo,rail"),
+    perfetto::Category::Group("benchmark,latencyInfo,rail,input.scrolling"),
+    perfetto::Category::Group("benchmark,loading"),
+    perfetto::Category::Group("benchmark,rail"),
+    perfetto::Category::Group("benchmark,uma"),
+    perfetto::Category::Group("benchmark,ui"),
+    perfetto::Category::Group("benchmark,viz"),
+    perfetto::Category::Group(
+        "benchmark,viz," TRACE_DISABLED_BY_DEFAULT("display.framedisplayed")),
+    perfetto::Category::Group("blink,benchmark"),
+    perfetto::Category::Group("blink,benchmark,rail," TRACE_DISABLED_BY_DEFAULT(
+        "blink.debug.layout")),
+    perfetto::Category::Group("blink,blink.resource"),
+    perfetto::Category::Group("blink,blink_style"),
+    perfetto::Category::Group("blink,devtools.timeline"),
+    perfetto::Category::Group("blink,latency"),
+    perfetto::Category::Group("blink,loading"),
+    perfetto::Category::Group("blink,rail"),
+    perfetto::Category::Group(
+        "blink.animations,devtools.timeline,benchmark,rail"),
+    perfetto::Category::Group("blink.user_timing,rail"),
+    perfetto::Category::Group("browser,content,navigation"),
+    perfetto::Category::Group("browser,navigation"),
+    perfetto::Category::Group("browser,navigation,benchmark"),
+    perfetto::Category::Group("browser,startup"),
+    perfetto::Category::Group("category1,category2"),
+    perfetto::Category::Group("cc,benchmark"),
+    perfetto::Category::Group("cc,benchmark,input,input.scrolling"),
+    perfetto::Category::Group("cc,benchmark,latency"),
+    perfetto::Category::Group(
+        "cc,benchmark," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.frame")),
+    perfetto::Category::Group("cc,input"),
+    perfetto::Category::Group("cc,raf_investigation"),
+    perfetto::Category::Group(
+        "cc," TRACE_DISABLED_BY_DEFAULT("devtools.timeline")),
+    perfetto::Category::Group("content,navigation"),
+    perfetto::Category::Group("devtools.timeline,rail"),
+    perfetto::Category::Group("drm,hwoverlays"),
+    perfetto::Category::Group("dwrite,fonts"),
+    perfetto::Category::Group("fonts,ui"),
+    perfetto::Category::Group("gpu,benchmark"),
+    perfetto::Category::Group("gpu,benchmark,android_webview"),
+    perfetto::Category::Group("gpu,benchmark,webview"),
+    perfetto::Category::Group("gpu,login"),
+    perfetto::Category::Group("gpu,startup"),
+    perfetto::Category::Group("gpu,toplevel.flow"),
+    perfetto::Category::Group("gpu.angle,startup"),
+    perfetto::Category::Group("input,benchmark"),
+    perfetto::Category::Group("input,benchmark,devtools.timeline"),
+    perfetto::Category::Group("input,benchmark,devtools.timeline,latencyInfo"),
+    perfetto::Category::Group("input,benchmark,latencyInfo"),
+    perfetto::Category::Group("input,latency"),
+    perfetto::Category::Group("input,rail"),
+    perfetto::Category::Group("input,input.scrolling"),
+    perfetto::Category::Group("input,views"),
+    perfetto::Category::Group("interactions,input.scrolling"),
+    perfetto::Category::Group("interactions,startup"),
+    perfetto::Category::Group("ipc,security"),
+    perfetto::Category::Group("ipc,toplevel"),
+    perfetto::Category::Group(
+        "Java,devtools," TRACE_DISABLED_BY_DEFAULT("devtools.timeline")),
+    perfetto::Category::Group("loading,interactions"),
+    perfetto::Category::Group("loading,rail"),
+    perfetto::Category::Group("loading,rail,devtools.timeline"),
+    perfetto::Category::Group("login,screenlock_monitor"),
+    perfetto::Category::Group("media,gpu"),
+    perfetto::Category::Group("media,rail"),
+    perfetto::Category::Group("navigation,benchmark,rail"),
+    perfetto::Category::Group("navigation,rail"),
+    perfetto::Category::Group("renderer,benchmark,rail"),
+    perfetto::Category::Group("renderer,benchmark,rail,input.scrolling"),
+    perfetto::Category::Group("renderer,webkit"),
+    perfetto::Category::Group("renderer_host,navigation"),
+    perfetto::Category::Group(
+        "renderer_host," TRACE_DISABLED_BY_DEFAULT("viz.surface_id_flow")),
+    perfetto::Category::Group("scheduler,devtools.timeline,loading"),
+    perfetto::Category::Group("shutdown,viz"),
+    perfetto::Category::Group("startup,benchmark,rail"),
+    perfetto::Category::Group("startup,rail"),
+    perfetto::Category::Group("toplevel,graphics.pipeline"),
+    perfetto::Category::Group("toplevel,Java"),
+    perfetto::Category::Group("toplevel,mojom"),
+    perfetto::Category::Group("toplevel,viz"),
+    perfetto::Category::Group("toplevel.flow,mojom.flow"),
+    perfetto::Category::Group("ui,input"),
+    perfetto::Category::Group("ui,latency"),
+    perfetto::Category::Group("ui,toplevel"),
+    perfetto::Category::Group("v8," TRACE_DISABLED_BY_DEFAULT("v8.compile")),
+    perfetto::Category::Group("v8,devtools.timeline"),
+    perfetto::Category::Group(
+        "v8,devtools.timeline," TRACE_DISABLED_BY_DEFAULT("v8.compile")),
+    perfetto::Category::Group("viz,android.adpf"),
+    perfetto::Category::Group("viz,benchmark"),
+    perfetto::Category::Group("viz,benchmark,graphics.pipeline"),
+    perfetto::Category::Group("viz,benchmark,input.scrolling"),
+    perfetto::Category::Group("viz,input.scrolling"),
+    perfetto::Category::Group("wakeup.flow,toplevel.flow"),
+    perfetto::Category::Group("WebCore,benchmark,rail"),
+    perfetto::Category::Group(
+        TRACE_DISABLED_BY_DEFAULT("cc.debug") ","
+        TRACE_DISABLED_BY_DEFAULT("viz.quads") ","
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")),
+    perfetto::Category::Group(
+        TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items") ","
+        TRACE_DISABLED_BY_DEFAULT("cc.debug.picture") ","
+        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture")),
+    perfetto::Category::Group(
+        TRACE_DISABLED_BY_DEFAULT("v8.inspector") ","
+        TRACE_DISABLED_BY_DEFAULT("v8.stack_trace")));
+// clang-format on
+
 PERFETTO_USE_CATEGORIES_FROM_NAMESPACE(base);
-
-#undef INTERNAL_CATEGORY
-#undef INTERNAL_CATEGORY_GROUP
-
-namespace base {
-namespace trace_event {
-
-// Constexpr version of string comparison operator. |a| and |b| must be valid
-// C-style strings known at compile-time.
-constexpr bool StrEqConstexpr(const char* a, const char* b) {
-  for (; *a != '\0' && *b != '\0'; ++a, ++b) {
-    if (*a != *b)
-      return false;
-  }
-  return *a == *b;
-}
-
-// Tests for |StrEqConstexpr()|.
-static_assert(StrEqConstexpr("foo", "foo"), "strings should be equal");
-static_assert(!StrEqConstexpr("foo", "Foo"), "strings should not be equal");
-static_assert(!StrEqConstexpr("foo", "foo1"), "strings should not be equal");
-static_assert(!StrEqConstexpr("foo2", "foo"), "strings should not be equal");
-static_assert(StrEqConstexpr("", ""), "strings should be equal");
-static_assert(!StrEqConstexpr("foo", ""), "strings should not be equal");
-static_assert(!StrEqConstexpr("", "foo"), "strings should not be equal");
-static_assert(!StrEqConstexpr("ab", "abc"), "strings should not be equal");
-static_assert(!StrEqConstexpr("abc", "ab"), "strings should not be equal");
-
-// Static-only class providing access to the compile-time registry of trace
-// categories.
-// TODO(skyostil): Remove after migrating to the Perfetto client API.
-class BASE_EXPORT BuiltinCategories {
- public:
-  BuiltinCategories() = delete;
-  BuiltinCategories(const BuiltinCategories&) = delete;
-  BuiltinCategories& operator=(const BuiltinCategories&) = delete;
-
-  // Returns a built-in category name at |index| in the registry.
-  static constexpr const char* At(size_t index) {
-    return kBuiltinCategories[index];
-  }
-
-  // Returns the amount of built-in categories in the registry.
-  static constexpr size_t Size() { return std::size(kBuiltinCategories); }
-
-  // Where in the builtin category list to start when populating the
-  // about://tracing UI.
-  static constexpr size_t kVisibleCategoryStart = 3;
-
-  // Returns whether the category is either:
-  // - Properly registered in the builtin list.
-  // - Constists of several categories separated by commas.
-  // - Used only in tests.
-  // All trace categories are checked against this. A static_assert is triggered
-  // if at least one category fails this check.
-  static constexpr bool IsAllowedCategory(const char* category) {
-#if BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
-    return true;
-#else
-    return IsBuiltinCategory(category) ||
-           IsCommaSeparatedCategoryGroup(category) ||
-           IsCategoryForTesting(category);
-#endif
-  }
-
- private:
-  // The array of built-in category names used for compile-time lookup.
-  static constexpr const char* kBuiltinCategories[] = {
-      INTERNAL_TRACE_LIST_BUILTIN_CATEGORIES(
-          INTERNAL_TRACE_INIT_CATEGORY_NAME)};
-
-  // The array of category names used only for testing. It's kept separately
-  // from the main list to avoid allocating the space for them in the binary.
-  static constexpr const char* kCategoriesForTesting[] = {
-      "test_\001\002\003\n\r",
-      "test_a",
-      "test_all",
-      "test_b",
-      "test_b1",
-      "test_c",
-      "test_c0",
-      "test_c1",
-      "test_c2",
-      "test_c3",
-      "test_c4",
-      "test_tracing",
-      "cat",
-      "cat1",
-      "cat2",
-      "cat3",
-      "cat4",
-      "cat5",
-      "cat6",
-      "category",
-      "test_drink",
-      "test_excluded_cat",
-      "test_filtered_cat",
-      "foo",
-      "test_inc",
-      "test_inc2",
-      "test_included",
-      "test_inc_wildcard_",
-      "test_inc_wildcard_abc",
-      "test_inc_wildchar_bla_end",
-      "test_inc_wildchar_x_end",
-      "kTestCategory",
-      "noise",
-      "test_other_included",
-      "test",
-      "test_category",
-      "Testing",
-      "TraceEventAgentTestCategory",
-      "test_unfiltered_cat",
-      "test_x",
-      TRACE_DISABLED_BY_DEFAULT("test_c9"),
-      TRACE_DISABLED_BY_DEFAULT("test_cat"),
-      TRACE_DISABLED_BY_DEFAULT("test_filtered_cat"),
-      TRACE_DISABLED_BY_DEFAULT("NotTesting"),
-      TRACE_DISABLED_BY_DEFAULT("Testing"),
-      TRACE_DISABLED_BY_DEFAULT("test_unfiltered_cat")};
-
-  // Returns whether |str| is in |array| of |array_len|.
-  static constexpr bool IsStringInArray(const char* str,
-                                        const char* const array[],
-                                        size_t array_len) {
-    for (size_t i = 0; i < array_len; ++i) {
-      if (StrEqConstexpr(str, array[i]))
-        return true;
-    }
-    return false;
-  }
-
-  // Returns whether |category_group| contains a ',' symbol, denoting that an
-  // event belongs to several categories. We don't add such strings in the
-  // builtin list but allow them to pass the static assert.
-  static constexpr bool IsCommaSeparatedCategoryGroup(
-      const char* category_group) {
-    for (; *category_group != '\0'; ++category_group) {
-      if (*category_group == ',')
-        return true;
-    }
-    return false;
-  }
-
-  // Returns whether |category| is used only for testing.
-  static constexpr bool IsCategoryForTesting(const char* category) {
-    return IsStringInArray(category, kCategoriesForTesting,
-                           std::size(kCategoriesForTesting));
-  }
-
-  // Returns whether |category| is registered in the builtin list.
-  static constexpr bool IsBuiltinCategory(const char* category) {
-    return IsStringInArray(category, kBuiltinCategories,
-                           std::size(kBuiltinCategories));
-  }
-};
-
-}  // namespace trace_event
-}  // namespace base
 
 #endif  // BASE_TRACE_EVENT_BUILTIN_CATEGORIES_H_

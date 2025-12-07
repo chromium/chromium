@@ -1,0 +1,12 @@
+include_rules = [
+  "+components/favicon_base",
+  "+components/favicon/core",
+  "+components/keyed_service",
+  "+components/sessions/core",
+  "+components/sync/base",
+  "+components/sync/model",
+  "+components/url_formatter",
+  "+third_party/skia/include/core",
+  "+ui/gfx",
+  "+url",
+]

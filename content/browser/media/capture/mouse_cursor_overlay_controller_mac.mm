@@ -125,8 +125,16 @@ class MouseCursorOverlayController::Observer {
 
  private:
   void OnMouseMoved(const NSPoint& location_in_window) {
+    // Ignore mouse movements if the window is inactive or the view is hidden.
+    // This can happen if the mouse is dragged with a button pressed, as these
+    // events are not tied to the specific NSView.
+    if ((view_.window && ![view_.window isKeyWindow]) ||
+        view_.hiddenOrHasHiddenAncestor) {
+      return;
+    }
+
     const bool cursor_within_surface =
-        NSPointInRect(location_in_window, NSRectFromCGRect([view_ bounds]));
+        NSPointInRect(location_in_window, [view_ bounds]);
 
     // Compute the location within the view using Aura conventions: (0,0) is the
     // upper-left corner. So, if the NSView is flipped in Cocoa, it's not

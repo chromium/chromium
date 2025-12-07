@@ -14,9 +14,11 @@
 // Enum of relaunch manners. Useful combinations of whether force a relaunch,
 // whether kill app gracefully, whether run resets after a relaunch.
 enum RelaunchPolicy : long {
+  // Obsolete if [ChromeTestCase forceRestartAndWipe] sticks.
   // Does not relaunch if app is already running with the same feature list.
   // Kills the app directly. Keeps app state the same as before relaunch.
   NoForceRelaunchAndKeepState,
+  // Obsolete if [ChromeTestCase forceRestartAndWipe] sticks.
   // Does not relaunch if app is already running with the same feature list.
   // Kills the app directly. Provides clean test case setups after relaunch.
   NoForceRelaunchAndResetState,
@@ -44,6 +46,8 @@ struct AppLaunchConfiguration {
   std::optional<std::string> iph_feature_enabled;
   // Additional arguments to be directly forwarded to the app.
   std::vector<std::string> additional_args;
+  // Override the app's language.
+  std::optional<std::string> language;
   // Relaunch policy.
   RelaunchPolicy relaunch_policy = NoForceRelaunchAndResetState;
 };

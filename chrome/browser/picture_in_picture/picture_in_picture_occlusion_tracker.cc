@@ -53,6 +53,33 @@ void PictureInPictureOcclusionTracker::OnPictureInPictureWidgetOpened(
   UpdateAllObserverStates();
 }
 
+void PictureInPictureOcclusionTracker::RemovePictureInPictureWidget(
+    views::Widget* picture_in_picture_widget) {
+  auto iter = observed_widget_data_.find(picture_in_picture_widget);
+  if (iter == observed_widget_data_.end()) {
+    // If we're not currently tracking this widget, then there's nothing to do.
+    return;
+  }
+
+  // We're no longer tracking this widget as a picture-in-picture widget.
+  iter->second.is_picture_in_picture_widget = false;
+
+  // As long as we're not also observing this an an occludable widget, we can
+  // stop observing the widget.
+  if (iter->second.number_of_dependent_observers == 0) {
+    // If `number_of_dependent_observers` == 0, then
+    // `number_of_direct_observers` must also be zero since dependent observers
+    // includes direct observers.
+    CHECK_EQ(iter->second.number_of_direct_observers, 0);
+    observed_widget_data_.erase(iter);
+    widget_observations_.RemoveObservation(picture_in_picture_widget);
+  }
+
+  // Update all observers since some previously occluded widgets may no longer
+  // be occluded.
+  UpdateAllObserverStates();
+}
+
 void PictureInPictureOcclusionTracker::AddObserver(
     PictureInPictureOcclusionTrackerObserver* observer) {
   observers_.AddObserver(observer);
@@ -185,6 +212,11 @@ void PictureInPictureOcclusionTracker::SetWidgetOcclusionStateForTesting(
   iter->second.forced_occlusion_state = occluded;
 
   UpdateObserverStateForWidget(observed_widget, /*force_update=*/true);
+}
+
+void PictureInPictureOcclusionTracker::
+    FireBoundsChangedThrottleTimerForTesting() {
+  bounds_changed_throttle_timer_.FireNow();
 }
 
 void PictureInPictureOcclusionTracker::ObserveWidgetAndParents(

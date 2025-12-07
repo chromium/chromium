@@ -7,14 +7,15 @@
 
 #import <UIKit/UIKit.h>
 
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+
+class ProfileIOS;
 
 namespace autofill {
 class CreditCard;
 }  // namespace autofill
 
-class ChromeBrowserState;
 class WebStateList;
 
 @protocol FullCardRequestResultDelegateObserving;
@@ -25,10 +26,10 @@ class WebStateList;
 
 // Inits the requests with required parameters and the `delegate` to receive the
 // success/failure state of the request.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                        webStateList:(WebStateList*)webStateList
-                      resultDelegate:
-                          (id<FullCardRequestResultDelegateObserving>)delegate;
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                   webStateList:(WebStateList*)webStateList
+                 resultDelegate:
+                     (id<FullCardRequestResultDelegateObserving>)delegate;
 
 // Executes the request, putting up a CVC input requester then unlocking a
 // server side credit card if the CVC is correct. The delegate will receive the

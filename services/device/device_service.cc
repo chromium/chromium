@@ -11,15 +11,12 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/device/binder_overrides.h"
-#include "services/device/compute_pressure/pressure_manager_impl.h"
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/sensor_provider_impl.h"
-#include "services/device/geolocation/geolocation_config.h"
 #include "services/device/geolocation/geolocation_context.h"
 #include "services/device/geolocation/public_ip_address_geolocator.h"
 #include "services/device/geolocation/public_ip_address_location_notifier.h"
@@ -30,7 +27,6 @@
 #include "services/device/vibration/vibration_manager_impl.h"
 #include "services/device/wake_lock/wake_lock_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "ui/gfx/native_widget_types.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
@@ -43,44 +39,13 @@
 #include "services/device/hid/hid_manager_impl.h"
 #endif
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
+#include "services/device/compute_pressure/pressure_manager_impl.h"
+#endif
+
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV)
 #include "services/device/hid/input_service_linux.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
-namespace {
-
-#if !BUILDFLAG(IS_ANDROID)
-constexpr bool IsLaCrOS() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return true;
-#else
-  return false;
-#endif
-}
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-void BindLaCrOSHidManager(
-    mojo::PendingReceiver<device::mojom::HidManager> receiver) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LaCrOS does not have direct access to the permission_broker service over
-  // D-Bus. Use the HidManager interface from ash-chrome instead.
-  auto* lacros_service = chromeos::LacrosService::Get();
-  DCHECK(lacros_service);
-  // If the Hid manager is not available, then the pending receiver is deleted.
-  if (lacros_service->IsAvailable<device::mojom::HidManager>()) {
-    lacros_service->GetRemote<device::mojom::HidManager>()->AddReceiver(
-        std::move(receiver));
-  }
-#endif
-}
-#endif
-
-}  // namespace
 
 namespace device {
 
@@ -127,23 +92,23 @@ DeviceService::DeviceService(
   // On other platforms it must be allowed to do blocking IO.
   auto serial_port_manager_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 #endif
   serial_port_manager_.emplace(
       std::move(serial_port_manager_task_runner), io_task_runner_,
       base::SingleThreadTaskRunner::GetCurrentDefault());
 #endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS_TVOS)
   // Ensure that the battery backend is initialized now; otherwise it may end up
   // getting initialized on access during destruction, when it's no longer safe
   // to initialize.
   device::BatteryStatusService::GetInstance();
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS_TVOS)
 }
 
 DeviceService::~DeviceService() {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS_TVOS)
   // NOTE: We don't call this on Chrome OS due to https://crbug.com/856771, as
   // Shutdown() implicitly depends on DBusThreadManager, which may already be
   // destroyed by the time DeviceService is destroyed. Fortunately on Chrome OS
@@ -169,11 +134,13 @@ void DeviceService::OverrideGeolocationContextBinderForTesting(
   internal::GetGeolocationContextBinderOverride() = std::move(binder);
 }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 // static
 void DeviceService::OverridePressureManagerBinderForTesting(
     PressureManagerBinder binder) {
   internal::GetPressureManagerBinderOverride() = std::move(binder);
 }
+#endif
 
 // static
 void DeviceService::OverrideTimeZoneMonitorBinderForTesting(
@@ -181,15 +148,22 @@ void DeviceService::OverrideTimeZoneMonitorBinderForTesting(
   internal::GetTimeZoneMonitorBinderOverride() = std::move(binder);
 }
 
+// static
+void DeviceService::OverrideUsbDeviceManagerBinderForTesting(
+    UsbDeviceManagerBinder binder) {
+  internal::GetUsbDeviceManagerBinderOverride() = std::move(binder);
+}
+
 void DeviceService::BindBatteryMonitor(
     mojo::PendingReceiver<mojom::BatteryMonitor> receiver) {
 #if BUILDFLAG(IS_ANDROID)
   GetJavaInterfaceProvider()->GetInterface(std::move(receiver));
-#else
+#elif !BUILDFLAG(IS_IOS_TVOS)
   BatteryMonitorImpl::Create(std::move(receiver));
 #endif
 }
 
+#if BUILDFLAG(ENABLE_COMPUTE_PRESSURE)
 void DeviceService::BindPressureManager(
     mojo::PendingReceiver<mojom::PressureManager> receiver) {
   const auto& binder_override = internal::GetPressureManagerBinderOverride();
@@ -202,6 +176,7 @@ void DeviceService::BindPressureManager(
     pressure_manager_ = PressureManagerImpl::Create();
   pressure_manager_->Bind(std::move(receiver));
 }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
 // static
@@ -233,17 +208,14 @@ void DeviceService::BindVibrationManager(
 #if !BUILDFLAG(IS_ANDROID)
 void DeviceService::BindHidManager(
     mojo::PendingReceiver<mojom::HidManager> receiver) {
-  if (IsLaCrOS() && !HidManagerImpl::IsHidServiceTesting()) {
-    BindLaCrOSHidManager(std::move(receiver));
-  } else {
-    if (!hid_manager_)
-      hid_manager_ = std::make_unique<HidManagerImpl>();
-    hid_manager_->AddReceiver(std::move(receiver));
+  if (!hid_manager_) {
+    hid_manager_ = std::make_unique<HidManagerImpl>();
   }
+  hid_manager_->AddReceiver(std::move(receiver));
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void DeviceService::BindMtpManager(
     mojo::PendingReceiver<mojom::MtpManager> receiver) {
   if (!mtp_device_manager_)
@@ -264,11 +236,6 @@ void DeviceService::BindInputDeviceManager(
 void DeviceService::BindFingerprint(
     mojo::PendingReceiver<mojom::Fingerprint> receiver) {
   Fingerprint::Create(std::move(receiver));
-}
-
-void DeviceService::BindGeolocationConfig(
-    mojo::PendingReceiver<mojom::GeolocationConfig> receiver) {
-  GeolocationConfig::Create(std::move(receiver));
 }
 
 void DeviceService::BindGeolocationContext(
@@ -343,7 +310,7 @@ void DeviceService::BindSerialPortManager(
   serial_port_manager_.AsyncCall(&SerialPortManagerImpl::Bind, FROM_HERE)
       .WithArgs(std::move(receiver));
 #else   // defined(IS_SERIAL_ENABLED_PLATFORM)
-  NOTREACHED_IN_MIGRATION() << "Serial devices not supported on this platform.";
+  NOTREACHED() << "Serial devices not supported on this platform.";
 #endif  // defined(IS_SERIAL_ENABLED_PLATFORM)
 }
 
@@ -367,6 +334,12 @@ void DeviceService::BindWakeLockProvider(
 
 void DeviceService::BindUsbDeviceManager(
     mojo::PendingReceiver<mojom::UsbDeviceManager> receiver) {
+  const auto& binder_override = internal::GetUsbDeviceManagerBinderOverride();
+  if (binder_override) {
+    binder_override.Run(std::move(receiver));
+    return;
+  }
+
   // TODO(crbug.com/40141825): usb::DeviceManagerImpl depends on the
   // permission_broker service on Chromium OS. We will need to redirect
   // connections for LaCrOS here.
@@ -411,3 +384,7 @@ service_manager::InterfaceProvider* DeviceService::GetJavaInterfaceProvider() {
 #endif
 
 }  // namespace device
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(InterfaceRegistrar)
+#endif

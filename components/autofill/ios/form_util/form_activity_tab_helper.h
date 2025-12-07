@@ -5,19 +5,29 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_ACTIVITY_TAB_HELPER_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_FORM_ACTIVITY_TAB_HELPER_H_
 
-#include "base/observer_list.h"
-#include "base/values.h"
-#include "ios/web/public/web_state_observer.h"
+#import "base/observer_list.h"
+#import "base/values.h"
+#import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
 class ScriptMessage;
 class WebState;
+enum class ContentWorld;
 }  // namespace web
 
 namespace autofill {
 
 class FormActivityObserver;
+
+inline constexpr char kProgrammaticFormSubmissionHistogram[] =
+    "Autofill.iOS.FormSubmission.IsProgrammatic";
+
+inline constexpr char kFormSubmissionOutcomeHistogram[] =
+    "Autofill.iOS.FormSubmission.OutcomeV2";
+
+inline constexpr char kInvalidSubmittedFormReasonHistogram[] =
+    "Autofill.iOS.FormSubmission.Outcome.InvalidFormReason";
 
 // Processes user activity messages for web page forms and forwards the form
 // activity event to FormActivityObserver.
@@ -64,8 +74,6 @@ class FormActivityTabHelper
 
   // The observers.
   base::ObserverList<FormActivityObserver>::Unchecked observers_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 }  // namespace autofill

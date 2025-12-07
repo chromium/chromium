@@ -47,7 +47,7 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
   void AddReport(const GURL& url) {
     cache()->AddReport(std::nullopt, NetworkAnonymizationKey(), url,
                        kUserAgent_, kGroup_, kType_, base::Value::Dict(), 0,
-                       tick_clock()->NowTicks(), 0,
+                       tick_clock()->NowTicks(),
                        ReportingTargetType::kDeveloper);
   }
 
@@ -139,7 +139,7 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeReports) {
   SetEndpoint(kOrigin2_);
 
   RemoveBrowsingData(/* remove_reports= */ true, /* remove_clients= */ false,
-                     /* host= */ kUrl1_.host());
+                     /* host= */ kUrl1_.GetHost());
   EXPECT_EQ(2u, cache()->GetEndpointCount());
 
   std::vector<raw_ptr<const ReportingReport, VectorExperimental>> reports;
@@ -156,7 +156,7 @@ TEST_F(ReportingBrowsingDataRemoverTest, RemoveSomeClients) {
   SetEndpoint(kOrigin2_);
 
   RemoveBrowsingData(/* remove_reports= */ false, /* remove_clients= */ true,
-                     /* host= */ kUrl1_.host());
+                     /* host= */ kUrl1_.GetHost());
   EXPECT_EQ(2u, report_count());
   EXPECT_FALSE(FindEndpointInCache(
       ReportingEndpointGroupKey(NetworkAnonymizationKey(), kOrigin1_, kGroup_,

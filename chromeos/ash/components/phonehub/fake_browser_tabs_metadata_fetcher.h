@@ -8,11 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 
-namespace ash {
-
-struct ForeignSyncedSessionAsh;
-
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
  public:
@@ -23,11 +19,6 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
   void Fetch(
       const sync_sessions::SyncedSession* session,
       base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
-  void FetchForeignSyncedPhoneSessionMetadata(
-      const ForeignSyncedSessionAsh& session,
-      SyncedSessionClientAsh* synced_session_client_ash,
-      base::OnceCallback<void(BrowserTabsMetadataResponse)> callback) override;
-
   void RespondToCurrentFetchAttempt(
       const BrowserTabsMetadataResponse& response);
 
@@ -35,15 +26,11 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
 
   const sync_sessions::SyncedSession* GetSession() const;
 
-  const ash::ForeignSyncedSessionAsh* GetForeignSyncedSession() const;
-
  private:
   raw_ptr<const sync_sessions::SyncedSession, DanglingUntriaged> session_;
-  raw_ptr<const ForeignSyncedSessionAsh> foreign_synced_session_;
   base::OnceCallback<void(BrowserTabsMetadataResponse)> callback_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_BROWSER_TABS_METADATA_FETCHER_H_

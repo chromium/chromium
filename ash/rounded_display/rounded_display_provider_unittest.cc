@@ -44,7 +44,7 @@ auto GutterWithMatchingCorners(Matchers&&... positions) {
       [](const RoundedDisplayGutter* gutter) {
         std::vector<RoundedCornerPosition> positions;
         const std::vector<RoundedCorner>& corners = gutter->GetGutterCorners();
-        base::ranges::transform(
+        std::ranges::transform(
             corners.begin(), corners.end(), std::back_inserter(positions),
             [](const RoundedCorner& corner) { return corner.position(); });
         return positions;
@@ -168,7 +168,7 @@ TEST_P(RoundedDisplayProviderSurfaceUpdateTest,
   RoundedDisplayProviderTestApi test_api(provider_.get());
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
 
   auto display_id = primary_display.id();
 

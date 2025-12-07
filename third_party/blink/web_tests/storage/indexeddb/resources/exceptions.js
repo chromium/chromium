@@ -84,14 +84,14 @@ function testDatabase()
         debug("");
         debug("IDBDatabase.transaction()");
         debug('If this method is called on IDBDatabase object for which a "versionchange" transaction is still running, a InvalidStateError exception must be thrown.');
-        evalAndExpectException("db.transaction('store', 'readonly', {durability: 'relaxed'})", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+        evalAndExpectException("db.transaction('store', 'readonly')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
     };
 }
 
 function checkTransactionAndObjectStoreExceptions()
 {
     debug("One of the names provided in the storeNames argument doesn't exist in this database.");
-    evalAndExpectException("db.transaction('no-such-store', 'readonly', {durability: 'relaxed'})", "DOMException.NOT_FOUND_ERR", "'NotFoundError'");
+    evalAndExpectException("db.transaction('no-such-store', 'readonly')", "DOMException.NOT_FOUND_ERR", "'NotFoundError'");
     debug("The value for the mode parameter is invalid.");
     evalAndExpectExceptionClass("db.transaction('store', 'invalid-mode')", "TypeError");
     debug("The 'versionchange' value for the mode parameter can only be set internally during upgradeneeded.");
@@ -116,7 +116,7 @@ function prepareStoreAndIndex()
 {
     debug("");
     debug("Prepare an object store and index from an inactive transaction for later use.");
-    evalAndLog("finishedTransaction = inactiveTransaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+    evalAndLog("finishedTransaction = inactiveTransaction = db.transaction('store', 'readonly')");
     inactiveTransaction.onabort = unexpectedAbortCallback;
     evalAndLog("storeFromInactiveTransaction = inactiveTransaction.objectStore('store')");
     evalAndLog("indexFromInactiveTransaction = storeFromInactiveTransaction.index('index')");
@@ -132,9 +132,9 @@ function testObjectStore()
 {
     debug("");
     debug("3.2.5 Object Store");
-    evalAndLog("ro_transaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+    evalAndLog("ro_transaction = db.transaction('store', 'readonly')");
     evalAndLog("storeFromReadOnlyTransaction = ro_transaction.objectStore('store')");
-    evalAndLog("rw_transaction = db.transaction('store', 'readwrite', {durability: 'relaxed'})");
+    evalAndLog("rw_transaction = db.transaction('store', 'readwrite')");
     evalAndLog("store = rw_transaction.objectStore('store')");
 
     debug("");
@@ -185,7 +185,7 @@ function testObjectStore()
     debug("");
     debug("IDBObjectStore.getAll()");
     debug("If the key parameter is not a valid key or a key range, this method throws a DOMException of type DataError.");
-    evalAndExpectException("store.getAll({})", "0", "'DataError'");
+    evalAndExpectException('store.getAll({ query: {} })', '0', '\'DataError\'');
     debug("The transaction this IDBObjectStore belongs to is not active.");
     evalAndExpectException("storeFromInactiveTransaction.getAll(0)", "0", "'TransactionInactiveError'");
     // "Occurs if a request is made on a source object that has been deleted or removed." - covered in deleted-objects.html
@@ -193,7 +193,8 @@ function testObjectStore()
     debug("");
     debug("IDBObjectStore.getAllKeys()");
     debug("If the key parameter is not a valid key or a key range, this method throws a DOMException of type DataError.");
-    evalAndExpectException("store.getAllKeys({})", "0", "'DataError'");
+    evalAndExpectException(
+        'store.getAllKeys({ query: {} })', '0', '\'DataError\'');
     debug("The transaction this IDBObjectStore belongs to is not active.");
     evalAndExpectException("storeFromInactiveTransaction.getAllKeys(0)", "0", "'TransactionInactiveError'");
     // "Occurs if a request is made on a source object that has been deleted or removed." - covered in deleted-objects.html
@@ -285,12 +286,12 @@ function testOutsideVersionChangeTransaction() {
     debug("");
     debug("One more IDBObjectStore.createIndex() test:");
     debug('If this function is called from outside a "versionchange" transaction callback ... the implementation must throw a DOMException of type InvalidStateError.');
-    evalAndExpectException("db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store').createIndex('fail', 'keyPath')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("db.transaction('store', 'readonly').objectStore('store').createIndex('fail', 'keyPath')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
 
     debug("");
     debug("One more IDBObjectStore.deleteIndex() test:");
     debug('If this function is called from outside a "versionchange" transaction callback ... the implementation must throw a DOMException of type InvalidStateError.');
-    evalAndExpectException("db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store').deleteIndex('fail', 'keyPath')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
+    evalAndExpectException("db.transaction('store', 'readonly').objectStore('store').deleteIndex('fail', 'keyPath')", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
     testIndex();
 }
 
@@ -298,8 +299,8 @@ function testIndex()
 {
     debug("");
     debug("3.2.6 Index");
-    evalAndLog("indexFromReadOnlyTransaction = db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('store').index('index')");
-    evalAndLog("index = db.transaction('store', 'readwrite', {durability: 'relaxed'}).objectStore('store').index('index')");
+    evalAndLog("indexFromReadOnlyTransaction = db.transaction('store', 'readonly').objectStore('store').index('index')");
+    evalAndLog("index = db.transaction('store', 'readwrite').objectStore('store').index('index')");
 
     debug("");
     debug("IDBIndex.count()");
@@ -320,7 +321,7 @@ function testIndex()
     debug("");
     debug("IDBIndex.getAll()");
     debug("If the key parameter is not a valid key or a key range, this method throws a DOMException of type DataError.");
-    evalAndExpectException("index.getAll({})", "0", "'DataError'");
+    evalAndExpectException('index.getAll({ query: {} })', '0', '\'DataError\'');
     debug("The transaction this IDBIndex belongs to is not active.");
     evalAndExpectException("indexFromInactiveTransaction.getAll(0)", "0", "'TransactionInactiveError'");
     // "Occurs if a request is made on a source object that has been deleted or removed." - covered in deleted-objects.html
@@ -336,7 +337,8 @@ function testIndex()
     debug("");
     debug("IDBIndex.getAllKeys()");
     debug("If the key parameter is not a valid key or a key range, this method throws a DOMException of type DataError.");
-    evalAndExpectException("index.getAllKeys({})", "0", "'DataError'");
+    evalAndExpectException(
+        'index.getAllKeys({ query: {} })', '0', '\'DataError\'');
     debug("The transaction this IDBIndex belongs to is not active.");
     evalAndExpectException("indexFromInactiveTransaction.getAllKeys(0)", "0", "'TransactionInactiveError'");
     // "Occurs if a request is made on a source object that has been deleted or removed." - covered in deleted-objects.html
@@ -471,7 +473,7 @@ function testCursor()
 
     // Can't have both transactions running at once, so these tests must be separated out.
     function makeReadOnlyCursor() {
-        evalAndLog("readOnlyTransaction = db.transaction('store', 'readonly', {durability: 'relaxed'})");
+        evalAndLog("readOnlyTransaction = db.transaction('store', 'readonly')");
         evalAndLog("request = readOnlyTransaction.objectStore('store').openCursor()");
         request.onerror = unexpectedErrorCallback;
         request.onsuccess = function() {
@@ -505,7 +507,7 @@ function testTransaction()
     debug("If this transaction is finished, throw a DOMException of type InvalidStateError. ");
     evalAndExpectException("finishedTransaction.abort()", "DOMException.INVALID_STATE_ERR", "'InvalidStateError'");
     debug("If the requested object store is not in this transaction's scope.");
-    evalAndExpectException("db.transaction('store', 'readonly', {durability: 'relaxed'}).objectStore('otherStore')", "DOMException.NOT_FOUND_ERR", "'NotFoundError'");
+    evalAndExpectException("db.transaction('store', 'readonly').objectStore('otherStore')", "DOMException.NOT_FOUND_ERR", "'NotFoundError'");
 
     finishJSTest();
 }

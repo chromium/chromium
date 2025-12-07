@@ -13,7 +13,10 @@ namespace web_app {
 
 class AllAppsLock;
 
-// Clears the browsing data for web app, given the inclusive time range.
+// Clears web app specific browsing data from the web app system for a given
+// time range. This includes last launch times, last badging times, and seen
+// manifest URLs. This is used as part of the general browsing data clearing
+// mechanism in Chrome.
 void ClearWebAppBrowsingData(const base::Time& begin_time,
                              const base::Time& end_time,
                              AllAppsLock& lock,

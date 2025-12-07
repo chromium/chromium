@@ -11,7 +11,8 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
 import {OnboardingWpDisableCompletePage} from 'chrome://shimless-rma/onboarding_wp_disable_complete_page.js';
-import {StateResult, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import type {StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -71,7 +72,7 @@ suite('onboardingWpDisableCompletePageTest', function() {
     assert(component);
     let actionComponent =
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
-    assertEquals('', actionComponent.textContent!.trim());
+    assertEquals('', actionComponent.textContent.trim());
 
     await resetPageWithAction(
         WriteProtectDisableCompleteAction.kSkippedAssembleDevice);
@@ -79,7 +80,7 @@ suite('onboardingWpDisableCompletePageTest', function() {
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('wpDisableReassembleNowText'),
-        actionComponent.textContent!.trim());
+        actionComponent.textContent.trim());
 
     await resetPageWithAction(
         WriteProtectDisableCompleteAction.kCompleteAssembleDevice);
@@ -87,7 +88,7 @@ suite('onboardingWpDisableCompletePageTest', function() {
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('wpDisableReassembleNowText'),
-        actionComponent.textContent!.trim());
+        actionComponent.textContent.trim());
 
     await resetPageWithAction(
         WriteProtectDisableCompleteAction.kCompleteKeepDeviceOpen);
@@ -95,12 +96,12 @@ suite('onboardingWpDisableCompletePageTest', function() {
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('wpDisableLeaveDisassembledText'),
-        actionComponent.textContent!.trim());
+        actionComponent.textContent.trim());
 
     await resetPageWithAction(WriteProtectDisableCompleteAction.kCompleteNoOp);
     actionComponent =
         strictQuery(actionSelector, component.shadowRoot, HTMLElement);
-    assertEquals('', actionComponent.textContent!.trim());
+    assertEquals('', actionComponent.textContent.trim());
   });
 
   // Verify clicking the next button confirms the wp disable is complete.

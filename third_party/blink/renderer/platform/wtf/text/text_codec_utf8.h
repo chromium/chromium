@@ -31,70 +31,58 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 
-namespace WTF {
+namespace blink {
 
-class TextCodecUTF8 : public TextCodec {
+class TextCodecUtf8 : public TextCodec {
  public:
   static void RegisterEncodingNames(EncodingNameRegistrar);
   static void RegisterCodecs(TextCodecRegistrar);
 
  protected:
-  TextCodecUTF8() : partial_sequence_size_(0) {}
+  TextCodecUtf8() : partial_sequence_size_(0) {}
 
  private:
-  static std::unique_ptr<TextCodec> Create(const TextEncoding&, const void*);
+  static std::unique_ptr<TextCodec> Create(const TextEncoding&);
 
-  String Decode(const char*,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> data,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  std::string Encode(const UChar*,
-                     wtf_size_t length,
-                     UnencodableHandling) override;
-  std::string Encode(const LChar*,
-                     wtf_size_t length,
-                     UnencodableHandling) override;
+  std::string Encode(base::span<const UChar>, UnencodableHandling) override;
+  std::string Encode(base::span<const LChar>, UnencodableHandling) override;
 
   // See comment above TextCodec::EncodeInto for more information.
   // This implementation writes as many code points to |destination| as will
   // fit, while never writing partial code points. If EncodeIntoResult's
   // |bytes_written| member is less than |capacity|, the remaining
   // |capacity| - |bytes_written| bytes remain untouched.
-  EncodeIntoResult EncodeInto(const UChar*,
-                              wtf_size_t length,
-                              unsigned char* destination,
-                              size_t capacity) override;
-  EncodeIntoResult EncodeInto(const LChar*,
-                              wtf_size_t length,
-                              unsigned char* destination,
-                              size_t capacity) override;
+  EncodeIntoResult EncodeInto(base::span<const UChar>,
+                              base::span<uint8_t> destination) override;
+  EncodeIntoResult EncodeInto(base::span<const LChar>,
+                              base::span<uint8_t> destination) override;
 
   template <typename CharType>
-  std::string EncodeCommon(const CharType* characters, wtf_size_t length);
+  std::string EncodeCommon(base::span<const CharType> characters);
   template <typename CharType>
-  EncodeIntoResult EncodeIntoCommon(const CharType* characters,
-                                    wtf_size_t length,
-                                    unsigned char* destination,
-                                    size_t capacity);
+  EncodeIntoResult EncodeIntoCommon(base::span<const CharType> characters,
+                                    base::span<uint8_t> destination);
 
   template <typename CharType>
-  bool HandlePartialSequence(CharType*& destination,
-                             const uint8_t*& source,
-                             const uint8_t* end,
+  bool HandlePartialSequence(base::span<CharType>& destination,
+                             base::span<const uint8_t>& source,
                              bool flush,
                              bool stop_on_error,
                              bool& saw_error);
   void HandleError(int character,
-                   UChar*& destination,
+                   base::span<UChar>& destination,
                    bool stop_on_error,
                    bool& saw_error);
-  void ConsumePartialSequenceBytes(int num_bytes);
+  void ConsumePartialSequenceBytes(size_t num_bytes);
 
-  int partial_sequence_size_;
-  uint8_t partial_sequence_[U8_MAX_LENGTH];
+  std::array<uint8_t, U8_MAX_LENGTH> partial_sequence_;
+  size_t partial_sequence_size_ = 0;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_UTF8_H_

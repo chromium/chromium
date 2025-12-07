@@ -347,7 +347,7 @@ class NigoriSyncBridgeImplTest : public testing::Test {
     storage_ = storage.get();
     ON_CALL(*storage, StoreData)
         .WillByDefault(testing::SaveArg<0>(&nigori_local_data_));
-    if (nigori_local_data_.ByteSize() != 0) {
+    if (nigori_local_data_.ByteSizeLong() != 0U) {
       // Return local data only if it's populated and non-empty. Otherwise,
       // return default nullopt.
       ON_CALL(*storage, RestoreData).WillByDefault(Return(nigori_local_data_));
@@ -379,7 +379,7 @@ class NigoriSyncBridgeImplTest : public testing::Test {
   sync_pb::NigoriLocalData nigori_local_data_;
   testing::NiceMock<MockNigoriLocalChangeProcessor> processor_;
   std::unique_ptr<NigoriSyncBridgeImpl> bridge_;
-  // Ownership transferred to |bridge_|.
+  // Ownership transferred to `bridge_`.
   raw_ptr<testing::NiceMock<MockNigoriStorage>> storage_ = nullptr;
   testing::NiceMock<MockObserver> observer_;
 };
@@ -587,9 +587,9 @@ TEST_F(NigoriSyncBridgeImplTest,
 // backward compatible mode.
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldAcceptOldKeysFromBackwardCompatibleKeystoreNigori) {
-  // |kOldKeyParams| is needed to ensure we was able to decrypt
+  // `kOldKeyParams` is needed to ensure we was able to decrypt
   // encryption_keybag - there is no way to add key derived from
-  // |kOldKeyParams| to cryptographer without decrypting encryption_keybag.
+  // `kOldKeyParams` to cryptographer without decrypting encryption_keybag.
   const KeyParamsForTesting kOldKeyParams =
       Pbkdf2PassphraseKeyParamsForTesting("old_key");
   const KeyParamsForTesting kCurrentKeyParams =
@@ -647,7 +647,7 @@ TEST_F(NigoriSyncBridgeImplTest,
 }
 
 // Tests that upon receiving Nigori corrupted due to absence of
-// |encryption_keybag|, bridge respect its passphrase type and doesn't attempt
+// `encryption_keybag`, bridge respect its passphrase type and doesn't attempt
 // to trigger keystore initialization.
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldNotTriggerKeystoreInitializationForCorruptedCustomPassphrase) {
@@ -663,7 +663,7 @@ TEST_F(NigoriSyncBridgeImplTest,
 
   // There should be no commits.
   EXPECT_CALL(*processor(), Put).Times(0);
-  // Model error should be reported, because there is no |encryption_keybag|.
+  // Model error should be reported, because there is no `encryption_keybag`.
   EXPECT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
               Ne(std::nullopt));
 }
@@ -687,18 +687,18 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldRotateKeystoreKey) {
   const KeyParamsForTesting kKeystoreKeyParams2 =
       KeystoreKeyParamsForTesting(kRawKeystoreKey2);
   // Emulate server and client behavior: server sends both keystore keys and
-  // |not_rotated_specifics| with changed metadata. Client have already seen
+  // `not_rotated_specifics` with changed metadata. Client have already seen
   // this specifics, but should pass it to the bridge, because bridge also
-  // issues a commit, which conflicts with |not_rotated_specifics|.
+  // issues a commit, which conflicts with `not_rotated_specifics`.
 
   // Ensure bridge issues a commit right after SetKeystoreKeys() call, because
   // otherwise there is no conflict and ApplyIncrementalSyncChanges() will be
-  // called with empty |data|.
+  // called with empty `data`.
   EXPECT_CALL(*processor(), Put(HasKeystoreNigori()));
   EXPECT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey1, kRawKeystoreKey2}));
 
   // Populate new remote specifics to bridge, which is actually still
-  // |not_rotated_specifics|.
+  // `not_rotated_specifics`.
   EntityData new_entity_data;
   *new_entity_data.specifics.mutable_nigori() = not_rotated_specifics;
   EXPECT_CALL(*processor(), Put(HasKeystoreNigori()));
@@ -718,7 +718,7 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldRotateKeystoreKey) {
 }
 
 // This test emulates late arrival of keystore keys, so neither
-// |keystore_decryptor_token| or |encryption_keybag| could be decrypted at the
+// `keystore_decryptor_token` or `encryption_keybag` could be decrypted at the
 // moment NigoriSpecifics arrived. They should be decrypted right after
 // keystore keys arrival.
 TEST_F(NigoriSyncBridgeImplTest, ShouldDecryptPendingKeysInKeystoreMode) {
@@ -752,12 +752,12 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldDecryptPendingKeysInKeystoreMode) {
 }
 
 // This test emulates late arrival of keystore keys in backward-compatible
-// keystore mode, so neither |keystore_decryptor_token| or |encryption_keybag|
+// keystore mode, so neither `keystore_decryptor_token` or `encryption_keybag`
 // could be decrypted at the moment NigoriSpecifics arrived. Since default key
 // is derived from legacy implicit passphrase, pending keys should be decrypted
 // once passphrase passed to SetExplicitPassphraseDecryptionKey().
 // SetKeystoreKeys() intentionally not called in this test, to not allow
-// decryption with |keystore_decryptor_token|.
+// decryption with `keystore_decryptor_token`.
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldDecryptPendingKeysWithPassphraseInKeystoreMode) {
   const KeyParamsForTesting kKeystoreKeyParams =
@@ -791,7 +791,7 @@ TEST_F(NigoriSyncBridgeImplTest,
 }
 
 // Tests that bridge is able to decrypt keystore nigori, when
-// |keystore_decryptor_token| is corrupted, but |encryption_keybag| is
+// `keystore_decryptor_token` is corrupted, but `encryption_keybag` is
 // decryptable using keystore keys.
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldDecryptKeystoreNigoriWithCorruptedKeystoreDecryptor) {
@@ -799,7 +799,7 @@ TEST_F(NigoriSyncBridgeImplTest,
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
 
   EntityData entity_data;
-  // |keystore_decryptor_token| will be undecryptable.
+  // `keystore_decryptor_token` will be undecryptable.
   *entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
       /*keybag_keys_params=*/{kKeystoreKeyParams},
       /*keystore_decryptor_params=*/kKeystoreKeyParams,
@@ -817,9 +817,9 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_FALSE(bridge()->NeedKeystoreKey());
 }
 
-// Tests that unsuccessful attempt of |pending_keys| decryption ends up in
+// Tests that unsuccessful attempt of `pending_keys` decryption ends up in
 // additional OnPassphraseRequired() call. This is allowed because of possible
-// change of |pending_keys| in keystore mode or due to transition from keystore
+// change of `pending_keys` in keystore mode or due to transition from keystore
 // to custom passphrase.
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldNotifyWhenDecryptionWithPassphraseFailed) {
@@ -963,8 +963,8 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldFailOnUnknownPassprase) {
 }
 
 // Test emulates remote update in custom passphrase mode, which contains
-// |encryption_keybag| encrypted with known key, but without this key inside
-// the |encryption_keybag|. This is a protocol violation and bridge should
+// `encryption_keybag` encrypted with known key, but without this key inside
+// the `encryption_keybag`. This is a protocol violation and bridge should
 // return ModelError on such updates.
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldFailOnCustomPassphraseUpdateWithMissingKeybagDecryptionKey) {
@@ -982,9 +982,9 @@ TEST_F(NigoriSyncBridgeImplTest,
   bridge()->SetExplicitPassphraseDecryptionKey(
       MakeNigoriKey(kPassphraseKeyParams));
 
-  // Emulate |encryption_keybag| corruption: it will contain only key derived
-  // from |kOldKeyParams|, but will be encrypted with key derived from
-  // |kPassphraseKeyParams|.
+  // Emulate `encryption_keybag` corruption: it will contain only key derived
+  // from `kOldKeyParams`, but will be encrypted with key derived from
+  // `kPassphraseKeyParams`.
   std::unique_ptr<CryptographerImpl> passphrase_cryptographer =
       CryptographerImpl::FromSingleKeyForTesting(
           kPassphraseKeyParams.password,
@@ -1008,8 +1008,8 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldFailOnInvalidKeystoreDecryption) {
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
 
-  // Don't populate |kKeystoreKeyParams| in |keybag_keys_params|, so encryption
-  // keybag isn't valid. Put fake key params in |keybag_keys_params|, because
+  // Don't populate `kKeystoreKeyParams` in `keybag_keys_params`, so encryption
+  // keybag isn't valid. Put fake key params in `keybag_keys_params`, because
   // they must be non-empty.
   EntityData entity_data;
   *entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
@@ -1074,20 +1074,20 @@ TEST_F(NigoriSyncBridgeImplTest,
   // Encryption should succeed since a default key exists.
   CrossUserSharingPublicPrivateKeyPair peer_key_pair =
       CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
-  ASSERT_TRUE(cryptographer()
-                  ->AuthEncryptForCrossUserSharing(
-                      base::as_bytes(base::make_span("hello world")),
-                      peer_key_pair.GetRawPublicKey())
-                  .has_value());
+  ASSERT_TRUE(
+      cryptographer()
+          ->AuthEncryptForCrossUserSharing(base::as_byte_span("hello world"),
+                                           peer_key_pair.GetRawPublicKey())
+          .has_value());
 
   EXPECT_CALL(*storage(), ClearData);
   bridge()->ApplyDisableSyncChanges();
   EXPECT_FALSE(cryptographer()->CanEncrypt());
-  EXPECT_FALSE(cryptographer()
-                   ->AuthEncryptForCrossUserSharing(
-                       base::as_bytes(base::make_span("hello world")),
-                       peer_key_pair.GetRawPublicKey())
-                   .has_value());
+  EXPECT_FALSE(
+      cryptographer()
+          ->AuthEncryptForCrossUserSharing(base::as_byte_span("hello world"),
+                                           peer_key_pair.GetRawPublicKey())
+          .has_value());
 }
 
 // Tests decryption logic for explicit passphrase. In order to check that we're
@@ -1126,6 +1126,46 @@ TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
   EXPECT_THAT(*cryptographer(), CanDecryptWith(passphrase_key_params));
   EXPECT_THAT(*cryptographer(),
               HasDefaultKeyDerivedFrom(passphrase_key_params));
+}
+
+TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
+       ShouldRestoreNotDecryptedCustomPassphraseNigori) {
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(GetCustomPassphraseKeyParams());
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_THAT(bridge()->GetPassphraseType(),
+              Eq(PassphraseType::kCustomPassphrase));
+  EXPECT_FALSE(cryptographer()->CanEncrypt());
+
+  EXPECT_CALL(*observer(), OnPassphraseAccepted());
+  bridge()->SetExplicitPassphraseDecryptionKey(
+      MakeNigoriKey(GetCustomPassphraseKeyParams()));
+  EXPECT_TRUE(cryptographer()->CanEncrypt());
+  EXPECT_THAT(*cryptographer(),
+              HasDefaultKeyDerivedFrom(GetCustomPassphraseKeyParams()));
+}
+
+TEST_P(NigoriSyncBridgeImplTestWithOptionalScryptDerivation,
+       ShouldRestoreDecryptedCustomPassphraseNigori) {
+  EntityData entity_data;
+  *entity_data.specifics.mutable_nigori() =
+      BuildCustomPassphraseNigoriSpecifics(GetCustomPassphraseKeyParams());
+  ASSERT_TRUE(bridge()->SetKeystoreKeys({kRawKeystoreKey}));
+  ASSERT_THAT(bridge()->MergeFullSyncData(std::move(entity_data)),
+              Eq(std::nullopt));
+
+  bridge()->SetExplicitPassphraseDecryptionKey(
+      MakeNigoriKey(GetCustomPassphraseKeyParams()));
+
+  MimicRestartWithLocalData(nigori_local_data());
+  EXPECT_TRUE(cryptographer()->CanEncrypt());
+  EXPECT_THAT(*cryptographer(),
+              HasDefaultKeyDerivedFrom(GetCustomPassphraseKeyParams()));
 }
 
 INSTANTIATE_TEST_SUITE_P(Scrypt,
@@ -1221,7 +1261,7 @@ TEST_F(NigoriSyncBridgeImplTest,
   bridge()->SetKeystoreKeys({kRawKeystoreKey1, kRawKeystoreKey2});
 
   // Verify that custom passphrase is set on top of
-  // |rotated_keystore_entity_data|.
+  // `rotated_keystore_entity_data`.
   EXPECT_CALL(*processor(), Put(HasCustomPassphraseNigori()));
   EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(
                   std::move(rotated_keystore_entity_data)),
@@ -1645,7 +1685,7 @@ TEST_F(NigoriSyncBridgeImplTest,
 
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
-  // Don't populate kTrustedVaultKey into |new_entity_data|.
+  // Don't populate kTrustedVaultKey into `new_entity_data`.
   EntityData new_entity_data;
   *new_entity_data.specifics.mutable_nigori() = BuildKeystoreNigoriSpecifics(
       /*keybag_keys_params=*/{kKeystoreKeyParams},
@@ -1679,7 +1719,7 @@ TEST_F(NigoriSyncBridgeImplTest,
 
   const KeyParamsForTesting kCustomPassphraseKeyParams =
       Pbkdf2PassphraseKeyParamsForTesting("custom_passphrase");
-  // Don't populate kTrustedVaultKey into |new_entity_data|.
+  // Don't populate kTrustedVaultKey into `new_entity_data`.
   EntityData new_entity_data;
   *new_entity_data.specifics.mutable_nigori() =
       BuildCustomPassphraseNigoriSpecifics(kCustomPassphraseKeyParams);
@@ -1727,7 +1767,7 @@ TEST_F(NigoriSyncBridgeImplTest,
   // Mimic invalid remote update with custom passphrase.
   const KeyParamsForTesting kCustomPassphraseKeyParams =
       Pbkdf2PassphraseKeyParamsForTesting("custom_passphrase");
-  // Don't populate kTrustedVaultKeyParams into |new_entity_data|.
+  // Don't populate kTrustedVaultKeyParams into `new_entity_data`.
   EntityData new_entity_data;
   *new_entity_data.specifics.mutable_nigori() =
       BuildCustomPassphraseNigoriSpecifics(kCustomPassphraseKeyParams);
@@ -1762,7 +1802,7 @@ TEST_F(NigoriSyncBridgeImplTest,
               Eq(PassphraseType::kTrustedVaultPassphrase));
   ASSERT_TRUE(bridge()->HasPendingKeysForTesting());
 
-  // Note that |kTrustedVaultKey2| was not part of Nigori specifics.
+  // Note that `kTrustedVaultKey2` was not part of Nigori specifics.
   bridge()->AddTrustedVaultDecryptionKeys(
       {kTrustedVaultKey1, kTrustedVaultKey2});
   ASSERT_FALSE(bridge()->HasPendingKeysForTesting());
@@ -1910,8 +1950,6 @@ TEST_F(NigoriSyncBridgeImplTest,
 // Tests that the initial built keystore Nigori, includes initialized
 // Public-private key-pairs.
 TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
-  base::HistogramTester histogram_tester;
-
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
 
@@ -1944,14 +1982,10 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeystoreNigoriWithKeyPair) {
               HasPublicKeyVersionAndValue(0, key_value));
 
   EXPECT_THAT(bridge()->GetKeystoreMigrationTime(), Not(NullTime()));
-  histogram_tester.ExpectUniqueSample(
-      "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", true, 1);
 }
 
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldFailOnDifferentKeyInitializingKeystoreNigoriWithKeyPair) {
-  base::HistogramTester histogram_tester;
-
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
 
@@ -1983,15 +2017,11 @@ TEST_F(NigoriSyncBridgeImplTest,
               Eq(std::nullopt));
   EXPECT_THAT(bridge()->GetDataForDebugging(), Not(HasKeystoreNigori()));
   EXPECT_THAT(bridge()->GetDataForDebugging(), Not(HasPublicKeyVersion(0)));
-  histogram_tester.ExpectUniqueSample(
-      "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
 }
 
 // Tests that an existing Nigori will be initialized with Public-private
 // key-pairs.
 TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
-  base::HistogramTester histogram_tester;
-
   // Perform initial sync with simple keystore Nigori without key pair.
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
@@ -2019,14 +2049,10 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldInitKeyPairForExistingNigori) {
   // bridge.
   EXPECT_THAT(bridge()->GetDataForDebugging(),
               HasPublicKeyVersionAndValue(0, key_value));
-  histogram_tester.ExpectUniqueSample(
-      "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", true, 1);
 }
 
 TEST_F(NigoriSyncBridgeImplTest,
        ShouldFailOnDifferentNigoriKeyInitializingKeyPairForExistingNigori) {
-  base::HistogramTester histogram_tester;
-
   // Perform initial sync with simple keystore Nigori without key pair.
   const KeyParamsForTesting kKeystoreKeyParams =
       KeystoreKeyParamsForTesting(kRawKeystoreKey);
@@ -2052,8 +2078,6 @@ TEST_F(NigoriSyncBridgeImplTest,
   // passphrase Nigori. Bridge should not attempt to commit cross user sharing
   // key anymore, because it can't decrypt the custom passphrase Nigori yet.
   EXPECT_THAT(bridge()->GetDataForCommit(), Not(HasPublicKeyVersion(0)));
-  histogram_tester.ExpectUniqueSample(
-      "Sync.CrossUserSharingPublicPrivateKeyInitSuccess", false, 1);
 }
 
 TEST_F(NigoriSyncBridgeImplTest, ShouldRegenerateKeyPairIfCorrupted) {
@@ -2083,11 +2107,6 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldRegenerateKeyPairIfCorrupted) {
   // Verify that local state wasn't dropped.
   ASSERT_THAT(bridge()->GetDataForDebugging(), HasKeystoreNigori());
 
-  // Verify that the key pair is corrupted.
-  histogram_tester.ExpectUniqueSample("Sync.CrossUserSharingKeyPairState",
-                                      /*kCorruptedKeyPair*/ 3,
-                                      /*expected_bucket_count=*/1);
-
   // Mimic commit completion.
   EXPECT_THAT(bridge()->ApplyIncrementalSyncChanges(std::nullopt),
               Eq(std::nullopt));
@@ -2108,7 +2127,7 @@ TEST_F(NigoriSyncBridgeImplTest, ShouldIgnoreLocalDataWithoutInitialSyncDone) {
   ASSERT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
 
   sync_pb::NigoriLocalData local_data = nigori_local_data();
-  // Mimic corrupted (empty) |initial_sync_state| field.
+  // Mimic corrupted (empty) `initial_sync_state` field.
   local_data.mutable_data_type_state()->clear_initial_sync_state();
 
   // Ensure that bridge ignores local state.
@@ -2165,6 +2184,35 @@ TEST_F(NigoriSyncBridgeImplTest,
   EXPECT_CALL(*processor(),
               ModelReadyToSync(NotNull(), IsEmptyMetadataBatch()));
   MimicRestartWithLocalData(local_data);
+  EXPECT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+}
+
+// Regression test for crbug.com/422542565: bridge should reset local data
+// if processor reports that it doesn't track metadata upon ModelReadyToSync(),
+// meaning that metadata is corrupted.
+TEST_F(NigoriSyncBridgeImplTest,
+       ShouldIgnoreLocalDataIfProcessorNotTrackingMetadata) {
+  // Prepare valid local data.
+  ASSERT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
+  sync_pb::NigoriLocalData local_data = nigori_local_data();
+  ASSERT_THAT(bridge()->GetPassphraseType(),
+              Eq(PassphraseType::kKeystorePassphrase));
+
+  // Mimic browser restart.
+  // Ensure that ModelReadyToSync() is called and mimic the scenario when the
+  // processor reports that it doesn't want to track the metadata indicating
+  // that metadata is corrupted.
+  EXPECT_CALL(
+      *processor(),
+      ModelReadyToSync(NotNull(),
+                       IsFakeNigoriMetadataBatchWithTokenAndSequenceNumber(
+                           "fake_token", 100)));
+  EXPECT_CALL(*processor(), IsTrackingMetadata()).WillOnce(Return(false));
+
+  // Ensure that bridge ignores local state.
+  MimicRestartWithLocalData(local_data);
+  EXPECT_THAT(bridge()->GetPassphraseType(),
+              Eq(PassphraseType::kImplicitPassphrase));
   EXPECT_TRUE(PerformInitialSyncWithSimpleKeystoreNigori());
 }
 

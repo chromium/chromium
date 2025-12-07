@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_count.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -22,8 +23,6 @@
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -47,25 +46,12 @@ using ::ash::memory::userspace_swap::UserspaceSwapConfig;
 constexpr base::TimeDelta kSwapDeviceAvailableSpaceCheckInterval =
     base::Seconds(30);
 base::TimeTicks g_last_swap_device_free_space_check;
-uint64_t g_swap_device_free_swap_bytes;
-
-// We must bind our mojo remote on the UI thread, this callback does that.
-void BindUserspaceSwapReceiverOnUIThread(
-    RenderProcessHostProxy proxy,
-    mojo::PendingReceiver<::userspace_swap::mojom::UserspaceSwap> receiver) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  content::RenderProcessHost* render_process_host = proxy.Get();
-  if (!render_process_host) {
-    return;
-  }
-
-  render_process_host->BindReceiver(std::move(receiver));
-}
+base::ByteCount g_swap_device_free_swap;
 
 // UserspaceSwapMechanismData contains process node specific details and
 // handles.
 class UserspaceSwapMechanismData
-    : public ExternalNodeAttachedDataImpl<UserspaceSwapMechanismData> {
+    : public NodeAttachedDataImpl<UserspaceSwapMechanismData> {
  public:
   explicit UserspaceSwapMechanismData(const ProcessNode* node) {}
   ~UserspaceSwapMechanismData() override = default;
@@ -75,45 +61,33 @@ class UserspaceSwapMechanismData
 
 void InitializeProcessNodeOnGraph(int render_process_host_id,
                                   base::ScopedFD uffd,
-                                  Region swap_area,
-                                  performance_manager::Graph* graph) {
+                                  Region swap_area) {
   // Now look up the ProcessNode so we can complete initialization.
-  DCHECK(graph);
   DCHECK(uffd.is_valid());
 
-  const ProcessNode* process_node = nullptr;
-  for (const ProcessNode* proc : graph->GetAllProcessNodes()) {
-    if (proc->GetRenderProcessHostId().GetUnsafeValue() ==
-        render_process_host_id) {
-      process_node = proc;
-      break;
-    }
-  }
-
+  base::WeakPtr<ProcessNode> process_node =
+      PerformanceManager::GetProcessNodeForRenderProcessHostId(
+          RenderProcessHostId(render_process_host_id));
   if (!process_node) {
     LOG(ERROR) << "Couldn't find process node for rphid: "
                << render_process_host_id;
     return;
   }
 
-  if (UserspaceSwapMechanismData::Destroy(process_node)) {
+  if (UserspaceSwapMechanismData::Destroy(process_node.get())) {
     LOG(ERROR) << "ProcessNode contained UserspaceSwapMechanismData";
     return;
   }
 
-  auto* data = UserspaceSwapMechanismData::GetOrCreate(process_node);
+  auto* data = UserspaceSwapMechanismData::GetOrCreate(process_node.get());
 
   // If all other setup has completed successfully, we can tell the renderer to
   // construct an implementation of userspace_swap::mojom::UserspaceSwap.
-  // The RenderProcessHostProxy is a WeakPtr that should only be accessed on the
-  // UI thread.
   mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote;
   const RenderProcessHostProxy& proxy =
       process_node->GetRenderProcessHostProxy();
-
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&BindUserspaceSwapReceiverOnUIThread, proxy,
-                                remote.InitWithNewPipeAndPassReceiver()));
+  content::RenderProcessHost* render_process_host = proxy.Get();
+  render_process_host->BindReceiver(remote.InitWithNewPipeAndPassReceiver());
 
   // Wrap up the received userfaultfd into a UserfaultFD instance.
   std::unique_ptr<UserfaultFD> userfaultfd =
@@ -133,7 +107,7 @@ void InitializeProcessNodeOnGraph(int render_process_host_id,
                    "creating swap file";
 
     // If we can't create a swap file, then we will bail freeing our resources.
-    UserspaceSwapMechanismData::Destroy(process_node);
+    UserspaceSwapMechanismData::Destroy(process_node.get());
 
     return;
   }
@@ -160,42 +134,43 @@ bool IsEligibleToSwap(const ProcessNode* process_node) {
   return data->swap_data->SwapAllowed();
 }
 
-uint64_t GetSwapDeviceFreeSpaceBytes() {
+base::ByteCount GetSwapDeviceFreeSpace() {
   auto now_ticks = base::TimeTicks::Now();
   if (now_ticks - g_last_swap_device_free_space_check >
       kSwapDeviceAvailableSpaceCheckInterval) {
     g_last_swap_device_free_space_check = now_ticks;
-    g_swap_device_free_swap_bytes = SwapFile::GetBackingStoreFreeSpaceKB()
-                                    << 10;  // convert to bytes.
+    g_swap_device_free_swap = base::KiB(SwapFile::GetBackingStoreFreeSpaceKB());
   }
 
-  return g_swap_device_free_swap_bytes;
+  return g_swap_device_free_swap;
 }
 
-uint64_t GetProcessNodeSwapFileUsageBytes(const ProcessNode* process_node) {
+base::ByteCount GetProcessNodeSwapFileUsage(const ProcessNode* process_node) {
   auto* data = UserspaceSwapMechanismData::Get(process_node);
   if (!data || !data->swap_data) {
-    return 0;
+    return base::ByteCount(0);
   }
 
-  return data->swap_data->SwapDiskspaceUsedBytes();
+  return base::ByteCount(data->swap_data->SwapDiskspaceUsedBytes());
 }
 
-uint64_t GetProcessNodeReclaimedBytes(const ProcessNode* process_node) {
+base::ByteCount GetProcessNodeReclaimedSpace(const ProcessNode* process_node) {
   auto* data = UserspaceSwapMechanismData::Get(process_node);
   if (!data || !data->swap_data) {
-    return 0;
+    return base::ByteCount(0);
   }
 
-  return data->swap_data->ReclaimedBytes();
+  return base::ByteCount(data->swap_data->ReclaimedBytes());
 }
 
-uint64_t GetTotalSwapFileUsageBytes() {
-  return ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed();
+base::ByteCount GetTotalSwapFileUsage() {
+  return base::ByteCount(
+      ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed());
 }
 
-uint64_t GetTotalReclaimedBytes() {
-  return ash::memory::userspace_swap::GetGlobalMemoryReclaimed();
+base::ByteCount GetTotalReclaimedSpace() {
+  return base::ByteCount(
+      ash::memory::userspace_swap::GetGlobalMemoryReclaimed());
 }
 
 void SwapProcessNode(const ProcessNode* process_node) {
@@ -218,27 +193,28 @@ void SwapProcessNode(const ProcessNode* process_node) {
 
   const auto& config = UserspaceSwapConfig::Get();
 
-  uint64_t swap_file_disk_space_used_bytes =
-      swap_data->SwapDiskspaceUsedBytes();
+  base::ByteCount swap_file_disk_space_used_bytes =
+      base::ByteCount::FromUnsigned(swap_data->SwapDiskspaceUsedBytes());
 
   // This renderer can only swap up to what's available in the global swap file
   // limit or what's available in it's own swap file limit.
-  int64_t available_swap_bytes =
-      std::min(config.maximum_swap_disk_space_bytes -
-                   ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed(),
-               config.renderer_maximum_disk_swap_file_size_bytes -
-                   swap_file_disk_space_used_bytes);
+  base::ByteCount available_swap = std::min(
+      base::ByteCount(
+          config.maximum_swap_disk_space_bytes -
+          ash::memory::userspace_swap::GetGlobalSwapDiskspaceUsed()),
+      base::ByteCount(config.renderer_maximum_disk_swap_file_size_bytes) -
+          swap_file_disk_space_used_bytes);
 
   // We have a configurable limit to the number of regions we will consider per
   // iteration and adjust based on how much disk space is actually
   // available for us which was calculated before.
   // Finally, we know how many regions this renderer is able to swap.
-  int64_t available_swap_regions = available_swap_bytes / kRegionSize;
-  int64_t total_regions_swapable =
+  int64_t available_swap_regions = available_swap.InBytes() / kRegionSize;
+  int64_t total_regions_swappable =
       std::min(static_cast<int64_t>(config.renderer_region_limit_per_swap),
                available_swap_regions);
 
-  if (total_regions_swapable <= 0) {
+  if (total_regions_swappable <= 0) {
     // We don't have enough space available to swap a single region.
     return;
   }
@@ -246,7 +222,7 @@ void SwapProcessNode(const ProcessNode* process_node) {
   // Now we know how many regions this renderer can theoretically swap after
   // enforcing all configurable limits.
   ash::memory::userspace_swap::SwapRenderer(
-      swap_data.get(), total_regions_swapable * kRegionSize);
+      swap_data.get(), total_regions_swappable * kRegionSize);
 }
 
 UserspaceSwapInitializationImpl::UserspaceSwapInitializationImpl(
@@ -302,11 +278,8 @@ void UserspaceSwapInitializationImpl::TransferUserfaultFD(
     return;
   }
 
-  // Make sure we're on the graph and complete the initialization.
-  PerformanceManager::CallOnGraph(
-      FROM_HERE, base::BindOnce(&InitializeProcessNodeOnGraph,
-                                render_process_host_id_, uffd_handle.TakeFD(),
-                                Region(swap_area->address, swap_area->length)));
+  InitializeProcessNodeOnGraph(render_process_host_id_, uffd_handle.TakeFD(),
+                               Region(swap_area->address, swap_area->length));
 }
 
 }  // namespace userspace_swap

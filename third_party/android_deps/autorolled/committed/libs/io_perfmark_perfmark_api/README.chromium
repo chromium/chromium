@@ -1,0 +1,19 @@
+Name: perfmark:perfmark-api
+Short Name: perfmark-api
+URL: https://repo.maven.apache.org/maven2/io/perfmark/perfmark-api/0.27.0/perfmark-api-0.27.0.jar
+Version: 0.27.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+PerfMark API
+
+See also: https://github.com/perfmark/perfmark
+
+
+Local Modifications:
+No modifications.

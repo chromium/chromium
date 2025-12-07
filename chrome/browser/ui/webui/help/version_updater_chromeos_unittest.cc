@@ -54,7 +54,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
         fake_update_engine_client_(nullptr),
         user_manager_enabler_(std::make_unique<FakeChromeUserManager>()) {}
 
-  ~VersionUpdaterCrosTest() override {}
+  ~VersionUpdaterCrosTest() override = default;
 
   void SetUp() override {
     fake_update_engine_client_ =
@@ -69,9 +69,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
     ash::ShillServiceClient::TestInterface* service_test =
         network_handler_test_helper_->service_test();
     service_test->ClearServices();
-    service_test->AddService("/service/eth",
-                             "eth" /* guid */,
-                             "eth",
+    service_test->AddService("/service/eth", "eth" /* guid */, "eth",
                              shill::kTypeEthernet, shill::kStateOnline,
                              true /* visible */);
     base::RunLoop().RunUntilIdle();
@@ -190,14 +188,33 @@ TEST_F(VersionUpdaterCrosTest, CellularUpdateOneTimePermission) {
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 }
 
-TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_NoCallbackDuringInstallations) {
+TEST_F(VersionUpdaterCrosTest,
+       GetUpdateStatus_CallbackDuringInstallationsWhenDownloading) {
   SetEthernetService();
   update_engine::StatusResult status;
   status.set_is_install(true);
+  status.set_current_operation(update_engine::Operation::DOWNLOADING);
   fake_update_engine_client_->set_default_status(status);
 
-  // Expect the callback not to be called as it's an installation (not update).
   StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(VersionUpdater::UPDATED, 0, false, false,
+                                 std::string(), 0, std::u16string()))
+      .Times(1);
+  version_updater_->GetUpdateStatus(mock_callback.Get());
+}
+
+TEST_F(VersionUpdaterCrosTest,
+       GetUpdateStatus_CallbackDuringInstallationsWhenIdle) {
+  SetEthernetService();
+  update_engine::StatusResult status;
+  status.set_is_install(true);
+  status.set_current_operation(update_engine::Operation::IDLE);
+  fake_update_engine_client_->set_default_status(status);
+
+  StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(VersionUpdater::UPDATED, 0, false, false,
+                                 std::string(), 0, std::u16string()))
+      .Times(1);
   version_updater_->GetUpdateStatus(mock_callback.Get());
 }
 
@@ -206,7 +223,7 @@ TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_CallbackDuringUpdates) {
   update_engine::StatusResult status;
   fake_update_engine_client_->set_default_status(status);
 
-  // Expect the callbac kto be called as it's an update status change.
+  // Expect the callback to be called as it's an update status change.
   StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
   EXPECT_CALL(mock_callback, Run(_, _, _, _, _, _, _)).Times(1);
   version_updater_->GetUpdateStatus(mock_callback.Get());
@@ -298,15 +315,17 @@ TEST_F(VersionUpdaterCrosTest, IsFeatureEnabled) {
   EXPECT_EQ(1, fake_update_engine_client_->is_feature_enabled_count());
 }
 
-TEST_F(VersionUpdaterCrosTest, ApplyDeferredUpdate) {
+TEST_F(VersionUpdaterCrosTest, ApplyDeferredUpdateAdvanced) {
   update_engine::StatusResult status;
   status.set_current_operation(update_engine::Operation::UPDATED_BUT_DEFERRED);
   fake_update_engine_client_->set_default_status(status);
   fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
 
-  EXPECT_EQ(0, fake_update_engine_client_->apply_deferred_update_count());
-  version_updater_->ApplyDeferredUpdate();
-  EXPECT_EQ(1, fake_update_engine_client_->apply_deferred_update_count());
+  EXPECT_EQ(0,
+            fake_update_engine_client_->apply_deferred_update_advanced_count());
+  version_updater_->ApplyDeferredUpdateAdvanced();
+  EXPECT_EQ(1,
+            fake_update_engine_client_->apply_deferred_update_advanced_count());
 }
 
 }  // namespace chromeos

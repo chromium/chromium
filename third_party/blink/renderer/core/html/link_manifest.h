@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_MANIFEST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_LINK_MANIFEST_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/html/link_resource.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 

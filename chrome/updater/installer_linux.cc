@@ -5,23 +5,27 @@
 #include "chrome/updater/installer.h"
 
 #include <optional>
+#include <string>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/version.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
-AppInstallerResult RunApplicationInstaller(
+InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& installer_path,
     const std::string& arguments,
-    const std::optional<base::FilePath>& install_data_file,
+    std::optional<base::FilePath> install_data_file,
     bool usage_stats_enabled,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     InstallProgressCallback /*progress_callback*/) {
   base::LaunchOptions options;
   if (install_data_file) {
@@ -44,18 +48,19 @@ AppInstallerResult RunApplicationInstaller(
   }
 
   int exit_code = 0;
-  if (!base::LaunchProcess(command, options)
-           .WaitForExitWithTimeout(timeout, &exit_code)) {
+  const base::Process process = base::LaunchProcess(command, options);
+  if (!process.IsValid() ||
+      !process.WaitForExitWithTimeout(timeout, &exit_code)) {
     LOG(ERROR) << "Could not launch application installer.";
-    return AppInstallerResult(kErrorApplicationInstallerFailed,
-                              kErrorProcessLaunchFailed);
+    return InstallerResult(kErrorApplicationInstallerFailed,
+                           kErrorProcessLaunchFailed);
   }
   if (exit_code != 0) {
     LOG(ERROR) << "Installer returned error code " << exit_code;
-    return AppInstallerResult(kErrorApplicationInstallerFailed, exit_code);
+    return InstallerResult(kErrorApplicationInstallerFailed, exit_code);
   }
 
-  return AppInstallerResult();
+  return InstallerResult();
 }
 
 std::string LookupString(const base::FilePath& path,
@@ -64,8 +69,10 @@ std::string LookupString(const base::FilePath& path,
   return default_value;
 }
 
-base::Version LookupVersion(const base::FilePath& path,
-                            const std::string& keyname,
+base::Version LookupVersion(UpdaterScope scope,
+                            const std::string& app_id,
+                            const base::FilePath& version_path,
+                            const std::string& version_key,
                             const base::Version& default_value) {
   return default_value;
 }

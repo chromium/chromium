@@ -4,15 +4,15 @@
 
 #include "content/browser/attribution_reporting/interop/runner.h"
 
-#include <stddef.h>
 #include <stdint.h>
 
-#include <limits>
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/base64.h"
@@ -27,9 +27,9 @@
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -44,20 +44,19 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
-#include "components/attribution_reporting/features.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
-#include "content/browser/aggregation_service/aggregation_service_features.h"
 #include "content/browser/aggregation_service/aggregation_service_impl.h"
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/aggregation_service/public_key.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
-#include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
@@ -68,17 +67,21 @@
 #include "content/browser/attribution_reporting/attribution_suitable_context.h"
 #include "content/browser/attribution_reporting/interop/parser.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_utils.h"
+#include "content/test/test_content_browser_client.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
-#include "services/network/public/cpp/features.h"
+#include "services/network/network_service.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "url/gurl.h"
@@ -91,6 +94,9 @@ namespace {
 using ::attribution_reporting::RandomizedResponse;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::network::mojom::AttributionReportingEligibility;
+
+using AttributionReportingOperation =
+    ::content::ContentBrowserClient::AttributionReportingOperation;
 
 constexpr int64_t kNavigationId(-1);
 
@@ -136,8 +142,8 @@ class Adjuster : public ReportBodyAdjuster {
     AdjustTime(*shared_info_dict, "source_registration_time",
                /*skip_adjust_value=*/"0");
 
-    std::string adjusted_shared_info;
-    base::JSONWriter::Write(*shared_info_dict, &adjusted_shared_info);
+    std::string adjusted_shared_info =
+        base::WriteJson(*shared_info_dict).value_or("");
 
     // The payloads were encrypted with the original shared info, therefore
     // need to be re-encrypted with the adjusted shared info.
@@ -164,7 +170,7 @@ class Adjuster : public ReportBodyAdjuster {
       *payload_str =
           base::Base64Encode(EncryptAggregatableReportPayloadWithHpke(
               decrypted_payload, hpke_key_->GetPublicKey().key,
-              base::as_bytes(base::make_span(authenticated_info_str))));
+              base::as_byte_span(authenticated_info_str)));
     }
 
     *shared_info = std::move(adjusted_shared_info);
@@ -204,36 +210,53 @@ AttributionInteropOutput::Report MakeReport(
       base::Time::Now() - TimeOffset(time_origin), req.url, *std::move(value));
 }
 
-class FakeCookieChecker : public AttributionCookieChecker {
+class AttributionInteropContentBrowserClient : public TestContentBrowserClient {
  public:
-  explicit FakeCookieChecker(
+  explicit AttributionInteropContentBrowserClient(
       const std::vector<AttributionSimulationEvent>& events) {
     std::vector<base::Time> times;
     for (const auto& event : events) {
       if (const auto* data =
-              absl::get_if<AttributionSimulationEvent::Response>(&event.data);
+              std::get_if<AttributionSimulationEvent::Response>(&event.data);
           data && data->debug_permission) {
         times.push_back(event.time);
       }
     }
-    debug_cookie_set_.replace(std::move(times));
+    debug_allowed_.replace(std::move(times));
   }
-
-  ~FakeCookieChecker() override = default;
-
-  FakeCookieChecker(const FakeCookieChecker&) = delete;
-  FakeCookieChecker(FakeCookieChecker&&) = delete;
-
-  FakeCookieChecker& operator=(const FakeCookieChecker&) = delete;
-  FakeCookieChecker& operator=(FakeCookieChecker&&) = delete;
 
  private:
-  // AttributionCookieChecker:
-  void IsDebugCookieSet(const url::Origin&, Callback callback) override {
-    std::move(callback).Run(debug_cookie_set_.contains(base::Time::Now()));
+  bool IsAttributionReportingOperationAllowed(
+      content::BrowserContext* browser_context,
+      AttributionReportingOperation operation,
+      content::RenderFrameHost* rfh,
+      const url::Origin* source_origin,
+      const url::Origin* destination_origin,
+      const url::Origin* reporting_origin,
+      bool* can_bypass) override {
+    switch (operation) {
+      case AttributionReportingOperation::kSource:
+      case AttributionReportingOperation::kSourceVerboseDebugReport:
+      case AttributionReportingOperation::kTrigger:
+      case AttributionReportingOperation::kTriggerVerboseDebugReport:
+      case AttributionReportingOperation::kOsSource:
+      case AttributionReportingOperation::kOsSourceVerboseDebugReport:
+      case AttributionReportingOperation::kOsTrigger:
+      case AttributionReportingOperation::kOsTriggerVerboseDebugReport:
+      case AttributionReportingOperation::kSourceAggregatableDebugReport:
+      case AttributionReportingOperation::kTriggerAggregatableDebugReport:
+      case AttributionReportingOperation::kReport:
+      case AttributionReportingOperation::kAny:
+        return true;
+      case AttributionReportingOperation::kSourceTransitionalDebugReporting:
+      case AttributionReportingOperation::kOsSourceTransitionalDebugReporting:
+      case AttributionReportingOperation::kTriggerTransitionalDebugReporting:
+      case AttributionReportingOperation::kOsTriggerTransitionalDebugReporting:
+        return debug_allowed_.contains(base::Time::Now());
+    }
   }
 
-  base::flat_set<base::Time> debug_cookie_set_;
+  base::flat_set<base::Time> debug_allowed_;
 };
 
 class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
@@ -247,7 +270,7 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
         null_aggregatable_reports_days;
     for (auto& event : run.events) {
       if (auto* data =
-              absl::get_if<AttributionSimulationEvent::Response>(&event.data)) {
+              std::get_if<AttributionSimulationEvent::Response>(&event.data)) {
         if (data->randomized_response.has_value()) {
           responses.emplace_back(
               event.time,
@@ -279,13 +302,18 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
   // AttributionResolverDelegateImpl:
   GetRandomizedResponseResult GetRandomizedResponse(
       const attribution_reporting::mojom::SourceType source_type,
-      const attribution_reporting::TriggerSpecs& trigger_specs,
-      const attribution_reporting::EventLevelEpsilon epsilon) override {
+      const attribution_reporting::TriggerDataSet& trigger_data,
+      const attribution_reporting::EventReportWindows& event_report_windows,
+      const attribution_reporting::MaxEventLevelReports max_event_level_reports,
+      const attribution_reporting::EventLevelEpsilon epsilon,
+      const std::optional<attribution_reporting::AttributionScopesData>&
+          scopes_data) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     ASSIGN_OR_RETURN(auto response_data,
                      AttributionResolverDelegateImpl::GetRandomizedResponse(
-                         source_type, trigger_specs, epsilon));
+                         source_type, trigger_data, event_report_windows,
+                         max_event_level_reports, epsilon, scopes_data));
 
     auto it = randomized_responses_.find(base::Time::Now());
     if (it == randomized_responses_.end()) {
@@ -294,15 +322,25 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 
     // Avoid crashing in `AttributionStorageSql::StoreSource()` by returning an
     // arbitrary error here, which will manifest as unexpected test output.
-    if (!attribution_reporting::IsValid(it->second, trigger_specs)) {
-      LOG(ERROR) << "invalid randomized response with trigger_specs="
-                 << trigger_specs;
+    if (!attribution_reporting::IsValid(it->second, trigger_data,
+                                        event_report_windows,
+                                        max_event_level_reports)) {
+      LOG(ERROR) << "invalid randomized response with trigger_data="
+                 << trigger_data;
       return base::unexpected(attribution_reporting::RandomizedResponseError::
                                   kExceedsChannelCapacityLimit);
     }
 
     response_data.response() = std::exchange(it->second, std::nullopt);
     return response_data;
+  }
+
+  std::optional<AttributionResolverDelegate::OfflineReportDelayConfig>
+  GetOfflineReportDelayConfig() const override {
+    return OfflineReportDelayConfig{
+        .min = base::Minutes(5),
+        .max = base::Minutes(5),
+    };
   }
 
   bool GenerateNullAggregatableReportForLookbackDay(
@@ -329,7 +367,7 @@ class ControllableStorageDelegate : public AttributionResolverDelegateImpl {
 };
 
 void Handle(const AttributionSimulationEvent::StartRequest& event,
-            AttributionDataHostManager& data_host_manager) {
+            AttributionManager& manager) {
   std::optional<RegistrationEligibility> eligibility =
       attribution_reporting::GetRegistrationEligibility(event.eligibility);
   if (!eligibility.has_value()) {
@@ -340,6 +378,7 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
       event.context_origin, event.fenced, kFrameId,
       /*last_navigation_id=*/kNavigationId);
 
+  auto& data_host_manager = *manager.GetDataHostManager();
   std::optional<blink::AttributionSrcToken> attribution_src_token;
   if (event.eligibility == AttributionReportingEligibility::kNavigationSource) {
     attribution_src_token.emplace();
@@ -348,27 +387,28 @@ void Handle(const AttributionSimulationEvent::StartRequest& event,
         /*background_registrations_count=*/1);
     data_host_manager.NotifyNavigationRegistrationStarted(
         suitable_context, *attribution_src_token, kNavigationId,
-        /*devtools_request_id=*/"");
+        /*devtools_request_id=*/"",
+        /*from_context_menu=*/false);
     data_host_manager.NotifyNavigationRegistrationCompleted(
         *attribution_src_token);
   }
 
-  data_host_manager.NotifyBackgroundRegistrationStarted(
+  manager.GetDataHostManager()->NotifyBackgroundRegistrationStarted(
       BackgroundRegistrationsId(event.request_id), std::move(suitable_context),
       *eligibility, attribution_src_token,
       /*devtools_request_id=*/"");
 }
 
 void Handle(const AttributionSimulationEvent::Response& event,
-            AttributionDataHostManager& data_host_manager) {
-  data_host_manager.NotifyBackgroundRegistrationData(
+            AttributionManager& manager) {
+  manager.GetDataHostManager()->NotifyBackgroundRegistrationData(
       BackgroundRegistrationsId(event.request_id), event.response_headers.get(),
       event.url);
 }
 
 void Handle(const AttributionSimulationEvent::EndRequest& event,
-            AttributionDataHostManager& data_host_manager) {
-  data_host_manager.NotifyBackgroundRegistrationCompleted(
+            AttributionManager& manager) {
+  manager.GetDataHostManager()->NotifyBackgroundRegistrationCompleted(
       BackgroundRegistrationsId(event.request_id));
 }
 
@@ -381,8 +421,8 @@ void FastForwardUntilReportsConsumed(AttributionManager& manager,
     manager.GetPendingReportsForInternalUse(
         /*limit=*/-1,
         base::BindLambdaForTesting([&](std::vector<AttributionReport> reports) {
-          auto it = base::ranges::max_element(reports, /*comp=*/{},
-                                              &AttributionReport::report_time);
+          auto it = std::ranges::max_element(reports, /*comp=*/{},
+                                             &AttributionReport::report_time);
           if (it != reports.end()) {
             delta = it->report_time() - base::Time::Now();
           }
@@ -392,6 +432,7 @@ void FastForwardUntilReportsConsumed(AttributionManager& manager,
     run_loop.Run();
 
     if (delta.is_negative()) {
+      task_environment.FastForwardBy(base::TimeDelta());
       break;
     }
     task_environment.FastForwardBy(delta);
@@ -408,48 +449,21 @@ RunAttributionInteropSimulation(
     return AttributionInteropOutput();
   }
 
-  DCHECK(base::ranges::is_sorted(run.events, /*comp=*/{},
-                                 &AttributionSimulationEvent::time));
+  DCHECK(std::ranges::is_sorted(run.events, /*comp=*/{},
+                                &AttributionSimulationEvent::time));
 
-  std::vector<base::test::FeatureRef> enabled_features(
-      {blink::features::kKeepAliveInBrowserMigration,
-       blink::features::kAttributionReportingInBrowserMigration});
+  std::vector<base::test::FeatureRefAndParams> enabled_features(
+      {{blink::features::kKeepAliveInBrowserMigration, {}}});
 
   std::optional<AttributionOsLevelManager::ScopedApiStateForTesting>
       scoped_api_state;
   if (run.config.needs_cross_app_web) {
-    enabled_features.emplace_back(
-        network::features::kAttributionReportingCrossAppWeb);
     scoped_api_state.emplace(AttributionOsLevelManager::ApiState::kEnabled);
-  }
-  if (run.config.needs_aggregatable_debug) {
-    enabled_features.emplace_back(attribution_reporting::features::
-                                      kAttributionAggregatableDebugReporting);
-  }
-
-  if (run.config.needs_source_destination_limit) {
-    enabled_features.emplace_back(
-        attribution_reporting::features::kAttributionSourceDestinationLimit);
-  }
-
-  if (run.config.needs_aggregatable_filtering_ids) {
-    enabled_features.emplace_back(
-        attribution_reporting::features::
-            kAttributionReportingAggregatableFilteringIds);
-    enabled_features.emplace_back(
-        kPrivacySandboxAggregationServiceFilteringIds);
   }
 
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      enabled_features,
-      /*disabled_features=*/{
-          // This UMA records a sample every 30s via a periodic task which
-          // interacts poorly with TaskEnvironment::FastForward using day long
-          // delays (we need to run the uma update every 30s for that
-          // interval)
-          network::features::kGetCookiesStringUma,
-      });
+  scoped_feature_list.InitWithFeaturesAndParameters(enabled_features,
+                                                    /*disabled_features=*/{});
 
   attribution_reporting::ScopedMaxEventLevelEpsilonForTesting
       scoped_max_event_level_epsilon(run.config.max_event_level_epsilon);
@@ -462,6 +476,13 @@ RunAttributionInteropSimulation(
   BrowserTaskEnvironment task_environment(
       base::test::TaskEnvironment::TimeSource::MOCK_TIME);
   TestBrowserContext browser_context;
+
+  GetNetworkService();
+  // Wait for the Network Service to initialize on the IO thread.
+  RunAllPendingInMessageLoop(content::BrowserThread::IO);
+  // Disable metrics updater to avoid test timeouts.
+  network::NetworkService::GetNetworkServiceForTesting()
+      ->ResetMetricsUpdaterForTesting();  // IN-TEST
 
   // Ensure that `time_origin` has a whole number of days to make
   // `AdjustEventLevelBody()` and `AdjustAggregatableReportSharedInfo()` time
@@ -500,7 +521,8 @@ RunAttributionInteropSimulation(
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context.GetDefaultStoragePartition());
 
-  auto fake_cookie_checker = std::make_unique<FakeCookieChecker>(run.events);
+  AttributionInteropContentBrowserClient browser_client(run.events);
+  ScopedContentBrowserClientSetting setting(&browser_client);
 
   AttributionInteropOutput output;
 
@@ -523,10 +545,8 @@ RunAttributionInteropSimulation(
   auto manager = AttributionManagerImpl::CreateForTesting(
       // Avoid creating an on-disk sqlite DB.
       /*user_data_directory=*/base::FilePath(),
-      /*max_pending_events=*/std::numeric_limits<size_t>::max(),
       /*special_storage_policy=*/nullptr,
       std::make_unique<ControllableStorageDelegate>(run),
-      std::move(fake_cookie_checker),
       std::make_unique<AttributionReportNetworkSender>(
           test_url_loader_factory.GetSafeWeakWrapper()),
       std::make_unique<NoOpAttributionOsLevelManager>(), storage_partition,
@@ -549,9 +569,34 @@ RunAttributionInteropSimulation(
 
   for (const auto& event : run.events) {
     task_environment.FastForwardBy(event.time - base::Time::Now());
-
-    absl::visit(
-        [&](const auto& data) { Handle(data, *manager->GetDataHostManager()); },
+    std::visit(
+        absl::Overload{
+            [&](const AttributionSimulationEvent::Connection& event) {
+              if (!event.connected) {
+                test_url_loader_factory.SetInterceptor(
+                    base::BindLambdaForTesting([&](const network::
+                                                       ResourceRequest& req) {
+                      test_url_loader_factory.AddResponse(
+                          req.url, network::mojom::URLResponseHead::New(),
+                          /*content=*/"",
+                          network::URLLoaderCompletionStatus(
+                              net::ERR_INTERNET_DISCONNECTED),
+                          network::TestURLLoaderFactory::Redirects(),
+                          network::TestURLLoaderFactory::ResponseProduceFlags::
+                              kSendHeadersOnNetworkError);
+                    }));
+              } else {
+                test_url_loader_factory.SetInterceptor(
+                    base::BindLambdaForTesting(
+                        [&](const network::ResourceRequest& req) {
+                          output.reports.emplace_back(
+                              MakeReport(req, time_origin, hpke_key));
+                          test_url_loader_factory.AddResponse(req.url.spec(),
+                                                              /*content=*/"");
+                        }));
+              }
+            },
+            [&](const auto& data) { Handle(data, *manager); }},
         event.data);
   }
 
@@ -563,16 +608,15 @@ RunAttributionInteropSimulation(
 void MaybeAdjustReportBody(const GURL& url,
                            base::Value& payload,
                            ReportBodyAdjuster& adjuster) {
-  if (base::EndsWith(url.path_piece(), "/report-aggregate-attribution")) {
+  if (base::EndsWith(url.path(), "/report-aggregate-attribution")) {
     if (base::Value::Dict* dict = payload.GetIfDict()) {
       adjuster.AdjustAggregatable(*dict);
     }
-  } else if (base::EndsWith(url.path_piece(), "/report-event-attribution")) {
+  } else if (base::EndsWith(url.path(), "/report-event-attribution")) {
     if (base::Value::Dict* dict = payload.GetIfDict()) {
       adjuster.AdjustEventLevel(*dict);
     }
-  } else if (url.path_piece() ==
-             "/.well-known/attribution-reporting/debug/verbose") {
+  } else if (url.path() == "/.well-known/attribution-reporting/debug/verbose") {
     if (base::Value::List* list = payload.GetIfList()) {
       for (auto& item : *list) {
         base::Value::Dict* dict = item.GetIfDict();
@@ -587,7 +631,7 @@ void MaybeAdjustReportBody(const GURL& url,
         }
       }
     }
-  } else if (url.path_piece() ==
+  } else if (url.path() ==
              "/.well-known/attribution-reporting/debug/"
              "report-aggregate-debug") {
     if (base::Value::Dict* dict = payload.GetIfDict()) {

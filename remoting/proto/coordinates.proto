@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// Fractional coordinate information. Fractional coordinates define a location
+// as a number in the range [0, 1], interpreted relative to the bounds of a
+// monitor identified by `screen_id` in the most recent VideoLayout message sent
+// by the host.
+message FractionalCoordinate {
+  optional float x = 1;
+  optional float y = 2;
+  optional int64 screen_id = 3;
+}

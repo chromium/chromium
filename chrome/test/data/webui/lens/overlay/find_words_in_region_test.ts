@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://lens/find_words_in_region.js';
+import 'chrome-untrusted://lens-overlay/find_words_in_region.js';
 
-import {areaOfPolygon, clip, ClippingEdge, findWordsInRegion, intersectionWithEdge, isInsideEdge, rotate, toPolygon} from 'chrome-untrusted://lens/find_words_in_region.js';
-import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens/geometry.mojom-webui.js';
+import {areaOfPolygon, clip, ClippingEdge, findWordsInRegion, intersectionWithEdge, isInsideEdge, rotate, toPolygon} from 'chrome-untrusted://lens-overlay/find_words_in_region.js';
+import {CenterRotatedBox_CoordinateType} from 'chrome-untrusted://lens-overlay/geometry.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createWord} from '../utils/text_utils.js';

@@ -8,10 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "components/plugins/renderer/webview_plugin.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "gin/handle.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "v8/include/cppgc/persistent.h"
 
 namespace plugins {
 
@@ -47,14 +48,15 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
   void HidePlugin();
   bool hidden() const { return hidden_; }
 
+ protected:
   // JavaScript callbacks:
   void HideCallback();
   void NotifyPlaceholderReadyForTestingCallback();
 
- private:
   // RenderFrameObserver methods:
   void OnDestruct() override;
 
+ private:
   blink::WebPluginParams plugin_params_;
   raw_ptr<WebViewPlugin> plugin_;
 
@@ -62,27 +64,36 @@ class PluginPlaceholderBase : public content::RenderFrameObserver,
 };
 
 // A basic placeholder that supports only hiding.
-class PluginPlaceholder final : public PluginPlaceholderBase,
-                                public gin::Wrappable<PluginPlaceholder> {
+class PluginPlaceholder final : public gin::Wrappable<PluginPlaceholder>,
+                                public PluginPlaceholderBase {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kPluginPlaceholder};
 
+  PluginPlaceholder(content::RenderFrame* render_frame,
+                    const blink::WebPluginParams& params);
   ~PluginPlaceholder() override;
 
   static PluginPlaceholder* Create(content::RenderFrame* render_frame,
                                    const blink::WebPluginParams& params,
                                    const std::string& html_data);
 
- private:
-  PluginPlaceholder(content::RenderFrame* render_frame,
-                    const blink::WebPluginParams& params);
+  // gin::WrappableBase overrides:
+  const gin::WrapperInfo* wrapper_info() const override;
 
+ private:
   // WebViewPlugin::Delegate methods:
   v8::Local<v8::Value> GetV8Handle(v8::Isolate* isolate) final;
 
   // gin::Wrappable method:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
+
+  // RenderFrameObserver override.
+  void OnDestruct() override;
+
+  // Keeps `this` alive until `OnDestruct()` is called.
+  cppgc::Persistent<PluginPlaceholder> self_;
 };
 
 }  // namespace plugins

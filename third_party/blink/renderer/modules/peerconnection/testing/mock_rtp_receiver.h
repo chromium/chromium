@@ -17,8 +17,8 @@
 
 namespace blink {
 
-class MockRtpReceiver : public rtc::RefCountedObject<webrtc::MockRtpReceiver> {
-};
+class MockRtpReceiver
+    : public webrtc::RefCountedObject<webrtc::MockRtpReceiver> {};
 
 }  // namespace blink
 

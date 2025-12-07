@@ -14,10 +14,9 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/cbor/values.h"
-#include "components/cbor/writer.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/constants.h"
+#include "components/web_package/test_support/signed_web_bundles/signature_verifier_test_utils.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -360,7 +359,7 @@ TEST_F(SafeWebBundleParserTest, ConnectionError) {
 struct IntegrityBlockInfo {
   uint64_t size_bytes;
   uint32_t num_signatures;
-  std::optional<std::string> web_bundle_id;
+  std::string web_bundle_id;
 };
 
 class SafeSignedWebBundleParserTest
@@ -386,19 +385,11 @@ TEST_P(SafeSignedWebBundleParserTest, ParseSignedWebBundle) {
   ASSERT_EQ(integrity_block->size, ib_info.size_bytes);
   ASSERT_EQ(integrity_block->signature_stack.size(), ib_info.num_signatures);
 
-  if (ib_info.web_bundle_id) {
-    EXPECT_TRUE(integrity_block->attributes);
-    EXPECT_EQ(integrity_block->attributes->web_bundle_id(),
-              *ib_info.web_bundle_id);
+  EXPECT_EQ(integrity_block->attributes.web_bundle_id(), ib_info.web_bundle_id);
 
-    cbor::Value::MapValue attributes;
-    attributes.emplace(web_package::kWebBundleIdAttributeName,
-                       *ib_info.web_bundle_id);
-    EXPECT_EQ(integrity_block->attributes->cbor(),
-              cbor::Writer::Write(cbor::Value(attributes)));
-  } else {
-    EXPECT_FALSE(integrity_block->attributes);
-  }
+  integrity_block->attributes =
+      web_package::test::GetAttributesForSignedWebBundleId(
+          ib_info.web_bundle_id);
 
   base::test::TestFuture<web_package::mojom::BundleMetadataPtr,
                          web_package::mojom::BundleMetadataParseErrorPtr>
@@ -478,8 +469,8 @@ TEST_F(SafeWebBundleParserTest, ParseWebBundleWithRelativeUrls) {
 
   std::vector<GURL> requests;
   requests.reserve(metadata->requests.size());
-  base::ranges::transform(metadata->requests, std::back_inserter(requests),
-                          [](const auto& entry) { return entry.first; });
+  std::ranges::transform(metadata->requests, std::back_inserter(requests),
+                         [](const auto& entry) { return entry.first; });
   EXPECT_THAT(requests, UnorderedElementsAreArray(
                             {GURL("https://test.example.org/absolute-url"),
                              GURL("https://example.com/relative-url-1"),

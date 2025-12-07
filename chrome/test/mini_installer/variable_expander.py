@@ -167,6 +167,9 @@ class VariableExpander:
             Name for Chrome SxS.
         * $LAST_INSTALLER_BREAKING_VERSION: The last installer version that had
             breaking changes.
+        * $TRACING_SERVICE_CLSID: The elevated tracing service's class ID.
+        * $TRACING_SERVICE_STORAGE_DIR: The directory where the elevated tracing
+            service maintains persistent storage.
 
         Args:
             mini_installer_path: The path to a mini_installer.
@@ -311,13 +314,13 @@ class VariableExpander:
                 'CHROME_ELEVATOR_CLSID_SXS':
                 ('{704C2872-2049-435E-A469-0A534313C42B}'),
                 'CHROME_ELEVATOR_IID':
-                ('{463ABECF-410D-407F-8AF5-0DF35A005CC8}'),
+                ('{1BF5208B-295F-4992-B5F4-3A9BB6494838}'),
                 'CHROME_ELEVATOR_IID_BETA':
-                ('{A2721D66-376E-4D2F-9F0F-9070E9A42B5F}'),
+                ('{B96A14B8-D0B0-44D8-BA68-2385B2A03254}'),
                 'CHROME_ELEVATOR_IID_DEV':
-                ('{BB2AA26B-343A-4072-8B6F-80557B8CE571}'),
+                ('{3FEFA48E-C8BF-461F-AED6-63F658CC850A}'),
                 'CHROME_ELEVATOR_IID_SXS':
-                ('{4F7CE041-28E9-484F-9DD0-61A8CACEFEE4}'),
+                ('{FF672E9F-0994-4322-81E5-3A5A9746140A}'),
                 'CHROME_ELEVATION_SERVICE_NAME':
                 ('GoogleChromeElevationService'),
                 'CHROME_ELEVATION_SERVICE_NAME_BETA':
@@ -337,6 +340,12 @@ class VariableExpander:
                  ' (GoogleChromeDevElevationService)'),
                 'CHROME_ELEVATION_SERVICE_DISPLAY_NAME_SXS':
                 ('Google Chrome Canary Elevation Service'),
+                'TRACING_SERVICE_CLSID':
+                '{70457024-D309-462C-B2E0-49A771487E46}',
+                'TRACING_SERVICE_STORAGE_DIR':
+                os.path.join(
+                    shell.SHGetFolderPath(0, shellcon.CSIDL_WINDOWS, None, 0),
+                    'SystemTemp', 'ChromeTracing'),
             })
         elif mini_installer_product_name == 'Chromium Installer':
             self._variable_mapping.update({
@@ -361,11 +370,17 @@ class VariableExpander:
                 'CHROME_ELEVATOR_CLSID':
                 ('{D133B120-6DB4-4D6B-8BFE-83BF8CA1B1B0}'),
                 'CHROME_ELEVATOR_IID':
-                ('{B88C45B9-8825-4629-B83E-77CC67D9CEED}'),
+                ('{BB19A0E5-00C6-4966-94B2-5AFEC6FED93A}'),
                 'CHROME_ELEVATION_SERVICE_NAME':
                 'ChromiumElevationService',
                 'CHROME_ELEVATION_SERVICE_DISPLAY_NAME':
                 ('Chromium Elevation Service (ChromiumElevationService)'),
+                'TRACING_SERVICE_CLSID':
+                '{83F69367-442D-447F-8BCC-0E3F97BE9CF2}',
+                'TRACING_SERVICE_STORAGE_DIR':
+                os.path.join(
+                    shell.SHGetFolderPath(0, shellcon.CSIDL_WINDOWS, None, 0),
+                    'SystemTemp', 'ChromiumTracing'),
             })
         elif mini_installer_product_name == ('Google Chrome for Testing '
                                              'Installer'):
@@ -395,6 +410,10 @@ class VariableExpander:
                 'CHROME_ELEVATION_SERVICE_DISPLAY_NAME':
                 ('Google Chrome for Testing Elevation Service ' +
                  '(GoogleChromeforTestingElevationService)'),
+                'TRACING_SERVICE_STORAGE_DIR':
+                os.path.join(
+                    shell.SHGetFolderPath(0, shellcon.CSIDL_WINDOWS, None, 0),
+                    'SystemTemp', 'Chrome for TestingTracing'),
             })
         else:
             raise KeyError("Unknown mini_installer product name '%s'" %

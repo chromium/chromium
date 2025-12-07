@@ -6,6 +6,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
+#include "base/test/test_file_util.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
@@ -16,12 +17,12 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace drive::util {
 namespace {
 
-using ash::features::kDriveFsBulkPinning;
 using ash::features::kFeatureManagementDriveFsBulkPinning;
 using base::test::ScopedFeatureList;
 
@@ -54,7 +55,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsUnderDriveMountPoint) {
 }
 
 TEST_F(ProfileRelatedFileSystemUtilTest, GetCacheRootPath) {
-  TestingProfile profile;
+  TestingProfile profile(base::CreateUniqueTempDirectoryScopedToTest());
   base::FilePath profile_path = profile.GetPath();
   EXPECT_EQ(profile_path.AppendASCII("GCache/v1"),
             util::GetCacheRootPath(&profile));
@@ -81,8 +82,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
 
   {
     ScopedFeatureList features;
-    features.InitWithFeatures(
-        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable());
@@ -90,17 +90,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
 
   {
     ScopedFeatureList features;
-    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning},
-                              {kDriveFsBulkPinning});
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable());
-  }
-
-  {
-    ScopedFeatureList features;
-    features.InitWithFeatures({kDriveFsBulkPinning},
-                              {kFeatureManagementDriveFsBulkPinning});
+    features.InitWithFeatures({}, {kFeatureManagementDriveFsBulkPinning});
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable());
@@ -110,8 +100,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
 
   {
     ScopedFeatureList features;
-    features.InitWithFeatures(
-        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
@@ -120,8 +109,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
 
   {
     ScopedFeatureList features;
-    features.InitWithFeatures(
-        {kFeatureManagementDriveFsBulkPinning, kDriveFsBulkPinning}, {});
+    features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
@@ -129,8 +117,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
   // Test for Googler account.
   {
     ScopedFeatureList features;
-    features.InitWithFeatures({kDriveFsBulkPinning},
-                              {kFeatureManagementDriveFsBulkPinning});
+    features.InitWithFeatures({}, {kFeatureManagementDriveFsBulkPinning});
 
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
@@ -138,7 +125,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
     const user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
         user_manager(std::make_unique<ash::FakeChromeUserManager>());
     user_manager->AddUser(AccountId::FromUserEmailGaiaId(
-        "foobar@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId));
+        "foobar@google.com", GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
 
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
@@ -176,7 +163,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest,
   const user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager(std::make_unique<ash::FakeChromeUserManager>());
   const AccountId account_id(AccountId::FromUserEmailGaiaId(
-      "foobar@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId));
+      "foobar@google.com", GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
   user_manager->AddUser(account_id);
   user_manager->LoginUser(account_id);
   ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(

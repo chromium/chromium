@@ -8,34 +8,40 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/extensions/extension_service.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_context.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 ZipFileInstaller::DoneCallback MakeRegisterInExtensionServiceCallback(
-    ExtensionService* service) {
+    content::BrowserContext* context) {
+  // TODO(crbug.com/41317803): Continue removing std::string error and
+  // replacing with std::u16string.
   return base::BindOnce(
-      [](base::WeakPtr<ExtensionService> extension_service_weak,
+      [](base::WeakPtr<content::BrowserContext> context_weak,
          const base::FilePath& zip_file, const base::FilePath& unzip_dir,
          const std::string& error) {
-        if (!extension_service_weak)
+        if (!context_weak) {
           return;
+        }
 
         if (!unzip_dir.empty()) {
           DCHECK(error.empty());
-          UnpackedInstaller::Create(extension_service_weak.get())
-              ->Load(unzip_dir);
+          UnpackedInstaller::Create(context_weak.get())->Load(unzip_dir);
           return;
         }
         DCHECK(!error.empty());
         LoadErrorReporter::GetInstance()->ReportLoadError(
-            zip_file, error, extension_service_weak->profile(),
+            zip_file, base::UTF8ToUTF16(error), context_weak.get(),
             /*noisy_on_failure=*/true);
       },
-      service->AsExtensionServiceWeakPtr());
+      context->GetWeakPtr());
 }
 
 }  // namespace extensions

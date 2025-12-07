@@ -10,8 +10,6 @@
 #import "base/task/sequenced_task_runner.h"
 #import "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #import "ios/chrome/browser/https_upgrades/model/https_upgrade_service_impl.h"
-#import "ios/chrome/browser/prerender/model/prerender_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/components/security_interstitials/https_only_mode/https_upgrade_service.h"
 #import "ios/web/public/navigation/https_upgrade_type.h"
 #import "ios/web/public/navigation/navigation_context.h"
@@ -35,9 +33,8 @@ TypedNavigationUpgradeTabHelper::~TypedNavigationUpgradeTabHelper() = default;
 
 TypedNavigationUpgradeTabHelper::TypedNavigationUpgradeTabHelper(
     web::WebState* web_state,
-    PrerenderService* prerender_service,
     HttpsUpgradeService* service)
-    : prerender_service_(prerender_service), service_(service) {
+    : service_(service) {
   web_state->AddObserver(this);
 }
 
@@ -87,10 +84,6 @@ void TypedNavigationUpgradeTabHelper::DidStartNavigation(
   if (navigation_context->IsSameDocument()) {
     return;
   }
-  if (prerender_service_ &&
-      prerender_service_->IsWebStatePrerendered(web_state)) {
-    return;
-  }
 
   web::NavigationItem* item_pending =
       web_state->GetNavigationManager()->GetPendingItem();
@@ -124,10 +117,7 @@ void TypedNavigationUpgradeTabHelper::DidFinishNavigation(
   if (navigation_context->IsSameDocument() || state_ == State::kNone) {
     return;
   }
-  if (prerender_service_ &&
-      prerender_service_->IsWebStatePrerendered(web_state)) {
-    return;
-  }
+
   timer_.Stop();
 
   // Start a fallback navigation if the upgraded navigation failed.
@@ -164,5 +154,3 @@ void TypedNavigationUpgradeTabHelper::WebStateDestroyed(
     web::WebState* web_state) {
   web_state->RemoveObserver(this);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(TypedNavigationUpgradeTabHelper)

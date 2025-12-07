@@ -34,8 +34,10 @@
 #include <memory>
 #include <optional>
 
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_ref.h"
+#include "components/subresource_filter/core/common/scoped_rule.h"
 #include "third_party/blink/public/common/subresource_load_metrics.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink-forward.h"
@@ -52,11 +54,15 @@
 #include "third_party/blink/renderer/platform/weborigin/reporting_disposition.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
+namespace network {
+class PermissionsPolicy;
+}  // namespace network
+
 namespace blink {
 
 enum class ResourceType : uint8_t;
-class PermissionsPolicy;
 class KURL;
+class Resource;
 struct ResourceLoaderOptions;
 class SecurityOrigin;
 class WebScopedVirtualTimePauser;
@@ -104,6 +110,8 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
                               WebScopedVirtualTimePauser& virtual_time_pauser,
                               ResourceType);
 
+  virtual void FillInitiatorInfo(FetchInitiatorInfo& initiator_info) {}
+
   virtual void AddResourceTiming(mojom::blink::ResourceTimingInfoPtr,
                                  const AtomicString& initiator_type);
   virtual bool AllowImage() const { return false; }
@@ -133,6 +141,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual std::optional<ResourceRequestBlockedReason> CheckCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
+      network::mojom::RequestMode request_mode,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
@@ -145,6 +154,7 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   CheckAndEnforceCSPForRequest(
       mojom::blink::RequestContextType,
       network::mojom::RequestDestination request_destination,
+      network::mojom::RequestMode request_mode,
       const KURL&,
       const ResourceLoaderOptions&,
       ReportingDisposition,
@@ -153,14 +163,43 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return ResourceRequestBlockedReason::kOther;
   }
 
-  // Populates the ResourceRequest using the given values and information
-  // stored in the FetchContext implementation. Used by ResourceFetcher to
-  // prepare a ResourceRequest instance at the start of resource loading.
-  virtual void PopulateResourceRequest(
+  // Check for policy on the resource and report if necessary, per the explainer
+  // here: https://aka.ms/webembeddedperf
+  virtual void CheckGuardrailsPolicyForRequest(
+      ResourceType resource_type,
+      mojom::blink::RequestContextType request_context,
+      const ResourceResponse& response,
+      const KURL& url) {}
+
+  // Called from RequestResource() to upgrade insecure ResourceRequests if
+  // necessary and prepare them for checking CSP. A mutable ResourceRequest is
+  // passed as the URL may be modified. After this call returns, it is not
+  // permitted to modify the URL of the ResourceRequest.
+  virtual void ModifyRequestForMixedContentUpgrade(ResourceRequest&) {}
+
+  // Populates the ResourceRequest with enough information for a cache lookup.
+  // If the resource requires a load, then UpgradeResourceRequestForLoader() is
+  // called.
+  virtual void PopulateResourceRequestBeforeCacheAccess(
+      const ResourceLoaderOptions& options,
+      ResourceRequest& request) {}
+
+  // Called after csp checks to potentially override the URL of the request.
+  virtual void WillSendRequest(ResourceRequest& request) {}
+
+  // Called if a resource request needs to be loaded (vs served from the cache).
+  // This adds additional information to the ResourceRequest needed for
+  // loading. This is called after PopulateResourceRequestBeforeCacheAccess().
+  // This function may be called in some circumstances when still served from
+  // the cache. For example, if the right probes are present, then this is
+  // always called.
+  virtual void UpgradeResourceRequestForLoader(
       ResourceType,
       const std::optional<float> resource_width,
       ResourceRequest&,
       const ResourceLoaderOptions&);
+
+  virtual bool StartSpeculativeImageDecode(Resource* resource);
 
   // Called when the underlying context is detached. Note that some
   // FetchContexts continue working after detached (e.g., for fetch() operations
@@ -170,18 +209,23 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
     return MakeGarbageCollected<FetchContext>();
   }
 
-  virtual const PermissionsPolicy* GetPermissionsPolicy() const {
+  virtual const network::PermissionsPolicy* GetPermissionsPolicy() const {
     return nullptr;
   }
 
+  virtual const FeatureContext* GetFeatureContext() const { return nullptr; }
+
   // Determine if the request is on behalf of an advertisement. If so, return
   // true. Checks `resource_request.Url()` unless `alias_url` is non-null, in
-  // which case it checks the latter.
+  // which case it checks the latter. If `out_rule` is non-null and the
+  // SubresourceFilter identifies the current resource as an ad based on its
+  // URL, then `out_rule` will be populated with the matching filterlist rule.
   virtual bool CalculateIfAdSubresource(
       const ResourceRequestHead& resource_request,
       base::optional_ref<const KURL> alias_url,
       ResourceType type,
-      const FetchInitiatorInfo& initiator_info) {
+      const FetchInitiatorInfo& initiator_info,
+      subresource_filter::ScopedRule* out_rule) {
     return false;
   }
 
@@ -221,6 +265,15 @@ class PLATFORM_EXPORT FetchContext : public GarbageCollected<FetchContext> {
   virtual void AddLcpPredictedCallback(base::OnceClosure callback) {
     NOTIMPLEMENTED();
   }
+
+  virtual HashSet<HashAlgorithm> CSPHashesToReport() const {
+    return HashSet<HashAlgorithm>();
+  }
+  virtual void AddCSPHashReport(
+      const String& url,
+      const HashMap<HashAlgorithm, String>& integrity_hashes) {}
+
+  virtual String GetSVGCacheIdentifier() const { return String(); }
 
  protected:
   const Vector<KURL> empty_unused_preloads_;

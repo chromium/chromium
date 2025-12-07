@@ -29,25 +29,23 @@ AccountInfo FillAccountInfo(
     signin::Tribool
         can_show_history_sync_opt_ins_without_minor_mode_restrictions) {
   const char kHostedDomain[] = "example.com";
-  AccountInfo account_info;
-
-  account_info.email = core_info.email;
-  account_info.gaia = core_info.gaia;
-  account_info.account_id = core_info.account_id;
-  account_info.is_under_advanced_protection =
-      core_info.is_under_advanced_protection;
-  account_info.full_name = "Test Full Name";
-  account_info.given_name = "Joe";
-  account_info.hosted_domain =
-      management_status == AccountManagementStatus::kManaged
-          ? kHostedDomain
-          : kNoHostedDomainFound;
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
+  AccountInfo account_info =
+      AccountInfo::Builder(core_info)
+          .SetFullName("Test Full Name")
+          .SetGivenName("Joe")
+          .SetHostedDomain(management_status ==
+                                   AccountManagementStatus::kManaged
+                               ? kHostedDomain
+                               : std::string())
+          .SetLocale("en")
+          .SetAvatarUrl("https://example.com")
+          .Build();
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_is_subject_to_enterprise_features(
+      management_status == AccountManagementStatus::kManaged);
 
   if (can_show_history_sync_opt_ins_without_minor_mode_restrictions !=
       signin::Tribool::kUnknown) {
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_show_history_sync_opt_ins_without_minor_mode_restrictions(
         signin::TriboolToBoolOrDie(
             can_show_history_sync_opt_ins_without_minor_mode_restrictions));
@@ -101,7 +99,7 @@ void SetUpPixelTestCommandLine(
     const std::string language = "ar-XB";
     command_line->AppendSwitchASCII(switches::kLang, language);
 
-    // On Linux & Lacros the command line switch has no effect, we need to use
+    // On Linux the command line switch has no effect, we need to use
     // environment variables to change the language.
     env_variables = std::make_unique<base::ScopedEnvironmentVariableOverride>(
         "LANGUAGE", language);

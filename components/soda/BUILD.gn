@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//components/soda/buildflags.gni")
 
 assert(!is_android)
@@ -26,13 +25,12 @@ component("soda") {
   deps = [
     ":constants",
     "//base",
-    "//build:chromeos_buildflags",
     "//components/live_caption:constants",
     "//components/prefs",
     "//media",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "soda_installer_impl_chromeos.cc",
       "soda_installer_impl_chromeos.h",
@@ -44,10 +42,6 @@ component("soda") {
       "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
       "//ui/base",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup:startup" ]
   }
 }
 
@@ -63,6 +57,8 @@ source_set("constants") {
     "//base",
     "//components/component_updater:component_updater_paths",
     "//components/crx_file",
+    "//components/language/core/browser",
+    "//components/prefs",
     "//components/strings/",
     "//media",
     "//ui/base",
@@ -80,21 +76,18 @@ source_set("utils") {
     ":soda",
     "//base",
     "//media",
+    "//media/mojo/mojom",
     "//ui/base",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [ "//ash/constants:constants" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup:startup" ]
+  if (is_chromeos) {
+    deps += [ "//ash/constants" ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources = [ "soda_installer_impl_chromeos_unittest.cc" ]
 
     deps = [
@@ -109,4 +102,19 @@ source_set("unit_tests") {
       "//testing/gtest",
     ]
   }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_soda_installer.cc",
+    "mock_soda_installer.h",
+  ]
+
+  deps = [
+    ":soda",
+    "//base",
+    "//testing/gmock",
+  ]
 }

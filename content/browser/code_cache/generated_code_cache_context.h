@@ -7,10 +7,18 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "components/persistent_cache/pending_backend.h"
+#include "components/persistent_cache/persistent_cache_collection.h"
+#endif
 
 namespace content {
 
@@ -53,6 +61,45 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   GeneratedCodeCache* generated_wasm_code_cache() const;
   GeneratedCodeCache* generated_webui_js_code_cache() const;
 
+  // Use to get rid of code cached in the PersistentCache collection both in
+  // memory and persisted.
+  void ClearAndDeletePersistentCacheCollection();
+
+#if !BUILDFLAG(IS_FUCHSIA)
+  // Returns a pending backend for an independent read-only connection to the
+  // `context_key` cache, or nothing if it is not functional or the handles
+  // cannot be exported. The returned value grants read access to all data
+  // stored in the cache corresponding to `context_key`. Take care to only pass
+  // it to the renderer for which it is intended; see
+  // CodeCacheWithPersistentCacheHost::GetCacheId for more on this topic.
+  std::optional<persistent_cache::PendingBackend> ShareReadOnlyConnection(
+      const std::string& context_key);
+
+  // Using a persistent cache collection with `context_key` as the cache_id
+  // makes sure that there are seperate files for separate process locks. This
+  // will eventually allow the sharing of the files with the renderers.
+  void InsertIntoPersistentCacheCollection(
+      const std::string& context_key,
+      std::string_view url,
+      base::span<const uint8_t> content,
+      persistent_cache::EntryMetadata metadata);
+
+  // A simple container for the metadata associated with an URL in the cache and
+  // the content that was cached. (The content is separate from the metadata so
+  // that consumers of PersistentCache can control allocation of the memory and
+  // the data type holding it.)
+  struct MetadataAndContent {
+    persistent_cache::EntryMetadata metadata;
+    mojo_base::BigBuffer content;
+  };
+
+  // TODO(crbug.com/377475540): Use types that are not interchangeable for
+  // `context_key` and `url` so that they cannot be mixed up by mistake.
+  std::optional<MetadataAndContent> FindInPersistentCacheCollection(
+      const std::string& context_key,
+      std::string_view url);
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
  private:
   friend class base::RefCountedThreadSafe<GeneratedCodeCacheContext>;
   ~GeneratedCodeCacheContext();
@@ -70,8 +117,21 @@ class CONTENT_EXPORT GeneratedCodeCacheContext
   std::unique_ptr<GeneratedCodeCache, base::OnTaskRunnerDeleter>
       generated_webui_js_code_cache_ GUARDED_BY_CONTEXT(sequence_checker_) = {
           nullptr, base::OnTaskRunnerDeleter(nullptr)};
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+#if !BUILDFLAG(IS_FUCHSIA)
+  // When used instead of `generated_js_code_cache_` this stores the code
+  // following the same isolation principles but using two keys instead of one.
+  // The first key is used to get a `PersistentCache` associated with an
+  // isolation context from the collection. This insures that each isolation
+  // context uses a seperate database file. The second key is the resource
+  // url used on that cache.
+  std::unique_ptr<persistent_cache::PersistentCacheCollection,
+                  base::OnTaskRunnerDeleter>
+      persistent_cache_collection_ GUARDED_BY_CONTEXT(sequence_checker_){
+          nullptr, base::OnTaskRunnerDeleter(nullptr)};
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 

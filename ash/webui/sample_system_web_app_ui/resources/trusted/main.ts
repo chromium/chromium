@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {callbackRouter, pageHandler} from './page_handler.js';
-import {PageCallbackRouter, PageHandlerRemote} from './sample_system_web_app_ui.mojom-webui.js';
+import type {PageCallbackRouter, PageHandlerRemote} from './sample_system_web_app_ui.mojom-webui.js';
 
 const first = document.querySelector<HTMLInputElement>('#number1')!;
 const second = document.querySelector<HTMLInputElement>('#number2')!;

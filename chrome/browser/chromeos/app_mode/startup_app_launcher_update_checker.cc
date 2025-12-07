@@ -9,10 +9,8 @@
 #include "base/functional/bind.h"
 #include "base/syslog_logging.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/profiles/profile.h"
-#include "extensions/browser/extension_system.h"
 #include "extensions/browser/updater/extension_downloader.h"
 
 namespace chromeos {
@@ -29,11 +27,8 @@ bool StartupAppLauncherUpdateChecker::Run(UpdateCheckCallback callback) {
     return false;
   }
 
-  extensions::ExtensionUpdater* updater =
-      extensions::ExtensionSystem::Get(profile_)
-          ->extension_service()
-          ->updater();
-  if (!updater) {
+  auto* updater = extensions::ExtensionUpdater::Get(profile_);
+  if (!updater->enabled()) {
     return false;
   }
 

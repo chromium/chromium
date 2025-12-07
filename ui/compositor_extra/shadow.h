@@ -8,13 +8,13 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_owner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/shadow_util.h"
 
 namespace ui {
-class Layer;
 
 // Simple class that draws a drop shadow around content at given bounds.
 class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {

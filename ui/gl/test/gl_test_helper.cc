@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gl/test/gl_test_helper.h"
 
 #include <memory>
 #include <string>
 
-#include "testing/gtest/include/gtest/gtest.h"
-
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
 
@@ -26,7 +21,7 @@
 #include "base/win/scoped_select_object.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
-#include "ui/gfx/gdi_util.h"
+#include "ui/gfx/win/gdi_util.h"
 #include "ui/gl/direct_composition_support.h"
 #endif
 
@@ -67,48 +62,6 @@ GLuint GLTestHelper::SetupFramebuffer(int width, int height) {
   return framebuffer;
 }
 
-// static
-bool GLTestHelper::CheckPixels(int x,
-                               int y,
-                               int width,
-                               int height,
-                               const uint8_t expected_color[4]) {
-  return CheckPixelsWithError(x, y, width, height, 0, expected_color);
-}
-
-// static
-bool GLTestHelper::CheckPixelsWithError(int x,
-                                        int y,
-                                        int width,
-                                        int height,
-                                        int error,
-                                        const uint8_t expected_color[4]) {
-  int size = width * height * 4;
-  auto pixels = base::HeapArray<uint8_t>::Uninit(size);
-  const uint8_t kCheckClearValue = 123u;
-  memset(pixels.data(), kCheckClearValue, pixels.size());
-  glReadPixels(x, y, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
-  int bad_count = 0;
-  for (int yy = 0; yy < height; ++yy) {
-    for (int xx = 0; xx < width; ++xx) {
-      int offset = yy * width * 4 + xx * 4;
-      for (int jj = 0; jj < 4; ++jj) {
-        uint8_t actual = pixels[offset + jj];
-        uint8_t expected = expected_color[jj];
-        EXPECT_NEAR(expected, actual, error)
-            << " at " << (xx + x) << ", " << (yy + y) << " channel " << jj;
-        bad_count += actual != expected;
-        // Exit early just so we don't spam the log but we print enough to
-        // hopefully make it easy to diagnose the issue.
-        if (bad_count > 16)
-          return false;
-      }
-    }
-  }
-
-  return !bad_count;
-}
-
 std::pair<scoped_refptr<GLSurface>, scoped_refptr<GLContext>>
 GLTestHelper::CreateOffscreenGLSurfaceAndContext() {
   scoped_refptr<GLSurface> gl_surface = init::CreateOffscreenGLSurface(
@@ -145,13 +98,13 @@ SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
   }
 
   base::win::ScopedCreateDC mem_hdc(::CreateCompatibleDC(nullptr));
-  DCHECK(mem_hdc.IsValid());
+  DCHECK(mem_hdc.is_valid());
 
   BITMAPV4HEADER hdr;
   gfx::CreateBitmapV4HeaderForARGB888(size.width(), size.height(), &hdr);
 
   void* bits = nullptr;
-  base::win::ScopedBitmap bitmap(
+  base::win::ScopedGDIObject<HBITMAP> bitmap(
       ::CreateDIBSection(mem_hdc.Get(), reinterpret_cast<BITMAPINFO*>(&hdr),
                          DIB_RGB_COLORS, &bits, nullptr, 0));
   DCHECK(bitmap.is_valid());
@@ -175,7 +128,8 @@ SkBitmap GLTestHelper::ReadBackWindow(HWND window, const gfx::Size& size) {
       SkISize::Make(size.width(), size.height()),
       SkColorInfo(SkColorType::kBGRA_8888_SkColorType,
                   SkAlphaType::kPremul_SkAlphaType, nullptr))));
-  memcpy(sk_bitmap.getAddr(0, 0), bits, sk_bitmap.computeByteSize());
+  UNSAFE_TODO(
+      memcpy(sk_bitmap.getAddr(0, 0), bits, sk_bitmap.computeByteSize()));
 
   return sk_bitmap;
 }

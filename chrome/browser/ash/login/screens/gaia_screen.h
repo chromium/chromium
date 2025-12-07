@@ -47,6 +47,7 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
     ENTERPRISE_ENROLL,
     ENTER_QUICK_START,
     QUICK_START_ONGOING,
+    ERROR_OOBE_NOT_COMPLETED,
   };
 
   static std::string GetResultString(Result result);
@@ -106,6 +107,10 @@ class GaiaScreen : public BaseScreen, public ScreenBacklightObserver {
   // `WizardContext::GaiaPath::kDefault`.
   void LoadOnlineGaiaForAccount(const AccountId& account,
                                 bool force_default_gaia_page = false);
+
+  // Whether the QuickStart entry point visibility has already been determined.
+  // This flag prevents duplicate histogram entries.
+  bool has_emitted_quick_start_visible = false;
 
   AuthFactorEditor auth_factor_editor_;
   std::unique_ptr<GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/metrics/histogram_macros.h"
@@ -16,9 +16,9 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/browser_ui/photo_picker/android/photo_picker_jni_headers/ImageDecoder_jni.h"
 
-void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
-  auto* info = base::android::BuildInfo::GetInstance();
-  sandbox::SeccompStarterAndroid starter(info->sdk_int());
+static void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
+  sandbox::SeccompStarterAndroid starter(
+      base::android::android_info::sdk_int());
 
 #if BUILDFLAG(USE_SECCOMP_BPF)
   // The policy compiler is only available if USE_SECCOMP_BPF is enabled.
@@ -27,3 +27,5 @@ void JNI_ImageDecoder_InitializePhotoPickerSandbox(JNIEnv* env) {
 #endif
   starter.StartSandbox();
 }
+
+DEFINE_JNI(ImageDecoder)

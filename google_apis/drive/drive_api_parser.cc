@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "google_apis/drive/drive_api_parser.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 #include <string_view>
 
@@ -208,10 +205,10 @@ struct ChangeTypeMap {
   const char* type_name;
 };
 
-constexpr ChangeTypeMap kChangeTypeMap[] = {
+constexpr auto kChangeTypeMap = std::to_array<ChangeTypeMap>({
     {ChangeResource::FILE, "file"},
     {ChangeResource::TEAM_DRIVE, "teamDrive"},
-};
+});
 
 }  // namespace
 

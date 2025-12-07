@@ -11,8 +11,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 
 namespace page_content_annotations {
@@ -44,9 +44,6 @@ PageContentAnnotationsModelManager::~PageContentAnnotationsModelManager() =
 void PageContentAnnotationsModelManager::SetUpPageVisibilityModel(
     optimization_guide::OptimizationGuideModelProvider*
         optimization_guide_model_provider) {
-  if (!features::PageVisibilityBatchAnnotationsEnabled())
-    return;
-
   if (page_visibility_model_handler_)
     return;
 
@@ -151,7 +148,7 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace page_content_annotations

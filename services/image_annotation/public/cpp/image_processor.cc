@@ -55,8 +55,9 @@ void ScaleAndEncodeImage(scoped_refptr<base::SequencedTaskRunner> task_runner,
           ? image
           : ScaleImage(image, std::sqrt(1.0 * max_pixels / num_pixels));
 
-  std::vector<uint8_t> encoded;
-  if (!gfx::JPEGCodec::Encode(scaled_image, jpg_quality, &encoded)) {
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::JPEGCodec::Encode(scaled_image, jpg_quality);
+  if (!encoded) {
     ReportEncodedJpegSize(0u);
     task_runner->PostTask(
         FROM_HERE,
@@ -64,9 +65,9 @@ void ScaleAndEncodeImage(scoped_refptr<base::SequencedTaskRunner> task_runner,
     return;
   }
 
-  ReportEncodedJpegSize(encoded.size());
+  ReportEncodedJpegSize(encoded->size());
   task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(encoded),
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(encoded).value(),
                                 scaled_image.width(), scaled_image.height()));
 }
 

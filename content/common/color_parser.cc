@@ -10,7 +10,7 @@
 #include <cmath>
 
 #include "base/containers/contains.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"

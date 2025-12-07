@@ -11,11 +11,28 @@
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "components/google/core/common/google_util.h"
+#include "google_apis/gaia/register_bound_session_payload.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_util.h"
 #include "url/gurl.h"
 
 namespace bound_session_credentials {
+namespace {
+
+bound_session_credentials::Credential CreateCookieCredential(
+    std::string_view name,
+    std::string_view domain,
+    std::string_view path) {
+  bound_session_credentials::Credential credential;
+  bound_session_credentials::CookieCredential* cookie_credential =
+      credential.mutable_cookie_credential();
+  cookie_credential->set_name(name);
+  cookie_credential->set_domain(domain);
+  cookie_credential->set_path(path);
+  return credential;
+}
+
+}  // namespace
 
 Timestamp TimeToTimestamp(base::Time time) {
   Timestamp timestamp = Timestamp();
@@ -58,7 +75,7 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
 
   GURL refresh_url(bound_session_params.refresh_url());
   if (!refresh_url.is_valid() ||
-      net::SchemefulSite(site) != net::SchemefulSite(refresh_url)) {
+      !net::SchemefulSite::IsSameSite(site, refresh_url)) {
     return false;
   }
 
@@ -67,7 +84,7 @@ bool AreParamsValid(const BoundSessionParams& bound_session_params) {
     return false;
   }
 
-  return base::ranges::all_of(
+  return std::ranges::all_of(
       bound_session_params.credentials(), [](const auto& credential) {
         return credential.has_cookie_credential() &&
                !credential.cookie_credential().name().empty() &&
@@ -107,7 +124,7 @@ GURL GetBoundSessionScope(const BoundSessionParams& bound_session_params) {
     // components (like scheme and port) from `site`.
     GURL credential_scope = site.ReplaceComponents(replacements);
     if (!credential_scope.is_valid() ||
-        !credential_scope.DomainIs(site.host_piece())) {
+        !credential_scope.DomainIs(site.host())) {
       return GURL();
     }
 
@@ -134,11 +151,39 @@ GURL ResolveEndpointPath(const GURL& request_url,
       base::UnescapeRule::PATH_SEPARATORS |
           base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
   GURL result = request_url.Resolve(unescaped);
-  if (net::SchemefulSite(result) == net::SchemefulSite(request_url)) {
+  if (net::SchemefulSite::IsSameSite(result, request_url)) {
     return result;
   }
 
   return GURL();
+}
+
+BoundSessionParams CreateBoundSessionsParamsFromRegistrationPayload(
+    const RegisterBoundSessionPayload& payload,
+    const GURL& request_url,
+    const GURL& site,
+    std::string_view wrapped_key) {
+  CHECK(!payload.parsed_for_dbsc_standard);
+  BoundSessionParams params;
+  if (!site.is_valid()) {
+    return BoundSessionParams();
+  }
+  const GURL refresh_url =
+      ResolveEndpointPath(request_url, payload.refresh_url);
+  if (!refresh_url.is_valid()) {
+    return BoundSessionParams();
+  }
+  params.set_refresh_url(refresh_url.spec());
+  params.set_site(site.spec());
+  params.set_session_id(payload.session_id);
+  params.set_wrapped_key(wrapped_key);
+  for (const RegisterBoundSessionPayload::Credential& credential :
+       payload.credentials) {
+    *params.add_credentials() = CreateCookieCredential(
+        credential.name, credential.scope.domain, credential.scope.path);
+  }
+  *params.mutable_creation_time() = TimeToTimestamp(base::Time::Now());
+  return params;
 }
 
 }  // namespace bound_session_credentials

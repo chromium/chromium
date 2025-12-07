@@ -38,8 +38,5 @@ blink_modules_sources("bluetooth") {
     "bluetooth_uuid.h",
   ]
 
-  deps = [
-    "//build:chromeos_buildflags",
-    "//device/bluetooth/public/mojom:mojom_blink",
-  ]
+  deps = [ "//device/bluetooth/public/mojom:mojom_blink" ]
 }

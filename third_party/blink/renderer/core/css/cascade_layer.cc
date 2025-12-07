@@ -51,14 +51,7 @@ void CascadeLayer::ToStringInternal(StringBuilder& result,
     }
     result.Append(prefix);
     result.Append(name);
-    sub_layer->ToStringInternal(result, prefix + name + ".");
-  }
-}
-
-void CascadeLayer::Merge(const CascadeLayer& other, LayerMap& mapping) {
-  mapping.insert(&other, this);
-  for (CascadeLayer* sub_layer : other.direct_sub_layers_) {
-    GetOrAddSubLayer({sub_layer->GetName()})->Merge(*sub_layer, mapping);
+    sub_layer->ToStringInternal(result, StrCat({prefix, name, "."}));
   }
 }
 

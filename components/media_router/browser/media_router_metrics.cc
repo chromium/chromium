@@ -51,21 +51,28 @@ std::string GetHistogramNameForProvider(
 }
 
 PresentationUrlType GetPresentationUrlType(const GURL& url) {
-  if (url.SchemeIs(kDialPresentationUrlScheme))
+  if (url.SchemeIs(kDialPresentationUrlScheme)) {
     return PresentationUrlType::kDial;
-  if (url.SchemeIs(kCastPresentationUrlScheme))
+  }
+  if (url.SchemeIs(kCastPresentationUrlScheme)) {
     return PresentationUrlType::kCast;
-  if (url.SchemeIs(kCastDialPresentationUrlScheme))
+  }
+  if (url.SchemeIs(kCastDialPresentationUrlScheme)) {
     return PresentationUrlType::kCastDial;
-  if (url.SchemeIs(kRemotePlaybackPresentationUrlScheme))
+  }
+  if (url.SchemeIs(kRemotePlaybackPresentationUrlScheme)) {
     return PresentationUrlType::kRemotePlayback;
+  }
   if (base::StartsWith(url.spec(), kLegacyCastPresentationUrlPrefix,
-                       base::CompareCase::INSENSITIVE_ASCII))
+                       base::CompareCase::INSENSITIVE_ASCII)) {
     return PresentationUrlType::kCastLegacy;
-  if (url.SchemeIs(url::kHttpsScheme))
+  }
+  if (url.SchemeIs(url::kHttpsScheme)) {
     return PresentationUrlType::kHttps;
-  if (url.SchemeIs(url::kHttpScheme))
+  }
+  if (url.SchemeIs(url::kHttpScheme)) {
     return PresentationUrlType::kHttp;
+  }
   return PresentationUrlType::kOther;
 }
 
@@ -97,10 +104,8 @@ const char MediaRouterMetrics::kHistogramUiAndroidDialogType[] =
     "MediaRouter.Ui.Android.DialogType";
 const char MediaRouterMetrics::kHistogramUiAndroidDialogAction[] =
     "MediaRouter.Ui.Android.DialogAction";
-const char MediaRouterMetrics::kHistogramUserPromptWhenLaunchingCast[] =
-    "MediaRouter.Cast.UserPromptWhenLaunchingCast";
-const char MediaRouterMetrics::kHistogramPendingUserAuthLatency[] =
-    "MediaRouter.Cast.PendingUserAuthLatency";
+const char MediaRouterMetrics::kHistogramUiPermissionRejectedViewAction[] =
+    "MediaRouter.Ui.PermissionRejectedViewAction";
 
 // static
 const base::TimeDelta MediaRouterMetrics::kDeviceCountMetricDelay =
@@ -126,8 +131,7 @@ void MediaRouterMetrics::RecordGmcDialogLoaded(const base::TimeDelta& delta) {
 // static
 void MediaRouterMetrics::RecordMediaRouterFileFormat(
     const media::container_names::MediaContainerName format) {
-  base::UmaHistogramEnumeration(
-      kHistogramMediaRouterFileFormat, format);
+  base::UmaHistogramEnumeration(kHistogramMediaRouterFileFormat, format);
 }
 
 // static
@@ -216,17 +220,10 @@ void MediaRouterMetrics::RecordMediaRouterAndroidDialogAction(
   base::UmaHistogramEnumeration(kHistogramUiAndroidDialogAction, action);
 }
 
-// static
-void MediaRouterMetrics::RecordMediaRouterUserPromptWhenLaunchingCast(
-    MediaRouterUserPromptWhenLaunchingCast user_prompt) {
-  base::UmaHistogramEnumeration(kHistogramUserPromptWhenLaunchingCast,
-                                user_prompt);
-}
-
-// static
-void MediaRouterMetrics::RecordMediaRouterPendingUserAuthLatency(
-    const base::TimeDelta& delta) {
-  base::UmaHistogramTimes(kHistogramPendingUserAuthLatency, delta);
+void MediaRouterMetrics::RecordMediaRouterUiPermissionRejectedViewEvents(
+    MediaRouterUiPermissionRejectedViewEvents event) {
+  base::UmaHistogramEnumeration(kHistogramUiPermissionRejectedViewAction,
+                                event);
 }
 
 }  // namespace media_router

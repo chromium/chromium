@@ -12,7 +12,7 @@ namespace content {
 class WebContents;
 }
 
-class Browser;
+class BrowserWindowInterface;
 
 namespace metrics {
 
@@ -53,7 +53,8 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
 
   // Returns a visible webcontents from `browser` that can be observed for
   // startup profiling, or `nullptr` if no compatible one was obtained.
-  static content::WebContents* GetVisibleContents(Browser* browser);
+  static content::WebContents* GetVisibleContents(
+      BrowserWindowInterface* browser);
 
  protected:
   explicit FirstWebContentsProfilerBase(content::WebContents* web_contents);
@@ -87,6 +88,10 @@ class FirstWebContentsProfilerBase : public content::WebContentsObserver {
 
   // Whether a main frame navigation finished since this was created.
   bool did_finish_first_navigation_ = false;
+
+  // Whether a navigation was pending at the time this profiler was constructed,
+  // or if a navigation start was observed post-construction.
+  bool first_navigation_started_ = false;
 };
 
 }  // namespace metrics

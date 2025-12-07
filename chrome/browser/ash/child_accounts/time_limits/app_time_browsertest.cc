@@ -6,10 +6,6 @@
 #include <optional>
 #include <string>
 
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/test/arc_util_test_support.h"
-#include "ash/components/arc/test/connection_holder_util.h"
-#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -33,6 +29,10 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
+#include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
+#include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
+#include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -40,8 +40,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 namespace {
 
@@ -113,8 +112,7 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
   }
 
   void UpdatePerAppTimeLimitsPolicy(const base::Value::Dict& policy) {
-    std::string policy_value;
-    base::JSONWriter::Write(policy, &policy_value);
+    std::string policy_value = base::WriteJson(policy).value_or("");
 
     logged_in_user_mixin_.GetUserPolicyMixin()
         ->RequestPolicyUpdate()
@@ -300,5 +298,4 @@ IN_PROC_BROWSER_TEST_F(AppTimeTest, PerAppTimeLimitsPolicyMultipleEntries) {
             app_registry_test.GetAppLimit(app4)->restriction());
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

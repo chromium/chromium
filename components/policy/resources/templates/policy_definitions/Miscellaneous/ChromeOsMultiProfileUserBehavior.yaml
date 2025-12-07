@@ -16,6 +16,7 @@ desc: |-
         If the setting is changed while the user is signed into a multiprofile session, all users in the session will be checked against their corresponding settings. The session will be closed if any one of the users is no longer allowed to be in the session.
 
         If the policy is left not set, the default value 'MultiProfileUserBehaviorMustBePrimary' applies for enterprise-managed users and 'MultiProfileUserBehaviorUnrestricted' will be used for non-managed users.
+default: unrestricted
 example_value: unrestricted
 features:
   dynamic_refresh: true

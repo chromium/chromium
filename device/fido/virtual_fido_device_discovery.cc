@@ -10,7 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "device/fido/fido_transport_protocol.h"
+#include "device/fido/cable/pairing.h"
+#include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/virtual_fido_device_authenticator.h"
 #include "device/fido/virtual_u2f_device.h"
 

@@ -42,7 +42,7 @@ void TracedValue::SetBooleanWithCopiedName(const char* name, bool value) {
 }
 
 void TracedValue::SetString(const char* name, const String& value) {
-  StringUTF8Adaptor adaptor(value);
+  StringUtf8Adaptor adaptor(value);
   traced_value_->SetString(name, adaptor.AsStringView());
 }
 
@@ -52,7 +52,7 @@ void TracedValue::SetValue(const char* name, TracedValue* value) {
 
 void TracedValue::SetStringWithCopiedName(const char* name,
                                           const String& value) {
-  StringUTF8Adaptor adaptor(value);
+  StringUtf8Adaptor adaptor(value);
   traced_value_->SetStringWithCopiedName(name, adaptor.AsStringView());
 }
 
@@ -89,7 +89,7 @@ void TracedValue::PushBoolean(bool value) {
 }
 
 void TracedValue::PushString(const String& value) {
-  StringUTF8Adaptor adaptor(value);
+  StringUtf8Adaptor adaptor(value);
   traced_value_->AppendString(adaptor.AsStringView());
 }
 
@@ -111,11 +111,6 @@ void TracedValue::AppendAsTraceFormat(std::string* out) const {
 
 bool TracedValue::AppendToProto(ProtoAppender* appender) const {
   return traced_value_->AppendToProto(appender);
-}
-
-void TracedValue::EstimateTraceMemoryOverhead(
-    base::trace_event::TraceEventMemoryOverhead* overhead) {
-  traced_value_->EstimateTraceMemoryOverhead(overhead);
 }
 
 TracedValueJSON::TracedValueJSON()

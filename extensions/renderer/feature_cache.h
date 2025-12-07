@@ -37,8 +37,8 @@ class FeatureCache {
 
   ~FeatureCache();
 
-  // Returns the names of features available to the given set of |context_type|,
-  // |extension|, and |url| in a lexicographically sorted vector.
+  // Returns the names of features available to the given set of `context_type`,
+  // `extension`, and `url` in a lexicographically sorted vector.
   // Note: these contexts should be valid, so WebUI contexts should have no
   // extensions, extension should be non-null for extension contexts, etc.
   FeatureNameVector GetAvailableFeatures(mojom::ContextType context_type,

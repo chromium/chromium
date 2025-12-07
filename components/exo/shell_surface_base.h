@@ -25,6 +25,7 @@
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -283,7 +284,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnFrameLockingChanged(Surface*, bool) override {}
   void OnDeskChanged(Surface*, int) override {}
   void OnTooltipShown(Surface* surface,
-                      const std::u16string& text,
+                      std::u16string_view text,
                       const gfx::Rect& bounds) override {}
   void OnTooltipHidden(Surface* surface) override {}
 
@@ -297,7 +298,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   views::Widget* GetWidget() override;
   const views::Widget* GetWidget() const override;
   views::View* GetContentsView() override;
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameView(
+  std::unique_ptr<views::FrameView> CreateFrameView(
       views::Widget* widget) override;
   bool ShouldSaveWindowPlacement() const override;
   bool WidgetHasHitTestMask() const override;
@@ -315,7 +316,6 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // ShellSurfaceBase::GetWidget()->GetXxxSize.
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::FocusTraversable* GetFocusTraversable() override;
 
   // aura::WindowObserver:
@@ -334,7 +334,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // wm::TooltipObserver:
   void OnTooltipShown(aura::Window* target,
-                      const std::u16string& text,
+                      std::u16string_view text,
                       const gfx::Rect& bounds) override;
   void OnTooltipHidden(aura::Window* target) override;
 
@@ -392,7 +392,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
-  void CreateShellSurfaceWidget(ui::WindowShowState show_state);
+  void CreateShellSurfaceWidget(ui::mojom::WindowShowState show_state);
 
   // Returns true if the window is the ShellSurface's widget's window.
   bool IsShellSurfaceWindow(const aura::Window* window) const;
@@ -456,8 +456,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // Install custom window targeter. Used to restore window targeter.
   void InstallCustomWindowTargeter();
 
-  // Creates a NonClientFrameView for shell surface.
-  std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameViewInternal(
+  // Creates a FrameView for shell surface.
+  std::unique_ptr<views::FrameView> CreateFrameViewInternal(
       views::Widget* widget);
 
   virtual void OnPostWidgetCommit();

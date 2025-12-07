@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/threadable_loader.h"
@@ -61,7 +60,7 @@ class CORE_EXPORT ThreadedIconLoader final
 
   // Data received from |threadable_loader_|. Will be invalidated when decoding
   // of the image data starts.
-  scoped_refptr<SharedBuffer> data_;
+  SegmentedBuffer data_;
 
   String response_mime_type_;
 

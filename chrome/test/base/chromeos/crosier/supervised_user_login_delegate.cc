@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -142,6 +143,6 @@ void SupervisedUserLoginDelegate::DoCustomGaiaLogin(std::string& username) {
   // Skip post login steps.
   ash::WizardController::default_controller()->SkipPostLoginScreensForTesting();
 #else
-  CHECK(false) << "Gaia login is only supported in branded build.";
+  NOTREACHED() << "Gaia login is only supported in branded build.";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }

@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/function_ref.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -18,14 +19,26 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_data_store.h"
-#include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/metrics/daily_event.h"
 #include "content/public/browser/web_contents_observer.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
+#endif
+
 class PrefRegistrySimple;
 class PrefService;
+class Profile;
+
+#if BUILDFLAG(IS_ANDROID)
+class TabModel;
+#else
+class BrowserWindowInterface;
+#endif
+
+namespace content {
+class WebContents;
+}
 
 namespace metrics {
 FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
@@ -37,11 +50,16 @@ FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
 // method, e.g.:
 //     TabStatsTracker::SetInstance(
 //         std::make_unique<TabStatsTracker>(g_browser_process->local_state()));
-class TabStatsTracker : public TabStripModelObserver,
-                        public BrowserListObserver,
-                        public base::PowerSuspendObserver,
-                        public resource_coordinator::TabLifecycleObserver {
+class TabStatsTracker :
+#if !BUILDFLAG(IS_ANDROID)
+    public resource_coordinator::LifecycleUnitObserver,
+#endif
+    public base::PowerSuspendObserver {
  public:
+  // Abstraction of a Browser + TabStripModel (on desktop) or a TabModel (on
+  // Android).
+  class TabStripInterface;
+
   // Constructor. |pref_service| must outlive this object.
   explicit TabStatsTracker(PrefService* pref_service);
 
@@ -74,9 +92,14 @@ class TabStatsTracker : public TabStripModelObserver,
   // Accessors.
   const TabStatsDataStore::TabsStats& tab_stats() const;
 
+  content::WebContentsObserver* GetWebContentsUsageObserverForTesting(
+      content::WebContents* web_contents);
+
  protected:
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TabDeletionGetsHandledProperly);
+  FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
+                           TabsAndWindowsAreCountedAccurately);
 #if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TestCalculateAndRecordNativeWindowVisibilities);
@@ -84,7 +107,100 @@ class TabStatsTracker : public TabStripModelObserver,
 
   // The UmaStatsReportingDelegate is responsible for delivering statistics
   // reported by the TabStatsTracker via UMA.
-  class UmaStatsReportingDelegate;
+  class UmaStatsReportingDelegate {
+   public:
+    // The name of the histogram that records the number of tabs total at resume
+    // from sleep/hibernate.
+    static const char kNumberOfTabsOnResumeHistogramName[];
+
+    // The name of the histogram that records the maximum number of tabs opened
+    // in a day.
+    static const char kMaxTabsInADayHistogramName[];
+
+    // The name of the histogram that records the maximum number of tabs opened
+    // in the same window in a day.
+    static const char kMaxTabsPerWindowInADayHistogramName[];
+
+    // The name of the histogram that records the maximum number of windows
+    // opened in a day.
+    static const char kMaxWindowsInADayHistogramName[];
+
+    // The name of the histograms that records the current number of
+    // tabs/windows.
+    static const char kTabCountHistogramName[];
+    static const char kWindowCountHistogramName[];
+
+    // The name of the histogram that records each window's width, in DIPs.
+    static const char kWindowWidthHistogramName[];
+
+    // The names of the histograms that record daily discard/reload counts
+    // caused for each discard reason.
+    static const char kDailyDiscardsExternalHistogramName[];
+    static const char kDailyDiscardsUrgentHistogramName[];
+    static const char kDailyDiscardsProactiveHistogramName[];
+    static const char kDailyDiscardsSuggestedHistogramName[];
+    static const char kDailyDiscardsFrozenWithGrowingMemoryHistogramName[];
+    static const char kDailyReloadsExternalHistogramName[];
+    static const char kDailyReloadsUrgentHistogramName[];
+    static const char kDailyReloadsProactiveHistogramName[];
+    static const char kDailyReloadsSuggestedHistogramName[];
+    static const char kDailyReloadsFrozenWithGrowingMemoryHistogramName[];
+
+    // The names of the histograms that record duplicate tab data.
+    static const char kTabDuplicateCountSingleWindowHistogramName[];
+    static const char kTabDuplicateCountAllProfileWindowsHistogramName[];
+    static const char kTabDuplicatePercentageSingleWindowHistogramName[];
+    static const char kTabDuplicatePercentageAllProfileWindowsHistogramName[];
+    static const char
+        kTabDuplicateExcludingFragmentsCountSingleWindowHistogramName[];
+    static const char
+        kTabDuplicateExcludingFragmentsCountAllProfileWindowsHistogramName[];
+    static const char
+        kTabDuplicateExcludingFragmentsPercentageSingleWindowHistogramName[];
+    static const char
+        kTabDuplicateExcludingFragmentsPercentageAllProfileWindowsHistogramName
+            [];
+
+    UmaStatsReportingDelegate() = default;
+
+    UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
+    UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
+        delete;
+
+    virtual ~UmaStatsReportingDelegate() = default;
+
+    // Called at resume from sleep/hibernate.
+    void ReportTabCountOnResume(size_t tab_count);
+
+    // Called once per day to report the metrics.
+    void ReportDailyMetrics(const TabStatsDataStore::TabsStats& tab_stats);
+
+    // Report the tab heartbeat metrics.
+    void ReportHeartbeatMetrics(const TabStatsDataStore::TabsStats& tab_stats);
+
+    // Calculate and report the metrics related to tab duplicates, which are
+    // re-calculated each time rather than cached like the other metrics due to
+    // their complexity. |exclude_fragments| will treat two tabs with the same
+    // URL apart from trailing fragments as duplicates, otherwise will only
+    // treat exact URL matches as duplicates.
+    void ReportTabDuplicateMetrics(bool exclude_fragments);
+
+   protected:
+    // Checks if Chrome is running in background with no visible windows,
+    // virtual for unittesting.
+    virtual bool IsChromeBackgroundedWithoutWindows();
+
+   private:
+    struct DuplicateData {
+      DuplicateData();
+      DuplicateData(const DuplicateData&);
+      ~DuplicateData();
+
+      int duplicate_count;
+      int tab_count;
+      std::set<GURL> seen_urls;
+    };
+  };
 
   // The observer that's used by |daily_event_| to report the metrics.
   class TabStatsDailyObserver : public DailyEvent::Observer {
@@ -98,7 +214,7 @@ class TabStatsTracker : public TabStripModelObserver,
     TabStatsDailyObserver(const TabStatsDailyObserver&) = delete;
     TabStatsDailyObserver& operator=(const TabStatsDailyObserver&) = delete;
 
-    ~TabStatsDailyObserver() override {}
+    ~TabStatsDailyObserver() override = default;
 
     // Callback called when the daily event happen.
     void OnDailyEvent(DailyEvent::IntervalType type) override;
@@ -142,29 +258,26 @@ class TabStatsTracker : public TabStripModelObserver,
     tab_stats_data_store_.reset(data_store);
   }
 
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override;
-  void OnBrowserRemoved(Browser* browser) override;
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override;
-
   // base::PowerSuspendObserver:
   void OnResume() override;
 
-  // resource_coordinator::TabLifecycleObserver:
-  void OnDiscardedStateChange(content::WebContents* contents,
-                              ::mojom::LifecycleUnitDiscardReason reason,
-                              bool is_discarded) override;
+#if !BUILDFLAG(IS_ANDROID)
+  // resource_coordinator::LifecycleUnitObserver:
+  void OnLifecycleUnitStateChanged(
+      resource_coordinator::LifecycleUnit* lifecycle_unit,
+      ::mojom::LifecycleUnitState previous_state) override;
+#endif
 
-  void OnAutoDiscardableStateChange(content::WebContents* contents,
-                                    bool is_auto_discardable) override;
+  // Functions to call when a tab strip (or the Android equivalent) is added,
+  // removed or modified.
+  void OnTabStripAdded();
+  void OnTabStripRemoved();
+  void OnTabStripNewTabCount(size_t tab_count);
 
   // Functions to call to start tracking a new tab.
   void OnInitialOrInsertedTab(content::WebContents* web_contents);
+  void OnTabReplaced(content::WebContents* old_contents,
+                     content::WebContents* new_contents);
 
   // Functions to call when a WebContents get destroyed.
   void OnWebContentsDestroyed(content::WebContents* web_contents);
@@ -179,6 +292,13 @@ class TabStatsTracker : public TabStripModelObserver,
 
   // For access to |tab_stats_observers_|
   friend class WebContentsUsageObserver;
+
+  // A class that watches for tabs to be added and removed. Abstracts away
+  // tab strip differences on Android and desktop.
+  class TabWatcher;
+
+  // For access to OnTabStripAdded() and OnTabStripRemoved().
+  friend class TabWatcher;
 
   // The delegate that reports the events.
   std::unique_ptr<UmaStatsReportingDelegate> reporting_delegate_;
@@ -203,67 +323,71 @@ class TabStatsTracker : public TabStripModelObserver,
   std::map<content::WebContents*, std::unique_ptr<WebContentsUsageObserver>>
       web_contents_usage_observers_;
 
+  std::unique_ptr<TabWatcher> tab_watcher_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-// The reporting delegate, which reports metrics via UMA.
-class TabStatsTracker::UmaStatsReportingDelegate {
+// A Browser + TabStripModel (on desktop) or a TabModel (on Android).
+// The TabStripInterface must not outlive the underlying model.
+class TabStatsTracker::TabStripInterface {
  public:
-  // The name of the histogram that records the number of tabs total at resume
-  // from sleep/hibernate.
-  static const char kNumberOfTabsOnResumeHistogramName[];
+#if BUILDFLAG(IS_ANDROID)
+  using PlatformModel = TabModel;
 
-  // The name of the histogram that records the maximum number of tabs opened in
-  // a day.
-  static const char kMaxTabsInADayHistogramName[];
+  const TabModel* tab_model() const { return model_.get(); }
+  TabModel* tab_model() { return model_.get(); }
+#else
+  using PlatformModel = BrowserWindowInterface;
 
-  // The name of the histogram that records the maximum number of tabs opened in
-  // the same window in a day.
-  static const char kMaxTabsPerWindowInADayHistogramName[];
+  const BrowserWindowInterface* browser_window_interface() const {
+    return model_.get();
+  }
+  BrowserWindowInterface* browser_window_interface() { return model_.get(); }
+#endif
 
-  // The name of the histogram that records the maximum number of windows
-  // opened in a day.
-  static const char kMaxWindowsInADayHistogramName[];
+  explicit TabStripInterface(PlatformModel* model);
+  ~TabStripInterface();
 
-  // The name of the histograms that records the current number of tabs/windows.
-  static const char kTabCountHistogramName[];
-  static const char kWindowCountHistogramName[];
+  TabStripInterface(const TabStripInterface&) = delete;
+  TabStripInterface& operator=(const TabStripInterface&) = delete;
 
-  // The name of the histogram that records each window's width, in DIPs.
-  static const char kWindowWidthHistogramName[];
+  // Calls `func` for each tab in the tab strip that has a non-null
+  // WebContents. On Android, tabs will be skipped if their WebContents isn't
+  // initialized yet.
+  void ForEachWebContents(
+      base::FunctionRef<void(content::WebContents*)> func) const;
 
-  // The names of the histograms that record daily discard/reload counts caused
-  // by external/urgent/proactive/suggested events.
-  static const char kDailyDiscardsExternalHistogramName[];
-  static const char kDailyDiscardsUrgentHistogramName[];
-  static const char kDailyDiscardsProactiveHistogramName[];
-  static const char kDailyDiscardsSuggestedHistogramName[];
-  static const char kDailyReloadsExternalHistogramName[];
-  static const char kDailyReloadsUrgentHistogramName[];
-  static const char kDailyReloadsProactiveHistogramName[];
-  static const char kDailyReloadsSuggestedHistogramName[];
+  // Returns the count of tabs in this tab strip.
+  size_t GetTabCount() const;
 
-  UmaStatsReportingDelegate() = default;
+  // Returns the active tab for this tab strip. On Android this may return
+  // nullptr if the tab's WebContents isn't initialized yet.
+  content::WebContents* GetActiveWebContents() const;
 
-  UmaStatsReportingDelegate(const UmaStatsReportingDelegate&) = delete;
-  UmaStatsReportingDelegate& operator=(const UmaStatsReportingDelegate&) =
-      delete;
+  // Returns the tab at `index` of this tab strip. On Android this may return
+  // nullptr if the tab's WebContents isn't initialized yet.
+  content::WebContents* GetWebContentsAt(size_t index) const;
 
-  virtual ~UmaStatsReportingDelegate() = default;
+  // Returns the profile this tab strip is attached to.
+  Profile* GetProfile() const;
 
-  // Called at resume from sleep/hibernate.
-  void ReportTabCountOnResume(size_t tab_count);
+  // Returns true if this tab strip is attached to a TYPE_NORMAL Browser.
+  // Always returns true on Android.
+  bool IsInNormalBrowser() const;
 
-  // Called once per day to report the metrics.
-  void ReportDailyMetrics(const TabStatsDataStore::TabsStats& tab_stats);
+  // Activates the tab at `index` of this tab strip.
+  void ActivateTabAtForTesting(size_t index);
 
-  // Report the tab heartbeat metrics.
-  void ReportHeartbeatMetrics(const TabStatsDataStore::TabsStats& tab_stats);
+  // Closes the tab at `index` of this tab strip.
+  void CloseTabAtForTesting(size_t index);
 
- protected:
-  // Checks if Chrome is running in background with no visible windows, virtual
-  // for unittesting.
-  virtual bool IsChromeBackgroundedWithoutWindows();
+  // Calls `func` for each existing Browser + TabStripModel (or TabModel on
+  // Android).
+  static void ForEach(base::FunctionRef<void(const TabStripInterface&)> func);
+
+ private:
+  raw_ptr<PlatformModel> model_;
 };
 
 }  // namespace metrics

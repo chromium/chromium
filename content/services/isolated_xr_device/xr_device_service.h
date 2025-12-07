@@ -6,11 +6,10 @@
 #define CONTENT_SERVICES_ISOLATED_XR_DEVICE_XR_DEVICE_SERVICE_H_
 
 #include "base/task/single_thread_task_runner.h"
-#include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "device/vr/public/mojom/test/browser_test_interfaces.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace device {
 

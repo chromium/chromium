@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.CallSuper;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListProperties;
 import org.chromium.chrome.browser.download.home.list.UiUtils;
@@ -23,6 +24,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * A {@link RecyclerView.ViewHolder} specifically meant to display an in-progress {@code
  * OfflineItem}.
  */
+@NullMarked
 public abstract class InProgressViewHolder extends ListItemViewHolder {
     private final boolean mConstrainCaption;
 

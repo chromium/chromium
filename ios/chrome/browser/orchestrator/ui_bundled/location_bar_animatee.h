@@ -9,7 +9,7 @@
 
 // Protocol defining an interface to trigger changes on the location bar.
 // Calling those methods should not start any animation.
-@protocol LocationBarAnimatee<NSObject>
+@protocol LocationBarAnimatee <NSObject>
 
 // Moves the text field to a position where the text in it visually overlays the
 // text in steady view.
@@ -38,6 +38,11 @@
 // Resets tranforms of edit and steady view. Used for post-animation cleanup.
 // Only resets the translation, and leaves scale intact.
 - (void)resetTransforms;
+
+// Adds, fades, and clears the fakebox buttons snapshot.
+- (void)addFakeboxButtonsSnapshot;
+- (void)setFakeboxButtonsSnapshotFaded:(BOOL)faded;
+- (void)clearFakeboxButtonsSnapshot;
 
 @end
 

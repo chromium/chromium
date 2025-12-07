@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/fake_user_action_recorder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeUserActionRecorder::FakeUserActionRecorder() = default;
 
@@ -47,5 +46,4 @@ void FakeUserActionRecorder::RecordAppStreamLauncherOpened() {
   ++app_stream_launcher_opened_;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

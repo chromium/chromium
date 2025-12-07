@@ -4,22 +4,38 @@
 
 #include "ui/base/interaction/element_tracker.h"
 
+#include <algorithm>
 #include <iterator>
 #include <list>
 #include <map>
 #include <sstream>
 
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace ui {
+
+namespace {
+
+ElementTracker::Callback FilterCallback(ElementTracker::Callback callback,
+                                        ElementIdentifier id) {
+  return base::BindRepeating(
+      [](const ElementTracker::Callback& callback, ElementIdentifier id,
+         TrackedElement* el) {
+        if (el->identifier() == id) {
+          callback.Run(el);
+        }
+      },
+      std::move(callback), id);
+}
+
+}  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ElementTracker, kTemporaryIdentifier);
 
@@ -102,7 +118,7 @@ class ElementTracker::ElementData {
   void NotifyElementHidden(TrackedElement* element) {
     if (context_) {
       const auto it = element_lookup_.find(element);
-      CHECK(it != element_lookup_.end(), base::NotFatalUntil::M130);
+      CHECK(it != element_lookup_.end());
       elements_.erase(it->second);
       element_lookup_.erase(it);
     }
@@ -189,12 +205,19 @@ class ElementTracker::GarbageCollector {
 };
 
 TrackedElement::TrackedElement(ElementIdentifier id, ElementContext context)
-    : identifier_(id), context_(context) {}
+    : identifier_(id), context_(context) {
+  CHECK(id);
+  CHECK(context);
+}
 
 TrackedElement::~TrackedElement() = default;
 
 gfx::Rect TrackedElement::GetScreenBounds() const {
   return gfx::Rect();
+}
+
+gfx::NativeView TrackedElement::GetNativeView() const {
+  return gfx::NativeView();
 }
 
 std::string TrackedElement::ToString() const {
@@ -247,7 +270,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElements(
   const auto it = element_data_.find(LookupKey(id, context));
   ElementList result;
   if (it != element_data_.end()) {
-    base::ranges::copy(it->second.elements(), std::back_inserter(result));
+    std::ranges::copy(it->second.elements(), std::back_inserter(result));
   }
   return result;
 }
@@ -257,7 +280,7 @@ ElementTracker::ElementList ElementTracker::GetAllMatchingElementsInAnyContext(
   ElementList result;
   for (const auto& [key, data] : element_data_) {
     if (key.first == id) {
-      base::ranges::copy(data.elements(), std::back_inserter(result));
+      std::ranges::copy(data.elements(), std::back_inserter(result));
     }
   }
   return result;
@@ -272,7 +295,12 @@ bool ElementTracker::IsElementVisible(ElementIdentifier id,
 ElementTracker::Contexts ElementTracker::GetAllContextsForTesting() const {
   Contexts result;
   for (const auto& [key, data] : element_data_) {
-    result.insert(key.second);
+    const ElementContext context = key.second;
+    // The null context is used for registering "in any context" callbacks, but
+    // is not actually a valid context.
+    if (context) {
+      result.insert(context);
+    }
   }
   return result;
 }
@@ -370,6 +398,32 @@ ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
       ->AddCustomEventCallback(callback);
 }
 
+ElementTracker::Subscription ElementTracker::AddCustomEventCallback(
+    CustomElementEventType event_type,
+    ElementIdentifier id,
+    ElementContext context,
+    Callback callback) {
+  DCHECK(event_type);
+  DCHECK(context);
+  // Because custom event callbacks are indexed by event type (and because we
+  // use the same underlying type for both element ids and custom events), we
+  // can store both in the same lookup table.
+  return GetOrAddElementData(event_type, context)
+      ->AddCustomEventCallback(FilterCallback(std::move(callback), id));
+}
+
+ElementTracker::Subscription ElementTracker::AddCustomEventInAnyContextCallback(
+    CustomElementEventType event_type,
+    ElementIdentifier id,
+    Callback callback) {
+  DCHECK(event_type);
+  // Because custom event callbacks are indexed by event type (and because we
+  // use the same underlying type for both element ids and custom events), we
+  // can store both in the same lookup table.
+  return GetOrAddElementData(event_type, ElementContext())
+      ->AddCustomEventCallback(FilterCallback(std::move(callback), id));
+}
+
 ElementTracker::ElementTracker()
     : gc_(std::make_unique<GarbageCollector>(this)) {}
 
@@ -411,7 +465,7 @@ void ElementTracker::NotifyElementActivated(TrackedElement* element) {
   GarbageCollector::Frame gc_frame(gc_.get());
   const auto it =
       element_data_.find(LookupKey(element->identifier(), element->context()));
-  CHECK(it != element_data_.end(), base::NotFatalUntil::M130);
+  CHECK(it != element_data_.end());
   it->second.NotifyElementActivated(safe_element);
 
   // Do "all contexts" notification:
@@ -440,7 +494,7 @@ void ElementTracker::NotifyElementHidden(TrackedElement* element) {
   // Call context-specific callbacks and erase entry.
   const auto it =
       element_data_.find(LookupKey(element->identifier(), element->context()));
-  CHECK(it != element_data_.end(), base::NotFatalUntil::M130);
+  CHECK(it != element_data_.end());
   ElementData* const data = &it->second;
   data->NotifyElementHidden(element);
   gc_frame.Add(data);
@@ -525,6 +579,14 @@ SafeElementReference::SafeElementReference(SafeElementReference&& other)
 SafeElementReference::SafeElementReference(const SafeElementReference& other)
     : element_(other.element_) {
   Subscribe();
+}
+
+SafeElementReference& SafeElementReference::operator=(TrackedElement* el) {
+  if (element_ != el) {
+    element_ = el;
+    Subscribe();
+  }
+  return *this;
 }
 
 SafeElementReference& SafeElementReference::operator=(

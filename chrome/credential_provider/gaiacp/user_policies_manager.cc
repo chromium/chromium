@@ -7,15 +7,16 @@
 #include <limits>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -219,7 +220,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   }
 
   // Make the fetch policies HTTP request.
-  std::optional<base::Value> request_result;
+  std::optional<base::Value::Dict> request_result;
   HRESULT hr = WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
       user_policies_url, access_token, {}, {},
       kDefaultFetchPoliciesRequestTimeout, kMaxNumHttpRetries, &request_result);
@@ -231,7 +232,7 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
   }
 
   std::string policy_data;
-  if (request_result && request_result->is_dict()) {
+  if (request_result) {
     if (!base::JSONWriter::Write(*request_result, &policy_data)) {
       LOGFN(ERROR) << "base::JSONWriter::Write failed";
       return (fetch_status_ = E_FAIL);
@@ -250,8 +251,8 @@ HRESULT UserPoliciesManager::FetchAndStorePolicies(
     return (fetch_status_ = E_FAIL);
   }
 
-  int num_bytes_written =
-      policy_file->Write(0, policy_data.c_str(), policy_data.size());
+  int num_bytes_written = UNSAFE_TODO(
+      policy_file->Write(0, policy_data.c_str(), policy_data.size()));
 
   policy_file.reset();
 
@@ -283,20 +284,19 @@ bool UserPoliciesManager::GetUserPolicies(const std::wstring& sid,
     return false;
   }
 
-  std::vector<char> buffer(policy_file->GetLength());
-  policy_file->Read(0, buffer.data(), buffer.size());
+  std::vector<uint8_t> buffer(policy_file->GetLength());
+  policy_file->Read(0, buffer);
   policy_file.reset();
 
-  std::optional<base::Value> policy_data =
-      base::JSONReader::Read(std::string_view(buffer.data(), buffer.size()),
-                             base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!policy_data || !policy_data->is_dict()) {
+  std::optional<base::Value::Dict> policy_data = base::JSONReader::ReadDict(
+      base::as_string_view(buffer), base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!policy_data) {
     LOGFN(ERROR) << "Failed to read policy data from file!";
     return false;
   }
 
   const base::Value::Dict* policies =
-      policy_data->GetDict().FindDict(kPolicyFetchResponseKeyName);
+      policy_data->FindDict(kPolicyFetchResponseKeyName);
   if (!policies) {
     LOGFN(ERROR) << "User policies not found!";
     return false;

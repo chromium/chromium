@@ -7,6 +7,8 @@
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +23,7 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/scorer.h"
 #include "components/safe_browsing/core/common/fbs/client_model_generated.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
@@ -31,6 +34,7 @@
 #include "url/gurl.h"
 
 using base::ASCIIToUTF16;
+using safe_browsing::mojom::ClientSideDetectionType::kTriggerModels;
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -46,12 +50,6 @@ namespace {
 scoped_refptr<const base::RefCountedString16> MakeRefPtrString(
     const std::u16string& str) {
   return base::MakeRefCounted<const base::RefCountedString16>(str);
-}
-
-testing::Matcher<scoped_refptr<const base::RefCountedString16>>
-RefCntStr16Matcher(const scoped_refptr<const base::RefCountedString16>& str) {
-  return Pointee(
-      Property(&base::RefCountedString16::as_string, Eq(str->as_string())));
 }
 
 std::string GetFlatBufferString(int version) {
@@ -123,10 +121,11 @@ class MockPhishingClassifier : public PhishingClassifier {
 
   ~MockPhishingClassifier() override = default;
 
-  MOCK_METHOD2(BeginClassification,
-               void(scoped_refptr<const base::RefCountedString16>,
-                    DoneCallback));
+  MOCK_METHOD1(BeginClassification, void(DoneCallback));
   MOCK_METHOD0(CancelPendingClassification, void());
+  MOCK_METHOD1(
+      SetClientSideDetectionType,
+      void(std::optional<safe_browsing::mojom::ClientSideDetectionType>));
 };
 }  // namespace
 
@@ -151,9 +150,12 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
   }
 
   void OnStartPhishingDetection(const GURL& url) {
+    EXPECT_CALL(*classifier_,
+                SetClientSideDetectionType(std::optional(kTriggerModels)));
     delegate_->StartPhishingDetection(
-        url, base::BindOnce(&PhishingClassifierDelegateTest::VerifyRequestProto,
-                            base::Unretained(this)));
+        url, kTriggerModels,
+        base::BindOnce(&PhishingClassifierDelegateTest::VerifyRequestProto,
+                       base::Unretained(this)));
   }
 
   void SimulateRedirection(const GURL& redir_url) {
@@ -187,9 +189,7 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
     std::string model_str = GetFlatBufferString(model_version);
     base::MappedReadOnlyRegion mapped_region =
         base::ReadOnlySharedMemoryRegion::Create(model_str.length());
-    memcpy(mapped_region.mapping.memory(), model_str.data(),
-           model_str.length());
-
+    mapped_region.mapping.GetMemoryAsSpan<char>().copy_from(model_str);
     ScorerStorage::GetInstance()->SetScorer(
         Scorer::Create(mapped_region.region.Duplicate(), base::File()));
   }
@@ -202,6 +202,8 @@ class PhishingClassifierDelegateTest : public ChromeRenderViewTest {
 };
 
 TEST_F(PhishingClassifierDelegateTest, Navigation) {
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
+
   SetScorer(/*model_version=*/1);
   ASSERT_TRUE(classifier_->is_ready());
 
@@ -215,12 +217,9 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   OnStartPhishingDetection(url);
   const auto page_text = MakeRefPtrString(u"dummy");
   const auto page_text2 = MakeRefPtrString(u"dummy2");
-
   {
     InSequence s;
-    EXPECT_CALL(*classifier_, CancelPendingClassification());
-    EXPECT_CALL(*classifier_,
-                BeginClassification(RefCntStr16Matcher(page_text), _));
+    EXPECT_CALL(*classifier_, BeginClassification(_));
     delegate_->PageCaptured(page_text, false);
     Mock::VerifyAndClearExpectations(classifier_);
   }
@@ -230,26 +229,20 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   LoadHTMLWithUrlOverride(html.c_str(), url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
 
+  // Start phishing detection without a fresh page text should still classify,
+  // because the top level URL still match.
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
-  EXPECT_CALL(*classifier_,
-              BeginClassification(RefCntStr16Matcher(page_text), _));
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
-  // Same document navigation works similarly to a subframe navigation, but see
-  // the TODO in PhishingClassifierDelegate::DidCommitProvisionalLoad.
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
-  OnSameDocumentNavigation(GetMainFrame(), true);
-  Mock::VerifyAndClearExpectations(classifier_);
-
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
@@ -260,11 +253,10 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   Mock::VerifyAndClearExpectations(classifier_);
 
   OnStartPhishingDetection(new_url);
+
   {
     InSequence s;
-    EXPECT_CALL(*classifier_, CancelPendingClassification());
-    EXPECT_CALL(*classifier_,
-                BeginClassification(RefCntStr16Matcher(page_text2), _));
+    EXPECT_CALL(*classifier_, BeginClassification(_));
     delegate_->PageCaptured(page_text2, false);
     Mock::VerifyAndClearExpectations(classifier_);
   }
@@ -278,7 +270,6 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   SimulatePageTrantitionForwardOrBack(html.c_str(), url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
   OnStartPhishingDetection(new_url);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
@@ -288,7 +279,6 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   Mock::VerifyAndClearExpectations(classifier_);
 
   OnStartPhishingDetection(url);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text2, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
@@ -300,17 +290,10 @@ TEST_F(PhishingClassifierDelegateTest, Navigation) {
   Mock::VerifyAndClearExpectations(classifier_);
 
   OnStartPhishingDetection(url);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
-  // Same document navigation.
-  OnSameDocumentNavigation(GetMainFrame(), true);
-  Mock::VerifyAndClearExpectations(classifier_);
-
   OnStartPhishingDetection(url);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
@@ -345,13 +328,14 @@ TEST_F(PhishingClassifierDelegateTest, HasVisualTfLiteModel) {
   base::File file(file_path, base::File::FLAG_OPEN_ALWAYS |
                                  base::File::FLAG_READ |
                                  base::File::FLAG_WRITE);
-  std::string file_contents = "visual model file";
-  file.WriteAtCurrentPos(file_contents.data(), file_contents.size());
+
+  file.WriteAtCurrentPos(base::byte_span_from_cstring("visual model file"));
 
   std::string model_str = GetFlatBufferString(0);
   base::MappedReadOnlyRegion mapped_region =
       base::ReadOnlySharedMemoryRegion::Create(model_str.length());
-  memcpy(mapped_region.mapping.memory(), model_str.data(), model_str.length());
+  UNSAFE_TODO(memcpy(mapped_region.mapping.memory(), model_str.data(),
+                     model_str.length()));
   ScorerStorage::GetInstance()->SetScorer(
       Scorer::Create(mapped_region.region.Duplicate(), std::move(file)));
   ASSERT_TRUE(classifier_->is_ready());
@@ -382,15 +366,13 @@ TEST_F(PhishingClassifierDelegateTest, NoScorerWithRetry) {
 
   // Now set a scorer, which should cause a classifier to be created, and
   // classification will happen again because the scorer is set within timeout.
-  EXPECT_CALL(*classifier_,
-              BeginClassification(RefCntStr16Matcher(page_text), _));
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   SetScorer(/*model_version=*/1);
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification, so that when a new scorer is set, it
   // should cancel.
-  EXPECT_CALL(*classifier_,
-              BeginClassification(RefCntStr16Matcher(page_text), _));
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url2);
 
   // If we set a new scorer while a classification is going on the
@@ -423,15 +405,13 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref_WithRetry) {
 
   // Now set a scorer, which should cause a classifier to be created, and
   // classification will happen again because the scorer is set within timeout.
-  EXPECT_CALL(*classifier_,
-              BeginClassification(RefCntStr16Matcher(page_text), _));
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   SetScorer(/*model_version=*/1);
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification, so that when a new scorer is set, it
   // should cancel.
-  EXPECT_CALL(*classifier_,
-              BeginClassification(RefCntStr16Matcher(page_text), _));
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url);
 
   // If we set a new scorer while a classification is going on the
@@ -475,8 +455,7 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
 
   // Manually start a classification, so that when a new scorer is set, it
   // should cancel.
-  EXPECT_CALL(*classifier_,
-              BeginClassification(RefCntStr16Matcher(page_text), _));
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url2);
 
   // If we set a new scorer while a classification is going on the
@@ -518,8 +497,7 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
   Mock::VerifyAndClearExpectations(classifier_);
 
   // Manually start a classification
-  EXPECT_CALL(*classifier_,
-              BeginClassification(RefCntStr16Matcher(page_text), _));
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url);
 
   // If we set a new scorer while a classification is going on the
@@ -557,6 +535,7 @@ TEST_F(PhishingClassifierDelegateTest, NoScorerWithinTimeout) {
 }
 
 TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
   // Tests the behavior when OnStartPhishingDetection has not yet been called
   // when the page load finishes.
   SetScorer(/*model_version=*/1);
@@ -568,13 +547,11 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   LoadHTMLWithUrlOverride("<html><body>phish</body></html>",
                           url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
   // Now simulate the StartPhishingDetection IPC.  We expect classification
   // to begin.
-  EXPECT_CALL(*classifier_,
-              BeginClassification(RefCntStr16Matcher(page_text), _));
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url);
   Mock::VerifyAndClearExpectations(classifier_);
 
@@ -585,7 +562,6 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   LoadHTMLWithUrlOverride("<html><body>phish</body></html>",
                           url2.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
@@ -606,7 +582,6 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
                           url4.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
   page_text = MakeRefPtrString(u"abc");
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
   EXPECT_CALL(*classifier_, CancelPendingClassification());
@@ -614,13 +589,13 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   GURL redir_url("http://host4.com/redir");
   LoadHTMLWithUrlOverride("123", redir_url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
+
+  EXPECT_CALL(*classifier_, BeginClassification(_));
   OnStartPhishingDetection(url4);
   page_text = MakeRefPtrString(u"123");
   {
     InSequence s;
-    EXPECT_CALL(*classifier_, CancelPendingClassification());
-    EXPECT_CALL(*classifier_,
-                BeginClassification(RefCntStr16Matcher(page_text), _));
+    EXPECT_CALL(*classifier_, BeginClassification(_));
     SimulateRedirection(redir_url);
     delegate_->PageCaptured(page_text, false);
     Mock::VerifyAndClearExpectations(classifier_);
@@ -630,7 +605,9 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_F(PhishingClassifierDelegateTest, IgnorePreliminaryCapture) {
+TEST_F(PhishingClassifierDelegateTest,
+       IgnorePreliminaryCaptureAndDoesNotCancelClassification) {
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
   // Tests that preliminary PageCaptured notifications are ignored.
   SetScorer(/*model_version=*/1);
   ASSERT_TRUE(classifier_->is_ready());
@@ -647,9 +624,7 @@ TEST_F(PhishingClassifierDelegateTest, IgnorePreliminaryCapture) {
   // Once the non-preliminary capture happens, classification should begin.
   {
     InSequence s;
-    EXPECT_CALL(*classifier_, CancelPendingClassification());
-    EXPECT_CALL(*classifier_,
-                BeginClassification(RefCntStr16Matcher(page_text), _));
+    EXPECT_CALL(*classifier_, BeginClassification(_));
     delegate_->PageCaptured(page_text, false);
     Mock::VerifyAndClearExpectations(classifier_);
   }
@@ -658,7 +633,9 @@ TEST_F(PhishingClassifierDelegateTest, IgnorePreliminaryCapture) {
   EXPECT_CALL(*classifier_, CancelPendingClassification());
 }
 
-TEST_F(PhishingClassifierDelegateTest, DuplicatePageCapture) {
+TEST_F(PhishingClassifierDelegateTest, DuplicatePageCaptureDoesNotCancel) {
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
+
   // Tests that a second PageCaptured notification causes classification to
   // be cancelled.
   SetScorer(/*model_version=*/1);
@@ -673,14 +650,11 @@ TEST_F(PhishingClassifierDelegateTest, DuplicatePageCapture) {
   OnStartPhishingDetection(url);
   {
     InSequence s;
-    EXPECT_CALL(*classifier_, CancelPendingClassification());
-    EXPECT_CALL(*classifier_,
-                BeginClassification(RefCntStr16Matcher(page_text), _));
+    EXPECT_CALL(*classifier_, BeginClassification(_));
     delegate_->PageCaptured(page_text, false);
     Mock::VerifyAndClearExpectations(classifier_);
   }
 
-  EXPECT_CALL(*classifier_, CancelPendingClassification());
   delegate_->PageCaptured(page_text, false);
   Mock::VerifyAndClearExpectations(classifier_);
 
@@ -689,6 +663,7 @@ TEST_F(PhishingClassifierDelegateTest, DuplicatePageCapture) {
 }
 
 TEST_F(PhishingClassifierDelegateTest, PhishingDetectionDone) {
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
   // Tests that a SafeBrowsingHostMsg_PhishingDetectionDone IPC is
   // sent to the browser whenever we finish classification.
   SetScorer(/*model_version=*/1);
@@ -704,9 +679,7 @@ TEST_F(PhishingClassifierDelegateTest, PhishingDetectionDone) {
   OnStartPhishingDetection(url);
   {
     InSequence s;
-    EXPECT_CALL(*classifier_, CancelPendingClassification());
-    EXPECT_CALL(*classifier_,
-                BeginClassification(RefCntStr16Matcher(page_text), _));
+    EXPECT_CALL(*classifier_, BeginClassification(_));
     delegate_->PageCaptured(page_text, false);
     Mock::VerifyAndClearExpectations(classifier_);
   }

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_APPS_CHROME_APP_WINDOW_CLIENT_H_
 #define CHROME_BROWSER_UI_APPS_CHROME_APP_WINDOW_CLIENT_H_
 
-#include "build/build_config.h"
 #include "extensions/browser/app_window/app_window_client.h"
 
 namespace base {
@@ -33,10 +32,6 @@ class ChromeAppWindowClient : public extensions::AppWindowClient {
   extensions::AppWindow* CreateAppWindow(
       content::BrowserContext* context,
       const extensions::Extension* extension) override;
-  extensions::AppWindow* CreateAppWindowForLockScreenAction(
-      content::BrowserContext* context,
-      const extensions::Extension* extension,
-      extensions::api::app_runtime::ActionType action) override;
   std::unique_ptr<extensions::NativeAppWindow> CreateNativeAppWindow(
       extensions::AppWindow* window,
       extensions::AppWindow::CreateParams* params) override;

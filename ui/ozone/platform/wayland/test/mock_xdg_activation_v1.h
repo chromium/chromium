@@ -33,6 +33,10 @@ class MockXdgActivationV1 : public GlobalObject {
   MockXdgActivationTokenV1* get_token() { return token_; }
   void set_token(MockXdgActivationTokenV1* token) { token_ = token; }
 
+  base::WeakPtr<MockXdgActivationV1> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   MOCK_METHOD4(Activate,
                void(struct wl_client* client,
                     struct wl_resource* resource,
@@ -47,7 +51,8 @@ class MockXdgActivationV1 : public GlobalObject {
                void(struct wl_client* client, struct wl_resource* resource));
 
  private:
-  raw_ptr<MockXdgActivationTokenV1, DanglingUntriaged> token_ = nullptr;
+  raw_ptr<MockXdgActivationTokenV1> token_ = nullptr;
+  base::WeakPtrFactory<MockXdgActivationV1> weak_ptr_factory_{this};
 };
 
 class MockXdgActivationTokenV1 : public ServerObject {

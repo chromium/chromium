@@ -10,6 +10,8 @@
 
 namespace updater {
 
+using RpcError = int;
+
 enum class UpdaterScope;
 
 // The UpdateServiceInternal is a service abstraction to expose functionality

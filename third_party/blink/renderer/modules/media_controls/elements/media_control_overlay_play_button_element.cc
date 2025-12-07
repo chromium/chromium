@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace {
 
@@ -52,7 +53,7 @@ void MediaControlOverlayPlayButtonElement::UpdateDisplayType() {
   int state = MediaElement().paused() ? IDS_AX_MEDIA_PLAY_BUTTON
                                       : IDS_AX_MEDIA_PAUSE_BUTTON;
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(state)));
+               AtomicString(GetLocale().QueryString(state)));
 
   MediaControlInputElement::UpdateDisplayType();
 }

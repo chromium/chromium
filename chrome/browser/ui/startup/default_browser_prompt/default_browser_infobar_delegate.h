@@ -13,25 +13,28 @@
 
 class Profile;
 
-namespace chrome {
-
 // The delegate for the infobar shown when Chrome is not the default browser.
 // Ownership of the delegate is given to the infobar itself, the lifetime of
 // which is bound to the containing WebContents.
 class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates a default browser infobar and delegate and adds the infobar to
-  // |infobar_manager|.
+  // `infobar_manager`. If `can_pin_to_taskbar` is true, will attempt to
+  // pin Chrome to the taskbar if the user clicks the set as default button.
+  // This is currently only true on Windows, but it's possible this will
+  // be extended to Mac.
   static infobars::InfoBar* Create(
       infobars::ContentInfoBarManager* infobar_manager,
-      Profile* profile);
+      Profile* profile,
+      bool can_pin_to_taskbar);
 
   DefaultBrowserInfoBarDelegate(const DefaultBrowserInfoBarDelegate&) = delete;
   DefaultBrowserInfoBarDelegate& operator=(
       const DefaultBrowserInfoBarDelegate&) = delete;
 
   DefaultBrowserInfoBarDelegate(base::PassKey<DefaultBrowserInfoBarDelegate>,
-                                Profile* profile);
+                                Profile* profile,
+                                bool can_pin_to_taskbar);
   ~DefaultBrowserInfoBarDelegate() override;
 
  private:
@@ -49,8 +52,6 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
     NUM_INFO_BAR_USER_INTERACTION_TYPES
   };
 
-  void AllowExpiry();
-
   // ConfirmInfoBarDelegate:
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -60,20 +61,18 @@ class DefaultBrowserInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool Accept() override;
+  bool ShouldHideInFullscreen() const override;
 
   // The WebContents's corresponding profile.
   raw_ptr<Profile> profile_;
 
-  // Whether the info bar should be dismissed on the next navigation.
-  bool should_expire_ = false;
+  // If true, the info bar text will indicate that in addition to setting
+  // the default browser, confirming the dialog will attempt to pin Chrome
+  // to the taskbar (only ever true on Windows, currently).
+  const bool can_pin_to_taskbar_ = false;
 
   // Indicates if the user interacted with the infobar.
   bool action_taken_ = false;
-
-  // Used to delay the expiration of the info-bar.
-  base::WeakPtrFactory<DefaultBrowserInfoBarDelegate> weak_factory_{this};
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_STARTUP_DEFAULT_BROWSER_PROMPT_DEFAULT_BROWSER_INFOBAR_DELEGATE_H_

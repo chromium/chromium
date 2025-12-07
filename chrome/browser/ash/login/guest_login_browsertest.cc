@@ -2,28 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/keyboard/keyboard_controller.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/about_flags.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/signin_fatal_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/flags_ui/feature_entry_macros.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
+#include "components/webui/flags/feature_entry_macros.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/cros_system_api/switches/chrome_switches.h"
 
@@ -36,7 +44,10 @@ const test::UIPath kGuestTosAcceptButton = {kGuestTosId, "acceptButton"};
 // Tests guest user log in.
 class GuestLoginTest : public MixinBasedInProcessBrowserTest {
  public:
-  GuestLoginTest() { login_manager_.set_session_restore_enabled(); }
+  GuestLoginTest() {
+    login_manager_.set_session_restore_enabled();
+    SetAllowFeaturesSwitches(/*allow=*/true);
+  }
   ~GuestLoginTest() override = default;
 
   // Test overrides can implement this to add login policy switches to login
@@ -117,6 +128,13 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, Login) {
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
+
+  // Checks User::GetProfilePrefs() uses the correct instance.
+  user_manager::User* user = user_manager->GetActiveUser();
+  ASSERT_TRUE(user);
+  EXPECT_EQ(user_manager::UserType::kGuest, user->GetType());
+  EXPECT_EQ(ProfileHelper::Get()->GetProfileByUser(user)->GetPrefs(),
+            user->GetProfilePrefs());
 }
 
 // Check that the guest button is visible on user creation screen before
@@ -195,9 +213,10 @@ IN_PROC_BROWSER_TEST_F(GuestLoginTest, ExitFullscreenOnSuspend) {
   login_manager_.WaitForActiveSession();
   BrowserWindow* browser_window = browser()->window();
   browser()
-      ->exclusive_access_manager()
+      ->GetFeatures()
+      .exclusive_access_manager()
       ->fullscreen_controller()
-      ->ToggleBrowserFullscreenMode();
+      ->ToggleBrowserFullscreenMode(/*user_initiated=*/true);
   EXPECT_TRUE(browser_window->IsFullscreen());
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent_Reason_OTHER);
@@ -289,6 +308,24 @@ IN_PROC_BROWSER_TEST_F(GuestLoginWithLoginSwitchesTest, Login) {
       base::CommandLine::ForCurrentProcess()->HasSwitch("test_switch_1"));
   EXPECT_FALSE(
       base::CommandLine::ForCurrentProcess()->HasSwitch("test_switch_2"));
+}
+
+class GuestLoginWithAutoEnrollmentCheckForcedTest : public GuestLoginTest {
+ public:
+  GuestLoginWithAutoEnrollmentCheckForcedTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kOobeAutoEnrollmentCheckForced);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GuestLoginWithAutoEnrollmentCheckForcedTest,
+                       FatalScreenShownWhenOobeNotCompleted) {
+  g_browser_process->local_state()->ClearPref(prefs::kOobeComplete);
+  StartGuestSession();
+  OobeScreenWaiter(SignInFatalErrorView::kScreenId).Wait();
 }
 
 }  // namespace ash

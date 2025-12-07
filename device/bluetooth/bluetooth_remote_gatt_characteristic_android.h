@@ -69,43 +69,37 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattCharacteristicAndroid
   std::vector<BluetoothRemoteGattDescriptor*> GetDescriptorsByUUID(
       const BluetoothUUID& uuid) const override;
   void ReadRemoteCharacteristic(ValueCallback callback) override;
-  void WriteRemoteCharacteristic(const std::vector<uint8_t>& value,
+  void WriteRemoteCharacteristic(base::span<const uint8_t> value,
                                  WriteType write_type,
                                  base::OnceClosure callback,
                                  ErrorCallback error_callback) override;
   void DeprecatedWriteRemoteCharacteristic(
-      const std::vector<uint8_t>& value,
+      base::span<const uint8_t> value,
       base::OnceClosure callback,
       ErrorCallback error_callback) override;
 
   // Called when value changed event occurs.
-  void OnChanged(JNIEnv* env,
-                 const base::android::JavaParamRef<jobject>& jcaller,
-                 const base::android::JavaParamRef<jbyteArray>& value);
+  void OnChanged(JNIEnv* env, const base::android::JavaRef<jbyteArray>& value);
 
   // Called when Read operation completes.
   void OnRead(JNIEnv* env,
-              const base::android::JavaParamRef<jobject>& jcaller,
               int32_t status,
-              const base::android::JavaParamRef<jbyteArray>& value);
+              const base::android::JavaRef<jbyteArray>& value);
 
   // Called when Write operation completes.
   void OnWrite(JNIEnv* env,
-               const base::android::JavaParamRef<jobject>& jcaller,
                int32_t status);
 
   // Creates a Bluetooth GATT descriptor object and adds it to |descriptors_|,
   // DCHECKing that it has not already been created.
   void CreateGattRemoteDescriptor(
       JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& caller,
-      const base::android::JavaParamRef<jstring>& instanceId,
-      const base::android::JavaParamRef<
+      const base::android::JavaRef<jstring>& instanceId,
+      const base::android::JavaRef<
           jobject>& /* BluetoothGattDescriptorWrapper */
-      bluetooth_gatt_descriptor_wrapper,
-      const base::android::JavaParamRef<
-          jobject>& /* ChromeBluetoothCharacteristic */
-      chrome_bluetooth_characteristic);
+          bluetooth_gatt_descriptor_wrapper,
+      const base::android::JavaRef<jobject>& /* ChromeBluetoothCharacteristic */
+          chrome_bluetooth_characteristic);
 
  protected:
   void SubscribeToNotifications(BluetoothRemoteGattDescriptor* ccc_descriptor,

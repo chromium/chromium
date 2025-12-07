@@ -1,3 +1,5 @@
 file://chrome/android/OWNERS
 
+hnakashima@chromium.org
+
 per-file BUILD.gn=*

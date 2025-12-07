@@ -9,6 +9,7 @@
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol ContextualPanelEntrypointCoordinatorDelegate;
+@protocol ContextualPanelEntrypointVisibilityDelegate;
 
 // Coordinator for the Contextual Panel Entrypoint.
 @interface ContextualPanelEntrypointCoordinator : ChromeCoordinator
@@ -16,6 +17,10 @@
 // The delegate for this coordinator.
 @property(nonatomic, weak) id<ContextualPanelEntrypointCoordinatorDelegate>
     delegate;
+
+// The viewController visibility delegate.
+@property(nonatomic, weak) id<ContextualPanelEntrypointVisibilityDelegate>
+    visibilityDelegate;
 
 // The view controller for this coordinator.
 @property(nonatomic, strong)

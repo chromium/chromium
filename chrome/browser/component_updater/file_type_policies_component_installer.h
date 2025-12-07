@@ -33,7 +33,6 @@ class FileTypePoliciesComponentInstallerPolicy
       const FileTypePoliciesComponentInstallerPolicy&) = delete;
   FileTypePoliciesComponentInstallerPolicy& operator=(
       const FileTypePoliciesComponentInstallerPolicy&) = delete;
-  ~FileTypePoliciesComponentInstallerPolicy() override = default;
 
  private:
   // The following methods override ComponentInstallerPolicy.

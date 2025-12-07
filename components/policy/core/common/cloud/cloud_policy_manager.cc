@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -22,12 +23,26 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/prefs/pref_service.h"
+#include "device_management_backend.pb.h"
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/policy/core/common/cloud/resource_cache.h"
 #endif
 
 namespace policy {
+
+namespace {
+
+const enterprise_management::PolicyData* GetPolicyData(
+    const CloudPolicyManager* manager) {
+  CHECK(manager);
+  const policy::CloudPolicyStore* store = manager->core()->store();
+  return store && store->has_policy() ? store->policy() : nullptr;
+}
+
+}  // namespace
+
+BASE_FEATURE(kPublishPolicyWithoutWaiting, base::FEATURE_ENABLED_BY_DEFAULT);
 
 CloudPolicyManager::CloudPolicyManager(
     const std::string& policy_type,
@@ -43,7 +58,23 @@ CloudPolicyManager::CloudPolicyManager(
             std::move(network_connection_tracker_getter)),
       waiting_for_policy_refresh_(false) {}
 
-CloudPolicyManager::~CloudPolicyManager() {}
+CloudPolicyManager::~CloudPolicyManager() = default;
+
+std::optional<policy::DMToken> CloudPolicyManager::GetDMToken() const {
+  const auto* data = GetPolicyData(this);
+  if (!data || !data->has_request_token()) {
+    return std::nullopt;
+  }
+  return policy::DMToken::CreateValidToken(data->request_token());
+}
+
+std::optional<std::string> CloudPolicyManager::GetClientId() const {
+  const auto* data = GetPolicyData(this);
+  if (!data || !data->has_device_id()) {
+    return std::nullopt;
+  }
+  return data->device_id();
+}
 
 bool CloudPolicyManager::IsClientRegistered() const {
   return client() && client()->is_registered();
@@ -113,16 +144,43 @@ void CloudPolicyManager::OnComponentCloudPolicyUpdated() {
   CheckAndPublishPolicy();
 }
 
-void CloudPolicyManager::CheckAndPublishPolicy() {
-  if (IsInitializationComplete(POLICY_DOMAIN_CHROME) &&
-      !waiting_for_policy_refresh_) {
-    PolicyBundle bundle;
-    GetChromePolicy(
-        &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())));
-    if (component_policy_service_)
-      bundle.MergeFrom(component_policy_service_->policy());
-    UpdatePolicy(std::move(bundle));
+bool CloudPolicyManager::CanPublishPolicy() const {
+  if (!IsInitializationComplete(POLICY_DOMAIN_CHROME)) {
+    return false;
   }
+
+  if (!waiting_for_policy_refresh_) {
+    return true;
+  }
+
+  // Component policy service initializaion is async. Its first publish might be
+  // blocked by first cloud policy refresh.
+  //
+  // Skip the `waiting_for_policy_refresh_` check if component policies are
+  // ready but never published.
+  if (base::FeatureList::IsEnabled(kPublishPolicyWithoutWaiting) &&
+      component_policy_service_ &&
+      component_policy_service_->is_initialized() &&
+      !is_component_policy_published_) {
+    return true;
+  }
+
+  return false;
+}
+
+void CloudPolicyManager::CheckAndPublishPolicy() {
+  if (!CanPublishPolicy()) {
+    return;
+  }
+  PolicyBundle bundle;
+  GetChromePolicy(
+      &bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())));
+  if (component_policy_service_ &&
+      component_policy_service_->is_initialized()) {
+    bundle.MergeFrom(component_policy_service_->policy());
+    is_component_policy_published_ = true;
+  }
+  UpdatePolicy(std::move(bundle));
 }
 
 void CloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {

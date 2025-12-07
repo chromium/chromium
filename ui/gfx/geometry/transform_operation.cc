@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ui/gfx/geometry/transform_operation.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
 #include <numbers>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/numerics/ranges.h"
@@ -173,8 +171,7 @@ bool TransformOperation::ApproximatelyEqual(const TransformOperation& other,
     case TransformOperation::TRANSFORM_OPERATION_IDENTITY:
       return other.matrix.IsIdentity();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool TransformOperation::BlendTransformOperations(
@@ -307,7 +304,7 @@ bool TransformOperation::BlendTransformOperations(
 static void FindCandidatesInPlane(float px,
                                   float py,
                                   float nz,
-                                  double* candidates,
+                                  base::span<double> candidates,
                                   int* num_candidates) {
   double phi = atan2(px, py);
   *num_candidates = 4;
@@ -337,7 +334,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
   // We will have at most 6 angles to test (excluding from->angle and
   // to->angle).
   static const int kMaxNumCandidates = 6;
-  double candidates[kMaxNumCandidates];
+  std::array<double, kMaxNumCandidates> candidates;
   int num_candidates = kMaxNumCandidates;
 
   if (x_is_zero && y_is_zero && z_is_zero)
@@ -522,8 +519,7 @@ bool TransformOperation::BlendedBoundsForBox(const gfx::BoxF& box,
     case TransformOperation::TRANSFORM_OPERATION_MATRIX:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace gfx

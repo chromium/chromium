@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/webrtc/fake_ssl_client_socket.h"
 
@@ -59,7 +55,7 @@ enum {
 // Used by PassThroughMethods test.
 class MockClientSocket : public net::StreamSocket {
  public:
-  ~MockClientSocket() override {}
+  ~MockClientSocket() override = default;
 
   MOCK_METHOD3(Read, int(net::IOBuffer*, int, net::CompletionOnceCallback));
   MOCK_METHOD4(Write,
@@ -97,17 +93,17 @@ void AddChunkedOps(std::string_view data,
   size_t offset = 0;
   while (offset < data.size()) {
     size_t bounded_chunk_size = std::min(data.size() - offset, chunk_size);
-    ops->push_back(net::MockReadWrite<type>(mode, data.data() + offset,
-                                            bounded_chunk_size));
+    ops->push_back(net::MockReadWrite<type>(
+        mode, data.substr(offset, bounded_chunk_size)));
     offset += bounded_chunk_size;
   }
 }
 
 class FakeSSLClientSocketTest : public testing::Test {
  protected:
-  FakeSSLClientSocketTest() {}
+  FakeSSLClientSocketTest() = default;
 
-  ~FakeSSLClientSocketTest() override {}
+  ~FakeSSLClientSocketTest() override = default;
 
   std::unique_ptr<net::StreamSocket> MakeClientSocket() {
     return mock_client_socket_factory_.CreateTransportClientSocket(
@@ -152,16 +148,14 @@ class FakeSSLClientSocketTest : public testing::Test {
     net::MockConnect mock_connect(mode, net::OK);
     std::vector<net::MockRead> reads;
     std::vector<net::MockWrite> writes;
-    static const char kReadTestData[] = "read test data";
-    static const char kWriteTestData[] = "write test data";
+    static constexpr std::string_view kReadTestData = "read test data";
+    static constexpr std::string_view kWriteTestData = "write test data";
     for (int i = 0; i < num_resets + 1; ++i) {
       SCOPED_TRACE(i);
       AddChunkedOps(ssl_server_hello, read_chunk_size, mode, &reads);
       AddChunkedOps(ssl_client_hello, write_chunk_size, mode, &writes);
-      reads.push_back(
-          net::MockRead(mode, kReadTestData, std::size(kReadTestData)));
-      writes.push_back(
-          net::MockWrite(mode, kWriteTestData, std::size(kWriteTestData)));
+      reads.push_back(net::MockRead(mode, kReadTestData));
+      writes.push_back(net::MockWrite(mode, kWriteTestData));
     }
     SetData(mock_connect, &reads, &writes);
 
@@ -186,8 +180,8 @@ class FakeSSLClientSocketTest : public testing::Test {
             read_buf.get(), read_buf_len, read_callback.callback());
         ExpectStatus(mode, read_len, read_status, &read_callback);
 
-        auto write_buf =
-            base::MakeRefCounted<net::StringIOBuffer>(kWriteTestData);
+        auto write_buf = base::MakeRefCounted<net::StringIOBuffer>(
+            std::string(kWriteTestData));
         net::TestCompletionCallback write_callback;
         int write_status = fake_ssl_client_socket.Write(
             write_buf.get(), std::size(kWriteTestData),
@@ -229,8 +223,7 @@ class FakeSSLClientSocketTest : public testing::Test {
         // Use a fixed index for repeatability.
         size_t index = 100 % writes.size();
         writes[index].result = error;
-        writes[index].data = NULL;
-        writes[index].data_len = 0;
+        writes[index].data = std::string_view();
         writes.resize(index + 1);
         reads.clear();
         break;
@@ -240,16 +233,14 @@ class FakeSSLClientSocketTest : public testing::Test {
         size_t index = 50 % reads.size();
         if (error == ERR_MALFORMED_SERVER_HELLO) {
           static const char kBadData[] = "BAD_DATA";
-          reads[index].data = kBadData;
-          reads[index].data_len = std::size(kBadData);
+          reads[index].data = std::string_view(kBadData, std::size(kBadData));
         } else {
           reads[index].result = error;
-          reads[index].data = NULL;
-          reads[index].data_len = 0;
+          reads[index].data = std::string_view();
         }
         reads.resize(index + 1);
         if (error == net::ERR_TEST_PEER_CLOSE_AFTER_NEXT_MOCK_READ) {
-          static const char kDummyData[] = "DUMMY";
+          static constexpr std::string_view kDummyData = "DUMMY";
           reads.push_back(net::MockRead(mode, kDummyData));
         }
         break;

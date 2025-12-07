@@ -4,11 +4,14 @@
 
 #include "services/network/test/trust_token_request_handler.h"
 
+#include <optional>
+#include <string>
+
 #include "base/base64.h"
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -99,12 +102,14 @@ bssl::UniquePtr<TRUST_TOKEN_ISSUER>
 TrustTokenRequestHandler::Rep::CreateIssuerContextFromUnexpiredKeys() const {
   bssl::UniquePtr<TRUST_TOKEN_ISSUER> ret(
       TRUST_TOKEN_ISSUER_new(TRUST_TOKEN_experiment_v2_pmb(), batch_size));
-  if (!ret)
+  if (!ret) {
     return nullptr;
+  }
 
   for (const IssuanceKeyPair& key_pair : issuance_keys) {
-    if (HasKeyPairExpired(key_pair))
+    if (HasKeyPairExpired(key_pair)) {
       continue;
+    }
 
     if (!TRUST_TOKEN_ISSUER_add_key(ret.get(), key_pair.signing.data(),
                                     key_pair.signing.size())) {
@@ -121,11 +126,13 @@ TrustTokenRequestHandler::Rep::CreateIssuerContextFromUnexpiredKeys() const {
       EVP_PKEY_ED25519, /*unused=*/nullptr, private_key,
       /*len=*/32));
 
-  if (!issuer_rr_key)
+  if (!issuer_rr_key) {
     return nullptr;
+  }
 
-  if (!TRUST_TOKEN_ISSUER_set_srr_key(ret.get(), issuer_rr_key.get()))
+  if (!TRUST_TOKEN_ISSUER_set_srr_key(ret.get(), issuer_rr_key.get())) {
     return nullptr;
+  }
 
   return ret;
 }
@@ -142,8 +149,6 @@ TrustTokenRequestHandler::~TrustTokenRequestHandler() = default;
 std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   base::AutoLock lock(mutex_);
 
-  std::string ret;
-  JSONStringValueSerializer serializer(&ret);
 
   base::Value::Dict dict;
   const std::string protocol_string = internal::ProtocolVersionToString(
@@ -156,8 +161,7 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   for (size_t i = 0; i < rep_->issuance_keys.size(); ++i) {
     dict.SetByDottedPath(
         protocol_string + ".keys." + base::NumberToString(i) + ".Y",
-        base::Base64Encode(
-            base::make_span(rep_->issuance_keys[i].verification)));
+        base::Base64Encode(base::span(rep_->issuance_keys[i].verification)));
     dict.SetByDottedPath(
         protocol_string + ".keys." + base::NumberToString(i) + ".expiry",
         base::NumberToString(
@@ -168,8 +172,9 @@ std::string TrustTokenRequestHandler::GetKeyCommitmentRecord() const {
   // It's OK to be a bit crashy in exceptional failure cases because it
   // indicates a serious coding error in this test-only code; we'd like to find
   // this out sooner rather than later.
-  CHECK(serializer.Serialize(dict));
-  return ret;
+  std::optional<std::string> ret = base::WriteJson(dict);
+  CHECK(ret);
+  return *ret;
 }
 
 std::optional<std::string> TrustTokenRequestHandler::Issue(
@@ -184,8 +189,9 @@ std::optional<std::string> TrustTokenRequestHandler::Issue(
       rep_->CreateIssuerContextFromUnexpiredKeys();
 
   std::string decoded_issuance_request;
-  if (!base::Base64Decode(issuance_request, &decoded_issuance_request))
+  if (!base::Base64Decode(issuance_request, &decoded_issuance_request)) {
     return std::nullopt;
+  }
 
   // TODO(davidvc): Perhaps make this configurable? Not a high priority, though.
   constexpr uint8_t kPrivateMetadata = 0;
@@ -195,13 +201,15 @@ std::optional<std::string> TrustTokenRequestHandler::Issue(
   bool ok = false;
 
   for (size_t i = 0; i < rep_->issuance_keys.size(); ++i) {
-    if (HasKeyPairExpired(rep_->issuance_keys[i]))
+    if (HasKeyPairExpired(rep_->issuance_keys[i])) {
       continue;
+    }
 
     if (TRUST_TOKEN_ISSUER_issue(
-            issuer_ctx.get(), decoded_issuance_response.mutable_ptr(),
+            issuer_ctx.get(),
+            &decoded_issuance_response.mutable_ptr()->AsEphemeralRawAddr(),
             decoded_issuance_response.mutable_len(), &num_tokens_issued,
-            base::as_bytes(base::make_span(decoded_issuance_request)).data(),
+            base::as_byte_span(decoded_issuance_request).data(),
             decoded_issuance_request.size(),
             /*public_metadata=*/static_cast<uint32_t>(i), kPrivateMetadata,
             rep_->batch_size)) {
@@ -210,8 +218,9 @@ std::optional<std::string> TrustTokenRequestHandler::Issue(
     }
   }
 
-  if (!ok)
+  if (!ok) {
     return std::nullopt;
+  }
 
   return base::Base64Encode(decoded_issuance_response.as_span());
 }
@@ -229,8 +238,9 @@ std::optional<std::string> TrustTokenRequestHandler::Redeem(
       rep_->CreateIssuerContextFromUnexpiredKeys();
 
   std::string decoded_redemption_request;
-  if (!base::Base64Decode(redemption_request, &decoded_redemption_request))
+  if (!base::Base64Decode(redemption_request, &decoded_redemption_request)) {
     return std::nullopt;
+  }
 
   TRUST_TOKEN* redeemed_token;
   ScopedBoringsslBytes redeemed_client_data;
@@ -239,9 +249,9 @@ std::optional<std::string> TrustTokenRequestHandler::Redeem(
   if (!TRUST_TOKEN_ISSUER_redeem(
           issuer_ctx.get(), &received_public_metadata,
           &received_private_metadata, &redeemed_token,
-          redeemed_client_data.mutable_ptr(),
+          &redeemed_client_data.mutable_ptr()->AsEphemeralRawAddr(),
           redeemed_client_data.mutable_len(),
-          base::as_bytes(base::make_span(decoded_redemption_request)).data(),
+          base::as_byte_span(decoded_redemption_request).data(),
           decoded_redemption_request.size())) {
     return std::nullopt;
   }
@@ -250,8 +260,8 @@ std::optional<std::string> TrustTokenRequestHandler::Redeem(
   // leaving scope.
   bssl::UniquePtr<TRUST_TOKEN> redeemed_token_scoper(redeemed_token);
 
-  return base::Base64Encode(base::as_bytes(base::make_span(base::StringPrintf(
-      "%d:%d", received_public_metadata, received_private_metadata))));
+  return base::Base64Encode(base::as_byte_span(base::StringPrintf(
+      "%d:%d", received_public_metadata, received_private_metadata)));
 }
 
 void TrustTokenRequestHandler::RecordSignedRequest(

@@ -7,6 +7,7 @@
 
 #include <jni.h>
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"
@@ -39,9 +40,9 @@ class AuthenticatorSelectionDialogViewAndroid
   void UpdateContent() override;
 
   // Called by the Java code when an Authenticator selection is made.
-  void OnOptionSelected(JNIEnv* env,
-                        const base::android::JavaParamRef<jstring>&
-                            authenticator_option_identifier);
+  void OnOptionSelected(
+      JNIEnv* env,
+      const base::android::JavaRef<jstring>& authenticator_option_identifier);
 
   // Called by the Java code when the authenticatior selection dialog is
   // dismissed.

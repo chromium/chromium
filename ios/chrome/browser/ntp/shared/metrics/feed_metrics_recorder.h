@@ -1,0 +1,214 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_NTP_SHARED_METRICS_FEED_METRICS_RECORDER_H_
+#define IOS_CHROME_BROWSER_NTP_SHARED_METRICS_FEED_METRICS_RECORDER_H_
+
+#import <UIKit/UIKit.h>
+
+#import "base/time/time.h"
+#import "components/feed/core/v2/public/common_enums.h"
+#import "ios/chrome/browser/discover_feed/model/feed_constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_refresh_state_tracker.h"
+
+@protocol NewTabPageActionsDelegate;
+namespace feature_engagement {
+class Tracker;
+}
+class PrefService;
+
+// Records different metrics for the NTP feeds.
+// TODO(crbug.com/402798827): Rename `FeedMetricsRecorder` to something more
+// general like `FeedRecorder` if kFeedSwipeInProductHelp becomes a full launch
+// candidate.
+@interface FeedMetricsRecorder : NSObject <FeedRefreshStateTracker>
+
+// Whether or not the feed is currently being shown on the Start Surface.
+@property(nonatomic, assign) BOOL isShownOnStartSurface;
+
+// Delegate for reporting feed actions.
+@property(nonatomic, weak) id<NewTabPageActionsDelegate> NTPActionsDelegate;
+
+- (instancetype)initWithPrefService:(PrefService*)prefService
+           featureEngagementTracker:
+               (feature_engagement::Tracker*)featureEngagementTracker
+    NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Records the trigger where a feed refresh is requested.
++ (void)recordFeedRefreshTrigger:(FeedRefreshTrigger)trigger;
+
+// Record metrics for when the user has scrolled `scrollDistance` in the Feed.
+- (void)recordFeedScrolled:(int)scrollDistance;
+
+// Record metrics for when the user changes the device orientation with the feed
+// visible.
+- (void)recordDeviceOrientationChanged:(UIDeviceOrientation)orientation;
+
+// Record when the NTP changes visibility.
+- (void)recordNTPDidChangeVisibility:(BOOL)visible;
+
+// Record metrics for when the user has tapped on the feed preview.
+- (void)recordDiscoverFeedPreviewTapped;
+
+// Records metrics for when a user opens an article in the same tab.
+- (void)recordOpenURLInSameTab;
+
+// Records metrics for when a user opens an article in a new tab.
+- (void)recordOpenURLInNewTab;
+
+// Records metrics for when a user opens an article in an incognito tab.
+- (void)recordOpenURLInIncognitoTab;
+
+// Records metrics for when a user adds an article to the Reading List.
+- (void)recordAddURLToReadLater;
+
+// Records metrics for when a user opens the Send Feedback form.
+- (void)recordTapSendFeedback;
+
+// Records metrics for when a user opens the back of card menu.
+- (void)recordOpenBackOfCardMenu;
+
+// Records metrics for when a user closes the back of card menu.
+- (void)recordCloseBackOfCardMenu;
+
+// Records metrics for when a user opens the native back of card menu.
+- (void)recordOpenNativeBackOfCardMenu;
+
+// Records metrics for when a user displayed a Dialog (e.g. Report content
+// dialog.)
+- (void)recordShowDialog;
+
+// Records metrics for when a user dismissed a Dialog (e.g. Report content
+// dialog.)
+- (void)recordDismissDialog;
+
+// Records metrics for when a user dismissed a card (e.g. Hide story, not
+// interested in, etc.)
+- (void)recordDismissCard;
+
+// Records metrics for when a user undos a dismissed card (e.g. Tapping Undo in
+// the Snackbar)
+- (void)recordUndoDismissCard;
+
+// Records metrics for when a user committs to a dismissed card (e.g. Undo
+// snackbar was dismissed, so Undo can no longer happen.)
+- (void)recordCommittDismissCard;
+
+// Records metrics for when a Snackbar has been shown.
+- (void)recordShowSnackbar;
+
+// Records an unknown `commandID` performed by the Feed.
+- (void)recordCommandID:(int)commandID;
+
+// Records that a card was shown at `index`.
+- (void)recordCardShownAtIndex:(NSUInteger)index;
+
+// Records that a card was opened at `index`.
+- (void)recordCardTappedAtIndex:(NSUInteger)index;
+
+// Records if a notice card was presented at the time the feed was initially
+// loaded. e.g. Launch time, user refreshes, and account switches.
+- (void)recordNoticeCardShown:(BOOL)shown;
+
+// Records if activity logging was enabled at the time the feed was initially
+// loaded. e.g. Launch time, user refreshes, and account switches.
+- (void)recordActivityLoggingEnabled:(BOOL)loggingEnabled;
+
+// Records the `durationInSeconds` it took to Discover feed to Fetch articles.
+// `success` is YES if operation was successful.
+// DEPRECATED: use -recordFeedArticlesFetchDuration:success:.
+- (void)recordFeedArticlesFetchDurationInSeconds:
+            (NSTimeInterval)durationInSeconds
+                                         success:(BOOL)success;
+
+// Records the `duration` it took to Discover feed to Fetch articles.
+// `success` is YES if operation was successful.
+- (void)recordFeedArticlesFetchDuration:(base::TimeDelta)duration
+                                success:(BOOL)success;
+
+// Records the `durationInSeconds` it took to Discover feed to Fetch more
+// articles (e.g. New "infinite feed" articles). `success` is YES if operation
+// was successful.
+// DEPRECATED: use -recordFeedMoreArticlesFetchDuration:success:.
+- (void)recordFeedMoreArticlesFetchDurationInSeconds:
+            (NSTimeInterval)durationInSeconds
+                                             success:(BOOL)success;
+
+// Records the `duration` it took to Discover feed to Fetch more articles
+// (e.g. New "infinite feed" articles). `success` is YES if operation
+// was successful.
+- (void)recordFeedMoreArticlesFetchDuration:(base::TimeDelta)duration
+                                    success:(BOOL)success;
+
+// Records the `durationInSeconds` it took to Discover feed to upload actions.
+// `success` is YES if operation was successful.
+// DEPRECATED: use -recordFeedUploadActionsDuration:success:.
+- (void)recordFeedUploadActionsDurationInSeconds:
+            (NSTimeInterval)durationInSeconds
+                                         success:(BOOL)success;
+
+// Records the `duration` it took to Discover feed to upload actions.
+// `success` is YES if operation was successful.
+- (void)recordFeedUploadActionsDuration:(base::TimeDelta)duration
+                                success:(BOOL)success;
+
+// Records the native context menu visibility change.
+- (void)recordNativeContextMenuVisibilityChanged:(BOOL)shown;
+
+// Records the native pull-down menu visibility change.
+- (void)recordNativePulldownMenuVisibilityChanged:(BOOL)shown;
+
+// Records the broken view hierarchy before repairing it.
+// TODO(crbug.com/40799579): Remove this when issue is fixed.
+- (void)recordBrokenNTPHierarchy:
+    (BrokenNTPHierarchyRelationship)brokenRelationship;
+
+// Records that the feed is about to be refreshed.
+- (void)recordFeedWillRefresh;
+
+// Records the state of the Feed setting based on the `enterprisePolicy` being
+// enabled, `feedVisible`, the user being `signedIn`, user having `waaEnabled`
+// and `spywEnabled`, and the `lastRefreshTime` for the Feed.
+- (void)recordFeedSettingsOnStartForEnterprisePolicy:(BOOL)enterprisePolicy
+                                         feedVisible:(BOOL)feedVisible
+                                            signedIn:(BOOL)signedIn
+                                          waaEnabled:(BOOL)waaEnabled
+                                         spywEnabled:(BOOL)spywEnabled
+                                     lastRefreshTime:
+                                         (base::Time)lastRefreshTime;
+
+// Records when the user has scrolled `scrollDistance` in a carousel within a
+// cell.
+- (void)recordCarouselScrolled:(int)scrollDistance;
+
+// Records that an error has occurred when handling `action` requested by the
+// feed.
+- (void)recordFeedHandlingError:(NSString*)action;
+
+// Records the value of the uniformity flag value from Discover.
+- (void)recordUniformityFlagValue:(BOOL)flag;
+
+#pragma mark - Sign-in Promo
+
+// Record metrics for when a user triggered a sign-in only flow from Discover
+// feed. `hasUserId` is YES when the user has one or more device-level
+// identities.
+- (void)recordShowSignInOnlyUIWithUserId:(BOOL)hasUserId;
+
+// Record metrics for sign-in related UI from Discover feed personalization
+// controls.
+- (void)recordShowSignInRelatedUIWithType:(feed::FeedSignInUI)type;
+
+#pragma mark - Sync Promo
+
+// Record metrics for when a user triggered a sync related UI from Discover
+// feed sync promo entry point.
+- (void)recordShowSyncnRelatedUIWithType:(feed::FeedSyncPromo)type;
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_NTP_SHARED_METRICS_FEED_METRICS_RECORDER_H_

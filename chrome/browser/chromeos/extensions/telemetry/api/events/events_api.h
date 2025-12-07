@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/base_telemetry_extension_api_guard_function.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/events/remote_event_service_strategy.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
@@ -23,10 +22,6 @@ class EventsApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
 
  protected:
   ~EventsApiFunctionBase() override;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool IsCrosApiAvailable() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   mojo::Remote<crosapi::mojom::TelemetryEventService>& GetRemoteService();
 

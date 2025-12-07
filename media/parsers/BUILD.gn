@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
+import("//third_party/libgav1/options.gni")
 
 source_set("parsers") {
   sources = [
@@ -23,10 +24,6 @@ source_set("parsers") {
     "vp8_bool_decoder.h",
     "vp8_parser.cc",
     "vp8_parser.h",
-    "vp9_bool_decoder.cc",
-    "vp9_bool_decoder.h",
-    "vp9_compressed_header_parser.cc",
-    "vp9_compressed_header_parser.h",
     "vp9_parser.cc",
     "vp9_parser.h",
     "vp9_raw_bits_reader.cc",
@@ -67,6 +64,7 @@ source_set("parsers") {
   deps = [
     "//base",
     "//media/base",
+    "//third_party/libgav1:libgav1_parser",
   ]
 }
 
@@ -119,7 +117,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//media:test_support",
     "//testing/gtest",
+    "//third_party/libgav1:libgav1_parser",
   ]
+
+  data = [ "//media/test/data/" ]
 }
 
 fuzzer_test("media_h264_parser_fuzzer") {
@@ -156,6 +157,7 @@ fuzzer_test("media_jpeg_parser_picture_fuzzer") {
   deps = [
     ":parsers",
     "//base",
+    "//media:test_support",
   ]
   seed_corpus = "//media/test/data"
   dict = "//media/test/jpeg.dict"
@@ -175,6 +177,7 @@ fuzzer_test("media_vp8_parser_fuzzer") {
 fuzzer_test("media_vp9_parser_fuzzer") {
   sources = [ "vp9_parser_fuzzertest.cc" ]
   deps = [
+    ":parsers",
     "//base",
     "//media:test_support",
   ]
@@ -196,6 +199,7 @@ fuzzer_test("media_webp_parser_fuzzer") {
   deps = [
     ":parsers",
     "//base",
+    "//media:test_support",
   ]
   seed_corpus = "//media/test/data"
   dict = "//media/test/webp.dict"

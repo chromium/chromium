@@ -25,8 +25,7 @@ CastWebUI::CastWebUI(content::WebUI* webui,
   DCHECK(web_contents_);
   DCHECK(browser_context_);
   weak_this_ = weak_factory_.GetWeakPtr();
-  webui->SetBindings(content::BINDINGS_POLICY_MOJO_WEB_UI |
-                     content::BINDINGS_POLICY_WEB_UI);
+  webui->SetBindings(content::kWebUIBindingsPolicySet);
   auto cast_resources =
       std::make_unique<CastResourceDataSource>(host, true /* for_webui */);
   client->CreateController(host, web_ui_.BindNewPipeAndPassRemote(),

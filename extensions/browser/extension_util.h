@@ -8,10 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
-#include "extensions/common/mojom/host_id.mojom.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -21,10 +22,6 @@ class FilePath;
 namespace gfx {
 class ImageSkia;
 }  // namespace gfx
-
-namespace guest_view {
-class GuestViewBase;
-}  // namespace guest_view
 
 namespace content {
 class BrowserContext;
@@ -45,36 +42,36 @@ namespace util {
 // chrome/browser/extensions/extension_util.h/cc that are only dependent on
 // extensions/ here.
 
-// Returns a HostID type based on the given GuestViewBase.
-mojom::HostID::HostType HostIdTypeFromGuestView(
-    const guest_view::GuestViewBase& guest);
-
-// Returns a HostID instance based on the given GuestViewBase.
-mojom::HostID GenerateHostIdFromGuestView(
-    const guest_view::GuestViewBase& guest);
-
 // Returns true if the extension can be enabled in incognito mode.
 bool CanBeIncognitoEnabled(const Extension* extension);
 
-// Returns true if |extension_id| can run in an incognito window.
+// Returns true if `extension_id` can run in an incognito window.
 bool IsIncognitoEnabled(const ExtensionId& extension_id,
                         content::BrowserContext* context);
 
-// Returns true if |extension| can see events and data from another sub-profile
+// Returns true if `extension` can see events and data from another sub-profile
 // (incognito to original profile, or vice versa).
 bool CanCrossIncognito(const Extension* extension,
                        content::BrowserContext* context);
+
+// Returns true if the extension associated with `extension_id` is idle and it
+// is safe to perform actions such as updating.
+bool IsExtensionIdle(const ExtensionId& extension_id,
+                     content::BrowserContext* browser_context);
+
+// Returns true if prompting for external extensions is enabled.
+bool IsPromptingEnabled();
 
 // Returns true if this extension can inject scripts into pages with file URLs.
 bool AllowFileAccess(const ExtensionId& extension_id,
                      content::BrowserContext* context);
 
-// Returns the StoragePartition domain for |extension|.
-// Note: The reference returned has the same lifetime as |extension|.
+// Returns the StoragePartition domain for `extension`.
+// Note: The reference returned has the same lifetime as `extension`.
 const std::string& GetPartitionDomainForExtension(const Extension* extension);
 
 // Returns an extension specific StoragePartitionConfig if the extension
-// associated with |extension_id| has isolated storage.
+// associated with `extension_id` has isolated storage.
 // Otherwise, return the default StoragePartitionConfig.
 content::StoragePartitionConfig GetStoragePartitionConfigForExtensionId(
     const ExtensionId& extension_id,
@@ -90,10 +87,10 @@ content::ServiceWorkerContext* GetServiceWorkerContextForExtensionId(
     const ExtensionId& extension_id,
     content::BrowserContext* browser_context);
 
-// Maps a |file_url| to a |file_path| on the local filesystem, including
+// Maps a `file_url` to a `file_path` on the local filesystem, including
 // resources in extensions. Returns true on success. See NaClBrowserDelegate for
-// full details. If |use_blocking_api| is false, only a subset of URLs will be
-// handled. If |use_blocking_api| is true, blocking file operations may be used,
+// full details. If `use_blocking_api` is false, only a subset of URLs will be
+// handled. If `use_blocking_api` is true, blocking file operations may be used,
 // and this must be called on threads that allow blocking. Otherwise this can be
 // called on any thread.
 bool MapUrlToLocalFilePath(const ExtensionSet* extensions,
@@ -116,8 +113,8 @@ bool CanWithholdPermissionsFromExtension(
 // be keyed by strings instead.
 int GetBrowserContextId(content::BrowserContext* context);
 
-// Returns whether the |extension| should be loaded in the given
-// |browser_context|.
+// Returns whether the `extension` should be loaded in the given
+// `browser_context`.
 bool IsExtensionVisibleToContext(const Extension& extension,
                                  content::BrowserContext* browser_context);
 
@@ -150,6 +147,15 @@ bool CanRendererHostExtensionOrigin(int render_process_id,
                                     const ExtensionId& extension_id,
                                     bool is_sandboxed);
 
+// Returns `true` if `render_process_host` can legitimately claim to send IPC
+// messages on behalf of `extension_id`.  `render_frame_host` parameter is
+// needed to account for scenarios involving a Chrome Web Store frame.
+bool CanRendererActOnBehalfOfExtension(
+    const ExtensionId& extension_id,
+    content::RenderFrameHost* render_frame_host,
+    content::RenderProcessHost& render_process_host,
+    bool include_user_scripts);
+
 // Returns true if the extension associated with `extension_id` is a Chrome App.
 bool IsChromeApp(const ExtensionId& extension_id,
                  content::BrowserContext* context);
@@ -162,6 +168,11 @@ bool IsAppLaunchable(const ExtensionId& extension_id,
 // Returns true if `extension_id` can be launched without being enabled first.
 bool IsAppLaunchableWithoutEnabling(const ExtensionId& extension_id,
                                     content::BrowserContext* context);
+
+// Returns `true` if any currently installed extension was installed from the
+// webstore, otherwise false.
+bool AnyCurrentlyInstalledExtensionIsFromWebstore(
+    content::BrowserContext* context);
 
 }  // namespace util
 }  // namespace extensions

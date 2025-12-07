@@ -10,4 +10,7 @@ found in the LICENSE file.
     <integer name="reload_button_level_reload">0</integer>
     <integer name="reload_button_level_stop">1</integer>
 
+    <integer name="window_controls_overlay_toggle_level_enable">0</integer>
+    <integer name="window_controls_overlay_toggle_level_disable">1</integer>
+
 </resources>

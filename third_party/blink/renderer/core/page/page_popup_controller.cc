@@ -31,34 +31,35 @@
 #include "third_party/blink/renderer/core/page/page_popup_controller.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_popup.h"
 #include "third_party/blink/renderer/core/page/page_popup_client.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
-const char PagePopupController::kSupplementName[] = "PagePopupController";
-
 PagePopupController* PagePopupController::From(Page& page) {
-  return Supplement<Page>::From<PagePopupController>(page);
+  return page.GetPagePopupController();
 }
 
 PagePopupController::PagePopupController(Page& page,
                                          PagePopup& popup,
                                          PagePopupClient* client)
-    : Supplement(page), popup_(popup), popup_client_(client) {
+    : popup_(popup), popup_client_(client) {
   DCHECK(client);
-  ProvideTo(page, this);
+  page.SetPagePopupController(this);
 }
 
 void PagePopupController::setValueAndClosePopup(int num_value,
-                                                const String& string_value) {
-  if (popup_client_)
-    popup_client_->SetValueAndClosePopup(num_value, string_value);
+                                                const String& string_value,
+                                                bool is_keyboard_event) {
+  if (popup_client_) {
+    popup_client_->SetValueAndClosePopup(num_value, string_value,
+                                         is_keyboard_event);
+  }
 }
 
 void PagePopupController::setValue(const String& value) {
@@ -123,14 +124,13 @@ void PagePopupController::setWindowRect(int x, int y, int width, int height) {
 
 void PagePopupController::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<Page>::Trace(visitor);
 }
 
 void PagePopupController::setMenuListOptionsBoundsInAXTree(
-    HeapVector<Member<DOMRect>>& options_bounds,
+    const HeapVector<Member<DOMRect>>& options_bounds,
     bool children_updated) {
   options_bounds_.clear();
-  for (auto option_bounds : options_bounds) {
+  for (const auto& option_bounds : options_bounds) {
     options_bounds_.emplace_back(
         gfx::Rect(option_bounds->x(), option_bounds->y(),
                   option_bounds->width(), option_bounds->height()));

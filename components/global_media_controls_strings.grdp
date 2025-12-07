@@ -6,8 +6,8 @@
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_DISMISS_ICON_TOOLTIP_TEXT" desc="Tooltip for the dismiss button within the Global Media Controls dialog. The tooltip appears on mouseover of the icon.">
    Dismiss
   </message>
-  <message name="IDS_GLOBAL_MEDIA_CONTROLS_CAST_TO_TEXT" desc="A11y text for directing users to select a device to cast media to.">
-   Cast to...
+  <message name="IDS_GLOBAL_MEDIA_CONTROLS_CAST_HEADER_TEXT" desc="Header text for directing users to select a device to cast media to.">
+   Cast to a device
   </message>
   <message name="IDS_GLOBAL_MEDIA_CONTROLS_CLOSE_DEVICE_LIST_TEXT" desc="Tooltip for the close button in the cast device selector view.">
    Close device list for casting

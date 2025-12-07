@@ -162,13 +162,13 @@ TEST_P(SocketDataPumpTest, ReadAndWriteMultiple) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (const char& c : kTestMsg) {
-      reads.emplace_back(mode, &c, 1, sequence_number++);
+      reads.emplace_back(mode, sequence_number++, base::byte_span_from_ref(c));
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
     }
     for (const char& c : kTestMsg) {
-      writes.emplace_back(mode, &c, 1, sequence_number++);
+      writes.emplace_back(mode, sequence_number++, base::byte_span_from_ref(c));
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -202,13 +202,13 @@ TEST_P(SocketDataPumpTest, PartialStreamSocketWrite) {
   net::IoMode mode = GetParam();
   for (int j = 0; j < kNumIterations; ++j) {
     for (const char& c : kTestMsg) {
-      reads.emplace_back(mode, &c, 1, sequence_number++);
+      reads.emplace_back(mode, sequence_number++, base::byte_span_from_ref(c));
     }
     if (j == kNumIterations - 1) {
       reads.emplace_back(mode, net::OK, sequence_number++);
     }
     for (const char& c : kTestMsg) {
-      writes.emplace_back(mode, &c, 1, sequence_number++);
+      writes.emplace_back(mode, sequence_number++, base::byte_span_from_ref(c));
     }
   }
   net::StaticSocketDataProvider data_provider(reads, writes);
@@ -245,8 +245,7 @@ TEST_P(SocketDataPumpTest, ReadEof) {
   net::IoMode mode = GetParam();
   net::MockRead reads[] = {net::MockRead(mode, net::OK)};
   constexpr std::string_view kTestMsg = "hello!";
-  net::MockWrite writes[] = {
-      net::MockWrite(mode, kTestMsg.data(), kTestMsg.size(), 0)};
+  net::MockWrite writes[] = {net::MockWrite(mode, 0, kTestMsg)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
   EXPECT_EQ("", Read(&receive_handle_, 1));
@@ -268,8 +267,7 @@ TEST_P(SocketDataPumpTest, ReadError) {
   net::IoMode mode = GetParam();
   net::MockRead reads[] = {net::MockRead(mode, net::ERR_FAILED)};
   constexpr std::string_view kTestMsg = "hello!";
-  net::MockWrite writes[] = {
-      net::MockWrite(mode, kTestMsg.data(), kTestMsg.size(), 0)};
+  net::MockWrite writes[] = {net::MockWrite(mode, 0, kTestMsg)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
   EXPECT_EQ("", Read(&receive_handle_, 1));
@@ -290,9 +288,8 @@ TEST_P(SocketDataPumpTest, ReadError) {
 TEST_P(SocketDataPumpTest, WriteEof) {
   net::IoMode mode = GetParam();
   constexpr std::string_view kTestMsg = "hello!";
-  net::MockRead reads[] = {
-      net::MockRead(mode, kTestMsg.data(), kTestMsg.size(), 0),
-      net::MockRead(mode, net::OK)};
+  net::MockRead reads[] = {net::MockRead(mode, 0, kTestMsg),
+                           net::MockRead(mode, net::OK)};
   net::MockWrite writes[] = {net::MockWrite(mode, net::OK)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);
@@ -314,9 +311,8 @@ TEST_P(SocketDataPumpTest, WriteEof) {
 TEST_P(SocketDataPumpTest, WriteError) {
   net::IoMode mode = GetParam();
   constexpr std::string_view kTestMsg = "hello!";
-  net::MockRead reads[] = {
-      net::MockRead(mode, kTestMsg.data(), kTestMsg.size(), 0),
-      net::MockRead(mode, net::OK)};
+  net::MockRead reads[] = {net::MockRead(mode, 0, kTestMsg),
+                           net::MockRead(mode, net::OK)};
   net::MockWrite writes[] = {net::MockWrite(mode, net::ERR_FAILED)};
   net::StaticSocketDataProvider data_provider(reads, writes);
   Init(&data_provider);

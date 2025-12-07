@@ -77,7 +77,7 @@ void AudioScheduledSourceNode::setOnended(EventListener* listener) {
 bool AudioScheduledSourceNode::HasPendingActivity() const {
   // To avoid the leak, a node should be collected regardless of its
   // playback state if the context is closed.
-  if (context()->ContextState() == BaseAudioContext::kClosed) {
+  if (context()->ContextState() == V8AudioContextState::Enum::kClosed) {
     return false;
   }
 

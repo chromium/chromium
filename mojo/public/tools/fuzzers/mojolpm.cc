@@ -4,6 +4,7 @@
 
 #include "mojo/public/tools/fuzzers/mojolpm.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -431,7 +432,7 @@ void HandleSharedBufferWrite(const ::mojolpm::SharedBufferWrite& input) {
   if (!mem) {
     return;
   }
-  std::memcpy(mem.get(), input.data().data(), size);
+  UNSAFE_TODO(std::memcpy(mem.get(), input.data().data(), size));
 }
 
 void HandleDataPipeConsumerClose(

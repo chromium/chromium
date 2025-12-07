@@ -6,9 +6,13 @@
 #define CHROME_BROWSER_EXTENSIONS_UPDATER_CHROME_EXTENSION_DOWNLOADER_FACTORY_H_
 
 #include <memory>
+
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/verifier_formats.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class Profile;
 

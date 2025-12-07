@@ -1,4 +1,5 @@
 include_rules = [
+  "+crypto/hash.h",
   "+net/base",
   "+net/disk_cache",
   "+net/http/http_response_info.h",

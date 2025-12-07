@@ -42,11 +42,10 @@ SharedStorageManager::SharedStorageManager(
           sql_task_runner_,
           special_storage_policy_,
           options_->GetDatabaseOptions())),
-      memory_pressure_listener_(std::make_unique<base::MemoryPressureListener>(
+      memory_pressure_listener_registration_(
           FROM_HERE,
-          base::BindRepeating(&SharedStorageManager::OnMemoryPressure,
-                              base::Unretained(this),
-                              base::DoNothing()))) {
+          base::MemoryPressureListenerTag::kSharedStorageManager,
+          this) {
   timer_.Start(FROM_HERE, options_->stale_purge_initial_interval,
                base::BindOnce(&SharedStorageManager::PurgeStale,
                               weak_ptr_factory_.GetWeakPtr()));
@@ -56,20 +55,24 @@ SharedStorageManager::~SharedStorageManager() {
   RecordShutdownMetrics();
 }
 
-void SharedStorageManager::OnMemoryPressure(
+void SharedStorageManager::HandleMemoryPressure(
     base::OnceCallback<void()> callback,
-    base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
+    base::MemoryPressureLevel memory_pressure_level) {
   DCHECK(callback);
   DCHECK(database_);
 
   // TODO(cammie): Check if MEMORY_PRESSURE_LEVEL_MODERATE should also be
   // ignored.
-  if (memory_pressure_level ==
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_pressure_level == base::MEMORY_PRESSURE_LEVEL_NONE) {
     return;
   }
 
   database_->TrimMemory(std::move(callback));
+}
+
+void SharedStorageManager::OnMemoryPressure(
+    base::MemoryPressureLevel memory_pressure_level) {
+  HandleMemoryPressure(base::DoNothing(), memory_pressure_level);
 }
 
 void SharedStorageManager::OnOperationResult(OperationResult result) {
@@ -145,6 +148,29 @@ void SharedStorageManager::Delete(
                     GetOperationResultCallback(std::move(callback)));
 }
 
+void SharedStorageManager::BatchUpdate(
+    url::Origin context_origin,
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options,
+    base::OnceCallback<void(BatchUpdateResult)> callback) {
+  DCHECK(callback);
+  DCHECK(database_);
+  database_->BatchUpdate(
+      std::move(context_origin), std::move(methods_with_options),
+      base::BindOnce(
+          [](base::WeakPtr<SharedStorageManager> manager,
+             base::OnceCallback<void(BatchUpdateResult)> callback,
+             BatchUpdateResult result) {
+            if (manager) {
+              // Only report the overall result, as we treat the entire batch as
+              // a single atomic unit.
+              manager->OnOperationResult(result.overall_result);
+            }
+            std::move(callback).Run(std::move(result));
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void SharedStorageManager::Length(url::Origin context_origin,
                                   base::OnceCallback<void(int)> callback) {
   DCHECK(callback);
@@ -187,11 +213,12 @@ void SharedStorageManager::Entries(
 
 void SharedStorageManager::Clear(
     url::Origin context_origin,
-    base::OnceCallback<void(OperationResult)> callback) {
+    base::OnceCallback<void(OperationResult)> callback,
+    DataClearSource source) {
   DCHECK(callback);
   DCHECK(database_);
   database_->Clear(std::move(context_origin),
-                   GetOperationResultCallback(std::move(callback)));
+                   GetOperationResultCallback(std::move(callback)), source);
 }
 
 void SharedStorageManager::BytesUsed(url::Origin context_origin,
@@ -497,6 +524,8 @@ void SharedStorageManager::OnStalePurged(OperationResult result) {
 void SharedStorageManager::RecordShutdownMetrics() {
   base::UmaHistogramCounts1000("Storage.SharedStorage.OnShutdown.NumSqlErrors",
                                operation_sql_error_count_);
+  base::UmaHistogramBoolean("Storage.SharedStorage.OnShutdown.HasSqlErrors",
+                            operation_sql_error_count_ > 0);
   base::UmaHistogramBoolean(
       "Storage.SharedStorage.OnShutdown.RecoveryFromInitFailureAttempted",
       tried_to_recover_from_init_failure_);

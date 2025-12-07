@@ -9,7 +9,10 @@
 #include "chrome/browser/device_notifications/device_system_tray_icon_renderer.h"
 #include "chrome/browser/profiles/profile_attributes_storage_observer.h"
 #include "chrome/browser/status_icons/status_icon.h"
-#include "chrome/browser/ui/chrome_pages.h"
+
+namespace chrome {
+enum class HelpSource;
+}
 
 class DeviceStatusIconRenderer : public DeviceSystemTrayIconRenderer,
                                  public StatusIconMenuModel::Delegate,
@@ -62,7 +65,7 @@ class DeviceStatusIconRenderer : public DeviceSystemTrayIconRenderer,
   int about_device_message_id_;
 
   // Reference to our status icon (if any) - owned by the StatusTray.
-  raw_ptr<StatusIcon, DanglingUntriaged> status_icon_ = nullptr;
+  raw_ptr<StatusIcon> status_icon_ = nullptr;
 
   // The mapping of clickable system tray icon items to their click handlers
   std::vector<base::RepeatingClosure> command_id_callbacks_;

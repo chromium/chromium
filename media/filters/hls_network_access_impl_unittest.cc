@@ -4,11 +4,13 @@
 
 #include "media/filters/hls_network_access_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "media/base/test_helpers.h"
 #include "media/filters/hls_rendition_impl.h"
 #include "media/filters/hls_test_helpers.h"
+
 namespace media {
 
 namespace {
@@ -38,6 +40,12 @@ class HlsNetworkAccessImplUnittest : public testing::Test {
     base::SequenceBound<HlsDataSourceProviderImpl> dsp(
         task_environment_.GetMainThreadTaskRunner(), std::move(factory));
     network_access_ = std::make_unique<HlsNetworkAccessImpl>(std::move(dsp));
+  }
+
+  void TearDown() override {
+    factory_ = nullptr;
+    network_access_.reset();
+    task_environment_.RunUntilIdle();
   }
 
   std::optional<hls::types::ByteRange> ByteRangeFromTuple(
@@ -72,10 +80,9 @@ class HlsNetworkAccessImplUnittest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<HlsNetworkAccessImpl> network_access_;
   raw_ptr<MockDataSourceFactory> factory_;
-  std::unique_ptr<HlsDataSourceProviderImpl> dsp_;
-  base::test::TaskEnvironment task_environment_;
 };
 
 TEST_F(HlsNetworkAccessImplUnittest, TestReadSmallManifest) {
@@ -275,13 +282,13 @@ TEST_F(HlsNetworkAccessImplUnittest, TestSegmentWithKey) {
   auto* ds_for_keyfetch = factory_->PregenerateNextMock();
   EXPECT_CALL(*ds_for_keyfetch, Initialize)
       .WillOnce(base::test::RunOnceCallback<0>(true));
-  EXPECT_CALL(*ds_for_keyfetch, Read(0, 16384, _, _))
-      .WillOnce([](int64_t, int, uint8_t* data, DataSource::ReadCB cb) {
-        memset(data, 'x', 16);
+  EXPECT_CALL(*ds_for_keyfetch, Read(0, SpanSizeEq(16384), _))
+      .WillOnce([](int64_t, base::span<uint8_t> data, DataSource::ReadCB cb) {
+        std::ranges::fill(data.first<16>(), 'x');
         std::move(cb).Run(16);
       });
-  EXPECT_CALL(*ds_for_keyfetch, Read(16, 16384, _, _))
-      .WillOnce(base::test::RunOnceCallback<3>(0));
+  EXPECT_CALL(*ds_for_keyfetch, Read(16, SpanSizeEq(16384), _))
+      .WillOnce(base::test::RunOnceCallback<2>(0));
 
   // Then expect media content to be read.
   factory_->AddReadExpectation(0, 16384, 1000);

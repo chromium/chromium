@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -24,9 +25,6 @@
 
 class GoogleServiceAuthError;
 class OAuth2MintTokenFlowTest;
-
-COMPONENT_EXPORT(GOOGLE_APIS)
-extern const char kOAuth2MintTokenApiCallResultHistogram[];
 
 // Values carrying the result of processing a successful API call.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -65,7 +63,8 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) RemoteConsentResolutionData {
   GURL url;
   net::CookieList cookies;
 
-  bool operator==(const RemoteConsentResolutionData& rhs) const;
+  friend bool operator==(const RemoteConsentResolutionData&,
+                         const RemoteConsentResolutionData&) = default;
 };
 
 // This class implements the OAuth2 flow to Google to mint an OAuth2 access
@@ -101,7 +100,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
         std::string_view version,
         std::string_view channel,
         std::string_view device_id = {},
-        std::string_view selected_user_id = {},
+        const GaiaId& selected_user_id = GaiaId(),
         std::string_view consent_result = {});
 
     static Parameters CreateForClientFlow(
@@ -131,7 +130,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
     std::string extension_id;  // Do not set if an access token should be issued
                                // for Chrome itself.
     std::string device_id;
-    std::string selected_user_id;
+    GaiaId selected_user_id;
     std::string consent_result;
     std::string bound_oauth_token;
 
@@ -186,10 +185,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
       const std::string& access_token) override;
 
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+                             std::optional<std::string> body) override;
   void ProcessApiCallFailure(int net_error,
                              const network::mojom::URLResponseHead* head,
-                             std::unique_ptr<std::string> body) override;
+                             std::optional<std::string> body) override;
   net::PartialNetworkTrafficAnnotationTag GetNetworkTrafficAnnotationTag()
       override;
 

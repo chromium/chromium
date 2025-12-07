@@ -19,11 +19,13 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_lock_manager_snapshot.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/locks/lock.h"
+#include "third_party/blink/renderer/modules/shared_storage/shared_storage_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -46,7 +48,7 @@ constexpr char kInvalidStateErrorMessage[] = "The document is not active.";
 
 LockInfo* ToLockInfo(const mojom::blink::LockInfoPtr& record) {
   LockInfo* info = LockInfo::Create();
-  info->setMode(Lock::ModeToString(record->mode));
+  info->setMode(Lock::ModeToEnum(record->mode));
   info->setName(record->name);
   info->setClientId(record->client_id);
   return info;
@@ -101,7 +103,7 @@ class LockManager::LockRequestImpl final
     visitor->Trace(abort_handle_);
   }
 
-  const char* NameInHeapSnapshot() const override {
+  const char* GetHumanReadableName() const override {
     return "LockManager::LockRequestImpl";
   }
 
@@ -183,7 +185,7 @@ class LockManager::LockRequestImpl final
     manager_->held_locks_.insert(lock);
 
     // Note that either invoking `callback` or calling
-    // ScriptPromiseUntyped::Cast to convert the resulting value to a Promise
+    // ToResolvedPromise to convert the resulting value to a Promise
     // can or will execute javascript. This means that the ExecutionContext
     // could be synchronously destroyed, and the `lock` might be released before
     // HoldUntil is called. This is safe, as releasing a lock twice is harmless.
@@ -232,21 +234,32 @@ class LockManager::LockRequestImpl final
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 
-const char LockManager::kSupplementName[] = "LockManager";
-
 // static
-LockManager* LockManager::locks(NavigatorBase& navigator) {
-  auto* supplement = Supplement<NavigatorBase>::From<LockManager>(navigator);
+LockManager* LockManager::locks(NavigatorBase& navigator,
+                                ExceptionState& exception_state) {
+  ExecutionContext* context = navigator.GetExecutionContext();
+
+  auto* shared_storage_worklet_global_scope =
+      DynamicTo<SharedStorageWorkletGlobalScope>(context);
+
+  if (shared_storage_worklet_global_scope &&
+      !shared_storage_worklet_global_scope->add_module_finished()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        "navigator.locks cannot be accessed during addModule().");
+    return nullptr;
+  }
+
+  LockManager* supplement = navigator.GetLockManager();
   if (!supplement) {
     supplement = MakeGarbageCollected<LockManager>(navigator);
-    Supplement<NavigatorBase>::ProvideTo(navigator, supplement);
+    navigator.SetLockManager(supplement);
   }
   return supplement;
 }
 
 LockManager::LockManager(NavigatorBase& navigator)
-    : Supplement<NavigatorBase>(navigator),
-      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+    : ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
       service_(navigator.GetExecutionContext()),
       observer_(navigator.GetExecutionContext()) {}
 
@@ -280,13 +293,14 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
   ExecutionContext* context = ExecutionContext::From(script_state);
   DCHECK(context->IsContextThread());
 
-  context->GetScheduler()->RegisterStickyFeature(
-      blink::SchedulingPolicy::Feature::kWebLocks,
-      {blink::SchedulingPolicy::DisableBackForwardCache()});
-
   // 5. If origin is an opaque origin, then reject promise with a
   // "SecurityError" DOMException.
-  if (!context->GetSecurityOrigin()->CanAccessLocks()) {
+  //
+  // TODO(crbug.com/373899208): It's safe to bypass the opaque origin check for
+  // shared storage worklets. However, it'd be better to give shared storage
+  // worklets the correct security origin to avoid bypassing this check.
+  if (!context->GetSecurityOrigin()->CanAccessLocks() &&
+      !context->IsSharedStorageWorkletGlobalScope()) {
     exception_state.ThrowSecurityError(
         "Access to the Locks API is denied in this context.");
     return EmptyPromise();
@@ -295,7 +309,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
     UseCounter::Count(context, WebFeature::kFileAccessedLocks);
   }
 
-  mojom::blink::LockMode mode = Lock::StringToMode(options->mode());
+  mojom::blink::LockMode mode = Lock::EnumToMode(options->mode().AsEnum());
 
   // 6. Otherwise, if name starts with U+002D HYPHEN-MINUS (-), then reject
   // promise with a "NotSupportedError" DOMException.
@@ -355,7 +369,7 @@ ScriptPromise<IDLAny> LockManager::request(ScriptState* script_state,
 
   CheckStorageAccessAllowed(
       context, resolver,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &LockManager::RequestImpl, WrapWeakPersistent(this),
           WrapPersistent(options), name, WrapPersistent(callback), mode)));
 
@@ -415,8 +429,8 @@ void LockManager::RequestImpl(const LockOptions* options,
     // In "Request a lock": If signal is present, then add the algorithm signal
     // to abort the request request with signal to signal.
     AbortSignal::AlgorithmHandle* handle = options->signal()->AddAlgorithm(
-        WTF::BindOnce(&LockRequestImpl::Abort, WrapWeakPersistent(request),
-                      WrapPersistent(options->signal())));
+        BindOnce(&LockRequestImpl::Abort, WrapWeakPersistent(request),
+                 WrapPersistent(options->signal())));
     request->InitializeAbortAlgorithm(*handle);
   }
   service_->RequestLock(name, mode, wait, std::move(request_remote));
@@ -451,7 +465,7 @@ ScriptPromise<LockManagerSnapshot> LockManager::query(
   CheckStorageAccessAllowed(
       context, resolver,
       resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&LockManager::QueryImpl, WrapWeakPersistent(this))));
+          BindOnce(&LockManager::QueryImpl, WrapWeakPersistent(this))));
   return promise;
 }
 
@@ -468,7 +482,7 @@ void LockManager::QueryImpl(
     }
   }
 
-  service_->QueryState(WTF::BindOnce(
+  service_->QueryState(BindOnce(
       [](ScriptPromiseResolver<LockManagerSnapshot>* resolver,
          Vector<mojom::blink::LockInfoPtr> pending,
          Vector<mojom::blink::LockInfoPtr> held) {
@@ -494,7 +508,6 @@ bool LockManager::IsPendingRequest(LockRequestImpl* request) {
 
 void LockManager::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
-  Supplement<NavigatorBase>::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
   visitor->Trace(pending_requests_);
   visitor->Trace(held_locks_);
@@ -519,9 +532,10 @@ void LockManager::CheckStorageAccessAllowed(
     ExecutionContext* context,
     ScriptPromiseResolverBase* resolver,
     base::OnceCallback<void()> callback) {
-  DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
+  DCHECK(context->IsWindow() || context->IsWorkerGlobalScope() ||
+         context->IsSharedStorageWorkletGlobalScope());
 
-  auto wrapped_callback = WTF::BindOnce(
+  auto wrapped_callback = blink::BindOnce(
       &LockManager::DidCheckStorageAccessAllowed, WrapWeakPersistent(this),
       WrapPersistent(resolver), std::move(callback));
 
@@ -539,9 +553,10 @@ void LockManager::CheckStorageAccessAllowed(
     frame->AllowStorageAccessAndNotify(
         WebContentSettingsClient::StorageType::kWebLocks,
         std::move(wrapped_callback));
-  } else {
+  } else if (auto* worker_global_scope =
+                 DynamicTo<WorkerGlobalScope>(context)) {
     WebContentSettingsClient* content_settings_client =
-        To<WorkerGlobalScope>(context)->ContentSettingsClient();
+        worker_global_scope->ContentSettingsClient();
     if (!content_settings_client) {
       std::move(wrapped_callback).Run(true);
       return;
@@ -549,6 +564,14 @@ void LockManager::CheckStorageAccessAllowed(
     content_settings_client->AllowStorageAccess(
         WebContentSettingsClient::StorageType::kWebLocks,
         std::move(wrapped_callback));
+  } else {
+    // Shared storage always allows WebLocks as long as the
+    // `SharedStorageWorkletGlobalScope` is allowed in the first place.
+    //
+    // TODO(crbug.com/373891801): A more generic way is to provide
+    // `WebContentSettingsClient` to shared storage worklets.
+    CHECK(context->IsSharedStorageWorkletGlobalScope());
+    std::move(wrapped_callback).Run(true);
   }
 }
 

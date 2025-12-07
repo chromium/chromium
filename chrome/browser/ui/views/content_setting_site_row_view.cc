@@ -61,7 +61,8 @@ ContentSettingSiteRowView::ContentSettingSiteRowView(
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   title_label->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
   title_label->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
 

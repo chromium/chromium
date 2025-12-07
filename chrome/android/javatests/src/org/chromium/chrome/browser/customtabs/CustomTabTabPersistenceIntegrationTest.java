@@ -51,10 +51,7 @@ public class CustomTabTabPersistenceIntegrationTest {
                         tab.getId(), false, /* isFlatBuffer= */ false);
 
         CustomTabTabPersistencePolicy tabPersistencePolicy =
-                mCustomTabActivityTestRule
-                        .getActivity()
-                        .getComponent()
-                        .resolveTabPersistencePolicy();
+                mCustomTabActivityTestRule.getActivity().getCustomTabTabPersistencePolicy();
 
         String expectedMetadataFileName = tabPersistencePolicy.getMetadataFileName();
         File stateDir = tabPersistencePolicy.getOrCreateStateDirectory();
@@ -64,8 +61,7 @@ public class CustomTabTabPersistenceIntegrationTest {
 
         mCustomTabActivityTestRule
                 .getActivity()
-                .getComponent()
-                .resolveNavigationController()
+                .getCustomTabActivityNavigationController()
                 .finish(FinishReason.OTHER);
 
         waitForFileExistState(false, expectedTabFileName, stateDir);

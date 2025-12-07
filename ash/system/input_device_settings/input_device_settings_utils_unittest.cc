@@ -20,6 +20,7 @@
 #include "components/user_manager/known_user.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 namespace {
@@ -482,6 +483,23 @@ TEST_F(ButtonRemappingConversionTest,
   EXPECT_FALSE(remapping2);
 }
 
+TEST_F(ButtonRemappingConversionTest, DictToButtonUnknownKeyCode) {
+  // Valid dict with name, vkey and static shortcut action fields.
+  base::Value::Dict dict;
+  dict.Set(prefs::kButtonRemappingName, "Button 1");
+  dict.Set(prefs::kButtonRemappingKeyboardCode,
+           static_cast<int>(ui::VKEY_UNKNOWN));
+  dict.Set(
+      prefs::kButtonRemappingStaticShortcutAction,
+      static_cast<int>(
+          button_remapping5.remapping_action->get_static_shortcut_action()));
+
+  // Return nullptr if the KeyCode is set to be an unknown key.
+  mojom::ButtonRemappingPtr remapping1 = ConvertDictToButtonRemapping(
+      dict, mojom::CustomizationRestriction::kAllowCustomizations);
+  EXPECT_FALSE(remapping1);
+}
+
 TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingArrayToList) {
   std::vector<mojom::ButtonRemappingPtr> remappings;
   remappings.push_back(button_remapping1.Clone());
@@ -489,7 +507,7 @@ TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingArrayToList) {
   remappings.push_back(button_remapping4.Clone());
   base::Value::List list1 = ConvertButtonRemappingArrayToList(
       remappings, mojom::CustomizationRestriction::kAllowCustomizations);
-  EXPECT_EQ(3, static_cast<int>(list1.size()));
+  EXPECT_EQ(3u, list1.size());
 
   ASSERT_TRUE(list1[0].is_dict());
   const auto& dict1 = list1[0].GetDict();
@@ -539,11 +557,11 @@ TEST_F(ButtonRemappingConversionTest, ConvertButtonRemappingArrayToList) {
 
   base::Value::List list2 = ConvertButtonRemappingArrayToList(
       remappings, mojom::CustomizationRestriction::kDisallowCustomizations);
-  EXPECT_EQ(0, static_cast<int>(list2.size()));
+  EXPECT_EQ(0u, list2.size());
 
   base::Value::List list3 = ConvertButtonRemappingArrayToList(
       remappings, mojom::CustomizationRestriction::kDisableKeyEventRewrites);
-  EXPECT_EQ(2, static_cast<int>(list3.size()));
+  EXPECT_EQ(2u, list3.size());
 
   ASSERT_TRUE(list3[0].is_dict());
   const auto& dict5 = list3[0].GetDict();
@@ -606,7 +624,7 @@ TEST_F(ButtonRemappingConversionTest, ConvertListToButtonRemappingArray) {
   std::vector<mojom::ButtonRemappingPtr> array =
       ConvertListToButtonRemappingArray(
           list, mojom::CustomizationRestriction::kAllowCustomizations);
-  EXPECT_EQ(2, static_cast<int>(array.size()));
+  EXPECT_EQ(2u, array.size());
 
   mojom::ButtonRemappingPtr remapping1 = std::move(array[0]);
   EXPECT_EQ(*dict1.FindString(prefs::kButtonRemappingName), remapping1->name);
@@ -643,12 +661,12 @@ TEST_F(ButtonRemappingConversionTest, ConvertListToButtonRemappingArray) {
   std::vector<mojom::ButtonRemappingPtr> array2 =
       ConvertListToButtonRemappingArray(
           list, mojom::CustomizationRestriction::kDisallowCustomizations);
-  EXPECT_EQ(0, static_cast<int>(array2.size()));
+  EXPECT_EQ(0u, array2.size());
 
   std::vector<mojom::ButtonRemappingPtr> array3 =
       ConvertListToButtonRemappingArray(
           list, mojom::CustomizationRestriction::kDisableKeyEventRewrites);
-  EXPECT_EQ(1, static_cast<int>(array3.size()));
+  EXPECT_EQ(1u, array3.size());
   mojom::ButtonRemappingPtr remapping3 = std::move(array3[0]);
   EXPECT_EQ(*dict1.FindString(prefs::kButtonRemappingName), remapping3->name);
   EXPECT_TRUE(remapping3->button->is_customizable_button());

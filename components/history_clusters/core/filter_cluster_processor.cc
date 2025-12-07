@@ -27,7 +27,7 @@ void RecordClusterFilterReasonHistogram(
 
 // Returns whether `filter_params` is a filter that would actually filter
 // clusters out.
-bool IsFunctionalFilter(QueryClustersFilterParams filter_params) {
+bool IsFunctionalFilter(const QueryClustersFilterParams& filter_params) {
   return filter_params.min_visits > 0 ||
          filter_params.min_visits_with_images > 0 ||
          !filter_params.categories_allowlist.empty() ||
@@ -60,11 +60,10 @@ void FilterClusterProcessor::ProcessClusters(
           GetHistogramNameSliceForRequestSource(clustering_request_source_),
       clusters->size());
 
-  clusters->erase(
-      base::ranges::remove_if(
-          *clusters,
-          [&](auto& cluster) { return !DoesClusterMatchFilter(cluster); }),
-      clusters->end());
+  auto to_remove = std::ranges::remove_if(*clusters, [&](auto& cluster) {
+    return !DoesClusterMatchFilter(cluster);
+  });
+  clusters->erase(to_remove.begin(), to_remove.end());
 
   base::UmaHistogramCounts1000(
       "History.Clusters.Backend.FilterClusterProcessor.NumClusters.PostFilter" +

@@ -6,13 +6,11 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/webshare/store_file_task.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/test/web_contents_tester.h"
@@ -26,7 +24,6 @@ class SharingServiceOperationUnitTest : public ChromeRenderViewHostTestHarness {
   SharingServiceOperationUnitTest()
       : ChromeRenderViewHostTestHarness(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(features::kWebShare);
   }
   ~SharingServiceOperationUnitTest() override = default;
 
@@ -58,9 +55,6 @@ class SharingServiceOperationUnitTest : public ChromeRenderViewHostTestHarness {
       blink::mojom::ShareService::ShareCallback close_callback) {
     std::move(close_callback).Run(blink::mojom::ShareError::OK);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(SharingServiceOperationUnitTest, TestIncognitoWithFiles) {

@@ -62,7 +62,8 @@ class DocumentMetadataExtractorTest : public PageTestBase {
 
 void DocumentMetadataExtractorTest::SetHTMLInnerHTML(
     const String& html_content) {
-  GetDocument().documentElement()->setInnerHTML((html_content));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      html_content);
 }
 
 void DocumentMetadataExtractorTest::SetURL(const String& url) {
@@ -634,6 +635,35 @@ TEST_F(DocumentMetadataExtractorTest, ignorePropertyWithEmptyArray) {
       "\n"
       "{\"@type\": \"Restaurant\","
       "\"name\": []"
+      "}\n"
+      "\n"
+      "</script>"
+      "</body>");
+  SetURL("http://www.test.com/");
+  SetTitle("My neat website about cool stuff");
+
+  WebPagePtr extracted = Extract();
+  ASSERT_FALSE(extracted.is_null());
+
+  WebPagePtr expected =
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
+
+  EntityPtr restaurant = Entity::New();
+  restaurant->type = "Restaurant";
+
+  expected->entities.push_back(std::move(restaurant));
+
+  EXPECT_EQ(expected, extracted);
+}
+
+TEST_F(DocumentMetadataExtractorTest, ignoreNullProperty) {
+  SetHTMLInnerHTML(
+      "<body>"
+      "<script type=\"application/ld+json\">"
+      "\n"
+      "\n"
+      "{\"@type\": \"Restaurant\","
+      "\"name\": null"
       "}\n"
       "\n"
       "</script>"

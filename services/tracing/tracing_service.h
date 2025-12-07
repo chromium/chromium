@@ -28,7 +28,7 @@ class TracingService : public mojom::TracingService {
   // mojom::TracingService implementation:
   void Initialize(std::vector<mojom::ClientInfoPtr> clients) override;
   void AddClient(mojom::ClientInfoPtr client) override;
-#if !BUILDFLAG(IS_NACL) && BUILDFLAG(USE_BLINK)
+#if BUILDFLAG(USE_BLINK)
   void BindConsumerHost(
       mojo::PendingReceiver<mojom::ConsumerHost> receiver) override;
 #endif

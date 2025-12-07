@@ -30,7 +30,6 @@ class SelectionForUndoStep final {
   SelectionForUndoStep& operator=(const SelectionForUndoStep&);
 
   bool operator==(const SelectionForUndoStep&) const;
-  bool operator!=(const SelectionForUndoStep&) const;
 
   TextAffinity Affinity() const { return affinity_; }
   Position Anchor() const { return anchor_; }

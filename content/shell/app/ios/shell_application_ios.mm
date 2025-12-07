@@ -4,7 +4,9 @@
 
 #import "content/shell/app/ios/shell_application_ios.h"
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
+#include "components/crash/core/app/crashpad.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_runner.h"
 #include "content/shell/app/shell_main_delegate.h"
@@ -37,6 +39,13 @@ static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
   window.windowScene = (UIWindowScene*)scene;
   window.rootViewController = controller;
   [window makeKeyAndVisible];
+}
+
+- (void)sceneWillEnterForeground:(UIScene*)scene {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableCrashReporter)) {
+    ::crash_reporter::ProcessIntermediateDumps();
+  }
 }
 
 @end

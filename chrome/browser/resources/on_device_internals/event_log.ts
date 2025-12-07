@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '//resources/cr_elements/cr_button/cr_button.js';
+
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
@@ -30,8 +32,8 @@ function convertMojoTimeToJs(mojoTime: Time): Date {
 
 export class EventLogMessage {
   eventTime: Date;
-  sourceLinkText: string;
-  sourceLinkURL: string;
+  sourceLinkText: string = '';
+  sourceLinkURL: string = '';
   message: string;
 
   constructor(
@@ -85,7 +87,7 @@ export class OnDeviceInternalsEventLogElement extends CrLitElement {
     };
   }
 
-  protected eventLogMessages_: EventLogMessage[] = [];
+  protected accessor eventLogMessages_: EventLogMessage[] = [];
 
   override connectedCallback() {
     super.connectedCallback();

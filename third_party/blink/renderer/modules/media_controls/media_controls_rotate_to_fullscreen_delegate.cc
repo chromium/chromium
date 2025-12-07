@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/user_metrics_action.h"
+#include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -115,7 +116,7 @@ void MediaControlsRotateToFullscreenDelegate::Invoke(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MediaControlsRotateToFullscreenDelegate::OnStateChange() {
@@ -129,7 +130,7 @@ void MediaControlsRotateToFullscreenDelegate::OnStateChange() {
   if (needs_intersection_observer && !intersection_observer_) {
     intersection_observer_ = IntersectionObserver::Create(
         video_element_->GetDocument(),
-        WTF::BindRepeating(
+        BindRepeating(
             &MediaControlsRotateToFullscreenDelegate::OnIntersectionChange,
             WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kMediaIntersectionObserver,
@@ -180,8 +181,10 @@ void MediaControlsRotateToFullscreenDelegate::OnScreenOrientationChange() {
            << " -> " << static_cast<int>(current_screen_orientation_);
 
   // Do not enable if video is in Picture-in-Picture.
-  if (video_element_->GetDisplayType() == DisplayType::kPictureInPicture)
+  if (video_element_->GetDisplayType() ==
+      WebMediaPlayer::DisplayType::kVideoPictureInPicture) {
     return;
+  }
 
   // Only enable if native media controls are used.
   if (!video_element_->ShouldShowControls())
@@ -287,8 +290,7 @@ MediaControlsRotateToFullscreenDelegate::ComputeScreenOrientation() const {
       return SimpleOrientation::kUnknown;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SimpleOrientation::kUnknown;
+  NOTREACHED();
 }
 
 void MediaControlsRotateToFullscreenDelegate::Trace(Visitor* visitor) const {

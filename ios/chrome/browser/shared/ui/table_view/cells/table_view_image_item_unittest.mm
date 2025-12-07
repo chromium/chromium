@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_image_item.h"
 
 #import "base/apple/foundation_util.h"
+#import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -26,18 +27,23 @@ TEST_F(TableViewImageItemTest, ItemProperties) {
   item.image = [[UIImage alloc] init];
 
   id cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewImageCell class]]);
+  ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
 
-  TableViewImageCell* imageCell =
-      base::apple::ObjCCastStrict<TableViewImageCell>(cell);
-  EXPECT_FALSE(imageCell.textLabel.text);
-  EXPECT_FALSE(imageCell.detailTextLabel.text);
-  EXPECT_FALSE(imageCell.imageView.image);
+  LegacyTableViewCell* imageCell =
+      base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
+  EXPECT_EQ(nil, imageCell.contentConfiguration);
 
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_NSEQ(text, imageCell.textLabel.text);
-  EXPECT_NSEQ(detailText, imageCell.detailTextLabel.text);
-  EXPECT_FALSE(imageCell.imageView.isHidden);
+  EXPECT_NE(nil, imageCell.contentConfiguration);
+  ASSERT_TRUE([imageCell.contentConfiguration
+      isMemberOfClass:TableViewCellContentConfiguration.class]);
+
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          imageCell.contentConfiguration);
+  EXPECT_NSEQ(text, configuration.title);
+  EXPECT_NSEQ(detailText, configuration.subtitle);
+  EXPECT_NE(nil, configuration.leadingConfiguration);
 }
 
 // Tests that the imageView is not visible if no image is set.
@@ -48,12 +54,17 @@ TEST_F(TableViewImageItemTest, ItemImageViewHidden) {
   item.title = text;
 
   id cell = [[[item cellClass] alloc] init];
-  ASSERT_TRUE([cell isMemberOfClass:[TableViewImageCell class]]);
+  ASSERT_TRUE([cell isMemberOfClass:[LegacyTableViewCell class]]);
 
-  TableViewImageCell* imageCell =
-      base::apple::ObjCCastStrict<TableViewImageCell>(cell);
-  EXPECT_FALSE(item.image);
+  LegacyTableViewCell* imageCell =
+      base::apple::ObjCCastStrict<LegacyTableViewCell>(cell);
+
   [item configureCell:cell withStyler:[[ChromeTableViewStyler alloc] init]];
-  EXPECT_FALSE(item.image);
-  EXPECT_TRUE(imageCell.imageView.isHidden);
+  ASSERT_TRUE([imageCell.contentConfiguration
+      isMemberOfClass:TableViewCellContentConfiguration.class]);
+
+  TableViewCellContentConfiguration* configuration =
+      base::apple::ObjCCastStrict<TableViewCellContentConfiguration>(
+          imageCell.contentConfiguration);
+  EXPECT_EQ(nil, configuration.leadingConfiguration);
 }

@@ -7,25 +7,34 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-
-namespace cricket {
-class PortAllocator;
-}  // namespace cricket
+#include "third_party/webrtc/p2p/base/port_allocator.h"
 
 namespace remoting::protocol {
 
+struct NetworkSettings;
 class SessionOptionsProvider;
 class TransportContext;
 
-// Factory class used for creating cricket::PortAllocator that is used
+// Factory class used for creating webrtc::PortAllocator that is used
 // to allocate ICE candidates.
 class PortAllocatorFactory {
  public:
-  virtual ~PortAllocatorFactory() {}
+  using ApplyNetworkSettingsCallback =
+      base::OnceCallback<void(const NetworkSettings&)>;
+  struct CreatePortAllocatorResult {
+    CreatePortAllocatorResult();
+    CreatePortAllocatorResult(CreatePortAllocatorResult&&);
+    ~CreatePortAllocatorResult();
+    std::unique_ptr<webrtc::PortAllocator> allocator;
+    ApplyNetworkSettingsCallback apply_network_settings;
+  };
 
-  virtual std::unique_ptr<cricket::PortAllocator> CreatePortAllocator(
+  virtual ~PortAllocatorFactory() = default;
+
+  virtual CreatePortAllocatorResult CreatePortAllocator(
       scoped_refptr<TransportContext> transport_context,
       base::WeakPtr<SessionOptionsProvider> session_options_provider) = 0;
 };

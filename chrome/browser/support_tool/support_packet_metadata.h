@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 #include <vector>
@@ -16,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/policy/core/browser/webui/json_generation.h"
 
@@ -26,7 +28,8 @@
 // - Support Case ID
 // - Issue Description
 // - Email Address (optional)
-// - GUID of the support packet
+// - GUID of the support packet: This ID matches with the `upload_id` field on
+// server.
 // - List of data collectors
 // - Chrome details:
 //   - Platform and OS (contains board and channel for ChromeOS)
@@ -38,7 +41,8 @@ class SupportPacketMetadata {
  public:
   SupportPacketMetadata(std::string case_id,
                         std::string email_address,
-                        std::string issue_description);
+                        std::string issue_description,
+                        std::optional<std::string> upload_id);
 
   ~SupportPacketMetadata();
 
@@ -86,12 +90,12 @@ class SupportPacketMetadata {
       const char* chrome_metadata_key,
       const char* support_packet_key);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Is called when machine statistics is loaded. Puts `machine_serial` on
   // `metadata_` and runs `on_metadata_contents_populated`.
   void OnMachineStatisticsLoaded(
       base::OnceClosure on_metadata_contents_populated);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns the string of `timestamp` in a numeric date and time with time zone
   // such as "12/13/52 2:44:30 PM PST".

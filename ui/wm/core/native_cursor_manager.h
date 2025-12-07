@@ -6,6 +6,7 @@
 #define UI_WM_CORE_NATIVE_CURSOR_MANAGER_H_
 
 #include "base/component_export.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/wm/core/native_cursor_manager_delegate.h"
 
 namespace display {
@@ -44,9 +45,14 @@ class COMPONENT_EXPORT(UI_WM) NativeCursorManager {
     bool visible,
     NativeCursorManagerDelegate* delegate) = 0;
 
-  // A request to set the cursor set.
+  // A request to set the cursor size.
   virtual void SetCursorSize(ui::CursorSize cursor_size,
                              NativeCursorManagerDelegate* delegate) = 0;
+
+  // A request to set the ui::CursorSize::kLarge dimensions in DIPs.
+  virtual void SetLargeCursorSizeInDip(
+      int large_cursor_size_in_dip,
+      NativeCursorManagerDelegate* delegate) = 0;
 
   // A request to set whether mouse events are disabled. At minimum,
   // implementer should call NativeCursorManagerDelegate::
@@ -54,6 +60,10 @@ class COMPONENT_EXPORT(UI_WM) NativeCursorManager {
   virtual void SetMouseEventsEnabled(
       bool enabled,
       NativeCursorManagerDelegate* delegate) = 0;
+
+  // A request to set the color of the cursor.
+  virtual void SetCursorColor(SkColor color,
+                              NativeCursorManagerDelegate* delegate) = 0;
 };
 
 }  // namespace wm

@@ -4,40 +4,12 @@
 
 # Execute this file to set up some common GN arg configs for Chromium builders.
 
-load("//lib/gn_args.star", "gn_args")
+load("@chromium-luci//gn_args.star", "gn_args")
 
 gn_args.config(
     name = "afl",
     args = {
         "use_afl": True,
-    },
-)
-
-gn_args.config(
-    name = "also_build_ash_chrome",
-    args = {
-        "also_build_ash_chrome": True,
-    },
-)
-
-gn_args.config(
-    name = "also_build_lacros_chrome",
-    args = {
-        "also_build_lacros_chrome": True,
-    },
-)
-
-gn_args.config(
-    name = "also_build_lacros_chrome_for_architecture_amd64",
-    args = {
-        "also_build_lacros_chrome_for_architecture": "amd64",
-    },
-)
-
-gn_args.config(
-    name = "also_build_lacros_chrome_for_architecture_arm64",
-    args = {
-        "also_build_lacros_chrome_for_architecture": "arm64",
     },
 )
 
@@ -119,6 +91,16 @@ gn_args.config(
     name = "android_fastbuild",
     args = {
         "android_static_analysis": "off",
+        # Still want TraceReferences checks, which impact targets that enable R8.
+        "enable_r8_tracerefs": True,
+    },
+)
+
+# This will not be the default anymore so must explicitly be set on bots.
+gn_args.config(
+    name = "android_with_static_analysis",
+    args = {
+        "android_static_analysis": "on",
     },
 )
 
@@ -230,15 +212,66 @@ gn_args.config(
 
 gn_args.config(
     name = "cast_android",
+    args_file = "//chromecast/build/args/config/android.gni",
+    configs = [
+        "cast_receiver",
+        "android",
+        "minimal_symbols",
+        "static",
+    ],
+)
+
+gn_args.config(
+    name = "cast_linux",
+    args_file = "//chromecast/build/args/config/linux.gni",
+    configs = [
+        "cast_receiver",
+        "linux",
+        "minimal_symbols",
+        "static",
+    ],
+)
+
+gn_args.config(
+    name = "cast_debug",
     args = {
-        "is_cast_android": True,
+        "cast_is_debug": True,
+    },
+    configs = [
+        "debug",
+        "dcheck_always_on",
+    ],
+)
+
+gn_args.config(
+    name = "cast_java_debug",
+    args = {
+        "is_java_debug": True,
     },
 )
 
 gn_args.config(
-    name = "cast_os",
+    name = "cast_java_release",
     args = {
-        "is_castos": True,
+        "is_java_debug": False,
+    },
+)
+
+gn_args.config(
+    name = "cast_release",
+    args = {
+        "cast_is_debug": False,
+    },
+    configs = [
+        "dcheck_off",
+        "release",
+    ],
+)
+
+gn_args.config(
+    name = "disable_jni_multiplexing",
+    args = {
+        "enable_jni_multiplexing": False,
     },
 )
 
@@ -247,6 +280,11 @@ gn_args.config(
     args = {
         "enable_cast_receiver": True,
     },
+)
+
+gn_args.config(
+    name = "cast_receiver_perf_optimized",
+    args_file = "//build/config/fuchsia/perf_optimized_cast_receiver_args.gn",
 )
 
 gn_args.config(
@@ -365,8 +403,9 @@ gn_args.config(
     },
 )
 
+# The gn suffix distinguishes this from the "clang_tot" gclient config
 gn_args.config(
-    name = "clang_tot",
+    name = "clang_tot_gn",
     args = {
         "llvm_force_head_revision": True,
     },
@@ -374,6 +413,25 @@ gn_args.config(
         "clang",
     ],
 )
+
+# The gn suffix distinguishes this from the "rust_tot" gclient config
+gn_args.config(
+    name = "rust_tot_gn",
+    args = {
+        "rust_force_head_revision": True,
+    },
+    configs = [
+        "clang",
+    ],
+)
+
+gn_args.config(
+    name = "no_treat_warnings_as_errors",
+    args = {
+        "treat_warnings_as_errors": False,
+    },
+)
+
 gn_args.config(
     name = "codesearch_builder",
     args = {
@@ -392,20 +450,13 @@ gn_args.config(
     ],
 )
 
-# Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
 gn_args.config(
     name = "cronet_android",
     args = {
-        "use_partition_alloc": False,
-        "enable_reporting": True,
-        "use_hashed_jni_names": True,
-        "default_min_sdk_version": 21,
-        "enable_base_tracing": False,
-        "clang_use_default_sample_profile": False,
-        "media_use_ffmpeg": False,
-        # https://crbug.com/1136963
-        "use_thin_lto": False,
-        "enable_resource_allowlist_generation": False,
+        # DO NOT ADD GN ARGS HERE. Special snowflake gn args are a pain to
+        # maintain; see https://crbug.com/40287068. Instead, change the GN arg
+        # declaration so that the default value for the arg is derived from the
+        # `is_cronet_build` GN arg.
     },
     configs = [
         "android",
@@ -414,26 +465,13 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "cronet_android_mainline_clang",
-    args = {
-        "clang_base_path": "//third_party/cronet_android_mainline_clang/linux-amd64",
-        "clang_use_chrome_plugins": False,
-        "default_min_sdk_version": 29,
-        # https://crbug.com/1481060
-        "llvm_android_mainline": True,
-    },
-)
-
-# Keep in sync with //infra/build/recipes/recipe_modules/chromium_android/chromium_config.py
-gn_args.config(
     name = "cronet_common",
     args = {
-        "disable_file_support": True,
-        "enable_websockets": False,
-        "include_transport_security_state_preload_list": False,
+        # DO NOT ADD GN ARGS HERE. Special snowflake gn args are a pain to
+        # maintain; see https://crbug.com/40287068. Instead, change the GN arg
+        # declaration so that the default value for the arg is derived from the
+        # `is_cronet_build` GN arg.
         "is_cronet_build": True,
-        "use_platform_icu_alternatives": True,
-        "enable_rust": False,
     },
 )
 
@@ -448,6 +486,13 @@ gn_args.config(
     name = "dawn_use_built_dxc",
     args = {
         "dawn_use_built_dxc": True,
+    },
+)
+
+gn_args.config(
+    name = "dawn_use_swiftshader",
+    args = {
+        "dawn_use_swiftshader": True,
     },
 )
 
@@ -498,6 +543,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "dev_channel",
+    args = {
+        "android_channel": "dev",
+    },
+)
+
+gn_args.config(
     name = "developer",
     configs = [
         "debug",
@@ -520,19 +572,19 @@ gn_args.config(
     },
 )
 
-gn_args.config(
-    name = "enable_all_rust_features",
-    args = {
-        "enable_all_rust_features": True,
-    },
-)
-
 # TODO(crbug.com/40101527): Explicitly enable DirectX 12.
 gn_args.config(
     name = "dx12vk",
     configs = [
         "enable_vulkan",
     ],
+)
+
+gn_args.config(
+    name = "enable_android_secondary_abi",
+    args = {
+        "enable_android_secondary_abi": True,
+    },
 )
 
 # Enables backup ref ptr by changing the default value of the feature flag.
@@ -543,6 +595,16 @@ gn_args.config(
     name = "enable_backup_ref_ptr_feature_flag",
     args = {
         "enable_backup_ref_ptr_feature_flag": True,
+    },
+)
+
+# Enables the instance tracer for BackupRefPtr. This provides more useful stack
+# traces when triggering the dangling pointer detector, but at the cost of some
+# runtime performance (last measured at ~10% in release builds).
+gn_args.config(
+    name = "enable_backup_ref_ptr_instance_tracer",
+    args = {
+        "enable_backup_ref_ptr_instance_tracer": True,
     },
 )
 
@@ -570,6 +632,16 @@ gn_args.config(
     },
 )
 
+# iOS can't use enable_dangling_raw_ptr_checks, since there are some configurations
+# that do not build with backup ref ptr. Instead, enable dangling_raw_ptr via
+# ios_enable_dangling_raw_ptr_checks
+gn_args.config(
+    name = "ios_enable_dangling_raw_ptr_checks",
+    args = {
+        "ios_enable_dangling_raw_ptr_checks": True,
+    },
+)
+
 # Changes the default of the dangling raw pointer detection feature flag,
 # enabling it on all runs.
 gn_args.config(
@@ -586,6 +658,13 @@ gn_args.config(
     name = "enable_vulkan",
     args = {
         "enable_vulkan": True,
+    },
+)
+
+gn_args.config(
+    name = "enterprise_companion",
+    args = {
+        "enable_enterprise_companion": True,
     },
 )
 
@@ -698,6 +777,20 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "hwasan",
+    args = {
+        "is_hwasan": True,
+    },
+)
+
+gn_args.config(
+    name = "reclient",
+    args = {
+        "use_reclient": True,
+    },
+)
+
+gn_args.config(
     name = "include_unwind_tables",
     args = {
         "exclude_unwind_tables": False,
@@ -726,13 +819,6 @@ gn_args.config(
     configs = [
         "ios",
     ],
-)
-
-gn_args.config(
-    name = "ios_chromium_cert",
-    args = {
-        "ios_code_signing_identity_description": "iPhone Developer",
-    },
 )
 
 gn_args.config(
@@ -768,6 +854,11 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "tvos_platform",
+    args = {"target_platform": "tvos"},
+)
+
+gn_args.config(
     name = "is_skylab",
     args = {
         "is_skylab": True,
@@ -780,21 +871,17 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "lacros",
-    args = {
-        "target_os": "chromeos",
-        "chromeos_is_browser_only": True,
-    },
-)
-
-gn_args.config(
-    name = "lacros_on_linux",
-    args = {
-        "chromeos_is_browser_only": True,
-    },
+    name = "chromeos_on_linux",
     configs = [
         "chromeos",
     ],
+)
+
+gn_args.config(
+    name = "no_clang_modules",
+    args = {
+        "use_clang_modules": False,
+    },
 )
 
 gn_args.config(
@@ -821,6 +908,7 @@ gn_args.config(
         "ozone_platform_wayland": True,
         "ozone_platform": "wayland",
         "use_bundled_weston": True,
+        "use_bundled_mutter": True,
     },
 )
 
@@ -956,9 +1044,9 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "no_secondary_abi",
+    name = "no_safe_browsing",
     args = {
-        "skip_secondary_abi_for_cq": True,
+        "safe_browsing_mode": 0,
     },
 )
 
@@ -1075,15 +1163,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "reclient_with_remoteexec_links",
-    args = {
-        "use_reclient_links": True,
-        "concurrent_links": 50,
-    },
-    configs = ["remoteexec"],
-)
-
-gn_args.config(
     name = "release",
     args = {
         "is_debug": False,
@@ -1124,6 +1203,14 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "release_with_dchecks",
+    args = {
+        "is_debug": False,
+        "dcheck_always_on": True,
+    },
+)
+
+gn_args.config(
     name = "resource_allowlisting",
     args = {
         "enable_resource_allowlist_generation": True,
@@ -1141,6 +1228,13 @@ gn_args.config(
     name = "shared",
     args = {
         "is_component_build": True,
+    },
+)
+
+gn_args.config(
+    name = "save_lld_reproducers",
+    args = {
+        "save_reproducers_on_lld_crash": True,
     },
 )
 
@@ -1183,6 +1277,13 @@ gn_args.config(
     name = "strip_debug_info",
     args = {
         "strip_debug_info": True,
+    },
+)
+
+gn_args.config(
+    name = "system_headers_in_deps",
+    args = {
+        "system_headers_in_deps": True,
     },
 )
 
@@ -1319,6 +1420,20 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "v8_backtrace",
+    args = {
+        "v8_enable_backtrace": True,
+    },
+)
+
+gn_args.config(
+    name = "v8_debug",
+    args = {
+        "v8_enable_debug_code": True,
+    },
+)
+
+gn_args.config(
     name = "v8_heap",
     args = {
         "v8_enable_verify_heap": True,
@@ -1344,6 +1459,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "v8_sandbox_testing",
+    args = {
+        "v8_enable_memory_corruption_api": True,
+    },
+)
+
+gn_args.config(
     name = "v8_simulate_arm",
     args = {
         "v8_target_cpu": "arm",
@@ -1364,6 +1486,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "v8_static",
+    args = {
+        "v8_static_library": True,
+    },
+)
+
+gn_args.config(
     name = "volteer",
     args_file = "//build/args/chromeos/volteer.gni",
 )
@@ -1372,21 +1501,6 @@ gn_args.config(
     name = "webview_google",
     args = {
         "system_webview_package_name": "com.google.android.webview",
-    },
-)
-
-gn_args.config(
-    name = "webview_instrumentation_tests_multi_process_only",
-    args = {
-        "webview_instrumentation_tests_process_mode": "multiple",
-    },
-)
-
-# For Android N-P, only userdebug/eng
-gn_args.config(
-    name = "webview_monochrome",
-    args = {
-        "system_webview_package_name": "com.google.android.apps.chrome",
     },
 )
 

@@ -27,6 +27,7 @@ class PreRedirectionURLObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<PreRedirectionURLObserver> {
  public:
+  ~PreRedirectionURLObserver() override;
   PreRedirectionURLObserver(const PreRedirectionURLObserver&) = delete;
   PreRedirectionURLObserver& operator=(const PreRedirectionURLObserver&) =
       delete;

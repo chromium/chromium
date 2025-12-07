@@ -13,6 +13,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -405,8 +406,7 @@ TEST_F(NetworkDetailedViewControllerTest, WifiNetworkListItemSelected) {
 
   // Login as secondary user, and make sure network is not connected to,
   // but settings page is opened.
-  GetSessionControllerClient()->AddUserSession(kUser1Email);
-  SimulateUserLogin(kUser1Email);
+  SimulateUserLogin({kUser1Email});
   GetSessionControllerClient()->SetSessionState(
       session_manager::SessionState::LOGIN_SECONDARY);
   base::RunLoop().RunUntilIdle();

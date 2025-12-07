@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_common.h"
 
-#include <optional>
-#include <string>
+#include <stdint.h>
 
+#include <optional>
+
+#include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -24,13 +22,14 @@
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/attestation/attestation_client.h"
 #include "chromeos/ash/components/dbus/attestation/interface.pb.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "components/account_id/account_id.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/user_manager/user.h"
 
@@ -38,10 +37,10 @@ namespace ash {
 namespace cert_provisioning {
 
 BASE_FEATURE(kCertProvisioningUseOnlyInvalidationsForTesting,
-             "CertProvisioningUseOnlyInvalidationsForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
+
 std::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
   switch (scope) {
     case CertScope::kDevice: {
@@ -58,7 +57,7 @@ std::optional<AccountId> GetAccountId(CertScope scope, Profile* profile) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // This function implements `DeleteVaKey()` and `DeleteVaKeysByPrefix()`, both
@@ -87,6 +86,10 @@ void DeleteVaKeysWithMatchBehavior(
   };
   AttestationClient::Get()->DeleteKeys(
       request, base::BindOnce(wrapped_callback, std::move(callback)));
+}
+
+bool IsValidKeyType(const std::string& key_type) {
+  return key_type == "rsa" || key_type == "ec";
 }
 
 }  // namespace
@@ -146,12 +149,14 @@ bool IsFinalState(CertProvisioningWorkerState state) {
 CertProfile::CertProfile(CertProfileId profile_id,
                          std::string name,
                          std::string policy_version,
+                         KeyType key_type,
                          bool is_va_enabled,
                          base::TimeDelta renewal_period,
                          ProtocolVersion protocol_version)
     : profile_id(profile_id),
       name(std::move(name)),
       policy_version(std::move(policy_version)),
+      key_type(key_type),
       is_va_enabled(is_va_enabled),
       renewal_period(renewal_period),
       protocol_version(protocol_version) {}
@@ -165,7 +170,7 @@ CertProfile::~CertProfile() = default;
 
 std::optional<CertProfile> CertProfile::MakeFromValue(
     const base::Value::Dict& value) {
-  static_assert(kVersion == 6, "This function should be updated");
+  static_assert(kVersion == 7, "This function should be updated");
 
   const std::string* id = value.FindString(kCertProfileIdKey);
   const std::string* name = value.FindString(kCertProfileNameKey);
@@ -179,11 +184,11 @@ std::optional<CertProfile> CertProfile::MakeFromValue(
   std::optional<int> protocol_version =
       value.FindInt(kCertProfileProtocolVersion);
 
-  if (!id || !policy_version) {
+  if (!id || !policy_version || !key_type) {
     return std::nullopt;
   }
 
-  if (key_type && *key_type != "rsa") {
+  if (!IsValidKeyType(*key_type)) {
     LOG(ERROR) << "Unsupported key type received: " << *key_type;
     return std::nullopt;
   }
@@ -208,30 +213,24 @@ std::optional<CertProfile> CertProfile::MakeFromValue(
   }
   result.protocol_version = *parsed_protocol_version;
 
+  if (*key_type == "rsa") {
+    result.key_type = KeyType::kRsa;
+  } else if (*key_type == "ec") {
+    result.key_type = KeyType::kEc;
+  }
+
   return result;
-}
-
-bool CertProfile::operator==(const CertProfile& other) const {
-  static_assert(kVersion == 6, "This function should be updated");
-  return ((profile_id == other.profile_id) && (name == other.name) &&
-          (policy_version == other.policy_version) &&
-          (is_va_enabled == other.is_va_enabled) &&
-          (renewal_period == other.renewal_period) &&
-          (protocol_version == other.protocol_version));
-}
-
-bool CertProfile::operator!=(const CertProfile& other) const {
-  return !(*this == other);
 }
 
 bool CertProfileComparator::operator()(const CertProfile& a,
                                        const CertProfile& b) const {
-  static_assert(CertProfile::kVersion == 6, "This function should be updated");
+  static_assert(CertProfile::kVersion == 7, "This function should be updated");
   return ((a.profile_id < b.profile_id) || (a.name < b.name) ||
           (a.policy_version < b.policy_version) ||
           (a.is_va_enabled < b.is_va_enabled) ||
           (a.renewal_period < b.renewal_period) ||
-          (a.protocol_version < b.protocol_version));
+          (a.protocol_version < b.protocol_version) ||
+          (a.key_type < b.key_type));
 }
 
 //==============================================================================
@@ -323,7 +322,7 @@ scoped_refptr<net::X509Certificate> CreateSingleCertificateFromBytes(
     size_t length) {
   net::CertificateList cert_list =
       net::X509Certificate::CreateCertificateListFromBytes(
-          base::as_bytes(base::make_span(data, length)),
+          base::as_bytes(UNSAFE_TODO(base::span(data, length))),
           net::X509Certificate::FORMAT_AUTO);
 
   if (cert_list.size() != 1) {

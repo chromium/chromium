@@ -32,10 +32,9 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
-#include "base/memory/scoped_refptr.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_cursor_direction.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_factory_client.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_request.h"
@@ -59,7 +58,8 @@ class MODULES_EXPORT IDBCursor : public ScriptWrappable {
  public:
   using Source = V8UnionIDBIndexOrIDBObjectStore;
 
-  static mojom::IDBCursorDirection StringToDirection(const String& mode_string);
+  static mojom::blink::IDBCursorDirection V8EnumToDirection(
+      V8IDBCursorDirection::Enum mode);
 
   // Reset cursor prefetch caches for all cursors except `except_cursor`.
   // In most callers, `except_cursor` is passed as nullptr, causing all cursors
@@ -78,13 +78,8 @@ class MODULES_EXPORT IDBCursor : public ScriptWrappable {
   void Trace(Visitor*) const override;
   void ContextWillBeDestroyed();
 
-  [[nodiscard]] v8::Local<v8::Object> AssociateWithWrapper(
-      v8::Isolate*,
-      const WrapperTypeInfo*,
-      v8::Local<v8::Object> wrapper) override;
-
   // Implement the IDL
-  const String& direction() const;
+  V8IDBCursorDirection direction() const;
   ScriptValue key(ScriptState*);
   ScriptValue primaryKey(ScriptState*);
   ScriptValue value(ScriptState*);

@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/files/safe_base_name.h"
 #include "chrome/browser/ash/file_system_provider/operations/get_metadata.h"
 #include "chrome/common/extensions/api/file_system_provider.h"
 #include "chrome/common/extensions/api/file_system_provider_internal.h"
@@ -37,7 +38,9 @@ bool ConvertRequestValueToEntryList(const RequestValue& value,
       return false;
     }
 
-    output->emplace_back(base::FilePath(*entry_metadata.name),
+    auto name = base::SafeBaseName::Create(*entry_metadata.name);
+    CHECK(name) << *entry_metadata.name;
+    output->emplace_back(*name, std::string(),
                          *entry_metadata.is_directory
                              ? filesystem::mojom::FsFileType::DIRECTORY
                              : filesystem::mojom::FsFileType::REGULAR_FILE);

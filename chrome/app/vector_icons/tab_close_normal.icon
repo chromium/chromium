@@ -4,17 +4,17 @@
 
 // The close "X" for a tab when not hovered/pressed.
 CANVAS_DIMENSIONS, 32,
-STROKE, 2.45f,
-MOVE_TO, 10.25f, 10.25f,
-R_LINE_TO, 11.5f, 11.5f,
-MOVE_TO, 10.25f, 21.75f,
-R_LINE_TO, 11.5f, -11.5f
+STROKE, 2.45,
+MOVE_TO, 10.25, 10.25,
+R_LINE_TO, 11.5, 11.5,
+MOVE_TO, 10.25, 21.75,
+R_LINE_TO, 11.5, -11.5
 
 // The close "X" for a tab when not hovered/pressed, optimized for 1x scale
 // factor devices.
 CANVAS_DIMENSIONS, 16,
-STROKE, 1.415f,
-MOVE_TO, 4.75f, 4.75f,
-R_LINE_TO, 6.5f, 6.5f,
-MOVE_TO, 4.75f, 11.25f,
-R_LINE_TO, 6.5f, -6.5f
+STROKE, 1.415,
+MOVE_TO, 4.75, 4.75,
+R_LINE_TO, 6.5, 6.5,
+MOVE_TO, 4.75, 11.25,
+R_LINE_TO, 6.5, -6.5

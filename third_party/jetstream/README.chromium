@@ -1,0 +1,13 @@
+Name: JetStream
+Short Name: jetstream
+URL: https://github.com/WebKit/JetStream
+Version: N/A
+Revision: DEPS
+Update Mechanism: Autoroll
+License: BSD-2-Clause
+License File: LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+This contains versioned snapshots of the JetStream JavaScript and wasm benchmark.

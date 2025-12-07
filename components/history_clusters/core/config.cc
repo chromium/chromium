@@ -78,26 +78,6 @@ Config::Config() {
         internal::kJourneysImages, "JourneysImagesCover", images_cover);
   }
 
-  // The `kOmniboxAction` feature and child params.
-  {
-    omnibox_action = base::FeatureList::IsEnabled(internal::kOmniboxAction);
-
-    omnibox_action_with_pedals = base::GetFieldTrialParamByFeatureAsBool(
-        internal::kOmniboxAction, "omnibox_action_with_pedals",
-        omnibox_action_with_pedals);
-
-    omnibox_action_on_navigation_intents =
-        base::GetFieldTrialParamByFeatureAsBool(
-            internal::kOmniboxAction, "omnibox_action_on_navigation_intents",
-            omnibox_action_on_navigation_intents);
-
-    omnibox_action_navigation_intent_score_threshold =
-        base::GetFieldTrialParamByFeatureAsInt(
-            internal::kOmniboxAction,
-            "omnibox_action_on_navigation_intent_score_threshold",
-            omnibox_action_navigation_intent_score_threshold);
-  }
-
   // The `kOmniboxHistoryClusterProvider` feature and child params.
   {
     omnibox_history_cluster_provider =
@@ -190,22 +170,6 @@ Config::Config() {
             number_interesting_visits_filter_threshold);
   }
 
-  // The `kUseEngagementScoreCache` feature and child params.
-  {
-    use_engagement_score_cache =
-        base::FeatureList::IsEnabled(features::kUseEngagementScoreCache);
-
-    engagement_score_cache_size = GetFieldTrialParamByFeatureAsInt(
-        features::kUseEngagementScoreCache, "engagement_score_cache_size",
-        engagement_score_cache_size);
-
-    engagement_score_cache_refresh_duration =
-        base::Minutes(GetFieldTrialParamByFeatureAsInt(
-            features::kUseEngagementScoreCache,
-            "engagement_score_cache_refresh_duration_minutes",
-            engagement_score_cache_refresh_duration.InMinutes()));
-  }
-
   // The `kHistoryClustersVisitDeduping` feature and child params.
   {
     use_host_for_visit_deduping = GetFieldTrialParamByFeatureAsBool(
@@ -262,31 +226,6 @@ Config::Config() {
             cluster_triggerability_cutoff_duration.InMinutes()));
   }
 
-  // WebUI features and params.
-  {
-    named_new_tab_groups =
-        base::FeatureList::IsEnabled(internal::kJourneysNamedNewTabGroups);
-  }
-
-  // The `kJourneysZeroStateFiltering` feature and child params.
-  {
-    apply_zero_state_filtering =
-        base::FeatureList::IsEnabled(internal::kJourneysZeroStateFiltering);
-  }
-
-  // The `kNtpChromeCartInHistoryClusterModule` child params.
-  {
-    use_ntp_specific_intracluster_ranking = GetFieldTrialParamByFeatureAsBool(
-        ntp_features::kNtpChromeCartInHistoryClusterModule,
-        "use_ntp_specific_intracluster_ranking",
-        use_ntp_specific_intracluster_ranking);
-
-    ntp_visit_duration_ranking_weight = GetFieldTrialParamByFeatureAsDouble(
-        ntp_features::kNtpChromeCartInHistoryClusterModule,
-        "ntp_visit_duration_ranking_weight", ntp_visit_duration_ranking_weight);
-    DCHECK_GE(ntp_visit_duration_ranking_weight, 0.0f);
-  }
-
   // Lonely features without child params.
   {
     non_user_visible_debug =
@@ -295,24 +234,15 @@ Config::Config() {
     user_visible_debug =
         base::FeatureList::IsEnabled(internal::kUserVisibleDebug);
 
-    persist_context_annotations_in_history_db = base::FeatureList::IsEnabled(
-        internal::kPersistContextAnnotationsInHistoryDb);
-
     history_clusters_internals_page =
         base::FeatureList::IsEnabled(internal::kHistoryClustersInternalsPage);
 
     should_check_hosts_to_skip_clustering_for =
         base::FeatureList::IsEnabled(features::kOnDeviceClusteringBlocklists);
 
-    use_continue_on_shutdown = base::FeatureList::IsEnabled(
-        internal::kHistoryClustersUseContinueOnShutdown);
-
     should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
         base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kShouldShowAllClustersOnProminentUiSurfaces);
-
-    persist_caches_to_prefs =
-        base::FeatureList::IsEnabled(internal::kJourneysPersistCachesToPrefs);
   }
 }
 

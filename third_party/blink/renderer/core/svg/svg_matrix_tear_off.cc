@@ -64,7 +64,7 @@ void SVGMatrixTearOff::CommitChange() {
     return;
 
   context_transform_->Target()->OnMatrixChange();
-  context_transform_->CommitChange();
+  context_transform_->CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 #define DEFINE_SETTER(ATTRIBUTE)                                          \

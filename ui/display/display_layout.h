@@ -73,8 +73,8 @@ struct DISPLAY_EXPORT DisplayPlacement {
   DisplayPlacement(const DisplayPlacement&);
   DisplayPlacement& operator=(const DisplayPlacement&);
 
-  bool operator==(const DisplayPlacement& other) const;
-  bool operator!=(const DisplayPlacement& other) const;
+  friend bool operator==(const DisplayPlacement&,
+                         const DisplayPlacement&) = default;
 
   DisplayPlacement& Swap();
 

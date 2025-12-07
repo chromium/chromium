@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.screenshot_monitor;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** This class serves as a callback from ScreenshotMonitor. */
+@NullMarked
 public interface ScreenshotMonitorDelegate {
     void onScreenshotTaken();
 }

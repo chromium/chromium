@@ -9,23 +9,19 @@
 
 #include "base/files/file.h"
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/file_system_provider/request_dispatcher.h"
-#include "chromeos/crosapi/mojom/file_system_provider.mojom-forward.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
 class EventRouter;
-
-namespace file_system_provider {
-class ServiceWorkerLifetimeManager;
-}  // namespace file_system_provider
-
 }  // namespace extensions
 
 namespace ash::file_system_provider {
 
-// Routes fileSystemProvider events to an extension locally or in Lacros.
+class ServiceWorkerLifetimeManager;
+
+// Routes fileSystemProvider events to an extension.
 class RequestDispatcherImpl : public RequestDispatcher {
  public:
   // This callback is an indirection to reject requests in |RequestManager|: the
@@ -34,12 +30,9 @@ class RequestDispatcherImpl : public RequestDispatcher {
   // destructor when it aborts outstanding operations.
   using ForwardResultCallback =
       base::RepeatingCallback<void(int, base::File::Error)>;
-  RequestDispatcherImpl(
-      const extensions::ExtensionId& extension_id,
-      extensions::EventRouter* event_router,
-      ForwardResultCallback forward_result_callback,
-      extensions::file_system_provider::ServiceWorkerLifetimeManager*
-          sw_lifetime_manager);
+  RequestDispatcherImpl(const extensions::ExtensionId& extension_id,
+                        extensions::EventRouter* event_router,
+                        ServiceWorkerLifetimeManager* sw_lifetime_manager);
   ~RequestDispatcherImpl() override;
 
   RequestDispatcherImpl(const RequestDispatcherImpl&) = delete;
@@ -52,23 +45,9 @@ class RequestDispatcherImpl : public RequestDispatcher {
                      std::optional<std::string> file_system_id) override;
 
  private:
-  // This method is only used when Lacros is enabled. It's a callback from
-  // Lacros indicating whether the operation was successfully forwarded. If the
-  // operation could not be forwarded then the file system request manager must
-  // be informed.
-  void OperationForwarded(int request_id,
-                          crosapi::mojom::FSPForwardResult result);
-  // Same as |OperationForwarded|, but called with a result of call to an older
-  // crosapi returning a boolean.
-  void OperationForwardedDeprecated(int request_id, bool delivery_failure);
-
   const extensions::ExtensionId extension_id_;
   const raw_ptr<extensions::EventRouter> event_router_;
-  const ForwardResultCallback forward_result_callback_;
-  const raw_ptr<extensions::file_system_provider::ServiceWorkerLifetimeManager>
-      sw_lifetime_manager_;
-
-  base::WeakPtrFactory<RequestDispatcherImpl> weak_ptr_factory_{this};
+  const raw_ptr<ServiceWorkerLifetimeManager> sw_lifetime_manager_;
 };
 
 }  // namespace ash::file_system_provider

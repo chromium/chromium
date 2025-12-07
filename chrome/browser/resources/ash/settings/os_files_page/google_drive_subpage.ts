@@ -9,7 +9,8 @@ import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_pref_indicato
 import 'chrome://resources/js/action_link.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
-import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import './google_drive_confirmation_dialog.js';
+import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
@@ -19,11 +20,13 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {GoogleDriveBrowserProxy, GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, Stage, Status} from './google_drive_browser_proxy.js';
+import type {GoogleDrivePageCallbackRouter, GoogleDrivePageHandlerRemote, Status} from './google_drive_browser_proxy.js';
+import {GoogleDriveBrowserProxy, Stage} from './google_drive_browser_proxy.js';
 import {getTemplate} from './google_drive_subpage.html.js';
 
 const SettingsGoogleDriveSubpageElementBase =
@@ -79,15 +82,6 @@ export class SettingsGoogleDriveSubpageElement extends
   static get properties() {
     return {
       /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>(
-            [Setting.kGoogleDriveRemoveAccess, Setting.kGoogleDriveFileSync]),
-      },
-
-      /**
        * Ensures the data binding is updated on the UI when
        * `contentCacheSize_` is updated.
        */
@@ -133,6 +127,12 @@ export class SettingsGoogleDriveSubpageElement extends
       `updateBulkPinningVisible_(prefs.drivefs.bulk_pinning.visible.value)`,
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kGoogleDriveRemoveAccess,
+    Setting.kGoogleDriveFileSync,
+  ]);
 
   /**
    * Reflects the state of `prefs.gdata.disabled` pref.
@@ -190,7 +190,8 @@ export class SettingsGoogleDriveSubpageElement extends
 
   private updateContentCacheSizeInterval_: number;
 
-  private isDriveFsBulkPinningEnabled_: boolean;
+  private readonly isDriveFsBulkPinningEnabled_: boolean;
+  private readonly isDriveFsMirrorSyncEnabled_: boolean;
 
   /**
    * Returns the browser proxy page handler (to invoke functions).
@@ -491,8 +492,8 @@ export class SettingsGoogleDriveSubpageElement extends
     const {requiredSpace, freeSpace} = this.bulkPinningStatus_;
     return this.i18n(
         'googleDriveFileSyncSubtitleWithStorage',
-        requiredSpace!,
-        freeSpace!,
+        requiredSpace,
+        freeSpace,
     );
   }
 
@@ -591,7 +592,7 @@ export class SettingsGoogleDriveSubpageElement extends
     return this.i18nAdvanced('googleDriveOfflineCleanStorageDialogBody', {
       tags: ['a'],
       substitutions: [
-        this.contentCacheSize_!,
+        this.contentCacheSize_,
         this.i18n('googleDriveCleanUpStorageLearnMoreLink'),
       ],
     });

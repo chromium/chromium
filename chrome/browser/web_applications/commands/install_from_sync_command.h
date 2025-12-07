@@ -14,9 +14,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
 #include "components/webapps/browser/installable/installable_logging.h"
@@ -34,6 +36,10 @@ namespace web_app {
 
 class WebAppDataRetriever;
 
+// Installs a web app using data from sync. This command will first try to
+// fetch a manifest from the app's start URL to get the latest metadata. If that
+// fails, it will fall back to using the information provided from sync data to
+// ensure the app is installed.
 class InstallFromSyncCommand
     : public WebAppCommand<SharedWebContentsWithAppLock,
                            const webapps::AppId&,
@@ -50,7 +56,8 @@ class InstallFromSyncCommand
            const GURL& scope,
            const std::optional<SkColor>& theme_color,
            const std::optional<mojom::UserDisplayMode>& user_display_mode,
-           const std::vector<apps::IconInfo>& icons);
+           const std::vector<apps::IconInfo>& manifest_icons,
+           const std::vector<apps::IconInfo>& trusted_icons);
     const webapps::AppId app_id;
     const webapps::ManifestId manifest_id;
     const GURL start_url;
@@ -58,7 +65,8 @@ class InstallFromSyncCommand
     const GURL scope;
     const std::optional<SkColor> theme_color;
     const std::optional<mojom::UserDisplayMode> user_display_mode;
-    const std::vector<apps::IconInfo> icons;
+    const std::vector<apps::IconInfo> manifest_icons;
+    const std::vector<apps::IconInfo> trusted_icons;
   };
   using DataRetrieverFactory =
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>;
@@ -82,17 +90,23 @@ class InstallFromSyncCommand
 
   void OnGetWebAppInstallInfo(std::unique_ptr<WebAppInstallInfo> web_app_info);
 
-  void OnDidPerformInstallableCheck(blink::mojom::ManifestPtr opt_manifest,
-                                    bool valid_manifest_for_web_app,
-                                    webapps::InstallableStatusCode error_code);
+  void OnDidPerformInstallableCheck(
+      std::unique_ptr<WebAppInstallInfo> page_info,
+      blink::mojom::ManifestPtr opt_manifest,
+      bool valid_manifest_for_web_app,
+      webapps::InstallableStatusCode error_code);
 
   enum class FinalizeMode { kNormalWebAppInfo, kFallbackWebAppInfo };
 
-  void OnIconsRetrievedFinalizeInstall(
-      FinalizeMode mode,
+  void OnWebAppInstallInfoRetrievedMergeAndFinalizeInstall(
+      std::unique_ptr<WebAppInstallInfo> install_info);
+
+  void OnIconsRetrievedForFallbackInfo(
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
+
+  void FinalizeInstall(FinalizeMode mode);
 
   void OnInstallFinalized(FinalizeMode mode,
                           const webapps::AppId& app_id,
@@ -110,11 +124,10 @@ class InstallFromSyncCommand
 
   std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
+  std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;
-
-  InstallErrorLogEntry install_error_log_entry_;
 
   base::OnceCallback<void(webapps::InstallResultCode code)>
       fallback_triggered_for_testing_;

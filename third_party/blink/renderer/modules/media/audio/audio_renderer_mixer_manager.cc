@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_manager.h"
 
+#include <algorithm>
 #include <limits>
 #include <string>
 #include <utility>
@@ -14,8 +15,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
@@ -70,10 +69,6 @@ media::AudioParameters GetMixerOutputParams(
 
   // Adjust output buffer size according to the latency requirement.
   switch (latency) {
-    case media::AudioLatency::Type::kInteractive:
-      output_buffer_size = media::AudioLatency::GetInteractiveBufferSize(
-          hardware_params.frames_per_buffer());
-      break;
     case media::AudioLatency::Type::kRtc:
       output_buffer_size = media::AudioLatency::GetRtcBufferSize(
           output_sample_rate, preferred_output_buffer_size);
@@ -82,10 +77,11 @@ media::AudioParameters GetMixerOutputParams(
       output_buffer_size = media::AudioLatency::GetHighLatencyBufferSize(
           output_sample_rate, preferred_output_buffer_size);
       break;
-    case media::AudioLatency::Type::kExactMS:
     // TODO(olka): add support when WebAudio requires it.
+    case media::AudioLatency::Type::kExactMS:
+    case media::AudioLatency::Type::kInteractive:
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   DCHECK_NE(output_buffer_size, 0);
@@ -145,6 +141,7 @@ scoped_refptr<AudioRendererMixerInput> AudioRendererMixerManager::CreateInput(
 }
 
 AudioRendererMixer* AudioRendererMixerManager::GetMixer(
+    const LocalFrameToken& source_frame_token,
     const FrameToken& main_frame_token,
     const media::AudioParameters& input_params,
     media::AudioLatency::Type latency,
@@ -158,8 +155,8 @@ AudioRendererMixer* AudioRendererMixerManager::GetMixer(
   // given device.
   CHECK_EQ(sink_info.device_status(), media::OUTPUT_DEVICE_STATUS_OK);
 
-  const MixerKey key(main_frame_token, input_params, latency,
-                     sink_info.device_id());
+  const MixerKey key(source_frame_token, main_frame_token, input_params,
+                     latency, sink_info.device_id());
   base::AutoLock auto_lock(mixers_lock_);
 
   auto it = mixers_.find(key);
@@ -202,7 +199,7 @@ AudioRendererMixer* AudioRendererMixerManager::GetMixer(
 
 void AudioRendererMixerManager::ReturnMixer(AudioRendererMixer* mixer) {
   base::AutoLock auto_lock(mixers_lock_);
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       mixers_, mixer,
       [](const std::pair<MixerKey, AudioRendererMixerReference>& val) {
         return val.second.mixer.get();
@@ -211,10 +208,10 @@ void AudioRendererMixerManager::ReturnMixer(AudioRendererMixer* mixer) {
   // If a mixer isn't in the normal map, check the map for mixers w/ errors.
   auto dead_it = dead_mixers_.end();
   if (it == mixers_.end()) {
-    dead_it = base::ranges::find(
+    dead_it = std::ranges::find(
         dead_mixers_, mixer,
         [](const AudioRendererMixerReference& val) { return val.mixer.get(); });
-    CHECK(dead_it != dead_mixers_.end(), base::NotFatalUntil::M130);
+    CHECK(dead_it != dead_mixers_.end());
   }
 
   auto& mixer_ref = it == mixers_.end() ? *dead_it : it->second;
@@ -236,18 +233,33 @@ void AudioRendererMixerManager::ReturnMixer(AudioRendererMixer* mixer) {
 
 scoped_refptr<media::AudioRendererSink> AudioRendererMixerManager::GetSink(
     const LocalFrameToken& source_frame_token,
+    const FrameToken& main_frame_token,
     std::string_view device_id) {
+  std::string device_id_str = std::string(device_id);
+
+  auto token_for_creation = source_frame_token;
+  if (media::AudioDeviceDescription::IsDefaultDevice(device_id_str) &&
+      main_frame_token.Is<blink::LocalFrameToken>()) {
+    // In order to share resources within sub-frames of a main frame, we must
+    // bind sinks to the main frame to ensure they have proper lifetimes. This
+    // is only safe to do for the default device, since otherwise we need to
+    // authorize on a per frame basis.
+    token_for_creation = main_frame_token.GetAs<blink::LocalFrameToken>();
+  }
+
   return create_sink_cb_.Run(
-      source_frame_token, media::AudioSinkParameters(base::UnguessableToken(),
-                                                     std::string(device_id)));
+      token_for_creation, media::AudioSinkParameters(base::UnguessableToken(),
+                                                     std::move(device_id_str)));
 }
 
 AudioRendererMixerManager::MixerKey::MixerKey(
+    const LocalFrameToken& source_frame_token,
     const FrameToken& main_frame_token,
     const media::AudioParameters& params,
     media::AudioLatency::Type latency,
     std::string_view device_id)
-    : main_frame_token(main_frame_token),
+    : source_frame_token(source_frame_token),
+      main_frame_token(main_frame_token),
       params(params),
       latency(latency),
       device_id(device_id) {}

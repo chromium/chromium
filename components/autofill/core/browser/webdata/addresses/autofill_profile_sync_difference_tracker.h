@@ -44,7 +44,7 @@ class AutofillProfileSyncDifferenceTracker {
   // Adds a new |remote| entry to the diff tracker, originating from the sync
   // server. The provided |remote| entry must be valid.
   [[nodiscard]] std::optional<syncer::ModelError> IncorporateRemoteProfile(
-      std::unique_ptr<AutofillProfile> remote);
+      AutofillProfile remote);
 
   // Informs the diff tracker that the entry with |storage_key| has been deleted
   // from the sync server. |storage_key| must be non-empty.
@@ -61,7 +61,7 @@ class AutofillProfileSyncDifferenceTracker {
   // keys of all profiles to be deleted from the server. After flushing, no
   // further remote changes should get incorporated.
   [[nodiscard]] virtual std::optional<syncer::ModelError> FlushToSync(
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync,
+      std::vector<AutofillProfile>* profiles_to_upload_to_sync,
       std::vector<std::string>* profiles_to_delete_from_sync);
 
  protected:
@@ -83,8 +83,7 @@ class AutofillProfileSyncDifferenceTracker {
 
   // Accessor for data that is only stored local. Initializes the data if
   // needed. Returns nullptr if initialization failed.
-  std::map<std::string, std::unique_ptr<AutofillProfile>>*
-  GetLocalOnlyEntries();
+  std::map<std::string, AutofillProfile>* GetLocalOnlyEntries();
 
   // Helper function called by GetLocalOnlyEntries().
   bool InitializeLocalOnlyEntriesIfNeeded();
@@ -96,20 +95,18 @@ class AutofillProfileSyncDifferenceTracker {
   // has happened or not yet.
   bool local_only_entries_initialized_ = false;
 
-  // We use unique_ptrs for storing AutofillProfile to avoid unnecessary copies.
-
   // Local data, mapped by storage key. Use GetLocalOnlyEntries() to access it.
-  std::map<std::string, std::unique_ptr<AutofillProfile>> local_only_entries_;
+  std::map<std::string, AutofillProfile> local_only_entries_;
 
   // Contain changes (originating from sync) that need to be saved to the local
   // store.
   std::set<std::string> delete_from_local_;
-  std::vector<std::unique_ptr<AutofillProfile>> add_to_local_;
-  std::vector<std::unique_ptr<AutofillProfile>> update_to_local_;
+  std::vector<AutofillProfile> add_to_local_;
+  std::vector<AutofillProfile> update_to_local_;
 
   // Contains data for entries that existed on both sync and local sides
   // and need to be saved back to sync.
-  std::vector<std::unique_ptr<AutofillProfile>> save_to_sync_;
+  std::vector<AutofillProfile> save_to_sync_;
   // Contains storage keys for entries that existed on both sync and local
   // sides and need to be deleted from sync (because the conflict resolution
   // preferred the local copies).
@@ -133,7 +130,7 @@ class AutofillProfileInitialSyncDifferenceTracker
       const std::string& storage_key) override;
 
   [[nodiscard]] std::optional<syncer::ModelError> FlushToSync(
-      std::vector<std::unique_ptr<AutofillProfile>>* profiles_to_upload_to_sync,
+      std::vector<AutofillProfile>* profiles_to_upload_to_sync,
       std::vector<std::string>* profiles_to_delete_from_sync) override;
 
   // Performs an additional pass through remote entries incorporated from sync

@@ -13,12 +13,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.language.AppLanguagePromoDialog.LanguageItemAdapter;
 import org.chromium.chrome.browser.language.settings.LanguageItem;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -34,8 +34,8 @@ import java.util.LinkedHashSet;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AppLanguagePromoDialogTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
 
     LanguageItem mFollowSystem;
@@ -53,7 +53,6 @@ public class AppLanguagePromoDialogTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         LanguageTestUtils.initializeResourceBundleForTesting();
         mFollowSystem = LanguageItem.makeFollowSystemLanguageItem();
         mLangAf = new LanguageItem("af", "Afrikaans", "Afrikaans", true);
@@ -69,10 +68,10 @@ public class AppLanguagePromoDialogTest {
 
         // Setup fake translate and language preferences.
         mFakeTranslateBridge = new FakeTranslateBridgeJni();
-        mJniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mFakeTranslateBridge);
+        TranslateBridgeJni.setInstanceForTesting(mFakeTranslateBridge);
 
         mFakeLanguageBridge = new FakeLanguageBridgeJni();
-        mJniMocker.mock(LanguageBridgeJni.TEST_HOOKS, mFakeLanguageBridge);
+        LanguageBridgeJni.setInstanceForTesting(mFakeLanguageBridge);
     }
 
     @After
@@ -171,22 +170,22 @@ public class AppLanguagePromoDialogTest {
                 new ArrayList<>(topLanguages), Arrays.asList(mFollowSystem, mLangAf, mLangZu));
     }
 
-    // Test getPotentialUILanguage
+    // Test getPotentialUiLanguage
     @Test
     @SmallTest
-    public void testGetPotentialUILanguage() {
+    public void testGetPotentialUiLanguage() {
         LinkedHashSet<String> uiLanguages =
                 new LinkedHashSet<>(Arrays.asList("af", "en-US", "en-GB", "es", "es-419"));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("af-ZA", uiLanguages), "af");
+                "af", AppLanguagePromoDialog.getPotentialUiLanguage("af-ZA", uiLanguages));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("en-GB", uiLanguages), "en-GB");
+                "en-GB", AppLanguagePromoDialog.getPotentialUiLanguage("en-GB", uiLanguages));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("en-ZA", uiLanguages), "en");
+                "en", AppLanguagePromoDialog.getPotentialUiLanguage("en-ZA", uiLanguages));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("es-AR", uiLanguages), "es");
+                "es", AppLanguagePromoDialog.getPotentialUiLanguage("es-AR", uiLanguages));
         Assert.assertEquals(
-                AppLanguagePromoDialog.getPotentialUILanguage("es-419", uiLanguages), "es-419");
+                "es-419", AppLanguagePromoDialog.getPotentialUiLanguage("es-419", uiLanguages));
     }
 
     // Test LanguageItemAdapter getItemCount

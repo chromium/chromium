@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -47,7 +48,7 @@ scoped_refptr<EncodedFormData> BeaconBlob::GetEncodedFormData() const {
     entity_body->AppendFile(To<File>(data_)->GetPath(),
                             To<File>(data_)->LastModifiedTime());
   } else {
-    entity_body->AppendBlob(data_->Uuid(), data_->GetBlobDataHandle());
+    entity_body->AppendBlob(data_->GetBlobDataHandle());
   }
 
   return entity_body;
@@ -78,9 +79,7 @@ scoped_refptr<EncodedFormData> BeaconDOMArrayBufferView::GetEncodedFormData()
     const {
   DCHECK(data_);
 
-  return EncodedFormData::Create(
-      data_->BaseAddress(),
-      base::checked_cast<wtf_size_t>(data_->byteLength()));
+  return EncodedFormData::Create(data_->ByteSpan());
 }
 
 void BeaconDOMArrayBufferView::Serialize(ResourceRequest& request) const {
@@ -100,8 +99,7 @@ scoped_refptr<EncodedFormData> BeaconDOMArrayBuffer::GetEncodedFormData()
     const {
   DCHECK(data_);
 
-  return EncodedFormData::Create(
-      data_->Data(), base::checked_cast<wtf_size_t>(data_->ByteLength()));
+  return EncodedFormData::Create(data_->ByteSpan());
 }
 
 void BeaconDOMArrayBuffer::Serialize(ResourceRequest& request) const {
@@ -133,8 +131,7 @@ void BeaconURLSearchParams::Serialize(ResourceRequest& request) const {
 BeaconFormData::BeaconFormData(FormData* data)
     : data_(data),
       entity_body_(data_->EncodeMultiPartFormData()),
-      content_type_(String("multipart/form-data; boundary=") +
-                    entity_body_->Boundary().data()) {}
+      content_type_(entity_body_->FormatContentTypeWithBoundary()) {}
 
 uint64_t BeaconFormData::size() const {
   return entity_body_->SizeInBytes();

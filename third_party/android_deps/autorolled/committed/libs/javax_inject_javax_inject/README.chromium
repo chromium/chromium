@@ -1,0 +1,19 @@
+Name: javax.inject
+Short Name: javax.inject
+URL: https://repo.maven.apache.org/maven2/javax/inject/javax.inject/1/javax.inject-1.jar
+Version: 1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+The javax.inject API
+
+See also: http://code.google.com/p/atinject/
+
+
+Local Modifications:
+No modifications.

@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_HIT_TEST_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_HIT_TEST_SOURCE_H_
 
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
+#include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
-
-#include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 
 namespace blink {
 
@@ -20,9 +20,10 @@ class XRHitTestSource : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRHitTestSource(uint64_t id, XRSession* xr_session);
+  XRHitTestSource(const device::HitTestSubscriptionId& id,
+                  XRSession* xr_session);
 
-  uint64_t id() const;
+  device::HitTestSubscriptionId id() const;
 
   void cancel(ExceptionState& exception_state);
 
@@ -36,7 +37,7 @@ class XRHitTestSource : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
-  const uint64_t id_;
+  const device::HitTestSubscriptionId id_;
   Member<XRSession> xr_session_;
 
   Vector<device::mojom::blink::XRHitResultPtr> last_frame_results_;

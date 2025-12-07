@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "storage/browser/blob/blob_memory_controller.h"
 
+#include <array>
 #include <optional>
 
-#include "base/files/file_util.h"
+#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -46,7 +42,7 @@ const uint64_t kTestSmallBlobStorageMaxDiskSpace = 100;
 static int64_t sFakeDiskSpace = 0;
 static bool sFakeDiskSpaceCalled = true;
 
-int64_t FakeDiskSpaceMethod(const base::FilePath& path) {
+std::optional<int64_t> FakeDiskSpaceMethod(const base::FilePath& path) {
   EXPECT_FALSE(sFakeDiskSpaceCalled);
   sFakeDiskSpaceCalled = true;
   return sFakeDiskSpace;
@@ -287,7 +283,7 @@ TEST_F(BlobMemoryControllerTest, PageToDisk) {
   AssertEnoughDiskSpace();
 
   char kData[kTestBlobStorageMaxBlobMemorySize];
-  std::memset(kData, 'e', kTestBlobStorageMaxBlobMemorySize);
+  UNSAFE_TODO(std::memset(kData, 'e', kTestBlobStorageMaxBlobMemorySize));
 
   // Add memory item that is the memory quota.
   BlobDataBuilder builder(kId);
@@ -325,8 +321,7 @@ TEST_F(BlobMemoryControllerTest, PageToDisk) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
 
   // Add our original item as populated so it's paged to disk.
-  future_data.Populate(base::as_bytes(
-      base::make_span(kData, kTestBlobStorageMaxBlobMemorySize)));
+  future_data.Populate(base::as_byte_span(kData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 
@@ -374,7 +369,7 @@ TEST_F(BlobMemoryControllerTest, CancelMemoryRequest) {
   SetTestMemoryLimits(&controller);
 
   char kData[kTestBlobStorageMaxBlobMemorySize];
-  std::memset(kData, 'e', kTestBlobStorageMaxBlobMemorySize);
+  UNSAFE_TODO(std::memset(kData, 'e', kTestBlobStorageMaxBlobMemorySize));
 
   // Add memory item that is the memory quota.
   BlobDataBuilder builder(kId);
@@ -401,8 +396,7 @@ TEST_F(BlobMemoryControllerTest, CancelMemoryRequest) {
   EXPECT_EQ(0u, controller.disk_usage());
 
   // Add our original item as populated so we start paging to disk.
-  future_data.Populate(base::as_bytes(
-      base::make_span(kData, kTestBlobStorageMaxBlobMemorySize)));
+  future_data.Populate(base::as_byte_span(kData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 
@@ -435,7 +429,7 @@ TEST_F(BlobMemoryControllerTest, FileRequest) {
   SetTestMemoryLimits(&controller);
 
   char kData[kBlobSize];
-  std::memset(kData, 'e', kBlobSize);
+  UNSAFE_TODO(std::memset(kData, 'e', kBlobSize));
 
   // Add item that is the file quota.
   auto builder = std::make_unique<BlobDataBuilder>(kId);
@@ -492,7 +486,7 @@ TEST_F(BlobMemoryControllerTest, CancelFileRequest) {
   SetTestMemoryLimits(&controller);
 
   char kData[kBlobSize];
-  std::memset(kData, 'e', kBlobSize);
+  UNSAFE_TODO(std::memset(kData, 'e', kBlobSize));
 
   // Add memory item that is the memory quota.
   BlobDataBuilder builder(kId);
@@ -521,12 +515,12 @@ TEST_F(BlobMemoryControllerTest, MultipleFilesPaged) {
   const std::string kId1 = "id";
   const size_t kSize1 = kTestBlobStorageMaxFileSizeBytes;
   char kData1[kSize1];
-  std::memset(kData1, 'e', kSize1);
+  UNSAFE_TODO(std::memset(kData1, 'e', kSize1));
 
   const std::string kId2 = "id2";
   const size_t kSize2 = kTestBlobStorageMaxFileSizeBytes;
   char kData2[kSize2];
-  std::memset(kData2, 'f', kSize2);
+  UNSAFE_TODO(std::memset(kData2, 'f', kSize2));
 
   const std::string kId3 = "id3";
   const size_t kSize3 = kTestBlobStorageMaxBlobMemorySize - 1;
@@ -577,9 +571,9 @@ TEST_F(BlobMemoryControllerTest, MultipleFilesPaged) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
 
   // Add our original item as populated so it's paged to disk.
-  future_data1.Populate(base::as_bytes(base::make_span(kData1, kSize1)));
+  future_data1.Populate(base::as_byte_span(kData1));
   items1[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
-  future_data2.Populate(base::as_bytes(base::make_span(kData2, kSize2)));
+  future_data2.Populate(base::as_byte_span(kData2));
   items2[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
 
   std::vector<scoped_refptr<ShareableBlobDataItem>> both_items = {items1[0],
@@ -676,12 +670,12 @@ TEST_F(BlobMemoryControllerTest, PagingStopsWhenFull) {
   const size_t kBlobsThatCanFit = kTotalBlobStorageSize / kDataSize;
   const size_t kNumFastBlobs = kTestBlobStorageMaxBlobMemorySize / kDataSize;
   char kData[10];
-  memset(kData, 'e', kDataSize);
+  UNSAFE_TODO(memset(kData, 'e', kDataSize));
 
   // Create all of our blobs.
   std::vector<scoped_refptr<ShareableBlobDataItem>> all_items;
   std::vector<base::WeakPtr<QuotaAllocationTask>> memory_tasks;
-  bool memory_requested[kBlobsThatCanFit] = {};
+  std::array<bool, kBlobsThatCanFit> memory_requested = {};
   for (size_t i = 0; i < kBlobsThatCanFit; i++) {
     BlobDataBuilder builder("fake");
     builder.AppendData(std::string(kData, kDataSize));
@@ -803,7 +797,7 @@ TEST_F(BlobMemoryControllerTest, DisableDiskWithFileAndMemoryPending) {
   SetTestMemoryLimits(&controller);
 
   char kDataMemoryData[kFirstMemorySize];
-  std::memset(kDataMemoryData, 'e', kFirstMemorySize);
+  UNSAFE_TODO(std::memset(kDataMemoryData, 'e', kFirstMemorySize));
 
   // Add first memory item to fill up some memory quota.
   BlobDataBuilder builder(kFirstMemoryId);
@@ -829,8 +823,7 @@ TEST_F(BlobMemoryControllerTest, DisableDiskWithFileAndMemoryPending) {
   EXPECT_EQ(0u, controller.disk_usage());
 
   // Add our original item as populated so we start paging it to disk.
-  future_data.Populate(
-      base::as_bytes(base::make_span(kDataMemoryData, kFirstMemorySize)));
+  future_data.Populate(base::as_byte_span(kDataMemoryData));
   items[0]->set_state(ItemState::POPULATED_WITH_QUOTA);
   controller.NotifyMemoryItemsUsed(items);
 
@@ -1159,9 +1152,7 @@ TEST_F(BlobMemoryControllerTest, OnMemoryPressure) {
   EXPECT_FALSE(file_runner_->HasPendingTask());
   EXPECT_EQ(size_to_load, controller.memory_usage());
 
-  controller.OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel::
-          MEMORY_PRESSURE_LEVEL_MODERATE);
+  controller.OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_MODERATE);
 
   EXPECT_TRUE(file_runner_->HasPendingTask());
 

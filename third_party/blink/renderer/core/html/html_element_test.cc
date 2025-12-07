@@ -5,16 +5,16 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
+#include "third_party/blink/renderer/core/layout/hit_test_location.h"
+#include "third_party/blink/renderer/core/layout/hit_test_request.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -253,9 +253,7 @@ TEST_F(HTMLElementTest,
       GetDocument().GetPage()->Animator().has_inline_style_mutation_for_test());
 }
 
-TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
+TEST_F(HTMLElementTest, MayBeImplicitAnchor) {
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
@@ -268,25 +266,23 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElement) {
       To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_FALSE(anchor2->MayBeImplicitAnchor());
 
   target->setAttribute(html_names::kAnchorAttr, AtomicString("anchor2"));
 
   EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 
   target->removeAttribute(html_names::kAnchorAttr);
 
   EXPECT_FALSE(target->anchorElement());
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 }
 
-TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
+TEST_F(HTMLElementTest, MayBeImplicitAnchorViaElementAttr) {
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
@@ -299,31 +295,29 @@ TEST_F(HTMLElementTest, HasImplicitlyAnchoredElementViaElementAttr) {
       To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_FALSE(anchor2->MayBeImplicitAnchor());
 
-  target->setAnchorElement(anchor2);
+  target->setAnchorElementForBinding(anchor2);
 
   EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 
-  target->setAnchorElement(nullptr);
+  target->setAnchorElementForBinding(nullptr);
 
   EXPECT_FALSE(target->anchorElement());
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 
   target->setAttribute(html_names::kAnchorAttr, AtomicString("anchor1"));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 }
 
 TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
   SetBodyInnerHTML(R"HTML(
     <div id="anchor1"></div>
     <div id="anchor2"></div>
@@ -336,49 +330,18 @@ TEST_F(HTMLElementTest, ImplicitAnchorIdChange) {
       To<HTMLElement>(GetDocument().getElementById(AtomicString("target")));
 
   EXPECT_EQ(target->anchorElement(), anchor1);
-  EXPECT_TRUE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(anchor2->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_FALSE(anchor2->MayBeImplicitAnchor());
 
   anchor1->setAttribute(html_names::kIdAttr, AtomicString("anchor2"));
   anchor2->setAttribute(html_names::kIdAttr, AtomicString("anchor1"));
 
   EXPECT_EQ(target->anchorElement(), anchor2);
-  EXPECT_FALSE(anchor1->HasImplicitlyAnchoredElement());
-  EXPECT_TRUE(anchor2->HasImplicitlyAnchoredElement());
-}
-
-TEST_F(HTMLElementTest, ImplicitlyAnchoredElementRemoved) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
-  SetBodyInnerHTML(R"HTML(
-    <div id="anchor"></div>
-    <div id="target1" anchor="anchor"></div>
-    <div id="target2"></div>
-  )HTML");
-
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
-  HTMLElement* target1 =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("target1")));
-  HTMLElement* target2 =
-      To<HTMLElement>(GetDocument().getElementById(AtomicString("target2")));
-
-  target2->setAnchorElement(anchor);
-
-  EXPECT_EQ(target1->anchorElement(), anchor);
-  EXPECT_EQ(target2->anchorElement(), anchor);
-  EXPECT_TRUE(anchor->HasImplicitlyAnchoredElement());
-
-  target1->remove();
-  target2->remove();
-
-  EXPECT_FALSE(target1->anchorElement());
-  EXPECT_FALSE(target2->anchorElement());
-  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor1->MayBeImplicitAnchor());
+  EXPECT_TRUE(anchor2->MayBeImplicitAnchor());
 }
 
 TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
-  ScopedCSSAnchorPositioningForTest scoped_feature(true);
-
   SetBodyInnerHTML("<div id=anchor></div>");
 
   Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
@@ -389,18 +352,18 @@ TEST_F(HTMLElementTest, ImplicitlyAnchorElementConnected) {
 
   HTMLElement* target2 = To<HTMLElement>(
       GetDocument().CreateElementForBinding(AtomicString("div")));
-  target2->setAnchorElement(anchor);
+  target2->setAnchorElementForBinding(anchor);
 
   EXPECT_FALSE(target1->anchorElement());
   EXPECT_FALSE(target2->anchorElement());
-  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
+  EXPECT_FALSE(anchor->MayBeImplicitAnchor());
 
   GetDocument().body()->appendChild(target1);
   GetDocument().body()->appendChild(target2);
 
   EXPECT_EQ(target1->anchorElement(), anchor);
   EXPECT_EQ(target2->anchorElement(), anchor);
-  EXPECT_TRUE(anchor->HasImplicitlyAnchoredElement());
+  EXPECT_TRUE(anchor->MayBeImplicitAnchor());
 }
 
 TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
@@ -420,8 +383,9 @@ TEST_F(HTMLElementTest, PopoverTopLayerRemovalTiming) {
   // HidePopoverInternal causes :closed to match immediately, but schedules
   // the removal from the top layer.
   target->HidePopoverInternal(
-      HidePopoverFocusBehavior::kFocusPreviousElement,
-      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions, nullptr);
+      /*invoker=*/nullptr, HidePopoverFocusBehavior::kFocusPreviousElement,
+      HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+      /*exception_state*/ nullptr);
   EXPECT_FALSE(target->popoverOpen());
   EXPECT_TRUE(target->IsInTopLayer());
   UpdateAllLifecyclePhasesForTest();
@@ -453,19 +417,90 @@ TEST_F(HTMLElementTest, DialogTopLayerRemovalTiming) {
   EXPECT_FALSE(target->IsInTopLayer());
 }
 
-TEST_F(HTMLElementTest, AnchorAttrWithFeatureDisabled) {
-  ScopedHTMLSelectListElementForTest select_list_disabled(false);
-  ScopedCSSAnchorPositioningForTest anchor_pos_disabled(false);
+TEST_F(HTMLElementTest, InertAttributeUseCounted) {
+  SetBodyInnerHTML(R"HTML(
+    <div inert></div>
+  )HTML");
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
 
-  SetBodyInnerHTML("<div id=anchor><div anchor=anchor id=target></div></div>");
+  // Set via setAttribute
+  SetBodyInnerHTML(R"HTML(
+    <div id=target></div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument()
+      .getElementById(AtomicString("target"))
+      ->setAttribute(html_names::kInertAttr, AtomicString("true"));
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
 
-  Element* anchor = GetDocument().getElementById(AtomicString("anchor"));
-  Element* target = GetDocument().getElementById(AtomicString("target"));
+  // Test that the use counter is not incremented when the inert is
+  // set via style.
+  SetBodyInnerHTML(R"HTML(
+    <div style="interactivity: inert;"></div>
+  )HTML");
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kInertAttribute));
+  GetDocument().ClearUseCounterForTesting(WebFeature::kInertAttribute);
+}
 
-  // Shouldn't hook up objects related to anchor attr when the feature is
-  // disabled.
-  EXPECT_FALSE(anchor->HasImplicitlyAnchoredElement());
-  EXPECT_FALSE(target->HasAnchorElementObserverForTesting());
+TEST_F(HTMLElementTest, TitleAttributeDirectionality) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #text { height: 20px; }
+      #target { height: 100px; }
+    </style>
+    <div id="parent">
+      <div id="container">
+        <div id="text"></div>
+        <div id="target"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* parent = GetElementById("parent");
+  Element* container = GetElementById("container");
+  HTMLElement* text = DynamicTo<HTMLElement>(GetElementById("text"));
+  Element* target = GetElementById("target");
+
+  AtomicString a_b_c("abc");
+  AtomicString aleph_beth_gimel(u"\u05D0\u05D1\u05D2");
+  AtomicString kLtr("ltr");
+  AtomicString kRtl("rtl");
+  AtomicString kAuto("auto");
+
+  auto get_title_direction = [this, target]() -> TextDirection {
+    const HitTestRequest hit_request(HitTestRequest::kActive);
+    const HitTestLocation hit_location(PhysicalOffset(50, 70));
+    HitTestResult hit_result(hit_request, hit_location);
+    EXPECT_TRUE(GetLayoutView().HitTest(hit_location, hit_result));
+    EXPECT_EQ(hit_result.InnerNode(), target);
+    TextDirection dir;
+    EXPECT_FALSE(hit_result.Title(dir).IsNull());
+    return dir;
+  };
+
+  text->setInnerText(aleph_beth_gimel);
+  container->setAttribute(html_names::kTitleAttr, a_b_c);
+  EXPECT_EQ(get_title_direction(), TextDirection::kLtr);
+  container->setAttribute(html_names::kDirAttr, kRtl);
+  EXPECT_EQ(get_title_direction(), TextDirection::kRtl);
+  container->setAttribute(html_names::kDirAttr, kLtr);
+  EXPECT_EQ(get_title_direction(), TextDirection::kLtr);
+  container->setAttribute(html_names::kDirAttr,
+                          kAuto);  // RTL for contents, LTR for attribute
+  EXPECT_EQ(get_title_direction(), TextDirection::kLtr);
+  container->removeAttribute(html_names::kDirAttr);
+  parent->setAttribute(html_names::kDirAttr, kAuto);  // RTL
+  EXPECT_EQ(get_title_direction(), TextDirection::kRtl);
+  text->setInnerText(a_b_c);  // now auto is LTR
+  container->setAttribute(html_names::kTitleAttr, aleph_beth_gimel);
+  EXPECT_EQ(get_title_direction(), TextDirection::kLtr);
+  parent->removeAttribute(html_names::kDirAttr);
+  container->setAttribute(html_names::kDirAttr,
+                          kAuto);  // LTR for contents, RTL for attribute
+  EXPECT_EQ(get_title_direction(), TextDirection::kRtl);
 }
 
 }  // namespace blink

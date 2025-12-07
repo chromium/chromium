@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CONTEXT_MENU_PARAMS_H_
 #define CONTENT_PUBLIC_BROWSER_CONTEXT_MENU_PARAMS_H_
 
+#include <map>
+
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "url/gurl.h"

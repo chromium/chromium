@@ -10,7 +10,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/guest_view/browser/bad_message.h"
 #include "components/guest_view/browser/guest_view_base.h"
@@ -19,11 +18,13 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 
 using content::BrowserContext;
 using content::RenderProcessHost;
@@ -76,7 +77,7 @@ GuestViewManager::GuestViewManager(
 GuestViewManager::~GuestViewManager() {
   // It seems that ChromeOS OTR profiles may still have RenderProcessHosts at
   // this point. See https://crbug.com/828479
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   DCHECK(view_destruction_callback_map_.empty());
 #endif
 }
@@ -112,7 +113,7 @@ void GuestViewManager::set_factory_for_testing(
 
 GuestViewBase* GuestViewManager::GetGuestByInstanceIDSafely(
     int guest_instance_id,
-    int embedder_render_process_id) {
+    content::ChildProcessId embedder_render_process_id) {
   if (!CanEmbedderAccessInstanceIDMaybeKill(embedder_render_process_id,
                                             guest_instance_id)) {
     return nullptr;
@@ -120,7 +121,14 @@ GuestViewBase* GuestViewManager::GetGuestByInstanceIDSafely(
   return GetGuestByInstanceID(guest_instance_id);
 }
 
-void GuestViewManager::AttachGuest(int embedder_process_id,
+GuestViewBase* GuestViewManager::GetGuestByInstanceIDSafely(
+    int guest_instance_id,
+    int embedder_render_process_id) {
+  return GetGuestByInstanceIDSafely(
+      guest_instance_id, content::ChildProcessId(embedder_render_process_id));
+}
+
+void GuestViewManager::AttachGuest(content::ChildProcessId embedder_process_id,
                                    int element_instance_id,
                                    int guest_instance_id,
                                    const base::Value::Dict& attach_params) {
@@ -142,6 +150,15 @@ void GuestViewManager::AttachGuest(int embedder_process_id,
   instance_id_map_[key] = guest_instance_id;
   reverse_instance_id_map_[guest_instance_id] = key;
   guest_view->SetAttachParams(attach_params);
+}
+
+void GuestViewManager::AttachGuest(int embedder_process_id,
+                                   int element_instance_id,
+                                   int guest_instance_id,
+                                   const base::Value::Dict& attach_params) {
+  GuestViewManager::AttachGuest(content::ChildProcessId(embedder_process_id),
+                                element_instance_id, guest_instance_id,
+                                attach_params);
 }
 
 bool GuestViewManager::IsOwnedByExtension(const GuestViewBase* guest) {
@@ -175,23 +192,27 @@ void GuestViewManager::CreateGuest(const std::string& view_type,
         std::move(callback).Run(raw_guest);
       },
       std::move(callback));
-  CreateGuestAndTransferOwnership(view_type, owner_rfh, create_params,
+  CreateGuestAndTransferOwnership(view_type, owner_rfh, nullptr, create_params,
                                   std::move(ownership_transferring_callback));
 }
 
-void GuestViewManager::CreateGuestAndTransferOwnership(
+int GuestViewManager::CreateGuestAndTransferOwnership(
     const std::string& view_type,
     content::RenderFrameHost* owner_rfh,
+    scoped_refptr<content::SiteInstance> site_instance,
     const base::Value::Dict& create_params,
     OwnedGuestCreatedCallback callback) {
   std::unique_ptr<GuestViewBase> guest =
       CreateGuestInternal(owner_rfh, view_type);
   if (!guest) {
     std::move(callback).Run(nullptr);
-    return;
+    return -1;
   }
   auto* raw_guest = guest.get();
-  raw_guest->Init(std::move(guest), create_params, std::move(callback));
+  int guest_instance_id = guest->guest_instance_id();
+  raw_guest->Init(std::move(guest), site_instance, create_params,
+                  std::move(callback));
+  return guest_instance_id;
 }
 
 std::unique_ptr<GuestViewBase> GuestViewManager::TransferOwnership(
@@ -253,9 +274,10 @@ SiteInstance* GuestViewManager::GetGuestSiteInstance(
   return nullptr;
 }
 
-void GuestViewManager::ForEachUnattachedGuest(
+void GuestViewManager::ForEachUnattachedGuestContents(
     content::WebContents* owner_web_contents,
     base::FunctionRef<void(content::WebContents*)> fn) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   for (auto [id, guest] : guests_by_instance_id_) {
     if (guest->owner_web_contents() == owner_web_contents &&
         !guest->attached() && guest->web_contents()) {
@@ -264,9 +286,23 @@ void GuestViewManager::ForEachUnattachedGuest(
   }
 }
 
+void GuestViewManager::ForEachUnattachedGuestPage(
+    content::Page& owner_page,
+    base::FunctionRef<void(content::GuestPageHolder&)> fn) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  for (auto [id, guest] : guests_by_instance_id_) {
+    if (guest->owned_guest_page() && guest->GetGuestMainFrame() &&
+        &guest->owner_rfh()->GetPage() == &owner_page) {
+      CHECK(!guest->attached());
+      fn(*guest->owned_guest_page());
+    }
+  }
+}
+
 bool GuestViewManager::ForEachGuest(
     WebContents* owner_web_contents,
     base::FunctionRef<bool(content::WebContents*)> fn) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   for (auto [id, guest] : guests_by_instance_id_) {
     if (!guest->web_contents() ||
         guest->owner_web_contents() != owner_web_contents) {
@@ -298,7 +334,6 @@ WebContents* GuestViewManager::GetFullPageGuest(
 
 void GuestViewManager::AddGuest(GuestViewBase* guest) {
   const int guest_instance_id = guest->guest_instance_id();
-  WebContents* guest_web_contents = guest->web_contents();
 
   CHECK(CanUseGuestInstanceID(guest_instance_id));
   const auto [it, success] =
@@ -308,15 +343,28 @@ void GuestViewManager::AddGuest(GuestViewBase* guest) {
   // re-adding it here.
   CHECK(success || it->second == guest);
 
-  webcontents_guestview_map_.insert({guest_web_contents, guest});
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    guest_page_frame_id_guestview_map_.insert(
+        {guest->guest_main_frame_tree_node_id(), guest});
+    // There's no need for an MPArch equivalent of `OnGuestAdded`, as features
+    // can use existing WebContentsObservers.
+  } else {
+    WebContents* guest_web_contents = guest->web_contents();
+    webcontents_guestview_map_.insert({guest_web_contents, guest});
 
-  delegate_->OnGuestAdded(guest_web_contents);
+    delegate_->OnGuestAdded(guest_web_contents);
+  }
 }
 
 void GuestViewManager::RemoveGuest(GuestViewBase* guest, bool invalidate_id) {
   const int guest_instance_id = guest->guest_instance_id();
 
-  webcontents_guestview_map_.erase(guest->web_contents());
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    guest_page_frame_id_guestview_map_.erase(
+        guest->guest_main_frame_tree_node_id());
+  } else {
+    webcontents_guestview_map_.erase(guest->web_contents());
+  }
 
   auto id_iter = reverse_instance_id_map_.find(guest_instance_id);
   if (id_iter != reverse_instance_id_map_.end()) {
@@ -359,11 +407,56 @@ void GuestViewManager::RemoveGuest(GuestViewBase* guest, bool invalidate_id) {
 
 GuestViewBase* GuestViewManager::GetGuestFromWebContents(
     content::WebContents* web_contents) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   auto it = webcontents_guestview_map_.find(web_contents);
   return it == webcontents_guestview_map_.end() ? nullptr : it->second;
 }
 
-void GuestViewManager::EmbedderProcessDestroyed(int embedder_process_id) {
+GuestViewBase* GuestViewManager::GetGuestFromRenderFrameHost(
+    content::RenderFrameHost& rfh) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  content::RenderFrameHost* outermost_rfh = rfh.GetOutermostMainFrame();
+  return GetGuestFromOutermostFrameTreeNodeId(
+      outermost_rfh->GetFrameTreeNodeId());
+}
+
+GuestViewBase* GuestViewManager::GetGuestFromNavigationHandle(
+    content::NavigationHandle& navigation_handle) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  if (content::RenderFrameHost* parent_or_outer =
+          navigation_handle.GetParentFrameOrOuterDocument()) {
+    return GetGuestFromRenderFrameHost(*parent_or_outer);
+  }
+
+  CHECK(navigation_handle.IsInOutermostMainFrame());
+  return GetGuestFromOutermostFrameTreeNodeId(
+      navigation_handle.GetFrameTreeNodeId());
+}
+
+GuestViewBase* GuestViewManager::GetGuestFromFrameTreeNodeId(
+    content::FrameTreeNodeId frame_tree_node_id) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  // This lookup is safe, since we're only using it to get to the parent.
+  content::RenderFrameHost* rfh =
+      web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
+  if (rfh && rfh->GetParentOrOuterDocument()) {
+    return GetGuestFromRenderFrameHost(*rfh->GetParentOrOuterDocument());
+  }
+
+  return GetGuestFromOutermostFrameTreeNodeId(frame_tree_node_id);
+}
+
+GuestViewBase* GuestViewManager::GetGuestFromOutermostFrameTreeNodeId(
+    content::FrameTreeNodeId outermost_ftn_id) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  auto it = guest_page_frame_id_guestview_map_.find(outermost_ftn_id);
+  return it == guest_page_frame_id_guestview_map_.end() ? nullptr : it->second;
+}
+
+void GuestViewManager::EmbedderProcessDestroyed(
+    content::ChildProcessId embedder_process_id) {
   embedders_observed_.erase(embedder_process_id);
 
   // We can't just call std::multimap::erase here because destroying a guest
@@ -382,7 +475,7 @@ void GuestViewManager::EmbedderProcessDestroyed(int embedder_process_id) {
   CallViewDestructionCallbacks(embedder_process_id);
 }
 
-void GuestViewManager::ViewCreated(int embedder_process_id,
+void GuestViewManager::ViewCreated(content::ChildProcessId embedder_process_id,
                                    int view_instance_id,
                                    const std::string& view_type) {
   if (guest_view_registry_.empty())
@@ -403,13 +496,15 @@ void GuestViewManager::ViewCreated(int embedder_process_id,
   }
 }
 
-void GuestViewManager::ViewGarbageCollected(int embedder_process_id,
-                                            int view_instance_id) {
+void GuestViewManager::ViewGarbageCollected(
+    content::ChildProcessId embedder_process_id,
+    int view_instance_id) {
   CallViewDestructionCallbacks(embedder_process_id, view_instance_id);
 }
 
-void GuestViewManager::CallViewDestructionCallbacks(int embedder_process_id,
-                                                    int view_instance_id) {
+void GuestViewManager::CallViewDestructionCallbacks(
+    content::ChildProcessId embedder_process_id,
+    int view_instance_id) {
   // Find the callbacks for the embedder with ID |embedder_process_id|.
   auto embedder_it = view_destruction_callback_map_.find(embedder_process_id);
   if (embedder_it == view_destruction_callback_map_.end())
@@ -440,7 +535,8 @@ void GuestViewManager::CallViewDestructionCallbacks(int embedder_process_id,
   callbacks_for_embedder.erase(view_it);
 }
 
-void GuestViewManager::CallViewDestructionCallbacks(int embedder_process_id) {
+void GuestViewManager::CallViewDestructionCallbacks(
+    content::ChildProcessId embedder_process_id) {
   CallViewDestructionCallbacks(embedder_process_id, kInstanceIDNone);
 }
 
@@ -452,8 +548,7 @@ std::unique_ptr<GuestViewBase> GuestViewManager::CreateGuestInternal(
 
   auto it = guest_view_registry_.find(view_type);
   if (it == guest_view_registry_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   return it->second.create_function.Run(owner_rfh);
@@ -480,7 +575,7 @@ void GuestViewManager::RegisterGuestViewType(
 }
 
 void GuestViewManager::RegisterViewDestructionCallback(
-    int embedder_process_id,
+    content::ChildProcessId embedder_process_id,
     int view_instance_id,
     base::OnceClosure callback) {
   RenderProcessHost* rph = RenderProcessHost::FromID(embedder_process_id);
@@ -525,7 +620,7 @@ GuestViewBase* GuestViewManager::GetGuestByInstanceID(int guest_instance_id) {
 }
 
 bool GuestViewManager::CanEmbedderAccessInstanceIDMaybeKill(
-    int embedder_render_process_id,
+    content::ChildProcessId embedder_render_process_id,
     int guest_instance_id) {
   if (!CanEmbedderAccessInstanceID(embedder_render_process_id,
                                    guest_instance_id)) {
@@ -545,7 +640,7 @@ bool GuestViewManager::CanUseGuestInstanceID(int guest_instance_id) {
 }
 
 bool GuestViewManager::CanEmbedderAccessInstanceID(
-    int embedder_render_process_id,
+    content::ChildProcessId embedder_render_process_id,
     int guest_instance_id) {
   // TODO(crbug.com/41353094): Remove crash key once the cause of the kill is
   // known.
@@ -577,7 +672,7 @@ bool GuestViewManager::CanEmbedderAccessInstanceID(
   // MimeHandlerViewGuests (PDF) may be embedded in a cross-process frame.
   // Other than MimeHandlerViewGuest, all other guest types are only permitted
   // to run in the main frame or its local subframes.
-  const int allowed_embedder_render_process_id =
+  const content::ChildProcessId allowed_embedder_render_process_id =
       guest_view->CanBeEmbeddedInsideCrossProcessFrames()
           ? guest_view->owner_rfh()->GetProcess()->GetID()
           : guest_view->owner_rfh()->GetMainFrame()->GetProcess()->GetID();
@@ -595,11 +690,10 @@ GuestViewManager::ElementInstanceKey::ElementInstanceKey()
       element_instance_id(kInstanceIDNone) {}
 
 GuestViewManager::ElementInstanceKey::ElementInstanceKey(
-    int embedder_process_id,
+    content::ChildProcessId embedder_process_id,
     int element_instance_id)
     : embedder_process_id(embedder_process_id),
-      element_instance_id(element_instance_id) {
-}
+      element_instance_id(element_instance_id) {}
 
 bool GuestViewManager::ElementInstanceKey::operator<(
     const GuestViewManager::ElementInstanceKey& other) const {

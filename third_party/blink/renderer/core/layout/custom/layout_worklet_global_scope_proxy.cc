@@ -36,13 +36,13 @@ LayoutWorkletGlobalScopeProxy::LayoutWorkletGlobalScopeProxy(
   reporting_proxy_ = std::make_unique<MainThreadWorkletReportingProxy>(window);
 
   String global_scope_name =
-      StringView("LayoutWorklet #") + String::Number(global_scope_number);
+      StrCat({"LayoutWorklet #", String::Number(global_scope_number)});
 
   LocalFrameClient* frame_client = frame->Client();
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
       window->Url(), mojom::blink::ScriptType::kModule, global_scope_name,
       frame_client->UserAgent(), frame_client->UserAgentMetadata(),
-      frame_client->CreateWorkerFetchContext(),
+      frame_client->CreateWorkletFetchContext(),
       mojo::Clone(window->GetContentSecurityPolicy()->GetParsedPolicies()),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       window->GetReferrerPolicy(), window->GetSecurityOrigin(),

@@ -160,7 +160,7 @@ void AudioFocusRequest::PerformUIAction(mojom::MediaSessionAction action) {
       break;
     default:
       // Only UI transport actions are supported.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -173,6 +173,10 @@ void AudioFocusRequest::GetMediaImageBitmap(
       image, minimum_size_px, desired_size_px,
       base::BindOnce(&AudioFocusRequest::OnImageDownloaded,
                      base::Unretained(this), std::move(callback)));
+}
+
+void AudioFocusRequest::FlushForTesting() {
+  session_.FlushForTesting();  // IN-TEST
 }
 
 void AudioFocusRequest::SetSessionInfo(

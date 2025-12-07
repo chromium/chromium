@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <UIKit/UIKit.h>
-
 #import "ios/chrome/test/providers/mini_map/test_mini_map.h"
+
+#import <UIKit/UIKit.h>
 
 #import "ios/public/provider/chrome/browser/mini_map/mini_map_api.h"
 
@@ -15,13 +15,13 @@ id<MiniMapControllerFactory> g_mini_map_controller_factory;
 namespace ios {
 namespace provider {
 
-id<MiniMapController> CreateMiniMapController(
-    NSString* address,
-    MiniMapControllerCompletion completion) {
+id<MiniMapController> CreateMiniMapController() {
   // Mini map is not supported in Tests.
-  return [g_mini_map_controller_factory
-      createMiniMapControllerForString:address
-                            completion:completion];
+  return [g_mini_map_controller_factory createMiniMapController];
+}
+
+BOOL MiniMapCanHandleURL(NSURL* url) {
+  return [g_mini_map_controller_factory canHandleURL:url];
 }
 
 namespace test {

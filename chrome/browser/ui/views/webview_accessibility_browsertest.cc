@@ -33,9 +33,10 @@ int CountOffscreenButtons(const ui::AXTree* tree, const ui::AXNode* node) {
   int count = 0;
   if (node->GetRole() == ax::mojom::Role::kButton) {
     bool offscreen = false;
-    tree->GetTreeBounds(node, &offscreen, /* clip = */ true);
-    if (offscreen)
+    tree->GetTreeBounds(node, &offscreen, /*clip_bounds=*/true);
+    if (offscreen) {
       count++;
+    }
   }
 
   for (const ui::AXNode* child : node->children()) {

@@ -10,7 +10,7 @@ import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {CLICK_EXIT_BUTTON, DISABLE_NEXT_BUTTON, FATAL_HARDWARE_ERROR, OPEN_LOGS_DIALOG, SET_NEXT_BUTTON_LABEL, TRANSITION_STATE} from 'chrome://shimless-rma/events.js';
 import {fakeCalibrationComponentsWithFails, fakeStates} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
@@ -18,7 +18,8 @@ import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interf
 import {OnboardingLandingPage} from 'chrome://shimless-rma/onboarding_landing_page.js';
 import {OnboardingSelectComponentsPageElement} from 'chrome://shimless-rma/onboarding_select_components_page.js';
 import {ButtonState, ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
-import {RmadErrorCode, State, StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import type {StateResult} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {RmadErrorCode, State} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {disableAllButtons, enableAllButtons} from 'chrome://shimless-rma/shimless_rma_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -155,7 +156,8 @@ suite('shimlessRMAAppTest', function() {
     // This enables the next button on the landing page.
     assert(service);
     service.triggerHardwareVerificationStatusObserver(
-        /* isCompliant= */ true, /* errorMessage= */ '', /* delayMs= */ 0);
+        /* result= */ {passResult: {}},
+        /* delayMs= */ 0);
     await flushTasks();
     await clickNext();
 
@@ -272,7 +274,7 @@ suite('shimlessRMAAppTest', function() {
         strictQuery('#nextButtonLabel', component.shadowRoot, HTMLElement);
     assertEquals(
         loadTimeData.getString('nextButtonLabel'),
-        nextButtonLabel.textContent!.trim());
+        nextButtonLabel.textContent.trim());
 
     // Trigger the next button to update its label.
     component.dispatchEvent(new CustomEvent(
@@ -281,7 +283,7 @@ suite('shimlessRMAAppTest', function() {
         ));
     assertEquals(
         loadTimeData.getString('skipButtonLabel'),
-        nextButtonLabel.textContent!.trim());
+        nextButtonLabel.textContent.trim());
   });
 
   // Verify the correct button spinners are showing based on the current state.
@@ -619,7 +621,7 @@ suite('shimlessRMAAppTest', function() {
     assertEquals(
         loadTimeData.getStringF('rmaLogsSaveSuccessText', savePath),
         strictQuery(logSavedStatusSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     // Close the logs dialog.
     await clickButton(logSaveDoneButtonSelector);
@@ -668,7 +670,7 @@ suite('shimlessRMAAppTest', function() {
     assertEquals(
         loadTimeData.getString('rmaLogsSaveFailText'),
         strictQuery(logSavedStatusSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
 
     // Click the retry button and verify that it retries saving the logs.
     await clickButton(logRetryButtonSelector);
@@ -712,7 +714,7 @@ suite('shimlessRMAAppTest', function() {
     assertEquals(
         loadTimeData.getString('rmaLogsSaveUsbNotFound'),
         strictQuery(logSavedStatusSelector, component.shadowRoot, HTMLElement)
-            .textContent!.trim());
+            .textContent.trim());
   });
 
   // Verify the correct message is shown for USB connected or disconnected.

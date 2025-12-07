@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/common/lightweight_detector_state.h"
+
+#include "base/compiler_specific.h"
 
 namespace gwp_asan::internal {
 
@@ -29,7 +26,7 @@ LightweightDetectorState::SlotMetadata&
 LightweightDetectorState::GetSlotMetadataById(
     MetadataId id,
     LightweightDetectorState::SlotMetadata* metadata_arr) {
-  return metadata_arr[id % num_metadata];
+  return UNSAFE_TODO(metadata_arr[id % num_metadata]);
 }
 
 bool LightweightDetectorState::HasMetadataForId(

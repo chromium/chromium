@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -17,8 +18,9 @@
 #include "components/update_client/utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -80,16 +82,17 @@ void UpdateDataProvider::GetData(
     const Extension* extension = registry->GetInstalledExtension(id);
     data.push_back(extension ? std::make_optional<update_client::CrxComponent>()
                              : std::nullopt);
-    if (!extension)
+    if (!extension) {
       continue;
+    }
     DCHECK_NE(0u, update_crx_component.count(id));
     const ExtensionUpdateData& extension_data = update_crx_component.at(id);
     auto& crx_component = data.back();
-    std::string pubkey_bytes;
-    base::Base64Decode(extension->public_key(), &pubkey_bytes);
-    crx_component->pk_hash.resize(crypto::kSHA256Length, 0);
-    crypto::SHA256HashString(pubkey_bytes, crx_component->pk_hash.data(),
-                             crx_component->pk_hash.size());
+    auto pubkey = base::Base64Decode(extension->public_key());
+    if (!pubkey) {
+      continue;
+    }
+    crx_component->pk_hash = base::ToVector(crypto::hash::Sha256(*pubkey));
     crx_component->app_id =
         update_client::GetCrxIdFromPublicKeyHash(crx_component->pk_hash);
     if (extension_data.is_corrupt_reinstall) {
@@ -113,16 +116,18 @@ void UpdateDataProvider::GetData(
         base::BindRepeating(&UpdateDataProvider::RunInstallCallback, this));
     if (!ExtensionsBrowserClient::Get()->IsExtensionEnabled(id,
                                                             browser_context_)) {
-      int disabled_reasons = extension_prefs->GetDisableReasons(id);
-      if (disabled_reasons == extensions::disable_reason::DISABLE_NONE ||
-          disabled_reasons >= extensions::disable_reason::DISABLE_REASON_LAST) {
+      DisableReasonSet disable_reasons = extension_prefs->GetDisableReasons(id);
+
+      if (disable_reasons.empty() ||
+          disable_reasons.contains(disable_reason::DISABLE_UNKNOWN)) {
         crx_component->disabled_reasons.push_back(0);
       }
-      for (int enum_value = 1;
-           enum_value < extensions::disable_reason::DISABLE_REASON_LAST;
-           enum_value <<= 1) {
-        if (disabled_reasons & enum_value)
-          crx_component->disabled_reasons.push_back(enum_value);
+
+      // We are only interested in valid disable reasons from here.
+      disable_reasons.erase(disable_reason::DISABLE_UNKNOWN);
+
+      for (int reason : disable_reasons) {
+        crx_component->disabled_reasons.push_back(reason);
       }
     }
     crx_component->install_source = extension_data.is_corrupt_reinstall
@@ -166,10 +171,9 @@ void UpdateDataProvider::InstallUpdateCallback(
     return;
   }
 
-  // Note that error codes are converted into custom error codes, which are all
-  // based on a constant (see ToInstallerResult). This means that custom codes
-  // from different embedders may collide. However, for any given extension ID,
-  // there should be only one embedder, so this should be OK from Omaha.
+  // Error codes are converted into integers and may collide with codes from
+  // other embedders. However, for any given extension ID, there should be only
+  // one embedder, so the server should be able to figure it out.
   ExtensionSystem::Get(browser_context_)
       ->InstallUpdate(
           extension_id, public_key, unpacked_dir, install_immediately,
@@ -184,8 +188,8 @@ void UpdateDataProvider::InstallUpdateCallback(
                               CrxInstallErrorType::SANDBOXED_UNPACKER_FAILURE
                           ? static_cast<int>(error->sandbox_failure_detail())
                           : static_cast<int>(error->detail());
-                  result =
-                      update_client::ToInstallerResult(error->type(), detail);
+                  result = update_client::CrxInstaller::Result(
+                      static_cast<int>(error->type()), detail);
                 }
                 std::move(callback).Run(result);
               },

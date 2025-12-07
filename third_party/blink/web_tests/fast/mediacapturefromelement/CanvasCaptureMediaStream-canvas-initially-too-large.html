@@ -16,8 +16,8 @@ test(function() {
   canvas.height = 32768;
   assert_throws_dom("NotSupportedError", function() { canvas.captureStream() },
                     "video frame height too large");
-  canvas.width = 16385;
-  canvas.height = 16384;
+  canvas.width = 30000;
+  canvas.height = 30000;
   assert_throws_dom("NotSupportedError", function() { canvas.captureStream() },
                     "video frame area too large");
 });

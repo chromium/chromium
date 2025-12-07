@@ -21,7 +21,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/vector_icons.h"
 
@@ -136,18 +135,17 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
       return views::kNewIncognitoWindowIcon;
     case ash::INSTALL:
       // Deprecated.
-      return gfx::kNoneIcon;
+      return gfx::VectorIcon::EmptyIcon();
     case ash::SETTINGS:
       return vector_icons::kSettingsIcon;
     case ash::USE_LAUNCH_TYPE_REGULAR:
     case ash::USE_LAUNCH_TYPE_WINDOW:
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
       // Check items use the default icon.
-      return gfx::kNoneIcon;
+      return gfx::VectorIcon::EmptyIcon();
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::kNoneIcon;
+      NOTREACHED();
     case ash::REORDER_SUBMENU:
       return ash::kReorderIcon;
     case ash::REORDER_BY_NAME_ALPHABETICAL:
@@ -155,15 +153,13 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
     case ash::REORDER_BY_COLOR:
       return ash::kSortColorIcon;
     case ash::NOTIFICATION_CONTAINER:
-      NOTREACHED_IN_MIGRATION()
-          << "NOTIFICATION_CONTAINER does not have an icon, and it is "
-             "added to the model by NotificationMenuController.";
-      return gfx::kNoneIcon;
+      NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
+                      "added to the model by NotificationMenuController.";
     case ash::SHUTDOWN_GUEST_OS:
+    case ash::SHUTDOWN_BRUSCHETTA_OS:
       return kShutdownGuestOsIcon;
     default:
-      NOTREACHED_IN_MIGRATION() << "No icon for command_id: " << command_id;
-      return gfx::kNoneIcon;
+      NOTREACHED() << "No icon for command_id: " << command_id;
   }
 }
 
@@ -210,9 +206,8 @@ void AppContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
     return;
   }
   if (command_id == ash::NOTIFICATION_CONTAINER) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "NOTIFICATION_CONTAINER is added by NotificationMenuController.";
-    return;
   }
   menu_model->AddItemWithStringId(command_id, string_id);
 }

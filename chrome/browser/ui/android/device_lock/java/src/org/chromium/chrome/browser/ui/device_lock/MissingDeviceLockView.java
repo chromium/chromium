@@ -4,14 +4,17 @@
 package org.chromium.chrome.browser.ui.device_lock;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
 
@@ -19,6 +22,7 @@ import org.chromium.components.browser_ui.widget.DualControlLayout.ButtonType;
  * View shown to a user who has removed the device lock to inform them that their private data will
  * be deleted from Chrome if they continue, and prompts them to create a new device lock otherwise.
  */
+@NullMarked
 public class MissingDeviceLockView extends LinearLayout {
     private TextView mTitle;
     private TextView mDescription;
@@ -54,7 +58,7 @@ public class MissingDeviceLockView extends LinearLayout {
                         null);
         mCreateDeviceLockButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mContinueButton =
                 DualControlLayout.createButtonForLayout(
@@ -64,12 +68,36 @@ public class MissingDeviceLockView extends LinearLayout {
                         null);
         mContinueButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         mButtonBar = findViewById(R.id.dual_control_button_bar);
         mButtonBar.addView(mContinueButton);
         mButtonBar.addView(mCreateDeviceLockButton);
-        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.APART);
+
+        ImageView illustration = findViewById(R.id.missing_device_lock_illustration);
+        MarginLayoutParams illustrationParams = (MarginLayoutParams) illustration.getLayoutParams();
+        int illustrationTopMargin;
+
+        illustration.setBackgroundColor(Color.TRANSPARENT);
+        illustrationParams.height =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_height);
+        illustrationTopMargin =
+                getContext()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.device_lock_dialog_illustration_top_margin);
+        mButtonBar.setAlignment(DualControlLayout.DualControlLayoutAlignment.STACK);
+        DeviceLockUtils.updateDialogSubviewMargins(mButtonBar);
+        DeviceLockUtils.updateDialogSubviewMargins(mTitle);
+        DeviceLockUtils.updateDialogSubviewMargins(mDescription);
+        DeviceLockUtils.updateDialogSubviewMargins(mCheckBox);
+        illustrationParams.setMargins(
+                illustrationParams.leftMargin,
+                illustrationTopMargin,
+                illustrationParams.rightMargin,
+                illustrationParams.bottomMargin);
+        illustration.setLayoutParams(illustrationParams);
     }
 
     TextView getTitle() {

@@ -7,6 +7,7 @@
 #include <mstask.h>
 #include <oleauto.h>
 #include <security.h>
+#include <shlobj.h>
 #include <taskschd.h>
 #include <wrl/client.h>
 
@@ -18,7 +19,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
@@ -31,6 +31,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_co_mem.h"
@@ -38,6 +39,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/util/win_util.h"
 
 namespace updater {
 namespace {
@@ -61,14 +63,14 @@ const size_t kDeleteRetryDelayInMs = 100;
 }
 
 // Returns |timestamp| in the format YYYY-MM-DDTHH:MM:SS.
-std::wstring GetTimestampString(const base::Time& timestamp) {
+std::wstring GetTimestampString(base::Time timestamp) {
   // This intentionally avoids depending on the facilities in
   // base/i18n/time_formatting.h so the updater will not need to depend on the
   // ICU data file.
   base::Time::Exploded exploded_time;
   // The Z timezone info at the end of the string means UTC.
   timestamp.UTCExplode(&exploded_time);
-  return base::ASCIIToWide(base::StringPrintf(
+  return base::UTF8ToWide(base::StringPrintf(
       "%04d-%02d-%02dT%02d:%02d:%02dZ", exploded_time.year, exploded_time.month,
       exploded_time.day_of_month, exploded_time.hour, exploded_time.minute,
       exploded_time.second));
@@ -423,11 +425,82 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return !IsTaskRegistered(task_name);
   }
 
+  bool RegisterTaskDefinition(Microsoft::WRL::ComPtr<ITaskDefinition> task,
+                              const std::wstring& task_name,
+                              const base::CommandLine& run_command,
+                              const base::win::ScopedBstr& user_name,
+                              bool is_system) {
+    Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
+    base::win::ScopedVariant user(user_name.Get());
+
+    const HRESULT hr = task_folder_->RegisterTaskDefinition(
+        base::win::ScopedBstr(task_name).Get(), task.Get(),
+        TASK_CREATE_OR_UPDATE,
+        *user.AsInput(),  // Not really input, but API expect non-const.
+        base::win::ScopedVariant::kEmptyVariant,
+        is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
+        base::win::ScopedVariant::kEmptyVariant, &registered_task);
+    if (FAILED(hr)) {
+      LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr
+                 << ", Task XML: " << GetTaskXml(task.Get());
+      return false;
+    }
+
+    if (!is_system && ::IsUserAnAdmin()) {
+      // Best-effort (returns `true` on any failure) to adjust privileges to
+      // explicitly allow the current user to be able to manipulate the task
+      // folder and task at medium integrity since the per-user task is being
+      // installed elevated. This allows a subsequent `updater` running at
+      // medium integrity to edit or delete the installed task.
+      constexpr LONG kRequestedSecurityInformation =
+          OWNER_SECURITY_INFORMATION | GROUP_SECURITY_INFORMATION |
+          DACL_SECURITY_INFORMATION | SACL_SECURITY_INFORMATION;
+      for (auto& task_interface :
+           std::vector<std::variant<Microsoft::WRL::ComPtr<ITaskFolder>,
+                                    Microsoft::WRL::ComPtr<IRegisteredTask>>>{
+               task_folder_, registered_task}) {
+        std::visit(
+            [](auto& task_ifc) {
+              base::win::ScopedBstr sddl;
+              HRESULT hr = task_ifc->GetSecurityDescriptor(
+                  kRequestedSecurityInformation, sddl.Receive());
+              if (FAILED(hr)) {
+                LOG(ERROR) << "GetSecurityDescriptor failed: " << std::hex
+                           << hr;
+                return;
+              }
+
+              std::optional<std::wstring> new_sddl =
+                  AddCurrentUserAllowedAce(sddl.Get(), FILE_ALL_ACCESS, 0);
+              if (!new_sddl) {
+                return;
+              }
+              hr = task_ifc->SetSecurityDescriptor(
+                  base::win::ScopedBstr(*new_sddl).Get(), 0);
+              if (FAILED(hr)) {
+                LOG(ERROR) << "SetSecurityDescriptor failed: " << *new_sddl
+                           << ": " << std::hex << hr;
+                return;
+              }
+            },
+            task_interface);
+      }
+    }
+
+    VLOG(1) << __func__ << ":" << task_name << ": "
+            << run_command.GetCommandLineString();
+    return true;
+  }
+
   bool RegisterTask(const std::wstring& task_name,
                     const std::wstring& task_description,
                     const base::CommandLine& run_command,
                     int trigger_types,
                     bool hidden) override {
+    if (!task_folder_) {
+      return false;
+    }
+
     // Create the task definition object to create the task.
     Microsoft::WRL::ComPtr<ITaskDefinition> task;
     HRESULT hr = task_service_->NewTask(0, &task);
@@ -455,11 +528,19 @@ class TaskSchedulerV2 final : public TaskScheduler {
       return false;
     }
 
-    hr = is_system ? principal->put_RunLevel(TASK_RUNLEVEL_HIGHEST)
-                   : principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
+    hr = principal->put_RunLevel(is_system ? TASK_RUNLEVEL_HIGHEST
+                                           : TASK_RUNLEVEL_LUA);
     if (FAILED(hr)) {
-      PLOG(ERROR) << "Can't put run level or logon type. " << std::hex << hr;
+      PLOG(ERROR) << "Can't put run level. " << std::hex << hr;
       return false;
+    }
+
+    if (!is_system) {
+      hr = principal->put_LogonType(TASK_LOGON_INTERACTIVE_TOKEN);
+      if (FAILED(hr)) {
+        PLOG(ERROR) << "Can't put logon type. " << std::hex << hr;
+        return false;
+      }
     }
 
     Microsoft::WRL::ComPtr<IRegistrationInfo> registration_info;
@@ -555,18 +636,15 @@ class TaskSchedulerV2 final : public TaskScheduler {
           task_trigger_type = TASK_TRIGGER_REGISTRATION;
           break;
         case TRIGGER_TYPE_HOURLY:
+          task_trigger_type = TASK_TRIGGER_DAILY;
+          repetition_interval.Reset(::SysAllocString(kOneHourText));
+          break;
         case TRIGGER_TYPE_EVERY_FIVE_HOURS:
           task_trigger_type = TASK_TRIGGER_DAILY;
-          if (trigger_type == TRIGGER_TYPE_EVERY_FIVE_HOURS) {
-            repetition_interval.Reset(::SysAllocString(kFiveHoursText));
-          } else if (trigger_type == TRIGGER_TYPE_HOURLY) {
-            repetition_interval.Reset(::SysAllocString(kOneHourText));
-          } else {
-            NOTREACHED_IN_MIGRATION() << "Unknown TriggerType?";
-          }
+          repetition_interval.Reset(::SysAllocString(kFiveHoursText));
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "Unknown TriggerType?";
+          NOTREACHED() << "Unknown TriggerType.";
       }
 
       Microsoft::WRL::ComPtr<ITrigger> trigger;
@@ -688,28 +766,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
     }
 
     DVLOG(2) << "Registering Task with XML: " << GetTaskXml(task.Get());
-
-    Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
-    base::win::ScopedVariant user(user_name.Get());
-
-    if (task_folder_) {
-      hr = task_folder_->RegisterTaskDefinition(
-          base::win::ScopedBstr(task_name).Get(), task.Get(),
-          TASK_CREATE_OR_UPDATE,
-          *user.AsInput(),  // Not really input, but API expect non-const.
-          base::win::ScopedVariant::kEmptyVariant,
-          is_system ? TASK_LOGON_SERVICE_ACCOUNT : TASK_LOGON_INTERACTIVE_TOKEN,
-          base::win::ScopedVariant::kEmptyVariant, &registered_task);
-      if (FAILED(hr)) {
-        LOG(ERROR) << "RegisterTaskDefinition failed: " << std::hex << hr;
-        LOG(ERROR) << "Task XML: " << GetTaskXml(task.Get());
-        return false;
-      }
-    }
-
-    VLOG(1) << __func__ << ":" << task_name << ": "
-            << run_command.GetCommandLineString();
-    return IsTaskRegistered(task_name);
+    return RegisterTaskDefinition(task, task_name, run_command, user_name,
+                                  is_system);
   }
 
   bool StartTask(const std::wstring& task_name) override {
@@ -842,6 +900,9 @@ class TaskSchedulerV2 final : public TaskScheduler {
   };
 
   [[nodiscard]] Microsoft::WRL::ComPtr<ITaskService> GetTaskService() const {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+
     Microsoft::WRL::ComPtr<ITaskService> task_service;
     HRESULT hr =
         ::CoCreateInstance(CLSID_TaskScheduler, nullptr, CLSCTX_INPROC_SERVER,
@@ -849,6 +910,18 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (FAILED(hr)) {
       PLOG(ERROR) << "CreateInstance failed for CLSID_TaskScheduler. "
                   << std::hex << hr;
+      return nullptr;
+    }
+
+    // Calling ITaskService::Connect crashes when the current user is empty.
+    // This is correlated with a Windows update followed by a computer
+    // restart (crbug.com/434269515).
+    const std::wstring current_user = [] {
+      base::win::ScopedBstr user_name;
+      return GetCurrentUser(user_name) ? std::wstring(user_name.Get())
+                                       : std::wstring();
+    }();
+    if (current_user.empty()) {
       return nullptr;
     }
     hr = task_service->Connect(base::win::ScopedVariant::kEmptyVariant,
@@ -1182,7 +1255,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get trigger collection: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return hr;
     }
 
     LONG trigger_count = 0;
@@ -1190,7 +1263,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get trigger collection count: "
                  << logging::SystemErrorCodeToString(hr);
-      return false;
+      return hr;
     }
 
     trigger_types = 0;
@@ -1200,7 +1273,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       if (FAILED(hr)) {
         LOG(ERROR) << "Failed to get trigger: "
                    << logging::SystemErrorCodeToString(hr);
-        return false;
+        return hr;
       }
 
       TASK_TRIGGER_TYPE2 task_trigger_type = {};
@@ -1208,7 +1281,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
       if (FAILED(hr)) {
         LOG(ERROR) << "Failed to get trigger type: "
                    << logging::SystemErrorCodeToString(hr);
-        return false;
+        return hr;
       }
 
       switch (task_trigger_type) {
@@ -1224,7 +1297,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
           if (FAILED(hr)) {
             LOG(ERROR) << "Failed to get 'Repetition'. "
                        << logging::SystemErrorCodeToString(hr);
-            return false;
+            return hr;
           }
 
           base::win::ScopedBstr repetition_interval;
@@ -1232,7 +1305,7 @@ class TaskSchedulerV2 final : public TaskScheduler {
           if (FAILED(hr)) {
             LOG(ERROR) << "Failed to get 'Interval': "
                        << logging::SystemErrorCodeToString(hr);
-            return false;
+            return hr;
           }
 
           if (base::EqualsCaseInsensitiveASCII(repetition_interval.Get(),
@@ -1242,14 +1315,16 @@ class TaskSchedulerV2 final : public TaskScheduler {
                                                       kOneHourText)) {
             trigger_types |= TRIGGER_TYPE_HOURLY;
           } else {
-            NOTREACHED_IN_MIGRATION() << "Unknown TriggerType for interval: "
-                                      << repetition_interval.Get();
+            LOG(ERROR) << "Unknown TriggerType for interval: "
+                       << repetition_interval.Get();
+            return E_UNEXPECTED;
           }
           break;
         }
-        default:
-          NOTREACHED_IN_MIGRATION()
-              << "Unknown task trigger type: " << task_trigger_type;
+        default: {
+          LOG(ERROR) << "Unknown task trigger type: " << task_trigger_type;
+          return E_UNEXPECTED;
+        }
       }
     }
 
@@ -1310,7 +1385,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
     hr = root_task_folder->DeleteFolder(
         base::win::ScopedBstr(folder_name).Get(), 0);
     if (FAILED(hr)) {
-      LOG(ERROR) << "Failed get delete the sub folder. " << std::hex << hr;
+      LOG(ERROR) << "Failed to delete the sub folder: " << folder_name
+                 << ", error: " << std::hex << hr;
       return false;
     }
 
@@ -1361,7 +1437,7 @@ std::ostream& operator<<(std::ostream& stream,
   stream << "TaskInfo: name: " << t.name << ", description: " << t.description
          << ", exec_actions: ";
 
-  for (auto exec_action : t.exec_actions) {
+  for (const auto& exec_action : t.exec_actions) {
     stream << ", exec_action: " << exec_action;
   }
 

@@ -2,21 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/image-decoders/fast_shared_buffer_reader.h"
 
 namespace blink {
 
 FastSharedBufferReader::FastSharedBufferReader(
     scoped_refptr<SegmentReader> data)
-    : data_(std::move(data)),
-      segment_(nullptr),
-      segment_length_(0),
-      data_position_(0) {}
+    : data_(std::move(data)), data_position_(0) {}
 
 FastSharedBufferReader::~FastSharedBufferReader() = default;
 
@@ -29,53 +21,53 @@ void FastSharedBufferReader::SetData(scoped_refptr<SegmentReader> data) {
 }
 
 void FastSharedBufferReader::ClearCache() {
-  segment_ = nullptr;
-  segment_length_ = 0;
+  segment_ = {};
   data_position_ = 0;
 }
 
-const char* FastSharedBufferReader::GetConsecutiveData(size_t data_position,
-                                                       size_t length,
-                                                       char* buffer) const {
+base::span<const uint8_t> FastSharedBufferReader::GetConsecutiveData(
+    size_t data_position,
+    size_t length,
+    base::span<uint8_t> buffer) const {
   CHECK_LE(data_position + length, data_->size());
 
   // Use the cached segment if it can serve the request.
   if (data_position >= data_position_ &&
-      data_position + length <= data_position_ + segment_length_) {
-    return segment_ + data_position - data_position_;
+      data_position + length <= data_position_ + segment_.size()) {
+    return segment_.subspan(data_position - data_position_, length);
   }
 
-  // Return a pointer into |data_| if the request doesn't span segments.
+  // Return a span into `data_` if the request doesn't span segments.
   GetSomeDataInternal(data_position);
-  if (length <= segment_length_) {
-    return segment_;
+  if (length <= segment_.size()) {
+    return segment_.first(length);
   }
 
-  for (char* dest = buffer;;) {
-    size_t copy = std::min(length, segment_length_);
-    memcpy(dest, segment_, copy);
-    length -= copy;
-    if (!length) {
-      return buffer;
+  base::span<uint8_t> dest = buffer;
+  size_t remaining = length;
+  while (true) {
+    size_t copy = std::min(remaining, segment_.size());
+    dest.take_first(copy).copy_from(segment_.first(copy));
+    remaining -= copy;
+    if (remaining == 0) {
+      break;
     }
-
     // Continue reading the next segment.
-    dest += copy;
     GetSomeDataInternal(data_position_ + copy);
   }
+  return buffer.first(length);
 }
 
-size_t FastSharedBufferReader::GetSomeData(const char*& some_data,
-                                           size_t data_position) const {
+base::span<const uint8_t> FastSharedBufferReader::GetSomeData(
+    size_t data_position) const {
   GetSomeDataInternal(data_position);
-  some_data = segment_;
-  return segment_length_;
+  return segment_;
 }
 
 void FastSharedBufferReader::GetSomeDataInternal(size_t data_position) const {
   data_position_ = data_position;
-  segment_length_ = data_->GetSomeData(segment_, data_position);
-  DCHECK(segment_length_);
+  segment_ = data_->GetSomeData(data_position);
+  DCHECK(!segment_.empty());
 }
 
 }  // namespace blink

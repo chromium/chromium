@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -20,6 +21,7 @@
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/base/collaboration_id.h"
 #include "components/sync/base/features.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/cancelation_signal.h"
@@ -27,6 +29,7 @@
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/collaboration_metadata.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
@@ -49,6 +52,7 @@ using sync_pb::DataTypeState;
 using sync_pb::EntitySpecifics;
 using sync_pb::SyncEntity;
 using testing::ElementsAre;
+using testing::IsEmpty;
 using testing::IsNull;
 using testing::NotNull;
 using testing::SizeIs;
@@ -133,8 +137,7 @@ CreateIncomingPasswordSharingInvitation(const std::string& invitation_guid,
       cryptographer->GetCrossUserSharingKeyPair(/*version=*/0);
   std::optional<std::vector<uint8_t>> encrypted_data =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_bytes(base::make_span(serialized_data)),
-          key_pair.GetRawPublicKey());
+          base::as_byte_span(serialized_data), key_pair.GetRawPublicKey());
   CHECK(encrypted_data);
 
   invitation.set_encrypted_password_sharing_invitation_data(
@@ -277,7 +280,7 @@ class DataTypeWorkerTest : public ::testing::Test {
         PassphraseType::kImplicitPassphrase, &mock_nudge_handler_,
         &cancelation_signal_);
 
-    // We don't get to own this object. The |worker_| keeps a unique_ptr to it.
+    // We don't get to own this object. The `worker_` keeps a unique_ptr to it.
     auto processor = std::make_unique<MockDataTypeProcessor>();
     mock_type_processor_ = processor.get();
     processor->SetDisconnectCallback(base::BindOnce(
@@ -326,7 +329,7 @@ class DataTypeWorkerTest : public ::testing::Test {
     }
   }
 
-  // Modifies the input/output parameter |specifics| by encrypting it with
+  // Modifies the input/output parameter `specifics` by encrypting it with
   // the n-th encryption key.
   void EncryptUpdateWithNthKey(int n, EntitySpecifics* specifics) {
     EntitySpecifics original_specifics = *specifics;
@@ -477,7 +480,7 @@ class DataTypeWorkerTest : public ::testing::Test {
   }
   void PumpModelThread() { processor()->RunQueuedTasks(); }
 
-  // Returns true if the |worker_| is ready to commit something.
+  // Returns true if the `worker_` is ready to commit something.
   bool WillCommit() { return worker()->GetContribution(INT_MAX) != nullptr; }
 
   // Pretend to successfully commit all outstanding unsynced items.
@@ -533,6 +536,10 @@ class DataTypeWorkerTest : public ::testing::Test {
     worker_.reset();
   }
 
+  void FastForwardBy(base::TimeDelta delta) {
+    task_environment_.FastForwardBy(delta);
+  }
+
   FakeCryptographer* cryptographer() { return &cryptographer_; }
   MockDataTypeProcessor* processor() { return mock_type_processor_; }
   DataTypeWorker* worker() { return worker_.get(); }
@@ -544,17 +551,18 @@ class DataTypeWorkerTest : public ::testing::Test {
   }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   const DataType data_type_;
 
   FakeCryptographer cryptographer_;
 
-  // Determines whether |worker_| has access to the cryptographer or not.
+  // Determines whether `worker_` has access to the cryptographer or not.
   bool is_encrypted_type_ = false;
 
   // The number of encryption keys known to the cryptographer. Keys are
-  // identified by an index from 1 to |encryption_keys_count_| and the last one
+  // identified by an index from 1 to `encryption_keys_count_` and the last one
   // might not have been decrypted yet.
   int encryption_keys_count_ = 0;
 
@@ -574,7 +582,7 @@ class DataTypeWorkerTest : public ::testing::Test {
 
   // A mock that emulates enough of the sync server that it can be used
   // a single UpdateHandler and CommitContributor pair. In this test
-  // harness, the |worker_| is both of them.
+  // harness, the `worker_` is both of them.
   std::unique_ptr<SingleTypeMockServer> mock_server_;
 
   // A mock to track the number of times the CommitQueue requests to
@@ -591,7 +599,7 @@ class DataTypeWorkerTest : public ::testing::Test {
 //
 // This test performs sanity checks on most of the fields in these messages.
 // For the most part this is checking that the test code behaves as expected
-// and the |worker_| doesn't mess up its simple task of moving around these
+// and the `worker_` doesn't mess up its simple task of moving around these
 // values. It makes sense to have one or two tests that are this thorough, but
 // we shouldn't be this verbose in all tests.
 TEST_F(DataTypeWorkerTest, SimpleCommit) {
@@ -768,7 +776,7 @@ TEST_F(DataTypeWorkerTest, TwoNewItemsCommittedSeparately) {
 
   EXPECT_FALSE(WillCommit());
 
-  // The IDs assigned by the |worker_| should be unique.
+  // The IDs assigned by the `worker_` should be unique.
   EXPECT_NE(tag1_entity.id_string(), tag2_entity.id_string());
 
   // Check that the committed specifics values are sane.
@@ -977,7 +985,7 @@ TEST_F(DataTypeWorkerTest,
   second_newest_entity.set_client_tag_hash(oldest_entity.client_tag_hash());
   newest_entity.set_client_tag_hash(oldest_entity.client_tag_hash());
 
-  // Send |newest_entity| in the middle position, to rule out the worker is
+  // Send `newest_entity` in the middle position, to rule out the worker is
   // keeping the first or last received update.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(),
@@ -1030,7 +1038,7 @@ TEST_F(DataTypeWorkerTest,
   second_newest_entity.set_originator_client_item_id(kOriginatorClientItemId);
   newest_entity.set_originator_client_item_id(kOriginatorClientItemId);
 
-  // Send |newest_entity| in the middle position, to rule out the worker is
+  // Send `newest_entity` in the middle position, to rule out the worker is
   // keeping the first or last received update.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(),
@@ -1286,8 +1294,7 @@ TEST_F(DataTypeWorkerTest, ReceiveDecryptableEntities) {
 
 // Test the receipt of decryptable entities, and that the worker will keep the
 // entities until the decryption key arrives.
-TEST_F(DataTypeWorkerTest,
-       ReceiveDecryptableEntitiesShouldWaitTillKeyArrives) {
+TEST_F(DataTypeWorkerTest, ReceiveDecryptableEntitiesShouldWaitTillKeyArrives) {
   NormalInitialize();
 
   // This next update will be encrypted using the second key.
@@ -1492,66 +1499,7 @@ TEST_F(DataTypeWorkerTest, DecryptUpdateIfPossibleDespiteEncryptionDisabled) {
   EXPECT_EQ(1u, processor()->GetNthUpdateResponse(0).size());
 }
 
-TEST_F(DataTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
-  base::HistogramTester histogram_tester;
-  NormalInitialize();
-  int get_updates_while_should_have_been_known = 0;
-
-  // Send a GetUpdatesResponse containing data encrypted with an unknown key.
-  // The cryptographer doesn't have pending keys, so in theory this key should
-  // have been known by now. This will cause
-  // |get_updates_while_should_have_been_known| to be incremented by the end
-  // of this GetUpdates cycle.
-  SetUpdateEncryptionFilter(1);
-  TriggerPartialUpdateFromServer(10, kTag1, kValue1);
-
-  // The fact that the data type is now blocked should have been recorded.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeBlockedDueToUndecryptableUpdate",
-      DataTypeForHistograms::kPreferences, 1);
-
-  // Send empty GetUpdatesResponse. The counter shouldn't change.
-  TriggerEmptyUpdateFromServer();
-
-  // Finish the GetUpdates cycle. The counter should be set to 1.
-  get_updates_while_should_have_been_known++;
-
-  // An empty GetUpdates cycle. The counter should be set to 2.
-  TriggerEmptyUpdateFromServer();
-  get_updates_while_should_have_been_known++;
-
-  // Send the Nigori containing the missing key. The key isn't available yet
-  // though.
-  AddPendingKey();
-
-  // Another empty GetUpdates cycle. This one shouldn't be counted, since the
-  // cryptographer now knows it's lacking some keys.
-  TriggerEmptyUpdateFromServer();
-
-  // Double check the histogram hasn't been recorded so far.
-  EXPECT_TRUE(
-      histogram_tester.GetAllSamples("Sync.DataTypeTimeUntilEncryptionKeyFound")
-          .empty());
-  EXPECT_TRUE(
-      histogram_tester
-          .GetAllSamples("Sync.DataTypeTimeUntilEncryptionKeyFound.PREFERENCE")
-          .empty());
-
-  // Make the key available. The correct number of GetUpdates cycles should
-  // have been recorded.
-  DecryptPendingKey();
-  ASSERT_EQ(2, get_updates_while_should_have_been_known);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeTimeUntilEncryptionKeyFound",
-      get_updates_while_should_have_been_known, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeTimeUntilEncryptionKeyFound.PREFERENCE",
-      get_updates_while_should_have_been_known, 1);
-}
-
 TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
-  base::HistogramTester histogram_tester;
-
   NormalInitialize();
 
   // Send an update encrypted with a key that shall remain unknown.
@@ -1576,21 +1524,10 @@ TEST_F(DataTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // longer blocked.
   EXPECT_FALSE(worker()->BlockForEncryption());
 
-  // Should have recorded that 1 entity was dropped.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUndecryptablePendingUpdatesDropped", 1, 1);
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUndecryptablePendingUpdatesDropped.PREFERENCE", 1, 1);
-
   // From now on, incoming updates encrypted with the missing key don't block
   // the worker.
   TriggerUpdateFromServer(10, kTag2, kValue2);
   EXPECT_FALSE(worker()->BlockForEncryption());
-
-  // Should have recorded that 1 incoming update was ignored.
-  histogram_tester.ExpectUniqueSample(
-      "Sync.DataTypeUpdateDrop.DecryptionPendingForTooLong",
-      DataTypeForHistograms::kPreferences, 1);
 }
 
 // Test that processor has been disconnected from Sync when worker got
@@ -1955,6 +1892,30 @@ TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
 }
 
 TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
+     WalletDataIncludingClientTagHash) {
+  const ClientTagHash kTestClientTagHash =
+      ClientTagHash::FromUnhashed(AUTOFILL_WALLET_DATA, "12345");
+
+  UpdateResponseData response_data;
+
+  // Set up the entity with an arbitrary value for an arbitrary field in the
+  // specifics (so that it _has_ autofill wallet specifics).
+  sync_pb::SyncEntity entity;
+  entity.set_client_tag_hash(kTestClientTagHash.value());
+  entity.mutable_specifics()->mutable_autofill_wallet()->set_type(
+      sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS);
+
+  ASSERT_EQ(
+      DataTypeWorker::SUCCESS,
+      DataTypeWorker::PopulateUpdateResponseData(
+          FakeCryptographer(), AUTOFILL_WALLET_DATA, entity, &response_data));
+
+  // The client tag hash makes it through.
+  EXPECT_EQ(response_data.entity.client_tag_hash.value(),
+            kTestClientTagHash.value());
+}
+
+TEST(DataTypeWorkerPopulateUpdateResponseDataTest,
      OfferDataWithMissingClientTagHash) {
   UpdateResponseData response_data;
 
@@ -2168,7 +2129,7 @@ TEST_F(DataTypeWorkerPasswordsTest, PasswordCommit) {
 }
 
 // Same as above but uses custom passphrase. In this case, field
-// |unencrypted_metadata| should be cleared.
+// `unencrypted_metadata` should be cleared.
 TEST_F(DataTypeWorkerPasswordsTest, PasswordCommitWithCustomPassphrase) {
   NormalInitializeWithCustomPassphrase();
 
@@ -2663,7 +2624,7 @@ TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
 
   // The worker is still not aware if there are more changes available. It is
   // supposed that GetContribution() will be called until it returns less than
-  // |max_entities| items. This is not the intended behaviour, but this is how
+  // `max_entities` items. This is not the intended behaviour, but this is how
   // things currently work.
   EXPECT_TRUE(worker()->HasLocalChanges());
   contribution = worker()->GetContribution(kMaxEntities);
@@ -2893,14 +2854,13 @@ TEST_F(DataTypeWorkerPasswordsTest,
       entity.specifics().password().encrypted_notes_backup().blob().empty());
 }
 
-// Verifies persisting invalidations load from the DataTypeProcessor.
-TEST_F(DataTypeWorkerTest, LoadInvalidations) {
+TEST_F(DataTypeWorkerTest, LoadPersistedInvalidations) {
   InitializeWithInvalidations();
 
   sync_pb::GetUpdateTriggers gu_trigger_1;
   worker()->CollectPendingInvalidations(&gu_trigger_1);
   ASSERT_EQ(1, gu_trigger_1.notification_hint_size());
-  EXPECT_THAT(gu_trigger_1.notification_hint(), Not(testing::IsEmpty()));
+  EXPECT_THAT(gu_trigger_1.notification_hint(), Not(IsEmpty()));
 }
 
 // Verifies StorePendingInvalidations() calls for every incoming invalidation.
@@ -2969,6 +2929,8 @@ TEST_F(DataTypeWorkerTest, DataTypeStateAfterApplyUpdates) {
 
   // The GetUpdates request finishes. This should delete the processed
   // invalidations.
+  base::HistogramTester histogram_tester;
+  FastForwardBy(base::Seconds(1));
   worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
 
   // Unprocessed invalidations after ApplyUpdates are in DataTypeState.
@@ -2977,6 +2939,10 @@ TEST_F(DataTypeWorkerTest, DataTypeStateAfterApplyUpdates) {
             processor()->GetNthUpdateState(0).invalidations(0).hint());
   EXPECT_EQ("unprocessed_hint_5",
             processor()->GetNthUpdateState(0).invalidations(1).hint());
+
+  histogram_tester.ExpectTimeBucketCount("Sync.NudgedUpdateLatency.PREFERENCE",
+                                         base::Seconds(1),
+                                         /*expected_count=*/1);
 }
 
 // Test the dropping of invalidation hints.  Receives invalidations one by one.
@@ -3094,7 +3060,7 @@ class DataTypeWorkerIncomingPasswordSharingInvitationTest
  public:
   DataTypeWorkerIncomingPasswordSharingInvitationTest()
       : DataTypeWorkerTest(INCOMING_PASSWORD_SHARING_INVITATION,
-                            /*is_encrypted_type=*/false) {}
+                           /*is_encrypted_type=*/false) {}
 };
 
 TEST_F(DataTypeWorkerIncomingPasswordSharingInvitationTest,
@@ -3280,8 +3246,9 @@ TEST_F(DataTypeWorkerAckTrackingTest, OverflowAndRecover) {
     invalidation_ids.push_back(SendInvalidation(i + 10, "hint"));
   }
 
-  for (int id : invalidation_ids)
+  for (int id : invalidation_ids) {
     EXPECT_TRUE(IsInvalidationUnacknowledged(id));
+  }
 
   // This invalidation, though arriving the most recently, has the oldest
   // version number so it should be dropped first.
@@ -3299,8 +3266,9 @@ TEST_F(DataTypeWorkerAckTrackingTest, OverflowAndRecover) {
   // This should recover from the drop and bring us back into sync.
   worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
 
-  for (int id : invalidation_ids)
+  for (int id : invalidation_ids) {
     EXPECT_TRUE(IsInvalidationAcknowledged(id));
+  }
 
   EXPECT_TRUE(IsInvalidationAcknowledged(inv100_id));
 
@@ -3530,7 +3498,7 @@ class DataTypeWorkerSharedTabGroupDataTest : public DataTypeWorkerTest {
  protected:
   DataTypeWorkerSharedTabGroupDataTest()
       : DataTypeWorkerTest(SHARED_TAB_GROUP_DATA,
-                            /*is_encrypted_type=*/false) {
+                           /*is_encrypted_type=*/false) {
     CHECK(SharedTypes().Has(SHARED_TAB_GROUP_DATA));
   }
 };
@@ -3549,11 +3517,15 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
   SyncEntity entity_inactive = server()->UpdateFromServer(
       /*version_offset=*/10,
       ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_2"),
-      specifics, "inactive_collaboration");
+      specifics,
+      CollaborationMetadata::ForLocalChange(
+          /*changed_by=*/GaiaId(), CollaborationId("inactive_collaboration")));
   SyncEntity entity_active = server()->UpdateFromServer(
       /*version_offset=*/10,
       ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_1"),
-      specifics, "active_collaboration");
+      specifics,
+      CollaborationMetadata::ForLocalChange(
+          /*changed_by=*/GaiaId(), CollaborationId("active_collaboration")));
 
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(),
@@ -3574,9 +3546,15 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
   // collaboration.
   ASSERT_EQ(processor()->GetNumUpdateResponses(), 1u);
   ASSERT_THAT(processor()->GetNthUpdateResponse(0), SizeIs(1));
-  EXPECT_EQ(
-      processor()->GetNthUpdateResponse(0).front()->entity.collaboration_id,
-      "active_collaboration");
+
+  const std::optional<CollaborationMetadata> collaboration_metadata =
+      processor()
+          ->GetNthUpdateResponse(0)
+          .front()
+          ->entity.collaboration_metadata;
+  ASSERT_TRUE(collaboration_metadata.has_value());
+  EXPECT_EQ(collaboration_metadata->collaboration_id(),
+            CollaborationId("active_collaboration"));
 
   // Verify also that the last GC directive is propagated to the processor.
   EXPECT_THAT(processor()
@@ -3584,6 +3562,46 @@ TEST_F(DataTypeWorkerSharedTabGroupDataTest,
                   .collaboration_gc()
                   .active_collaboration_ids(),
               ElementsAre("active_collaboration"));
+}
+
+TEST_F(DataTypeWorkerSharedTabGroupDataTest, ShouldPopulateAttributionData) {
+  const std::string kCollaborationId = "collaboration";
+  const GaiaId kCreatorUserId("creator_user_id");
+  const GaiaId kUpdaterUserId("updater_user_id");
+
+  NormalInitialize();
+  server()->AddCollaboration(kCollaborationId);
+
+  sync_pb::SyncEntity::CollaborationMetadata collaboration_metadata_proto;
+  collaboration_metadata_proto.set_collaboration_id(kCollaborationId);
+  collaboration_metadata_proto.mutable_creation_attribution()
+      ->set_obfuscated_gaia_id(kCreatorUserId.ToString());
+  collaboration_metadata_proto.mutable_last_update_attribution()
+      ->set_obfuscated_gaia_id(kUpdaterUserId.ToString());
+
+  EntitySpecifics specifics;
+  specifics.mutable_shared_tab_group_data()->set_guid("guid");
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10,
+      ClientTagHash::FromUnhashed(SHARED_TAB_GROUP_DATA, "client_tag_2"),
+      specifics,
+      CollaborationMetadata::FromRemoteProto(collaboration_metadata_proto));
+
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller(), /*cycle_done=*/true);
+  ASSERT_EQ(processor()->GetNumUpdateResponses(), 1u);
+  ASSERT_THAT(processor()->GetNthUpdateResponse(0), SizeIs(1));
+
+  const std::optional<CollaborationMetadata> collaboration_metadata =
+      processor()
+          ->GetNthUpdateResponse(0)
+          .front()
+          ->entity.collaboration_metadata;
+  ASSERT_TRUE(collaboration_metadata.has_value());
+  EXPECT_EQ(collaboration_metadata->created_by(), kCreatorUserId);
+  EXPECT_EQ(collaboration_metadata->last_updated_by(), kUpdaterUserId);
 }
 
 }  // namespace syncer

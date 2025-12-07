@@ -10,16 +10,15 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/domain_reliability/clear_mode.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -30,9 +29,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "extensions/buildflags/buildflags.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -46,21 +44,15 @@ class SSLHostStateDelegate;
 class ZoomLevelDelegate;
 }  // namespace content
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-namespace chromeos {
-class ScopedLacrosServiceTestHelper;
-}  // namespace chromeos
-#endif
-
 namespace policy {
 class PolicyService;
 class ProfilePolicyConnector;
 class SchemaRegistryService;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class UserCloudPolicyManagerAsh;
 #else
 class UserCloudPolicyManager;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace policy
 
 namespace storage {
@@ -87,7 +79,7 @@ class TestingProfile : public Profile {
   // Default constructor that cannot be used with multi-profiles.
   TestingProfile();
 
-  // Wrapper over absl::variant to help type deduction when calling
+  // Wrapper over std::variant to help type deduction when calling
   // AddTestingFactories(). See example call in the method's comment.
   struct TestingFactory {
     TestingFactory(
@@ -100,7 +92,7 @@ class TestingProfile : public Profile {
     TestingFactory& operator=(TestingFactory&&);
     ~TestingFactory();
 
-    absl::variant<
+    std::variant<
         std::pair<BrowserContextKeyedServiceFactory*,
                   BrowserContextKeyedServiceFactory::TestingFactory>,
         std::pair<RefcountedBrowserContextKeyedServiceFactory*,
@@ -117,7 +109,7 @@ class TestingProfile : public Profile {
 
     template <typename... Ts>
       requires(... && std::same_as<Ts, TestingFactory>)
-    TestingFactories(Ts&&... ts) {
+    TestingFactories(Ts&&... ts) {  // NOLINT(runtime/explicit)
       (..., factories_.push_back(std::move(ts)));
     }
 
@@ -151,15 +143,20 @@ class TestingProfile : public Profile {
    public:
     Builder();
     Builder(const Builder&) = delete;
+    Builder(Builder&&);
     Builder& operator=(const Builder&) = delete;
+    Builder& operator=(Builder&&);
     ~Builder();
 
-    // Sets a Delegate to be called back during profile init. This causes the
-    // final initialization to be performed via a task so the caller must run
-    // a MessageLoop. Caller maintains ownership of the Delegate
-    // and must manage its lifetime so it continues to exist until profile
-    // initialization is complete.
+    // Sets a Delegate to be called back during profile init. Caller maintains
+    // ownership of the Delegate and must manage its lifetime so it continues
+    // to exist until profile initialization is complete.
     Builder& SetDelegate(Delegate* delegate);
+
+    // Sets profile creation mode to the given one.
+    // Setting CreateMode::kAsynchronous causes the final initialization
+    // to be performed via a task so the caller must run a MessageLoop.
+    Builder& SetCreateMode(CreateMode create_mode);
 
     // Adds a testing factory to the TestingProfile. These testing factories
     // are applied before the ProfileKeyedServices are created.
@@ -205,15 +202,10 @@ class TestingProfile : public Profile {
     // Set the value to be returned by Profile::IsNewProfile().
     Builder& SetIsNewProfile(bool is_new_profile);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Set the value to be returned by Profile::IsMainProfile().
-    Builder& SetIsMainProfile(bool is_main_profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     // Marks profile as a Family Link supervised profile.
     Builder& SetIsSupervisedProfile();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     Builder& SetUserCloudPolicyManagerAsh(
         std::unique_ptr<policy::UserCloudPolicyManagerAsh>
             user_cloud_policy_manager);
@@ -224,7 +216,7 @@ class TestingProfile : public Profile {
     Builder& SetProfileCloudPolicyManager(
         std::unique_ptr<policy::ProfileCloudPolicyManager>
             profile_cloud_policy_manager);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     // Sets the PolicyService to be used by this profile.
     Builder& SetPolicyService(
@@ -250,6 +242,8 @@ class TestingProfile : public Profile {
 
     TestingProfile* BuildIncognito(TestingProfile* original_profile);
 
+    const base::FilePath& GetPath() const { return path_; }
+
    private:
     // If true, Build() has already been called.
     bool build_called_ = false;
@@ -261,14 +255,12 @@ class TestingProfile : public Profile {
 #endif
     base::FilePath path_;
     raw_ptr<Delegate> delegate_ = nullptr;
+    CreateMode create_mode_ = CreateMode::kSynchronous;
     bool guest_session_ = false;
     bool allows_browser_windows_ = true;
     bool is_new_profile_ = false;
     bool is_supervised_profile_ = false;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    bool is_main_profile_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     std::unique_ptr<policy::UserCloudPolicyManagerAsh>
         user_cloud_policy_manager_;
 #else
@@ -294,13 +286,16 @@ class TestingProfile : public Profile {
   // Multi-profile aware constructor that takes the path to a directory managed
   // for this profile and a delegate. This constructor is meant to be used
   // for unittesting the ProfileManager.
-  TestingProfile(const base::FilePath& path, Delegate* delegate);
+  TestingProfile(const base::FilePath& path,
+                 Delegate* delegate,
+                 CreateMode create_mode);
 
   // Full constructor allowing the setting of all possible instance data.
   // Callers should use Builder::Build() instead of invoking this constructor.
   TestingProfile(
       const base::FilePath& path,
       Delegate* delegate,
+      CreateMode create_mode,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       scoped_refptr<ExtensionSpecialStoragePolicy> extension_policy,
 #endif
@@ -310,16 +305,13 @@ class TestingProfile : public Profile {
       bool allows_browser_windows,
       bool is_new_profile,
       bool is_supervised_profile,
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      bool is_main_profile,
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       std::unique_ptr<policy::UserCloudPolicyManagerAsh> policy_manager,
 #else
-      absl::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
-                    std::unique_ptr<policy::ProfileCloudPolicyManager>>
+      std::variant<std::unique_ptr<policy::UserCloudPolicyManager>,
+                   std::unique_ptr<policy::ProfileCloudPolicyManager>>
           policy_manager,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       std::unique_ptr<policy::PolicyService> policy_service,
       TestingFactories testing_factories,
       const std::string& profile_name,
@@ -330,10 +322,6 @@ class TestingProfile : public Profile {
   ~TestingProfile() override;
 
   // Note: Calling the Builder methods instead is preferred.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Allow setting the return value of IsMainProfile().
-  void SetIsMainProfile(bool is_main_profile);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Allow setting a profile as Guest after-the-fact to simplify some tests.
   void SetGuestSession(bool guest);
@@ -353,15 +341,11 @@ class TestingProfile : public Profile {
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
   // content::BrowserContext
-  base::FilePath GetPath() override;
   base::FilePath GetPath() const override;
   base::Time GetCreationTime() const override;
   std::unique_ptr<content::ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool IsMainProfile() const override;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   content::DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   content::BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
@@ -385,6 +369,10 @@ class TestingProfile : public Profile {
 
   TestingProfile* AsTestingProfile() override;
 
+  base::WeakPtr<TestingProfile> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
   // Profile
   std::string GetProfileUserName() const override;
 
@@ -397,7 +385,6 @@ class TestingProfile : public Profile {
   Profile* GetOriginalProfile() override;
   const Profile* GetOriginalProfile() const override;
   bool IsChild() const override;
-  bool AllowsBrowserWindows() const override;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void SetExtensionSpecialStoragePolicy(
       scoped_refptr<ExtensionSpecialStoragePolicy>
@@ -414,7 +401,7 @@ class TestingProfile : public Profile {
   base::Time GetStartTime() const override;
   ProfileKey* GetProfileKey() const override;
   policy::SchemaRegistryService* GetPolicySchemaRegistryService() override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUserCloudPolicyManagerAsh(
       std::unique_ptr<policy::UserCloudPolicyManagerAsh>
           user_cloud_policy_manager);
@@ -422,7 +409,7 @@ class TestingProfile : public Profile {
 #else
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   policy::ProfileCloudPolicyManager* GetProfileCloudPolicyManager() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   policy::CloudPolicyManager* GetCloudPolicyManager() override;
   policy::ProfilePolicyConnector* GetProfilePolicyConnector() override;
   const policy::ProfilePolicyConnector* GetProfilePolicyConnector()
@@ -433,14 +420,14 @@ class TestingProfile : public Profile {
   bool IsGuestSession() const override;
   bool IsNewProfile() const override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void ChangeAppLocale(const std::string&, AppLocaleChangedVia) override;
   void OnLogin() override {}
   void InitChromeOSPreferences() override {}
   ash::ScopedCrosSettingsTestHelper* ScopedCrosSettingsTestHelper();
 
   std::optional<std::string> requested_locale() { return requested_locale_; }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Schedules a task on the history backend and runs a nested loop until the
   // task is processed.  This has the effect of blocking the caller until the
@@ -488,19 +475,15 @@ class TestingProfile : public Profile {
 
  private:
   // Common initialization between the two constructors.
-  void Init(bool is_supervised_profile);
+  void Init(bool is_supervised_profile, CreateMode create_mode);
 
   // Finishes initialization when a profile is created asynchronously.
-  void FinishInit();
+  void FinishInit(CreateMode create_mode);
 
   void InitializeProfileType();
 
   // Creates a TestingPrefService and associates it with the TestingProfile.
   void CreateTestingPrefService();
-
-  // Creates a pref service that uses SupervisedUserPrefStore and associates
-  // it with the TestingProfile.
-  void CreatePrefServiceForSupervisedUser();
 
   // Initializes |prefs_| for an incognito profile, derived from
   // |original_profile_|.
@@ -509,22 +492,16 @@ class TestingProfile : public Profile {
   // Creates a ProfilePolicyConnector.
   void CreateProfilePolicyConnector();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::map<OTRProfileID, std::unique_ptr<Profile>> otr_profiles_;
   raw_ptr<TestingProfile> original_profile_ = nullptr;
 
   bool guest_session_ = false;
 
-  bool allows_browser_windows_ = true;
-
   bool is_new_profile_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool is_main_profile_ = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
 
@@ -533,7 +510,7 @@ class TestingProfile : public Profile {
 
   base::FilePath last_selected_directory_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   scoped_refptr<ExtensionSpecialStoragePolicy>
       extension_special_storage_policy_;
 #endif
@@ -553,13 +530,13 @@ class TestingProfile : public Profile {
       BrowserContextDependencyManager::GetInstance()};
 
   std::unique_ptr<policy::SchemaRegistryService> schema_registry_service_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<policy::UserCloudPolicyManagerAsh> user_cloud_policy_manager_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
   std::unique_ptr<policy::ProfileCloudPolicyManager>
       profile_cloud_policy_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;
 
   // Weak pointer to a delegate for indicating that a profile was created.
@@ -569,23 +546,18 @@ class TestingProfile : public Profile {
 
   std::optional<bool> override_policy_connector_is_managed_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
       scoped_cros_settings_test_helper_;
 
   std::optional<std::string> requested_locale_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
-      lacros_service_test_helper_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   std::unique_ptr<policy::PolicyService> policy_service_;
 
-  scoped_refptr<TestingPrefStore> supervised_user_pref_store_ = nullptr;
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  base::WeakPtrFactory<TestingProfile> weak_factory_{this};
 };
 
 #endif  // CHROME_TEST_BASE_TESTING_PROFILE_H_

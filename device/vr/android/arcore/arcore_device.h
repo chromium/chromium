@@ -18,12 +18,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
-#include "device/vr/vr_device.h"
 #include "device/vr/vr_device_base.h"
 #include "gpu/ipc/common/surface_handle.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class WindowAndroid;

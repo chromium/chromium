@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -20,11 +21,11 @@
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_devtools_proxy.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -223,7 +224,7 @@ void SignedExchangeCertFetcher::OnDataComplete() {
 
   std::unique_ptr<SignedExchangeCertificateChain> cert_chain =
       SignedExchangeCertificateChain::Parse(
-          base::as_bytes(base::make_span(body_string_)), devtools_proxy_);
+          base::as_bytes(base::span(body_string_)), devtools_proxy_);
   body_string_.clear();
   if (!cert_chain) {
     signed_exchange_utils::ReportErrorAndTraceEvent(
@@ -320,7 +321,7 @@ void SignedExchangeCertFetcher::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // Cert fetching doesn't have request body.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangeCertFetcher::OnTransferSizeUpdated(

@@ -10,6 +10,7 @@
 #include <stdint.h>
 
 #include "base/apple/scoped_cftyperef.h"
+#include "base/compiler_specific.h"
 #include "base/ios/ios_util.h"
 #include "base/logging.h"
 #include "third_party/skia/include/utils/mac/SkCGUtils.h"
@@ -22,8 +23,8 @@ const uint8_t kICOHeaderMagic[4] = {0x00, 0x00, 0x01, 0x00};
 bool EncodesIcoImage(NSData* image_data) {
   if (image_data.length < std::size(kICOHeaderMagic))
     return false;
-  return memcmp(kICOHeaderMagic, image_data.bytes,
-                std::size(kICOHeaderMagic)) == 0;
+  return UNSAFE_TODO(memcmp(kICOHeaderMagic, image_data.bytes,
+                            std::size(kICOHeaderMagic))) == 0;
 }
 
 }  // namespace
@@ -50,7 +51,8 @@ SkBitmap CGImageToSkBitmap(CGImageRef image, CGSize size, bool is_opaque) {
       CGColorSpaceCreateDeviceRGB());
   base::apple::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       data, size.width, size.height, 8, size.width * 4, color_space.get(),
-      uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
+      static_cast<CGBitmapInfo>(kCGImageAlphaPremultipliedFirst) |
+          kCGImageByteOrder32Host));
 #else
 #error We require that Skia's and CoreGraphics's recommended \
        image memory layout match.
@@ -133,6 +135,14 @@ UIColor* UIColorFromSkColor(SkColor color) {
                          green:SkColorGetG(color) / 255.0f
                           blue:SkColorGetB(color) / 255.0f
                          alpha:SkColorGetA(color) / 255.0f];
+}
+
+SkColor UIColorToSkColor(UIColor* color) {
+  CGFloat red = 0.0, green = 0.0, blue = 0.0, alpha = 0.0;
+  [color getRed:&red green:&green blue:&blue alpha:&alpha];
+
+  return SkColorSetARGB(alpha * 255.0f, red * 255.0f, green * 255.0f,
+                        blue * 255.0f);
 }
 
 }  // namespace skia

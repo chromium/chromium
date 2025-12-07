@@ -72,6 +72,11 @@ ConsentSyncBridgeImpl::~ConsentSyncBridgeImpl() {
   if (!deferred_consents_while_initializing_.empty()) {
     LOG(ERROR) << "Non-empty event queue at shutdown!";
   }
+  // TODO(crbug.com/362428820): Remove logging once investigation is complete.
+  if (store_) {
+    VLOG(1) << "UserConsents during destruction: "
+            << store_->in_memory_data().size();
+  }
 }
 
 std::unique_ptr<MetadataChangeList>
@@ -84,7 +89,7 @@ std::optional<ModelError> ConsentSyncBridgeImpl::MergeFullSyncData(
     EntityChangeList entity_data) {
   DCHECK(entity_data.empty());
   DCHECK(change_processor()->IsTrackingMetadata());
-  DCHECK(!change_processor()->TrackedAccountId().empty());
+  DCHECK(!change_processor()->TrackedGaiaId().empty());
   ResubmitAllData();
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_data));
@@ -138,13 +143,20 @@ ConsentSyncBridgeImpl::GetAllDataForDebugging() {
   return batch;
 }
 
-std::string ConsentSyncBridgeImpl::GetClientTag(const EntityData& entity_data) {
+std::string ConsentSyncBridgeImpl::GetClientTag(
+    const EntityData& entity_data) const {
   return GetStorageKey(entity_data);
 }
 
 std::string ConsentSyncBridgeImpl::GetStorageKey(
-    const EntityData& entity_data) {
+    const EntityData& entity_data) const {
   return GetStorageKeyFromSpecifics(entity_data.specifics.user_consent());
+}
+
+bool ConsentSyncBridgeImpl::IsEntityDataValid(
+    const EntityData& entity_data) const {
+  // USER_CONSENT is a commit only data type so this method is not called.
+  NOTREACHED();
 }
 
 void ConsentSyncBridgeImpl::ApplyDisableSyncChanges(
@@ -169,7 +181,7 @@ void ConsentSyncBridgeImpl::ApplyDisableSyncChanges(
 }
 
 void ConsentSyncBridgeImpl::ResubmitAllData() {
-  DCHECK(!change_processor()->TrackedAccountId().empty());
+  DCHECK(!change_processor()->TrackedGaiaId().empty());
   DCHECK(change_processor()->IsTrackingMetadata());
   CHECK(store_);
 
@@ -177,7 +189,8 @@ void ConsentSyncBridgeImpl::ResubmitAllData() {
       store_->CreateWriteBatch();
 
   for (const auto& [storage_key, specifics] : store_->in_memory_data()) {
-    if (specifics.account_id() == change_processor()->TrackedAccountId()) {
+    if (specifics.obfuscated_gaia_id() ==
+        change_processor()->TrackedGaiaId().ToString()) {
       auto specifics_copy = std::make_unique<UserConsentSpecifics>(specifics);
       change_processor()->Put(storage_key,
                               MoveToEntityData(std::move(specifics_copy)),
@@ -192,9 +205,9 @@ void ConsentSyncBridgeImpl::ResubmitAllData() {
 
 void ConsentSyncBridgeImpl::RecordConsent(
     std::unique_ptr<UserConsentSpecifics> specifics) {
-  // TODO(vitaliii): Sanity-check specifics->account_id() against
+  // TODO(vitaliii): Sanity-check specifics->obfuscated_gaia_id() against
   // change_processor()->TrackedAccountId(), maybe DCHECK.
-  DCHECK(!specifics->account_id().empty());
+  DCHECK(!specifics->obfuscated_gaia_id().empty());
   if (store_) {
     RecordConsentImpl(std::move(specifics));
     return;
@@ -221,7 +234,8 @@ void ConsentSyncBridgeImpl::RecordConsentImpl(
       store_->CreateWriteBatch();
   batch->WriteData(storage_key, *specifics);
 
-  if (specifics->account_id() == change_processor()->TrackedAccountId()) {
+  if (specifics->obfuscated_gaia_id() ==
+      change_processor()->TrackedGaiaId().ToString()) {
     change_processor()->Put(storage_key, MoveToEntityData(std::move(specifics)),
                             batch->GetMetadataChangeList());
   }
@@ -257,7 +271,7 @@ void ConsentSyncBridgeImpl::OnStoreLoaded(
   store_ = std::move(store);
 
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
-  if (!change_processor()->TrackedAccountId().empty()) {
+  if (!change_processor()->TrackedGaiaId().empty()) {
     // Resubmit all data in case the client crashed immediately after
     // MergeFullSyncData(), where submissions are supposed to happen and
     // metadata populated.

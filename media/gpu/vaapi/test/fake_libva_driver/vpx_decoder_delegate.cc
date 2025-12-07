@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/vaapi/test/fake_libva_driver/vpx_decoder_delegate.h"
 
@@ -69,11 +65,11 @@ void VpxDecoderDelegate::EnqueueWork(
 void VpxDecoderDelegate::Run() {
   CHECK(render_target_);
   CHECK(encoded_data_buffer_);
-  const vpx_codec_err_t status = vpx_codec_decode(
-      vpx_codec_.get(), static_cast<uint8_t*>(encoded_data_buffer_->GetData()),
-      base::checked_cast<unsigned int>(encoded_data_buffer_->GetDataSize()),
-      /*user_priv=*/nullptr,
-      /*deadline=*/0);
+  const vpx_codec_err_t status =
+      vpx_codec_decode(vpx_codec_.get(), encoded_data_buffer_->GetData().data(),
+                       encoded_data_buffer_->GetData().size(),
+                       /*user_priv=*/nullptr,
+                       /*deadline=*/0);
   CHECK_EQ(status, VPX_CODEC_OK);
 
   vpx_codec_iter_t iter = nullptr;

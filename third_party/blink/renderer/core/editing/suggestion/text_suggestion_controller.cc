@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/suggestion/text_suggestion_controller.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
@@ -48,9 +49,10 @@ bool ShouldDeleteNextCharacter(const Node& marker_text_node,
       PlainText(next_character_range, TextIteratorBehavior::Builder().Build());
   const UChar next_character = next_character_str[0];
   // Character immediately following the range is not a space
-  if (next_character != kSpaceCharacter &&
-      next_character != kNoBreakSpaceCharacter)
+  if (next_character != uchar::kSpace &&
+      next_character != uchar::kNoBreakSpace) {
     return false;
+  }
 
   // First case: we're deleting at the beginning of the editable text
   if (marker.StartOffset() == 0)
@@ -69,8 +71,8 @@ bool ShouldDeleteNextCharacter(const Node& marker_text_node,
   // Return true if the character immediately before the range is a space, false
   // otherwise
   const UChar prev_character = prev_character_str[0];
-  return prev_character == kSpaceCharacter ||
-         prev_character == kNoBreakSpaceCharacter;
+  return prev_character == uchar::kSpace ||
+         prev_character == uchar::kNoBreakSpace;
 }
 
 EphemeralRangeInFlatTree ComputeRangeSurroundingCaret(
@@ -170,7 +172,7 @@ SuggestionInfosWithNodeAndHighlightColor ComputeSuggestionInfos(
       const String& suggestion = marker_suggestions[suggestion_index];
       if (suggestion_infos.size() == max_number_of_suggestions)
         break;
-      if (base::ranges::any_of(
+      if (std::ranges::any_of(
               suggestion_infos,
               [marker, &suggestion](const TextSuggestionInfo& info) {
                 return info.span_start == (int32_t)marker->StartOffset() &&
@@ -411,7 +413,9 @@ void TextSuggestionController::ShowSpellCheckMenu(
     const std::pair<const Text*, DocumentMarker*>& node_spelling_marker_pair) {
   const Text* const marker_text_node = node_spelling_marker_pair.first;
   auto* const marker = To<SpellCheckMarker>(node_spelling_marker_pair.second);
-
+  if (marker->ShouldHideSuggestionMenu()) {
+    return;
+  }
   const EphemeralRange active_suggestion_range =
       EphemeralRange(Position(marker_text_node, marker->StartOffset()),
                      Position(marker_text_node, marker->EndOffset()));

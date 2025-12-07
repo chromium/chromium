@@ -4,16 +4,15 @@
 
 package org.chromium.base.test.util;
 
-import org.chromium.base.CommandLine;
-import org.chromium.base.FeatureList;
+import android.content.SharedPreferences;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
-import org.chromium.base.cached_flags.CachedFlag;
-import org.chromium.base.cached_flags.CachedFlagUtils;
+import org.chromium.base.cached_flags.ValuesReturned;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Map;
 
 /**
  * Provides annotations for enabling / disabling features during tests.
@@ -24,11 +23,19 @@ import java.util.Map;
  * @EnableFeatures(BaseFeatures.FOO)
  * public class Test {
  *
- *    @EnableFeatures(BaseFeatures.BAR)
+ *    @EnableFeatures(BaseFeatures.BAR + ":paramA/valueA/paramB/valueB")
  *    public void testBarEnabled() { ... }
  *
- *    @DisableFeatures(ContentFeatureList.BAZ)
- *    public void testBazDisabled() { ... }
+ *    @EnableFeatures({
+ *            BaseFeatures.BAR + ":paramA/valueA/paramB/valueB",
+ *            BaseFeatures.BAZ})
+ *    public void testBarBazEnabled() { ... }
+ *
+ *    @DisableFeatures(ContentFeatureList.BAR)
+ *    public void testBarDisabled() { ... }
+ *
+ *    @DisableFeatures({ContentFeatureList.BAR, ContentFeatureList.BAZ})
+ *    public void testBarBazDisabled() { ... }
  * }
  * </pre>
  */
@@ -46,19 +53,17 @@ public class Features {
     private Features() {}
 
     static void resetCachedFlags() {
-        // TODO(agrieve): Allow cached flags & field trials to be set in @BeforeClass.
-        CachedFlagUtils.resetFlagsForTesting();
-        FieldTrials.getInstance().reset();
+        SharedPreferences sharedPreferences = ContextUtils.getAppSharedPreferences();
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        for (String key : sharedPreferences.getAll().keySet()) {
+            if (key.startsWith("Chrome.Flags.")) {
+                editor.remove(key);
+            }
+        }
+        editor.apply();
+
+        ValuesReturned.clearForTesting();
         Flag.resetAllInMemoryCachedValuesForTesting();
         FeatureParam.resetAllInMemoryCachedValuesForTesting();
-    }
-
-    public static void reset(Map<String, Boolean> flagStates) {
-        // TODO(agrieve): Use ScopedFeatureList to update native feature states even after
-        //     native feature list has been initialized.
-        FeatureList.setTestFeaturesNoResetForTesting(flagStates);
-        CachedFlag.setFeaturesForTesting(flagStates);
-        // Apply "--force-fieldtrials" passed by @CommandLineFlags.
-        FieldTrials.getInstance().applyFieldTrials(CommandLine.getInstance());
     }
 }

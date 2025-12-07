@@ -57,10 +57,9 @@ class NeverRunsExternalProtocolHandlerDelegate
  public:
   scoped_refptr<shell_integration::DefaultSchemeClientWorker> CreateShellWorker(
       const GURL& url) override {
-    NOTREACHED_IN_MIGRATION();
     // This will crash, but it shouldn't get this far with BlockState::BLOCK
     // anyway.
-    return nullptr;
+    NOTREACHED();
   }
 
   ExternalProtocolHandler::BlockState GetBlockState(const std::string& scheme,
@@ -79,16 +78,16 @@ class NeverRunsExternalProtocolHandlerDelegate
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       const std::u16string& program_name) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void LaunchUrlWithoutSecurityCheck(
       const GURL& url,
       content::WebContents* web_contents) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
-  void FinishedProcessingCheck() override { NOTREACHED_IN_MIGRATION(); }
+  void FinishedProcessingCheck() override { NOTREACHED(); }
 };
 
 }  // namespace
@@ -116,26 +115,29 @@ TestNoStatePrefetchContents::TestNoStatePrefetchContents(
       skip_final_checks_(ignore_final_status) {}
 
 TestNoStatePrefetchContents::~TestNoStatePrefetchContents() {
-  if (skip_final_checks_)
+  if (skip_final_checks_) {
     return;
+  }
 
   EXPECT_EQ(expected_final_status_, final_status())
-      << " when testing URL " << prefetch_url().path()
+      << " when testing URL " << prefetch_url().GetPath()
       << " (Expected: " << NameFromFinalStatus(expected_final_status_)
       << ", Actual: " << NameFromFinalStatus(final_status()) << ")";
 
   // A used NoStatePrefetchContents will only be destroyed when we swap out
   // WebContents, at the end of a navigation caused by a call to
   // NavigateToURLImpl().
-  if (final_status() == FINAL_STATUS_USED)
+  if (final_status() == FINAL_STATUS_USED) {
     EXPECT_TRUE(new_main_frame_);
+  }
 }
 
 bool TestNoStatePrefetchContents::CheckURL(const GURL& url) {
   // Prevent FINAL_STATUS_UNSUPPORTED_SCHEME when navigating to about:crash in
   // the PrerenderRendererCrash test.
-  if (url.spec() != blink::kChromeUICrashURL)
+  if (url.spec() != blink::kChromeUICrashURL) {
     return NoStatePrefetchContents::CheckURL(url);
+  }
   return true;
 }
 
@@ -158,7 +160,7 @@ void TestNoStatePrefetchContents::RenderWidgetHostVisibilityChanged(
     content::RenderWidgetHost* widget_host,
     bool became_visible) {
   // The NoStatePrefetchContents should never be visible.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestNoStatePrefetchContents::RenderWidgetHostDestroyed(
@@ -187,7 +189,7 @@ DestructionWaiter::DestructionWaiter(
   }
 }
 
-DestructionWaiter::~DestructionWaiter() {}
+DestructionWaiter::~DestructionWaiter() = default;
 
 bool DestructionWaiter::WaitForDestroy() {
   if (!saw_correct_status_) {
@@ -205,7 +207,7 @@ DestructionWaiter::DestructionMarker::DestructionMarker(
     DestructionWaiter* waiter)
     : waiter_(waiter) {}
 
-DestructionWaiter::DestructionMarker::~DestructionMarker() {}
+DestructionWaiter::DestructionMarker::~DestructionMarker() = default;
 
 void DestructionWaiter::DestructionMarker::OnPrefetchStop(
     NoStatePrefetchContents* contents) {
@@ -221,31 +223,36 @@ TestPrerender::TestPrerender()
       stopped_(false) {}
 
 TestPrerender::~TestPrerender() {
-  if (contents_)
+  if (contents_) {
     contents_->RemoveObserver(this);
+  }
 }
 
 FinalStatus TestPrerender::GetFinalStatus() const {
-  if (contents_)
+  if (contents_) {
     return contents_->final_status();
+  }
   return final_status_;
 }
 
 void TestPrerender::WaitForCreate() {
-  if (contents_)
+  if (contents_) {
     return;
+  }
   create_loop_.Run();
 }
 
 void TestPrerender::WaitForStart() {
-  if (started_)
+  if (started_) {
     return;
+  }
   start_loop_.Run();
 }
 
 void TestPrerender::WaitForStop() {
-  if (stopped_)
+  if (stopped_) {
     return;
+  }
   stop_loop_.Run();
 }
 
@@ -277,8 +284,9 @@ void TestPrerender::OnPrefetchStart(NoStatePrefetchContents* contents) {
 
 void TestPrerender::OnPrefetchStopLoading(NoStatePrefetchContents* contents) {
   number_of_loads_++;
-  if (load_waiter_ && number_of_loads_ >= expected_number_of_loads_)
+  if (load_waiter_ && number_of_loads_ >= expected_number_of_loads_) {
     load_waiter_->Quit();
+  }
 }
 
 void TestPrerender::OnPrefetchStop(NoStatePrefetchContents* contents) {
@@ -289,8 +297,9 @@ void TestPrerender::OnPrefetchStop(NoStatePrefetchContents* contents) {
   stop_loop_.Quit();
   // If there is a WaitForLoads call and it has yet to see the expected number
   // of loads, stop the loop so the test fails instead of timing out.
-  if (load_waiter_)
+  if (load_waiter_) {
     load_waiter_->Quit();
+  }
 }
 
 // static
@@ -305,23 +314,27 @@ FirstContentfulPaintManagerWaiter* FirstContentfulPaintManagerWaiter::Create(
 FirstContentfulPaintManagerWaiter::FirstContentfulPaintManagerWaiter()
     : saw_fcp_(false) {}
 
-FirstContentfulPaintManagerWaiter::~FirstContentfulPaintManagerWaiter() {}
+FirstContentfulPaintManagerWaiter::~FirstContentfulPaintManagerWaiter() =
+    default;
 
 void FirstContentfulPaintManagerWaiter::OnFirstContentfulPaint() {
   saw_fcp_ = true;
-  if (waiter_)
+  if (waiter_) {
     waiter_->Quit();
+  }
 }
 
 void FirstContentfulPaintManagerWaiter::Wait() {
-  if (saw_fcp_)
+  if (saw_fcp_) {
     return;
+  }
   waiter_ = std::make_unique<base::RunLoop>();
   waiter_->Run();
   waiter_.reset();
 }
 
-TestNoStatePrefetchContentsFactory::TestNoStatePrefetchContentsFactory() {}
+TestNoStatePrefetchContentsFactory::TestNoStatePrefetchContentsFactory() =
+    default;
 
 TestNoStatePrefetchContentsFactory::~TestNoStatePrefetchContentsFactory() {
   EXPECT_TRUE(expected_contents_queue_.empty());
@@ -357,12 +370,14 @@ TestNoStatePrefetchContentsFactory::CreateNoStatePrefetchContents(
   TestNoStatePrefetchContents* contents = new TestNoStatePrefetchContents(
       no_state_prefetch_manager, browser_context, url, referrer,
       initiator_origin, origin, expected.final_status, expected.ignore);
-  if (expected.handle)
+  if (expected.handle) {
     expected.handle->OnPrefetchContentsCreated(contents);
+  }
   return contents;
 }
 
-TestNoStatePrefetchContentsFactory::ExpectedContents::ExpectedContents() {}
+TestNoStatePrefetchContentsFactory::ExpectedContents::ExpectedContents() =
+    default;
 
 TestNoStatePrefetchContentsFactory::ExpectedContents::ExpectedContents(
     const ExpectedContents& other) = default;
@@ -376,7 +391,8 @@ TestNoStatePrefetchContentsFactory::ExpectedContents::ExpectedContents(
     bool ignore)
     : ignore(ignore) {}
 
-TestNoStatePrefetchContentsFactory::ExpectedContents::~ExpectedContents() {}
+TestNoStatePrefetchContentsFactory::ExpectedContents::~ExpectedContents() =
+    default;
 
 PrerenderInProcessBrowserTest::PrerenderInProcessBrowserTest()
     : external_protocol_handler_delegate_(
@@ -387,7 +403,7 @@ PrerenderInProcessBrowserTest::PrerenderInProcessBrowserTest()
       explicitly_set_browser_(nullptr),
       autostart_test_server_(true) {}
 
-PrerenderInProcessBrowserTest::~PrerenderInProcessBrowserTest() {}
+PrerenderInProcessBrowserTest::~PrerenderInProcessBrowserTest() = default;
 
 void PrerenderInProcessBrowserTest::TearDownInProcessBrowserTestFixture() {
   safe_browsing::SafeBrowsingService::RegisterFactory(nullptr);
@@ -396,8 +412,9 @@ void PrerenderInProcessBrowserTest::TearDownInProcessBrowserTestFixture() {
 content::SessionStorageNamespace*
 PrerenderInProcessBrowserTest::GetSessionStorageNamespace() const {
   content::WebContents* web_contents = GetActiveWebContents();
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
   return web_contents->GetController().GetDefaultSessionStorageNamespace();
 }
 
@@ -443,8 +460,9 @@ PrerenderInProcessBrowserTest::GetNoStatePrefetchContentsFor(
 }
 
 net::EmbeddedTestServer* PrerenderInProcessBrowserTest::src_server() {
-  if (https_src_server_)
+  if (https_src_server_) {
     return https_src_server_.get();
+  }
   return embedded_test_server();
 }
 
@@ -462,8 +480,7 @@ void PrerenderInProcessBrowserTest::CreatedBrowserMainParts(
   InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
   safe_browsing_factory_->SetTestDatabaseManager(
       new safe_browsing::FakeSafeBrowsingDatabaseManager(
-          content::GetUIThreadTaskRunner({}),
-          content::GetIOThreadTaskRunner({})));
+          content::GetUIThreadTaskRunner({})));
   safe_browsing::SafeBrowsingService::RegisterFactory(
       safe_browsing_factory_.get());
 }
@@ -474,8 +491,9 @@ void PrerenderInProcessBrowserTest::SetUpOnMainThread() {
   embedded_test_server()->RegisterRequestMonitor(base::BindRepeating(
       &PrerenderInProcessBrowserTest::MonitorResourceRequest,
       base::Unretained(this)));
-  if (autostart_test_server_)
+  if (autostart_test_server_) {
     CHECK(embedded_test_server()->Start());
+  }
   ExternalProtocolHandler::SetDelegateForTesting(
       external_protocol_handler_delegate_.get());
 
@@ -503,8 +521,9 @@ void PrerenderInProcessBrowserTest::SetUpOnMainThread() {
 }
 
 void PrerenderInProcessBrowserTest::UseHttpsSrcServer() {
-  if (https_src_server_)
+  if (https_src_server_) {
     return;
+  }
   https_src_server_ = std::make_unique<net::EmbeddedTestServer>(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_src_server_->ServeFilesFromSourceDirectory("chrome/test/data");
@@ -600,16 +619,19 @@ void PrerenderInProcessBrowserTest::MonitorResourceRequest(
 uint32_t PrerenderInProcessBrowserTest::GetRequestCount(const GURL& url) {
   base::AutoLock auto_lock(lock_);
   auto i = requests_.find(url);
-  if (i == requests_.end())
+  if (i == requests_.end()) {
     return 0;
+  }
   return i->second;
 }
 
 void PrerenderInProcessBrowserTest::WaitForRequestCount(
     const GURL& url,
     uint32_t expected_count) {
-  if (GetRequestCount(url) == expected_count)
+  EXPECT_LE(GetRequestCount(url), expected_count);
+  if (GetRequestCount(url) >= expected_count) {
     return;
+  }
 
   base::RunLoop run_loop;
   {

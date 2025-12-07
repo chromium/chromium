@@ -16,8 +16,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
+#include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
@@ -27,9 +29,10 @@
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_validation.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/optimization_guide/core/model_validator.h"
+#include "components/optimization_guide/core/inference/model_validator.h"
 #endif  // BUILD_WITH_TFLITE_LIB
 
 namespace {
@@ -148,6 +151,7 @@ void ModelValidatorKeyedService::StartModelExecutionValidation() {
   request.set_value(model_execution_input);
   opt_guide_service->ExecuteModel(
       ModelBasedCapabilityKey::kTest, request,
+      /*options=*/{},
       base::BindOnce(&ModelValidatorKeyedService::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -179,46 +183,65 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
   // TODO: b/345495541 - Add support for conducting inference within a loop.
   // For now, we are just using the first request in the ModelValidationInput.
   auto request = input->requests(0);
-  auto capability_key = ToModelBasedCapabilityKey(request.feature());
+  auto request_copy =
+      std::make_unique<optimization_guide::proto::ExecuteRequest>(request);
+  auto capability_key = *ToOnDeviceFeature(request.feature());
 
-  on_device_validation_session_ =
-      opt_guide_service->StartSession(capability_key,
-                                      /*config_params=*/std::nullopt);
+  auto eligibility =
+      opt_guide_service->GetOnDeviceModelEligibility(capability_key);
+  if (eligibility != OnDeviceModelEligibilityReason::kSuccess) {
+    LOG(FATAL) << "Failed to create on-device session for validation with "
+               << "OnDeviceModelEligibilityReason: "
+               << static_cast<int>(eligibility);
+  }
+
+  using optimization_guide::SessionConfigParams;
+  on_device_validation_session_ = opt_guide_service->StartSession(
+      capability_key, SessionConfigParams{}, nullptr);
   auto metadata = GetProtoFromAny(request.request_metadata());
   on_device_validation_session_->AddContext(*metadata);
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ModelValidatorKeyedService::ExecuteModel,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(metadata)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_copy)),
       base::Seconds(30));
 }
 
 void ModelValidatorKeyedService::ExecuteModel(
-    std::unique_ptr<google::protobuf::MessageLite> request_metadata) {
+    std::unique_ptr<optimization_guide::proto::ExecuteRequest> request) {
   DCHECK(on_device_validation_session_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(request_metadata);
+  DCHECK(request);
+
+  auto metadata = GetProtoFromAny(request->request_metadata());
   on_device_validation_session_->ExecuteModel(
-      *request_metadata,
-      base::RepeatingCallback(base::BindRepeating(
-          &ModelValidatorKeyedService::OnDeviceModelExecuteResponse,
-          weak_ptr_factory_.GetWeakPtr())));
+      *metadata, base::BindRepeating(
+                     &ModelValidatorKeyedService::OnDeviceModelExecuteResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
 }
 
 void ModelValidatorKeyedService::OnDeviceModelExecuteResponse(
+    const std::unique_ptr<optimization_guide::proto::ExecuteRequest>& request,
     OptimizationGuideModelStreamingExecutionResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!result.response.has_value() || !result.response->is_complete) {
+  if (result.response.has_value() && !result.response->is_complete) {
+    // Ignore partial responses.
     return;
   }
-  // Complete responses with empty log entry indicate errors.
-  if (!result.log_entry || !result.provided_by_on_device) {
-    LOCAL_HISTOGRAM_BOOLEAN(kModelValidationErrorHistogramString, true);
+  if (!result.response.has_value()) {
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "OptimizationGuide.ModelValidation.OnDevice.DidError", true);
   }
   proto::ModelValidationOutput output;
-  output.add_log_ai_data_requests()->CopyFrom(
-      *result.log_entry->log_ai_data_request());
+  optimization_guide::proto::ModelCall* model_call = output.add_model_calls();
+  model_call->mutable_request()->CopyFrom(*request);
+  if (result.execution_info) {
+    *model_call->mutable_model_execution_info() =
+        std::move(*result.execution_info);
+  }
+  if (result.response.has_value()) {
+    model_call->mutable_response()->CopyFrom(result.response.value().response);
+  }
 
   auto out_file = switches::GetOnDeviceValidationWriteToFile();
   if (!out_file) {

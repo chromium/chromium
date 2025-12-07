@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback_helpers.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/web_apps/web_app_views_utils.h"
 #include "chrome/grit/generated_resources.h"
@@ -25,6 +26,7 @@
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
@@ -81,7 +83,7 @@ SiteIconTextAndOriginView::SiteIconTextAndOriginView(
 
   auto icon_view = std::make_unique<views::ImageView>();
   icon_view->SetImage(ui::ImageModel::FromImageSkia(icon));
-  AddChildView(icon_view.release());
+  AddChildViewRaw(icon_view.release());
 
   std::u16string current_title =
       NormalizeSuggestedTitle(GetTrimmedTitle(initial_title));
@@ -101,7 +103,7 @@ SiteIconTextAndOriginView::SiteIconTextAndOriginView(
   AddChildView(views::Builder<views::View>().Build());
 
   // TODO(dibyapal): Modify to support full urls for Create Shortcut dialog.
-  AddChildView(
+  AddChildViewRaw(
       web_app::CreateOriginLabelFromStartUrl(url, /*is_primary_text=*/false)
           .release());
   title_field_->SelectAll(true);
@@ -130,7 +132,8 @@ void SiteIconTextAndOriginView::ContentsChanged(
   }
 
   auto* const modal_dialog_host =
-      modal_dialog_manager->delegate()->GetWebContentsModalDialogHost();
+      modal_dialog_manager->delegate()->GetWebContentsModalDialogHost(
+          web_contents_);
   if (!modal_dialog_host) {
     return;
   }

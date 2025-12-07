@@ -31,7 +31,8 @@ enum SegmentId {
   // Reserved fields are `OptimizationTarget`s that are not used by segmentation
   // to prevent accidental misuse.
   reserved 1, 2, 3, 7, 8, 9, 13, 14, 15, 19, 20, 24, 25, 26, 30, 31, 33, 34, 35,
-      36, 39, 40, 42, 43, 44, 47, 48, 49;
+      36, 39, 40, 42, 43, 44, 47, 48, 49, 51, 52, 53, 54, 55, 56, 57, 59, 60,
+      61, 62, 1013;
 
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Target for segmentation: New tab page user.
@@ -79,6 +80,10 @@ enum SegmentId {
   OPTIMIZATION_TARGET_URL_VISIT_RESUMPTION_RANKER = 46;
   // Target for metrics based segmentation clustering.
   OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING = 50;
+  // Target for segmentation: FedCM user.
+  OPTIMIZATION_TARGET_SEGMENTATION_FEDCM_USER = 58;
+  // Target for ios_default_browser_promo.
+  OPTIMIZATION_TARGET_SEGMENTATION_IOS_DEFAULT_BROWSER_PROMO = 63;
   // Add new entries to OptimizationTarget proto.
 
   // New entries should start from a 1000 if OptimizationTarget does not
@@ -108,4 +113,12 @@ enum SegmentId {
   DATABASE_API_CLIENTS = 1009;
   // Test model for OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER
   OPTIMIZATION_TARGET_SEGMENTATION_IOS_MODULE_RANKER_TEST = 1010;
+  // Model used for targeting and triggering ephemeral home module.
+  EPHEMERAL_HOME_MODULE_BACKEND = 1011;
+  // Test model for EPHEMERAL_HOME_MODULE_BACKEND.
+  EPHEMERAL_HOME_MODULE_BACKEND_TEST = 1012;
+  // Default model used for tracking metrics for Chrome user engagement.
+  CHROME_USER_ENGAGEMENT = 1014;
+  // Target for tips notifications ranker.
+  OPTIMIZATION_TARGET_SEGMENTATION_TIPS_NOTIFICATIONS_RANKER = 1015;
 };

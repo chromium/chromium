@@ -50,9 +50,9 @@ class BackgroundTaskCoordinatorHelper {
         auto type = pair.first;
         if (notification->schedule_params.priority ==
             ScheduleParams::Priority::kNoThrottle) {
-          unthrottled_notifications[type].emplace_back(std::move(notification));
+          unthrottled_notifications[type].emplace_back(notification);
         } else {
-          throttled_notifications[type].emplace_back(std::move(notification));
+          throttled_notifications[type].emplace_back(notification);
         }
       }
     }

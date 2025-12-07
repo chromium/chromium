@@ -6,8 +6,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "components/contextual_search/core/browser/contextual_search_delegate.h"
-#include "components/contextual_search/core/browser/resolved_search_term.h"
+#include "components/touch_to_search/core/browser/contextual_search_delegate.h"
+#include "components/touch_to_search/core/browser/resolved_search_term.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -54,9 +54,9 @@ class PartialTranslateManagerTest : public testing::Test {
   void TearDown() override {}
 
  protected:
-  // Owned by manager_.
-  raw_ptr<FakeContextualSearchDelegate, DanglingUntriaged> delegate_;
   std::unique_ptr<PartialTranslateManager> manager_;
+  // Owned by manager_.
+  raw_ptr<FakeContextualSearchDelegate> delegate_;
 };
 
 TEST_F(PartialTranslateManagerTest, CreateContext) {

@@ -8,12 +8,14 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "components/webcrypto/algorithms/asymmetric_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
+#include "crypto/evp.h"
 #include "crypto/openssl_util.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -31,35 +33,33 @@ blink::WebCryptoAlgorithm SynthesizeImportAlgorithmForClone(
                                                          nullptr);
 }
 
+// This function accepts only the RFC 8032 format.
 Status CreateWebCryptoEd25519PrivateKey(
-    base::span<const uint8_t> raw_key,
+    base::span<const uint8_t, 32u> raw_key,
     const blink::WebCryptoKeyAlgorithm& algorithm,
     bool extractable,
     blink::WebCryptoKeyUsageMask usages,
     blink::WebCryptoKey* key) {
-  // This function accepts only the RFC 8032 format.
-  DCHECK_EQ(raw_key.size(), 32u);
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new_raw_private_key(
       EVP_PKEY_ED25519, /*engine*/ nullptr, raw_key.data(), raw_key.size()));
-  if (!pkey)
+  if (!pkey) {
     return Status::OperationError();
-
+  }
   return webcrypto::CreateWebCryptoPrivateKey(std::move(pkey), algorithm,
                                               extractable, usages, key);
 }
 
 Status CreateWebCryptoEd25519PublicKey(
-    base::span<const uint8_t> raw_key,
+    base::span<const uint8_t, 32u> raw_key,
     const blink::WebCryptoKeyAlgorithm& algorithm,
     bool extractable,
     blink::WebCryptoKeyUsageMask usages,
     blink::WebCryptoKey* key) {
-  DCHECK_EQ(raw_key.size(), 32u);
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_PKEY_new_raw_public_key(
       EVP_PKEY_ED25519, /*engine*/ nullptr, raw_key.data(), raw_key.size()));
-  if (!pkey)
+  if (!pkey) {
     return Status::OperationError();
-
+  }
   return webcrypto::CreateWebCryptoPublicKey(std::move(pkey), algorithm,
                                              extractable, usages, key);
 }
@@ -126,7 +126,7 @@ Status Ed25519Implementation::GenerateKey(
   // multiplication, but there aren't EVP APIs to avoid it without a lot of
   // boilerplate.
   blink::WebCryptoKey private_key;
-  status = CreateWebCryptoEd25519PrivateKey(base::make_span(privkey).first(32u),
+  status = CreateWebCryptoEd25519PrivateKey(base::span(privkey).first<32>(),
                                             key_algorithm, extractable,
                                             private_usages, &private_key);
   if (status.IsError())
@@ -233,11 +233,12 @@ Status Ed25519Implementation::ImportKeyRaw(
   if (status.IsError())
     return status;
 
-  if (key_data.size() != 32)
+  auto fixed_data = key_data.to_fixed_extent<32u>();
+  if (!fixed_data) {
     return Status::ErrorImportEd25519KeyLength();
-
+  }
   return CreateWebCryptoEd25519PublicKey(
-      key_data, blink::WebCryptoKeyAlgorithm::CreateEd25519(algorithm.Id()),
+      *fixed_data, blink::WebCryptoKeyAlgorithm::CreateEd25519(algorithm.Id()),
       extractable, usages, key);
 }
 
@@ -297,14 +298,12 @@ Status Ed25519Implementation::ImportKeyJwk(
   JwkReader jwk;
 
   // 3. If the kty field of jwk is not "OKP", then throw a DataError.
-  // 5. If the alg field of jwk is present and is not "EdDSA", then throw a
-  // DataError.
   // 7. If the key_ops field of jwk is present, and is invalid according to the
   // requirements of JSON Web Key [JWK], or it does not contain all of the
   // specified usages values, then throw a DataError.
   // 8. If the ext field of jwk is present and has the value false and
   // extractable is true, then throw a DataError.
-  Status status = jwk.Init(key_data, extractable, usages, "OKP", "EdDSA");
+  Status status = jwk.Init(key_data, extractable, usages, "OKP", "");
   if (status.IsError())
     return status;
 
@@ -315,6 +314,18 @@ Status Ed25519Implementation::ImportKeyJwk(
     return status;
   if (jwk_crv != "Ed25519")
     return Status::ErrorJwkIncorrectCrv();
+
+  // 5. If the alg field of jwk is present and is not "EdDSA", then throw a
+  // DataError.
+  bool has_alg;
+  std::string jwk_alg;
+  status = jwk.GetAlg(&jwk_alg, &has_alg);
+  if (status.IsError()) {
+    return status;
+  }
+  if (has_alg && jwk_alg != "EdDSA" && jwk_alg != "Ed25519") {
+    return Status::ErrorJwkAlgorithmInconsistent();
+  }
 
   // Only private keys have a "d" parameter. The key may still be invalid, but
   // tentatively decide if it is a public or private key.
@@ -335,8 +346,10 @@ Status Ed25519Implementation::ImportKeyJwk(
   //  + The parameter "d" MUST be present for private keys.
   std::vector<uint8_t> raw_public_key;
   status = ReadBytes(jwk, "x", 32, &raw_public_key);
-  if (status.IsError())
+  if (status.IsError()) {
     return status;
+  }
+  auto fixed_public_key = base::span(raw_public_key).to_fixed_extent<32u>();
 
   // 9.2 Let key be a new CryptoKey object that represents the Ed25519
   // private/public key. 9.3. Set the [[type]] internal slot of Key to "private"
@@ -344,16 +357,19 @@ Status Ed25519Implementation::ImportKeyJwk(
   blink::WebCryptoKeyAlgorithm key_algorithm =
       blink::WebCryptoKeyAlgorithm::CreateEd25519(algorithm.Id());
   if (!is_private_key) {
-    return CreateWebCryptoEd25519PublicKey(raw_public_key, key_algorithm,
+    return CreateWebCryptoEd25519PublicKey(*fixed_public_key, key_algorithm,
                                            extractable, usages, key);
   }
 
   std::vector<uint8_t> raw_private_key;
   status = ReadBytes(jwk, "d", 32, &raw_private_key);
-  if (status.IsError())
+  if (status.IsError()) {
     return status;
+  }
+  auto fixed_private_key = base::span(raw_private_key).to_fixed_extent<32u>();
+
   blink::WebCryptoKey private_key;
-  status = CreateWebCryptoEd25519PrivateKey(raw_private_key, key_algorithm,
+  status = CreateWebCryptoEd25519PrivateKey(*fixed_private_key, key_algorithm,
                                             extractable, usages, &private_key);
   if (status.IsError())
     return status;
@@ -364,8 +380,9 @@ Status Ed25519Implementation::ImportKeyJwk(
   if (!EVP_PKEY_get_raw_public_key(GetEVP_PKEY(private_key), raw_key, &len))
     return Status::OperationError();
   DCHECK_EQ(len, 32u);
-  if (memcmp(raw_public_key.data(), raw_key, 32) != 0)
+  if (UNSAFE_TODO(memcmp(raw_public_key.data(), raw_key, 32)) != 0) {
     return Status::DataError();
+  }
 
   *key = private_key;
   return Status::Success();
@@ -393,7 +410,8 @@ Status Ed25519Implementation::ExportKeyPkcs8(
   if (key.GetType() != blink::kWebCryptoKeyTypePrivate)
     return Status::ErrorUnexpectedKeyType();
 
-  return ExportPKeyPkcs8(GetEVP_PKEY(key), buffer);
+  *buffer = crypto::evp::PrivateKeyToBytes(GetEVP_PKEY(key));
+  return Status::Success();
 }
 
 Status Ed25519Implementation::ExportKeySpki(
@@ -402,7 +420,8 @@ Status Ed25519Implementation::ExportKeySpki(
   if (key.GetType() != blink::kWebCryptoKeyTypePublic)
     return Status::ErrorUnexpectedKeyType();
 
-  return ExportPKeySpki(GetEVP_PKEY(key), buffer);
+  *buffer = crypto::evp::PublicKeyToBytes(GetEVP_PKEY(key));
+  return Status::Success();
 }
 
 Status Ed25519Implementation::ExportKeyJwk(const blink::WebCryptoKey& key,
@@ -417,9 +436,9 @@ Status Ed25519Implementation::ExportKeyJwk(const blink::WebCryptoKey& key,
     return Status::OperationError();
   DCHECK_EQ(keylen, sizeof(raw_public_key));
 
-  // No "alg" is set for OKP keys.
   JwkWriter jwk(std::string(), key.Extractable(), key.Usages(), "OKP");
   jwk.SetString("crv", "Ed25519");
+  jwk.SetString("alg", "Ed25519");
 
   // Set "x", and "d" if it is a private key.
   jwk.SetBytes("x", raw_public_key);

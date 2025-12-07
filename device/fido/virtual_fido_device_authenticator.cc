@@ -3,13 +3,15 @@
 // found in the LICENSE file.
 
 #include "device/fido/virtual_fido_device_authenticator.h"
+
+#include "crypto/hash.h"
 #include "device/fido/ctap_get_assertion_request.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device_authenticator.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "device/fido/fido_types.h"
-#include "device/fido/public_key_credential_user_entity.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_user_entity.h"
 
 namespace device {
 
@@ -28,20 +30,21 @@ void VirtualFidoDeviceAuthenticator::GetPlatformCredentialInfoForRequest(
   VirtualFidoDevice* virtual_device = static_cast<VirtualFidoDevice*>(device());
   std::vector<DiscoverableCredentialMetadata> credentials;
   std::array<uint8_t, kRpIdHashLength> rp_id_hash =
-      fido_parsing_utils::CreateSHA256Hash(request.rp_id);
+      crypto::hash::Sha256(request.rp_id);
   for (const auto& registration :
        virtual_device->mutable_state()->registrations) {
     if (rp_id_hash == registration.second.application_parameter &&
         // Discoverable credentials are found if the allow-list is empty.
         ((request.allow_list.empty() && registration.second.is_resident) ||
          // Otherwise any credentials are found if enumerated in the allowlist.
-         base::ranges::any_of(request.allow_list,
-                              [&registration](const auto& cred_descriptor) {
-                                return cred_descriptor.id == registration.first;
-                              }))) {
+         std::ranges::any_of(request.allow_list,
+                             [&registration](const auto& cred_descriptor) {
+                               return cred_descriptor.id == registration.first;
+                             }))) {
       credentials.emplace_back(
           AuthenticatorType::kOther, request.rp_id, registration.first,
-          registration.second.user.value_or(PublicKeyCredentialUserEntity()));
+          registration.second.user.value_or(PublicKeyCredentialUserEntity()),
+          std::nullopt);
     }
   }
   FidoRequestHandlerBase::RecognizedCredential has_credentials =

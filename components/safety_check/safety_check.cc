@@ -6,7 +6,18 @@
 
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
+namespace {
+
+const base::TimeDelta kUnusedSitePermissionsRevocationCleanUpThreshold =
+    base::Days(30);
+
+}  // namespace
+
 namespace safety_check {
+
+base::TimeDelta GetUnusedSitePermissionsRevocationCleanUpThreshold() {
+  return kUnusedSitePermissionsRevocationCleanUpThreshold;
+}
 
 SafeBrowsingStatus CheckSafeBrowsing(PrefService* pref_service) {
   const PrefService::Preference* enabled_pref =

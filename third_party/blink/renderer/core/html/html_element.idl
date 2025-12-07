@@ -20,9 +20,9 @@
 
 // https://html.spec.whatwg.org/C/#htmlelement
 [
-    Exposed=Window,
-    HTMLConstructor
+    Exposed=Window
 ] interface HTMLElement : Element {
+    [HTMLConstructor] constructor();
     // metadata attributes
     [CEReactions, Reflect] attribute DOMString title;
     [CEReactions, Reflect] attribute DOMString lang;
@@ -35,6 +35,7 @@
     [RuntimeCallStatsCounter=HTMLElementClick] void click();
     [CEReactions, Reflect] attribute boolean inert;
     [CEReactions, Reflect] attribute DOMString accessKey;
+    [RuntimeEnabled=AccessKeyLabel] readonly attribute DOMString accessKeyLabel;
     [CEReactions] attribute boolean draggable;
     [CEReactions] attribute boolean spellcheck;
     [Measure] attribute DOMString autocapitalize;
@@ -59,6 +60,7 @@
 
     // CSSOM View Module
     // https://drafts.csswg.org/cssom-view/#extensions-to-the-htmlelement-interface
+    [RuntimeEnabled=HTMLElementScrollParent, ImplementedAs=unclosedScrollParent] readonly attribute Element? scrollParent;
     [PerWorldBindings, ImplementedAs=unclosedOffsetParent] readonly attribute Element? offsetParent;
     [ImplementedAs=offsetTopForBinding] readonly attribute long offsetTop;
     [ImplementedAs=offsetLeftForBinding] readonly attribute long offsetLeft;
@@ -66,19 +68,16 @@
     [ImplementedAs=offsetHeightForBinding] readonly attribute long offsetHeight;
 
     // The Popover API
-    [MeasureAs=ElementTogglePopover,RaisesException] boolean togglePopover(optional boolean force);
-    [MeasureAs=ElementShowPopover,RaisesException] void showPopover();
+    [MeasureAs=ElementTogglePopover,RaisesException] boolean togglePopover(optional (TogglePopoverOptions or boolean) options);
+    [MeasureAs=ElementShowPopover,RaisesException] void showPopover(optional ShowPopoverOptions options);
     [MeasureAs=ElementHidePopover,RaisesException] void hidePopover();
-    // See crbug.com/1418144. We need to change ReflectOnly based on a runtime flag, which isn't possible.
-    // See also crbug.com/1416284. When HTMLPopoverHint is removed as a flag, we should be able to go back to using [Reflect].
-    // [CEReactions,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
-    [CEReactions] attribute DOMString? popover;
+    [CEReactions,Reflect,ReflectOnly=("auto","hint","manual"),ReflectEmpty="auto",ReflectInvalid="manual"] attribute DOMString? popover;
 
     // Non-standard APIs
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementInnerText, ImplementedAs=innerTextForBinding] attribute ([LegacyNullToEmptyString] DOMString or TrustedScript) innerText;
     [CEReactions, RaisesException=Setter, MeasureAs=HTMLElementOuterText] attribute [LegacyNullToEmptyString] DOMString outerText;
 
-    [RuntimeEnabled=WritingSuggestions, CEReactions] attribute DOMString writingSuggestions;
+    [CEReactions] attribute DOMString writingSuggestions;
 };
 
 HTMLElement includes GlobalEventHandlers;

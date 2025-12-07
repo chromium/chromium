@@ -1,0 +1,140 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Chrome histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="CollaborationServiceFlow">
+  <variant name="JoinFlow" summary="Collaboration join flow"/>
+  <variant name="LeaveOrDeleteFlow"
+      summary="Collaboration leave or delete flow"/>
+  <variant name="ShareOrManageFlow"
+      summary="Collaboration share or manage flow"/>
+</variants>
+
+<variants name="CollaborationServiceStep">
+  <variant name="AuthenticationInitToSuccess"
+      summary="Authentication initiated to successful completion"/>
+  <variant name="FullJoinFlowSuccess"
+      summary="Full join flow start to successful user added"/>
+  <variant name="LinkReadyAfterGroupCreation"
+      summary="Link ready after group creation"/>
+  <variant name="TabGroupFetchedAfterPeopleGroupJoined"
+      summary="Tab group fetched after group creation"/>
+  <variant name="Unknown" summary="Unknown"/>
+  <variant name="WaitingForServicesInitialization"
+      summary="Waiting time for service initialization"/>
+</variants>
+
+<histogram name="CollaborationService.JoinFlow"
+    enum="CollaborationServiceJoinEvent" expires_after="2026-04-26">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the type of join event that can happen when joining
+    a collaboration such as starting the join flow.
+
+    Recorded when a join event is triggered by the CollaborationService.
+  </summary>
+</histogram>
+
+<histogram name="CollaborationService.JoinFlow.EntryPoint"
+    enum="CollaborationServiceJoinEntryPoint" expires_after="2026-04-26">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the entry point from where the join flow started.
+
+    Recorded when a join event is started by the CollaborationService.
+  </summary>
+</histogram>
+
+<histogram name="CollaborationService.Latency.{CollaborationServiceStep}"
+    units="ms" expires_after="2026-04-26">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the time in milliseconds between when a flow step
+    is started and finished.
+
+    Recorded by the CollaborationService for each {CollaborationServiceStep} in
+    a collaboration flow that has user wait time.
+  </summary>
+  <token key="CollaborationServiceStep" variants="CollaborationServiceStep"/>
+</histogram>
+
+<histogram name="CollaborationService.LeaveOrDeleteFlow.EntryPoint"
+    enum="CollaborationServiceLeaveOrDeleteEntryPoint"
+    expires_after="2026-05-24">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the entry point from where the leave or delete flow
+    started.
+
+    Recorded when a leave or delete event is started by the
+    CollaborationService.
+  </summary>
+</histogram>
+
+<histogram name="CollaborationService.ShareOrManageFlow"
+    enum="CollaborationServiceShareOrManageEvent" expires_after="2026-04-26">
+  <owner>dljames@chromium.org</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the type of share event that can happen when
+    sharing a collaboration such as starting the share flow.
+
+    Recorded when a share event is triggered by the CollaborationService.
+  </summary>
+</histogram>
+
+<histogram name="CollaborationService.ShareOrManageFlow.EntryPoint"
+    enum="CollaborationServiceShareOrManageEntryPoint"
+    expires_after="2026-04-26">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the entry point from where the share or manage flow
+    started.
+
+    Recorded when a share or manage event is started by the
+    CollaborationService.
+  </summary>
+</histogram>
+
+<histogram name="CollaborationService.{CollaborationServiceFlow}.Events"
+    enum="CollaborationServiceFlowEvent" expires_after="2026-02-22">
+  <owner>haileywang@google.com</owner>
+  <owner>chrome-tab-group-eng@google.com</owner>
+  <summary>
+    [ All platforms ] Tracks the type of collaboration flow event that can
+    happen when going through a collaboration flow.
+
+    Recorded when a collaboration event is triggered by the
+    CollaborationService.
+  </summary>
+  <token key="CollaborationServiceFlow" variants="CollaborationServiceFlow"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

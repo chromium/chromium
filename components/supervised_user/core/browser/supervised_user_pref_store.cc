@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
@@ -21,6 +22,7 @@
 #include "components/safe_search_api/safe_search_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/supervised_user/core/browser/supervised_user_content_filters_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -31,6 +33,7 @@
 #include "components/sync/service/sync_prefs.h"
 #include "extensions/buildflags/buildflags.h"
 
+namespace supervised_user {
 namespace {
 
 struct SupervisedUserSettingsPrefMappingEntry {
@@ -71,21 +74,44 @@ SupervisedUserSettingsPrefMappingEntry kSupervisedUserSettingsPrefMapping[] = {
 
 }  // namespace
 
+void SetSupervisedUserPrefStoreDefaults(PrefValueMap& pref_values) {
+  pref_values.SetInteger(
+      prefs::kDefaultSupervisedUserFilteringBehavior,
+      static_cast<int>(supervised_user::FilteringBehavior::kAllow));
+
+  pref_values.SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
+  pref_values.SetBoolean(feed::prefs::kEnableSnippets, false);
+  pref_values.SetBoolean(prefs::kSupervisedUserSafeSites, true);
+}
+}  // namespace supervised_user
+
 SupervisedUserPrefStore::SupervisedUserPrefStore() = default;
 
 SupervisedUserPrefStore::SupervisedUserPrefStore(
     supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service) {
-  Init(supervised_user_settings_service);
+        supervised_user_settings_service,
+    supervised_user::SupervisedUserContentFiltersService*
+        content_filters_service) {
+  Init(supervised_user_settings_service, content_filters_service);
 }
 
 void SupervisedUserPrefStore::Init(
     supervised_user::SupervisedUserSettingsService*
-        supervised_user_settings_service) {
+        supervised_user_settings_service,
+    supervised_user::SupervisedUserContentFiltersService*
+        content_filters_service) {
   user_settings_subscription_ =
       supervised_user_settings_service->SubscribeForSettingsChange(
           base::BindRepeating(&SupervisedUserPrefStore::OnNewSettingsAvailable,
                               base::Unretained(this)));
+
+  if (content_filters_service) {
+    content_filter_settings_subscription_ =
+        content_filters_service->SubscribeForContentFiltersStateChange(
+            base::BindRepeating(
+                &SupervisedUserPrefStore::OnNewContentFiltersStateAvailable,
+                weak_factory_.GetWeakPtr()));
+  }
 
   // The SupervisedUserSettingsService must be created before the PrefStore, and
   // it will notify the PrefStore to destroy both subscriptions when it is shut
@@ -122,21 +148,34 @@ bool SupervisedUserPrefStore::IsInitializationComplete() const {
   return !!prefs_;
 }
 
-SupervisedUserPrefStore::~SupervisedUserPrefStore() {}
+SupervisedUserPrefStore::~SupervisedUserPrefStore() = default;
+
+void SupervisedUserPrefStore::OnNewContentFiltersStateAvailable(
+    supervised_user::SupervisedUserContentFiltersService::State state) {
+  std::unique_ptr<PrefValueMap> old_prefs = std::move(prefs_);
+  prefs_ = std::make_unique<PrefValueMap>();
+
+  if (state.incognito_disabled) {
+    prefs_->SetInteger(
+        policy::policy_prefs::kIncognitoModeAvailability,
+        static_cast<int>(policy::IncognitoModeAvailability::kDisabled));
+  }
+  if (state.safe_sites_enabled) {
+    prefs_->SetBoolean(prefs::kSupervisedUserSafeSites, true);
+  }
+  if (state.safe_search_enabled) {
+    prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch, true);
+  }
+
+  NotifyObserversAboutChanges(std::move(old_prefs));
+}
 
 void SupervisedUserPrefStore::OnNewSettingsAvailable(
     const base::Value::Dict& settings) {
   std::unique_ptr<PrefValueMap> old_prefs = std::move(prefs_);
   prefs_ = std::make_unique<PrefValueMap>();
   if (!settings.empty()) {
-    // Set hardcoded prefs and defaults.
-    prefs_->SetInteger(
-        prefs::kDefaultSupervisedUserFilteringBehavior,
-        static_cast<int>(supervised_user::FilteringBehavior::kAllow));
-
-    prefs_->SetBoolean(policy::policy_prefs::kHideWebStoreIcon, false);
-    prefs_->SetBoolean(feed::prefs::kEnableSnippets,
-                       supervised_user::IsKidFriendlyContentFeedAvailable());
+    supervised_user::SetSupervisedUserPrefStoreDefaults(*prefs_.get());
 
 #if BUILDFLAG(IS_ANDROID)
     syncer::SyncPrefs::SetTypeDisabledByCustodian(
@@ -144,7 +183,8 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
 #endif
 
     // Copy supervised user settings to prefs.
-    for (const auto& entry : kSupervisedUserSettingsPrefMapping) {
+    for (const auto& entry :
+         supervised_user::kSupervisedUserSettingsPrefMapping) {
       const base::Value* value = settings.Find(entry.settings_name);
       if (value) {
         prefs_->SetValue(entry.pref_name, value->Clone());
@@ -179,8 +219,13 @@ void SupervisedUserPrefStore::OnNewSettingsAvailable(
     return;
   }
 
+  NotifyObserversAboutChanges(std::move(old_prefs));
+}
+
+void SupervisedUserPrefStore::NotifyObserversAboutChanges(
+    std::unique_ptr<PrefValueMap> diff_base) {
   std::vector<std::string> changed_prefs;
-  prefs_->GetDifferingKeys(old_prefs.get(), &changed_prefs);
+  prefs_->GetDifferingKeys(diff_base.get(), &changed_prefs);
 
   // Send out change notifications.
   for (const std::string& pref : changed_prefs) {

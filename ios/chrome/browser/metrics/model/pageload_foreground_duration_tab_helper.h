@@ -20,7 +20,6 @@ class PageloadForegroundDurationTabHelper
   ~PageloadForegroundDurationTabHelper() override;
 
  private:
-  WEB_STATE_USER_DATA_KEY_DECL();
   friend class web::WebStateUserData<PageloadForegroundDurationTabHelper>;
   explicit PageloadForegroundDurationTabHelper(web::WebState* web_state);
 

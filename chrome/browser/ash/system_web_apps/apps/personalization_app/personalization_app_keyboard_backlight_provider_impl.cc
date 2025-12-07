@@ -17,7 +17,6 @@
 #include "base/logging.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_metrics.h"
 #include "chrome/browser/ash/system_web_apps/apps/personalization_app/personalization_app_utils.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -78,12 +77,6 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
 void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightZoneColor(
     int zone,
     mojom::BacklightColor backlight_color) {
-  if (!ash::features::IsMultiZoneRgbKeyboardEnabled()) {
-    keyboard_backlight_receiver_.ReportBadMessage(
-        "Cannot call `SetBacklightZoneColor()` without multi-zone rgb keyboard "
-        "enabled");
-    return;
-  }
 
   DVLOG(4) << __func__ << " zone=" << zone
            << " backlight_color=" << backlight_color;

@@ -50,11 +50,20 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
     // |kDefaultSecurityDescriptor|.
     std::wstring security_descriptor;
 
-    // If |true|, only a server endpoint will be allowed with the given name and
-    // only one client will be able to connect. Otherwise many
-    // NamedPlatformChannel instances can be created with the same name and
-    // a different client can connect to each one.
+    // If |true|, only a single server endpoint will be allowed with the given
+    // name. Otherwise many NamedPlatformChannel instances can be created with
+    // the same name.
     bool enforce_uniqueness = true;
+
+    // If a client sets this value to `true`, it allows the server to
+    // impersonate the client. This is to allow for a high privilege server to
+    // impersonate a client.
+    bool allow_impersonation = false;
+
+    // The maximum number of clients that can connect at any given time.
+    // Acceptable values are in the range 1 through PIPE_UNLIMITED_INSTANCES
+    // (255).
+    size_t max_clients = 1;
 #elif BUILDFLAG(IS_POSIX)
     // On POSIX, every new unnamed NamedPlatformChannel creates a server socket
     // with a random name. This controls the directory where that happens.
@@ -80,7 +89,12 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) NamedPlatformChannel {
 
 #if BUILDFLAG(IS_WIN)
   static ServerName GenerateRandomServerName();
-  static std::wstring GetPipeNameFromServerName(const ServerName& server_name);
+
+  // Returns an OS name for the pipe based on `server_name`. If `is_local_pipe` is true, the
+  // name will contain "LOCAL", which will allow the pipe to be created in an AppContainer
+  // sandbox but won't be cross-version compatible with pipes that lack this naming scheme.
+  static std::wstring GetPipeNameFromServerName(const ServerName& server_name,
+                                                bool is_local_pipe = false);
 #endif
 
   // Passes the local server endpoint for the channel. On Windows, this is a

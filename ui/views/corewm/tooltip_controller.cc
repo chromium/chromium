@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/time/time.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
@@ -22,9 +21,7 @@
 #include "ui/compositor/layer_type.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
-#include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/views/corewm/tooltip_state_manager.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/wm/public/activation_client.h"
@@ -40,8 +37,9 @@ constexpr auto kDefaultHideTooltipDelay = base::Seconds(10);
 // |event_target| is the original target from the event and |target| the window
 // at the same location.
 bool IsValidTarget(aura::Window* event_target, aura::Window* target) {
-  if (!target || (event_target == target))
+  if (!target || (event_target == target)) {
     return true;
+  }
 
   // If `target` is contained in `event_target`, it's valid.
   // This case may happen on exo surfaces.
@@ -83,8 +81,9 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
     case ui::EventType::kMouseMoved:
     case ui::EventType::kMouseDragged: {
       aura::Window* event_target = static_cast<aura::Window*>(event.target());
-      if (!event_target)
+      if (!event_target) {
         return nullptr;
+      }
 
       // If a window other than |event_target| has capture, ignore the event.
       // This can happen when RootWindow creates events when showing/hiding, or
@@ -99,8 +98,9 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
           if (capture_client) {
             aura::Window* capture_window =
                 capture_client->GetGlobalCaptureWindow();
-            if (capture_window && event_target != capture_window)
+            if (capture_window && event_target != capture_window) {
               return nullptr;
+            }
           }
         }
         return event_target;
@@ -109,23 +109,25 @@ aura::Window* GetTooltipTarget(const ui::MouseEvent& event,
       // If |target| has capture all events go to it, even if the mouse is
       // really over another window. Find the real window the mouse is over.
       const gfx::Point screen_loc = event.target()->GetScreenLocation(event);
-      display::Screen* screen = display::Screen::GetScreen();
+      display::Screen* screen = display::Screen::Get();
       aura::Window* target = screen->GetWindowAtScreenPoint(screen_loc);
-      if (!target)
+      if (!target) {
         return nullptr;
+      }
       gfx::Point target_loc(screen_loc);
       aura::client::GetScreenPositionClient(target->GetRootWindow())
           ->ConvertPointFromScreen(target, &target_loc);
       aura::Window* screen_target = target->GetEventHandlerForPoint(target_loc);
-      if (!IsValidTarget(event_target, screen_target))
+      if (!IsValidTarget(event_target, screen_target)) {
         return nullptr;
+      }
 
       aura::Window::ConvertPointToTarget(screen_target, target, &target_loc);
       *location = target_loc;
       return screen_target;
     }
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -139,15 +141,18 @@ TooltipController::TooltipController(std::unique_ptr<Tooltip> tooltip,
     : activation_client_(activation_client),
       state_manager_(
           std::make_unique<TooltipStateManager>(std::move(tooltip))) {
-  if (activation_client_)
+  if (activation_client_) {
     activation_client_->AddObserver(this);
+  }
 }
 
 TooltipController::~TooltipController() {
-  if (observed_window_)
+  if (observed_window_) {
     observed_window_->RemoveObserver(this);
-  if (activation_client_)
+  }
+  if (activation_client_) {
     activation_client_->RemoveObserver(this);
+  }
 }
 
 void TooltipController::AddObserver(wm::TooltipObserver* observer) {
@@ -209,8 +214,9 @@ void TooltipController::SetHideTooltipTimeout(aura::Window* target,
 }
 
 void TooltipController::SetTooltipsEnabled(bool enable) {
-  if (tooltips_enabled_ == enable)
+  if (tooltips_enabled_ == enable) {
     return;
+  }
   tooltips_enabled_ = enable;
   UpdateTooltip(observed_window_);
 }
@@ -257,8 +263,9 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
     case ui::EventType::kMouseDragged: {
       // Synthesized mouse moves shouldn't cause us to show a tooltip. See
       // https://crbug.com/1146981.
-      if (event->IsSynthesized())
+      if (event->IsSynthesized()) {
         break;
+      }
 
 #if BUILDFLAG(IS_WIN)
       // Showing a tooltip causes Windows to generate a MOUSE_MOVED
@@ -307,8 +314,9 @@ void TooltipController::OnMouseEvent(ui::MouseEvent* event) {
       break;
     case ui::EventType::kMousewheel:
       // Hide the tooltip for click, release, drag, wheel events.
-      if (state_manager_->IsVisible())
+      if (state_manager_->IsVisible()) {
         state_manager_->HideAndReset();
+      }
       break;
     default:
       break;
@@ -346,8 +354,9 @@ void TooltipController::OnCursorVisibilityChanged(bool is_visible) {
 void TooltipController::OnWindowVisibilityChanged(aura::Window* window,
                                                   bool visible) {
   // If window is not drawn, skip modifying tooltip.
-  if (!visible && window->layer()->type() != ui::LAYER_NOT_DRAWN)
+  if (!visible && window->layer()->type() != ui::LAYER_NOT_DRAWN) {
     HideAndReset();
+  }
 }
 
 void TooltipController::OnWindowDestroying(aura::Window* window) {
@@ -380,26 +389,15 @@ void TooltipController::OnWindowActivated(ActivationReason reason,
                                           aura::Window* gained_active,
                                           aura::Window* lost_active) {
   // We want to hide tooltips whenever the client is losing user focus.
-  if (lost_active)
+  if (lost_active) {
     HideAndReset();
+  }
 }
 
 void TooltipController::SetShowTooltipDelay(aura::Window* target,
                                             base::TimeDelta delay) {
   show_tooltip_delay_map_[target] = delay;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TooltipController::OnTooltipShownOnServer(aura::Window* window,
-                                               const std::u16string& text,
-                                               const gfx::Rect& bounds) {
-  state_manager_->OnTooltipShownOnServer(window, text, bounds);
-}
-
-void TooltipController::OnTooltipHiddenOnServer() {
-  state_manager_->OnTooltipHiddenOnServer();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 ////////////////////////////////////////////////////////////////////////////////
 // TooltipController private:
@@ -446,19 +444,22 @@ void TooltipController::UpdateIfRequired(TooltipTrigger trigger) {
 }
 
 bool TooltipController::IsDragDropInProgress() const {
-  if (!observed_window_)
+  if (!observed_window_) {
     return false;
+  }
   aura::client::DragDropClient* client =
       aura::client::GetDragDropClient(observed_window_->GetRootWindow());
   return client && client->IsDragDropInProgress();
 }
 
 bool TooltipController::IsCursorVisible() const {
-  if (!observed_window_)
+  if (!observed_window_) {
     return false;
+  }
   aura::Window* root = observed_window_->GetRootWindow();
-  if (!root)
+  if (!root) {
     return false;
+  }
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(root);
   // |cursor_client| may be NULL in tests, treat NULL as always visible.
@@ -478,14 +479,16 @@ base::TimeDelta TooltipController::GetShowTooltipDelay() {
 base::TimeDelta TooltipController::GetHideTooltipDelay() {
   std::map<aura::Window*, base::TimeDelta>::const_iterator it =
       hide_tooltip_timeout_map_.find(observed_window_);
-  if (it == hide_tooltip_timeout_map_.end())
+  if (it == hide_tooltip_timeout_map_.end()) {
     return kDefaultHideTooltipDelay;
+  }
   return it->second;
 }
 
 void TooltipController::SetObservedWindow(aura::Window* target) {
-  if (observed_window_ == target)
+  if (observed_window_ == target) {
     return;
+  }
 
   // When we are setting the |observed_window_| to nullptr, it is generally
   // because the cursor is over a window not owned by Chromium. To prevent a
@@ -498,11 +501,13 @@ void TooltipController::SetObservedWindow(aura::Window* target) {
     state_manager_->HideAndReset();
   }
 
-  if (observed_window_)
+  if (observed_window_) {
     observed_window_->RemoveObserver(this);
+  }
   observed_window_ = target;
-  if (observed_window_)
+  if (observed_window_) {
     observed_window_->AddObserver(this);
+  }
 }
 
 bool TooltipController::IsTooltipIdUpdateNeeded() const {
@@ -546,8 +551,9 @@ bool TooltipController::ShouldHideBecauseMouseWasOncePressed() {
   // actual text to show.
   // TODO(crbug.com/40246278): Remove or update this special path when tooltip
   // identifier is implemented.
-  if (wm::GetTooltipText(observed_window_).empty())
+  if (wm::GetTooltipText(observed_window_).empty()) {
     return false;
+  }
 
   return tooltip_window_at_mouse_press() &&
          observed_window_ == tooltip_window_at_mouse_press() &&

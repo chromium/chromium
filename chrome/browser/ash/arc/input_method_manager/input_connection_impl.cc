@@ -5,10 +5,10 @@
 #include "chrome/browser/ash/arc/input_method_manager/input_connection_impl.h"
 
 #include <tuple>
+#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 #include "ui/base/ime/ash/ime_bridge.h"
 #include "ui/base/ime/ash/ime_keymap.h"
 #include "ui/events/base_event_utils.h"

@@ -9,12 +9,37 @@
 #include "base/memory/ref_counted.h"
 #include "base/syslog_logging.h"
 #include "base/values.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace policy {
+
+namespace {
+void SetJustWorksBluetoothPairingPolicy(
+    ash::CrosSettings* cros_settings,
+    scoped_refptr<device::BluetoothAdapter> adapter,
+    base::OnceClosure callback,
+    base::OnceClosure error_callback) {
+  bool allow_just_works_bluetooth_pairing = false;
+  bool has_policy_value =
+      cros_settings->GetBoolean(ash::kDeviceBluetoothJustWorksPairingEnabled,
+                                &allow_just_works_bluetooth_pairing);
+
+  if (has_policy_value && ash::LoginState::IsInitialized() &&
+      ash::LoginState::Get()->IsUserLoggedIn()) {
+    adapter->SetSimpleSecurePairingEnabled(allow_just_works_bluetooth_pairing,
+                                           std::move(callback),
+                                           std::move(error_callback));
+    return;
+  }
+  // When not in session always disable just works pairing.
+  adapter->SetSimpleSecurePairingEnabled(/*enabled=*/false, std::move(callback),
+                                         std::move(error_callback));
+}
+}  // namespace
 
 BluetoothPolicyHandler::BluetoothPolicyHandler(ash::CrosSettings* cros_settings)
     : cros_settings_(cros_settings) {
@@ -28,9 +53,15 @@ BluetoothPolicyHandler::BluetoothPolicyHandler(ash::CrosSettings* cros_settings)
       base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
                           weak_factory_.GetWeakPtr()));
 
+  allow_just_works_pairing_subscription_ = cros_settings_->AddSettingsObserver(
+      ash::kDeviceBluetoothJustWorksPairingEnabled,
+      base::BindRepeating(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
+                          weak_factory_.GetWeakPtr()));
+
   device::BluetoothAdapterFactory::Get()->GetAdapter(
       base::BindOnce(&BluetoothPolicyHandler::InitializeOnAdapterReady,
                      weak_factory_.GetWeakPtr()));
+  ash::LoginState::Get()->AddObserver(this);
 
   // Fire it once so we're sure we get an invocation on startup.
   OnBluetoothPolicyChanged();
@@ -39,6 +70,11 @@ BluetoothPolicyHandler::BluetoothPolicyHandler(ash::CrosSettings* cros_settings)
 BluetoothPolicyHandler::~BluetoothPolicyHandler() {
   if (adapter_) {
     adapter_->RemoveObserver(this);
+  }
+  // During Shutdown, Check if |LoginState| is still initialized before removing
+  // the observer to prevent a CHECK failure.
+  if (ash::LoginState::IsInitialized()) {
+    ash::LoginState::Get()->RemoveObserver(this);
   }
 }
 
@@ -54,6 +90,12 @@ void BluetoothPolicyHandler::AdapterPoweredChanged(
   SetBluetoothPolicy();
 }
 
+void BluetoothPolicyHandler::LoggedInStateChanged() {
+  // Force a policy update so that the in-session policies can be applied
+  // properly.
+  OnBluetoothPolicyChanged();
+}
+
 void BluetoothPolicyHandler::InitializeOnAdapterReady(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   adapter_ = std::move(adapter);
@@ -67,8 +109,9 @@ void BluetoothPolicyHandler::OnBluetoothPolicyChanged() {
       cros_settings_->PrepareTrustedValues(
           base::BindOnce(&BluetoothPolicyHandler::OnBluetoothPolicyChanged,
                          weak_factory_.GetWeakPtr()));
-  if (status != ash::CrosSettingsProvider::TRUSTED)
+  if (status != ash::CrosSettingsProvider::TRUSTED) {
     return;
+  }
 
   new_policy_update_pending_ = true;
   SetBluetoothPolicy();
@@ -80,6 +123,14 @@ void SetServiceAllowListSuccess() {
 
 void SetServiceAllowListFailed() {
   SYSLOG(ERROR) << "Set ServiceAllowList Failed";
+}
+
+void SetJustWorksPairingEnabledSuccess() {
+  SYSLOG(INFO) << "Set JustWorksPairingEnabled Success";
+}
+
+void SetJustWorksPairingEnabledFailed() {
+  SYSLOG(ERROR) << "Set JustWorksPairingEnabled Failed";
 }
 
 void BluetoothPolicyHandler::SetBluetoothPolicy() {
@@ -106,8 +157,9 @@ void BluetoothPolicyHandler::SetBluetoothPolicy() {
   if (cros_settings_->GetList(ash::kDeviceAllowedBluetoothServices,
                               &allowed_services_list)) {
     for (const auto& list_value : *allowed_services_list) {
-      if (!list_value.is_string())
+      if (!list_value.is_string()) {
         continue;
+      }
 
       const std::string& uuid_str = list_value.GetString();
       device::BluetoothUUID uuid(uuid_str);
@@ -133,6 +185,11 @@ void BluetoothPolicyHandler::SetBluetoothPolicy() {
                                   base::BindOnce(SetServiceAllowListSuccess),
                                   base::BindOnce(SetServiceAllowListFailed));
   }
+
+  SetJustWorksBluetoothPairingPolicy(
+      cros_settings_, adapter_,
+      base::BindOnce(SetJustWorksPairingEnabledSuccess),
+      base::BindOnce(SetJustWorksPairingEnabledFailed));
 
   // Reset the indicator to false to make sure we don't bother setting the same
   // policy to the daemon, although it is harmless.

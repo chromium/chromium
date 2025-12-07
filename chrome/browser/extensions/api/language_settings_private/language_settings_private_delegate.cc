@@ -53,9 +53,9 @@ LanguageSettingsPrivateDelegate::LanguageSettingsPrivateDelegate(
       Profile::FromBrowserContext(context_)->GetPrefs());
 
   StartOrStopListeningForSpellcheckChanges();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   StartOrStopListeningForInputMethodChanges();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 LanguageSettingsPrivateDelegate::~LanguageSettingsPrivateDelegate() {
@@ -102,14 +102,14 @@ void LanguageSettingsPrivateDelegate::Shutdown() {
     listening_spellcheck_ = false;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (listening_input_method_) {
     auto* input_method_manager = ash::input_method::InputMethodManager::Get();
     if (input_method_manager)
       input_method_manager->RemoveObserver(this);
     listening_input_method_ = false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void LanguageSettingsPrivateDelegate::OnListenerAdded(
@@ -122,7 +122,7 @@ void LanguageSettingsPrivateDelegate::OnListenerAdded(
     StartOrStopListeningForSpellcheckChanges();
     return;
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (details.event_name ==
           language_settings_private::OnInputMethodAdded::kEventName ||
       details.event_name ==
@@ -130,19 +130,19 @@ void LanguageSettingsPrivateDelegate::OnListenerAdded(
     StartOrStopListeningForInputMethodChanges();
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void LanguageSettingsPrivateDelegate::OnListenerRemoved(
     const EventListenerInfo& details) {
   // Stop listening to events if there are no more listeners.
   StartOrStopListeningForSpellcheckChanges();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   StartOrStopListeningForInputMethodChanges();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void LanguageSettingsPrivateDelegate::InputMethodChanged(
     ash::input_method::InputMethodManager* manager,
     Profile* profile,
@@ -171,7 +171,7 @@ void LanguageSettingsPrivateDelegate::OnInputMethodExtensionRemoved(
       std::move(args)));
   EventRouter::Get(context_)->BroadcastEvent(std::move(extension_event));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void LanguageSettingsPrivateDelegate::OnHunspellDictionaryInitialized(
     const std::string& language) {
@@ -271,7 +271,7 @@ void LanguageSettingsPrivateDelegate::
   listening_spellcheck_ = should_listen;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void LanguageSettingsPrivateDelegate::
     StartOrStopListeningForInputMethodChanges() {
   EventRouter* event_router = EventRouter::Get(context_);
@@ -291,7 +291,7 @@ void LanguageSettingsPrivateDelegate::
 
   listening_input_method_ = should_listen;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void LanguageSettingsPrivateDelegate::RetryDownloadHunspellDictionary(
     const std::string& language) {

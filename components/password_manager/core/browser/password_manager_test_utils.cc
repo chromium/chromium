@@ -4,21 +4,23 @@
 
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 
+#include <algorithm>
 #include <memory>
 #include <ostream>
 #include <string>
 #include <utility>
 
 #include "base/feature_list.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
+#include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
 #include "components/password_manager/core/browser/password_form.h"
 
 namespace password_manager {
-
 std::unique_ptr<PasswordForm> PasswordFormFromData(
     const PasswordFormData& form_data) {
   auto form = std::make_unique<PasswordForm>();
@@ -71,7 +73,7 @@ std::unique_ptr<PasswordForm> FillPasswordFormWithData(
         url::SchemeHostPort(GURL("https://accounts.google.com/login"));
     if (!affiliations::IsValidAndroidFacetURI(form->signon_realm)) {
       form->signon_realm =
-          "federation://" + form->url.host() + "/accounts.google.com";
+          "federation://" + form->url.GetHost() + "/accounts.google.com";
       form->type = PasswordForm::Type::kApi;
     }
   }
@@ -123,6 +125,26 @@ bool ContainsEqualPasswordFormsUnordered(
     *mismatch_output << listener.str();
   }
   return matches;
+}
+
+base::flat_map<autofill::FieldGlobalId, autofill::AutofillServerPrediction>
+CreateServerPredictions(
+    const autofill::FormData& form,
+    const base::flat_map<size_t, autofill::FieldType>& types,
+    bool is_override) {
+  std::vector<
+      std::pair<autofill::FieldGlobalId, autofill::AutofillServerPrediction>>
+      result;
+  for (size_t i = 0; i < form.fields().size(); ++i) {
+    autofill::AutofillServerPrediction prediction;
+    if (auto it = types.find(i); it != types.end()) {
+      prediction.server_predictions = {
+          autofill::test::CreateFieldPrediction(it->second, is_override)};
+    }
+    result.emplace_back(form.fields()[i].global_id(), std::move(prediction));
+  }
+  return base::flat_map<autofill::FieldGlobalId,
+                        autofill::AutofillServerPrediction>(std::move(result));
 }
 
 std::vector<::testing::Matcher<PasswordForm>> FormsIgnoringPrimaryKey(

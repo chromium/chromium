@@ -24,14 +24,11 @@ source_set("find_in_page") {
     "find_in_page_constants.mm",
     "find_in_page_java_script_feature.h",
     "find_in_page_java_script_feature.mm",
-    "find_in_page_manager.mm",
     "find_in_page_manager_delegate_bridge.mm",
     "find_in_page_manager_impl.h",
     "find_in_page_manager_impl.mm",
     "find_in_page_metrics.h",
     "find_in_page_metrics.mm",
-    "java_script_find_in_page_manager_impl.h",
-    "java_script_find_in_page_manager_impl.mm",
     "java_script_find_in_page_request.h",
     "java_script_find_in_page_request.mm",
   ]
@@ -42,7 +39,6 @@ compile_ts("compile_ts") {
   sources = [
     "resources/find_in_page.ts",
     "resources/find_in_page_constants.ts",
-    "resources/find_in_page_utils.ts",
   ]
 }
 
@@ -88,7 +84,6 @@ source_set("find_in_page_unittests") {
     "find_in_page_js_unittest.mm",
     "find_in_page_manager_delegate_bridge_unittest.mm",
     "find_in_page_manager_impl_unittest.mm",
-    "java_script_find_in_page_manager_impl_unittest.mm",
     "java_script_find_in_page_request_unittest.mm",
   ]
 }

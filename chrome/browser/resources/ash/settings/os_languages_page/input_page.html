@@ -47,6 +47,10 @@
     margin-top: 8px;
   }
 
+  .list-item {
+    padding-inline-start: 4px;
+  }
+
   iron-icon[icon='cr:error'],
   iron-icon[icon='os-settings:multidevice-error'] {
     --iron-icon-fill-color: var(--cros-icon-color-alert);
@@ -63,6 +67,7 @@
     width: 16px;
   }
 
+  #inputMethodsManagedbyPolicyIcon,
   iron-icon[icon='cr20:domain'] {
     margin-inline-end: 10px;
   }
@@ -118,6 +123,11 @@
     margin-top: 16px;
   }
 
+  #inputMethodTitle {
+    display: flex;
+    justify-content: space-between;
+  }
+
   cr-button[disabled] iron-icon {
     --iron-icon-fill-color: var(--cros-button-icon-color-primary-disabled);
   }
@@ -154,14 +164,16 @@
           lastUsedImeAccelerator_, nextImeAccelerator_, metaKey_)]]">
     </keyboard-shortcut-banner>
   </template>
-  <h2>$i18n{inputMethodListTitle}</h2>
-  <template is="dom-if" if="[[inputMethodsLimitedByPolicy_(
-      prefs.settings.language.allowed_input_methods.*)]]">
-    <div class="cr-row continuation" id="inputMethodsManagedbyPolicy">
-      <iron-icon icon="cr20:domain"></iron-icon>
-      <div class="secondary">$i18n{inputMethodsManagedbyPolicy}</div>
-    </div>
-  </template>
+  <h2 id="inputMethodTitle">
+    $i18n{inputMethodListTitle}
+    <template is="dom-if" if="[[inputMethodsLimitedByPolicy_(
+        prefs.settings.language.allowed_input_methods.*)]]">
+      <cr-tooltip-icon tooltip-text="$i18n{inputMethodsManagedbyPolicy}"
+                       icon-class="cr20:domain"
+                       icon-aria-label="$i18n{inputMethodsManagedbyPolicy}"
+                       id="inputMethodsManagedbyPolicyIcon"></cr-tooltip-icon>
+    </template>
+  </h2>
   <div class="list-frame vertical-list" id="inputMethodsList">
     <template is="dom-repeat"
         items="[[languages.inputMethods.enabled]]">
@@ -201,8 +213,7 @@
         </template>
         <template is="dom-if"
             if="[[hasOptionsPageInSettings_(item.id)]]">
-          <div class="internal-wrapper"
-              hidden="[[!item.hasOptionsPage]]">
+          <div class="internal-wrapper">
             <cr-icon-button class="subpage-arrow"
                 aria-label$="[[getOpenOptionsPageLabel_(
                 item.displayName)]]"
@@ -232,7 +243,11 @@
     </template>
     <div class="list-item">
       <cr-button id="addInputMethod" on-click="onAddInputMethodClick_"
-          deep-link-focus-id$="[[Setting.kAddInputMethod]]">
+          deep-link-focus-id$="[[Setting.kAddInputMethod]]"
+          disabled$="[[addInputMethodButtonDisabled_(
+              languages.inputMethods.enabled.*,
+              prefs.settings.language.allowed_input_methods_force_enabled.value
+              )]]">
         <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
         $i18n{addInputMethodLabel}
       </cr-button>
@@ -338,35 +353,11 @@
   </iron-collapse>
 </div>
 
-<template is="dom-if" if="[[allowSuggestionSection_]]">
-  <div id="suggestionsSection" class="hr bottom-margin">
-    <h2>$i18n{suggestionsTitle}</h2>
-    <div class="subsection">
-      <template is="dom-if" if="[[allowOrca_]]">
-        <settings-toggle-button id="orcaToggle"
-            pref="{{prefs.assistive_input.orca_enabled}}"
-            label="$i18n{orcaTitle}"
-            sub-label="$i18n{orcaDescription}"
-            aria-label="$i18n{orcaTitle}"
-            deep-link-focus-id$="[[Setting.kShowOrca]]"
-            learn-more-url="$i18n{orcaLearnMoreUrl}">
-        </settings-toggle-button>
-      </template>
-
-      <settings-toggle-button id="emojiSuggestionToggle"
-          pref="{{prefs.assistive_input.emoji_suggestion_enabled}}"
-          label="$i18n{emojiSuggestionTitle}"
-          sub-label="$i18n{emojiSuggestionDescription}"
-          aria-label="$i18n{emojiSuggestionTitle}"
-          deep-link-focus-id$="[[Setting.kShowEmojiSuggestions]]">
-      </settings-toggle-button>
-    </div>
-  </div>
-</template>
-
 <template is="dom-if" if="[[showAddInputMethodsDialog_]]" restamp>
   <os-settings-add-input-methods-dialog languages="[[languages]]"
       language-helper="[[languageHelper]]"
+      limited-by-policy="[[inputMethodsLimitedByPolicy_(
+          prefs.settings.language.allowed_input_methods.*)]]"
       on-close="onAddInputMethodsDialogClose_">
   </os-settings-add-input-methods-dialog>
 </template>

@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 
 #include "third_party/webrtc_overrides/timer_based_tick_provider.h"
+
+#include <utility>
+
+#include "base/location.h"
+#include "base/task/delay_policy.h"
 #include "base/task/sequenced_task_runner.h"
 
 namespace blink {

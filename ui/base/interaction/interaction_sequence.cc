@@ -2,33 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/base/interaction/interaction_sequence.h"
 
+#include <array>
 #include <list>
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/map_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
-#include "base/not_fatal_until.h"
+#include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_specifier.h"
 #include "ui/base/interaction/element_tracker.h"
 
 namespace ui {
@@ -68,8 +68,9 @@ base::OnceCallback<Ret(Arg1, Arg2, Args...)> PushUnusedArgs2(
 // Sets step->must_remain_visible if it does not have a value.
 void SetDefaultMustRemainVisibleValue(InteractionSequence::Step* step,
                                       const InteractionSequence::Step* next) {
-  if (step->must_remain_visible.has_value())
+  if (step->must_remain_visible.has_value()) {
     return;
+  }
 
   // Default for types other than kShown is false.
   if (step->type != InteractionSequence::StepType::kShown) {
@@ -92,8 +93,30 @@ void SetDefaultMustRemainVisibleValue(InteractionSequence::Step* step,
     return;
   }
 
+  // If the following step is a subsequence step, the default is also false.
+  // This is because the current step doesn't officially end until all required
+  // subsequences complete.
+  if (next && next->type == InteractionSequence::StepType::kSubsequence) {
+    step->must_remain_visible = false;
+    return;
+  }
+
   // Otherwise for kShown steps, the default is true.
   step->must_remain_visible = true;
+}
+
+// Some step types allow the target element to become hidden between being
+// triggered and the start callback being called, others do not.
+bool AllowNullElementInStartCallback(InteractionSequence::StepType step_type) {
+  switch (step_type) {
+    case InteractionSequence::StepType::kSubsequence:
+    case InteractionSequence::StepType::kActivated:
+    case InteractionSequence::StepType::kHidden:
+      return true;
+    case InteractionSequence::StepType::kCustomEvent:
+    case InteractionSequence::StepType::kShown:
+      return false;
+  }
 }
 
 }  // anonymous namespace
@@ -125,6 +148,7 @@ struct InteractionSequence::Configuration {
   ~Configuration() = default;
 
   std::list<std::unique_ptr<Step>> steps;
+  std::optional<StepStartMode> step_start_mode;
   ElementContext context;
   AbortedCallback aborted_callback;
   CompletedCallback completed_callback;
@@ -233,23 +257,45 @@ InteractionSequence::Builder& InteractionSequence::Builder::SetContext(
   return *this;
 }
 
+InteractionSequence::Builder&
+InteractionSequence::Builder::SetDefaultStepStartMode(
+    StepStartMode step_start_mode) {
+  configuration_->step_start_mode = step_start_mode;
+  return *this;
+}
+
 std::unique_ptr<InteractionSequence> InteractionSequence::Builder::Build() {
   DCHECK(!configuration_->steps.empty());
-  // Configure defaults for the final step.
-  SetDefaultMustRemainVisibleValue(configuration_->steps.back().get(), nullptr);
   DCHECK(configuration_->context)
       << "If no view is provided, Builder::SetContext() must be called.";
+
+  // Configure defaults for the final step.
+  SetDefaultMustRemainVisibleValue(configuration_->steps.back().get(), nullptr);
+
+  // Configure defaults for the sequence.
+  if (!configuration_->step_start_mode) {
+    configuration_->step_start_mode = StepStartMode::kAsynchronous;
+  }
+
   return base::WrapUnique(
       new InteractionSequence(std::move(configuration_), nullptr));
 }
 
 std::unique_ptr<InteractionSequence>
-InteractionSequence::Builder::BuildSubsequence(const Step* reference_step) {
+InteractionSequence::Builder::BuildSubsequence(
+    const Configuration* reference_config,
+    const Step* reference_step) {
   DCHECK(!configuration_->steps.empty());
   // Configure defaults for the final step.
   SetDefaultMustRemainVisibleValue(configuration_->steps.back().get(), nullptr);
   DCHECK(configuration_->context)
       << "If no view is provided, Builder::SetContext() must be called.";
+
+  // Configure defaults for the sequence.
+  if (reference_config && !configuration_->step_start_mode) {
+    configuration_->step_start_mode = *reference_config->step_start_mode;
+  }
+
   return base::WrapUnique(
       new InteractionSequence(std::move(configuration_), reference_step));
 }
@@ -260,6 +306,14 @@ InteractionSequence::StepBuilder::StepBuilder(StepBuilder&& other) = default;
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::operator=(
     StepBuilder&& other) = default;
 InteractionSequence::StepBuilder::~StepBuilder() = default;
+
+InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetElement(
+    ElementSpecifier element_spec) {
+  DCHECK(element_spec);
+  step_->id = element_spec.identifier();
+  step_->element_name = element_spec.name();
+  return *this;
+}
 
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetElementID(ElementIdentifier element_id) {
@@ -276,7 +330,7 @@ InteractionSequence::StepBuilder::SetElementName(std::string_view name) {
 }
 
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
-    StepContext context) {
+    StepContext context) & {
   DCHECK(context != StepContext(ElementContext()));
   step_->context = context;
   if (const ContextMode* mode = std::get_if<ContextMode>(&context)) {
@@ -287,25 +341,48 @@ InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetContext(
   return *this;
 }
 
+InteractionSequence::StepBuilder&& InteractionSequence::StepBuilder::SetContext(
+    StepContext context) && {
+  return std::move(this->SetContext(context));
+}
+
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetMustBeVisibleAtStart(
-    bool must_be_visible) {
+    bool must_be_visible) & {
   step_->must_be_visible = must_be_visible;
   return *this;
 }
 
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetMustBeVisibleAtStart(
+    bool must_be_visible) && {
+  return std::move(this->SetMustBeVisibleAtStart(must_be_visible));
+}
+
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetMustRemainVisible(
-    bool must_remain_visible) {
+    bool must_remain_visible) & {
   step_->must_remain_visible = must_remain_visible;
   return *this;
 }
 
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetMustRemainVisible(
+    bool must_remain_visible) && {
+  return std::move(this->SetMustRemainVisible(must_remain_visible));
+}
+
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetTransitionOnlyOnEvent(
-    bool transition_only_on_event) {
+    bool transition_only_on_event) & {
   step_->transition_only_on_event = transition_only_on_event;
   return *this;
+}
+
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetTransitionOnlyOnEvent(
+    bool transition_only_on_event) && {
+  return std::move(this->SetTransitionOnlyOnEvent(transition_only_on_event));
 }
 
 InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetType(
@@ -327,6 +404,8 @@ InteractionSequence::StepBuilder& InteractionSequence::StepBuilder::SetType(
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetSubsequenceMode(
     SubsequenceMode subsequence_mode) {
+  CHECK(!step_->start_callback)
+      << "Start callback not allowed for subsequence steps.";
   step_->type = StepType::kSubsequence;
   step_->subsequence_mode = subsequence_mode;
   return *this;
@@ -347,6 +426,8 @@ InteractionSequence::StepBuilder::AddSubsequence(
 InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetStartCallback(
     StepStartCallback start_callback) {
+  CHECK_NE(step_->type, StepType::kSubsequence)
+      << "Start callbacks not allowed for subsequence steps.";
   step_->start_callback = std::move(start_callback);
   return *this;
 }
@@ -369,6 +450,19 @@ InteractionSequence::StepBuilder::SetStartCallback(
 }
 
 InteractionSequence::StepBuilder&
+InteractionSequence::StepBuilder::SetStepStartMode(
+    StepStartMode step_start_mode) & {
+  step_->step_start_mode = step_start_mode;
+  return *this;
+}
+
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetStepStartMode(
+    StepStartMode step_start_mode) && {
+  return std::move(this->SetStepStartMode(step_start_mode));
+}
+
+InteractionSequence::StepBuilder&
 InteractionSequence::StepBuilder::SetEndCallback(StepEndCallback end_callback) {
   step_->end_callback = std::move(end_callback);
   return *this;
@@ -382,17 +476,29 @@ InteractionSequence::StepBuilder::SetEndCallback(
 }
 
 InteractionSequence::StepBuilder&
-InteractionSequence::StepBuilder::SetDescription(std::string_view description) {
+InteractionSequence::StepBuilder::SetDescription(
+    std::string_view description) & {
   step_->description = std::string(description);
   return *this;
 }
 
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::SetDescription(
+    std::string_view description) && {
+  return std::move(this->SetDescription(description));
+}
+
 InteractionSequence::StepBuilder&
-InteractionSequence::StepBuilder::FormatDescription(
-    std::string_view format_string) {
-  step_->description = base::StringPrintfNonConstexpr(
-      format_string.data(), step_->description.c_str());
+InteractionSequence::StepBuilder::AddDescriptionPrefix(
+    std::string_view prefix) & {
+  step_->description = base::StrCat({prefix, ": ", step_->description});
   return *this;
+}
+
+InteractionSequence::StepBuilder&&
+InteractionSequence::StepBuilder::AddDescriptionPrefix(
+    std::string_view prefix) && {
+  return std::move(this->AddDescriptionPrefix(prefix));
 }
 
 std::unique_ptr<InteractionSequence::Step>
@@ -444,14 +550,15 @@ InteractionSequence::WithInitialElement(TrackedElement* element,
 
 InteractionSequence::~InteractionSequence() {
   // We can abort during a step callback, but we cannot destroy this object.
-  if (started_)
+  if (state_ != State::kNotStarted) {
     Abort(AbortedReason::kSequenceDestroyed);
+  }
 }
 
 void InteractionSequence::Start() {
   // Ensure we're not already started.
-  DCHECK(!started_);
-  started_ = true;
+  DCHECK_EQ(State::kNotStarted, state_);
+  state_ = State::kIdle;
   if (missing_first_element_) {
     Abort(AbortedReason::kElementHiddenBeforeSequenceStart);
     return;
@@ -469,6 +576,11 @@ void InteractionSequence::RunSynchronouslyForTesting() {
 bool InteractionSequence::IsCurrentStepInAnyContextForTesting() const {
   CHECK(current_step_);
   return current_step_->in_any_context;
+}
+
+bool InteractionSequence::IsCurrentStepImmediateForTesting() const {
+  CHECK(current_step_);
+  return current_step_->step_start_mode == StepStartMode::kImmediate;
 }
 
 void InteractionSequence::FailForTesting() {
@@ -497,14 +609,15 @@ void InteractionSequence::NameElement(TrackedElement* element,
   MaybeWatchForEarlyTrigger(current_step_.get());
 }
 
-TrackedElement* InteractionSequence::GetNamedElement(std::string_view name) {
-  const auto it = named_elements_.find(std::string(name));
-  CHECK(it != named_elements_.end());
-  return it->second.get();
+TrackedElement* InteractionSequence::GetNamedElement(const std::string& name) {
+  if (auto* const result = base::FindOrNull(named_elements_, name)) {
+    return result->get();
+  }
+  NOTREACHED() << "No element was named: " << name;
 }
 
 const TrackedElement* InteractionSequence::GetNamedElement(
-    std::string_view name) const {
+    const std::string& name) const {
   return const_cast<InteractionSequence*>(this)->GetNamedElement(name);
 }
 
@@ -518,8 +631,10 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
       reason == AbortedReason::kSequenceDestroyed ||
       reason == AbortedReason::kNoSubsequenceRun ||
       reason == AbortedReason::kSubsequenceFailed ||
+      reason == AbortedReason::kSubsequentStepTriggeredTooEarly ||
+      reason == AbortedReason::kSubsequentStepTriggerInvalidated ||
       (reason == AbortedReason::kSequenceTimedOut &&
-       !running_start_callback_)) {
+       (state_ == State::kIdle || state_ == State::kNotStarted))) {
     ++aborted_data.step_index;
     if (next_step()) {
       aborted_data.step_type = next_step()->type;
@@ -531,6 +646,19 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
               data.result == false ? std::make_optional(data.aborted_data)
                                    : std::nullopt);
         }
+      } else if (reason == AbortedReason::kSequenceTimedOut) {
+        for (const auto& data : next_step()->subsequence_data) {
+          if (data.result == false) {
+            aborted_data.subsequence_failures.emplace_back(data.aborted_data);
+          } else if (data.result != true && data.sequence) {
+            aborted_data.subsequence_failures.emplace_back(
+                data.sequence->BuildAbortedData(reason));
+          }
+        }
+      }
+      if (const auto* ctx =
+              std::get_if<ui::ElementContext>(&next_step()->context)) {
+        aborted_data.context = *ctx;
       }
     }
   } else if (current_step_) {
@@ -547,6 +675,16 @@ InteractionSequence::AbortedData InteractionSequence::BuildAbortedData(
       waiting_for.element_id = next_step()->id;
       waiting_for.step_description = next_step()->description;
       aborted_data.subsequence_failures.emplace_back(std::move(waiting_for));
+      if (const auto* ctx =
+              std::get_if<ui::ElementContext>(&next_step()->context)) {
+        aborted_data.context = *ctx;
+      }
+    }
+    if (!aborted_data.context && current_step_) {
+      if (const auto* ctx =
+              std::get_if<ui::ElementContext>(&current_step_->context)) {
+        aborted_data.context = *ctx;
+      }
     }
   }
   return aborted_data;
@@ -566,7 +704,7 @@ void InteractionSequence::OnElementShown(TrackedElement* element) {
   // Note that we don't need to look for a named element here, as any named
   // element referenced in a kShown step must already exist, and therefore we
   // should have already transitioned or failed.
-  DoStepTransition(element);
+  StartStepTransition(element);
 }
 
 void InteractionSequence::OnElementActivated(TrackedElement* element) {
@@ -577,7 +715,7 @@ void InteractionSequence::OnElementActivated(TrackedElement* element) {
   DCHECK_EQ(StepType::kActivated, next_step()->type);
   DCHECK(element->identifier() == next_step()->id);
   if (MatchesNameIfSpecified(element, next_step()->element_name))
-    DoStepTransition(element);
+    StartStepTransition(element);
 }
 
 void InteractionSequence::OnCustomEvent(TrackedElement* element) {
@@ -585,11 +723,11 @@ void InteractionSequence::OnCustomEvent(TrackedElement* element) {
   if (next_step()->id && next_step()->id != element->identifier())
     return;
   if (MatchesNameIfSpecified(element, next_step()->element_name))
-    DoStepTransition(element);
+    StartStepTransition(element);
 }
 
 void InteractionSequence::OnElementHidden(TrackedElement* element) {
-  if (!started_) {
+  if (state_ == State::kNotStarted) {
     DCHECK_EQ(next_step()->element, element);
     missing_first_element_ = true;
     next_step()->subscription = ElementTracker::Subscription();
@@ -606,6 +744,15 @@ void InteractionSequence::OnElementHidden(TrackedElement* element) {
       return;
     }
 
+    // If there is a start callback queued and the element goes away, this is
+    // also a failure state.
+    if (state_ == State::kWaitingForStartCallback &&
+        current_step_->start_callback &&
+        !AllowNullElementInStartCallback(current_step_->type)) {
+      Abort(AbortedReason::kElementHiddenBetweenTriggerAndStepStart);
+      return;
+    }
+
     // This element pointer is no longer valid and we can stop watching.
     current_step_->subscription = ElementTracker::Subscription();
     current_step_->element = nullptr;
@@ -618,75 +765,103 @@ void InteractionSequence::OnElementHidden(TrackedElement* element) {
     if (next_step()->uses_named_element()) {
       // Find the named element; if it still exists, it hasn't been hidden.
       const auto it = named_elements_.find(next_step()->element_name);
-      CHECK(it != named_elements_.end(), base::NotFatalUntil::M130);
-      if (it->second.get())
+      CHECK(it != named_elements_.end());
+      if (it->second.get()) {
         return;
+      }
     }
 
     // We can get this situation when an element goes away during a step
     // callback, before we've actually staged the following hide step. At this
     // point it's not valid to do a transition, so we'll mark that the next
     // transition has happened.
-    if (processing_step_) {
-      OnTriggerDuringStepTransition(element);
-    } else {
-      DoStepTransition(element);
+    switch (state_) {
+      case State::kIdle:
+        StartStepTransition(element);
+        break;
+      case State::kNotStarted:
+      case State::kInEndCallback:
+      case State::kWaitingForStartCallback:
+      case State::kInStartCallback:
+        OnTriggerDuringStepTransition(element);
+        break;
     }
   }
 }
 
 void InteractionSequence::OnTriggerDuringStepTransition(
     TrackedElement* element) {
-  if (!next_step() || !element)
+  auto* const next = next_step();
+  if (!next || !element) {
     return;
+  }
 
-  switch (next_step()->type) {
-    case StepType::kActivated:
+  switch (next->type) {
     case StepType::kShown:
-      // We should know the identifier and name ahead of time for activation
-      // steps, so just make sure nothing has gone awry.
-      DCHECK(element->identifier() == next_step()->id);
-      DCHECK(MatchesNameIfSpecified(element, next_step()->element_name));
-      break;
+    case StepType::kActivated:
     case StepType::kHidden:
-      // We should know the identifier and name ahead of time for activation
-      // steps, so just make sure nothing has gone awry.
-      DCHECK(element->identifier() == next_step()->id);
-      if (next_step()->uses_named_element()) {
-        // Because the named elements list use safe references, they may already
-        // be nulled out. Therefore, it's fine if there's no element, but not if
-        // there is an element that's different than the one we care about.
-        auto* const named = GetNamedElement(next_step()->element_name);
-        DCHECK(!named || named == element);
+      // We should know the identifier ahead of time.
+      CHECK(element->identifier() == next->id);
+      if (AllowNullElementInStartCallback(next->type)) {
+        if (next->uses_named_element()) {
+          // Because the named elements list use safe references, they may
+          // already be nulled out. Therefore, it's fine if there's no element,
+          // but not if there is an element that's different than the one we
+          // care about.
+          auto* const named = GetNamedElement(next->element_name);
+          DCHECK(!named || named == element);
+        }
+      } else {
+        // This will fail if the element has gone away.
+        CHECK(MatchesNameIfSpecified(element, next->element_name));
       }
       break;
     case StepType::kCustomEvent:
       // Since we don't specify the element ID when registering for custom
       // events we have to see if we specified an ID or name and if so, whether
       // it matches the element we actually got.
-      if (next_step()->id && element->identifier() != next_step()->id)
+      if (next->id && element->identifier() != next->id) {
         return;
-      if (!MatchesNameIfSpecified(element, next_step()->element_name))
+      }
+      if (!MatchesNameIfSpecified(element, next->element_name)) {
         return;
+      }
       break;
     default:
       NOTREACHED();
   }
 
+  // If the event comes in while the current step's start callback is still
+  // sitting in the event queue, then an out-of-order execution error may occur.
+  //
+  // TODO(dfried): the way we watch for events doesn't handle all corner cases,
+  // so it needs to be rewritten. Examples include things like a view becoming
+  // visible and then hidden again before the step callback, or a view being
+  // hidden but not being the only matching view with that ID. We would
+  // currently allow both of those to succeed, but they might not actually be
+  // the correct behavior, especially in a test.
+  if (state_ != State::kInStartCallback && state_ != State::kNotStarted) {
+    CHECK_NE(State::kIdle, state_);
+    if (next->transition_only_on_event) {
+      Abort(AbortedReason::kSubsequentStepTriggeredTooEarly);
+      return;
+    }
+  }
+
   // Barring disaster, we will immediately transition as soon as we finish
   // processing the current step.
   trigger_during_callback_ = true;
-  next_step()->context = element->context();
+  next->context = element->context();
 
-  if (next_step()->type == StepType::kHidden) {
-    next_step()->element = nullptr;
-    next_step()->subscription = base::CallbackListSubscription();
+  if (next->type == StepType::kHidden) {
+    next->element = nullptr;
+    next->subscription = base::CallbackListSubscription();
   } else {
     // Since we've hit the trigger for the next step, we need to make sure we
     // clean up (and possibly abort) if the element goes away before we can
     // finish processing the current step.
-    next_step()->element = element;
-    next_step()->subscription =
+    next->element = element;
+    next->subscription =
         ElementTracker::GetElementTracker()->AddElementHiddenCallback(
             element->identifier(), element->context(),
             base::BindRepeating(
@@ -758,7 +933,7 @@ void InteractionSequence::MaybeWatchForEarlyTrigger(const Step* current_step) {
   // This should only be called while we're processing a step, there is a next
   // step we care about, and we aren't already subscribed for an event on that
   // step.
-  if (!processing_step_ || configuration_->steps.empty() ||
+  if (state_ == State::kIdle || configuration_->steps.empty() ||
       next_step()->subscription) {
     return;
   }
@@ -842,79 +1017,119 @@ void InteractionSequence::MaybeWatchForEarlyTrigger(const Step* current_step) {
   }
 }
 
-void InteractionSequence::DoStepTransition(TrackedElement* element) {
+void InteractionSequence::StartStepTransition(TrackedElement* element) {
   // There are a number of callbacks during this method that could potentially
   // result in this InteractionSequence being destructed, so maintain a weak
   // pointer we can check to see if we need to bail out early.
-  base::WeakPtr<InteractionSequence> delete_guard = weak_factory_.GetWeakPtr();
+  base::WeakPtr<InteractionSequence> abort_guard = weak_factory_.GetWeakPtr();
   auto* const tracker = ElementTracker::GetElementTracker();
-  {
-    // This block is non-re-entrant.
-    DCHECK(!processing_step_);
-    base::WeakAutoReset processing(
-        delete_guard, &InteractionSequence::processing_step_, true);
 
-    // End the current step.
-    if (current_step_) {
-      // Unsubscribe from any events during the step-end process. Since the step
-      // has ended, conditions like "must remain visible" no longer apply.
-      current_step_->subscription = ElementTracker::Subscription();
-      RunIfValid(std::move(current_step_->end_callback),
-                 current_step_->element.get());
-      if (!delete_guard || AbortedDuringCallback())
-        return;
-    }
+  // This block is non-re-entrant.
+  DCHECK_EQ(State::kIdle, state_);
+  state_ = State::kInEndCallback;
 
-    // Set up the new current step.
-    current_step_ = std::move(configuration_->steps.front());
-    configuration_->steps.pop_front();
-    ++active_step_index_;
-    DCHECK(!current_step_->element || current_step_->element == element);
-    current_step_->element =
-        current_step_->type == StepType::kHidden ? nullptr : element;
-    if (element)
-      current_step_->context = element->context();
-    if (current_step_->element) {
-      current_step_->subscription = tracker->AddElementHiddenCallback(
-          current_step_->element->identifier(),
-          current_step_->element->context(),
-          base::BindRepeating(&InteractionSequence::OnElementHidden,
-                              base::Unretained(this)));
-    } else {
-      current_step_->subscription = ElementTracker::Subscription();
-    }
-
-    // Once a transition is successful, any remaining subsequences must be
-    // cleared to prevent them executing in the background.
-    current_step_->subsequence_data.clear();
-
-    // If we've got a guard on the new current step's element having gone away
-    // while we were waiting, we can release it.
-    next_step_hidden_subscription_ = ElementTracker::Subscription();
-
-    // Special care must be taken here, because theoretically *anything* could
-    // happen as a result of this callback. If the next step is a shown or
-    // hidden step and the element becomes shown or hidden (or it's a step that
-    // requires the element to be visible and it is not), then the appropriate
-    // transition (or Abort()) will happen in StageNextStep() below.
-    //
-    // If, however, the callback *activates* or sends a custom event on the next
-    // target element, and the next step is of the matching type, then the event
-    // will not register unless we explicitly listen for it. This will add a
-    // temporary callback to handle this case.
-    MaybeWatchForEarlyTrigger(current_step_.get());
-
-    // Start the step. Like all callbacks, this could abort the sequence, or
-    // cause `element` to become invalid. Because of this we use the element
-    // field of the current step from here forward, because we've installed a
-    // callback above that will null it out if it becomes invalid.
-    base::WeakAutoReset running_start_callback(
-        delete_guard, &InteractionSequence::running_start_callback_, true);
-    RunIfValid(std::move(current_step_->start_callback), this,
+  // End the current step.
+  if (current_step_) {
+    // Unsubscribe from any events during the step-end process. Since the step
+    // has ended, conditions like "must remain visible" no longer apply.
+    current_step_->subscription = ElementTracker::Subscription();
+    RunIfValid(std::move(current_step_->end_callback),
                current_step_->element.get());
-    if (!delete_guard || AbortedDuringCallback())
+    if (!abort_guard) {
       return;
+    }
   }
+
+  state_ = State::kWaitingForStartCallback;
+
+  // Set up the new current step.
+  current_step_ = std::move(configuration_->steps.front());
+  configuration_->steps.pop_front();
+  ++active_step_index_;
+  DCHECK(!current_step_->element || current_step_->element == element);
+  current_step_->element =
+      current_step_->type == StepType::kHidden ? nullptr : element;
+  if (element) {
+    current_step_->context = element->context();
+  }
+  if (current_step_->element) {
+    current_step_->subscription = tracker->AddElementHiddenCallback(
+        current_step_->element->identifier(), current_step_->element->context(),
+        base::BindRepeating(&InteractionSequence::OnElementHidden,
+                            base::Unretained(this)));
+  } else {
+    current_step_->subscription = ElementTracker::Subscription();
+  }
+
+  // Once a transition is successful, any remaining subsequences must be
+  // cleared to prevent them executing in the background.
+  current_step_->subsequence_data.clear();
+
+  // If we've got a guard on the new current step's element having gone away
+  // while we were waiting, we can release it.
+  next_step_hidden_subscription_ = ElementTracker::Subscription();
+
+  // Special care must be taken here, because theoretically *anything* could
+  // between here and when the current step callback completes. If the next
+  // step is a shown or hidden step and the element becomes shown or hidden (or
+  // it's a step that requires the element to be visible and it is not), then
+  // the appropriate transition (or Abort()) will happen in StageNextStep()
+  // below.
+  //
+  // If, however, the callback *activates* or sends a custom event on the next
+  // target element, and the next step is of the matching type, then the event
+  // will not register unless we explicitly listen for it. This will add a
+  // temporary callback to handle this case.
+  //
+  // If the current step is asynchronous and a discrete trigger for the
+  // following step occurs *before* the step start callback can run, it is an
+  // error.
+  MaybeWatchForEarlyTrigger(current_step_.get());
+
+  switch (current_step_->step_start_mode.value_or(
+      *configuration_->step_start_mode)) {
+    case StepStartMode::kAsynchronous:
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&InteractionSequence::CompleteStepTransition,
+                         std::move(abort_guard)));
+      break;
+    case StepStartMode::kImmediate:
+      CompleteStepTransition();
+      break;
+  }
+}
+
+void InteractionSequence::CompleteStepTransition() {
+  // This block is non-re-entrant.
+  DCHECK_EQ(State::kWaitingForStartCallback, state_);
+
+  // There are a number of callbacks during this method that could potentially
+  // result in this InteractionSequence being destructed, so maintain a weak
+  // pointer we can check to see if we need to bail out early.
+  base::WeakPtr<InteractionSequence> abort_guard = weak_factory_.GetWeakPtr();
+
+  // Start the step. Like all callbacks, this could abort the sequence, or
+  // cause `element` to become invalid. Because of this we use the element
+  // field of the current step from here forward, because we've installed a
+  // callback above that will null it out if it becomes invalid.
+  state_ = State::kInStartCallback;
+
+  // For step types where the element passed to a callback must not be null,
+  // ensure there is an element.
+  if (!AllowNullElementInStartCallback(current_step_->type) &&
+      current_step_->start_callback && !current_step_->element) {
+    LOG(ERROR) << "Assumption violated: Start callback for this step should "
+                  "always have a valid element!";
+    Abort(AbortedReason::kElementHiddenBetweenTriggerAndStepStart);
+    return;
+  }
+  RunIfValid(std::move(current_step_->start_callback), this,
+             current_step_->element.get());
+  if (!abort_guard) {
+    return;
+  }
+  state_ = State::kIdle;
 
   if (configuration_->steps.empty()) {
     // Reset anything that might cause state change during the final callback.
@@ -991,13 +1206,13 @@ void InteractionSequence::StageNextStep() {
       if (trigger_during_callback_) {
         trigger_during_callback_ = false;
         if (next->must_remain_visible.value() && !next_element) {
-          Abort(AbortedReason::kElementHiddenDuringStep);
+          Abort(AbortedReason::kSubsequentStepTriggerInvalidated);
           return;
         } else {
-          DoStepTransition(next_element);
+          StartStepTransition(next_element);
         }
       } else if (next_element && !next->transition_only_on_event) {
-        DoStepTransition(next_element);
+        StartStepTransition(next_element);
       } else {
         DCHECK(!next->uses_named_element());
         auto callback = base::BindRepeating(
@@ -1013,7 +1228,7 @@ void InteractionSequence::StageNextStep() {
       if (trigger_during_callback_ ||
           (!next_element && !next->transition_only_on_event)) {
         trigger_during_callback_ = false;
-        DoStepTransition(nullptr);
+        StartStepTransition(nullptr);
       } else {
         DCHECK(next_element || !next->uses_named_element());
         auto callback = base::BindRepeating(
@@ -1028,7 +1243,7 @@ void InteractionSequence::StageNextStep() {
     case StepType::kActivated:
       if (trigger_during_callback_) {
         trigger_during_callback_ = false;
-        DoStepTransition(next_element);
+        StartStepTransition(next_element);
       } else {
         DCHECK(next_element || !next->uses_named_element());
         auto callback = base::BindRepeating(
@@ -1056,7 +1271,7 @@ void InteractionSequence::StageNextStep() {
     case StepType::kCustomEvent:
       if (trigger_during_callback_) {
         trigger_during_callback_ = false;
-        DoStepTransition(next_element);
+        StartStepTransition(next_element);
       } else {
         DCHECK(next_element || !next->uses_named_element());
         auto callback = base::BindRepeating(&InteractionSequence::OnCustomEvent,
@@ -1113,8 +1328,7 @@ void InteractionSequence::StageNextStep() {
               base::BindOnce(
                   [](base::WeakPtr<InteractionSequence> seq) {
                     if (seq) {
-                      // Unblock the sequence from proceeding and start it.
-                      seq->processing_step_ = false;
+                      // Start the subsequence.
                       seq->Start();
                     }
                   },
@@ -1133,7 +1347,7 @@ void InteractionSequence::StageNextStep() {
             return;
           case SubsequenceMode::kAtMostOne:
           case SubsequenceMode::kAll:
-            DoStepTransition(next_element);
+            StartStepTransition(next_element);
             break;
         }
       } else if (next_element) {
@@ -1148,7 +1362,7 @@ void InteractionSequence::StageNextStep() {
 }
 
 void InteractionSequence::Abort(AbortedReason reason) {
-  DCHECK(started_);
+  DCHECK_NE(State::kNotStarted, state_);
   next_step_hidden_subscription_ = ElementTracker::Subscription();
 
   AbortedData aborted_data = BuildAbortedData(reason);
@@ -1163,6 +1377,9 @@ void InteractionSequence::Abort(AbortedReason reason) {
   std::unique_ptr<Step> current_step = std::move(current_step_);
   configuration_->steps.clear();
 
+  // This blows up any abort guards and pending callbacks.
+  weak_factory_.InvalidateWeakPtrs();
+
   // Note that if the sequence has already been aborted, this is a no-op, the
   // callbacks will already be null.
   if (current_step) {
@@ -1175,20 +1392,9 @@ void InteractionSequence::Abort(AbortedReason reason) {
   RunIfValid(std::move(quit_closure));
 }
 
-bool InteractionSequence::AbortedDuringCallback() const {
-  // All step callbacks are sourced from the current step. If the current step
-  // is null, then the sequence must have aborted (which clears out the current
-  // step). Completion can only happen after step callbacks are finished
-  if (current_step_)
-    return false;
-
-  DCHECK(configuration_->steps.empty());
-  DCHECK(!configuration_->aborted_callback);
-  return true;
-}
-
-bool InteractionSequence::MatchesNameIfSpecified(const TrackedElement* element,
-                                                 std::string_view name) const {
+bool InteractionSequence::MatchesNameIfSpecified(
+    const TrackedElement* element,
+    const std::string& name) const {
   if (name.empty())
     return true;
 
@@ -1257,7 +1463,7 @@ void InteractionSequence::OnSubsequenceCompleted(
     case SubsequenceMode::kExactlyOne:
     case SubsequenceMode::kAtMostOne:
     case SubsequenceMode::kAtLeastOne:
-      DoStepTransition(next_step()->element);
+      StartStepTransition(next_step()->element);
       break;
     case SubsequenceMode::kAll:
       // Only transition if all enabled sequences are complete.
@@ -1266,7 +1472,7 @@ void InteractionSequence::OnSubsequenceCompleted(
         still_running |= (subsequence_data.sequence != nullptr);
       }
       if (!still_running) {
-        DoStepTransition(next_step()->element);
+        StartStepTransition(next_step()->element);
       }
       break;
   }
@@ -1318,12 +1524,10 @@ void InteractionSequence::BuildSubsequences(const Step* current_step) {
       subsequence_data.builder.SetAbortedCallback(
           base::BindOnce(&InteractionSequence::OnSubsequenceAborted,
                          AsWeakPtr(), SubsequenceHandle(&subsequence_data)));
-      subsequence_data.sequence =
-          subsequence_data.builder.BuildSubsequence(current_step);
-      // This will prevent internal transitions until the current step
-      // transition is done, while allowing watching for pre-trigger of the
-      // initial step.
-      subsequence_data.sequence->processing_step_ = true;
+      subsequence_data.sequence = subsequence_data.builder.BuildSubsequence(
+          configuration_.get(), current_step);
+
+      // Watch for pre-trigger of the initial step.
       subsequence_data.sequence->MaybeWatchForEarlyTrigger(current_step);
     }
   }
@@ -1344,47 +1548,53 @@ ElementContext InteractionSequence::context() const {
 }
 
 void PrintTo(InteractionSequence::StepType step_type, std::ostream* os) {
-  static const char* const kStepTypeNames[] = {
-      "kShown", "kActivated", "kHidden", "kCustomEvent", "kSubsequence"};
-  constexpr int kCount = sizeof(kStepTypeNames) / sizeof(kStepTypeNames[0]);
+  static constexpr auto kStepTypeNames = std::to_array<const char*>(
+      {"kShown", "kActivated", "kHidden", "kCustomEvent", "kSubsequence"});
+  constexpr size_t kCount = kStepTypeNames.size();
   static_assert(kCount ==
-                static_cast<int>(InteractionSequence::StepType::kMaxValue) + 1);
-  const int value = static_cast<int>(step_type);
-  *os << ((value < 0 || value >= kCount) ? "[invalid StepType]"
-                                         : kStepTypeNames[value]);
+                static_cast<size_t>(InteractionSequence::StepType::kMaxValue) +
+                    1);
+  const size_t value = base::checked_cast<size_t>(step_type);
+  *os << (value >= kCount ? "[invalid StepType]" : kStepTypeNames[value]);
 }
 
 void PrintTo(InteractionSequence::AbortedReason reason, std::ostream* os) {
-  static const char* const kAbortedReasonNames[] = {
-      "kSequenceDestroyed",
-      "kElementHiddenBeforeSequenceStart",
-      "kElementNotVisibleAtStartOfStep",
-      "kElementHiddenDuringStep",
-      "kNoSubsequenceRun",
-      "kSubsequenceFailed",
-      "kFailedForTesting",
-      "kSequenceTimedOut"};
-  constexpr int kCount =
-      sizeof(kAbortedReasonNames) / sizeof(kAbortedReasonNames[0]);
+  static constexpr auto kAbortedReasonNames = std::to_array(
+      {"kSequenceDestroyed", "kElementHiddenBeforeSequenceStart",
+       "kElementNotVisibleAtStartOfStep", "kElementHiddenDuringStep",
+       "kElementHiddenBetweenTriggerAndStepStart", "kNoSubsequenceRun",
+       "kSubsequenceFailed", "kFailedForTesting", "kSequenceTimedOut",
+       "kSubsequentStepTriggeredTooEarly",
+       "kSubsequentStepTriggerInvalidated"});
+  constexpr size_t kCount = kAbortedReasonNames.size();
   static_assert(
       kCount ==
-      static_cast<int>(InteractionSequence::AbortedReason::kMaxValue) + 1);
-  const int value = static_cast<int>(reason);
-  *os << ((value < 0 || value >= kCount) ? "[invalid StepType]"
-                                         : kAbortedReasonNames[value]);
+      static_cast<size_t>(InteractionSequence::AbortedReason::kMaxValue) + 1);
+  const size_t value = base::checked_cast<size_t>(reason);
+  *os << (value >= kCount ? "[invalid StepType]" : kAbortedReasonNames[value]);
 }
 
 void PrintTo(InteractionSequence::SubsequenceMode mode, std::ostream* os) {
-  static const char* const kSubsequenceModeNames[] = {
-      "kAtMostOne", "kExactlyOne", "kAtLeastOne", "kAll"};
-  constexpr int kCount =
-      sizeof(kSubsequenceModeNames) / sizeof(kSubsequenceModeNames[0]);
+  static constexpr auto kSubsequenceModeNames = std::to_array<const char*>(
+      {"kAtMostOne", "kExactlyOne", "kAtLeastOne", "kAll"});
+  constexpr size_t kCount = kSubsequenceModeNames.size();
   static_assert(
       kCount ==
       static_cast<int>(InteractionSequence::SubsequenceMode::kMaxValue) + 1);
-  const int value = static_cast<int>(mode);
-  *os << ((value < 0 || value >= kCount) ? "[invalid SubsequenceMode]"
-                                         : kSubsequenceModeNames[value]);
+  const size_t value = base::checked_cast<size_t>(mode);
+  *os << (value >= kCount ? "[invalid SubsequenceMode]"
+                          : kSubsequenceModeNames[value]);
+}
+
+void PrintTo(InteractionSequence::StepStartMode mode, std::ostream* os) {
+  switch (mode) {
+    case InteractionSequence::StepStartMode::kAsynchronous:
+      *os << "kAsynchronous";
+      break;
+    case InteractionSequence::StepStartMode::kImmediate:
+      *os << "kImmediate";
+      break;
+  }
 }
 
 void PrintTo(const InteractionSequence::AbortedData& data, std::ostream* os) {
@@ -1399,11 +1609,22 @@ void PrintTo(const InteractionSequence::AbortedData& data, std::ostream* os) {
   }
   if (data.aborted_reason ==
       InteractionSequence::AbortedReason::kSubsequenceFailed) {
-    *os << "; subsequence failures:";
+    *os << "\nsubsequence failures:";
     size_t i = 0;
     for (auto& subsequence : data.subsequence_failures) {
       if (subsequence) {
-        *os << " { subsequence " << i << " failed " << *subsequence << " }";
+        *os << "\n - subsequence " << i << " failed: " << *subsequence;
+      }
+      ++i;
+    }
+  } else if (data.aborted_reason ==
+                 InteractionSequence::AbortedReason::kSequenceTimedOut &&
+             !data.subsequence_failures.empty()) {
+    *os << "\nsubsequence failures and timeouts:";
+    size_t i = 0;
+    for (auto& subsequence : data.subsequence_failures) {
+      if (subsequence) {
+        *os << "\n - subsequence " << i << ": " << *subsequence;
       }
       ++i;
     }
@@ -1431,6 +1652,12 @@ extern std::ostream& operator<<(std::ostream& os,
 extern std::ostream& operator<<(std::ostream& os,
                                 InteractionSequence::AbortedReason reason) {
   PrintTo(reason, &os);
+  return os;
+}
+
+extern std::ostream& operator<<(std::ostream& os,
+                                InteractionSequence::StepStartMode mode) {
+  PrintTo(mode, &os);
   return os;
 }
 

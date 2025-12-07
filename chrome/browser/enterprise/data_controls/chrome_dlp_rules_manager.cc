@@ -120,8 +120,7 @@ Level ChromeDlpRulesManager::IsRestrictedDestination(
 
   const MatchedRuleInfo rule_info = GetMaxJoinRestrictionLevelAndRuleId(
       restriction, intersection_rules, restrictions_map_);
-  if (rule_info.url_condition.has_value() && out_source_pattern &&
-      out_destination_pattern) {
+  if (rule_info.url_condition.has_value() && out_source_pattern) {
     UrlConditionId src_condition_id = rule_info.url_condition.value().first;
     UrlConditionId dst_condition_id = rule_info.url_condition.value().second;
     if (out_source_pattern) {
@@ -189,7 +188,7 @@ ChromeDlpRulesManager::GetAggregatedDestinations(
   }
 
   std::map<Level, std::set<std::string>> result;
-  for (auto it : destination_level_map) {
+  for (const auto& it : destination_level_map) {
     if (it.first == kWildCardMatching) {
       result[it.second] = {it.first};
     } else if (it.second >= wildcard_level &&
@@ -302,7 +301,7 @@ void ChromeDlpRulesManager::OnDataLeakPreventionRulesUpdate() {
   // Not supported on non-CrOS platforms, see
   // `DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate()` for the CrOS
   // implementation.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace data_controls

@@ -14,6 +14,7 @@
 
 #if BUILDFLAG(SKIA_USE_METAL)
 #include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypes.h"
+#include "third_party/skia/include/gpu/graphite/mtl/MtlGraphiteTypesUtils.h"
 #endif
 
 namespace gpu {
@@ -69,15 +70,14 @@ uint32_t SharedImageFormatToIOSurfacePixelFormat(viz::SharedImageFormat format,
       return 0;
     }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
   MTLPixelFormat mtl_pixel_format = MTLPixelFormatInvalid;
   if (format.is_single_plane()) {
     if (format == viz::SinglePlaneFormat::kR_8 ||
-        format == viz::SinglePlaneFormat::kALPHA_8 ||
-        format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+        format == viz::SinglePlaneFormat::kALPHA_8) {
       mtl_pixel_format = MTLPixelFormatR8Unorm;
     } else if (format == viz::SinglePlaneFormat::kRG_88) {
       mtl_pixel_format = MTLPixelFormatRG8Unorm;
@@ -85,6 +85,8 @@ unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
       mtl_pixel_format = MTLPixelFormatRGBA8Unorm;
     } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       mtl_pixel_format = MTLPixelFormatBGRA8Unorm;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+      mtl_pixel_format = MTLPixelFormatRGBA16Float;
     } else {
       DLOG(ERROR) << "Invalid Metal pixel format:" << format.ToString();
     }
@@ -136,11 +138,10 @@ skgpu::graphite::TextureInfo GraphiteMetalTextureInfo(
   // Must match CreateMetalTexture in iosurface_image_backing.mm.
   // TODO(sunnyps): Move constants to a common utility header.
   skgpu::graphite::MtlTextureInfo mtl_texture_info;
-  mtl_texture_info.fSampleCount = 1;
+  mtl_texture_info.fSampleCount = skgpu::graphite::SampleCount::k1;
   mtl_texture_info.fFormat = mtl_pixel_format;
   mtl_texture_info.fUsage = MTLTextureUsageShaderRead;
-  if (format.is_single_plane() && !format.IsLegacyMultiplanar() &&
-      !is_yuv_plane) {
+  if (format.is_single_plane() && !is_yuv_plane) {
     mtl_texture_info.fUsage |= MTLTextureUsageRenderTarget;
   }
 #if BUILDFLAG(IS_IOS)

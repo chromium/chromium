@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -63,8 +63,8 @@ export class HorizontalCarouselElement extends CrLitElement {
 
   private resizeObserver_: ResizeObserver|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-  protected showBackButton_: boolean = false;
-  protected showForwardButton_: boolean = false;
+  protected accessor showBackButton_: boolean = false;
+  protected accessor showForwardButton_: boolean = false;
 
   //============================================================================
   // Overridden methods

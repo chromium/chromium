@@ -38,14 +38,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT) ObservationImpl
   // UseCase:
   void CheckMembershipOprf() override;
   void OnCheckMembershipOprfComplete(
-      std::unique_ptr<std::string> response_body) override;
+      std::optional<std::string> response_body) override;
   void CheckMembershipQuery(
       const private_membership::rlwe::PrivateMembershipRlweOprfResponse&
           oprf_response) override;
   void OnCheckMembershipQueryComplete(
-      std::unique_ptr<std::string> response_body) override;
+      std::optional<std::string> response_body) override;
   void CheckIn() override;
-  void OnCheckInComplete(std::unique_ptr<std::string> response_body) override;
+  void OnCheckInComplete(std::optional<std::string> response_body) override;
   base::Time GetLastPingTimestamp() override;
   void SetLastPingTimestamp(base::Time ts) override;
   std::vector<private_membership::rlwe::RlwePlaintextId>

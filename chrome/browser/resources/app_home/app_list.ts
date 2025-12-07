@@ -44,13 +44,13 @@ export class AppListElement extends CrLitElement {
     };
   }
 
-  protected apps_: AppInfo[] = [];
+  protected accessor apps_: AppInfo[] = [];
   private boundContextMenuListener_: any;
   private boundKeydownListener_: any;
   private listenerIds_: number[] = [];
   private mojoEventTarget_: PageCallbackRouter;
   // The app item that has the context menu click opened by user.
-  private selectedAppItem_: AppItemElement|null = null;
+  private accessor selectedAppItem_: AppItemElement|null = null;
 
   constructor() {
     super();
@@ -77,6 +77,7 @@ export class AppListElement extends CrLitElement {
     this.listenerIds_ = [
       this.mojoEventTarget_.addApp.addListener(this.addApp_.bind(this)),
       this.mojoEventTarget_.removeApp.addListener(this.removeApp_.bind(this)),
+      this.mojoEventTarget_.updateApp.addListener(this.updateApp_.bind(this)),
     ];
     document.addEventListener('contextmenu', this.boundContextMenuListener_);
     document.addEventListener('keydown', this.boundKeydownListener_);
@@ -106,15 +107,15 @@ export class AppListElement extends CrLitElement {
   }
 
   private launchFocusedApp() {
-    const activeElementId = this.shadowRoot!.activeElement?.id;
+    const activeElementId = this.shadowRoot.activeElement?.id;
     if (activeElementId !== undefined &&
         this.apps_.some(app => activeElementId === app.id)) {
-      BrowserProxy.getInstance().handler.launchApp(activeElementId!, null);
+      BrowserProxy.getInstance().handler.launchApp(activeElementId, null);
     }
   }
 
   private launchContextMenuForFocusedApp() {
-    const activeElementId = this.shadowRoot!.activeElement?.id;
+    const activeElementId = this.shadowRoot.activeElement?.id;
     if (!activeElementId) {
       return;
     }
@@ -124,7 +125,7 @@ export class AppListElement extends CrLitElement {
       return;
     }
 
-    const appElement = this.shadowRoot!.getElementById('container')
+    const appElement = this.shadowRoot.getElementById('container')
                            ?.querySelector('#' + this.apps_[currIndex]!.id);
     if (!appElement) {
       return;
@@ -138,9 +139,9 @@ export class AppListElement extends CrLitElement {
   private handleNavigateWithArrows(e: KeyboardEvent) {
     const numApps = this.apps_.length;
     const cssProps =
-        window.getComputedStyle(this.shadowRoot!.getElementById('container')!);
+        window.getComputedStyle(this.shadowRoot.getElementById('container')!);
     const numColumns: number =
-        cssProps!.getPropertyValue('grid-template-columns')!.split(' ').length;
+        cssProps.getPropertyValue('grid-template-columns').split(' ').length;
     const keyActions = {
       ArrowRight: 1,
       ArrowLeft: -1,
@@ -152,9 +153,9 @@ export class AppListElement extends CrLitElement {
       return;
     }
 
-    const activeElementId = this.shadowRoot!.activeElement?.id;
+    const activeElementId = this.shadowRoot.activeElement?.id;
     if (!activeElementId) {
-      this.shadowRoot!.getElementById('container')
+      this.shadowRoot.getElementById('container')
           ?.querySelector<HTMLElement>('#' + this.apps_[0]!.id)!.focus();
       return;
     }
@@ -172,7 +173,7 @@ export class AppListElement extends CrLitElement {
       nextIndex = currIndex;
     }
 
-    this.shadowRoot!.getElementById('container')
+    this.shadowRoot.getElementById('container')
         ?.querySelector<HTMLElement>('#' + this.apps_[nextIndex]!.id)!.focus();
   }
 
@@ -208,6 +209,18 @@ export class AppListElement extends CrLitElement {
       this.apps_.splice(index, 1);
       this.requestUpdate();
     }
+  }
+
+  private updateApp_(appInfo: AppInfo) {
+    const currIndex = this.apps_.findIndex(app => app.id === appInfo.id);
+    // If the app is found in the existing grid, remove it.
+    if (currIndex !== -1) {
+      this.apps_.splice(currIndex, 1);
+    }
+
+    // Add the current app in the correct place in the "grid" to
+    // show the app. This will call `requestUpdate()` under the hood.
+    this.addApp_(appInfo);
   }
 
   private closeCurrentAppMenu() {

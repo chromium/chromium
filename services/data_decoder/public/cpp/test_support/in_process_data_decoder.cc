@@ -59,13 +59,6 @@ void InProcessDataDecoder::BindImageDecoder(
   GetForwardingInterface()->BindImageDecoder(std::move(receiver));
 }
 
-void InProcessDataDecoder::BindJsonParser(
-    mojo::PendingReceiver<mojom::JsonParser> receiver) {
-  if (!drop_json_parsers_) {
-    GetForwardingInterface()->BindJsonParser(std::move(receiver));
-  }
-}
-
 void InProcessDataDecoder::BindWebBundleParserFactory(
     mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
         receiver) {

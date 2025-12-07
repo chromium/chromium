@@ -58,11 +58,6 @@ export interface InlineLoginBrowserProxy {
 
   /** Send 'openGuestWindow' message to the handler */
   openGuestWindow(): void;
-
-  /**
-   * @return JSON-encoded dialog arguments.
-   */
-  getDialogArguments(): string|null;
 }
 
 export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
@@ -108,10 +103,6 @@ export class InlineLoginBrowserProxyImpl implements InlineLoginBrowserProxy {
 
   openGuestWindow() {
     chrome.send('openGuestWindow');
-  }
-
-  getDialogArguments() {
-    return chrome.getVariableValue('dialogArguments');
   }
 
   static getInstance(): InlineLoginBrowserProxy {

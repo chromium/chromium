@@ -31,7 +31,7 @@ source_set("structured") {
     "structured_metrics_service.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "flushed_map.cc",
       "flushed_map.h",
@@ -63,7 +63,7 @@ source_set("structured") {
   ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("external_metrics") {
     sources = [
       "external_metrics.cc",
@@ -107,8 +107,7 @@ proto_library("proto") {
   # which means protos can't be referred to by absolute paths from within other
   # protos.
   import_dirs = [ "//third_party/metrics_proto" ]
-  proto_deps = [ "//third_party/metrics_proto" ]
-  link_deps = [ "//third_party/metrics_proto" ]
+  deps = [ "//third_party/metrics_proto" ]
 }
 
 # Sources used by all source sets in this BUILD file.
@@ -251,7 +250,7 @@ action("gen_structured_metrics_validator") {
     rebase_path(outdir, root_build_dir),
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "//tools/metrics/structured/sync/structured_chromiumos.xml" ]
 
     args += [
@@ -295,7 +294,7 @@ source_set("test_support") {
     ":structured_metrics_validator",
     "//base",
     "//base/test:test_support",
-    "//components/metrics:metrics",
+    "//components/metrics",
     "//components/metrics/structured/lib",
   ]
 }
@@ -308,7 +307,7 @@ source_set("unit_tests") {
     "structured_metrics_service_unittest.cc",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "flushed_map_unittest.cc" ]
   }
 
@@ -330,7 +329,7 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "external_metrics_unittest.cc" ]
 
     deps += [ ":external_metrics" ]

@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/timer/timer.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "components/live_caption/pref_names.h"
@@ -30,18 +31,23 @@ namespace speech {
 namespace {
 
 constexpr char kSodaDlcName[] = "libsoda";
-constexpr char kSodaEnglishUsDlcName[] = "libsoda-model-en-us";
+
+constexpr float kInitialSodaRetryTimeSeconds = 1.0;
+constexpr float kMaxSodaRetryTimeSeconds = 32.0;
 
 SodaInstaller::ErrorCode DlcCodeToSodaErrorCode(const std::string& code) {
   return (code == dlcservice::kErrorNeedReboot)
              ? SodaInstaller::ErrorCode::kNeedsReboot
              : SodaInstaller::ErrorCode::kUnspecifiedError;
 }
+const constexpr char* const kDefaultCrOSEnabledLanguages[] = {"da-DK", "nl-NL",
+                                                              "nb-NO", "sv-SE"};
 
 }  // namespace
 
 SodaInstallerImplChromeOS::SodaInstallerImplChromeOS() {
   available_languages_ = ConstructAvailableLanguages();
+  soda_backoff_seconds_ = kInitialSodaRetryTimeSeconds;
 }
 
 void SodaInstallerImplChromeOS::InitLanguages(PrefService* profile_prefs,
@@ -68,73 +74,68 @@ base::flat_map<std::string, SodaInstallerImplChromeOS::LanguageInfo>
 SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   base::flat_map<std::string, LanguageInfo> available_languages;
   // Defaults checked in.
-  if (!base::FeatureList::IsEnabled(kCrosExpandSodaLanguages)) {
-    available_languages.insert(
-        {kUsEnglishLocale, {kSodaEnglishUsDlcName, LanguageCode::kEnUs}});
-    return available_languages;
-  }
   available_languages.insert(
-      {kUsEnglishLocale, {"libsoda-model-en-us-df24d1", LanguageCode::kEnUs}});
+      {kUsEnglishLocale, {"libsoda-model-en-us-df24d2", LanguageCode::kEnUs}});
   available_languages.insert(
-      {"ja-JP", {"libsoda-model-ja-jp-df24d1", LanguageCode::kJaJp}});
+      {"ja-JP", {"libsoda-model-ja-jp-df24d2", LanguageCode::kJaJp}});
   available_languages.insert(
-      {"de-DE", {"libsoda-model-de-de-df24d1", LanguageCode::kDeDe}});
+      {"de-DE", {"libsoda-model-de-de-df24d2", LanguageCode::kDeDe}});
   available_languages.insert(
-      {"fr-FR", {"libsoda-model-fr-fr-df24d1", LanguageCode::kFrFr}});
+      {"fr-FR", {"libsoda-model-fr-fr-df24d2", LanguageCode::kFrFr}});
   available_languages.insert(
-      {"it-IT", {"libsoda-model-it-it-df24d1", LanguageCode::kItIt}});
+      {"it-IT", {"libsoda-model-it-it-df24d2", LanguageCode::kItIt}});
   available_languages.insert(
-      {"en-CA", {"libsoda-model-en-ca-df24d1", LanguageCode::kEnCa}});
+      {"en-CA", {"libsoda-model-en-ca-df24d2", LanguageCode::kEnCa}});
   available_languages.insert(
-      {"en-AU", {"libsoda-model-en-au-df24d1", LanguageCode::kEnAu}});
+      {"en-AU", {"libsoda-model-en-au-df24d2", LanguageCode::kEnAu}});
   available_languages.insert(
-      {"en-GB", {"libsoda-model-en-gb-df24d1", LanguageCode::kEnGb}});
+      {"en-GB", {"libsoda-model-en-gb-df24d2", LanguageCode::kEnGb}});
   available_languages.insert(
-      {"en-IE", {"libsoda-model-en-ie-df24d1", LanguageCode::kEnIe}});
+      {"en-IE", {"libsoda-model-en-ie-df24d2", LanguageCode::kEnIe}});
   available_languages.insert(
-      {"en-SG", {"libsoda-model-en-sg-df24d1", LanguageCode::kEnSg}});
+      {"en-SG", {"libsoda-model-en-sg-df24d2", LanguageCode::kEnSg}});
   available_languages.insert(
-      {"fr-BE", {"libsoda-model-fr-be-df24d1", LanguageCode::kFrBe}});
+      {"fr-BE", {"libsoda-model-fr-be-df24d2", LanguageCode::kFrBe}});
   available_languages.insert(
-      {"fr-CH", {"libsoda-model-fr-ch-df24d1", LanguageCode::kFrCh}});
+      {"fr-CH", {"libsoda-model-fr-ch-df24d2", LanguageCode::kFrCh}});
   available_languages.insert(
-      {"en-IN", {"libsoda-model-en-in-df24d1", LanguageCode::kEnIn}});
+      {"en-IN", {"libsoda-model-en-in-df24d2", LanguageCode::kEnIn}});
   available_languages.insert(
-      {"it-CH", {"libsoda-model-it-ch-df24d1", LanguageCode::kItCh}});
+      {"it-CH", {"libsoda-model-it-ch-df24d2", LanguageCode::kItCh}});
   available_languages.insert(
-      {"de-AT", {"libsoda-model-de-at-df24d1", LanguageCode::kDeAt}});
+      {"de-AT", {"libsoda-model-de-at-df24d2", LanguageCode::kDeAt}});
   available_languages.insert(
-      {"de-BE", {"libsoda-model-de-be-df24d1", LanguageCode::kDeBe}});
+      {"de-BE", {"libsoda-model-de-be-df24d2", LanguageCode::kDeBe}});
   available_languages.insert(
-      {"de-CH", {"libsoda-model-de-ch-df24d1", LanguageCode::kDeCh}});
+      {"de-CH", {"libsoda-model-de-ch-df24d2", LanguageCode::kDeCh}});
   available_languages.insert(
-      {"es-US", {"libsoda-model-es-us-df24d1", LanguageCode::kEsUs}});
+      {"es-US", {"libsoda-model-es-us-df24d2", LanguageCode::kEsUs}});
   available_languages.insert(
-      {"es-ES", {"libsoda-model-es-us-df24d1", LanguageCode::kEsEs}});
+      {"es-ES", {"libsoda-model-es-us-df24d2", LanguageCode::kEsEs}});
   available_languages.insert(
-      {"fr-CA", {"libsoda-model-fr-ca-df24d1", LanguageCode::kFrCa}});
+      {"fr-CA", {"libsoda-model-fr-ca-df24d2", LanguageCode::kFrCa}});
   available_languages.insert(
-      {"hi-IN", {"libsoda-model-hi-in-df24d1", LanguageCode::kHiIn}});
+      {"hi-IN", {"libsoda-model-hi-in-df24d2", LanguageCode::kHiIn}});
   available_languages.insert(
-      {"id-ID", {"libsoda-model-id-id-df24d1", LanguageCode::kIdId}});
+      {"id-ID", {"libsoda-model-id-id-df24d2", LanguageCode::kIdId}});
   available_languages.insert(
-      {"ko-KR", {"libsoda-model-ko-kr-df24d1", LanguageCode::kKoKr}});
+      {"ko-KR", {"libsoda-model-ko-kr-df24d2", LanguageCode::kKoKr}});
   available_languages.insert(
-      {"pl-PL", {"libsoda-model-pl-pl-df24d1", LanguageCode::kPlPl}});
+      {"pl-PL", {"libsoda-model-pl-pl-df24d2", LanguageCode::kPlPl}});
   available_languages.insert(
-      {"th-TH", {"libsoda-model-th-th-df24d1", LanguageCode::kThTh}});
+      {"th-TH", {"libsoda-model-th-th-df24d2", LanguageCode::kThTh}});
   available_languages.insert(
-      {"tr-TR", {"libsoda-model-tr-tr-df24d1", LanguageCode::kTrTr}});
+      {"tr-TR", {"libsoda-model-tr-tr-df24d2", LanguageCode::kTrTr}});
   available_languages.insert(
-      {"cmn-Hant-TW", {"libsoda-model-zh-tw-df24d1", LanguageCode::kZhTw}});
+      {"cmn-Hant-TW", {"libsoda-model-zh-tw-df24d2", LanguageCode::kZhTw}});
   available_languages.insert(
-      {"cmn-Hans-CN", {"libsoda-model-zh-cn-df24d1", LanguageCode::kZhCn}});
+      {"cmn-Hans-CN", {"libsoda-model-zh-cn-df24d2", LanguageCode::kZhCn}});
   available_languages.insert(
-      {"pt-BR", {"libsoda-model-pt-br-df24d1", LanguageCode::kPtBr}});
+      {"pt-BR", {"libsoda-model-pt-br-df24d2", LanguageCode::kPtBr}});
   available_languages.insert(
-      {"ru-RU", {"libsoda-model-ru-ru-df24d1", LanguageCode::kRuRu}});
+      {"ru-RU", {"libsoda-model-ru-ru-df24d2", LanguageCode::kRuRu}});
   available_languages.insert(
-      {"vi-VN", {"libsoda-model-vi-vn-df24d1", LanguageCode::kViVn}});
+      {"vi-VN", {"libsoda-model-vi-vn-df24d2", LanguageCode::kViVn}});
   available_languages.insert({"da-DK", {"", LanguageCode::kDaDk}});
   available_languages.insert({"nb-NO", {"", LanguageCode::kNbNo}});
   available_languages.insert({"nl-NL", {"", LanguageCode::kNlNl}});
@@ -142,65 +143,58 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
 
   if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages) &&
       base::FeatureList::IsEnabled(kCrosSodaConchLanguages)) {
-    available_languages["de-DE"] = {"libsoda-model-de-de-cnch24d1",
+    available_languages["da-DK"] = {"libsoda-model-da-dk-cnch24d3",
+                                    LanguageCode::kDaDk};
+    available_languages["de-AT"] = {"libsoda-model-de-at-cnch24d3",
+                                    LanguageCode::kDeAt};
+    available_languages["de-BE"] = {"libsoda-model-de-be-cnch24d3",
+                                    LanguageCode::kDeBe};
+    available_languages["de-CH"] = {"libsoda-model-de-ch-cnch24d3",
+                                    LanguageCode::kDeCh};
+    available_languages["de-DE"] = {"libsoda-model-de-de-cnch24d3",
                                     LanguageCode::kDeDe};
-    available_languages["en-US"] = {"libsoda-model-en-us-cnch24d1",
-                                    LanguageCode::kEnUs};
-    available_languages["fr-FR"] = {"libsoda-model-fr-fr-cnch24d1",
-                                    LanguageCode::kFrFr};
-    available_languages["en-AU"] = {"libsoda-model-en-au-cnch24d1",
+    available_languages["en-AU"] = {"libsoda-model-en-au-cnch24d3",
                                     LanguageCode::kEnAu};
-    available_languages["en-GB"] = {"libsoda-model-en-gb-cnch24d1",
+    available_languages["en-CA"] = {"libsoda-model-en-ca-cnch24d3",
+                                    LanguageCode::kEnCa};
+    available_languages["en-GB"] = {"libsoda-model-en-gb-cnch24d3",
                                     LanguageCode::kEnGb};
-    available_languages["en-IE"] = {"libsoda-model-en-ie-cnch24d1",
+    available_languages["en-IE"] = {"libsoda-model-en-ie-cnch24d3",
                                     LanguageCode::kEnIe};
-    available_languages["en-SG"] = {"libsoda-model-en-sg-cnch24d1",
+    available_languages["en-IN"] = {"libsoda-model-en-in-cnch24d3",
+                                    LanguageCode::kEnIn};
+    available_languages["en-SG"] = {"libsoda-model-en-sg-cnch24d3",
                                     LanguageCode::kEnSg};
-    available_languages["es-ES"] = {"libsoda-model-es-es-cnch24d1",
+    available_languages["en-US"] = {"libsoda-model-en-us-cnch24d3",
+                                    LanguageCode::kEnUs};
+    available_languages["es-ES"] = {"libsoda-model-es-es-cnch24d3",
                                     LanguageCode::kEsEs};
-    available_languages["es-US"] = {"libsoda-model-es-es-cnch24d1",
+    available_languages["es-US"] = {"libsoda-model-es-us-cnch24d3",
                                     LanguageCode::kEsUs};
-    available_languages["hi-IN"] = {"libsoda-model-hi-in-cnch24d1",
+    available_languages["fr-BE"] = {"libsoda-model-fr-be-cnch24d3",
+                                    LanguageCode::kFrBe};
+    available_languages["fr-CA"] = {"libsoda-model-fr-ca-cnch24d3",
+                                    LanguageCode::kFrCa};
+    available_languages["fr-CH"] = {"libsoda-model-fr-Ch-cnch24d3",
+                                    LanguageCode::kFrCh};
+    available_languages["fr-FR"] = {"libsoda-model-fr-fr-cnch24d3",
+                                    LanguageCode::kFrFr};
+    available_languages["hi-IN"] = {"libsoda-model-hi-in-cnch24d3",
                                     LanguageCode::kHiIn};
-    available_languages["it-IT"] = {"libsoda-model-it-it-cnch24d1",
+    available_languages["it-IT"] = {"libsoda-model-it-it-cnch24d3",
                                     LanguageCode::kItIt};
-    available_languages["ja-JP"] = {"libsoda-model-ja-jp-cnch24d1",
+    available_languages["ja-JP"] = {"libsoda-model-ja-jp-cnch24d3",
                                     LanguageCode::kJaJp};
-    available_languages["sv-SE"] = {"libsoda-model-sv-se-cnch24d1",
+    available_languages["ko-KR"] = {"libsoda-model-ko-kr-cnch24d3",
+                                    LanguageCode::kKoKr};
+    available_languages["nb-NO"] = {"libsoda-model-nb-no-cnch24d3",
+                                    LanguageCode::kNbNo};
+    available_languages["nl-NL"] = {"libsoda-model-nl-nl-cnch24d3",
+                                    LanguageCode::kNlNl};
+    available_languages["sv-SE"] = {"libsoda-model-sv-se-cnch24d3",
                                     LanguageCode::kSvSe};
   }
 
-  // Add in from feature flags. the value is of the format:
-  // "en-AU:libsoda-modelname,fr-CA:,de-CH:libsoda-pizzaface,"
-  // Note that fr-CA is removed explicitly in example.
-  std::vector<std::string> langs =
-      base::SplitString(base::GetFieldTrialParamValueByFeature(
-                            kCrosExpandSodaLanguages, "available_languages"),
-                        ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  for (const auto& unparsed_pair : langs) {
-    std::vector<std::string> lang_model_pair = base::SplitString(
-        unparsed_pair, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (lang_model_pair.size() != 2) {
-      // skip, but log.
-      LOG(DFATAL) << "Unable to parse a language pair, in wrong format. "
-                     "value received and ignored is "
-                  << unparsed_pair;
-      continue;
-    }
-    if (lang_model_pair[1].rfind("libsoda", 0) == std::string::npos &&
-        !lang_model_pair[1].empty()) {
-      LOG(ERROR) << "Incorrect prefix for " << lang_model_pair[0]
-                 << " given, is: " << lang_model_pair[1] << " and ignoring.";
-      continue;
-    }
-    const auto& lang_it = available_languages.find(lang_model_pair[0]);
-    if (lang_it == available_languages.end()) {
-      LOG(ERROR) << "Unable to find language " << lang_model_pair[0]
-                 << ", ignoring.";
-      continue;
-    }
-    lang_it->second.dlc_name = lang_model_pair[1];
-  }
 
   // Remove empty.
   base::EraseIf(available_languages,
@@ -216,7 +210,8 @@ base::FilePath SodaInstallerImplChromeOS::GetSodaBinaryPath() const {
 
 base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
     const std::string& language) const {
-  auto available_it = available_languages_.find(language);
+  auto available_it =
+      available_languages_.find(MaybeMapToChineseLocale(language));
   if (available_it == available_languages_.end()) {
     LOG(DFATAL) << "Asked for unavailable language " << language;
     return base::FilePath();
@@ -228,14 +223,35 @@ base::FilePath SodaInstallerImplChromeOS::GetLanguagePath(
   return it->second;
 }
 
+void SodaInstallerImplChromeOS::OnSodaInstallRetry() {
+  // we just run a soda install here. Turns out that we don't actually need the
+  // global prefs for this (at time of writing).  Internally runs the install
+  // process again, and then if that fails, continue retrying until
+  // exhausted. Timeout for retry doubles on every try and retries happen for
+  // all non-OK errors, although some errors are permanent.
+  InstallSoda(nullptr);
+}
+
+void SodaInstallerImplChromeOS::OnSodaLanguageInstallRetry() {
+  // We move the retry langs to a temporary here so that, just in case failure
+  // is instant and not out of line, we dont clobber it later.
+  base::flat_set<std::string> retry_languages(retry_languages_to_install_);
+  retry_languages_to_install_.clear();
+
+  for (const auto& language : retry_languages) {
+    InstallLanguageInternal(language);
+  }
+}
+
 void SodaInstallerImplChromeOS::InstallSoda(PrefService* global_prefs) {
-  if (never_download_soda_for_testing_)
+  if (soda_binary_installed_ || never_download_soda_for_testing_) {
     return;
+  }
+
   // Clear cached path in case this is a reinstallation (path could
   // change).
   SetSodaBinaryPath(base::FilePath());
 
-  soda_binary_installed_ = false;
   is_soda_downloading_ = true;
   soda_progress_ = 0.0;
 
@@ -257,8 +273,12 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
   SodaInstaller::RegisterLanguage(language, global_prefs);
   // Clear cached path in case this is a reinstallation (path could
   // change).
-
-  auto language_info = available_languages_.find(language);
+  InstallLanguageInternal(language);
+}
+void SodaInstallerImplChromeOS::InstallLanguageInternal(
+    const std::string& language) {
+  auto language_info =
+      available_languages_.find(MaybeMapToChineseLocale(language));
   if (language_info == available_languages_.end()) {
     LOG(DFATAL)
         << "Language " << language
@@ -285,10 +305,15 @@ void SodaInstallerImplChromeOS::InstallLanguage(const std::string& language,
 void SodaInstallerImplChromeOS::UninstallLanguage(const std::string& language,
                                                   PrefService* global_prefs) {
   SodaInstaller::UnregisterLanguage(language, global_prefs);
-  const auto& language_info = available_languages_.find(language);
+  const auto& language_info =
+      available_languages_.find(MaybeMapToChineseLocale(language));
+  // Remove from retry list in case it's in there.
+  retry_languages_to_install_.erase(language);
   if (language_info == available_languages_.end()) {
-    LOG(FATAL) << "Unable to uninstall language " << language
+    LOG(ERROR) << "Unable to uninstall language " << language
                << " as it is not in the list of available languages.";
+    NOTREACHED(base::NotFatalUntil::M145);
+    return;
   }
   const auto& dlc_name = language_info->second.dlc_name;
   installed_languages_.erase(language_info->second.language_code);
@@ -309,8 +334,35 @@ std::vector<std::string> SodaInstallerImplChromeOS::GetAvailableLanguages()
   return languages;
 }
 
+std::vector<std::string>
+SodaInstallerImplChromeOS::GetLiveCaptionEnabledLanguages() const {
+  auto enabled_languages = SodaInstaller::GetLiveCaptionEnabledLanguages();
+  // extra CrOS languages.
+  if (base::FeatureList::IsEnabled(kFeatureManagementCrosSodaConchLanguages) &&
+      base::FeatureList::IsEnabled(kCrosSodaConchLanguages)) {
+    for (const char* const enabled_language : kDefaultCrOSEnabledLanguages) {
+      enabled_languages.push_back(enabled_language);
+    }
+  }
+  return enabled_languages;
+}
+
+std::string SodaInstallerImplChromeOS::GetLanguageDlcNameForLocale(
+    const std::string& locale) const {
+  const auto& language_info =
+      available_languages_.find(MaybeMapToChineseLocale(locale));
+  if (language_info == available_languages_.end()) {
+    LOG(DFATAL) << "Asked for unavailable language " << locale;
+    return std::string();
+  }
+
+  return language_info->second.dlc_name;
+}
+
 void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
   soda_binary_installed_ = false;
+  soda_install_retry_timer_.Stop();
+  soda_backoff_seconds_ = kInitialSodaRetryTimeSeconds;
   SetSodaBinaryPath(base::FilePath());
   ash::DlcserviceClient::Get()->Uninstall(
       kSodaDlcName, base::BindOnce(&SodaInstallerImplChromeOS::OnDlcUninstalled,
@@ -331,7 +383,6 @@ void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
   language_pack_progress_.clear();
   SodaInstaller::UnregisterLanguages(global_prefs);
   installed_language_paths_.clear();
-  global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
 }
 
 void SodaInstallerImplChromeOS::SetSodaBinaryPath(base::FilePath new_path) {
@@ -351,6 +402,8 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
   if (install_result.error == dlcservice::kErrorNone) {
     soda_binary_installed_ = true;
     soda_progress_ = 1.0;
+    soda_backoff_seconds_ = kInitialSodaRetryTimeSeconds;
+    soda_install_retry_timer_.Stop();
     SetSodaBinaryPath(base::FilePath(install_result.root_path));
     for (const auto& available_lang : available_languages_) {
       // Check every installed language and notify on it, in case the language
@@ -362,9 +415,17 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
 
     base::UmaHistogramTimes(kSodaBinaryInstallationSuccessTimeTaken,
                             base::Time::Now() - start_time);
+  } else if (soda_backoff_seconds_ <= kMaxSodaRetryTimeSeconds) {
+    // TODO(robsc): Pipe the original start time through here, so that total
+    // time to fail or install is tracked correctly.
+    soda_install_retry_timer_.Start(
+        FROM_HERE, base::Seconds(soda_backoff_seconds_), this,
+        &SodaInstallerImplChromeOS::OnSodaInstallRetry);
+    soda_backoff_seconds_ *= 2;
   } else {
     soda_binary_installed_ = false;
     soda_progress_ = 0.0;
+    soda_backoff_seconds_ = kInitialSodaRetryTimeSeconds;
     NotifyOnSodaInstallError(LanguageCode::kNone,
                              DlcCodeToSodaErrorCode(install_result.error));
     base::UmaHistogramTimes(kSodaBinaryInstallationFailureTimeTaken,
@@ -382,6 +443,10 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
     const ash::DlcserviceClient::InstallResult& install_result) {
   language_pack_progress_.erase(language_code);
   if (install_result.error == dlcservice::kErrorNone) {
+    if (retry_languages_to_install_.empty()) {
+      soda_languagepack_backoff_seconds_ = 1.0;
+      languagepack_install_retry_timer_.Stop();
+    }
     installed_languages_.insert(language_code);
     SetLanguagePath(language_code, base::FilePath(install_result.root_path));
     if (soda_binary_installed_) {
@@ -391,9 +456,16 @@ void SodaInstallerImplChromeOS::OnLanguageInstalled(
         GetInstallationSuccessTimeMetricForLanguage(language),
         base::Time::Now() - start_time);
 
+  } else if (soda_languagepack_backoff_seconds_ <= kMaxSodaRetryTimeSeconds) {
+    retry_languages_to_install_.insert(language);
+    if (retry_languages_to_install_.size() == 1) {
+      // let's set the timer now.
+      languagepack_install_retry_timer_.Start(
+          FROM_HERE, base::Seconds(soda_languagepack_backoff_seconds_), this,
+          &SodaInstallerImplChromeOS::OnSodaLanguageInstallRetry);
+      soda_languagepack_backoff_seconds_ *= 2;
+    }
   } else {
-    // TODO: Notify the observer of the specific language pack that failed
-    // to install. ChromeOS currently only supports the en-US language pack.
     NotifyOnSodaInstallError(language_code,
                              DlcCodeToSodaErrorCode(install_result.error));
 

@@ -26,7 +26,7 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 
 namespace signin {
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 }
 
 class PrefRegistrySimple;
@@ -117,8 +117,8 @@ class AboutSigninInternals : public KeyedService,
     // Called when the token is invalidated.
     void Invalidate();
 
-    std::string consumer_id;    // service that requested the token.
-    signin::ScopeSet scopes;    // Scoped that are requested.
+    std::string consumer_id;  // service that requested the token.
+    signin::ScopeSet scopes;  // Scoped that are requested.
     base::Time request_time;
     base::Time receive_time;
     base::Time expiration_time;
@@ -215,6 +215,11 @@ class AboutSigninInternals : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
 
+  // Notifies that the value of `field` is changed. This function will update
+  // the corresponding field in `signin_status_` and the underlying prefs.
+  //
+  // If `value` is empty, then this function will clear the prefs and reset
+  // the corresponding entry in `signin_status_`.
   void NotifyTimedSigninFieldValueChanged(
       const signin_internals_util::TimedSigninStatusField& field,
       const std::string& value);

@@ -26,8 +26,8 @@ bool IgnoreTpcdDtGracePeriodMetadataGrant(
       return false;
   }
 
-  NOTREACHED_NORETURN() << "Invalid enum value: "
-                        << info->metadata.tpcd_metadata_cohort();
+  NOTREACHED() << "Invalid enum value: "
+               << info->metadata.tpcd_metadata_cohort();
 }
 
 ContentSetting ManagerBase::GetContentSetting(
@@ -73,7 +73,7 @@ ContentSettingsForOneType ManagerBase::GetContentSettingForOneType(
     result.emplace_back(
         RuleEntry.first.primary_pattern, RuleEntry.first.secondary_pattern,
         RuleEntry.second.value.Clone(), content_settings::ProviderType::kNone,
-        false, RuleEntry.second.metadata);
+        false, RuleEntry.second.metadata.Clone());
   }
   return result;
 }

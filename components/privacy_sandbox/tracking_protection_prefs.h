@@ -63,18 +63,6 @@ inline constexpr char kTrackingProtectionSilentEligibleSince[] =
 inline constexpr char kTrackingProtectionSilentOnboardedSince[] =
     "tracking_protection.tracking_protection_silent_onboarded_since";
 
-// Tracking Protection Reminder Prefs.
-
-// Unsynced pref that indicates the reminder status for a profile.
-inline constexpr char kTrackingProtectionReminderStatus[] =
-    "tracking_protection.reminder_status";
-
-// Tracking Protection Survey Prefs.
-
-// Unsynced pref that indicates the start time of the survey window.
-inline constexpr char kTrackingProtectionSurveyWindowStartTime[] =
-    "tracking_protection.survey_window_start_time";
-
 // Tracking Protection Settings Prefs.
 
 // Synced boolean that indicates whether the "block all 3pc" toggle on the
@@ -112,9 +100,6 @@ inline constexpr char kIpProtectionInitializedByDogfood[] =
 // fingerprinting protection setting.
 inline constexpr char kFingerprintingProtectionEnabled[] =
     "tracking_protection.fingerprinting_protection_enabled";
-
-// Whether to send the DNT header.
-inline constexpr char kEnableDoNotTrack[] = "enable_do_not_track";
 
 // Whether User Bypass 3PC exceptions have been migrated to Tracking Protection
 // exceptions.
@@ -158,17 +143,6 @@ enum class TrackingProtectionOnboardingAckAction {
   // Acked by clicking the close button/ESC/Swipe away.
   kClosed = 5,
   kMaxValue = kClosed,
-};
-
-// Tracking protection reminder statues.
-enum class TrackingProtectionReminderStatus {
-  kUnset = 0,
-  kInvalid = 1,
-  kPendingReminder = 2,
-  kExperiencedReminder = 3,
-  kModeBUserSkipped = 4,
-  kFeatureDisabledSkipped = 5,
-  kMaxValue = kFeatureDisabledSkipped,
 };
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry);

@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/strings/string_util.h"
 #include "content/public/renderer/v8_value_converter.h"
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
@@ -57,7 +58,8 @@ void GetAliasedFeature(v8::Local<v8::Name> property_name,
                        const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.HolderV2()->GetCreationContextChecked(isolate);
 
   v8::TryCatch try_catch(isolate);
   v8::Local<v8::Value> chrome;
@@ -119,7 +121,7 @@ void EmptySetterCallback(v8::Local<v8::Name> name,
 ExtensionHooksDelegate::ExtensionHooksDelegate(
     NativeRendererMessagingService* messaging_service)
     : messaging_service_(messaging_service) {}
-ExtensionHooksDelegate::~ExtensionHooksDelegate() {}
+ExtensionHooksDelegate::~ExtensionHooksDelegate() = default;
 
 RequestResult ExtensionHooksDelegate::HandleRequest(
     const std::string& method_name,
@@ -156,8 +158,8 @@ RequestResult ExtensionHooksDelegate::HandleRequest(
     return RequestResult(RequestResult::NOT_HANDLED);
 
   if (method_name == kSendExtensionRequest) {
-    messaging_util::MassageSendMessageArguments(context->GetIsolate(), false,
-                                                arguments);
+    messaging_util::MassageSendMessageArguments(v8::Isolate::GetCurrent(),
+                                                false, arguments);
   }
 
   APISignature::V8ParseResult parse_result =
@@ -183,7 +185,7 @@ void ExtensionHooksDelegate::InitializeTemplate(
 void ExtensionHooksDelegate::InitializeInstance(
     v8::Local<v8::Context> context,
     v8::Local<v8::Object> instance) {
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
 
   // Throw access errors for deprecated sendRequest-related properties. This
@@ -298,9 +300,8 @@ APIBindingHooks::RequestResult ExtensionHooksDelegate::HandleGetViews(
     if (!options_dict.Get("windowId", &v8_window_id) ||
         !options_dict.Get("tabId", &v8_tab_id) ||
         !options_dict.Get("type", &v8_view_type)) {
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Unexpected exception: argument parsing produces plain objects";
-      return RequestResult(RequestResult::THROWN);
     }
 
     if (!v8_window_id->IsUndefined()) {

@@ -59,7 +59,6 @@ std::unique_ptr<IconButton> CreateIconButton(
     const std::u16string& text,
     bool is_togglable,
     ui::ColorId icon_color = cros_tokens::kCrosSysOnSurface) {
-  // TODO(b/290696780): Update logic so the toolbar can drag from icon buttons.
   auto button = std::make_unique<IconButton>(
       std::move(callback), IconButton::Type::kMedium, icon, text,
       /*is_togglable=*/is_togglable, /*has_border=*/true);
@@ -243,9 +242,9 @@ GameDashboardToolbarView::GameDashboardToolbarView(
   SetInsideBorderInsets(gfx::Insets::VH(kVerticalInset, kHorizontalInset));
   SetBetweenChildSpacing(kBetweenChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  SetBackground(views::CreateThemedRoundedRectBackground(
+  SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kCornerRadius));
-  SetBorder(views::CreateThemedRoundedRectBorder(
+  SetBorder(views::CreateRoundedRectBorder(
       1, kCornerRadius, ui::ColorIds::kColorCrosSystemHighlightBorder));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
       this, SystemShadow::Type::kElevation12);

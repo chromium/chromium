@@ -1,9 +1,0 @@
-CONSOLE WARNING: Listener added for a 'DOMNodeRemovedFromDocument' mutation event. This event type is deprecated, and will be removed from this browser VERY soon. Usage of this event listener will cause performance issues today, and represents a large risk of imminent site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
-PASS ranges["blur"].startOffset is 0
-PASS ranges["blur"].endOffset is 0
-PASS ranges["DOMNodeRemovedFromDocument"].startOffset is 0
-PASS ranges["DOMNodeRemovedFromDocument"].endOffset is 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

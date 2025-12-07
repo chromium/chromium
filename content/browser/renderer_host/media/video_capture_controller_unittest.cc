@@ -8,29 +8,35 @@
 #include <string.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
-#include "base/memory/raw_ptr.h"
-#include "base/task/single_thread_task_runner.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "content/browser/media/capture/pip_screen_capture_coordinator_impl.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
 #include "content/browser/renderer_host/media/video_capture_controller_event_handler.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_util.h"
+#include "media/capture/capture_switches.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
@@ -40,9 +46,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::_;
 using ::testing::AnyNumber;
@@ -94,8 +100,8 @@ class MockVideoCaptureControllerEventHandler
                void(const VideoCaptureControllerID&, media::VideoCaptureError));
   MOCK_METHOD1(OnStarted, void(const VideoCaptureControllerID&));
   MOCK_METHOD1(OnStartedUsingGpuDecode, void(const VideoCaptureControllerID&));
-  MOCK_METHOD2(OnNewSubCaptureTargetVersion,
-               void(const VideoCaptureControllerID&, uint32_t));
+  MOCK_METHOD2(OnNewCaptureVersion,
+               void(const VideoCaptureControllerID&, media::CaptureVersion));
   MOCK_METHOD2(OnFrameDropped,
                void(const VideoCaptureControllerID&,
                     media::VideoCaptureFrameDropReason));
@@ -163,9 +169,11 @@ class VideoCaptureControllerTest
   ~VideoCaptureControllerTest() override {}
 
  protected:
-  static const int kPoolSize = 3;
+  static constexpr int kPoolSize = 3;
 
   void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kExcludePipFromScreenCapture);
+
     const std::string arbitrary_device_id = "arbitrary_device_id";
     const blink::mojom::MediaStreamType arbitrary_stream_type =
         blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
@@ -188,9 +196,9 @@ class VideoCaptureControllerTest
   void TearDown() override { base::RunLoop().RunUntilIdle(); }
 
   void InitializeNewDeviceClientAndBufferPoolInstances() {
-    buffer_pool_ = new media::VideoCaptureBufferPoolImpl(
+    buffer_pool_ = base::MakeRefCounted<media::VideoCaptureBufferPoolImpl>(
         media::VideoCaptureBufferType::kSharedMemory, kPoolSize);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
@@ -199,8 +207,8 @@ class VideoCaptureControllerTest
     device_client_ = std::make_unique<media::VideoCaptureDeviceClient>(
         std::make_unique<media::VideoFrameReceiverOnTaskRunner>(
             controller_->GetWeakPtrForIOThread(), GetIOThreadTaskRunner({})),
-        buffer_pool_, media::VideoEffectsContext({}));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+        buffer_pool_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void SendStubFrameToDeviceClient(const media::VideoCaptureFormat format,
@@ -216,7 +224,8 @@ class VideoCaptureControllerTest
         media::VideoFrame::AllocationSize(stub_frame->format(),
                                           stub_frame->coded_size()),
         format, color_space, rotation, false /* flip_y */, base::TimeTicks(),
-        base::TimeDelta(), std::nullopt, frame_feedback_id);
+        base::TimeDelta(), /*capture_begin_timestamp=*/std::nullopt,
+        /*metadata=*/std::nullopt, frame_feedback_id);
   }
 
   BrowserTaskEnvironment task_environment_;
@@ -233,6 +242,7 @@ class VideoCaptureControllerTest
   const gfx::ColorSpace arbitrary_color_space_;
   const VideoCaptureControllerID arbitrary_route_id_;
   const media::VideoCaptureSessionId arbitrary_session_id_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // A simple test of VideoCaptureController's ability to add, remove, and keep
@@ -267,18 +277,18 @@ TEST_F(VideoCaptureControllerTest, AddAndRemoveClients) {
   // Clients in controller: []
   ASSERT_EQ(0u, controller_->GetClientCount())
       << "Client count should initially be zero.";
-  controller_->AddClient(client_a_route_1, client_a_.get(), session_id_1,
-                         session_params_1);
+  controller_->AddClient(client_a_route_1, {}, client_a_.get(), session_id_1,
+                         session_params_1, std::nullopt);
   // Clients in controller: [A/1]
   ASSERT_EQ(1u, controller_->GetClientCount())
       << "Adding client A/1 should bump client count.";
-  controller_->AddClient(client_a_route_2, client_a_.get(), session_id_2,
-                         session_params_2);
+  controller_->AddClient(client_a_route_2, {}, client_a_.get(), session_id_2,
+                         session_params_2, std::nullopt);
   // Clients in controller: [A/1, A/2]
   ASSERT_EQ(2u, controller_->GetClientCount())
       << "Adding client A/2 should bump client count.";
-  controller_->AddClient(client_b_route_1, client_b_.get(), session_id_3,
-                         session_params_3);
+  controller_->AddClient(client_b_route_1, {}, client_b_.get(), session_id_3,
+                         session_params_3, std::nullopt);
   // Clients in controller: [A/1, A/2, B/1]
   ASSERT_EQ(3u, controller_->GetClientCount())
       << "Adding client B/1 should bump client count.";
@@ -297,8 +307,8 @@ TEST_F(VideoCaptureControllerTest, AddAndRemoveClients) {
       << "Removing client B/1 should return its session_id.";
   // Clients in controller: [A/1]
   ASSERT_EQ(1u, controller_->GetClientCount());
-  controller_->AddClient(client_b_route_2, client_b_.get(), session_id_4,
-                         session_params_4);
+  controller_->AddClient(client_b_route_2, {}, client_b_.get(), session_id_4,
+                         session_params_4, std::nullopt);
   // Clients in controller: [A/1, B/2]
 
   EXPECT_CALL(*client_a_, DoEnded(client_a_route_1)).Times(1);
@@ -374,12 +384,12 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   const media::VideoCaptureSessionId session_id_3 =
       base::UnguessableToken::Create();
 
-  controller_->AddClient(client_a_route_1, client_a_.get(), session_id_1,
-                         session_params_1);
-  controller_->AddClient(client_b_route_1, client_b_.get(), session_id_3,
-                         session_params_3);
-  controller_->AddClient(client_a_route_2, client_a_.get(), session_id_2,
-                         session_params_2);
+  controller_->AddClient(client_a_route_1, {}, client_a_.get(), session_id_1,
+                         session_params_1, std::nullopt);
+  controller_->AddClient(client_b_route_1, {}, client_b_.get(), session_id_3,
+                         session_params_3, std::nullopt);
+  controller_->AddClient(client_a_route_2, {}, client_a_.get(), session_id_2,
+                         session_params_2, std::nullopt);
   ASSERT_EQ(3u, controller_->GetClientCount());
 
   // Now, simulate an incoming captured buffer from the capture device. As a
@@ -396,7 +406,8 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
             result_code);
   auto buffer_access = buffer.handle_provider->GetHandleForInProcessAccess();
   ASSERT_EQ(1.0 / kPoolSize, device_client_->GetBufferPoolUtilization());
-  memset(buffer_access->data(), buffer_no++, buffer_access->mapped_size());
+  UNSAFE_TODO(memset(buffer_access->data().data(), buffer_no++,
+                     buffer_access->mapped_size()));
   {
     InSequence s;
     EXPECT_CALL(*client_a_, DoBufferCreated(client_a_route_1, _));
@@ -424,9 +435,10 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   kExpectedFeedback.frame_id = arbitrary_frame_feedback_id;
   EXPECT_CALL(*mock_launched_device_, OnUtilizationReport(kExpectedFeedback));
 
-  device_client_->OnIncomingCapturedBuffer(std::move(buffer), device_format,
-                                           arbitrary_reference_time_,
-                                           arbitrary_timestamp_, std::nullopt);
+  device_client_->OnIncomingCapturedBuffer(
+      std::move(buffer), device_format, arbitrary_reference_time_,
+      arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
 
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
@@ -446,7 +458,8 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
             result_code_2);
   auto buffer2_access = buffer2.handle_provider->GetHandleForInProcessAccess();
-  memset(buffer2_access->data(), buffer_no++, buffer2_access->mapped_size());
+  UNSAFE_TODO(memset(buffer2_access->data().data(), buffer_no++,
+                     buffer2_access->mapped_size()));
 
   client_a_->feedback_ = media::VideoCaptureFeedback(0.5, 60, 1000);
   client_a_->feedback_.frame_id = arbitrary_frame_feedback_id_2;
@@ -460,9 +473,10 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   expected_feedback_2.frame_id = arbitrary_frame_feedback_id_2;
   EXPECT_CALL(*mock_launched_device_, OnUtilizationReport(expected_feedback_2));
 
-  device_client_->OnIncomingCapturedBuffer(std::move(buffer2), device_format,
-                                           arbitrary_reference_time_,
-                                           arbitrary_timestamp_, std::nullopt);
+  device_client_->OnIncomingCapturedBuffer(
+      std::move(buffer2), device_format, arbitrary_reference_time_,
+      arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
 
   // The frame should be delivered to the clients in any order.
   EXPECT_CALL(*client_a_, DoBufferReady(ControllerIDAndSize(
@@ -477,8 +491,9 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   Mock::VerifyAndClearExpectations(mock_launched_device_);
 
   // Add a fourth client now that some buffers have come through.
-  controller_->AddClient(client_b_route_2, client_b_.get(),
-                         base::UnguessableToken::Create(), session_params_4);
+  controller_->AddClient(client_b_route_2, {}, client_b_.get(),
+                         base::UnguessableToken::Create(), session_params_4,
+                         std::nullopt);
   Mock::VerifyAndClearExpectations(client_b_.get());
 
   // Third, fourth, and fifth buffers. Pretend they all arrive at the same time.
@@ -494,10 +509,12 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
               result_code_3);
     auto buffer3_access =
         buffer3.handle_provider->GetHandleForInProcessAccess();
-    memset(buffer3_access->data(), buffer_no++, buffer3_access->mapped_size());
+    UNSAFE_TODO(memset(buffer3_access->data().data(), buffer_no++,
+                       buffer3_access->mapped_size()));
     device_client_->OnIncomingCapturedBuffer(
         std::move(buffer3), device_format, arbitrary_reference_time_,
-        arbitrary_timestamp_, std::nullopt);
+        arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
+        /*metadata=*/std::nullopt);
   }
   // ReserveOutputBuffer ought to fail now, because the pool is depleted.
   media::VideoCaptureDevice::Client::Buffer buffer_fail;
@@ -549,10 +566,12 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
             result_code_3);
   auto buffer3_access = buffer3.handle_provider->GetHandleForInProcessAccess();
-  memset(buffer3_access->data(), buffer_no++, buffer3_access->mapped_size());
-  device_client_->OnIncomingCapturedBuffer(std::move(buffer3), device_format,
-                                           arbitrary_reference_time_,
-                                           arbitrary_timestamp_, std::nullopt);
+  UNSAFE_TODO(memset(buffer3_access->data().data(), buffer_no++,
+                     buffer3_access->mapped_size()));
+  device_client_->OnIncomingCapturedBuffer(
+      std::move(buffer3), device_format, arbitrary_reference_time_,
+      arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
 
   media::VideoCaptureDevice::Client::Buffer buffer4;
   const auto result_code_4 = device_client_->ReserveOutputBuffer(
@@ -568,10 +587,12 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
   ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
             result_code_4);
   auto buffer4_access = buffer4.handle_provider->GetHandleForInProcessAccess();
-  memset(buffer4_access->data(), buffer_no++, buffer4_access->mapped_size());
-  device_client_->OnIncomingCapturedBuffer(std::move(buffer4), device_format,
-                                           arbitrary_reference_time_,
-                                           arbitrary_timestamp_, std::nullopt);
+  UNSAFE_TODO(memset(buffer4_access->data().data(), buffer_no++,
+                     buffer4_access->mapped_size()));
+  device_client_->OnIncomingCapturedBuffer(
+      std::move(buffer4), device_format, arbitrary_reference_time_,
+      arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
   // B2 is the only client left, and is the only one that should
   // get the buffer.
   EXPECT_CALL(*client_b_, DoBufferReady(ControllerIDAndSize(
@@ -603,8 +624,8 @@ TEST_F(VideoCaptureControllerTest, ErrorBeforeDeviceCreation) {
   const base::UnguessableToken session_id_1 = base::UnguessableToken::Create();
   const base::UnguessableToken session_id_2 = base::UnguessableToken::Create();
   // Start with one client.
-  controller_->AddClient(route_id, client_a_.get(), session_id_1,
-                         session_params_1);
+  controller_->AddClient(route_id, {}, client_a_.get(), session_id_1,
+                         session_params_1, std::nullopt);
   device_client_->OnError(
       media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest, FROM_HERE,
       "Test Error");
@@ -623,8 +644,8 @@ TEST_F(VideoCaptureControllerTest, ErrorBeforeDeviceCreation) {
       DoError(route_id, media::VideoCaptureError::
                             kVideoCaptureControllerIsAlreadyInErrorState))
       .Times(1);
-  controller_->AddClient(route_id, client_b_.get(), session_id_2,
-                         session_params_2);
+  controller_->AddClient(route_id, {}, client_b_.get(), session_id_2,
+                         session_params_2, std::nullopt);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_b_.get());
 
@@ -638,9 +659,10 @@ TEST_F(VideoCaptureControllerTest, ErrorBeforeDeviceCreation) {
       /*retire_old_buffer_id=*/nullptr);
   ASSERT_EQ(media::VideoCaptureDevice::Client::ReserveResult::kSucceeded,
             reserve_result);
-  device_client_->OnIncomingCapturedBuffer(std::move(buffer), device_format,
-                                           arbitrary_reference_time_,
-                                           arbitrary_timestamp_, std::nullopt);
+  device_client_->OnIncomingCapturedBuffer(
+      std::move(buffer), device_format, arbitrary_reference_time_,
+      arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
 
   base::RunLoop().RunUntilIdle();
 }
@@ -657,8 +679,9 @@ TEST_F(VideoCaptureControllerTest, ErrorAfterDeviceCreation) {
   const VideoCaptureControllerID route_id(base::UnguessableToken::Create());
 
   // Start with one client.
-  controller_->AddClient(route_id, client_a_.get(),
-                         base::UnguessableToken::Create(), session_params_1);
+  controller_->AddClient(route_id, {}, client_a_.get(),
+                         base::UnguessableToken::Create(), session_params_1,
+                         std::nullopt);
 
   // Start the device. Then, before the first buffer, signal an error and
   // deliver the buffer. The error should be propagated to clients; the buffer
@@ -680,9 +703,10 @@ TEST_F(VideoCaptureControllerTest, ErrorAfterDeviceCreation) {
   device_client_->OnError(
       media::VideoCaptureError::kIntentionalErrorRaisedByUnitTest, FROM_HERE,
       "Test Error");
-  device_client_->OnIncomingCapturedBuffer(std::move(buffer), device_format,
-                                           arbitrary_reference_time_,
-                                           arbitrary_timestamp_, std::nullopt);
+  device_client_->OnIncomingCapturedBuffer(
+      std::move(buffer), device_format, arbitrary_reference_time_,
+      arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
 
   EXPECT_CALL(
       *client_a_,
@@ -699,8 +723,9 @@ TEST_F(VideoCaptureControllerTest, ErrorAfterDeviceCreation) {
       DoError(route_id, media::VideoCaptureError::
                             kVideoCaptureControllerIsAlreadyInErrorState))
       .Times(1);
-  controller_->AddClient(route_id, client_b_.get(),
-                         base::UnguessableToken::Create(), session_params_2);
+  controller_->AddClient(route_id, {}, client_b_.get(),
+                         base::UnguessableToken::Create(), session_params_2,
+                         std::nullopt);
   Mock::VerifyAndClearExpectations(client_b_.get());
 }
 
@@ -719,8 +744,9 @@ TEST_F(VideoCaptureControllerTest, FrameFeedbackIsReportedForSequenceOfFrames) {
   media::VideoCaptureParams session_params_1;
   session_params_1.requested_format = arbitrary_format;
   const VideoCaptureControllerID route_id = base::UnguessableToken::Create();
-  controller_->AddClient(route_id, client_a_.get(),
-                         base::UnguessableToken::Create(), session_params_1);
+  controller_->AddClient(route_id, {}, client_a_.get(),
+                         base::UnguessableToken::Create(), session_params_1,
+                         std::nullopt);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
 
@@ -753,7 +779,8 @@ TEST_F(VideoCaptureControllerTest, FrameFeedbackIsReportedForSequenceOfFrames) {
               result_code);
     device_client_->OnIncomingCapturedBuffer(
         std::move(buffer), arbitrary_format, arbitrary_reference_time_,
-        arbitrary_timestamp_, std::nullopt);
+        arbitrary_timestamp_, /*capture_begin_timestamp=*/std::nullopt,
+        /*metadata=*/std::nullopt);
 
     base::RunLoop().RunUntilIdle();
     Mock::VerifyAndClearExpectations(client_a_.get());
@@ -766,8 +793,8 @@ TEST_F(VideoCaptureControllerTest,
   // Register |client_a_| at |controller_|.
   media::VideoCaptureParams requested_params;
   requested_params.requested_format = arbitrary_format_;
-  controller_->AddClient(arbitrary_route_id_, client_a_.get(),
-                         arbitrary_session_id_, requested_params);
+  controller_->AddClient(arbitrary_route_id_, {}, client_a_.get(),
+                         arbitrary_session_id_, requested_params, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // |device_client_| is released by the device.
@@ -782,8 +809,8 @@ TEST_F(VideoCaptureControllerTest,
   // Register |client_a_| at |controller_|.
   media::VideoCaptureParams requested_params;
   requested_params.requested_format = arbitrary_format_;
-  controller_->AddClient(arbitrary_route_id_, client_a_.get(),
-                         arbitrary_session_id_, requested_params);
+  controller_->AddClient(arbitrary_route_id_, {}, client_a_.get(),
+                         arbitrary_session_id_, requested_params, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // Device sends a frame to |device_client_| and |client_a_| reports to
@@ -814,8 +841,8 @@ TEST_F(VideoCaptureControllerTest,
   // Register |client_a_| at |controller_|.
   media::VideoCaptureParams requested_params;
   requested_params.requested_format = arbitrary_format_;
-  controller_->AddClient(arbitrary_route_id_, client_a_.get(),
-                         arbitrary_session_id_, requested_params);
+  controller_->AddClient(arbitrary_route_id_, {}, client_a_.get(),
+                         arbitrary_session_id_, requested_params, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // Device sends a frame to |device_client_|.
@@ -854,8 +881,8 @@ TEST_F(VideoCaptureControllerTest,
   // Register |client_a_| at |controller_|.
   media::VideoCaptureParams requested_params;
   requested_params.requested_format = arbitrary_format_;
-  controller_->AddClient(arbitrary_route_id_, client_a_.get(),
-                         arbitrary_session_id_, requested_params);
+  controller_->AddClient(arbitrary_route_id_, {}, client_a_.get(),
+                         arbitrary_session_id_, requested_params, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // Device sends a frame to |device_client_|.
@@ -934,10 +961,12 @@ TEST_F(VideoCaptureControllerTest, OnStartedForMultipleClients) {
   const VideoCaptureControllerID client_b_route_1 =
       base::UnguessableToken::Create();
 
-  controller_->AddClient(client_a_route_1, client_a_.get(),
-                         base::UnguessableToken::Create(), session_params_1);
-  controller_->AddClient(client_b_route_1, client_b_.get(),
-                         base::UnguessableToken::Create(), session_params_3);
+  controller_->AddClient(client_a_route_1, {}, client_a_.get(),
+                         base::UnguessableToken::Create(), session_params_1,
+                         std::nullopt);
+  controller_->AddClient(client_b_route_1, {}, client_b_.get(),
+                         base::UnguessableToken::Create(), session_params_3,
+                         std::nullopt);
   ASSERT_EQ(2u, controller_->GetClientCount());
 
   {
@@ -950,16 +979,17 @@ TEST_F(VideoCaptureControllerTest, OnStartedForMultipleClients) {
     // VideoCaptureController will take care of the OnStarted event for the
     // clients who join later.
     EXPECT_CALL(*client_a_, OnStarted(_));
-    controller_->AddClient(client_a_route_2, client_a_.get(),
-                           base::UnguessableToken::Create(), session_params_2);
+    controller_->AddClient(client_a_route_2, {}, client_a_.get(),
+                           base::UnguessableToken::Create(), session_params_2,
+                           std::nullopt);
   }
 }
 
 TEST_F(VideoCaptureControllerTest, OnFrameDroppedIsForwarded) {
   media::VideoCaptureParams requested_params;
   requested_params.requested_format = arbitrary_format_;
-  controller_->AddClient(arbitrary_route_id_, client_a_.get(),
-                         arbitrary_session_id_, requested_params);
+  controller_->AddClient(arbitrary_route_id_, {}, client_a_.get(),
+                         arbitrary_session_id_, requested_params, std::nullopt);
 
   EXPECT_CALL(*client_a_, OnFrameDropped(_, _)).Times(1);
   controller_->OnFrameDropped(
@@ -979,8 +1009,8 @@ TEST_F(VideoCaptureControllerTest, DeviceClientWithColorSpace) {
           gfx::ColorSpace::MatrixID::SMPTE170M,
           gfx::ColorSpace::RangeID::LIMITED);
   client_a_->expected_color_space_ = overriden_color_space;
-  controller_->AddClient(arbitrary_route_id_, client_a_.get(),
-                         arbitrary_session_id_, requested_params);
+  controller_->AddClient(arbitrary_route_id_, {}, client_a_.get(),
+                         arbitrary_session_id_, requested_params, std::nullopt);
   base::RunLoop().RunUntilIdle();
 
   // Device sends a frame to |device_client_| and |client_a_| reports to
@@ -1005,6 +1035,53 @@ TEST_F(VideoCaptureControllerTest, DeviceClientWithColorSpace) {
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(client_a_.get());
 }
+
+#if BUILDFLAG(IS_MAC)
+TEST_F(VideoCaptureControllerTest, AddRemoveScreenCaptureClient) {
+  PipScreenCaptureCoordinatorImpl* coordinator =
+      PipScreenCaptureCoordinatorImpl::GetInstance();
+  coordinator->ResetForTesting();
+
+  const std::string kScreenDeviceId =
+      DesktopMediaID(DesktopMediaID::TYPE_SCREEN, 1).ToString();
+  const blink::mojom::MediaStreamType kScreenStreamType =
+      blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  const media::VideoCaptureParams
+      kScreenCaptureParams;  // Default params are fine for this test
+
+  auto device_launcher = std::make_unique<MockVideoCaptureDeviceLauncher>();
+  scoped_refptr<VideoCaptureController> screen_controller =
+      new VideoCaptureController(kScreenDeviceId, kScreenStreamType,
+                                 kScreenCaptureParams,
+                                 std::move(device_launcher), base::DoNothing());
+
+  auto client_a = std::make_unique<MockVideoCaptureControllerEventHandler>(
+      screen_controller.get());
+  const VideoCaptureControllerID client_a_route_id =
+      base::UnguessableToken::Create();
+  const media::VideoCaptureSessionId session_id =
+      base::UnguessableToken::Create();
+  const GlobalRenderFrameHostId render_frame_host_id(1, 1);
+  const media::VideoCaptureParams session_params;
+
+  screen_controller->AddClient(client_a_route_id, render_frame_host_id,
+                               client_a.get(), session_id, session_params,
+                               std::nullopt);
+
+  const auto& captures = coordinator->Captures();
+  ASSERT_EQ(1u, captures.size());
+  EXPECT_EQ(session_id, captures[0].session_id);
+  EXPECT_EQ(render_frame_host_id, captures[0].render_frame_host_id);
+  EXPECT_EQ(DesktopMediaID::Parse(kScreenDeviceId),
+            captures[0].desktop_media_id);
+
+  screen_controller->RemoveClient(client_a_route_id, client_a.get());
+
+  ASSERT_TRUE(coordinator->Captures().empty());
+
+  coordinator->ResetForTesting();
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 }  // namespace content

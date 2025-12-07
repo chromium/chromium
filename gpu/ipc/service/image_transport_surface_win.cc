@@ -8,7 +8,7 @@
 
 #include "base/win/windows_version.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/gl/dcomp_presenter.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_bindings.h"
@@ -32,6 +32,8 @@ gl::DCompPresenter::Settings CreatDCompPresenterSettings(
   settings.disable_vp_scaling = workarounds.disable_vp_scaling;
   settings.disable_vp_super_resolution =
       workarounds.disable_vp_super_resolution;
+  settings.disable_dc_letterbox_video_optimization =
+      workarounds.disable_direct_composition_letterbox_video_optimization;
   settings.force_dcomp_triple_buffer_video_swap_chain =
       workarounds.force_dcomp_triple_buffer_video_swap_chain;
   return settings;
@@ -40,12 +42,16 @@ gl::DCompPresenter::Settings CreatDCompPresenterSettings(
 
 // static
 scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
-    gl::GLDisplay* display,
+    scoped_refptr<SharedContextState> context_state,
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
-    SurfaceHandle surface_handle,
-    DawnContextProvider* dawn_context_provider) {
+    SurfaceHandle surface_handle) {
   if (gl::DirectCompositionSupported()) {
+#if BUILDFLAG(SKIA_USE_DAWN)
+    // DirectComposition is only supported on Graphite with Dawn D3D11 backend.
+    DCHECK(!context_state->IsGraphiteDawn() ||
+           context_state->IsGraphiteDawnD3D11());
+#endif
     return base::MakeRefCounted<gl::DCompPresenter>(
         CreatDCompPresenterSettings(workarounds));
   }

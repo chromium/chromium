@@ -11,18 +11,22 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/commerce/core/commerce_info_cache.h"
+#include "components/commerce/core/compare/product_specifications_server_proxy.h"
+#include "components/commerce/core/mock_discount_infos_storage.h"
 #include "components/commerce/core/product_specifications/mock_product_specifications_service.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/web_extractor.h"
 #include "components/commerce/core/web_wrapper.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
-#include "components/optimization_guide/core/optimization_metadata.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decider.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/proto/hints.pb.h"
+#include "components/sessions/core/mock_tab_restore_service.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -110,6 +114,13 @@ class MockOptGuideDecider
       const std::string& gpc_title = "example_gpc_title",
       const std::vector<std::vector<std::string>>& product_categories = {});
 
+  void AddPriceSummaryToPriceTrackingResponse(
+      OptimizationMetadata* out_meta,
+      const PriceSummary_ProductOfferCondition condition,
+      const int64_t lowest_price,
+      const int64_t highest_price,
+      const std::string& country_code);
+
   void AddPriceUpdateToPriceTrackingResponse(OptimizationMetadata* out_meta,
                                              const std::string& currency_code,
                                              const int64_t current_price,
@@ -169,7 +180,7 @@ class MockWebWrapper : public WebWrapper {
 
   ~MockWebWrapper() override;
 
-  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(const std::u16string&, GetTitle, (), (override));
   MOCK_METHOD(bool, IsFirstLoadForNavigationFinished, (), (override));
   MOCK_METHOD(bool, IsOffTheRecord, (), (override));
@@ -199,6 +210,26 @@ class MockWebExtractor : public WebExtractor {
               (WebWrapper * web_wrapper,
                base::OnceCallback<void(const base::Value)> callback),
               (override));
+};
+
+class MockProductSpecificationsServerProxy
+    : public ProductSpecificationsServerProxy {
+ public:
+  explicit MockProductSpecificationsServerProxy();
+  MockProductSpecificationsServerProxy(
+      const MockProductSpecificationsServerProxy&) = delete;
+  MockProductSpecificationsServerProxy operator=(
+      const MockProductSpecificationsServerProxy&) = delete;
+  ~MockProductSpecificationsServerProxy() override;
+
+  MOCK_METHOD(void,
+              GetProductSpecificationsForClusterIds,
+              (std::vector<uint64_t> cluster_ids,
+               ProductSpecificationsCallback callback),
+              (override));
+
+  void SetGetProductSpecificationsForClusterIdsResponse(
+      std::optional<ProductSpecifications> specs);
 };
 
 class ShoppingServiceTestBase : public testing::Test {
@@ -244,6 +275,11 @@ class ShoppingServiceTestBase : public testing::Test {
   // URLs that are part of a user's ProductSpecificationsSets.
   ProductSpecificationsSet::Observer* GetProductSpecServiceUrlRefObserver();
 
+  void SetProductSpecificationsServerProxy(
+      std::unique_ptr<ProductSpecificationsServerProxy> proxy_ptr);
+
+  MockTabRestoreService* GetMockTabRestoreService();
+
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -266,6 +302,10 @@ class ShoppingServiceTestBase : public testing::Test {
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
 
   std::unique_ptr<MockProductSpecificationsService> product_spec_service_;
+
+  std::unique_ptr<MockTabRestoreService> tab_restore_service_;
+
+  raw_ptr<MockDiscountInfosStorage> discount_infos_storage_;
 
   std::unique_ptr<ShoppingService> shopping_service_;
 };

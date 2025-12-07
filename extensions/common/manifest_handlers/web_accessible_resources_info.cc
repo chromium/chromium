@@ -164,31 +164,34 @@ std::unique_ptr<WebAccessibleResourcesInfo> ParseEntryList(
   return info;
 }
 
-bool IsResourceWebAccessibleImpl(
-    const Extension& extension,
-    const std::optional<url::Origin>& initiator_origin,
-    const GURL& upstream_url,
-    const GURL& target_url) {
-  std::string relative_path = target_url.path();
-
-  // Set the intiator_url.
+// Returns the initiator URL to use for the given `initiator_origin`. This
+// depends on whether the origin is present, as well as if it's opaque -- in the
+// case of an opaque origin, this falls back to the precursor origin.
+GURL GetInitiatorUrl(const std::optional<url::Origin>& initiator_origin) {
   GURL initiator_url;
   if (initiator_origin) {
-    if (initiator_origin->opaque()) {
-      initiator_url =
-          initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL();
-    } else {
-      initiator_url = initiator_origin->GetURL();
-    }
+    initiator_url =
+        initiator_origin->opaque()
+            ? initiator_origin->GetTupleOrPrecursorTupleIfOpaque().GetURL()
+            : initiator_origin->GetURL();
   }
+  return initiator_url;
+}
 
+// Shared implementation for `IsResourceWebAccessible` and
+// `IsResourceWebAccessibleRedirect`.
+bool IsResourceWebAccessibleImpl(
+    const Extension& extension,
+    const GURL& target_url,
+    const std::optional<url::Origin>& initiator_origin,
+    const GURL& upstream_url) {
   const WebAccessibleResourcesInfo* info = GetResourcesInfo(&extension);
   if (!info) {
     return false;
   }
 
-  bool using_dynamic_url_extension_feature = base::FeatureList::IsEnabled(
-      extensions_features::kExtensionDynamicURLRedirection);
+  GURL initiator_url = GetInitiatorUrl(initiator_origin);
+  std::string relative_path = target_url.GetPath();
 
   // Look for the first match in the array of web accessible resources.
   for (const auto& entry : info->web_accessible_resources) {
@@ -201,25 +204,32 @@ bool IsResourceWebAccessibleImpl(
         return result;
       }
 
-      // If the manifest declares `use_dynamic_url` and the extension feature is
-      // enabled, then only load the resource if the dynamic url is used. The
+      // If `use_dynamic_url` is true in the manifest and the extension feature
+      // is enabled, then only load the resource if the dynamic url is used. The
       // dynamic url should be ok to accept if it's a `host_piece` of either the
-      // `upstream_url` or the `target_url` because the goal if this feature is
+      // `upstream_url` or the `target_url` because the goal of this feature is
       // to ensure that the dynamic url was used for fetching the resource.
-      if (using_dynamic_url_extension_feature && entry.use_dynamic_url) {
-        bool is_guid_target_url = extension.guid() == target_url.host_piece();
+      if (entry.use_dynamic_url) {
+        bool is_guid_target_url = extension.guid() == target_url.host();
         if (upstream_url.is_empty()) {
           result = is_guid_target_url;
         } else {
-          result = extension.guid() == upstream_url.host_piece() ||
-                   is_guid_target_url;
+          result =
+              extension.guid() == upstream_url.host() || is_guid_target_url;
         }
         if (!result) {
           continue;
         }
+
+        // If a site calls e.g. document.location.replace, then `upstream_url`
+        // will contain the site that requested the resource and `initiator url`
+        // will only be chrome-extension://<guid>.
+        if (entry.matches.MatchesURL(upstream_url)) {
+          return result;
+        }
       }
 
-      // Determine if the `intiator_url` is allowed to access this resource.
+      // Determine if the `initiator_url` is allowed to access this resource.
       if (entry.matches.MatchesURL(initiator_url)) {
         return result;
       }
@@ -228,8 +238,8 @@ bool IsResourceWebAccessibleImpl(
       // extension, or if the initiator host matches an entry extension id.
       if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
           (entry.allow_all_extensions ||
-           extension.id() == initiator_url.host() ||
-           base::Contains(entry.extension_ids, initiator_url.host()))) {
+           extension.id() == initiator_url.GetHost() ||
+           base::Contains(entry.extension_ids, initiator_url.GetHost()))) {
         return result;
       }
     }
@@ -253,9 +263,10 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
     const url::Origin* initiator_origin) {
   CHECK(extension);
   return IsResourceWebAccessibleImpl(
-      *extension, base::OptionalFromPtr(initiator_origin),
-      /*upstream_url=*/GURL(),
-      /*target_url=*/extension->GetResourceURL(relative_path));
+      *extension,
+      /*target_url=*/extension->ResolveExtensionURL(relative_path),
+      base::OptionalFromPtr(initiator_origin),
+      /*upstream_url=*/GURL());
 }
 
 // static
@@ -267,8 +278,8 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessibleRedirect(
   CHECK(extension);
   CHECK(target_url.SchemeIs(kExtensionScheme));
 
-  return IsResourceWebAccessibleImpl(*extension, initiator_origin, upstream_url,
-                                     target_url);
+  return IsResourceWebAccessibleImpl(*extension, target_url, initiator_origin,
+                                     upstream_url);
 }
 
 // static
@@ -321,8 +332,9 @@ bool WebAccessibleResourcesHandler::Parse(Extension* extension,
   auto info = extension->manifest_version() < 3
                   ? ParseResourceStringList(*extension, error)
                   : ParseEntryList(*extension, error);
-  if (!info)
+  if (!info) {
     return false;
+  }
   extension->SetManifestData(
       WebAccessibleResourcesManifestKeys::kWebAccessibleResources,
       std::move(info));

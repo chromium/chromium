@@ -33,9 +33,8 @@ def GetBuildData(method, request):
   url = ulib.Request(
       'https://cr-buildbucket.appspot.com/prpc/buildbucket.v2.Builds/' + method,
       request, headers)
-  conn = ulib.urlopen(url)
-  result = conn.read().decode('utf-8')
-  conn.close()
+  with ulib.urlopen(url) as conn:
+    result = conn.read().decode('utf-8')
   # Result is a multi-line string the first line of which is
   # deliberate garbage and the rest of which is a JSON payload.
   return json.loads(''.join(result.splitlines()[1:]))
@@ -81,9 +80,8 @@ def GetJsonForLatestGreenBuildSteps(bot):
 
 
 def JsonLoadFromUrl(url):
-  conn = ulib.urlopen(url + '?format=raw')
-  result = conn.read()
-  conn.close()
+  with ulib.urlopen(url + '?format=raw') as conn:
+    result = conn.read()
   return json.loads(result)
 
 
@@ -128,7 +126,7 @@ def GatherResults(bot, build, step):
   json_output = FindStepLogURL(build_json['steps'], step, 'json.output')
   if not json_output:
     raise ValueError(
-        'Unable to find json.output from step starting with %s' % step)
+        f'Unable to find json.output from step starting with {step}')
   logging.debug('json.output for step starting with %s: %s', step, json_output)
 
   merged_json = JsonLoadFromUrl(json_output)
@@ -199,13 +197,13 @@ gather_swarming_json_results.py \
                                                options.step)
 
   logging.debug('Saving output to %s', options.output)
-  with open(options.output, 'w') as f:
+  with open(options.output, 'w', encoding='utf-8') as f:
     json.dump(
         extracted_times, f, sort_keys=True, indent=2, separators=(',', ': '))
 
   if options.full_output is not None:
     logging.debug('Saving full output to %s', options.full_output)
-    with open(options.full_output, 'w') as f:
+    with open(options.full_output, 'w', encoding='utf-8') as f:
       json.dump(
           merged_json, f, sort_keys=True, indent=2, separators=(',', ': '))
 

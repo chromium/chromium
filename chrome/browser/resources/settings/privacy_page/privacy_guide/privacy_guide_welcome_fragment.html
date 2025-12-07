@@ -5,17 +5,14 @@
     min-height: calc(432px - var(--privacy-guide-footer-total-height));
   }
 
-  .headline {
-    outline: none;
-  }
-
-  .headline-container {
+  .welcome-completion-header {
     padding: 48px 116px var(--cr-section-padding) 116px;
     row-gap: 12px;
   }
 
   .footer {
     align-items: center;
+    animation: fade-in var(--privacy-guide-animation-duration);
     bottom: calc(-1 * var(--privacy-guide-footer-total-height));
     display: flex;
     justify-content: flex-end;
@@ -23,25 +20,17 @@
     position: absolute;
     width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
   }
-
-  :host-context([is-privacy-guide-v2]) picture {
-    animation: fade-in 1500ms, slide-in 300ms;
-  }
-
-  :host-context([is-privacy-guide-v2]) .footer {
-    animation: fade-in var(--privacy-guide-animation-duration);
-  }
 </style>
-<div class="headline-container">
+<div class="welcome-completion-header">
   <picture>
     <source
         srcset="./images/privacy_guide/welcome_banner_dark.svg"
         media="(prefers-color-scheme: dark)">
     <img alt="" src="./images/privacy_guide/welcome_banner.svg">
   </picture>
-  <div class="headline" tabindex="-1">
+  <h2 class="welcome-completion-header-label" tabindex="-1">
     $i18n{privacyGuideWelcomeCardHeader}
-  </div>
+  </h2>
   <div class="cr-secondary-text">$i18n{privacyGuideWelcomeCardSubHeader}</div>
 </div>
 <div class="footer">

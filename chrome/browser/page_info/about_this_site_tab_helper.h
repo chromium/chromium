@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_PAGE_INFO_ABOUT_THIS_SITE_TAB_HELPER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "components/optimization_guide/core/optimization_guide_decision.h"
+#include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "content/public/browser/web_contents_observer.h"

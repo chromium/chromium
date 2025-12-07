@@ -7,6 +7,7 @@
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/memory_program_cache.h"
 #include "gpu/command_buffer/service/program_cache.h"
+#include "gpu/config/gpu_driver_bug_workaround_type.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_share_group.h"
 
@@ -24,8 +25,6 @@ CommandBufferTaskExecutor::CommandBufferTaskExecutor(
       sync_point_manager_(sync_point_manager),
       share_group_surface_format_(share_group_surface_format),
       program_cache_(program_cache),
-      discardable_manager_(gpu_preferences_),
-      passthrough_discardable_manager_(gpu_preferences_),
       shader_translator_cache_(gpu_preferences_),
       shared_image_manager_(shared_image_manager) {
   DCHECK(shared_image_manager_);

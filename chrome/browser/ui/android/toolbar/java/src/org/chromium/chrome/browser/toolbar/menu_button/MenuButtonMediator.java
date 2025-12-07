@@ -4,14 +4,19 @@
 
 package org.chromium.chrome.browser.toolbar.menu_button;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
+import android.graphics.drawable.InsetDrawable;
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.core.graphics.Insets;
 
 import org.chromium.base.Callback;
 import org.chromium.base.MathUtils;
@@ -19,11 +24,13 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.ToolbarResourceUtils;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.SetFocusFunction;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ShowBadgeProperty;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonProperties.ThemeProperty;
@@ -39,34 +46,41 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelAnimatorFactory;
 import org.chromium.ui.util.TokenHolder;
 
+import java.util.function.Supplier;
+
 /**
  * Mediator for the MenuButton. Listens for MenuButton state changes and drives corresponding
  * changes to the property model that backs the MenuButton view.
  */
+@NullMarked
 class MenuButtonMediator implements AppMenuObserver {
-    private Callback<AppMenuCoordinator> mAppMenuCoordinatorSupplierObserver;
+    private final Callback<AppMenuCoordinator> mAppMenuCoordinatorSupplierObserver;
     private @Nullable AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
-    private AppMenuButtonHelper mAppMenuButtonHelper;
-    private ObservableSupplierImpl<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
-    private AppMenuHandler mAppMenuHandler;
+    private @Nullable AppMenuButtonHelper mAppMenuButtonHelper;
+    private final ObservableSupplierImpl<AppMenuButtonHelper> mAppMenuButtonHelperSupplier;
+    private @Nullable AppMenuHandler mAppMenuHandler;
     private final BrowserStateBrowserControlsVisibilityDelegate mControlsVisibilityDelegate;
     private final SetFocusFunction mSetUrlBarFocusFunction;
     private final PropertyModel mPropertyModel;
     private final Runnable mRequestRenderRunnable;
-    private final ThemeColorProvider mThemeColorProvider;
     private final Activity mActivity;
     private final KeyboardVisibilityDelegate mKeyboardDelegate;
-    private boolean mCanShowAppUpdateBadge;
+    private final boolean mCanShowAppUpdateBadge;
     private final Supplier<Boolean> mIsActivityFinishingSupplier;
     private int mFullscreenMenuToken = TokenHolder.INVALID_TOKEN;
     private int mFullscreenHighlightToken = TokenHolder.INVALID_TOKEN;
     private final Supplier<Boolean> mIsInOverviewModeSupplier;
-    private Resources mResources;
+    private final Resources mResources;
     private final OneshotSupplier<AppMenuCoordinator> mAppMenuCoordinatorSupplier;
-    private final Supplier<MenuButtonState> mMenuButtonStateSupplier;
+    private final Supplier<@Nullable MenuButtonState> mMenuButtonStateSupplier;
     private final Runnable mOnMenuButtonClicked;
+    private final TokenHolder mHideTokenHolder;
+    private final MenuButtonCoordinator.@Nullable VisibilityDelegate mVisibilityDelegate;
 
     private final int mUrlFocusTranslationX;
+    private final ThemeColorProvider mThemeColorProvider;
+    private final boolean mIsWebApp;
+    private Insets mInsets;
 
     /**
      * @param propertyModel Model to write property changes to.
@@ -75,7 +89,6 @@ class MenuButtonMediator implements AppMenuObserver {
      *     process of finishing or has already been destroyed.
      * @param requestRenderRunnable Runnable that requests a re-rendering of the compositor view
      *     containing the app menu button.
-     * @param themeColorProvider Provider of theme color changes.
      * @param isInOverviewModeSupplier Supplier of overview mode state.
      * @param controlsVisibilityDelegate Delegate for forcing persistent display of browser
      *     controls.
@@ -85,41 +98,58 @@ class MenuButtonMediator implements AppMenuObserver {
      * @param windowAndroid The WindowAndroid instance.
      * @param menuButtonStateSupplier Suplier of {@link MenuButtonState}.
      * @param onMenuButtonClicked Runnable to execute when menu button is clicked.
+     * @param visibilityDelegate Delegate for handling the visibility of the menu button.
+     * @param themeColorProvider The {@link ThemeColorProvider} for the toolbar.
+     * @param isWebApp Whether this menu button is for a web app.
      */
     MenuButtonMediator(
             PropertyModel propertyModel,
             boolean canShowAppUpdateBadge,
             Supplier<Boolean> isActivityFinishingSupplier,
             Runnable requestRenderRunnable,
-            ThemeColorProvider themeColorProvider,
             Supplier<Boolean> isInOverviewModeSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             SetFocusFunction setUrlBarFocusFunction,
             OneshotSupplier<AppMenuCoordinator> appMenuCoordinatorSupplier,
             WindowAndroid windowAndroid,
-            Supplier<MenuButtonState> menuButtonStateSupplier,
-            Runnable onMenuButtonClicked) {
+            Supplier<@Nullable MenuButtonState> menuButtonStateSupplier,
+            Runnable onMenuButtonClicked,
+            MenuButtonCoordinator.@Nullable VisibilityDelegate visibilityDelegate,
+            ThemeColorProvider themeColorProvider,
+            boolean isWebApp) {
         mPropertyModel = propertyModel;
         mCanShowAppUpdateBadge = canShowAppUpdateBadge;
         mIsActivityFinishingSupplier = isActivityFinishingSupplier;
         mRequestRenderRunnable = requestRenderRunnable;
-        mThemeColorProvider = themeColorProvider;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mControlsVisibilityDelegate = controlsVisibilityDelegate;
         mSetUrlBarFocusFunction = setUrlBarFocusFunction;
-        mThemeColorProvider.addTintObserver(this::onTintChanged);
         mAppMenuCoordinatorSupplierObserver = this::onAppMenuInitialized;
         mAppMenuCoordinatorSupplier = appMenuCoordinatorSupplier;
         mAppMenuCoordinatorSupplier.onAvailable(mAppMenuCoordinatorSupplierObserver);
-        mActivity = windowAndroid.getActivity().get();
+        mActivity = assertNonNull(windowAndroid.getActivity().get());
         mResources = mActivity.getResources();
         mAppMenuButtonHelperSupplier = new ObservableSupplierImpl<>();
         mKeyboardDelegate = windowAndroid.getKeyboardDelegate();
         mMenuButtonStateSupplier = menuButtonStateSupplier;
         mOnMenuButtonClicked = onMenuButtonClicked;
+        mHideTokenHolder = new TokenHolder(this::updateMenuButtonVisibility);
+        mVisibilityDelegate = visibilityDelegate;
+        mThemeColorProvider = themeColorProvider;
+        mIsWebApp = isWebApp;
+        mInsets = Insets.NONE;
 
         mUrlFocusTranslationX =
                 mResources.getDimensionPixelSize(R.dimen.toolbar_url_focus_translation_x);
+    }
+
+    private void updateMenuButtonVisibility() {
+        boolean visible = !mHideTokenHolder.hasTokens();
+        if (mVisibilityDelegate != null) {
+            mVisibilityDelegate.setMenuButtonVisible(visible);
+        } else {
+            mPropertyModel.set(MenuButtonProperties.IS_VISIBLE, visible);
+        }
     }
 
     @Override
@@ -174,7 +204,43 @@ class MenuButtonMediator implements AppMenuObserver {
     }
 
     void setVisibility(boolean visible) {
-        mPropertyModel.set(MenuButtonProperties.IS_VISIBLE, visible);
+        if (mHideTokenHolder.hasTokens()) return;
+        if (mVisibilityDelegate != null) {
+            mVisibilityDelegate.setMenuButtonVisible(visible);
+        } else {
+            mPropertyModel.set(MenuButtonProperties.IS_VISIBLE, visible);
+        }
+    }
+
+    /**
+     * Informs the button on whether there is enough space for it to be shown.
+     *
+     * @param hasSpaceToShow indicates whether the button view has space to show.
+     */
+    void setHasSpaceToShow(boolean hasSpaceToShow) {
+        mPropertyModel.set(MenuButtonProperties.HAS_SPACE_TO_SHOW, hasSpaceToShow);
+    }
+
+    /**
+     * Hides menu button persistently until all tokens are released.
+     *
+     * @param token previously acquired token.
+     * @return a new token that keeps menu button hidden.
+     */
+    int hideWithOldTokenRelease(int token) {
+        int newToken = mHideTokenHolder.acquireToken();
+        releaseHideToken(token);
+        return newToken;
+    }
+
+    /**
+     * Releases menu button hide token that might cause menu button to become visible if no more
+     * tokens are held.
+     *
+     * @param token previously acquired token.
+     */
+    void releaseHideToken(int token) {
+        mHideTokenHolder.releaseToken(token);
     }
 
     void updateReloadingState(boolean isLoading) {
@@ -182,7 +248,6 @@ class MenuButtonMediator implements AppMenuObserver {
             return;
         }
         mAppMenuPropertiesDelegate.loadingStateChanged(isLoading);
-        mAppMenuHandler.menuItemContentChanged(R.id.icon_row_menu_id);
     }
 
     ObservableSupplier<AppMenuButtonHelper> getMenuButtonHelperSupplier() {
@@ -191,6 +256,7 @@ class MenuButtonMediator implements AppMenuObserver {
 
     void destroy() {
         if (mAppMenuButtonHelper != null) {
+            assumeNonNull(mAppMenuHandler);
             mAppMenuHandler.removeObserver(this);
             mAppMenuButtonHelper = null;
         }
@@ -224,9 +290,9 @@ class MenuButtonMediator implements AppMenuObserver {
         updateContentDescription(false, 0);
     }
 
-    private void onTintChanged(
-            ColorStateList tintList,
-            ColorStateList activityFocusTintList,
+    void onTintChanged(
+            @Nullable ColorStateList tintList,
+            @Nullable ColorStateList activityFocusTintList,
             @BrandedColorScheme int brandedColorScheme) {
         mPropertyModel.set(
                 MenuButtonProperties.THEME,
@@ -307,5 +373,31 @@ class MenuButtonMediator implements AppMenuObserver {
                         mPropertyModel, MenuButtonProperties.ALPHA, alpha);
         animatorSet.playTogether(translationAnimator, alphaAnimator);
         return animatorSet;
+    }
+
+    void setBackgroundInsets(Insets insets) {
+        mInsets = insets;
+        updateBackground(mThemeColorProvider.getBrandedColorScheme());
+    }
+
+    private void updateBackground(@BrandedColorScheme int brandedColorScheme) {
+        final int backgroundRes =
+                ToolbarResourceUtils.backgroundResForThemeColor(brandedColorScheme, mIsWebApp);
+        InsetDrawable drawable =
+                new InsetDrawable(
+                        ResourcesCompat.getDrawable(
+                                mResources, backgroundRes, mActivity.getTheme()),
+                        mInsets.left,
+                        mInsets.top,
+                        mInsets.right,
+                        mInsets.bottom);
+        mPropertyModel.set(MenuButtonProperties.BACKGROUND_HIGHLIGHT, drawable);
+
+        // When setting the background of a view to an `InsetDrawable`, the padding of the view
+        // is automatically set to the insets of the `InsetDrawable`. However, a bug prevents the
+        // padding from being set if the insets are all 0. The workaround is to set the padding
+        // explicitly.
+        // https://crbug.com/442688217
+        mPropertyModel.set(MenuButtonProperties.BACKGROUND_INSETS, mInsets);
     }
 }

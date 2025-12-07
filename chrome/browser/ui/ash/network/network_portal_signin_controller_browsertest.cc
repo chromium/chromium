@@ -23,8 +23,6 @@ namespace ash {
 
 namespace {
 
-constexpr char kDefaultPortalUrl[] = "http://www.gstatic.com/generate_204";
-
 const NetworkState& GetDefaultNetwork() {
   const NetworkState* network =
       NetworkHandler::Get()->network_state_handler()->DefaultNetwork();
@@ -34,11 +32,10 @@ const NetworkState& GetDefaultNetwork() {
 
 }  // namespace
 
-class NetworkPortalSigninControllerBrowserTestBase
-    : public InProcessBrowserTest {
+class NetworkPortalSigninControllerBrowserTest : public InProcessBrowserTest {
  public:
-  NetworkPortalSigninControllerBrowserTestBase() = default;
-  ~NetworkPortalSigninControllerBrowserTestBase() override = default;
+  NetworkPortalSigninControllerBrowserTest() = default;
+  ~NetworkPortalSigninControllerBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -54,45 +51,12 @@ class NetworkPortalSigninControllerBrowserTestBase
         base::Value(shill::kStateRedirectFound));
   }
 
-  void SetupFeature(bool enabled) {
-    feature_list_.InitWithFeatureState(
-        chromeos::features::kCaptivePortalPopupWindow, enabled);
-  }
-
  protected:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<NetworkHandlerTestHelper> network_helper_;
 };
 
-class NetworkPortalSigninControllerBrowserTest
-    : public NetworkPortalSigninControllerBrowserTestBase {
- public:
-  NetworkPortalSigninControllerBrowserTest() { SetupFeature(false); }
-  ~NetworkPortalSigninControllerBrowserTest() override = default;
-};
-
 IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerBrowserTest,
-                       SigninDefault) {
-  GURL portal_url = GURL(kDefaultPortalUrl);
-  content::TestNavigationObserver navigation_observer(portal_url);
-  navigation_observer.StartWatchingNewWebContents();
-
-  NetworkPortalSigninController::Get()->ShowSignin(
-      NetworkPortalSigninController::SigninSource::kNotification);
-  base::RunLoop().RunUntilIdle();
-
-  navigation_observer.Wait();
-  EXPECT_EQ(navigation_observer.last_navigation_url(), portal_url);
-}
-
-class NetworkPortalSigninControllerPopupWindowBrowserTest
-    : public NetworkPortalSigninControllerBrowserTestBase {
- public:
-  NetworkPortalSigninControllerPopupWindowBrowserTest() { SetupFeature(true); }
-  ~NetworkPortalSigninControllerPopupWindowBrowserTest() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(NetworkPortalSigninControllerPopupWindowBrowserTest,
                        SigninDefault) {
   NetworkPortalSigninController::Get()->ShowSignin(
       NetworkPortalSigninController::SigninSource::kNotification);

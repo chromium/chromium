@@ -75,7 +75,7 @@ class WebRtcAudioDeviceImplTest : public testing::Test {
  public:
   WebRtcAudioDeviceImplTest()
       : audio_device_(
-            new rtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>()),
+            new webrtc::RefCountedObject<blink::WebRtcAudioDeviceImpl>()),
         audio_transport_(new MockAudioTransport()) {
     audio_device_module()->Init();
     audio_device_module()->RegisterAudioCallback(audio_transport_.get());
@@ -113,11 +113,14 @@ TEST_F(WebRtcAudioDeviceImplTest, GetStats) {
               static_cast<uint64_t>(audio_bus->frames() * i));
     EXPECT_EQ(stats.total_playout_delay_s,
               (audio_bus->frames() * i * base::Seconds(1)).InSecondsF());
+    base::TimeDelta buffer_duration = media::AudioTimestampHelper::FramesToTime(
+        audio_bus->frames(), sample_rate);
+    base::TimeDelta glitch_duration = glitch_info.duration;
+    base::TimeDelta buffer_plus_glitch_duration =
+        buffer_duration + glitch_duration;
     EXPECT_EQ(stats.total_samples_duration_s,
-              (media::AudioTimestampHelper::FramesToTime(audio_bus->frames(),
-                                                         sample_rate) *
-               i)
-                  .InSecondsF());
+              (buffer_plus_glitch_duration * i).InSecondsF());
+
     audio_device_->RenderData(audio_bus.get(), sample_rate, audio_delay,
                               &current_time, glitch_info);
   }

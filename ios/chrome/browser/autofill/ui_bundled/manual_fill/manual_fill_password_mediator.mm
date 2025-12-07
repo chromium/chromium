@@ -13,14 +13,17 @@
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/form_fetcher_impl.h"
 #import "components/password_manager/core/browser/password_manager_client.h"
+#import "components/password_manager/core/browser/password_manager_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #import "components/sync/base/data_type.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/form_fetcher_consumer_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential+PasswordForm.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
@@ -28,15 +31,14 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_consumer.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_list_navigator.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
+#import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/passwords/model/password_counter_delegate_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/settings/ui_bundled/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
-#import "ios/chrome/browser/ui/settings/password/saved_passwords_presenter_observer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -46,34 +48,35 @@
 using password_manager::CredentialUIEntry;
 using password_manager::PasswordForm;
 
-namespace manual_fill {
+namespace {
 
-NSString* const ManagePasswordsAccessibilityIdentifier =
-    @"kManualFillManagePasswordsAccessibilityIdentifier";
-NSString* const ManageSettingsAccessibilityIdentifier =
-    @"kManualFillManageSettingsAccessibilityIdentifier";
-NSString* const OtherPasswordsAccessibilityIdentifier =
-    @"kManualFillOtherPasswordsAccessibilityIdentifier";
-NSString* const SuggestPasswordAccessibilityIdentifier =
-    @"kManualFillSuggestPasswordAccessibilityIdentifier";
+// Struct used to store ManualFillCredential with their corresponding
+// PasswordForm.
+struct ManualFillCredentialAndPasswordForm {
+  ManualFillCredential* manual_fill_credential;
+  PasswordForm password_form;
+};
 
-}  // namespace manual_fill
+// Returns the `credentials` that match the `search_text`.
+std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
+    const std::vector<ManualFillCredentialAndPasswordForm>& credentials,
+    const NSString* search_text) {
+  // This method shouldn't be reached if `search_text` is empty.
+  CHECK(search_text.length);
 
-// Checks if two credential are connected. They are considered connected if they
-// have the same host.
-BOOL AreCredentialsAtIndicesConnected(
-    NSArray<ManualFillCredential*>* credentials,
-    int first_index,
-    int second_index) {
-  CHECK(!IsKeyboardAccessoryUpgradeEnabled());
-  if (first_index < 0 || first_index >= (int)credentials.count ||
-      second_index < 0 || second_index >= (int)credentials.count) {
-    return NO;
-  }
-
-  return [credentials[first_index].host
-      isEqualToString:credentials[second_index].host];
+  std::vector<ManualFillCredentialAndPasswordForm> filtered_credentials;
+  NSPredicate* predicate = [NSPredicate
+      predicateWithFormat:@"host CONTAINS[cd] %@ OR username CONTAINS[cd] %@",
+                          search_text, search_text];
+  std::ranges::copy_if(
+      credentials, std::back_inserter(filtered_credentials),
+      [&predicate](const ManualFillCredentialAndPasswordForm& credential) {
+        return [predicate evaluateWithObject:credential.manual_fill_credential];
+      });
+  return filtered_credentials;
 }
+
+}  // namespace
 
 @interface ManualFillPasswordMediator () <CRWWebStateObserver,
                                           FormActivityObserver,
@@ -84,13 +87,6 @@ BOOL AreCredentialsAtIndicesConnected(
 
 // The favicon loader used in TableViewFaviconDataSource.
 @property(nonatomic, assign) FaviconLoader* faviconLoader;
-
-// A cache of the saved credentials to present.
-@property(nonatomic, strong) NSArray<ManualFillCredential*>* credentials;
-
-// A cache of the password forms used to create ManualFillCredentials and
-// ManualFillCredentialItems.
-@property(nonatomic, assign) std::vector<PasswordForm> passwordForms;
 
 // YES if passwords were fetched at least once.
 @property(nonatomic, assign) BOOL passwordsWereFetched;
@@ -138,6 +134,9 @@ BOOL AreCredentialsAtIndicesConnected(
   // have been fetched by the `_formFetcher`.
   std::unique_ptr<FormFetcherConsumerBridge> _formFetcherConsumer;
 
+  // A cache of the saved credentials to present.
+  std::vector<ManualFillCredentialAndPasswordForm> _credentials;
+
   // Whether or not the user has passwords saved in the password stores.
   BOOL _hasSavedPasswords;
 
@@ -159,8 +158,7 @@ BOOL AreCredentialsAtIndicesConnected(
                showAutofillFormButton:(BOOL)showAutofillFormButton {
   self = [super init];
   if (self) {
-    _credentials = @[];
-    _passwordForms = {};
+    _credentials = {};
     _faviconLoader = faviconLoader;
     _webState = webState;
     _syncService = syncService;
@@ -174,7 +172,7 @@ BOOL AreCredentialsAtIndicesConnected(
     _showAutofillFormButton = showAutofillFormButton;
 
     // A valid `profilePasswordStore` is needed to observe PasswordCounter.
-    if (IsKeyboardAccessoryUpgradeEnabled() && profilePasswordStore) {
+    if (profilePasswordStore) {
       _passwordCounter = std::make_unique<PasswordCounterDelegateBridge>(
           self, profilePasswordStore.get(), accountPasswordStore.get());
     }
@@ -219,9 +217,10 @@ BOOL AreCredentialsAtIndicesConnected(
 
   std::vector<CredentialUIEntry> savedCredentials =
       _savedPasswordsPresenter->GetSavedCredentials();
-  self.passwordForms = [self passwordFormsFromCredentials:savedCredentials];
-  self.credentials =
-      [self createManualFillCredentialsFromPasswordForms:self.passwordForms];
+  std::vector<PasswordForm> passwordForms =
+      [self passwordFormsFromCredentials:savedCredentials];
+  _credentials = [self
+      createManualFillCredentialsFromPasswordForms:std::move(passwordForms)];
   self.passwordsWereFetched = YES;
   [self postDataToConsumer];
 }
@@ -233,20 +232,15 @@ BOOL AreCredentialsAtIndicesConnected(
   NSString* searchText = searchController.searchBar.text;
   if (!searchText.length) {
     NSArray<ManualFillCredentialItem*>* credentialItems =
-        [self createItemsForCredentials:self.credentials
-                      withPasswordForms:self.passwordForms];
+        [self createItemsForCredentials:_credentials];
     [self.consumer presentCredentials:credentialItems];
     return;
   }
 
-  NSPredicate* predicate = [NSPredicate
-      predicateWithFormat:@"host CONTAINS[cd] %@ OR username CONTAINS[cd] %@",
-                          searchText, searchText];
-  NSArray* filteredCredentials =
-      [self.credentials filteredArrayUsingPredicate:predicate];
+  std::vector<ManualFillCredentialAndPasswordForm> filteredCredentials =
+      GetFilteredCredentials(_credentials, searchText);
   NSArray<ManualFillCredentialItem*>* credentialItems =
-      [self createItemsForCredentials:filteredCredentials
-                    withPasswordForms:self.passwordForms];
+      [self createItemsForCredentials:filteredCredentials];
   [self.consumer presentCredentials:credentialItems];
 }
 
@@ -260,6 +254,7 @@ BOOL AreCredentialsAtIndicesConnected(
   if (self.passwordsWereFetched) {
     [self postCredentialsToConsumer];
     [self postActionsToConsumer];
+    [self.navigator passwordsFetched];
   }
 }
 
@@ -270,50 +265,41 @@ BOOL AreCredentialsAtIndicesConnected(
     return;
   }
   NSArray<ManualFillCredentialItem*>* credentials =
-      [self createItemsForCredentials:self.credentials
-                    withPasswordForms:self.passwordForms];
+      [self createItemsForCredentials:_credentials];
   [self.consumer presentCredentials:credentials];
 }
 
 // Creates a table view model with the passed credentials.
-- (NSArray<ManualFillCredentialItem*>*)
-    createItemsForCredentials:(NSArray<ManualFillCredential*>*)credentials
-            withPasswordForms:(const std::vector<PasswordForm>&)passwordForms {
-  int credentialCount = (int)credentials.count;
+- (NSArray<ManualFillCredentialItem*>*)createItemsForCredentials:
+    (const std::vector<ManualFillCredentialAndPasswordForm>&)credentials {
+  size_t credentialCount = credentials.size();
   NSMutableArray* items =
       [[NSMutableArray alloc] initWithCapacity:credentialCount];
-  for (int i = 0; i < credentialCount; i++) {
-    // Credentials from the same affiliated group are never connected when the
-    // Keyboard Accessory Upgrade feature is enabled.
-    BOOL isConnectedToPreviousItem =
-        IsKeyboardAccessoryUpgradeEnabled()
-            ? NO
-            : AreCredentialsAtIndicesConnected(credentials, i, i - 1);
-    BOOL isConnectedToNextItem =
-        IsKeyboardAccessoryUpgradeEnabled()
-            ? NO
-            : AreCredentialsAtIndicesConnected(credentials, i, i + 1);
+  for (size_t i = 0; i < credentialCount; i++) {
+    ManualFillCredential* manualFillCredential =
+        credentials[i].manual_fill_credential;
 
     NSArray<UIAction*>* menuActions =
-        IsKeyboardAccessoryUpgradeEnabled()
-            ? @[ [self createMenuEditActionForPassword:passwordForms[i]] ]
+        !manualFillCredential.isBackupCredential
+            ? @[ [self createMenuEditActionForPassword:credentials[i]
+                                                           .password_form] ]
             : @[];
 
     NSString* cellIndexAccessibilityLabel = base::SysUTF16ToNSString(
         base::i18n::MessageFormatter::FormatWithNamedArgs(
             l10n_util::GetStringUTF16(
                 IDS_IOS_MANUAL_FALLBACK_PASSWORD_CELL_INDEX),
-            "count", credentialCount, "position", i + 1));
+            "count", base::checked_cast<int>(credentialCount), "position",
+            base::checked_cast<int>(i + 1)));
 
     ManualFillCredentialItem* item = [[ManualFillCredentialItem alloc]
-                 initWithCredential:credentials[i]
-          isConnectedToPreviousItem:isConnectedToPreviousItem
-              isConnectedToNextItem:isConnectedToNextItem
+                 initWithCredential:manualFillCredential
                     contentInjector:self
                         menuActions:menuActions
+                          cellIndex:i
         cellIndexAccessibilityLabel:cellIndexAccessibilityLabel
              showAutofillFormButton:_showAutofillFormButton
-             shouldReauthToAutofill:![self isFromAllPasswordsContext]];
+            fromAllPasswordsContext:[self isFromAllPasswordsContext]];
     [items addObject:item];
   }
   return items;
@@ -347,12 +333,11 @@ BOOL AreCredentialsAtIndicesConnected(
                    [weakSelf.navigator openPasswordSuggestion];
                  }];
       suggestPasswordItem.accessibilityIdentifier =
-          manual_fill::SuggestPasswordAccessibilityIdentifier;
+          manual_fill::kSuggestPasswordAccessibilityIdentifier;
       [actions addObject:suggestPasswordItem];
     }
 
-    if (!IsKeyboardAccessoryUpgradeEnabled() ||
-        (IsKeyboardAccessoryUpgradeEnabled() && _hasSavedPasswords)) {
+    if (_hasSavedPasswords) {
       NSString* otherPasswordsTitleString = l10n_util::GetNSString(
           IDS_IOS_MANUAL_FALLBACK_SELECT_PASSWORD_WITH_DOTS);
       ManualFillActionItem* otherPasswordsItem = [[ManualFillActionItem alloc]
@@ -363,7 +348,7 @@ BOOL AreCredentialsAtIndicesConnected(
                    [weakSelf.navigator openAllPasswordsList];
                  }];
       otherPasswordsItem.accessibilityIdentifier =
-          manual_fill::OtherPasswordsAccessibilityIdentifier;
+          manual_fill::kOtherPasswordsAccessibilityIdentifier;
       [actions addObject:otherPasswordsItem];
     }
 
@@ -378,7 +363,7 @@ BOOL AreCredentialsAtIndicesConnected(
                  [weakSelf.navigator openPasswordManager];
                }];
     managePasswordsItem.accessibilityIdentifier =
-        manual_fill::ManagePasswordsAccessibilityIdentifier;
+        manual_fill::kManagePasswordsAccessibilityIdentifier;
     [actions addObject:managePasswordsItem];
 
     NSString* manageSettingsTitle =
@@ -391,7 +376,7 @@ BOOL AreCredentialsAtIndicesConnected(
                  [weakSelf.navigator openPasswordSettings];
                }];
     manageSettingsItem.accessibilityIdentifier =
-        manual_fill::ManageSettingsAccessibilityIdentifier;
+        manual_fill::kManageSettingsAccessibilityIdentifier;
 
     [actions addObject:manageSettingsItem];
 
@@ -415,27 +400,46 @@ BOOL AreCredentialsAtIndicesConnected(
   return passwordforms;
 }
 
-// Creates and returns a list of manual fill credentials built off of a list of
-// password forms.
-- (NSMutableArray<ManualFillCredential*>*)
+// Creates manual fill credentials from a list of password forms, and returns
+// every credential paired with the password form it was created from.
+- (std::vector<ManualFillCredentialAndPasswordForm>)
     createManualFillCredentialsFromPasswordForms:
-        (const std::vector<PasswordForm>&)passwordForms {
-  NSMutableArray<ManualFillCredential*>* manualFillCredentials =
-      [[NSMutableArray alloc] initWithCapacity:passwordForms.size()];
+        (std::vector<PasswordForm>)passwordForms {
+  std::vector<ManualFillCredentialAndPasswordForm> credentials;
   for (const auto& passwordForm : passwordForms) {
     ManualFillCredential* manualFillCredential =
-        [[ManualFillCredential alloc] initWithPasswordForm:passwordForm];
-    [manualFillCredentials addObject:manualFillCredential];
+        [[ManualFillCredential alloc] initWithPasswordForm:passwordForm
+                                                  isBackup:NO];
+
+    // Create an additional ManualFillCredential for the backup password if
+    // existing.
+    std::optional<std::u16string> backupPassword =
+        passwordForm.GetPasswordBackup();
+    if (backupPassword &&
+        base::FeatureList::IsEnabled(
+            password_manager::features::kIOSFillRecoveryPassword)) {
+      PasswordForm tempPasswordForm = passwordForm;
+      tempPasswordForm.password_value = backupPassword.value();
+      ManualFillCredential* backupManualFillCredential =
+          [[ManualFillCredential alloc] initWithPasswordForm:tempPasswordForm
+                                                    isBackup:YES];
+
+      credentials.push_back({manualFillCredential, passwordForm});
+      credentials.push_back(
+          {backupManualFillCredential, std::move(passwordForm)});
+    } else {
+      credentials.push_back({manualFillCredential, std::move(passwordForm)});
+    }
   }
 
-  return manualFillCredentials;
+  return credentials;
 }
 
 // Creates and configures a form fetcher.
 - (std::unique_ptr<password_manager::FormFetcherImpl>)createFormFetcher {
   password_manager::PasswordFormDigest formDigest(
       password_manager::PasswordForm::Scheme::kHtml,
-      password_manager::GetSignonRealm(_URL), _URL);
+      password_manager_util::GetSignonRealm(_URL), _URL);
 
   PasswordTabHelper* tabHelper = PasswordTabHelper::FromWebState(_webState);
   if (!tabHelper) {
@@ -474,10 +478,15 @@ BOOL AreCredentialsAtIndicesConnected(
 // Requests the appropriate delegate to open the details of the given credential
 // in edit mode.
 - (void)openPasswordDetailsInEditMode:(CredentialUIEntry)credential {
-  if ([self isFromAllPasswordsContext]) {
+  BOOL fromAllPasswordContext = [self isFromAllPasswordsContext];
+  if (fromAllPasswordContext) {
+    base::RecordAction(base::UserMetricsAction(
+        "ManualFallback_OtherPasswords_OverflowMenu_Edit"));
     [self.delegate manualFillPasswordMediator:self
         didTriggerOpenPasswordDetailsInEditMode:credential];
   } else {
+    base::RecordAction(
+        base::UserMetricsAction("ManualFallback_Password_OverflowMenu_Edit"));
     [self.navigator openPasswordDetailsInEditModeForCredential:credential];
   }
 }
@@ -540,9 +549,11 @@ BOOL AreCredentialsAtIndicesConnected(
                                       shouldReauth:shouldReauth];
 }
 
-- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion {
+- (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
+                           atIndex:(NSInteger)index {
   [self.delegate manualFillPasswordMediatorWillInjectContent:self];
-  [self.contentInjector autofillFormWithSuggestion:formSuggestion];
+  [self.contentInjector autofillFormWithSuggestion:formSuggestion
+                                           atIndex:index];
 }
 
 - (BOOL)isActiveFormAPasswordForm {
@@ -552,7 +563,8 @@ BOOL AreCredentialsAtIndicesConnected(
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
   DCHECK(completion);
   self.faviconLoader->FaviconForPageUrlOrHost(URL.gurl, gfx::kFaviconSize,
                                               completion);
@@ -607,13 +619,14 @@ BOOL AreCredentialsAtIndicesConnected(
 
 - (void)fetchDidComplete {
   // Fetch the passwords.
-  const base::span<const password_manager::PasswordForm> passwordForms =
+  const base::span<const PasswordForm> passwordForms =
       _formFetcher->GetBestMatches();
 
-  self.passwordForms =
+  std::vector<PasswordForm> passwordFormVector =
       std::vector<PasswordForm>(passwordForms.begin(), passwordForms.end());
-  self.credentials =
-      [self createManualFillCredentialsFromPasswordForms:self.passwordForms];
+  _credentials = [self
+      createManualFillCredentialsFromPasswordForms:std::move(
+                                                       passwordFormVector)];
 
   // Pass the passwords to the consumer.
   self.passwordsWereFetched = YES;

@@ -4,43 +4,31 @@
 
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 
-#include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
-#include "chrome/browser/ash/login/ui/fake_login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace policy {
 
 constexpr char kTestDomain[] = "example.com";
-
-struct ZeroTouchParam {
-  const char* enable_zero_touch_flag;
-  EnrollmentConfig::AuthMechanism auth_mechanism;
-  EnrollmentConfig::AuthMechanism auth_mechanism_after_oobe;
-
-  ZeroTouchParam(const char* flag,
-                 EnrollmentConfig::AuthMechanism auth,
-                 EnrollmentConfig::AuthMechanism auth_after_oobe)
-      : enable_zero_touch_flag(flag),
-        auth_mechanism(auth),
-        auth_mechanism_after_oobe(auth_after_oobe) {}
-};
 
 class EnrollmentConfigTest : public testing::Test {
  protected:
@@ -64,7 +52,13 @@ class EnrollmentConfigTest : public testing::Test {
   base::test::ScopedCommandLine command_line_;
   test::EnrollmentTestHelper enrollment_test_helper_{&command_line_,
                                                      &statistics_provider_};
-  ash::FakeLoginDisplayHost fake_login_display_host_;
+
+  // TODO(crbug.com/332587367): Because the process spawn by DEATH_CHECK's
+  // do not instantiate TestingBrowserProcess, FakeLoginDisplayHost can not call
+  // out to TestingBrowserProcess::GetGlobal()->local_state() to
+  // get a PrefService instance. For this reason, the instance is passed in
+  // here.
+  ash::FakeLoginDisplayHost fake_login_display_host_{&local_state_};
 };
 
 TEST_F(EnrollmentConfigTest, TokenEnrollmentModeWithNoTokenYieldsModeNone) {
@@ -99,37 +93,94 @@ TEST_F(
   EXPECT_TRUE(config.is_mode_with_manual_fallback());
   EXPECT_TRUE(config.is_automatic_enrollment());
   EXPECT_FALSE(config.is_mode_oauth());
-  EXPECT_EQ(EnrollmentConfig::GetManualFallbackMode(config.mode),
+  EXPECT_EQ(config.GetManualFallbackConfig().mode,
             EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK);
 }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-class EnrollmentConfigZeroTouchTest
-    : public EnrollmentConfigTest,
-      public testing::WithParamInterface<ZeroTouchParam> {
- protected:
-  void SetupZeroTouchCommandLineSwitch();
-};
+TEST_F(
+    EnrollmentConfigTest,
+    TokenEnrollmentModeWithRemoteDeploymentSourceYieldsRemoteDeploymentMode) {
+  const char kRemoteDeploymentFlexOobeConfig[] = R"({
+    "enrollmentToken": "test-enrollment-token",
+    "source": "REMOTE_DEPLOYMENT"
+  })";
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig(
+      kRemoteDeploymentFlexOobeConfig);
+  auto state_dict = base::Value::Dict().Set(
+      kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
 
-void EnrollmentConfigZeroTouchTest::SetupZeroTouchCommandLineSwitch() {
-  const ZeroTouchParam& param = GetParam();
-  if (param.enable_zero_touch_flag != nullptr) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        ash::switches::kEnterpriseEnableZeroTouchEnrollment,
-        param.enable_zero_touch_flag);
-  }
+  const EnrollmentConfig config = GetPrescribedConfig();
+
+  EXPECT_EQ(config.mode,
+            EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED);
+  EXPECT_TRUE(config.should_enroll());
+  EXPECT_TRUE(config.is_forced());
+  EXPECT_TRUE(config.is_mode_with_manual_fallback());
+  EXPECT_TRUE(config.is_automatic_enrollment());
+  EXPECT_EQ(config.GetManualFallbackConfig().mode,
+            EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK);
 }
 
-// Test enrollment configuration based on device state with precedence.
-TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
-  SetupZeroTouchCommandLineSwitch();
+struct EnrollmentConfigOOBEConfigSourceTestCase {
+  const char* json_source;
+  OOBEConfigSource expected_oobe_config_source;
+  EnrollmentConfig::Mode expected_mode;
+};
 
+class EnrollmentConfigOOBEConfigSourceTest
+    : public EnrollmentConfigTest,
+      public testing::WithParamInterface<
+          EnrollmentConfigOOBEConfigSourceTestCase> {};
+
+const EnrollmentConfigOOBEConfigSourceTestCase test_cases[] = {
+    {"", OOBEConfigSource::kNone,
+     EnrollmentConfig::Mode::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED},
+    {"UNKNOWN_VALUE", OOBEConfigSource::kUnknown,
+     EnrollmentConfig::Mode::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED},
+    {"REMOTE_DEPLOYMENT", OOBEConfigSource::kRemoteDeployment,
+     EnrollmentConfig::Mode::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED},
+    {"PACKAGING_TOOL", OOBEConfigSource::kPackagingTool,
+     EnrollmentConfig::Mode::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED},
+};
+
+TEST_P(EnrollmentConfigOOBEConfigSourceTest,
+       TokenEnrollmentModeWithTokenAndOOBEConfigSource) {
+  EnrollmentConfigOOBEConfigSourceTestCase test_case = GetParam();
+  const char kOOBEConfigFormat[] = R"({
+    "enrollmentToken": "test_enrollment_token",
+    "source": "%s"
+  })";
+  std::string oobe_config =
+      base::StringPrintf(kOOBEConfigFormat, test_case.json_source).c_str();
+  enrollment_test_helper_.SetUpFlexDevice();
+  enrollment_test_helper_.SetUpEnrollmentTokenConfig(oobe_config.c_str());
+  auto state_dict = base::Value::Dict().Set(
+      kDeviceStateMode, kDeviceStateInitialModeTokenEnrollment);
+  local_state_.SetDict(prefs::kServerBackedDeviceState, state_dict.Clone());
+
+  const EnrollmentConfig config = GetPrescribedConfig();
+
+  EXPECT_EQ(config.enrollment_token, test::kEnrollmentToken);
+  EXPECT_EQ(config.oobe_config_source, test_case.expected_oobe_config_source);
+  EXPECT_EQ(config.mode, test_case.expected_mode);
+}
+
+INSTANTIATE_TEST_SUITE_P(TokenEnrollmentModeWithTokenAndOOBEConfigSource,
+                         EnrollmentConfigOOBEConfigSourceTest,
+                         testing::ValuesIn(test_cases));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// Test enrollment configuration based on device state with precedence.
+TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigDuringOOBE) {
   // Default configuration is empty.
   {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
     EXPECT_TRUE(config.management_domain.empty());
-    EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
+    EXPECT_FALSE(config.is_automatic_enrollment());
+    EXPECT_FALSE(config.is_mode_oauth());
   }
 
   // Set signals in increasing order of precedence, check results.
@@ -141,7 +192,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
     EXPECT_TRUE(config.management_domain.empty());
-    EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
+    EXPECT_TRUE(config.is_mode_oauth());
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Pref: advertised enrollment. The resulting |config| is indistinguishable
@@ -154,7 +206,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_ADVERTISED, config.mode);
     EXPECT_TRUE(config.management_domain.empty());
-    EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
+    EXPECT_TRUE(config.is_mode_oauth());
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Server-backed state: advertised enrollment.
@@ -167,7 +220,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_SERVER_ADVERTISED, config.mode);
     EXPECT_EQ(kTestDomain, config.management_domain);
-    EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
+    EXPECT_TRUE(config.is_mode_oauth());
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // OEM manifest: forced enrollment.
@@ -179,7 +233,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
     EXPECT_TRUE(config.management_domain.empty());
-    EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
+    EXPECT_TRUE(config.is_mode_oauth());
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Pref: forced enrollment. The resulting |config| is indistinguishable from
@@ -192,7 +247,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_LOCAL_FORCED, config.mode);
     EXPECT_TRUE(config.management_domain.empty());
-    EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
+    EXPECT_TRUE(config.is_mode_oauth());
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Server-backed state: forced initial attestation-based enrollment.
@@ -206,8 +262,14 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
               config.mode);
     EXPECT_EQ(kTestDomain, config.management_domain);
-    EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
-              config.auth_mechanism);
+    EXPECT_TRUE(config.is_automatic_enrollment());
+    EXPECT_TRUE(config.is_mode_attestation());
+
+    const auto manual_fallback_config = config.GetManualFallbackConfig();
+    EXPECT_TRUE(manual_fallback_config.is_manual_fallback());
+    EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK,
+              manual_fallback_config.mode);
+    EXPECT_TRUE(manual_fallback_config.is_mode_oauth());
   }
 
   // Server-backed state: forced attestation-based re-enrollment.
@@ -220,8 +282,14 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED, config.mode);
     EXPECT_EQ(kTestDomain, config.management_domain);
-    EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
-              config.auth_mechanism);
+    EXPECT_TRUE(config.is_automatic_enrollment());
+    EXPECT_TRUE(config.is_mode_attestation());
+
+    const auto manual_fallback_config = config.GetManualFallbackConfig();
+    EXPECT_TRUE(manual_fallback_config.is_manual_fallback());
+    EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK,
+              manual_fallback_config.mode);
+    EXPECT_TRUE(manual_fallback_config.is_mode_oauth());
   }
 
   // Server-backed state: forced initial enrollment.
@@ -234,7 +302,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_INITIAL_SERVER_FORCED, config.mode);
     EXPECT_EQ(kTestDomain, config.management_domain);
-    EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
+    EXPECT_TRUE(config.is_mode_oauth());
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // Server-backed state: forced re-enrollment.
@@ -247,7 +316,8 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_SERVER_FORCED, config.mode);
     EXPECT_EQ(kTestDomain, config.management_domain);
-    EXPECT_EQ(GetParam().auth_mechanism, config.auth_mechanism);
+    EXPECT_TRUE(config.is_mode_oauth());
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 
   // OOBE config: rollback re-enrollment.
@@ -257,15 +327,19 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigDuringOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED, config.mode);
     EXPECT_TRUE(config.management_domain.empty());
-    EXPECT_EQ(EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
-              config.auth_mechanism);
+    EXPECT_TRUE(config.is_automatic_enrollment());
+    EXPECT_TRUE(config.is_mode_attestation());
+
+    const auto manual_fallback_config = config.GetManualFallbackConfig();
+    EXPECT_TRUE(manual_fallback_config.is_manual_fallback());
+    EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK,
+              manual_fallback_config.mode);
+    EXPECT_TRUE(manual_fallback_config.is_mode_oauth());
   }
 }
 
 // Test enrollment configuration after OOBE completed.
-TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
-  SetupZeroTouchCommandLineSwitch();
-
+TEST_F(EnrollmentConfigTest, GetPrescribedEnrollmentConfigAfterOOBE) {
   // If OOBE is complete, we may re-enroll to the domain configured in install
   // attributes. This is only enforced after detecting enrollment loss.
   local_state_.SetBoolean(ash::prefs::kOobeComplete, true);
@@ -273,7 +347,7 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
     EXPECT_TRUE(config.management_domain.empty());
-    EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
+    EXPECT_FALSE(config.should_enroll());
   }
 
   // Advertised enrollment gets ignored.
@@ -284,7 +358,7 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
     EXPECT_TRUE(config.management_domain.empty());
-    EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
+    EXPECT_FALSE(config.should_enroll());
   }
 
   // If the device is enterprise-managed, the management domain gets pulled from
@@ -294,7 +368,7 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_NONE, config.mode);
     EXPECT_EQ(kTestDomain, config.management_domain);
-    EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
+    EXPECT_FALSE(config.should_enroll());
   }
 
   // If enrollment recovery is on, this is signaled in |config.mode|.
@@ -303,22 +377,64 @@ TEST_P(EnrollmentConfigZeroTouchTest, GetPrescribedEnrollmentConfigAfterOOBE) {
     const auto config = GetPrescribedConfig();
     EXPECT_EQ(EnrollmentConfig::MODE_RECOVERY, config.mode);
     EXPECT_EQ(kTestDomain, config.management_domain);
-    EXPECT_EQ(GetParam().auth_mechanism_after_oobe, config.auth_mechanism);
+    EXPECT_TRUE(config.is_mode_oauth());
+    EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ZeroTouchFlag,
-    EnrollmentConfigZeroTouchTest,
-    ::testing::Values(
-        ZeroTouchParam(nullptr,  // No flag set.
-                       EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE,
-                       EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE),
-        ZeroTouchParam("",  // Flag set without a set value.
-                       EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED,
-                       EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE),
-        ZeroTouchParam("forced",
-                       EnrollmentConfig::AUTH_MECHANISM_ATTESTATION,
-                       EnrollmentConfig::AUTH_MECHANISM_ATTESTATION)));
+TEST_F(EnrollmentConfigTest, GetDemoModeEnrollmentConfig) {
+  const auto config = EnrollmentConfig::GetDemoModeEnrollmentConfig();
+
+  EXPECT_EQ(EnrollmentConfig::MODE_ATTESTATION, config.mode);
+  EXPECT_EQ(policy::kDemoModeDomain, config.management_domain);
+  EXPECT_TRUE(config.is_automatic_enrollment());
+  EXPECT_TRUE(config.is_mode_attestation());
+  EXPECT_CHECK_DEATH(config.GetManualFallbackConfig());
+}
+
+TEST_F(EnrollmentConfigTest, GetEffectivePrescribedEnrollmentConfig) {
+  EnrollmentConfig config;
+  config.mode = EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
+  config.management_domain = kTestDomain;
+
+  ASSERT_TRUE(config.should_enroll());
+  EXPECT_EQ(config, config.GetEffectiveConfig());
+}
+
+// Test that partially filled prescribed config that does not prescribe
+// enrollment produces correct manual enrollment config.
+TEST_F(EnrollmentConfigTest, GetEffectiveManualEnrollmentConfig) {
+  {
+    const auto config = GetPrescribedConfig();
+    ASSERT_FALSE(config.should_enroll());
+
+    const auto manual_config = config.GetEffectiveConfig();
+
+    EXPECT_EQ(EnrollmentConfig::MODE_MANUAL, manual_config.mode);
+    EXPECT_TRUE(manual_config.management_domain.empty());
+    EXPECT_TRUE(manual_config.is_mode_oauth());
+    EXPECT_EQ(LicenseType::kNone, manual_config.license_type);
+    EXPECT_CHECK_DEATH(manual_config.GetManualFallbackConfig());
+  }
+
+  local_state_.SetDict(
+      prefs::kServerBackedDeviceState,
+      base::Value::Dict()
+          .Set(kDeviceStateManagementDomain, kTestDomain)
+          .Set(kDeviceStateLicenseType, kDeviceStateLicenseTypeEducation));
+
+  {
+    const auto config = GetPrescribedConfig();
+    ASSERT_FALSE(config.should_enroll());
+
+    const auto manual_config = config.GetEffectiveConfig();
+
+    EXPECT_EQ(EnrollmentConfig::MODE_MANUAL, manual_config.mode);
+    EXPECT_TRUE(manual_config.management_domain.empty());
+    EXPECT_TRUE(manual_config.is_mode_oauth());
+    EXPECT_EQ(LicenseType::kEducation, manual_config.license_type);
+    EXPECT_CHECK_DEATH(manual_config.GetManualFallbackConfig());
+  }
+}
 
 }  // namespace policy

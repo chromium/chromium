@@ -13,7 +13,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
               "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -41,7 +40,37 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
+              "builder_group": "chromium.linux",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "linux"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "use_clang_coverage"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "Linux Builder",
+                "project": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "linux-oi-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
               "builder_group": "chromium.linux",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -80,6 +109,11 @@
           "bucket": "ci",
           "builder": "Linux Tests",
           "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "linux-oi-rel",
+          "project": "chromium"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -92,7 +126,15 @@
           "group": "tryserver.chromium.linux"
         },
         {
+          "builder": "linux-oi-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
           "builder": "linux-rel",
+          "group": "tryserver.chromium.linux"
+        },
+        {
+          "builder": "linux-rel-test-selection",
           "group": "tryserver.chromium.linux"
         },
         {
@@ -100,21 +142,21 @@
           "group": "tryserver.chromium.linux"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Builder/targets"
     }
-  },
-  "$build/reclient": {
-    "instance": "rbe-chromium-trusted",
-    "metrics_project": "chromium-reclient-metrics",
-    "scandeps_server": true
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "minimum",
     "project": "rbe-chromium-trusted",
     "remote_jobs": 500
   },

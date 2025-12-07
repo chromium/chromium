@@ -25,9 +25,7 @@ void NativeMessagingPipe::Start(
 }
 
 void NativeMessagingPipe::OnMessage(const base::Value& message) {
-  std::string message_json;
-  base::JSONWriter::Write(message, &message_json);
-  host_->OnMessage(message_json);
+  host_->OnMessage(base::WriteJson(message).value_or(""));
 }
 
 void NativeMessagingPipe::OnDisconnect() {
@@ -37,7 +35,8 @@ void NativeMessagingPipe::OnDisconnect() {
 
 void NativeMessagingPipe::PostMessageFromNativeHost(
     const std::string& message) {
-  std::optional<base::Value> json = base::JSONReader::Read(message);
+  std::optional<base::Value> json =
+      base::JSONReader::Read(message, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   channel_->SendMessage(json);
 }
 

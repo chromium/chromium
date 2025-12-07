@@ -48,8 +48,8 @@ class MockCursorImpl : public mojom::blink::IDBCursor {
   explicit MockCursorImpl(
       mojo::PendingAssociatedReceiver<mojom::blink::IDBCursor> receiver)
       : receiver_(this, std::move(receiver)) {
-    receiver_.set_disconnect_handler(WTF::BindOnce(
-        &MockCursorImpl::CursorDestroyed, WTF::Unretained(this)));
+    receiver_.set_disconnect_handler(
+        BindOnce(&MockCursorImpl::CursorDestroyed, Unretained(this)));
   }
 
   void Prefetch(int32_t count,
@@ -110,8 +110,8 @@ class IDBCursorTest : public testing::Test {
     MockIDBDatabase mock_database;
     // Set up `transaction`.
     IDBDatabase* db = MakeGarbageCollected<IDBDatabase>(
-        execution_context, mojo::NullAssociatedReceiver(), mojo::NullRemote(),
-        mock_database.BindNewEndpointAndPassDedicatedRemote());
+        execution_context, mojo::NullAssociatedReceiver(),
+        mock_database.BindNewEndpointAndPassDedicatedRemote(), /*priority=*/0);
 
     MockIDBTransaction mock_transaction_remote;
     IDBTransaction::TransactionMojoRemote transaction_remote(execution_context);
@@ -130,7 +130,7 @@ class IDBCursorTest : public testing::Test {
     // Set up `store`.
     IDBKeyPath store_key_path("primaryKey");
     scoped_refptr<IDBObjectStoreMetadata> store_metadata = base::AdoptRef(
-        new IDBObjectStoreMetadata("store", kStoreId, store_key_path, true, 1));
+        new IDBObjectStoreMetadata("store", kStoreId, store_key_path, true));
     IDBObjectStore* store =
         MakeGarbageCollected<IDBObjectStore>(store_metadata, transaction);
 
@@ -214,8 +214,8 @@ TEST_F(IDBCursorTest, PrefetchTest) {
         blob_info.emplace_back(WebBlobInfo::BlobForTesting(
             WebString("blobuuid"), "text/plain", 123));
       }
-      values.emplace_back(
-          std::make_unique<IDBValue>(Vector<char>(), std::move(blob_info)));
+      values.emplace_back(std::make_unique<IDBValue>());
+      values.back()->SetBlobInfo(std::move(blob_info));
     }
     cursor_->SetPrefetchData(std::move(keys), std::move(primary_keys),
                              std::move(values));
@@ -284,8 +284,8 @@ TEST_F(IDBCursorTest, AdvancePrefetchTest) {
       blob_info.emplace_back(WebBlobInfo::BlobForTesting(WebString("blobuuid"),
                                                          "text/plain", 123));
     }
-    values.emplace_back(
-        std::make_unique<IDBValue>(Vector<char>(), std::move(blob_info)));
+    values.emplace_back(std::make_unique<IDBValue>());
+    values.back()->SetBlobInfo(std::move(blob_info));
   }
   cursor_->SetPrefetchData(std::move(keys), std::move(primary_keys),
                            std::move(values));
@@ -368,8 +368,7 @@ TEST_F(IDBCursorTest, PrefetchReset) {
   Vector<std::unique_ptr<IDBKey>> primary_keys(prefetch_count);
   Vector<std::unique_ptr<IDBValue>> values;
   for (int i = 0; i < prefetch_count; ++i) {
-    values.emplace_back(
-        std::make_unique<IDBValue>(Vector<char>(), Vector<WebBlobInfo>()));
+    values.emplace_back(std::make_unique<IDBValue>());
   }
   cursor_->SetPrefetchData(std::move(keys), std::move(primary_keys),
                            std::move(values));

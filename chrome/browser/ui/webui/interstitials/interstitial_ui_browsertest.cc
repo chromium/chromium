@@ -4,6 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/ui/browser.h"
@@ -12,8 +13,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webui/chrome_urls/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -22,8 +25,8 @@
 
 class InterstitialUITest : public InProcessBrowserTest {
  public:
-  InterstitialUITest() {}
-  ~InterstitialUITest() override {}
+  InterstitialUITest() = default;
+  ~InterstitialUITest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpCommandLine(command_line);
@@ -37,15 +40,24 @@ class InterstitialUITest : public InProcessBrowserTest {
 #endif
   }
 
+  void SetUpOnMainThread() override {
+    g_browser_process->local_state()->SetBoolean(
+        chrome_urls::kInternalOnlyUisEnabled, true);
+    InProcessBrowserTest::SetUpOnMainThread();
+  }
+
  protected:
   // Tests interstitial displayed at url to verify that it has the given
   // page title and body content that is expected.
   //
   // page_title must be an exact match, while body content may appear anywhere
-  // in the rendered page. Thus an empty body_text never fails.
+  // in the rendered page. Thus an empty body_text never fails. If
+  // expand_details is set, body_text will also match any content hidden below
+  // the fold.
   void TestInterstitial(GURL url,
                         const std::string& page_title,
-                        const std::u16string& body_text) {
+                        const std::u16string& body_text,
+                        bool expand_details) {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
     EXPECT_EQ(base::ASCIIToUTF16(page_title),
               browser()->tab_strip_model()->GetActiveWebContents()->GetTitle());
@@ -63,6 +75,13 @@ class InterstitialUITest : public InProcessBrowserTest {
     content::WebContents* contents =
         browser()->tab_strip_model()->GetActiveWebContents();
 
+    if (expand_details) {
+      EXPECT_EQ(true,
+                content::EvalJs(
+                    contents,
+                    "document.querySelector('#details-button').click(); true"));
+    }
+
     EXPECT_GE(ui_test_utils::FindInPage(contents, body_text, true, true,
                                         nullptr, nullptr),
               1);
@@ -70,7 +89,8 @@ class InterstitialUITest : public InProcessBrowserTest {
 
   // Convenience function to test interstitial pages without provided body_text.
   void TestInterstitial(GURL url, const std::string& page_title) {
-    TestInterstitial(url, page_title, std::u16string());
+    TestInterstitial(url, page_title, std::u16string(),
+                     /*expand_details=*/false);
   }
 
   // Convenience function to test interstitial pages with l10n message_ids as
@@ -78,7 +98,23 @@ class InterstitialUITest : public InProcessBrowserTest {
   void TestInterstitial(GURL url,
                         const std::string& page_title,
                         int message_id) {
-    TestInterstitial(url, page_title, l10n_util::GetStringUTF16(message_id));
+    TestInterstitial(url, page_title, l10n_util::GetStringUTF16(message_id),
+                     /*expand_details=*/false);
+  }
+
+  // Default version of TestInterstitial that uses expand_details=false.
+  void TestInterstitial(GURL url,
+                        const std::string& page_title,
+                        const std::u16string& body_text) {
+    TestInterstitial(url, page_title, body_text, /*expand_details=*/false);
+  }
+
+  // Convenience function to test interstitial pages where the body_text is
+  // below the fold.
+  void TestInterstitialExpandedDetails(GURL url,
+                                       const std::string& page_title,
+                                       const std::u16string& body_text) {
+    TestInterstitial(url, page_title, body_text, /*expand_details=*/true);
   }
 };
 
@@ -110,15 +146,15 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, MITMSoftwareInterstitial) {
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, PinnedCertInterstitial) {
-  TestInterstitial(GURL("chrome://interstitials/ssl?type=hpkp_failure"),
-                   "Privacy error",
-                   u"NET::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN");
+  TestInterstitialExpandedDetails(
+      GURL("chrome://interstitials/ssl?type=hpkp_failure"), "Privacy error",
+      u"NET::ERR_SSL_PINNED_KEY_NOT_IN_CERT_CHAIN");
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, CTInterstitial) {
-  TestInterstitial(GURL("chrome://interstitials/ssl?type=ct_failure"),
-                   "Privacy error",
-                   u"NET::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED");
+  TestInterstitialExpandedDetails(
+      GURL("chrome://interstitials/ssl?type=ct_failure"), "Privacy error",
+      u"NET::ERR_CERTIFICATE_TRANSPARENCY_REQUIRED");
 }
 
 IN_PROC_BROWSER_TEST_F(InterstitialUITest, EnterpriseBlockInterstitial) {
@@ -204,10 +240,35 @@ IN_PROC_BROWSER_TEST_F(InterstitialUITest, BlockedInterceptionInterstitial) {
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Tests that the interstitials have the expected title and content.
 IN_PROC_BROWSER_TEST_F(InterstitialUITest,
                        SupervisedUserVerificationInterstitial) {
   TestInterstitial(GURL("chrome://interstitials/supervised-user-verify"),
-                   "Verify it's you", IDS_SUPERVISED_USER_VERIFY_IT_IS_YOU);
+                   "YouTube", IDS_SUPERVISED_USER_VERIFY_PAGE_PRIMARY_HEADING);
+}
+
+IN_PROC_BROWSER_TEST_F(InterstitialUITest,
+                       SupervisedUserVerificationBlockedSiteInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/supervised-user-verify-blocked-site"),
+      "Site blocked", IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_NOT_SIGNED_IN);
+}
+
+IN_PROC_BROWSER_TEST_F(InterstitialUITest,
+                       SupervisedUserVerificationSubframeInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/supervised-user-verify-subframe"), "YouTube",
+      IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_YOUTUBE_HEADING);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    InterstitialUITest,
+    SupervisedUserVerificationBlockedSiteSubframeInterstitial) {
+  TestInterstitial(
+      GURL("chrome://interstitials/"
+           "supervised-user-verify-blocked-site-subframe"),
+      "Site blocked",
+      IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING);
 }
 #endif
 

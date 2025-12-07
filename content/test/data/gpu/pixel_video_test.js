@@ -61,7 +61,7 @@ function main() {
   getParametersTesting();
 
   video.onerror = e => {
-    logOutput(`Video playback error occurred: ${e.message}`);
+    logOutput(`Video playback error occurred: ${video.error.message}`);
     abort = true;
     domAutomationController.send('FAIL');
   };
@@ -104,9 +104,6 @@ function main() {
     }
   }
 
-  // Must add "--enable-features=ReportFCPOnlyOnSuccessfulCommit" with
-  // gpu_benchmarking to ensure completion event callback in
-  // addSwapCompletionEventListener is sent only on a succdessful commit.
   function waitForSwapsToComplete() {
     if (videoFrameReady) {
       if (swapCount == 0) {

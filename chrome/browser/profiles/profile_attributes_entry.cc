@@ -13,6 +13,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -30,7 +31,10 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
+#include "components/signin/public/identity_manager/tribool.h"
+#include "components/sync/base/features.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
@@ -51,6 +55,7 @@ const char kActiveTimeKey[] = "active_time";
 const char kMetricsBucketIndex[] = "metrics_bucket_index";
 const char kForceSigninProfileLockedKey[] = "force_signin_profile_locked";
 const char kHostedDomain[] = "hosted_domain";
+const char kIsManaged[] = "is_managed";
 const char kOIDCIdentityNameKey[] = "oidc_identity_name";
 const char kProfileManagementEnrollmentToken[] =
     "profile_management_enrollment_token";
@@ -62,8 +67,6 @@ const char kProfileManagementId[] = "profile_management_id";
 const char kProfileManagementOidcState[] = "profile_management_oidc_state";
 const char kUserAcceptedAccountManagement[] =
     "user_accepted_account_management";
-const char kIsUsingNewPlaceholderAvatarIcon[] =
-    "is_using_new_placeholder_avatar_icon";
 
 // All accounts info. This is a dictionary containing sub-dictionaries of
 // account information, keyed by the gaia ID. The sub-dictionaries are empty for
@@ -131,12 +134,14 @@ const char ProfileAttributesEntry::kGAIAIdKey[] = "gaia_id";
 const char ProfileAttributesEntry::kIsConsentedPrimaryAccountKey[] =
     "is_consented_primary_account";
 const char ProfileAttributesEntry::kNameKey[] = "name";
+const char ProfileAttributesEntry::kEnterpriseLabelKey[] = "enterprise_label";
 const char ProfileAttributesEntry::kIsUsingDefaultNameKey[] =
     "is_using_default_name";
 const char ProfileAttributesEntry::kIsUsingDefaultAvatarKey[] =
     "is_using_default_avatar";
 const char ProfileAttributesEntry::kUseGAIAPictureKey[] = "use_gaia_picture";
 const char ProfileAttributesEntry::kAccountIdKey[] = "account_id_key";
+const char ProfileAttributesEntry::kIsGlicEligible[] = "is_glic_eligible";
 
 // static
 void ProfileAttributesEntry::RegisterLocalStatePrefs(
@@ -148,7 +153,7 @@ void ProfileAttributesEntry::RegisterLocalStatePrefs(
 
 ProfileAttributesEntry::ProfileAttributesEntry() = default;
 
-ProfileManagementOidcTokens::ProfileManagementOidcTokens() {}
+ProfileManagementOidcTokens::ProfileManagementOidcTokens() = default;
 
 ProfileManagementOidcTokens::ProfileManagementOidcTokens(
     const std::string& auth_token,
@@ -163,6 +168,10 @@ ProfileManagementOidcTokens::ProfileManagementOidcTokens(
     const std::string& id_token,
     const std::string& state)
     : auth_token(auth_token), id_token(id_token), state(state) {}
+
+ProfileManagementOidcTokens::ProfileManagementOidcTokens(
+    const std::string& encrypted_user_info)
+    : auth_token(""), id_token(encrypted_user_info), is_token_encrypted(true) {}
 
 ProfileManagementOidcTokens::ProfileManagementOidcTokens(
     ProfileManagementOidcTokens&& other) = default;
@@ -205,8 +214,12 @@ void ProfileAttributesEntry::Initialize(ProfileAttributesStorage* storage,
   }
 
   if (signin_util::IsForceSigninEnabled()) {
-    if (!CanBeManaged())
+    if ((!base::FeatureList::IsEnabled(
+             syncer::kReplaceSyncPromosWithSignInPromos) ||
+         GetSigninState() == SigninState::kNotSignedIn) &&
+        !CanBeManaged()) {
       SetBool(kForceSigninProfileLockedKey, true);
+    }
   } else {
     // Reset the locked state to avoid a profile being locked after the force
     // signin policy has been disabled.
@@ -220,7 +233,14 @@ void ProfileAttributesEntry::InitializeLastNameToDisplay() {
 }
 
 std::u16string ProfileAttributesEntry::GetLocalProfileName() const {
+  if (!GetEnterpriseProfileLabel().empty()) {
+    return GetEnterpriseProfileLabel();
+  }
   return GetString16(kNameKey);
+}
+
+std::u16string ProfileAttributesEntry::GetEnterpriseProfileLabel() const {
+  return GetString16(kEnterpriseLabelKey);
 }
 
 std::u16string ProfileAttributesEntry::GetGAIANameToDisplay() const {
@@ -238,8 +258,9 @@ bool ProfileAttributesEntry::ShouldShowProfileLocalName(
   }
 
   // Customized profile name that is not equal to Gaia name, e.g. Matt (Work).
-  if (!IsUsingDefaultName())
+  if (!IsUsingDefaultName() || !GetEnterpriseProfileLabel().empty()) {
     return true;
+  }
 
   // The profile local name is a default profile name : Person n.
   std::vector<ProfileAttributesEntry*> entries =
@@ -366,13 +387,13 @@ gfx::Image ProfileAttributesEntry::GetAvatarIcon(
       return *image;
   }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40138086): After launch, remove the treatment of placeholder
   // avatars from GetHighResAvatar() and from any other places.
   if (GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
     return GetPlaceholderAvatarIcon(size_for_placeholder_avatar, icon_params);
   }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_ANDROID)
   // Use the high resolution version of the avatar if it exists. Mobile doesn't
@@ -414,8 +435,8 @@ std::u16string ProfileAttributesEntry::GetGAIAGivenName() const {
   return GetString16(kGAIAGivenNameKey);
 }
 
-std::string ProfileAttributesEntry::GetGAIAId() const {
-  return GetString(ProfileAttributesEntry::kGAIAIdKey);
+GaiaId ProfileAttributesEntry::GetGAIAId() const {
+  return GaiaId(GetString(ProfileAttributesEntry::kGAIAIdKey));
 }
 
 const gfx::Image* ProfileAttributesEntry::GetGAIAPicture() const {
@@ -450,10 +471,6 @@ std::string ProfileAttributesEntry::GetLastDownloadedGAIAPictureUrlWithSize()
 
 bool ProfileAttributesEntry::IsSupervised() const {
   return !GetSupervisedUserId().empty();
-}
-
-bool ProfileAttributesEntry::IsChild() const {
-  return GetSupervisedUserId() == supervised_user::kChildAccountSUID;
 }
 
 bool ProfileAttributesEntry::IsOmitted() const {
@@ -556,9 +573,7 @@ ProfileAttributesEntry::GetProfileThemeColorsIfSet() const {
 ProfileThemeColors ProfileAttributesEntry::GetProfileThemeColors() const {
 #if BUILDFLAG(IS_ANDROID)
   // Profile theme colors shouldn't be queried on Android.
-  NOTREACHED_IN_MIGRATION();
-  return {gfx::kPlaceholderColor, gfx::kPlaceholderColor,
-          gfx::kPlaceholderColor, gfx::kPlaceholderColor};
+  NOTREACHED();
 #else
   std::optional<ProfileThemeColors> theme_colors = GetProfileThemeColorsIfSet();
   if (theme_colors)
@@ -581,6 +596,32 @@ std::string ProfileAttributesEntry::GetHostedDomain() const {
   return GetString(kHostedDomain);
 }
 
+signin::Tribool ProfileAttributesEntry::GetIsManaged() const {
+  static_assert(kIntegerNotSet ==
+                base::to_underlying(signin::Tribool::kUnknown));
+  static_assert(base::to_underlying(signin::Tribool::kFalse) == 0);
+  static_assert(base::to_underlying(signin::Tribool::kTrue) == 1);
+
+  int value = GetInteger(kIsManaged);
+
+  // If the value is not set, return fallback to the hosted domain check.
+  // This can eventually be removed once all profiles have an explicit value.
+  if (value == kIntegerNotSet) {
+    if (GetHostedDomain().empty()) {
+      return signin::Tribool::kUnknown;
+    }
+    return signin::TriboolFromBool(GetHostedDomain() !=
+                                   signin::constants::kNoHostedDomainFound);
+  }
+
+  // If the value is invalid, or is not a valid Tribool value, return unknown.
+  if (value < kIntegerNotSet ||
+      value > base::to_underlying(signin::Tribool::kTrue)) {
+    return signin::Tribool::kUnknown;
+  }
+  return static_cast<signin::Tribool>(value);
+}
+
 std::string ProfileAttributesEntry::GetProfileManagementEnrollmentToken()
     const {
   return GetString(kProfileManagementEnrollmentToken);
@@ -588,9 +629,13 @@ std::string ProfileAttributesEntry::GetProfileManagementEnrollmentToken()
 
 ProfileManagementOidcTokens
 ProfileAttributesEntry::GetProfileManagementOidcTokens() const {
-  return ProfileManagementOidcTokens(GetString(kProfileManagementOidcAuthToken),
-                                     GetString(kProfileManagementOidcIdToken),
-                                     GetString(kProfileManagementOidcState));
+  std::string auth_token = GetString(kProfileManagementOidcAuthToken);
+  std::string id_token = GetString(kProfileManagementOidcIdToken);
+  return (auth_token.empty() && !id_token.empty())
+             ? ProfileManagementOidcTokens(id_token)
+             : ProfileManagementOidcTokens(
+                   auth_token, id_token,
+                   GetString(kProfileManagementOidcState));
 }
 
 std::string ProfileAttributesEntry::GetProfileManagementId() const {
@@ -601,22 +646,31 @@ std::string ProfileAttributesEntry::GetAccountIdKey() const {
   return GetString(kAccountIdKey);
 }
 
-base::flat_set<std::string> ProfileAttributesEntry::GetGaiaIds() const {
-  const base::Value* accounts = GetValue(kAllAccountsKey);
-  if (!accounts || !accounts->is_dict())
-    return base::flat_set<std::string>();
+bool ProfileAttributesEntry::IsGlicEligible() const {
+  return GetBool(kIsGlicEligible);
+}
 
-  return base::MakeFlatSet<std::string>(
-      accounts->GetDict(), {}, [](const auto& it) { return it.first; });
+void ProfileAttributesEntry::SetIsGlicEligible(bool value) {
+  SetBool(kIsGlicEligible, value);
+}
+
+base::flat_set<GaiaId> ProfileAttributesEntry::GetGaiaIds() const {
+  const base::Value* accounts = GetValue(kAllAccountsKey);
+  if (!accounts || !accounts->is_dict()) {
+    return base::flat_set<GaiaId>();
+  }
+
+  return base::MakeFlatSet<GaiaId>(
+      accounts->GetDict(), {}, [](const auto& it) { return GaiaId(it.first); });
 }
 
 void ProfileAttributesEntry::SetGaiaIds(
-    const base::flat_set<std::string>& gaia_ids) {
+    const base::flat_set<GaiaId>& gaia_ids) {
   base::Value::Dict accounts;
   for (const auto& gaia_id : gaia_ids) {
     // The dictionary is empty for now, but can hold account-specific info in
     // the future.
-    accounts.Set(gaia_id, base::Value::Dict());
+    accounts.Set(gaia_id.ToString(), base::Value::Dict());
   }
   SetValue(kAllAccountsKey, base::Value(std::move(accounts)));
 }
@@ -627,6 +681,11 @@ void ProfileAttributesEntry::SetLocalProfileName(const std::u16string& name,
   changed |= SetBool(kIsUsingDefaultNameKey, is_default_name);
   if (changed)
     profile_attributes_storage_->NotifyIfProfileNamesHaveChanged();
+}
+
+void ProfileAttributesEntry::SetEnterpriseProfileLabel(
+    const std::u16string& label) {
+  SetString16(kEnterpriseLabelKey, label);
 }
 
 void ProfileAttributesEntry::SetShortcutName(const std::u16string& name) {
@@ -788,16 +847,6 @@ void ProfileAttributesEntry::SetProfileThemeColors(
     profile_attributes_storage_->NotifyProfileThemeColorsChanged(GetPath());
   }
 
-  // If the kOutlineSilhouetteIcon feature state has changed, notify that the
-  // avatar icon has changed once so that cached avatar images will be updated
-  // (e.g. the application badge icon on Windows).
-  if (base::FeatureList::IsEnabled(kOutlineSilhouetteIcon) !=
-      GetBool(kIsUsingNewPlaceholderAvatarIcon)) {
-    SetBool(kIsUsingNewPlaceholderAvatarIcon,
-            base::FeatureList::IsEnabled(kOutlineSilhouetteIcon));
-    changed = true;
-  }
-
   // Only notify if the profile uses the placeholder avatar.
   if (changed &&
       GetAvatarIconIndex() == profiles::GetPlaceholderAvatarIndex()) {
@@ -808,6 +857,12 @@ void ProfileAttributesEntry::SetProfileThemeColors(
 void ProfileAttributesEntry::SetHostedDomain(std::string hosted_domain) {
   if (SetString(kHostedDomain, hosted_domain))
     profile_attributes_storage_->NotifyProfileHostedDomainChanged(GetPath());
+}
+
+void ProfileAttributesEntry::SetIsManaged(signin::Tribool value) {
+  if (SetInteger(kIsManaged, base::to_underlying(value))) {
+    profile_attributes_storage_->NotifyProfileIsManagedChanged(GetPath());
+  }
 }
 
 void ProfileAttributesEntry::SetProfileManagementEnrollmentToken(
@@ -834,7 +889,7 @@ void ProfileAttributesEntry::SetProfileManagementId(const std::string& id) {
   }
 }
 
-void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
+void ProfileAttributesEntry::SetAuthInfo(const GaiaId& gaia_id,
                                          const std::u16string& user_name,
                                          bool is_consented_primary_account) {
   // If gaia_id, username and consent state are unchanged, abort early.
@@ -848,7 +903,7 @@ void ProfileAttributesEntry::SetAuthInfo(const std::string& gaia_id,
     ScopedDictPrefUpdate update(prefs_, prefs::kProfileAttributes);
     base::Value::Dict& attributes_dict = update.Get();
     base::Value::Dict* entry = attributes_dict.EnsureDict(storage_key_);
-    entry->Set(kGAIAIdKey, gaia_id);
+    entry->Set(kGAIAIdKey, gaia_id.ToString());
     entry->Set(kUserNameKey, user_name);
     DCHECK(!is_consented_primary_account || !gaia_id.empty() ||
            !user_name.empty());
@@ -898,13 +953,6 @@ gfx::Image ProfileAttributesEntry::GetPlaceholderAvatarIcon(
     int size,
     const PlaceholderAvatarIconParams& icon_params) const {
   ProfileThemeColors colors = GetProfileThemeColors();
-
-  // Filled Person Icon
-  if (!base::FeatureList::IsEnabled(kOutlineSilhouetteIcon)) {
-    return profiles::GetPlaceholderAvatarIconWithColors(
-        colors.default_avatar_fill_color, colors.default_avatar_stroke_color,
-        size, icon_params);
-  }
 
   // Outline Silhouette Person Icon
   if (icon_params.visibility_against_background.has_value()) {

@@ -11,7 +11,7 @@ distributed to end-users through one or more distribution methods.
 ## `isolated-app:` Scheme
 
 Isolated Web Apps are served from an `isolated-app:`
-(`chrome::kIsolatedAppScheme`) scheme. [This
+(`webapps::kIsolatedAppScheme`) scheme. [This
 explainer](https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md)
 provides more details. The scheme is registered in `ChromeContentClient`.
 

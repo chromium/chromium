@@ -18,9 +18,8 @@ class AXPlatformNodeDelegate;
 // Compute the attribute value instead of returning the "raw" attribute value
 // for those attributes that have computation methods.
 COMPONENT_EXPORT(AX_PLATFORM)
-std::optional<int32_t> ComputeAttribute(
-    const ui::AXPlatformNodeDelegate* delegate,
-    ax::mojom::IntAttribute attribute);
+std::optional<int32_t> ComputeAttribute(const AXPlatformNodeDelegate* delegate,
+                                        ax::mojom::IntAttribute attribute);
 
 }  // namespace ui
 

@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
@@ -21,6 +22,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/trace_util.h"
+#include "ipc/constants.mojom.h"
+#include "url/origin_debug.h"
 
 using content::BrowserThread;
 using content::RenderProcessHost;
@@ -42,7 +45,7 @@ bool IsPortContextSandboxed(RenderProcessHost& process,
   }
 
   content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
-      process.GetID(), context.frame->routing_id);
+      process.GetDeprecatedID(), context.frame->routing_id);
 
   if (!frame) {
     // TODO(https://crbug.com/325410297): It should not be possible to reach
@@ -52,6 +55,16 @@ bool IsPortContextSandboxed(RenderProcessHost& process,
     // ExtensionFrameHost::OpenChannelToExtension()). Ensure there are no
     // unexpected reports of this and then remove the early return here and also
     // in IsValidSourceUrl().
+    DUMP_WILL_BE_NOTREACHED();
+    return false;
+  }
+
+  if (!frame->HasPolicyContainerHost()) {
+    // If the WebContents has not fully initialized the RenderFrameHost yet.
+    // TODO(crbug.com/346386726): Remove the HasPolicyContainerHost() call once
+    // RenderFrameHost initialization order is fixed.
+    SCOPED_CRASH_KEY_NUMBER("EMF_INVALID_RFH", "lifecycle_state",
+                            static_cast<size_t>(frame->GetLifecycleState()));
     DUMP_WILL_BE_NOTREACHED();
     return false;
   }
@@ -89,7 +102,7 @@ bool IsValidMessagingSource(RenderProcessHost& process,
         return false;
       }
       if (!util::CanRendererHostExtensionOrigin(
-              process.GetID(), source_endpoint.extension_id.value(),
+              process.GetDeprecatedID(), source_endpoint.extension_id.value(),
               IsPortContextSandboxed(process, source_context))) {
         bad_message::ReceivedBadMessage(
             &process,
@@ -190,7 +203,7 @@ bool IsValidSourceContext(RenderProcessHost& process,
     // false=invalid-IPC for IPCs from workers that were recently torn down /
     // made inactive.
     if (!util::CanRendererHostExtensionOrigin(
-            process.GetID(), worker_context.extension_id,
+            process.GetDeprecatedID(), worker_context.extension_id,
             IsPortContextSandboxed(process, source_context))) {
       bad_message::ReceivedBadMessage(
           &process, bad_message::EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT);
@@ -217,11 +230,6 @@ bool IsValidSourceContext(RenderProcessHost& process,
 bool IsValidSourceUrl(content::RenderProcessHost& process,
                       const GURL& source_url,
                       const PortContext& source_context) {
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSourceUrlEnforcement)) {
-    return true;
-  }
-
   // Some scenarios may end up with an empty `source_url` (e.g. this may have
   // been triggered by the ExtensionApiTabTest.TabConnect test).
   //
@@ -243,7 +251,7 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
   url::Origin base_origin;
   if (source_context.is_for_render_frame()) {
     content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
-        process.GetID(), source_context.frame->routing_id);
+        process.GetDeprecatedID(), source_context.frame->routing_id);
     if (!frame) {
       // Not calling ReceivedBadMessage because it is possible that the frame
       // got deleted before the IPC arrived.
@@ -305,7 +313,7 @@ bool IsValidSourceUrl(content::RenderProcessHost& process,
     source_url_origin = source_url_origin.DeriveNewOpaqueOrigin();
   }
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  if (!policy->HostsOrigin(process.GetID(), source_url_origin)) {
+  if (!policy->HostsOrigin(process.GetDeprecatedID(), source_url_origin)) {
     SCOPED_CRASH_KEY_STRING256(
         "EMF_INVALID_SOURCE_URL", "base_origin",
         base_origin.GetDebugString(false /* include_nonce */));
@@ -378,7 +386,7 @@ std::optional<ExtensionId> ValidateSourceContextAndExtractExtensionId(
 
   if (source_context.is_for_render_frame()) {
     content::RenderFrameHost* frame = content::RenderFrameHost::FromID(
-        process.GetID(), source_context.frame->routing_id);
+        process.GetDeprecatedID(), source_context.frame->routing_id);
     if (!frame) {
       // Not calling ReceivedBadMessage because it is possible that the frame
       // got deleted before the IPC arrived.
@@ -520,7 +528,7 @@ void MessageService::OpenPort(RenderProcessHost* process,
   if (!IsValidSourceContext(*process, source)) {
     return;
   }
-  OpenPortImpl(port_id, process->GetID(), source);
+  OpenPortImpl(port_id, process->GetDeprecatedID(), source);
 }
 
 void MessageService::ClosePort(RenderProcessHost* process,
@@ -538,12 +546,12 @@ void MessageService::ClosePort(RenderProcessHost* process,
   if (!IsValidSourceContext(*process, port_context)) {
     return;
   }
-  int routing_id =
-      port_context.frame ? port_context.frame->routing_id : MSG_ROUTING_NONE;
+  int routing_id = port_context.frame ? port_context.frame->routing_id
+                                      : IPC::mojom::kRoutingIdNone;
   int worker_thread_id =
       port_context.worker ? port_context.worker->thread_id : kMainThreadId;
-  ClosePortImpl(port_id, process->GetID(), routing_id, worker_thread_id,
-                force_close, std::string());
+  ClosePortImpl(port_id, process->GetDeprecatedID(), routing_id,
+                worker_thread_id, force_close, std::string());
 }
 
 void MessageService::NotifyResponsePending(RenderProcessHost* process,

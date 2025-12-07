@@ -55,6 +55,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Notification displayed"/>
   <int value="6" label="Notification closed by user"/>
   <int value="7" label="Notification closed by system"/>
+  <int value="8" label="Notification Open Settings button clicked"/>
 </enum>
 
 <enum name="NotificationDatabaseStatus">
@@ -65,6 +66,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="I/O error"/>
   <int value="5" label="Not supported error"/>
   <int value="6" label="Invalid Argument error"/>
+</enum>
+
+<enum name="NotificationEvent">
+  <int value="0" label="Notification call started without callback"/>
+  <int value="1" label="Notification call succeeded without callback"/>
+  <int value="2" label="Notification call failed without callback"/>
+  <int value="3" label="Notification call started with callback"/>
+  <int value="4" label="Notification call succeeded with callback"/>
+  <int value="5" label="Notification call failed with callback"/>
 </enum>
 
 <enum name="NotificationHelperComServerModuleStatus">
@@ -121,12 +131,6 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="PENDING_JOB_REASON_JOB_SCHEDULER_OPTIMIZATION"/>
   <int value="14" label="PENDING_JOB_REASON_QUOTA"/>
   <int value="15" label="PENDING_JOB_REASON_USER"/>
-</enum>
-
-<enum name="NotificationSchedulerActionButtonEvent">
-  <int value="0" label="Shown"/>
-  <int value="1" label="Helpful"/>
-  <int value="2" label="Unhelpful"/>
 </enum>
 
 <enum name="NotificationSchedulerNotificationLifeCycleEvent">
@@ -222,7 +226,37 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="event.waitUntil promise rejected"/>
   <int value="4" label="Database error"/>
   <int value="5" label="No permission granted"/>
+  <int value="6" label="Canceled by app terminating"/>
 </enum>
+
+<!-- LINT.IfChange(TipsNotificationsFeatureTipPromoEventType) -->
+
+<enum name="TipsNotificationsFeatureTipPromoEventType">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Dismissed"/>
+  <int value="2" label="Accepted"/>
+  <int value="3" label="Detail page clicked"/>
+  <int value="4" label="Detail page back button"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsPromoCoordinator.java:FeatureTipPromoEventType) -->
+
+<enum name="TipsNotificationsFeatureType">
+  <int value="0" label="Enhanced Safe Browsing"/>
+  <int value="1" label="Quick Delete"/>
+  <int value="2" label="Google Lens"/>
+  <int value="3" label="Bottom Omnibox"/>
+</enum>
+
+<!-- LINT.IfChange(TipsNotificationsOptInPromoEventType) -->
+
+<enum name="TipsNotificationsOptInPromoEventType">
+  <int value="0" label="Shown"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Ignored"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/notifications/tips/TipsOptInCoordinator.java:OptInPromoEventType) -->
 
 <enum name="UNNotificationPermissionRequestResult">
   <int value="0" label="Permission request failed"/>
@@ -253,6 +287,8 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="SUCCESS"/>
   <int value="1" label="GET_TOAST_HISTORY_FAILED"/>
   <int value="2" label="REMOVING_TOAST_FAILED"/>
+  <int value="3" label="EMPTY_APP_USER_MODEL_ID"/>
+  <int value="4" label="NOTIFICATION_NOT_FOUND"/>
 </enum>
 
 <enum name="WindowsNotificationDisplayStatus">

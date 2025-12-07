@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught SecurityError: Failed to read a named property 'document' from 'Window': Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame.
+[TIMEOUT] csp-derived sandboxing flags prevent autoplay.
+  Test timed out
+Harness: the test ran to completion.
+

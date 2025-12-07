@@ -9,17 +9,20 @@ import android.content.res.Resources;
 import android.content.res.Resources.NotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Contains utility methods for drawing splash screen. The methods are applicable for both home
  * screen shortcuts and WebAPKs.
  */
+@NullMarked
 public class SplashLayout {
     public static int getDefaultBackgroundColor(Context appContext) {
         return getColorCompatibility(appContext.getResources(), R.color.webapp_default_bg);
@@ -30,7 +33,8 @@ public class SplashLayout {
      * example, the icon must not be generated (nor missing) and has to have the length of both its
      * edges above `R.dimen.webapp_splash_image_size_minimum` to be usable.
      */
-    public static int selectLayout(Resources resources, Bitmap icon, boolean wasIconGenerated) {
+    public static int selectLayout(
+            Resources resources, @Nullable Bitmap icon, boolean wasIconGenerated) {
         if (icon == null || wasIconGenerated) {
             return R.layout.webapp_splash_screen_no_icon;
         }
@@ -55,10 +59,10 @@ public class SplashLayout {
     public static void createLayout(
             Context appContext,
             ViewGroup parentView,
-            Bitmap icon,
+            @Nullable Bitmap icon,
             boolean isIconAdaptive,
             boolean isIconGenerated,
-            String text,
+            @Nullable String text,
             boolean useLightTextColor) {
         int layoutId = selectLayout(appContext.getResources(), icon, isIconGenerated);
         ViewGroup layout =
@@ -75,8 +79,7 @@ public class SplashLayout {
         ImageView splashIconView = (ImageView) layout.findViewById(R.id.webapp_splash_screen_icon);
         if (splashIconView == null) return;
 
-        // Adaptive icons should only be present on Android O.
-        if (isIconAdaptive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (isIconAdaptive && icon != null) {
             splashIconView.setImageIcon(Icon.createWithAdaptiveBitmap(icon));
         } else {
             splashIconView.setImageBitmap(icon);

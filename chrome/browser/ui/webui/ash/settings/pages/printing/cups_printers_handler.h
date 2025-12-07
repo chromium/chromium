@@ -108,7 +108,8 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
                          const std::string& make_and_model,
                          const std::vector<std::string>& document_formats,
                          bool ipp_everywhere,
-                         const chromeos::PrinterAuthenticationInfo& auth_info);
+                         const chromeos::PrinterAuthenticationInfo& auth_info,
+                         const chromeos::IppPrinterInfo& ipp_printer_info);
 
   // Handles the callback for HandleGetPrinterInfo for a discovered printer.
   void OnAutoconfQueriedDiscovered(
@@ -119,7 +120,8 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
       const std::string& make_and_model,
       const std::vector<std::string>& document_formats,
       bool ipp_everywhere,
-      const chromeos::PrinterAuthenticationInfo& auth_info);
+      const chromeos::PrinterAuthenticationInfo& auth_info,
+      const chromeos::IppPrinterInfo& ipp_printer_info);
 
   // Callback for PPD matching attempts;
   void OnPpdResolved(const std::string& callback_id,
@@ -195,6 +197,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // Called when we get a response from
   // PrintscanmgrClient::CupsRetrievePrinterPpd.
   void OnRetrieveCupsPrinterPpd(
+      const std::string& printer_id,
       const std::string& printer_name,
       const std::string& eula,
       std::optional<printscanmgr::CupsRetrievePpdResponse> response);

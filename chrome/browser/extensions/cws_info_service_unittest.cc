@@ -4,13 +4,13 @@
 
 #include "chrome/browser/extensions/cws_info_service.h"
 
+#include "base/command_line.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/extensions/chrome_extension_registrar_delegate.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/cws_item_service.pb.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -18,8 +18,10 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
@@ -28,6 +30,8 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -81,6 +85,17 @@ class CWSInfoServiceTest : public ::testing::Test,
     return std::make_unique<CWSInfoService>(static_cast<Profile*>(context));
   }
 
+  // testing::Test:
+  void TearDown() override {
+    // Avoid dangling pointers.
+    cws_info_service_ = nullptr;
+    extension_prefs_ = nullptr;
+    extension_registry_ = nullptr;
+    extension_registrar_delegate_->Shutdown();
+    extension_registrar_ = nullptr;
+    profile_.reset();
+  }
+
   // CWSInfoService::Observer:
   void OnCWSInfoChanged() override {
     info_change_notification_received_ = true;
@@ -92,7 +107,9 @@ class CWSInfoServiceTest : public ::testing::Test,
   raw_ptr<CWSInfoService> cws_info_service_ = nullptr;
   raw_ptr<ExtensionPrefs> extension_prefs_ = nullptr;
   raw_ptr<ExtensionRegistry> extension_registry_ = nullptr;
-  raw_ptr<ExtensionService> extension_service_ = nullptr;
+  std::unique_ptr<ChromeExtensionRegistrarDelegate>
+      extension_registrar_delegate_;
+  raw_ptr<ExtensionRegistrar> extension_registrar_ = nullptr;
   bool info_change_notification_received_ = false;
 };
 
@@ -123,13 +140,13 @@ CWSInfoServiceTest::CWSInfoServiceTest()
   // Skip official Google API key check for testing.
   cws_info_service_->SetSkipApiCheckForTesting(true);
 
-  // Create test extension service instance.
-  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  auto* test_extension_system = static_cast<extensions::TestExtensionSystem*>(
-      extensions::ExtensionSystem::Get(profile_.get()));
-  extension_service_ = test_extension_system->CreateExtensionService(
-      &command_line, /*install_directory=*/base::FilePath(),
-      /*autoupdate_enabled=*/false);
+  extension_registrar_delegate_ =
+      std::make_unique<ChromeExtensionRegistrarDelegate>(profile_.get());
+  extension_registrar_ = ExtensionRegistrar::Get(profile_.get());
+  extension_registrar_->Init(extension_registrar_delegate_.get(), true,
+                             base::CommandLine::ForCurrentProcess(),
+                             base::FilePath(), base::FilePath());
+  extension_registrar_delegate_->Init(extension_registrar_);
 }
 
 CWSInfoServiceTest::~CWSInfoServiceTest() = default;
@@ -143,7 +160,7 @@ scoped_refptr<const Extension> CWSInfoServiceTest::AddExtension(
                            extension_urls::kChromeWebstoreUpdateURL);
   }
   scoped_refptr<const Extension> extension = builder.Build();
-  extension_service_->AddExtension(extension.get());
+  ExtensionRegistrar::Get(profile_.get())->AddExtension(extension.get());
   return extension;
 }
 
@@ -192,13 +209,13 @@ TEST_F(CWSInfoServiceTest, QueriesCWSExtensions) {
   scoped_refptr<const Extension> test1 =
       AddExtension("test1", /* updates_from_cws= */ true);
   cws_info_service_->CheckAndMaybeFetchInfo();
-  ASSERT_EQ(1u, test_url_loader_factory_.pending_requests()->size());
-  std::string request_body(test_url_loader_factory_.pending_requests()
-                               ->at(0)
-                               .request.request_body->elements()
-                               ->at(0)
-                               .As<network::DataElementBytes>()
-                               .AsStringPiece());
+  const auto& pending_requests = *test_url_loader_factory_.pending_requests();
+  ASSERT_EQ(1u, pending_requests.size());
+  std::string_view request_body = pending_requests[0]
+                                      .request.request_body->elements()
+                                      ->at(0)
+                                      .As<network::DataElementBytes>()
+                                      .AsStringView();
   EXPECT_TRUE(VerifyStats(/*requests=*/1, 0, 0, 0));
   BatchGetStoreMetadatasRequest request_proto;
   ASSERT_TRUE(request_proto.ParseFromString(request_body));
@@ -230,7 +247,7 @@ TEST_F(CWSInfoServiceTest, HandlesNetworkErrorAndBadServerResponse) {
       net::HTTP_NOT_FOUND, 1);
   histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
                                      false, 1);
-  EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == std::nullopt);
+  EXPECT_FALSE(cws_info_service_->GetCWSInfo(*test1).has_value());
   // Verify that the fetch error timestamp was recorded.
   EXPECT_EQ(base::Time::Now(),
             cws_info_service_->GetCWSInfoFetchErrorTimestampForTesting());
@@ -249,7 +266,7 @@ TEST_F(CWSInfoServiceTest, HandlesNetworkErrorAndBadServerResponse) {
       "Extensions.CWSInfoService.NetworkResponseCodeOrError", net::HTTP_OK, 1);
   histogram_tester.ExpectBucketCount("Extensions.CWSInfoService.FetchSuccess",
                                      false, 2);
-  EXPECT_TRUE(cws_info_service_->GetCWSInfo(*test1) == std::nullopt);
+  EXPECT_FALSE(cws_info_service_->GetCWSInfo(*test1).has_value());
 }
 
 TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
@@ -261,7 +278,7 @@ TEST_F(CWSInfoServiceTest, SavesGoodResponse) {
   *response_proto.add_store_metadatas() =
       BuildStoreMetadata(test1->id(), last_update_time);
   std::string response_str = response_proto.SerializeAsString();
-  ASSERT_TRUE(!response_str.empty());
+  ASSERT_FALSE(response_str.empty());
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         response_str);
   cws_info_service_->AddObserver(this);
@@ -326,7 +343,7 @@ TEST_F(CWSInfoServiceTest, HandlesMultipleRequestsPerInfoCheck) {
   *response.add_store_metadatas() = test1_metadata;
   *response.add_store_metadatas() = test2_metadata;
   std::string response_str = response.SerializeAsString();
-  ASSERT_TRUE(!response_str.empty());
+  ASSERT_FALSE(response_str.empty());
 
   // Set up server response for requests and start the info check.
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
@@ -397,7 +414,7 @@ TEST_F(CWSInfoServiceTest, SchedulesStartupAndPeriodicInfoChecks) {
   *response_proto.add_store_metadatas() =
       BuildStoreMetadata(test1->id(), last_update_time);
   std::string response_str = response_proto.SerializeAsString();
-  ASSERT_TRUE(!response_str.empty());
+  ASSERT_FALSE(response_str.empty());
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         response_str);
   // Forward time by the fetch interval since CWSInfoService will wait that
@@ -427,7 +444,7 @@ TEST_F(CWSInfoServiceTest, UpdatesExistingInfoAtUpdateIntervals) {
   *response_proto.add_store_metadatas() =
       BuildStoreMetadata(test1->id(), last_update_time);
   std::string response_str = response_proto.SerializeAsString();
-  ASSERT_TRUE(!response_str.empty());
+  ASSERT_FALSE(response_str.empty());
   SetUpResponseWithData(GURL(cws_info_service_->GetRequestURLForTesting()),
                         response_str);
   task_environment_.FastForwardBy(

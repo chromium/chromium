@@ -14,6 +14,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/flex_layout.h"
@@ -25,15 +26,15 @@ TabListView::TabListView(TabListModel* tab_list_model)
       views::View::SetLayoutManager(std::make_unique<views::FlexLayout>());
   flex_layout->SetOrientation(views::LayoutOrientation::kVertical);
 
-  views::FocusManager::set_arrow_key_traversal_enabled(true);
-
-  for (resource_attribution::PageContext context :
-       tab_list_model->page_contexts()) {
+  for (const auto& context : tab_list_model->page_contexts()) {
     AddChildView(std::make_unique<TabListRowView>(
         context, tab_list_model,
         base::BindOnce(&TabListView::RemoveRow, base::Unretained(this),
                        context)));
   }
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListBox);
+  UpdateAccessibleName();
 }
 
 TabListView::~TabListView() = default;
@@ -47,11 +48,11 @@ void TabListView::RemoveRow(resource_attribution::PageContext context,
   views::InkDrop::Remove(row_view);
   RemoveChildViewT(row_view);
   RecordTabRemovedFromTabList(tab_list_model_->count());
+  UpdateAccessibleName();
 }
 
-void TabListView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->role = ax::mojom::Role::kListBox;
-  node_data->SetNameChecked(l10n_util::GetPluralStringFUTF16(
+void TabListView::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(l10n_util::GetPluralStringFUTF16(
       IDS_PERFORMANCE_INTERVENTION_TAB_LIST_ACCNAME, tab_list_model_->count()));
 }
 

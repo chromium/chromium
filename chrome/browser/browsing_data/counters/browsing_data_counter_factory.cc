@@ -7,7 +7,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
+#include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browsing_data/counters/browsing_data_counter_utils.h"
 #include "chrome/browser/browsing_data/counters/cache_counter.h"
 #include "chrome/browser/browsing_data/counters/downloads_counter.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "components/browsing_data/core/counters/autofill_counter.h"
 #include "components/browsing_data/core/counters/browsing_data_counter.h"
@@ -44,7 +44,7 @@
 #include "chrome/browser/browsing_data/counters/tabs_counter.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "device/fido/cros/credential_store.h"
 #endif
 
@@ -88,7 +88,7 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
 
   if (pref_name == browsing_data::prefs::kDeletePasswords) {
     std::unique_ptr<::device::fido::PlatformCredentialStore> credential_store =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         std::make_unique<
             ::device::fido::cros::PlatformAuthenticatorCredentialStore>();
 #else
@@ -105,8 +105,10 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
 
   if (pref_name == browsing_data::prefs::kDeleteFormData) {
     return std::make_unique<browsing_data::AutofillCounter>(
+        autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
         WebDataServiceFactory::GetAutofillWebDataForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
+        autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
         SyncServiceFactory::GetForProfile(profile));
   }
 

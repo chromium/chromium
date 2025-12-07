@@ -32,12 +32,12 @@
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
+#include "third_party/blink/renderer/core/events/command_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -56,13 +56,18 @@ void HTMLButtonElement::setType(const AtomicString& type) {
 
 LayoutObject* HTMLButtonElement::CreateLayoutObject(
     const ComputedStyle& style) {
+  if (style.IsVerticalWritingMode()) {
+    UseCounter::Count(GetDocument(), WebFeature::kVerticalFormControls);
+  }
   // https://html.spec.whatwg.org/C/#button-layout
   EDisplay display = style.Display();
   if (display == EDisplay::kInlineGrid || display == EDisplay::kGrid ||
-      display == EDisplay::kInlineFlex || display == EDisplay::kFlex ||
-      display == EDisplay::kInlineLayoutCustom ||
-      display == EDisplay::kLayoutCustom)
+      display == EDisplay::kInlineGridLanes ||
+      display == EDisplay::kGridLanes || display == EDisplay::kInlineFlex ||
+      display == EDisplay::kFlex || display == EDisplay::kInlineLayoutCustom ||
+      display == EDisplay::kLayoutCustom) {
     return HTMLFormControlElement::CreateLayoutObject(style);
+  }
   return MakeGarbageCollected<LayoutBlockFlow>(this);
 }
 
@@ -79,26 +84,19 @@ FormControlType HTMLButtonElement::FormControlType() const {
 const AtomicString& HTMLButtonElement::FormControlTypeAsString() const {
   switch (type_) {
     case Type::kButton: {
-      DEFINE_STATIC_LOCAL(const AtomicString, button, ("button"));
+      DEFINE_STATIC_LOCAL(const AtomicString, button, (keywords::kButton));
       return button;
     }
     case Type::kSubmit: {
-      DEFINE_STATIC_LOCAL(const AtomicString, submit, ("submit"));
+      DEFINE_STATIC_LOCAL(const AtomicString, submit, (keywords::kSubmit));
       return submit;
     }
     case Type::kReset: {
-      DEFINE_STATIC_LOCAL(const AtomicString, reset, ("reset"));
+      DEFINE_STATIC_LOCAL(const AtomicString, reset, (keywords::kReset));
       return reset;
     }
-    case Type::kSelectlist: {
-      if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled()) {
-        DEFINE_STATIC_LOCAL(const AtomicString, selectlist, ("selectlist"));
-        return selectlist;
-      }
-      break;
-    }
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 bool HTMLButtonElement::IsPresentationAttribute(
@@ -112,82 +110,145 @@ bool HTMLButtonElement::IsPresentationAttribute(
   return HTMLFormControlElement::IsPresentationAttribute(name);
 }
 
+// static
+std::optional<HTMLButtonElement::Type> HTMLButtonElement::TypeFromString(
+    const AtomicString& string) {
+  if (EqualIgnoringASCIICase(string, keywords::kReset)) {
+    return kReset;
+  }
+  if (EqualIgnoringASCIICase(string, keywords::kButton)) {
+    return kButton;
+  }
+  if (EqualIgnoringASCIICase(string, keywords::kSubmit)) {
+    return kSubmit;
+  }
+  return std::nullopt;
+}
+
 void HTMLButtonElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
-    if (EqualIgnoringASCIICase(params.new_value, "reset")) {
-      type_ = kReset;
-    } else if (EqualIgnoringASCIICase(params.new_value, "button")) {
-      type_ = kButton;
-    } else if (RuntimeEnabledFeatures::HTMLSelectListElementEnabled() &&
-               EqualIgnoringASCIICase(params.new_value, "selectlist")) {
-      type_ = kSelectlist;
+    if (std::optional<HTMLButtonElement::Type> type =
+            TypeFromString(params.new_value)) {
+      SetTypeInternal(*type);
     } else {
       if (!params.new_value.IsNull()) {
         if (params.new_value.empty()) {
           UseCounter::Count(GetDocument(),
                             WebFeature::kButtonTypeAttrEmptyString);
-        } else if (!EqualIgnoringASCIICase(params.new_value, "submit")) {
+        } else {
           UseCounter::Count(GetDocument(), WebFeature::kButtonTypeAttrInvalid);
         }
       }
-      type_ = kSubmit;
+      if (FastHasAttribute(html_names::kCommandAttr) ||
+          FastHasAttribute(html_names::kCommandforAttr)) {
+        UseCounter::Count(
+            GetDocument(),
+            WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
+        SetTypeInternal(kButton);
+      } else {
+        SetTypeInternal(kSubmit);
+      }
     }
-    UpdateWillValidateCache();
-    if (formOwner() && isConnected())
+    if (formOwner() && isConnected()) {
       formOwner()->InvalidateDefaultButtonStyle();
+    }
+  } else if (params.name == html_names::kCommandAttr ||
+             params.name == html_names::kCommandforAttr) {
+    bool has_type = FastHasAttribute(html_names::kTypeAttr);
+    auto type = TypeFromString(FastGetAttribute(html_names::kTypeAttr));
+    bool type_is_button = type && *type == kButton;
+    if ((!has_type || !type_is_button)) {
+      UseCounter::Count(
+          GetDocument(),
+          WebFeature::kButtonTypeAttrInvalidWithCommandOrCommandfor);
+    }
+
+    if (!params.new_value.IsNull() && !type) {
+      // https://html.spec.whatwg.org/multipage/form-elements.html#dom-button-type
+      // Type, as reflected in the IDL, must be "button" if there are command
+      // attributes without an explicit valid type attribute set.
+      SetTypeInternal(kButton);
+    }
   } else {
-    if (params.name == html_names::kFormactionAttr)
+    if (params.name == html_names::kFormactionAttr) {
       LogUpdateAttributeIfIsolatedWorldAndInDocument("button", params);
+    }
     HTMLFormControlElement::ParseAttribute(params);
   }
 }
 
+void HTMLButtonElement::SetTypeInternal(Type type) {
+  type_ = type;
+  UpdateWillValidateCache();
+  if (formOwner() && isConnected()) {
+    formOwner()->InvalidateDefaultButtonStyle();
+  }
+}
+
+bool HTMLButtonElement::CanBeCommandInvoker() const {
+  return !IsFormAssociatedSubmitButton();
+}
+
+bool HTMLButtonElement::IsFormAssociatedSubmitButton() const {
+  return Form() && FastHasAttribute(html_names::kTypeAttr) && type_ == kSubmit;
+}
+
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
-    if (!IsDisabledFormControl()) {
-      if (Form() && type_ == kSubmit && !OwnerSelect()) {
-        Form()->PrepareForSubmission(&event, this);
+    if (auto* form = Form();
+          form && !IsDisabledFormControl()) {
+      bool has_command_attr = FastHasAttribute(html_names::kCommandforAttr) ||
+                              FastHasAttribute(html_names::kCommandAttr);
+      if (has_command_attr && type_ == kButton &&
+          !EqualIgnoringASCIICase(FastGetAttribute(html_names::kTypeAttr),
+                                  keywords::kButton)) {
+        AddConsoleMessage(mojom::blink::ConsoleMessageSource::kOther,
+                          mojom::blink::ConsoleMessageLevel::kWarning,
+                          "Buttons associated with forms that include "
+                          "command or commandfor attributes are "
+                          "ambiguous, and require a type=button attribute. "
+                          "No action will be taken.");
+        return;
+      }
+      if (type_ == kSubmit) {
+        if (has_command_attr &&
+            EqualIgnoringASCIICase(FastGetAttribute(html_names::kTypeAttr),
+                                   keywords::kSubmit)) {
+          AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Buttons with an explicit type=submit will always submit a "
+              "form, so command or commandfor attributes will be ignored.");
+        }
+        form->PrepareForSubmission(&event, this);
         event.SetDefaultHandled();
         return;
       }
-      if (Form() && type_ == kReset) {
-        Form()->reset();
+      if (type_ == kReset) {
+        form->reset();
         event.SetDefaultHandled();
+        if (has_command_attr) {
+          AddConsoleMessage(
+              mojom::blink::ConsoleMessageSource::kOther,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "Buttons with an explicit type=reset will always reset a form, "
+              "so command or commandfor attributes will be ignored.");
+        }
         return;
       }
     }
   }
 
-  if (type_ == kSelectlist) {
-    CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
-    if (auto* selectlist = OwnerSelectList()) {
-      selectlist->HandleButtonEvent(event);
+  if (event.type() == event_type_names::kDOMActivate) {
+    if (HandleCommandForActivation()) {
+      return;
     }
   }
 
-  if (auto* select = OwnerSelect()) {
-    CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-    // For native popups, use HTMLSelectElement's codepath. For <datalist>
-    // popover popups, use the HTMLFormControlElement popover code path.
-    if (select->IsAppearanceBaseSelect()) {
-      CHECK(!event.DefaultHandled())
-          << " We shouldn't run HTMLSelectElement::DefaultEventHandler here if "
-             "the default has already been handled. event.type(): "
-          << event.type();
-      select->DefaultEventHandler(event);
-      if (event.DefaultHandled()) {
-        return;
-      }
-    }
-  }
-
-  // type=selectlist should not open the listbox when enter is pressed, which
-  // HandleKeyboardActivation would do via simulated click.
-  if (type_ != kSelectlist && HandleKeyboardActivation(event)) {
+  if (HandleKeyboardActivation(event)) {
     return;
   }
-
   HTMLFormControlElement::DefaultEventHandler(event);
 }
 
@@ -197,8 +258,9 @@ bool HTMLButtonElement::HasActivationBehavior() const {
 
 bool HTMLButtonElement::WillRespondToMouseClickEvents() {
   if (!IsDisabledFormControl() && Form() &&
-      (type_ == kSubmit || type_ == kReset))
+      (type_ == kSubmit || type_ == kReset)) {
     return true;
+  }
   return HTMLFormControlElement::WillRespondToMouseClickEvents();
 }
 
@@ -215,8 +277,9 @@ void HTMLButtonElement::SetActivatedSubmit(bool flag) {
 }
 
 void HTMLButtonElement::AppendToFormData(FormData& form_data) {
-  if (type_ == kSubmit && !GetName().empty() && is_activated_submit_)
+  if (type_ == kSubmit && !GetName().empty() && is_activated_submit_) {
     form_data.AppendFromElement(GetName(), Value());
+  }
 }
 
 void HTMLButtonElement::AccessKeyAction(
@@ -267,45 +330,19 @@ void HTMLButtonElement::DispatchBlurEvent(
     Element* new_focused_element,
     mojom::blink::FocusType type,
     InputDeviceCapabilities* source_capabilities) {
-  SetActive(false);
+  // The button might be the control element of a label
+  // that is in :active state. In that case the control should
+  // remain :active to avoid crbug.com/40934455.
+  if (!HasActiveLabel()) {
+    SetActive(false);
+  }
   HTMLFormControlElement::DispatchBlurEvent(new_focused_element, type,
                                             source_capabilities);
 }
 
-HTMLSelectListElement* HTMLButtonElement::OwnerSelectList() const {
-  if (type_ != kSelectlist) {
-    return nullptr;
-  }
-  for (auto& ancestor : FlatTreeTraversal::AncestorsOf(*this)) {
-    if (IsA<HTMLListboxElement>(ancestor)) {
-      // Buttons inside listboxes are excluded from triggering the listbox.
-      return nullptr;
-    }
-    if (auto* selectlist = DynamicTo<HTMLSelectListElement>(ancestor)) {
-      return selectlist;
-    }
-  }
-  return nullptr;
-}
-
 HTMLSelectElement* HTMLButtonElement::OwnerSelect() const {
-  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    return nullptr;
-  }
   if (auto* select = DynamicTo<HTMLSelectElement>(parentNode())) {
-    for (auto* previous_sibling = previousSibling(); previous_sibling;
-         previous_sibling = previous_sibling->previousSibling()) {
-      if (IsA<HTMLButtonElement>(previous_sibling)) {
-        // Only the first child <button> of a <select>, which is the one that
-        // gets slotted into the button slot, should get the <select> opening
-        // behavior.
-        return nullptr;
-      }
-    }
-    return select;
-  }
-  if (auto* root = ContainingShadowRoot()) {
-    if (auto* select = DynamicTo<HTMLSelectElement>(root->host())) {
+    if (select->SlottedButton() == this) {
       return select;
     }
   }

@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -192,13 +195,13 @@ TEST_F(FontResourceTest, RevalidationPolicyMetrics) {
 
   // Test histograms.
   histogram_tester.ExpectTotalCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Font", 2);
+      "Blink.MemoryCache.RevalidationPolicy2.Preload.Font", 2);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Font",
+      "Blink.MemoryCache.RevalidationPolicy2.Preload.Font",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::kLoad),
       1);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Preload.Font",
+      "Blink.MemoryCache.RevalidationPolicy2.Preload.Font",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::kUse), 1);
 
   KURL url_font("http://127.0.0.1:8000/font.ttf");
@@ -214,28 +217,28 @@ TEST_F(FontResourceTest, RevalidationPolicyMetrics) {
       FetchParameters::CreateForTest(ResourceRequest(url_font));
   resource = FontResource::Fetch(fetch_params, fetcher, nullptr);
   ASSERT_TRUE(resource);
-  histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Font",
-                                    1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Font", 1);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Font",
+      "Blink.MemoryCache.RevalidationPolicy2.Font",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::kDefer),
       1);
   fetcher->StartLoad(resource);
   url_test_helpers::ServeAsynchronousRequests();
-  histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Font",
-                                    2);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Font", 2);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Font",
+      "Blink.MemoryCache.RevalidationPolicy2.Font",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::
                            kPreviouslyDeferredLoad),
       1);
   // Load the resource again, deferred resource already loaded shall be counted
   // as kUse.
   resource = FontResource::Fetch(fetch_params, fetcher, nullptr);
-  histogram_tester.ExpectTotalCount("Blink.MemoryCache.RevalidationPolicy.Font",
-                                    3);
+  histogram_tester.ExpectTotalCount(
+      "Blink.MemoryCache.RevalidationPolicy2.Font", 3);
   histogram_tester.ExpectBucketCount(
-      "Blink.MemoryCache.RevalidationPolicy.Font",
+      "Blink.MemoryCache.RevalidationPolicy2.Font",
       static_cast<int>(ResourceFetcher::RevalidationPolicyForMetrics::kUse), 1);
 }
 
@@ -254,9 +257,10 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   Document& document = dummy_page_holder->GetDocument();
   ResourceFetcher* fetcher = document.Fetcher();
   auto* src_uri_value = MakeGarbageCollected<cssvalue::CSSURIValue>(
-      CSSUrlData(AtomicString(url.GetString()), url,
-                 Referrer(document.Url(), document.GetReferrerPolicy()),
-                 OriginClean::kTrue, false /* is_ad_related */));
+      *MakeGarbageCollected<CSSUrlData>(
+          AtomicString(url.GetString()), url,
+          Referrer(document.Url(), document.GetReferrerPolicy()),
+          /*origin_clean=*/true, /*is_ad_related=*/false));
   auto* src_value =
       CSSFontFaceSrcValue::Create(src_uri_value, nullptr /* world */);
 
@@ -436,7 +440,6 @@ class TestFontResourceClient final
   String DebugName() const override { return "TestFontResourceClient"; }
 
  private:
-  bool error_occurred_ = false;
   base::OnceClosure finish_closure_;
 };
 

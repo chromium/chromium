@@ -72,8 +72,7 @@ class ApplicationControllerImplTest
 
   // chromium_cast::ApplicationContext implementation.
   void GetMediaSessionId(GetMediaSessionIdCompleter::Sync& completer) override {
-    NOTREACHED_IN_MIGRATION();
-    completer.Reply({});
+    NOTREACHED();
   }
   void SetApplicationController(
       SetApplicationControllerRequest& request,

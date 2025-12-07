@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_provider_win.h"
 
 #include <objbase.h>
@@ -27,6 +22,7 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -51,6 +47,7 @@
 #include "base/win/scoped_hstring.h"
 #include "chrome/browser/enterprise/platform_auth/cloud_ap_utils_win.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "net/cookies/cookie_util.h"
 #include "net/http/http_request_headers.h"
 #include "url/gurl.h"
@@ -196,8 +193,13 @@ void ParseCookieInfo(const ProofOfPossessionCookieInfo* cookie_info,
   // new header. Otherwise, append it to the existing list of cookies.
   static constexpr std::string_view kHeaderPrefix("x-ms-");
   for (DWORD i = 0; i < cookie_info_count; ++i) {
-    const ProofOfPossessionCookieInfo& cookie = cookie_info[i];
+    const ProofOfPossessionCookieInfo& cookie = UNSAFE_TODO(cookie_info[i]);
     auto ascii_cookie_name = base::WideToASCII(cookie.name);
+    // TODO(b/425887809): Remove after debugging.
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "[CloudAPAuthEnabled] Fetched cookie with name " << ascii_cookie_name
+        << " and size " << wcslen(cookie.data);
+
     if (base::StartsWith(ascii_cookie_name, kHeaderPrefix,
                          base::CompareCase::INSENSITIVE_ASCII)) {
       // Removing cookie attributes from the value before setting it as a
@@ -256,11 +258,18 @@ net::HttpRequestHeaders GetAuthData(const GURL& url) {
     base::UmaHistogramExactLinear("Enterprise.PlatformAuth.GetAuthData.Count",
                                   cookie_info_count,
                                   10);  // Expect < 10 cookies.
+    // TODO(b/425887809): Remove after debugging.
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "[CloudAPAuthEnabled] Successfully fetched " << cookie_info_count
+        << " cookies.";
   } else {
     base::UmaHistogramTimes("Enterprise.PlatformAuth.GetAuthData.FailureTime",
                             delta);
     base::UmaHistogramSparse(
         "Enterprise.PlatformAuth.GetAuthData.FailureHresult", int{hresult});
+    // TODO(b/425887809): Remove after debugging.
+    VLOG_POLICY(1, EXTENSIBLE_SSO)
+        << "[CloudAPAuthEnabled] Failed to fetch cookies.";
   }
 
   return auth_headers;
@@ -427,7 +436,8 @@ void CloudApProviderWin::FetchOrigins(FetchOriginsCallback on_fetch_complete) {
 void CloudApProviderWin::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
-  get_data_subscription_ = on_get_data_callback_list_.Add(std::move(callback));
+  get_data_subscriptions_.push_back(
+      on_get_data_callback_list_.Add(std::move(callback)));
   if (!base::ThreadPool::CreateCOMSTATaskRunner(
            {base::TaskPriority::USER_BLOCKING,
             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()})

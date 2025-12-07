@@ -32,28 +32,35 @@ function makeOffscreenCanvas() {
     });
 }
 
-var imageBitmapVideoPromise = new Promise(function(resolve, reject) {
-    var video = document.createElement("video");
-    video.oncanplaythrough = function() {
-        resolve(video);
-    };
-    video.onerror = reject;
+function makeMakeVideo(src) {
+    return function () {
+        return new Promise(function(resolve, reject) {
+            var video = document.createElement("video");
+            video.oncanplaythrough = function() {
+                resolve(video);
+            };
+            video.onerror = reject;
 
-    // preload=auto is required to ensure a frame is available once
-    // canplaythrough is fired. The default of preload=metadata does not
-    // gaurantee this.
-    video.preload = "auto";
-    video.src = getVideoURI("/images/pattern");
+            // preload=auto is required to ensure a frame is available once
+            // canplaythrough is fired. The default of preload=metadata does not
+            // gaurantee this.
+            video.preload = "auto";
+            video.src = getVideoURI(src);
 
-    // Prevent WebKit from garbage collecting event handlers.
-    window._video = video;
-});
-
-function makeVideo() {
-    return imageBitmapVideoPromise;
+            // Prevent WebKit from garbage collecting event handlers.
+            window._video = video;
+        });
+    }
 }
 
-var imageBitmapDataUrlVideoPromise = fetch(getVideoURI("/images/pattern"))
+function makeVideo() {
+  return makeMakeVideo("/images/pattern")();
+}
+
+var imageBitmapDataUrlVideoPromise = self.GLOBAL && self.GLOBAL.isWorker()
+    // /common/media.js can't load in a Worker so we don't have getVideoURI
+    ? null
+    : fetch(getVideoURI("/images/pattern"))
     .then(response => Promise.all([response.headers.get("Content-Type"), response.arrayBuffer()]))
     .then(([type, data]) => {
         return new Promise(function(resolve, reject) {

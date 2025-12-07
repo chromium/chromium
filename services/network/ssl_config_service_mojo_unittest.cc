@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/ssl_config_service_mojo.h"
 
+#include <array>
+
 #include "base/feature_list.h"
-#include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -41,6 +37,7 @@
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace network {
 namespace {
@@ -98,6 +95,16 @@ class TestCertVerifierConfigObserver : public net::CertVerifier {
              const net::NetLogWithSource& net_log) override {
     ADD_FAILURE() << "Verify should not be called by tests";
     return net::ERR_FAILED;
+  }
+  void Verify2QwacBinding(
+      const std::string& binding,
+      const std::string& hostname,
+      const scoped_refptr<net::X509Certificate>& tls_cert,
+      base::OnceCallback<void(const scoped_refptr<net::X509Certificate>&)>
+          callback,
+      const net::NetLogWithSource& net_log) override {
+    ADD_FAILURE();
+    std::move(callback).Run(nullptr);
   }
   void SetConfig(const Config& config) override {
     set_config_call_.SetValue(config);
@@ -324,27 +331,15 @@ TEST_F(NetworkServiceSSLConfigServiceTest, Sha1LocalAnchorsEnabled) {
   RunCertConversionTests(*mojo_config, expected_net_config);
 }
 
-TEST_F(NetworkServiceSSLConfigServiceTest, SymantecEnforcementDisabled) {
-  net::CertVerifier::Config expected_net_config;
-  // Use the opposite of the default value.
-  expected_net_config.disable_symantec_enforcement =
-      !expected_net_config.disable_symantec_enforcement;
-
-  mojom::SSLConfigPtr mojo_config = mojom::SSLConfig::New();
-  mojo_config->symantec_enforcement_disabled =
-      expected_net_config.disable_symantec_enforcement;
-
-  RunCertConversionTests(*mojo_config, expected_net_config);
-}
-
 TEST_F(NetworkServiceSSLConfigServiceTest, SSLVersion) {
-  const struct {
+  struct VersionTable {
     mojom::SSLVersion mojo_ssl_version;
     int net_ssl_version;
-  } kVersionTable[] = {
+  };
+  const auto kVersionTable = std::to_array<VersionTable>({
       {mojom::SSLVersion::kTLS12, net::SSL_PROTOCOL_VERSION_TLS1_2},
       {mojom::SSLVersion::kTLS13, net::SSL_PROTOCOL_VERSION_TLS1_3},
-  };
+  });
 
   for (size_t min_index = 0; min_index < std::size(kVersionTable);
        ++min_index) {
@@ -445,6 +440,113 @@ TEST_F(NetworkServiceSSLConfigServiceTest, CanShareConnectionWithClientCerts) {
       config_service->CanShareConnectionWithClientCerts("example.com"));
   EXPECT_FALSE(
       config_service->CanShareConnectionWithClientCerts("example.net"));
+}
+
+TEST_F(NetworkServiceSSLConfigServiceTest,
+       NamedGroupsConfigPostQuantumDisabled) {
+  net::SSLContextConfig expected_net_config;
+  expected_net_config.supported_named_groups = {
+      {.group_id = SSL_GROUP_X25519, .send_key_share = true},
+      {.group_id = SSL_GROUP_SECP256R1, .send_key_share = false},
+      {.group_id = SSL_GROUP_SECP384R1, .send_key_share = false},
+  };
+
+  mojom::SSLConfigPtr mojo_config = mojom::SSLConfig::New();
+  mojo_config->post_quantum_key_agreement_enabled = false;
+
+  RunConversionTests(*mojo_config, expected_net_config);
+}
+
+TEST_F(NetworkServiceSSLConfigServiceTest, NamedGroupsDefaultPreset) {
+  mojom::NetworkContextParamsPtr network_context_params =
+      mojom::NetworkContextParams::New();
+  network_context_params->initial_ssl_config = mojom::SSLConfig::New();
+  EXPECT_EQ(network_context_params->initial_ssl_config->named_groups_preset,
+            network::mojom::SSLNamedGroupsPreset::kDefault);
+  SetUpNetworkContext(std::move(network_context_params));
+
+  net::SSLContextConfig net_config = GetSSLContextConfig();
+  std::vector<uint16_t> expected_supported_groups = {
+      SSL_GROUP_X25519_MLKEM768, SSL_GROUP_X25519, SSL_GROUP_SECP256R1,
+      SSL_GROUP_SECP384R1};
+  EXPECT_EQ(net_config.GetSupportedGroups(), expected_supported_groups);
+
+  std::vector<uint16_t> expected_key_shares = {SSL_GROUP_X25519_MLKEM768,
+                                               SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(/*key_shares_only=*/true),
+            expected_key_shares);
+}
+
+TEST_F(NetworkServiceSSLConfigServiceTest,
+       NamedGroupsDefaultPostQuantumDisabled) {
+  mojom::NetworkContextParamsPtr network_context_params =
+      mojom::NetworkContextParams::New();
+  network_context_params->initial_ssl_config = mojom::SSLConfig::New();
+  network_context_params->initial_ssl_config
+      ->post_quantum_key_agreement_enabled = false;
+  EXPECT_EQ(network_context_params->initial_ssl_config->named_groups_preset,
+            network::mojom::SSLNamedGroupsPreset::kDefault);
+  SetUpNetworkContext(std::move(network_context_params));
+
+  net::SSLContextConfig net_config = GetSSLContextConfig();
+  std::vector<uint16_t> expected_supported_groups = {
+      SSL_GROUP_X25519, SSL_GROUP_SECP256R1, SSL_GROUP_SECP384R1};
+  EXPECT_EQ(net_config.GetSupportedGroups(), expected_supported_groups);
+
+  std::vector<uint16_t> expected_key_shares = {SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(/*key_shares_only=*/true),
+            expected_key_shares);
+}
+
+TEST_F(NetworkServiceSSLConfigServiceTest, NamedGroupsCnsa2Preset) {
+  mojom::NetworkContextParamsPtr network_context_params =
+      mojom::NetworkContextParams::New();
+  network_context_params->initial_ssl_config = mojom::SSLConfig::New();
+  network_context_params->initial_ssl_config->named_groups_preset =
+      network::mojom::SSLNamedGroupsPreset::kCnsa2;
+  SetUpNetworkContext(std::move(network_context_params));
+
+  net::SSLContextConfig net_config = GetSSLContextConfig();
+  std::vector<uint16_t> expected_supported_groups = {
+      SSL_GROUP_MLKEM1024, SSL_GROUP_X25519_MLKEM768, SSL_GROUP_SECP384R1,
+      SSL_GROUP_SECP256R1, SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(), expected_supported_groups);
+
+  std::vector<uint16_t> expected_key_shares = {SSL_GROUP_X25519_MLKEM768,
+                                               SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(/*key_shares_only=*/true),
+            expected_key_shares);
+}
+
+TEST_F(NetworkServiceSSLConfigServiceTest,
+       NamedGroupsCnsa2PostQuantumDisabled) {
+  mojom::NetworkContextParamsPtr network_context_params =
+      mojom::NetworkContextParams::New();
+  network_context_params->initial_ssl_config = mojom::SSLConfig::New();
+  network_context_params->initial_ssl_config->named_groups_preset =
+      network::mojom::SSLNamedGroupsPreset::kCnsa2;
+  network_context_params->initial_ssl_config
+      ->post_quantum_key_agreement_enabled = false;
+  SetUpNetworkContext(std::move(network_context_params));
+
+  net::SSLContextConfig net_config = GetSSLContextConfig();
+  std::vector<uint16_t> expected_supported_groups = {
+      SSL_GROUP_SECP384R1, SSL_GROUP_SECP256R1, SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(), expected_supported_groups);
+
+  std::vector<uint16_t> expected_key_shares = {SSL_GROUP_X25519};
+  EXPECT_EQ(net_config.GetSupportedGroups(/*key_shares_only=*/true),
+            expected_key_shares);
+}
+
+TEST_F(NetworkServiceSSLConfigServiceTest, Tls13CipherPreferAes256) {
+  net::SSLContextConfig expected_net_config;
+  expected_net_config.tls13_cipher_prefer_aes_256 = true;
+
+  mojom::SSLConfigPtr mojo_config = mojom::SSLConfig::New();
+  mojo_config->tls13_cipher_prefer_aes_256 = true;
+
+  RunConversionTests(*mojo_config, expected_net_config);
 }
 
 }  // namespace

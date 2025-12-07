@@ -169,35 +169,34 @@ class BluetoothAdvertisementMonitorManagerClientImpl final
       std::move(error_callback).Run(kFailedError, "Adapter does not exist.");
       return;
     }
-    object_proxy->CallMethodWithErrorCallback(
+    object_proxy->CallMethodWithErrorResponse(
         method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(
-            &BluetoothAdvertisementMonitorManagerClientImpl::OnSuccess,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&BluetoothAdvertisementMonitorManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
-  }
-  // Called when a response for successful method call is received.
-  void OnSuccess(base::OnceClosure callback, dbus::Response* response) {
-    DCHECK(response);
-    std::move(callback).Run();
+            &BluetoothAdvertisementMonitorManagerClientImpl::OnMethodResponse,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            std::move(error_callback)));
   }
 
-  // Called when a response for a failed method call is received.
-  void OnError(ErrorCallback error_callback, dbus::ErrorResponse* response) {
-    // Error response has optional error message argument.
-    std::string error_name;
-    std::string error_message;
-    if (response) {
-      dbus::MessageReader reader(response);
-      error_name = response->GetErrorName();
-      reader.PopString(&error_message);
-    } else {
-      error_name = kNoResponseError;
-      error_message = "D-Bus did not provide a response.";
+  void OnMethodResponse(base::OnceClosure callback,
+                        ErrorCallback error_callback,
+                        dbus::Response* response,
+                        dbus::ErrorResponse* error_response) {
+    if (!response) {
+      std::string error_name;
+      std::string error_message;
+      if (error_response) {
+        dbus::MessageReader reader(error_response);
+        error_name = error_response->GetErrorName();
+        reader.PopString(&error_message);
+      } else {
+        error_name = kNoResponseError;
+        error_message = "D-Bus did not provide a response.";
+      }
+      std::move(error_callback).Run(error_name, error_message);
+      return;
     }
-    std::move(error_callback).Run(error_name, error_message);
+
+    std::move(callback).Run();
   }
 
   base::ObserverList<Observer> observers_;

@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "cc/paint/element_id.h"
+#include "cc/slim/layer_tree.h"
 #include "cc/slim/layer_tree_client.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
@@ -34,7 +35,6 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/viz/privileged/mojom/compositing/begin_frame_observer.mojom.h"
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
-#include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "ui/android/resources/resource_manager_impl.h"
 #include "ui/android/resources/ui_resource_provider.h"
@@ -47,12 +47,17 @@
 
 namespace cc::slim {
 class Layer;
-class LayerTree;
 }  // namespace cc::slim
 
+namespace gpu {
+class GpuChannelHost;
+}  // namespace gpu
+
 namespace viz {
+class ContextProviderCommandBuffer;
 class FrameSinkId;
 class HostDisplayClient;
+class RasterContextProvider;
 }  // namespace viz
 
 namespace content {
@@ -101,6 +106,8 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   void RemoveFrameSubmissionObserver(
       FrameSubmissionObserver* observer) override;
 
+  scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider();
+
  private:
   class AndroidHostDisplayClient;
   class ScopedCachedBackBuffer;
@@ -109,8 +116,10 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   // Compositor implementation.
   void SetRootWindow(gfx::NativeWindow root_window) override;
   void SetRootLayer(scoped_refptr<cc::slim::Layer> root) override;
-  void SetSurface(const base::android::JavaRef<jobject>& surface,
-                  bool can_be_used_with_surface_control) override;
+  std::optional<gpu::SurfaceHandle> SetSurface(
+      const base::android::JavaRef<jobject>& surface,
+      bool can_be_used_with_surface_control,
+      const base::android::JavaRef<jobject>& host_input_token) override;
   void SetBackgroundColor(int color) override;
   void SetWindowBounds(const gfx::Size& size) override;
   const gfx::Size& GetWindowBounds() override;
@@ -137,19 +146,20 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   void DidLoseLayerTreeFrameSink() override;
 
   // WindowAndroidCompositor implementation.
-  std::unique_ptr<ReadbackRef> TakeReadbackRef(
-      const viz::SurfaceId& surface_id) override;
+  ui::WindowAndroidCompositor::ScopedKeepSurfaceAliveCallback
+  TakeScopedKeepSurfaceAliveCallback(const viz::SurfaceId& surface_id) override;
   void RequestCopyOfOutputOnRootLayer(
       std::unique_ptr<viz::CopyOutputRequest> request) override;
   void SetNeedsAnimate() override;
   viz::FrameSinkId GetFrameSinkId() override;
+  gpu::SurfaceHandle GetSurfaceHandle() override;
   void AddChildFrameSink(const viz::FrameSinkId& frame_sink_id) override;
   void RemoveChildFrameSink(const viz::FrameSinkId& frame_sink_id) override;
   bool IsDrawingFirstVisibleFrame() const override;
-  void SetVSyncPaused(bool paused) override;
   void OnUpdateRefreshRate(float refresh_rate) override;
   void OnUpdateSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override;
+  void OnAdaptiveRefreshRateInfoChanged() override;
   void OnUpdateOverlayTransform() override;
   std::unique_ptr<ui::CompositorLock> GetCompositorLock(
       base::TimeDelta timeout) override;
@@ -201,15 +211,20 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   void InitializeVizLayerTreeFrameSink(
       scoped_refptr<viz::ContextProviderCommandBuffer> context_provider);
 
-  void DecrementPendingReadbacks();
-
   void MaybeUpdateObserveBeginFrame();
+
+  using PendingSurfaceCopyId =
+      base::StrongAlias<struct PendingSurfaceCopyIdTag, uint32_t>;
+  void RemoveScopedKeepSurfaceAlive(
+      const PendingSurfaceCopyId& scoped_keep_surface_alive_id);
 
   viz::FrameSinkId frame_sink_id_;
 
   // root_layer_ is the persistent internal root layer, while subroot_layer_
   // is the one attached by the compositor client.
   scoped_refptr<cc::slim::Layer> subroot_layer_;
+
+  scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
 
   // Destruction order matters here:
   std::unique_ptr<cc::slim::LayerTree> host_;
@@ -248,7 +263,6 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   // Viz-specific members for communicating with the display.
   mojo::AssociatedRemote<viz::mojom::DisplayPrivate> display_private_;
   std::unique_ptr<viz::HostDisplayClient> display_client_;
-  bool vsync_paused_ = false;
 
   viz::ParentLocalSurfaceIdAllocator local_surface_id_allocator_;
 
@@ -257,8 +271,6 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
       swap_completed_with_size_for_testing_;
 
   size_t num_of_consecutive_surface_failures_ = 0u;
-
-  uint32_t pending_readbacks_ = 0u;
 
   bool enable_swap_completion_callbacks_ = false;
 
@@ -273,6 +285,12 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   std::unique_ptr<ui::HostBeginFrameObserver> host_begin_frame_observer_;
 
   base::ObserverList<FrameSubmissionObserver> frame_submission_observers_;
+
+  // Tracks a list of pending `viz::CopyOutputRequest`s.
+  PendingSurfaceCopyId pending_surface_copy_id_ = PendingSurfaceCopyId(0u);
+  base::flat_map<PendingSurfaceCopyId,
+                 std::unique_ptr<cc::slim::LayerTree::ScopedKeepSurfaceAlive>>
+      pending_surface_copies_;
 
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};
 };

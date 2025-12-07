@@ -52,6 +52,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 typedef sessions::tab_restore::Entry Entry;
 typedef sessions::tab_restore::Tab Tab;
@@ -115,12 +116,13 @@ class MockLiveTabContext : public sessions::LiveTabContext {
                void(const tab_groups::TabGroupId& group,
                     const tab_groups::TabGroupVisualData& visual_data));
   MOCK_CONST_METHOD0(GetRestoredBounds, const gfx::Rect());
-  MOCK_CONST_METHOD0(GetRestoredState, ui::WindowShowState());
+  MOCK_CONST_METHOD0(GetRestoredState, ui::mojom::WindowShowState());
   MOCK_CONST_METHOD0(GetWorkspace, std::string());
   MOCK_METHOD(sessions::LiveTab*,
               AddRestoredTab,
               ((const sessions::tab_restore::Tab&),
                int,
+               bool,
                bool,
                sessions::tab_restore::Type),
               (override));
@@ -142,7 +144,7 @@ class MockTabRestoreServiceClient : public sessions::TabRestoreServiceClient {
                    sessions::SessionWindow::WindowType type,
                    const std::string& app_name,
                    const gfx::Rect& bounds,
-                   ui::WindowShowState show_state,
+                   ui::mojom::WindowShowState show_state,
                    const std::string& workspace,
                    const std::string& user_title,
                    const std::map<std::string, std::string>& extra_data));
@@ -167,7 +169,7 @@ class TabRestoreTimeFactory : public sessions::tab_restore::TimeFactory {
  public:
   TabRestoreTimeFactory() : time_(base::Time::Now()) {}
 
-  ~TabRestoreTimeFactory() override {}
+  ~TabRestoreTimeFactory() override = default;
 
   base::Time TimeNow() override { return time_; }
 
@@ -198,7 +200,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
     user_agent_override_.ua_metadata_override->bitness = "32";
   }
 
-  ~TabRestoreServiceImplTest() override {}
+  ~TabRestoreServiceImplTest() override = default;
 
   SessionID tab_id() const { return tab_id_; }
   SessionID window_id() const { return window_id_; }
@@ -270,7 +272,7 @@ class TabRestoreServiceImplTest : public ChromeRenderViewHostTestHarness {
       std::optional<tab_groups::TabGroupId> group = std::nullopt,
       std::optional<tab_groups::TabGroupVisualData> group_visual_data =
           std::nullopt,
-      absl ::optional<ExtraData> extra_data = std::nullopt) {
+      std::optional<ExtraData> extra_data = std::nullopt) {
     // Create new window / tab IDs so that these remain distinct.
     window_id_ = SessionID::NewUnique();
     tab_id_ = SessionID::NewUnique();
@@ -472,7 +474,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, WindowRestore) {
   ON_CALL(mock_live_tab_context, GetRestoredBounds)
       .WillByDefault(Return(gfx::Rect(10, 20, 30, 40)));
   ON_CALL(mock_live_tab_context, GetRestoredState)
-      .WillByDefault(Return(ui::SHOW_STATE_MAXIMIZED));
+      .WillByDefault(Return(ui::mojom::WindowShowState::kMaximized));
   ON_CALL(mock_live_tab_context, GetWorkspace)
       .WillByDefault(Return("workspace"));
   ON_CALL(mock_live_tab_context, GetTabCount).WillByDefault(Return(1));
@@ -492,7 +494,7 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, WindowRestore) {
     EXPECT_EQ("app-name", window->app_name);
     EXPECT_EQ("user-title", window->user_title);
     EXPECT_EQ(gfx::Rect(10, 20, 30, 40), window->bounds);
-    EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED, window->show_state);
+    EXPECT_EQ(ui::mojom::WindowShowState::kMaximized, window->show_state);
     EXPECT_EQ("workspace", window->workspace);
   };
   validate();
@@ -881,7 +883,7 @@ TEST_F(TabRestoreServiceImplTest, WindowShowStateIsSet) {
     if (entry->type == sessions::tab_restore::Type::WINDOW) {
       got_window = true;
       Window* window = static_cast<Window*>(entry.get());
-      EXPECT_EQ(window->show_state, ui::SHOW_STATE_DEFAULT);
+      EXPECT_EQ(window->show_state, ui::mojom::WindowShowState::kDefault);
     }
   }
   EXPECT_TRUE(got_window);
@@ -936,7 +938,8 @@ TEST_F(TabRestoreServiceImplTest, LoadPreviousSessionAndTabs) {
 // service.
 TEST_F(TabRestoreServiceImplTest, LoadWindowBoundsAndWorkspace) {
   constexpr gfx::Rect kBounds(10, 20, 640, 480);
-  constexpr ui::WindowShowState kShowState = ui::SHOW_STATE_MINIMIZED;
+  constexpr ui::mojom::WindowShowState kShowState =
+      ui::mojom::WindowShowState::kMinimized;
   constexpr char kWorkspace[] = "workspace";
 
   CreateSessionServiceWithOneWindow(false);

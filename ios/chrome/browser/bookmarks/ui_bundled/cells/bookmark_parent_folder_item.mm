@@ -7,10 +7,9 @@
 #import "base/apple/foundation_util.h"
 #import "base/i18n/rtl.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -34,7 +33,7 @@
 
 #pragma mark TableViewItem
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
   BookmarkParentFolderCell* cell =
@@ -124,6 +123,11 @@
                                   kBookmarkCellHorizontalAccessoryViewSpacing));
   [self applyContentSizeCategoryStyles];
 
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(applyContentSizeCategoryStyles)];
+
   return self;
 }
 
@@ -131,28 +135,6 @@
   [super prepareForReuse];
   self.parentFolderNameLabel.text = nil;
   self.cloudSlashedView.hidden = YES;
-}
-
-- (NSString*)accessibilityLabel {
-  if (!self.cloudSlashedView.hidden) {
-    return l10n_util::GetNSStringF(
-        IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
-        base::SysNSStringToUTF16(self.parentFolderNameLabel.text));
-  }
-  return self.parentFolderNameLabel.text;
-}
-
-- (NSString*)accessibilityHint {
-  return l10n_util::GetNSString(
-      IDS_IOS_BOOKMARK_EDIT_PARENT_FOLDER_BUTTON_HINT);
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self applyContentSizeCategoryStyles];
-  }
 }
 
 - (void)applyContentSizeCategoryStyles {
@@ -166,6 +148,22 @@
     self.stackView.alignment = UIStackViewAlignmentCenter;
     self.parentFolderNameLabel.textAlignment = NSTextAlignmentRight;
   }
+}
+
+#pragma mark - UIAccessibility
+
+- (NSString*)accessibilityLabel {
+  if (!self.cloudSlashedView.hidden) {
+    return l10n_util::GetNSStringF(
+        IDS_IOS_BOOKMARKS_FOLDER_NAME_WITH_CLOUD_SLASH_ICON_LABEL,
+        base::SysNSStringToUTF16(self.parentFolderNameLabel.text));
+  }
+  return self.parentFolderNameLabel.text;
+}
+
+- (NSString*)accessibilityHint {
+  return l10n_util::GetNSString(
+      IDS_IOS_BOOKMARK_EDIT_PARENT_FOLDER_BUTTON_HINT);
 }
 
 @end

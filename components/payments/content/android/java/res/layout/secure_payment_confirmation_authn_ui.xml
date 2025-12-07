@@ -6,6 +6,7 @@ found in the LICENSE file.
 -->
 
 <RelativeLayout
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="wrap_content"
     android:layout_width="match_parent">
@@ -25,7 +26,8 @@ found in the LICENSE file.
         android:id="@+id/scroll_view"
         android:layout_below="@id/handlebar"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+        android:layout_width="match_parent"
+        android:clickable="true">
 
         <RelativeLayout
             android:layout_height="wrap_content"
@@ -53,7 +55,7 @@ found in the LICENSE file.
                 android:paddingVertical="@dimen/secure_payment_confirmation_ui_medium_padding"
                 android:layout_centerHorizontal="true"
                 android:textAppearance="@style/TextAppearance.Headline.Primary"
-                android:text="@string/secure_payment_confirmation_verify_purchase"/>
+                tools:text="Verify your purchase"/>
 
             <!-- "Store" label -->
             <TextView
@@ -171,14 +173,26 @@ found in the LICENSE file.
                 android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
                 android:text="@string/secure_payment_confirmation_opt_out_label"/>
 
+            <org.chromium.ui.widget.TextViewWithClickableSpans
+                android:id="@+id/secure_payment_confirmation_footnote"
+                android:layout_below="@id/secure_payment_confirmation_nocredmatch_opt_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:gravity="center"
+                android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_small_padding"
+                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_medium_padding"
+                android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+                android:text="@string/secure_payment_confirmation_footnote"/>
+
             <!-- "Continue" button -->
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/continue_button"
-                android:layout_below="@id/secure_payment_confirmation_nocredmatch_opt_out"
+                android:layout_below="@id/secure_payment_confirmation_footnote"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:text="@string/payments_continue_button"
-                style="@style/FilledButton.Flat"/>
+                tools:text="Verify"
+                style="@style/FilledButton"/>
 
             <!-- "Cancel" button -->
             <org.chromium.ui.widget.ButtonCompat

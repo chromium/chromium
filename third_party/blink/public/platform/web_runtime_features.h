@@ -69,6 +69,8 @@ class BLINK_PLATFORM_EXPORT WebRuntimeFeatures : public WebRuntimeFeaturesBase {
   static void EnableFluentScrollbars(bool);
   static void EnableFluentOverlayScrollbars(bool);
 
+  static void EnableLocalNetworkAccessWebRTC(bool);
+
   WebRuntimeFeatures() = delete;
 };
 

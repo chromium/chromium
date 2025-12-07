@@ -4,12 +4,14 @@
 
 source_set("content_notification_service") {
   sources = [
+    "content_notification_configuration.h",
+    "content_notification_configuration.mm",
     "content_notification_service.h",
     "content_notification_service.mm",
   ]
   deps = [
-    "//components/keyed_service/core:core",
-    "//url:url",
+    "//components/keyed_service/core",
+    "//url",
   ]
 }
 
@@ -20,8 +22,11 @@ source_set("content_notification_service_factory") {
   ]
   deps = [
     ":content_notification_service",
-    "//components/keyed_service/ios",
-    "//ios/chrome/browser/shared/model/browser_state",
+    "//base",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/signin/model",
     "//ios/public/provider/chrome/browser/content_notification:content_notification_api",
   ]
 }
@@ -39,8 +44,11 @@ source_set("content_notification_client") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile:features",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 
   frameworks = [ "UserNotifications.framework" ]
@@ -57,7 +65,7 @@ source_set("content_notification_nau_configuration") {
     "//base",
     "//ios/chrome/browser/push_notification/model:constants",
     "//ui/base",
-    "//url:url",
+    "//url",
   ]
 
   frameworks = [ "UserNotifications.framework" ]
@@ -75,10 +83,10 @@ source_set("util") {
     "//components/search_engines",
     "//ios/chrome/browser/metrics/model:constants",
     "//ios/chrome/browser/push_notification/model:constants",
-    "//ios/chrome/browser/push_notification/model:push_notification_client",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
@@ -98,10 +106,14 @@ source_set("constants") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "content_notification_client_unittest.mm" ]
+  sources = [
+    "content_notification_client_unittest.mm",
+    "content_notification_service_factory_unittest.mm",
+  ]
   deps = [
     ":constants",
     ":content_notification_client",
+    ":content_notification_service_factory",
     "//base",
     "//base/test:test_support",
     "//ios/chrome/browser/default_browser/model",
@@ -113,11 +125,13 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/test:test_support",
     "//ios/testing:block_swizzler",
+    "//ios/web/public/test",
     "//third_party/ocmock",
   ]
 }

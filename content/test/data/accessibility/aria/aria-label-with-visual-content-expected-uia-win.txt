@@ -1,0 +1,11 @@
+Document
+++Button Name='button supports naming with child content'
+++Hyperlink Name='link supports naming with child content'
+++++Text Name='This is a link' IsControlElement=false
+++Group Name='div does not support naming with child content'
+++++Text Name='This is a div'
+++Group Name='span does not support naming with child content'
+++++Text Name='This is a span'
+++Text Name=' '
+++Group Name='region does not support naming with child content'
+++++Text Name='This is a region'

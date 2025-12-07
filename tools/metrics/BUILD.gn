@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/gclient_args.gni")
+import("//tools/json_to_struct/json_to_struct.gni")
 import("//tools/metrics/histograms/histograms_xml_files.gni")
 
 # Only include histograms_xml if we have access to dirmd data, which
@@ -71,13 +72,6 @@ group("metrics_python_tests") {
     "//tools/json_comment_eater/json_comment_eater_test.py",
     "//tools/json_comment_eater/everything.json",
     "//tools/json_comment_eater/everything_expected.json",
-    "//tools/json_to_struct/java_element_generator.py",
-    "//tools/json_to_struct/element_generator.py",
-    "//tools/json_to_struct/element_generator_test.py",
-    "//tools/json_to_struct/json_to_struct.py",
-    "//tools/json_to_struct/class_generator.py",
-    "//tools/json_to_struct/struct_generator.py",
-    "//tools/json_to_struct/struct_generator_test.py",
 
     # The metrics_python_tests.py runner and its dependencies.
     "//tools/metrics/metrics_python_tests.py",
@@ -98,12 +92,16 @@ group("metrics_python_tests") {
     "//tools/metrics/common/pretty_print_xml.py",
     "//tools/metrics/common/etree_util.py",
 
-    "//tools/metrics/dwa/dwa.xml",
-    "//tools/metrics/dwa/codegen.py",
-    "//tools/metrics/dwa/dwa_model.py",
-    "//tools/metrics/dwa/dwa_model_test.py",
-    "//tools/metrics/dwa/dwa_xml_validations.py",
-    "//tools/metrics/dwa/dwa_xml_validations_test.py",
+    "//tools/metrics/private_metrics/dwa_builders_template.py",
+    "//tools/metrics/private_metrics/dwa_decode_template.py",
+    "//tools/metrics/private_metrics/dwa.xml",
+    "//tools/metrics/private_metrics/dwa_model.py",
+    "//tools/metrics/private_metrics/gen_private_metrics_builders.py",
+    "//tools/metrics/private_metrics/gen_private_metrics_builders_test.py",
+    "//tools/metrics/private_metrics/private_metrics_codegen.py",
+    "//tools/metrics/private_metrics/private_metrics_model_shared_test.py",
+    "//tools/metrics/private_metrics/private_metrics_validations.py",
+    "//tools/metrics/private_metrics/private_metrics_validations_test.py",
 
     "//tools/metrics/histograms/test_data/enums.xml",
     "//tools/metrics/histograms/test_data/histograms.xml",
@@ -127,8 +125,11 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/merge_xml.py",
     "//tools/metrics/histograms/merge_xml_test.py",
     "//tools/metrics/histograms/populate_enums.py",
+    "//tools/metrics/histograms/PRESUBMIT_test.py",
     "//tools/metrics/histograms/pretty_print.py",
     "//tools/metrics/histograms/pretty_print_test.py",
+    "//tools/metrics/histograms/print_expanded_histograms.py",
+    "//tools/metrics/histograms/print_expanded_histograms_test.py",
     "//tools/metrics/histograms/validate_token.py",
     "//tools/metrics/histograms/validate_token_test.py",
 
@@ -163,21 +164,27 @@ group("metrics_python_tests") {
     "//components/variations/service/generate_ui_string_overrider_unittest.py",
   ]
 
+  data += JSON_TO_STRUCT_FILES + JSON_TO_STRUCT_TEST_FILES
+
   # Add platform-specific dependencies for dirmd.
   if (is_win) {
     data += [
       "//third_party/depot_tools/dirmd.bat",
-      "//third_party/depot_tools/.cipd_bin/dirmd.exe",
       "//third_party/depot_tools/cipd_bin_setup.bat",
       "//third_party/depot_tools/cipd_manifest.txt",
     ]
+    if (host_os == "win") {
+      data += [ "//third_party/depot_tools/.cipd_bin/dirmd.exe" ]
+    }
   } else {
     data += [
       "//third_party/depot_tools/dirmd",
-      "//third_party/depot_tools/.cipd_bin/dirmd",
       "//third_party/depot_tools/cipd_bin_setup.sh",
       "//third_party/depot_tools/cipd_manifest.txt",
     ]
+    if (host_os != "win") {
+      data += [ "//third_party/depot_tools/.cipd_bin/dirmd" ]
+    }
   }
 
   data_deps = [ "//testing:test_scripts_shared" ]

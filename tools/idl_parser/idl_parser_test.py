@@ -399,5 +399,17 @@ class TestDefaultValue(unittest.TestCase):
     default_value = argument.GetChildren()[1]
     self._CheckDefaultValue(default_value, 'NULL', 'NULL')
 
+class TestLineNumbers(unittest.TestCase):
+  def setUp(self):
+    self.parser = IDLParser(IDLLexer(), mute_error=True)
+
+  def testTypedefLineNumbers(self):
+    idl_text = '\n\ntypedef byte MyByte;'
+    file_node = self.parser.ParseText(filename='', data=idl_text)
+    type_node = file_node.GetChildren()[0].GetChildren()[0];
+    self.assertEqual('Type', type_node.GetClass())
+    self.assertEqual(3, type_node.GetProperty('LINENO'))
+
+
 if __name__ == '__main__':
   unittest.main(verbosity=2)

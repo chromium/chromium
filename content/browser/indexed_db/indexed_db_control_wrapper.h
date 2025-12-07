@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTROL_WRAPPER_H_
 #define CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTROL_WRAPPER_H_
 
+#include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
@@ -12,7 +13,7 @@
 #include "content/browser/indexed_db/indexed_db_context_impl.h"
 #include "storage/browser/quota/storage_policy_observer.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // This wrapper is created, destroyed, and operated on the UI thread in the
 // browser process. Its main purpose is to observe the `special_storage_policy`
@@ -28,8 +29,7 @@ class IndexedDBControlWrapper {
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
           file_system_access_context,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
   IndexedDBControlWrapper(const IndexedDBControlWrapper&) = delete;
   IndexedDBControlWrapper& operator=(const IndexedDBControlWrapper&) = delete;
@@ -38,9 +38,9 @@ class IndexedDBControlWrapper {
 
   void BindIndexedDB(
       const storage::BucketLocator& bucket_locator,
+      const storage::BucketClientInfo& client_info,
       mojo::PendingRemote<storage::mojom::IndexedDBClientStateChecker>
           client_state_checker_remote,
-      const base::UnguessableToken& client_token,
       mojo::PendingReceiver<blink::mojom::IDBFactory> receiver);
 
   // Returns the mojom interface to the `IndexedDBContextImpl`, creating the
@@ -59,6 +59,6 @@ class IndexedDBControlWrapper {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_CONTROL_WRAPPER_H_

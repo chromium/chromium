@@ -13,10 +13,6 @@
 namespace chromecast {
 namespace media {
 
-#if BUILDFLAG(ENABLE_PLAYREADY)
-extern const char kChromecastPlayreadyKeySystem[];
-#endif  // BUILDFLAG(ENABLE_PLAYREADY)
-
 // Translates a key system string into a CastKeySystem, calling into the
 // platform for known key systems if needed.
 CastKeySystem GetKeySystemByName(const std::string& key_system_name);

@@ -21,5 +21,6 @@ include_rules = [
   "+third_party/smhasher",
   "+ui/android",
   "+ui/base",
+  "+ui/edge_to_edge",
   "+ui/gfx",
 ]

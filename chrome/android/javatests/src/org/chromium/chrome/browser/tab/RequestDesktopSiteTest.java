@@ -16,7 +16,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -35,39 +36,42 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
 /** Test for user flows around {@link ContentSettingsType.REQUEST_DESKTOP_SITE}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class RequestDesktopSiteTest {
     private static final String URL_1 = "https://www.chromium.org/";
     private static final String URL_2 = "https://www.example.com/";
     private CallbackHelper mMenuObserver;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Mock Tracker mMockTracker;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         // Disable IPH to avoid interruptions on the app menu.
         TrackerFactory.setTrackerForTests(mMockTracker);
         Mockito.doReturn(false)
                 .when(mMockTracker)
-                .shouldTriggerHelpUI(ArgumentMatchers.anyString());
-        mActivityTestRule.startMainActivityOnBlankPage();
+                .shouldTriggerHelpUi(ArgumentMatchers.anyString());
+        mActivityTestRule.startOnBlankPage();
         mMenuObserver = new CallbackHelper();
         mActivityTestRule
                 .getAppMenuCoordinator()

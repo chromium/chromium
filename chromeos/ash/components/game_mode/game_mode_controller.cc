@@ -4,13 +4,13 @@
 
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
 
-#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/borealis/borealis_util.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
 #include "ui/views/widget/widget.h"
 
 namespace game_mode {

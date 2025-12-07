@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/printing/print_server.h"
 #include "chrome/browser/ash/printing/enterprise/print_servers_provider.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
 
@@ -24,8 +23,7 @@ using ServerPrintersFetchingMode =
 // This class observes values provided by the DeviceExternalPrintServers and
 // ExternalPrintServers policies and calculates resultant list of available
 // print servers. This list is propagated to the provided callback.
-class PrintServersPolicyProvider : public KeyedService,
-                                   public PrintServersProvider::Observer {
+class PrintServersPolicyProvider : public PrintServersProvider::Observer {
  public:
   PrintServersPolicyProvider(
       base::WeakPtr<PrintServersProvider> user_policy_provider,

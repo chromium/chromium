@@ -4,23 +4,23 @@
 
 #include "third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_source.h"
 
+#include "device/vr/public/mojom/hit_test_subscription_id.h"
+#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_transient_input_hit_test_result.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
-#include "device/vr/public/mojom/vr_service.mojom-blink.h"
-
 namespace blink {
 
 XRTransientInputHitTestSource::XRTransientInputHitTestSource(
-    uint64_t id,
+    const device::HitTestSubscriptionId& id,
     XRSession* xr_session)
     : id_(id), xr_session_(xr_session) {
   DCHECK(xr_session_);
 }
 
-uint64_t XRTransientInputHitTestSource::id() const {
+device::HitTestSubscriptionId XRTransientInputHitTestSource::id() const {
   return id_;
 }
 

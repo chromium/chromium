@@ -18,7 +18,7 @@
 #include "content/browser/web_package/signed_exchange_utils.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -240,9 +240,7 @@ bool SignedExchangeCertificateChain::IgnoreErrorsSPKIList::
           &spki)) {
     return false;
   }
-  net::SHA256HashValue hash;
-  crypto::SHA256HashString(spki, &hash, sizeof(net::SHA256HashValue));
-  return hash_set_.find(hash) != hash_set_.end();
+  return hash_set_.contains(crypto::hash::Sha256(spki));
 }
 
 }  // namespace content

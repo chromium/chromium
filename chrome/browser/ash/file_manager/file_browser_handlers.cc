@@ -19,13 +19,11 @@
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/extensions/api/file_browser_handlers/file_browser_handler.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "content/public/browser/browser_thread.h"
@@ -277,7 +275,7 @@ void FileBrowserHandlerExecutor::SetupPermissionsAndDispatchEvent(
     return;
   }
 
-  int handler_pid = context_info->render_process_host->GetID();
+  int handler_pid = context_info->render_process_host->GetDeprecatedID();
   if (handler_pid <= 0) {
     ExecuteDoneOnUIThread(false, "No app available");
     return;

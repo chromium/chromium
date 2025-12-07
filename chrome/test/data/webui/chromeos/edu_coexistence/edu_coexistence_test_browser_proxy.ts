@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AccountAdditionOptions} from 'chrome://chrome-signin/arc_account_picker/arc_util.js';
-import {EduCoexistenceBrowserProxy} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_browser_proxy.js';
-import {EduCoexistenceParams} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_controller.js';
-import {AuthCompletedCredentials} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
+import type {EduCoexistenceBrowserProxy} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_browser_proxy.js';
+import type {EduCoexistenceParams} from 'chrome://chrome-signin/edu_coexistence/edu_coexistence_controller.js';
+import type {AuthCompletedCredentials} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 const DEFAULT_COEXISTENCE_PARAMS = {
@@ -22,14 +21,8 @@ const DEFAULT_COEXISTENCE_PARAMS = {
   signinTime: 10000,
 };
 
-const DEFAULT_DIALOG_ARGUMENTS = {
-  isAvailableInArc: true,
-  showArcAvailabilityPicker: false,
-};
-
 export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy implements
     EduCoexistenceBrowserProxy {
-  private dialogArguments: AccountAdditionOptions;
   private coexistenceParams: EduCoexistenceParams;
 
   constructor() {
@@ -46,7 +39,6 @@ export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy implements
       'onError',
     ]);
 
-    this.dialogArguments = DEFAULT_DIALOG_ARGUMENTS;
     this.coexistenceParams = DEFAULT_COEXISTENCE_PARAMS;
   }
 
@@ -96,23 +88,11 @@ export class TestEduCoexistenceBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('error');
   }
 
-  getDialogArguments(): string {
-    return JSON.stringify(this.dialogArguments);
-  }
-
   /**
    * The passed in params override DEFAULT_COEXISTENCE_PARAMS for this instance
    * of TestEduCoexistenceBrowserProxy.
    */
   setCoexistenceParams(coexistenceParams: EduCoexistenceParams) {
     this.coexistenceParams = coexistenceParams;
-  }
-
-  /**
-   * The passed in dialogArguments override DEFAULT_DIALOG_ARGUMENTS for this
-   * instance of TestEduCoexistenceBrowserProxy.
-   */
-  setDialogArguments(dialogArguments: AccountAdditionOptions) {
-    this.dialogArguments = dialogArguments;
   }
 }

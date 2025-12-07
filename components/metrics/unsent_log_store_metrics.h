@@ -32,7 +32,7 @@ class UnsentLogStoreMetrics {
     DECODE_FAIL,                    // Failed to decode log.
     DEPRECATED_XML_PROTO_MISMATCH,  // The XML and protobuf logs have
                                     // inconsistent data.
-    END_RECALL_STATUS  // Number of bins to use to create the histogram.
+    kMaxValue = DEPRECATED_XML_PROTO_MISMATCH
   };
 
   UnsentLogStoreMetrics();

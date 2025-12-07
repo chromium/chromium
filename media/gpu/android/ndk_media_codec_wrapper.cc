@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 
 namespace media {
 
@@ -123,6 +124,29 @@ void NdkMediaCodecWrapper::Stop() {
 
   started_ = false;
   AMediaCodec_stop(media_codec_.get());
+}
+
+base::span<uint8_t> NdkMediaCodecWrapper::GetInputBuffer(size_t idx) {
+  size_t capacity = 0;
+  uint8_t* buf_data = AMediaCodec_getInputBuffer(codec(), idx, &capacity);
+  // SAFETY: `AMediaCodec_getInputBuffer` returns buffer size as the out param.
+  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity));
+}
+
+base::span<uint8_t> NdkMediaCodecWrapper::GetOutputBuffer(
+    const OutputInfo& info) {
+  size_t capacity = 0;
+  const size_t size = base::saturated_cast<size_t>(info.info.size);
+  // `AMediaCodec_getOutputBuffer()` already took `info.info.offset` into
+  // account, we don't need to do it again here.
+
+  // SAFETY: `AMediaCodec_getOutputBuffer` returns buffer size as the out param.
+  uint8_t* buf_data =
+      AMediaCodec_getOutputBuffer(codec(), info.buffer_index, &capacity);
+  if (size > capacity) {
+    return {};
+  }
+  return UNSAFE_BUFFERS(base::span<uint8_t>(buf_data, capacity)).first(size);
 }
 
 void NdkMediaCodecWrapper::OnAsyncInputAvailable(AMediaCodec* codec,

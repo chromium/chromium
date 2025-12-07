@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/privacy_screen_dlp_helper.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/thread_pool.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/dialogs/mock_dlp_warn_notifier.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_content_manager_test_helper.h"
@@ -30,12 +30,12 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/screenshot_area.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
+#include "components/enterprise/common/proto/synced/dlp_policy_event.pb.h"
 #include "components/enterprise/data_controls/core/browser/dlp_histogram_helper.h"
-#include "components/enterprise/data_controls/core/browser/dlp_policy_event.pb.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/reporting/storage/test_storage_module.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -44,6 +44,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -55,7 +56,7 @@ namespace policy {
 namespace {
 
 constexpr char kEmailId[] = "test@example.com";
-constexpr char kGaiaId[] = "12345";
+constexpr GaiaId::Literal kGaiaId("12345");
 constexpr char kSrcPattern[] = "example";
 constexpr char kRuleName[] = "ruleName";
 constexpr char kRuleId[] = "obfuscatedId";
@@ -157,7 +158,15 @@ class DlpContentManagerAshTest : public testing::Test {
   ~DlpContentManagerAshTest() override = default;
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
-    return content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+    auto web_contents =
+        content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+    // `DlpContentTabHelper` is responsible for clearing a destroyed
+    // `WebContents` from `DlpContentManager`'s list of `WebContents`;
+    // instantiate it here to make sure that cleanup happens even in unit
+    // tests.
+    DlpContentTabHelper::MaybeCreateForWebContents(web_contents.get());
+    CHECK(DlpContentTabHelper::FromWebContents(web_contents.get()));
+    return web_contents;
   }
 
   void SetUp() override {
@@ -165,6 +174,8 @@ class DlpContentManagerAshTest : public testing::Test {
 
     ASSERT_TRUE(profile_manager_.SetUp());
     LoginFakeUser();
+    SetReportQueueForReportingManager();
+    SetupDlpRulesManager();
 
     EXPECT_CALL(mock_privacy_screen_helper_, IsSupported())
         .WillRepeatedly(::testing::Return(true));
@@ -373,8 +384,6 @@ TEST_F(DlpContentManagerAshTest,
 }
 
 TEST_F(DlpContentManagerAshTest, PrivacyScreenEnforcement) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   const std::string src_pattern("example.com");
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -458,8 +467,6 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenEnforcement) {
 }
 
 TEST_F(DlpContentManagerAshTest, PrivacyScreenReported) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   const std::string src_pattern("example.com");
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -508,8 +515,6 @@ TEST_F(DlpContentManagerAshTest, PrivacyScreenReported) {
 
 TEST_F(DlpContentManagerAshTest,
        PrivacyScreenNotEnforcedAndReportedOnUnsupportedDevice) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   const std::string src_pattern("example.com");
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern(_, _, _, _))
       .WillRepeatedly(::testing::Return(src_pattern));
@@ -538,8 +543,6 @@ TEST_F(DlpContentManagerAshTest,
 TEST_F(DlpContentManagerAshTest, VideoCaptureReportDuringRecording) {
   const GURL kSrcUrl = GURL("https://example.com/");
   const GURL kGoogleUrl = GURL("https://google.com/");
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   // Return |kSrcPattern| for reporting for both |kSrcUrl| and |kGoogleUrl|.
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(2)
@@ -633,8 +636,6 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
   // Needs to be set because CheckPrintingRestriction() will show the blocked
   // notification.
   NotificationDisplayServiceTester display_service_tester(profile());
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -690,8 +691,6 @@ TEST_F(DlpContentManagerAshTest, PrintingRestricted) {
 }
 
 TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   // The warning should be shown only once.
@@ -773,8 +772,6 @@ TEST_F(DlpContentManagerAshTest, PrintingWarnedProceeded) {
 }
 
 TEST_F(DlpContentManagerAshTest, PrintingWarnedCancelled) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   // If the user cancels, the warning can be shown again for the same contents.
@@ -850,8 +847,6 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   // Needs to be set because CheckCaptureModeInitRestriction() will show the
   // blocked notification.
   NotificationDisplayServiceTester display_service_tester(profile());
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -864,7 +859,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   EXPECT_CALL(cb, Run(true)).Times(1);   // WebContents destroyed.
 
   std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/0,
       /*total_count=*/1,
@@ -874,7 +870,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotRestricted);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kScreenshotRestricted);
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/1, /*warned_count=*/0,
       /*total_count=*/2,
@@ -890,7 +887,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
   helper_.DestroyWebContents(web_contents.get());
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kEmptyRestrictionSet);
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/1, /*warned_count=*/0,
       /*total_count=*/3,
@@ -899,8 +897,6 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitRestricted) {
 }
 
 TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
@@ -919,7 +915,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kScreenshotWarned);
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
 
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/1,
@@ -939,7 +936,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
           kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: allow based on cached user's response - no dialog is shown.
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/2,
       /*total_count=*/2,
@@ -957,8 +955,6 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedContinued) {
 }
 
 TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(2);
@@ -977,7 +973,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
   helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
   EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
             kScreenshotWarned);
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/1,
       /*total_count=*/1,
@@ -995,7 +992,8 @@ TEST_F(DlpContentManagerAshTest, CaptureModeInitWarnedCancelled) {
           kRuleId, DlpRulesManager::Level::kWarn)));
 
   // Check again: since the user previously cancelled, dialog is shown again.
-  GetManager()->CheckCaptureModeInitRestriction(cb.Get());
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
   VerifyHistogramCounts(
       /*blocked_count=*/0, /*warned_count=*/2,
       /*total_count=*/2,
@@ -1017,8 +1015,6 @@ TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
   // Needs to be set because CheckScreenshotRestriction() will show the blocked
   // notification.
   NotificationDisplayServiceTester display_service_tester(profile());
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -1069,8 +1065,6 @@ TEST_F(DlpContentManagerAshTest, ScreenshotRestricted) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenshotWarnedContinued) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
@@ -1118,8 +1112,6 @@ TEST_F(DlpContentManagerAshTest, ScreenshotWarnedContinued) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenshotWarnedCancelled) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(2);
@@ -1179,8 +1171,6 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
   // Needs to be set because CheckScreenShareRestriction() will show the blocked
   // notification.
   NotificationDisplayServiceTester display_service_tester(profile());
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
       .Times(1)
       .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
@@ -1197,7 +1187,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
   GetManager()->CheckScreenShareRestriction(media_id, kApplicationName,
                                             cb.Get());
@@ -1239,8 +1229,6 @@ TEST_F(DlpContentManagerAshTest, ScreenShareRestricted) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
@@ -1258,7 +1246,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Warn restriction is enforced: allow and remember that the user proceeded.
@@ -1295,8 +1283,6 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedContinued) {
 }
 
 TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
-  SetReportQueueForReportingManager();
-  SetupDlpRulesManager();
   MockDlpWarnNotifier* mock_dlp_warn_notifier =
       CreateAndSetDlpWarnNotifier(/*should_proceed=*/false);
   EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(2);
@@ -1314,7 +1300,7 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
       content::DesktopMediaID::TYPE_WEB_CONTENTS,
       content::DesktopMediaID::kNullId,
       content::WebContentsMediaCaptureId(
-          web_contents->GetPrimaryMainFrame()->GetProcess()->GetID(),
+          web_contents->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
           web_contents->GetPrimaryMainFrame()->GetRoutingID()));
 
   // Warn restriction is enforced: reject since the user canceled.
@@ -1359,6 +1345,87 @@ TEST_F(DlpContentManagerAshTest, ScreenShareWarnedCancelled) {
           kRuleId, DlpRulesManager::Level::kWarn)));
 }
 
-TEST_F(DlpContentManagerAshTest, OnWindowRestrictionChanged) {}
+// Tests that the DLP warning dialog is not shown to users while trying to take
+// a screenshot for informed restore on shutdown, and instead the callback is
+// immediately run with `false`.
+TEST_F(DlpContentManagerAshTest, NoWarningOnShutdown) {
+  MockDlpWarnNotifier* mock_dlp_warn_notifier =
+      CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(0);
+
+  // Due to the shutdown request, we should immediately reply back with `false`.
+  MockWarningCallback cb;
+  testing::InSequence s;
+  EXPECT_CALL(cb, Run(false)).Times(1);
+
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kScreenshotWarned);
+
+  // For metrics purposes, we would still consider a warn on shutdown as a warn.
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/true,
+                                                cb.Get());
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/1,
+      /*total_count=*/1,
+      /*blocked_suffix=*/data_controls::dlp::kCaptureModeInitBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kCaptureModeInitWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnShutdownOverrideUMA,
+      true, 1);
+}
+
+// Tests that the DLP warning dialog is not shown to users while trying to take
+// a screenshot for informed restore on shutdown if the content was previously
+// allowed.
+TEST_F(DlpContentManagerAshTest, RememberProceedOnShutdown) {
+  MockDlpWarnNotifier* mock_dlp_warn_notifier =
+      CreateAndSetDlpWarnNotifier(/*should_proceed=*/true);
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog).Times(1);
+  EXPECT_CALL(*mock_rules_manager_, GetSourceUrlPattern)
+      .Times(1)
+      .WillRepeatedly(testing::DoAll(::testing::SetArgPointee<3>(kRuleMetadata),
+                                     ::testing::Return(kSrcPattern)));
+
+  MockWarningCallback cb;
+  EXPECT_CALL(cb, Run(true)).Times(2);
+
+  // Warn restriction is enforced: allow and remember that the user proceeded.
+  std::unique_ptr<content::WebContents> web_contents = CreateWebContents();
+  helper_.ChangeConfidentiality(web_contents.get(), kScreenshotWarned);
+  EXPECT_EQ(GetManager()->GetConfidentialRestrictions(web_contents.get()),
+            kScreenshotWarned);
+
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/false,
+                                                cb.Get());
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/1,
+      /*total_count=*/1,
+      /*blocked_suffix=*/data_controls::dlp::kCaptureModeInitBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kCaptureModeInitWarnedUMA);
+  EXPECT_EQ(events_.size(), 1u);
+  EXPECT_THAT(
+      events_[0],
+      data_controls::IsDlpPolicyEvent(data_controls::CreateDlpPolicyEvent(
+          kSrcPattern, DlpRulesManager::Restriction::kScreenshot, kRuleName,
+          kRuleId, DlpRulesManager::Level::kWarn)));
+
+  // Check again: allow based on cached user's response - no dialog is shown on
+  // shutdown.
+  GetManager()->CheckCaptureModeInitRestriction(/*shutting_down=*/true,
+                                                cb.Get());
+  VerifyHistogramCounts(
+      /*blocked_count=*/0, /*warned_count=*/2,
+      /*total_count=*/2,
+      /*blocked_suffix=*/data_controls::dlp::kCaptureModeInitBlockedUMA,
+      /*warned_suffix=*/data_controls::dlp::kCaptureModeInitWarnedUMA);
+  histogram_tester_.ExpectBucketCount(
+      data_controls::GetDlpHistogramPrefix() +
+          data_controls::dlp::kScreenshotWarnProceededUMA,
+      true, 1);
+  EXPECT_EQ(events_.size(), 1u);
+}
 
 }  // namespace policy

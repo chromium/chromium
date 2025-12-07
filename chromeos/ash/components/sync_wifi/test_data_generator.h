@@ -23,7 +23,8 @@ NetworkIdentifier GenerateInvalidPskNetworkId(const std::string& ssid);
 sync_pb::WifiConfigurationSpecifics GenerateTestWifiSpecifics(
     const NetworkIdentifier& id,
     const std::string& passphrase = "passphrase",
-    double timestamp = 1);
+    double timestamp = 1,
+    bool has_proxy = false);
 
 }  // namespace ash::sync_wifi
 

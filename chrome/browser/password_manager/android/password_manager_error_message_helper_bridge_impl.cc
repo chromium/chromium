@@ -30,7 +30,10 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 }
 
 void PasswordManagerErrorMessageHelperBridgeImpl::
-    StartTrustedVaultKeyRetrievalFlow(content::WebContents* web_contents) {
+    StartTrustedVaultKeyRetrievalFlow(
+        content::WebContents* web_contents,
+        trusted_vault::TrustedVaultUserActionTriggerForUMA
+            user_action_trigger) {
   ui::WindowAndroid* window_android =
       web_contents->GetNativeView()->GetWindowAndroid();
   if (window_android == nullptr) {
@@ -41,22 +44,14 @@ void PasswordManagerErrorMessageHelperBridgeImpl::
 
   Java_PasswordManagerErrorMessageHelperBridge_startTrustedVaultKeyRetrievalFlow(
       base::android::AttachCurrentThread(), window_android->GetJavaObject(),
-      profile->GetJavaObject());
+      profile->GetJavaObject(), static_cast<jint>(user_action_trigger));
 }
 
 bool PasswordManagerErrorMessageHelperBridgeImpl::ShouldShowSignInErrorUI(
     content::WebContents* web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  return Java_PasswordManagerErrorMessageHelperBridge_shouldShowSignInErrorUI(
-      base::android::AttachCurrentThread(), profile->GetJavaObject());
-}
-
-bool PasswordManagerErrorMessageHelperBridgeImpl::
-    ShouldShowUpdateGMSCoreErrorUI(content::WebContents* web_contents) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  return Java_PasswordManagerErrorMessageHelperBridge_shouldShowUpdateGMSCoreErrorUI(
+  return Java_PasswordManagerErrorMessageHelperBridge_shouldShowSignInErrorUi(
       base::android::AttachCurrentThread(), profile->GetJavaObject());
 }
 
@@ -68,14 +63,4 @@ void PasswordManagerErrorMessageHelperBridgeImpl::SaveErrorUIShownTimestamp(
       base::android::AttachCurrentThread(), profile->GetJavaObject());
 }
 
-void PasswordManagerErrorMessageHelperBridgeImpl::LaunchGmsUpdate(
-    content::WebContents* web_contents) {
-  CHECK(web_contents);
-  ui::WindowAndroid* window_android =
-      web_contents->GetNativeView()->GetWindowAndroid();
-  if (window_android == nullptr) {
-    return;
-  }
-  Java_PasswordManagerErrorMessageHelperBridge_launchGmsUpdate(
-      base::android::AttachCurrentThread(), window_android->GetJavaObject());
-}
+DEFINE_JNI(PasswordManagerErrorMessageHelperBridge)

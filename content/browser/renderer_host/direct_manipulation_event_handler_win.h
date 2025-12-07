@@ -10,14 +10,8 @@
 #include <directmanipulation.h>
 #include <wrl.h>
 
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/gfx/geometry/size.h"
-
-namespace ui {
-
-class WindowEventTarget;
-
-}  // namespace ui
 
 namespace content {
 
@@ -38,19 +32,17 @@ class DirectManipulationEventHandler
               IDirectManipulationViewportEventHandler,
               IDirectManipulationInteractionEventHandler>> {
  public:
-  DirectManipulationEventHandler(ui::WindowEventTarget* event_target);
+  explicit DirectManipulationEventHandler(
+      base::WeakPtr<DirectManipulationHelper> helper);
 
   DirectManipulationEventHandler(const DirectManipulationEventHandler&) =
       delete;
   DirectManipulationEventHandler& operator=(
       const DirectManipulationEventHandler&) = delete;
 
-  // Return true if viewport_size_in_pixels_ changed.
-  bool SetViewportSizeInPixels(const gfx::Size& viewport_size_in_pixels);
+  void SetViewportSizeInPixels(const gfx::Size& viewport_size_in_pixels);
 
   void SetDeviceScaleFactor(float device_scale_factor);
-
-  void SetDirectManipulationHelper(DirectManipulationHelper* helper);
 
  private:
   friend class DirectManipulationBrowserTestBase;
@@ -79,8 +71,11 @@ class DirectManipulationEventHandler
   OnInteraction(_In_ IDirectManipulationViewport2* viewport,
                 _In_ DIRECTMANIPULATION_INTERACTION_TYPE interaction) override;
 
-  raw_ptr<DirectManipulationHelper> helper_ = nullptr;
-  raw_ptr<ui::WindowEventTarget> event_target_ = nullptr;
+  // Pointer to the DirectManipulationHelper that created this object. Since
+  // this is a reference-counted COM object, it may outlive the
+  // DirectManipulationHelper if other COM objects keep references to it.
+  base::WeakPtr<DirectManipulationHelper> helper_;
+
   float device_scale_factor_ = 1.0f;
   float last_scale_ = 1.0f;
   int last_x_offset_ = 0;

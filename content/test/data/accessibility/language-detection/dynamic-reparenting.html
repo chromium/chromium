@@ -15,17 +15,21 @@
     // Test node re-parenting. Dynamic language detection is needed in order for
     // re-parented nodes to get a language assignment, as re-parenting removes
     // any previously detected language.
-    setTimeout(function() {
-      // Move all existing translations to new parent.
-      translations_to.append(...translations_from.childNodes);
+    document.addEventListener('DOMContentLoaded', () => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          // Move all existing translations to new parent.
+          translations_to.append(...translations_from.childNodes);
 
-      // Add a new translation.
-      // This lets us use `WAIT-FOR`.
-      const de_text = "Dies ist ein mit Google Translate erstellter Text. Es ist unwahrscheinlich, dass er in der angegebenen Zielsprache idiomatisch ist. Dieser Text wird nur zum Testen der Spracherkennung verwendet.";
-      const li = document.createElement("li");
-      li.innerHTML = de_text;
-      translations_to.append(li);
-    }, 100);
+          // Add a new translation.
+          // This lets us use `WAIT-FOR`.
+          const de_text = "Dies ist ein mit Google Translate erstellter Text. Es ist unwahrscheinlich, dass er in der angegebenen Zielsprache idiomatisch ist. Dieser Text wird nur zum Testen der Spracherkennung verwendet.";
+          const li = document.createElement("li");
+          li.innerHTML = de_text;
+          translations_to.append(li);
+        });
+      });
+    });
   </script>
 
   <ul id="translations_from">

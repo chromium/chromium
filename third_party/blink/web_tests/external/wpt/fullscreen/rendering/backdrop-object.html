@@ -10,14 +10,23 @@
 object::backdrop {
   background: blue;
 }
+object {
+  object-position: 0 0;
+}
 </style>
-<object width="200" type="image/svg+xml" data="../../images/100px-green-rect.svg"></object>
+<object width="200" type="image/svg+xml"></object>
+
 <script>
 const object = document.querySelector("object");
-Promise.all([
-    new Promise((resolve, reject) => document.addEventListener("fullscreenchange", resolve)),
-    new Promise((resolve, reject) => object.addEventListener("load", resolve))
-]).then(() => document.documentElement.classList.remove('reftest-wait'));
 
-test_driver.bless('fullscreen', () => object.requestFullscreen());
+Promise.all([
+  new Promise((resolve) => {
+    object.addEventListener("load", resolve);
+    object.data = "/images/100px-green-rect.svg";
+  }),
+  new Promise((resolve) => {
+    document.addEventListener("fullscreenchange", resolve);
+    test_driver.bless('fullscreen', () => object.requestFullscreen());
+  }),
+]).then(() => document.documentElement.classList.remove('reftest-wait'));
 </script>

@@ -265,8 +265,16 @@ void AudioCapturerWin::DoCapture() {
     if (FAILED(hr)) {
       break;
     }
-
-    if (volume_filter_.Apply(reinterpret_cast<int16_t*>(data), frames)) {
+    // SAFETY: The Data from the AudioCaptureClient is configured to be 16-bit
+    // (see `kBytesPerSample` == 2) when we run the initaliztion code in
+    // AudioCapturerWin::Initialize and configure
+    // `wave_format_ex_->wBitsPerSample`. If this configuration for 16-bit fails
+    // the initialization fails. Thus it is safe to reinterpret this as a
+    // int16_t buffer of size `frames * wave_format_ex_->nChannels`. Reference:
+    // https://learn.microsoft.com/en-gb/windows/win32/api/audioclient/nf-audioclient-iaudiocaptureclient-getbuffer
+    const auto audio_samples = UNSAFE_BUFFERS(base::span(
+        reinterpret_cast<int16_t*>(data), frames * wave_format_ex_->nChannels));
+    if (volume_filter_.Apply(audio_samples)) {
       std::unique_ptr<AudioPacket> packet(new AudioPacket());
       packet->add_data(data, frames * wave_format_ex_->nBlockAlign);
       packet->set_encoding(AudioPacket::ENCODING_RAW);

@@ -48,8 +48,7 @@ class ProviderId {
   std::string ToString() const;
   ProviderType GetType() const;
 
-  bool operator==(const ProviderId& other) const;
-  bool operator!=(const ProviderId& other) const;
+  friend bool operator==(const ProviderId&, const ProviderId&) = default;
   bool operator<(const ProviderId& other) const;
 
  private:

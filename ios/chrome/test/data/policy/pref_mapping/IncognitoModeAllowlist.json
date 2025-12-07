@@ -1,0 +1,16 @@
+[
+ {
+   "os": [
+     "ios"
+   ],
+   "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.incognito_mode_allowlist",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "example.com"
+        ]
+      ]
+    }
+ }
+]

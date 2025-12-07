@@ -30,6 +30,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_binary_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
@@ -51,6 +53,8 @@ class Blob;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
+class V8RTCDataChannelState;
+class V8RTCPriorityType;
 
 class MODULES_EXPORT RTCDataChannel final
     : public EventTarget,
@@ -67,7 +71,7 @@ class MODULES_EXPORT RTCDataChannel final
   static void EnsureThreadWrappersForWorkerThread();
 
   RTCDataChannel(ExecutionContext*,
-                 rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
+                 webrtc::scoped_refptr<webrtc::DataChannelInterface> channel);
   ~RTCDataChannel() override;
 
   String label() const;
@@ -81,14 +85,16 @@ class MODULES_EXPORT RTCDataChannel final
   String protocol() const;
   bool negotiated() const;
   std::optional<uint16_t> id() const;
-  String readyState() const;
+  V8RTCDataChannelState readyState() const;
   unsigned bufferedAmount() const;
 
   unsigned bufferedAmountLowThreshold() const;
   void setBufferedAmountLowThreshold(unsigned);
 
-  String binaryType() const;
-  void setBinaryType(const String&, ExceptionState&);
+  V8BinaryType binaryType() const;
+  void setBinaryType(const V8BinaryType&);
+
+  V8RTCPriorityType priority() const;
 
   // Functions called from RTCPeerConnection's DidAddRemoteDataChannel
   // in order to make things happen in the specified order when announcing
@@ -104,7 +110,8 @@ class MODULES_EXPORT RTCDataChannel final
   void close();
 
   bool IsTransferable();
-  rtc::scoped_refptr<webrtc::DataChannelInterface> TransferUnderlyingChannel();
+  webrtc::scoped_refptr<webrtc::DataChannelInterface>
+  TransferUnderlyingChannel();
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(open, kOpen)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(bufferedamountlow, kBufferedamountlow)
@@ -135,18 +142,18 @@ class MODULES_EXPORT RTCDataChannel final
   // narrower than the |webrtc_channel_|, the observer is reference counted to
   // make sure all callbacks have a valid pointer but won't do anything if the
   // |blink_channel_| has gone away.
-  class Observer : public WTF::ThreadSafeRefCounted<RTCDataChannel::Observer>,
+  class Observer : public ThreadSafeRefCounted<RTCDataChannel::Observer>,
                    public webrtc::DataChannelObserver {
    public:
     Observer(scoped_refptr<base::SingleThreadTaskRunner> main_thread,
              RTCDataChannel* blink_channel,
-             rtc::scoped_refptr<webrtc::DataChannelInterface> channel);
+             webrtc::scoped_refptr<webrtc::DataChannelInterface> channel);
     ~Observer() override;
 
     // Returns a reference to |webrtc_channel_|. Typically called from the main
     // thread except for on observer registration, done in a synchronous call to
     // the signaling thread (safe because the call is synchronous).
-    const rtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
+    const webrtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
 
     // Returns true if a valid `blink_channel_` is held and `Unregister()`
     // hasn't been called. A return value of false indicates that the `Observer`
@@ -172,7 +179,7 @@ class MODULES_EXPORT RTCDataChannel final
 
     const scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
     WeakPersistent<RTCDataChannel> blink_channel_;
-    const rtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
+    const webrtc::scoped_refptr<webrtc::DataChannelInterface> webrtc_channel_;
   };
 
   void RegisterObserver();
@@ -183,7 +190,7 @@ class MODULES_EXPORT RTCDataChannel final
 
   void Dispose();
 
-  const rtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
+  const webrtc::scoped_refptr<webrtc::DataChannelInterface>& channel() const;
   bool ValidateSendLength(uint64_t length, ExceptionState& exception_state);
   void SendRawData(const char* data, size_t length);
   void SendDataBuffer(webrtc::DataBuffer data_buffer);
@@ -195,8 +202,7 @@ class MODULES_EXPORT RTCDataChannel final
   webrtc::DataChannelInterface::DataState state_ =
       webrtc::DataChannelInterface::kConnecting;
 
-  enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
-  BinaryType binary_type_ = kBinaryTypeArrayBuffer;
+  V8BinaryType::Enum binary_type_ = V8BinaryType::Enum::kArraybuffer;
 
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Open);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);
@@ -249,10 +255,13 @@ class MODULES_EXPORT RTCDataChannel final
     void Trace(Visitor*) const override;
 
    private:
+    void Dispose();
+
     Member<FileReaderLoader> loader_;
     Member<RTCDataChannel> data_channel_;
     Member<PendingMessage> message_;
 
+    SelfKeepAlive<BlobReader> keep_alive_;
     SEQUENCE_CHECKER(sequence_checker_);
   };
 

@@ -84,10 +84,14 @@ class CC_EXPORT VideoPlaybackRoughnessReporter {
   void ProcessFrameWindow();
   void Reset();
 
-  // A lower bund on how many frames can be in ConsecutiveFramesWindow
+  void set_is_media_stream(bool is_media_stream) {
+    is_media_stream_ = is_media_stream;
+  }
+
+  // A lower bound on how many frames can be in ConsecutiveFramesWindow
   static constexpr int kMinWindowSize = 6;
 
-  // An upper bund on how many frames can be in ConsecutiveFramesWindow
+  // An upper bound on how many frames can be in ConsecutiveFramesWindow
   static constexpr int kMaxWindowSize = 60;
 
   // How many frame windows should be observed before reporting smoothness
@@ -163,6 +167,8 @@ class CC_EXPORT VideoPlaybackRoughnessReporter {
   // Worst case difference between a frame's intended duration and
   // actual duration, calculated for all frames in the reporting interval.
   base::TimeDelta max_single_frame_error_;
+
+  bool is_media_stream_ = false;
 };
 
 }  // namespace cc

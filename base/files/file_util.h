@@ -17,6 +17,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
@@ -93,9 +94,7 @@ MakeAbsoluteFilePathNoResolveSymbolicLinks(const FilePath& input);
 BASE_EXPORT int64_t ComputeDirectorySize(const FilePath& root_path);
 
 // Deletes the given path, whether it's a file or a directory.
-// If it's a directory, it's perfectly happy to delete all of the directory's
-// contents, but it will not recursively delete subdirectories and their
-// contents.
+// Directories will only be successfully deleted if empty.
 // Returns true if successful, false otherwise. It is considered successful to
 // attempt to delete a file that does not exist.
 //
@@ -425,9 +424,9 @@ BASE_EXPORT bool CreateTemporaryFileInDir(const FilePath& dir,
                                           FilePath* temp_file);
 
 // Returns the file name for a temporary file by using a platform-specific
-// naming scheme that incorporates |identifier|.
+// naming scheme that incorporates |identifier|. |hidden| is ignored on Windows.
 BASE_EXPORT FilePath
-FormatTemporaryFileName(FilePath::StringPieceType identifier);
+FormatTemporaryFileName(FilePath::StringViewType identifier, bool hidden);
 
 // Create and open a temporary file stream for exclusive read, write, and delete
 // access. The full path is placed in `path`. Returns the opened file stream, or
@@ -441,30 +440,12 @@ BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStream(FilePath* path);
 BASE_EXPORT ScopedFILE CreateAndOpenTemporaryStreamInDir(const FilePath& dir,
                                                          FilePath* path);
 
-#if BUILDFLAG(IS_WIN)
-// Retrieves the path `%systemroot%\SystemTemp`, if available, else retrieves
-// `%programfiles%`.
-// Returns the path in `temp` and `true` if the path is writable by the caller,
-// which is usually only when the caller is running as admin or system.
-// Returns `false` otherwise.
-// Both paths are only accessible to admin and system processes, and are
-// therefore secure.
-BASE_EXPORT bool GetSecureSystemTemp(FilePath* temp);
-
-// Set whether or not the use of %systemroot%\SystemTemp or %programfiles% is
-// permitted for testing. This is so tests that run as admin will still continue
-// to use %TMP% so their files will be correctly cleaned up by the test
-// launcher.
-BASE_EXPORT void SetDisableSecureSystemTempForTesting(bool disabled);
-#endif  // BUILDFLAG(IS_WIN)
-
 // Do NOT USE in new code. Use ScopedTempDir instead.
 // TODO(crbug.com/40446440) Remove existing usage and make this an
 // implementation detail inside ScopedTempDir.
 //
 // Create a new directory. If prefix is provided, the new directory name is in
 // the format of prefixyyyy.
-// NOTE: prefix is ignored in the POSIX implementation.
 // If success, return true and output the full path of the directory created.
 //
 // For Windows, this directory is usually created in a secure location if the
@@ -472,43 +453,59 @@ BASE_EXPORT void SetDisableSecureSystemTempForTesting(bool disabled);
 // insecure, since low privilege users can get the path of folders under %TEMP%
 // after creation and are able to create subfolders and files within these
 // folders which can lead to privilege escalation.
-BASE_EXPORT bool CreateNewTempDirectory(const FilePath::StringType& prefix,
+BASE_EXPORT bool CreateNewTempDirectory(FilePath::StringViewType prefix,
                                         FilePath* new_temp_path);
 
 // Create a directory within another directory.
 // Extra characters will be appended to |prefix| to ensure that the
 // new directory does not have the same name as an existing directory.
 BASE_EXPORT bool CreateTemporaryDirInDir(const FilePath& base_dir,
-                                         FilePath::StringPieceType prefix,
+                                         FilePath::StringViewType prefix,
                                          FilePath* new_dir);
 
-// Creates a directory, as well as creating any parent directories, if they
-// don't exist. Returns 'true' on successful creation, or if the directory
-// already exists.  The directory is only readable by the current user.
-// Returns true on success, leaving *error unchanged.
-// Returns false on failure and sets *error appropriately, if it is non-NULL.
+// Ensures a directory exists, if necessary, creating it and parent directories.
+// Returns true if the directory already existed or was created, leaving *error
+// unchanged.
+// Returns false on failure and sets *error appropriately if it is non-NULL.
+//
+// The created directories can only be accessed by the current user, except on
+// ChromeOS, where the directories created under `~/MyFiles` or `/media` can
+// also be accessed by ChromeOS services.
 BASE_EXPORT bool CreateDirectoryAndGetError(const FilePath& full_path,
                                             File::Error* error);
 
 // Backward-compatible convenience method for the above.
 BASE_EXPORT bool CreateDirectory(const FilePath& full_path);
 
-// Returns the file size. Returns true on success.
-BASE_EXPORT bool GetFileSize(const FilePath& file_path, int64_t* file_size);
+// Returns the file size, or std::nullopt on failure.
+BASE_EXPORT std::optional<int64_t> GetFileSize(const FilePath& file_path);
+
+// Same as above, but as an OnceCallback.
+BASE_EXPORT OnceCallback<std::optional<int64_t>()> GetFileSizeCallback(
+    const FilePath& path);
 
 // Sets |real_path| to |path| with symbolic links and junctions expanded.
-// On Windows, the function ensures that the resulting |real_path| starts with a
-// drive letter.
 //
 // The |path| parameter can reference either a file or a directory. The function
-// will fail if |path| points to a nonexistent path or to a volume that isn't
-// mapped to a drive letter on Windows.
+// will fail if |path| points to a nonexistent path.
 //
 // In addition, on Windows this function will fail if the resulting |real_path|
 // would exceed 'MAX_PATH' characters in length.
 BASE_EXPORT bool NormalizeFilePath(const FilePath& path, FilePath* real_path);
 
 #if BUILDFLAG(IS_WIN)
+
+// Returns `SystemTemp` (or `DIR_PROGRAM_FILES` if SystemTemp does not exist)
+// for security reasons if the caller is the default admin (i.e., no split
+// token, such as the SYSTEM user or the built-in administrator) to avoid
+// attacks from lower privilege processes. For non-default-admin cases, returns
+// `%TEMP%`. An override of `DIR_SYSTEM_TEMP` by tests is respected.
+BASE_EXPORT bool GetSecureTempDirectory(FilePath* temp_dir);
+
+// Removes the Windows extended-length path prefix from a prefixed path.
+// Exported for testing. Refer to the function implementation for details.
+BASE_EXPORT FilePath
+RemoveWindowsExtendedPathPrefixForTesting(std::wstring_view prefixed_path);
 
 // Given a path in NT native form ("\Device\HarddiskVolumeXX\..."),
 // return in |drive_letter_path| the equivalent path that starts with
@@ -577,15 +574,6 @@ BASE_EXPORT std::optional<uint64_t> ReadFile(const FilePath& filename,
 // TODO(crbug.com/40284755): Migrate callers to the span variant.
 BASE_EXPORT int ReadFile(const FilePath& filename, char* data, int max_size);
 
-// Writes the given buffer into the file, overwriting any data that was
-// previously there.  Returns the number of bytes written, or -1 on error.
-// If file doesn't exist, it gets created with read/write permissions for all.
-// Note that the other variants of WriteFile() below may be easier to use.
-// TODO(crbug.com/40284755): Migrate callers to the span variant.
-UNSAFE_BUFFER_USAGE BASE_EXPORT int WriteFile(const FilePath& filename,
-                                              const char* data,
-                                              int size);
-
 // Writes |data| into the file, overwriting any data that was previously there.
 // Returns true if and only if all of |data| was written. If the file does not
 // exist, it gets created with read/write permissions for all.
@@ -641,8 +629,9 @@ BASE_EXPORT FilePath GetUniquePath(const FilePath& path);
 // suffix printf format string in cases where the default format doesn't work
 // (for example because you need a filename without spaces in it). Passing
 // " (%d)" as `suffix_format` makes this behave identical to `GetUniquePath()`.
-BASE_EXPORT FilePath GetUniquePathWithSuffixFormat(const FilePath& path,
-                                                   cstring_view suffix_format);
+BASE_EXPORT FilePath
+GetUniquePathWithSuffixFormat(const FilePath& path,
+                              base::cstring_view suffix_format);
 
 // Sets the given |fd| to non-blocking mode.
 // Returns true if it was able to set it in the non-blocking mode, otherwise
@@ -747,6 +736,19 @@ BASE_EXPORT int GetMaximumPathComponentLength(const base::FilePath& path);
 BASE_EXPORT bool GetShmemTempDir(bool executable, FilePath* path);
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+// Resolves this FilePath to a content URI if it represents a virtual
+// document path or is already a content URI. Returns std::nullopt otherwise.
+BASE_EXPORT std::optional<FilePath> ResolveToContentUri(const FilePath& path);
+
+// Resolves this FilePath to a virtual document path if it's a content URI
+// representing a document tree or is already a virtual document path. Returns
+// std::nullopt otherwise.
+BASE_EXPORT std::optional<FilePath> ResolveToVirtualDocumentPath(
+    const FilePath& path);
+
+#endif
+
 // Internal --------------------------------------------------------------------
 
 namespace internal {
@@ -762,6 +764,11 @@ BASE_EXPORT bool MoveUnsafe(const FilePath& from_path, const FilePath& to_path);
 // This function is not transactional.
 BASE_EXPORT bool CopyAndDeleteDirectory(const FilePath& from_path,
                                         const FilePath& to_path);
+
+// Returns true if the user is an administrator with default elevation type,
+// i.e., no split token, such as the SYSTEM user or the built-in
+// administrator.
+BASE_EXPORT bool IsUserDefaultAdmin();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

@@ -13,7 +13,7 @@ namespace visited_url_ranking {
 // done in fetcher since we still want signals about the URLs for longer period.
 class RecencyFilterTransformer : public URLVisitAggregatesTransformer {
  public:
-  RecencyFilterTransformer();
+  RecencyFilterTransformer() = default;
   ~RecencyFilterTransformer() override;
 
   RecencyFilterTransformer(const RecencyFilterTransformer&) = delete;
@@ -23,9 +23,6 @@ class RecencyFilterTransformer : public URLVisitAggregatesTransformer {
   void Transform(std::vector<URLVisitAggregate> aggregates,
                  const FetchOptions& options,
                  OnTransformCallback callback) override;
-
- private:
-  const size_t aggregate_count_limit_;
 };
 
 }  // namespace visited_url_ranking

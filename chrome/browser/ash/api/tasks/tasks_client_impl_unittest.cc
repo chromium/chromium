@@ -12,6 +12,7 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -27,10 +28,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/policy/policy_blocklist_service/ash_policy_blocklist_service_factory.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/services/app_service/public/cpp/app.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -68,7 +69,6 @@ using ::testing::ByMove;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
-using ::testing::Invoke;
 using ::testing::Not;
 using ::testing::Return;
 
@@ -123,9 +123,12 @@ constexpr char kDefaultTasksResponseContent[] = R"(
     }
   )";
 
-using TaskListsFuture = TestFuture<bool, const ui::ListModel<TaskList>*>;
+using TaskListsFuture = TestFuture<bool,
+                                   std::optional<ApiErrorCode>,
+                                   const ui::ListModel<TaskList>*>;
 
-using TasksFuture = TestFuture<bool, const ui::ListModel<Task>*>;
+using TasksFuture =
+    TestFuture<bool, std::optional<ApiErrorCode>, const ui::ListModel<Task>*>;
 
 // Helper class to simplify mocking `net::EmbeddedTestServer` responses,
 // especially useful for subsequent responses when testing pagination logic.
@@ -190,9 +193,11 @@ class TasksClientImplIsDisabledByAdminTest : public testing::Test {
 
   TasksClientImpl CreateClientForProfile(Profile* profile) const {
     return TasksClientImpl(
-        profile,
+        profile->GetPrefs(),
+        apps::AppServiceProxyFactory::GetForProfile(profile),
+        AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         base::BindLambdaForTesting(
-            [&](const std::vector<std::string>& scopes,
+            [&](signin::OAuthConsumerId oauth_consumer_id,
                 const net::NetworkTrafficAnnotationTag& traffic_annotation_tag)
                 -> std::unique_ptr<google_apis::RequestSender> {
               return nullptr;
@@ -241,7 +246,7 @@ TEST_F(TasksClientImplIsDisabledByAdminTest, DisabledCalendarApp) {
 
   std::vector<apps::AppPtr> app_deltas;
   app_deltas.push_back(apps::AppPublisher::MakeApp(
-      apps::AppType::kWeb, web_app::kGoogleCalendarAppId,
+      apps::AppType::kWeb, ash::kGoogleCalendarAppId,
       apps::Readiness::kDisabledByPolicy, "Calendar",
       apps::InstallReason::kUser, apps::InstallSource::kBrowser));
 
@@ -281,17 +286,20 @@ class TasksClientImplTest : public testing::Test {
     ASSERT_TRUE(profile_manager_.SetUp());
 
     auto create_request_sender_callback = base::BindLambdaForTesting(
-        [&](const std::vector<std::string>& scopes,
+        [&](signin::OAuthConsumerId oauth_consumer_id,
             const net::NetworkTrafficAnnotationTag& traffic_annotation_tag) {
           return std::make_unique<google_apis::RequestSender>(
               std::make_unique<google_apis::DummyAuthService>(),
               url_loader_factory_, task_environment_.GetMainThreadTaskRunner(),
               "test-user-agent", traffic_annotation_tag);
         });
+    Profile* profile = profile_manager_.CreateTestingProfile(
+        "profile@example.com",
+        /*testing_factories=*/{}, url_loader_factory_);
     client_ = std::make_unique<TasksClientImpl>(
-        profile_manager_.CreateTestingProfile("profile@example.com",
-                                              /*is_main_profile=*/true,
-                                              url_loader_factory_),
+        profile->GetPrefs(),
+        apps::AppServiceProxyFactory::GetForProfile(profile),
+        AshPolicyBlocklistServiceFactory::GetForBrowserContext(profile),
         create_request_sender_callback, TRAFFIC_ANNOTATION_FOR_TESTS);
 
     test_server_.RegisterRequestHandler(
@@ -337,7 +345,7 @@ TEST_F(TasksClientImplTest, GetTaskLists) {
   client()->GetTaskLists(/*force_fetch=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, task_lists] = future.Take();
+  const auto [success, http_error, task_lists] = future.Take();
   EXPECT_TRUE(success);
   EXPECT_EQ(task_lists->item_count(), 2u);
 
@@ -376,14 +384,14 @@ TEST_F(TasksClientImplTest, GetTaskListsOnSubsequentCalls) {
   client()->GetTaskLists(/*force_fetch=*/false, future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [status, task_lists] = future.Take();
+  const auto [status, http_error, task_lists] = future.Take();
   EXPECT_TRUE(status);
 
   // Subsequent request doesn't trigger another network call and returns a
   // pointer to the same `ui::ListModel`.
   client()->GetTaskLists(/*force_fetch=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
-  EXPECT_EQ(std::get<1>(future.Take()), task_lists);
+  EXPECT_EQ(std::get<2>(future.Take()), task_lists);
 }
 
 TEST_F(TasksClientImplTest, GetCachedTaskLists) {
@@ -397,7 +405,7 @@ TEST_F(TasksClientImplTest, GetCachedTaskLists) {
   client()->GetTaskLists(/*force_fetch=*/false, future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [status, task_lists] = future.Take();
+  const auto [status, http_error, task_lists] = future.Take();
   EXPECT_TRUE(status);
   EXPECT_EQ(client()->GetCachedTaskLists(), task_lists);
 }
@@ -416,10 +424,11 @@ TEST_F(TasksClientImplTest, ConcurrentGetTaskListsCalls) {
   ASSERT_TRUE(first_future.Wait());
   ASSERT_TRUE(second_future.Wait());
 
-  const auto [first_success, task_lists] = first_future.Take();
+  const auto [first_success, first_error, task_lists] = first_future.Take();
   EXPECT_TRUE(first_success);
 
-  const auto [second_success, second_task_lists] = second_future.Take();
+  const auto [second_success, second_error, second_task_lists] =
+      second_future.Take();
   EXPECT_TRUE(second_success);
 
   EXPECT_EQ(task_lists, second_task_lists);
@@ -470,7 +479,7 @@ TEST_F(TasksClientImplTest,
   client()->GetTaskLists(/*force_fetch=*/false, future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, task_lists] = future.Take();
+  const auto [success, http_error, task_lists] = future.Take();
   EXPECT_TRUE(success);
 
   EXPECT_EQ(task_lists->item_count(), 2u);
@@ -485,7 +494,8 @@ TEST_F(TasksClientImplTest,
   client()->GetTaskLists(/*force_fetch=*/false, refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto [refresh_success, refreshed_task_lists] = refresh_future.Take();
+  const auto [refresh_success, refresh_error, refreshed_task_lists] =
+      refresh_future.Take();
   EXPECT_TRUE(refresh_success);
 
   EXPECT_EQ(refreshed_task_lists->item_count(), 2u);
@@ -496,8 +506,8 @@ TEST_F(TasksClientImplTest,
   client()->GetTaskLists(/*force_fetch=*/false,
                          repeated_refresh_future.GetCallback());
 
-  const auto [repeated_refresh_success, repeated_refreshed_task_lists] =
-      repeated_refresh_future.Take();
+  const auto [repeated_refresh_success, repeated_refresh_error,
+              repeated_refreshed_task_lists] = repeated_refresh_future.Take();
   EXPECT_TRUE(repeated_refresh_success);
 
   EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 2u);
@@ -508,7 +518,7 @@ TEST_F(TasksClientImplTest,
 TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
   base::RunLoop first_request_waiter;
   EXPECT_CALL(request_handler(), HandleRequest(_))
-      .WillOnce(Invoke([&first_request_waiter](const HttpRequest&) {
+      .WillOnce([&first_request_waiter](const HttpRequest&) {
         first_request_waiter.Quit();
 
         return TestRequestHandler::CreateSuccessfulResponse(R"(
@@ -524,7 +534,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
               "updated": "2022-12-21T23:38:22.590Z"
             }]
           })");
-      }))
+      })
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"(
           {
             "kind": "tasks#taskLists",
@@ -547,7 +557,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
 
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, task_lists] = future.Take();
+  const auto [success, http_error, task_lists] = future.Take();
   EXPECT_FALSE(success);
 
   EXPECT_EQ(task_lists->item_count(), 0u);
@@ -563,7 +573,8 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
   client()->GetTaskLists(/*force_fetch=*/false, refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto [refresh_success, refreshed_task_lists] = refresh_future.Take();
+  const auto [refresh_success, refresh_error, refreshed_task_lists] =
+      refresh_future.Take();
   EXPECT_TRUE(refresh_success);
 
   EXPECT_EQ(refreshed_task_lists->item_count(), 2u);
@@ -574,8 +585,8 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskLists) {
   client()->GetTaskLists(/*force_fetch=*/false,
                          repeated_refresh_future.GetCallback());
 
-  const auto [repeated_refresh_success, repeated_refreshed_task_lists] =
-      repeated_refresh_future.Take();
+  const auto [repeated_refresh_success, repeated_error,
+              repeated_refreshed_task_lists] = repeated_refresh_future.Take();
   EXPECT_TRUE(repeated_refresh_success);
 
   EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 2u);
@@ -591,7 +602,7 @@ TEST_F(TasksClientImplTest, GetTaskListsReturnsEmptyVectorOnHttpError) {
   client()->GetTaskLists(/*force_fetch=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, task_lists] = future.Take();
+  const auto [success, http_error, task_lists] = future.Take();
   EXPECT_FALSE(success);
   EXPECT_EQ(task_lists->item_count(), 0u);
 
@@ -633,7 +644,7 @@ TEST_F(TasksClientImplTest, GetTaskListsReturnsCachedResultsOnHttpError) {
   client()->GetTaskLists(/*force_fetch=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, task_lists] = future.Take();
+  const auto [success, http_error, task_lists] = future.Take();
   EXPECT_TRUE(success);
   EXPECT_EQ(task_lists->item_count(), 2u);
   EXPECT_EQ(task_lists->GetItemAt(0)->id, "qwerty");
@@ -652,7 +663,8 @@ TEST_F(TasksClientImplTest, GetTaskListsReturnsCachedResultsOnHttpError) {
   client()->GetTaskLists(/*force_fetch=*/true, failure_future.GetCallback());
   ASSERT_TRUE(failure_future.Wait());
 
-  const auto [failure_status, failed_task_lists] = failure_future.Take();
+  const auto [failure_status, failure_error, failed_task_lists] =
+      failure_future.Take();
   EXPECT_FALSE(failure_status);
 
   EXPECT_EQ(failed_task_lists->item_count(), 2u);
@@ -672,7 +684,8 @@ TEST_F(TasksClientImplTest, GetTaskListsReturnsCachedResultsOnHttpError) {
   client()->GetTaskLists(/*force_fetch=*/false, retry_future.GetCallback());
   ASSERT_TRUE(retry_future.Wait());
 
-  const auto [retry_success, retry_task_lists] = retry_future.Take();
+  const auto [retry_success, retry_error, retry_task_lists] =
+      retry_future.Take();
   EXPECT_TRUE(retry_success);
 
   EXPECT_EQ(retry_task_lists->item_count(), 1u);
@@ -725,7 +738,7 @@ TEST_F(TasksClientImplTest,
   client()->GetTaskLists(/*force_fetch=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, task_lists] = future.Take();
+  const auto [success, http_error, task_lists] = future.Take();
   EXPECT_TRUE(success);
 
   EXPECT_EQ(task_lists->item_count(), 2u);
@@ -745,7 +758,8 @@ TEST_F(TasksClientImplTest,
   client()->GetTaskLists(/*force_fetch=*/true, failure_future.GetCallback());
   ASSERT_TRUE(failure_future.Wait());
 
-  const auto [failed_status, failed_task_lists] = failure_future.Take();
+  const auto [failed_status, failed_error, failed_task_lists] =
+      failure_future.Take();
   EXPECT_FALSE(failed_status);
 
   EXPECT_EQ(failed_task_lists->item_count(), 2u);
@@ -801,7 +815,7 @@ TEST_F(TasksClientImplTest, GetTaskListsFetchesAllPages) {
   client()->GetTaskLists(/*force_fetch=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [status, task_lists] = future.Take();
+  const auto [status, http_error, task_lists] = future.Take();
   EXPECT_TRUE(status);
 
   EXPECT_EQ(task_lists->item_count(), 3u);
@@ -879,7 +893,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
   // contain empty tasks list, as closing the bubble cancels the fetch.
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, task_lists] = future.Take();
+  const auto [success, http_error, task_lists] = future.Take();
   EXPECT_FALSE(success);
 
   EXPECT_EQ(task_lists->item_count(), 0u);
@@ -893,7 +907,8 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
   client()->GetTaskLists(/*force_fetch=*/false, refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto [refresh_success, refreshed_task_lists] = refresh_future.Take();
+  const auto [refresh_success, refresh_error, refreshed_task_lists] =
+      refresh_future.Take();
   EXPECT_TRUE(refresh_success);
 
   EXPECT_EQ(refreshed_task_lists->item_count(), 3u);
@@ -905,8 +920,8 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTaskListsPage) {
   client()->GetTaskLists(/*force_fetch=*/false,
                          repeated_refresh_future.GetCallback());
 
-  const auto [repeated_refresh_success, repeated_refreshed_task_lists] =
-      repeated_refresh_future.Take();
+  const auto [repeated_refresh_success, repreated_refresh_error,
+              repeated_refreshed_task_lists] = repeated_refresh_future.Take();
   EXPECT_TRUE(repeated_refresh_success);
 
   EXPECT_EQ(repeated_refreshed_task_lists->item_count(), 3u);
@@ -981,7 +996,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
   client()->GetTaskLists(/*force_fetch=*/false, future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [status, task_lists] = future.Take();
+  const auto [status, http_error, task_lists] = future.Take();
   EXPECT_TRUE(status);
 
   ASSERT_EQ(task_lists->item_count(), 2u);
@@ -993,7 +1008,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
                      abandoned_tasks_future.GetCallback());
   ASSERT_TRUE(abandoned_tasks_future.Wait());
 
-  const auto [abandoned_tasks_success, abandoned_tasks] =
+  const auto [abandoned_tasks_success, abandoned_error, abandoned_tasks] =
       abandoned_tasks_future.Take();
   EXPECT_TRUE(abandoned_tasks_success);
 
@@ -1005,7 +1020,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
                      tasks_future.GetCallback());
   ASSERT_TRUE(tasks_future.Wait());
 
-  const auto [tasks_success, tasks] = tasks_future.Take();
+  const auto [tasks_success, tasks_error, tasks] = tasks_future.Take();
   EXPECT_TRUE(tasks_success);
 
   EXPECT_EQ(tasks->item_count(), 2u);
@@ -1019,7 +1034,7 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
                          refreshed_task_list_future.GetCallback());
   ASSERT_TRUE(refreshed_task_list_future.Wait());
 
-  const auto [refresh_status, refreshed_task_lists] =
+  const auto [refresh_status, refresh_error, refreshed_task_lists] =
       refreshed_task_list_future.Take();
   EXPECT_TRUE(refresh_status);
 
@@ -1031,7 +1046,8 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
                      refreshed_abandoned_tasks_future.GetCallback());
   ASSERT_TRUE(refreshed_abandoned_tasks_future.Wait());
 
-  const auto [refresh_abandoned_tasks_success, refreshed_abandoned_tasks] =
+  const auto [refresh_abandoned_tasks_success, refresh_abandoned_tasks_error,
+              refreshed_abandoned_tasks] =
       refreshed_abandoned_tasks_future.Take();
   EXPECT_FALSE(refresh_abandoned_tasks_success);
 
@@ -1042,7 +1058,8 @@ TEST_F(TasksClientImplTest, AbandonedTaskListsRemovedFromCache) {
                      refreshed_tasks_future.GetCallback());
   ASSERT_TRUE(refreshed_tasks_future.Wait());
 
-  const auto [refresh_success, refreshed_tasks] = refreshed_tasks_future.Take();
+  const auto [refresh_success, refresh_success_error, refreshed_tasks] =
+      refreshed_tasks_future.Take();
   EXPECT_FALSE(refresh_success);
 
   EXPECT_EQ(refreshed_tasks->item_count(), 2u);
@@ -1063,7 +1080,7 @@ TEST_F(TasksClientImplTest, GetTasks) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
 
   ASSERT_EQ(root_tasks->item_count(), 2u);
@@ -1132,10 +1149,11 @@ TEST_F(TasksClientImplTest, ConcurrentGetTasksCalls) {
   ASSERT_TRUE(first_future.Wait());
   ASSERT_TRUE(second_future.Wait());
 
-  const auto [first_success, root_tasks] = first_future.Take();
+  const auto [first_success, first_error, root_tasks] = first_future.Take();
   EXPECT_TRUE(first_success);
 
-  const auto [second_success, second_root_tasks] = second_future.Take();
+  const auto [second_success, second_error, second_root_tasks] =
+      second_future.Take();
   EXPECT_TRUE(second_success);
 
   EXPECT_EQ(root_tasks, second_root_tasks);
@@ -1209,7 +1227,8 @@ TEST_F(TasksClientImplTest, ConcurrentGetTasksCallsForDifferentLists) {
   ASSERT_TRUE(first_future.Wait());
   ASSERT_TRUE(second_future.Wait());
 
-  const auto [first_success, first_root_tasks] = first_future.Take();
+  const auto [first_success, first_error, first_root_tasks] =
+      first_future.Take();
   EXPECT_TRUE(first_success);
 
   ASSERT_EQ(first_root_tasks->item_count(), 2u);
@@ -1217,7 +1236,8 @@ TEST_F(TasksClientImplTest, ConcurrentGetTasksCallsForDifferentLists) {
   EXPECT_EQ(first_root_tasks->GetItemAt(0)->id, "task-1-1");
   EXPECT_EQ(first_root_tasks->GetItemAt(1)->id, "task-1-2");
 
-  const auto [second_success, second_root_tasks] = second_future.Take();
+  const auto [second_success, second_error, second_root_tasks] =
+      second_future.Take();
   EXPECT_TRUE(second_success);
 
   ASSERT_EQ(second_root_tasks->item_count(), 2u);
@@ -1244,7 +1264,7 @@ TEST_F(TasksClientImplTest, GetCachedTasks) {
                      future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
   EXPECT_EQ(client()->GetCachedTasksInTaskList("test-task-list-id"),
             root_tasks);
@@ -1260,7 +1280,7 @@ TEST_F(TasksClientImplTest, GetTasksOnSubsequentCalls) {
                      future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
 
   // Subsequent request doesn't trigger another network call and returns a
@@ -1269,7 +1289,7 @@ TEST_F(TasksClientImplTest, GetTasksOnSubsequentCalls) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [retry_success, retry_root_tasks] = future.Take();
+  const auto [retry_success, retry_error, retry_root_tasks] = future.Take();
   EXPECT_TRUE(retry_success);
   EXPECT_EQ(retry_root_tasks, root_tasks);
 }
@@ -1286,7 +1306,7 @@ TEST_F(TasksClientImplTest, GetTasksOnSubsequentCallsWhenForcingFetch) {
                      future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
 
   EXPECT_EQ(root_tasks->GetItemAt(0)->id, "asd");
@@ -1297,7 +1317,7 @@ TEST_F(TasksClientImplTest, GetTasksOnSubsequentCallsWhenForcingFetch) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [retry_success, retry_root_tasks] = future.Take();
+  const auto [retry_success, retry_error, retry_root_tasks] = future.Take();
   EXPECT_TRUE(retry_success);
 }
 
@@ -1337,7 +1357,7 @@ TEST_F(TasksClientImplTest,
                      future.GetRepeatingCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
 
   ASSERT_EQ(root_tasks->item_count(), 2u);
@@ -1354,7 +1374,8 @@ TEST_F(TasksClientImplTest,
                      refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto [refresh_success, refreshed_root_tasks] = refresh_future.Take();
+  const auto [refresh_success, refresh_error, refreshed_root_tasks] =
+      refresh_future.Take();
   EXPECT_TRUE(refresh_success);
 
   ASSERT_EQ(refreshed_root_tasks->item_count(), 2u);
@@ -1366,8 +1387,8 @@ TEST_F(TasksClientImplTest,
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
 
-  const auto [repeated_refresh_success, repeated_refreshed_root_tasks] =
-      repeated_refresh_future.Take();
+  const auto [repeated_refresh_success, repeated_refresh_error,
+              repeated_refreshed_root_tasks] = repeated_refresh_future.Take();
   EXPECT_TRUE(repeated_refresh_success);
 
   ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 2u);
@@ -1378,7 +1399,7 @@ TEST_F(TasksClientImplTest,
 TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
   base::RunLoop first_request_waiter;
   EXPECT_CALL(request_handler(), HandleRequest(_))
-      .WillOnce(Invoke([&first_request_waiter](const HttpRequest&) {
+      .WillOnce([&first_request_waiter](const HttpRequest&) {
         first_request_waiter.Quit();
         return TestRequestHandler::CreateSuccessfulResponse(R"({
           "kind": "tasks#tasks",
@@ -1393,7 +1414,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
             "status": "needsAction"
           }]
         })");
-      }))
+      })
       .WillOnce(Return(ByMove(TestRequestHandler::CreateSuccessfulResponse(R"({
           "kind": "tasks#tasks",
           "items": [{
@@ -1418,7 +1439,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
   client()->OnGlanceablesBubbleClosed(base::DoNothing());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_FALSE(success);
 
   // Glanceables bubble was closed before receiving tasks response, so
@@ -1435,7 +1456,8 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
                      refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto [refresh_success, refreshed_root_tasks] = refresh_future.Take();
+  const auto [refresh_success, refreshed_error, refreshed_root_tasks] =
+      refresh_future.Take();
   EXPECT_TRUE(refresh_success);
 
   ASSERT_EQ(refreshed_root_tasks->item_count(), 2u);
@@ -1447,8 +1469,8 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasks) {
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
 
-  const auto [repeated_refresh_success, repeated_refreshed_root_tasks] =
-      repeated_refresh_future.Take();
+  const auto [repeated_refresh_success, repeated_refresh_error,
+              repeated_refreshed_root_tasks] = repeated_refresh_future.Take();
   EXPECT_TRUE(repeated_refresh_success);
 
   ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 2u);
@@ -1465,7 +1487,7 @@ TEST_F(TasksClientImplTest, GetTasksReturnsEmptyVectorOnHttpError) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_FALSE(success);
 
   EXPECT_EQ(root_tasks->item_count(), 0u);
@@ -1510,7 +1532,7 @@ TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnHttpError) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
 
   EXPECT_EQ(root_tasks->item_count(), 2u);
@@ -1530,7 +1552,8 @@ TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnHttpError) {
                      failed_future.GetCallback());
   ASSERT_TRUE(failed_future.Wait());
 
-  const auto [failed_status, failed_root_tasks] = failed_future.Take();
+  const auto [failed_status, failed_error, failed_root_tasks] =
+      failed_future.Take();
   EXPECT_FALSE(failed_status);
 
   EXPECT_EQ(failed_root_tasks->item_count(), 2u);
@@ -1551,7 +1574,8 @@ TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnHttpError) {
                      retry_future.GetCallback());
   ASSERT_TRUE(retry_future.Wait());
 
-  const auto [retry_success, retry_root_tasks] = retry_future.Take();
+  const auto [retry_success, retry_error, retry_root_tasks] =
+      retry_future.Take();
   EXPECT_TRUE(retry_success);
 
   EXPECT_EQ(retry_root_tasks->item_count(), 1u);
@@ -1605,7 +1629,7 @@ TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnPartialHttpError) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, tasks] = future.Take();
+  const auto [success, http_error, tasks] = future.Take();
   EXPECT_TRUE(success);
 
   EXPECT_EQ(tasks->item_count(), 2u);
@@ -1625,7 +1649,8 @@ TEST_F(TasksClientImplTest, GetTasksReturnsCachedResultsOnPartialHttpError) {
                      failure_future.GetCallback());
   ASSERT_TRUE(failure_future.Wait());
 
-  const auto [failure_status, failed_tasks] = failure_future.Take();
+  const auto [failure_status, failure_error, failed_tasks] =
+      failure_future.Take();
   EXPECT_FALSE(failure_status);
 
   EXPECT_EQ(failed_tasks->item_count(), 2u);
@@ -1686,7 +1711,7 @@ TEST_F(TasksClientImplTest, GetTasksFetchesAllPages) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
 
   ASSERT_EQ(root_tasks->item_count(), 2u);
@@ -1774,7 +1799,7 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasksPage) {
 
   // Expect an empty list, given that the glanceables bubble got closed before
   // all tasks were fetched, effectively cancelling the fetch.
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_FALSE(success);
 
   ASSERT_EQ(root_tasks->item_count(), 0u);
@@ -1787,7 +1812,8 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasksPage) {
                      refresh_future.GetCallback());
   ASSERT_TRUE(refresh_future.Wait());
 
-  const auto [refresh_success, refreshed_root_tasks] = refresh_future.Take();
+  const auto [refresh_success, refresh_error, refreshed_root_tasks] =
+      refresh_future.Take();
   EXPECT_TRUE(refresh_success);
 
   ASSERT_EQ(refreshed_root_tasks->item_count(), 3u);
@@ -1800,8 +1826,8 @@ TEST_F(TasksClientImplTest, GlanceablesBubbleClosedWhileFetchingTasksPage) {
                      repeated_refresh_future.GetCallback());
   ASSERT_TRUE(repeated_refresh_future.Wait());
 
-  const auto [repeated_refresh_success, repeated_refreshed_root_tasks] =
-      repeated_refresh_future.Take();
+  const auto [repeated_refresh_success, repeated_refresh_error,
+              repeated_refreshed_root_tasks] = repeated_refresh_future.Take();
   EXPECT_TRUE(repeated_refresh_success);
 
   ASSERT_EQ(repeated_refreshed_root_tasks->item_count(), 3u);
@@ -1831,7 +1857,7 @@ TEST_F(TasksClientImplTest, GetTasksSortsByPosition) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
 
   ASSERT_EQ(root_tasks->item_count(), 3u);
@@ -1860,7 +1886,7 @@ TEST_F(TasksClientImplTest, GetTasksHandlesOriginSurfaceType) {
                      future.GetCallback());
   ASSERT_TRUE(future.Wait());
 
-  const auto [success, root_tasks] = future.Take();
+  const auto [success, http_error, root_tasks] = future.Take();
   EXPECT_TRUE(success);
 
   ASSERT_EQ(root_tasks->item_count(), 4u);
@@ -1901,7 +1927,7 @@ TEST_F(TasksClientImplTest, MarkAsCompleted) {
       request_handler(),
       HandleRequest(Field(&HttpRequest::method, Eq(HttpMethod::METHOD_PATCH))))
       .Times(2)
-      .WillRepeatedly(Invoke([](const HttpRequest&) {
+      .WillRepeatedly([](const HttpRequest&) {
         return TestRequestHandler::CreateSuccessfulResponse(R"(
           {
             "kind": "tasks#task",
@@ -1910,14 +1936,14 @@ TEST_F(TasksClientImplTest, MarkAsCompleted) {
             "status": "completed"
           }
         )");
-      }));
+      });
 
   TasksFuture get_tasks_future;
   client()->GetTasks("test-task-list-id", /*force_fetch=*/false,
                      get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 
-  const auto [success, tasks] = get_tasks_future.Take();
+  const auto [success, http_error, tasks] = get_tasks_future.Take();
   EXPECT_TRUE(success);
 
   EXPECT_EQ(tasks->item_count(), 2u);
@@ -1971,7 +1997,7 @@ TEST_F(TasksClientImplTest, MarkAsCompletedOnHttpError) {
                      get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 
-  const auto [success, tasks] = get_tasks_future.Take();
+  const auto [success, http_error, tasks] = get_tasks_future.Take();
   EXPECT_TRUE(success);
 
   EXPECT_EQ(tasks->item_count(), 2u);
@@ -2026,7 +2052,7 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
                      get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
 
-  const auto [success, tasks] = get_tasks_future.Take();
+  const auto [success, http_error, tasks] = get_tasks_future.Take();
   EXPECT_TRUE(success);
 
   EXPECT_EQ(tasks->item_count(), 1u);
@@ -2042,13 +2068,14 @@ TEST_F(TasksClientImplTest, AddsNewTask) {
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.InsertTask.Status", /*expected_count=*/0);
 
-  TestFuture<const Task*> add_task_future;
+  TestFuture<ApiErrorCode, const Task*> add_task_future;
   client()->AddTask("test-task-list-id", "New task",
                     add_task_future.GetCallback());
 
   ASSERT_TRUE(add_task_future.Wait());
-  EXPECT_EQ(add_task_future.Get()->id, "new-task-id");
-  EXPECT_EQ(add_task_future.Get()->title, "New task");
+  const auto [new_error, new_task] = add_task_future.Take();
+  EXPECT_EQ(new_task->id, "new-task-id");
+  EXPECT_EQ(new_task->title, "New task");
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.InsertTask.Latency", /*expected_count=*/1);
@@ -2093,7 +2120,7 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
   client()->GetTasks("task-list-id", /*force_fetch=*/false,
                      get_tasks_future.GetCallback());
   ASSERT_TRUE(get_tasks_future.Wait());
-  const auto [success, tasks] = get_tasks_future.Take();
+  const auto [success, http_error, tasks] = get_tasks_future.Take();
   EXPECT_TRUE(success);
 
   ASSERT_EQ(tasks->item_count(), 1u);
@@ -2105,13 +2132,13 @@ TEST_F(TasksClientImplTest, UpdatesTask) {
       "Ash.Glanceables.Api.Tasks.PatchTask.Status", /*expected_count=*/0);
 
   // Update the task.
-  TestFuture<const Task*> update_task_future;
+  TestFuture<ApiErrorCode, const Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
                        /*completed=*/true, update_task_future.GetCallback());
   ASSERT_TRUE(update_task_future.Wait());
 
   // Make sure `tasks` contains the update.
-  EXPECT_EQ(tasks->GetItemAt(0), update_task_future.Get());
+  EXPECT_EQ(tasks->GetItemAt(0), std::get<1>(update_task_future.Take()));
   EXPECT_EQ(tasks->GetItemAt(0)->title, "Updated title");
   EXPECT_EQ(tasks->GetItemAt(0)->completed, true);
 
@@ -2133,12 +2160,12 @@ TEST_F(TasksClientImplTest, UpdatesTaskOnHttpError) {
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.PatchTask.Status", /*expected_count=*/0);
 
-  TestFuture<const Task*> update_task_future;
+  TestFuture<ApiErrorCode, const Task*> update_task_future;
   client()->UpdateTask("task-list-id", "task-id", "Updated title",
                        /*completed=*/false, update_task_future.GetCallback());
 
   ASSERT_TRUE(update_task_future.Wait());
-  EXPECT_FALSE(update_task_future.Get());
+  EXPECT_FALSE(std::get<1>(update_task_future.Take()));
 
   histogram_tester()->ExpectTotalCount(
       "Ash.Glanceables.Api.Tasks.PatchTask.Latency", /*expected_count=*/1);

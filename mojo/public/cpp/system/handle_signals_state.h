@@ -24,6 +24,15 @@ struct MOJO_CPP_SYSTEM_EXPORT HandleSignalsState final
     satisfiable_signals = satisfiable;
   }
 
+  explicit HandleSignalsState(const MojoHandleSignalsState& mojo_state)
+      : MojoHandleSignalsState(mojo_state) {}
+
+  HandleSignalsState& operator=(const MojoHandleSignalsState& mojo_state) {
+    satisfied_signals = mojo_state.satisfied_signals;
+    satisfiable_signals = mojo_state.satisfiable_signals;
+    return *this;
+  }
+
   bool operator==(const HandleSignalsState& other) const {
     return satisfied_signals == other.satisfied_signals &&
            satisfiable_signals == other.satisfiable_signals;

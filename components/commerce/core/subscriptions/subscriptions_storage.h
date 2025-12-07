@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_SUBSCRIPTIONS_STORAGE_H_
 #define COMPONENTS_COMMERCE_CORE_SUBSCRIPTIONS_SUBSCRIPTIONS_STORAGE_H_
 
-#include <queue>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>

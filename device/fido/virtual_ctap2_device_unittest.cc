@@ -29,14 +29,14 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/device_response_converter.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
-#include "device/fido/fido_transport_protocol.h"
-#include "device/fido/fido_types.h"
 #include "device/fido/large_blob.h"
-#include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public/fido_constants.h"
+#include "device/fido/public/fido_transport_protocol.h"
+#include "device/fido/public/fido_types.h"
+#include "device/fido/public/public_key_credential_descriptor.h"
 #include "device/fido/virtual_fido_device.h"
 #include "net/cert/asn1_util.h"
 #include "net/cert/x509_certificate.h"
@@ -61,7 +61,7 @@ void SendCommand(VirtualCtap2Device* device,
 // assumed to be a CTAP2 status byte.
 std::optional<cbor::Value> DecodeCBOR(base::span<const uint8_t> in) {
   CHECK(!in.empty());
-  return cbor::Reader::Read(in.subspan(1));
+  return cbor::Reader::Read(in.subspan<1>());
 }
 
 std::vector<uint8_t> ToCTAP2Command(
@@ -106,7 +106,7 @@ class VirtualCtap2DeviceTest : public ::testing::Test {
 
 TEST_F(VirtualCtap2DeviceTest, ParseMakeCredentialRequestForVirtualCtapKey) {
   const auto& cbor_request = cbor::Reader::Read(
-      base::make_span(test_data::kCtapMakeCredentialRequest).subspan(1));
+      base::span(test_data::kCtapMakeCredentialRequest).subspan<1>());
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
   const std::optional<CtapMakeCredentialRequest> request =
@@ -153,8 +153,7 @@ TEST_F(VirtualCtap2DeviceTest, ParseGetAssertionRequestForVirtualCtapKey) {
       0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03};
 
   const auto& cbor_request = cbor::Reader::Read(
-      base::make_span(test_data::kTestComplexCtapGetAssertionRequest)
-          .subspan(1));
+      base::span(test_data::kTestComplexCtapGetAssertionRequest).subspan<1>());
   ASSERT_TRUE(cbor_request);
   ASSERT_TRUE(cbor_request->is_map());
 

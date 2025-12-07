@@ -55,16 +55,20 @@ bool User::TypeHasGaiaAccount(UserType user_type) {
 
 // static
 bool User::TypeIsKiosk(UserType type) {
-  return type == UserType::kKioskApp || type == UserType::kWebKioskApp;
+  return type == UserType::kKioskChromeApp || type == UserType::kKioskWebApp ||
+         type == UserType::kKioskIWA || type == UserType::kKioskArcvmApp;
 }
 
 User::User(const AccountId& account_id, UserType type)
-    : account_id_(account_id), type_(type), user_image_(new UserImage()) {
+    : account_id_(account_id), type_(type) {
+  // Set up display email.
   switch (type_) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
-    case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       set_display_email(account_id.GetUserEmail());
       break;
     case user_manager::UserType::kGuest:
@@ -72,6 +76,31 @@ User::User(const AccountId& account_id, UserType type)
       // Public accounts nor guest account do not have a real email address,
       // so they do not set |display_email_|.
       break;
+  }
+
+  // Set up default user image.
+  switch (type_) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+    case user_manager::UserType::kPublicAccount:
+      user_image_ = std::make_unique<UserImage>();
+      break;
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kKioskArcvmApp:
+      user_image_ = UserImage::CreateStub();
+      image_index_ = UserImage::Type::kInvalid;
+      image_is_stub_ = true;
+      image_is_loading_ = false;
+      break;
+  }
+
+  // Device local accounts are always managed and affiliated.
+  if (IsDeviceLocalAccount()) {
+    is_managed_ = true;
+    is_affiliated_ = true;
   }
 }
 
@@ -99,31 +128,6 @@ const AccountId& User::GetAccountId() const {
   return account_id_;
 }
 
-void User::UpdateType(UserType new_type) {
-  // Can only change between regular and child.
-  if ((type_ == user_manager::UserType::kChild ||
-       type_ == user_manager::UserType::kRegular) &&
-      (new_type == user_manager::UserType::kChild ||
-       new_type == user_manager::UserType::kRegular)) {
-    // We want all the other type changes to crash, that is why this check is
-    // not at the top level.
-    if (type_ == new_type) {
-      return;
-    }
-
-    LOG(WARNING) << "User type has changed: " << type_ << " -> " << new_type;
-    type_ = new_type;
-
-    UMAUserTypeChanged(new_type == user_manager::UserType::kChild
-                           ? UserTypeChangeHistogram::REGULAR_TO_CHILD
-                           : UserTypeChangeHistogram::CHILD_TO_REGULAR);
-    return;
-  }
-
-  UMAUserTypeChanged(UserTypeChangeHistogram::UNKNOWN_FATAL);
-  LOG(FATAL) << "Unsupported user type change " << type_ << "=>" << new_type;
-}
-
 bool User::HasGaiaAccount() const {
   return TypeHasGaiaAccount(GetType());
 }
@@ -147,9 +151,11 @@ bool User::CanLock() const {
         return false;
       }
       break;
-    case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
     case user_manager::UserType::kGuest:
+    case user_manager::UserType::kKioskArcvmApp:
       return false;
     case user_manager::UserType::kPublicAccount:
       if (!profile_prefs_ ||
@@ -180,16 +186,18 @@ bool User::is_active() const {
 }
 
 bool User::has_gaia_account() const {
-  static_assert(static_cast<int>(user_manager::UserType::kMaxValue) == 9,
-                "kMaxValue should equal 9");
+  static_assert(static_cast<int>(user_manager::UserType::kMaxValue) == 11,
+                "kMaxValue should equal 11");
   switch (GetType()) {
     case user_manager::UserType::kRegular:
     case user_manager::UserType::kChild:
       return true;
     case user_manager::UserType::kGuest:
     case user_manager::UserType::kPublicAccount:
-    case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       return false;
   }
   return false;
@@ -210,38 +218,21 @@ void User::SetProfileIsCreated() {
   on_profile_created_observers_.clear();
 }
 
-bool User::IsAffiliated() const {
-  // Device local accounts are always affiliated.
-  if (IsDeviceLocalAccount()) {
-    return true;
-  }
+const std::optional<bool>& User::is_managed() const {
+  return is_managed_;
+}
 
+bool User::IsAffiliated() const {
   return is_affiliated_.value_or(false);
 }
 
 void User::IsAffiliatedAsync(
     base::OnceCallback<void(bool)> is_affiliated_callback) {
-  // TODO(b/278643115): Conceptually, we should call
-  //   std::move(is_affiliated_callback).Run(true)
-  // here immediately if this is for device local account.
-
   if (is_affiliated_.has_value()) {
     std::move(is_affiliated_callback).Run(is_affiliated_.value());
   } else {
     on_affiliation_set_callbacks_.push_back(std::move(is_affiliated_callback));
   }
-}
-
-void User::SetAffiliated(bool is_affiliated) {
-  // Device local accounts are always affiliated. No affiliation
-  // modification must happen.
-  CHECK(!IsDeviceLocalAccount());
-
-  is_affiliated_ = is_affiliated;
-  for (auto& callback : on_affiliation_set_callbacks_) {
-    std::move(callback).Run(is_affiliated_.value());
-  }
-  on_affiliation_set_callbacks_.clear();
 }
 
 bool User::IsDeviceLocalAccount() const {
@@ -251,8 +242,10 @@ bool User::IsDeviceLocalAccount() const {
     case user_manager::UserType::kGuest:
       return false;
     case user_manager::UserType::kPublicAccount:
-    case user_manager::UserType::kKioskApp:
-    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskChromeApp:
+    case user_manager::UserType::kKioskWebApp:
+    case user_manager::UserType::kKioskIWA:
+    case user_manager::UserType::kKioskArcvmApp:
       return true;
   }
   return false;
@@ -274,12 +267,16 @@ User* User::CreateGuestUser(const AccountId& guest_account_id) {
   return new User(guest_account_id, UserType::kGuest);
 }
 
-User* User::CreateKioskAppUser(const AccountId& kiosk_app_account_id) {
-  return new User(kiosk_app_account_id, UserType::kKioskApp);
+User* User::CreateKioskChromeAppUser(const AccountId& kiosk_app_account_id) {
+  return new User(kiosk_app_account_id, UserType::kKioskChromeApp);
 }
 
-User* User::CreateWebKioskAppUser(const AccountId& web_kiosk_account_id) {
-  return new User(web_kiosk_account_id, UserType::kWebKioskApp);
+User* User::CreateKioskWebAppUser(const AccountId& web_kiosk_account_id) {
+  return new User(web_kiosk_account_id, UserType::kKioskWebApp);
+}
+
+User* User::CreateKioskIwaUser(const AccountId& kiosk_iwa_account_id) {
+  return new User(kiosk_iwa_account_id, UserType::kKioskIWA);
 }
 
 User* User::CreatePublicAccountUser(const AccountId& account_id,
@@ -287,6 +284,10 @@ User* User::CreatePublicAccountUser(const AccountId& account_id,
   User* user = new User(account_id, UserType::kPublicAccount);
   user->set_using_saml(is_using_saml);
   return user;
+}
+
+User* User::CreateKioskArcvmAppUser(const AccountId& arcvm_kiosk_account_id) {
+  return new User(arcvm_kiosk_account_id, UserType::kKioskArcvmApp);
 }
 
 void User::SetAccountLocale(const std::string& resolved_account_locale) {
@@ -304,6 +305,31 @@ void User::SetImageURL(const GURL& image_url) {
   user_image_->set_url(image_url);
 }
 
+void User::SetType(UserType new_type) {
+  // Can only change between regular and child.
+  if ((type_ == user_manager::UserType::kChild ||
+       type_ == user_manager::UserType::kRegular) &&
+      (new_type == user_manager::UserType::kChild ||
+       new_type == user_manager::UserType::kRegular)) {
+    // We want all the other type changes to crash, that is why this check is
+    // not at the top level.
+    if (type_ == new_type) {
+      return;
+    }
+
+    LOG(WARNING) << "User type has changed: " << type_ << " -> " << new_type;
+    type_ = new_type;
+
+    UMAUserTypeChanged(new_type == user_manager::UserType::kChild
+                           ? UserTypeChangeHistogram::REGULAR_TO_CHILD
+                           : UserTypeChangeHistogram::CHILD_TO_REGULAR);
+    return;
+  }
+
+  UMAUserTypeChanged(UserTypeChangeHistogram::UNKNOWN_FATAL);
+  LOG(FATAL) << "Unsupported user type change " << type_ << "=>" << new_type;
+}
+
 void User::SetStubImage(std::unique_ptr<UserImage> stub_user_image,
                         int image_index,
                         bool is_loading) {
@@ -311,6 +337,19 @@ void User::SetStubImage(std::unique_ptr<UserImage> stub_user_image,
   image_index_ = image_index;
   image_is_stub_ = true;
   image_is_loading_ = is_loading;
+}
+
+void User::SetUserPolicyStatus(bool is_managed, bool is_affiliated) {
+  // Device local accounts are always affiliated. No affiliation
+  // modification must happen.
+  CHECK(!IsDeviceLocalAccount());
+
+  is_managed_ = is_managed;
+  is_affiliated_ = is_affiliated;
+
+  for (auto& callback : std::exchange(on_affiliation_set_callbacks_, {})) {
+    std::move(callback).Run(is_affiliated_.value());
+  }
 }
 
 }  // namespace user_manager

@@ -83,8 +83,7 @@ HeapVector<Member<SmartCardReaderStateOut>> ToV8ReaderStatesOut(
         ToV8ReaderStateFlagsOut(*mojom_state_out->event_state));
     state_out->setEventCount(mojom_state_out->event_count);
     state_out->setAnswerToReset(
-        DOMArrayBuffer::Create(mojom_state_out->answer_to_reset.data(),
-                               mojom_state_out->answer_to_reset.size()));
+        DOMArrayBuffer::Create(mojom_state_out->answer_to_reset));
     reader_states.push_back(state_out);
   }
 
@@ -105,7 +104,7 @@ SmartCardContext::SmartCardContext(
   scard_context_.Bind(
       std::move(pending_context),
       execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  scard_context_.set_disconnect_handler(WTF::BindOnce(
+  scard_context_.set_disconnect_handler(BindOnce(
       &SmartCardContext::CloseMojoConnection, WrapWeakPersistent(this)));
 }
 
@@ -122,9 +121,9 @@ ScriptPromise<IDLSequence<IDLString>> SmartCardContext::listReaders(
           script_state, exception_state.GetContext());
 
   SetOperationInProgress(resolver);
-  scard_context_->ListReaders(
-      WTF::BindOnce(&SmartCardContext::OnListReadersDone, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  scard_context_->ListReaders(BindOnce(&SmartCardContext::OnListReadersDone,
+                                       WrapPersistent(this),
+                                       WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -164,9 +163,9 @@ SmartCardContext::getStatusChange(
   SetOperationInProgress(resolver);
   scard_context_->GetStatusChange(
       timeout, ToMojomReaderStatesIn(reader_states),
-      WTF::BindOnce(&SmartCardContext::OnGetStatusChangeDone,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    WrapPersistent(signal), WrapPersistent(abort_handle)));
+      BindOnce(&SmartCardContext::OnGetStatusChangeDone, WrapPersistent(this),
+               WrapPersistent(resolver), WrapPersistent(signal),
+               WrapPersistent(abort_handle)));
 
   return resolver->Promise();
 }
@@ -192,9 +191,9 @@ ScriptPromise<SmartCardConnectResult> SmartCardContext::connect(
   SetOperationInProgress(resolver);
   scard_context_->Connect(
       reader_name, ToMojoSmartCardShareMode(access_mode),
-      ToMojoSmartCardProtocols(preferred_protocols),
-      WTF::BindOnce(&SmartCardContext::OnConnectDone, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+      ToMojoSmartCardProtocols(preferred_protocols), mojo::NullRemote(),
+      BindOnce(&SmartCardContext::OnConnectDone, WrapPersistent(this),
+               WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -212,7 +211,7 @@ void SmartCardContext::Cancel() {
     return;
   }
   scard_context_->Cancel(
-      WTF::BindOnce(&SmartCardContext::OnCancelDone, WrapPersistent(this)));
+      BindOnce(&SmartCardContext::OnCancelDone, WrapPersistent(this)));
 }
 
 bool SmartCardContext::EnsureNoOperationInProgress(

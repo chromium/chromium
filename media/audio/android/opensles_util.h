@@ -15,7 +15,7 @@ namespace media {
 template <typename SLType, typename SLDerefType>
 class ScopedSLObject {
  public:
-  ScopedSLObject() : obj_(NULL) {}
+  ScopedSLObject() : obj_(nullptr) {}
 
   ~ScopedSLObject() { Reset(); }
 
@@ -31,7 +31,7 @@ class ScopedSLObject {
   void Reset() {
     if (obj_) {
       (*obj_)->Destroy(obj_);
-      obj_ = NULL;
+      obj_ = nullptr;
     }
   }
 

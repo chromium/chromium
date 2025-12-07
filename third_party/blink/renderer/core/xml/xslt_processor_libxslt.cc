@@ -20,17 +20,15 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/xml/xslt_processor.h"
 
 #include <libxslt/imports.h>
 #include <libxslt/security.h>
 #include <libxslt/variables.h>
 #include <libxslt/xsltutils.h>
+
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/transform_source.h"
@@ -54,7 +52,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
@@ -93,8 +90,8 @@ void XSLTProcessor::ParseErrorFunc(void* user_data, const xmlError* error) {
 
   console->AddMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kXml, level, error->message,
-      std::make_unique<SourceLocation>(error->file, String(), error->line, 0,
-                                       nullptr)));
+      MakeGarbageCollected<SourceLocation>(error->file, String(), error->line,
+                                           0, nullptr)));
 }
 
 // FIXME: There seems to be no way to control the ctxt pointer for loading here,
@@ -188,28 +185,22 @@ static inline void SetXSLTLoadCallBack(xsltDocLoaderFunc func,
 }
 
 static int WriteToStringBuilder(void* context, const char* buffer, int len) {
-  StringBuilder& result_output = *static_cast<StringBuilder*>(context);
-
   if (!len)
     return 0;
 
+  // SAFETY: libxslt provides `len` bytes pointed to by `buffer`.
+  auto source_buffer =
+      UNSAFE_BUFFERS(base::span(buffer, base::checked_cast<size_t>(len)));
+
   StringBuffer<UChar> string_buffer(len);
-  UChar* buffer_u_char = string_buffer.Characters();
-  UChar* buffer_u_char_end = buffer_u_char + len;
+  unicode::ConversionResult result = unicode::ConvertUtf8ToUtf16(
+      base::as_bytes(source_buffer), string_buffer.Span());
+  CHECK(result.status == unicode::kConversionOK ||
+        result.status == unicode::kSourceExhausted);
 
-  const char* string_current = buffer;
-  WTF::unicode::ConversionResult result = WTF::unicode::ConvertUTF8ToUTF16(
-      &string_current, buffer + len, &buffer_u_char, buffer_u_char_end);
-  if (result != WTF::unicode::kConversionOK &&
-      result != WTF::unicode::kSourceExhausted) {
-    NOTREACHED_IN_MIGRATION();
-    return -1;
-  }
-
-  int utf16_length =
-      static_cast<int>(buffer_u_char - string_buffer.Characters());
-  result_output.Append(string_buffer.Characters(), utf16_length);
-  return static_cast<int>(string_current - buffer);
+  StringBuilder& result_output = *static_cast<StringBuilder*>(context);
+  result_output.Append(result.converted);
+  return base::checked_cast<int>(result.consumed);
 }
 
 static bool SaveResultToString(xmlDocPtr result_doc,
@@ -239,49 +230,44 @@ static bool SaveResultToString(xmlDocPtr result_doc,
   return true;
 }
 
-static char* AllocateParameterArray(const char* data) {
-  size_t length = strlen(data) + 1;
-  char* parameter_array = static_cast<char*>(WTF::Partitions::FastMalloc(
-      length, WTF_HEAP_PROFILER_TYPE_NAME(XSLTProcessor)));
-  memcpy(parameter_array, data, length);
-  return parameter_array;
+static char* AllocateParameterValue(const String& value) {
+  StringUtf8Adaptor utf8(value);
+  auto parameter_value = base::HeapArray<char>::Uninit(
+      base::CheckAdd(utf8.size(), 1u).ValueOrDie());
+  parameter_value.copy_prefix_from(base::span(utf8));
+  parameter_value[utf8.size()] = '\0';
+  return std::move(parameter_value).leak().data();
 }
 
-static const char** XsltParamArrayFromParameterMap(
+static Vector<char*> XsltParamArrayFromParameterMap(
     XSLTProcessor::ParameterMap& parameters) {
   if (parameters.empty())
-    return nullptr;
+    return {};
 
-  base::CheckedNumeric<size_t> size = parameters.size();
+  base::CheckedNumeric<wtf_size_t> size = parameters.size();
   size *= 2;
   ++size;
-  size *= sizeof(char*);
-  const char** parameter_array =
-      static_cast<const char**>(WTF::Partitions::FastMalloc(
-          size.ValueOrDie(), WTF_HEAP_PROFILER_TYPE_NAME(XSLTProcessor)));
+
+  Vector<char*> parameter_array(size.ValueOrDie());
 
   unsigned index = 0;
   for (auto& parameter : parameters) {
-    parameter_array[index++] =
-        AllocateParameterArray(parameter.key.Utf8().c_str());
-    parameter_array[index++] =
-        AllocateParameterArray(parameter.value.Utf8().c_str());
+    parameter_array[index++] = AllocateParameterValue(parameter.key);
+    parameter_array[index++] = AllocateParameterValue(parameter.value);
   }
   parameter_array[index] = nullptr;
-
   return parameter_array;
 }
 
-static void FreeXsltParamArray(const char** params) {
-  const char** temp = params;
-  if (!params)
+static void FreeXsltParamArray(Vector<char*>& params) {
+  if (params.empty()) {
     return;
-
-  while (*temp) {
-    WTF::Partitions::FastFree(const_cast<char*>(*(temp++)));
-    WTF::Partitions::FastFree(const_cast<char*>(*(temp++)));
   }
-  WTF::Partitions::FastFree(params);
+
+  for (auto& param : params) {
+    base::HeapArray<char>::DeleteLeakedData(param);
+  }
+  params.clear();
 }
 
 static xsltStylesheetPtr XsltStylesheetPointer(
@@ -412,8 +398,10 @@ bool XSLTProcessor::TransformToString(Node* source_node,
     if (!transform_context->globalVars)
       transform_context->globalVars = xmlHashCreate(20);
 
-    const char** params = XsltParamArrayFromParameterMap(parameters_);
-    xsltQuoteUserParams(transform_context, params);
+    Vector<char*> params = XsltParamArrayFromParameterMap(parameters_);
+    xsltQuoteUserParams(
+        transform_context,
+        static_cast<const char**>(static_cast<void*>(params.data())));
     xmlDocPtr result_doc = xsltApplyStylesheetUser(
         sheet, source_doc, nullptr, nullptr, nullptr, transform_context);
 

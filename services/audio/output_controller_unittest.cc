@@ -34,13 +34,12 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
-#include "services/audio/loopback_group_member.h"
+#include "services/audio/loopback_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::Invoke;
 using ::testing::Mock;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -222,13 +221,13 @@ class MockAudioOutputStream : public AudioOutputStream,
                  const media::AudioGlitchInfo& glitch_info,
                  AudioBus* dest) override {
     int res = callback_->OnMoreData(delay, delay_timestamp, glitch_info, dest);
-    EXPECT_EQ(dest->channel(0)[0], kBufferNonZeroData);
+    EXPECT_EQ(dest->channel_span(0)[0], kBufferNonZeroData);
     return res;
   }
 
   void OnError(ErrorType type) override {
     // Fake stream doesn't send errors.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   raw_ptr<AudioOutputStream, DanglingUntriaged> impl_;
@@ -254,7 +253,7 @@ class MockSnooper : public Snoopable::Snooper {
               base::TimeTicks reference_time,
               double volume) final {
     // Is the AudioBus populated?
-    EXPECT_EQ(kBufferNonZeroData, audio_bus.channel(0)[0]);
+    EXPECT_EQ(kBufferNonZeroData, audio_bus.channel_span(0)[0]);
 
     // Are reference timestamps monotonically increasing?
     if (!last_reference_time_.is_null()) {
@@ -332,7 +331,7 @@ ACTION(PopulateBuffer) {
   arg0->Zero();
   // Note: To confirm the buffer will be populated in these tests, it's
   // sufficient that only the first float in channel 0 is set to the value.
-  arg0->channel(0)[0] = kBufferNonZeroData;
+  arg0->channel_span(0)[0] = kBufferNonZeroData;
   return true;
 }
 
@@ -378,12 +377,12 @@ class OutputControllerTest : public ::testing::Test {
         .WillOnce(RunClosure(barrier))
         .WillRepeatedly(Return());
     EXPECT_CALL(mock_sync_reader_, Read(_, false))
-        .WillOnce(Invoke([barrier](AudioBus* data, bool /*is_mixing*/) {
+        .WillOnce([barrier](AudioBus* data, bool /*is_mixing*/) {
           data->Zero();
-          data->channel(0)[0] = kBufferNonZeroData;
+          data->channel_span(0)[0] = kBufferNonZeroData;
           barrier.Run();
           return true;
-        }))
+        })
         .WillRepeatedly(PopulateBuffer());
 
     controller_->Play();

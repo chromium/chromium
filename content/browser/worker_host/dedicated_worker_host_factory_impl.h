@@ -10,7 +10,6 @@
 #include "content/public/browser/dedicated_worker_creator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/storage_access_api/status.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
@@ -41,8 +40,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       const blink::StorageKey& creator_storage_key,
       const net::IsolationInfo& isolation_info,
       network::mojom::ClientSecurityStatePtr creator_client_security_state,
-      base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter,
-      base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter);
+      base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter);
 
   DedicatedWorkerHostFactoryImpl(const DedicatedWorkerHostFactoryImpl&) =
       delete;
@@ -52,15 +50,6 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   ~DedicatedWorkerHostFactoryImpl() override;
 
   // blink::mojom::DedicatedWorkerHostFactory:
-  void CreateWorkerHost(
-      const blink::DedicatedWorkerToken& token,
-      const GURL& script_url,
-      mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
-          broker_receiver,
-      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
-      CreateWorkerHostCallback callback) override;
-
-  // PlzDedicatedWorker:
   void CreateWorkerHostAndStartScriptLoad(
       const blink::DedicatedWorkerToken& token,
       const GURL& script_url,
@@ -91,7 +80,6 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
   network::mojom::ClientSecurityStatePtr creator_client_security_state_;
 
   base::WeakPtr<CrossOriginEmbedderPolicyReporter> creator_coep_reporter_;
-  base::WeakPtr<CrossOriginEmbedderPolicyReporter> ancestor_coep_reporter_;
 };
 
 }  // namespace content

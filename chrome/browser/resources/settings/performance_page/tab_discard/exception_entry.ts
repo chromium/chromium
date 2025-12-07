@@ -38,7 +38,8 @@ export class ExceptionEntryElement extends
     };
   }
 
-  entry: ExceptionEntry;
+  declare entry: ExceptionEntry;
+  declare prefs: {[key: string]: any};
 
   private onMenuClick_(e: Event) {
     this.fire(

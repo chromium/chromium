@@ -6,11 +6,11 @@
 
 namespace device {
 
-// Return a null ptr. Link this when there is no suitable BluetoothAdapter for
-// a particular platform.
+// Callers assume CreateAdapter() does not return null and is not called
+// when Bluetooth is not supported, so crash right away if we get here.
 // static
 scoped_refptr<BluetoothAdapter> BluetoothAdapter::CreateAdapter() {
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace device

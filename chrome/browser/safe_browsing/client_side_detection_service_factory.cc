@@ -4,11 +4,7 @@
 
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 
-#include "base/command_line.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -16,7 +12,6 @@
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_service_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -52,6 +47,10 @@ ClientSideDetectionServiceFactory::ClientSideDetectionServiceFactory()
 std::unique_ptr<KeyedService>
 ClientSideDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  if (!g_browser_process || !g_browser_process->safe_browsing_service()) {
+    return nullptr;
+  }
+
   Profile* profile = Profile::FromBrowserContext(context);
 
   auto* opt_guide = OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -61,13 +60,9 @@ ClientSideDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-
   return std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile),
-      opt_guide, background_task_runner);
+      opt_guide);
 }
 
 bool ClientSideDetectionServiceFactory::ServiceIsCreatedWithBrowserContext()

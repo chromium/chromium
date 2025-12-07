@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -15,12 +16,14 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "media/base/limits.h"
+#include "media/base/picture_in_picture_events_info.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -48,13 +51,14 @@ class MockWebMediaPlayer : public WebMediaPlayer {
     return LoadTiming::kImmediate;
   }
   void Play() override {}
-  void Pause() override {}
+  void Pause(PauseReason pause_reason) override {}
   void Seek(double seconds) override {}
   void SetRate(double) override {}
   void SetVolume(double) override {}
   void SetLatencyHint(double) override {}
   void SetPreservesPitch(bool) override {}
-  void SetWasPlayedWithUserActivation(bool) override {}
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(bool) override {}
+  void SetShouldPauseWhenFrameIsHidden(bool) override {}
   void OnRequestPictureInPicture() override {}
   WebTimeRanges Buffered() const override { return WebTimeRanges(); }
   WebTimeRanges Seekable() const override { return WebTimeRanges(); }
@@ -86,15 +90,15 @@ class MockWebMediaPlayer : public WebMediaPlayer {
   uint64_t VideoDecodedByteCount() const override { return 0; }
   void SetVolumeMultiplier(double multiplier) override {}
   void SuspendForFrameClosed() override {}
+  void RecordAutoPictureInPictureInfo(
+      const media::PictureInPictureEventsInfo::AutoPipInfo&
+          auto_picture_in_picture_info) override {}
 
   void SetWouldTaintOrigin(bool taint) { would_taint_origin_ = taint; }
-  bool PassedTimingAllowOriginCheck() const override { return true; }
 
   void Paint(cc::PaintCanvas* canvas,
              const gfx::Rect& rect,
-             cc::PaintFlags&) override {
-    return;
-  }
+             const cc::PaintFlags&) override {}
 
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override {
     // We could fill in |canvas| with a meaningful pattern in ARGB and verify
@@ -144,8 +148,9 @@ class HTMLVideoElementCapturerSourceTest : public testing::TestWithParam<bool> {
   }
 
   MOCK_METHOD1(DoOnRunning, void(bool));
-  void OnRunning(blink::RunState run_state) {
-    bool state = (run_state == blink::RunState::kRunning) ? true : false;
+  void OnRunning(blink::VideoCaptureRunState run_state) {
+    bool state =
+        (run_state == blink::VideoCaptureRunState::kRunning) ? true : false;
     DoOnRunning(state);
   }
 
@@ -171,13 +176,15 @@ TEST_F(HTMLVideoElementCapturerSourceTest, EmptyWebMediaPlayerFailsCapture) {
   web_media_player_.reset();
   EXPECT_CALL(*this, DoOnRunning(false)).Times(1);
 
+  VideoCaptureCallbacks video_capture_callbacks;
+  video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
+      &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
+  video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   html_video_capturer_->StartCapture(
-      media::VideoCaptureParams(),
-      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
-                         base::Unretained(this)),
-      base::DoNothing(), base::DoNothing(),
-      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
-                         base::Unretained(this)));
+      media::VideoCaptureParams(), std::move(video_capture_callbacks),
+      BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
+                    Unretained(this)));
 }
 
 // Checks that the usual sequence of GetPreferredFormats() ->
@@ -208,13 +215,14 @@ TEST_P(HTMLVideoElementCapturerSourceTest, GetFormatsAndStartAndStop) {
       .WillOnce(DoAll(SaveArg<0>(&second_frame),
                       RunOnceClosure(std::move(quit_closure))));
 
+  VideoCaptureCallbacks video_capture_callbacks;
+  video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
+      &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
+  video_capture_callbacks.frame_dropped_cb = base::DoNothing();
   html_video_capturer_->StartCapture(
-      params,
-      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
-                         base::Unretained(this)),
-      base::DoNothing(), base::DoNothing(),
-      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
-                         base::Unretained(this)));
+      media::VideoCaptureParams(), std::move(video_capture_callbacks),
+      BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
+                    Unretained(this)));
 
   run_loop.Run();
 
@@ -250,13 +258,15 @@ TEST_F(HTMLVideoElementCapturerSourceTest,
   EXPECT_CALL(*this, DoOnRunning(true));
   EXPECT_CALL(*this, DoOnDeliverFrame(_, _)).Times(0);
 
+  VideoCaptureCallbacks video_capture_callbacks;
+  video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
+      &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
+  video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   html_video_capturer_->StartCapture(
-      params,
-      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
-                         base::Unretained(this)),
-      base::DoNothing(), base::DoNothing(),
-      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
-                         base::Unretained(this)));
+      media::VideoCaptureParams(), std::move(video_capture_callbacks),
+      BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
+                    Unretained(this)));
   html_video_capturer_->StopCapture();
   base::RunLoop().RunUntilIdle();
 
@@ -282,13 +292,15 @@ TEST_F(HTMLVideoElementCapturerSourceTest, AlphaAndNot) {
     EXPECT_CALL(*this, DoOnDeliverFrame(_, _))
         .WillOnce(
             DoAll(SaveArg<0>(&frame), RunOnceClosure(std::move(quit_closure))));
+    VideoCaptureCallbacks video_capture_callbacks;
+    video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
+        &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
+    video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+    video_capture_callbacks.capture_version_cb = base::DoNothing();
     html_video_capturer_->StartCapture(
-        params,
-        WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
-                           base::Unretained(this)),
-        base::DoNothing(), base::DoNothing(),
-        WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
-                           base::Unretained(this)));
+        media::VideoCaptureParams(), std::move(video_capture_callbacks),
+        BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
+                      Unretained(this)));
     run_loop.Run();
 
     EXPECT_EQ(media::PIXEL_FORMAT_I420A, frame->format());
@@ -344,13 +356,16 @@ TEST_F(HTMLVideoElementCapturerSourceTest, SizeChange) {
     EXPECT_CALL(*this, DoOnDeliverFrame(_, _))
         .WillOnce(
             DoAll(SaveArg<0>(&frame), RunOnceClosure(std::move(quit_closure))));
+
+    VideoCaptureCallbacks video_capture_callbacks;
+    video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
+        &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
+    video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+    video_capture_callbacks.capture_version_cb = base::DoNothing();
     html_video_capturer_->StartCapture(
-        params,
-        WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
-                           base::Unretained(this)),
-        base::DoNothing(), base::DoNothing(),
-        WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
-                           base::Unretained(this)));
+        media::VideoCaptureParams(), std::move(video_capture_callbacks),
+        BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
+                      Unretained(this)));
     run_loop.Run();
   }
   {
@@ -387,13 +402,15 @@ TEST_F(HTMLVideoElementCapturerSourceTest, TaintedPlayerDoesNotDeliverFrames) {
 
   // No frames should be delivered.
   EXPECT_CALL(*this, DoOnDeliverFrame(_, _)).Times(0);
+  VideoCaptureCallbacks video_capture_callbacks;
+  video_capture_callbacks.deliver_frame_cb = blink::BindRepeating(
+      &HTMLVideoElementCapturerSourceTest::OnDeliverFrame, Unretained(this));
+  video_capture_callbacks.frame_dropped_cb = base::DoNothing();
+  video_capture_callbacks.capture_version_cb = base::DoNothing();
   html_video_capturer_->StartCapture(
-      params,
-      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnDeliverFrame,
-                         base::Unretained(this)),
-      base::DoNothing(), base::DoNothing(),
-      WTF::BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
-                         base::Unretained(this)));
+      media::VideoCaptureParams(), std::move(video_capture_callbacks),
+      BindRepeating(&HTMLVideoElementCapturerSourceTest::OnRunning,
+                    Unretained(this)));
 
   // Wait for frames to be potentially sent in a follow-up task.
   base::RunLoop().RunUntilIdle();

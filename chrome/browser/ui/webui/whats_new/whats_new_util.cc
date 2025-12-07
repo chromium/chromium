@@ -108,7 +108,7 @@ GURL GetWebUIStartupURL() {
   return net::AppendQueryParameter(GURL(chrome::kChromeUIWhatsNewURL), "auto",
                                    "true");
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

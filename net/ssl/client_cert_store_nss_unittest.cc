@@ -52,8 +52,6 @@ void SavePrivateKeyAndQuitCallback(scoped_refptr<net::SSLPrivateKey>* out_key,
 
 class ClientCertStoreNSSTestDelegate {
  public:
-  ClientCertStoreNSSTestDelegate() = default;
-
   bool SelectClientCerts(const CertificateList& input_certs,
                          const SSLCertRequestInfo& cert_request_info,
                          ClientCertIdentityList* selected_identities) {
@@ -69,7 +67,7 @@ class ClientCertStoreNSSTestDelegate {
   }
 };
 
-INSTANTIATE_TYPED_TEST_SUITE_P(NSS,
+INSTANTIATE_TYPED_TEST_SUITE_P(NSSNew,
                                ClientCertStoreTest,
                                ClientCertStoreNSSTestDelegate);
 

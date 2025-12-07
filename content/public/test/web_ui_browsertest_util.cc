@@ -56,7 +56,8 @@ void GetResource(const std::string& id,
 struct WebUIControllerConfig {
   WebUIControllerConfig();
   ~WebUIControllerConfig();
-  int bindings = BINDINGS_POLICY_WEB_UI;
+
+  BindingsPolicySet bindings = BindingsPolicySet({BindingsPolicyValue::kWebUi});
   std::string child_src = "child-src 'self' chrome://web-ui-subframe/;";
   bool disable_xfo = false;
   bool disable_trusted_types = false;
@@ -85,20 +86,26 @@ std::unique_ptr<WebUIController> CreateTestWebUIControllerForURL(
   if (url.has_query()) {
     std::string value;
     bool has_value = net::GetValueForKeyInQuery(url, "bindings", &value);
-    if (has_value)
-      CHECK(base::StringToInt(value, &(config.bindings)));
+    if (has_value) {
+      int64_t int_value;
+      CHECK(base::StringToInt64(value, &int_value));
+      config.bindings = BindingsPolicySet::FromEnumBitmask(int_value);
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "noxfo", &value);
-    if (has_value && value == "true")
+    if (has_value && value == "true") {
       config.disable_xfo = true;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "notrustedtypes", &value);
-    if (has_value && value == "true")
+    if (has_value && value == "true") {
       config.disable_trusted_types = true;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "childsrc", &value);
-    if (has_value)
+    if (has_value) {
       config.child_src = value;
+    }
 
     has_value = net::GetValueForKeyInQuery(url, "requestableschemes", &value);
     if (has_value) {
@@ -144,7 +151,7 @@ TestWebUIController::TestWebUIController(WebUI* web_ui,
   }
 
   WebUIDataSource* data_source = WebUIDataSource::CreateAndAdd(
-      web_ui->GetWebContents()->GetBrowserContext(), base_url.host());
+      web_ui->GetWebContents()->GetBrowserContext(), base_url.GetHost());
   data_source->SetRequestFilter(
       base::BindRepeating([](const std::string& path) { return true; }),
       base::BindRepeating(&GetResource));
@@ -218,12 +225,6 @@ void AddUntrustedDataSource(
           break;
         case network::mojom::CrossOriginOpenerPolicyValue::
             kSameOriginAllowPopups:
-        case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
-          NOTREACHED() << "COOP:restrict-properties is not supported in WebUI";
-        case network::mojom::CrossOriginOpenerPolicyValue::
-            kRestrictPropertiesPlusCoep:
-          NOTREACHED()
-              << "COOP:restrict-properties-plus-coep is not supported in WebUI";
         case network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups:
           NOTREACHED()
               << "COOP:noopener-allow-popups is not supported in WebUI";
@@ -271,7 +272,7 @@ WebUI::TypeID TestWebUIControllerFactory::GetWebUIType(
     return WebUI::kNoWebUI;
   }
 
-  return reinterpret_cast<WebUI::TypeID>(base::FastHash(url.host()));
+  return reinterpret_cast<WebUI::TypeID>(base::FastHash(url.GetHost()));
 }
 
 bool TestWebUIControllerFactory::UseWebUIForURL(BrowserContext* browser_context,

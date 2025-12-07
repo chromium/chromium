@@ -55,22 +55,9 @@ TEST_F(APIKeyRequestUtilTest, AddAPIKeyToRequest_ExistingHeader) {
 
   // This is a misuse of the API, enforced by a DLOG(FATAL) in tests.
   EXPECT_DEATH_IF_SUPPORTED(AddAPIKeyToRequest(request, "test_api_key"),
-                            "API key already present on the request.");
+                            "API key already present in request header.");
 }
 #endif  // DCHECK_IS_ON()
-
-TEST_F(APIKeyRequestUtilTest, HasAPIKey_HeaderNotPresent) {
-  network::ResourceRequest request;
-
-  ASSERT_FALSE(HasAPIKey(request));
-}
-
-TEST_F(APIKeyRequestUtilTest, HasAPIKey_HeaderPresent) {
-  network::ResourceRequest request;
-  request.headers.SetHeader(kApiKeyHeaderName, "test_api_key");
-
-  ASSERT_TRUE(HasAPIKey(request));
-}
 
 }  // namespace
 }  // namespace google_apis

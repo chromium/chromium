@@ -149,8 +149,8 @@ std::array<float, 2> ClampToViewSpace(
   // inclusive, but max is exclusive - so we subtract epsilon.
   const float max_x_inclusive = std::nextafter(max_x, min_x);
   const float max_y_inclusive = std::nextafter(max_y, min_y);
-  const float clamped_x = base::ranges::clamp(x, min_x, max_x_inclusive);
-  const float clamped_y = base::ranges::clamp(y, min_y, max_y_inclusive);
+  const float clamped_x = std::ranges::clamp(x, min_x, max_x_inclusive);
+  const float clamped_y = std::ranges::clamp(y, min_y, max_y_inclusive);
   return {clamped_x, clamped_y};
 }
 

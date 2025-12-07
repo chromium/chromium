@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
 
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
@@ -40,8 +41,8 @@ DiscountsPageActionController::GetOrCreate(ShoppingService* shopping_service) {
 }
 
 std::optional<bool> DiscountsPageActionController::ShouldShowForNavigation() {
-  if (!shopping_service_ ||
-      !shopping_service_->IsDiscountEligibleToShowOnNavigation()) {
+  if (!shopping_service_ || !IsDiscountEligibleToShowOnNavigation(
+                                shopping_service_->GetAccountChecker())) {
     return false;
   }
 
@@ -49,12 +50,11 @@ std::optional<bool> DiscountsPageActionController::ShouldShowForNavigation() {
     return std::nullopt;
   }
 
-  return discounts_.has_value();
+  return !discounts_.empty();
 }
 
 bool DiscountsPageActionController::WantsExpandedUi() {
-  if (!got_discounts_response_for_page_ || !discounts_.has_value() ||
-      discounts_.value().empty()) {
+  if (!got_discounts_response_for_page_ || discounts_.empty()) {
     return false;
   }
 
@@ -77,7 +77,7 @@ bool DiscountsPageActionController::WantsExpandedUi() {
     return true;
   }
 
-  for (const auto& discount_info : discounts_.value()) {
+  for (const auto& discount_info : discounts_) {
     if (ShouldAutoShowBubble(discount_info.id,
                              discount_info.is_merchant_wide)) {
       return true;
@@ -88,8 +88,8 @@ bool DiscountsPageActionController::WantsExpandedUi() {
 }
 
 void DiscountsPageActionController::ResetForNewNavigation(const GURL& url) {
-  if (!shopping_service_ ||
-      !shopping_service_->IsDiscountEligibleToShowOnNavigation()) {
+  if (!shopping_service_ || !IsDiscountEligibleToShowOnNavigation(
+                                shopping_service_->GetAccountChecker())) {
     return;
   }
 
@@ -101,31 +101,28 @@ void DiscountsPageActionController::ResetForNewNavigation(const GURL& url) {
   last_committed_url_ = url;
   NotifyHost();
 
-  shopping_service_->GetDiscountInfoForUrls(
-      {url},
+  shopping_service_->GetDiscountInfoForUrl(
+      url,
       base::BindOnce(&DiscountsPageActionController::HandleDiscountInfoResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DiscountsPageActionController::HandleDiscountInfoResponse(
-    const DiscountsMap& discounts_map) {
-  CHECK(discounts_map.empty() ||
-        (discounts_map.size() == 1 &&
-         discounts_map.begin()->first == last_committed_url_));
-
-  if (discounts_map.empty() || discounts_map.begin()->second.empty()) {
+    const GURL& url,
+    const std::vector<DiscountInfo> discounts) {
+  if (url != last_committed_url_ || discounts.empty()) {
     got_discounts_response_for_page_ = true;
     NotifyHost();
     return;
   }
 
-  discounts_ = discounts_map.begin()->second;
+  discounts_ = std::move(discounts);
   got_discounts_response_for_page_ = true;
   NotifyHost();
 }
 
 const std::vector<DiscountInfo>& DiscountsPageActionController::GetDiscounts() {
-  return discounts_.value();
+  return discounts_;
 }
 
 void DiscountsPageActionController::CouponCodeCopied() {
@@ -141,8 +138,8 @@ bool DiscountsPageActionController::IsCouponCodeCopied() {
 bool DiscountsPageActionController::ShouldAutoShowBubble(
     uint64_t discount_id,
     bool is_merchant_wide) {
-  if (!shopping_service_ ||
-      !shopping_service_->IsDiscountEligibleToShowOnNavigation()) {
+  if (!shopping_service_ || !IsDiscountEligibleToShowOnNavigation(
+                                shopping_service_->GetAccountChecker())) {
     return false;
   }
   auto behavior = is_merchant_wide

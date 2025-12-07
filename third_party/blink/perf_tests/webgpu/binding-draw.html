@@ -13,11 +13,7 @@
   <canvas id="canvas" width=400 height=400></canvas>
   <script>
     (async () => {
-      const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
-      if (!adapter) {
-        return skipTest('WebGPU not supported');
-      }
-
+      const adapter = await getAdapter();
       const device = await adapter.requestDevice();
       const canvas = document.getElementById('canvas');
       const context = canvas.getContext('webgpu');

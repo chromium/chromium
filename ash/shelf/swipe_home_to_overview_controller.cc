@@ -88,8 +88,7 @@ void SwipeHomeToOverviewController::Drag(const gfx::PointF& location_in_screen,
     return;
 
   display::Display display;
-  if (!display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id_,
-                                                             &display)) {
+  if (!display::Screen::Get()->GetDisplayWithDisplayId(display_id_, &display)) {
     CancelDrag();
     return;
   }

@@ -80,8 +80,7 @@ let l = document.body.getBoundingClientRect().left;
 document.body.style.zoom = 2;
 l == document.body.getBoundingClientRect().left;
 )");
-  ASSERT_TRUE(result.value.is_bool());
-  EXPECT_EQ(expected_disabled, result.value.GetBool());
+  EXPECT_EQ(expected_disabled, result);
 }
 
 IN_PROC_BROWSER_TEST_P(StandardizedBrowserZoomPolicyBrowserTest,
@@ -97,8 +96,7 @@ let l = document.body.getBoundingClientRect().left;
 document.body.style.zoom = 2;
 l == document.body.getBoundingClientRect().left;
 )");
-  ASSERT_TRUE(result.value.is_bool());
-  EXPECT_TRUE(result.value.GetBool());
+  EXPECT_EQ(true, result);
 }
 
 INSTANTIATE_TEST_SUITE_P(

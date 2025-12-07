@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/policy/core/common/cloud/device_management_service.h"
+
 #include <stdint.h>
 
 #include <memory>
@@ -13,8 +15,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/test/base/chrome_test_utils.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
-#include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/proto/cloud_policy.pb.h"
@@ -191,7 +193,7 @@ class DeviceManagementServiceIntegrationTest
         em::PolicyOptions::MANDATORY);
     settings.mutable_homepagelocation()->set_value("http://www.chromium.org");
     PolicyStorage* policy_storage = test_server_->policy_storage();
-    policy_storage->SetPolicyPayload(dm_protocol::kChromeUserPolicyType,
+    policy_storage->SetPolicyPayload(dm_protocol::GetChromeUserPolicyType(),
                                      settings.SerializeAsString());
     policy_storage->add_managed_user("*");
     policy_storage->set_robot_api_auth_code("fake_auth_code");
@@ -253,7 +255,7 @@ IN_PROC_BROWSER_TEST_P(DeviceManagementServiceIntegrationTest, PolicyFetch) {
 
   em::DeviceManagementRequest request;
   request.mutable_policy_request()->add_requests()->set_policy_type(
-      dm_protocol::kChromeUserPolicyType);
+      dm_protocol::GetChromeUserPolicyType());
   std::unique_ptr<DeviceManagementService::Job> job =
       StartJob(DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH,
                false, DMAuth::FromDMToken(token_), "", request);

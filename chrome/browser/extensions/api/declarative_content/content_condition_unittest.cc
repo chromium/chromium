@@ -10,8 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -19,7 +22,7 @@ namespace {
 
 class TestPredicate : public ContentPredicate {
  public:
-  TestPredicate() {}
+  TestPredicate() = default;
 
   TestPredicate(const TestPredicate&) = delete;
   TestPredicate& operator=(const TestPredicate&) = delete;
@@ -54,7 +57,7 @@ class TestPredicateFactoryGeneratingError : public ContentPredicateFactory {
 
 class TestPredicateFactoryGeneratingPredicate : public ContentPredicateFactory {
  public:
-  TestPredicateFactoryGeneratingPredicate() {}
+  TestPredicateFactoryGeneratingPredicate() = default;
 
   TestPredicateFactoryGeneratingPredicate(
       const TestPredicateFactoryGeneratingPredicate&) = delete;

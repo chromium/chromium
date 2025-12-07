@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_VIEW_CONTROLLER_PRIVATE_H_
 #define IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_BROWSER_VIEW_CONTROLLER_PRIVATE_H_
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
 
-#import "base/ios/block_types.h"
+enum class BrowserViewVisibilityState;
 
 // This is a private category that is intended to only be imported in
 // browser_coordinator.mm.
@@ -19,17 +20,12 @@
 // an inactive BVC should not be visible.
 @property(nonatomic, assign, getter=isActive) BOOL active;
 
-// Whether the controller's view is currently visible.
-// YES from viewDidAppear to viewWillDisappear.
-@property(nonatomic, readonly) BOOL viewVisible;
+// The visibility state of the browser view. Value will be set to `kVisible` on
+// viewDidAppear and to `kNotInViewHierarchy` on viewWillDisappear.
+@property(nonatomic, readonly) BrowserViewVisibilityState visibilityState;
 
 // Height of the header view.
 @property(nonatomic, readonly) CGFloat headerHeight;
-
-// Dismisses all presented views, excluding the omnibox if `dismissOmnibox` is
-// NO, then calls `completion`.
-- (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion
-                           dismissOmnibox:(BOOL)dismissOmnibox;
 
 // Does an animation from `originPoint` when opening a background tab, then
 // calls `completion`.

@@ -1,0 +1,21 @@
+Name: Noto Emoji Font
+URL: https://fonts.google.com/noto/specimen/Noto+Emoji
+License: OFL-1.1
+License File: OFL.txt
+Security Critical: no
+Shipped: no
+Version: 2.001
+Update Mechanism: Static (https://crbug.com/422373855)
+
+Description:
+Font file subset included to have a cross platform font for testing emoji variation selectors support.
+
+Local modifications:
+Command to generate subset font:
+$ pyftsubset NotoEmoji-Regular.ttf --text="☔☃"
+
+Modified font cmap table to include variation selector 15 (U+FE0E).
+
+Command to generate XML text format file from font: ttx NotoEmoji-Regular.ttf
+
+pyftsubset and ttx from https://github.com/fonttools/fonttools

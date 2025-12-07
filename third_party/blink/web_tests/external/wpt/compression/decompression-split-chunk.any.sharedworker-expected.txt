@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] decompressing splitted chunk into pieces of size 1 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 2 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 3 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 4 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 5 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 6 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 7 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 8 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 9 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 10 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 11 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 12 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 13 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 14 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+[FAIL] decompressing splitted chunk into pieces of size 15 should work in brotli
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to construct 'DecompressionStream': Unsupported compression format: 'brotli'"
+Harness: the test ran to completion.
+

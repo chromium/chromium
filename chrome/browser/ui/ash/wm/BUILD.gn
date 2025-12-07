@@ -1,0 +1,79 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("wm") {
+  sources = [
+    "coral_delegate_impl.cc",
+    "coral_delegate_impl.h",
+    "tab_cluster_ui_client.cc",
+    "tab_cluster_ui_client.h",
+  ]
+
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui:browser_tab_strip",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
+
+  deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/ash/desks",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/webui/ash/scanner_feedback_dialog",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/services/coral/public/mojom",
+    "//chromeos/ui/wm",
+    "//components/app_constants",
+    "//components/application_locale_storage",
+    "//components/signin/public/identity_manager",
+    "//components/variations/service",
+    "//content/public/browser",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "coral_browsertest.cc",
+    "float_controller_browsertest.cc",
+    "snap_group_browsertest.cc",
+    "wmp_browsertest.cc",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/app_restore:test_support",
+    "//chrome/browser/ash/system_web_apps",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/birch:test_support",
+    "//chrome/browser/ui/ash/new_window",
+    "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/views/frame",
+    "//chrome/test:test_support",
+    "//chrome/test/base/ash/util:test_support",
+    "//chromeos/ash/services/coral/public/mojom",
+    "//content/test:test_support",
+    "//ui/display",
+    "//ui/display:test_support",
+    "//ui/events:test_support",
+    "//ui/views",
+    "//ui/wm",
+  ]
+}

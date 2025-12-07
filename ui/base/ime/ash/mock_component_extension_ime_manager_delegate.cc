@@ -20,7 +20,7 @@ MockComponentExtensionIMEManagerDelegate::ListIME() {
 }
 
 void MockComponentExtensionIMEManagerDelegate::Load(
-    Profile* profile,
+    content::BrowserContext* profile,
     const std::string& extension_id,
     const std::string& manifest,
     const base::FilePath& path) {

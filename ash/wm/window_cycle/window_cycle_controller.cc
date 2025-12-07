@@ -30,6 +30,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -192,8 +193,7 @@ void WindowCycleController::HandleKeyboardNavigation(
       break;
     case KeyboardNavDirection::kInvalid:
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -374,7 +374,7 @@ void WindowCycleController::OnModeChanged(bool per_desk,
               " "));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

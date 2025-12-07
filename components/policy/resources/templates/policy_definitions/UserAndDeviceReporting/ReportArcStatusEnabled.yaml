@@ -3,6 +3,7 @@ desc: |-
   If Android apps are on, then setting the policy to True has enrolled devices report Android status information.
 
         Setting the policy to Disabled or leaving it unset means enrolled devices don't report Android status information
+default: false
 example_value: true
 features:
   dynamic_refresh: true

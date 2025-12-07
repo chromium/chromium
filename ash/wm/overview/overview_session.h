@@ -333,6 +333,8 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   void UpdateFrameThrottling();
 
+  base::WeakPtr<OverviewSession> GetWeakPtr();
+
   // DesksController::Observer:
   void OnDeskActivationChanged(const Desk* activated,
                                const Desk* deactivated) override;
@@ -479,9 +481,9 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   // because accessibility needs something focused for it to work and we cannot
   // use one of the overview windows otherwise wm::ActivateWindow will not
   // work.
-  // TODO(sammiequon): Focus the grid desks widget if it is always available, or
-  // we may be able to add some mechanism to trigger accessibility events
-  // without a focused window.
+  // TODO: Focus the grid desks widget if it is always available, or we may be
+  // able to add some mechanism to trigger accessibility events without a
+  // focused window.
   std::unique_ptr<views::Widget> overview_focus_widget_;
 
   // True when performing operations that may cause window activations. This is
@@ -497,9 +499,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   // The following variables are used for metric collection purposes. All of
   // them refer to this particular overview session and are not cumulative:
-  // The time when overview was started.
-  base::Time overview_start_time_;
-
   // The number of arrow and tab key presses.
   size_t num_key_presses_ = 0;
 
@@ -574,6 +573,7 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       active_window_before_overview_observation_{this};
+  base::WeakPtrFactory<OverviewSession> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

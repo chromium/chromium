@@ -49,32 +49,20 @@ import * as Console from 'devtools/panels/console/console.js';
     // opposed to some replacement character that came from transcoding to UTF8
     // and back to valid UTF16.
     TestRunner.assertEquals('\uD835', text[text.length - 1]);
-    TestRunner.assertEquals(2, countTextNodes(text), 'nodes count');
-    TestRunner.assertEquals(1, countTextNodes('"' + text + '"'), 'nodes with quoted text count');
-    TestRunner.addResult('PASS: Found all nodes with the broken text');
+
+    ConsoleTestRunner.disableConsoleViewport();
+    var viewMessages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
+
+    for (var i = 0; i < viewMessages.length; ++i) {
+      var node = viewMessages[i].contentElement();
+      TestRunner.addResult(node.textContent);
+    }
+
     TestRunner.completeTest();
   }
 
   function expandFirstArrayIndexFilter(treeElement) {
     var propertyName = treeElement.nameElement && treeElement.nameElement.textContent;
     return propertyName === '0';
-  }
-
-  function countTextNodes(textContent) {
-    ConsoleTestRunner.disableConsoleViewport();
-    var count = 0;
-    var viewMessages = Console.ConsoleView.ConsoleView.instance().visibleViewMessages;
-
-    for (var i = 0; i < viewMessages.length; ++i) {
-      var node = viewMessages[i].contentElement();
-      var currentNode = node;
-
-      while (currentNode = currentNode.traverseNextNode(node)) {
-        if (currentNode.nodeType === Node.TEXT_NODE && currentNode.nodeValue === textContent)
-          ++count;
-      }
-    }
-
-    return count;
   }
 })();

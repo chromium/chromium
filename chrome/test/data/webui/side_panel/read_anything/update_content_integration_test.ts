@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {createApp} from './common.js';
 
 suite('UpdateContentIntegration', () => {
-  let app: ReadAnythingElement;
+  let app: AppElement;
 
   function setTree(rootChildren: number[], nodes: Object[]) {
     const tree = {
@@ -32,13 +32,12 @@ suite('UpdateContentIntegration', () => {
     assertEquals(expected, app.$.container.innerHTML);
   }
 
-  setup(() => {
-    suppressInnocuousErrors();
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     chrome.readingMode.onConnected = () => {};
 
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    app = await createApp();
   });
 
   test('overline text style', () => {
@@ -370,14 +369,11 @@ suite('UpdateContentIntegration', () => {
       },
       {
         id: 4,
-        role: 'image',
-        htmlTag: 'img',
-        url: 'http://www.mycat.com',
+        role: 'link',
+        htmlTag: 'a',
       },
     ];
-    const expected =
-        '<div><a>This link does not have a url.</a><canvas alt="" ' +
-        'class="downloaded-image"></canvas></div>';
+    const expected = '<div><a>This link does not have a url.</a><a></a></div>';
 
     setTree([2, 4], nodes);
 

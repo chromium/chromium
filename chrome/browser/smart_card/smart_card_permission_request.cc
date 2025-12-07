@@ -3,7 +3,14 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/smart_card/smart_card_permission_request.h"
+
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_decision.h"
+#include "components/permissions/permission_request_data.h"
+#include "components/permissions/request_type.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
@@ -13,13 +20,13 @@ SmartCardPermissionRequest::SmartCardPermissionRequest(
     const std::string& reader_name,
     ResultCallback result_callback)
     : permissions::PermissionRequest(
-          requesting_origin.GetURL(),
-          permissions::RequestType::kSmartCard,
-          /*has_gesture=*/false,
+          std::make_unique<permissions::PermissionRequestData>(
+              std::make_unique<permissions::ContentSettingPermissionResolver>(
+                  ContentSettingsType::SMART_CARD_DATA),
+              /*user_gesture=*/false,
+              requesting_origin.GetURL()),
           base::BindRepeating(&SmartCardPermissionRequest::OnPermissionDecided,
-                              base::Unretained(this)),
-          base::BindOnce(&SmartCardPermissionRequest::DeleteRequest,
-                         base::Unretained(this))),
+                              base::Unretained(this))),
       reader_name_(reader_name),
       result_callback_(std::move(result_callback)) {}
 
@@ -44,27 +51,17 @@ std::optional<std::u16string> SmartCardPermissionRequest::GetAllowAlwaysText()
   return l10n_util::GetStringUTF16(IDS_SMART_CARD_PERMISSION_ALWAYS_ALLOW);
 }
 
+std::optional<std::u16string> SmartCardPermissionRequest::GetBlockText() const {
+  return l10n_util::GetStringUTF16(IDS_PERMISSION_DONT_ALLOW);
+}
+
 void SmartCardPermissionRequest::OnPermissionDecided(
-    ContentSetting content_setting_result,
-    bool is_one_time,
-    bool is_final_decision) {
+    PermissionDecision decision,
+    bool is_final_decision,
+    const permissions::PermissionRequestData& request_data) {
   if (!is_final_decision) {
     return;
   }
 
-  Result result = Result::kDontAllow;
-
-  if (content_setting_result == ContentSetting::CONTENT_SETTING_ALLOW) {
-    if (is_one_time) {
-      result = Result::kAllowOnce;
-    } else {
-      result = Result::kAllowAlways;
-    }
-  }
-
-  std::move(result_callback_).Run(result);
-}
-
-void SmartCardPermissionRequest::DeleteRequest() {
-  delete this;
+  std::move(result_callback_).Run(decision);
 }

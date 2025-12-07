@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("fatal_crash") {
   sources = [
@@ -24,7 +24,7 @@ static_library("fatal_crash") {
     "//ash",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash/policy/reporting/event_based_logs",
+    "//chrome/browser/ash/policy/reporting/event_based_logs:utils",
     "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",
@@ -80,6 +80,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/affiliation:test_support",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/reporting/metrics_reporting",

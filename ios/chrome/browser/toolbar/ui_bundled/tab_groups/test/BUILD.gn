@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "tab_group_indicator_egtest.mm" ]
+  deps = [
+    "//components/data_sharing:test_support",
+    "//components/data_sharing/public",
+    "//components/data_sharing/public:features",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/test:eg_test_support+eg2",
+    "//ios/chrome/browser/share_kit/model:test_constants",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:eg_test_support+eg2",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups:tab_groups_constant",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/test:utils",
+    "//ios/chrome/browser/toolbar/ui_bundled/tab_groups/ui:constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/chrome/test/earl_grey:switches",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

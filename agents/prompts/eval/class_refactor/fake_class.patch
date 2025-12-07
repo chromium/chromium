@@ -1,0 +1,85 @@
+
+diff --git a/base/BUILD.gn b/base/BUILD.gn
+index 0573c2db7639..5601a403c482 100644
+--- a/base/BUILD.gn
++++ b/base/BUILD.gn
+@@ -624,6 +624,8 @@ component("base") {
+     "strings/cstring_view.h",
+     "strings/durable_string_view.h",
+     "strings/escape.cc",
+     "strings/escape.h",
++    "strings/fake_simple_class.cc",
++    "strings/fake_simple_class.h",
+     "strings/latin1_string_conversions.cc",
+     "strings/latin1_string_conversions.h",
+     "strings/lazy_string_builder.cc",
+diff --git a/base/strings/fake_simple_class.cc b/base/strings/fake_simple_class.cc
+new file mode 100644
+index 0000000000000..d811801c431d1
+--- /dev/null
++++ b/base/strings/fake_simple_class.cc
+@@ -0,0 +1,18 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "base/strings/fake_simple_class.h"
++
++#include "base/logging.h"
++
++namespace base {
++
++FakeSimpleClass::FakeSimpleClass() = default;
++FakeSimpleClass::~FakeSimpleClass() = default;
++
++void FakeSimpleClass::ProcessStruct(const NestedStruct& s) {
++  if (s.field1) {
++    LOG(INFO) << "Field2: " << s.field2;
++  }
++}
++
++// static
++FakeSimpleClass::NestedStruct FakeSimpleClass::CreateNestedStruct(
++    bool field1,
++    const std::string& field2) {
++  NestedStruct s;
++  s.field1 = field1;
++  s.field2 = field2;
++  return s;
++}
++
++}  // namespace base
+diff --git a/base/strings/fake_simple_class.h b/base/strings/fake_simple_class.h
+new file mode 100644
+index 0000000000000..8b3a3c1a2d1f4
+--- /dev/null
++++ b/base/strings/fake_simple_class.h
+@@ -0,0 +1,22 @@
++// Copyright 2025 The Chromium Authors
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#ifndef BASE_STRINGS_FAKE_SIMPLE_CLASS_H_
++#define BASE_STRINGS_FAKE_SIMPLE_CLASS_H_
++
++#include <string>
++
++namespace base {
++
++class FakeSimpleClass {
++ public:
++  struct NestedStruct {
++    bool field1 = false;
++    std::string field2;
++  };
++
++  FakeSimpleClass();
++  ~FakeSimpleClass();
++
++  void ProcessStruct(const NestedStruct& s);
++  static NestedStruct CreateNestedStruct(bool field1, const std::string& field2);
++};
++
++}  // namespace base
++
++#endif  // BASE_STRINGS_FAKE_SIMPLE_CLASS_H_

@@ -9,9 +9,26 @@
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
-import {AlwaysOnVpnMode, AlwaysOnVpnProperties, ApnProperties, ApnState, CellularSimState, ConfigProperties, CrosNetworkConfigInterface, CrosNetworkConfigObserverRemote, DeviceStateProperties, FilterType, GlobalPolicy, InhibitReason, ManagedProperties, NetworkCertificate, NetworkFilter, NetworkStateProperties, NO_LIMIT, StartConnectResult, TrafficCounter, UInt32Value, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {AlwaysOnVpnMode, ApnState, FilterType, InhibitReason, NO_LIMIT, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+
+/** @typedef {*} AlwaysOnVpnProperties */
+/** @typedef {*} ApnProperties */
+/** @typedef {*} CellularSimState */
+/** @typedef {*} ConfigProperties */
+/** @typedef {*} ConfigProperties */
+/** @typedef {*} CrosNetworkConfigInterface */
+/** @typedef {*} CrosNetworkConfigObserverRemote */
+/** @typedef {*} DeviceStateProperties */
+/** @typedef {*} GlobalPolicy */
+/** @typedef {*} ManagedProperties */
+/** @typedef {*} NetworkCertificate */
+/** @typedef {*} NetworkFilter */
+/** @typedef {*} NetworkStateProperties */
+/** @typedef {*} Time */
+/** @typedef {*} TrafficCounter */
+/** @typedef {*} UInt32Value */
+/** @typedef {*} VpnProvider */
 
 // Default cellular pin, used when locking/unlocking cellular profiles.
 export const DEFAULT_CELLULAR_PIN = '1111';
@@ -186,8 +203,7 @@ export class FakeNetworkConfig {
   }
 
   /**
-   * @param {!Array<!NetworkStateProperties>}
-   *     networks
+   * @param {!Array<!NetworkStateProperties>} networks
    */
   addNetworksForTest(networks) {
     this.networkStates_ = this.networkStates_.concat(networks);
@@ -467,8 +483,7 @@ export class FakeNetworkConfig {
   // networkConfig methods
 
   /**
-   * @param {!CrosNetworkConfigObserverRemote}
-   *     observer
+   * @param {!CrosNetworkConfigObserverRemote} observer
    */
   addObserver(observer) {
     this.observers_.push(observer);

@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/base/amplitude_peak_detector.h"
 
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/test/bind.h"
+#include "media/base/audio_bus.h"
 #include "media/base/audio_sample_types.h"
+#include "media/base/sample_format.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -25,6 +24,7 @@ constexpr float kQuietSample = 0.4;
 // Default values
 constexpr int kChannels = 2;
 constexpr int kFrames = 240;
+constexpr SampleFormat kSampleFormat = kSampleFormatS32;
 
 struct SampleLocation {
   int channel;
@@ -66,7 +66,7 @@ class AmplitudePeakDetectorTest : public testing::TestWithParam<int> {
       const SampleLocation& location) {
     auto bus = GetSilentAudioBus();
 
-    bus->channel(location.channel)[location.index] = value;
+    bus->channel_span(location.channel)[location.index] = value;
 
     return bus;
   }
@@ -202,48 +202,76 @@ TEST_F(AmplitudePeakDetectorTest, NoTracing) {
   EXPECT_EQ(peak_count, 0);
 }
 
-class FixedSampleAmplitudePeakDetector : public AmplitudePeakDetectorTest {
+class SampleAmplitudePeakDetector : public AmplitudePeakDetectorTest {
  public:
-  FixedSampleAmplitudePeakDetector() = default;
+  SampleAmplitudePeakDetector() = default;
 
-  FixedSampleAmplitudePeakDetector(const FixedSampleAmplitudePeakDetector&) =
+  SampleAmplitudePeakDetector(const SampleAmplitudePeakDetector&) = delete;
+  SampleAmplitudePeakDetector& operator=(const SampleAmplitudePeakDetector&) =
       delete;
-  FixedSampleAmplitudePeakDetector& operator=(
-      const FixedSampleAmplitudePeakDetector&) = delete;
 
-  ~FixedSampleAmplitudePeakDetector() override = default;
+  ~SampleAmplitudePeakDetector() override = default;
 
   template <typename SampleType>
   void VerifyNoPeaksFoundInSilence() {
     std::vector<SampleType> samples(
         kFrames, FixedSampleTypeTraits<SampleType>::kZeroPointValue);
 
-    VerifyFindPeaks(samples.data(), /*expect_peak=*/false,
-                    "No peak should be detected in zeroed values");
+    VerifyFindPeaks<SampleType>(samples, /*expect_peak=*/false,
+                                "No peak should be detected in zeroed values");
+  }
+
+  template <>
+  void VerifyNoPeaksFoundInSilence<float>() {
+    std::vector<float> samples(kFrames,
+                               FloatSampleTypeTraits<float>::kZeroPointValue);
+
+    VerifyFindPeaks<float>(samples, /*expect_peak=*/false,
+                           "No peak should be detected in zeroed values");
   }
 
   template <typename SampleType>
-  void RunSimpleDetectionTest_Fixed(float value,
-                                    bool expect_peak,
-                                    std::string_view message) {
+  void RunSimpleDetectionTest(float value,
+                              bool expect_peak,
+                              std::string_view message) {
     std::vector<SampleType> samples(
         kFrames, FixedSampleTypeTraits<SampleType>::kZeroPointValue);
 
     // Verify finding peaks for values at the start of the data range.
     samples[0] = FixedSampleTypeTraits<SampleType>::FromFloat(value);
-    VerifyFindPeaks(samples.data(), expect_peak, message);
+    VerifyFindPeaks<SampleType>(samples, expect_peak, message);
 
     // Reset the value.
     samples[0] = FixedSampleTypeTraits<SampleType>::kZeroPointValue;
 
     // Verify finding peaks for values at the end of the data range.
     samples[kFrames - 1] = FixedSampleTypeTraits<SampleType>::FromFloat(value);
-    VerifyFindPeaks(samples.data(), expect_peak, message);
+    VerifyFindPeaks<SampleType>(samples, expect_peak, message);
   }
 
-  int bytes_per_samples() { return GetParam(); }
+  template <>
+  void RunSimpleDetectionTest<float>(float value,
+                                     bool expect_peak,
+                                     std::string_view message) {
+    std::vector<float> samples(kFrames,
+                               FloatSampleTypeTraits<float>::kZeroPointValue);
 
-  void VerifyFindPeaks(const void* data,
+    // Verify finding peaks for values at the start of the data range.
+    samples[0] = FloatSampleTypeTraits<float>::FromFloat(value);
+    VerifyFindPeaks<float>(samples, expect_peak, message);
+
+    // Reset the value.
+    samples[0] = FloatSampleTypeTraits<float>::kZeroPointValue;
+
+    // Verify finding peaks for values at the end of the data range.
+    samples[kFrames - 1] = FloatSampleTypeTraits<float>::FromFloat(value);
+    VerifyFindPeaks<float>(samples, expect_peak, message);
+  }
+
+  SampleFormat sample_format() { return static_cast<SampleFormat>(GetParam()); }
+
+  template <typename SampleType>
+  void VerifyFindPeaks(base::span<const SampleType> data,
                        bool expect_peak,
                        std::string_view message) {
     CreateDetector(
@@ -251,134 +279,161 @@ class FixedSampleAmplitudePeakDetector : public AmplitudePeakDetectorTest {
             ? base::MakeExpectedRunAtLeastOnceClosure(FROM_HERE, message)
             : base::MakeExpectedNotRunClosure(FROM_HERE, message));
 
-    peak_detector_->FindPeak(data, kFrames, bytes_per_samples());
+    peak_detector_->FindPeak(base::as_byte_span(data), sample_format());
+  }
+
+  template <>
+  void VerifyFindPeaks<float>(base::span<const float> data,
+                              bool expect_peak,
+                              std::string_view message) {
+    CreateDetector(
+        expect_peak
+            ? base::MakeExpectedRunAtLeastOnceClosure(FROM_HERE, message)
+            : base::MakeExpectedNotRunClosure(FROM_HERE, message));
+
+    peak_detector_->FindPeak(
+        base::as_byte_span(base::allow_nonunique_obj, data), sample_format());
   }
 };
 
-TEST_P(FixedSampleAmplitudePeakDetector, NoPeaks_Silent) {
-  switch (bytes_per_samples()) {
-    case 1:
+TEST_P(SampleAmplitudePeakDetector, NoPeaks_Silent) {
+  switch (sample_format()) {
+    case kSampleFormatU8:
       VerifyNoPeaksFoundInSilence<uint8_t>();
       break;
-    case 2:
+    case kSampleFormatS16:
       VerifyNoPeaksFoundInSilence<int16_t>();
       break;
-    case 4:
+    case kSampleFormatS32:
       VerifyNoPeaksFoundInSilence<int32_t>();
       break;
+    case kSampleFormatF32: {
+      VerifyNoPeaksFoundInSilence<float>();
+      break;
+    }
+    default:
+      NOTREACHED();
   }
 }
 
-TEST_P(FixedSampleAmplitudePeakDetector, NoPeaks_Quiet) {
+TEST_P(SampleAmplitudePeakDetector, NoPeaks_Quiet) {
   constexpr char message[] = "No peaks detected from quiet values";
 
-  switch (bytes_per_samples()) {
-    case 1:
-      RunSimpleDetectionTest_Fixed<uint8_t>(kQuietSample, false, message);
-      RunSimpleDetectionTest_Fixed<uint8_t>(-kQuietSample, false, message);
+  switch (sample_format()) {
+    case kSampleFormatU8:
+      RunSimpleDetectionTest<uint8_t>(kQuietSample, false, message);
+      RunSimpleDetectionTest<uint8_t>(-kQuietSample, false, message);
       break;
-    case 2:
-      RunSimpleDetectionTest_Fixed<int16_t>(kQuietSample, false, message);
-      RunSimpleDetectionTest_Fixed<int16_t>(-kQuietSample, false, message);
+    case kSampleFormatS16:
+      RunSimpleDetectionTest<int16_t>(kQuietSample, false, message);
+      RunSimpleDetectionTest<int16_t>(-kQuietSample, false, message);
       break;
-    case 4:
-      RunSimpleDetectionTest_Fixed<int32_t>(kQuietSample, false, message);
-      RunSimpleDetectionTest_Fixed<int32_t>(-kQuietSample, false, message);
+    case kSampleFormatS32:
+      RunSimpleDetectionTest<int32_t>(kQuietSample, false, message);
+      RunSimpleDetectionTest<int32_t>(-kQuietSample, false, message);
       break;
+    case kSampleFormatF32:
+      RunSimpleDetectionTest<float>(kQuietSample, false, message);
+      RunSimpleDetectionTest<float>(-kQuietSample, false, message);
+      break;
+    default:
+      NOTREACHED();
   }
 }
 
-TEST_P(FixedSampleAmplitudePeakDetector, Peaks_Loud) {
+TEST_P(SampleAmplitudePeakDetector, Peaks_Loud) {
   constexpr char message[] = "Peaks detected in loud values";
 
-  switch (bytes_per_samples()) {
-    case 1:
-      RunSimpleDetectionTest_Fixed<uint8_t>(kLoudSample, true, message);
-      RunSimpleDetectionTest_Fixed<uint8_t>(-kLoudSample, true, message);
+  switch (sample_format()) {
+    case kSampleFormatU8:
+      RunSimpleDetectionTest<uint8_t>(kLoudSample, true, message);
+      RunSimpleDetectionTest<uint8_t>(-kLoudSample, true, message);
       break;
-    case 2:
-      RunSimpleDetectionTest_Fixed<int16_t>(kLoudSample, true, message);
-      RunSimpleDetectionTest_Fixed<int16_t>(-kLoudSample, true, message);
+    case kSampleFormatS16:
+      RunSimpleDetectionTest<int16_t>(kLoudSample, true, message);
+      RunSimpleDetectionTest<int16_t>(-kLoudSample, true, message);
       break;
-    case 4:
-      RunSimpleDetectionTest_Fixed<int32_t>(kLoudSample, true, message);
-      RunSimpleDetectionTest_Fixed<int32_t>(-kLoudSample, true, message);
+    case kSampleFormatS32:
+      RunSimpleDetectionTest<int32_t>(kLoudSample, true, message);
+      RunSimpleDetectionTest<int32_t>(-kLoudSample, true, message);
       break;
+    case kSampleFormatF32:
+      RunSimpleDetectionTest<float>(kLoudSample, true, message);
+      RunSimpleDetectionTest<float>(-kLoudSample, true, message);
+      break;
+    default:
+      NOTREACHED();
   }
 }
 
-TEST_F(FixedSampleAmplitudePeakDetector, Sequence_SilenceAndQuiet) {
-  constexpr int kBytesPerSample = 4;
-  std::vector<uint32_t> silent_data(
+TEST_F(SampleAmplitudePeakDetector, Sequence_SilenceAndQuiet) {
+  std::vector<int32_t> silent_data(
       kFrames, SignedInt32SampleTypeTraits::kZeroPointValue);
-  std::vector<uint32_t> quiet_data(
+  std::vector<int32_t> quiet_data(
       kFrames, SignedInt32SampleTypeTraits::FromFloat(kQuietSample));
 
   int peak_count = 0;
   CreateDetectorWithPeakCounter(&peak_count);
 
   // Make sure peaks are never detected in silent and quiet samples.
-  peak_detector_->FindPeak(silent_data.data(), kFrames, kBytesPerSample);
-  peak_detector_->FindPeak(quiet_data.data(), kFrames, kBytesPerSample);
-  peak_detector_->FindPeak(silent_data.data(), kFrames, kBytesPerSample);
-  peak_detector_->FindPeak(quiet_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(silent_data), kSampleFormat);
+  peak_detector_->FindPeak(base::as_byte_span(quiet_data), kSampleFormat);
+  peak_detector_->FindPeak(base::as_byte_span(silent_data), kSampleFormat);
+  peak_detector_->FindPeak(base::as_byte_span(quiet_data), kSampleFormat);
 
   EXPECT_EQ(peak_count, 0);
 }
 
-TEST_F(FixedSampleAmplitudePeakDetector, Sequence_ShortPeak) {
-  constexpr int kBytesPerSample = 4;
-  std::vector<uint32_t> silent_data(
+TEST_F(SampleAmplitudePeakDetector, Sequence_ShortPeak) {
+  std::vector<int32_t> silent_data(
       kFrames, SignedInt32SampleTypeTraits::kZeroPointValue);
-  std::vector<uint32_t> loud_data(
+  std::vector<int32_t> loud_data(
       kFrames, SignedInt32SampleTypeTraits::FromFloat(kLoudSample));
 
   int peak_count = 0;
   CreateDetectorWithPeakCounter(&peak_count);
 
-  peak_detector_->FindPeak(silent_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(silent_data), kSampleFormat);
   EXPECT_EQ(peak_count, 0);
 
   // We should immediately find a peak.
-  peak_detector_->FindPeak(loud_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(loud_data), kSampleFormat);
   EXPECT_EQ(peak_count, 1);
 
   // Exiting the peak should not run the callback.
-  peak_detector_->FindPeak(silent_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(silent_data), kSampleFormat);
   EXPECT_EQ(peak_count, 1);
 
   // The callback should be run again when another peak is found.
-  peak_detector_->FindPeak(loud_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(loud_data), kSampleFormat);
   EXPECT_EQ(peak_count, 2);
 }
 
-TEST_P(FixedSampleAmplitudePeakDetector, Sequence_LongPeak) {
-  constexpr int kBytesPerSample = 4;
-  std::vector<uint32_t> silent_data(
+TEST_F(SampleAmplitudePeakDetector, Sequence_LongPeak) {
+  std::vector<int32_t> silent_data(
       kFrames, SignedInt32SampleTypeTraits::kZeroPointValue);
-  std::vector<uint32_t> loud_data(
+  std::vector<int32_t> loud_data(
       kFrames, SignedInt32SampleTypeTraits::FromFloat(kLoudSample));
 
   int peak_count = 0;
   CreateDetectorWithPeakCounter(&peak_count);
 
-  peak_detector_->FindPeak(silent_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(silent_data), kSampleFormat);
   EXPECT_EQ(peak_count, 0);
 
   // Long peaks should only run the callback once.
-  peak_detector_->FindPeak(loud_data.data(), kFrames, kBytesPerSample);
-  peak_detector_->FindPeak(loud_data.data(), kFrames, kBytesPerSample);
-  peak_detector_->FindPeak(loud_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(loud_data), kSampleFormat);
+  peak_detector_->FindPeak(base::as_byte_span(loud_data), kSampleFormat);
+  peak_detector_->FindPeak(base::as_byte_span(loud_data), kSampleFormat);
   EXPECT_EQ(peak_count, 1);
 
   // Exiting the peak should not run the callback.
-  peak_detector_->FindPeak(silent_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(silent_data), kSampleFormat);
   EXPECT_EQ(peak_count, 1);
 }
 
-TEST_P(FixedSampleAmplitudePeakDetector, NoTracing) {
-  constexpr int kBytesPerSample = 4;
-  std::vector<uint32_t> loud_data(
+TEST_F(SampleAmplitudePeakDetector, NoTracing) {
+  std::vector<int32_t> loud_data(
       kFrames, SignedInt32SampleTypeTraits::FromFloat(kLoudSample));
 
   int peak_count = 0;
@@ -386,12 +441,15 @@ TEST_P(FixedSampleAmplitudePeakDetector, NoTracing) {
   peak_detector_->SetIsTracingEnabledForTests(false);
 
   // Callbacks should not be run when tracing is disabled.
-  peak_detector_->FindPeak(loud_data.data(), kFrames, kBytesPerSample);
+  peak_detector_->FindPeak(base::as_byte_span(loud_data), kSampleFormat);
   EXPECT_EQ(peak_count, 0);
 }
 
-INSTANTIATE_TEST_SUITE_P(FixedSampleAmplitudePeakDetector,
-                         FixedSampleAmplitudePeakDetector,
-                         testing::Values(1, 2, 4));
+INSTANTIATE_TEST_SUITE_P(SampleAmplitudePeakDetector,
+                         SampleAmplitudePeakDetector,
+                         testing::Values(kSampleFormatU8,
+                                         kSampleFormatS16,
+                                         kSampleFormatS32,
+                                         kSampleFormatF32));
 
 }  // namespace media

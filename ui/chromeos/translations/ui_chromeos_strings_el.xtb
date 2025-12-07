@@ -20,6 +20,7 @@
 <translation id="1155759005174418845">Καταλανικά
 </translation>
 <translation id="1168100932582989117">Διακομιστές ονομάτων της Google</translation>
+<translation id="1170788066030116158">Ημερομηνία λήψης</translation>
 <translation id="1172970565351728681">Απομένουν περίπου <ph name="REMAINING_TIME" />.</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
 <translation id="1173916544412572294">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Λεπτομέρειες</translation>
@@ -35,6 +36,7 @@
 <translation id="1249250836236328755">Είδος</translation>
 <translation id="1254593899333212300">Άμεση σύνδεση στο διαδίκτυο</translation>
 <translation id="1272293450992660632">Οι τιμές PIN δεν ταιριάζουν.</translation>
+<translation id="1279040297980392566">Αναμονή για την ολοκλήρωση της σάρωσης, δοκιμάστε ξανά αργότερα</translation>
 <translation id="1280820357415527819">Αναζήτηση για δίκτυα κινητής τηλεφωνίας</translation>
 <translation id="1293556467332435079">Αρχεία</translation>
 <translation id="1297922636971898492">Το Google Drive δεν είναι διαθέσιμο αυτήν τη στιγμή. Η μεταφόρτωση θα ξεκινήσει ξανά, όταν το Google Drive είναι και πάλι διαθέσιμο.</translation>
@@ -44,7 +46,7 @@
 <translation id="134645005685694099">Η συσκευή σας δεν διαθέτει αρκετό αποθηκευτικό χώρο για να παραμείνει ενεργοποιημένος ο συγχρονισμός αρχείων. Τα νέα αρχεία δεν θα συγχρονίζονται πλέον αυτόματα.</translation>
 <translation id="1353686479385938207"><ph name="PROVIDER_NAME" />: <ph name="NETWORK_NAME" /></translation>
 <translation id="1358735829858566124">Το αρχείο ή ο κατάλογος δεν μπορούν να χρησιμοποιηθούν.</translation>
-<translation id="1363028406613469049">Κομμάτι</translation>
+<translation id="1363028406613469049">Παρακολούθηση</translation>
 <translation id="1378727793141957596">Καλώς ήρθατε στο Google Drive!</translation>
 <translation id="1379911846207762492">Μπορείτε να καταστήσετε τα αρχεία διαθέσιμα εκτός σύνδεσης για να έχετε πρόσβαση σε αυτά χωρίς σύνδεση στο διαδίκτυο.</translation>
 <translation id="1383876407941801731">Αναζήτηση</translation>
@@ -73,6 +75,7 @@
 <translation id="1577977504532381335">Έλεγχος πολιτικής διαχειριστή</translation>
 <translation id="158849752021629804">Απαιτείται εγχώριο δίκτυο</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1601786938618212857">Ταχυδρομικός κώδικας</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="162175252992296058">Πορτογαλικά με πληκτρολόγιο Διεθνές ΗΠΑ</translation>
 <translation id="1629521517399325891">Το πιστοποιητικό χρήστη δεν είναι διαθέσιμο για έλεγχο ταυτότητας δικτύου.</translation>
@@ -101,11 +104,12 @@
 <translation id="1761091787730831947">Κοινή χρήση με το <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε τοπικά</translation>
 <translation id="1775381402323441512">Πληροφορίες βίντεο</translation>
-<translation id="180035236176489073">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτά τα αρχεία.</translation>
+<translation id="180035236176489073">Πρέπει να έχετε συνδεθεί στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτά τα αρχεία.</translation>
 <translation id="1807938677607439181">Όλα τα αρχεία</translation>
 <translation id="1810764548349082891">Δεν υπάρχει διαθέσιμη προεπισκόπηση</translation>
 <translation id="1812302367230252929">Μεταγραφή σε Αμχαρικά</translation>
 <translation id="1813278315230285598">Υπηρεσίες</translation>
+<translation id="181434555916624618">Προς το παρόν, τα αποτελέσματα που περιέχουν άτομα δεν θα εμφανίζονται. Δοκιμάστε άλλη προτροπή.</translation>
 <translation id="1829129547161959350">Πιγκουίνος</translation>
 <translation id="183183971458492120">Γίνεται φόρτωση των πληροφοριών…</translation>
 <translation id="1832073788765803750">Κατακάνα μισού πλάτους</translation>
@@ -137,7 +141,6 @@
 <translation id="2084809735218147718">Άτομο που λέει ευχαριστώ στη νοηματική γλώσσα</translation>
 <translation id="2088690981887365033">Δίκτυο VPN</translation>
 <translation id="209653272837065803">Ο αποθηκευτικός χώρος δεν επαρκεί για να συνεχιστεί ο συγχρονισμός αρχείων</translation>
-<translation id="2111134541987263231">Ενεργοποιήστε την επιλογή <ph name="BEGIN_BOLD" />Να επιτρέπεται στην ανώνυμη περιήγηση<ph name="END_BOLD" />.</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> στοιχεία θα διαγραφούν και δεν θα είστε σε θέση να τα επαναφέρετε.</translation>
 <translation id="2122305276694332719">Η αυτόματη σύνδεση σε ένα κρυφό δίκτυο επιτρέπει σε άλλα άτομα να βλέπουν τη συσκευή σας και ορισμένες ρυθμίσεις δικτύου σας και δεν συνιστάται.</translation>
 <translation id="2125607626296734455">Xμερ</translation>
@@ -168,7 +171,6 @@
 <translation id="2304820083631266885">Πλανήτης</translation>
 <translation id="2305020378527873881">Το στοιχείο <ph name="VOLUME_NAME" /> καταργήθηκε.</translation>
 <translation id="2307462900900812319">Διαμόρφωση δικτύου</translation>
-<translation id="2312704192806647271">{COUNT,plural, =1{Δεν είναι δυνατός ο εντοπισμός μιας επέκτασης με το αναγνωριστικό <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Επικοινωνήστε με τον διαχειριστή σας.}other{Δεν είναι δυνατός ο εντοπισμός των επεκτάσεων με τα αναγνωριστικά <ph name="BEGIN_LIST" /><ph name="END_LIST" />. Επικοινωνήστε με τον διαχειριστή σας.}}</translation>
 <translation id="2325650632570794183">Αυτός ο τύπος αρχείου δεν υποστηρίζεται. Επισκεφτείτε το Chrome Web Store για να εντοπίσετε μια εφαρμογή που να μπορεί να ανοίξει αυτόν τον τύπο αρχείου.</translation>
 <translation id="2326539130272988168">Βουλγαρικά</translation>
 <translation id="233822363739146957">Ο αποθηκευτικός χώρος δεν επαρκεί για τον συγχρονισμό όλων των αρχείων σας</translation>
@@ -242,7 +244,6 @@
 <translation id="2923240520113693977">Εσθονικά
 </translation>
 <translation id="2938685643439809023">Μογγολικά</translation>
-<translation id="293972288692056847">{COUNT,plural, =1{Δεν είναι δυνατή η εύρεση της επέκτασης}other{Δεν είναι δυνατή η εύρεση των επεκτάσεων}}</translation>
 <translation id="2943503720238418293">Χρησιμοποιήστε πιο σύντομο όνομα</translation>
 <translation id="2949781154072577687">Μορφοποίηση <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Μέδουσα</translation>
@@ -301,7 +302,6 @@
 <translation id="3356580349448036450">Ολοκληρώθηκε</translation>
 <translation id="3358452157379365236">Κιθάρα</translation>
 <translation id="3368922792935385530">Σε σύνδεση</translation>
-<translation id="3372635229069101468">Κάντε κλικ στο στοιχείο <ph name="BEGIN_BOLD" />Λεπτομέρειες<ph name="END_BOLD" />.</translation>
 <translation id="3382143449143186018">Νεπαλικά με πληκτρολόγιο InScript</translation>
 <translation id="338691029516748599">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Διαχειριζόμενο από τον διαχειριστή σας, Σύνδεση</translation>
 <translation id="3408072735282270043">Ενεργοποίηση, <ph name="NETWORK_NAME" /></translation>
@@ -361,7 +361,6 @@
 <translation id="3811494700605067549">έχει επιλεγεί 1 αρχείο</translation>
 <translation id="3817579325494460411">Άγνωστο</translation>
 <translation id="3819448694985509187">Εσφαλμένο PIN. Απομένει 1 ακόμη προσπάθεια.</translation>
-<translation id="3822559385185038546">Αυτός ο διακομιστής μεσολάβησης επιβάλλεται από τον διαχειριστή σας</translation>
 <translation id="3830674330436234648">Δεν διατίθεται αναπαραγωγή</translation>
 <translation id="383652340667548381">Σερβικά
 </translation>
@@ -393,7 +392,6 @@
 <translation id="4124935795427217608">Μονόκερος</translation>
 <translation id="4131235941541910880">Μεταφέρετε τα στοιχεία που δεν θέλετε στον κάδο</translation>
 <translation id="4134804435730168042">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, Ενεργοποίηση μετά τη ρύθμιση συσκευής</translation>
-<translation id="41501027364808384">{COUNT,plural, =1{Ενεργοποιήστε την παρακάτω επέκταση στην ανώνυμη περιήγηση:}other{Ενεργοποιήστε τις παρακάτω επεκτάσεις στην ανώνυμη περιήγηση:}}</translation>
 <translation id="4153015322587141338">Κάντε δεξί κλικ σε ένα αρχείο και επιλέξτε <ph name="PIN_COMMAND" /> για γρήγορη πρόσβαση στα αρχεία σας που βρίσκονται στο ράφι.</translation>
 <translation id="4157569377477607576">Η πολιτική διαχειριστή δεν συνιστά:</translation>
 <translation id="4159731583141908892">Το αρχείο <ph name="FILE_NAME" /> μετακινήθηκε.</translation>
@@ -401,7 +399,6 @@
 <translation id="4179621117429069925">Αυτό το στοιχείο βρίσκεται στον κάδο</translation>
 <translation id="4186579485882418952">Ενεργοποίηση πρόσβασης εκτός σύνδεσης</translation>
 <translation id="4193154014135846272">Έγγραφο Google</translation>
-<translation id="4197674956721858839">Επιλογή για δημιουργία συμπιεσμένου αρχείου</translation>
 <translation id="4202378258276439759">Ισπανικά (Λατινική Αμερική)</translation>
 <translation id="4202977638116331303">Γεωργιανά</translation>
 <translation id="421017592316736757">Πρέπει να είστε συνδεδεμένοι στο διαδίκτυο για να αποκτήσετε πρόσβαση σε αυτό το αρχείο.</translation>
@@ -429,6 +426,7 @@
 <translation id="4387004326333427325">Το πιστοποιητικό ελέγχου ταυτότητας απορρίφθηκε απομακρυσμένα</translation>
 <translation id="4394214039309501350">Εξωτερικός σύνδεσμος</translation>
 <translation id="4394980935660306080">Νωρίτερα αυτή την εβδομάδα</translation>
+<translation id="4397435965699247285">Το OneDrive δεν είναι διαθέσιμο εκτός σύνδεσης</translation>
 <translation id="4398096759193130964">Επαναφέρετε τα στοιχεία ή σύρετέ τα σε νέο φάκελο εκτός του κάδου.</translation>
 <translation id="4401287888955153199">Εξαγωγή όλων</translation>
 <translation id="4410695710508688828">Η λειτουργία εξαγωγής απέτυχε. <ph name="ERROR_MESSAGE" /></translation>
@@ -492,9 +490,7 @@
 <translation id="4801956050125744859">Διατήρηση και των δύο</translation>
 <translation id="4804827417948292437">Αβοκάντο</translation>
 <translation id="4805966553127040832">Επαναφορά <ph name="COUNT" /> στοιχείων</translation>
-<translation id="4816695657735045067">{COUNT,plural, =1{Ο οργανισμός σας απαιτεί μια επέκταση για να χρησιμοποιήσετε την ανώνυμη περιήγηση}other{Ο οργανισμός σας απαιτεί ορισμένες επεκτάσεις για να χρησιμοποιήσετε την ανώνυμη περιήγηση.}}</translation>
 <translation id="4826849268470072925">Ταμίλ ITRANS</translation>
-<translation id="482932175346970750">Πληκτρολογήστε <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> στο πρόγραμμα περιήγησης</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">Προβολή</translation>
 <translation id="485316830061041779">Γερμανικά
@@ -570,7 +566,6 @@
     σε αρχεία με άλλους χρήστες σε ένα μέρος.<ph name="MARKUP_9" /></translation>
 <translation id="5275973617553375938">Ανακτημένα αρχεία από το Google Drive</translation>
 <translation id="5278111733643988471">Για να επαναφέρετε αυτό το στοιχείο, σύρετέ το σε έναν νέο φάκελο εκτός του κάδου. Ο αρχικός φάκελος "<ph name="PARENT_FOLDER_NAME" />" αυτού του στοιχείου έχει διαγραφεί.</translation>
-<translation id="5283101102242354279">Ενεργοποιήστε μια επέκταση στην ανώνυμη περιήγηση:</translation>
 <translation id="5288441970121584418">Μπέργκερ</translation>
 <translation id="5293615890992542006">Η μετακίνηση αυτού του αρχείου έχει αποκλειστεί από την πολιτική διαχειριστή</translation>
 <translation id="5305688511332277257">Δεν υπάρχει εγκατεστημένο</translation>
@@ -614,6 +609,7 @@
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5602622065581044566">Βουλγαρικά με φωνητικό πληκτρολόγιο</translation>
 <translation id="5605830556594064952">Dvorak ΗΠΑ</translation>
+<translation id="560739212255190568">Ο διαχειριστής σας όρισε κανόνες παράκαμψης διακομιστή μεσολάβησης, επιπλέον της επιβολής του ακόλουθου διακομιστή μεσολάβησης</translation>
 <translation id="5618330573454123917">Αυτό το αρχείο έχει σχεδιαστεί για υπολογιστή που χρησιμοποιεί λογισμικό Macintosh. Δεν είναι συμβατό με τη συσκευή σας, η οποία εκτελεί Chrome OS. <ph name="BEGIN_LINK_HELP" />Μάθετε περισσότερα<ph name="END_LINK_HELP" /> σχετικά με το άνοιγμα αρχείων στο Chrome OS.</translation>
 <translation id="5625294776298156701">Ταμίλ με πληκτρολόγιο Tamil99</translation>
 <translation id="5633226425545095130">Με τη μετακίνηση αυτού του στοιχείου, αυτό θα κοινοποιηθεί σε όλους τους χρήστες που μπορούν να δουν τον κοινόχρηστο φάκελο "<ph name="DESTINATION_NAME" />".</translation>
@@ -635,7 +631,7 @@
 <translation id="5760252553414789727">Επιλέχθηκαν <ph name="SELECTED_FILES_COUNT" /> στοιχεία</translation>
 <translation id="5763377084591234761">Γερμανικά (Ελβετία)</translation>
 <translation id="5769519078756170258">Κεντρικός υπολογιστής ή τομέας προς εξαίρεση</translation>
-<translation id="5775750595919327203">Ουρντού</translation>
+<translation id="5775750595919327203">Ούρντου</translation>
 <translation id="5776325638577448643">Διαγραφή και διαμόρφωση</translation>
 <translation id="57838592816432529">Σίγαση</translation>
 <translation id="5788127256798019331">Αρχεία Play</translation>
@@ -675,7 +671,7 @@
 <translation id="6096979789310008754">Έγινε κατάργηση του κειμένου αναζήτησης, εμφανίζονται όλα τα αρχεία και οι φάκελοι.</translation>
 <translation id="610101264611565198">Μετακίνηση αρχείου <ph name="FILE_NAME" /> στον φάκελο <ph name="FOLDER_NAME" /></translation>
 <translation id="61118516107968648">Κείμενο CSV</translation>
-<translation id="6129953537138746214">Κενό</translation>
+<translation id="6129953537138746214">Space</translation>
 <translation id="6133173853026656527">Μετακίνηση αρχείου <ph name="FILE_NAME" />…</translation>
 <translation id="6133877453787250710">Ο διαχειριστής παρακολουθεί:</translation>
 <translation id="613750717151263950">Ιαπωνικά με πληκτρολόγιο ΗΠΑ</translation>
@@ -806,7 +802,7 @@
 <translation id="7075931588889865715">Ταϊλανδικά με πληκτρολόγιο TIS 820-2531</translation>
 <translation id="708278670402572152">Αποσυνδεθείτε για να είναι δυνατή η σάρωση</translation>
 <translation id="7086590977277044826">Ταμίλ με πληκτρολόγιο InScript</translation>
-<translation id="7088615885725309056">Παλαιότερο</translation>
+<translation id="7088615885725309056">Παλαιότερη</translation>
 <translation id="7103992300314999525">Σλαβομακεδονικά</translation>
 <translation id="7104338189998813914">Υπάρχει κάποιο πρόβλημα με την πρόσβαση στον λογαριασμό σας στο OneDrive</translation>
 <translation id="7106346894903675391">Αγοράστε περισσότερο αποθηκευτικό χώρο...</translation>
@@ -826,7 +822,6 @@
 <translation id="7238643356913091553"><ph name="NETWORK_NAME" />, Λεπτομέρειες</translation>
 <translation id="7246947237293279874">Διακομιστής μεσολάβησης FTP</translation>
 <translation id="7248671827512403053">Εφαρμογή</translation>
-<translation id="7252604552361840748">Βρείτε την επέκταση παραπάνω</translation>
 <translation id="7256405249507348194">Μη αναγνωρίσιμο σφάλμα: <ph name="DESC" /></translation>
 <translation id="7268659760406822741">Διαθέσιμες υπηρεσίες</translation>
 <translation id="7291818353625820805">Θέλετε να επαναλαμβάνεται το πάτημα των πλήκτρων; Απενεργοποίηση σημαδιών τονισμού στις Ρυθμίσεις πληκτρολογίου</translation>
@@ -1020,6 +1015,7 @@
 <translation id="8540608333167683902">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Λεπτομέρειες</translation>
 <translation id="8545476925160229291">Αγγλικά (ΗΠΑ)</translation>
 <translation id="854655314928502177">URL αυτόματου εντοπισμού διακομιστή μεσολάβησης ιστού</translation>
+<translation id="8547747809824590510">Ο διαχειριστής σας όρισε κανόνες παράκαμψης διακομιστή μεσολάβησης</translation>
 <translation id="8549186985808798022">Ιταλικά</translation>
 <translation id="8551494947769799688">Λετονικά
 </translation>
@@ -1084,6 +1080,7 @@
 <translation id="9038620279323455325">Το αρχείο με το όνομα "<ph name="FILE_NAME" />" υπάρχει ήδη. Επιλέξτε ένα διαφορετικό όνομα.</translation>
 <translation id="9046895021617826162">Η σύνδεση απέτυχε</translation>
 <translation id="9065512565307033593">Εάν δεν επαληθεύσετε, θα απενεργοποιηθεί η πρόσβαση δικτύου σας.</translation>
+<translation id="9079844694307518094">Ο διαχειριστής σας επιβάλλει τον ακόλουθο διακομιστή μεσολάβησης</translation>
 <translation id="908378762078012445">Ρωσικά με φωνητικό πληκτρολόγιο AATSEEL</translation>
 <translation id="9086302186042011942">Συγχρονισμός</translation>
 <translation id="9099674669267916096">Πλήθος σελίδων</translation>
@@ -1107,6 +1104,7 @@
 <translation id="9213073329713032541">Η εγκατάσταση ξεκίνησε με επιτυχία.</translation>
 <translation id="9219103736887031265">Εικόνες</translation>
 <translation id="9219908252191632183">Σεληνιακό τοπίο</translation>
+<translation id="931652069802536959">Το δίκτυο έχει αποκλειστεί από την πολιτική</translation>
 <translation id="938470336146445890">Εγκαταστήστε ένα πιστοποιητικό χρήστη.</translation>
 <translation id="939736085109172342">Νέος φάκελος</translation>
 <translation id="943972244133411984">Τροποποιήθηκε από</translation>

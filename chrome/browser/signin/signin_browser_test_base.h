@@ -36,18 +36,16 @@ template <typename T>
 class SigninBrowserTestBaseT : public T {
  public:
   // `use_main_profile` controls whether the main profile is used (the default
-  // `Profile` created by `InProcessBrowserTest`). On Lacros the main profile
-  // behaves differently, and signout is not allowed.
+  // `Profile` created by `InProcessBrowserTest`).
   explicit SigninBrowserTestBaseT(bool use_main_profile = true)
       : use_main_profile_(use_main_profile) {}
 
   ~SigninBrowserTestBaseT() override = default;
 
   // Sets accounts in the environment to new ones based on the given `emails`.
-  // The primary account is automatically set by Chrome when
-  // `switches::kExplicitBrowserSigninUIOnDesktop` is disabled, and remains
-  // unset when it is enabled. Returns `AccountInfo`s for each added account, in
-  // the same order as `emails`.
+  // The primary account is automatically set by Chrome when explicit signin is
+  // disabled, and remains unset when it is enabled. Returns `AccountInfo`s for
+  // each added account, in the same order as `emails`.
   std::vector<AccountInfo> SetAccountsCookiesAndTokens(
       const std::vector<std::string>& emails) {
     auto account_availability_options =
@@ -92,9 +90,6 @@ class SigninBrowserTestBaseT : public T {
                                        profile_manager, profile_path);
 
     DCHECK(GetProfile());
-#if (IS_CHROMEOS_LACROS)
-    DCHECK_EQ(GetProfile()->IsMainProfile(), use_main_profile_);
-#endif
 
     if (GetProfile()->IsOffTheRecord()) {
       return;

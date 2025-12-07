@@ -27,8 +27,6 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/editing/commands/editing_command_filter.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -40,6 +38,8 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -55,14 +55,12 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
     node = frame_->GetDocument()->FocusedElement();
   }
   if (node) {
-    if (const ComputedStyle* style = node->GetComputedStyle()) {
+    if (const ComputedStyle* style =
+            GetComputedStyleForElementOrLayoutObject(*node)) {
       writing_mode = style->GetWritingMode();
     }
   }
   String command_name = Behavior().InterpretKeyEvent(*evt, writing_mode);
-  if (IsCommandFilteredOut(command_name)) {
-    return false;
-  }
 
   const EditorCommand command = CreateCommand(command_name);
 
@@ -87,19 +85,16 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
   // text to the focused element.
   if (auto* edit_context =
           GetFrame().GetInputMethodController().GetActiveEditContext()) {
-    if (DispatchBeforeInputInsertText(evt->target()->ToNode(),
+    if (DispatchBeforeInputInsertText(evt->RawTarget()->ToNode(),
                                       key_event->text.data()) !=
         DispatchEventResult::kNotCanceled) {
       return true;
     }
 
-    WebString text(WTF::String(key_event->text.data()));
+    WebString text(String(key_event->text.data()));
     edit_context->InsertText(text);
     return true;
   }
-
-  if (!CanEdit())
-    return false;
 
   const Element* const focused_element =
       frame_->GetDocument()->FocusedElement();
@@ -112,8 +107,16 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
   if (!frame_->Selection().SelectionHasFocus())
     return false;
 
+  // We should not insert text if the root editable element of the selection is
+  // null and the focused element is not a text control.
+  if (!CanEdit() &&
+      !(RuntimeEnabledFeatures::DelegatesFocusTextControlInputFixEnabled() &&
+        focused_element->IsTextControl())) {
+    return false;
+  }
+
   // Return true to prevent default action. e.g. Space key scroll.
-  if (DispatchBeforeInputInsertText(evt->target()->ToNode(),
+  if (DispatchBeforeInputInsertText(evt->RawTarget()->ToNode(),
                                     key_event->text.data()) !=
       DispatchEventResult::kNotCanceled) {
     return true;
@@ -123,6 +126,7 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
 }
 
 void Editor::HandleKeyboardEvent(KeyboardEvent* evt) {
+  TRACE_EVENT0("blink", "Editor::HandleKeyboardEvent");
   // Give the embedder a chance to handle the keyboard event.
   if (frame_->Client()->HandleCurrentKeyboardEvent() ||
       HandleEditingKeyboardEvent(evt)) {

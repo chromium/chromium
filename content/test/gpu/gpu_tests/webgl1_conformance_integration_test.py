@@ -5,7 +5,7 @@
 
 import os
 import sys
-from typing import Any, List, Set
+from typing import Any
 import unittest
 
 from gpu_tests import gpu_integration_test
@@ -20,10 +20,10 @@ class WebGL1ConformanceIntegrationTest(
   def Name(cls) -> str:
     return 'webgl1_conformance'
 
-  def _GetSerialGlobs(self) -> Set[str]:
+  def _GetSerialGlobs(self) -> set[str]:
     return super()._GetSerialGlobs() | set()
 
-  def _GetSerialTests(self) -> Set[str]:
+  def _GetSerialTests(self) -> set[str]:
     return super()._GetSerialTests() | set()
 
   @classmethod
@@ -32,7 +32,7 @@ class WebGL1ConformanceIntegrationTest(
     assert cls._webgl_version == 1
 
   @classmethod
-  def _GetExtensionList(cls) -> List[str]:
+  def _GetExtensionList(cls) -> list[str]:
     return [
         'ANGLE_instanced_arrays',
         'EXT_blend_minmax',
@@ -76,7 +76,7 @@ class WebGL1ConformanceIntegrationTest(
     ]
 
   @classmethod
-  def ExpectationsFiles(cls) -> List[str]:
+  def ExpectationsFiles(cls) -> list[str]:
     return [
         os.path.join(os.path.dirname(os.path.abspath(__file__)),
                      'test_expectations', 'webgl_conformance_expectations.txt')

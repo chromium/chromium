@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.contextualsearch;
 
 import android.content.Context;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -16,6 +14,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -38,6 +38,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /** Manages the enabling and disabling and gesture listeners for ContextualSearch on a given Tab. */
+@NullMarked
 public class ContextualSearchTabHelper extends EmptyTabObserver
         implements NetworkChangeNotifier.ConnectionTypeObserver, TemplateUrlServiceObserver {
     private static final String TAG = "ContextualSearch";
@@ -48,39 +49,39 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     // Device scale factor.
     private final float mPxToDp;
 
-    private TemplateUrlService mTemplateUrlService;
+    private @Nullable TemplateUrlService mTemplateUrlService;
 
     /** The WebContents associated with the Tab which this helper is monitoring, unless detached. */
-    private WebContents mWebContents;
+    private @Nullable WebContents mWebContents;
 
     /**
-     * The {@link ContextualSearchManager} that's managing this tab. This may point to
-     * the manager from another activity during reparenting, or be {@code null} during startup.
+     * The {@link ContextualSearchManager} that's managing this tab. This may point to the manager
+     * from another activity during reparenting, or be {@code null} during startup.
      */
-    private ContextualSearchManager mContextualSearchManager;
+    private @Nullable ContextualSearchManager mContextualSearchManager;
 
     /** The GestureListener used for handling events from the current WebContents. */
-    private GestureStateListener mGestureStateListener;
+    private @Nullable GestureStateListener mGestureStateListener;
 
     /** Manages incoming calls to Smart Select when available, for the current base WebContents. */
-    private SelectionClientManager mSelectionClientManager;
+    private @Nullable SelectionClientManager mSelectionClientManager;
 
     /** The pointer to our native C++ implementation. */
     private long mNativeHelper;
 
-    /** Whether the current default search engine is Google.  Is {@code null} if not inited. */
-    private Boolean mIsDefaultSearchEngineGoogle;
+    /** Whether the current default search engine is Google. Is {@code null} if not inited. */
+    private @Nullable Boolean mIsDefaultSearchEngineGoogle;
 
-    private Callback<ContextualSearchManager> mManagerCallback;
+    private final Callback<ContextualSearchManager> mManagerCallback;
 
     /** The ReadAloudController supplier to get the active playback tab supplier when available. */
-    private ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
+    private @Nullable ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
+
+    private final Callback<@Nullable Tab> mActivePlaybackTabCallback =
+            this::onActivePlaybackTabUpdated;
 
     /** To listen for when the current tab has an active ReadAloud playback. */
-    private ObservableSupplier<Tab> mReadAloudActivePlaybackTab;
-
-    /** Callback for when the ReadAloudController is ready. */
-    private OneShotCallback<ReadAloudController> mReadAloudControllerSupplierCallback;
+    private @Nullable ObservableSupplier<@Nullable Tab> mReadAloudActivePlaybackTab;
 
     /**
      * Creates a contextual search tab helper for the given tab.
@@ -110,10 +111,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (isReadAloudTapToSeekEnabled()) {
             mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
             if (mReadAloudControllerSupplier != null) {
-                mReadAloudControllerSupplierCallback =
-                        new OneShotCallback<ReadAloudController>(
-                                mReadAloudControllerSupplier,
-                                this::onReadAloudControllerSupplierReady);
+                new OneShotCallback<>(
+                        mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
             }
         }
     }
@@ -135,11 +134,11 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
             mReadAloudActivePlaybackTab = readAloudController.getActivePlaybackTabSupplier();
         }
         if (mReadAloudActivePlaybackTab != null) {
-            mReadAloudActivePlaybackTab.addObserver(this::onActivePlaybackTabUpdated);
+            mReadAloudActivePlaybackTab.addObserver(mActivePlaybackTabCallback);
         }
     }
 
-    private void onActivePlaybackTabUpdated(Tab tab) {
+    private void onActivePlaybackTabUpdated(@Nullable Tab tab) {
         updateContextualSearchHooks(mTab.getWebContents());
     }
 
@@ -149,9 +148,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         // is initialized.
         Profile profile = tab.getProfile();
         if (mNativeHelper == 0 && tab.getWebContents() != null) {
-            mNativeHelper =
-                    ContextualSearchTabHelperJni.get()
-                            .init(ContextualSearchTabHelper.this, profile);
+            mNativeHelper = ContextualSearchTabHelperJni.get().init(this, profile);
         }
         if (profile != null && mTemplateUrlService == null) {
             mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
@@ -162,15 +159,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     }
 
     @Override
-    public void onWebContentsSwapped(Tab tab, boolean didStartLoad, boolean didFinishLoad) {
-        updateHooksForTab(tab);
-    }
-
-    @Override
     public void onDestroyed(Tab tab) {
         if (mNativeHelper != 0) {
-            ContextualSearchTabHelperJni.get()
-                    .destroy(mNativeHelper, ContextualSearchTabHelper.this);
+            ContextualSearchTabHelperJni.get().destroy(mNativeHelper);
             mNativeHelper = 0;
         }
         if (mTemplateUrlService != null) {
@@ -178,6 +169,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         }
         if (NetworkChangeNotifier.isInitialized()) {
             NetworkChangeNotifier.removeConnectionTypeObserver(this);
+        }
+        if (mReadAloudActivePlaybackTab != null) {
+            mReadAloudActivePlaybackTab.removeObserver(mActivePlaybackTabCallback);
         }
         removeContextualSearchHooks(mWebContents);
         mWebContents = null;
@@ -270,7 +264,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
      *
      * @param webContents The WebContents to attach the gesture state listener to.
      */
-    private void updateContextualSearchHooks(WebContents webContents) {
+    private void updateContextualSearchHooks(@Nullable WebContents webContents) {
         if (webContents == null) return;
 
         removeContextualSearchHooks(webContents);
@@ -279,24 +273,29 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
 
     /**
      * Adds Contextual Search hooks for its client and listener to the given WebContents.
+     *
      * @param webContents The WebContents to attach the gesture state listener to.
      */
     private void addContextualSearchHooks(WebContents webContents) {
         assert mTab.getWebContents() == null || mTab.getWebContents() == webContents;
-        ContextualSearchManager contextualSearchManager = getContextualSearchManager(mTab);
-        if (mGestureStateListener == null && contextualSearchManager != null) {
-            mGestureStateListener = contextualSearchManager.getGestureStateListener();
-            GestureListenerManager.fromWebContents(webContents).addListener(mGestureStateListener);
+        ContextualSearchManager manager = getContextualSearchManager(mTab);
+        if (mGestureStateListener == null && manager != null) {
+            mGestureStateListener = manager.getGestureStateListener();
+            GestureListenerManager gestureListenerManager =
+                    GestureListenerManager.fromWebContents(webContents);
+            assert mGestureStateListener != null;
+            assert mSelectionClientManager != null;
+            assert gestureListenerManager != null;
+            gestureListenerManager.addListener(mGestureStateListener);
 
             // If we needed to add our listener, we also need to add our selection client.
             SelectionPopupController controller =
                     SelectionPopupController.fromWebContents(webContents);
             controller.setSelectionClient(
                     mSelectionClientManager.addContextualSearchSelectionClient(
-                            contextualSearchManager.getContextualSearchSelectionClient()));
+                            manager.getContextualSearchSelectionClient()));
             ContextualSearchTabHelperJni.get()
-                    .installUnhandledTapNotifierIfNeeded(
-                            mNativeHelper, ContextualSearchTabHelper.this, webContents, mPxToDp);
+                    .installUnhandledTapNotifierIfNeeded(mNativeHelper, webContents, mPxToDp);
         }
     }
 
@@ -308,8 +307,10 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (webContents == null) return;
 
         if (mGestureStateListener != null) {
-            GestureListenerManager.fromWebContents(webContents)
-                    .removeListener(mGestureStateListener);
+            GestureListenerManager gestureListenerManager =
+                    GestureListenerManager.fromWebContents(webContents);
+            assert gestureListenerManager != null;
+            gestureListenerManager.removeListener(mGestureStateListener);
             mGestureStateListener = null;
 
             // If we needed to remove our listener, we also need to remove our selection client.
@@ -328,9 +329,9 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                 }
             }
             // Also make sure the UI is hidden if the device is offline.
-            ContextualSearchManager contextualSearchManager = getContextualSearchManager(mTab);
-            if (contextualSearchManager != null && !isDeviceOnline(contextualSearchManager)) {
-                contextualSearchManager.hideContextualSearch(StateChangeReason.UNKNOWN);
+            ContextualSearchManager manager = getContextualSearchManager(mTab);
+            if (manager != null && !isDeviceOnline(manager)) {
+                manager.hideContextualSearch(StateChangeReason.UNKNOWN);
             }
         }
     }
@@ -350,6 +351,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (maybeObserveManagerCreation()) return false;
 
         ContextualSearchManager manager = getContextualSearchManager(mTab);
+        assert manager != null;
+
         Profile profile = Profile.fromWebContents(webContents);
         boolean isDseGoogle =
                 TemplateUrlServiceFactory.getForProfile(profile).isDefaultSearchEngineGoogle();
@@ -363,7 +366,7 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
                         // and Talkback has poor interaction with Contextual Search (see
                         // http://crbug.com/399708 and http://crbug.com/396934).
                         && !manager.isRunningInCompatibilityMode()
-                        && !(mTab.isShowingErrorPage())
+                        && !mTab.isShowingErrorPage()
                         && isDeviceOnline(manager);
         if (mTab.isCustomTab() && !isActive) {
             // TODO(donnd): remove after https://crbug.com/1192143 is resolved.
@@ -432,19 +435,21 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
      * @param tab The {@link Tab} that we're getting the manager for.
      * @return The Contextual Search manager controlling that Tab.
      */
-    private ContextualSearchManager getContextualSearchManager(Tab tab) {
+    private @Nullable ContextualSearchManager getContextualSearchManager(Tab tab) {
         var supplier = getContextualSearchManagerSupplier(tab);
         return supplier != null ? supplier.get() : null;
     }
 
-    private ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier(
-            Tab tab) {
+    private @Nullable
+            ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier(
+                    Tab tab) {
         // Window may be null in tests.
         WindowAndroid window = tab.getWindowAndroid();
         return window != null ? ContextualSearchManagerSupplier.from(window) : null;
     }
 
-    private static ObservableSupplier<ReadAloudController> getReadAloudControllerSupplier(Tab tab) {
+    private static @Nullable ObservableSupplier<ReadAloudController> getReadAloudControllerSupplier(
+            Tab tab) {
         // Window may be null in tests.
         WindowAndroid window = tab.getWindowAndroid();
         return window != null ? ReadAloudControllerSupplier.from(window) : null;
@@ -469,23 +474,23 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
      * coordinates.
      */
     @CalledByNative
-    void onShowUnhandledTapUIIfNeeded(int x, int y) {
+    void onShowUnhandledTapUiIfNeeded(int x, int y) {
         // Only notify the manager if we currently have a valid listener.
-        if (mGestureStateListener != null && getContextualSearchManager(mTab) != null) {
-            getContextualSearchManager(mTab).onShowUnhandledTapUIIfNeeded(x, y);
+        ContextualSearchManager manager = getContextualSearchManager(mTab);
+        if (mGestureStateListener != null && manager != null) {
+            manager.onShowUnhandledTapUiIfNeeded(x, y);
         }
     }
 
     @NativeMethods
     interface Natives {
-        long init(ContextualSearchTabHelper caller, @JniType("Profile*") Profile profile);
+        long init(ContextualSearchTabHelper self, @JniType("Profile*") Profile profile);
 
         void installUnhandledTapNotifierIfNeeded(
                 long nativeContextualSearchTabHelper,
-                ContextualSearchTabHelper caller,
                 WebContents webContents,
                 float pxToDpScaleFactor);
 
-        void destroy(long nativeContextualSearchTabHelper, ContextualSearchTabHelper caller);
+        void destroy(long nativeContextualSearchTabHelper);
     }
 }

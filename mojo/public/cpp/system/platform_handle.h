@@ -14,15 +14,23 @@
 #include <stdint.h>
 
 #include "base/files/platform_file.h"
-#include "base/memory/read_only_shared_memory_region.h"
-#include "base/memory/unsafe_shared_memory_region.h"
-#include "base/memory/writable_shared_memory_region.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/platform_handle.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/buffer.h"
 #include "mojo/public/cpp/system/handle.h"
 #include "mojo/public/cpp/system/system_export.h"
+
+namespace base {
+class ReadOnlySharedMemoryRegion;
+class UnsafeSharedMemoryRegion;
+class WritableSharedMemoryRegion;
+
+namespace subtle {
+class PlatformSharedMemoryRegion;
+}  // namespace subtle
+
+}  // namespace base
 
 namespace mojo {
 
@@ -55,7 +63,13 @@ MOJO_CPP_SYSTEM_EXPORT PlatformHandle UnwrapPlatformHandle(ScopedHandle handle);
 MOJO_CPP_SYSTEM_EXPORT
 ScopedHandle WrapPlatformFile(base::ScopedPlatformFile platform_file);
 
-// Unwraps a PlatformFile from a Mojo handle.
+// Unwraps a PlatformFile from a Mojo handle. If |handle| does wrap a platform
+// file handle, this function unwraps it and stores it in |file|. This function
+// returns MOJO_RESULT_OK if this unwrapping step succeeds, *even if* the
+// unwrapped handle is actually invalid, since validity can't always be
+// determined until the unwrapped handle is used. Regardless of whether the
+// unwrapping succeeds or fails, |handle| is always closed after this function
+// returns.
 MOJO_CPP_SYSTEM_EXPORT
 MojoResult UnwrapPlatformFile(ScopedHandle handle,
                               base::ScopedPlatformFile* file);

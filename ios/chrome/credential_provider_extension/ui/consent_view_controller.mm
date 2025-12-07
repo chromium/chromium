@@ -5,7 +5,9 @@
 #import "ios/chrome/credential_provider_extension/ui/consent_view_controller.h"
 
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/credential_provider/constants.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -15,14 +17,21 @@ NSString* const kConsentViewControllerIdentifier =
 
 @implementation ConsentViewController
 
+#pragma mark - Initialization
+
+- (instancetype)init {
+  return [super initWithTaskRunner:nullptr];
+}
+
 #pragma mark - UIViewController
 
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier = kConsentViewControllerIdentifier;
   self.bannerName = @"consent_view_controller";
 
-  NSString* userEmail = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+  NSString* userEmail = app_group::UserDefaultsStringForKey(
+      AppGroupUserDefaultsCredentialProviderUserEmail(),
+      /*default_value=*/@"");
 
   if (userEmail.length) {
     NSString* baseLocalizedString = NSLocalizedString(
@@ -42,10 +51,13 @@ NSString* const kConsentViewControllerIdentifier =
                         @"The title in the consent screen.");
   self.bannerSize = BannerImageSizeType::kStandard;
   self.shouldShowLearnMoreButton = YES;
-  self.primaryActionString = NSLocalizedString(
-      @"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_BUTTON_TITLE",
-      @"The primary action title in the consent screen. Used to enable the "
-      @"extension and dismiss the view");
+  // Primary action button is initialized regardless of the visibility set and
+  // the view crashes without this value set.
+  self.configuration.primaryActionString = @"";
+  self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
+  self.shouldShowDismissButton = YES;
+  self.dismissButtonString = NSLocalizedString(
+      @"IDS_IOS_CREDENTIAL_PROVIDER_DONE", @"The label of the done button.");
 
   // Add consent view specific content.
   UILabel* captionLabel = [self drawCaptionLabel];
@@ -80,4 +92,5 @@ NSString* const kConsentViewControllerIdentifier =
   captionLabel.adjustsFontForContentSizeCategory = YES;
   return captionLabel;
 }
+
 @end

@@ -16,6 +16,9 @@
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_tree_host_observer.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/views/widget/drop_helper.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/wm/core/compound_event_filter.h"
@@ -53,8 +56,9 @@ class FocusManagerEventHandler;
 class TooltipManagerAura;
 class WindowReorderer;
 
-// DesktopNativeWidgetAura handles top-level widgets on Windows, Linux, and
-// Chrome OS with mash.
+// DesktopNativeWidgetAura is a NativeWidgetPrivate implementation that owns
+// a platform-specific window (x11::Window, HWND, etc). A widget that uses a
+// DesktopNativeWidgetAura is called a desktop widget.
 class VIEWS_EXPORT DesktopNativeWidgetAura
     : public internal::NativeWidgetPrivate,
       public aura::WindowDelegate,
@@ -97,8 +101,6 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
 
   aura::Window* content_window() { return content_window_; }
 
-  views::corewm::TooltipController* tooltip_controller();
-
   Widget::InitParams::Type widget_type() const { return widget_type_; }
 
   // Ensures that the correct window is activated/deactivated based on whether
@@ -115,6 +117,10 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   // DesktopWindowTreeHost's transparency.
   void UpdateWindowTransparency();
 
+  // Gets child Widgets with an ownership relationship established at the
+  // platform window level. Does not include the views::Widget for this.
+  Widget::Widgets GetOwnedDesktopWidgets();
+
   base::WeakPtr<internal::NativeWidgetPrivate> GetWeakPtr() override;
 
  protected:
@@ -122,7 +128,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void InitNativeWidget(Widget::InitParams params) override;
   void OnWidgetInitDone() override;
   void ReparentNativeViewImpl(gfx::NativeView new_parent) override;
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() override;
+  std::unique_ptr<FrameView> CreateFrameView() override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
@@ -134,6 +140,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   const ui::Layer* GetLayer() const override;
   void ReorderNativeViews() override;
   void ViewRemoved(View* view) override;
+  void ClientDestroyedWidget() override;
   void SetNativeWindowProperty(const char* name, void* value) override;
   void* GetNativeWindowProperty(const char* name) const override;
   TooltipManager* GetTooltipManager() const override;
@@ -143,13 +150,12 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   ui::InputMethod* GetInputMethod() override;
   void CenterWindow(const gfx::Size& size) override;
   void GetWindowPlacement(gfx::Rect* bounds,
-                          ui::WindowShowState* maximized) const override;
+                          ui::mojom::WindowShowState* maximized) const override;
   bool SetWindowTitle(const std::u16string& title) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
-  const gfx::ImageSkia* GetWindowIcon() override;
-  const gfx::ImageSkia* GetWindowAppIcon() override;
-  void InitModalType(ui::ModalType modal_type) override;
+  void InitModalType(ui::mojom::ModalType modal_type) override;
+  void SetBackgroundColor(SkColor background_color) override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
   gfx::Rect GetRestoredBounds() const override;
@@ -163,10 +169,11 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void SetShape(std::unique_ptr<Widget::ShapeRects> shape) override;
   void Close() override;
   void CloseNow() override;
-  void Show(ui::WindowShowState show_state,
+  void Show(ui::mojom::WindowShowState show_state,
             const gfx::Rect& restore_bounds) override;
   void Hide() override;
   bool IsVisible() const override;
+  bool IsVisibleOnScreen() const override;
   void Activate() override;
   void Deactivate() override;
   bool IsActive() const override;
@@ -180,6 +187,7 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   void Restore() override;
+  void ShowWindowControlsMenu(const gfx::Point& point) override;
   void SetFullscreen(bool fullscreen, int64_t target_display_id) override;
   bool IsFullscreen() const override;
   void SetCanAppearInExistingFullscreenSpaces(
@@ -218,11 +226,12 @@ class VIEWS_EXPORT DesktopNativeWidgetAura
   void OnNativeViewHierarchyChanged() override;
   bool SetAllowScreenshots(bool allow) override;
   bool AreScreenshotsAllowed() override;
+  bool IsDesktopNativeWidget() const override;
   std::string GetName() const override;
 
   // aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override;
-  gfx::Size GetMaximumSize() const override;
+  std::optional<gfx::Size> GetMaximumSize() const override;
   void OnBoundsChanged(const gfx::Rect& old_bounds,
                        const gfx::Rect& new_bounds) override {}
   gfx::NativeCursor GetCursor(const gfx::Point& point) override;

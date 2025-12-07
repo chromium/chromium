@@ -15,6 +15,7 @@ namespace content {
 class BrowserContext;
 class ServiceWorkerContext;
 class StoragePartition;
+struct ServiceWorkerRegistrationInformation;
 }  // namespace content
 
 namespace web_app {
@@ -41,7 +42,9 @@ class ServiceWorkerRegistrationWaiter
   // content::ServiceWorkerContextObserver:
   void OnRegistrationCompleted(const GURL& pattern) override;
   void OnRegistrationStored(int64_t registration_id,
-                            const GURL& scope) override;
+                            const GURL& scope,
+                            const content::ServiceWorkerRegistrationInformation&
+                                service_worker_info) override;
   void OnDestruct(content::ServiceWorkerContext* context) override;
 
   raw_ptr<content::ServiceWorkerContext> service_worker_context_;

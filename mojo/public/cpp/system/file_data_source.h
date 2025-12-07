@@ -30,11 +30,11 @@ class MOJO_CPP_SYSTEM_EXPORT FileDataSource final
   // Read() fails with MOJO_RESULT_INVALID_ARGUMENT. [start, end) will be read.
   void SetRange(uint64_t start, uint64_t end);
 
- private:
   // DataPipeProducer::DataSource:
   uint64_t GetLength() const override;
   ReadResult Read(uint64_t offset, base::span<char> buffer) override;
 
+ private:
   base::File file_;
   MojoResult error_;
   uint64_t start_offset_;

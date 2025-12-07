@@ -5,13 +5,11 @@
 #ifndef GOOGLE_APIS_GOOGLE_API_KEYS_H_
 #define GOOGLE_APIS_GOOGLE_API_KEYS_H_
 
-// If you add more includes to this file, you also need to add them to
-// google_api_keys_unittest.cc.
 #include <string>
 
 #include "base/component_export.h"
+#include "base/functional/callback_helpers.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "google_apis/buildflags.h"
 
 namespace version_info {
@@ -66,6 +64,8 @@ enum class Channel;
 
 namespace google_apis {
 
+class ApiKeyCache;
+
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAPIKeysDevelopersHowToURL[];
 
 // Returns true if no dummy API key is set.
@@ -81,46 +81,50 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool HasAPIKeyConfigured();
 // `AddDefaultAPIKeyToRequest()` rather than calling this method and manually
 // adding the key.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string GetAPIKey(version_info::Channel channel);
+const std::string& GetAPIKey(version_info::Channel channel);
 
 // Retrieves the API key, for the stable channel.
 //
 // DEPRECATED: Use `GetAPIKey(channel)` to get the right key for your
 // distribution channel instead of calling this function directly.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetAPIKey();
 
 // Retrieves the Chrome Remote Desktop API key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetRemotingAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetRemotingAPIKey();
 
 // Retrieves the Speech On-Device API (SODA) API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetSodaAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetSodaAPIKey();
 
 #if !BUILDFLAG(IS_ANDROID)
 // Retrieves the HaTS API Key. This key is only used for desktop HaTS
 // and the internal API Key is only defined in non-Android builds.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetHatsAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetHatsAPIKey();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Retrieves the Sharing API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetSharingAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetSharingAPIKey();
 
 // Retrieves the ReadAloud API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetReadAloudAPIKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetReadAloudAPIKey();
 
 // Retrieves the Fresnel API Key.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetFresnelAPIKey();
-#endif
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetFresnelAPIKey();
 
-#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
-// Sets the API key. This should be called as early as possible before this
-// API key is even accessed. It must be called before GetAPIKey.
-// TODO(crbug.com/40164066): Enforce this is called before GetAPIKey.
-COMPONENT_EXPORT(GOOGLE_APIS) void SetAPIKey(const std::string& api_key);
+// Retrieves the Boca API Key.
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetBocaAPIKey();
+
+// Retrieves the ChromeOS-specific Geolocation API Key used by the System
+// Services.
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetCrosSystemGeoAPIKey();
+// Retrieves the ChromeOS-specific Geolocation API Key used by the Chrome
+// browser.
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetCrosChromeGeoAPIKey();
+
 #endif
 
 // Retrieves the key used to sign metrics (UMA/UKM) uploads.
-COMPONENT_EXPORT(GOOGLE_APIS) std::string GetMetricsKey();
+COMPONENT_EXPORT(GOOGLE_APIS) const std::string& GetMetricsKey();
 
 // Represents the different sets of client IDs and secrets in use.
 enum OAuth2Client {
@@ -140,7 +144,7 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool HasOAuthClientConfigured();
 // Note that the ID should be escaped for the context you use it in,
 // e.g. URL-escaped if you use it in a URL.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string GetOAuth2ClientID(OAuth2Client client);
+const std::string& GetOAuth2ClientID(OAuth2Client client);
 
 // Retrieves the OAuth2 client secret for the specified client, or the
 // empty string if not set.
@@ -148,24 +152,42 @@ std::string GetOAuth2ClientID(OAuth2Client client);
 // Note that the secret should be escaped for the context you use it
 // in, e.g. URL-escaped if you use it in a URL.
 COMPONENT_EXPORT(GOOGLE_APIS)
-std::string GetOAuth2ClientSecret(OAuth2Client client);
-
-#if BUILDFLAG(IS_IOS)
-// Sets the client id for the specified client. Should be called as early as
-// possible before these ids are accessed.
-COMPONENT_EXPORT(GOOGLE_APIS)
-void SetOAuth2ClientID(OAuth2Client client, const std::string& client_id);
-
-// Sets the client secret for the specified client. Should be called as early as
-// possible before these secrets are accessed.
-COMPONENT_EXPORT(GOOGLE_APIS)
-void SetOAuth2ClientSecret(OAuth2Client client,
-                           const std::string& client_secret);
-#endif
+const std::string& GetOAuth2ClientSecret(OAuth2Client client);
 
 // Returns if the API key using in the current build is the one for official
 // Google Chrome.
 COMPONENT_EXPORT(GOOGLE_APIS) bool IsGoogleChromeAPIKeyUsed();
+
+#if BUILDFLAG(SUPPORT_EXTERNAL_GOOGLE_API_KEY)
+// Initializes the API keys with default values and overrides the main APIKey
+// with `api_key`.
+//
+// Note: Following this call, `GetApiKey()` and `GetAPIKey(channel)` will
+// return `api_key`. This function does not override the other API keys
+// or client IDS & client secrets.
+COMPONENT_EXPORT(GOOGLE_APIS)
+void InitializeAndOverrideAPIKey(const std::string& api_key);
+
+// Initializes the API keys with default values and overrides the `APIKey` with
+// `api_key`, all the client IDs with `client_id` and all client secrets with
+// `client_secret`.
+//
+// Note: Following this call, `GetApiKey()` and `GetAPIKey(channel)` will
+// return `api_key`, `GetOAuth2ClientID(*)` will return 'client_id' and
+// `GetOAuth2ClientSecret(*)` will return `client_secret`. This function does
+// not override the other API keys.
+COMPONENT_EXPORT(GOOGLE_APIS)
+void InitializeAndOverrideAPIKeyAndOAuthClient(
+    const std::string& api_key,
+    const std::string& client_id,
+    const std::string& client_secret);
+#endif
+
+// Sets a testing global instance of `ApiKeyCache` and returns a scoped object
+// that will restore the previous value once destroyed.
+COMPONENT_EXPORT(GOOGLE_APIS)
+base::ScopedClosureRunner
+    SetScopedApiKeyCacheForTesting(ApiKeyCache* api_key_cache);
 
 }  // namespace google_apis
 

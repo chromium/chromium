@@ -4,6 +4,7 @@
 
 #include "services/device/geolocation/geolocation_provider_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -12,15 +13,15 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/device_event_log/device_event_log.h"
 #include "net/base/network_change_notifier.h"
 #include "services/device/geolocation/location_provider_manager.h"
@@ -38,11 +39,25 @@
 namespace device {
 
 namespace {
-base::LazyInstance<CustomLocationProviderCallback>::Leaky
-    g_custom_location_provider_callback = LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<std::unique_ptr<network::PendingSharedURLLoaderFactory>>::
-    Leaky g_pending_url_loader_factory = LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<std::string>::Leaky g_api_key = LAZY_INSTANCE_INITIALIZER;
+
+CustomLocationProviderCallback& GetCustomLocationProviderCallback() {
+  static base::NoDestructor<CustomLocationProviderCallback> callback;
+  return *callback;
+}
+
+std::unique_ptr<network::PendingSharedURLLoaderFactory>&
+GetPendingURLLoaderFactory() {
+  static base::NoDestructor<
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>>
+      factory;
+  return *factory;
+}
+
+std::string& GetApiKey() {
+  static base::NoDestructor<std::string> api_key;
+  return *api_key;
+}
+
 GeolocationSystemPermissionManager* g_geolocation_system_permission_manager =
     nullptr;
 }  // namespace
@@ -71,10 +86,11 @@ void GeolocationProviderImpl::SetGeolocationConfiguration(
     const CustomLocationProviderCallback& custom_location_provider_getter,
     GeolocationSystemPermissionManager* geolocation_system_permission_manager,
     bool use_gms_core_location_provider) {
-  if (url_loader_factory)
-    g_pending_url_loader_factory.Get() = url_loader_factory->Clone();
-  g_api_key.Get() = api_key;
-  g_custom_location_provider_callback.Get() = custom_location_provider_getter;
+  if (url_loader_factory) {
+    GetPendingURLLoaderFactory() = url_loader_factory->Clone();
+  }
+  GetApiKey() = api_key;
+  GetCustomLocationProviderCallback() = custom_location_provider_getter;
   g_geolocation_system_permission_manager =
       geolocation_system_permission_manager;
   if (use_gms_core_location_provider) {
@@ -82,8 +98,7 @@ void GeolocationProviderImpl::SetGeolocationConfiguration(
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_LocationProviderFactory_useGmsCoreLocationProvider(env);
 #else
-    NOTREACHED_IN_MIGRATION()
-        << "GMS core location provider is only available for Android";
+    NOTREACHED() << "GMS core location provider is only available for Android";
 #endif
   }
 }
@@ -107,15 +122,19 @@ GeolocationProviderImpl::AddLocationUpdateCallback(
   }
 
   OnClientsChanged();
-  if (result_) {
-    callback.Run(*result_);
+  if (base::FeatureList::IsEnabled(
+          content_settings::features::kApproximateGeolocationPermission)) {
+    if (enable_high_accuracy && high_accuracy_result_) {
+      callback.Run(*high_accuracy_result_);
+    } else if (!enable_high_accuracy && low_accuracy_result_) {
+      callback.Run(*low_accuracy_result_);
+    }
+  } else {
+    if (result_) {
+      callback.Run(*result_);
+    }
   }
-
   return subscription;
-}
-
-bool GeolocationProviderImpl::HighAccuracyLocationInUse() {
-  return !high_accuracy_callbacks_.empty();
 }
 
 void GeolocationProviderImpl::OverrideLocationForTesting(
@@ -181,8 +200,8 @@ GeolocationProviderImpl::GeolocationProviderImpl()
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   if (features::IsOsLevelGeolocationPermissionSupportEnabled() &&
       g_geolocation_system_permission_manager) {
-    observers_ = g_geolocation_system_permission_manager->GetObserverList();
-    observers_->AddObserver(this);
+    geolocation_permission_observation_.Observe(
+        g_geolocation_system_permission_manager);
     system_permission_status_ =
         g_geolocation_system_permission_manager->GetSystemPermission();
   } else {
@@ -196,11 +215,6 @@ GeolocationProviderImpl::GeolocationProviderImpl()
 }
 
 GeolocationProviderImpl::~GeolocationProviderImpl() {
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  if (features::IsOsLevelGeolocationPermissionSupportEnabled() && observers_) {
-    observers_->RemoveObserver(this);
-  }
-#endif
   Stop();
   DCHECK(!location_provider_manager_);
 }
@@ -222,6 +236,8 @@ void GeolocationProviderImpl::OnClientsChanged() {
       // We have no more observers, so we clear the cached geoposition so that
       // when the next observer is added we will not provide a stale position.
       result_.reset();
+      low_accuracy_result_.reset();
+      high_accuracy_result_.reset();
     }
     task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&GeolocationProviderImpl::StopProviders,
@@ -247,6 +263,17 @@ void GeolocationProviderImpl::OnClientsChanged() {
       return;
     }
 #endif
+    // When the `kApproximateGeolocationPermission` feature is enabled, we
+    // prioritize approximate location requests. This is because returning a
+    // precise location to an approximate location client is not acceptable,
+    // whereas returning an approximate location to a precise location client
+    // is permissible (e.g., in concurrent mode).
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kApproximateGeolocationPermission)) {
+      is_running_precise_ = low_accuracy_callbacks_.empty();
+    } else {
+      is_running_precise_ = !high_accuracy_callbacks_.empty();
+    }
     DoStartProvidersOnGeolocationThread();
   }
 }
@@ -344,12 +371,42 @@ void GeolocationProviderImpl::NotifyClients(
     mojom::GeopositionResultPtr result) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DCHECK(result);
-  if (result->is_position() && !ValidateGeoposition(*result->get_position())) {
-    return;
+  if (result->is_position()) {
+    if (!ValidateGeoposition(*result->get_position())) {
+      return;
+    }
+    if (base::FeatureList::IsEnabled(
+            content_settings::features::kApproximateGeolocationPermission)) {
+      // When the `kApproximateGeolocationPermission` feature is enabled,
+      // location updates are dispatched to the appropriate callbacks based on
+      // the `is_precise` flag.
+      if (result->get_position()->is_precise) {
+        high_accuracy_result_ = std::move(result);
+        high_accuracy_callbacks_.Notify(*high_accuracy_result_);
+      } else {
+        low_accuracy_result_ = std::move(result);
+        low_accuracy_callbacks_.Notify(*low_accuracy_result_);
+        // When in concurrent mode, we also forward approximate location to
+        // precise request client.
+        if (!high_accuracy_callbacks_.empty()) {
+          high_accuracy_result_ = low_accuracy_result_.Clone();
+          high_accuracy_callbacks_.Notify(*high_accuracy_result_);
+        }
+      }
+    } else {
+      result_ = std::move(result);
+      high_accuracy_callbacks_.Notify(*result_);
+      low_accuracy_callbacks_.Notify(*result_);
+    }
+  } else {
+    // Errors are broadcast to all clients, regardless of their accuracy
+    // requirement.
+    result_ = result.Clone();
+    high_accuracy_result_ = result.Clone();
+    low_accuracy_result_ = std::move(result);
+    high_accuracy_callbacks_.Notify(*high_accuracy_result_);
+    low_accuracy_callbacks_.Notify(*low_accuracy_result_);
   }
-  result_ = std::move(result);
-  high_accuracy_callbacks_.Notify(*result_);
-  low_accuracy_callbacks_.Notify(*result_);
 }
 
 void GeolocationProviderImpl::NotifyInternalsUpdated(
@@ -389,17 +446,17 @@ void GeolocationProviderImpl::Init() {
                           base::Unretained(this));
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-  if (g_pending_url_loader_factory.Get()) {
+  if (GetPendingURLLoaderFactory()) {
     url_loader_factory = network::SharedURLLoaderFactory::Create(
-        std::move(g_pending_url_loader_factory.Get()));
+        std::move(GetPendingURLLoaderFactory()));
   }
 
   DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded())
       << "PositionCacheImpl needs a global NetworkChangeNotifier";
   location_provider_manager_ = std::make_unique<LocationProviderManager>(
-      g_custom_location_provider_callback.Get(),
+      GetCustomLocationProviderCallback(),
       g_geolocation_system_permission_manager, std::move(url_loader_factory),
-      g_api_key.Get(),
+      GetApiKey(),
       std::make_unique<PositionCacheImpl>(
           base::DefaultTickClock::GetInstance()),
       base::BindRepeating(&GeolocationProviderImpl::OnInternalsUpdated,
@@ -421,11 +478,6 @@ void GeolocationProviderImpl::AddInternalsObserver(
     AddInternalsObserverCallback callback) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
 
-  if (!base::FeatureList::IsEnabled(
-          features::kGeolocationDiagnosticsObserver)) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
   internals_observers_.Add(std::move(observer));
   if (!location_provider_manager_) {
     std::move(callback).Run(nullptr);
@@ -480,6 +532,12 @@ void GeolocationProviderImpl::OnSystemPermissionUpdated(
     if (!high_accuracy_callbacks_.empty() || !low_accuracy_callbacks_.empty()) {
       DoStartProvidersOnGeolocationThread();
     }
+    if (system_permission_status_ == LocationSystemPermissionStatus::kDenied) {
+      // If the system permission was previously denied and is now granted,
+      // clear the cached `result_`. This prevents a stale error result from
+      // being delivered to the first new callback registered after the grant.
+      result_.reset();
+    }
   } else if (new_status == LocationSystemPermissionStatus::kDenied) {
     GEOLOCATION_LOG(DEBUG) << "New system permission state is kDenied";
     NotifyClientsSystemPermissionDenied();
@@ -496,23 +554,32 @@ void GeolocationProviderImpl::OnSystemPermissionUpdated(
   system_permission_status_ = new_status;
 }
 
+void GeolocationProviderImpl::OnPermissionManagerShuttingDown() {
+  geolocation_permission_observation_.Reset();
+}
+
 void GeolocationProviderImpl::NotifyClientsSystemPermissionDenied() {
   CHECK(main_task_runner_->BelongsToCurrentThread());
   auto error_result =
       mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
           mojom::GeopositionErrorCode::kPermissionDenied,
-          kSystemPermissionDeniedErrorMessage, ""));
+          kSystemPermissionDeniedErrorMessage,
+          kSystemPermissionDeniedErrorTechnical));
   NotifyClients(std::move(error_result));
 }
-#endif
+
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 void GeolocationProviderImpl::DoStartProvidersOnGeolocationThread() {
   CHECK(main_task_runner_->BelongsToCurrentThread());
   task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GeolocationProviderImpl::StartProviders,
-                     base::Unretained(this), !high_accuracy_callbacks_.empty(),
-                     !internals_observers_.empty()));
+      FROM_HERE, base::BindOnce(&GeolocationProviderImpl::StartProviders,
+                                base::Unretained(this), is_running_precise_,
+                                !internals_observers_.empty()));
 }
 
 }  // namespace device
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(LocationProviderFactory)
+#endif

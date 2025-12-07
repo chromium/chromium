@@ -1,0 +1,77 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Language Detector API
+// https://github.com/webmachinelearning/translation-api
+
+dictionary LanguageDetectorCreateCoreOptions {
+  sequence<DOMString> expectedInputLanguages;
+};
+
+dictionary LanguageDetectorCreateOptions : LanguageDetectorCreateCoreOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+};
+
+dictionary LanguageDetectorDetectOptions {
+  AbortSignal signal;
+};
+
+dictionary LanguageDetectionResult {
+  DOMString detectedLanguage;
+  double confidence;
+};
+
+[
+  Exposed(Window LanguageDetectionAPI, Worker LanguageDetectionAPIForWorkers),
+  RuntimeEnabled=LanguageDetectionAPI,
+  SecureContext
+]
+interface LanguageDetector {
+  [
+    MeasureAs=LanguageDetector_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(
+    optional LanguageDetectorCreateCoreOptions options = {});
+
+  [
+    MeasureAs=LanguageDetector_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<LanguageDetector> create(
+    optional LanguageDetectorCreateOptions options = {}
+  );
+
+  [
+    MeasureAs=LanguageDetector_Detect,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<sequence<LanguageDetectionResult>> detect(DOMString input,
+    optional LanguageDetectorDetectOptions options = {});
+
+  [
+    MeasureAs=LanguageDetector_MeasureInputUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    DOMString input,
+    optional LanguageDetectorDetectOptions options = {}
+  );
+
+  [
+    MeasureAs=LanguageDetector_Destroy,
+    CallWith=ScriptState
+  ]
+  undefined destroy();
+
+  [MeasureAs=LanguageDetector_ExpectedInputLanguages]
+  readonly attribute FrozenArray<DOMString>? expectedInputLanguages;
+  [MeasureAs=LanguageDetector_InputQuota]
+  readonly attribute unrestricted double inputQuota;
+};

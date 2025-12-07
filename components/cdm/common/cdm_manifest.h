@@ -9,7 +9,6 @@
 
 namespace base {
 class FilePath;
-class Version;
 }  // namespace base
 
 namespace media {
@@ -23,21 +22,21 @@ struct CdmCapability;
 // updated recently or the user downgrades Chrome.
 bool IsCdmManifestCompatibleWithChrome(const base::Value::Dict& manifest);
 
-// Extracts the necessary information from |manifest| and updates |capability|.
+// Extracts the necessary information from `manifest` and updates `capability`.
 // Returns true on success, false if there are errors in the manifest.
-// If this method returns false, |capability| may or may not be updated.
+// If this method returns false, `capability` may or may not be updated.
 bool ParseCdmManifest(const base::Value::Dict& manifest,
                       media::CdmCapability* capability);
 
-// Reads the file |manifest_path| which is assumed to be a CDM manifest and
-// extracts the necessary information from it to update |version| and
-// |capability|. This also verifies that the read CDM manifest is compatible
-// with Chrome (by calling IsCdmManifestCompatibleWithChrome()). Returns true on
+// Reads the file `manifest_path` which is assumed to be a CDM manifest and
+// extracts the necessary information from it to update `capability`. All the
+// fields in `capability` are optional except `version`, which must be
+// specified. This also verifies that the read CDM manifest is compatible with
+// Chrome (by calling IsCdmManifestCompatibleWithChrome()). Returns true on
 // success, false if there are errors in the file or the manifest is not
 // compatible with this version of Chrome. If this method returns false,
-// |version| and |capability| may or may not be updated.
+// `capability` may or may not be updated.
 bool ParseCdmManifestFromPath(const base::FilePath& manifest_path,
-                              base::Version* version,
                               media::CdmCapability* capability);
 
 #endif  // COMPONENTS_CDM_COMMON_CDM_MANIFEST_H_

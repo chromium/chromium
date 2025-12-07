@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/strings/string_util.h"
 #include "chromecast/base/cast_constants.h"
 #include "net/base/mime_util.h"
 #include "net/url_request/url_request.h"
@@ -47,12 +48,10 @@ std::string CastResourceDataSource::GetMimeType(const GURL& url) {
 
   if (!for_webui_) {
     std::string mime_type;
-    base::FilePath::StringType file_ext =
-        base::FilePath().AppendASCII(path).Extension();
     // net::GetMimeTypeFromFile() will crash at base::nix::GetFileMimeType()
     // because IO is not allowed.
-    if (!file_ext.empty())
-      net::GetWellKnownMimeTypeFromExtension(file_ext.substr(1), &mime_type);
+    net::GetWellKnownMimeTypeFromFile(base::FilePath::FromASCII(path),
+                                      &mime_type);
     return mime_type;
   }
 

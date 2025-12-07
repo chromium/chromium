@@ -1,6 +1,0 @@
-include_rules = [
-  "+chromeos/ash/components/memory",
-  "+chromeos/ash/components/mojo_service_manager",
-  "+chromeos/system",
-  "+services/accessibility/android/public/mojom",
-]

@@ -31,7 +31,8 @@
 namespace blink {
 
 WebGLDrawInstancedBaseVertexBaseInstance::
-    WebGLDrawInstancedBaseVertexBaseInstance(WebGLRenderingContextBase* context)
+    WebGLDrawInstancedBaseVertexBaseInstance(WebGLRenderingContextBase* context,
+                                             ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_WEBGL_draw_instanced_base_vertex_base_instance");

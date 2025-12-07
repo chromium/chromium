@@ -9,13 +9,14 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
+#include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -31,7 +32,8 @@ class MODULES_EXPORT TCPReadableStreamWrapper
  public:
   TCPReadableStreamWrapper(ScriptState*,
                            CloseOnceCallback,
-                           mojo::ScopedDataPipeConsumerHandle);
+                           mojo::ScopedDataPipeConsumerHandle,
+                           uint64_t inspector_id);
 
   // ReadableStreamWrapper:
   void Pull() override;
@@ -66,7 +68,11 @@ class MODULES_EXPORT TCPReadableStreamWrapper
   bool graceful_peer_shutdown_ = false;
 
   // Stores a v8::Local<v8::Value> V8DOMException inside.
-  ScriptValue pending_exception_;
+  TraceWrapperV8Reference<v8::Value> pending_exception_;
+  int pending_net_error_ = net::OK;
+
+  // Unique id for devtools inspector_network_agent.
+  const uint64_t inspector_id_;
 };
 
 }  // namespace blink

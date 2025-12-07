@@ -29,6 +29,17 @@ const uint32_t kMinQueryLength = 5;
 const double kLanguageConfidenceThreshold = 0.9;
 const char kEnglishLocale[] = "en";
 
+constexpr std::array<std::string_view, 1> kBadWords = {"fuck"};
+
+bool ContainsBadWords(std::string_view text) {
+  for (std::string_view bad_word : kBadWords) {
+    if (text.find(bad_word) != std::string_view::npos) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 GrammarServiceClient::GrammarServiceClient() {
@@ -145,7 +156,8 @@ void GrammarServiceClient::ParseGrammarCheckerResult(
   if (result->status == GrammarCheckerResult::Status::OK &&
       !result->candidates.empty()) {
     const auto& top_candidate = result->candidates.front();
-    if (!top_candidate->text.empty() && !top_candidate->fragments.empty()) {
+    if (!top_candidate->text.empty() && !top_candidate->fragments.empty() &&
+        !ContainsBadWords(top_candidate->text)) {
       std::vector<ui::GrammarFragment> grammar_results;
       for (const auto& fragment : top_candidate->fragments) {
         uint32_t end;

@@ -73,6 +73,9 @@ class WebStateList;
 // Returns YES if the last focused field is of type 'password'.
 - (BOOL)lastFocusedFieldWasObfuscated;
 
+// Returns the main filling product of the current FormInputSuggestionsProvider.
+- (autofill::FillingProduct)currentProviderMainFillingProduct;
+
 @end
 
 // Methods to allow injection in tests.
@@ -83,6 +86,9 @@ class WebStateList;
 
 // Replaces the object in charge of providing suggestions.
 - (void)injectProvider:(id<FormInputSuggestionsProvider>)provider;
+
+// Replaces the current provider selected by the mediator.
+- (void)injectCurrentProvider:(id<FormInputSuggestionsProvider>)provider;
 
 @end
 

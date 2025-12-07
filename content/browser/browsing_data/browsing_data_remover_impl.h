@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <memory>
 #include <optional>
 #include <set>
 
@@ -140,11 +141,13 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
     kNetworkErrorLogging = 11,
     kTrustTokens = 12,
     kConversions = 13,
-    kDeferredCookies = 14,
+    // Deprecated: kDeferredCookies = 14,
     kSharedStorage = 15,
     kPreflightCache = 16,
     kSharedDictionary = 17,
-    kMaxValue = kSharedDictionary,
+    kPrefetchCache = 18,
+    kPrerenderCache = 19,
+    kMaxValue = kPrerenderCache,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/history/enums.xml:BrowsingDataRemoverTasks)
 
@@ -261,8 +264,6 @@ class CONTENT_EXPORT BrowsingDataRemoverImpl
   // if absent.
   std::optional<StoragePartitionConfig> storage_partition_config_ =
       std::nullopt;
-
-  std::vector<std::string> domains_for_deferred_cookie_deletion_;
 
   // True if Remove has been invoked.
   bool is_removing_;

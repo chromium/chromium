@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/functional/callback.h"
+#include "build/branding_buildflags.h"
 
 namespace ash {
 
@@ -40,7 +41,6 @@ const char kBruschettaFolderId[] = "olojmkekngdacpmgcffeipkflkgohcja";
 bool IsAppListSearchResultAnApp(AppListSearchResultType result_type) {
   switch (result_type) {
     case AppListSearchResultType::kInstalledApp:
-    case AppListSearchResultType::kInternalApp:
     case AppListSearchResultType::kPlayStoreApp:
     case AppListSearchResultType::kPlayStoreReinstallApp:
     case AppListSearchResultType::kArcAppShortcut:
@@ -84,7 +84,6 @@ bool IsZeroStateResultType(AppListSearchResultType result_type) {
     case AppListSearchResultType::kInstalledApp:
     case AppListSearchResultType::kPlayStoreApp:
     case AppListSearchResultType::kInstantApp:
-    case AppListSearchResultType::kInternalApp:
     case AppListSearchResultType::kOmnibox:
     case AppListSearchResultType::kLauncher:
     case AppListSearchResultType::kAnswerCard:
@@ -424,6 +423,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvBrowserBackIcon;
     case kKeyboardShortcutBrowserForward:
       return &kKsvBrowserForwardIcon;
+    case kKeyboardShortcutBrowserHome:
+      return &kKsvBrowserHomeIcon;
     case kKeyboardShortcutBrowserRefresh:
       return &kKsvReloadIcon;
     case kKeyboardShortcutBrowserSearch:
@@ -440,8 +441,12 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Media.
     case kKeyboardShortcutMediaLaunchApp1:
       return &kKsvOverviewIcon;
+    case kKeyboardShortcutMediaLaunchApp1Refresh:
+      return &kOverviewRefreshIcon;
     case kKeyboardShortcutMediaFastForward:
       return &kKsMediaFastForwardIcon;
+    case kKeyboardShortcutMediaLaunchMail:
+      return &kKsMediaLaunchMailIcon;
     case kKeyboardShortcutMediaPause:
       return &kKsMediaPauseIcon;
     case kKeyboardShortcutMediaPlay:
@@ -457,6 +462,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsvBrightnessDownIcon;
     case kKeyboardShortcutBrightnessUp:
       return &kKsvBrightnessUpIcon;
+    case kKeyboardShortcutBrightnessUpRefresh:
+      return &kBrightnessUpRefreshIcon;
     // Volume.
     case kKeyboardShortcutVolumeMute:
       return &kKsvMuteIcon;
@@ -485,6 +492,8 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Launcher.
     case kKeyboardShortcutLauncher:
       return &kKsLauncherIcon;
+    case kKeyboardShortcutLauncherRefresh:
+      return &kCampbellHeroIcon;
     // Search.
     case kKeyboardShortcutSearch:
       return &kKsSearchIcon;
@@ -509,6 +518,18 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
       return &kKsKeyboardBrightnessUpIcon;
     case kKeyboardShortcutKeyboardBacklightToggle:
       return &kKsKeyboardBrightnessToggleIcon;
+    // Accessibility.
+    case kKeyboardShortcutAccessibility:
+      return &kKsAccessibilityIcon;
+    // Context menu.
+    case kKeyboardShortcutContextMenu:
+      return &kKsContextMenuIcon;
+    case kKeyboardShortcutKeyboardQuickInsert:
+      return &kQuickInsertIcon;
+    case kKeyboardShortcutDoNotDisturb:
+      return &kKsDoNotDisturbIcon;
+    case kKeyboardShortcutCameraAccessToggle:
+      return &kKsCameraAccessToggleIcon;
     default:
       return nullptr;
   }

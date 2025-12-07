@@ -4,14 +4,13 @@
 
 #include "components/web_package/signed_web_bundles/ecdsa_p256_public_key.h"
 
+#include <algorithm>
+
 #include "base/containers/span.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
-#include "components/web_package/signed_web_bundles/ecdsa_p256_utils.h"
+#include "crypto/keypair.h"
 
 namespace web_package {
-
-EcdsaP256PublicKey::~EcdsaP256PublicKey() = default;
 
 base::expected<EcdsaP256PublicKey, std::string> EcdsaP256PublicKey::Create(
     base::span<const uint8_t> bytes) {
@@ -23,15 +22,13 @@ base::expected<EcdsaP256PublicKey, std::string> EcdsaP256PublicKey::Create(
                            kLength, bytes.size()));
   }
 
-  auto key_bytes = bytes.first<kLength>();
-  if (!internal::IsValidEcdsaP256PublicKey(key_bytes)) {
+  if (!crypto::keypair::PublicKey::FromEcP256Point(bytes)) {
     return base::unexpected(
         "Unable to parse a valid ECDSA P-256 key from the given bytes.");
   }
 
   std::array<uint8_t, kLength> key;
-  base::ranges::copy(key_bytes, key.begin());
-
+  std::ranges::copy(bytes, key.begin());
   return EcdsaP256PublicKey(std::move(key));
 }
 

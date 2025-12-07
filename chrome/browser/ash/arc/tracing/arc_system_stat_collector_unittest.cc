@@ -75,10 +75,11 @@ TEST_F(ArcSystemStatCollectorTest, Serialize) {
   ASSERT_TRUE(collector.LoadFromJson(json_content));
   const std::string json_content_restored = collector.SerializeToJson();
   ASSERT_TRUE(!json_content_restored.empty());
-  std::optional<base::Value> root = base::JSONReader::Read(json_content);
+  std::optional<base::Value> root = base::JSONReader::Read(
+      json_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root);
-  std::optional<base::Value> root_restored =
-      base::JSONReader::Read(json_content_restored);
+  std::optional<base::Value> root_restored = base::JSONReader::Read(
+      json_content_restored, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(root_restored);
   EXPECT_EQ(*root, *root_restored);
 }

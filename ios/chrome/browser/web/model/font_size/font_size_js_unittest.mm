@@ -6,7 +6,7 @@
 #import <stddef.h>
 
 #import "base/ios/ios_util.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -23,9 +23,9 @@ class FontSizeJsTest : public PlatformTest {
   FontSizeJsTest() : web_client_(std::make_unique<web::FakeWebClient>()) {
     PlatformTest::SetUp();
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -68,14 +68,13 @@ class FontSizeJsTest : public PlatformTest {
                                  web_state());
   }
 
-  // Executes JavaScript "__gCrWeb.font_size.adjustFontSize(`scale`)" to
-  // adjust font size to `scale`% and return if it is executed without
-  // exception.
+  // Executes `adjustFontSize` to adjust font size to `scale`% and
+  // return if it is executed without exception.
   [[nodiscard]] bool AdjustFontSize(int scale) {
     id script_result = web::test::ExecuteJavaScript(
-        [NSString
-            stringWithFormat:@"__gCrWeb.font_size.adjustFontSize(%d); true;",
-                             scale],
+        [NSString stringWithFormat:@"__gCrWeb.getRegisteredApi('font_size')."
+                                   @"getFunction('adjustFontSize')(%d); true;",
+                                   scale],
         web_state());
     return [script_result isEqual:@YES];
   }
@@ -85,11 +84,11 @@ class FontSizeJsTest : public PlatformTest {
 
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
 };
 
-// Tests that __gCrWeb.font_size.adjustFontSize works for any scale.
+// Tests that `adjustFontSize` works for any scale.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
   float original_size = 0;
   float current_size = 0;
@@ -203,7 +202,7 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForScale) {
   EXPECT_FLOAT_EQ(current_size, original_size * 200 / 100);
 }
 
-// Tests that __gCrWeb.font_size.adjustFontSize works for any CSS unit.
+// Tests that `adjustFontSize` works for any CSS unit.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
   float original_size = 0;
   float current_size = 0;
@@ -269,7 +268,7 @@ TEST_F(FontSizeJsTest, TestAdjustFontSizeForUnit) {
   EXPECT_FLOAT_EQ(current_size, original_size * 110 / 100);
 }
 
-// Tests that __gCrWeb.font_size.adjustFontSize works for nested elements.
+// Tests `adjustFontSize works for nested elements.
 TEST_F(FontSizeJsTest, TestAdjustFontSizeForNestedElements) {
   float original_size_1 = 0;
   float original_size_2 = 0;

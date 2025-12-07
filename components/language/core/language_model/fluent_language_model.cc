@@ -17,7 +17,7 @@ FluentLanguageModel::FluentLanguageModel(PrefService* const pref_service)
   DCHECK(pref_service);
 }
 
-FluentLanguageModel::~FluentLanguageModel() {}
+FluentLanguageModel::~FluentLanguageModel() = default;
 
 std::vector<LanguageModel::LanguageDetails>
 FluentLanguageModel::GetLanguages() {

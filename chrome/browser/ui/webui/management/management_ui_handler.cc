@@ -18,6 +18,8 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -29,13 +31,17 @@
 #include "chrome/browser/device_api/managed_configuration_api.h"
 #include "chrome/browser/device_api/managed_configuration_api_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
-#include "chrome/browser/enterprise/connectors/common.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/identifiers/profile_id_service_factory.h"
 #include "chrome/browser/enterprise/reporting/prefs.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service.h"
+#include "chrome/browser/media/webrtc/multi_capture/multi_capture_data_service_factory.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/policy_ui_utils.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/management/management_ui_constants.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -43,10 +49,16 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/enterprise/browser/identifiers/profile_id_service.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/management/management_service.h"
+#include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
@@ -63,7 +75,6 @@
 #include "components/device_signals/core/browser/user_permission_service.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/common/extensions/permissions/chrome_permission_message_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -77,6 +88,11 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/permission_message_provider.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/common.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 enum class ReportingType {
   kDevice,
@@ -166,6 +182,7 @@ const char* GetReportingTypeValue(ReportingType reportingType) {
   }
 }
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 void AddThreatProtectionPermission(const char* title,
                                    const char* permission,
                                    base::Value::List* info) {
@@ -174,7 +191,7 @@ void AddThreatProtectionPermission(const char* title,
   value.Set("permission", permission);
   info->Append(std::move(value));
 }
-
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 }  // namespace
 
@@ -227,6 +244,18 @@ void ManagementUIHandler::RegisterMessages() {
       "initProfileReportingInfo",
       base::BindRepeating(&ManagementUIHandler::HandleInitProfileReportingInfo,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "shouldShowPromotion",
+      base::BindRepeating(&ManagementUIHandler::HandleShouldShowPromotion,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setBannerDismissed",
+      base::BindRepeating(&ManagementUIHandler::HandleSetBannerDismissed,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "recordBannerRedirected",
+      base::BindRepeating(&ManagementUIHandler::HandleRecordBannerRedirected,
+                          base::Unretained(this)));
 }
 
 void ManagementUIHandler::OnJavascriptAllowed() {
@@ -273,11 +302,15 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
       Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
           enterprise_reporting::kCloudProfileReportingEnabled);
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   const bool real_time_url_check_connector_enabled =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
           Profile::FromWebUI(web_ui()))
           ->GetAppliedRealTimeUrlCheck() !=
       enterprise_connectors::REAL_TIME_CHECK_DISABLED;
+#else
+  const bool real_time_url_check_connector_enabled = false;
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
   if (cloud_legacy_tech_report_enabled) {
     Profile::FromWebUI(web_ui())->GetPrefs()->GetList(
@@ -349,6 +382,13 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
                GetReportingTypeValue(report_definition.reporting_type));
       report_sources->Append(std::move(data));
     }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    auto device_signal_data = GetDeviceSignalGrantedMessage();
+    if (!device_signal_data.empty()) {
+      report_sources->Append(std::move(device_signal_data));
+    }
+#endif
   } else {
     if (cloud_reporting_policy_enabled ||
         !cloud_profile_reporting_policy_enabled) {
@@ -364,19 +404,17 @@ void ManagementUIHandler::AddReportingInfo(base::Value::List* report_sources,
       data.Set("messageId", message);
       report_sources->Append(std::move(data));
     }
-  }
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  // Insert the device signals consent disclosure at the end of browser
-  // reporting section.
-  auto* user_permission_service = GetUserPermissionService();
-  if (user_permission_service && user_permission_service->CanCollectSignals() ==
-                                     device_signals::UserPermission::kGranted) {
-    base::Value::Dict data;
-    data.Set("messageId", kManagementDeviceSignalsDisclosure);
-    data.Set("reportingType", GetReportingTypeValue(ReportingType::kDevice));
-    report_sources->Append(std::move(data));
+    auto device_signal_data = GetDeviceSignalGrantedMessage();
+    if (!device_signal_data.empty()) {
+      report_sources->Append(std::move(device_signal_data));
+    }
+#endif
+    base::Value::Dict learn_more_data;
+    learn_more_data.Set("messageId", kProfileReportingLearnMore);
+    report_sources->Append(std::move(learn_more_data));
   }
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 base::Value::Dict ManagementUIHandler::GetContextualManagedData(
@@ -395,7 +433,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
                    message_id, chrome::kManagedUiLearnMoreUrl,
                    base::EscapeForHTML(l10n_util::GetStringUTF16(
                        IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
-  response.Set("pageSubtitle", chrome::GetManagementPageSubtitle(profile));
+  response.Set("pageSubtitle", GetManagementPageSubtitle(profile));
 
   response.Set("extensionReportingSubtitle",
                l10n_util::GetStringUTF16(IDS_MANAGEMENT_EXTENSIONS_INSTALLED));
@@ -407,7 +445,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
       l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
 
   response.Set("managed", managed());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return response;
 }
@@ -416,22 +454,23 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
     Profile* profile) {
   base::Value::List info;
 
+#if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   constexpr struct {
     enterprise_connectors::AnalysisConnector connector;
     const char* title;
     const char* permission;
   } analysis_connector_permissions[] = {
-    {enterprise_connectors::FILE_ATTACHED, kManagementOnFileAttachedEvent,
-     kManagementOnFileAttachedVisibleData},
-    {enterprise_connectors::FILE_DOWNLOADED, kManagementOnFileDownloadedEvent,
-     kManagementOnFileDownloadedVisibleData},
-    {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
-     kManagementOnBulkDataEntryVisibleData},
-    {enterprise_connectors::PRINT, kManagementOnPrintEvent,
-     kManagementOnPrintVisibleData},
+      {enterprise_connectors::FILE_ATTACHED, kManagementOnFileAttachedEvent,
+       kManagementOnFileAttachedVisibleData},
+      {enterprise_connectors::FILE_DOWNLOADED, kManagementOnFileDownloadedEvent,
+       kManagementOnFileDownloadedVisibleData},
+      {enterprise_connectors::BULK_DATA_ENTRY, kManagementOnBulkDataEntryEvent,
+       kManagementOnBulkDataEntryVisibleData},
+      {enterprise_connectors::PRINT, kManagementOnPrintEvent,
+       kManagementOnPrintVisibleData},
 #if BUILDFLAG(IS_CHROMEOS)
-    {enterprise_connectors::FILE_TRANSFER, kManagementOnFileTransferEvent,
-     kManagementOnFileTransferVisibleData},
+      {enterprise_connectors::FILE_TRANSFER, kManagementOnFileTransferEvent,
+       kManagementOnFileTransferVisibleData},
 #endif
   };
   auto* connectors_service =
@@ -444,10 +483,7 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
     }
   }
 
-  if (!connectors_service
-           ->GetReportingServiceProviderNames(
-               enterprise_connectors::ReportingConnector::SECURITY_EVENT)
-           .empty()) {
+  if (!connectors_service->GetReportingServiceProviderNames().empty()) {
     AddThreatProtectionPermission(kManagementEnterpriseReportingEvent,
                                   kManagementEnterpriseReportingVisibleData,
                                   &info);
@@ -459,8 +495,20 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
                                   kManagementOnPageVisitedVisibleData, &info);
   }
 
+  if (connectors_service->GetReportingSettings().has_value() &&
+      connectors_service->GetReportingSettings()->enabled_opt_in_events.count(
+          enterprise_connectors::kExtensionTelemetryEvent) > 0) {
+    AddThreatProtectionPermission(kManagementOnExtensionTelemetryEvent,
+                                  kManagementOnExtensionTelemetryVisibleData,
+                                  &info);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS)
-  if (is_get_all_screens_media_allowed_for_any_origin_) {
+  const auto* multi_capture_data_service =
+      multi_capture::MultiCaptureDataServiceFactory::GetForBrowserContext(
+          profile);
+  if (multi_capture_data_service &&
+      multi_capture_data_service->IsMultiCaptureAllowedForAnyApp()) {
     AddThreatProtectionPermission(kManagementScreenCaptureEvent,
                                   kManagementScreenCaptureData, &info);
   }
@@ -477,6 +525,11 @@ base::Value::Dict ManagementUIHandler::GetThreatProtectionInfo(
                  : l10n_util::GetStringFUTF16(
                        IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION_BY,
                        base::UTF8ToUTF16(enterprise_manager)));
+#else
+  base::Value::Dict result;
+  result.Set("description", l10n_util::GetStringUTF16(
+                                IDS_MANAGEMENT_THREAT_PROTECTION_DESCRIPTION));
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   result.Set("info", std::move(info));
   return result;
 }
@@ -503,9 +556,8 @@ base::Value::List ManagementUIHandler::GetApplicationsInfo(
   base::Value::List applications;
 
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
-  // Only display web apps for the profile that contains them e.g. Lacros
-  // primary profile when Lacros is enabled.
-  if (provider == nullptr) {
+  // Only display web apps for the profile that contains them.
+  if (provider == nullptr || !provider->is_registry_ready()) {
     return applications;
   }
 
@@ -548,6 +600,20 @@ device_signals::UserPermissionService*
 ManagementUIHandler::GetUserPermissionService() {
   return enterprise_signals::UserPermissionServiceFactory::GetForProfile(
       Profile::FromWebUI(web_ui()));
+}
+
+base::Value::Dict ManagementUIHandler::GetDeviceSignalGrantedMessage() {
+  // Insert the device signals consent disclosure at the end of browser
+  // reporting section.
+  auto* user_permission_service = GetUserPermissionService();
+  if (user_permission_service && user_permission_service->CanCollectSignals() ==
+                                     device_signals::UserPermission::kGranted) {
+    base::Value::Dict data;
+    data.Set("messageId", kManagementDeviceSignalsDisclosure);
+    data.Set("reportingType", GetReportingTypeValue(ReportingType::kDevice));
+    return data;
+  }
+  return base::Value::Dict();
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
@@ -595,11 +661,10 @@ bool ManagementUIHandler::UpdateBrowserManagedState() {
 #endif
 
 std::string ManagementUIHandler::GetAccountManager(Profile* profile) const {
-  std::optional<std::string> manager =
-      chrome::GetAccountManagerIdentity(profile);
+  std::optional<std::string> manager = GetAccountManagerIdentity(profile);
   if (!manager &&
       base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
-    manager = chrome::GetDeviceManagerIdentity();
+    manager = GetDeviceManagerIdentity();
   }
 
   return manager.value_or(std::string());
@@ -607,6 +672,16 @@ std::string ManagementUIHandler::GetAccountManager(Profile* profile) const {
 
 bool ManagementUIHandler::IsProfileManaged(Profile* profile) const {
   return profile->GetProfilePolicyConnector()->IsManaged();
+}
+
+void ManagementUIHandler::AddManagementPromotionObserver(
+    ManagementPromotionObserver* observer) {
+  promotion_eligibility_observers_.AddObserver(observer);
+}
+
+void ManagementUIHandler::RemoveManagementPromotionObserver(
+    ManagementPromotionObserver* observer) {
+  promotion_eligibility_observers_.RemoveObserver(observer);
 }
 
 void ManagementUIHandler::HandleGetExtensions(const base::Value::List& args) {
@@ -665,6 +740,68 @@ void ManagementUIHandler::HandleInitProfileReportingInfo(
   AllowJavascript();
   AddReportingInfo(&report_sources, /*is_browser=*/false);
   ResolveJavascriptCallback(args[0] /* callback_id */, report_sources);
+}
+
+void ManagementUIHandler::HandleShouldShowPromotion(
+    const base::Value::List& args) {
+  AllowJavascript();
+  Profile* profile = Profile::FromWebUI(web_ui());
+  std::string callback_id = args[0].GetString();
+
+  bool dismissed_banner_pref = profile->GetPrefs()->GetBoolean(
+      policy::policy_prefs::kHasDismissedManagementPagePromotionBanner);
+
+  bool feature_enabled =
+      base::FeatureList::IsEnabled(features::kEnableManagementPromotionBanner);
+
+  promotion_eligibility_checker_ = policy::CreatePromotionEligibilityChecker(
+      profile, dismissed_banner_pref, feature_enabled);
+  if (!promotion_eligibility_checker_) {
+    OnPromotionEligibilityFetched(
+        callback_id,
+        enterprise_management::GetUserEligiblePromotionsResponse());
+    return;
+  }
+  promotion_eligibility_checker_->MaybeCheckPromotionEligibility(
+      base::BindOnce(&ManagementUIHandler::OnPromotionEligibilityFetched,
+                     weak_factory_.GetWeakPtr(), callback_id));
+  return;
+}
+
+void ManagementUIHandler::HandleSetBannerDismissed(
+    const base::Value::List& args) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.ManagementPromotionBannerAction",
+      policy::ManagementPromotionBannerAction::kManagementBannerDismissed);
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kHasDismissedManagementPagePromotionBanner, true);
+}
+
+void ManagementUIHandler::HandleRecordBannerRedirected(
+    const base::Value::List& args) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.ManagementPromotionBannerAction",
+      policy::ManagementPromotionBannerAction::kManagementRedirected);
+}
+
+void ManagementUIHandler::OnPromotionEligibilityFetched(
+    const std::string& callback_id,
+    enterprise_management::GetUserEligiblePromotionsResponse response) {
+  AllowJavascript();
+
+  bool should_show_promotion = response.promotions().policy_page_promotion() ==
+                               enterprise_management::CHROME_ENTERPRISE_CORE;
+  // Log the UMA metric of whether the promotion should be shown.
+  base::UmaHistogramBoolean("Enterprise.ManagementPromotionBannerDisplayed",
+                            should_show_promotion);
+  ResolveJavascriptCallback(base::Value(callback_id), should_show_promotion);
+
+  for (ManagementPromotionObserver& observer :
+       promotion_eligibility_observers_) {
+    observer.OnPromotionEligibilityFetched(callback_id, response);
+  }
+
+  has_checked_promotion_eligibility_ = true;
 }
 
 void ManagementUIHandler::NotifyBrowserReportingInfoUpdated() {

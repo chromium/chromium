@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/browser_ui/settings/android",
+  "+components/browser_ui/site_settings/android",
+]

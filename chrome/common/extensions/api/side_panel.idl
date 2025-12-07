@@ -14,6 +14,17 @@ namespace sidePanel {
     SidePanel side_panel;
   };
 
+  // Defines the possible alignment for the side panel in the browser UI.
+  enum Side {
+    left,
+    right
+  };
+
+  // Represents the layout of the side panel, indicating which side it is shown.
+  dictionary PanelLayout {
+    Side side;
+  };
+
   // The options used when setting a side panel. Omitted properties are
   // unchanged.
   dictionary PanelOptions {
@@ -66,9 +77,57 @@ namespace sidePanel {
     long? tabId;
   };
 
+  // Options for closing the side panel.
+  // At least one of `tabId` or `windowId` must be specified.
+  dictionary CloseOptions {
+    // The window in which to close the side panel. If a global side panel is
+    // open in the specified window, it will be closed for all tabs in that
+    // window where no tab-specific panel is active. At least one of this or
+    // <code>tabId</code> must be provided.
+    long? windowId;
+
+    // The tab in which to close the side panel. If a tab-specific side panel
+    // is open in the specified tab, it will be closed for that tab.
+    // At least one of this or <code>windowId</code> must be provided.
+    long? tabId;
+  };
+
+  // Information about the opened side panel. It is fired when the extension's
+  // side panel is opened.
+  dictionary PanelOpenedInfo {
+    // The ID of the window where the side panel is opened. This is available
+    // for both global and tab-specific panels.
+    long windowId;
+
+    // The optional ID of the tab where the side panel is opened. This is
+    // provided only when the panel is tab-specific.
+    long? tabId;
+
+    // The path of the local resource within the extension package whose content
+    // is displayed in the panel.
+    DOMString path;
+  };
+
+  // Information about the closed side panel. It is fired when the extension's
+  // side panel is closed.
+  dictionary PanelClosedInfo {
+    // The ID of the window where the side panel was closed. This is available
+    // for both global and tab-specific panels.
+    long windowId;
+
+    // The optional ID of the tab where the side panel was closed. This is
+    // provided only when the panel is tab-specific.
+    long? tabId;
+
+    // The path of the local resource within the extension package whose content
+    // is displayed in the panel.
+    DOMString path;
+  };
+
   callback VoidCallback = void();
   callback PanelOptionsCallback = void(PanelOptions options);
   callback PanelBehaviorCallback = void(PanelBehavior behavior);
+  callback PanelLayoutCallback = void(PanelLayout layout);
 
   interface Functions {
     // Configures the side panel.
@@ -105,5 +164,25 @@ namespace sidePanel {
     static void open(
         OpenOptions options,
         VoidCallback callback);
+
+    // Returns the side panel's current layout.
+    // |callback|: Called with a $(ref:PanelLayout) containing the side value.
+    static void getLayout(PanelLayoutCallback callback);
+
+    // Closes the extension's side panel.
+    // This is a no-op if the panel is already closed.
+    // |options|: Specifies the context in which to close the side panel.
+    // |callback|: Called when the side panel has been closed.
+    [nodoc] static void close(
+        CloseOptions options,
+        VoidCallback callback);
+  };
+
+  interface Events {
+    // Fired when the extension's side panel is opened.
+    static void onOpened(PanelOpenedInfo info);
+
+    // Fired when the extension's side panel is closed.
+    static void onClosed(PanelClosedInfo info);
   };
 };

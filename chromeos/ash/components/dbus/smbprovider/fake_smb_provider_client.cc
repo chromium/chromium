@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/task/single_thread_task_runner.h"
@@ -49,6 +50,7 @@ void FakeSmbProviderClient::Init(dbus::Bus* bus) {}
 
 void FakeSmbProviderClient::GetShares(const base::FilePath& server_url,
                                       ReadDirectoryCallback callback) {
+  CheckDbusMethodsNotCalledAfterStopJob();
   smbprovider::DirectoryEntryListProto entry_list;
 
   smbprovider::ErrorType error = smbprovider::ErrorType::ERROR_OK;
@@ -70,6 +72,7 @@ void FakeSmbProviderClient::GetShares(const base::FilePath& server_url,
 
 void FakeSmbProviderClient::SetupKerberos(const std::string& account_id,
                                           SetupKerberosCallback callback) {
+  CheckDbusMethodsNotCalledAfterStopJob();
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true /* success */));
 }
@@ -88,6 +91,7 @@ void FakeSmbProviderClient::ParseNetBiosPacket(
     const std::vector<uint8_t>& packet,
     uint16_t transaction_id,
     ParseNetBiosPacketCallback callback) {
+  CheckDbusMethodsNotCalledAfterStopJob();
   std::vector<std::string> result;
 
   // For testing, we map a 1 byte packet to a vector<std::string> to simulate
@@ -109,6 +113,17 @@ void FakeSmbProviderClient::ClearShares() {
 
 void FakeSmbProviderClient::RunStoredReadDirCallback() {
   std::move(stored_readdir_callback_).Run();
+}
+
+void FakeSmbProviderClient::OnStopJobCalled() {
+  stop_job_called_ = true;
+}
+
+void FakeSmbProviderClient::CheckDbusMethodsNotCalledAfterStopJob() {
+  // D-Bus methods are not expected to be called after smbproviderd has stopped.
+  if (base::FeatureList::IsEnabled(features::kSmbproviderdOnDemand)) {
+    CHECK(!stop_job_called_);
+  }
 }
 
 }  // namespace ash

@@ -4,13 +4,6 @@
 
 'use strict';
 
-// Use 16x16 aligned resolution since some platforms require that.
-// See https://crbug.com/1084702.
-// Also, some platforms require a resolution that isn't tiny (e.g. 160) to
-// use hardware acceleration.
-const FRAME_WIDTH = 640;
-const FRAME_HEIGHT = 480;
-
 function isRec709(colorSpace) {
   return colorSpace.primaries === 'bt709' && colorSpace.transfer === 'bt709' &&
       colorSpace.matrix === 'bt709' && colorSpace.fullRange === false;
@@ -35,6 +28,14 @@ function makePixelArray(byteLength) {
     data[i] = i;
   }
   return data;
+}
+
+function arrayBufferToBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const binString = Array.from(bytes, (byte) =>
+    String.fromCharCode(byte),
+  ).join("");
+  return window.btoa(binString);
 }
 
 function makeFrame(type, timestamp) {
@@ -105,7 +106,6 @@ async function main(arg) {
 
   for (let frame of inputFrames) {
     encoder.encode(frame);
-    await waitForNextFrame();
   }
   await encoder.flush();
   encoder.close();
@@ -195,13 +195,26 @@ async function main(arg) {
 
       config.hardwareAcceleration = arg.acceleration;
       let support = await VideoDecoder.isConfigSupported(config);
-      if (!support.supported)
+      if (!support.supported) {
         config.hardwareAcceleration = 'no-preference';
+      }
 
       decoder.configure(config);
     }
-    decoder.decode(outputChunks[i]);
-    await waitForNextFrame();
+    let chunk = outputChunks[i];
+    let buffer = new ArrayBuffer(chunk.byteLength);
+    chunk.copyTo(buffer);
+    try {
+      decoder.decode(chunk);
+    } catch (e) {
+      TEST.reportFailure(e);
+      TEST.log(`Chunk index: ${i}`);
+      if (outputMetadata[i].decoderConfig) {
+        TEST.log('Config: ' + JSON.stringify(outputMetadata[i].decoderConfig));
+      }
+      TEST.log('Data: ' + arrayBufferToBase64(buffer));
+      return;
+    }
   }
   await decoder.flush();
   decoder.close();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/websockets/websocket_frame.h"
 
 #include <stdint.h>
@@ -18,9 +13,9 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
-#include "base/ranges/algorithm.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -77,7 +72,8 @@ TEST(WebSocketFrameHeaderTest, FrameLengthsWithMasking) {
        UINT64_C(0x7FFFFFFFFFFFFFFF)}};
 
   WebSocketMaskingKey masking_key;
-  base::ranges::copy(kMaskingKey, masking_key.key);
+  base::as_writable_byte_span(masking_key.key)
+      .copy_from(base::as_byte_span(kMaskingKey));
 
   for (const auto& test : kTests) {
     WebSocketFrameHeader header(WebSocketFrameHeader::kOpCodeText);
@@ -208,39 +204,53 @@ TEST(WebSocketFrameHeaderTest, InsufficientBufferSize) {
 
 TEST(WebSocketFrameTest, MaskPayload) {
   struct TestCase {
-    const std::string_view masking_key;
+    base::span<const char> masking_key;
     uint64_t frame_offset;
-    const char* input;
-    const char* output;
-    size_t data_length;
+    base::span<const char> input;
+    base::span<const char> output;
   };
   static constexpr TestCase kTests[] = {
-      {"\xDE\xAD\xBE\xEF", 0, "FooBar", "\x98\xC2\xD1\xAD\xBF\xDF", 6},
-      {"\xDE\xAD\xBE\xEF", 1, "FooBar", "\xEB\xD1\x80\x9C\xCC\xCC", 6},
-      {"\xDE\xAD\xBE\xEF", 2, "FooBar", "\xF8\x80\xB1\xEF\xDF\x9D", 6},
-      {"\xDE\xAD\xBE\xEF", 3, "FooBar", "\xA9\xB1\xC2\xFC\x8E\xAC", 6},
-      {"\xDE\xAD\xBE\xEF", 4, "FooBar", "\x98\xC2\xD1\xAD\xBF\xDF", 6},
-      {"\xDE\xAD\xBE\xEF", 42, "FooBar", "\xF8\x80\xB1\xEF\xDF\x9D", 6},
-      {"\xDE\xAD\xBE\xEF", 0, "", "", 0},
-      {"\xDE\xAD\xBE\xEF", 0, "\xDE\xAD\xBE\xEF", "\x00\x00\x00\x00", 4},
-      {"\xDE\xAD\xBE\xEF", 0, "\x00\x00\x00\x00", "\xDE\xAD\xBE\xEF", 4},
-      {{"\x00\x00\x00\x00", WebSocketFrameHeader::kMaskingKeyLength},
-       0,
-       "FooBar",
-       "FooBar",
-       6},
-      {"\xFF\xFF\xFF\xFF", 0, "FooBar", "\xB9\x90\x90\xBD\x9E\x8D", 6},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 0,
+       base::span_from_cstring("FooBar"),
+       base::span_from_cstring("\x98\xC2\xD1\xAD\xBF\xDF")},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 1,
+       base::span_from_cstring("FooBar"),
+       base::span_from_cstring("\xEB\xD1\x80\x9C\xCC\xCC")},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 2,
+       base::span_from_cstring("FooBar"),
+       base::span_from_cstring("\xF8\x80\xB1\xEF\xDF\x9D")},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 3,
+       base::span_from_cstring("FooBar"),
+       base::span_from_cstring("\xA9\xB1\xC2\xFC\x8E\xAC")},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 4,
+       base::span_from_cstring("FooBar"),
+       base::span_from_cstring("\x98\xC2\xD1\xAD\xBF\xDF")},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 42,
+       base::span_from_cstring("FooBar"),
+       base::span_from_cstring("\xF8\x80\xB1\xEF\xDF\x9D")},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 0,
+       base::span_from_cstring(""), base::span_from_cstring("")},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 0,
+       base::span_from_cstring("\xDE\xAD\xBE\xEF"),
+       base::span_from_cstring("\x00\x00\x00\x00")},
+      {base::span_from_cstring("\xDE\xAD\xBE\xEF"), 0,
+       base::span_from_cstring("\x00\x00\x00\x00"),
+       base::span_from_cstring("\xDE\xAD\xBE\xEF")},
+      {base::span_from_cstring("\x00\x00\x00\x00"), 0,
+       base::span_from_cstring("FooBar"), base::span_from_cstring("FooBar")},
+      {base::span_from_cstring("\xFF\xFF\xFF\xFF"), 0,
+       base::span_from_cstring("FooBar"),
+       base::span_from_cstring("\xB9\x90\x90\xBD\x9E\x8D")},
   };
 
   for (const auto& test : kTests) {
     WebSocketMaskingKey masking_key;
-    base::ranges::copy(test.masking_key, masking_key.key);
-    std::vector<char> frame_data(test.input, test.input + test.data_length);
-    std::vector<char> expected_output(test.output,
-                                      test.output + test.data_length);
+    base::as_writable_byte_span(masking_key.key)
+        .copy_from(base::as_byte_span(test.masking_key));
+    std::vector<char> frame_data(test.input.begin(), test.input.end());
+    std::vector<char> expected_output(test.output.begin(), test.output.end());
     MaskWebSocketFramePayload(masking_key, test.frame_offset,
-                              frame_data.empty() ? nullptr : frame_data.data(),
-                              frame_data.size());
+                              base::as_writable_byte_span(frame_data));
     EXPECT_EQ(expected_output, frame_data);
   }
 }
@@ -275,6 +285,7 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
       "\xfc\x8e\xd8\x72\xcf\x7e\x37\xcd\x31\xcd\xc1\xc0\x89\x0c\xa7\x4c"
       "\xda\xa8\x4b\x75\xa1\xcb\xa9\x77\x19\x4d\x6e\xdf\xc8\x08\x1c\xb6"
       "\x6d\xfb\x38\x04\x44\xd5\xba\x57\x9f\x76\xb0\x2e\x07\x91\xe6\xa8"};
+  static constexpr auto kTestInputSpan = base::span_from_cstring(kTestInput);
   static constexpr size_t kTestInputSize = std::size(kTestInput) - 1;
   static constexpr char kTestOutput[] = {
       "\xef\xcd\x47\xa5\xcb\x36\x12\x1d\xcb\xd7\xad\x72\xeb\x5d\x0d\xb5"
@@ -283,34 +294,36 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
       "\x2e\x34\x82\xcc\x1d\xc4\x6d\x73\xe3\x77\x9b\x7e\x5b\xb6\xfd\xf2"
       "\x08\x12\x11\xcb\x73\x71\xf3\xc9\xcb\xf7\x34\x61\x1a\xb2\x46\x08"
       "\xbf\x41\x62\xba\x96\x6f\xe0\xe9\x4d\xcc\xea\x90\xd5\x2b\xbc\x16"};
+  static constexpr auto kTestOutputSpan = base::span_from_cstring(kTestOutput);
   static_assert(std::size(kTestInput) == std::size(kTestOutput),
                 "output and input arrays should have the same length");
-  std::unique_ptr<char, base::AlignedFreeDeleter> scratch(static_cast<char*>(
-      base::AlignedAlloc(kScratchBufferSize, kMaxVectorAlignment)));
+  auto scratch =
+      base::AlignedUninit<char>(kScratchBufferSize, kMaxVectorAlignment);
   WebSocketMaskingKey masking_key;
-  base::ranges::copy(kTestMask, masking_key.key);
+  base::as_writable_byte_span(masking_key.key)
+      .copy_from(base::as_byte_span(kTestMask));
   for (size_t frame_offset = 0; frame_offset < kMaskingKeyLength;
        ++frame_offset) {
     for (size_t alignment = 0; alignment < kMaxVectorAlignment; ++alignment) {
-      char* const aligned_scratch = scratch.get() + alignment;
-      const size_t aligned_len = std::min(kScratchBufferSize - alignment,
-                                          kTestInputSize - frame_offset);
+      base::span<char> aligned_scratch =
+          scratch.subspan(alignment, std::min(kScratchBufferSize - alignment,
+                                              kTestInputSize - frame_offset));
       for (size_t chunk_size = 1; chunk_size < kMaxVectorSize; ++chunk_size) {
-        memcpy(aligned_scratch, kTestInput + frame_offset, aligned_len);
-        for (size_t chunk_start = 0; chunk_start < aligned_len;
+        aligned_scratch.copy_from(
+            kTestInputSpan.subspan(frame_offset, aligned_scratch.size()));
+        for (size_t chunk_start = 0; chunk_start < aligned_scratch.size();
              chunk_start += chunk_size) {
           const size_t this_chunk_size =
-              std::min(chunk_size, aligned_len - chunk_start);
-          MaskWebSocketFramePayload(masking_key,
-                                    frame_offset + chunk_start,
-                                    aligned_scratch + chunk_start,
-                                    this_chunk_size);
+              std::min(chunk_size, aligned_scratch.size() - chunk_start);
+          MaskWebSocketFramePayload(
+              masking_key, frame_offset + chunk_start,
+              base::as_writable_bytes(
+                  aligned_scratch.subspan(chunk_start, this_chunk_size)));
         }
         // Stop the test if it fails, since we don't want to spew thousands of
         // failures.
-        ASSERT_TRUE(std::equal(aligned_scratch,
-                               aligned_scratch + aligned_len,
-                               kTestOutput + frame_offset))
+        ASSERT_EQ(aligned_scratch,
+                  kTestOutputSpan.subspan(frame_offset, aligned_scratch.size()))
             << "Output failed to match for frame_offset=" << frame_offset
             << ", alignment=" << alignment << ", chunk_size=" << chunk_size;
       }
@@ -323,7 +336,7 @@ TEST(WebSocketFrameTest, MaskPayloadAlignment) {
 // implementation in future.
 TEST(WebSocketFrameHeaderTest, IsKnownDataOpCode) {
   // Make the test less verbose.
-  typedef WebSocketFrameHeader Frame;
+  using Frame = WebSocketFrameHeader;
 
   // Known opcode, is used for data frames
   EXPECT_TRUE(Frame::IsKnownDataOpCode(Frame::kOpCodeContinuation));
@@ -336,12 +349,16 @@ TEST(WebSocketFrameHeaderTest, IsKnownDataOpCode) {
   EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodePong));
 
   // Check that unused opcodes return false
-  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused));
-  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnused));
-
-  // Check that opcodes with the 4 bit set return false
-  EXPECT_FALSE(Frame::IsKnownDataOpCode(0x6));
-  EXPECT_FALSE(Frame::IsKnownDataOpCode(0xF));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused3));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused4));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused5));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused6));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeDataUnused7));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedB));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedC));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedD));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedE));
+  EXPECT_FALSE(Frame::IsKnownDataOpCode(Frame::kOpCodeControlUnusedF));
 
   // Check that out-of-range opcodes return false
   EXPECT_FALSE(Frame::IsKnownDataOpCode(-1));
@@ -352,7 +369,7 @@ TEST(WebSocketFrameHeaderTest, IsKnownDataOpCode) {
 // might be optimised in future.
 TEST(WebSocketFrameHeaderTest, IsKnownControlOpCode) {
   // Make the test less verbose.
-  typedef WebSocketFrameHeader Frame;
+  using Frame = WebSocketFrameHeader;
 
   // Known opcode, is used for data frames
   EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeContinuation));
@@ -365,16 +382,73 @@ TEST(WebSocketFrameHeaderTest, IsKnownControlOpCode) {
   EXPECT_TRUE(Frame::IsKnownControlOpCode(Frame::kOpCodePong));
 
   // Check that unused opcodes return false
-  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused));
-  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnused));
-
-  // Check that opcodes with the 4 bit set return false
-  EXPECT_FALSE(Frame::IsKnownControlOpCode(0x6));
-  EXPECT_FALSE(Frame::IsKnownControlOpCode(0xF));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused3));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused4));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused5));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused6));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeDataUnused7));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedB));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedC));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedD));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedE));
+  EXPECT_FALSE(Frame::IsKnownControlOpCode(Frame::kOpCodeControlUnusedF));
 
   // Check that out-of-range opcodes return false
   EXPECT_FALSE(Frame::IsKnownControlOpCode(-1));
   EXPECT_FALSE(Frame::IsKnownControlOpCode(0xFF));
+}
+
+// Test for reserved data opcodes.
+TEST(WebSocketFrameHeaderTest, IsReservedDataOpCode) {
+  using Frame = WebSocketFrameHeader;
+
+  // Known opcodes for data frames should not be reserved.
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodeContinuation));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodeText));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodeBinary));
+
+  // Unused opcodes in the data frame range should be considered reserved.
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused3));
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused4));
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused5));
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused6));
+  EXPECT_TRUE(Frame::IsReservedDataOpCode(Frame::kOpCodeDataUnused7));
+
+  // Known opcodes for control frames should not be considered reserved data
+  // opcodes.
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodeClose));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodePing));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(Frame::kOpCodePong));
+
+  // Out-of-range opcodes should not be considered reserved data opcodes.
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(-1));
+  EXPECT_FALSE(Frame::IsReservedDataOpCode(0xFF));
+}
+
+// Test for reserved control opcodes.
+TEST(WebSocketFrameHeaderTest, IsReservedControlOpCode) {
+  using Frame = WebSocketFrameHeader;
+
+  // Known opcodes for data frames should not be reserved control opcodes.
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodeContinuation));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodeText));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodeBinary));
+
+  // Known opcodes for control frames should not be reserved.
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodeClose));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodePing));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(Frame::kOpCodePong));
+
+  // Unused opcodes in the control frame range should be considered reserved.
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedB));
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedC));
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedD));
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedE));
+  EXPECT_TRUE(Frame::IsReservedControlOpCode(Frame::kOpCodeControlUnusedF));
+
+  // Out-of-range opcodes should not be considered reserved control opcodes.
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(-1));
+  EXPECT_FALSE(Frame::IsReservedControlOpCode(0xFF));
 }
 
 }  // namespace

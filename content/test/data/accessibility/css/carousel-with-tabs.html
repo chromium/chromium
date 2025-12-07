@@ -1,0 +1,54 @@
+<!--
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:focusable*
+-->
+<!doctype html>
+
+<style>
+.carousel {
+  overflow: auto;
+  columns: 1;
+  height: 200px;
+
+  scroll-marker-group: after;
+
+  /* Request buttons for the carousel by setting a non-none content */
+  &::scroll-button(left) { content: '<' / 'prev'; }
+  &::scroll-button(right) { content: '>' / 'next'; }
+  &::scroll-button(up) { content: 'u' / 'up'; }
+  &::scroll-button(down) { content: 'd' / 'down'; }
+
+  /* Scroll marker group is generated on the .carousel element */
+  &::scroll-marker-group {
+    height: 1rem;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* These are div items children within the carousel */
+  & > div {
+    height: 100%;
+
+    /* Request a scroll marker for this element by setting non-none content */
+    &::scroll-marker {
+      display: inline-block;
+      content: '';
+      width: 1rem;
+      height: 1rem;
+      border: 1px solid black;
+    }
+    /* The currently selected scroll marker should be blue */
+    &::scroll-marker:target-current {
+      background: blue;
+    }
+  }
+}
+</style>
+
+<div class=carousel>
+  <div>One</div>
+  <div>Two</div>
+  <div>Three</div>
+</div>
+

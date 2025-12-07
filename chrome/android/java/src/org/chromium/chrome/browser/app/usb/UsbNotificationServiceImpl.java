@@ -7,18 +7,19 @@ package org.chromium.chrome.browser.app.usb;
 import android.content.Intent;
 import android.os.IBinder;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManagerDelegate;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 
-/**
- * Service that manages the WebUSB notification when a website is connected
- * to a USB device.
- */
-public class UsbNotificationServiceImpl extends UsbNotificationService.Impl {
-    private UsbNotificationManagerDelegate mManagerDelegate =
+/** Service that manages the WebUSB notification when a website is connected to a USB device. */
+@NullMarked
+public class UsbNotificationServiceImpl extends SplitCompatService.Impl {
+    private final UsbNotificationManagerDelegate mManagerDelegate =
             new UsbNotificationManagerDelegate() {
                 @Override
                 public Intent createTrustedBringTabToFrontIntent(int tabId) {
@@ -39,18 +40,17 @@ public class UsbNotificationServiceImpl extends UsbNotificationService.Impl {
 
     private UsbNotificationManager mManager;
 
+    @Initializer
     @Override
     public void onCreate() {
         mManager =
                 new UsbNotificationManager(
-                        BaseNotificationManagerProxyFactory.create(
-                                ContextUtils.getApplicationContext()),
-                        mManagerDelegate);
+                        BaseNotificationManagerProxyFactory.create(), mManagerDelegate);
         super.onCreate();
     }
 
     @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
+    public int onStartCommand(@Nullable Intent intent, int flags, int startId) {
         mManager.onStartCommand(intent, flags, startId);
         return super.onStartCommand(intent, flags, startId);
     }
@@ -68,7 +68,7 @@ public class UsbNotificationServiceImpl extends UsbNotificationService.Impl {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public @Nullable IBinder onBind(Intent intent) {
         return null;
     }
 }

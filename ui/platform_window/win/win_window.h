@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/memory/weak_ptr.h"
 #include "ui/gfx/win/msg_util.h"
 #include "ui/gfx/win/window_impl.h"
 #include "ui/platform_window/platform_window.h"
@@ -81,6 +80,7 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
     CR_MESSAGE_RANGE_HANDLER_EX(WM_MOUSEFIRST, WM_MOUSELAST, OnMouseRange)
     CR_MESSAGE_RANGE_HANDLER_EX(WM_NCMOUSEMOVE, WM_NCXBUTTONDBLCLK,
                                 OnMouseRange)
+    CR_MESSAGE_HANDLER_EX(WM_SETCURSOR, OnSetCursor);
     CR_MESSAGE_HANDLER_EX(WM_CAPTURECHANGED, OnCaptureChanged)
 
     CR_MESSAGE_HANDLER_EX(WM_KEYDOWN, OnKeyEvent)
@@ -108,6 +108,7 @@ class WIN_WINDOW_EXPORT WinWindow : public PlatformWindow,
   void OnDestroy();
   void OnPaint(HDC);
   void OnWindowPosChanged(WINDOWPOS* window_pos);
+  LRESULT OnSetCursor(UINT message, WPARAM w_param, LPARAM l_param);
 
   raw_ptr<PlatformWindowDelegate> delegate_;
 

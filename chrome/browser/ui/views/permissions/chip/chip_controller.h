@@ -10,6 +10,9 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "components/permissions/permission_prompt.h"
@@ -21,6 +24,9 @@ class PermissionPromptChipModel;
 class LocationBarView;
 class PermissionDashboardView;
 class PermissionDashboardController;
+class PermissionPromptBubbleBaseView;
+class ContentSettingBubbleContents;
+
 // ButtonController that NotifyClick from being called when the
 // BubbleOwnerDelegate's bubble is showing. Otherwise the bubble will show again
 // immediately after being closed via losing focus.
@@ -42,6 +48,15 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
                        public BubbleOwnerDelegate,
                        public PermissionChipView::Observer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Triggered when the permission prompt shows.
+    virtual void OnPermissionPromptShown() = 0;
+
+    // Triggered when the permission prompt hides.
+    virtual void OnPermissionPromptHidden() = 0;
+  };
+
   ChipController(
       LocationBarView* location_bar_view,
       PermissionChipView* chip_view,
@@ -54,7 +69,7 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   // PermissionRequestManager::Observer:
   void OnPermissionRequestManagerDestructed() override;
-  void OnTabVisibilityChanged(content::Visibility visibility) override;
+  void OnTabActiveChanged(bool is_active) override;
   // Called when the currently active permission request was finalized. That
   // could be called independently of `OnRequestDecided`.
   void OnRequestsFinalized() override;
@@ -78,12 +93,16 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetDestroyed(views::Widget* widget) override;
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // PermissionChipView::Observer
   void OnChipVisibilityChanged(bool is_visible) override;
   void OnExpandAnimationEnded() override;
   void OnCollapseAnimationEnded() override;
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
 
   // Initializes the permission prompt model as well as the permission request
   // manager and observes the prompt bubble.
@@ -116,7 +135,17 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   views::Widget* GetBubbleWidget();
 
+  // Returns the currently active permission prompt bubble, specifically when a
+  // non quiet chip UI is expected. This method CHECKs that the prompt style is
+  // `kChip`.
   PermissionPromptBubbleBaseView* GetPromptBubbleView();
+  // Returns the currently active permission prompt bubble,  specifically when a
+  // quiet chip UI is expected. This method CHECKs that the prompt style is
+  // `kQuietChip`.
+  ContentSettingBubbleContents* GetContentSettingBubbleContentsForTesting();
+
+  void ClosePermissionPrompt();
+  void PromptDecided(permissions::PermissionAction action);
 
   PermissionPromptChipModel* permission_prompt_model() {
     return permission_prompt_model_.get();
@@ -169,6 +198,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   void DoNotCollapseForTesting() { do_no_collapse_for_testing_ = true; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
+
   bool ShouldWaitForConfirmationToComplete() const;
   bool ShouldWaitForLHSIndicatorToCollapse() const;
   void AnimateExpand();
@@ -234,9 +265,6 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
   // `PermissionDashboardController` is an owner of this.
   raw_ptr<PermissionDashboardController> permission_dashboard_controller_;
 
-  // The time when the request chip was displayed.
-  base::TimeTicks request_chip_shown_time_;
-
   // A timer used to dismiss the permission request after it's been collapsed
   // for a while.
   base::OneShotTimer dismiss_timer_;
@@ -261,10 +289,15 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   bool do_no_collapse_for_testing_ = false;
 
+  // Keep prompt's decision until the prompt's widget is removed.
+  std::optional<permissions::PermissionAction> prompt_decision_;
+
   base::ScopedClosureRunner disallowed_custom_cursors_scope_;
 
   base::ScopedObservation<PermissionChipView, PermissionChipView::Observer>
       observation_{this};
+
+  base::ObserverList<Observer> permission_prompt_observers_;
 
   base::WeakPtrFactory<ChipController> weak_factory_{this};
 };

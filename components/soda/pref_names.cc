@@ -9,11 +9,6 @@ namespace prefs {
 // The file path of the Speech On-Device API (SODA) binary.
 const char kSodaBinaryPath[] = "accessibility.captions.soda_binary_path";
 
-// The scheduled time to clean up the Speech On-Device API (SODA) files from the
-// device.
-const char kSodaScheduledDeletionTime[] =
-    "accessibility.captions.soda_scheduled_deletion_time";
-
 // The file path of the en-US Speech On-Device API (SODA) configuration file.
 const char kSodaEnUsConfigPath[] =
     "accessibility.captions.soda_en_us_config_path";
@@ -81,6 +76,127 @@ const char kSodaZhCnConfigPath[] =
 // The file path of the zh-TW Speech On-Device API (SODA) configuration file.
 const char kSodaZhTwConfigPath[] =
     "accessibility.captions.soda_zh_tw_config_path";
+
+// The file path of the nb-NO Speech On-Device API (SODA) configuration file.
+const char kSodaNbNoConfigPath[] =
+    "accessibility.captions.soda_nb_no_config_path";
+
+// The file path of the da-DK Speech On-Device API (SODA) configuration file.
+const char kSodaDaDkConfigPath[] =
+    "accessibility.captions.soda_da_dk_config_path";
+
+// The file path of the nl-NL Speech On-Device API (SODA) configuration file.
+const char kSodaNlNlConfigPath[] =
+    "accessibility.captions.soda_nl_nl_config_path";
+
+// The file path of the sv-SE Speech On-Device API (SODA) configuration file.
+const char kSodaSvSeConfigPath[] =
+    "accessibility.captions.soda_sv_se_config_path";
+
+// The scheduled deletion time of the en-US Speech On-Device API (SODA)
+// configuration file.
+const char kSodaEnUsScheduledDeletionTime[] =
+    "accessibility.captions.soda_en_us_scheduled_deletion_time";
+
+// The scheduled deletion time of the ja-JP Speech On-Device API (SODA)
+// configuration file.
+const char kSodaJaJpScheduledDeletionTime[] =
+    "accessibility.captions.soda_ja_jp_scheduled_deletion_time";
+
+// The scheduled deletion time of the de-DE Speech On-Device API (SODA)
+// configuration file.
+const char kSodaDeDeScheduledDeletionTime[] =
+    "accessibility.captions.soda_de_de_scheduled_deletion_time";
+
+// The scheduled deletion time of the es-ES Speech On-Device API (SODA)
+// configuration file.
+const char kSodaEsEsScheduledDeletionTime[] =
+    "accessibility.captions.soda_es_es_scheduled_deletion_time";
+
+// The scheduled deletion time of the fr-FR Speech On-Device API (SODA)
+// configuration file.
+const char kSodaFrFrScheduledDeletionTime[] =
+    "accessibility.captions.soda_fr_fr_scheduled_deletion_time";
+
+// The scheduled deletion time of the it-IT Speech On-Device API (SODA)
+// configuration file.
+const char kSodaItItScheduledDeletionTime[] =
+    "accessibility.captions.soda_it_it_scheduled_deletion_time";
+
+// The scheduled deletion time of the hi-IN Speech On-Device API (SODA)
+// configuration file.
+const char kSodaHiInScheduledDeletionTime[] =
+    "accessibility.captions.soda_hi_in_scheduled_deletion_time";
+
+// The scheduled deletion time of the pt-BR Speech On-Device API (SODA)
+// configuration file.
+const char kSodaPtBrScheduledDeletionTime[] =
+    "accessibility.captions.soda_pt_br_scheduled_deletion_time";
+
+// The scheduled deletion time of the id-ID Speech On-Device API (SODA)
+// configuration file.
+const char kSodaIdIdScheduledDeletionTime[] =
+    "accessibility.captions.soda_id_id_scheduled_deletion_time";
+
+// The scheduled deletion time of the ko-KR Speech On-Device API (SODA)
+// configuration file.
+const char kSodaKoKrScheduledDeletionTime[] =
+    "accessibility.captions.soda_ko_kr_scheduled_deletion_time";
+
+// The scheduled deletion time of the pl-PL Speech On-Device API (SODA)
+// configuration file.
+const char kSodaPlPlScheduledDeletionTime[] =
+    "accessibility.captions.soda_pl_pl_scheduled_deletion_time";
+
+// The scheduled deletion time of the ru-RU Speech On-Device API (SODA)
+// configuration file.
+const char kSodaRuRuScheduledDeletionTime[] =
+    "accessibility.captions.soda_ru_ru_scheduled_deletion_time";
+
+// The scheduled deletion time of the th-TH Speech On-Device API (SODA)
+// configuration file.
+const char kSodaThThScheduledDeletionTime[] =
+    "accessibility.captions.soda_th_th_scheduled_deletion_time";
+
+// The scheduled deletion time of the tr-TR Speech On-Device API (SODA)
+// configuration file.
+const char kSodaTrTrScheduledDeletionTime[] =
+    "accessibility.captions.soda_tr_tr_scheduled_deletion_time";
+
+// The scheduled deletion time of the vi-VN Speech On-Device API (SODA)
+// configuration file.
+const char kSodaViVnScheduledDeletionTime[] =
+    "accessibility.captions.soda_vi_vn_scheduled_deletion_time";
+
+// The scheduled deletion time of the zh-CN Speech On-Device API (SODA)
+// configuration file.
+const char kSodaZhCnScheduledDeletionTime[] =
+    "accessibility.captions.soda_zh_cn_scheduled_deletion_time";
+
+// The scheduled deletion time of the zh-TW Speech On-Device API (SODA)
+// configuration file.
+const char kSodaZhTwScheduledDeletionTime[] =
+    "accessibility.captions.soda_zh_tw_scheduled_deletion_time";
+
+// The scheduled deletion time of the nb-NO Speech On-Device API (SODA)
+// configuration file.
+const char kSodaNbNoScheduledDeletionTime[] =
+    "accessibility.captions.soda_nb_no_scheduled_deletion_time";
+
+// The scheduled deletion time of the da-DK Speech On-Device API (SODA)
+// configuration file.
+const char kSodaDaDkScheduledDeletionTime[] =
+    "accessibility.captions.soda_da_dk_scheduled_deletion_time";
+
+// The scheduled deletion time of the nl-NL Speech On-Device API (SODA)
+// configuration file.
+const char kSodaNlNlScheduledDeletionTime[] =
+    "accessibility.captions.soda_nl_nl_scheduled_deletion_time";
+
+// The scheduled deletion time of the sv-SE Speech On-Device API (SODA)
+// configuration file.
+const char kSodaSvSeScheduledDeletionTime[] =
+    "accessibility.captions.soda_sv_se_scheduled_deletion_time";
 
 // The list of Speech On-Device API (SODA) language packs installed or
 // registered to be installed.

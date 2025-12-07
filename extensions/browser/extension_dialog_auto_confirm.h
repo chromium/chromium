@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/auto_reset.h"
 
 namespace extensions {
 
@@ -21,7 +20,7 @@ class ScopedTestDialogAutoConfirm {
     CANCEL,             // The prompt will always cancel.
   };
 
-  // Set up auto confirm value to |override_confirm_value| so the dialog is
+  // Set up auto confirm value to `override_confirm_value` so the dialog is
   // automatically shown, accepted, or cancelled.
   explicit ScopedTestDialogAutoConfirm(AutoConfirm override_confirm_value);
 

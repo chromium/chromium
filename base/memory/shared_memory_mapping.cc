@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/memory/shared_memory_mapping.h"
 
 #include <cstdint>
 #include <utility>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_security_policy.h"
 #include "base/memory/shared_memory_tracker.h"
@@ -55,15 +51,17 @@ SharedMemoryMapping::SharedMemoryMapping(span<uint8_t> mapped_span,
 }
 
 void SharedMemoryMapping::Unmap() {
-  if (!IsValid())
+  if (!IsValid()) {
     return;
+  }
 
   SharedMemorySecurityPolicy::ReleaseReservationForMapping(size_);
   SharedMemoryTracker::GetInstance()->DecrementMemoryUsage(*this);
 
   SharedMemoryMapper* mapper = mapper_;
-  if (!mapper)
+  if (!mapper) {
     mapper = SharedMemoryMapper::GetDefaultInstance();
+  }
 
   // The backing mapper expects offset to be aligned to
   // `SysInfo::VMAllocationGranularity()`, so replicate the alignment that was
@@ -73,8 +71,7 @@ void SharedMemoryMapping::Unmap() {
   size_t adjusted_size =
       mapped_span_.size() +
       static_cast<size_t>(mapped_span_.data() - aligned_data);
-  span<uint8_t> span_to_unmap = make_span(aligned_data, adjusted_size);
-  mapper->Unmap(span_to_unmap);
+  mapper->Unmap(UNSAFE_TODO(span(aligned_data, adjusted_size)));
 }
 
 ReadOnlySharedMemoryMapping::ReadOnlySharedMemoryMapping() = default;

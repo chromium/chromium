@@ -79,7 +79,7 @@ class PLATFORM_EXPORT BytesConsumer : public GarbageCollected<BytesConsumer> {
   virtual ~BytesConsumer() {}
 
   // Begins a two-phase read. On success, the function stores a buffer
-  // that contains the read data of length |*available| into |*buffer|.
+  // that contains the read data of length `buffer`.
   // Returns Ok when readable.
   // Returns ShouldWait when it's waiting.
   // Returns Done when it's closed.
@@ -87,13 +87,11 @@ class PLATFORM_EXPORT BytesConsumer : public GarbageCollected<BytesConsumer> {
   // When not readable, the caller doesn't have to (and must not) call
   // EndRead, because the read session implicitly ends in that case.
   //
-  // |*buffer| will become invalid when this object becomes unreachable,
+  // `buffer` will become invalid when this object becomes unreachable,
   // even if EndRead is not called.
   //
-  // |*buffer| will be set to null and |*available| will be set to 0 if not
-  // readable.
-  [[nodiscard]] virtual Result BeginRead(const char** buffer,
-                                         size_t* available) = 0;
+  // `buffer` will be set to empty if not readable.
+  [[nodiscard]] virtual Result BeginRead(base::span<const char>& buffer) = 0;
 
   // Ends a two-phase read.
   // This function can modify this BytesConsumer's state.
@@ -190,7 +188,7 @@ class PLATFORM_EXPORT BytesConsumer : public GarbageCollected<BytesConsumer> {
       case InternalState::kErrored:
         return PublicState::kErrored;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 

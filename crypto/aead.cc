@@ -6,8 +6,11 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <string>
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"

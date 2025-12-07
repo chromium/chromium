@@ -3,19 +3,14 @@
 // found in the LICENSE file.
 
 import {PageHandlerFactory, PageHandlerRemote} from './browser.mojom-webui.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {Url as MojoUrl} from '//resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {
-  DictionaryValue as mojoBase_mojom_DictionaryValue
-} from '//resources/mojo/mojo/public/mojom/base/values.mojom-webui.js';
+import '/strings.m.js';
 
 interface WebshellServices {
   allowWebviewElementRegistration(callback: ()=>void): void;
-  getNextId(): number;
-  registerWebView(viewInstanceId: number): void;
-  attachIframeGuest(containerId: number,
-                    guestInstanceId: number,
-                    attachParams: object,
+  attachIframeGuest(guestContentsId: number,
                     contentWindow: Window | null): void
 }
 
@@ -45,9 +40,7 @@ class BrowserProxy {
 
 class WebviewElement extends HTMLElement {
   public iframeElement: HTMLIFrameElement;
-  private viewInstanceId: number;
-  private containerId: number;
-  private guestInstanceId: number;
+  private guestContentsId: number;
 
   constructor() {
     super();
@@ -57,42 +50,23 @@ class WebviewElement extends HTMLElement {
     this.iframeElement.style.padding = "0";
     this.iframeElement.style.flex = '1';
     this.appendChild(this.iframeElement);
-    this.viewInstanceId = webshell.getNextId();
-    this.containerId = webshell.getNextId();
-    this.guestInstanceId = -1;
-    const instance = this;
-    webshell.registerWebView(this.viewInstanceId);
-    const createParams: mojoBase_mojom_DictionaryValue = {
-      storage: {"instanceId": {"intValue": this.viewInstanceId}}
-    };
-    BrowserProxy.getInstance().createGuestView(
-        createParams).then((result) => {
-          instance.onGuestViewCreated(result.guestInstanceId);
-        });
-  }
-
-  onGuestViewCreated(guestInstanceId: number) {
-    this.guestInstanceId = guestInstanceId;
-    const createParams: mojoBase_mojom_DictionaryValue = {
-      storage: {"instanceId": {"intValue": this.viewInstanceId}}
-    };
+    this.guestContentsId = loadTimeData.getInteger('guest-contents-id');
+    console.log('guest-contents-id', this.guestContentsId);
     const iframeContentWindow = this.iframeElement.contentWindow;
-    webshell.attachIframeGuest(this.containerId,
-                               this.guestInstanceId,
-                               createParams,
+    webshell.attachIframeGuest(this.guestContentsId,
                                iframeContentWindow);
   }
 
   navigate(src: MojoUrl) {
-    BrowserProxy.getInstance().navigate(this.guestInstanceId, src);
+    BrowserProxy.getInstance().navigate(this.guestContentsId, src);
   }
 
   goBack() {
-    BrowserProxy.getInstance().goBack(this.guestInstanceId);
+    BrowserProxy.getInstance().goBack(this.guestContentsId);
   }
 
   goForward() {
-    BrowserProxy.getInstance().goForward(this.guestInstanceId);
+    BrowserProxy.getInstance().goForward(this.guestContentsId);
   }
 }
 

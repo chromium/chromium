@@ -4,50 +4,46 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.answer;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.LocaleUtils;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxDrawableState;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
-import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteUIContext;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewProperties;
 import org.chromium.components.omnibox.AnswerTypeProto.AnswerType;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
-import java.util.Optional;
-
 /** A class that handles model and view creation for the most commonly used omnibox suggestion. */
+@NullMarked
 public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     private static final String COLOR_REVERSAL_COUNTRY_LIST = "ja-JP,ko-KR,zh-CN,zh-TW";
 
     private final UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
 
-    public AnswerSuggestionProcessor(
-            @NonNull Context context,
-            @NonNull SuggestionHost suggestionHost,
-            @NonNull UrlBarEditingTextStateProvider editingTextProvider,
-            @NonNull Optional<OmniboxImageSupplier> imageSupplier) {
-        super(context, suggestionHost, imageSupplier);
-        mUrlBarEditingTextProvider = editingTextProvider;
+    /**
+     * Constructor using AutocompleteUIContext for common dependencies.
+     *
+     * @param uiContext Context object containing common UI dependencies.
+     */
+    public AnswerSuggestionProcessor(AutocompleteUIContext uiContext) {
+        super(uiContext);
+        mUrlBarEditingTextProvider = uiContext.textProvider;
     }
 
     @Override
-    public boolean doesProcessSuggestion(@NonNull AutocompleteMatch suggestion, int position) {
+    public boolean doesProcessSuggestion(AutocompleteMatch suggestion, int position) {
         // Calculation answers are specific in a way that these are basic suggestions, but processed
         // as answers, when new answer layout is enabled.
         return suggestion.getAnswerTemplate() != null
-                || suggestion.hasAnswer()
                 || suggestion.getType() == OmniboxSuggestionType.CALCULATOR;
     }
 
@@ -57,32 +53,32 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public @NonNull PropertyModel createModel() {
+    public PropertyModel createModel() {
         return new PropertyModel(AnswerSuggestionViewProperties.ALL_KEYS);
     }
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
-        setStateForSuggestion(model, suggestion, position);
+            AutocompleteInput input,
+            AutocompleteMatch suggestion,
+            PropertyModel model,
+            int position) {
+        super.populateModel(input, suggestion, model, position);
+        setStateForSuggestion(model, input, suggestion, position);
     }
 
     private void setStateForSuggestion(
-            PropertyModel model, AutocompleteMatch suggestion, int position) {
-        AnswerType answerType =
-                suggestion.getAnswer() == null
-                        ? suggestion.getAnswerType()
-                        : suggestion.getAnswer().getType();
+            PropertyModel model,
+            AutocompleteInput input,
+            AutocompleteMatch suggestion,
+            int position) {
+        AnswerType answerType = suggestion.getAnswerType();
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details;
-        boolean shouldShowCardUi = false;
+        boolean shouldShowCardUi = false; // Set to `true` for large answer card.
         model.set(BaseSuggestionViewProperties.TOP_PADDING, 0);
         model.set(AnswerSuggestionViewProperties.RIGHT_PADDING, 0);
         if (suggestion.getAnswerTemplate() != null) {
-            shouldShowCardUi =
-                    OmniboxFeatures.shouldShowRichAnswerCard()
-                            && suggestion.getActions().size() > 0;
             details =
                     RichAnswerText.from(
                             mContext,
@@ -105,11 +101,10 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
             }
         } else {
             details =
-                    AnswerTextNewLayout.from(
+                    CalculatorAnswerTextLayout.from(
                             mContext,
                             suggestion,
-                            mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
-                            suggestionTextColorReversal);
+                            mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
         }
 
         model.set(AnswerSuggestionViewProperties.TEXT_LINE_1_TEXT, details[0].getText());
@@ -128,11 +123,9 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         if (shouldShowCardUi) {
             setActionButtons(model, null);
         } else {
-            setTabSwitchOrRefineAction(model, suggestion, position);
+            setRemoveOrRefineAction(model, input, suggestion, position);
         }
-        if (suggestion.hasAnswer() && suggestion.getAnswer().getSecondLine().hasImage()) {
-            fetchImage(model, new GURL(suggestion.getAnswer().getSecondLine().getImage()));
-        } else if (suggestion.getAnswerTemplate() != null) {
+        if (suggestion.getAnswerTemplate() != null) {
             GURL imageUrl =
                     suggestion.getAnswerTemplate().getAnswers(0).hasImage()
                             ? new GURL(
@@ -179,13 +172,13 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     }
 
     @Override
-    public @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch suggestion) {
+    public OmniboxDrawableState getFallbackIcon(AutocompleteMatch suggestion) {
         int icon = 0;
 
-        AnswerType type =
-                suggestion.getAnswer() == null
-                        ? suggestion.getAnswerType()
-                        : suggestion.getAnswer().getType();
+        AnswerType type = suggestion.getAnswerType();
+        if (type == null) {
+            type = AnswerType.ANSWER_TYPE_UNSPECIFIED;
+        }
         if (type != AnswerType.ANSWER_TYPE_UNSPECIFIED) {
             switch (type) {
                 case ANSWER_TYPE_DICTIONARY:
@@ -206,9 +199,6 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
                     break;
                 case ANSWER_TYPE_WEATHER:
                     icon = R.drawable.logo_partly_cloudy;
-                    break;
-                case ANSWER_TYPE_WHEN_IS:
-                    icon = R.drawable.ic_event_round;
                     break;
                 case ANSWER_TYPE_CURRENCY:
                     icon = R.drawable.ic_loop_round;

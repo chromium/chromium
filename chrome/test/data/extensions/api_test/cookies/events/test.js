@@ -127,5 +127,37 @@ chrome.test.runTests([
       value: '43',
       expirationDate: 1
     });
-  }
+  },
+  // Regression test for https://crbug.com/423096904.
+  function overwriteNoChange() {
+    var eventsObserved = 0;
+    var cookieOpts = {
+      url: 'http://a.com/path',
+      name: 'testOverwrite',
+      value: '42',
+      expirationDate: TEST_EXPIRATION_DATE
+    };
+    var done = chrome.test.listenForever(
+        chrome.cookies.onChanged,
+        function (info) {
+          eventsObserved++;
+          if (eventsObserved === 1) {
+            chrome.test.assertEq('explicit', info.cause);
+            chrome.test.assertEq(OVERWRITE_COOKIE_PRE, info.cookie);
+            chrome.test.assertFalse(info.removed);
+            // Overwrite with an exact duplicate cookie.
+            chrome.cookies.set(cookieOpts);
+          } else if (eventsObserved === 2) {
+            chrome.test.assertEq('overwrite', info.cause);
+            chrome.test.assertEq(OVERWRITE_COOKIE_PRE, info.cookie);
+            chrome.test.assertTrue(info.removed);
+          } else if (eventsObserved === 3) {
+            chrome.test.assertEq('explicit', info.cause);
+            chrome.test.assertEq(OVERWRITE_COOKIE_PRE, info.cookie);
+            chrome.test.assertFalse(info.removed);
+            done();
+          }
+        });
+    chrome.cookies.set(cookieOpts);
+  },
 ]);

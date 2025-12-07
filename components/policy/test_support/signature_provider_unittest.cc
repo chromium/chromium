@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "crypto/rsa_private_key.h"
 #include "crypto/signature_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,9 +49,9 @@ TEST_P(SignatureProviderWithValidKeyIndexTest, TestSha256Rsa) {
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
       crypto::SignatureVerifier::RSA_PKCS1_SHA256,
-      base::as_bytes(base::make_span(signature)),
-      base::as_bytes(base::make_span(signing_key->public_key()))));
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(some_string)));
+      base::as_byte_span(signature),
+      base::as_byte_span(signing_key->public_key())));
+  signature_verifier.VerifyUpdate(base::as_byte_span(some_string));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 
@@ -78,10 +77,9 @@ TEST_P(SignatureProviderWithValidKeyIndexTest, TestSha1Rsa) {
   EXPECT_FALSE(signature.empty());
   crypto::SignatureVerifier signature_verifier;
   ASSERT_TRUE(signature_verifier.VerifyInit(
-      crypto::SignatureVerifier::RSA_PKCS1_SHA1,
-      base::as_bytes(base::make_span(signature)),
-      base::as_bytes(base::make_span(signing_key->public_key()))));
-  signature_verifier.VerifyUpdate(base::as_bytes(base::make_span(some_string)));
+      crypto::SignatureVerifier::RSA_PKCS1_SHA1, base::as_byte_span(signature),
+      base::as_byte_span(signing_key->public_key())));
+  signature_verifier.VerifyUpdate(base::as_byte_span(some_string));
   EXPECT_TRUE(signature_verifier.VerifyFinal());
 }
 

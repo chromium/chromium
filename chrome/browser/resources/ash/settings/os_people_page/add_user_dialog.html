@@ -6,7 +6,7 @@
 <cr-dialog id="dialog" close-text="$i18n{close}">
   <div slot="title">$i18n{addUsers}</div>
   <div slot="body">
-    <cr-input id="addUserInput" label="$i18n{addUsersEmail}"
+    <cr-input id="addUserInput" type="email" label="$i18n{addUsersEmail}"
         invalid="[[shouldShowError_(errorCode_)]]"
         on-value-changed="onInput_"
         error-message="[[getErrorString_(errorCode_)]]" autofocus>

@@ -11,7 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class TabStripModel;
 
@@ -43,6 +43,9 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
   // Command IDs for various submenus.
   static constexpr int kMinExistingWindowCommandId = 1001;
   static constexpr int kMinExistingTabGroupCommandId = 1301;
+  static constexpr int kMinExistingComparisonTableCommandId = 1601;
+  static constexpr int kMinSplitTabMenuModelCommandId = 1701;
+  static constexpr int kMinSplitTabSwapMenuModelCommandId = 1801;
 
   ExistingBaseSubMenuModel(const ExistingBaseSubMenuModel&) = delete;
   ExistingBaseSubMenuModel& operator=(const ExistingBaseSubMenuModel&) = delete;
@@ -77,13 +80,17 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
     // |accessible_name| is empty, then the default accessible name will be used
     // for this item.
     std::u16string accessible_name;
+
+    // Specifies whether the menu item should have a separator line appearing
+    // before itself in the submenu.
+    bool has_separator_before = false;
   };
 
   // Helper method to create consistent submenus.|new_text| is the label to add
   // the tab to a new object model (e.g. group or window). |menu_item_infos| is
   // a vector of text and optionally images for adding the tab to an existing
   // object model.
-  void Build(int new_text, std::vector<MenuItemInfo> menu_item_infos);
+  void Build(int new_text, const std::vector<MenuItemInfo>& menu_item_infos);
 
   // Clears the MenuModel and |command_id_to_target_index_|.
   void ClearMenu();

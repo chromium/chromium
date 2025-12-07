@@ -6,10 +6,12 @@
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MESSAGING_ACCELERATED_IMAGE_INFO_H_
 
 #include "base/functional/callback.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/common/common_export.h"
-#include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkAlphaType.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -18,12 +20,9 @@ namespace blink {
 // See third_party/blink/public/mojom/messaging/static_bitmap_image.mojom
 // for details.
 struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
-  gpu::MailboxHolder mailbox_holder;
-  uint32_t usage;
-  SkImageInfo image_info;
-  bool is_origin_top_left;
-  bool supports_display_compositing;
-  bool is_overlay_candidate;
+  gpu::ExportedSharedImage shared_image;
+  gpu::SyncToken sync_token;
+  SkAlphaType alpha_type;
   base::OnceCallback<void(const gpu::SyncToken& sync_token)> release_callback;
 };
 

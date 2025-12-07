@@ -24,11 +24,11 @@ class OpenXrUnboundedSpaceProviderMsftFactory
 
   const base::flat_set<std::string_view>& GetRequestedExtensions()
       const override;
-  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures(
-      const OpenXrExtensionEnumeration* extension_enum) const override;
+  std::set<device::mojom::XRSessionFeature> GetSupportedFeatures()
+      const override;
 
-  std::unique_ptr<OpenXrUnboundedSpaceProvider> CreateUnboundedSpaceProvider(
-      const OpenXrExtensionHelper& extension_helper) const override;
+  std::unique_ptr<OpenXrUnboundedSpaceProvider> CreateUnboundedSpaceProvider()
+      const override;
 };
 }  // namespace device
 #endif  // DEVICE_VR_OPENXR_MSFT_OPENXR_UNBOUNDED_SPACE_PROVIDER_MSFT_H_

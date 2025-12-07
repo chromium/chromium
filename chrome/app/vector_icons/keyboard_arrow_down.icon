@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 CANVAS_DIMENSIONS, 24,
-MOVE_TO, 7.41f, 8.59f,
-LINE_TO, 12, 13.17f,
-R_LINE_TO, 4.59f, -4.58f,
+MOVE_TO, 7.41, 8.59,
+LINE_TO, 12, 13.17,
+R_LINE_TO, 4.59, -4.58,
 LINE_TO, 18, 10,
 R_LINE_TO, -6, 6,
 R_LINE_TO, -6, -6,
-R_LINE_TO, 1.41f, -1.41f,
+R_LINE_TO, 1.41, -1.41,
 CLOSE

@@ -10,11 +10,28 @@
 
 import {assert, assertNotReached} from '//resources/ash/common/assert.js';
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {ActivationStateType, ApnProperties, AuthenticationType, ConfigProperties, DeviceStateProperties as MojomDeviceStateProperties, HiddenSsidMode, InhibitReason, IPConfigProperties, ManagedApnList, ManagedBoolean, ManagedInt32, ManagedProperties, ManagedString, ManagedStringList, ManagedSubjectAltNameMatchList, MatchType, NetworkStateProperties as MojomNetworkStateProperties, ProxyMode, SecurityType, SIMInfo, SIMLockStatus, SubjectAltName, SubjectAltName_Type, TetherStateProperties, TrafficCounterProperties, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ActivationStateType, AuthenticationType, HiddenSsidMode, InhibitReason, MatchType, ProxyMode, SecurityType, SubjectAltName_Type, VpnType} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, IPConfigType, NetworkType, OncSource, PolicySource, PortalState} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {IPAddress} from '//resources/mojo/services/network/public/mojom/ip_address.mojom-webui.js';
 
-
+// Type aliases for js-webui to ts-webui migration
+/** @typedef {*} ApnProperties */
+/** @typedef {*} ConfigProperties */
+/** @typedef {*} IPAddress */
+/** @typedef {*} IPConfigProperties */
+/** @typedef {*} ManagedApnList */
+/** @typedef {*} ManagedBoolean */
+/** @typedef {*} ManagedInt32 */
+/** @typedef {*} ManagedProperties */
+/** @typedef {*} ManagedString */
+/** @typedef {*} ManagedStringList */
+/** @typedef {*} ManagedSubjectAltNameMatchList */
+/** @typedef {*} MojomDeviceStateProperties */
+/** @typedef {*} MojomNetworkStateProperties */
+/** @typedef {*} SIMInfo */
+/** @typedef {*} SIMLockStatus */
+/** @typedef {*} SubjectAltName */
+/** @typedef {*} TetherStateProperties */
+/** @typedef {*} TrafficCounterProperties */
 
 // Used to indicate a saved but unknown credential value. Will appear as
 // placeholder character in the credential (passphrase, password, etc.) field by
@@ -34,7 +51,7 @@ export class OncMojo {
    * @return {string}
    */
   static getEnumString(value) {
-    if (value === undefined) {
+    if (value === undefined || value === null) {
       return 'undefined';
     }
     return value.toString();
@@ -807,37 +824,75 @@ export class OncMojo {
   }
 
   /**
-   * Returns a ConfigProperties object with a default networkType struct
-   * based on |type|.
-   * @param {!NetworkType} type
+   * Returns a ConfigProperties object based on |managedProperties| that is
+   * suitable for updating a network's configuration. The returned object
+   * will have a default |typeConfig| created based on the network type.
+   *
+   * Due to imperfect handling of certain network properties in the ONC-to-Shill
+   * layer, this function explicitly copies certain existing network
+   * properties to its output when *any* property is changed. The intention of
+   * always including these properties is to preserve their value; the output of
+   * this function, without additional changes, should not result in any changes
+   * when applied. For more information see https://crbug.com/448829077.
+   *
+   * @param {!ManagedProperties} managedProperties
    * @return {!ConfigProperties}
    */
-  static getDefaultConfigProperties(type) {
+  static getBaselineConfigProperties(managedProperties) {
+    const type = managedProperties.type;
+    const config = {};
     switch (type) {
       case NetworkType.kCellular:
-        return {typeConfig: {cellular: {}}};
+        config.typeConfig = {cellular: {}};
         break;
       case NetworkType.kEthernet:
-        return {typeConfig: {ethernet: {}}};
+        config.typeConfig = {ethernet: {}};
         break;
       case NetworkType.kVPN:
-        return {typeConfig: {vpn: {}}};
+        config.typeConfig = {vpn: {}};
         break;
       case NetworkType.kWiFi:
-        // Note: wifi.security can not be changed, so |security| will be ignored
-        // for existing configurations.
-        return {
-          typeConfig: {
-            wifi: {
-              security: SecurityType.kNone,
-              hiddenSsid: HiddenSsidMode.kAutomatic,
-            },
+        // Note: wifi.security can not be changed, so |security| will be
+        // ignored for existing configurations.
+        config.typeConfig = {
+          wifi: {
+            security: SecurityType.kNone,
+            // The automatic hidden SSID mode is the default value and
+            // effectively means that Chrome should defer to the platform layer
+            // for the actual value. The result is that we satisfy the
+            // requirement of providing a value here while knowing that this
+            // value will not result in any changes to the network.
+            hiddenSsid: HiddenSsidMode.kAutomatic,
           },
         };
         break;
+      default:
+        assertNotReached('Unexpected type: ' + type.toString());
+        config.typeConfig = {};
     }
-    assertNotReached('Unexpected type: ' + type.toString());
-    return {typeConfig: {}};
+
+    // Unlike most properties, if the IP address or name servers config type are
+    // missing when setting any property the static IP config will be cleared.
+    // To avoid wrongly clearing the static IP config we resend the existing
+    // values of the IP address and name servers config types, and the static IP
+    // config entirely, if they exist. For more information see
+    // https://crbug.com/448829077.
+    const ipAddressConfigType =
+        OncMojo.getActiveValue(managedProperties.ipAddressConfigType);
+    if (ipAddressConfigType) {
+      config.ipAddressConfigType = ipAddressConfigType;
+    }
+    const nameServersConfigType =
+        OncMojo.getActiveValue(managedProperties.nameServersConfigType);
+    if (nameServersConfigType) {
+      config.nameServersConfigType = nameServersConfigType;
+    }
+    // The static IP config is not a managed field so we can copy it directly.
+    if (ipAddressConfigType === 'Static' ||
+        nameServersConfigType === 'Static') {
+      config.staticIpConfig = managedProperties.staticIpConfig;
+    }
+    return config;
   }
 
   /**
@@ -1039,7 +1094,7 @@ export class OncMojo {
     }
 
     // Set ONC IP config properties to existing values + new values.
-    const config = OncMojo.getDefaultConfigProperties(managedProperties.type);
+    const config = OncMojo.getBaselineConfigProperties(managedProperties);
     config.ipAddressConfigType = ipConfigType;
     config.nameServersConfigType = nsConfigType;
     if (ipConfigType === 'Static') {
@@ -1217,8 +1272,8 @@ export class OncMojo {
 
   /**
    * Returns true if the APN List matches.
-   * @param {Array<!ApnProperties>|undefined} a
-   * @param {Array<!ApnProperties>|undefined} b
+   * @param {Array<!ApnProperties>|undefined|null} a
+   * @param {Array<!ApnProperties>|undefined|null} b
    * @return {boolean}
    */
   static apnListMatch(a, b) {
@@ -1399,14 +1454,14 @@ OncMojo.ManagedProperty;
 /**
  * Modified version of IPConfigProperties to store routingPrefix as
  * a human-readable netmask string instead of as a number. Used in
- * network_ip_config.js.
+ * network_ip_config.ts.
  * @typedef {{
- *   gateway: (string|undefined),
- *   ipAddress: (string|undefined),
- *   nameServers: (Array<string>|undefined),
- *   netmask: (string|undefined),
+ *   gateway: (string|null),
+ *   ipAddress: (string|null),
+ *   nameServers: (Array<string>|null),
+ *   netmask: (string|null),
  *   type: !IPConfigType,
- *   webProxyAutoDiscoveryUrl: (string|undefined),
+ *   webProxyAutoDiscoveryUrl: (string|null),
  * }}
  */
 OncMojo.IPConfigUIProperties;

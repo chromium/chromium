@@ -1,8 +1,8 @@
 include_rules = [
   "+absl/types/variant.h",
+  "+chromeos/ash/components/policy/device_local_account",
   "+chromeos/ash/components/system",
   "+chromeos/crosapi",
-  "+chromeos/lacros",
   "+chromeos/startup",
   "+components/account_id",
   "+components/reporting",

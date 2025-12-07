@@ -9,14 +9,13 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/escape.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper_delegate.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
-#import "ios/chrome/browser/download/model/mime_type_util.h"
+#import "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 #import "ios/web/public/download/download_task.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/net_errors.h"
@@ -97,7 +96,7 @@ void LogHistogram(web::DownloadTask* download_task) {
 // parse ref).
 GURL ConvertRefToQueryInUrl(const GURL& url) {
   GURL::Replacements replacement;
-  replacement.SetQueryStr(url.ref_piece());
+  replacement.SetQueryStr(url.ref());
   replacement.ClearRef();
 
   return url.ReplaceComponents(replacement);
@@ -139,8 +138,9 @@ void ARQuickLookTabHelper::Download(
   // Calling DownloadTask::Start() may cause the task to be immediately
   // destroyed (e.g. if it is in error). Only call `LogHistogram` is it
   // is still valid and owned by the current object.
-  if (download_task_)
+  if (download_task_) {
     LogHistogram(download_task_.get());
+  }
 }
 
 void ARQuickLookTabHelper::DidFinishDownload() {
@@ -165,7 +165,7 @@ void ARQuickLookTabHelper::DidFinishDownload() {
     // URL, but this appears to work well enough for https://crbug.com/1341660
     // issue.
     url = GURL(base::UnescapeURLComponent(
-        url.path(),
+        url.GetPath(),
         base::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
   }
 
@@ -226,8 +226,6 @@ void ARQuickLookTabHelper::OnDownloadUpdated(web::DownloadTask* download_task) {
       DidFinishDownload();
       break;
     case web::DownloadTask::State::kNotStarted:
-      NOTREACHED_IN_MIGRATION() << "Invalid state.";
+      NOTREACHED() << "Invalid state.";
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(ARQuickLookTabHelper)

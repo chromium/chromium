@@ -8,8 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 

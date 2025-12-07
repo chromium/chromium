@@ -37,12 +37,11 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
   float DesiredWidth() const;
   String GetTextContent() const;
 
-  // Compressed font
   const Font* CompressedFont() const {
     NOT_DESTROYED();
-    return has_compressed_font_ ? &compressed_font_ : nullptr;
+    return compressed_font_;
   }
-  void SetCompressedFont(const Font& font);
+  void SetCompressedFont(const Font* font);
 
   // Scaling
 
@@ -105,6 +104,9 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
   // Returns true if |layout_object| is a child of |LayoutTextCombine|.
   static bool ShouldBeParentOf(const LayoutObject& layout_object);
 
+  // Returns true if `mode` is a supported writing-mode.
+  static bool IsSupportedMode(WritingMode mode);
+
  private:
   bool IsLayoutTextCombine() const final {
     NOT_DESTROYED();
@@ -129,22 +131,24 @@ class CORE_EXPORT LayoutTextCombine final : public LayoutBlockFlow {
   std::optional<float> scale_x_;
 
   // |compressed_font_| hold width variant of |StyleRef().GetFont()|.
-  //
-  // NOTE: This doesn't use a std::optional to avoid a potentially racy branch
-  // within the Trace method.
-  Font compressed_font_;
-  bool has_compressed_font_ = false;
+  Member<const Font> compressed_font_;
 };
+
+inline bool LayoutTextCombine::IsSupportedMode(WritingMode mode) {
+  if (!RuntimeEnabledFeatures::TextCombineNoSidewaysEnabled()) {
+    return !blink::IsHorizontalWritingMode(mode);
+  }
+  return !blink::IsHorizontalTypographicMode(mode);
+}
 
 // static
 inline bool LayoutTextCombine::ShouldBeParentOf(
     const LayoutObject& layout_object) {
-  if (LIKELY(layout_object.IsHorizontalWritingMode()) ||
-      !layout_object.IsText() || layout_object.IsSVGInlineText()) {
+  if (!IsSupportedMode(layout_object.StyleRef().GetWritingMode()) ||
+      !layout_object.IsText() || layout_object.IsSVGInlineText()) [[likely]] {
     return false;
   }
-  return UNLIKELY(layout_object.StyleRef().HasTextCombine()) &&
-         layout_object.IsLayoutNGObject();
+  return layout_object.StyleRef().HasTextCombine();
 }
 
 template <>

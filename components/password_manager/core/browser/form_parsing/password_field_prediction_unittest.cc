@@ -10,38 +10,31 @@
 #include "base/containers/flat_map.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/autofill_server_prediction.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::ACCOUNT_CREATION_PASSWORD;
+using autofill::AutofillServerPrediction;
 using autofill::AutofillType;
 using autofill::CalculateFieldSignatureForField;
 using autofill::CalculateFormSignature;
-using autofill::CONFIRMATION_PASSWORD;
-using autofill::CREDIT_CARD_NUMBER;
-using autofill::CREDIT_CARD_VERIFICATION_CODE;
-using autofill::EMAIL_ADDRESS;
 using autofill::FieldGlobalId;
 using autofill::FieldType;
 using autofill::FormControlType;
 using autofill::FormData;
 using autofill::FormFieldData;
-using autofill::NEW_PASSWORD;
-using autofill::NO_SERVER_DATA;
-using autofill::PASSWORD;
-using autofill::SINGLE_USERNAME;
-using autofill::UNKNOWN_TYPE;
-using autofill::USERNAME;
-using autofill::USERNAME_AND_EMAIL_ADDRESS;
 using base::ASCIIToUTF16;
+
+using enum autofill::FieldType;
 
 using FieldPrediction = autofill::AutofillQueryResponse::FormSuggestion::
     FieldSuggestion::FieldPrediction;
@@ -57,33 +50,28 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     FormControlType form_control_type;
     FieldType input_type;
     FieldType expected_type;
-    bool may_use_prefilled_placeholder;
     std::vector<FieldType> additional_types;
   };
   const auto test_fields = std::to_array<TestField>(
-      {{"full_name", FormControlType::kInputText, UNKNOWN_TYPE, UNKNOWN_TYPE,
-        false},
+      {{"full_name", FormControlType::kInputText, UNKNOWN_TYPE, UNKNOWN_TYPE},
        // Password Manager is interested only in credential related types.
-       {"Email", FormControlType::kInputEmail, EMAIL_ADDRESS, EMAIL_ADDRESS,
-        false},
-       {"username", FormControlType::kInputText, USERNAME, USERNAME, true},
-       {"Password", FormControlType::kInputPassword, PASSWORD, PASSWORD, false},
+       {"Email", FormControlType::kInputEmail, EMAIL_ADDRESS, EMAIL_ADDRESS},
+       {"username", FormControlType::kInputText, USERNAME, USERNAME},
+       {"Password", FormControlType::kInputPassword, PASSWORD, PASSWORD},
        {"confirm_password", FormControlType::kInputPassword,
-        CONFIRMATION_PASSWORD, CONFIRMATION_PASSWORD, true},
+        CONFIRMATION_PASSWORD, CONFIRMATION_PASSWORD},
        // username in |additional_types| takes precedence if the feature is
        // enabled.
        {"email",
         FormControlType::kInputText,
         EMAIL_ADDRESS,
         USERNAME,
-        false,
         {USERNAME}},
        // cvc in |additional_types| takes precedence if the feature is enabled.
        {"cvc",
         FormControlType::kInputPassword,
         PASSWORD,
         CREDIT_CARD_VERIFICATION_CODE,
-        false,
         {CREDIT_CARD_VERIFICATION_CODE}},
        // `CREDIT_CARD_NUMBER` takes precedence over any credential related
        // types.
@@ -91,33 +79,28 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
         FormControlType::kInputPassword,
         PASSWORD,
         CREDIT_CARD_NUMBER,
-        false,
         {CREDIT_CARD_NUMBER}},
        // non-password, non-cvc types in |additional_types| are ignored.
        {"email",
         FormControlType::kInputText,
         UNKNOWN_TYPE,
         UNKNOWN_TYPE,
-        false,
         {EMAIL_ADDRESS}}});
 
   FormData form_data;
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-      autofill_predictions;
+  base::flat_map<FieldGlobalId, AutofillServerPrediction> autofill_predictions;
   for (size_t i = 0; i < std::size(test_fields); ++i) {
     FormFieldData field;
     field.set_renderer_id(autofill::FieldRendererId(i + 1000));
     field.set_name(ASCIIToUTF16(test_fields[i].name));
     field.set_form_control_type(test_fields[i].form_control_type);
 
-    AutofillType::ServerPrediction prediction;
+    AutofillServerPrediction prediction;
     prediction.server_predictions.push_back(
         CreateFieldPrediction(test_fields[i].input_type));
     for (FieldType type : test_fields[i].additional_types) {
       prediction.server_predictions.push_back(CreateFieldPrediction(type));
     }
-    prediction.may_use_prefilled_placeholder =
-        test_fields[i].may_use_prefilled_placeholder;
     autofill_predictions.insert({field.global_id(), std::move(prediction)});
     test_api(form_data).Append(std::move(field));
   }
@@ -136,8 +119,6 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     const PasswordFieldPrediction& actual_prediction =
         actual_predictions.fields[i];
     EXPECT_EQ(test_fields[i].expected_type, actual_prediction.type);
-    EXPECT_EQ(test_fields[i].may_use_prefilled_placeholder,
-              actual_prediction.may_use_prefilled_placeholder);
     EXPECT_EQ(CalculateFieldSignatureForField(form_data.fields()[i]),
               actual_prediction.signature);
   }
@@ -176,7 +157,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
 
   for (const std::vector<TestField>& test_form : kTestForms) {
     FormData form_data;
-    base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+    base::flat_map<FieldGlobalId, AutofillServerPrediction>
         autofill_predictions;
     for (size_t i = 0; i < test_form.size(); ++i) {
       FormFieldData field;
@@ -184,7 +165,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
       field.set_name(ASCIIToUTF16(test_form[i].name));
       field.set_form_control_type(test_form[i].form_control_type);
 
-      AutofillType::ServerPrediction new_prediction;
+      AutofillServerPrediction new_prediction;
       new_prediction.server_predictions = {
           CreateFieldPrediction(test_form[i].input_type)};
       autofill_predictions.insert(
@@ -230,7 +211,14 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
        CredentialFieldType::kNewPassword},
       {"Confirmation password", CONFIRMATION_PASSWORD,
        CredentialFieldType::kConfirmationPassword},
-  };
+      {"Credit card number", CREDIT_CARD_NUMBER,
+       CredentialFieldType::kNonCredential},
+      {"Not password", NOT_PASSWORD, CredentialFieldType::kNonCredential},
+      {"Not username", NOT_USERNAME, CredentialFieldType::kNonCredential},
+      {"OTP", ONE_TIME_CODE, CredentialFieldType::kNonCredential},
+      {"Single username with intermediate values",
+       SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES,
+       CredentialFieldType::kSingleUsername}};
 
   for (const TestCase& test_case : test_cases) {
     SCOPED_TRACE(test_case.name);
@@ -239,7 +227,7 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
   }
 }
 
-// Tests that if |AutofillType::ServerPrediction| has an override flag, it
+// Tests that if |AutofillServerPrediction| has an override flag, it
 // will be propagated to |FormPredictions|.
 TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
   constexpr int driver_id = 0;
@@ -249,9 +237,8 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
   single_username_field.set_renderer_id(autofill::FieldRendererId(1000));
   form.set_fields({single_username_field});
 
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
-      autofill_predictions;
-  AutofillType::ServerPrediction autofill_prediction;
+  base::flat_map<FieldGlobalId, AutofillServerPrediction> autofill_predictions;
+  AutofillServerPrediction autofill_prediction;
   autofill_prediction.server_predictions.push_back(
       CreateFieldPrediction(autofill::SINGLE_USERNAME, /*is_override=*/true));
   autofill_predictions.insert(
@@ -263,8 +250,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
   expected_result.fields.push_back(
       {single_username_field.renderer_id(),
        CalculateFieldSignatureForField(single_username_field),
-       autofill::SINGLE_USERNAME, /*may_use_prefilled_placeholder=*/false,
-       /*is_override=*/true});
+       autofill::SINGLE_USERNAME, /*is_override=*/true});
 
   EXPECT_EQ(ConvertToFormPredictions(driver_id, form, autofill_predictions),
             expected_result);

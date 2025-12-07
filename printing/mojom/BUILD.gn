@@ -28,11 +28,6 @@ mojom("mojom") {
 
 if (enable_oop_printing) {
   mojom("printing_context") {
-    enabled_features = []
-    if (is_linux || is_chromeos) {
-      enabled_features += [ "is_linux_or_chromeos" ]
-    }
-
     sources = [ "printing_context.mojom" ]
 
     public_deps = [
@@ -41,6 +36,7 @@ if (enable_oop_printing) {
       "//ui/gfx/geometry/mojom",
     ]
 
+    enabled_features = []
     if (enable_oop_printing_no_oop_basic_print_dialog) {
       enabled_features += [ "enable_oop_printing_no_oop_basic_print_dialog" ]
     }

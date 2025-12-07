@@ -2,6 +2,7 @@ Name: CityHash
 URL: https://github.com/google/cityhash
 Version: 1.1.1
 Revision: 8af9b8c
+Update Mechanism: Manual
 License: MIT
 License File: COPYING
 Security Critical: yes

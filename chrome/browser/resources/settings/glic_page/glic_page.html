@@ -1,0 +1,31 @@
+<style include="cr-icons cr-shared-style settings-shared">
+  .learn-more-label[href=''] {
+    display: none;
+  }
+</style>
+
+<settings-section page-title="$i18n{glicSectionTitle}">
+  <div>
+    <!-- TODO(crbug.com/393445109) Placeholder for final icons. -->
+    <cr-link-row id="glicLinkRow"
+<if expr="not _google_chrome">
+        start-icon="settings20:lightbulb"
+</if>
+<if expr="_google_chrome">
+        start-icon="[[spark_]]"
+</if>
+        label="$i18n{glicRowLabel}"
+        on-click="onGlicPageClick_">
+
+      <div slot="sub-label">
+        $i18n{glicRowSublabel}
+        <a id="learnMoreLabel" class="learn-more-label"
+            href="$i18n{glicSettingsPageLearnMoreUrl}"
+            aria-description="$i18n{opensInNewTab}"
+            on-click="onSettingsPageLearnMoreClick_" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </div>
+    </cr-link-row>
+  </div>
+</settings-section>

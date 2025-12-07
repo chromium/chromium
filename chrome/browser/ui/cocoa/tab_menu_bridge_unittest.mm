@@ -2,24 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
+#include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 
 #import <Cocoa/Cocoa.h>
 
+#include <memory>
+
+#include "base/functional/callback_helpers.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/favicon/favicon_utils.h"
-#include "chrome/browser/ui/cocoa/tab_menu_bridge.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
+namespace {
 constexpr int kStaticItemCount = 4;
 
 class TabStripModelUiHelperDelegate : public TestTabStripModelDelegate {
@@ -28,9 +37,10 @@ class TabStripModelUiHelperDelegate : public TestTabStripModelDelegate {
     TestTabStripModelDelegate::WillAddWebContents(contents);
 
     favicon::CreateContentFaviconDriverForWebContents(contents);
-    TabUIHelper::CreateForWebContents(contents);
   }
 };
+
+}  // namespace
 
 class TabMenuBridgeTest : public ::testing::Test {
  public:
@@ -74,15 +84,23 @@ class TabMenuBridgeTest : public ::testing::Test {
     return model()->GetWebContentsAt(index);
   }
 
-  void AddModelTabNamed(const std::string& name) {
-    model()->AppendWebContents(CreateWebContents(name), true);
+  void AddModelTabNamed(const std::string& name,
+                        TabStripModel* tab_strip_model) {
+    std::unique_ptr<tabs::TabModel> tab_model =
+        std::make_unique<tabs::TabModel>(CreateWebContents(name),
+                                         tab_strip_model);
+    tabs::TabFeatures* const tab_features = tab_model->GetTabFeatures();
+    tab_features->SetTabUIHelperForTesting(
+        std::make_unique<TabUIHelper>(*tab_model));
+    tab_strip_model->AppendTab(std::move(tab_model), true);
   }
 
   int ModelIndexForTabNamed(const std::string& name) {
     std::u16string title16 = base::UTF8ToUTF16(name);
     for (int i = 0; i < model()->count(); ++i) {
-      if (model()->GetWebContentsAt(i)->GetTitle() == title16)
+      if (model()->GetWebContentsAt(i)->GetTitle() == title16) {
         return i;
+      }
     }
     return -1;
   }
@@ -135,8 +153,9 @@ class TabMenuBridgeTest : public ::testing::Test {
     }
 
     ASSERT_EQ(actual_titles.size(), titles.size());
-    for (int i = 0; i < static_cast<int>(titles.size()); ++i)
+    for (int i = 0; i < static_cast<int>(titles.size()); ++i) {
       EXPECT_EQ(actual_titles[i], titles[i]);
+    }
   }
 
   std::string ActiveTabName() {
@@ -148,12 +167,24 @@ class TabMenuBridgeTest : public ::testing::Test {
     // Check the static items too, to make sure none of them are checked.
     for (int i = 0; i < menu().numberOfItems; ++i) {
       NSMenuItem* item = [menu() itemAtIndex:i];
-      if (item.state == NSControlStateValueOn)
+      if (item.state == NSControlStateValueOn) {
         active_items.push_back(base::SysNSStringToUTF8(item.title));
+      }
     }
 
     ASSERT_EQ(active_items.size(), 1u);
     EXPECT_EQ(name, active_items[0]);
+  }
+
+  NSMenuItem* GetActiveMenuItem() {
+    for (int i = 0; i < menu().numberOfItems; ++i) {
+      NSMenuItem* item = [menu() itemAtIndex:i];
+      if (item.state == NSControlStateValueOn) {
+        return item;
+      }
+    }
+
+    return nullptr;
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -175,6 +206,10 @@ class TabMenuBridgeTest : public ::testing::Test {
   std::unique_ptr<TabStripModel> model_;
   NSMenuItem* __strong menu_root_;
   NSMenu* __strong menu_;
+  tabs::TabModel::PreventFeatureInitializationForTesting prevent_;
+
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kShowTabGroupsMacSystemMenu};
 };
 
 TEST_F(TabMenuBridgeTest, CreatesBlankMenu) {
@@ -185,18 +220,19 @@ TEST_F(TabMenuBridgeTest, CreatesBlankMenu) {
 }
 
 TEST_F(TabMenuBridgeTest, TracksModelUpdates) {
+  TabStripModel* const tab_strip_model = model();
   TabMenuBridge bridge(model(), menu_root());
   bridge.BuildMenu();
 
-  AddModelTabNamed("Tab 1");
-  AddModelTabNamed("Tab 2");
-  AddModelTabNamed("Tab 3");
+  AddModelTabNamed("Tab 1", tab_strip_model);
+  AddModelTabNamed("Tab 2", tab_strip_model);
+  AddModelTabNamed("Tab 3", tab_strip_model);
   ExpectDynamicTabsInMenuAre({"Tab 1", "Tab 2", "Tab 3"});
 
   RemoveModelTabNamed("Tab 2");
   ExpectDynamicTabsInMenuAre({"Tab 1", "Tab 3"});
 
-  AddModelTabNamed("Tab 2");
+  AddModelTabNamed("Tab 2", tab_strip_model);
   ExpectDynamicTabsInMenuAre({"Tab 1", "Tab 3", "Tab 2"});
 
   RenameModelTabNamed("Tab 1", "Tab 4");
@@ -211,13 +247,14 @@ TEST_F(TabMenuBridgeTest, TracksModelUpdates) {
 // Tests that dynamic menu items added by the bridge are removed on
 // bridge destruction.
 TEST_F(TabMenuBridgeTest, RemoveDynamicMenuItemsOnDestruct) {
+  TabStripModel* const tab_strip_model = model();
   std::unique_ptr<TabMenuBridge> bridge =
-      std::make_unique<TabMenuBridge>(model(), menu_root());
+      std::make_unique<TabMenuBridge>(tab_strip_model, menu_root());
   bridge->BuildMenu();
 
-  AddModelTabNamed("Tab 1");
-  AddModelTabNamed("Tab 2");
-  AddModelTabNamed("Tab 3");
+  AddModelTabNamed("Tab 1", tab_strip_model);
+  AddModelTabNamed("Tab 2", tab_strip_model);
+  AddModelTabNamed("Tab 3", tab_strip_model);
   ExpectDynamicTabsInMenuAre({"Tab 1", "Tab 2", "Tab 3"});
 
   bridge.reset();
@@ -226,11 +263,12 @@ TEST_F(TabMenuBridgeTest, RemoveDynamicMenuItemsOnDestruct) {
 }
 
 TEST_F(TabMenuBridgeTest, ClickingMenuActivatesTab) {
-  TabMenuBridge bridge(model(), menu_root());
+  TabStripModel* const tab_strip_model = model();
+  TabMenuBridge bridge(tab_strip_model, menu_root());
   bridge.BuildMenu();
 
-  AddModelTabNamed("Tab 1");
-  AddModelTabNamed("Tab 2");
+  AddModelTabNamed("Tab 1", tab_strip_model);
+  AddModelTabNamed("Tab 2", tab_strip_model);
   EXPECT_EQ(ActiveTabName(), "Tab 2");
 
   NSMenuItem* tab1_item = MenuItemForTabNamed("Tab 1");
@@ -257,13 +295,14 @@ TEST_F(TabMenuBridgeTest, ClickingMenuActivatesTab) {
 // static items, and ended up with incorrect indexes. This test exercises that
 // behavior.
 TEST_F(TabMenuBridgeTest, SwappingBridgeRecreatesMenu) {
-  auto bridge = std::make_unique<TabMenuBridge>(model(), menu_root());
+  TabStripModel* const tab_strip_model = model();
+  auto bridge = std::make_unique<TabMenuBridge>(tab_strip_model, menu_root());
   bridge->BuildMenu();
 
-  AddModelTabNamed("Tab 1");
+  AddModelTabNamed("Tab 1", tab_strip_model);
 
   auto model2 = std::make_unique<TabStripModel>(delegate(), profile());
-  model2->AppendWebContents(CreateWebContents("Tab 2"), true);
+  AddModelTabNamed("Tab 2", model2.get());
 
   bridge = std::make_unique<TabMenuBridge>(model2.get(), menu_root());
   bridge->BuildMenu();
@@ -283,12 +322,13 @@ TEST_F(TabMenuBridgeTest, SwappingBridgeRecreatesMenu) {
 }
 
 TEST_F(TabMenuBridgeTest, ActiveItemTracksChanges) {
-  TabMenuBridge bridge(model(), menu_root());
+  TabStripModel* const tab_strip_model = model();
+  TabMenuBridge bridge(tab_strip_model, menu_root());
   bridge.BuildMenu();
 
-  AddModelTabNamed("Tab 1");
-  AddModelTabNamed("Tab 2");
-  AddModelTabNamed("Tab 3");
+  AddModelTabNamed("Tab 1", tab_strip_model);
+  AddModelTabNamed("Tab 2", tab_strip_model);
+  AddModelTabNamed("Tab 3", tab_strip_model);
   ExpectActiveMenuItemNameIs("Tab 3");
 
   ActivateModelTabNamed("Tab 2");
@@ -299,4 +339,26 @@ TEST_F(TabMenuBridgeTest, ActiveItemTracksChanges) {
 
   RemoveModelTabNamed("Tab 1");
   ExpectActiveMenuItemNameIs("Tab 3");
+}
+
+TEST_F(TabMenuBridgeTest, TabGroupIndicator) {
+  TabStripModel* const tab_strip_model = model();
+  TabMenuBridge bridge(tab_strip_model, menu_root());
+  bridge.BuildMenu();
+
+  AddModelTabNamed("Tab 1", tab_strip_model);
+
+  ActivateModelTabNamed("Tab 1");
+
+  // Group indicator is not shown.
+  EXPECT_EQ(1, tab_strip_model->count());
+  EXPECT_EQ(nil, GetActiveMenuItem().attributedTitle);
+
+  // Add to new group. Group indicator is shown.
+  tab_strip_model->AddToNewGroup({0});
+  EXPECT_NE(nil, GetActiveMenuItem().attributedTitle);
+
+  // Remove from group. Group indicator is not shown.
+  tab_strip_model->RemoveFromGroup({0});
+  EXPECT_EQ(nil, GetActiveMenuItem().attributedTitle);
 }

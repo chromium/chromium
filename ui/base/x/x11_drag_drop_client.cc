@@ -5,8 +5,8 @@
 #include "ui/base/x/x11_drag_drop_client.h"
 
 #include "base/containers/flat_set.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -123,8 +123,10 @@ const char kXdndPosition[] = "XdndPosition";
 // action will be taken if the drop is accepted.
 const char kXdndStatus[] = "XdndStatus";
 
-static base::LazyInstance<std::map<x11::Window, XDragDropClient*>>::Leaky
-    g_live_client_map = LAZY_INSTANCE_INITIALIZER;
+std::map<x11::Window, XDragDropClient*>& GetLiveClientMap() {
+  static base::NoDestructor<std::map<x11::Window, XDragDropClient*>> map;
+  return *map;
+}
 
 x11::Atom DragOperationToAtom(DragOperation operation) {
   switch (operation) {
@@ -191,8 +193,8 @@ int XGetMaskAsEventFlags() {
 // static
 XDragDropClient* XDragDropClient::GetForWindow(x11::Window window) {
   std::map<x11::Window, XDragDropClient*>::const_iterator it =
-      g_live_client_map.Get().find(window);
-  if (it == g_live_client_map.Get().end()) {
+      GetLiveClientMap().find(window);
+  if (it == GetLiveClientMap().end()) {
     return nullptr;
   }
   return it->second;
@@ -209,11 +211,11 @@ XDragDropClient::XDragDropClient(XDragDropClient::Delegate* delegate,
                                       x11::Atom::ATOM, xdnd_version);
 
   // Some tests change the XDragDropClient associated with an |xwindow|.
-  g_live_client_map.Get()[xwindow] = this;
+  GetLiveClientMap()[xwindow] = this;
 }
 
 XDragDropClient::~XDragDropClient() {
-  g_live_client_map.Get().erase(xwindow());
+  GetLiveClientMap().erase(xwindow());
 }
 
 std::vector<x11::Atom> XDragDropClient::GetOfferedDragOperations() const {
@@ -355,13 +357,15 @@ void XDragDropClient::OnXdndEnter(const x11::ClientMessageEvent& event) {
 void XDragDropClient::OnXdndPosition(const x11::ClientMessageEvent& event) {
   DVLOG(1) << "OnXdndPosition";
 
+  if (!target_current_context()) {
+    return;
+  }
+
   auto source_window = static_cast<x11::Window>(event.data.data32[0]);
   int x_root_window = event.data.data32[2] >> 16;
   int y_root_window = event.data.data32[2] & 0xffff;
   x11::Time time_stamp = static_cast<x11::Time>(event.data.data32[3]);
   x11::Atom suggested_action = static_cast<x11::Atom>(event.data.data32[4]);
-
-  CHECK(target_current_context());
 
   target_current_context()->OnXdndPositionMessage(
       this, suggested_action, source_window, time_stamp,
@@ -491,7 +495,8 @@ void XDragDropClient::InitDrag(int allowed_operations,
   if (!source_provider_->file_contents_name().empty()) {
     actions.push_back(x11::GetAtom(kXdndActionDirectSave));
     x11::Connection::Get()->SetStringProperty(
-        xwindow_, x11::GetAtom(kXdndDirectSave0), x11::GetAtom(kMimeTypeText),
+        xwindow_, x11::GetAtom(kXdndDirectSave0),
+        x11::GetAtom(kMimeTypePlainText),
         source_provider_->file_contents_name().AsUTF8Unsafe());
   }
   x11::Connection::Get()->SetArrayProperty(

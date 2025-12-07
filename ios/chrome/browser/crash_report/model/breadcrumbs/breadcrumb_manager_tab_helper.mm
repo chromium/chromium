@@ -10,7 +10,7 @@
 #import "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/net/protocol_handler_util.h"
@@ -22,6 +22,8 @@
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_id.h"
 
 using LoggingBlock = void (^)(const std::string& event);
 
@@ -35,7 +37,7 @@ using LoggingBlock = void (^)(const std::string& event);
 }
 
 - (instancetype)initWithLoggingBlock:(LoggingBlock)loggingBlock {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _loggingBlock = loggingBlock;
   }
   return self;
@@ -57,8 +59,14 @@ using LoggingBlock = void (^)(const std::string& event);
 
 BreadcrumbManagerTabHelper::BreadcrumbManagerTabHelper(web::WebState* web_state)
     : breadcrumbs::BreadcrumbManagerTabHelper(
-          InfoBarManagerImpl::FromWebState(web_state)),
+          InfoBarManagerImpl::FromWebState(web_state),
+          web_state->GetUniqueIdentifier().identifier()),
       web_state_(web_state) {
+  // Assert that the WebState unique identifier can be used as unique id.
+  static_assert(
+      std::is_same<decltype(web_state->GetUniqueIdentifier().identifier()),
+                   decltype(this->GetUniqueId())>::value);
+
   web_state_->AddObserver(this);
   if (web_state_->IsRealized()) {
     CreateBreadcrumbScrollingObserver();
@@ -78,8 +86,8 @@ void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
     sequentially_scrolled_ = 0;
   }
 
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
-      web_state_->GetBrowserState())
+  BreadcrumbManagerKeyedServiceFactory::GetForProfile(
+      ProfileIOS::FromBrowserState(web_state_->GetBrowserState()))
       ->AddEvent(event);
 }
 
@@ -183,5 +191,3 @@ void BreadcrumbManagerTabHelper::OnScrollEvent(const std::string& event) {
     LogEvent(event);
   }
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(BreadcrumbManagerTabHelper)

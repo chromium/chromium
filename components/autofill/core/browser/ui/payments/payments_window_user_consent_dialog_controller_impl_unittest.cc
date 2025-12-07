@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/functional/callback_forward.h"
 #include "base/test/mock_callback.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -39,10 +38,9 @@ class PaymentsWindowUserConsentDialogControllerImplTest : public testing::Test {
 // Tests that the correct strings are returned for the dialog.
 TEST_F(PaymentsWindowUserConsentDialogControllerImplTest,
        CorrectStringsAreReturned) {
-  EXPECT_EQ(
-      controller()->GetWindowTitle(),
-      l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_TITLE_VCN_3DS));
+  EXPECT_EQ(controller()->GetWindowTitle(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_LOADING_AND_CONSENT_DIALOG_TITLE_VCN_3DS));
   EXPECT_EQ(
       controller()->GetDialogDescription(),
       l10n_util::GetStringUTF16(
@@ -51,6 +49,10 @@ TEST_F(PaymentsWindowUserConsentDialogControllerImplTest,
       controller()->GetOkButtonLabel(),
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_OK_BUTTON_LABEL_VCN_3DS));
+  EXPECT_EQ(
+      controller()->GetAcceptanceAccessibilityAnnouncement(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_ACCEPTANCE_ACCESSIBILITY_ANNOUNCEMENT));
 }
 
 // Tests that the accept callback is triggered when the dialog is accepted.

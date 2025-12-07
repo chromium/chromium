@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "components/policy/proto/device_management_backend.pb.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "url/gurl.h"
@@ -59,10 +60,20 @@ bool GetDeviceTokenFromRequest(const net::test_server::HttpRequest& request,
 bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
                                std::string* out);
 
+// Returns true if a Profile ID is specified in the `request` URL, and copies
+// its value to `out`.
+bool GetProfileIdFromRequest(const net::test_server::HttpRequest& request,
+                             std::string* out);
+
 // Returns a text/plain HttpResponse with a given `code` and `content`.
 std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
     const std::string& content);
+
+// Returns an application/x-protobuffer HttpResponse.
+std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
+    net::HttpStatusCode code,
+    const enterprise_management::DeviceManagementResponse& content);
 
 }  // namespace policy
 

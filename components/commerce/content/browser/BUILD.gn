@@ -18,9 +18,11 @@ static_library("browser") {
     "//base",
     "//components/commerce/core:shopping_service",
     "//components/commerce/core/mojom:mojo_bindings",
+    "//components/history/core/browser:features",
     "//components/resources:components_resources_grit",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
+    "//net",
     "//ui/webui",
   ]
 
@@ -29,29 +31,19 @@ static_library("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "web_extractor_impl_unittest.cc" ]
+  sources = [
+    "commerce_tab_helper_unittest.cc",
+    "web_extractor_impl_unittest.cc",
+  ]
   deps = [
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
     "//components/commerce/core/mojom:mojo_bindings",
+    "//components/history/core/browser:features",
     "//content/public/browser",
     "//content/test:test_support",
     "//testing/gtest",
   ]
-}
-
-if (!is_android) {
-  static_library("hint") {
-    sources = [
-      "hint/commerce_hint_tab_helper.cc",
-      "hint/commerce_hint_tab_helper.h",
-    ]
-
-    deps = [
-      "//base",
-      "//components/commerce/core:heuristics_provider",
-      "//content/public/browser",
-    ]
-  }
 }

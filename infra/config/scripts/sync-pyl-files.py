@@ -5,19 +5,13 @@
 """Sync generated *.pyl files to //testing/buildbot.
 
 After modifying the starlark and running it to regenerate configs, if
-any files in //infra/config/generated/testing are modified, this script
-should be run to sync them to //testing/buildbot. The script can be run
-with the --check flag to indicate whether any files are out-of-date.
+mixins.pyl has been modified, this script should be run to sync it to
+//testing/buildbot. The script can be run with the --check flag to
+indicate whether a sync needs to be performed.
 
-The *.pyl files need to be present in //testing/buildbot for multiple
-reasons:
-* The angle repo uses the *.pyl files in //testing/buildbot via a repo
-  that mirrors //testing so that the definitions do not need to be kept
-  in sync.
-* pinpoint builds revisions not at head, so until all revisions in scope
-  for pinpoint contain
-  //infra/config/generated/testing/gn_isolate_map.pyl, the config
-  located in recipes cannot be updated to refer to that location.
+mixins.pyl needs to be present in //testing/buildbot because the
+directory is exported to a separate repo that the angle repo includes as
+a dep in order to reuse the mixin definitions.
 """
 
 import argparse
@@ -62,17 +56,11 @@ def parse_args(argv):
 
 
 def main(args):
-  for f in (
-      'gn_isolate_map.pyl',
-      'mixins.pyl',
-      'test_suites.pyl',
-      'variants.pyl',
-  ):
-    error = args.func(os.path.normpath(f'{GENERATED_TESTING_DIR}/{f}'),
-                      os.path.normpath(f'{TESTING_BUILDBOT_DIR}/{f}'))
-    if error is not None:
-      print(error, file=sys.stderr)
-      return 1
+  error = args.func(os.path.normpath(f'{GENERATED_TESTING_DIR}/mixins.pyl'),
+                    os.path.normpath(f'{TESTING_BUILDBOT_DIR}/mixins.pyl'))
+  if error is not None:
+    print(error, file=sys.stderr)
+    return 1
   return 0
 
 

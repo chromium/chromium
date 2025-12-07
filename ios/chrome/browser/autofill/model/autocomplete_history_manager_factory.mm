@@ -7,24 +7,21 @@
 #import <utility>
 
 #import "base/no_destructor.h"
-#import "components/autofill/core/browser/autocomplete_history_manager.h"
+#import "components/autofill/core/browser/single_field_fillers/autocomplete/autocomplete_history_manager.h"
 #import "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 
 namespace autofill {
 
 // static
-AutocompleteHistoryManager*
-AutocompleteHistoryManagerFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<AutocompleteHistoryManager*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+AutocompleteHistoryManager* AutocompleteHistoryManagerFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<AutocompleteHistoryManager>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -35,9 +32,8 @@ AutocompleteHistoryManagerFactory::GetInstance() {
 }
 
 AutocompleteHistoryManagerFactory::AutocompleteHistoryManagerFactory()
-    : BrowserStateKeyedServiceFactory(
-          "AutocompleteHistoryManager",
-          BrowserStateDependencyManager::GetInstance()) {
+    : ProfileKeyedServiceFactoryIOS("AutocompleteHistoryManager",
+                                    ProfileSelection::kOwnInstanceInIncognito) {
   DependsOn(ios::WebDataServiceFactory::GetInstance());
 }
 
@@ -45,22 +41,13 @@ AutocompleteHistoryManagerFactory::~AutocompleteHistoryManagerFactory() {}
 
 std::unique_ptr<KeyedService>
 AutocompleteHistoryManagerFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  std::unique_ptr<AutocompleteHistoryManager> service(
-      new AutocompleteHistoryManager());
-  auto autofill_db =
-      ios::WebDataServiceFactory::GetAutofillWebDataForBrowserState(
-          chrome_browser_state, ServiceAccessType::EXPLICIT_ACCESS);
-  service->Init(autofill_db, chrome_browser_state->GetPrefs(),
-                chrome_browser_state->IsOffTheRecord());
+    ProfileIOS* profile) const {
+  auto service = std::make_unique<AutocompleteHistoryManager>();
+  scoped_refptr<autofill::AutofillWebDataService> autofill_db =
+      ios::WebDataServiceFactory::GetAutofillWebDataForProfile(
+          profile, ServiceAccessType::EXPLICIT_ACCESS);
+  service->Init(autofill_db, profile->GetPrefs(), profile->IsOffTheRecord());
   return service;
-}
-
-web::BrowserState* AutocompleteHistoryManagerFactory::GetBrowserStateToUse(
-    web::BrowserState* context) const {
-  return GetBrowserStateOwnInstanceInIncognito(context);
 }
 
 }  // namespace autofill

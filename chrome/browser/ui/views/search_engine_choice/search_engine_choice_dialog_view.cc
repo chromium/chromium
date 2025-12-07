@@ -19,15 +19,17 @@
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"
 
 namespace {
+
 // The minimum height and maximum dialog dimensions.
 // We don't have a minimum width because operating systems have a minimum width
 // for Chrome.
@@ -46,7 +48,9 @@ int GetWebViewCornerRadius() {
 }
 
 }  // namespace
-void ShowSearchEngineChoiceDialog(
+
+// static
+void SearchEngineChoiceDialog::Show(
     Browser& browser,
     std::optional<gfx::Size> boundary_dimensions_for_test,
     std::optional<double> zoom_factor_for_test) {
@@ -56,10 +60,10 @@ void ShowSearchEngineChoiceDialog(
   }
 
   auto delegate = std::make_unique<views::DialogDelegate>();
-  delegate->SetButtons(ui::DIALOG_BUTTON_NONE);
-  delegate->SetModalType(ui::MODAL_TYPE_WINDOW);
+  delegate->SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  delegate->SetModalType(ui::mojom::ModalType::kWindow);
   delegate->SetShowCloseButton(false);
-  delegate->SetOwnedByWidget(true);
+  delegate->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
 
   auto dialogView = std::make_unique<SearchEngineChoiceDialogView>(
       &browser, boundary_dimensions_for_test, zoom_factor_for_test);
@@ -96,8 +100,6 @@ SearchEngineChoiceDialogView::SearchEngineChoiceDialogView(
       boundary_dimensions_for_test_(boundary_dimensions_for_test),
       zoom_factor_for_test_(zoom_factor_for_test) {
   CHECK(browser_);
-  CHECK(search_engines::IsChoiceScreenFlagEnabled(
-      search_engines::ChoicePromo::kDialog));
   if (boundary_dimensions_for_test.has_value() ||
       zoom_factor_for_test_.has_value()) {
     CHECK_IS_TEST();

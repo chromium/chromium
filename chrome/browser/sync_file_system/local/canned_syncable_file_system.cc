@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
@@ -14,7 +15,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -155,7 +155,7 @@ class DirectoryHelper {
                        bool has_more) {
     DCHECK(entries_out);
     entries_out->reserve(entries_out->size() + entries.size());
-    base::ranges::copy(entries, std::back_inserter(*entries_out));
+    std::ranges::copy(entries, std::back_inserter(*entries_out));
 
     if (!has_more)
       std::move(callback_).Run(error);
@@ -256,7 +256,7 @@ void CannedSyncableFileSystem::SetUp() {
       quota_manager_.get(), io_task_runner_.get());
 
   std::vector<std::string> additional_allowed_schemes;
-  additional_allowed_schemes.push_back(origin_.scheme());
+  additional_allowed_schemes.push_back(origin_.GetScheme());
   storage::FileSystemOptions options(
       storage::FileSystemOptions::PROFILE_MODE_NORMAL, in_memory_file_system_,
       additional_allowed_schemes);
@@ -686,7 +686,6 @@ void CannedSyncableFileSystem::DoGetUsageAndQuota(
   DCHECK(quota_manager_.get());
   quota_manager_->GetUsageAndQuota(
       blink::StorageKey::CreateFirstParty(url::Origin::Create(origin_)),
-      storage_type(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), usage, quota));
 }
 

@@ -1,0 +1,48 @@
+source_set("auto_deletion") {
+  sources = [
+    "auto_deletion_histograms.h",
+    "auto_deletion_histograms.mm",
+    "auto_deletion_service.h",
+    "auto_deletion_service.mm",
+    "scheduled_file.h",
+    "scheduled_file.mm",
+    "scheduler.h",
+    "scheduler.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//crypto",
+    "//ios/chrome/browser/download/model/auto_deletion/proto",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/web/public/download",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "auto_deletion_service_unittest.mm",
+    "auto_deletion_test_utils.h",
+    "auto_deletion_test_utils.mm",
+    "scheduled_file_unittest.mm",
+    "scheduler_unittest.mm",
+  ]
+
+  deps = [
+    ":auto_deletion",
+    "//base",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//ios/chrome/browser/download/model/auto_deletion/proto",
+    "//ios/chrome/browser/shared/model/paths",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

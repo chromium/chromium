@@ -66,13 +66,6 @@ class AccountAppsAvailability
   AccountAppsAvailability(const AccountAppsAvailability&) = delete;
   AccountAppsAvailability& operator=(const AccountAppsAvailability&) = delete;
 
-  // ARC account restrictions are enabled iff Lacros is enabled.
-  static bool IsArcAccountRestrictionsEnabled();
-
-  // Managed secondary accounts are restricted if
-  // SecondaryAccountAllowedInArcPolicy is enabled.
-  static bool IsArcManagedAccountRestrictionEnabled();
-
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   // Registers an observer.
@@ -122,7 +115,7 @@ class AccountAppsAvailability
   // with the resulted account or with `nullopt` if requested account is not in
   // Account Manager.
   void FindAccountByGaiaId(
-      const std::string& gaia_id,
+      const GaiaId& gaia_id,
       base::OnceCallback<void(const std::optional<account_manager::Account>&)>
           callback);
 

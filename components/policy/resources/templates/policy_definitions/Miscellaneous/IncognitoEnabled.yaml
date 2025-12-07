@@ -9,6 +9,7 @@ desc: |-
         If this setting is disabled, users cannot open web pages in incognito mode.
 
         If this policy is left not set, this will be enabled and the user will be able to use incognito mode.
+default: true
 example_value: false
 features:
   dynamic_refresh: true

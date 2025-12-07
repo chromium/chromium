@@ -1,5 +1,5 @@
 // META: title=test WebNN API linear operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -18,15 +18,8 @@
 //
 // MLOperand linear(MLOperand input, optional MLLinearOptions options = {});
 
-
-const getLinearPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 2, float16: 2};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const linearTests = [
+  // float32 tests
   {
     'name': 'linear float32 1D constant tensor default options',
     'graph': {
@@ -42,7 +35,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'},
+          'descriptor': {shape: [24], dataType: 'float32'},
           'constant': true
         }
       },
@@ -63,7 +56,29 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'linear float32 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [-1.12251615524292],
+          'descriptor': {shape: [], dataType: 'float32'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [{'input': 'linearInput'}],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [-1.12251615524292],
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -83,7 +98,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -103,7 +118,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -123,7 +138,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -143,7 +158,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -163,7 +178,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -183,7 +198,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -203,7 +218,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -223,7 +238,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -243,7 +258,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -263,7 +278,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 1, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float32'}
         }
       }
     }
@@ -284,7 +299,7 @@ const linearTests = [
             5.2140889167785645,  9.65861701965332,   -8.721749305725098,
             -0.4533396363258362, 9.992619514465332,  -6.469675064086914
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -306,7 +321,7 @@ const linearTests = [
             38.57796859741211,   71.46211242675781,   -64.53042602539062,
             -3.3541665077209473, 73.9333267211914,    -47.86779022216797
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -327,7 +342,7 @@ const linearTests = [
             5.16057825088501,   0.8060914278030396,  9.130533218383789,
             3.1937403678894043, 5.748293399810791,   4.113487720489502
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -349,7 +364,7 @@ const linearTests = [
             11.079673767089844, 6.725186824798584,  15.049629211425781,
             9.112835884094238,  11.667388916015625, 10.032583236694336
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -370,7 +385,7 @@ const linearTests = [
             -5.16057825088501,   -0.8060914278030396,  -9.130533218383789,
             -3.1937403678894043, -5.748293399810791,   -4.113487720489502
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -392,7 +407,7 @@ const linearTests = [
             -11.079673767089844, -6.725186824798584,  -15.049629211425781,
             -9.112835884094238,  -11.667388916015625, -10.032583236694336
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -413,7 +428,7 @@ const linearTests = [
             5.16057825088501,   0.8060914278030396,  9.130533218383789,
             3.1937403678894043, 5.748293399810791,   4.113487720489502
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -436,7 +451,7 @@ const linearTests = [
             44.10115051269531,  11.883199691772461, 73.47402954101562,
             29.548921585083008, 48.44953155517578,  36.35394287109375
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -457,7 +472,7 @@ const linearTests = [
             5.16057825088501,   0.8060914278030396,  9.130533218383789,
             3.1937403678894043, 5.748293399810791,   4.113487720489502
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -480,7 +495,7 @@ const linearTests = [
             -44.10115051269531,  -11.883199691772461, -73.47402954101562,
             -29.548921585083008, -48.44953155517578,  -36.35394287109375
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -501,7 +516,7 @@ const linearTests = [
             -5.16057825088501,   -0.8060914278030396,  -9.130533218383789,
             -3.1937403678894043, -5.748293399810791,   -4.113487720489502
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -524,18 +539,480 @@ const linearTests = [
             -44.10115051269531,  -11.883199691772461, -73.47402954101562,
             -29.548921585083008, -48.44953155517578,  -36.35394287109375
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'linear float16 1D constant tensor default options',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [{'input': 'linearInput'}],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'linear float16 0D tensor default options',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [-1.1220703125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [{'input': 'linearInput'}],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [-1.1220703125],
+          'descriptor': {shape: [], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'linear float16 1D tensor default options',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [{'input': 'linearInput'}],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'linear float16 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [{'input': 'linearInput'}],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'linear float16 3D tensor default options',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [{'input': 'linearInput'}],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'linear float16 4D tensor default options',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [{'input': 'linearInput'}],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'linear float16 5D tensor default options',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [{'input': 'linearInput'}],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'linear float16 4D tensor specified options.alpha and default options.beta',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -1.1220703125, -6.60546875,     -1.955078125, -4.59765625,
+            4.234375,      3.09765625,      3.74609375,   -4.48828125,
+            6.40625,       -4.35546875,     -5.8203125,   3.720703125,
+            -6.33203125,   8.578125,        -6.765625,    6.43359375,
+            -9.7109375,    2.642578125,     5.21484375,   9.65625,
+            -8.71875,      -0.453369140625, 9.9921875,    -6.46875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [
+          {'input': 'linearInput'}, {'options': {'alpha': 7.398793812746618}}
+        ],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -8.3046875, -48.875,      -14.46875, -34.03125, 31.328125,
+            22.921875,  27.71875,     -33.21875, 47.40625,  -32.21875,
+            -43.0625,   27.53125,     -46.84375, 63.46875,  -50.0625,
+            47.59375,   -71.875,      19.546875, 38.59375,  71.4375,
+            -64.5,      -3.353515625, 73.9375,   -47.875
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'linear float16 positive 4D tensor specified positive options.beta and default options.alpha',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            5.09765625,  3.380859375,  8.0546875,    8.078125,   0.470703125,
+            5.2421875,   3.828125,     5.37109375,   6.1015625,  3.75,
+            0.748046875, 1.8935546875, 1.9052734375, 7.86328125, 4.58203125,
+            9.375,       6.5859375,    9.34375,      5.16015625, 0.80615234375,
+            9.1328125,   3.193359375,  5.75,         4.11328125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [
+          {'input': 'linearInput'}, {'options': {'beta': 5.919095653700928}}
+        ],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            11.015625,  9.296875,   13.9765625, 14,         6.390625,
+            11.1640625, 9.75,       11.2890625, 12.0234375, 9.671875,
+            6.66796875, 7.8125,     7.82421875, 13.78125,   10.5,
+            15.296875,  12.5078125, 15.265625,  11.078125,  6.7265625,
+            15.0546875, 9.109375,   11.671875,  10.03125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'linear float16 negative 4D tensor specified negative options.beta and default options.alpha',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -5.09765625,   -3.380859375, -8.0546875,   -8.078125,
+            -0.470703125,  -5.2421875,   -3.828125,    -5.37109375,
+            -6.1015625,    -3.75,        -0.748046875, -1.8935546875,
+            -1.9052734375, -7.86328125,  -4.58203125,  -9.375,
+            -6.5859375,    -9.34375,     -5.16015625,  -0.80615234375,
+            -9.1328125,    -3.193359375, -5.75,        -4.11328125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [
+          {'input': 'linearInput'}, {'options': {'beta': -5.919095653700928}}
+        ],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -11.015625,  -9.296875,   -13.9765625, -14,         -6.390625,
+            -11.1640625, -9.75,       -11.2890625, -12.0234375, -9.671875,
+            -6.66796875, -7.8125,     -7.82421875, -13.78125,   -10.5,
+            -15.296875,  -12.5078125, -15.265625,  -11.078125,  -6.7265625,
+            -15.0546875, -9.109375,   -11.671875,  -10.03125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'linear float16 positive 4D tensor all options (positive options.alpha and positive options.beta)',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            5.09765625,  3.380859375,  8.0546875,    8.078125,   0.470703125,
+            5.2421875,   3.828125,     5.37109375,   6.1015625,  3.75,
+            0.748046875, 1.8935546875, 1.9052734375, 7.86328125, 4.58203125,
+            9.375,       6.5859375,    9.34375,      5.16015625, 0.80615234375,
+            9.1328125,   3.193359375,  5.75,         4.11328125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [
+          {'input': 'linearInput'},
+          {'options': {'alpha': 7.398793812746618, 'beta': 5.919095653700928}}
+        ],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            43.625,    30.9375,    65.5,    65.6875,   9.3984375, 44.71875,
+            34.25,     45.65625,   51.0625, 33.65625,  11.453125, 19.921875,
+            20.015625, 64.125,     39.8125, 75.3125,   54.65625,  75.0625,
+            44.09375,  11.8828125, 73.5,    29.546875, 48.46875,  36.34375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'linear float16 positive 4D tensor all options (negative options.alpha and negative options.beta)',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            5.09765625,  3.380859375,  8.0546875,    8.078125,   0.470703125,
+            5.2421875,   3.828125,     5.37109375,   6.1015625,  3.75,
+            0.748046875, 1.8935546875, 1.9052734375, 7.86328125, 4.58203125,
+            9.375,       6.5859375,    9.34375,      5.16015625, 0.80615234375,
+            9.1328125,   3.193359375,  5.75,         4.11328125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [
+          {'input': 'linearInput'},
+          {'options': {'alpha': -7.398793812746618, 'beta': -5.919095653700928}}
+        ],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -43.625,    -30.9375,   -65.5,      -65.6875,  -9.3984375,
+            -44.71875,  -34.25,     -45.65625,  -51.0625,  -33.65625,
+            -11.453125, -19.921875, -20.015625, -64.125,   -39.8125,
+            -75.3125,   -54.65625,  -75.0625,   -44.09375, -11.8828125,
+            -73.5,      -29.546875, -48.46875,  -36.34375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'linear float16 negative 4D tensor all options (positive options.alpha and negative options.beta)',
+    'graph': {
+      'inputs': {
+        'linearInput': {
+          'data': [
+            -5.09765625,   -3.380859375, -8.0546875,   -8.078125,
+            -0.470703125,  -5.2421875,   -3.828125,    -5.37109375,
+            -6.1015625,    -3.75,        -0.748046875, -1.8935546875,
+            -1.9052734375, -7.86328125,  -4.58203125,  -9.375,
+            -6.5859375,    -9.34375,     -5.16015625,  -0.80615234375,
+            -9.1328125,    -3.193359375, -5.75,        -4.11328125
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'linear',
+        'arguments': [
+          {'input': 'linearInput'},
+          {'options': {'alpha': 7.398793812746618, 'beta': -5.919095653700928}}
+        ],
+        'outputs': 'linearOutput'
+      }],
+      'expectedOutputs': {
+        'linearOutput': {
+          'data': [
+            -43.625,    -30.9375,   -65.5,      -65.6875,  -9.3984375,
+            -44.71875,  -34.25,     -45.65625,  -51.0625,  -33.65625,
+            -11.453125, -19.921875, -20.015625, -64.125,   -39.8125,
+            -75.3125,   -54.65625,  -75.0625,   -44.09375, -11.8828125,
+            -73.5,      -29.546875, -48.46875,  -36.34375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  linearTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getLinearPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    linearTests, buildAndExecuteGraph, getPrecisionTolerance);

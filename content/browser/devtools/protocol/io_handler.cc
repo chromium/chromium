@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
@@ -50,11 +49,10 @@ void IOHandler::SetRenderer(int process_host_id,
   }
 }
 
-void IOHandler::Read(
-    const std::string& handle,
-    Maybe<int> offset,
-    Maybe<int> max_size,
-    std::unique_ptr<ReadCallback> callback) {
+void IOHandler::Read(const std::string& handle,
+                     std::optional<int> offset,
+                     std::optional<int> max_size,
+                     std::unique_ptr<ReadCallback> callback) {
   static const size_t kDefaultChunkSize = 10 * 1024 * 1024;
   static const char kBlobPrefix[] = "blob:";
 

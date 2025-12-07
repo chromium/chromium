@@ -7,7 +7,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/deferred_sequenced_task_runner.h"
 #include "base/values.h"
+#include "components/os_crypt/async/common/encryptor.h"
 #include "components/prefs/pref_filter.h"
 
 // A partial implementation of a PrefFilter whose FilterOnLoad call may be
@@ -44,6 +46,8 @@ class InterceptablePrefFilter : public PrefFilter {
       FilterOnLoadInterceptor filter_on_load_interceptor);
 
   void OnStoreDeletionFromDisk() override;
+
+  virtual void OnEncryptorReceived(os_crypt_async::Encryptor encryptor) = 0;
 
  private:
   // Does any extra filtering required by the implementation of this

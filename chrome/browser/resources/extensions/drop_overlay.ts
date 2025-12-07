@@ -2,37 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import {DragWrapper} from 'chrome://resources/js/drag_wrapper.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {DragAndDropHandler} from './drag_and_drop_handler.js';
-import {getTemplate} from './drop_overlay.html.js';
+import {getCss} from './drop_overlay.css.js';
+import {getHtml} from './drop_overlay.html.js';
 
-class ExtensionsDropOverlayElement extends PolymerElement {
+export class ExtensionsDropOverlayElement extends CrLitElement {
   static get is() {
     return 'extensions-drop-overlay';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      dragEnabled: {
-        type: Boolean,
-        observer: 'dragEnabledChanged_',
-      },
+      dragEnabled: {type: Boolean},
     };
   }
 
+  accessor dragEnabled: boolean = false;
   private dragWrapperHandler_: DragAndDropHandler;
-  private dragWrapper_: DragWrapper;
 
   constructor() {
     super();
@@ -53,11 +54,15 @@ class ExtensionsDropOverlayElement extends PolymerElement {
       this.dispatchEvent(new CustomEvent(
           'load-error', {bubbles: true, composed: true, detail: e.detail}));
     });
-    this.dragWrapper_ = new DragWrapper(dragTarget, this.dragWrapperHandler_);
+    new DragWrapper(dragTarget, this.dragWrapperHandler_);
   }
 
-  private dragEnabledChanged_(dragEnabled: boolean) {
-    this.dragWrapperHandler_.dragEnabled = dragEnabled;
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('dragEnabled')) {
+      this.dragWrapperHandler_.dragEnabled = this.dragEnabled;
+    }
   }
 }
 

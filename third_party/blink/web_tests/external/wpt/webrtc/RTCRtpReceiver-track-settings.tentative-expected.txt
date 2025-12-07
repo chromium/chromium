@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] RTCRtpReceiver.track.getSettings() contains resolution entries
+  assert_equals: Receive track width setting is zero initially expected (number) 0 but got (undefined) undefined
+Harness: the test ran to completion.
+

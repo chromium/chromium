@@ -5,11 +5,13 @@
 #ifndef DEVICE_VR_OPENXR_TEST_OPENXR_NEGOTIATE_H_
 #define DEVICE_VR_OPENXR_TEST_OPENXR_NEGOTIATE_H_
 
+#if BUILDFLAG(IS_WIN)
 #include <unknwn.h>
+#endif
 
 #include "device/vr/openxr/openxr_platform.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
-#include "third_party/openxr/src/src/common/loader_interfaces.h"
+#include "third_party/openxr/src/include/openxr/openxr_loader_negotiation.h"
 
 // This file contains functions that are used by the openxr_loader.dll to call
 // into the fake OpenXR Runtime. Used for testing purposes only, so this should
@@ -23,11 +25,11 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
 // The single exported function in fake OpenXR Runtime DLL which the OpenXR
 // loader calls for negotiation. xrGetInstanceProcAddr is returned to the
 // loader, which is then used by the loader to call OpenXR APIs.
-XrResult __stdcall xrNegotiateLoaderRuntimeInterface(
-    const XrNegotiateLoaderInfo* loaderInfo,
-    XrNegotiateRuntimeRequest* runtimeRequest) {
+XrResult XRAPI_CALL
+xrNegotiateLoaderRuntimeInterface(const XrNegotiateLoaderInfo* loaderInfo,
+                                  XrNegotiateRuntimeRequest* runtimeRequest) {
   runtimeRequest->runtimeInterfaceVersion = 1;
-  runtimeRequest->runtimeApiVersion = XR_CURRENT_API_VERSION;
+  runtimeRequest->runtimeApiVersion = XR_API_VERSION_1_0;
   runtimeRequest->getInstanceProcAddr = xrGetInstanceProcAddr;
 
   return XR_SUCCESS;

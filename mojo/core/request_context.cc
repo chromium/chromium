@@ -5,14 +5,13 @@
 #include "mojo/core/request_context.h"
 
 #include "base/check.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace mojo {
 namespace core {
 
 namespace {
 
-ABSL_CONST_INIT thread_local RequestContext* current_context = nullptr;
+constinit thread_local RequestContext* current_context = nullptr;
 
 }  // namespace
 

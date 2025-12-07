@@ -6,18 +6,21 @@ package org.chromium.chrome.browser.browserservices.ui.splashscreen;
 
 import android.view.View;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Delegate for {@link SplashController}. */
+@NullMarked
 public interface SplashDelegate {
     /** Builds the splash view. */
-    View buildSplashView();
+    @Nullable View buildSplashView();
 
     /**
      * Called when splash screen has been hidden.
-     * @param tab
+     *
      * @param startTimestamp Time that the splash screen was shown.
-     * @param endTimestap Time that the splash screen was hidden.
+     * @param endTimestamp Time that the splash screen was hidden.
      */
     void onSplashHidden(Tab tab, long startTimestamp, long endTimestamp);
 

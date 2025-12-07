@@ -12,9 +12,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/task_traits.h"
@@ -102,32 +102,35 @@ bool CopyFileContentsWithOffsetAndSize(base::File* infile,
     size_t bytes_to_read =
         std::min(buffer.size(),
                  base::checked_cast<size_t>(checked_max_size.ValueOrDie()));
-    int bytes_read = infile->ReadAtCurrentPos(buffer.data(), bytes_to_read);
-    if (bytes_read < 0)
+    std::optional<size_t> bytes_read = infile->ReadAtCurrentPos(
+        base::as_writable_byte_span(buffer).first(bytes_to_read));
+    if (!bytes_read.has_value()) {
       return false;
-    if (bytes_read == 0)
+    }
+    if (bytes_read.value() == 0) {
       return true;
-    checked_max_size -= bytes_read;
-    if (!checked_max_size.IsValid())
+    }
+    checked_max_size -= bytes_read.value();
+    if (!checked_max_size.IsValid()) {
       return false;
-
+    }
     // Allow for partial writes
-    int bytes_written_per_read = 0;
-    do {
-      int bytes_written_partial = outfile->WriteAtCurrentPos(
-          &buffer[bytes_written_per_read], bytes_read - bytes_written_per_read);
-      if (bytes_written_partial < 0)
+    auto span_to_write = base::as_byte_span(buffer).first(bytes_read.value());
+    while (!span_to_write.empty()) {
+      std::optional<size_t> bytes_written_partial =
+          outfile->WriteAtCurrentPos(span_to_write);
+      if (!bytes_written_partial.has_value()) {
         return false;
-
-      bytes_written_per_read += bytes_written_partial;
-      *bytes_copied += bytes_written_partial;
-    } while (bytes_written_per_read < bytes_read);
-    if (checked_max_size.ValueOrDie() == 0)
+      }
+      span_to_write = span_to_write.subspan(bytes_written_partial.value());
+      *bytes_copied += bytes_written_partial.value();
+    }
+    if (checked_max_size.ValueOrDie() == 0) {
       return true;
+    }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Copies the contents of |copy_from| to |copy_to|, with the given |offset| and

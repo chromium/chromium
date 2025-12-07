@@ -8,6 +8,8 @@
 #include <memory>
 #include <utility>
 
+#include "content/public/browser/preconnect_request.h"
+#include "content/public/test/preconnect_test_util.h"
 #include "net/base/request_priority.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 
@@ -35,9 +37,9 @@ void InitializeRedirectStat(RedirectStat* redirect,
                             int consecutive_misses,
                             bool include_scheme,
                             bool include_port) {
-  redirect->set_url(url.host());
+  redirect->set_url(url.GetHost());
   if (include_scheme)
-    redirect->set_url_scheme(url.scheme());
+    redirect->set_url_scheme(url.GetScheme());
   if (include_port)
     redirect->set_url_port(url.EffectiveIntPort());
   redirect->set_number_of_hits(number_of_hits);
@@ -143,7 +145,7 @@ blink::mojom::ResourceLoadInfoPtr CreateResourceLoadInfoWithRedirects(
 PreconnectPrediction CreatePreconnectPrediction(
     std::string host,
     bool is_redirected,
-    const std::vector<PreconnectRequest>& requests) {
+    const std::vector<content::PreconnectRequest>& requests) {
   PreconnectPrediction prediction;
   prediction.host = host;
   prediction.is_redirected = is_redirected;
@@ -158,8 +160,6 @@ void PopulateTestConfig(LoadingPredictorConfig* config, bool small_db) {
     config->max_origins_per_entry = 5;
     config->max_consecutive_misses = 2;
     config->max_redirect_consecutive_misses = 2;
-    config->lcpp_histogram_sliding_window_size = 5;
-    config->max_lcpp_histogram_buckets = 2;
   }
   config->flush_data_to_disk_delay_seconds = 0;
 }
@@ -209,7 +209,8 @@ std::ostream& operator<<(std::ostream& os, const PageRequestSummary& summary) {
   return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const PreconnectRequest& request) {
+std::ostream& operator<<(std::ostream& os,
+                         const content::PreconnectRequest& request) {
   return os << "[" << request.origin << "," << request.num_sockets << ","
             << request.allow_credentials << ","
             << request.network_anonymization_key.ToDebugString() << "]";
@@ -285,12 +286,6 @@ bool operator==(const OriginStat& lhs, const OriginStat& rhs) {
          AlmostEqual(lhs.average_position(), rhs.average_position()) &&
          lhs.always_access_network() == rhs.always_access_network() &&
          lhs.accessed_network() == rhs.accessed_network();
-}
-
-bool operator==(const PreconnectRequest& lhs, const PreconnectRequest& rhs) {
-  return lhs.origin == rhs.origin && lhs.num_sockets == rhs.num_sockets &&
-         lhs.allow_credentials == rhs.allow_credentials &&
-         lhs.network_anonymization_key == rhs.network_anonymization_key;
 }
 
 bool operator==(const PreconnectPrediction& lhs,

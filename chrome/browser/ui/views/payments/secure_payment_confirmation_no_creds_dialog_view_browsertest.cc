@@ -4,8 +4,14 @@
 
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view.h"
 
+#include <string_view>
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
@@ -13,7 +19,6 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
@@ -59,7 +64,7 @@ class SecurePaymentConfirmationNoCredsDialogViewTest
                              base::DoNothing(), base::DoNothing());
   }
 
-  const std::u16string& GetLabelText(
+  std::u16string_view GetLabelText(
       SecurePaymentConfirmationNoCredsDialogView::DialogViewID view_id) {
     return static_cast<views::Label*>(
                dialog_view_->GetViewByID(static_cast<int>(view_id)))
@@ -76,7 +81,14 @@ class SecurePaymentConfirmationNoCredsDialogViewTest
   }
 
   // SecurePaymentConfirmationNoCredsDialogView::ObserverForTest
-  void OnDialogClosed() override { dialog_closed_ = true; }
+  void OnDialogClosed() override {
+    dialog_closed_ = true;
+    if (dialog_closed_callback_) {
+      std::move(dialog_closed_callback_).Run();
+    }
+  }
+
+  // SecurePaymentConfirmationNoCredsDialogView::ObserverForTest
   void OnOptOutClicked() override { opt_out_clicked_ = true; }
 
  protected:
@@ -86,6 +98,8 @@ class SecurePaymentConfirmationNoCredsDialogViewTest
 
   bool dialog_closed_ = false;
   bool opt_out_clicked_ = false;
+
+  base::OnceClosure dialog_closed_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
@@ -159,31 +173,19 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest, OptOut) {
   EXPECT_TRUE(opt_out_clicked_);
 }
 
-class SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest
-    : public SecurePaymentConfirmationNoCredsDialogViewTest {
- public:
-  SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest() {
-    base::FieldTrialParams params;
-    params["spc_network_and_issuer_icons_option"] = "inline";
-    feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kSecurePaymentConfirmationNetworkAndIssuerIcons,
-        params);
-  }
+// Occlusion by picture-in-picture video should dismiss the SPC no-credentials
+// dialog.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
+                       PictureInPictureOcclusionClosesTheDialog) {
+  CreateAndShowDialog(u"merchant.example", /*show_opt_out=*/true);
+  base::RunLoop run_loop;
+  dialog_closed_callback_ = run_loop.QuitClosure();
 
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
+  static_cast<PictureInPictureOcclusionObserver*>(dialog_view_.get())
+      ->OnOcclusionStateChanged(/*occluded=*/true);
 
-// Test that the cart icon is still shown even when the inline network/issuer
-// flag is set.
-IN_PROC_BROWSER_TEST_F(
-    SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest,
-    CartIconStillShows) {
-  CreateAndShowDialog(u"merchant.example", /*show_opt_out=*/false);
-
-  EXPECT_NE(nullptr, dialog_view_->GetViewByID(static_cast<int>(
-                         SecurePaymentConfirmationNoCredsDialogView::
-                             DialogViewID::HEADER_ICON)));
+  run_loop.Run();
+  EXPECT_TRUE(dialog_closed_);
 }
 
 }  // namespace payments

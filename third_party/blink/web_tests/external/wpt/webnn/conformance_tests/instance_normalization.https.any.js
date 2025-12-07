@@ -1,5 +1,5 @@
 // META: title=test WebNN API instanceNormalization operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -21,16 +21,6 @@
 // MLOperand instanceNormalization(
 //     MLOperand input, optional MLInstanceNormalizationOptions options = {});
 
-
-const getInstanceNormPrecisionTolerance = (graphResources) => {
-  // according to
-  // https://github.com/web-platform-tests/wpt/pull/43891#discussion_r1457026316
-  const toleranceValueDict = {float32: 840, float16: 8400};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const instanceNormTests = [
   {
     'name': 'instanceNormalization float32 4D tensor default options',
@@ -47,7 +37,7 @@ const instanceNormTests = [
             -16.574905395507812, 42.949893951416016, 73.8739242553711,
             -99.00035095214844,  -33.11322784423828, -17.380685806274414
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -67,7 +57,7 @@ const instanceNormTests = [
             -1.6783342361450195, 0.46660327911376953, 1.5037200450897217,
             -1.2981476783752441, -0.2302791178226471, 0.024706769734621048
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -87,11 +77,11 @@ const instanceNormTests = [
             -16.574905395507812, 42.949893951416016, 73.8739242553711,
             -99.00035095214844,  -33.11322784423828, -17.380685806274414
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         },
         'instanceNormScale': {
           'data': [-94.42772674560547, 66.69620513916016, -98.56572723388672],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -115,7 +105,7 @@ const instanceNormTests = [
             -111.93852233886719, 31.120668411254883,  -148.2152557373047,
             127.95286560058594,  22.697628021240234,  -2.4352407455444336
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -135,11 +125,11 @@ const instanceNormTests = [
             -16.574905395507812, 42.949893951416016, 73.8739242553711,
             -99.00035095214844,  -33.11322784423828, -17.380685806274414
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         },
         'instanceNormBias': {
           'data': [-33.048641204833984, 4.511423587799072, -37.93617248535156],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -163,7 +153,7 @@ const instanceNormTests = [
             2.8330893516540527,  4.978026866912842,   -36.43245315551758,
             -39.23432159423828,  -38.16645050048828,  -37.91146469116211
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -183,7 +173,7 @@ const instanceNormTests = [
             -16.574905395507812, 42.949893951416016, 73.8739242553711,
             -99.00035095214844,  -33.11322784423828, -17.380685806274414
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -205,14 +195,14 @@ const instanceNormTests = [
             -1.6783342361450195, 0.46660327911376953, 1.5037200450897217,
             -1.2981476783752441, -0.2302791178226471, 0.024706769734621048
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
   },
   {
     'name':
-        'instanceNormalization float32 4D tensor explict options.layout=\'nchw\'',
+        'instanceNormalization float32 4D tensor explicit options.layout=\'nchw\'',
     'graph': {
       'inputs': {
         'instanceNormInput': {
@@ -226,7 +216,7 @@ const instanceNormTests = [
             -16.574905395507812, 42.949893951416016, 73.8739242553711,
             -99.00035095214844,  -33.11322784423828, -17.380685806274414
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -247,7 +237,7 @@ const instanceNormTests = [
             -1.6783342361450195, 0.46660327911376953, 1.5037200450897217,
             -1.2981476783752441, -0.2302791178226471, 0.024706769734621048
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -267,7 +257,7 @@ const instanceNormTests = [
             5.6758809089660645, -16.574905395507812, -33.11322784423828,
             25.68659210205078,  42.949893951416016,  -17.380685806274414
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -288,7 +278,7 @@ const instanceNormTests = [
             -1.3059037923812866, -1.6783342361450195,  -0.2302791178226471,
             -0.6197298169136047, 0.46660327911376953,  0.024706769734621048
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -308,16 +298,16 @@ const instanceNormTests = [
             5.6758809089660645, -16.574905395507812, -33.11322784423828,
             25.68659210205078,  42.949893951416016,  -17.380685806274414
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'instanceNormScale': {
           'data': [-94.42772674560547, 66.69620513916016, -98.56572723388672],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'instanceNormBias': {
           'data': [-33.048641204833984, 4.511423587799072, -37.93617248535156],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -347,18 +337,296 @@ const instanceNormTests = [
             90.26488494873047,   -107.4271011352539,  -15.238543510437012,
             25.471038818359375,  35.6320915222168,    -40.37141418457031
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'instanceNormalization float16 4D tensor default options',
+    'graph': {
+      'inputs': {
+        'instanceNormInput': {
+          'data': [
+            -97.9375,   29.4375,  -73.9375,   -38.125,     41.34375, -59.78125,
+            -74.6875,   -68.1875, 35.8125,    -6.94921875, 54.4375,  47.53125,
+            66.9375,    76.75,    5.67578125, 25.6875,     37.375,   56.25,
+            -16.578125, 42.9375,  73.875,     -99,         -33.125,  -17.375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'instanceNormalization',
+        'arguments': [{'input': 'instanceNormInput'}],
+        'outputs': 'instanceNormOutput'
+      }],
+      'expectedOutputs': {
+        'instanceNormOutput': {
+          'data': [
+            -1.099609375,    1.552734375,    -0.599609375,
+            0.1461181640625, 1.7216796875,   -0.409912109375,
+            -0.72412109375,  -0.5869140625,  0.1302490234375,
+            -1.6630859375,   0.9111328125,   0.62158203125,
+            0.79443359375,   1.130859375,    -1.3056640625,
+            -0.61962890625,  0.265869140625, 0.9462890625,
+            -1.6787109375,   0.46630859375,  1.50390625,
+            -1.2978515625,   -0.23046875,    0.024810791015625
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'instanceNormalization float16 4D tensor options.scale',
+    'graph': {
+      'inputs': {
+        'instanceNormInput': {
+          'data': [
+            -97.9375,   29.4375,  -73.9375,   -38.125,     41.34375, -59.78125,
+            -74.6875,   -68.1875, 35.8125,    -6.94921875, 54.4375,  47.53125,
+            66.9375,    76.75,    5.67578125, 25.6875,     37.375,   56.25,
+            -16.578125, 42.9375,  73.875,     -99,         -33.125,  -17.375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        },
+        'instanceNormScale': {
+          'data': [-94.4375, 66.6875, -98.5625],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'instanceNormalization',
+        'arguments': [
+          {'input': 'instanceNormInput'},
+          {'options': {'scale': 'instanceNormScale'}}
+        ],
+        'outputs': 'instanceNormOutput'
+      }],
+      'expectedOutputs': {
+        'instanceNormOutput': {
+          'data': [
+            103.8125,  -146.625,  56.625,    -13.796875,  114.8125,
+            -27.34375, -48.28125, -39.15625, -12.8359375, 163.875,
+            -89.8125,  -61.28125, -75.0625,  -106.8125,   123.3125,
+            58.53125,  17.734375, 63.09375,  -111.9375,   31.09375,
+            -148.25,   127.9375,  22.71875,  -2.4453125
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'instanceNormalization float16 4D tensor options.bias',
+    'graph': {
+      'inputs': {
+        'instanceNormInput': {
+          'data': [
+            -97.9375,   29.4375,  -73.9375,   -38.125,     41.34375, -59.78125,
+            -74.6875,   -68.1875, 35.8125,    -6.94921875, 54.4375,  47.53125,
+            66.9375,    76.75,    5.67578125, 25.6875,     37.375,   56.25,
+            -16.578125, 42.9375,  73.875,     -99,         -33.125,  -17.375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        },
+        'instanceNormBias': {
+          'data': [-33.0625, 4.51171875, -37.9375],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'instanceNormalization',
+        'arguments': [
+          {'input': 'instanceNormInput'},
+          {'options': {'bias': 'instanceNormBias'}}
+        ],
+        'outputs': 'instanceNormOutput'
+      }],
+      'expectedOutputs': {
+        'instanceNormOutput': {
+          'data': [
+            -34.15625, -31.515625,  -33.65625,   -32.90625,   6.234375,
+            4.1015625, 3.787109375, 3.923828125, -37.8125,    -39.59375,
+            -37.03125, -37.3125,    -32.28125,   -31.9375,    -34.375,
+            -33.6875,  4.77734375,  5.45703125,  2.833984375, 4.9765625,
+            -36.4375,  -39.25,      -38.15625,   -37.90625
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'instanceNormalization float16 4D tensor options.epsilon',
+    'graph': {
+      'inputs': {
+        'instanceNormInput': {
+          'data': [
+            -97.9375,   29.4375,  -73.9375,   -38.125,     41.34375, -59.78125,
+            -74.6875,   -68.1875, 35.8125,    -6.94921875, 54.4375,  47.53125,
+            66.9375,    76.75,    5.67578125, 25.6875,     37.375,   56.25,
+            -16.578125, 42.9375,  73.875,     -99,         -33.125,  -17.375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'instanceNormalization',
+        'arguments': [
+          {'input': 'instanceNormInput'}, {'options': {'epsilon': 0.000001}}
+        ],
+        'outputs': 'instanceNormOutput'
+      }],
+      'expectedOutputs': {
+        'instanceNormOutput': {
+          'data': [
+            -1.099609375,    1.552734375,    -0.599609375,
+            0.1461181640625, 1.7216796875,   -0.409912109375,
+            -0.72412109375,  -0.5869140625,  0.1302490234375,
+            -1.6630859375,   0.9111328125,   0.62158203125,
+            0.79443359375,   1.130859375,    -1.3056640625,
+            -0.61962890625,  0.265869140625, 0.9462890625,
+            -1.6787109375,   0.46630859375,  1.50390625,
+            -1.2978515625,   -0.23046875,    0.024810791015625
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'instanceNormalization float16 4D tensor explicit options.layout=\'nchw\'',
+    'graph': {
+      'inputs': {
+        'instanceNormInput': {
+          'data': [
+            -97.9375,   29.4375,  -73.9375,   -38.125,     41.34375, -59.78125,
+            -74.6875,   -68.1875, 35.8125,    -6.94921875, 54.4375,  47.53125,
+            66.9375,    76.75,    5.67578125, 25.6875,     37.375,   56.25,
+            -16.578125, 42.9375,  73.875,     -99,         -33.125,  -17.375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'instanceNormalization',
+        'arguments':
+            [{'input': 'instanceNormInput'}, {'options': {'layout': 'nchw'}}],
+        'outputs': 'instanceNormOutput'
+      }],
+      'expectedOutputs': {
+        'instanceNormOutput': {
+          'data': [
+            -1.099609375,    1.552734375,    -0.599609375,
+            0.1461181640625, 1.7216796875,   -0.409912109375,
+            -0.72412109375,  -0.5869140625,  0.1302490234375,
+            -1.6630859375,   0.9111328125,   0.62158203125,
+            0.79443359375,   1.130859375,    -1.3056640625,
+            -0.61962890625,  0.265869140625, 0.9462890625,
+            -1.6787109375,   0.46630859375,  1.50390625,
+            -1.2978515625,   -0.23046875,    0.024810791015625
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'instanceNormalization float16 4D tensor options.layout=\'nhwc\'',
+    'graph': {
+      'inputs': {
+        'instanceNormInput': {
+          'data': [
+            -97.9375,   41.34375,   35.8125, 29.4375, -59.78125, -6.94921875,
+            -73.9375,   -74.6875,   54.4375, -38.125, -68.1875,  47.53125,
+            66.9375,    37.375,     73.875,  76.75,   56.25,     -99,
+            5.67578125, -16.578125, -33.125, 25.6875, 42.9375,   -17.375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'instanceNormalization',
+        'arguments':
+            [{'input': 'instanceNormInput'}, {'options': {'layout': 'nhwc'}}],
+        'outputs': 'instanceNormOutput'
+      }],
+      'expectedOutputs': {
+        'instanceNormOutput': {
+          'data': [
+            -1.099609375,    1.7216796875,    0.1302490234375,
+            1.552734375,     -0.409912109375, -1.6630859375,
+            -0.599609375,    -0.72412109375,  0.9111328125,
+            0.1461181640625, -0.5869140625,   0.62158203125,
+            0.79443359375,   0.265869140625,  1.50390625,
+            1.130859375,     0.9462890625,    -1.2978515625,
+            -1.3056640625,   -1.6787109375,   -0.23046875,
+            -0.61962890625,  0.46630859375,   0.024810791015625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'instanceNormalization float16 4D tensor all options',
+    'graph': {
+      'inputs': {
+        'instanceNormInput': {
+          'data': [
+            -97.9375,   41.34375,   35.8125, 29.4375, -59.78125, -6.94921875,
+            -73.9375,   -74.6875,   54.4375, -38.125, -68.1875,  47.53125,
+            66.9375,    37.375,     73.875,  76.75,   56.25,     -99,
+            5.67578125, -16.578125, -33.125, 25.6875, 42.9375,   -17.375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'instanceNormScale': {
+          'data': [-94.4375, 66.6875, -98.5625],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'instanceNormBias': {
+          'data': [-33.0625, 4.51171875, -37.9375],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'instanceNormalization',
+        'arguments': [
+          {'input': 'instanceNormInput'}, {
+            'options': {
+              'scale': 'instanceNormScale',
+              'bias': 'instanceNormBias',
+              'epsilon': 0.000001,
+              'layout': 'nhwc'
+            }
+          }
+        ],
+        'outputs': 'instanceNormOutput'
+      }],
+      'expectedOutputs': {
+        'instanceNormOutput': {
+          'data': [
+            70.75,    119.3125,  -50.78125,   -179.75,   -22.828125, 126,
+            23.5625,  -43.78125, -127.75,     -46.84375, -34.65625,  -99.1875,
+            -108.125, 22.25,     -186.125,    -139.875,  67.625,     90,
+            90.25,    -107.4375, -15.2265625, 25.46875,  35.625,     -40.375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  instanceNormTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getInstanceNormPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    instanceNormTests, buildAndExecuteGraph, getInstanceNormPrecisionTolerance);

@@ -40,7 +40,6 @@ class MinifyJsTest(unittest.TestCase):
 
     minify_js.main(args)
 
-    manifest_contents = self._read_file(manifest_path)
     manifest_data = json.loads(self._read_file(manifest_path))
 
     self.assertEqual(manifest_data['base_dir'], self._out_dir)

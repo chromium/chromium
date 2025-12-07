@@ -35,11 +35,13 @@ import org.chromium.android_webview.AwDevToolsServer;
 import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.JsResultReceiver;
+import org.chromium.android_webview.common.WebViewCachedFlags;
 import org.chromium.android_webview.test.AwTestContainerView;
 import org.chromium.android_webview.test.NullContentsClient;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
@@ -107,25 +109,24 @@ public class AwShellActivity extends Activity {
         AwContents.setShouldDownloadFavicons();
         mUrlTextView.setText(startupUrl);
 
-        mWebContents.addObserver(
-                new WebContentsObserver() {
-                    @Override
-                    public void navigationEntriesChanged() {
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            if (mNavigationController.canGoBack()) {
-                                AwShellActivity.this
-                                        .getOnBackInvokedDispatcher()
-                                        .registerOnBackInvokedCallback(
-                                                OnBackInvokedDispatcher.PRIORITY_DEFAULT,
-                                                mOnBackInvokedCallback);
-                            } else if (!mNavigationController.canGoBack()) {
-                                AwShellActivity.this
-                                        .getOnBackInvokedDispatcher()
-                                        .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
-                            }
-                        }
+        new WebContentsObserver(mWebContents) {
+            @Override
+            public void navigationEntriesChanged() {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (mNavigationController.canGoBack()) {
+                        AwShellActivity.this
+                                .getOnBackInvokedDispatcher()
+                                .registerOnBackInvokedCallback(
+                                        OnBackInvokedDispatcher.PRIORITY_DEFAULT,
+                                        mOnBackInvokedCallback);
+                    } else if (!mNavigationController.canGoBack()) {
+                        AwShellActivity.this
+                                .getOnBackInvokedDispatcher()
+                                .unregisterOnBackInvokedCallback(mOnBackInvokedCallback);
                     }
-                });
+                }
+            }
+        };
     }
 
     @Override
@@ -138,12 +139,13 @@ public class AwShellActivity extends Activity {
     }
 
     private AwTestContainerView createAwTestContainerView() {
-        final String supportedModels[] = {
+        final String[] supportedModels = {
             "Pixel 6", "Pixel 6 Pro",
         };
         boolean useVulkan = Arrays.asList(supportedModels).contains(Build.MODEL);
         AwTestContainerView.installDrawFnFunctionTable(useVulkan);
-        AwBrowserProcess.start();
+        WebViewCachedFlags.init(new InMemorySharedPreferences());
+        AwBrowserProcess.startForTesting();
         AwTestContainerView testContainerView = new AwTestContainerView(this, true);
         AwContentsClient awContentsClient =
                 new NullContentsClient() {
@@ -244,7 +246,7 @@ public class AwShellActivity extends Activity {
         final AwSettings awSettings =
                 new AwSettings(
                         /* context= */ this,
-                        /* isAccessFromFileURLsGrantedByDefault= */ false,
+                        /* isAccessFromFileUrlsGrantedByDefault= */ false,
                         /* supportsLegacyQuirks= */ false,
                         /* allowEmptyDocumentPersistence= */ false,
                         /* allowGeolocationOnInsecureOrigins= */ true,
@@ -264,7 +266,7 @@ public class AwShellActivity extends Activity {
                         testContainerView,
                         testContainerView.getContext(),
                         testContainerView.getInternalAccessDelegate(),
-                        testContainerView.getNativeDrawFunctorFactory(),
+                        testContainerView.getDrawFnAccess(),
                         awContentsClient,
                         awSettings));
         testContainerView.getAwContents().getSettings().setJavaScriptEnabled(true);

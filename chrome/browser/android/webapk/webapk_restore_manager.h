@@ -9,14 +9,16 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
+#include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "components/webapps/common/web_app_id.h"
 
-class Profile;
+class WebApkInstallService;
 
 namespace webapps {
 struct ShortcutInfo;
@@ -32,7 +34,9 @@ class WebApkRestoreManager {
   using PassKey = base::PassKey<WebApkRestoreManager>;
   static PassKey PassKeyForTesting();
 
-  explicit WebApkRestoreManager(Profile* proqfile);
+  WebApkRestoreManager(
+      WebApkInstallService* web_apk_install_service,
+      std::unique_ptr<WebApkRestoreWebContentsManager> web_contents_manager);
   WebApkRestoreManager(const WebApkRestoreManager&) = delete;
   WebApkRestoreManager& operator=(const WebApkRestoreManager&) = delete;
   virtual ~WebApkRestoreManager();
@@ -40,7 +44,6 @@ class WebApkRestoreManager {
   using RestorableAppsCallback =
       base::OnceCallback<void(const std::vector<std::string>& app_ids,
                               const std::vector<std::u16string>& names,
-                              const std::vector<int>& last_used_in_days,
                               const std::vector<SkBitmap>& icons)>;
 
   void PrepareRestorableApps(std::vector<WebApkRestoreData>&& apps,
@@ -57,26 +60,22 @@ class WebApkRestoreManager {
 
  protected:
   virtual std::unique_ptr<WebApkRestoreTask> CreateNewTask(
-      std::unique_ptr<webapps::ShortcutInfo> restore_info,
-      base::Time last_used_time);
+      std::unique_ptr<webapps::ShortcutInfo> restore_info);
   virtual void OnTaskFinished(const GURL& manifest_id,
                               webapps::WebApkInstallResult result);
 
-  Profile* profile() const { return profile_; }
   WebApkRestoreWebContentsManager* web_contents_manager() const {
     return web_contents_manager_.get();
   }
 
  private:
-  friend class TestWebApkRestoreManager;
-
   void MaybeStartNextTask();
 
   void DownloadIcon(RestorableAppsCallback apps_info_callback,
                     webapps::WebAppUrlLoaderResult result);
   void OnAllIconsDownloaded(RestorableAppsCallback result_callback);
 
-  raw_ptr<Profile> profile_;
+  raw_ptr<WebApkInstallService> web_apk_install_service_;
   std::unique_ptr<WebApkRestoreWebContentsManager> web_contents_manager_;
 
   // All restorable WebAPKs

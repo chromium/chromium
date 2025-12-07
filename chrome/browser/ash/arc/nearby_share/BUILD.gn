@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("nearby_share") {
   sources = [
@@ -20,25 +20,31 @@ static_library("nearby_share") {
     "share_info_file_stream_adapter.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/sharesheet",
+  ]
 
   deps = [
-    "//ash/components/arc",
-    "//ash/components/arc/mojom",
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/nearby_share/ui",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/fileapi",
-    "//chrome/browser/ash/fusebox",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/mojom",
+    "//chromeos/ash/experiences/settings_ui",
     "//chromeos/components/sharesheet:constants",
-    "//components/arc",
+    "//components/exo",
     "//components/keyed_service/core",
     "//content/public/browser",
     "//net",
@@ -57,17 +63,16 @@ source_set("unit_tests") {
 
   deps = [
     ":nearby_share",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
-    "//ash/components/arc/mojom",
     "//base",
     "//base/test:test_support",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/app_list/arc:test_support",
     "//chrome/browser/ash/arc/fileapi",
-    "//chrome/browser/ash/arc/nearby_share/ui",
-    "//chrome/browser/ash/fusebox",
+    "//chrome/browser/ash/browser_delegate:impl",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/test:test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc/mojom",
     "//chromeos/ui/base",
     "//components/exo",
     "//content/test:test_support",

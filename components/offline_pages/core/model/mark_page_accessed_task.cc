@@ -67,7 +67,7 @@ MarkPageAccessedTask::MarkPageAccessedTask(OfflinePageMetadataStore* store,
   DCHECK(store_);
 }
 
-MarkPageAccessedTask::~MarkPageAccessedTask() {}
+MarkPageAccessedTask::~MarkPageAccessedTask() = default;
 
 void MarkPageAccessedTask::Run() {
   store_->Execute(

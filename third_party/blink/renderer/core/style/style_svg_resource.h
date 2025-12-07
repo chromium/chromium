@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_SVG_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_SVG_RESOURCE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/svg/svg_resource.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"

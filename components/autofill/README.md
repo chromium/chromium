@@ -1,7 +1,7 @@
 # Autofill
 
 Autofill is a [layered
-component](https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design).
+component](https://www.chromium.org/developers/design-documents/layered-components-design).
 It has the following structure:
 
 - [`core/`](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core): Code shared by `content/` and `ios/`.
@@ -22,57 +22,58 @@ platforms. The diagram is best read bottom-up because every Autofill flow starts
 with `AutofillAgent` extracting a form from the DOM.
 
 ```
-┌────────────────────┐
-│PersonalDataManager ├────────┬──────────────────┐
-│1 per BrowserContext│  owns N│            owns N│
-└─▲──────────────────┘      ┌─▼─────────────┐  ┌─▼────────┐
-  │                         │AutofillProfile│  │CreditCard│
-  │weak ref                 └───────────────┘  └──────────┘
-┌─┴───────────────┐
-│FormDataImporter ◄─────────────────────┐
-│1 per WebContents│               events│
-└─▲───────────────┘                     │
-  │                                     │
-  │ ┌────────────────────────┐        ┌─┴────────────────────┐
-  │ │AutofillExternalDelegate◄────────┤BrowserAutofillManager├─┐           ┌───────────────┐
-  │ │1 per RenderFrameHost   │  owns 1│1 per RenderFrameHost │ │ votes     │Autofill server│
-  │ └──────────────────────┬─┘        └─▲──────────────────┬─┘ │           └─────────────▲─┘
-  │                  events│            │            events│   │                     HTTP│
-  │                        │            │                  │ ┌─▼─────────────────────────▼─┐
-  ├────────────────────────┼────────────┼──────────────────┼─►AutofillCrowsourcingdManager │
-  │                        │            │                  │ │1 per WebContents            │
-  │                        │            │                  │ └───────────────────────────▲─┘
-  │                        │            │                  │                             │
-  │                        │            │                  │    ┌──────────────┐         │
-  │                        │            │                  │    │FormStructure │         │
-  │                        │            │                  │    │1 per FormData│         │
-  │                        │            │                  └──┐ └─▲────────────┘         │
-  │owns 1                  │            │events               │   │sets types            │
-┌─┴──────────────────┐     │          ┌─┴───────────────────┐ │   │owns N         queries│
-│ChromeAutofillClient◄─────┼──────────┤AutofillManager      ├─┼───┴──────────────────────┘
-│1 per WebContents   │     │  weak ref│1 per RenderFrameHost│ │
-└─┬──────────────────┘     │          └─▲─────────────────┬─┘ │
-  │owns 1                  │            │           events│   │
-  │                        └────────────┼────────────────►│◄──┘
-  │                                     │                 │
-  │                        ┌────────────┼─────────────────┼────────────┐
-  │                        │owns 1      │events           │            │
-  │                        │            │owns 1           │            │
-┌─▼────────────────────────┴─┐        ┌─┴─────────────────▼─┐        ┌─▼──────────────────┐
-│ContentAutofillDriverFactory├────────►ContentAutofillDriver◄────────►AutofillDriverRouter│
-│1 per WebContents           │owns N  │1 per RenderFrameHost│ events │1 per WebContents   │
-└────────────────────────────┘        └─▲─────────┬─────────┘        └────────────────────┘
-                                        │         │fill form and
-Browser                                 │         │other events
-1 process                               │         │
-────────────────────────────────────────┼─────────┼─────────────────────────────────────────
-Renderer                                │         │
-N processes           events, often with│         │
-                      FormData objects  │         │
-                                      ┌─┴─────────▼─────┐       ┌─────────────────────┐
-                                      │AutofillAgent    ├───────►form_autofill_util.cc│
-                                      │1 per RenderFrame│calls  └─────────────────────┘
-                                      └─────────────────┘
+  ┌────────────────────┐
+┌─►PersonalDataManager │────────┬──────────────────┐
+│ │1 per BrowserContext│  owns N│            owns N│
+│ └────────────────────┘      ┌─▼─────────────┐  ┌─▼────────┐
+│weak ref                     │AutofillProfile│  │CreditCard│
+│                             └───────────────┘  └──────────┘
+│ ┌─────────────────┐
+│ │FormDataImporter ◄─────────────────────┐
+│ │1 per WebContents│               events│
+│ └─▲───────────────┘                     │
+│   │                                     │
+│   │ ┌────────────────────────┐        ┌─┴────────────────────┐
+│   │ │AutofillExternalDelegate◄────────┤BrowserAutofillManager│
+│   │ │1 per RenderFrameHost   │  owns 1│1 per RenderFrameHost │
+│   │ └──────────────────────┬─┘        └─▲───┬──────────────┬─┘
+│   │                        │events      │   │        events│
+│   │ ┌─────────────────┐    │            │   │votes         │
+│   ├─►VotesUploader    ◄────┼────────────┼───┘              │
+│   │ │1 per WebContents│    │            │                  │
+│   │ └─┬───────────────┘    └────────┐   │                  │
+│   │   │posts                        │   │                  │
+│   │ ┌─▼──────────────────────────┐  │   │                  │
+│   ├─►AutofillCrowdsourcingManager│  │   │                  │    ┌──────────────┐
+│   │ │1 per WebContents           │  │   │                  │    │FormStructure │
+│   │ └─────────────────────▲──────┘  │   │                  │    │1 per FormData│
+│   │                       │         │   │                  └──┐ └─▲────────────┘
+│   │owns 1                 │         │   │events               │   │sets types
+│ ┌─┴──────────────────┐    │queries  │ ┌─┴───────────────────┐ │   │owns N
+└─┤ChromeAutofillClient│    └─────────┼─┤AutofillManager      ├─┼───┘
+  │1 per WebContents   │              │ │1 per RenderFrameHost│ │
+  └─┬──────────────────┘              │ └─▲─────────────────┬─┘ │
+    │owns 1                           │   │           events│   │
+    │                                 └───┼────────────────►│◄──┘
+    │                                     │                 │
+    │                        ┌────────────┼─────────────────┼────────────┐
+    │                        │owns 1      │events           │            │
+    │                        │            │owns 1           │            │
+  ┌─▼────────────────────────┴─┐        ┌─┴─────────────────▼─┐        ┌─▼──────────────────┐
+  │ContentAutofillDriverFactory├────────►ContentAutofillDriver◄────────►AutofillDriverRouter│
+  │1 per WebContents           │owns N  │1 per RenderFrameHost│ events │1 per WebContents   │
+  └────────────────────────────┘        └─▲─────────┬─────────┘        └────────────────────┘
+                                          │         │fill form and
+  Browser                                 │         │other events
+  1 process                               │         │
+  ────────────────────────────────────────┼─────────┼────────────────────────────────────────
+  Renderer                                │         │
+  N processes           events, often with│         │
+                        FormData objects  │         │
+                                        ┌─┴─────────▼─────┐       ┌─────────────────────┐
+                                        │AutofillAgent    ├───────►form_autofill_util.cc│
+                                        │1 per RenderFrame│calls  └─────────────────────┘
+                                        └─────────────────┘
 ```
 To edit the diagram, copy-paste it to asciiflow.com.
 
@@ -263,7 +264,7 @@ may sacrifice a little bit of correctness in favor of simplicity.
     exceptions for a few field types (email addresses, promo codes, IBANs, CVV
     fields).
   * We perform local heuristics even for smaller forms but only for promo codes
-    and IBANs (see `ParseSingleFieldForms`).
+    and IBANs (see `ParseSingleFields`).
   * Regular expressions for parsing are provided via
     `components/autofill/core/browser/form_parsing/regex_patterns.h` and
     `components/autofill/core/browser/form_parsing/*/*regex_patterns.json`.
@@ -322,7 +323,7 @@ Several important subsets of FieldTypes exist:
   * The supported type of [EmailInfo](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.h;l=87;drc=10009f6ff9f3b626979c9422321686f360df7cee) is [EMAIL_ADDRESS](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.cc;l=184;drc=59b1cf76cc21ae34bc99073e963f7d268b0a5c17).
   * The supported types of AutofillProfile are all name, address, phone number, etc. types.
 * Stored types of AutofillProfile: The set of types stored in AutofillTable,
-  defined by `GetDatabaseStoredTypesOfAutofillProfile()` in field_type_util.h.
+  defined by `AutofillProfile::kDatabaseStoredTypes`.
   * Not all supported types of AutofillProfile are stored, since types following
     a standard format can unambiguously be derived from another type. See
     derived types below.
@@ -375,28 +376,26 @@ that the website accepted the submitted values, not that the HTTP request
 succeeded):
 
 * A **regular HTTP form submission** (`FormTracker::WillSubmitForm()`).
-  * Triggers `SubmissionSource::FORM_SUBMISSION` with `known_success=false`.
+  * Triggers `SubmissionSource::FORM_SUBMISSION`.
 * A **main-frame navigation** was initiated in the content area but not triggered by
   a link click (`FormTracker::DidStartNavigation()`) - only if the frame has a
   `last_interacted_form_` or form-less element that the user interacted with.
-  * Triggers `SubmissionSource::PROBABLY_FORM_SUBMITTED` with
-    `known_success=false`.
+  * Triggers `SubmissionSource::PROBABLY_FORM_SUBMITTED`.
 * After a **same document navigation**
   (`FormTracker::DidFinishSameDocumentNavigation()`), the last interacted form
   is/becomes unfocusable or removed. The former condition is tested via
   `WebNode::IsFocusable()` and considers various styles (e.g. "display: none" on
   the node or a parent, "visibility: hidden") and attributes (e.g. "inert",
   tabindex="-1", "disabled") which prevent focusability.
-  * Triggers `SubmissionSource::SAME_DOCUMENT_NAVIGATION` with
-    `known_success=true`.
+  * Triggers `SubmissionSource::SAME_DOCUMENT_NAVIGATION`.
 * After a **successful AJAX/XMLHttpRequest request**
   (`AutofillAgent::AjaxSucceeded()`), the last interacted form is/becomes
   unfocusable or removed.
   * Triggers `SubmissionSource::XHR_SUCCEEDED` if the form is already
-    inaccessible or removed and the XHR succeeds (`known_success=true`).
+    inaccessible or removed and the XHR succeeds.
 * The **subframe** or non-primary main frame containing the form was
   **detached** (`FormTracker::WillDetach()`)
-  * Triggers `SubmissionSource::FRAME_DETACHED` with `known_success=true`.
+  * Triggers `SubmissionSource::FRAME_DETACHED`.
 
 ## When are votes uploaded?
 

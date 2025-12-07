@@ -19,6 +19,7 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/feature_engagement/internal",
     "//components/feature_engagement/public",
+    "//components/leveldb_proto",
     "//testing/gmock",
   ]
 }

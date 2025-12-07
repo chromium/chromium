@@ -15,11 +15,7 @@
 #endif  // defined(COMPONENTS_PREFS_IMPLEMENTATION)
 
 #else  // defined(WIN32)
-#if defined(COMPONENTS_PREFS_IMPLEMENTATION)
 #define COMPONENTS_PREFS_EXPORT __attribute__((visibility("default")))
-#else
-#define COMPONENTS_PREFS_EXPORT
-#endif
 #endif
 
 #else  // defined(COMPONENT_BUILD)

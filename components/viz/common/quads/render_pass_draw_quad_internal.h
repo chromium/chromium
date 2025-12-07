@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_RENDER_PASS_DRAW_QUAD_INTERNAL_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_RENDER_PASS_DRAW_QUAD_INTERNAL_H_
 
@@ -15,7 +10,6 @@
 #include "cc/paint/filter_operations.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
-
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -23,7 +17,9 @@ namespace viz {
 
 class VIZ_COMMON_EXPORT RenderPassDrawQuadInternal : public DrawQuad {
  public:
-  static const size_t kMaskResourceIdIndex = 0;
+  void SetFilters(const gfx::Vector2dF& scale,
+                  const gfx::PointF& origin,
+                  const float backdrop_quality);
 
   gfx::RectF mask_uv_rect;
   gfx::Size mask_texture_size;
@@ -48,9 +44,7 @@ class VIZ_COMMON_EXPORT RenderPassDrawQuadInternal : public DrawQuad {
   // to the same target.
   mutable bool intersects_damage_under = true;
 
-  ResourceId mask_resource_id() const {
-    return resources.ids[kMaskResourceIdIndex];
-  }
+  ResourceId mask_resource_id() const { return resource_id; }
 
  protected:
   RenderPassDrawQuadInternal();

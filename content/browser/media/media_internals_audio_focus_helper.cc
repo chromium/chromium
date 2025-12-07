@@ -4,13 +4,12 @@
 
 #include "content/browser/media/media_internals_audio_focus_helper.h"
 
+#include <algorithm>
 #include <string>
 #include <string_view>
 
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "content/browser/media/media_internals.h"
@@ -44,7 +43,6 @@ const char kMediaSessionPlaybackStatePaused[] = "Paused";
 const char kMediaSessionPlaybackStatePlaying[] = "Playing";
 
 const char kMediaSessionIsControllable[] = "Controllable";
-const char kMediaSessionIsSensitive[] = "Sensitive";
 
 const char kMediaSessionHasAudio[] = "HasAudio";
 const char kMediaSessionHasVideo[] = "HasVideo";
@@ -203,7 +201,7 @@ void MediaInternalsAudioFocusHelper::DidGetAudioFocusDebugInfo(
       continue;
 
     auto state = request_state_.find(id);
-    CHECK(state != request_state_.end(), base::NotFatalUntil::M130);
+    CHECK(state != request_state_.end());
 
     session.Set("name", BuildNameString(state->second, info->name));
     session.Set("owner", info->owner);
@@ -295,7 +293,7 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
   // Convert the audio_video_states to a string.
   if (state->session_info->audio_video_states) {
     result.append(" {");
-    base::ranges::for_each(
+    std::ranges::for_each(
         *state->session_info->audio_video_states, [&result](const auto& state) {
           result.append(" ");
           switch (state) {
@@ -309,8 +307,7 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
               result.append(kMediaSessionHasAudioVideo);
               break;
             case media_session::mojom::MediaAudioVideoState::kDeprecatedUnknown:
-              NOTREACHED_IN_MIGRATION();
-              break;
+              NOTREACHED();
           }
         });
     result.append(" }");
@@ -327,10 +324,6 @@ std::string MediaInternalsAudioFocusHelper::BuildStateString(
   // Convert the |is_controllable| boolean into a string.
   if (state->session_info->is_controllable)
     base::StrAppend(&result, {" ", kMediaSessionIsControllable});
-
-  // Convert the |is_sensitive| boolean into a string.
-  if (state->session_info->is_sensitive)
-    base::StrAppend(&result, {" ", kMediaSessionIsSensitive});
 
   if (!provided_state.empty())
     base::StrAppend(&result, {" ", provided_state});

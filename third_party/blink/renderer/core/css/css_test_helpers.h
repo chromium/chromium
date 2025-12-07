@@ -7,10 +7,10 @@
 
 #include <optional>
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
 #include "third_party/blink/renderer/core/css/rule_set.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -21,7 +21,9 @@ class CSSStyleSheet;
 class CSSVariableData;
 class CSSValue;
 class CSSProperty;
+class CSSRuleList;
 class PropertyRegistration;
+class PseudoIdFlags;
 
 namespace css_test_helpers {
 
@@ -91,6 +93,10 @@ const CSSPropertyValueSet* ParseDeclarationBlock(
     const String& block_text,
     CSSParserMode mode = kHTMLStandardMode);
 StyleRuleBase* ParseRule(Document& document, String text);
+StyleRuleBase* ParseNestedRule(Document& document,
+                               String text,
+                               CSSNestingType,
+                               StyleRule* parent_rule_for_nesting);
 
 // Parse a value according to syntax defined by:
 // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
@@ -102,19 +108,10 @@ CSSSelectorList* ParseSelectorList(const String&);
 // (for kNesting), or the :scope pseudo-class (for kScope).
 CSSSelectorList* ParseSelectorList(const String&,
                                    CSSNestingType,
-                                   const StyleRule* parent_rule_for_nesting,
-                                   bool is_within_scope);
+                                   const StyleRule* parent_rule_for_nesting);
 
-// Make the incoming StyleRule carry the specified signal.
-StyleRule* MakeSignalingRule(StyleRule&&, CSSSelector::Signal);
-
-// Make the incoming StyleRule invisible. (See CSSSelector::IsInvisible).
-StyleRule* MakeInvisibleRule(StyleRule&&);
-
-StyleRule* ParseSignalingRule(Document& document,
-                              String text,
-                              CSSSelector::Signal);
-StyleRule* ParseInvisibleRule(Document& document, String text);
+String ToString(PseudoId);
+String ToString(const PseudoIdFlags&);
 
 }  // namespace css_test_helpers
 }  // namespace blink

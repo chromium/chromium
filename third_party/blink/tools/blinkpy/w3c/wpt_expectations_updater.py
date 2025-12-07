@@ -15,7 +15,7 @@ from collections import defaultdict
 from typing import Collection, List, Optional, Set, Tuple
 
 from blinkpy.common.memoized import memoized
-from blinkpy.common.net.git_cl import BuildStatuses, GitCL
+from blinkpy.common.net.git_cl import BuildStatuses, CLRevisionID, GitCL
 from blinkpy.common.net.rpc import Build
 from blinkpy.common.net.web_test_results import (
     WebTestResult,
@@ -43,6 +43,17 @@ _log = logging.getLogger(__name__)
 
 class WPTExpectationsUpdater:
     MARKER_COMMENT = '# ====== New tests from wpt-importer added here ======'
+    DEFAULT_BUILDERS: list[str] = [
+        # TODO(crbug.com/433830466): Rebaseline with macOS and Windows on ARM.
+        # Architecture can sometimes affect results: crbug.com/450592015
+        'mac-rel',
+        'win-rel',
+        # Use these `*-blink-rel` builders instead of `android-*-rel` and
+        # `linux-rel`, respectively, to update `*webdriver_wpt_tests`
+        # expectations.
+        'android-15-chrome-blink-rel',
+        'linux-blink-rel',
+    ]
 
     def __init__(self, host, args=None, wpt_manifests=None):
         self.host = host
@@ -52,13 +63,14 @@ class WPTExpectationsUpdater:
         self.git = self.host.git(self.finder.chromium_base())
         self.patchset = None
         self.wpt_manifests = (
-            wpt_manifests or
-            [self.port.wpt_manifest(d) for d in self.port.WPT_DIRS])
+            wpt_manifests
+            or [self.port.wpt_manifest(d) for d in self.port.wpt_dirs()])
 
         # Get options from command line arguments.
         parser = argparse.ArgumentParser(description=__doc__)
         self.add_arguments(parser)
         self.options = parser.parse_args(args or [])
+        self.options.builders = self.options.builders or self.DEFAULT_BUILDERS
         if not (self.options.clean_up_test_expectations or
                 self.options.clean_up_test_expectations_only):
             assert not self.options.clean_up_affected_tests_only, (
@@ -134,6 +146,12 @@ class WPTExpectationsUpdater:
             help='Adds Pass to tests with failure expectations. '
                  'This command line argument can be used to mark tests '
                  'as flaky.')
+        parser.add_argument(
+            '--builder',
+            dest='builders',
+            action='append',
+            help=('Builder name to use for updating expectations. May provide '
+                  'multiple times.'))
 
     def suites_for_builder(self, builder: str) -> Set[str]:
         # TODO(crbug.com/1502294): Make everything a suite name (i.e., without
@@ -160,12 +178,15 @@ class WPTExpectationsUpdater:
         # here. See https://crbug.com/1154650 .
         self.port.wpt_manifest.cache_clear()
 
-        resolver = BuildResolver(self.host,
+        resolver = BuildResolver(self.host.web,
                                  self.git_cl,
                                  can_trigger_jobs=False)
-        builds = [Build(builder) for builder in self._get_try_bots()]
+        builds = [Build(builder) for builder in self.options.builders]
         try:
-            build_to_status = resolver.resolve_builds(builds, self.patchset)
+            issue = self.git_cl.get_issue_number()
+            assert issue is not None
+            cl = CLRevisionID(issue, self.patchset)
+            build_to_status = resolver.resolve_builds(builds, cl)
             _log.debug('Latest try jobs: %r', build_to_status)
         except UnresolvedBuildException as error:
             raise ScriptError(
@@ -173,6 +194,15 @@ class WPTExpectationsUpdater:
 
         tests_to_rebaseline, results = self._fetch_results_for_update(
             build_to_status)
+
+        # Some builders run duplicated test suites with some slight difference.
+        # E.g. both linux-rel and linux-blink-rel runs headless_shell_wpt_tests
+        # but with DCHECK on/off respectively. Merge the results first before
+        # processing.
+        # PASS results are already filtered so will not be merged. This will be
+        # fine if we will not update baseline for it.
+        results = self._merge_results(results)
+
         # TODO(crbug.com/1475013): Decide how to organize Android expectations.
         results_by_path = defaultdict(list)
         for suite_results in results:
@@ -192,6 +222,19 @@ class WPTExpectationsUpdater:
                     results_by_path[path], path).items():
                 exp_lines_dict[test].extend(lines)
         return sorted(tests_to_rebaseline), exp_lines_dict
+
+    def _merge_results(self,
+                       results: List[WebTestResults]) -> List[WebTestResults]:
+        results_dict = {}
+        for suite_results in results:
+            port = self._port_for_build_step(suite_results.builder_name,
+                                             suite_results.step_name())
+            key = (port.name(), suite_results.step_name())
+            if key in results_dict:
+                results_dict[key].merge_results(suite_results)
+            else:
+                results_dict[key] = suite_results
+        return list(results_dict.values())
 
     def _update_order(self, path: str) -> int:
         # Update generic expectations first.
@@ -231,9 +274,14 @@ class WPTExpectationsUpdater:
                 else:
                     completed_results.append(suite_results)
 
-        final_results.extend(
-            self.fill_missing_results(results, completed_results)
-            for results in missing_results)
+        for results in missing_results:
+            # Missing results should only get failed test results from
+            # the SAME step in its counter part.
+            final_results.append(
+                self.fill_missing_results(results, [
+                    r for r in completed_results
+                    if r.step_name() == results.step_name()
+                ]))
         final_results.extend(completed_results)
         return tests_to_rebaseline, final_results
 
@@ -306,16 +354,11 @@ class WPTExpectationsUpdater:
     def filter_results_for_update(
         self,
         test_results: WebTestResults,
-        min_attempts_for_update: int = 3,
     ) -> Tuple[Set[str], WebTestResults]:
         """Filters for failing test results that need TestExpectations.
 
         Arguments:
-            min_attempts_for_update: Threshold for the number of attempts at
-                which a test's expectations are updated. This prevents excessive
-                expectation creation due to infrastructure issues or flakiness.
-                Note that this threshold is necessary for updating without
-                `--include-unexpected-pass`, but sufficient otherwise.
+            test_results: All web test results on a given build step.
 
         Returns:
             * A set of tests that should be handled by rebaselining, which
@@ -328,14 +371,11 @@ class WPTExpectationsUpdater:
         if not self.options.include_unexpected_pass:
             # TODO(crbug.com/1149035): Consider suppressing flaky passes.
             for result in test_results.didnt_run_as_expected_results():
-                if (result.attempts >= min_attempts_for_update
-                        and not result.did_pass()):
+                if not result.did_pass():
                     failing_results.append(result)
         else:
             for result in test_results.didnt_run_as_expected_results():
-                if (result.attempts >= min_attempts_for_update
-                        or result.did_pass()):
-                    failing_results.append(result)
+                failing_results.append(result)
 
         failing_results = [
             result for result in failing_results
@@ -442,6 +482,10 @@ class WPTExpectationsUpdater:
             # (covered versions that are not skipped). For flag-specific
             # expectations, there should only be one covered version at most
             # that will automatically be promoted to a generic line.
+            #
+            # Unfortunately, we need `configuration_specifier_macros()` here
+            # instead of using `Port.CONFIGURATION_SPECIFIER_MACROS` directly to
+            # isolate tooling tests from real platform configurations.
             macros = {
                 os: set(versions)
                 & self._platform_specifiers(test, port_by_results.values())
@@ -678,8 +722,14 @@ class WPTExpectationsUpdater:
         for test in tests_to_rebaseline:
             _log.info('  %s', test)
 
-        # The importer should have already updated the manifests.
-        args = ['--no-trigger-jobs', '--no-manifest-update']
+        builders = ','.join(self.options.builders)
+        args = [
+            '--no-trigger-jobs',
+            # The importer should have already updated the manifests.
+            '--no-manifest-update',
+            '--clobber-os-version',
+            f'--builders={builders}'
+        ]
         if self.options.verbose:
             args.append('--verbose')
         if self.patchset:
@@ -688,36 +738,29 @@ class WPTExpectationsUpdater:
         self._run_blink_tool('rebaseline-cl', args)
 
     def _run_blink_tool(self, subcommand: str, args: List[str]):
-        output = self.host.executive.run_command([
+        command = [
             self.host.executable,
             self.finder.path_from_blink_tools('blink_tool.py'),
             subcommand,
             *args,
-        ])
-        _log.info('Output of %s:', subcommand)
+        ]
+        output = self.host.executive.run_command(command)
+        _log.info('Output of %s:',
+                  self.host.executive.command_for_printing(command))
         for line in output.splitlines():
             _log.info('  %s: %s', subcommand, line)
         _log.info('-- end of %s output --', subcommand)
 
     def can_rebaseline(self, result: WebTestResult) -> bool:
         """Checks if a test can be rebaselined."""
-        if self.is_reference_test(result.test_name()):
+        if not self.port.get_wpt_type(
+                result.test_name()) in {'testharness', 'wdspec'}:
             return False
         statuses = set(result.actual_results())
         if {ResultType.Pass, ResultType.Failure} <= statuses:
             return False  # Has nondeterministic output; cannot be rebaselined.
-        return not (statuses & {ResultType.Crash, ResultType.Timeout})
+        return ResultType.Failure in statuses
 
     def is_reference_test(self, test_name: str) -> bool:
         """Checks whether a given test is a reference test."""
         return bool(self.port.reference_files(test_name))
-
-    @memoized
-    def _get_try_bots(self, flag_specific: Optional[str] = None):
-        builders = self.host.builders.filter_builders(
-            is_try=True,
-            exclude_specifiers={'android'},
-            flag_specific=flag_specific)
-        # Exclude CQ builders like `win-rel`.
-        return sorted(
-            set(builders) & self.host.builders.builders_for_rebaselining())

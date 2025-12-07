@@ -19,7 +19,6 @@
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
-#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -29,6 +28,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_histograms.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
@@ -41,7 +41,10 @@ class PrivacySandboxAttestationsInstallerTest : public testing::Test {
 
  protected:
   using Installer = PrivacySandboxAttestationsComponentInstallerPolicy;
-  base::test::TaskEnvironment env_;
+  // The assignment of the parsed attestation list has a check that it must
+  // take place on the UI thread. The test needs to set up the browser task
+  // environment, otherwise the check will fail.
+  content::BrowserTaskEnvironment env_;
   base::ScopedTempDir component_install_dir_;
 };
 
@@ -52,8 +55,6 @@ class PrivacySandboxAttestationsInstallerFeatureDisabledTest
     scoped_feature_list_.InitAndDisableFeature(
         privacy_sandbox::kEnforcePrivacySandboxAttestations);
   }
-
-  ~PrivacySandboxAttestationsInstallerFeatureDisabledTest() override = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -101,10 +102,6 @@ TEST_F(PrivacySandboxAttestationsInstallerFeatureDisabledTest,
 
 class PrivacySandboxAttestationsInstallerFeatureEnabledTest
     : public PrivacySandboxAttestationsInstallerTest {
- public:
-  PrivacySandboxAttestationsInstallerFeatureEnabledTest() = default;
-
-  ~PrivacySandboxAttestationsInstallerFeatureEnabledTest() override = default;
 };
 
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
@@ -124,14 +121,15 @@ TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest, OnCustomInstall) {
   PrivacySandboxAttestationsComponentInstallerPolicy policy(base::DoNothing());
 
-  EXPECT_EQ(policy.OnCustomInstall(base::Value::Dict(), base::FilePath()).error,
-            0);
+  EXPECT_EQ(
+      policy.OnCustomInstall(base::Value::Dict(), base::FilePath()).result.code,
+      0);
 }
 
 TEST_F(PrivacySandboxAttestationsInstallerFeatureEnabledTest,
        RegisterIfFeatureEnabled) {
   component_updater::MockComponentUpdateService mock_update_service;
-  EXPECT_CALL(mock_update_service, RegisterComponent(testing::_)).Times(1);
+  EXPECT_CALL(mock_update_service, RegisterComponent(testing::_));
   RegisterPrivacySandboxAttestationsComponent(&mock_update_service);
 
   env_.RunUntilIdle();

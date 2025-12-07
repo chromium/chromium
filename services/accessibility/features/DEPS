@@ -1,8 +1,0 @@
-include_rules = [
-  "+gin",
-  "+ui/accessibility",
-  "+ui/events",
-  "+third_party/blink/public/mojom/devtools",
-  "+third_party/inspector_protocol/crdtp",
-  "+v8/include",
-]

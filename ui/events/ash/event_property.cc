@@ -4,6 +4,7 @@
 
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "ui/events/event.h"
 
 namespace ui {
@@ -20,7 +21,7 @@ int GetKeyboardDeviceIdProperty(const Event& event) {
     auto it = properties->find(kPropertyKeyboardDeviceId);
     if (it != properties->end()) {
       int result = 0;
-      std::memcpy(&result, it->second.data(), it->second.size());
+      UNSAFE_TODO(std::memcpy(&result, it->second.data(), it->second.size()));
       return result;
     }
   }
@@ -31,7 +32,7 @@ int GetKeyboardDeviceIdProperty(const Event& event) {
 void SetKeyboardDeviceIdProperty(Event* event, int device_id) {
   std::vector<std::uint8_t> buf;
   buf.resize(sizeof(device_id));
-  std::memcpy(buf.data(), &device_id, buf.size());
+  UNSAFE_TODO(std::memcpy(buf.data(), &device_id, buf.size()));
   auto properties =
       event->properties() ? *event->properties() : Event::Properties();
   properties.emplace(kPropertyKeyboardDeviceId, std::move(buf));

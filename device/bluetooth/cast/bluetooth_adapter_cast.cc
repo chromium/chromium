@@ -12,6 +12,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/gatt_client_manager.h"
 #include "chromecast/device/bluetooth/le/le_scan_manager.h"
@@ -208,9 +209,7 @@ base::WeakPtr<BluetoothAdapterCast> BluetoothAdapterCast::GetCastWeakPtr() {
 }
 
 bool BluetoothAdapterCast::SetPoweredImpl(bool powered) {
-  NOTREACHED_IN_MIGRATION()
-      << "This method is not invoked when SetPowered() is overridden.";
-  return true;
+  NOTREACHED() << "This method is not invoked when SetPowered() is overridden.";
 }
 
 void BluetoothAdapterCast::StartScanWithFilter(

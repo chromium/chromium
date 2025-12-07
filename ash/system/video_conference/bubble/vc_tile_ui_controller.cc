@@ -15,7 +15,9 @@
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/utils/haptics_util.h"
@@ -32,21 +34,26 @@ VcTileUiController::VcTileUiController(const VcHostedEffect* effect)
     : effect_(effect->get_weak_ptr()) {
   effect_id_ = effect->id();
   effect_state_ = effect->GetWeakState(/*index=*/0);
+  effect_state_label_for_debug_ = effect_state_->label_text();
   auto* dlc_service_client = DlcserviceClient::Get();
-  if (!dlc_service_client) {
+  if (dlc_service_client) {
     // `dlc_service_client` may not exist in tests.
-    return;
+    dlc_service_client->AddObserver(this);
   }
-  dlc_service_client->AddObserver(this);
+  VideoConferenceTrayController::Get()->GetEffectsManager().AddObserver(this);
 }
 
 VcTileUiController::~VcTileUiController() {
   auto* dlc_service_client = DlcserviceClient::Get();
-  if (!dlc_service_client) {
+  if (dlc_service_client) {
     // `dlc_service_client` may not exist in tests.
-    return;
+    dlc_service_client->RemoveObserver(this);
   }
-  dlc_service_client->RemoveObserver(this);
+  auto* vc_tray_controller = VideoConferenceTrayController::Get();
+  if (vc_tray_controller) {
+    // `vc_tray_controller` may be destroyed before this destructor.
+    vc_tray_controller->GetEffectsManager().RemoveObserver(this);
+  }
 }
 
 std::unique_ptr<FeatureTile> VcTileUiController::CreateTile() {
@@ -56,8 +63,13 @@ std::unique_ptr<FeatureTile> VcTileUiController::CreateTile() {
       /*is_togglable=*/true, FeatureTile::TileType::kCompact);
   tile_ = tile->GetWeakPtr();
 
-  // Set up view ids for the tile and its children.
-  tile->SetID(BubbleViewID::kToggleEffectsButton);
+  // Assign the ID, if present, to the outermost container view. Only used in
+  // tests.
+  std::optional<int> container_id =
+      effect_ ? effect_->container_id() : std::nullopt;
+  tile->SetID(container_id.has_value() ? container_id.value()
+                                       : BubbleViewID::kToggleEffectsButton);
+
   tile->label()->SetID(BubbleViewID::kToggleEffectLabel);
   tile->icon_button()->SetID(BubbleViewID::kToggleEffectIcon);
 
@@ -95,17 +107,28 @@ void VcTileUiController::OnDlcStateChanged(
   UpdateDlcDownloadUi();
 }
 
+void VcTileUiController::OnEffectChanged(VcEffectId effect_id, bool is_on) {
+  if (effect_id != effect_id_ || is_on == tile_->IsToggled()) {
+    return;
+  }
+
+  tile_->SetToggled(is_on);
+  tile_->UpdateColors();
+  UpdateTooltip();
+}
+
 void VcTileUiController::OnPressed(const ui::Event& event) {
   if (!effect_state_ || !tile_) {
     return;
   }
 
-  // Execute the associated tile's callback.
-  views::Button::PressedCallback(effect_state_->button_callback()).Run(event);
-
   // Set the toggled state.
   bool toggled = !tile_->IsToggled();
   tile_->SetToggled(toggled);
+
+  // Execute the associated tile's callback. This should be called after
+  // SetToggled() to avoid duplicated work with OnCameraEffectChange().
+  views::Button::PressedCallback(effect_state_->button_callback()).Run(event);
 
   // Track UMA metrics about the toggled state.
   TrackToggleUMA(toggled);
@@ -197,13 +220,29 @@ void VcTileUiController::DlcDownloadStateRequest::OnAllDlcStatesRetrieved(
   // One or more DLCs is still downloading. Calculate the overall download
   // progress as the average of each DLC's download progress, weighted evenly.
   double progress = 0;
+  int downloading_dlc_size = 0;
+  bool all_downloading = true;
   for (const DlcDownloadState& dlc_download_state : dlc_download_states) {
-    progress += dlc_download_state.dlc_state.progress();
+    if (dlc_download_state.dlc_state.state() ==
+        dlcservice::DlcState::State::DlcState_State_INSTALLING) {
+      progress += dlc_download_state.dlc_state.progress();
+      downloading_dlc_size += 1;
+    } else if (dlc_download_state.dlc_state.state() ==
+               dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED) {
+      all_downloading = false;
+      break;
+    }
   }
-  progress /= dlc_download_states.size();
-  std::move(set_progress_callback_)
-      .Run(FeatureTile::DownloadState::kDownloading,
-           /*progress=*/static_cast<int>(base::ClampFloor(progress * 100)));
+  // Only shows progress text when all DLCs are downloading.
+  if (all_downloading) {
+    progress /= downloading_dlc_size;
+    std::move(set_progress_callback_)
+        .Run(FeatureTile::DownloadState::kDownloading,
+             /*progress=*/static_cast<int>(base::ClampFloor(progress * 100)));
+  } else {
+    std::move(set_progress_callback_)
+        .Run(FeatureTile::DownloadState::kNone, /*progress=*/0);
+  }
 }
 
 void VcTileUiController::UpdateDlcDownloadUi() {
@@ -228,6 +267,13 @@ void VcTileUiController::OnDlcDownloadStateFetched(
   if (!tile_) {
     return;
   }
+
+  SCOPED_CRASH_KEY_STRING32("VCTileUIC", "label",
+                            base::UTF16ToUTF8(effect_state_label_for_debug_));
+
+  CHECK(effect_state_)
+      << "DLC State retrieved, but `effect_state_` is no longer valid for: "
+      << effect_state_label_for_debug_;
 
   VideoConferenceTrayController::Get()->OnDlcDownloadStateFetched(
       /*add_warning=*/download_state == FeatureTile::DownloadState::kError,

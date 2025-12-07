@@ -1,0 +1,77 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("isolated_web_app") {
+  sources = [
+    "kiosk_iwa_data.cc",
+    "kiosk_iwa_data.h",
+    "kiosk_iwa_launcher.cc",
+    "kiosk_iwa_launcher.h",
+    "kiosk_iwa_manager.cc",
+    "kiosk_iwa_manager.h",
+  ]
+  public_deps = []
+  deps = [
+    ":policy_util",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/chromeos/app_mode",
+    "//chrome/browser/web_applications",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/components/settings",
+    "//components/prefs",
+    "//components/web_package",
+    "//components/webapps/isolated_web_apps",
+    "//url",
+  ]
+}
+
+# A separate library is needed to avoid circular dependency between
+# //c/b/web_applications and //c/b/ash/app_mode/isolated_web_app.
+static_library("policy_util") {
+  sources = [
+    "kiosk_iwa_policy_util.cc",
+    "kiosk_iwa_policy_util.h",
+  ]
+  public_deps = []
+  deps = [
+    "//chrome/browser/ash/policy/core",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/components/settings",
+    "//chromeos/components/kiosk",
+    "//components/account_id",
+    "//components/prefs",
+    "//components/user_manager",
+    "//components/web_package",
+    "//components/webapps/isolated_web_apps",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "kiosk_iwa_data_unittest.cc",
+    "kiosk_iwa_manager_unittest.cc",
+  ]
+  deps = [
+    ":isolated_web_app",
+    "//base/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/web_applications",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/components/settings",
+    "//components/policy/core/common",
+    "//components/webapps/isolated_web_apps",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

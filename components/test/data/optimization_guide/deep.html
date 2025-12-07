@@ -1,0 +1,11 @@
+<html>
+<body>Page with deep tree</body>
+<script>
+  var node = document.body;
+  for(let i = 0; i < 202; i++) {
+    node = node.appendChild(document.createElement('div'));
+    node.style.position = 'fixed';
+    node.appendChild(document.createTextNode('text'));
+  }
+</script>
+</html>

@@ -29,6 +29,7 @@ source_set("factory") {
 source_set("public") {
   deps = [
     "//base",
+    "//components/password_manager/core/browser",
     "//url",
   ]
 

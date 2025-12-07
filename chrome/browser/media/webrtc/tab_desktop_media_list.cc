@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
@@ -21,11 +17,12 @@
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "components/favicon/content/content_favicon_driver.h"
+#include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -82,8 +79,8 @@ void HandleCapturedBitmap(
   gfx::ImageSkia image;
 
   // Only scale and update if the frame appears to be new.
-  const uint32_t hash = base::FastHash(base::make_span(
-      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
+  const uint32_t hash = base::FastHash(UNSAFE_TODO(base::span(
+      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize())));
   if (!last_hash.has_value() || hash != last_hash.value()) {
     image = ScaleBitmap(bitmap, desktopcapture::kPreviewSize);
   }
@@ -150,26 +147,25 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
     return;
   }
 
-  std::vector<Browser*> browsers;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    // Omit all the IWAs for TabDesktopMediaList as they are already
-    // present in NativeDesktopMediaList.
-    bool is_isolated_web_app = browser->app_controller() &&
-                               browser->app_controller()->IsIsolatedWebApp();
-
-    if ((!base::FeatureList::IsEnabled(
-             features::kRemovalOfIWAsFromTabCapture) ||
-         !is_isolated_web_app) &&
-        browser->profile()->GetOriginalProfile() ==
-            profile->GetOriginalProfile()) {
-      browsers.push_back(browser);
-    }
-  }
+  std::vector<BrowserWindowInterface*> browsers;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&browsers, profile](BrowserWindowInterface* browser) {
+        // Omit all the IWAs for TabDesktopMediaList as they are already
+        // present in NativeDesktopMediaList.
+        if ((!base::FeatureList::IsEnabled(
+                 features::kRemovalOfIWAsFromTabCapture) ||
+             !web_app::AppBrowserController::IsIsolatedWebApp(browser)) &&
+            browser->GetProfile()->GetOriginalProfile() ==
+                profile->GetOriginalProfile()) {
+          browsers.push_back(browser);
+        }
+        return true;
+      });
 
   std::vector<WebContents*> contents_list;
   // Enumerate all tabs for a user profile.
-  for (auto* browser : browsers) {
-    const TabStripModel* tab_strip_model = browser->tab_strip_model();
+  for (BrowserWindowInterface* const browser : browsers) {
+    const TabStripModel* tab_strip_model = browser->GetTabStripModel();
     DCHECK(tab_strip_model);
 
     for (int i = 0; i < tab_strip_model->count(); i++) {
@@ -200,10 +196,11 @@ void TabDesktopMediaList::Refresh(bool update_thumnails) {
       continue;
     content::RenderFrameHost* main_frame = contents->GetPrimaryMainFrame();
     DCHECK(main_frame);
-    DesktopMediaID media_id(
-        DesktopMediaID::TYPE_WEB_CONTENTS, DesktopMediaID::kNullId,
-        content::WebContentsMediaCaptureId(main_frame->GetProcess()->GetID(),
-                                           main_frame->GetRoutingID()));
+    DesktopMediaID media_id(DesktopMediaID::TYPE_WEB_CONTENTS,
+                            DesktopMediaID::kNullId,
+                            content::WebContentsMediaCaptureId(
+                                main_frame->GetProcess()->GetDeprecatedID(),
+                                main_frame->GetRoutingID()));
 
     // Get tab's last active time stamp.
     const base::TimeTicks t = contents->GetLastActiveTimeTicks();
@@ -295,8 +292,9 @@ void TabDesktopMediaList::ScreenshotReceived(
     int remaining_retries,
     const content::DesktopMediaID& id,
     std::unique_ptr<TabDesktopMediaList::RefreshCompleter> refresh_completer,
-    const SkBitmap& bitmap) {
+    const viz::CopyOutputBitmapWithMetadata& result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const SkBitmap& bitmap = result.bitmap;
 
   if (id != previewed_source_) {
     // Selection has changed since triggering this screenshot. Quit early to

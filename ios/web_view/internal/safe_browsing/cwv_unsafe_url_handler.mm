@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/safe_browsing/cwv_unsafe_url_handler_internal.h"
-
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
 #import "base/notreached.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
-#import "ios/components/security_interstitials/safe_browsing/unsafe_resource_util.h"
+#import "ios/components/security_interstitials/safe_browsing/ios_unsafe_resource_util.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web_view/internal/safe_browsing/cwv_unsafe_url_handler_internal.h"
 #import "net/base/apple/url_conversions.h"
 
 CWVUnsafeURLThreatType CWVUnsafeURLThreatTypeFromSBThreatType(
@@ -28,9 +27,7 @@ CWVUnsafeURLThreatType CWVUnsafeURLThreatTypeFromSBThreatType(
     case SB_THREAT_TYPE_URL_PHISHING:
       return CWVUnsafeURLThreatTypePhishing;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Update CWVUnsafeURLThreatType for new threat type.";
-      return CWVUnsafeURLThreatTypeUnknown;
+      NOTREACHED() << "Update CWVUnsafeURLThreatType for new threat type.";
   }
 }
 

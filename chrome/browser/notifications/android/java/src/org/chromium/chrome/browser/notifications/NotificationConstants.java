@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.notifications;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Constants used in more than a single Notification class, e.g. intents and extra names. */
+@NullMarked
 public class NotificationConstants {
     // These actions have to be synchronized with the receiver defined in AndroidManifest.xml.
     static final String ACTION_CLICK_NOTIFICATION =
@@ -17,6 +20,16 @@ public class NotificationConstants {
             "org.chromium.chrome.browser.notifications.UNDO_UNSUBSCRIBE";
     static final String ACTION_COMMIT_UNSUBSCRIBE =
             "org.chromium.chrome.browser.notifications.COMMIT_UNSUBSCRIBE";
+    static final String ACTION_SHOW_ORIGINAL_NOTIFICATION =
+            "org.chromium.chrome.browser.notifications.SHOW_ORIGINAL_NOTIFICATION";
+    static final String ACTION_ALWAYS_ALLOW =
+            "org.chromium.chrome.browser.notifications.ALWAYS_ALLOW";
+    static final String ACTION_REPORT_AS_SAFE =
+            "org.chromium.chrome.browser.notifications.REPORT_AS_SAFE";
+    static final String ACTION_REPORT_WARNED_NOTIFICATION_AS_SPAM =
+            "org.chromium.chrome.browser.notifications.REPORT_WARNED_NOTIFICATION_AS_SPAM";
+    static final String ACTION_REPORT_UNWARNED_NOTIFICATION_AS_SPAM =
+            "org.chromium.chrome.browser.notifications.REPORT_UNWARNED_NOTIFICATION_AS_SPAM";
 
     /**
      * Name of the Intent extra set by the framework when a notification preferences intent has been
@@ -40,8 +53,16 @@ public class NotificationConstants {
             "notification_info_profile_incognito";
     static final String EXTRA_NOTIFICATION_INFO_ACTION_INDEX = "notification_info_action_index";
     static final String EXTRA_NOTIFICATION_INFO_WEBAPK_PACKAGE = "notification_info_webapk_package";
+    static final String EXTRA_NOTIFICATION_INFO_CHANNEL_ID = "notification_info_channel_id";
     static final String EXTRA_NOTIFICATION_REPLY = "notification_reply";
     static final String EXTRA_NOTIFICATION_ACTION = "notification_action";
+    static final String EXTRA_NOTIFICATION_BACKUP_OF_ORIGINAL = "notification_backup_of_original";
+    static final String EXTRA_NOTIFICATION_BACKUP_FOR_SUSPICIOUS_VERDICT =
+            "notification_backup_for_suspicious_verdict";
+    static final String EXTRA_SUSPICIOUS_NOTIFICATION_COUNT = "suspicious_notification_count";
+
+    static final String EXTRA_ALLOW_REPORTING_AS_SPAM_IS_NOTIFICATION_WARNED =
+            "notification_allow_reporting_as_spam_is_notification_warned";
 
     static final String EXTRA_JOB_SCHEDULED_TIME_MS = "notification_job_scheduled_time_ms";
     static final String EXTRA_JOB_STARTED_TIME_MS = "notification_job_started_time_ms";
@@ -129,6 +150,18 @@ public class NotificationConstants {
      */
     public static final int NOTIFICATION_ID_UPM = 17;
 
+    /**
+     * Unique identifier for notifications announcing that the unified password manager will stop
+     * the supporting storing local passwords within Chrome.
+     */
+    public static final int NOTIFICATION_ID_UPM_ACCESS_LOSS = 18;
+
+    /**
+     * Unique identifier for notifications about auto-revoked notification permissions from Safety
+     * Hub.
+     */
+    public static final int NOTIFICATION_ID_SAFETY_HUB_UNSUBSCRIBED_NOTIFICATIONS = 19;
+
     // Separator used to separate the notification origin from additional data such as the developer
     // specified tag. This and the prefix following it need to be the same as the one specified in
     // notification_id_generator.cc.
@@ -158,4 +191,8 @@ public class NotificationConstants {
 
     // Default notificationId until it has been set.
     public static final int DEFAULT_NOTIFICATION_ID = -1;
+
+    // We always use the same request code for pending intents. We use other ways to force
+    // uniqueness of pending intents when necessary.
+    static final int PENDING_INTENT_REQUEST_CODE = 0;
 }

@@ -21,6 +21,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
@@ -47,10 +48,11 @@ void CreateCookies(
     GURL url(url_string);
     std::unique_ptr<net::CanonicalCookie> cookie =
         net::CanonicalCookie::CreateSanitizedCookie(
-            url, name, "A=" + name, url.host(), url.path(), base::Time::Now(),
-            base::Time::Max(), base::Time::Now(), url.SchemeIsCryptographic(),
-            false, net::CookieSameSite::NO_RESTRICTION,
-            net::COOKIE_PRIORITY_DEFAULT, std::nullopt, /*status=*/nullptr);
+            url, name, "A=" + name, url.GetHost(), url.GetPath(),
+            base::Time::Now(), base::Time::Max(), base::Time::Now(),
+            url.SchemeIsCryptographic(), false,
+            net::CookieSameSite::NO_RESTRICTION, net::COOKIE_PRIORITY_DEFAULT,
+            std::nullopt, /*status=*/nullptr);
     cookie_manager->SetCanonicalCookie(
         *cookie, url, net::CookieOptions::MakeAllInclusive(),
         base::BindLambdaForTesting(
@@ -155,7 +157,7 @@ class TokenManagedProfileCreationDelegateTest
     EXPECT_EQ(3u, cookies_new_profile.size());
 
     for (const auto& cookie : cookies_new_profile) {
-      EXPECT_TRUE(cookie.IsDomainMatch(url.host()));
+      EXPECT_TRUE(cookie.IsDomainMatch(url.GetHost()));
       EXPECT_TRUE(cookie.Name() == "oldgoogle0" ||
                   cookie.Name() == "validgoogle1" ||
                   cookie.Name() == "newgoogle2");

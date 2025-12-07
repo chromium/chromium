@@ -1,0 +1,20 @@
+Name: Credentials
+Short Name: credentials
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/credentials/credentials/1.6.0-SNAPSHOT/credentials-1.6.0-20251126.133552-1.aar
+Version: 1.6.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Android Credentials Library
+
+See also: https://developer.android.com/jetpack/androidx/releases/credentials#1.6.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

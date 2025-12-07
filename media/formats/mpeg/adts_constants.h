@@ -7,8 +7,9 @@
 
 #include <stddef.h>
 
+#include <array>
+
 #include "media/base/channel_layout.h"
-#include "media/base/media_export.h"
 
 namespace media {
 
@@ -19,11 +20,15 @@ enum {
   kSamplesPerAACFrame = 1024,
 };
 
-MEDIA_EXPORT extern const int kADTSFrequencyTable[];
-MEDIA_EXPORT extern const size_t kADTSFrequencyTableSize;
+inline constexpr auto kADTSFrequencyTable =
+    std::to_array<const int>({96000, 88200, 64000, 48000, 44100, 32000, 24000,
+                              22050, 16000, 12000, 11025, 8000, 7350});
 
-MEDIA_EXPORT extern const media::ChannelLayout kADTSChannelLayoutTable[];
-MEDIA_EXPORT extern const size_t kADTSChannelLayoutTableSize;
+inline constexpr std::array kADTSChannelLayoutTable{
+    media::CHANNEL_LAYOUT_NONE,     media::CHANNEL_LAYOUT_MONO,
+    media::CHANNEL_LAYOUT_STEREO,   media::CHANNEL_LAYOUT_SURROUND,
+    media::CHANNEL_LAYOUT_4_0,      media::CHANNEL_LAYOUT_5_0_BACK,
+    media::CHANNEL_LAYOUT_5_1_BACK, media::CHANNEL_LAYOUT_7_1};
 
 }  // namespace media
 

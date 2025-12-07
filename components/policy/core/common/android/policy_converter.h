@@ -25,6 +25,7 @@ class Value;
 namespace policy {
 
 class Schema;
+class SchemaRegistry;
 
 namespace android {
 
@@ -32,7 +33,7 @@ namespace android {
 // java classes, allows transforming Android |Bundle|s into |PolicyBundle|s.
 class POLICY_EXPORT PolicyConverter {
  public:
-  explicit PolicyConverter(const Schema* policy_schema);
+  explicit PolicyConverter(const SchemaRegistry* schema_registry);
   PolicyConverter(const PolicyConverter&) = delete;
   PolicyConverter& operator=(const PolicyConverter&) = delete;
   ~PolicyConverter();
@@ -45,19 +46,15 @@ class POLICY_EXPORT PolicyConverter {
 
   // To be called from Java:
   void SetPolicyBoolean(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& obj,
                         const base::android::JavaRef<jstring>& policyKey,
                         jboolean value);
   void SetPolicyInteger(JNIEnv* env,
-                        const base::android::JavaRef<jobject>& obj,
                         const base::android::JavaRef<jstring>& policyKey,
                         jint value);
   void SetPolicyString(JNIEnv* env,
-                       const base::android::JavaRef<jobject>& obj,
                        const base::android::JavaRef<jstring>& policyKey,
                        const base::android::JavaRef<jstring>& value);
   void SetPolicyStringArray(JNIEnv* env,
-                            const base::android::JavaRef<jobject>& obj,
                             const base::android::JavaRef<jstring>& policyKey,
                             const base::android::JavaRef<jobjectArray>& value);
 
@@ -80,7 +77,7 @@ class POLICY_EXPORT PolicyConverter {
   void SetPolicyValueForTesting(const std::string& key, base::Value raw_value);
 
  private:
-  const raw_ptr<const Schema> policy_schema_;
+  const raw_ptr<const SchemaRegistry> schema_registry_;
 
   PolicyBundle policy_bundle_;
 

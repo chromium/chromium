@@ -13,13 +13,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill {
+namespace {
+
 using ::testing::_;
 using ::testing::Eq;
 using ::testing::Property;
-
-namespace autofill {
-
-namespace {
 
 const char kTestText[] = "abcd1234";
 
@@ -32,7 +31,7 @@ auto JsonHasText(std::string_view text) {
       Eq(text));
 }
 
-class MockLogReceiver : public autofill::LogReceiver {
+class MockLogReceiver : public LogReceiver {
  public:
   MockLogReceiver() = default;
 
@@ -51,8 +50,6 @@ class MockNotifiedObject {
 
   MOCK_METHOD(void, NotifyAboutLoggingActivity, (), ());
 };
-
-}  // namespace
 
 class LogManagerTest : public testing::Test {
  protected:
@@ -205,4 +202,5 @@ TEST_F(LogManagerTest, InterleaveSuspendAndLoggingActivation_ActiveFirst) {
   EXPECT_FALSE(manager_->IsLoggingActive());
 }
 
+}  // namespace
 }  // namespace autofill

@@ -99,6 +99,9 @@
     {
       "id": 8,
       "description": "GpuControlListEntryTest.GlVersionGLESEntry",
+      "os": {
+        "type": "android"
+      },
       "gl_type": "gles",
       "gl_version": {
         "op": "=",
@@ -111,7 +114,10 @@
     {
       "id": 9,
       "description": "GpuControlListEntryTest.GlVersionANGLEEntry",
-      "gl_type": "angle",
+      "os": {
+        "type": "android"
+      },
+      "gl_type": "angle_gles",
       "gl_version": {
         "op": ">",
         "value": "2.0"
@@ -123,7 +129,9 @@
     {
       "id": 10,
       "description": "GpuControlListEntryTest.GlVersionGLEntry",
-      "gl_type": "gl",
+      "os": {
+        "type": "android"
+      },
       "gl_version": {
         "op": "<",
         "value": "4.0"
@@ -246,11 +254,14 @@
     },
     {
       "id" : 22,
-      "description": "GpuControlListEntryTest.NeedsMoreInfoForGlVersionEntry",
-      "gl_type": "gl",
+      "description": "GpuControlListEntryTest.NeedsMoreInfoForGLESVersionEntry",
+      "os": {
+        "type": "android"
+      },
+      "gl_type": "gles",
       "gl_version": {
         "op": "<",
-        "value" : "3.5"
+        "value" : "3.4"
       },
       "features" : [
         "test_feature_1"
@@ -1012,6 +1023,110 @@
       "id": 81,
       "description": "GpuControlListEntryTest.NativeAngleRenderer",
       "gl_renderer": "ANGLE \\(Samsung Xclipse 920\\) on Vulkan 1.1.179",
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 82,
+      "description": "GpuControlListEntryTest.GlTypeEntry",
+      "os": {
+        "type": "android"
+      },
+      "gl_type": "angle_vulkan",
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 83,
+      "description": "GpuControlListEntryTest.GLES30Exception",
+      "os": {
+        "type": "android"
+      },
+      "exceptions": [
+        {
+          "os": {
+            "type": "android"
+          },
+          "gl_type": "gles",
+          "gl_version": {
+            "op": ">=",
+            "value": "3.0"
+          }
+        }
+      ],
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 84,
+      "description": "GpuControlListEntryTest.WrongANGLEException",
+      "os": {
+        "type": "android"
+      },
+      "exceptions": [
+        {
+          "os": {
+            "type": "android"
+          },
+          "gl_renderer": "ANGLE.*"
+        }
+      ],
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 85,
+      "description": "GpuControlListEntryTest.ANGLEException",
+      "os": {
+        "type": "android"
+      },
+      "exceptions": [
+        {
+          "os": {
+            "type": "android"
+          },
+          "gl_type": "angle_gles"
+        },
+        {
+          "os": {
+            "type": "android"
+          },
+          "gl_type": "angle_vulkan"
+        }
+      ],
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 86,
+      "description": "GpuControlListEntryTest.GlTypeAngleGl",
+      "os": {
+        "type": "linux"
+      },
+      "gl_type": "angle_gl",
+      "gl_version": {
+        "op": "<",
+        "value": "11.9"
+      },
+      "features": [
+        "test_feature_0"
+      ]
+    },
+    {
+      "id": 87,
+      "description": "GpuControlListEntryTest.GLVersionOnly",
+      "os": {
+        "type": "android"
+      },
+      "gl_version": {
+        "op": "<",
+        "value": "3.1"
+      },
       "features": [
         "test_feature_0"
       ]

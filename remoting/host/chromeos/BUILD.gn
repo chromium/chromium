@@ -10,6 +10,9 @@ source_set("chromeos") {
     "ash_mojom_video_consumer.h",
     "ash_proxy.cc",
     "ash_proxy.h",
+    "audio_helper_chromeos.h",
+    "audio_helper_chromeos_impl.cc",
+    "audio_helper_chromeos_impl.h",
     "clipboard_aura.cc",
     "clipboard_aura.h",
     "frame_sink_desktop_capturer.cc",
@@ -26,7 +29,6 @@ source_set("chromeos") {
 
   public_deps = [
     "//ash",
-    "//build:chromeos_buildflags",
     "//cc",
     "//components/prefs",
     "//components/viz/host",
@@ -44,7 +46,8 @@ source_set("chromeos") {
 
   deps = [
     ":features",
-    "//remoting/base:base",
+    "//media/mojo/common",
+    "//remoting/base",
     "//remoting/host:clipboard",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/display/manager",
@@ -52,13 +55,11 @@ source_set("chromeos") {
   ]
 }
 
-# ChromeOS enterprise specific stuff that is also accessed from other areas
-# like //remoting/host/it2me.
-# Split out in its own target to prevent cyclic dependencies.
-source_set("enterprise_support") {
-  sources = [ "chromeos_enterprise_params.h" ]
-}
-
+# browser_interop can't explicitly depend on //chrome/browser since they form
+# a dependency circle
+# (chrome/browser->remote_command->browser_interop->chrome/browser).
+# Targets depending on browser_interop must have //chrome/browser in their
+# dependency tree.
 source_set("browser_interop") {
   sources = [
     "browser_interop.cc",
@@ -66,9 +67,12 @@ source_set("browser_interop") {
   ]
 
   deps = [
+    "//base",
     "//chrome/browser:browser_process",
-    "//content/public/browser:browser",
-    "//remoting/base:base",
+    "//chrome/browser:browser_public_dependencies",
+    "//content/public/browser",
+    "//net",
+    "//remoting/base",
     "//remoting/host",
   ]
 }
@@ -86,7 +90,7 @@ source_set("remoting_service") {
   ]
 
   public_deps = [
-    ":enterprise_support",
+    "//remoting/host:enterprise_params",
     "//remoting/host/it2me:chrome_os_host",
     "//remoting/host/it2me:common",
   ]
@@ -98,9 +102,9 @@ source_set("remoting_service") {
     ":features",
     "//chrome/common:constants",
     "//mojo/public/cpp/bindings",
-    "//remoting/base:base",
+    "//remoting/base",
     "//remoting/host",
-    "//remoting/host/mojom:mojom",
+    "//remoting/host/mojom",
   ]
 }
 
@@ -138,6 +142,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "audio_helper_chromeos_impl_unittest.cc",
     "clipboard_aura_unittest.cc",
     "file_session_storage_unittest.cc",
     "frame_sink_desktop_capturer_unittest.cc",
@@ -155,8 +160,11 @@ source_set("unit_tests") {
     ":features",
     ":remoting_service",
     "//base/test:test_support",
+    "//chrome/browser",  # Required for browser_interop
     "//components/policy/core/common:test_support",
     "//components/viz/service",
+    "//content/public/browser",
+    "//media:test_support",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host/it2me:common",
@@ -168,6 +176,8 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/display/manager",
   ]
+
+  public_deps = [ "//services/viz/privileged/mojom/compositing" ]
 }
 
 source_set("features") {

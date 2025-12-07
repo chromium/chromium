@@ -6,18 +6,27 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
+#include "base/scoped_observation.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/task_environment.h"
 #include "base/trace_event/named_trigger.h"
+#include "components/performance_manager/embedder/scoped_global_scenario_memory.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "components/performance_manager/scenarios/browser_performance_scenarios.h"
+#include "components/performance_manager/test_support/graph/mock_process_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
-#include "content/public/browser/background_tracing_config.h"
+#include "content/public/common/content_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -69,11 +78,11 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   // Resurrection should clear the exit status.
   EXPECT_FALSE(process_node->GetExitStatus());
 
-  EXPECT_EQ(0U, process_node->GetPrivateFootprintKb());
-  EXPECT_EQ(0U, process_node->GetResidentSetKb());
+  EXPECT_TRUE(process_node->GetPrivateFootprint().is_zero());
+  EXPECT_TRUE(process_node->GetResidentSet().is_zero());
 
-  process_node->set_private_footprint_kb(10u);
-  process_node->set_resident_set_kb(20u);
+  process_node->set_private_footprint(base::KiB(10));
+  process_node->set_resident_set(base::KiB(20));
 
   // Kill it again.
   // Verify that the process is cleared, but the properties stick around.
@@ -82,8 +91,8 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   EXPECT_EQ(self.Pid(), process_node->GetProcessId());
 
   EXPECT_EQ(launch_time, process_node->GetLaunchTime());
-  EXPECT_EQ(10u, process_node->GetPrivateFootprintKb());
-  EXPECT_EQ(20u, process_node->GetResidentSetKb());
+  EXPECT_EQ(base::KiB(10), process_node->GetPrivateFootprint());
+  EXPECT_EQ(base::KiB(20), process_node->GetResidentSet());
 
   // Resurrect again and verify the launch time and measurements
   // are cleared.
@@ -91,26 +100,33 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
   process_node->SetProcess(self.Duplicate(), launch2_time);
 
   EXPECT_EQ(launch2_time, process_node->GetLaunchTime());
-  EXPECT_EQ(0U, process_node->GetPrivateFootprintKb());
-  EXPECT_EQ(0U, process_node->GetResidentSetKb());
+  EXPECT_TRUE(process_node->GetPrivateFootprint().is_zero());
+  EXPECT_TRUE(process_node->GetResidentSet().is_zero());
 }
 
 namespace {
 
-class LenientMockObserver : public ProcessNodeImpl::Observer {
+class MockObserver : public MockProcessNodeObserver {
  public:
-  LenientMockObserver() {}
-  ~LenientMockObserver() override {}
-
-  MOCK_METHOD1(OnProcessNodeAdded, void(const ProcessNode*));
-  MOCK_METHOD1(OnProcessLifetimeChange, void(const ProcessNode*));
-  MOCK_METHOD1(OnBeforeProcessNodeRemoved, void(const ProcessNode*));
-  MOCK_METHOD1(OnMainThreadTaskLoadIsLow, void(const ProcessNode*));
-  MOCK_METHOD2(OnPriorityChanged, void(const ProcessNode*, base::TaskPriority));
-  MOCK_METHOD1(OnAllFramesInProcessFrozen, void(const ProcessNode*));
+  explicit MockObserver(Graph* graph = nullptr) {
+    // If a `graph` is passed, automatically start observing it.
+    if (graph) {
+      scoped_observation_.Observe(graph);
+    }
+  }
 
   void SetNotifiedProcessNode(const ProcessNode* process_node) {
     notified_process_node_ = process_node;
+  }
+
+  void TestNotifiedProcessNode(const ProcessNode* process_node) {
+    EXPECT_EQ(notified_process_node_, process_node);
+  }
+
+  void ExpectNoEdges(const ProcessNode* process_node) {
+    // Node should be created without edges.
+    EXPECT_TRUE(process_node->GetFrameNodes().empty());
+    EXPECT_TRUE(process_node->GetWorkerNodes().empty());
   }
 
   const ProcessNode* TakeNotifiedProcessNode() {
@@ -120,16 +136,17 @@ class LenientMockObserver : public ProcessNodeImpl::Observer {
   }
 
  private:
+  base::ScopedObservation<Graph, ProcessNodeObserver> scoped_observation_{this};
   raw_ptr<const ProcessNode, DanglingUntriaged> notified_process_node_ =
       nullptr;
 };
 
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
-
-using testing::_;
-using testing::Invoke;
-using testing::InvokeWithoutArgs;
-using testing::Return;
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::InSequence;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
+using ::testing::Return;
 
 }  // namespace
 
@@ -143,16 +160,24 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
 
   // Remove observers at the head and tail of the list inside a callback, and
   // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnProcessNodeAdded(_)).WillOnce(InvokeWithoutArgs([&] {
-    graph()->RemoveProcessNodeObserver(&head_obs);
-    graph()->RemoveProcessNodeObserver(&tail_obs);
-  }));
+  EXPECT_CALL(head_obs, OnBeforeProcessNodeAdded(_))
+      .WillOnce(InvokeWithoutArgs([&] {
+        graph()->RemoveProcessNodeObserver(&head_obs);
+        graph()->RemoveProcessNodeObserver(&tail_obs);
+      }));
   // `tail_obs` should not be notified as it was removed.
-  EXPECT_CALL(tail_obs, OnProcessNodeAdded(_)).Times(0);
+  EXPECT_CALL(tail_obs, OnBeforeProcessNodeAdded(_)).Times(0);
 
-  // Create a page node and expect a matching call to "OnProcessNodeAdded".
-  EXPECT_CALL(obs, OnProcessNodeAdded(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedProcessNode));
+  // Create a page node and expect a matching call to both "OnBeforeProcessNodeAdded" and
+  // "OnProcessNodeAdded".
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforeProcessNodeAdded(_))
+        .WillOnce(DoAll(Invoke(&obs, &MockObserver::SetNotifiedProcessNode),
+                        Invoke(&obs, &MockObserver::ExpectNoEdges)));
+    EXPECT_CALL(obs, OnProcessNodeAdded(_))
+        .WillOnce(Invoke(&obs, &MockObserver::TestNotifiedProcessNode));
+  }
   auto process_node = CreateNode<ProcessNodeImpl>();
   const ProcessNode* raw_process_node = process_node.get();
   EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
@@ -190,11 +215,14 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnPriorityChanged(raw_process_node, _));
   process_node->SetMainThreadTaskLoadIsLow(false);
 
-  // Release the page node and expect a call to "OnBeforeProcessNodeRemoved".
-  EXPECT_CALL(obs, OnBeforeProcessNodeRemoved(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedProcessNode));
+  // Release the page node and expect a call to both "OnBeforeProcessNodeRemoved" and
+  // "OnProcessNodeRemoved".
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforeProcessNodeRemoved(raw_process_node));
+    EXPECT_CALL(obs, OnProcessNodeRemoved(raw_process_node));
+  }
   process_node.reset();
-  EXPECT_EQ(raw_process_node, obs.TakeNotifiedProcessNode());
 
   graph()->RemoveProcessNodeObserver(&obs);
 }
@@ -260,37 +288,47 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   }
 }
 
-namespace {
+TEST_F(ProcessNodeImplTest, InitializeChildProcessCoordination) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
 
-class LenientFakeNamedTriggerManager
-    : public base::trace_event::NamedTriggerManager {
- public:
-  LenientFakeNamedTriggerManager() { NamedTriggerManager::SetInstance(this); }
-  ~LenientFakeNamedTriggerManager() {
-    NamedTriggerManager::SetInstance(nullptr);
-  }
+  // No global memory mapped. ProcessNodeImpl automatically creates a process
+  // memory region on request.
+  process_node->InitializeChildProcessCoordination(
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_FALSE(global_region.IsValid());
+            EXPECT_TRUE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
 
-  // Functions we want to intercept.
-  MOCK_METHOD(bool,
-              DoEmitNamedTrigger,
-              (const std::string& trigger_name, std::optional<int32_t> value),
-              (override));
-};
+  // Map global memory.
+  ScopedGlobalScenarioMemory global_shared_memory;
+  process_node->InitializeChildProcessCoordination(
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_TRUE(global_region.IsValid());
+            EXPECT_TRUE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
 
-using FakeBackgroundTracingManager =
-    ::testing::StrictMock<LenientFakeNamedTriggerManager>;
-
-}  // namespace
-
-TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
-  const std::string kTrigger1("trigger1");
-
-  LenientFakeNamedTriggerManager manager;
-
-  // Expect a new trigger to be registered and triggered.
-  EXPECT_CALL(manager, DoEmitNamedTrigger(_, _));
-  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1);
-  testing::Mock::VerifyAndClear(&manager);
+  // In single process mode, memory shouldn't be shared even if it's mapped,
+  // because the request isn't actually sent from a different process.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kSingleProcess);
+  process_node->InitializeChildProcessCoordination(
+      base::BindLambdaForTesting(
+          [&](base::ReadOnlySharedMemoryRegion global_region,
+              base::ReadOnlySharedMemoryRegion process_region) {
+            EXPECT_FALSE(global_region.IsValid());
+            EXPECT_FALSE(process_region.IsValid());
+          })
+          .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
 }
 
 }  // namespace performance_manager

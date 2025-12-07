@@ -1,0 +1,46 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.mojom.scanner_feedback_ui;
+
+import "url/mojom/url.mojom";
+
+// Encompasses all fixed additional information to attach to a given feedback
+// report. Will be displayed to the user in the feedback form.
+struct FeedbackInfo {
+  // A human-readible string showing the details of the action performed.
+  // Will realistically be <50kB.
+  // The contents are derived from a Google-owned server response.
+  string action_details;
+  // A `chrome-untrusted://scanner-feedback/screenshots/UNGUESSABLETOKEN.png`
+  // URL which, when accessed, will display the screenshot.
+  // The contents are a (possibly resized) screen capture from Ash.
+  url.mojom.Url? screenshot_url;
+};
+
+// Handles communication from `chrome-untrusted://scanner-feedback` to the
+// trusted browser process.
+interface PageHandler {
+  // Gets the `FeedbackInfo` for this page handler.
+  // If no feedback information was attached to this page handler (for example,
+  // if `chrome-untrusted://scanner-feedback` was manually opened in the
+  // browser) calling this will kill the renderer process by reporting a bad
+  // message.
+  GetFeedbackInfo() => (FeedbackInfo feedback_info);
+
+  // Requests for the dialog displaying this page to be closed.
+  // May not immediately close the dialog or the page handler.
+  //
+  // If no "close dialog" callback was attached to this page handler, calling
+  // this will kill the renderer process by reporting a bad message.
+  CloseDialog();
+
+  // Sends the user-specified description in a feedback report alongside the
+  // `FeedbackInfo` obtained from `GetFeedbackInfo()`.
+  //
+  // Detaches both the "send feedback" callback and the feedback information
+  // from this page handler. If either do not exist, calling this will kill the
+  // renderer process by reporting a bad message.
+  SendFeedback(string user_description);
+};

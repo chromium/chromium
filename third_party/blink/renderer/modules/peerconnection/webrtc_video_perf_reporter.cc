@@ -46,10 +46,8 @@ void WebrtcVideoPerfReporter::StoreWebrtcVideoStatsOnTaskRunner(
   }
 
   auto mojo_features = media::mojom::blink::WebrtcPredictionFeatures::New(
-      stats_key.is_decode,
-      static_cast<media::mojom::blink::VideoCodecProfile>(
-          stats_key.codec_profile),
-      stats_key.pixel_size, stats_key.hw_accelerated);
+      stats_key.is_decode, stats_key.codec_profile, stats_key.pixel_size,
+      stats_key.hw_accelerated);
 
   auto mojo_video_stats = media::mojom::blink::WebrtcVideoStats::New(
       video_stats.frame_count, video_stats.key_frame_count,

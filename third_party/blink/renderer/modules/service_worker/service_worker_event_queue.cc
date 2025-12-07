@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_event_queue.h"
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_tick_clock.h"
@@ -14,13 +13,6 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
-
-// This feature flag enables a new behavior that waits
-// processing events until the top-level script is evaluated.
-// See: https://crbug.com/1462568
-BASE_FEATURE(kServiceWorkerEventQueueWaitForScriptEvaluation,
-             "ServiceWorkerEventQueueWaitForScriptEvaluation",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // static
 constexpr base::TimeDelta ServiceWorkerEventQueue::kEventTimeout;
@@ -47,28 +39,19 @@ ServiceWorkerEventQueue::StayAwakeToken::~StayAwakeToken() {
 }
 
 ServiceWorkerEventQueue::ServiceWorkerEventQueue(
-    BeforeStartEventCallback before_start_event_callback,
     base::RepeatingClosure idle_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : ServiceWorkerEventQueue(std::move(before_start_event_callback),
-                              std::move(idle_callback),
+    : ServiceWorkerEventQueue(std::move(idle_callback),
                               std::move(task_runner),
                               base::DefaultTickClock::GetInstance()) {}
 
 ServiceWorkerEventQueue::ServiceWorkerEventQueue(
-    BeforeStartEventCallback before_start_event_callback,
     base::RepeatingClosure idle_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : task_runner_(std::move(task_runner)),
-      before_start_event_callback_(std::move(before_start_event_callback)),
       idle_callback_(std::move(idle_callback)),
-      tick_clock_(tick_clock) {
-  if (!base::FeatureList::IsEnabled(
-          kServiceWorkerEventQueueWaitForScriptEvaluation)) {
-    is_ready_for_processing_events_ = true;
-  }
-}
+      tick_clock_(tick_clock) {}
 
 ServiceWorkerEventQueue::~ServiceWorkerEventQueue() {
   // Abort all callbacks.
@@ -80,18 +63,12 @@ ServiceWorkerEventQueue::~ServiceWorkerEventQueue() {
 
 void ServiceWorkerEventQueue::Start() {
   DCHECK(!timer_.IsRunning());
-  timer_.Start(FROM_HERE, kUpdateInterval,
-               WTF::BindRepeating(&ServiceWorkerEventQueue::UpdateStatus,
-                                  WTF::Unretained(this)));
-  if (base::FeatureList::IsEnabled(
-          kServiceWorkerEventQueueWaitForScriptEvaluation)) {
-    is_ready_for_processing_events_ = true;
-    ResetIdleTimeout();
-    ProcessEvents();
-  } else if (!HasInflightEvent() && !HasScheduledIdleCallback()) {
-    // If no event happens until Start(), the idle callback should be scheduled.
-    OnNoInflightEvent();
-  }
+  timer_.Start(
+      FROM_HERE, kUpdateInterval,
+      BindRepeating(&ServiceWorkerEventQueue::UpdateStatus, Unretained(this)));
+  is_ready_for_processing_events_ = true;
+  ResetIdleTimeout();
+  ProcessEvents();
 }
 
 void ServiceWorkerEventQueue::EnqueueNormal(
@@ -114,41 +91,6 @@ void ServiceWorkerEventQueue::EnqueuePending(
       std::move(abort_callback), std::move(custom_timeout)));
 }
 
-void ServiceWorkerEventQueue::EnqueueOffline(
-    int event_id,
-    StartCallback start_callback,
-    AbortCallback abort_callback,
-    std::optional<base::TimeDelta> custom_timeout) {
-  EnqueueEvent(std::make_unique<ServiceWorkerEventQueue::Event>(
-      event_id, ServiceWorkerEventQueue::Event::Type::Offline,
-      std::move(start_callback), std::move(abort_callback),
-      std::move(custom_timeout)));
-}
-
-bool ServiceWorkerEventQueue::CanStartEvent(const Event& event) const {
-  if (running_event_type_ == RunningEventType::kNone) {
-    DCHECK(!HasInflightEvent());
-    return true;
-  }
-  if (event.type == Event::Type::Offline)
-    return running_event_type_ == RunningEventType::kOffline;
-  return running_event_type_ == RunningEventType::kOnline;
-}
-
-std::map<int, std::unique_ptr<ServiceWorkerEventQueue::Event>>&
-ServiceWorkerEventQueue::GetActiveEventQueue() {
-  if (running_event_type_ == RunningEventType::kNone) {
-    // Either online events or offline events can be started when inflight
-    // events don't exist. If online events exist in the queue, prioritize
-    // online events.
-    return queued_online_events_.empty() ? queued_offline_events_
-                                         : queued_online_events_;
-  }
-  if (running_event_type_ == RunningEventType::kOffline)
-    return queued_offline_events_;
-  return queued_online_events_;
-}
-
 void ServiceWorkerEventQueue::EnqueueEvent(std::unique_ptr<Event> event) {
   DCHECK(event->type != Event::Type::Pending || did_idle_timeout());
   DCHECK(!HasEvent(event->event_id));
@@ -164,11 +106,9 @@ void ServiceWorkerEventQueue::EnqueueEvent(std::unique_ptr<Event> event) {
       std::make_unique<EventInfo>(
           tick_clock_->NowTicks() +
               event->custom_timeout.value_or(kEventTimeout),
-          WTF::BindOnce(std::move(event->abort_callback), event->event_id)));
+          blink::BindOnce(std::move(event->abort_callback), event->event_id)));
 
-  auto& queue = event->type == Event::Type::Offline ? queued_offline_events_
-                                                    : queued_online_events_;
-  queue.emplace(event->event_id, std::move(event));
+  queued_online_events_.emplace(event->event_id, std::move(event));
 
   if (!can_start_processing_events)
     return;
@@ -182,11 +122,11 @@ void ServiceWorkerEventQueue::ProcessEvents() {
   DCHECK(is_ready_for_processing_events_);
   DCHECK(!processing_events_);
   processing_events_ = true;
-  auto& queue = GetActiveEventQueue();
-  while (!queue.empty() && CanStartEvent(*queue.begin()->second)) {
-    int event_id = queue.begin()->first;
-    std::unique_ptr<Event> event = std::move(queue.begin()->second);
-    queue.erase(queue.begin());
+  while (!queued_online_events_.empty()) {
+    int event_id = queued_online_events_.begin()->first;
+    std::unique_ptr<Event> event =
+        std::move(queued_online_events_.begin()->second);
+    queued_online_events_.erase(queued_online_events_.begin());
     StartEvent(event_id, std::move(event));
   }
   processing_events_ = false;
@@ -202,11 +142,6 @@ void ServiceWorkerEventQueue::ProcessEvents() {
 void ServiceWorkerEventQueue::StartEvent(int event_id,
                                          std::unique_ptr<Event> event) {
   DCHECK(HasEvent(event_id));
-  running_event_type_ = event->type == Event::Type::Offline
-                            ? RunningEventType::kOffline
-                            : RunningEventType::kOnline;
-  if (before_start_event_callback_)
-    before_start_event_callback_.Run(event->type == Event::Type::Offline);
   std::move(event->start_callback).Run(event_id);
 }
 
@@ -225,8 +160,7 @@ bool ServiceWorkerEventQueue::HasEvent(int event_id) const {
 }
 
 bool ServiceWorkerEventQueue::HasEventInQueue(int event_id) const {
-  return (base::Contains(queued_online_events_, event_id) ||
-          base::Contains(queued_offline_events_, event_id));
+  return base::Contains(queued_online_events_, event_id);
 }
 
 std::unique_ptr<ServiceWorkerEventQueue::StayAwakeToken>
@@ -278,7 +212,7 @@ void ServiceWorkerEventQueue::CheckEventQueue() {
 void ServiceWorkerEventQueue::UpdateStatus() {
   base::TimeTicks now = tick_clock_->NowTicks();
 
-  // Construct a new map because WTF::HashMap doesn't support deleting elements
+  // Construct a new map because HashMap doesn't support deleting elements
   // while iterating.
   HashMap<int /* event_id */, std::unique_ptr<EventInfo>> new_all_events;
 
@@ -297,7 +231,6 @@ void ServiceWorkerEventQueue::UpdateStatus() {
     // The event may still be in one of the queues when it timed out. Try to
     // remove the event from both.
     queued_online_events_.erase(event_id);
-    queued_offline_events_.erase(event_id);
 
     // Run the abort callback.
     std::move(event_info->abort_callback)
@@ -324,12 +257,11 @@ void ServiceWorkerEventQueue::ScheduleIdleCallback(base::TimeDelta delay) {
   DCHECK(!HasInflightEvent());
   DCHECK(!HasScheduledIdleCallback());
 
-  // WTF::Unretained() is safe because the task runner will be destroyed
+  // Unretained() is safe because the task runner will be destroyed
   // before |this| is destroyed at ServiceWorkerGlobalScope::Dispose().
   idle_callback_handle_ = PostDelayedCancellableTask(
       *task_runner_, FROM_HERE,
-      WTF::BindOnce(&ServiceWorkerEventQueue::TriggerIdleCallback,
-                    WTF::Unretained(this)),
+      BindOnce(&ServiceWorkerEventQueue::TriggerIdleCallback, Unretained(this)),
       delay);
 }
 
@@ -344,11 +276,21 @@ void ServiceWorkerEventQueue::TriggerIdleCallback() {
 
 void ServiceWorkerEventQueue::OnNoInflightEvent() {
   DCHECK(!HasInflightEvent());
-  running_event_type_ = RunningEventType::kNone;
-  // There might be events in the queue because offline (or non-offline) events
-  // can be enqueued during running non-offline (or offline) events.
-  auto& queue = GetActiveEventQueue();
-  if (!queue.empty()) {
+  if (!queued_online_events_.empty()) {
+    // The comment before offline queue removal
+    // https://chromium-review.googlesource.com/c/chromium/src/+/5847475 said:
+    //
+    // > There might be events in the queue because offline (or non-offline)
+    // > events can be enqueued during running non-offline (or offline) events.
+    //
+    // But also there can be events in the online queue even without offline
+    // queue interaction (crbug.com/373051915), perhaps the comment was
+    // obsolete.
+    //
+    // Call `ProcessEvents()` to anyway preserve the behavior before the offline
+    // queue removal.
+    //
+    // TODO(crbug.com/374797728): Investigate why the queue can be non-empty.
     ProcessEvents();
     return;
   }
@@ -357,8 +299,7 @@ void ServiceWorkerEventQueue::OnNoInflightEvent() {
 }
 
 bool ServiceWorkerEventQueue::HasInflightEvent() const {
-  size_t num_queued_events =
-      queued_online_events_.size() + queued_offline_events_.size();
+  size_t num_queued_events = queued_online_events_.size();
   DCHECK_LE(num_queued_events, all_events_.size());
   return all_events_.size() - num_queued_events > 0 ||
          num_of_stay_awake_tokens_ > 0;

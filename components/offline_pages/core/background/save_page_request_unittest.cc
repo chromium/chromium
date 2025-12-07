@@ -23,7 +23,7 @@ class SavePageRequestTest : public testing::Test {
   ~SavePageRequestTest() override;
 };
 
-SavePageRequestTest::~SavePageRequestTest() {}
+SavePageRequestTest::~SavePageRequestTest() = default;
 
 TEST_F(SavePageRequestTest, CreatePendingReqeust) {
   const GURL kUrl1("http://example.com");

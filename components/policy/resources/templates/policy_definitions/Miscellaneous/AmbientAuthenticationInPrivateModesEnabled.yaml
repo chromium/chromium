@@ -15,6 +15,7 @@ desc: |-
         Note that, ambient authentication is always allowed on regular profiles.
 
         In <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 81 and later, if the policy is left not set, ambient authentication will be enabled in regular sessions only.
+default: 0
 example_value: 0
 features:
   dynamic_refresh: true

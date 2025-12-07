@@ -10,7 +10,7 @@
 #include "base/check_op.h"
 #include "content/common/content_export.h"
 
-namespace content {
+namespace content::indexed_db {
 
 // Contains version data for the wire format used for encoding IndexedDB values.
 // A version tuple (a, b) is at least as new as (a', b')
@@ -30,13 +30,8 @@ class IndexedDBDataFormatVersion {
   uint32_t v8_version() const { return v8_version_; }
   uint32_t blink_version() const { return blink_version_; }
 
-  bool operator==(const IndexedDBDataFormatVersion& other) const {
-    return v8_version_ == other.v8_version_ &&
-           blink_version_ == other.blink_version_;
-  }
-  bool operator!=(const IndexedDBDataFormatVersion& other) const {
-    return !operator==(other);
-  }
+  friend bool operator==(const IndexedDBDataFormatVersion&,
+                         const IndexedDBDataFormatVersion&) = default;
 
   bool IsAtLeast(const IndexedDBDataFormatVersion& other) const {
     return v8_version_ >= other.v8_version_ &&
@@ -66,6 +61,6 @@ class IndexedDBDataFormatVersion {
   CONTENT_EXPORT static IndexedDBDataFormatVersion current_;
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_INDEXED_DB_DATA_FORMAT_VERSION_H_

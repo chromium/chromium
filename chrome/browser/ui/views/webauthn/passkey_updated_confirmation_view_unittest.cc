@@ -1,0 +1,52 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/views/webauthn/passkey_updated_confirmation_view.h"
+
+#include <utility>
+
+#include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "chrome/browser/ui/views/passwords/password_bubble_view_test_base.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/widget/widget.h"
+
+namespace {
+
+constexpr char kRpId[] = "touhou.example.com";
+
+class PasskeyUpdatedConfirmationViewTest : public PasswordBubbleViewTestBase {
+ public:
+  PasskeyUpdatedConfirmationViewTest() = default;
+  ~PasskeyUpdatedConfirmationViewTest() override = default;
+
+  void CreateViewAndShow() {
+    CreateAnchorViewAndShow();
+    view_ = new PasskeyUpdatedConfirmationView(
+        web_contents(), anchor_view(), LocationBarBubbleDelegateView::AUTOMATIC,
+        kRpId);
+    views::BubbleDialogDelegateView::CreateBubble(view_)->Show();
+  }
+
+  void TearDown() override {
+    std::exchange(view_, nullptr)
+        ->GetWidget()
+        ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+    PasswordBubbleViewTestBase::TearDown();
+  }
+
+  PasskeyUpdatedConfirmationView* view() { return view_; }
+
+ private:
+  raw_ptr<PasskeyUpdatedConfirmationView> view_ = nullptr;
+};
+
+TEST_F(PasskeyUpdatedConfirmationViewTest, ShowsTitle) {
+  CreateViewAndShow();
+  EXPECT_TRUE(view()->ShouldShowWindowTitle());
+  EXPECT_FALSE(view()->GetWindowTitle().empty());
+}
+
+}  // namespace

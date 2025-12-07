@@ -22,8 +22,20 @@ source_set("tab_manager_features") {
   ]
 }
 
-source_set("tab_lifecycle_observer") {
-  sources = [ "tab_lifecycle_observer.h" ]
+source_set("resource_coordinator") {
+  sources = []
+  public_deps = []
 
-  public_deps = [ "//chrome/browser/resource_coordinator:mojo_bindings" ]
+  if (!is_android) {
+    sources += [
+      "lifecycle_unit.h",
+      "tab_load_tracker.h",
+    ]
+    public_deps += [
+      ":mojo_bindings",
+      ":mojo_bindings__generator",
+      "//base",
+      "//content/public/browser",
+    ]
+  }
 }

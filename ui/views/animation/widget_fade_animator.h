@@ -11,7 +11,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/animation/animation_delegate_views.h"
@@ -33,6 +32,13 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
     kNone,
     kFadeIn,
     kFadeOut,
+  };
+
+  // Controls the window show type.
+  enum class WidgetShowType {
+    kNone,
+    kShowActive,
+    kShowInactive,
   };
 
   // Defines a callback for when a fade completes. Not called on cancel. The
@@ -65,6 +71,9 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
 
   void set_close_on_hide(bool close_on_hide) { close_on_hide_ = close_on_hide; }
   bool close_on_hide() const { return close_on_hide_; }
+
+  void set_show_type(WidgetShowType show_type) { show_type_ = show_type; }
+  WidgetShowType show_type() const { return show_type_; }
 
   Widget* widget() { return widget_; }
 
@@ -122,6 +131,10 @@ class VIEWS_EXPORT WidgetFadeAnimator : public AnimationDelegateViews,
 
   // Whether the widget should be closed at the end of a fade-out animation.
   bool close_on_hide_ = false;
+
+  // Controls the window show type. Specifically whether to show the window as
+  // active/inactive, or not show it at all.
+  WidgetShowType show_type_ = WidgetShowType::kShowActive;
 
   base::RepeatingCallbackList<FadeCompleteCallbackSignature>
       fade_complete_callbacks_;

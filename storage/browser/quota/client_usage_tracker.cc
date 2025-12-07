@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 namespace storage {
 
@@ -23,10 +24,8 @@ struct ClientUsageTracker::AccumulateInfo {
 ClientUsageTracker::ClientUsageTracker(
     UsageTracker* tracker,
     mojom::QuotaClient* client,
-    blink::mojom::StorageType type,
     scoped_refptr<SpecialStoragePolicy> special_storage_policy)
     : client_(client),
-      type_(type),
       special_storage_policy_(std::move(special_storage_policy)) {
   DCHECK(client_);
   if (special_storage_policy_.get())
@@ -260,8 +259,6 @@ void ClientUsageTracker::OnCleared() {
 bool ClientUsageTracker::IsStorageUnlimited(
     const blink::StorageKey& storage_key) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (type_ == blink::mojom::StorageType::kSyncable)
-    return false;
   return special_storage_policy_.get() &&
          special_storage_policy_->IsStorageUnlimited(
              storage_key.origin().GetURL());

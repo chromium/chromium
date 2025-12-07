@@ -34,9 +34,12 @@
 #include "extensions/browser/event_router_factory.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_extension_system.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using value_store::ValueStore;
 
@@ -111,7 +114,7 @@ class MockSyncChangeProcessor : public syncer::SyncChangeProcessor {
       const syncer::SyncChangeList& change_list) override {
     if (fail_all_requests_) {
       return syncer::ModelError(FROM_HERE,
-                                "MockSyncChangeProcessor: configured to fail");
+                                syncer::ModelError::Type::kGenericTestError);
     }
     for (const auto& sync_change : change_list) {
       changes_.push_back(std::make_unique<SettingSyncData>(sync_change));
@@ -179,21 +182,21 @@ class ExtensionSettingsSyncTest : public testing::Test {
 
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    profile_ = std::make_unique<TestingProfile>(temp_dir_.GetPath());
+    TestingProfile::Builder profile_builder;
+    profile_builder.AddTestingFactory(
+        ExtensionsBrowserClient::Get()->GetExtensionSystemFactory(),
+        base::BindRepeating(&MockExtensionSystemFactoryFunction));
+    profile_builder.AddTestingFactory(EventRouterFactory::GetInstance(),
+                                      base::BindRepeating(&BuildEventRouter));
+
+    profile_builder.SetPath(temp_dir_.GetPath());
+    profile_ = profile_builder.Build();
+
     content::RunAllTasksUntilIdle();
 
     storage_factory_->Reset();
     frontend_ =
         StorageFrontend::CreateForTesting(storage_factory_, profile_.get());
-
-    ExtensionsBrowserClient::Get()
-        ->GetExtensionSystemFactory()
-        ->SetTestingFactoryAndUse(
-            profile_.get(),
-            base::BindRepeating(&MockExtensionSystemFactoryFunction));
-
-    EventRouterFactory::GetInstance()->SetTestingFactory(
-        profile_.get(), base::BindRepeating(&BuildEventRouter));
 
     // Hold a pointer to SyncValueStoreCache in the main thread, such that
     // GetSyncableService() can be called from the backend sequence.
@@ -261,8 +264,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
         data_type = value_store_util::ModelType::EXTENSION;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
     value_store_dir = value_store_util::GetValueStoreDir(
         settings_namespace::SYNC, data_type, extension_id);

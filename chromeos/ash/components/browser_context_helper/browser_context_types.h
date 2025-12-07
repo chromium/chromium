@@ -34,10 +34,6 @@ namespace ash {
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
 extern const char kSigninBrowserContextBaseName[];
 
-// Base name of the lock-screen-app browser context.
-COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
-extern const char kLockScreenAppBrowserContextBaseName[];
-
 // Base name of the lock-screen browser context.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
 extern const char kLockScreenBrowserContextBaseName[];
@@ -49,22 +45,18 @@ extern const char kShimlessRmaAppBrowserContextBaseName[];
 // Returns true if given |browser_context| is for signin.
 // Returns false if nullptr is given.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
-bool IsSigninBrowserContext(content::BrowserContext* browser_context);
-
-// Returns true if given |browser_context| is for Lock-screen-app.
-// Returns false if nullptr is given.
-COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
-bool IsLockScreenAppBrowserContext(content::BrowserContext* browser_context);
+bool IsSigninBrowserContext(const content::BrowserContext* browser_context);
 
 // Returns true if given |browser_context| is for Lock-screen.
 // Returns false if nullptr is given.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
-bool IsLockScreenBrowserContext(content::BrowserContext* browser_context);
+bool IsLockScreenBrowserContext(const content::BrowserContext* browser_context);
 
 // Returns true if given |browser_context| is for shimless-rma-app.
 // Returns false if nullptr is given.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
-bool IsShimlessRmaAppBrowserContext(content::BrowserContext* browser_context);
+bool IsShimlessRmaAppBrowserContext(
+    const content::BrowserContext* browser_context);
 
 // Returns true if the given |browser_context| is none of these special
 // BrowserContext instances. Returns false if nullptr is given.
@@ -73,7 +65,7 @@ bool IsShimlessRmaAppBrowserContext(content::BrowserContext* browser_context);
 // should be used such as `Profile::IsRegularProfile()` or
 // `Profile::IsSystemProfile()`.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
-bool IsUserBrowserContext(content::BrowserContext* browser_context);
+bool IsUserBrowserContext(const content::BrowserContext* browser_context);
 
 // Returns true if the given |base_name| that is for BrowserContext directory's
 // base name is for a user's (i.e. none of these special BrowserContexts').

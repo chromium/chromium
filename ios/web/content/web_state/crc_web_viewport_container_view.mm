@@ -19,6 +19,7 @@
 @synthesize viewportEdgesAffectedBySafeArea = _viewportEdgesAffectedBySafeArea;
 @synthesize minViewportInsets = _minViewportInsets;
 @synthesize maxViewportInsets = _maxViewportInsets;
+@synthesize webViewResizingType = _webViewResizingType;
 
 - (id)init {
   if ((self = [super init])) {

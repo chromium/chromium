@@ -4,6 +4,7 @@
 
 #include "net/quic/mock_encrypter.h"
 
+#include "base/compiler_specific.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_data_writer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_utils.h"
 
@@ -43,7 +44,7 @@ bool MockEncrypter::EncryptPacket(uint64_t /*packet_number*/,
   if (max_output_length < ciphertext_size) {
     return false;
   }
-  memcpy(output, plaintext.data(), ciphertext_size);
+  UNSAFE_TODO(memcpy(output, plaintext.data(), ciphertext_size));
   *output_length = ciphertext_size;
   return true;
 }

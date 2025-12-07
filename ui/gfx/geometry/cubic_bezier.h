@@ -5,13 +5,15 @@
 #ifndef UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 #define UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include <array>
+
+#include "base/component_export.h"
 
 namespace gfx {
 
 #define CUBIC_BEZIER_SPLINE_SAMPLES 11
 
-class GEOMETRY_EXPORT CubicBezier {
+class COMPONENT_EXPORT(GEOMETRY) CubicBezier {
  public:
   CubicBezier(double p1x, double p1y, double p2x, double p2y);
   CubicBezier(const CubicBezier& other);
@@ -97,7 +99,7 @@ class GEOMETRY_EXPORT CubicBezier {
   double range_min_;
   double range_max_;
 
-  double spline_samples_[CUBIC_BEZIER_SPLINE_SAMPLES];
+  std::array<double, CUBIC_BEZIER_SPLINE_SAMPLES> spline_samples_;
 
 #ifndef NDEBUG
   // Guard against attempted to solve for t given x in the event that the curve

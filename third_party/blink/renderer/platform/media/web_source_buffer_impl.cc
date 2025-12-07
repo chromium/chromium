@@ -9,9 +9,6 @@
 #include <cmath>
 #include <limits>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/media_tracks.h"
 #include "media/base/stream_parser.h"
@@ -20,6 +17,8 @@
 #include "media/filters/source_buffer_parse_warnings.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_source_buffer_client.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -37,8 +36,7 @@ static WebSourceBufferClient::ParseWarning ParseWarningToBlink(
         kGroupEndTimestampDecreaseWithinMediaSegment);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return WebSourceBufferClient::ParseWarning::kKeyframeTimeGreaterThanDependant;
+  NOTREACHED();
 
 #undef CHROMIUM_PARSE_WARNING_TO_BLINK_ENUM_CASE
 }
@@ -77,12 +75,18 @@ WebSourceBufferImpl::WebSourceBufferImpl(const std::string& id,
       client_(nullptr),
       append_window_end_(media::kInfiniteDuration) {
   DCHECK(demuxer_);
+
+  // `HTMLMediaElement` transitively owns both the `MediaSource` (which owns
+  // this) and `Demuxer` and is responsible for shutting both down concurrently.
+  // See `HTMLMediaElement::ClearMediaPlayer`.
   demuxer_->SetTracksWatcher(
-      id, base::BindRepeating(&WebSourceBufferImpl::InitSegmentReceived,
-                              base::Unretained(this)));
+      id, ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
+              &WebSourceBufferImpl::InitSegmentReceived,
+              CrossThreadUnretained(this))));
   demuxer_->SetParseWarningCallback(
-      id, base::BindRepeating(&WebSourceBufferImpl::NotifyParseWarning,
-                              base::Unretained(this)));
+      id, ConvertToBaseRepeatingCallback(
+              CrossThreadBindRepeating(&WebSourceBufferImpl::NotifyParseWarning,
+                                       CrossThreadUnretained(this))));
 }
 
 WebSourceBufferImpl::~WebSourceBufferImpl() = default;
@@ -110,8 +114,7 @@ bool WebSourceBufferImpl::SetMode(WebSourceBuffer::AppendMode mode) {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 WebTimeRanges WebSourceBufferImpl::Buffered() {
@@ -167,7 +170,7 @@ bool WebSourceBufferImpl::AppendChunks(
 
   // Like in ::Append, timestamp_offset may be updated by coded frame
   // processing.
-  // TODO(crbug.com/1144908): Consider refactoring this common bit into helper.
+  // TODO(crbug.com/40155657): Consider refactoring this common bit into helper.
   if (timestamp_offset && old_offset != timestamp_offset_)
     *timestamp_offset = timestamp_offset_.InSecondsF();
 
@@ -181,7 +184,7 @@ void WebSourceBufferImpl::ResetParserState() {
 
   // TODO(wolenetz): resetParserState should be able to modify the caller
   // timestamp offset (just like WebSourceBufferImpl::append).
-  // See http://crbug.com/370229 for further details.
+  // See http://crbug.com/41105493 for further details.
 }
 
 void WebSourceBufferImpl::Remove(double start, double end) {
@@ -252,7 +255,7 @@ WebMediaPlayer::TrackType mediaTrackTypeToBlink(media::MediaTrack::Type type) {
     case media::MediaTrack::Type::kVideo:
       return WebMediaPlayer::kVideoTrack;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void WebSourceBufferImpl::InitSegmentReceived(
@@ -264,9 +267,9 @@ void WebSourceBufferImpl::InitSegmentReceived(
   for (const auto& track : tracks->tracks()) {
     WebSourceBufferClient::MediaTrackInfo trackInfo;
     trackInfo.track_type = mediaTrackTypeToBlink(track->type());
-    trackInfo.id = WebString::FromUTF8(track->id().value());
+    trackInfo.id = WebString::FromUTF8(track->track_id().value());
     trackInfo.byte_stream_track_id =
-        WebString::FromUTF8(base::NumberToString(track->bytestream_track_id()));
+        WebString::FromUTF8(base::NumberToString(track->stream_id()));
     trackInfo.kind = WebString::FromUTF8(track->kind().value());
     trackInfo.label = WebString::FromUTF8(track->label().value());
     trackInfo.language = WebString::FromUTF8(track->language().value());

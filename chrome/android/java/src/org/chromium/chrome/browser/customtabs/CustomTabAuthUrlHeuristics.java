@@ -7,13 +7,39 @@ package org.chromium.chrome.browser.customtabs;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
+
+import org.jni_zero.NativeMethods;
+
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.embedder_support.util.UrlConstants;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * Helper class to record histogram to determine whether the Custom Tab was launched with what looks
  * like an OAuth URL.
  */
+@NullMarked
 public class CustomTabAuthUrlHeuristics {
+    // This should be kept in sync with the definition |CustomTabsAuthScheme| in
+    // tools/metrics/histograms/metadata/custom_tabs/enums.xml.
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    @IntDef({AuthScheme.OTHER, AuthScheme.HTTP, AuthScheme.HTTPS})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface AuthScheme {
+        int OTHER = 0;
+        int HTTP = 1;
+        int HTTPS = 2;
+        int COUNT = 3;
+    }
+
     // Bit flags for potential OAuth params.
     private static final int FLAG_EMPTY = 0;
     private static final int FLAG_CLIENT_ID = 1 << 0;
@@ -37,7 +63,7 @@ public class CustomTabAuthUrlHeuristics {
      *
      * @param url The url to extract query params from.
      */
-    public static void recordUrlParamsHistogram(String url) {
+    public static void recordUrlParamsHistogram(@Nullable String url) {
         if (TextUtils.isEmpty(url)) return;
         Uri uri = Uri.parse(url);
 
@@ -63,5 +89,44 @@ public class CustomTabAuthUrlHeuristics {
             RecordHistogram.recordSparseHistogram(CUSTOM_TABS_AUTH_VIEW_URL_PARAMS, flags);
         } catch (UnsupportedOperationException ignored) {
         }
+    }
+
+    public static void setFirstCctPageLoadForMetrics(Tab tab) {
+        CustomTabAuthUrlHeuristicsJni.get().setFirstCctPageLoadForPasswords(tab);
+    }
+
+    public static void recordRedirectUriSchemeHistogram(
+            BrowserServicesIntentDataProvider intentDataProvider) {
+        if (intentDataProvider.isAuthTab()) return;
+
+        String url = intentDataProvider.getUrlToLoad();
+        if (TextUtils.isEmpty(url)) return;
+
+        Uri uri = Uri.parse(url);
+        if (!uri.isHierarchical()) return;
+
+        String redirectUri = uri.getQueryParameter("redirect_uri");
+        if (TextUtils.isEmpty(redirectUri)) return;
+
+        int schemeEnum = getAuthSchemeEnum(Uri.parse(redirectUri).getScheme());
+        RecordHistogram.recordEnumeratedHistogram(
+                "CustomTabs.AuthTab.RedirectUriScheme",
+                schemeEnum,
+                CustomTabAuthUrlHeuristics.AuthScheme.COUNT);
+    }
+
+    static @CustomTabAuthUrlHeuristics.AuthScheme int getAuthSchemeEnum(@Nullable String scheme) {
+        if (UrlConstants.HTTP_SCHEME.equalsIgnoreCase(scheme)) {
+            return CustomTabAuthUrlHeuristics.AuthScheme.HTTP;
+        } else if (UrlConstants.HTTPS_SCHEME.equalsIgnoreCase(scheme)) {
+            return CustomTabAuthUrlHeuristics.AuthScheme.HTTPS;
+        } else {
+            return CustomTabAuthUrlHeuristics.AuthScheme.OTHER;
+        }
+    }
+
+    @NativeMethods
+    public interface Natives {
+        void setFirstCctPageLoadForPasswords(Tab tab);
     }
 }

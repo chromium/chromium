@@ -8,7 +8,6 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
-#include "build/chromeos_buildflags.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -51,7 +50,8 @@ void NetworkConnectionChangeSimulator::InitializeChromeosConnectionType() {
     GetNetworkService()->GetNetworkChangeManager(
         manager.BindNewPipeAndPassReceiver());
     manager->OnNetworkChanged(
-        /*dns_changed=*/false, /*ip_address_changed=*/false,
+        /*dns_changed=*/false,
+        network::mojom::IPAddressChangeType::IP_ADDRESS_CHANGE_NONE,
         /*connection_type_changed=*/true,
         network::mojom::ConnectionType::CONNECTION_ETHERNET,
         /*connection_subtype_changed=*/false,

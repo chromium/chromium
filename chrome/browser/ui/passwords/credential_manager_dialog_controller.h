@@ -12,7 +12,6 @@
 
 #include "chrome/browser/ui/passwords/password_base_dialog_controller.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
-#include "ui/gfx/range/range.h"
 
 namespace password_manager {
 struct PasswordForm;
@@ -29,7 +28,7 @@ class CredentialManagerDialogController : public PasswordBaseDialogController {
   virtual const FormsVector& GetLocalForms() const = 0;
 
   // Returns a title of the account chooser.
-  virtual std::u16string GetAccoutChooserTitle() const = 0;
+  virtual std::u16string GetAccountChooserTitle() const = 0;
 
   // Whether the account chooser should display the "Sign in" button.
   virtual bool ShouldShowSignInButton() const = 0;

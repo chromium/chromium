@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
-#include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/font_face_set.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
@@ -42,19 +41,14 @@ namespace blink {
 
 class Font;
 
-class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
-                                              public Supplement<Document> {
+class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet {
  public:
-  static const char kSupplementName[];
-
   explicit FontFaceSetDocument(Document&);
   FontFaceSetDocument(const FontFaceSetDocument&) = delete;
   FontFaceSetDocument& operator=(const FontFaceSetDocument&) = delete;
   ~FontFaceSetDocument() override;
 
   ScriptPromise<FontFaceSet> ready(ScriptState*) override;
-
-  AtomicString status() const override;
 
   void DidLayout();
   void BeginFontLoading(FontFace*);
@@ -82,7 +76,7 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
   bool InActiveContext() const override;
   FontSelector* GetFontSelector() const override;
 
-  bool ResolveFontStyle(const String&, Font&) override;
+  const Font* ResolveFontStyle(const String&) override;
 
  private:
   Document* GetDocument() const;
@@ -106,6 +100,7 @@ class CORE_EXPORT FontFaceSetDocument final : public FontFaceSet,
    private:
     Status status_;
   };
+
   FontLoadHistogram font_load_histogram_;
 
   HeapTaskRunnerTimer<FontFaceSetDocument> lcp_limit_timer_;

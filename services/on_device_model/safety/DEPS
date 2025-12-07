@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/optimization_guide/core/tflite_op_resolver.h",
+  "+components/translate/core/language_detection",
+  "+third_party/tensorflow-text",
+  "+third_party/tflite_support",
+]

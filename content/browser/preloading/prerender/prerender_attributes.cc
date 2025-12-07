@@ -6,6 +6,8 @@
 
 #include <optional>
 
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/browser/render_frame_host.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace content {
@@ -21,55 +23,93 @@ PrerenderAttributes::PrerenderAttributes(
     const GURL& prerendering_url,
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
-    std::optional<blink::mojom::SpeculationTargetHint> target_hint,
+    std::optional<SpeculationRulesParams> speculation_rules_params,
     Referrer referrer,
-    std::optional<blink::mojom::SpeculationEagerness> eagerness,
-    std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
-    std::optional<url::Origin> initiator_origin,
-    int initiator_process_id,
+    std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
+    RenderFrameHost* initiator_render_frame_host,
     base::WeakPtr<WebContents> initiator_web_contents,
-    std::optional<blink::LocalFrameToken> initiator_frame_token,
-    int initiator_frame_tree_node_id,
-    ukm::SourceId initiator_ukm_id,
     ui::PageTransition transition_type,
     bool should_warm_up_compositor,
+    bool should_prepare_paint_tree,
+    blink::mojom::SpeculationAction prerender_action_type,
     base::RepeatingCallback<bool(const GURL&,
                                  const std::optional<UrlMatchType>&)>
         url_match_predicate,
     base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback,
-    const std::optional<base::UnguessableToken>&
-        initiator_devtools_navigation_token)
+    scoped_refptr<PreloadPipelineInfoImpl> preload_pipeline_info,
+    bool allow_reuse,
+    bool form_submission)
     : prerendering_url(prerendering_url),
       trigger_type(trigger_type),
       embedder_histogram_suffix(embedder_histogram_suffix),
-      target_hint(target_hint),
+      speculation_rules_params(std::move(speculation_rules_params)),
       referrer(std::move(referrer)),
-      eagerness(eagerness),
-      no_vary_search_expected(std::move(no_vary_search_expected)),
-      initiator_origin(std::move(initiator_origin)),
-      initiator_process_id(initiator_process_id),
+      no_vary_search_hint(std::move(no_vary_search_hint)),
       initiator_web_contents(std::move(initiator_web_contents)),
-      initiator_frame_token(std::move(initiator_frame_token)),
-      initiator_frame_tree_node_id(initiator_frame_tree_node_id),
-      initiator_ukm_id(initiator_ukm_id),
       transition_type(transition_type),
       should_warm_up_compositor(should_warm_up_compositor),
+      should_prepare_paint_tree(should_prepare_paint_tree),
+      prerender_action_type(prerender_action_type),
       url_match_predicate(std::move(url_match_predicate)),
       prerender_navigation_handle_callback(
           std::move(prerender_navigation_handle_callback)),
-      initiator_devtools_navigation_token(initiator_devtools_navigation_token) {
+      preload_pipeline_info(std::move(preload_pipeline_info)),
+      allow_reuse(allow_reuse),
+      form_submission(form_submission) {
+  if (initiator_render_frame_host) {
+    initiator_origin = initiator_render_frame_host->GetLastCommittedOrigin();
+    initiator_process_id =
+        initiator_render_frame_host->GetProcess()->GetDeprecatedID();
+    initiator_frame_token = initiator_render_frame_host->GetFrameToken();
+    initiator_frame_tree_node_id =
+        initiator_render_frame_host->GetFrameTreeNodeId();
+    initiator_ukm_id = initiator_render_frame_host->GetPageUkmSourceId();
+    auto* rfhi = static_cast<RenderFrameHostImpl*>(initiator_render_frame_host);
+    initiator_devtools_navigation_token = rfhi->GetDevToolsNavigationToken();
+  }
+
   CHECK(!IsBrowserInitiated() ||
         !initiator_devtools_navigation_token.has_value());
-  CHECK(!IsBrowserInitiated() || !eagerness.has_value());
+  CHECK(!IsBrowserInitiated() || !this->speculation_rules_params.has_value());
+  switch (prerender_action_type) {
+    case blink::mojom::SpeculationAction::kPrerender:
+    case blink::mojom::SpeculationAction::kPrerenderUntilScript:
+      break;
+    case blink::mojom::SpeculationAction::kPrefetch:
+    case blink::mojom::SpeculationAction::kPrefetchWithSubresources:
+      NOTREACHED();
+  }
 }
 
 PrerenderAttributes::~PrerenderAttributes() = default;
+
 PrerenderAttributes::PrerenderAttributes(const PrerenderAttributes&) = default;
 PrerenderAttributes& PrerenderAttributes::operator=(
     const PrerenderAttributes&) = default;
-PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&&) = default;
-PrerenderAttributes& PrerenderAttributes::operator=(PrerenderAttributes&&) =
+PrerenderAttributes::PrerenderAttributes(PrerenderAttributes&&) noexcept =
     default;
+PrerenderAttributes& PrerenderAttributes::operator=(
+    PrerenderAttributes&&) noexcept = default;
+
+std::optional<blink::mojom::SpeculationTargetHint>
+PrerenderAttributes::GetTargetHint() const {
+  return speculation_rules_params.has_value()
+             ? std::make_optional(speculation_rules_params->target_hint)
+             : std::nullopt;
+}
+
+std::optional<blink::mojom::SpeculationEagerness>
+PrerenderAttributes::GetEagerness() const {
+  return speculation_rules_params.has_value()
+             ? std::make_optional(speculation_rules_params->eagerness)
+             : std::nullopt;
+}
+
+std::optional<SpeculationRulesTags> PrerenderAttributes::GetTags() const {
+  return speculation_rules_params.has_value()
+             ? std::make_optional(speculation_rules_params->tags)
+             : std::nullopt;
+}
 
 }  // namespace content

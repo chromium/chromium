@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
 import("//chrome/version.gni")
+import("//remoting/build/config/remoting_build.gni")
 import("//remoting/remoting_options.gni")
 
 if (is_win) {
@@ -34,13 +34,16 @@ config("remoting_me2me_host") {
   }
 }
 
+# Config to be added to sources that implement a HOST_EXPORT function. Applying
+# this config will make symbols annotated with HOST_EXPORT visible to external
+# binaries.
 config("host_implementation") {
   defines = []
-  if (is_win || is_linux) {
+  if (is_win || is_linux || is_mac) {
     defines += [ "HOST_IMPLEMENTATION" ]
 
-    if (is_chrome_branded && is_official_build) {
-      defines += [ "REMOTING_ENABLE_BREAKPAD" ]
+    if (!is_mac && is_chrome_branded && is_official_build) {
+      defines += [ "REMOTING_ENABLE_CRASH_REPORTING" ]
     }
   }
   if (is_win) {
@@ -65,4 +68,15 @@ config("host_implementation") {
       defines += [ "REMOTING_MULTI_PROCESS" ]
     }
   }
+}
+
+# Config to allow Mac host binaries to locate libremoting_core.dylib.
+config("mac_host_rpath") {
+  ldflags = [
+    # For binaries in ChromeRemoteDesktopHost.app/Contents/MacOS.
+    "-Wl,-rpath,@executable_path",
+
+    # For binaries in Contents/MacOS of nested .app bundles.
+    "-Wl,-rpath,@executable_path/../../..",
+  ]
 }

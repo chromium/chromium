@@ -33,12 +33,6 @@ AboutThisSiteServiceFactory::AboutThisSiteServiceFactory()
           "AboutThisSiteServiceFactory",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
@@ -51,8 +45,9 @@ std::unique_ptr<KeyedService>
 AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
   if (!page_info::IsAboutThisSiteFeatureEnabled(
-          g_browser_process->GetApplicationLocale()))
+          g_browser_process->GetApplicationLocale())) {
     return nullptr;
+  }
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
@@ -62,13 +57,19 @@ AboutThisSiteServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
+  auto* template_service = TemplateURLServiceFactory::GetForProfile(profile);
+  // TemplateURLService may be null during testing.
+  if (!template_service) {
+    return nullptr;
+  }
+
   return std::make_unique<page_info::AboutThisSiteService>(
       optimization_guide, profile->IsOffTheRecord(), profile->GetPrefs(),
-      TemplateURLServiceFactory::GetForProfile(profile));
+      template_service);
 }
 
 bool AboutThisSiteServiceFactory::ServiceIsCreatedWithBrowserContext() const {
-  // This service needs to be created at startup in order to register its OptimizationType with
-  // OptimizationGuideDecider.
+  // This service needs to be created at startup in order to register its
+  // OptimizationType with OptimizationGuideDecider.
   return true;
 }

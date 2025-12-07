@@ -11,12 +11,9 @@
 namespace blink {
 
 PipeOptions::PipeOptions(const StreamPipeOptions* options)
-    : prevent_close_(options->hasPreventClose() ? options->preventClose()
-                                                : false),
-      prevent_abort_(options->hasPreventAbort() ? options->preventAbort()
-                                                : false),
-      prevent_cancel_(options->hasPreventCancel() ? options->preventCancel()
-                                                  : false),
+    : prevent_close_(options->hasPreventClose() && options->preventClose()),
+      prevent_abort_(options->hasPreventAbort() && options->preventAbort()),
+      prevent_cancel_(options->hasPreventCancel() && options->preventCancel()),
       signal_(options->hasSignal() ? options->signal() : nullptr) {}
 
 void PipeOptions::Trace(Visitor* visitor) const {

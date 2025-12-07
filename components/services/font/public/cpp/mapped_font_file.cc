@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/files/file_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/core/SkData.h"

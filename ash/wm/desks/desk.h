@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "ui/aura/window_observer.h"
 
 namespace ash {
@@ -35,6 +36,12 @@ class DeskContainerObserver;
 // the desk is inactive, those containers are hidden.
 class ASH_EXPORT Desk {
  public:
+  enum class Type {
+    kRestored,  // A restored desk.
+    kCoral,     // A desk created from a coral group.
+    kNormal,    // Other normal type of desks.
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when the desk's content change as a result of windows addition or
@@ -49,9 +56,6 @@ class ASH_EXPORT Desk {
 
     // Called when the desk's name changes.
     virtual void OnDeskNameChanged(const std::u16string& new_name) = 0;
-
-    // Called when the desk's associated profile has changed.
-    virtual void OnDeskProfileChanged(uint64_t new_lacros_profile_id) {}
   };
 
   // Suspends notification of content updates within its scope. Note that the
@@ -94,7 +98,7 @@ class ASH_EXPORT Desk {
     size_t order = 0;
   };
 
-  explicit Desk(int associated_container_id, bool desk_being_restored = false);
+  explicit Desk(int associated_container_id, Type type = Type::kNormal);
 
   Desk(const Desk&) = delete;
   Desk& operator=(const Desk&) = delete;
@@ -103,6 +107,8 @@ class ASH_EXPORT Desk {
 
   static void SetWeeklyActiveDesks(int weekly_active_desks);
   static int GetWeeklyActiveDesks();
+
+  Type type() const { return type_; }
 
   int container_id() const { return container_id_; }
 
@@ -149,9 +155,13 @@ class ASH_EXPORT Desk {
     return all_desk_window_stacking_;
   }
 
-  // Returns the lacros profile ID that this desk is associated with. A value of
-  // 0 means that the desk is associated with the primary user (the default).
-  uint64_t lacros_profile_id() const { return lacros_profile_id_; }
+  void set_tab_app_entities(
+      std::vector<coral::mojom::EntityPtr> tab_app_entities) {
+    tab_app_entities_ = std::move(tab_app_entities);
+  }
+  const std::vector<coral::mojom::EntityPtr>& tab_app_entities() const {
+    return tab_app_entities_;
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -174,15 +184,6 @@ class ASH_EXPORT Desk {
   // Sets the desks `uuid_` to the `new_guid` if `new_guid` is valid, used when
   // restoring desks on sign-in. If `new_guid` is invalid no change happens.
   void SetGuid(base::Uuid new_guid);
-
-  // Sets the desk's lacros profile id to `lacros_profile_id`. The value 0
-  // (which is the default value) indicates that the desk is associated with the
-  // primary user. `source` should be specified when the action is directly
-  // initiated by a user (metrics will be emitted). When `skip_prefs_update` is
-  // true, prefs are not updated.
-  void SetLacrosProfileId(uint64_t lacros_profile_id,
-                          std::optional<DeskProfilesSelectProfileSource> source,
-                          bool skip_prefs_update = false);
 
   // Prepares for the animation to activate this desk (i.e. this desk is not
   // active yet), by showing its containers on all root windows while setting
@@ -331,6 +332,8 @@ class ASH_EXPORT Desk {
   // The associated container ID with this desk.
   const int container_id_;
 
+  const Type type_;
+
   // Windows tracked on this desk. Clients of the DesksController can use this
   // list when they're notified of desk change events.
   // TODO(afakhry): Change this to track MRU windows on this desk.
@@ -396,9 +399,10 @@ class ASH_EXPORT Desk {
   // |this| for a brief period of time.
   base::OneShotTimer active_desk_timer_;
 
-  // The lacros profile ID that this desk has been associated with. Defaults to
-  // 0 which means the desk is associated with the primary user.
-  uint64_t lacros_profile_id_ = 0;
+  // The tab and app items associated with the desk if the desk is created or
+  // restored by Coral. Entities in this vector are used by Coral service to
+  // avoid suggesting groups with similar context.
+  std::vector<coral::mojom::EntityPtr> tab_app_entities_;
 };
 
 }  // namespace ash

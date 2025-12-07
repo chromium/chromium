@@ -4,14 +4,14 @@
 
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
 
+#import <Foundation/Foundation.h>
+
 #import <memory>
 #import <string>
 #import <vector>
 
-#import <Foundation/Foundation.h>
-
 #import "base/check.h"
-#import "base/notreached.h"
+#import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/infobars/core/infobar.h"
@@ -24,20 +24,16 @@
 #import "ios/chrome/browser/infobars/model/infobar_utils.h"
 #import "ios/chrome/browser/send_tab_to_self/model/ios_send_tab_to_self_infobar_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/web/public/web_state.h"
 
-BROWSER_USER_DATA_KEY_IMPL(SendTabToSelfBrowserAgent)
-
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
-    : browser_(browser),
-      model_(SendTabToSelfSyncServiceFactory::GetForBrowserState(
-                 browser_->GetBrowserState())
-                 ->GetSendTabToSelfModel()) {
+    : BrowserUserData(browser),
+      model_(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
+              ->GetSendTabToSelfModel()) {
   model_observation_.Observe(model_.get());
-  browser_observation_.Observe(browser_.get());
 }
 
 SendTabToSelfBrowserAgent::~SendTabToSelfBrowserAgent() = default;
@@ -123,16 +119,6 @@ void SendTabToSelfBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 
   web_state_observation_.Reset();
   pending_web_state_ = nullptr;
-}
-
-void SendTabToSelfBrowserAgent::BrowserDestroyed(Browser* browser) {
-  model_observation_.Reset();
-
-  web_state_list_observation_.Reset();
-
-  web_state_observation_.Reset();
-
-  browser_observation_.Reset();
 }
 
 void SendTabToSelfBrowserAgent::DisplayInfoBar(

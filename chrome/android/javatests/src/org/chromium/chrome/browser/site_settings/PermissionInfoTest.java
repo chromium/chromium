@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.site_settings;
 
+import static org.junit.Assert.assertEquals;
+
+import static org.chromium.components.permissions.PermissionUtil.getGeolocationType;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,19 +22,21 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
-import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.content_public.common.ContentSwitches;
@@ -46,20 +51,17 @@ import java.util.concurrent.TimeoutException;
     ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
     "ignore-certificate-errors"
 })
-@Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
+@Batch(Batch.PER_CLASS)
 public class PermissionInfoTest {
     private static final String DSE_ORIGIN = "https://www.google.com";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     @Before
     public void setUp() throws TimeoutException {
+        mActivityTestRule.startOnBlankPage();
         clearPermissions();
     }
 
@@ -87,41 +89,53 @@ public class PermissionInfoTest {
                 (Callable<Profile>) () -> ProfileManager.getLastUsedRegularProfile());
     }
 
-    private static Profile getNonPrimaryOTRProfile() {
+    private static Profile getNonPrimaryOtrProfile() {
         return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () -> {
-                            OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+                            OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
                             return ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
+                                            otrProfileId, /* createIfNeeded= */ true);
                         });
     }
 
-    private static Profile getPrimaryOTRProfile() {
+    private static Profile getPrimaryOtrProfile() {
         return ThreadUtils.runOnUiThreadBlocking(
                 (Callable<Profile>)
                         () ->
                                 ProfileManager.getLastUsedRegularProfile()
-                                        .getPrimaryOTRProfile(/* createIfNeeded= */ true));
+                                        .getPrimaryOtrProfile(/* createIfNeeded= */ true));
     }
 
     private void setSettingAndExpectValue(
             @ContentSettingsType.EnumType int type,
             String origin,
             String embedder,
-            @ContentSettingValues int setting,
+            @ContentSetting int setting,
             Profile profile,
-            @ContentSettingValues int expectedSetting) {
+            @ContentSetting int expectedSetting) {
         PermissionInfo info =
                 new PermissionInfo(
                         type, origin, embedder, /* isEmbargoed= */ false, SessionModel.DURABLE);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> info.setContentSetting(profile, setting));
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                        info.setGeolocationSetting(
+                                profile, new GeolocationSetting(setting, setting));
+                    } else {
+                        info.setContentSetting(profile, setting);
+                    }
+                });
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return info.getContentSetting(profile) == expectedSetting;
+                    if (type == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
+                        return info.getGeolocationSetting(profile).mPrecise == expectedSetting;
+                    } else {
+                        return info.getContentSetting(profile) == expectedSetting;
+                    }
                 });
     }
 
@@ -137,45 +151,45 @@ public class PermissionInfoTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSEGeolocation_InPrimaryOTRProfile_DefaultsToAskFromBlock()
+    public void testResetDSEGeolocation_InPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
-        Profile primaryOTRProfile = getPrimaryOTRProfile();
+        Profile primaryOtrProfile = getPrimaryOtrProfile();
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
-                primaryOTRProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK,
+                primaryOtrProfile,
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
-                primaryOTRProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.DEFAULT,
+                primaryOtrProfile,
+                ContentSetting.ASK);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSEGeolocation_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
+    public void testResetDSEGeolocation_InNonPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
-        Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
+        Profile nonPrimaryOtrProfile = getNonPrimaryOtrProfile();
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
-                nonPrimaryOTRProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK,
+                nonPrimaryOtrProfile,
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
-                nonPrimaryOTRProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.DEFAULT,
+                nonPrimaryOtrProfile,
+                ContentSetting.ASK);
     }
 
     @Test
@@ -184,27 +198,27 @@ public class PermissionInfoTest {
     public void testResetDSEGeolocation_RegularProfile_DefaultsToAskFromBlock() throws Throwable {
         Profile regularProfile = getRegularProfile();
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 regularProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
-                ContentSettingsType.GEOLOCATION,
+                getGeolocationType(),
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 regularProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.ASK);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSENotification_InPrimaryOTRProfile_DefaultsToAskFromBlock()
+    public void testResetDSENotification_InPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
-        Profile primaryOTRProfile = getPrimaryOTRProfile();
+        Profile primaryOtrProfile = getPrimaryOtrProfile();
 
         // Resetting in incognito should not have the same behavior.
         resetNotificationsSettingsForTest();
@@ -212,24 +226,24 @@ public class PermissionInfoTest {
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
-                primaryOTRProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK,
+                primaryOtrProfile,
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
-                primaryOTRProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.DEFAULT,
+                primaryOtrProfile,
+                ContentSetting.ASK);
     }
 
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testResetDSENotification_InNonPrimaryOTRProfile_DefaultsToAskFromBlock()
+    public void testResetDSENotification_InNonPrimaryOtrProfile_DefaultsToAskFromBlock()
             throws Throwable {
-        Profile nonPrimaryOTRProfile = getNonPrimaryOTRProfile();
+        Profile nonPrimaryOtrProfile = getNonPrimaryOtrProfile();
 
         // Resetting in incognito should not have the same behavior.
         resetNotificationsSettingsForTest();
@@ -237,16 +251,16 @@ public class PermissionInfoTest {
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
-                nonPrimaryOTRProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK,
+                nonPrimaryOtrProfile,
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
-                nonPrimaryOTRProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.DEFAULT,
+                nonPrimaryOtrProfile,
+                ContentSetting.ASK);
     }
 
     @Test
@@ -259,15 +273,60 @@ public class PermissionInfoTest {
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.BLOCK,
+                ContentSetting.BLOCK,
                 regularProfile,
-                ContentSettingValues.BLOCK);
+                ContentSetting.BLOCK);
         setSettingAndExpectValue(
                 ContentSettingsType.NOTIFICATIONS,
                 DSE_ORIGIN,
                 null,
-                ContentSettingValues.DEFAULT,
+                ContentSetting.DEFAULT,
                 regularProfile,
-                ContentSettingValues.ASK);
+                ContentSetting.ASK);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures("ApproximateGeolocationPermission")
+    public void testGeolocationSetting() throws Throwable {
+        Profile regularProfile = getRegularProfile();
+        var info =
+                new PermissionInfo(
+                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
+                        "https://example.com",
+                        "https://example.com",
+                        false,
+                        SessionModel.DURABLE);
+
+        var defaultSetting = new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
+        var allowApproximate = new GeolocationSetting(ContentSetting.ALLOW, ContentSetting.BLOCK);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertEquals(defaultSetting, info.getGeolocationSetting(regularProfile));
+                    info.setGeolocationSetting(regularProfile, allowApproximate);
+                    assertEquals(allowApproximate, info.getGeolocationSetting(regularProfile));
+                });
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures("ApproximateGeolocationPermission")
+    public void testGeolocationPermissionDefault() throws Throwable {
+        Profile regularProfile = getRegularProfile();
+        var info =
+                new PermissionInfo(
+                        ContentSettingsType.GEOLOCATION_WITH_OPTIONS,
+                        "https://permission.site",
+                        "https://permission.site",
+                        false,
+                        SessionModel.DURABLE);
+
+        var defaultSetting = new GeolocationSetting(ContentSetting.ASK, ContentSetting.ASK);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> assertEquals(defaultSetting, info.getGeolocationSetting(regularProfile)));
     }
 }

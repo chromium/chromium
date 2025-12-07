@@ -7,7 +7,7 @@
 
 #include <ApplicationServices/ApplicationServices.h>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 using NSSize = CGSize;
 
@@ -21,17 +21,19 @@ namespace gfx {
 class ImageSkia;
 
 // Converts to ImageSkia from NSImage.
-GFX_EXPORT gfx::ImageSkia ImageSkiaFromNSImage(NSImage* image);
+COMPONENT_EXPORT(GFX) gfx::ImageSkia ImageSkiaFromNSImage(NSImage* image);
 
 // Resizes NSImage to |size| DIP and then converts to ImageSkia.
-GFX_EXPORT gfx::ImageSkia ImageSkiaFromResizedNSImage(NSImage* image,
-                                                      NSSize size);
+COMPONENT_EXPORT(GFX)
+gfx::ImageSkia ImageSkiaFromResizedNSImage(NSImage* image, NSSize size);
 
 // Converts to NSImage from ImageSkia. Uses the sRGB color space.
-GFX_EXPORT NSImage* NSImageFromImageSkia(const gfx::ImageSkia& image_skia);
+COMPONENT_EXPORT(GFX)
+NSImage* NSImageFromImageSkia(const gfx::ImageSkia& image_skia);
 
 // Converts to NSImage from given ImageSkia.
-GFX_EXPORT NSImage* NSImageFromImageSkia(const gfx::ImageSkia& image_skia);
+COMPONENT_EXPORT(GFX)
+NSImage* NSImageFromImageSkia(const gfx::ImageSkia& image_skia);
 
 }  // namespace gfx
 

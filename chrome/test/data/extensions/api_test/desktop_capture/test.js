@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// Returns whether the current platform is Android. Useful because the user
+// agent for desktop Android is still in flux.
+async function isAndroid() {
+  const os = await new Promise((resolve) => {
+    chrome.runtime.getPlatformInfo(info => resolve(info.os));
+  });
+  return os === 'android';
+}
+
 function onPickerResult(audio_track_num, id, options) {
   chrome.test.assertEq("string", typeof id);
   chrome.test.assertNe("", id);
@@ -95,7 +104,14 @@ chrome.test.runTests([
 
   // Show window picker and then get the selected stream using
   // getUserMedia().
-  function chooseMediaAndGetStream() {
+  async function chooseMediaAndGetStream() {
+    // TODO(crbug.com/405218400): Port to desktop Android when getUserMedia()
+    // is supported (see DesktopCaptureAccessHandler).
+    if (await isAndroid()) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.desktopCapture.chooseDesktopMedia(
         ["screen", "window"], onPickerResult.bind(undefined, 0));
   },
@@ -141,12 +157,26 @@ chrome.test.runTests([
   //       ["tab", "audio"], onPickerResult.bind(undefined, 1));
   // },
 
-  function windowShareWithAudioPermissionGetStream() {
+  async function windowShareWithAudioPermissionGetStream() {
+    // TODO(crbug.com/405218400): Port to desktop Android when getUserMedia()
+    // is supported (see DesktopCaptureAccessHandler).
+    if (await isAndroid()) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.desktopCapture.chooseDesktopMedia(
         ["window", "audio"], onPickerResult.bind(undefined, 0));
   },
 
-  function screenShareWithAudioPermissionGetStream() {
+  async function screenShareWithAudioPermissionGetStream() {
+    // TODO(crbug.com/405218400): Port to desktop Android when getUserMedia()
+    // is supported (see DesktopCaptureAccessHandler).
+    if (await isAndroid()) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.desktopCapture.chooseDesktopMedia(
         ["screen", "audio"],
         onPickerResult.bind(undefined,
@@ -159,12 +189,26 @@ chrome.test.runTests([
   //       ["tab", "audio"], onPickerResult.bind(undefined, 0));
   // },
 
-  function windowShareWithoutAudioPermissionGetStream() {
+  async function windowShareWithoutAudioPermissionGetStream() {
+    // TODO(crbug.com/405218400): Port to desktop Android when getUserMedia()
+    // is supported (see DesktopCaptureAccessHandler).
+    if (await isAndroid()) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.desktopCapture.chooseDesktopMedia(
         ["window", "audio"], onPickerResult.bind(undefined, 0));
   },
 
-  function screenShareWithoutAudioPermissionGetStream() {
+  async function screenShareWithoutAudioPermissionGetStream() {
+    // TODO(crbug.com/405218400): Port to desktop Android when getUserMedia()
+    // is supported (see DesktopCaptureAccessHandler).
+    if (await isAndroid()) {
+      chrome.test.succeed();
+      return;
+    }
+
     chrome.desktopCapture.chooseDesktopMedia(
         ["screen", "audio"], onPickerResult.bind(undefined, 0));
   }

@@ -11,18 +11,22 @@ build_webui("build") {
 
   static_files = [ "history_clusters.html" ]
 
-  non_web_component_files = [
-    "app.ts",
+  ts_files = [
     "app.html.ts",
+    "app.ts",
+    "history_clusters.ts",
   ]
   css_files = [ "app.css" ]
 
+  ts_composite = true
   ts_deps = [
     "../shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/cr_components/history_embeddings:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
   ]
 
   ts_path_mappings =
@@ -35,7 +39,7 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "history-clusters-side-panel.top-chrome"
-    optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_in_files = [ "history_clusters.js" ]
     optimize_webui_external_paths =
         [ "chrome://history-clusters-side-panel.top-chrome/shared|" +
           rebase_path(

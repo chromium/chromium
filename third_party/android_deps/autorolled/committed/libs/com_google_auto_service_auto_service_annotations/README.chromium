@@ -1,0 +1,19 @@
+Name: AutoService
+Short Name: auto-service-annotations
+URL: https://repo.maven.apache.org/maven2/com/google/auto/service/auto-service-annotations/1.1.1/auto-service-annotations-1.1.1.jar
+Version: 1.1.1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Provider-configuration files for ServiceLoader.
+
+See also: https://github.com/google/auto/tree/main/service
+
+
+Local Modifications:
+No modifications.

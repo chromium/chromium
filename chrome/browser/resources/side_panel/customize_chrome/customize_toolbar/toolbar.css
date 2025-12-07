@@ -20,22 +20,51 @@
 }
 
 #pinningSelectionCard {
-  padding: 16px 16px;
+  /* Remove horizontal padding for highlight */
+  padding: 16px 0px 0px 0px;
+  max-width: calc(360px - 2 * var(--sp-body-padding));
+  overflow: hidden;
 }
 
 .sp-card sp-heading {
   padding: 0;
 }
 
-.toggle-container {
+.choose-icons-row-container {
   align-items: center;
   display: flex;
   gap: 12px;
   justify-content: flex-start;
 }
 
+.toggle-container:hover {
+  background-color: var(--cr-hover-background-color);
+  cursor: pointer;
+}
+
+.toggle-container:focus {
+  background-color: var(--cr-menu-background-focus-color);
+  outline: none;
+}
+
+.sp-hr {
+  width: auto;
+  margin: 8px 16px;
+}
+
 .choose-icons-row {
-  margin: 16px 0;
+  padding: 8px 16px;
+}
+
+.category-title {
+  padding: 0px 16px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.enterprise-enabled-text {
+  color: var(--cr-secondary-text-color);
+  font-weight: 400;
 }
 
 .sp-card > :first-child {
@@ -75,9 +104,8 @@
 .intro-text {
   color: var(--cr-secondary-text-color);
   font-weight: 400;
-  line-height: 20px;
   text-align: center;
-  padding: 0 0 8px;
+  padding: 0 0 16px;
 }
 
 #tipCard {
@@ -91,12 +119,17 @@
   padding: 16px;
 }
 
+#tipIcon {
+  height: 20px;
+  width: 20px;
+}
+
 #miniToolbar {
   border: 0;
   border-radius: 8px;
   box-shadow: var(--cr-elevation-2);
-  height: 148px;
-  width: 280px;
+  height: 147px; /* should match #miniNewTabPage for customize chrome */
+  width: 278px;
   z-index: 1;
 }
 
@@ -106,6 +139,6 @@
   border-radius: 12px;
   display: flex;
   justify-content: center;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   padding: 16px;
 }

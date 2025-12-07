@@ -6,18 +6,21 @@
 
 #include "base/functional/bind.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
-#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
+#include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
@@ -27,6 +30,7 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -44,7 +48,7 @@ const char kNonTrackableUrl[] = "about:blank";
 class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
  public:
   PriceTrackingIconViewIntegrationTest() {
-    MockCommerceUiTabHelper::ReplaceFactory();
+    commerce_ui_override_ = MockCommerceUiTabHelper::ReplaceFactory();
   }
 
   PriceTrackingIconViewIntegrationTest(
@@ -57,6 +61,11 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
   void SetUp() override {
     test_features_.InitAndEnableFeature(commerce::kShoppingList);
     TestWithBrowserView::SetUp();
+    if (IsPageActionMigrated(PageActionIconType::kPriceTracking)) {
+      GTEST_SKIP() << "The price tracking page action is removed for the page "
+                      "actions framework migration.";
+    }
+
     AddTab(browser(), GURL(kNonTrackableUrl));
     mock_tab_helper_ =
         static_cast<MockCommerceUiTabHelper*>(browser()
@@ -70,6 +79,9 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
         TestWithBrowserView::GetTestingFactories();
     factories.emplace_back(BookmarkModelFactory::GetInstance(),
                            BookmarkModelFactory::GetDefaultFactory());
+    factories.emplace_back(
+        BookmarkMergedSurfaceServiceFactory::GetInstance(),
+        BookmarkMergedSurfaceServiceFactory::GetDefaultFactory());
     factories.emplace_back(ManagedBookmarkServiceFactory::GetInstance(),
                            ManagedBookmarkServiceFactory::GetDefaultFactory());
     factories.emplace_back(
@@ -156,6 +168,7 @@ class PriceTrackingIconViewIntegrationTest : public TestWithBrowserView {
 
  private:
   base::test::ScopedFeatureList test_features_;
+  ui::UserDataFactory::ScopedOverride commerce_ui_override_;
 };
 
 TEST_F(PriceTrackingIconViewIntegrationTest,

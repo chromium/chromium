@@ -31,22 +31,11 @@ void AbortPaymentRespondWithObserver::OnResponseRejected(
       ->RespondToAbortPaymentEvent(event_id_, false);
 }
 
-void AbortPaymentRespondWithObserver::OnResponseFulfilled(
-    ScriptState* script_state,
-    const ScriptValue& value,
-    const ExceptionContext& exception_context) {
+void AbortPaymentRespondWithObserver::OnResponseFulfilled(ScriptState*,
+                                                          bool response) {
   DCHECK(GetExecutionContext());
-  ExceptionState exception_state(script_state->GetIsolate(), exception_context);
-  bool response =
-      ToBoolean(script_state->GetIsolate(), value.V8Value(), exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
-    OnResponseRejected(blink::mojom::ServiceWorkerResponseError::kNoV8Instance);
-    return;
-  }
-
   if (response) {
-    UseCounter::Count(ExecutionContext::From(script_state),
+    UseCounter::Count(GetExecutionContext(),
                       WebFeature::kAbortPaymentRespondWithTrue);
   }
 

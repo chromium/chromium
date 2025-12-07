@@ -17,20 +17,14 @@ class CORE_EXPORT LayoutListMarkerImage final : public LayoutImage {
   explicit LayoutListMarkerImage(Element*);
   static LayoutListMarkerImage* CreateAnonymous(Document*);
 
-  bool IsLayoutNGObject() const override {
-    NOT_DESTROYED();
-    return true;
-  }
-  gfx::SizeF DefaultSize() const;
-
  private:
   bool IsListMarkerImage() const final {
     NOT_DESTROYED();
     return true;
   }
 
-  void ComputeIntrinsicSizingInfoByDefaultSize(IntrinsicSizingInfo&) const;
-  void ComputeIntrinsicSizingInfo(IntrinsicSizingInfo&) const final;
+  PhysicalSize DefaultSize() const;
+  PhysicalNaturalSizingInfo GetNaturalDimensions() const override;
 };
 
 template <>

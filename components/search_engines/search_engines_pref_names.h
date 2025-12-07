@@ -13,20 +13,19 @@ namespace prefs {
 // like a pointer to which synced search engine should be the default, rather
 // than the prefs below which describe the locally saved default search provider
 // details. This is ignored in the case of the default search provider being
-// managed by policy. This pref is in the process of replacing
-// `kSyncedDefaultSearchProviderGUID`.
+// managed by policy.
 inline constexpr char kDefaultSearchProviderGUID[] =
     "default_search_provider.guid";
 
-// The GUID of the synced default search provider. Note that this acts like a
-// pointer to which synced search engine should be the default, rather than the
-// prefs below which describe the locally saved default search provider details
-// (and are not synced). This is ignored in the case of the default search
-// provider being managed by policy.
-// This pref is in the process of being replaced by
-// `kDefaultSearchProviderGUID`.
-inline constexpr char kSyncedDefaultSearchProviderGUID[] =
-    "default_search_provider.synced_guid";
+// Epoch timestamp in seconds of when the user's search engine choice was
+// invalidated.
+// While Chrome is processing detected restored installs on a just-in-time
+// basis, we use this pref to flag the detected installs and differentiate them
+// from the ones we missed.
+// TODO(crbug.com/434651685): Remove this pref and the associated code when we
+// fully transition to retroactive detection.
+inline constexpr char kDefaultSearchProviderChoiceInvalidationTimestamp[] =
+    "default_search_provider.choice_invalidation_timestamp";
 
 // Epoch timestamp in seconds of when the user chose a search engine in
 // the choice screen.
@@ -42,6 +41,20 @@ inline constexpr char kDefaultSearchProviderChoiceScreenCompletionTimestamp[] =
 inline constexpr char kDefaultSearchProviderChoiceScreenCompletionVersion[] =
     "default_search_provider.choice_screen_completion_version";
 
+// The regional program for which the user made a search engine choice.
+// See `regional_capabilities::Program` for the format.
+inline constexpr char kDefaultSearchProviderChoiceScreenCompletionProgram[] =
+    "default_search_provider.choice_screen_completion_program";
+
+// Prepopulated id of the search engine chosen in a guest session if the user
+// decides to propagate the default search engine to all guest sessions. The
+// prepopulated id indicates that the search engine choice dialog should not be
+// displayed in the next guest sessions and should be used to set the guest
+// sessions default search engine.
+// Defaults to 0;
+inline constexpr char kDefaultSearchProviderGuestModePrepopulatedId[] =
+    "default_search_provider.guest_mode_prepopulated_id";
+
 // Display state of the choice screen from which the user selected their
 // default search engine. It is stored for logging purposes, only for a limited
 // time, and cleared when that time runs out, or when we are able to report
@@ -56,26 +69,28 @@ inline constexpr char kDefaultSearchProviderPendingChoiceScreenDisplayState[] =
 inline constexpr char kDefaultSearchProviderChoiceScreenRandomShuffleSeed[] =
     "default_search_provider.choice_screen_random_shuffle_seed";
 
-// The Chrome milestone number at which the random seed was last set.
-inline constexpr char kDefaultSearchProviderChoiceScreenShuffleMilestone[] =
-    "default_search_provider.choice_screen_shuffle_milestone";
-
 // Whether a search context menu item is allowed.
 inline constexpr char kDefaultSearchProviderContextMenuAccessAllowed[] =
     "default_search_provider.context_menu_access_allowed";
 
-// Whether the prepopulated data from which the keywords were loaded is the
-// extended list that is not limited to just 5 engines.
-// This pref helps versioning the keyword data in an orthogonal way from the
-// prepopulated data version numbers, as this is dependent on runtime feature
-// state.
-// TODO(b/304947278): Deprecate when the SearchEngineChoice feature launches.
-inline constexpr char kDefaultSearchProviderKeywordsUseExtendedList[] =
-    "default_search_provider.keywords_use_extended_list";
-
 // Whether having a default search provider is enabled.
 inline constexpr char kDefaultSearchProviderEnabled[] =
     "default_search_provider.enabled";
+
+// Tracks if a default search engine reset has occurred that the user hasn't
+// been notified of. This is set to true when a reset occurs and false after the
+// notification is shown.
+inline constexpr char kUnacknowledgedDefaultSearchEngineResetOccurred[] =
+    "default_search_provider.reset_occurred";
+
+// The time the last mirror check based reset occurred.
+inline constexpr char kDefaultSearchEngineMirrorCheckResetTimeStamp[] =
+    "default_search_provider.reset_time";
+
+// The time of the default search engine reset for which the last notification
+// was shown.
+inline constexpr char kResetTimeForLastShownNotification[] =
+    "default_search_provider.notification_reset_time";
 
 // The dictionary key used when the default search providers are given
 // in the preferences file. Normally they are copied from the main

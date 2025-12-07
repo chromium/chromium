@@ -8,6 +8,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/policy/chrome_policy_conversions_client.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/policy/value_provider/value_provider_util.h"
@@ -25,9 +26,9 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -56,20 +57,10 @@ ExtensionPoliciesValueProvider::ExtensionPoliciesValueProvider(Profile* profile)
     : profile_(profile) {
   extension_registry_observation_.Observe(
       extensions::ExtensionRegistry::Get(profile_));
-  policy::PolicyService* policy_service = GetPolicyService(profile_);
-  policy_service->AddObserver(policy::POLICY_DOMAIN_EXTENSIONS, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_service->AddObserver(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS, this);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  policy_service_observation_.Observe(GetPolicyService(profile_));
 }
 
-ExtensionPoliciesValueProvider::~ExtensionPoliciesValueProvider() {
-  policy::PolicyService* policy_service = GetPolicyService(profile_);
-  policy_service->RemoveObserver(policy::POLICY_DOMAIN_EXTENSIONS, this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_service->RemoveObserver(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS, this);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
+ExtensionPoliciesValueProvider::~ExtensionPoliciesValueProvider() = default;
 
 base::Value::Dict ExtensionPoliciesValueProvider::GetValues() {
   base::Value::Dict extension_policies;
@@ -81,36 +72,36 @@ base::Value::Dict ExtensionPoliciesValueProvider::GetValues() {
       AddExtensionPolicyValueToDict(policy, extension_policies);
     }
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   for (auto& policy :
        client->GetExtensionPolicies(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS)) {
     AddExtensionPolicyValueToDict(policy, extension_policies);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return extension_policies;
 }
 
 base::Value::Dict ExtensionPoliciesValueProvider::GetNames() {
   base::Value::Dict extension_policy_names =
       GetExtensionPolicyNames(policy::POLICY_DOMAIN_EXTENSIONS);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   extension_policy_names.Merge(
       GetExtensionPolicyNames(policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return extension_policy_names;
 }
 
 base::Value::Dict ExtensionPoliciesValueProvider::GetExtensionPolicyNames(
     policy::PolicyDomain policy_domain) {
   base::Value::Dict names;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* extension_profile =
       policy_domain == policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
           ? ash::ProfileHelper::GetSigninProfile()
           : profile_.get();
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+#else   // BUILDFLAG(IS_CHROMEOS)
   Profile* extension_profile = profile_.get();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<policy::SchemaMap> schema_map =
       extension_profile->GetOriginalProfile()

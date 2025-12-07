@@ -89,7 +89,6 @@ bool UserNetworkConfigurationUpdaterAsh::
   base::Value::List certificates_value;
   chromeos::onc::ParseAndValidateOncForImport(
       policy_value->GetString(), onc::ONC_SOURCE_USER_POLICY,
-      /*passphrase=*/std::string(),
       /*network_configs=*/nullptr, /*global_network_config=*/nullptr,
       &certificates_value);
   chromeos::onc::OncParsedCertificates onc_parsed_certificates(

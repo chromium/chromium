@@ -5,27 +5,53 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_CONSTANTS_H_
 #define CHROME_BROWSER_UI_VIEWS_PROMOS_IOS_PROMO_CONSTANTS_H_
 
+#include <string>
+
+#include "ui/base/models/image_model.h"
+
 namespace IOSPromoConstants {
 
-// Size of QR code image view including the Margin.
-const int kQrCodeImageSize = 85;
+// iOS promo QR code URLs.
+inline constexpr char kIOSPromoPasswordBubbleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-passwords&android-campaign=desktop-chr-"
+    "passwords";
+inline constexpr char kIOSPromoAddressBubbleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-address&android-campaign=desktop-chr-address";
+inline constexpr char kIOSPromoPaymentBubbleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-payment&android-campaign=desktop-chr-payment";
+inline constexpr char kIOSPromoLensBubbleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-lens-1&android-campaign=desktop-chr-lens-1";
+inline constexpr char kIOSPromoESBBubbleQRCodeURL[] =
+    "https://www.google.com/chrome/go-mobile/"
+    "?ios-campaign=desktop-chr-esb-1&android-campaign=desktop-chr-esb-1";
 
-// URL used for the QR code within the password bubble promo.
-const char kPasswordBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-passwords&mt=8";
-
-const char kAddressBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-address&mt=8";
+// Size of the image view (QR code or otherwise) in the promos.
+inline constexpr int kImageSize = 80;
+// Element identifiers for the promo bubble. Used to update the promo bubble in
+// place.
+inline constexpr int kDescriptionLabelID = 1;
+inline constexpr int kImageViewID = 2;
 
 struct IOSPromoTypeConfigs {
-  int kBubbleTitleID;
-  int kBubbleSubtitleID;
-  int kPromoTitleID;
-  int kPromoDescriptionID;
-  int kDeclineButtonTextID;
-  std::string kPromoQRCodeURL;
+  IOSPromoTypeConfigs();
+  ~IOSPromoTypeConfigs();
+  IOSPromoTypeConfigs(const IOSPromoTypeConfigs&);
+  IOSPromoTypeConfigs& operator=(const IOSPromoTypeConfigs&);
+
+  int bubble_title_id = -1;
+  int bubble_subtitle_id = -1;
+  int promo_title_id = -1;
+  int promo_description_id = -1;
+  int decline_button_text_id = -1;
+  int accept_button_text_id = -1;
+  int feature_name_id = -1;
+  ui::ImageModel promo_image;
+  bool with_header;
+  std::string qr_code_url;
 };
 
 }  // namespace IOSPromoConstants

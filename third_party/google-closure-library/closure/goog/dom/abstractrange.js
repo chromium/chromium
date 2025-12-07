@@ -60,6 +60,7 @@ goog.dom.AbstractRange.getBrowserSelectionForWindow = function(win) {
  * Tests if the given Object is a controlRange.
  * @param {Object} range The range object to test.
  * @return {boolean} Whether the given Object is a controlRange.
+ * @suppress {strictMissingProperties} Added to tighten compiler checks
  */
 goog.dom.AbstractRange.isNativeControlRange = function(range) {
   'use strict';

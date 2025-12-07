@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
@@ -75,12 +76,12 @@ export class FullDataResetElement extends FullDataResetElementBase {
     };
   }
 
-  isSyncingPasswords: boolean;
-  isAccountStoreUser: boolean;
-  private passwordsCount_: string = '';
-  private passkeysCount_: string = '';
-  private passwordsCountDetails_: string = '';
-  private passkeysCountDetails_: string = '';
+  declare isSyncingPasswords: boolean;
+  declare isAccountStoreUser: boolean;
+  declare private passwordsCount_: string;
+  declare private passkeysCount_: string;
+  declare private passwordsCountDetails_: string;
+  declare private passkeysCountDetails_: string;
 
   private async updateCounters_(credentials:
                                     chrome.passwordsPrivate.PasswordUiEntry[]) {

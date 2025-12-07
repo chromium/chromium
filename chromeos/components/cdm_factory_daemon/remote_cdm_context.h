@@ -12,13 +12,13 @@
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decryptor.h"
-#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
+#include "media/mojo/mojom/cdm_context_for_oopvd.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace chromeos {
 
 // Provides the implementation that runs in out of process video decoding that
-// proxies the media::CdmContext calls back through a mojom::StableCdmContext
+// proxies the media::CdmContext calls back through a mojom::CdmContextForOOPVD
 // IPC connection.
 //
 // This particular media::CdmContext/chromeos::ChromeOsCdmContext implementation
@@ -34,8 +34,8 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) RemoteCdmContext
       public base::RefCountedThreadSafe<RemoteCdmContext> {
  public:
   explicit RemoteCdmContext(
-      mojo::PendingRemote<media::stable::mojom::StableCdmContext>
-          stable_cdm_context);
+      mojo::PendingRemote<media::mojom::CdmContextForOOPVD>
+          cdm_context_for_oopvd);
 
   RemoteCdmContext(const RemoteCdmContext&) = delete;
   RemoteCdmContext& operator=(const RemoteCdmContext&) = delete;
@@ -93,11 +93,10 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) RemoteCdmContext
 
   ~RemoteCdmContext() override;
 
-  void OnDecryptVideoBufferDone(
-      DecryptCB decrypt_cb,
-      media::Decryptor::Status status,
-      const scoped_refptr<media::DecoderBuffer>& decoder_buffer,
-      const std::vector<uint8_t>& bytes);
+  void OnDecryptVideoBufferDone(DecryptCB decrypt_cb,
+                                media::Decryptor::Status status,
+                                media::mojom::DecoderBufferPtr decoder_buffer,
+                                const std::vector<uint8_t>& bytes);
 
   std::unique_ptr<MojoSequenceState, void (*)(MojoSequenceState*)>
       mojo_sequence_state_;

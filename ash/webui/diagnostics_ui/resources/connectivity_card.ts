@@ -11,16 +11,17 @@ import './routine_section.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './connectivity_card.html.js';
 import {filterNameServers, formatMacAddress, getNetworkCardTitle, getNetworkState, getNetworkType, getRoutineGroups} from './diagnostics_utils.js';
 import {getNetworkHealthProvider} from './mojo_interface_provider.js';
-import {Network, NetworkHealthProviderInterface, NetworkStateObserverReceiver} from './network_health_provider.mojom-webui.js';
-import {RoutineGroup} from './routine_group.js';
+import type {Network, NetworkHealthProviderInterface} from './network_health_provider.mojom-webui.js';
+import {NetworkStateObserverReceiver} from './network_health_provider.mojom-webui.js';
+import type {RoutineGroup} from './routine_group.js';
 import {TestSuiteStatus} from './routine_list_executor.js';
-import {RoutineSectionElement} from './routine_section.js';
+import type {RoutineSectionElement} from './routine_section.js';
 
 /**
  * @fileoverview

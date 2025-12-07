@@ -92,6 +92,17 @@ bool IsSkippableCandidate(const Element* element) {
   return true;
 }
 
+bool IsEqualDistanceAndContainsBestCandidate(
+    const FocusCandidate& candidate,
+    const FocusCandidate& best_candidate,
+    const double& candidate_distance,
+    const double& best_distance) {
+  return std::fabs(candidate_distance - best_distance) <
+             std::numeric_limits<double>::epsilon() &&
+         candidate.rect_in_root_frame.Contains(
+             best_candidate.rect_in_root_frame);
+}
+
 // Determines whether the given candidate is closer to the current interested
 // node (in the given direction) than the current best. If so, it'll replace
 // the current best.
@@ -136,7 +147,12 @@ static void ConsiderForBestCandidate(SpatialNavigationDirection direction,
     previous_best_distance = kMaxDistance;
   }
 
-  if (distance < best_distance && IsUnobscured(candidate)) {
+  // In case of a tie, we must prefer a container to a contained element since
+  // interest moves from outside in (e.g. see ComputeDistanceDataForNode)
+  if ((distance < best_distance ||
+       IsEqualDistanceAndContainsBestCandidate(candidate, *best_candidate,
+                                               distance, best_distance)) &&
+      IsUnobscured(candidate)) {
     *previous_best_candidate = *best_candidate;
     previous_best_distance = best_distance;
     *best_candidate = candidate;
@@ -163,7 +179,7 @@ bool SpatialNavigationController::HandleArrowKeyboardEvent(
 
   // If the focus has already moved by a previous handler, return false.
   const Element* focused = GetFocusedElement();
-  if (focused && focused != event->target()) {
+  if (focused && focused != event->RawTarget()) {
     // SpatNav does not need to handle this arrow key because
     // the webpage had a key-handler that already moved focus.
     return false;
@@ -182,20 +198,12 @@ bool SpatialNavigationController::HandleEnterKeyboardEvent(
     return false;
 
   if (event->type() == event_type_names::kKeydown) {
-    enter_key_down_seen_ = true;
     interest_element->SetActive(true);
-  } else if (event->type() == event_type_names::kKeypress) {
-    enter_key_press_seen_ = true;
   } else if (event->type() == event_type_names::kKeyup) {
     interest_element->SetActive(false);
   }
 
   return true;
-}
-
-void SpatialNavigationController::ResetEnterKeyState() {
-  enter_key_down_seen_ = false;
-  enter_key_press_seen_ = false;
 }
 
 bool SpatialNavigationController::HandleImeSubmitKeyboardEvent(
@@ -432,7 +440,7 @@ bool SpatialNavigationController::IsValidCandidate(
       return false;
   }
 
-  return element->IsKeyboardFocusable();
+  return element->IsKeyboardFocusableSlow();
 }
 
 Element* SpatialNavigationController::GetInterestedElement() const {

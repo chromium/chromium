@@ -43,7 +43,6 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
   def test_device_trust_enrollment(self):
     # To match for the right IdP site when there are multiple present
     idp_matcher = '^[htps]+[:/]+staging-.*'
-    eventFound = False
     path = 'gs://%s/secrets/CELabOrg-devicetrust-enrollToken' % self.gsbucket
     cmd = r'gsutil cat ' + path
     token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
@@ -104,8 +103,8 @@ class DeviceTrustConnectorWindowsEnrollmentTest(ChromeEnterpriseTestCase):
       client = result['ClientSignals']
       server = result['ServerSignals']
       self.assertEqual(client['deviceEnrollmentDomain'], 'beyondcorp.bigr.name')
-      self.assertEqual(client['safeBrowsingProtectionLevel'], 1)
-      self.assertEqual(client['trigger'], 1)
+      self.assertEqual(client['safeBrowsingProtectionLevel'], 'STANDARD')
+      self.assertEqual(client['trigger'], 'TRIGGER_BROWSER_NAVIGATION')
       self.assertEqual(server['keyTrustLevel'], 'CHROME_BROWSER_HW_KEY')
       self.assertIsNotNone(server['devicePermanentId'])
 

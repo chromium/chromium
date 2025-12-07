@@ -16,6 +16,7 @@
 
 #include <lib/zx/thread.h>
 #include <link.h>
+#include <zircon/status.h>
 #include <zircon/syscalls.h>
 
 #include "base/check_op.h"
@@ -176,7 +177,8 @@ void ProcessReaderFuchsia::InitializeModules() {
   zx_status_t status = process_->get_property(
       ZX_PROP_PROCESS_DEBUG_ADDR, &debug_address, sizeof(debug_address));
   if (status != ZX_OK || debug_address == 0) {
-    LOG(ERROR) << "zx_object_get_property ZX_PROP_PROCESS_DEBUG_ADDR";
+    ZX_LOG(ERROR, status)
+        << "zx_object_get_property ZX_PROP_PROCESS_DEBUG_ADDR";
     return;
   }
 

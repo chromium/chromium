@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/files/file_path.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
@@ -15,14 +14,12 @@ namespace content {
 
 FileSystemAccessDataTransferTokenImpl::FileSystemAccessDataTransferTokenImpl(
     FileSystemAccessManagerImpl* manager,
-    FileSystemAccessManagerImpl::PathType path_type,
-    const base::FilePath& file_path,
+    const content::PathInfo& file_path_info,
     int renderer_process_id,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
         receiver)
     : manager_(manager),
-      path_type_(path_type),
-      file_path_(file_path),
+      file_path_info_(file_path_info),
       renderer_process_id_(renderer_process_id),
       token_(base::UnguessableToken::Create()) {
   DCHECK(manager_);

@@ -24,22 +24,25 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/fenced_frame_sandbox_flags.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/deferred_fetch_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
+#include "third_party/blink/renderer/core/fetch/fetch_later_util.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -60,9 +63,10 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
@@ -78,9 +82,10 @@ namespace {
 
 using PluginSet = HeapHashSet<Member<WebPluginContainerImpl>>;
 PluginSet& PluginsPendingDispose() {
-  DEFINE_STATIC_LOCAL(Persistent<PluginSet>, set,
-                      (MakeGarbageCollected<PluginSet>()));
-  return *set;
+  using PluginSetHolder = DisallowNewWrapper<PluginSet>;
+  DEFINE_STATIC_LOCAL(Persistent<PluginSetHolder>, holder,
+                      (MakeGarbageCollected<PluginSetHolder>()));
+  return holder->Value();
 }
 
 bool DoesParentAllowLazyLoadingChildren(Document& document) {
@@ -171,7 +176,9 @@ void HTMLFrameOwnerElement::PluginDisposeSuspendScope::
 HTMLFrameOwnerElement::HTMLFrameOwnerElement(const QualifiedName& tag_name,
                                              Document& document)
     : HTMLElement(tag_name, document),
-      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)) {
+      should_lazy_load_children_(DoesParentAllowLazyLoadingChildren(document)),
+      preferred_color_scheme_(mojom::blink::PreferredColorScheme::kLight) {
+  SetHasCustomStyleCallbacks();
   document.IncrementImmediateChildFrameCreationCount();
 }
 
@@ -195,15 +202,16 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
     ContainerNode& insertion_point) {
   InsertionNotificationRequest result =
       HTMLElement::InsertedInto(insertion_point);
+
+  if (display_ad_element_monitor_) {
+    display_ad_element_monitor_->EnsureStarted();
+  }
+
   // If a state-preserving atomic move is in progress, then we have to manually
   // perform some bookkeeping that ordinarily would only be done deeper in the
   // frame setup logic that gets triggered in the *NON* state-preserving atomic
   // move flow.
-  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
-    // State-preserving atomic moves can only be in-progress when all elements
-    // are connected, and when `HTMLFrameOwnerElement` is connected, it must
-    // have a non-null `ContentFrame()`.
-    CHECK(ContentFrame());
+  if (GetDocument().StatePreservingAtomicMoveInProgress() && ContentFrame()) {
     // During a state-preserving atomic move, we must specifically inform all of
     // `this`'s ancestor nodes of the new connected frame they are adopting.
     //
@@ -220,6 +228,10 @@ Node::InsertionNotificationRequest HTMLFrameOwnerElement::InsertedInto(
 }
 
 void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
+  if (display_ad_element_monitor_) {
+    display_ad_element_monitor_->OnElementRemovedOrUntagged();
+  }
+
   // See documentation in `InsertedInto()` above. In the state-preserving atomic
   // move case, we don't invoke `ClearContentFrame()`, which would normally do
   // at least two things:
@@ -229,7 +241,7 @@ void HTMLFrameOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
   // Not doing (1) is a good thing, since we're trying to preserve the frame,
   // but we still have to do (2) manually to maintain bookkeeping consistency
   // among the ancestor nodes.
-  if (GetDocument().StatePreservingAtomicMoveInProgress()) {
+  if (GetDocument().StatePreservingAtomicMoveInProgress() && ContentFrame()) {
     // `this` is no longer connected, so we have to decrement our subframe count
     // separately from our old ancestors's subframe count (i.e.,
     // `insertion_point`).
@@ -368,9 +380,10 @@ void HTMLFrameOwnerElement::SetSandboxFlags(
   }
 }
 
-bool HTMLFrameOwnerElement::IsKeyboardFocusable(
+bool HTMLFrameOwnerElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  return content_frame_ && HTMLElement::IsKeyboardFocusable(update_behavior);
+  return content_frame_ &&
+         HTMLElement::IsKeyboardFocusableSlow(update_behavior);
 }
 
 void HTMLFrameOwnerElement::DisposePluginSoon(WebPluginContainerImpl* plugin) {
@@ -423,6 +436,31 @@ void HTMLFrameOwnerElement::UpdateRequiredPolicy() {
   }
 }
 
+void HTMLFrameOwnerElement::UpdateDeferredFetchPolicy(
+    scoped_refptr<const SecurityOrigin> to_origin) {
+  if (!IsFetchLaterUseDeferredFetchPolicyEnabled()) {
+    return;
+  }
+  frame_policy_.deferred_fetch_policy =
+      FetchLaterUtil::GetContainerDeferredFetchPolicyOnNavigation(this,
+                                                                  to_origin);
+  DidChangeContainerPolicy();
+}
+
+void HTMLFrameOwnerElement::MaybeClearDeferredFetchPolicy() {
+  if (!IsFetchLaterUseDeferredFetchPolicyEnabled()) {
+    return;
+  }
+
+  // Must only be called from content frame.
+  CHECK(ContentFrame());
+  if (FetchLaterUtil::ShouldClearDeferredFetchPolicy(ContentFrame())) {
+    frame_policy_.deferred_fetch_policy =
+        mojom::blink::DeferredFetchPolicy::kDisabled;
+    DidChangeContainerPolicy();
+  }
+}
+
 network::mojom::blink::TrustTokenParamsPtr
 HTMLFrameOwnerElement::ConstructTrustTokenParams() const {
   return nullptr;
@@ -439,7 +477,7 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
   mojom::blink::FrameOwnerPropertiesPtr properties =
       mojom::blink::FrameOwnerProperties::New();
   properties->name = BrowsingContextContainerName().IsNull()
-                         ? WTF::g_empty_string
+                         ? g_empty_string
                          : BrowsingContextContainerName(),
   properties->scrollbar_mode = ScrollbarMode();
   properties->margin_width = MarginWidth();
@@ -448,6 +486,7 @@ void HTMLFrameOwnerElement::FrameOwnerPropertiesChanged() {
   properties->allow_payment_request = AllowPaymentRequest();
   properties->is_display_none = IsDisplayNone();
   properties->color_scheme = GetColorScheme();
+  properties->preferred_color_scheme = GetPreferredColorScheme();
 
   GetDocument()
       .GetFrame()
@@ -476,7 +515,7 @@ void HTMLFrameOwnerElement::AddResourceTiming(
     return;
   }
 
-  DOMWindowPerformance::performance(*GetDocument().domWindow())
+  GlobalPerformance::performance(*GetDocument().domWindow())
       ->AddResourceTiming(std::move(info), localName());
   DidReportResourceTiming();
 }
@@ -500,17 +539,20 @@ void HTMLFrameOwnerElement::ReportFallbackResourceTimingIfNeeded() {
   resource_timing_info.Swap(&fallback_timing_info_);
   resource_timing_info->response_end = base::TimeTicks::Now();
 
-  DOMWindowPerformance::performance(*GetDocument().domWindow())
+  GlobalPerformance::performance(*GetDocument().domWindow())
       ->AddResourceTiming(std::move(resource_timing_info), localName());
 }
 
 void HTMLFrameOwnerElement::DispatchLoad() {
   ReportFallbackResourceTimingIfNeeded();
   DispatchScopedEvent(*Event::Create(event_type_names::kLoad));
+  if (RuntimeEnabledFeatures::PotentialPermissionsPolicyReportingEnabled() &&
+      GetExecutionContext()) {
+    CheckPotentialPermissionsPolicyViolation();
+  }
 }
 
-Document* HTMLFrameOwnerElement::getSVGDocument(
-    ExceptionState& exception_state) const {
+Document* HTMLFrameOwnerElement::getSVGDocument() const {
   Document* doc = contentDocument();
   if (doc && doc->IsSVGDocument())
     return doc;
@@ -526,9 +568,9 @@ void HTMLFrameOwnerElement::SetEmbeddedContentView(
   if (doc && doc->GetFrame()) {
     bool will_be_display_none = !embedded_content_view;
     if (IsDisplayNone() != will_be_display_none) {
-      doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
-                                          ScrollbarMode(), will_be_display_none,
-                                          GetColorScheme());
+      doc->WillChangeFrameOwnerProperties(
+          MarginWidth(), MarginHeight(), ScrollbarMode(), will_be_display_none,
+          GetColorScheme(), GetPreferredColorScheme());
     }
   }
 
@@ -740,6 +782,9 @@ bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
   frame_load_request.SetIsContainerInitiated(true);
   frame_load_request.SetClientNavigationReason(
       ClientNavigationReason::kInitialFrameNavigation);
+  if (!child_frame->Loader().AllowRequestForThisFrame(frame_load_request)) {
+    return false;
+  }
   child_frame->Loader().StartNavigation(frame_load_request, child_load_type);
 
   return true;
@@ -785,11 +830,31 @@ void HTMLFrameOwnerElement::ParseAttribute(
   }
 }
 
+void HTMLFrameOwnerElement::DidSetAdStatus() {
+  if (display_ad_element_monitor_) {
+    if (!IsAdRelated()) {
+      display_ad_element_monitor_->OnElementRemovedOrUntagged();
+      display_ad_element_monitor_.Clear();
+    }
+    return;
+  }
+
+  if (IsAdRelated()) {
+    display_ad_element_monitor_ =
+        MakeGarbageCollected<DisplayAdElementMonitor>(this);
+  }
+}
+
 bool HTMLFrameOwnerElement::IsAdRelated() const {
   if (!content_frame_)
     return false;
 
   return content_frame_->IsAdFrame();
+}
+
+bool HTMLFrameOwnerElement::ShouldHighlightAd() const {
+  return display_ad_element_monitor_ &&
+         display_ad_element_monitor_->ShouldHighlight();
 }
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {
@@ -802,9 +867,29 @@ void HTMLFrameOwnerElement::SetColorScheme(
     mojom::blink::ColorScheme color_scheme) {
   Document* doc = contentDocument();
   if (doc && doc->GetFrame()) {
-    doc->WillChangeFrameOwnerProperties(MarginWidth(), MarginHeight(),
-                                        ScrollbarMode(), IsDisplayNone(),
-                                        color_scheme);
+    doc->WillChangeFrameOwnerProperties(
+        MarginWidth(), MarginHeight(), ScrollbarMode(), IsDisplayNone(),
+        color_scheme, GetPreferredColorScheme());
+  }
+  FrameOwnerPropertiesChanged();
+}
+
+mojom::blink::PreferredColorScheme
+HTMLFrameOwnerElement::GetPreferredColorScheme() const {
+  return preferred_color_scheme_;
+}
+
+void HTMLFrameOwnerElement::SetPreferredColorScheme(
+    mojom::blink::PreferredColorScheme preferred_color_scheme) {
+  if (preferred_color_scheme_ == preferred_color_scheme) {
+    return;
+  }
+  preferred_color_scheme_ = preferred_color_scheme;
+  Document* doc = contentDocument();
+  if (doc && doc->GetFrame()) {
+    doc->WillChangeFrameOwnerProperties(
+        MarginWidth(), MarginHeight(), ScrollbarMode(), IsDisplayNone(),
+        GetColorScheme(), preferred_color_scheme);
   }
   FrameOwnerPropertiesChanged();
 }
@@ -813,20 +898,22 @@ void HTMLFrameOwnerElement::Trace(Visitor* visitor) const {
   visitor->Trace(content_frame_);
   visitor->Trace(embedded_content_view_);
   visitor->Trace(lazy_load_frame_observer_);
+  visitor->Trace(display_ad_element_monitor_);
   HTMLElement::Trace(visitor);
   FrameOwner::Trace(visitor);
 }
 
 // static
-ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
-  ParsedPermissionsPolicy container_policy;
+network::ParsedPermissionsPolicy
+HTMLFrameOwnerElement::GetLegacyFramePolicies() {
+  network::ParsedPermissionsPolicy container_policy;
   {
     // Legacy frames are not allowed to enable the fullscreen feature. Add an
     // empty allowlist for the fullscreen feature so that the nested browsing
     //  context is unable to use the API, regardless of origin.
     // https://fullscreen.spec.whatwg.org/#model
-    ParsedPermissionsPolicyDeclaration allowlist(
-        mojom::blink::PermissionsPolicyFeature::kFullscreen);
+    network::ParsedPermissionsPolicyDeclaration allowlist(
+        network::mojom::PermissionsPolicyFeature::kFullscreen);
     container_policy.push_back(allowlist);
   }
   {
@@ -836,12 +923,20 @@ ParsedPermissionsPolicy HTMLFrameOwnerElement::GetLegacyFramePolicies() {
     // origins. Even with this, it still requires permission from the containing
     // frame for the origin.
     // https://fergald.github.io/docs/explainers/permissions-policy-deprecate-unload.html
-    ParsedPermissionsPolicyDeclaration allowlist(
-        mojom::blink::PermissionsPolicyFeature::kUnload, {}, std::nullopt,
-        /*allowed_by_default=*/true, /*matches_all_origins=*/true);
+    network::ParsedPermissionsPolicyDeclaration allowlist(
+        network::mojom::PermissionsPolicyFeature::kUnload, {}, std::nullopt,
+        /*matches_all_origins=*/true, /*matches_opaque_src=*/true);
     container_policy.push_back(allowlist);
   }
   return container_policy;
+}
+
+void HTMLFrameOwnerElement::DidRecalcStyle(
+    const StyleRecalcChange style_recalc_change) {
+  HTMLElement::DidRecalcStyle(style_recalc_change);
+  SetPreferredColorScheme(
+      GetDocument().GetStyleEngine().ResolveColorSchemeForEmbedding(
+          GetComputedStyle()));
 }
 
 }  // namespace blink

@@ -29,8 +29,8 @@ class MODULES_EXPORT AnimatorDefinition final
                               V8AnimateCallback* animate,
                               V8StateCallback* state);
   ~AnimatorDefinition() override = default;
-  virtual void Trace(Visitor* visitor) const;
-  const char* NameInHeapSnapshot() const override {
+  void Trace(Visitor* visitor) const;
+  const char* GetHumanReadableName() const override {
     return "AnimatorDefinition";
   }
 

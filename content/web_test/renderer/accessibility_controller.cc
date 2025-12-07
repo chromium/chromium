@@ -5,8 +5,8 @@
 #include "content/web_test/renderer/accessibility_controller.h"
 
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/web/web_ax_context.h"
@@ -17,27 +17,33 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_mode.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 
 namespace content {
 
 class AccessibilityControllerBindings
     : public gin::Wrappable<AccessibilityControllerBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {
+      {gin::kEmbedderNativeGin},
+      gin::kAccessibilityControllerBindings};
+
+  const gin::WrapperInfo* wrapper_info() const override {
+    return &kWrapperInfo;
+  }
 
   AccessibilityControllerBindings(const AccessibilityControllerBindings&) =
       delete;
   AccessibilityControllerBindings& operator=(
       const AccessibilityControllerBindings&) = delete;
 
+  explicit AccessibilityControllerBindings(
+      base::WeakPtr<AccessibilityController> controller);
   static void Install(base::WeakPtr<AccessibilityController> controller,
                       blink::WebLocalFrame* frame);
 
  private:
-  explicit AccessibilityControllerBindings(
-      base::WeakPtr<AccessibilityController> controller);
-  ~AccessibilityControllerBindings() override;
-
   // gin::Wrappable:
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
@@ -48,14 +54,10 @@ class AccessibilityControllerBindings
   v8::Local<v8::Object> FocusedElement();
   v8::Local<v8::Object> RootElement();
   v8::Local<v8::Object> AccessibleElementById(const std::string& id);
-  bool CanCallAOMEventListeners() const;
   void Reset();
 
   base::WeakPtr<AccessibilityController> controller_;
 };
-
-gin::WrapperInfo AccessibilityControllerBindings::kWrapperInfo = {
-    gin::kEmbedderNativeGin};
 
 // static
 void AccessibilityControllerBindings::Install(
@@ -69,22 +71,22 @@ void AccessibilityControllerBindings::Install(
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<AccessibilityControllerBindings> bindings = gin::CreateHandle(
-      isolate, new AccessibilityControllerBindings(controller));
-  if (bindings.IsEmpty())
+  auto* bindings = cppgc::MakeGarbageCollected<AccessibilityControllerBindings>(
+      isolate->GetCppHeap()->GetAllocationHandle(), controller);
+  v8::Local<v8::Object> wrapper;
+  if (!bindings->GetWrapper(isolate).ToLocal(&wrapper)) {
     return;
+  }
   v8::Local<v8::Object> global = context->Global();
   global
       ->Set(context, gin::StringToV8(isolate, "accessibilityController"),
-            bindings.ToV8())
+            wrapper)
       .Check();
 }
 
 AccessibilityControllerBindings::AccessibilityControllerBindings(
     base::WeakPtr<AccessibilityController> controller)
     : controller_(controller) {}
-
-AccessibilityControllerBindings::~AccessibilityControllerBindings() {}
 
 gin::ObjectTemplateBuilder
 AccessibilityControllerBindings::GetObjectTemplateBuilder(
@@ -102,8 +104,6 @@ AccessibilityControllerBindings::GetObjectTemplateBuilder(
       .SetProperty("rootElement", &AccessibilityControllerBindings::RootElement)
       .SetMethod("accessibleElementById",
                  &AccessibilityControllerBindings::AccessibleElementById)
-      .SetProperty("canCallAOMEventListeners",
-                   &AccessibilityControllerBindings::CanCallAOMEventListeners)
       // TODO(hajimehoshi): These are for backward compatibility. Remove them.
       .SetMethod("addNotificationListener",
                  &AccessibilityControllerBindings::SetNotificationListener)
@@ -142,10 +142,6 @@ v8::Local<v8::Object> AccessibilityControllerBindings::AccessibleElementById(
                      : v8::Local<v8::Object>();
 }
 
-bool AccessibilityControllerBindings::CanCallAOMEventListeners() const {
-  return controller_ ? controller_->CanCallAOMEventListeners() : false;
-}
-
 void AccessibilityControllerBindings::Reset() {
   if (controller_)
     controller_->Reset();
@@ -172,8 +168,8 @@ void AccessibilityController::Reset() {
 }
 
 void AccessibilityController::Install(blink::WebLocalFrame* frame) {
-  ax_context_ = std::make_unique<blink::WebAXContext>(frame->GetDocument(),
-                                                      ui::kAXModeComplete);
+  ax_context_ = std::make_unique<blink::WebAXContext>(
+      frame->GetDocument(), ui::kAXModeDefaultForTests);
   elements_ = std::make_unique<WebAXObjectProxyList>(
       frame->GetAgentGroupScheduler()->Isolate(), *ax_context_);
 
@@ -295,11 +291,6 @@ v8::Local<v8::Object> AccessibilityController::AccessibleElementById(
 
   return FindAccessibleElementByIdRecursive(
       root_element, blink::WebString::FromUTF8(id.c_str()));
-}
-
-bool AccessibilityController::CanCallAOMEventListeners() const {
-  return GetAccessibilityObjectForMainFrame()
-      .CanCallAOMEventListenersForTesting();
 }
 
 v8::Local<v8::Object>

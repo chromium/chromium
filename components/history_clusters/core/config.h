@@ -91,32 +91,10 @@ struct Config {
   // and unclustered visits from 1/10.
   size_t persist_clusters_recluster_window_days = 0;
 
-  // The `kOmniboxAction` feature and child params.
-
-  // Enables the Journeys Omnibox Action chip. `kJourneys` must also be enabled
-  // for this to take effect.
-  bool omnibox_action = false;
-
-  // If enabled, allows the Omnibox Action chip to appear when the suggestions
-  // contain pedals. Does nothing if `omnibox_action` is disabled.
-  bool omnibox_action_with_pedals = false;
-
-  // If `omnibox_action_on_navigation_intents` is false, this threshold
-  // helps determine when the user is intending to perform a navigation.
-  int omnibox_action_navigation_intent_score_threshold = 1300;
-
-  // If enabled, allows the Omnibox Action chip to appear when it's likely the
-  // user is intending to perform a navigation. This does not affect which
-  // suggestions are allowed to display the chip. Does nothing if
-  // `omnibox_action` is disabled.
-  bool omnibox_action_on_navigation_intents = false;
-
   // The `kOmniboxHistoryClusterProvider` feature and child params.
 
   // Enables `HistoryClusterProvider` to surface Journeys as a suggestion row
-  // instead of an action chip. Enabling this won't actually disable
-  // `omnibox_action_with_pedals`, but for user experiments, the intent is to
-  // only have 1 enabled.
+  // instead of an action chip.
   bool omnibox_history_cluster_provider = false;
 
   // If `omnibox_history_cluster_provider` is enabled, hides its suggestions but
@@ -191,20 +169,6 @@ struct Config {
   // on the zero state UI).
   size_t number_interesting_visits_filter_threshold = 1;
 
-  // The `kUseEngagementScoreCache` feature and child params.
-
-  // Whether to use a cache to store the site engagement scores per host. Used
-  // in both the old (OnDeviceClusteringBackend) and new
-  // (ContextClustererHistoryServiceObserver) clustering paths.
-  bool use_engagement_score_cache = true;
-
-  // The max number of hosts that should be stored in the engagement score
-  // cache.
-  int engagement_score_cache_size = 100;
-
-  // The max time a host should be stored in the engagement score cache.
-  base::TimeDelta engagement_score_cache_refresh_duration = base::Minutes(120);
-
   // The `kHistoryClustersVisitDeduping` feature and child params.
 
   // Use host instead of heavily-stripped URL as URL for deduping.
@@ -247,26 +211,6 @@ struct Config {
 
   // WebUI features and params.
 
-  // Whether new tab groups created by "Open all in new tab group" should be
-  // named after the cluster title. If false, the new tab group is anonymous,
-  // which is the pre-M115 behavior.
-  bool named_new_tab_groups = true;
-
-  // The `kJourneysZeroStateFiltering` feature and child params.
-
-  bool apply_zero_state_filtering = true;
-
-  // The `kNtpChromeCartInHistoryClusterModule` child params.
-
-  // Whether to use the NTP-specific algorithms and signals for determining
-  // intracluster ranking.
-  bool use_ntp_specific_intracluster_ranking = false;
-
-  // Returns the weight to use for the visit duration when ranking visits within
-  // a cluster. Will always be greater than or equal to 0 specifically on the
-  // NTP surface when `use_ntp_specific_intracluster_ranking is true`.
-  float ntp_visit_duration_ranking_weight = 1.0;
-
   // Lonely features without child params.
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
@@ -277,31 +221,16 @@ struct Config {
   // Does nothing if `kJourneys` is disabled.
   bool user_visible_debug = false;
 
-  // Enables persisting context annotations in the History DB. They are always
-  // calculated anyways. This just enables storing them. This is expected to be
-  // enabled for all users shortly. This just provides a killswitch.
-  // This flag is to enable us to turn on persisting context annotations WITHOUT
-  // exposing the Memories UI in general. If EITHER this flag or `kJourneys` is
-  // enabled, users will have context annotations persisted into their History
-  // DB.
-  bool persist_context_annotations_in_history_db = false;
-
   // Enables the history clusters internals page.
   bool history_clusters_internals_page = false;
 
   // Whether to check if all visits for a host should be in resulting clusters.
   bool should_check_hosts_to_skip_clustering_for = false;
 
-  // True if the task runner should use trait CONTINUE_ON_SHUTDOWN.
-  bool use_continue_on_shutdown = true;
-
   // Whether to show all clusters on prominent UI surfaces unconditionally. This
   // should only be set to true via command line.
   bool should_show_all_clusters_unconditionally_on_prominent_ui_surfaces =
       false;
-
-  // Whether keyword caches should be written to and read from prefs.
-  bool persist_caches_to_prefs = true;
 
   // Order consistently with features.h.
 

@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "enhanced_safe_browsing_promo_coordinator.h",
+    "enhanced_safe_browsing_promo_coordinator.mm",
+    "lens_promo_coordinator.h",
+    "lens_promo_coordinator.mm",
+    "search_what_you_see_promo_coordinator.h",
+    "search_what_you_see_promo_coordinator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//ios/chrome/browser/lens/ui_bundled:lens_entrypoint",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/tips_notifications/ui:enhanced_safe_browsing_promo",
+    "//ios/chrome/browser/tips_notifications/ui:lens_promo",
+    "//ios/chrome/browser/tips_notifications/ui:search_what_you_see_promo",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
+
+  frameworks = [ "UIKit.framework" ]
+}

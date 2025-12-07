@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//chrome/version.gni")
-
 source_set("image_decoder") {
   deps = [
     "//base",
@@ -27,10 +25,7 @@ if (!is_android) {
     testonly = true
 
     configs += [ "//build/config:precompiled_headers" ]
-    defines = [
-      "HAS_OUT_OF_PROC_TEST_RUNNER",
-      "CHROME_VERSION_MAJOR=" + chrome_version_major,
-    ]
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
       ":image_decoder",

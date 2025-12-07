@@ -3,12 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
-
-assert(use_blink, "Not supported without use_blink")
 
 source_set("color_headers") {
   sources = [
@@ -20,6 +17,7 @@ source_set("color_headers") {
     "color_provider.h",
     "color_provider_manager.h",
     "color_provider_utils.h",
+    "color_variant.h",
   ]
 
   public_deps = [
@@ -27,6 +25,7 @@ source_set("color_headers") {
     ":mojom",
     "//base",
     "//skia",
+    "//third_party/abseil-cpp:absl",
     "//ui/gfx:color_utils",
   ]
 }
@@ -63,6 +62,7 @@ component("color") {
     "color_recipe.h",
     "color_transform.cc",
     "color_transform.h",
+    "color_variant.cc",
   ]
 
   configs += [ "//build/config/compiler:prevent_unsafe_narrowing" ]
@@ -76,6 +76,8 @@ component("color") {
     "//ui/base:features",
     "//ui/gfx:color_utils",
   ]
+
+  deps = [ "//third_party/abseil-cpp:absl" ]
 
   if (is_mac) {
     sources += [
@@ -106,6 +108,7 @@ source_set("unit_tests") {
     "color_provider_utils_unittest.cc",
     "color_recipe_unittest.cc",
     "color_transform_unittest.cc",
+    "dynamic_color/palette_factory_unittest.cc",
     "sys_color_mixer_unittest.cc",
   ]
 
@@ -115,6 +118,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//testing/gtest",
+    "//ui/color/dynamic_color",
   ]
 }
 
@@ -174,7 +178,7 @@ component("mixers") {
     "//ui/base:features",
     "//ui/color/dynamic_color",
     "//ui/gfx:color_utils",
-    "//ui/native_theme:features",
+    "//ui/native_theme/features",
   ]
 
   public_deps = [ "//base" ]
@@ -191,6 +195,7 @@ component("mixers") {
     sources += [
       "win/css_system_color_mixer_win.cc",
       "win/native_color_mixers_win.cc",
+      "win/native_color_mixers_win.h",
     ]
     deps += [ ":accent_color_observer" ]
   }

@@ -114,12 +114,15 @@
         }, {
           "name": "deprecated_manifest_version",
           "description": "The extension uses a deprecated manifest version that is no longer supported by Chrome."
+        }, {
+          "name": "corrupted",
+          "description": "The extension has been installed already but it's corrupted."
         }]
       },
       {
         "id": "MV2DeprecationStatus",
         "type": "string",
-        "enum": ["inactive", "warning", "soft_disable"]
+        "enum": ["inactive", "warning", "soft_disable", "hard_disable"]
       }
     ],
     "functions": [

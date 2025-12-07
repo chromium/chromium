@@ -25,16 +25,17 @@
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/presentation_service_delegate.h"
+#include "extensions/buildflags/buildflags.h"
 #include "media/base/flinging_controller.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/browser/media_router_debugger.h"
 #include "components/media_router/common/mojom/media_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
 namespace content {
 class WebContents;
@@ -154,7 +155,7 @@ class MediaRouter : public KeyedService {
   virtual std::unique_ptr<media::FlingingController> GetFlingingController(
       const MediaRoute::Id& route_id) = 0;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
   // Returns a pointer to a controller host that sends media commands related to
   // mirroring within a route.
   virtual MirroringMediaControllerHost* GetMirroringMediaControllerHost(
@@ -193,8 +194,7 @@ class MediaRouter : public KeyedService {
 
   // Returns the instance of the debugger for this MediaRouter instance.
   virtual MediaRouterDebugger& GetDebugger() = 0;
-
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 
  private:
   // TODO(crbug.com/40177419): remove message observer classes and API.

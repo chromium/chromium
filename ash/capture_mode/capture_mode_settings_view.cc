@@ -26,6 +26,7 @@
 #include "ash/style/system_shadow.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -226,7 +227,7 @@ CaptureModeSettingsView::CaptureModeSettingsView(
         contents()->AddChildView(std::make_unique<CaptureModeMenuGroup>(
             this, kCaptureModeFolderIcon,
             l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO),
-            /*enabled=*/custom_folder_managed_by_policy));
+            /*managed=*/custom_folder_managed_by_policy));
     save_to_menu_group_->AddOption(
         /*option_icon=*/nullptr,
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_SAVE_TO_DOWNLOADS),
@@ -239,11 +240,17 @@ CaptureModeSettingsView::CaptureModeSettingsView(
         /*enabled=*/!custom_folder_managed_by_policy);
   }
 
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetRoundedCornerRadius(kRoundedCorners);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  SetBackground(views::CreateSolidBackground(
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemOnBaseOpaque));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
   // The options should appear vertically stacked on top of each other.
   contents()->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -380,6 +387,10 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
   auto* camera_controller = controller->camera_controller();
   const auto effective_audio_mode =
       controller->GetEffectiveAudioRecordingMode();
+  const bool is_custom_folder =
+      !GetCurrentCaptureFolder().is_default_downloads_folder &&
+      (controller->IsCustomFolderManagedByPolicy() ||
+       is_custom_folder_available_.value_or(false));
   switch (option_id) {
     case kAudioOff:
       return effective_audio_mode == AudioRecordingMode::kOff;
@@ -390,11 +401,9 @@ bool CaptureModeSettingsView::IsOptionChecked(int option_id) const {
     case kAudioSystemAndMicrophone:
       return effective_audio_mode == AudioRecordingMode::kSystemAndMicrophone;
     case kDownloadsFolder:
-      return GetCurrentCaptureFolder().is_default_downloads_folder ||
-             !is_custom_folder_available_.value_or(false);
+      return !is_custom_folder;
     case kCustomFolder:
-      return !GetCurrentCaptureFolder().is_default_downloads_folder &&
-             is_custom_folder_available_.value_or(false);
+      return is_custom_folder;
     case kCameraOff:
       return !camera_controller->selected_camera().is_valid();
     default:
@@ -420,7 +429,8 @@ bool CaptureModeSettingsView::IsOptionEnabled(int option_id) const {
     case kAudioSystemAndMicrophone:
       return !audio_capture_managed_by_policy;
     case kCustomFolder:
-      return is_custom_folder_available_.value_or(false);
+      return is_custom_folder_available_.value_or(false) ||
+             controller->IsCustomFolderManagedByPolicy();
     case kCameraOff: {
       auto* camera_controller = controller->camera_controller();
       DCHECK(camera_controller);

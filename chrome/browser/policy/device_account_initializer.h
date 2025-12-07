@@ -84,8 +84,6 @@ class DeviceAccountInitializer : public CloudPolicyClient::Observer,
   void Stop();
 
   // CloudPolicyClient::Observer:
-  void OnPolicyFetched(CloudPolicyClient* client) override;
-  void OnRegistrationStateChanged(CloudPolicyClient* client) override;
   void OnClientError(CloudPolicyClient* client) override;
 
   // GaiaOAuthClient::Delegate:

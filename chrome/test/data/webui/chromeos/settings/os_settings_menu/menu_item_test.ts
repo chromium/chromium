@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/os_settings.js';
 
-import {OsSettingsMenuItemElement} from 'chrome://os-settings/os_settings.js';
+import type {OsSettingsMenuItemElement} from 'chrome://os-settings/os_settings.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';

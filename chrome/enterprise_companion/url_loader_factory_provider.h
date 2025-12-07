@@ -14,6 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
+#include "chrome/enterprise_companion/event_logger.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -36,13 +37,15 @@ class URLLoaderFactoryProvider {
 };
 
 // Creates a URLLoaderFactoryProvider which services network requests
-// in-process. If `pending_receiver` is valid, it is bound to the underlying
-// implementation, allowing an out-of-process caller to use it. If
-// `pending_receiver` is valid, `disconnect_handler` will be run if the
-// connection is dropped.
+// in-process. If `event_logger_cookie_handler` is valid, it will be owned and
+// started to manage the population and persistence of the event logging cookie.
+// If `pending_receiver` is valid, it is bound to the underlying implementation,
+// allowing an out-of-process caller to use it. If `pending_receiver` is valid,
+// `disconnect_handler` will be run if the connection is dropped.
 base::SequenceBound<URLLoaderFactoryProvider>
 CreateInProcessUrlLoaderFactoryProvider(
     scoped_refptr<base::SingleThreadTaskRunner> net_thread_runner,
+    base::SequenceBound<EventLoggerCookieHandler> event_logger_cookie_handler,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> pending_receiver =
         {},
     base::OnceClosure on_disconnect_callback = base::DoNothing());

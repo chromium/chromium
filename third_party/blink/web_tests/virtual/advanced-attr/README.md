@@ -1,1 +1,0 @@
-This directory is for testing CSSAdvancedAttrFunction (https://crbug.com/40320391).

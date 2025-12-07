@@ -8,6 +8,7 @@
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 
 namespace enterprise_connectors {
 
@@ -45,8 +46,8 @@ void PagePrintAnalysisRequest::GetRequestData(DataCallback callback) {
   std::move(callback).Run(
       // Only enforce a max size for cloud scans.
       data.size >= kMaxPageSize && cloud_or_local_settings().is_cloud_analysis()
-          ? safe_browsing::BinaryUploadService::Result::FILE_TOO_LARGE
-          : safe_browsing::BinaryUploadService::Result::SUCCESS,
+          ? ScanRequestUploadResult::kFileTooLarge
+          : ScanRequestUploadResult::kSuccess,
       std::move(data));
 }
 

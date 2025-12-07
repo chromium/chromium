@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-syntax = 'proto2';
+syntax = 'proto3';
 
 option optimize_for = LITE_RUNTIME;
 
@@ -17,7 +17,11 @@ enum LensOverlaySelectionType {
   INJECTED_IMAGE = 10;
   TAP_ON_REGION_GLEAM = 15;
   MULTIMODAL_SEARCH = 18;
+  SELECT_TRANSLATED_TEXT = 21;
   TAP_ON_OBJECT = 22;
   MULTIMODAL_SUGGEST_TYPEAHEAD = 25;
   MULTIMODAL_SUGGEST_ZERO_PREFIX = 26;
+  MULTIMODAL_SELECTION_CLEAR = 27;
+  TRANSLATE_CHIP = 52;
+  SYMBOLIC_MATH_OBJECT = 53;
 }

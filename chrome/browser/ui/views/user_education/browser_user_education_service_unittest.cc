@@ -9,13 +9,16 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
-#include "base/test/metrics/action_suffix_reader.h"
+#include "base/test/metrics/action_variants_reader.h"
 #include "base/test/metrics/histogram_variants_reader.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_configurations.h"
-#include "components/user_education/common/feature_promo_registry.h"
-#include "components/user_education/common/tutorial_registry.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/feature_promo/feature_promo_registry.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_metadata.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,13 +76,13 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoHistograms) {
 }
 
 TEST(BrowserUserEducationServiceTest, CheckFeaturePromoActions) {
-  std::vector<base::ActionSuffixEntryMap> iph_suffixes;
+  std::vector<base::test::ActionVariantsEntryMap> iph_variants;
   std::vector<std::string> missing_features;
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-    iph_suffixes =
-        base::ReadActionSuffixesForAction("UserEducation.MessageShown.IPH");
-    ASSERT_EQ(1U, iph_suffixes.size());
+    iph_variants = base::test::ReadActionVariantsForAction(
+        "UserEducation.MessageShown.IPH", "_");
+    ASSERT_EQ(1U, iph_variants.size());
   }
 
   user_education::FeaturePromoRegistry registry;
@@ -90,7 +93,7 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoActions) {
     if (feature_name.starts_with("IPH_")) {
       feature_name = feature_name.substr(4);
     }
-    if (!base::Contains(iph_suffixes[0], feature_name)) {
+    if (!base::Contains(iph_variants[0], feature_name)) {
       missing_features.emplace_back(feature->name);
     }
   }
@@ -98,7 +101,7 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoActions) {
       << "IPH Features:\n"
       << base::JoinString(missing_features, ", ")
       << "\nconfigured in browser_user_education_service.cc but no "
-         "corresponding action suffixes were added in "
+         "corresponding action variants were added in "
          "//tools/metrics/actions/actions.xml";
 }
 
@@ -169,7 +172,7 @@ TEST(BrowserUserEducationServiceTest, CheckTutorialHistograms) {
 }
 
 TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
-  static const char* const kAllowedConfigurations[] = {
+  const base::Feature* const kAllowedConfigurations[] = {
       // To be triaged:
       //
       // (These are listed because they were present prior to this test being
@@ -177,46 +180,38 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
       // the rest moved down to the "explicitly allowed" list below.)
       //
       // DO NOT ADD ENTRIES TO THIS LIST, EVER.
-      "IPH_BatterySaverMode",
-      "IPH_CompanionSidePanel",
-      "IPH_ComposeMSBBSettingsFeature",
-      "IPH_DesktopSharedHighlighting",
-      "IPH_DesktopCustomizeChrome",
-      "IPH_DesktopCustomizeChromeRefresh",
-      "IPH_DesktopNewTabPageModulesCustomize",
-      "IPH_DiscardRing",
-      "IPH_DownloadEsbPromo",
-      "IPH_ExperimentalAIPromo",
-      "IPH_ExtensionsMenu",
-      "IPH_ExtensionsRequestAccessButton",
-      "IPH_GMCCastStartStop",
-      "IPH_GMCLocalMediaCasting",
-      "IPH_HighEfficiencyMode",
-      "IPH_PasswordsManagementBubbleAfterSave",
-      "IPH_PasswordsManagementBubbleDuringSignin",
-      "IPH_PasswordsWebAppProfileSwitch",
-      "IPH_PasswordManagerShortcut",
-      "IPH_PasswordSharingFeature",
-      "IPH_PowerBookmarksSidePanel",
-      "IPH_ReadingListInSidePanel",
-      "IPH_ReadingModeSidePanel",
-      "IPH_SidePanelGenericMenuFeature",
-      "IPH_SidePanelGenericPinnableFeature",
-      "IPH_SignoutWebIntercept",
-      "IPH_TabOrganizationSuccess",
-      "IPH_TrackingProtectionOnboarding",
-      "IPH_TrackingProtectionReminder",
-      "IPH_ProfileSwitch",
-      "IPH_PriceTrackingInSidePanel",
-      "IPH_BackNavigationMenu",
-      "IPH_AutofillCreditCardBenefit",
-      "IPH_AutofillExternalAccountProfileSuggestion",
-      "IPH_AutofillManualFallback",
-      "IPH_AutofillVirtualCardCVCSuggestion",
-      "IPH_AutofillVirtualCardSuggestion",
-      "IPH_CookieControls",
-      "IPH_DesktopPWAsLinkCapturingLaunch",
-
+      &feature_engagement::kIPHBatterySaverModeFeature,
+      &feature_engagement::kIPHCompanionSidePanelFeature,
+      &feature_engagement::kIPHComposeMSBBSettingsFeature,
+      &feature_engagement::kIPHDesktopSharedHighlightingFeature,
+      &feature_engagement::kIPHDiscardRingFeature,
+      &feature_engagement::kIPHDownloadEsbPromoFeature,
+      &feature_engagement::kIPHExtensionsMenuFeature,
+      &feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
+      &feature_engagement::kIPHGMCCastStartStopFeature,
+      &feature_engagement::kIPHGMCLocalMediaCastingFeature,
+      &feature_engagement::kIPHMemorySaverModeFeature,
+      &feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature,
+      &feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature,
+      &feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
+      &feature_engagement::kIPHPasswordManagerShortcutFeature,
+      &feature_engagement::kIPHPasswordSharingFeature,
+      &feature_engagement::kIPHPowerBookmarksSidePanelFeature,
+      &feature_engagement::kIPHReadingListInSidePanelFeature,
+      &feature_engagement::kIPHReadingModeSidePanelFeature,
+      &feature_engagement::kIPHSidePanelGenericPinnableFeature,
+      &feature_engagement::kIPHTabOrganizationSuccessFeature,
+      &feature_engagement::kIPHProfileSwitchFeature,
+      &feature_engagement::kIPHPriceTrackingInSidePanelFeature,
+      &feature_engagement::kIPHBackNavigationMenuFeature,
+      &feature_engagement::kIPHAutofillCreditCardBenefitFeature,
+      &feature_engagement::kIPHAutofillExternalAccountProfileSuggestionFeature,
+      &feature_engagement::kIPHAutofillVirtualCardCVCSuggestionFeature,
+      &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature,
+      &feature_engagement::kIPHCookieControlsFeature,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      &feature_engagement::kIPHDesktopPWAsLinkCapturingLaunch
+#endif
       // Explicitly allowed:
       //
       // (These have been cleared by Frizzle Team as requiring their own
@@ -233,7 +228,7 @@ TEST(BrowserUserEducationServiceTest, PreventNewHardCodedConfigurations) {
   const auto& iph_specifications = registry.feature_data();
   for (const auto& [feature, spec] : iph_specifications) {
     const auto config = feature_engagement::GetClientSideFeatureConfig(feature);
-    if (config && !Contains(kAllowedConfigurations, feature->name)) {
+    if (config && !Contains(kAllowedConfigurations, feature)) {
       invalid_configs.emplace_back(feature->name);
     }
   }
@@ -253,29 +248,24 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoMetadata) {
   // associated with them. All new promos should have metadata.
   //
   // DO NOT ADD ENTRIES TO THIS LIST, EVER.
-  static const char* const kExistingPromosWithoutMetadata[] = {
-      "IPH_ComposeMSBBSettingsFeature",
-      "IPH_DesktopSharedHighlighting",
-      "IPH_DesktopCustomizeChrome",
-      "IPH_ExperimentalAIPromo",
-      "IPH_ExplicitBrowserSigninPreferenceRemembered",
-      "IPH_GMCCastStartStop",
-      "IPH_GMCLocalMediaCasting",
-      "IPH_LiveCaption",
-      "IPH_TabAudioMuting",
-      "IPH_PasswordsAccountStorage",
-      "IPH_PasswordsManagementBubbleDuringSignin",
-      "IPH_PasswordsWebAppProfileSwitch",
-      "IPH_PasswordManagerShortcut",
-      "IPH_PasswordSharingFeature",
-      "IPH_ReadingListDiscovery",
-      "IPH_ReadingListEntryPoint",
-      "IPH_ReadingListInSidePanel",
-      "IPH_SignoutWebIntercept",
-      "IPH_ProfileSwitch",
-      "IPH_BackNavigationMenu",
-      "IPH_CookieControls",
-  };
+  const base::Feature* const kExistingPromosWithoutMetadata[] = {
+      &feature_engagement::kIPHComposeMSBBSettingsFeature,
+      &feature_engagement::kIPHDesktopSharedHighlightingFeature,
+      &feature_engagement::kIPHExplicitBrowserSigninPreferenceRememberedFeature,
+      &feature_engagement::kIPHGMCCastStartStopFeature,
+      &feature_engagement::kIPHGMCLocalMediaCastingFeature,
+      &feature_engagement::kIPHLiveCaptionFeature,
+      &feature_engagement::kIPHTabAudioMutingFeature,
+      &feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature,
+      &feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
+      &feature_engagement::kIPHPasswordManagerShortcutFeature,
+      &feature_engagement::kIPHPasswordSharingFeature,
+      &feature_engagement::kIPHReadingListDiscoveryFeature,
+      &feature_engagement::kIPHReadingListEntryPointFeature,
+      &feature_engagement::kIPHReadingListInSidePanelFeature,
+      &feature_engagement::kIPHProfileSwitchFeature,
+      &feature_engagement::kIPHBackNavigationMenuFeature,
+      &feature_engagement::kIPHCookieControlsFeature};
 
   user_education::FeaturePromoRegistry registry;
   MaybeRegisterChromeFeaturePromos(registry);
@@ -284,8 +274,7 @@ TEST(BrowserUserEducationServiceTest, CheckFeaturePromoMetadata) {
   bool failed = false;
   for (const auto& [feature, spec] : iph_specifications) {
     const auto errors = CheckMetadata(spec.metadata());
-    if (!errors.empty() &&
-        !Contains(kExistingPromosWithoutMetadata, feature->name)) {
+    if (!errors.empty() && !Contains(kExistingPromosWithoutMetadata, feature)) {
       failed = true;
       oss << "\n"
           << feature->name

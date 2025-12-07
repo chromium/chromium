@@ -11,12 +11,15 @@
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
-#include "ui/views/controls/image_view.h"
 
 namespace content {
 class WebContents;
 }
+
+namespace views {
+class Throbber;
+class View;
+}  // namespace views
 
 namespace autofill {
 

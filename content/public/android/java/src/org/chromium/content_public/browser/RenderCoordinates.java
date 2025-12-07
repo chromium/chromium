@@ -4,9 +4,11 @@
 
 package org.chromium.content_public.browser;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 
 /** Provides dimension/coordinate information of the view rendered by content layer. */
+@NullMarked
 public interface RenderCoordinates {
     /**
      * @return {@link Coord} instance associated with the given {@link WebContents}.
@@ -74,4 +76,9 @@ public interface RenderCoordinates {
      * @return Minimum page scale factor.
      */
     float getMinPageScaleFactor();
+
+    /**
+     * @return Local CSS converted to physical coordinates.
+     */
+    float fromLocalCssToPix(float css);
 }

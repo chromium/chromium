@@ -30,9 +30,8 @@
 <translation id="2134029355740465625">تنظیمات فیلم</translation>
 <translation id="2144806332417375165">پارامترهای ویدیو  سفارشی</translation>
 <translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
-<translation id="2244252133441425811">‏فعال کردن انتخابگر FPS ویدیو</translation>
+<translation id="2244252133441425811">‏فعال کردن انتخاب‌گر FPS ویدیو</translation>
 <translation id="2271433936731426666">فعال کردن عکس آنی از ویدیو با اندازه کامل</translation>
-<translation id="2281736597583450397">با بزرگ‌نمایی بهبودیافته، جزئیات واضح‌تری دریافت کنید</translation>
 <translation id="2320741269052147773">حرکت دادن به چپ</translation>
 <translation id="2360840973209616515">برنامه دوربین را سرپرستتان مدیریت می‌کند.
         برای جزئیات، با سرپرست تماس بگیرید.</translation>
@@ -73,12 +72,12 @@
 <translation id="4118525110028899586">توقف موقت ضبط</translation>
 <translation id="4121305183798804752">سند شناسایی شد</translation>
 <translation id="414641094616694804">نمی‌توان وضوح این دوربین را تغییر داد</translation>
-<translation id="428234092390943511">تصویر کوچک صفحه</translation>
+<translation id="428234092390943511">ریزعکس صفحه</translation>
 <translation id="4383571725254449280">چاپ گزارش‌های عملکرد</translation>
 <translation id="4445542136948522167">توقف عکس‌برداری</translation>
 <translation id="4570032796877367747">دوربین جلو</translation>
 <translation id="4598556348158889687">مدیریت فضای ذخیره‌سازی</translation>
-<translation id="4620818268515773682">وضعیت بی‌صدا بودن میکروفون را تغییر دهید. میکروفون صدادار است</translation>
+<translation id="4620818268515773682">وضعیت صامت بودن میکروفون را تغییر دهید. میکروفون صدادار است</translation>
 <translation id="4628948037717959914">عکس</translation>
 <translation id="4649291346448517080">فایل ذخیره نشد</translation>
 <translation id="4695379108709712600">درحال انتقال به‌سمت بالا</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">دورنمایی کردن</translation>
 <translation id="5976160379964388480">موارد دیگر</translation>
 <translation id="6073451960410192870">توقف ضبط</translation>
-<translation id="6165508094623778733">بیشتر بدانید</translation>
 <translation id="6197807149213783179">ذخیره فراداده</translation>
 <translation id="6233780560267770709">۳ در ۳</translation>
 <translation id="6243827288366940320">نسبت طلایی</translation>
@@ -122,7 +120,6 @@
 اگر بازخوردتان درباره کیفیت تصویر یا ویدیو است، لطفاً نمونه‌ای از عکس یا ویدیو را ضمیمه کنید و مشکل را توضیح دهید. (برای مثال، عکس خیلی تیره است یا روی سوژه موردنظر فوکوس نشده است.)</translation>
 <translation id="6519884562954018934">پیوستن به <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">اشتراک‌گذاری</translation>
-<translation id="6586509689874700895">ابتدا، <ph name="BUTTON_NAME" /> را برای زوم‌پیش کردن فشار دهید. سپس، بعداز گرفتن عکس، جزئیات بهبودیافته را مشاهده خواهید کرد.</translation>
 <translation id="659539649712855529"><ph name="CONTENT" /> کپی شد</translation>
 <translation id="6617916774429601017">نمایش همه وضوح‌ها</translation>
 <translation id="6631515515009660915">قرینه‌سازی خاموش</translation>
@@ -159,7 +156,7 @@
 <translation id="7983668134180549431">نوشتار شناسایی شد.</translation>
 <translation id="8079255378695216066">نمی‌توان ضبط را شروع کرد</translation>
 <translation id="8120146556401698679">حرکت دادن، کج کردن، بزرگ‌نمایی</translation>
-<translation id="8131740175452115882">تأیید</translation>
+<translation id="8131740175452115882">تأیید کردن</translation>
 <translation id="8145038249676204903">رفتن به حالت عکس‌برداری</translation>
 <translation id="8167081290930651932">ذخیره به‌عنوان عکس</translation>
 <translation id="8239780215768881278">گرفتن عکس آنی ویدیو</translation>
@@ -167,8 +164,7 @@
 <translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8609951387004618906">باز کردن <ph name="URL" /></translation>
 <translation id="8629662593426079630">۳۶۰ پیکسل</translation>
-<translation id="8711011893539266636">وضعیت بی‌صدا بودن میکروفون را تغییر دهید. میکروفون بی‌صدا است</translation>
-<translation id="8712637175834984815">متوجه شدم</translation>
+<translation id="8711011893539266636">وضعیت صامت بودن میکروفون را تغییر دهید. میکروفون صامت است</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8732462232047530626">پیش‌نمایش فراداده</translation>
 <translation id="874854738381978209">‏شبکه Wi-Fi شناسایی شد.</translation>

@@ -250,6 +250,9 @@ goog.fx.Dragger.cloneNode = function(sourceEl) {
               goog.dom.TagName.TBODY, null,
               goog.dom.createDom(goog.dom.TagName.TR, null, clonedEl)));
     case String(goog.dom.TagName.TEXTAREA):
+      /**
+       * @suppress {strictMissingProperties} Added to tighten compiler checks
+       */
       clonedEl.value = sourceEl.value;
     default:
       return clonedEl;

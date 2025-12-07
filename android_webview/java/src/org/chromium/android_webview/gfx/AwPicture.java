@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.CleanupReference;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.OutputStream;
 
@@ -19,13 +20,14 @@ import java.io.OutputStream;
  * chromium skia library.
  */
 @JNINamespace("android_webview")
+@NullMarked
 public class AwPicture extends Picture {
-    private long mNativeAwPicture;
+    private final long mNativeAwPicture;
 
     // There is no explicit destroy method on Picture base-class, so cleanup is always
     // handled via the CleanupReference.
     private static final class DestroyRunnable implements Runnable {
-        private long mNativeAwPicture;
+        private final long mNativeAwPicture;
 
         private DestroyRunnable(long nativeAwPicture) {
             mNativeAwPicture = nativeAwPicture;
@@ -37,21 +39,19 @@ public class AwPicture extends Picture {
         }
     }
 
-    private CleanupReference mCleanupReference;
-
     /**
-     * @param nativeAwPicture is an instance of the AwPicture native class. Ownership is
-     *                        taken by this java instance.
+     * @param nativeAwPicture is an instance of the AwPicture native class. Ownership is taken by
+     *     this java instance.
      */
     public AwPicture(long nativeAwPicture) {
         mNativeAwPicture = nativeAwPicture;
-        mCleanupReference = new CleanupReference(this, new DestroyRunnable(nativeAwPicture));
+        // Constructor has side-effects, so no need to store this in a field.
+        new CleanupReference(this, new DestroyRunnable(nativeAwPicture));
     }
 
     @Override
     public Canvas beginRecording(int width, int height) {
-        unsupportedOperation();
-        return null;
+        throw new IllegalStateException("Unsupported in AwPicture");
     }
 
     @Override
@@ -61,25 +61,21 @@ public class AwPicture extends Picture {
 
     @Override
     public int getWidth() {
-        return AwPictureJni.get().getWidth(mNativeAwPicture, AwPicture.this);
+        return AwPictureJni.get().getWidth(mNativeAwPicture);
     }
 
     @Override
     public int getHeight() {
-        return AwPictureJni.get().getHeight(mNativeAwPicture, AwPicture.this);
+        return AwPictureJni.get().getHeight(mNativeAwPicture);
     }
 
     @Override
     public void draw(Canvas canvas) {
-        AwPictureJni.get().draw(mNativeAwPicture, AwPicture.this, canvas);
+        AwPictureJni.get().draw(mNativeAwPicture, canvas);
     }
 
     @SuppressWarnings("deprecation")
     public void writeToStream(OutputStream stream) {
-        unsupportedOperation();
-    }
-
-    private void unsupportedOperation() {
         throw new IllegalStateException("Unsupported in AwPicture");
     }
 
@@ -87,10 +83,10 @@ public class AwPicture extends Picture {
     interface Natives {
         void destroy(long nativeAwPicture);
 
-        int getWidth(long nativeAwPicture, AwPicture caller);
+        int getWidth(long nativeAwPicture);
 
-        int getHeight(long nativeAwPicture, AwPicture caller);
+        int getHeight(long nativeAwPicture);
 
-        void draw(long nativeAwPicture, AwPicture caller, Canvas canvas);
+        void draw(long nativeAwPicture, Canvas canvas);
     }
 }

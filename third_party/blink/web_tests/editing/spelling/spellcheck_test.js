@@ -183,10 +183,14 @@ class MarkerSerializer {
     assert_equals(innerEditor.tagName, 'DIV',
                   'Internal error: inner editor DIV not found.');
     innerEditor.childNodes.forEach(child => {
-      assert_true(isCharacterData(child),
-                  'Internal error: inner editor having child node that is ' +
-                  'not CharacterData.');
-      this.handleCharacterData(child);
+      if (isCharacterData(child))
+        this.handleCharacterData(child);
+      else {
+        assert_true(child.nodeName == 'BR',
+                    'Internal error: inner editor having child node that is ' +
+                    'neither CharacterData nor <br>.');
+        this.emit('\n');
+      }
     });
   }
 

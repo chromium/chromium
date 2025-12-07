@@ -9,7 +9,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/not_fatal_until.h"
 #include "components/performance_manager/public/execution_context/execution_context.h"
 
 // This voter allows expressing "priority boosts" which are used to resolve
@@ -503,7 +502,7 @@ BoostingVoteAggregator::FindOrCreateNodeData(const ExecutionContext* node) {
 BoostingVoteAggregator::NodeDataMap::iterator
 BoostingVoteAggregator::FindNodeData(const ExecutionContext* node) {
   auto it = nodes_.find(node);
-  CHECK(it != nodes_.end(), base::NotFatalUntil::M130);
+  CHECK(it != nodes_.end());
   return it;
 }
 
@@ -531,7 +530,7 @@ const char* BoostingVoteAggregator::GetVoteReason(
   // Otherwise, this node has inherited its priority. Find the active incoming
   // edge and use the active reason for that edge.
   auto edge_it = GetActiveInboundEdge(layer_bit, node);
-  CHECK(edge_it != reverse_edges_.end(), base::NotFatalUntil::M130);
+  CHECK(edge_it != reverse_edges_.end());
   DCHECK(edge_it->second->GetReasonCount());
   return edge_it->second->GetActiveReason();
 }

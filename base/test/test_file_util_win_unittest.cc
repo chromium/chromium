@@ -36,8 +36,9 @@ class ScopedFileForTest {
   bool IsValid() const { return valid_; }
 
   ~ScopedFileForTest() {
-    if (valid_)
+    if (valid_) {
       ::DeleteFile(long_path_.c_str());
+    }
   }
 
  private:

@@ -4,9 +4,10 @@
 
 package org.chromium.components.browser_ui.http_auth;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.text.AlertDialogEditText;
 import org.chromium.url.GURL;
 
@@ -23,6 +26,7 @@ import org.chromium.url.GURL;
  *
  * This borrows liberally from android.browser.HttpAuthenticationDialog.
  */
+@NullMarked
 public class LoginPrompt {
     private final Context mContext;
     private final String mMessageBody;
@@ -33,12 +37,12 @@ public class LoginPrompt {
     private AlertDialogEditText mPasswordView;
 
     /** This is a public interface that provides the result of the prompt. */
-    public static interface Observer {
+    public interface Observer {
         /** Cancel the authorization request. */
-        public void cancel();
+        void cancel();
 
         /** Proceed with the authorization with the given credentials. */
-        public void proceed(String username, String password);
+        void proceed(String username, String password);
     }
 
     /**
@@ -50,18 +54,19 @@ public class LoginPrompt {
      *     given url being set as the web domain for the View control.
      * @param observer An interface to receive the result of the prompt.
      */
-    public LoginPrompt(Context context, String messageBody, GURL autofillUrl, Observer observer) {
+    public LoginPrompt(
+            Context context, String messageBody, @Nullable GURL autofillUrl, Observer observer) {
         mContext = context;
         mMessageBody = messageBody;
         mObserver = observer;
         createDialog(autofillUrl);
     }
 
-    private void createDialog(GURL autofillUrl) {
+    private void createDialog(@Nullable GURL autofillUrl) {
         View v = LayoutInflater.from(mContext).inflate(R.layout.http_auth_dialog, null);
-        mUsernameView = (AlertDialogEditText) v.findViewById(R.id.username);
-        mPasswordView = (AlertDialogEditText) v.findViewById(R.id.password);
-        if (autofillUrl != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        mUsernameView = v.findViewById(R.id.username);
+        mPasswordView = v.findViewById(R.id.password);
+        if (autofillUrl != null) {
             // By default Android Autofill support is turned off for these controls because Chrome
             // uses its own autofill provider (Chrome Sync). If an app is using Android Autofill
             // then we need to enable Android Autofill for the controls.
@@ -79,7 +84,7 @@ public class LoginPrompt {
                     return false;
                 });
 
-        TextView explanationView = (TextView) v.findViewById(R.id.explanation);
+        TextView explanationView = v.findViewById(R.id.explanation);
         explanationView.setText(mMessageBody);
 
         mDialog =
@@ -100,7 +105,8 @@ public class LoginPrompt {
         mDialog.getDelegate().setHandleNativeActionModesEnabled(false);
 
         // Make the IME appear when the dialog is displayed if applicable.
-        mDialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        assumeNonNull(mDialog.getWindow())
+                .setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
     }
 
     /** Shows the dialog. */
@@ -120,16 +126,20 @@ public class LoginPrompt {
     }
 
     private String getUsername() {
-        return mUsernameView.getText().toString();
+        return assumeNonNull(mUsernameView.getText()).toString();
     }
 
     private String getPassword() {
-        return mPasswordView.getText().toString();
+        return assumeNonNull(mPasswordView.getText()).toString();
     }
 
     public void onAutofillDataAvailable(String username, String password) {
         mUsernameView.setText(username);
         mPasswordView.setText(password);
         mUsernameView.selectAll();
+    }
+
+    public AlertDialog getDialogForTesting() {
+        return mDialog;
     }
 }

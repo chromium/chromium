@@ -4,29 +4,25 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 
+#include <variant>
+
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/test/test_file_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/touchscreen_device.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_util.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace web_app {
 
@@ -64,15 +60,15 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
 
   std::optional<ExternalInstallOptions> ParseConfig(
       const char* app_config_string) {
-    std::optional<base::Value> app_config =
-        base::JSONReader::Read(app_config_string);
+    std::optional<base::Value> app_config = base::JSONReader::Read(
+        app_config_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(app_config);
     auto file_utils = base::MakeRefCounted<FileUtilsWrapper>();
     OptionsOrError result =
         ::web_app::ParseConfig(*file_utils, /*dir=*/base::FilePath(),
                                /*file=*/base::FilePath(), app_config.value());
     if (ExternalInstallOptions* options =
-            absl::get_if<ExternalInstallOptions>(&result)) {
+            std::get_if<ExternalInstallOptions>(&result)) {
       return std::move(*options);
     }
     return std::nullopt;
@@ -80,15 +76,15 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
 
   std::optional<WebAppInstallInfoFactory> ParseOfflineManifest(
       const char* offline_manifest_string) {
-    std::optional<base::Value> offline_manifest =
-        base::JSONReader::Read(offline_manifest_string);
+    std::optional<base::Value> offline_manifest = base::JSONReader::Read(
+        offline_manifest_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(offline_manifest);
     WebAppInstallInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
         *file_utils_, base::FilePath(FILE_PATH_LITERAL("test_dir")),
         base::FilePath(FILE_PATH_LITERAL("test_dir/test.json")),
         *offline_manifest);
     if (WebAppInstallInfoFactory* factory =
-            absl::get_if<WebAppInstallInfoFactory>(&result)) {
+            std::get_if<WebAppInstallInfoFactory>(&result)) {
       return std::move(*factory);
     }
     return std::nullopt;
@@ -120,7 +116,7 @@ class PreinstalledWebAppUtilsTabletTest
  public:
   PreinstalledWebAppUtilsTabletTest() {
     if (GetParam()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           ash::switches::kEnableTabletFormFactor);
 #else
@@ -129,7 +125,7 @@ class PreinstalledWebAppUtilsTabletTest
       init_params->device_properties->is_tablet_form_factor = true;
       chromeos::BrowserInitParams::SetInitParamsForTests(
           std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
   ~PreinstalledWebAppUtilsTabletTest() override = default;
@@ -170,7 +166,7 @@ class PreinstalledWebAppUtilsArcTest
  public:
   PreinstalledWebAppUtilsArcTest() {
     if (GetParam()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
           ash::switches::kArcAvailability, "officially-supported");
 #else
@@ -179,7 +175,7 @@ class PreinstalledWebAppUtilsArcTest
       init_params->device_properties->is_arc_available = true;
       chromeos::BrowserInitParams::SetInitParamsForTests(
           std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
   ~PreinstalledWebAppUtilsArcTest() override = default;

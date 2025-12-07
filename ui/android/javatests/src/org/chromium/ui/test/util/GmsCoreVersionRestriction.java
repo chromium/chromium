@@ -4,7 +4,7 @@
 
 package org.chromium.ui.test.util;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.RestrictionSkipCheck;
@@ -59,7 +59,9 @@ public final class GmsCoreVersionRestriction {
         if (sGmsVersion == null) {
             String gmsVersionStr =
                     ThreadUtils.runOnUiThreadBlocking(
-                            () -> BuildInfo.getInstance().getGmsVersionCode());
+                            () -> {
+                                return DeviceInfo.getGmsVersionCode();
+                            });
             sGmsVersion = tryParseInt(gmsVersionStr, 0);
         }
         return sGmsVersion;

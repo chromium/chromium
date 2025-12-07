@@ -9,34 +9,11 @@
 #include <string>
 
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-
-namespace chromeos {
-class CupsPrinterStatus;
-class Printer;
-}  // namespace chromeos
+#include "chromeos/printing/printer_configuration.h"
 
 namespace printing {
 
-class PrintedDocument;
-class PrintJob;
 struct PrinterSemanticCapsAndDefaults;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Notify Ash Chrome of a new print job.
-// If `local_printer` is null, this method fails.
-void NotifyAshJobCreated(int job_id,
-                         const PrintedDocument& document,
-                         const crosapi::mojom::PrintJob::Source& source,
-                         const std::string& source_id,
-                         crosapi::mojom::LocalPrinter* local_printer);
-
-// Same as above but gets the LocalPrinter from LacrosService.
-void NotifyAshJobCreated(const PrintJob& job,
-                         int job_id,
-                         const PrintedDocument& document);
-
-#endif
 
 // Returns the platform-specific handle for the LocalPrinter interface.
 crosapi::mojom::LocalPrinter* GetLocalPrinterInterface();
@@ -56,6 +33,11 @@ crosapi::mojom::CapabilitiesResponsePtr PrinterWithCapabilitiesToMojom(
 // CupsPrinterStatus object.
 crosapi::mojom::PrinterStatusPtr StatusToMojom(
     const chromeos::CupsPrinterStatus& status);
+
+// The mojom ManagedPrintOptions object contains print job options for a
+// particular managed printer.
+crosapi::mojom::ManagedPrintOptionsPtr ManagedPrintOptionsToMojom(
+    const chromeos::Printer::ManagedPrintOptions& print_job_options);
 
 }  // namespace printing
 

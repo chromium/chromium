@@ -4,23 +4,25 @@
 
 #include "components/password_manager/core/browser/leak_detection/leak_detection_request_utils.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/containers/span.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "components/password_manager/core/browser/leak_detection/single_lookup_response.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
+#include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "crypto/sha2.h"
 #include "google_apis/gaia/core_account_id.h"
-#include "google_apis/gaia/gaia_constants.h"
 
 namespace password_manager {
 namespace {
@@ -48,8 +50,7 @@ LookupSingleLeakPayload ProduceHashes(std::string_view username,
   LookupSingleLeakPayload payload;
   payload.username_hash_prefix = BucketizeUsername(canonicalized_username);
   payload.encrypted_payload =
-      ScryptHashUsernameAndPassword(canonicalized_username, password)
-          .value_or("");
+      ScryptHashUsernameAndPassword(canonicalized_username, password);
   if (payload.encrypted_payload.empty()) {
     return LookupSingleLeakPayload();
   }
@@ -104,15 +105,15 @@ AnalyzeResponseResult CheckIfCredentialWasLeaked(
       CipherDecrypt(response->reencrypted_lookup_hash, encryption_key);
   if (!decrypted_username_password) {
     DLOG(ERROR) << "Can't decrypt data="
-                << base::HexEncode(base::as_bytes(
-                       base::make_span(response->reencrypted_lookup_hash)));
+                << base::HexEncode(
+                       base::as_byte_span(response->reencrypted_lookup_hash));
     return AnalyzeResponseResult::kDecryptionError;
   }
 
   std::string hash_username_password =
       crypto::SHA256HashString(*decrypted_username_password);
 
-  const ptrdiff_t matched_prefixes = base::ranges::count_if(
+  const ptrdiff_t matched_prefixes = std::ranges::count_if(
       response->encrypted_leak_match_prefixes,
       [&hash_username_password](const std::string& prefix) {
         return base::StartsWith(hash_username_password, prefix,
@@ -179,9 +180,8 @@ std::unique_ptr<signin::AccessTokenFetcher> RequestAccessToken(
     signin::AccessTokenFetcher::TokenCallback callback) {
   return identity_manager->CreateAccessTokenFetcherForAccount(
       GetAccountForRequest(identity_manager),
-      /*oauth_consumer_name=*/"leak_detection_service",
-      {GaiaConstants::kPasswordsLeakCheckOAuth2Scope}, std::move(callback),
-      signin::AccessTokenFetcher::Mode::kImmediate);
+      signin::OAuthConsumerId::kPasswordManagerLeakDetection,
+      std::move(callback), signin::AccessTokenFetcher::Mode::kImmediate);
 }
 
 TriggerBackendNotification ShouldTriggerBackendNotificationForInitiator(
@@ -193,6 +193,7 @@ TriggerBackendNotification ShouldTriggerBackendNotificationForInitiator(
     case LeakDetectionInitiator::kSignInCheck:
     case LeakDetectionInitiator::kBulkSyncedPasswordsCheck:
     case LeakDetectionInitiator::kEditCheck:
+    case LeakDetectionInitiator::kIOSWebViewSignInCheck:
     case LeakDetectionInitiator::kIGABulkSyncedPasswordsCheck:
     case LeakDetectionInitiator::kClientUseCaseUnspecified:
       return TriggerBackendNotification(false);

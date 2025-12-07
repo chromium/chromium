@@ -51,10 +51,6 @@ class StyleSelfAlignmentData {
            overflow_ == o.overflow_;
   }
 
-  bool operator!=(const StyleSelfAlignmentData& o) const {
-    return !(*this == o);
-  }
-
  private:
   unsigned position_ : 4;       // ItemPosition
   unsigned position_type_ : 1;  // Whether or not alignment uses the 'legacy'

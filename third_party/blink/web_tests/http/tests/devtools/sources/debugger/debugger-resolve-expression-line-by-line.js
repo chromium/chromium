@@ -9,6 +9,7 @@ import * as SourceMapScopesModule from 'devtools/models/source_map_scopes/source
 import * as SourcesModule from 'devtools/panels/sources/sources.js';
 import * as UIModule from 'devtools/ui/legacy/legacy.js';
 import * as SDK from 'devtools/core/sdk/sdk.js';
+import * as Formatter from 'devtools/models/formatter/formatter.js';
 
 (async function() {
   TestRunner.addResult(`Tests evaluation in webpack bundled scripts with 'line-by'line' source maps.\n`);
@@ -22,12 +23,15 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
 
   await TestRunner.addSnifferPromise(SourcesModule.CallStackSidebarPane.CallStackSidebarPane.prototype, 'updatedForTest');
   SourcesTestRunner.waitForScriptSource('resolve-expressions-webpack-authored.js', async (uiSourceCode) => {
-    // "this.#prop" maps to the whole assignment so we should not resolve to anything in the source map.
-    let resolvedExpression = await SourceMapScopesModule.NamesResolver.resolveExpression(UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame), 'this.#prop', uiSourceCode, 5, 17, 27);
+    const callFrame = UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame);
+    const mappings = await SourceMapScopesModule.NamesResolver.allVariablesInCallFrame(callFrame);
+
+    // "this.#prop" maps to the whole assignment, but we should be able to handle that..
+    let resolvedExpression = await Formatter.FormatterWorkerPool.FormatterWorkerPool.instance().javaScriptSubstitute('this.#prop', mappings);
     TestRunner.addResult(`Resolved expression "this.#prop" to "${resolvedExpression}"`);
 
     // "a" should work as the "a++" is the only statement on the line.
-    resolvedExpression = await SourceMapScopesModule.NamesResolver.resolveExpression(UIModule.Context.Context.instance().flavor(SDK.DebuggerModel.CallFrame), 'a', uiSourceCode, 6, 4, 5);
+    resolvedExpression = await Formatter.FormatterWorkerPool.FormatterWorkerPool.instance().javaScriptSubstitute('a', mappings);
     TestRunner.addResult(`Resolved expression "a" to "${resolvedExpression}"`);
 
     SourcesTestRunner.completeDebuggerTest();

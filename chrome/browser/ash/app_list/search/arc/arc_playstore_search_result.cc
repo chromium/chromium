@@ -6,9 +6,6 @@
 
 #include <utility>
 
-#include "ash/components/arc/mojom/app.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +14,9 @@
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/crx_file/id_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/canvas.h"

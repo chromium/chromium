@@ -6,10 +6,14 @@ package org.chromium.components.background_task_scheduler;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /**
  * Helper class to allow external code (typically Chrome-specific BackgroundTaskScheduler code) to
  * report UMA.
  */
+@NullMarked
 public abstract class BackgroundTaskSchedulerExternalUma {
     // BackgroundTaskId defined in tools/metrics/histograms/enums.xml
     public static final int BACKGROUND_TASK_NOT_FOUND = -1;
@@ -44,8 +48,10 @@ public abstract class BackgroundTaskSchedulerExternalUma {
     public static final int BACKGROUND_TASK_DOWNLOAD_AUTO_RESUMPTION_ANY_NETWORK = 30;
     public static final int BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE = 31;
     public static final int BACKGROUND_SAFETY_HUB = 32;
+    public static final int BACKGROUND_AUXILIARY_SEARCH_DONATE = 33;
+    public static final int BACKGROUND_CHROME_SIGNALS_REPORTING = 34;
     // Keep this one at the end and increment appropriately when adding new tasks.
-    public static final int BACKGROUND_TASK_COUNT = 33;
+    public static final int BACKGROUND_TASK_COUNT = 35;
 
     protected BackgroundTaskSchedulerExternalUma() {}
 
@@ -131,6 +137,10 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return BACKGROUND_TASK_NOTIFICATION_PRE_UNSUBSCRIBE;
             case TaskIds.SAFETY_HUB_JOB_ID:
                 return BACKGROUND_SAFETY_HUB;
+            case TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID:
+                return BACKGROUND_AUXILIARY_SEARCH_DONATE;
+            case TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID:
+                return BACKGROUND_CHROME_SIGNALS_REPORTING;
         }
         // Returning a value that is not expected to ever be reported.
         return BACKGROUND_TASK_NOT_FOUND;
@@ -142,7 +152,7 @@ public abstract class BackgroundTaskSchedulerExternalUma {
      * @return The histogram pattern to be used for the given {@code taskId}.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
-    public String getHistogramPatternForTaskId(int taskId) {
+    public @Nullable String getHistogramPatternForTaskId(int taskId) {
         switch (taskId) {
             case TaskIds.TEST:
                 return "Test";
@@ -198,6 +208,10 @@ public abstract class BackgroundTaskSchedulerExternalUma {
                 return "NotificationServicePreUnsubscribe";
             case TaskIds.SAFETY_HUB_JOB_ID:
                 return "SafetyHub";
+            case TaskIds.AUXILIARY_SEARCH_DONATE_JOB_ID:
+                return "AuxiliarySearchDonate";
+            case TaskIds.CHROME_SIGNALS_REPORTING_JOB_ID:
+                return "ChromeSignalsReporting";
         }
         assert false;
         return null;

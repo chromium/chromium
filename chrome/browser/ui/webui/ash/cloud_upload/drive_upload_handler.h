@@ -11,7 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
@@ -54,6 +54,7 @@ class DriveUploadHandler
 
   DriveUploadHandler(Profile* profile,
                      const storage::FileSystemURL& source_url,
+                     UploadType upload_type,
                      UploadCallback callback,
                      base::SafeRef<CloudOpenMetrics> cloud_open_metrics);
   ~DriveUploadHandler() override;

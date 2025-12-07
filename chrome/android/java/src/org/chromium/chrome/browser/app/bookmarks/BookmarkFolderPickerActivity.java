@@ -4,18 +4,20 @@
 
 package org.chromium.chrome.browser.app.bookmarks;
 
-import android.content.res.Resources;
-import android.os.Bundle;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SynchronousInitializationActivity;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
-import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.bookmarks.BookmarkAddNewFolderCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkFolderPickerCoordinator;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
@@ -23,6 +25,7 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
+import org.chromium.chrome.browser.bookmarks.BookmarkViewUtils;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowCoordinator;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -31,61 +34,58 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.commerce.core.ShoppingService;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * The activity that enables the user to pick the parent folder for the given {@link BookmarkId}.
  * Used for the improved android bookmarks manager.
  */
+@NullMarked
 public class BookmarkFolderPickerActivity extends SynchronousInitializationActivity {
     /** The intent extra specifying the ID of the bookmark to be moved. */
     public static final String INTENT_BOOKMARK_IDS = "BookmarkFolderPickerActivity.BookmarkIds";
 
-    private BookmarkModel mBookmarkModel;
-    private List<BookmarkId> mBookmarkIds;
-    private BookmarkImageFetcher mBookmarkImageFetcher;
-    private BookmarkFolderPickerCoordinator mCoordinator;
+    private @Nullable BookmarkFolderPickerCoordinator mCoordinator;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        Profile profile = getProfileProvider().getOriginalProfile();
-        mBookmarkModel = BookmarkModel.getForProfile(profile);
+    @Initializer
+    protected void onProfileAvailable(Profile profile) {
+        super.onProfileAvailable(profile);
+        BookmarkModel bookmarkModel = BookmarkModel.getForProfile(profile);
 
         List<String> bookmarkIdsAsStrings =
                 IntentUtils.safeGetStringArrayListExtra(getIntent(), INTENT_BOOKMARK_IDS);
-        mBookmarkIds = BookmarkUtils.stringListToBookmarkIds(mBookmarkModel, bookmarkIdsAsStrings);
-        if (mBookmarkIds.isEmpty()) {
+        bookmarkIdsAsStrings =
+                bookmarkIdsAsStrings == null ? new ArrayList<>() : bookmarkIdsAsStrings;
+        List<BookmarkId> bookmarkIds =
+                BookmarkUtils.stringListToBookmarkIds(bookmarkModel, bookmarkIdsAsStrings);
+        if (bookmarkIds.isEmpty()) {
             finish();
             return;
         }
 
-        Resources res = getResources();
-        mBookmarkImageFetcher =
+        BookmarkImageFetcher bookmarkImageFetcher =
                 new BookmarkImageFetcher(
                         profile,
                         this,
-                        mBookmarkModel,
+                        bookmarkModel,
                         ImageFetcherFactory.createImageFetcher(
                                 ImageFetcherConfig.IN_MEMORY_WITH_DISK_CACHE,
                                 profile.getProfileKey(),
                                 GlobalDiscardableReferencePool.getReferencePool()),
-                        new LargeIconBridge(profile),
-                        BookmarkUtils.getRoundedIconGenerator(this, BookmarkRowDisplayPref.VISUAL),
-                        BookmarkUtils.getImageIconSize(res, BookmarkRowDisplayPref.VISUAL),
-                        BookmarkUtils.getFaviconDisplaySize(res));
+                        BookmarkViewUtils.getRoundedIconGenerator(
+                                this, BookmarkRowDisplayPref.VISUAL));
         BookmarkAddNewFolderCoordinator addNewFolderCoordinator =
                 new BookmarkAddNewFolderCoordinator(
                         this,
                         new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP),
-                        mBookmarkModel);
+                        bookmarkModel);
         BookmarkUiPrefs bookmarkUiPrefs =
                 new BookmarkUiPrefs(ChromeSharedPreferences.getInstance());
         ShoppingService shoppingService = ShoppingServiceFactory.getForProfile(profile);
@@ -94,41 +94,37 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
         mCoordinator =
                 new BookmarkFolderPickerCoordinator(
                         this,
-                        mBookmarkModel,
-                        mBookmarkIds,
+                        bookmarkModel,
+                        bookmarkIds,
                         this::finish,
                         addNewFolderCoordinator,
                         bookmarkUiPrefs,
                         new ImprovedBookmarkRowCoordinator(
                                 this,
-                                mBookmarkImageFetcher,
-                                mBookmarkModel,
+                                bookmarkImageFetcher,
+                                bookmarkModel,
                                 bookmarkUiPrefs,
                                 shoppingService),
                         shoppingService);
 
-        BackPressHelper.create(
-                this,
-                getOnBackPressedDispatcher(),
-                mCoordinator,
-                SecondaryActivity.BOOKMARK_FOLDER_PICKER);
+        BackPressHelper.create(this, getOnBackPressedDispatcher(), mCoordinator);
 
         Toolbar toolbar = mCoordinator.getToolbar();
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        assumeNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         setContentView(mCoordinator.getView());
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.bookmark_folder_picker_menu, menu);
-        mCoordinator.updateToolbarButtons();
+        assumeNonNull(mCoordinator).updateToolbarButtons();
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (mCoordinator.optionsItemSelected(item)) {
+        if (assumeNonNull(mCoordinator).optionsItemSelected(item)) {
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -136,7 +132,9 @@ public class BookmarkFolderPickerActivity extends SynchronousInitializationActiv
 
     @Override
     protected void onDestroy() {
-        mCoordinator.destroy();
+        if (mCoordinator != null) {
+            mCoordinator.destroy();
+        }
         super.onDestroy();
     }
 }

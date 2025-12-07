@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/containers/queue.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
@@ -20,7 +20,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc::mojo_embedder {
@@ -30,14 +30,6 @@ class AsyncLayerTreeFrameSink;
 namespace exo {
 
 class SurfaceTreeHost;
-
-// When this feature is disabled (by default at the moment), frames are
-// submitted to the remote side as soon as they arrive, disregarding BeginFrame
-// requests.
-//
-// TODO(yzshen): Remove this flag and always submit according to BeginFrame
-// requests. crbug.com/1408614
-BASE_DECLARE_FEATURE(kExoReactiveFrameSubmission);
 
 // This class talks to CompositorFrameSink and keeps track of references to
 // the contents of Buffers.
@@ -98,6 +90,8 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
       const gfx::Transform& transform) override {}
 
   void ClearPendingBeginFramesForTesting();
+
+  void DeleteFrameTimingHistory() { frame_timing_history_.reset(); }
 
  private:
   struct PendingBeginFrame {
@@ -172,9 +166,6 @@ class LayerTreeFrameSinkHolder : public cc::LayerTreeFrameSinkClient,
 
   base::DeadlineTimer submit_frame_timer_;
 
-  const bool reactive_frame_submission_ = false;
-
-  // Set if `reactive_frame_submission_` is enabled.
   std::optional<FrameTimingHistory> frame_timing_history_;
 };
 

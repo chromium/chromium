@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/ambient/test/ambient_ash_test_base.h"
 
 #include <map>
@@ -34,7 +29,6 @@
 #include "ash/ambient/ui/ambient_view_ids.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/ui/photo_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "ash/public/cpp/ambient/ambient_ui_model.h"
 #include "ash/public/cpp/ambient/fake_ambient_backend_controller_impl.h"
@@ -641,19 +635,12 @@ AmbientPhotoController* AmbientAshTestBase::photo_controller() {
 }
 
 AmbientManagedPhotoController* AmbientAshTestBase::managed_photo_controller() {
-  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    return nullptr;
-  }
   AmbientManagedSlideshowUiLauncher* ui_launcher =
       static_cast<AmbientManagedSlideshowUiLauncher*>(ambient_ui_launcher());
   return &ui_launcher->photo_controller_;
 }
 
 ScreensaverImagesPolicyHandler* AmbientAshTestBase::managed_policy_handler() {
-  if (!ash::features::IsAmbientModeManagedScreensaverEnabled()) {
-    return nullptr;
-  }
-
   return ambient_controller()->screensaver_images_policy_handler_.get();
 }
 
@@ -732,11 +719,10 @@ void AmbientAshTestBase::CreateTestImageJpegFile(base::FilePath path,
                                                  size_t height,
                                                  SkColor color) {
   SkBitmap bitmap = gfx::test::CreateBitmap(width, height, color);
-  std::vector<unsigned char> data;
-  ASSERT_TRUE(gfx::JPEGCodec::Encode(std::move(bitmap), /*quality=*/50, &data));
-  size_t bytes_written = base::WriteFile(
-      path, reinterpret_cast<const char*>(data.data()), data.size());
-  ASSERT_EQ(data.size(), bytes_written);
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(std::move(bitmap), /*quality=*/50);
+  ASSERT_TRUE(data);
+  ASSERT_TRUE(base::WriteFile(path, data.value()));
 }
 
 void AmbientAshTestBase::SetScreenSaverDuration(int minutes) {

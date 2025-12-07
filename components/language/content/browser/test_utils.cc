@@ -8,10 +8,10 @@
 
 namespace language {
 
-MockGeoLocation::MockGeoLocation() {}
-MockGeoLocation::~MockGeoLocation() {}
+MockGeoLocation::MockGeoLocation() = default;
+MockGeoLocation::~MockGeoLocation() = default;
 
-void MockGeoLocation::SetHighAccuracy(bool high_accuracy) {}
+void MockGeoLocation::SetHighAccuracyHint(bool high_accuracy) {}
 
 void MockGeoLocation::QueryNextPosition(QueryNextPositionCallback callback) {
   ++query_next_position_called_times_;
@@ -36,7 +36,7 @@ MockIpGeoLocationProvider::MockIpGeoLocationProvider(
     MockGeoLocation* mock_geo_location)
     : mock_geo_location_(mock_geo_location) {}
 
-MockIpGeoLocationProvider::~MockIpGeoLocationProvider() {}
+MockIpGeoLocationProvider::~MockIpGeoLocationProvider() = default;
 
 void MockIpGeoLocationProvider::Bind(
     mojo::PendingReceiver<device::mojom::PublicIpAddressGeolocationProvider>

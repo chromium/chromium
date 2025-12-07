@@ -7,10 +7,13 @@ package org.chromium.chrome.browser.payments.ui;
 import android.graphics.drawable.Drawable;
 import android.util.IntProperty;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Holds different {@link android.util.Property} types that can be used with ObjectAnimators. */
+@NullMarked
 class AnimatorProperties {
     static final IntProperty<Drawable> DRAWABLE_ALPHA_PROPERTY =
-            new IntProperty<Drawable>("alpha") {
+            new IntProperty<>("alpha") {
                 @Override
                 public Integer get(Drawable d) {
                     return d.getAlpha();

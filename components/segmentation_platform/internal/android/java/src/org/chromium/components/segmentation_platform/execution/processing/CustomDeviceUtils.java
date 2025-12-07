@@ -10,9 +10,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
 
 /** Implements methods to get device info. */
 @JNINamespace("segmentation_platform")
+@NullMarked
 public class CustomDeviceUtils {
     /**
      * This method gets the PPI(pixels per inch) for device display in which chrome is running.

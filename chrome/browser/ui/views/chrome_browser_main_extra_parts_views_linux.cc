@@ -17,7 +17,7 @@
 #include "ui/native_theme/native_theme.h"
 #include "ui/ozone/public/ozone_platform.h"
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 #include "chrome/browser/ui/views/dark_mode_manager_linux.h"
 #endif
 
@@ -28,11 +28,13 @@ class LinuxUiGetterImpl : public ui::LinuxUiGetter {
   LinuxUiGetterImpl() = default;
   ~LinuxUiGetterImpl() override = default;
   ui::LinuxUiTheme* GetForWindow(aura::Window* window) override {
-    return window ? GetForProfile(GetThemeProfileForWindow(window)) : nullptr;
+    return GetForProfile(GetThemeProfileForWindow(window));
   }
   ui::LinuxUiTheme* GetForProfile(Profile* profile) override {
-    return ui::GetLinuxUiTheme(
-        ThemeServiceAuraLinux::GetSystemThemeForProfile(profile));
+    return profile
+               ? ui::GetLinuxUiTheme(
+                     ThemeServiceAuraLinux::GetSystemThemeForProfile(profile))
+               : ui::GetDefaultLinuxUiTheme();
   }
 };
 
@@ -55,7 +57,7 @@ void ChromeBrowserMainExtraPartsViewsLinux::ToolkitInitialized() {
     // implementation). Start observing them once it's initialized.
     ui::CursorFactory::GetInstance()->ObserveThemeChanges();
   }
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   dark_mode_manager_ = std::make_unique<ui::DarkModeManagerLinux>();
 #endif
 }

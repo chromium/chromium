@@ -7,10 +7,12 @@ package org.chromium.chrome.browser.ntp;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 
 /** Allows Java code to read and modify preferences related to the {@link RecentTabsPage}. */
+@NullMarked
 class RecentTabsPagePrefs {
     private long mNativePrefs;
 
@@ -123,8 +125,11 @@ class RecentTabsPagePrefs {
         boolean getSyncPromoCollapsed(long nativeRecentTabsPagePrefs);
 
         void setForeignSessionCollapsed(
-                long nativeRecentTabsPagePrefs, String sessionTag, boolean isCollapsed);
+                long nativeRecentTabsPagePrefs,
+                @JniType("std::string") String sessionTag,
+                boolean isCollapsed);
 
-        boolean getForeignSessionCollapsed(long nativeRecentTabsPagePrefs, String sessionTag);
+        boolean getForeignSessionCollapsed(
+                long nativeRecentTabsPagePrefs, @JniType("std::string") String sessionTag);
     }
 }

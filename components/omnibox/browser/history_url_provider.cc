@@ -16,8 +16,6 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -30,6 +28,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/omnibox/browser/autocomplete_enums.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
@@ -424,8 +423,7 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // re-run the query from scratch and ignore `minimal_changes`.
 
   // Cancel any in-progress query.
-  Stop(true, false);
-
+  Stop(AutocompleteStopReason::kClobbered);
   if (input.IsZeroSuggest() ||
       (input.type() == metrics::OmniboxInputType::EMPTY)) {
     return;
@@ -434,8 +432,8 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   const auto [autocomplete_input, starter_pack_engine] =
-      KeywordProvider::AdjustInputForStarterPackEngines(
-          input, client()->GetTemplateURLService());
+      AdjustInputForStarterPackKeyword(input,
+                                       client()->GetTemplateURLService());
 
   // Do some fixup on the user input before matching against it, so we provide
   // good results for local file paths, input with spaces, etc.
@@ -446,8 +444,10 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   // likely to be looking for a starer pack scope than a URL. However,
   // URLs containing '@' before the host, such as '@history.com', area valid
   // URLs and still needs to run autocompletion.
-  if (autocomplete_input.text().starts_with('@'))
+  if (autocomplete_input.GetFeaturedKeywordMode() !=
+      AutocompleteInput::FeaturedKeywordMode::kFalse) {
     fixup_return.second = u"@" + fixup_return.second;
+  }
 
   url::Parsed parts;
   url_formatter::SegmentURL(fixup_return.second, &parts);
@@ -542,10 +542,8 @@ void HistoryURLProvider::Start(const AutocompleteInput& input,
   }
 }
 
-void HistoryURLProvider::Stop(bool clear_cached_results,
-                              bool due_to_user_inactivity) {
-  AutocompleteProvider::Stop(clear_cached_results, due_to_user_inactivity);
-
+void HistoryURLProvider::Stop(AutocompleteStopReason stop_reason) {
+  AutocompleteProvider::Stop(stop_reason);
   if (params_)
     params_->cancel_flag.Set();
 }
@@ -899,8 +897,8 @@ bool HistoryURLProvider::FixupExactSuggestion(
   // which will have empty reference fragments.)
   if ((type == UNVISITED_INTRANET) &&
       (params->input.type() != metrics::OmniboxInputType::URL) &&
-      url.username().empty() && url.password().empty() && url.port().empty() &&
-      (url.path_piece() == "/") && url.query().empty() &&
+      url.GetUsername().empty() && url.GetPassword().empty() &&
+      url.GetPort().empty() && (url.path() == "/") && url.GetQuery().empty() &&
       (parsed.CountCharactersBefore(url::Parsed::REF, true) !=
        parsed.CountCharactersBefore(url::Parsed::REF, false))) {
     return false;
@@ -1086,11 +1084,10 @@ size_t HistoryURLProvider::RemoveSubsequentMatchesOf(
 
   // Find the first occurrence of any URL in the redirect chain. We want to
   // keep this one since it is rated the highest.
-  history::HistoryMatches::iterator first(base::ranges::find_first_of(
+  history::HistoryMatches::iterator first(std::ranges::find_first_of(
       *matches, remove, history::HistoryMatch::EqualsGURL));
-  CHECK(first != matches->end(), base::NotFatalUntil::M130)
-      << "We should have always found at least the "
-         "original URL.";
+  CHECK(first != matches->end()) << "We should have always found at least the "
+                                    "original URL.";
 
   // Find any following occurrences of any URL in the redirect chain, these
   // should be deleted.
@@ -1165,8 +1162,8 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
   // into the middle of a punycode sequence fixed up to Unicode.  In this case,
   // there can be no inline autocompletion, and the match must not be allowed to
   // be default.
-  if (match.TryRichAutocompletion(match.contents, match.description,
-                                  params.input_before_fixup)) {
+  if (match.TryRichAutocompletion(params.input_before_fixup, match.contents,
+                                  match.description)) {
     // If rich autocompletion applies, we skip trying the alternatives below.
   } else if (inline_autocomplete_offset != std::u16string::npos) {
     DCHECK(inline_autocomplete_offset <= match.fill_into_edit.length());
@@ -1188,9 +1185,8 @@ AutocompleteMatch HistoryURLProvider::HistoryMatchToACMatch(
 
   RecordAdditionalInfoFromUrlRow(info, &match);
 
-  // Populate scoring signals for machine learning model training and scoring.
-  if (populate_scoring_signals &&
-      AutocompleteScoringSignalsAnnotator::IsEligibleMatch(match)) {
+  // Populate ML scoring signals when appropriate.
+  if (populate_scoring_signals && match.IsMlSignalLoggingEligible()) {
     match.scoring_signals = std::make_optional<ScoringSignals>();
     match.scoring_signals->set_typed_count(info.typed_count());
     match.scoring_signals->set_visit_count(info.visit_count());

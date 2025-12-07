@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This binary generates two C arrays of useful information related to top
 // domains, which we embed directly into
 // the final Chrome binary.  The input is a list of the top domains. The first
@@ -24,6 +19,7 @@
 // IMPORTANT: This binary asserts that there are at least enough sites in the
 // input file to generate 500 skeletons and 500 keywords.
 
+#include <algorithm>
 #include <iostream>
 #include <set>
 #include <sstream>
@@ -31,11 +27,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -79,7 +76,7 @@ std::string GetSkeleton(const std::string& domain,
 }
 
 bool ContainsOnlyDigits(const std::string& text) {
-  return base::ranges::all_of(text.begin(), text.end(), ::isdigit);
+  return std::ranges::all_of(text.begin(), text.end(), ::isdigit);
 }
 
 }  // namespace
@@ -108,8 +105,8 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  base::FilePath input_path =
-      base::MakeAbsoluteFilePath(base::FilePath::FromUTF8Unsafe(argv[1]));
+  base::FilePath input_path = base::MakeAbsoluteFilePath(
+      base::FilePath::FromUTF8Unsafe(UNSAFE_TODO(argv[1])));
   if (!base::PathExists(input_path)) {
     LOG(ERROR) << "Input path doesn't exist: " << input_path;
     return 1;
@@ -121,7 +118,7 @@ int main(int argc, char* argv[]) {
     return 1;
   }
 
-  std::string namespace_str = argv[2];
+  std::string namespace_str = UNSAFE_TODO(argv[2]);
 
   std::vector<std::string> lines = base::SplitString(
       input_text, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -202,7 +199,8 @@ const char* const kTopBucketEditDistanceSkeletons[] = {
 
   std::string output = output_stream.str();
 
-  base::FilePath output_path = base::FilePath::FromUTF8Unsafe(argv[3]);
+  base::FilePath output_path =
+      base::FilePath::FromUTF8Unsafe(UNSAFE_TODO(argv[3]));
   if (!base::WriteFile(output_path, output)) {
     LOG(ERROR) << "Failed to write output: " << output_path;
     return 1;

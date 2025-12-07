@@ -7,6 +7,7 @@
 #import <CommonCrypto/CommonDigest.h>
 
 #import "base/apple/foundation_util.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/task/thread_pool.h"
@@ -14,7 +15,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/favicon/model/favicon_loader.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/archivable_credential.h"
 #import "ios/chrome/common/credential_provider/archivable_credential_store.h"
@@ -96,8 +97,10 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
                                     error:nil];
     }
 
-    // Write to file.
-    [data writeToURL:file_url atomically:YES];
+    // Create or overwrite the favicon file.
+    [file_manager createFileAtPath:[file_url path]
+                          contents:data
+                        attributes:nil];
   });
   base::ThreadPool::PostTask(
       FROM_HERE,
@@ -133,7 +136,7 @@ void ContinueFetchingFavicon(base::WeakPtr<FaviconLoader> weak_favicon_loader,
   // Fallback to Google server for synced user only.
   favicon_loader->FaviconForPageUrl(
       site_url, kDesiredMediumFaviconSizePt, kMinFaviconSizePt,
-      fallback_to_google_server, ^(FaviconAttributes* attributes) {
+      fallback_to_google_server, ^(FaviconAttributes* attributes, bool cached) {
         SaveFaviconToSharedAppContainer(attributes, filename);
       });
 }
@@ -306,16 +309,14 @@ void UpdateFaviconsStorage(FaviconLoader* favicon_loader,
   }];
 }
 
-void UpdateFaviconsStorageForBrowserState(
-    base::WeakPtr<ChromeBrowserState> weak_browser_state,
-    bool fallback_to_google_server) {
-  ChromeBrowserState* browser_state = weak_browser_state.get();
-  if (!browser_state) {
+void UpdateFaviconsStorageForProfile(base::WeakPtr<ProfileIOS> weak_profile,
+                                     bool fallback_to_google_server) {
+  ProfileIOS* profile = weak_profile.get();
+  if (!profile) {
     return;
   }
-  UpdateFaviconsStorage(
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browser_state),
-      fallback_to_google_server);
+  UpdateFaviconsStorage(IOSChromeFaviconLoaderFactory::GetForProfile(profile),
+                        fallback_to_google_server);
 }
 
 NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
@@ -345,8 +346,18 @@ NSDictionary<NSString*, NSDate*>* GetFaviconsListAndFreshness() {
     NSDictionary* fileAttribs =
         [file_manager attributesOfItemAtPath:filePath.path error:nil];
     if (fileAttribs) {
-      [favicon_info_dict setObject:fileAttribs[NSFileCreationDate]
-                            forKey:fileName];
+      // Try to get the modification date first but fallback to the creation
+      // date if necessary.
+      NSDate* date = fileAttribs[NSFileModificationDate]
+                         ?: fileAttribs[NSFileCreationDate];
+
+      // If for some reason these attributes are not set, don't add the info to
+      // the dictionary. The favicon will either be refetched and overwritten,
+      // or deleted in cleanup if there are no credentials using it anymore.
+      if (date) {
+        [favicon_info_dict setObject:fileAttribs[NSFileCreationDate]
+                              forKey:fileName];
+      }
     }
   }
   return favicon_info_dict;

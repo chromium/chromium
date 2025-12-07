@@ -15,6 +15,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_metadata.h"
@@ -71,7 +72,7 @@ class OriginValueMap {
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   OriginValueMap();
-  explicit OriginValueMap(base::Clock* clock);
+  explicit OriginValueMap(const base::Clock* clock);
 
   OriginValueMap(const OriginValueMap&) = delete;
   OriginValueMap& operator=(const OriginValueMap&) = delete;
@@ -96,7 +97,7 @@ class OriginValueMap {
                 const ContentSettingsPattern& secondary_pattern,
                 ContentSettingsType content_type,
                 base::Value value,
-                const RuleMetaData& metadata) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+                RuleMetaData metadata) EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Deletes the map entry for the given |primary_pattern|,
   // |secondary_pattern|, |content_type| tuple.
@@ -113,7 +114,7 @@ class OriginValueMap {
   // Clears all map entries.
   void clear() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  void SetClockForTesting(base::Clock* clock);
+  void SetClockForTesting(const base::Clock* clock);
 
  private:
   typedef std::map<ContentSettingsType, HostIndexedContentSettings> EntryIndex;
@@ -125,7 +126,8 @@ class OriginValueMap {
 
   HostIndexedContentSettings& get_index(ContentSettingsType type)
       EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-    auto [it, is_new] = entry_index().try_emplace(type, clock_);
+    auto [it, is_new] = entry_index().try_emplace(
+        type, clock_, content_settings::ShouldTypeExpireActively(type));
     return it->second;
   }
 
@@ -133,7 +135,7 @@ class OriginValueMap {
   mutable base::Lock lock_;
   EntryIndex entries_ GUARDED_BY(lock_);
 
-  raw_ptr<base::Clock> clock_;
+  raw_ptr<const base::Clock> clock_;
 };
 
 }  // namespace content_settings

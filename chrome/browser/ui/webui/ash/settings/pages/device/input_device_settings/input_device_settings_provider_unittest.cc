@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -152,7 +152,7 @@ void ExpectListsEqual(const std::vector<T>& expected_list,
   }
 
   for (size_t i = 0; i < expected_list.size(); i++) {
-    auto actual_iter = base::ranges::find(actual_list, expected_list[i]);
+    auto actual_iter = std::ranges::find(actual_list, expected_list[i]);
     EXPECT_NE(actual_list.end(), actual_iter);
     if (actual_iter != actual_list.end()) {
       EXPECT_EQ(expected_list[i], *actual_iter);
@@ -340,6 +340,25 @@ class FakeKeyboardAmbientLightSensorObserver
   bool keyboard_ambient_light_sensor_enabled_ = true;
 };
 
+class FakeLidStateObserver : public mojom::LidStateObserver {
+ public:
+  // mojom::LidStateObserver:
+  void OnLidStateChanged(bool is_lid_open) override {
+    ++num_lid_state_change_calls_;
+    is_lid_open_ = is_lid_open;
+  }
+
+  bool is_lid_open() { return is_lid_open_; }
+
+  int num_lid_state_change_calls() const { return num_lid_state_change_calls_; }
+
+  mojo::Receiver<mojom::LidStateObserver> receiver{this};
+
+ private:
+  int num_lid_state_change_calls_ = 0;
+  bool is_lid_open_ = true;
+};
+
 class FakeKeyboardBrightnessControlDelegate
     : public KeyboardBrightnessControlDelegate {
  public:
@@ -459,7 +478,7 @@ class FakeInputDeviceSettingsController
   }
   void RemoveKeyboard(uint32_t device_id) {
     auto iter =
-        base::ranges::find_if(keyboards_, [device_id](const auto& keyboard) {
+        std::ranges::find_if(keyboards_, [device_id](const auto& keyboard) {
           return keyboard->id == device_id;
         });
     if (iter == keyboards_.end()) {
@@ -482,7 +501,7 @@ class FakeInputDeviceSettingsController
     observer_->OnMouseConnected(*mice_.back());
   }
   void RemoveMouse(uint32_t device_id) {
-    auto iter = base::ranges::find_if(mice_, [device_id](const auto& mouse) {
+    auto iter = std::ranges::find_if(mice_, [device_id](const auto& mouse) {
       return mouse->id == device_id;
     });
     if (iter == mice_.end()) {
@@ -498,7 +517,7 @@ class FakeInputDeviceSettingsController
   }
   void RemoveTouchpad(uint32_t device_id) {
     auto iter =
-        base::ranges::find_if(touchpads_, [device_id](const auto& touchpad) {
+        std::ranges::find_if(touchpads_, [device_id](const auto& touchpad) {
           return touchpad->id == device_id;
         });
     if (iter == touchpads_.end()) {
@@ -513,10 +532,10 @@ class FakeInputDeviceSettingsController
     observer_->OnPointingStickConnected(*pointing_sticks_.back());
   }
   void RemovePointingStick(uint32_t device_id) {
-    auto iter = base::ranges::find_if(pointing_sticks_,
-                                      [device_id](const auto& pointing_stick) {
-                                        return pointing_stick->id == device_id;
-                                      });
+    auto iter = std::ranges::find_if(pointing_sticks_,
+                                     [device_id](const auto& pointing_stick) {
+                                       return pointing_stick->id == device_id;
+                                     });
     if (iter == pointing_sticks_.end()) {
       return;
     }
@@ -529,10 +548,10 @@ class FakeInputDeviceSettingsController
     observer_->OnGraphicsTabletConnected(*graphics_tablets_.back());
   }
   void RemoveGraphicsTablet(uint32_t device_id) {
-    auto iter = base::ranges::find_if(graphics_tablets_,
-                                      [device_id](const auto& graphics_tablet) {
-                                        return graphics_tablet->id == device_id;
-                                      });
+    auto iter = std::ranges::find_if(graphics_tablets_,
+                                     [device_id](const auto& graphics_tablet) {
+                                       return graphics_tablet->id == device_id;
+                                     });
     if (iter == graphics_tablets_.end()) {
       return;
     }
@@ -570,11 +589,7 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
 
   void SetUp() override {
     feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-    feature_list_->InitWithFeatures(
-        {features::kInputDeviceSettingsSplit,
-         features::kPeripheralCustomization,
-         features::kEnableKeyboardBacklightControlInSettings},
-        {});
+    feature_list_->InitWithFeatures({features::kPeripheralCustomization}, {});
     views::ViewsTestBase::SetUp();
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
@@ -1160,6 +1175,30 @@ TEST_F(InputDeviceSettingsProviderTest, KeyboardBrightnessObserverTest) {
 
   EXPECT_EQ(expected_brightness, fake_observer.keyboard_brightness());
   EXPECT_EQ(2, fake_observer.num_times_called());
+}
+
+TEST_F(InputDeviceSettingsProviderTest, LidStateObserverTest) {
+  FakeLidStateObserver fake_observer;
+  base::test::TestFuture<bool> future;
+
+  // Attach a lid state observer.
+  provider_->ObserveLidState(fake_observer.receiver.BindNewPipeAndPassRemote(),
+                             future.GetCallback());
+  base::RunLoop().RunUntilIdle();
+
+  // Open the lid.
+  provider_->LidEventReceived(chromeos::PowerManagerClient::LidState::OPEN,
+                              /*timestamp=*/{});
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(fake_observer.is_lid_open());
+  EXPECT_EQ(1, fake_observer.num_lid_state_change_calls());
+
+  // Close the lid.
+  provider_->LidEventReceived(chromeos::PowerManagerClient::LidState::CLOSED,
+                              /*timestamp=*/{});
+  base::RunLoop().RunUntilIdle();
+  ASSERT_FALSE(fake_observer.is_lid_open());
+  EXPECT_EQ(2, fake_observer.num_lid_state_change_calls());
 }
 
 TEST_F(InputDeviceSettingsProviderTest,

@@ -5,7 +5,7 @@
 #include "extensions/browser/api/messaging/messaging_delegate.h"
 
 #include "base/functional/callback.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "extensions/common/extension_id.h"
 
 namespace extensions {
@@ -27,17 +27,6 @@ std::optional<base::Value::Dict> MessagingDelegate::MaybeGetTabInfo(
 content::WebContents* MessagingDelegate::GetWebContentsByTabId(
     content::BrowserContext* browser_context,
     int tab_id) {
-  NOTIMPLEMENTED();
-  return nullptr;
-}
-
-std::unique_ptr<MessagePort> MessagingDelegate::CreateReceiverForTab(
-    base::WeakPtr<MessagePort::ChannelDelegate> channel_delegate,
-    const ExtensionId& extension_id,
-    const PortId& receiver_port_id,
-    content::WebContents* receiver_contents,
-    int receiver_frame_id,
-    const std::string& receiver_document_id) {
   NOTIMPLEMENTED();
   return nullptr;
 }

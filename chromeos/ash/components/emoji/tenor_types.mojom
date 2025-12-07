@@ -1,0 +1,48 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tenor.mojom;
+
+import "url/mojom/url.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The below structs are used to represent the Response format from the Tenor
+// search and featured API endpoints.
+// https://developers.google.com/tenor/guides/endpoints#response-format-search
+// https://developers.google.com/tenor/guides/endpoints#response-format-featured
+
+enum Status {
+  kHttpOk, // 200 OK
+  kNetError, // No internet connection
+  kHttpError, // Every other HTTP response status code
+};
+
+struct GifUrls {
+  // URL to the full GIF.
+  url.mojom.Url full;
+  // URL to a lower-resolution preview GIF.
+  url.mojom.Url preview;
+  // URL to a preview thumbnail of the GIF.
+  url.mojom.Url preview_image;
+};
+
+struct GifResponse {
+  // A unique identifier for the GIF.
+  string id;
+  // An accessible description of the GIF's contents.
+  string content_description;
+  // URLs associated with this GIF.
+  GifUrls url;
+  // The dimensions of the preview thumbnail image.
+  gfx.mojom.Size preview_size;
+  // The dimensions of the full GIF.
+  gfx.mojom.Size full_size;
+};
+
+struct PaginatedGifResponses {
+  // A cursor for the next set of GIFs to fetch.
+  string next;
+  // A list of GIFs.
+  array<GifResponse> results;
+};

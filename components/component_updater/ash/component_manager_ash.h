@@ -14,18 +14,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 
-namespace base {
-class FilePath;
-class Version;
-}  // namespace base
-
 namespace component_updater {
 
 // Contains the path and version of a compatible component.
 struct COMPONENT_EXPORT(COMPONENT_UPDATER_ASH) CompatibleComponentInfo {
   CompatibleComponentInfo();
   CompatibleComponentInfo(const base::FilePath& path_in,
-                          const std::optional<base::Version>& version_in);
+                          std::optional<base::Version> version_in);
   CompatibleComponentInfo(const CompatibleComponentInfo& rhs) = delete;
   CompatibleComponentInfo& operator=(const CompatibleComponentInfo& rhs) =
       delete;
@@ -62,10 +57,15 @@ class COMPONENT_EXPORT(COMPONENT_UPDATER_ASH) ComponentManagerAsh
  public:
   ComponentManagerAsh();
 
-  // Error needs to be consistent with ComponentManagerAshError in
-  // src/tools/metrics/histograms/enums.xml.
+  // The type of ChromeOS component install result. This enum is tied directly
+  // to the UMA enum called `ComponentUpdater.InstallResult` defined in
+  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+  // change one without changing the other). Entries should never be modified or
+  // reordered. Entries can only be removed by deprecating it and its value
+  // should never be reused. New ones should be added to the end (right before
+  // the max value).
   enum class Error {
-    NONE = 0,
+    NONE = 0,               // No error. Used as a "success code".
     UNKNOWN_COMPONENT = 1,  // Component requested does not exist.
     INSTALL_FAILURE = 2,    // update_client fails to install component.
     MOUNT_FAILURE = 3,      // Component can not be mounted.
@@ -73,7 +73,10 @@ class COMPONENT_EXPORT(COMPONENT_UPDATER_ASH) ComponentManagerAsh
     NOT_FOUND = 5,  // A component installation was not found - reported for
                     // load requests with kSkip update policy.
     UPDATE_IN_PROGRESS = 6,  // Component update in progress.
-    ERROR_MAX
+
+    // Add future entries above this comment, in sync with enums.xml.
+    // Update kMaxValue to the last value.
+    kMaxValue = UPDATE_IN_PROGRESS,
   };
 
   // Policy on mount operation.

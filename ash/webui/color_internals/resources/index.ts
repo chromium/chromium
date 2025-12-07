@@ -80,8 +80,7 @@ async function requestJSON(): Promise<JSON> {
 
 async function populateTokenTable() {
   function addTokens(table: HTMLTableSectionElement, tokens: Token[]) {
-    Object.values(tokens).forEach(
-        t => appendTokenRowToTable(table, t as Token));
+    Object.values(tokens).forEach(t => appendTokenRowToTable(table, t));
   }
   const json = await requestJSON();
   const tokens = json as unknown as TokenArray;

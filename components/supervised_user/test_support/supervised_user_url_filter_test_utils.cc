@@ -8,14 +8,28 @@
 
 namespace supervised_user {
 
-std::string FakeURLFilterDelegate::GetCountryCode() const {
+bool FakeURLFilterDelegate::SupportsWebstoreURL(const GURL& url) const {
+  return false;
+}
+
+std::string FakePlatformDelegate::GetCountryCode() const {
   // Country code information is not used in tests.
   return std::string();
 }
 
-version_info::Channel FakeURLFilterDelegate::GetChannel() const {
+version_info::Channel FakePlatformDelegate::GetChannel() const {
   // Channel information is not used in tests.
   return version_info::Channel::UNKNOWN;
+}
+
+// The fake should be used in supervised user context, true is a reasonable
+// return default.
+bool FakePlatformDelegate::ShouldCloseIncognitoTabs() const {
+  return true;
+}
+
+void FakePlatformDelegate::CloseIncognitoTabs() {
+  return;
 }
 
 }  // namespace supervised_user

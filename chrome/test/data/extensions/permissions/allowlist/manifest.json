@@ -1,5 +1,5 @@
 {
-  "name": "extensions.permissions.whitelist",
+  "name": "extensions.permissions.allowlist",
   "version": "1",
   "manifest_version": 3,
   "permissions": [

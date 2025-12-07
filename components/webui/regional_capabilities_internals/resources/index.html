@@ -1,0 +1,47 @@
+<!doctype html>
+<!-- Note that chrome://regional-capabilities-internals is intentionally not a
+     translated UI surface, so don't mark it with direction or language
+     attributes. -->
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="color-scheme" content="light dark">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+    <link rel="stylesheet" href="chrome://regional-capabilities-internals/app.css">
+    <title>Regional Capabilities Internals</title>
+    <style>
+      html,
+      body {
+        height: 100%;
+        overflow: hidden;
+        margin: 0;
+      }
+
+      div {
+        width: 60%;
+        min-width: 800px;
+        margin: 10px auto;
+      }
+
+      th {
+        text-align: end;
+        padding-inline-end: 5px;
+      }
+
+      td {
+        text-align: start;
+        padding-inline-start: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div>
+      <table id="data-table">
+        <!-- Will be populated by script with `<tr><th>Name</th><td>Value</td></tr>`. -->
+      </table>
+    </div>
+    <script src="app.js" type="module"></script>
+  </body>
+</html>

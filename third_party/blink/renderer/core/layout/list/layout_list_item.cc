@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/layout/list/layout_list_item.h"
 
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/list/layout_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 
@@ -38,9 +37,11 @@ void LayoutListItem::WillBeRemovedFromTree() {
   ListItemOrdinal::ItemInsertedOrRemoved(this);
 }
 
-void LayoutListItem::StyleDidChange(StyleDifference diff,
-                                    const ComputedStyle* old_style) {
-  LayoutBlockFlow::StyleDidChange(diff, old_style);
+void LayoutListItem::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
+  LayoutBlockFlow::StyleDidChange(diff, old_style, style_change_context);
 
   LayoutObject* marker = Marker();
   ListMarker* list_marker = ListMarker::Get(marker);
@@ -117,8 +118,9 @@ const LayoutObject* LayoutListItem::FindSymbolMarkerLayoutText(
     return FindSymbolMarkerLayoutText(inline_list_item->Marker());
   }
 
-  if (object->IsAnonymousBlock())
-    return FindSymbolMarkerLayoutText(GetLayoutObjectForParentNode(object));
+  if (object->IsAnonymousBlockFlow()) {
+    return FindSymbolMarkerLayoutText(object->Parent());
+  }
 
   if (object->IsLayoutTextCombine()) {
     return FindSymbolMarkerLayoutText(object->Parent());

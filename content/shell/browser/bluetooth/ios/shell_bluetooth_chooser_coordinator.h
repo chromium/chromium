@@ -5,11 +5,11 @@
 #ifndef CONTENT_SHELL_BROWSER_BLUETOOTH_IOS_SHELL_BLUETOOTH_CHOOSER_COORDINATOR_H_
 #define CONTENT_SHELL_BROWSER_BLUETOOTH_IOS_SHELL_BLUETOOTH_CHOOSER_COORDINATOR_H_
 
-#import <string>
-
 #import <Foundation/Foundation.h>
 
-#import "ui/gfx/native_widget_types.h"
+#import <string>
+
+#import "ui/gfx/native_ui_types.h"
 
 namespace content {
 class ShellBluetoothChooserIOS;

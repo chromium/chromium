@@ -85,7 +85,6 @@ TEST_F(SMILTimeContainerTest, ServiceAnimationsFlushesPendingSynchronizations) {
 
   // Frame callback before the synchronization timer fires.
   SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());
-  SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(GetDocument());
 
   // The frame callback should have flushed any pending updates.
   EXPECT_EQ(100, rect->height()->CurrentValue()->Value(length_context));
@@ -237,7 +236,6 @@ class SMILTimeContainerAnimationPolicyOnceTest : public PageTestBase {
     current_time_ += delta;
     GetAnimationClock().UpdateTime(current_time_);
     SVGDocumentExtensions::ServiceSmilOnAnimationFrame(GetDocument());
-    SVGDocumentExtensions::ServiceWebAnimationsOnAnimationFrame(GetDocument());
   }
 
   void OnContentLoaded(base::OnceCallback<void(Document&)> callback) {
@@ -329,7 +327,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, SetElapsedBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::BindOnce([](Document& document) {
+  OnContentLoaded(BindOnce([](Document& document) {
     auto* svg_root =
         To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
@@ -415,7 +413,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::BindOnce([](Document& document) {
+  OnContentLoaded(BindOnce([](Document& document) {
     auto* svg_root =
         To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
@@ -510,7 +508,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest,
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::BindOnce([](Document& document) {
+  OnContentLoaded(BindOnce([](Document& document) {
     auto* svg_root =
         To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);
@@ -566,7 +564,7 @@ TEST_F(SMILTimeContainerAnimationPolicyOnceTest, PauseAndResumeBeforeStart) {
       </rect>
     </svg>
   )HTML");
-  OnContentLoaded(WTF::BindOnce([](Document& document) {
+  OnContentLoaded(BindOnce([](Document& document) {
     auto* svg_root =
         To<SVGSVGElement>(document.getElementById(AtomicString("container")));
     ASSERT_TRUE(svg_root);

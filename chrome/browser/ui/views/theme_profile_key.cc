@@ -18,8 +18,9 @@ namespace {
 class ProfileTracker : public ProfileObserver {
  public:
   explicit ProfileTracker(Profile* profile) : profile_(profile) {
-    if (profile_)
+    if (profile_) {
       observation_.Observe(profile_.get());
+    }
   }
   ~ProfileTracker() override = default;
 
@@ -39,7 +40,7 @@ class ProfileTracker : public ProfileObserver {
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ProfileTracker*)
 
-DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ProfileTracker, kThemeProfileKey, nullptr)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(ProfileTracker, kThemeProfileKey)
 
 void SetThemeProfileForWindow(aura::Window* window, Profile* profile) {
   window->SetProperty(kThemeProfileKey,
@@ -47,6 +48,9 @@ void SetThemeProfileForWindow(aura::Window* window, Profile* profile) {
 }
 
 Profile* GetThemeProfileForWindow(aura::Window* window) {
+  if (!window) {
+    return nullptr;
+  }
   ProfileTracker* const tracker = window->GetProperty(kThemeProfileKey);
   return tracker ? tracker->profile() : nullptr;
 }

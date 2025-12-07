@@ -43,8 +43,10 @@ enum Property {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. This enum should be kept in sync
-// with the NearbyConnectionsGattResult enum in
-// src/tools/metrics/metadata/nearby/enums.xml.
+// with the NearbyConnectionsGattResult UMA enum defined in
+// //tools/metrics/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyConnectionsGattResult)
 enum GattResult {
   SUCCESS,
   UNKNOWN,
@@ -59,6 +61,7 @@ enum GattResult {
   CHARACTERISTIC_NOT_FOUND,
   DESCRIPTOR_NOT_FOUND,
 };
+// LINT.ThenChange(//tools/metrics/metadata/nearby/enums.xml:NearbyConnectionsGattResult)
 
 // TODO(crbug.com/40489779): Remove when numerical values can be optional.
 struct RSSIWrapper {

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_apitest.h"
-
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,14 +17,15 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
+#include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
@@ -33,7 +35,7 @@
 #include "ui/aura/window_tree_host.h"
 #endif
 
-using ContextType = extensions::ExtensionBrowserTest::ContextType;
+using ContextType = extensions::browser_test_util::ContextType;
 
 class ExtensionApiTabTest : public extensions::ExtensionApiTest {
  public:
@@ -113,12 +115,17 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ExtensionApiNewTabTest,
                          ::testing::Values(ContextType::kServiceWorker));
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiNewTabTest, Tabs) {
+// TODO(crbug.com/451682394): Disabled on Linux dbg due to flakiness.
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
+#define MAYBE_Tabs DISABLED_Tabs
+#else
+#define MAYBE_Tabs Tabs
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiNewTabTest, MAYBE_Tabs) {
   // The test creates a tab and checks that the URL of the new tab
   // is that of the new tab page.  Make sure the pref that controls
   // this is set.
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kHomePageIsNewTabPage, true);
+  profile()->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, true);
 
   ASSERT_TRUE(RunExtensionTest("tabs/basics/crud")) << message_;
 }
@@ -126,6 +133,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiNewTabTest, Tabs) {
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, TabAudible) {
   ASSERT_TRUE(
       RunExtensionTest("tabs/basics", {.extension_url = "audible.html"}))
+      << message_;
+}
+
+// Tests removing a tab while it is part of a group and an extension has a
+// listener for both chrome.tabs.onUpdated and chrome.tabs.onRemoved.
+// Regression test for https://crbug.com/431965152.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, RemovingTabWhilePartOfGroup) {
+  ASSERT_TRUE(RunExtensionTest("tabs/removing_tab_while_part_of_group"))
       << message_;
 }
 
@@ -183,12 +198,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
 }
 
 // TODO(crbug.com/40254426): Move to tabs_interactive_test.cc
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/40890826): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
-#endif
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, LastAccessed) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/last_accessed")) << message_;
@@ -252,23 +265,55 @@ INSTANTIATE_TEST_SUITE_P(ServiceWorker,
                          ::testing::Values(ContextType::kServiceWorker));
 
 // https://crbug.com/1450747 Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/381214152): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #define MAYBE_CaptureVisibleTabJpeg DISABLED_CaptureVisibleTabJpeg
 #else
 #define MAYBE_CaptureVisibleTabJpeg CaptureVisibleTabJpeg
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabJpeg) {
+  ExtensionTestMessageListener device_pixel_handler("get_device_pixel_ratio",
+                                                    ReplyBehavior::kWillReply);
+  auto get_device_pixel_ratio = [this, &device_pixel_handler](
+                                    const std::string& message) {
+    content::WebContents* active_tab = GetActiveWebContents();
+    ASSERT_TRUE(active_tab);
+    content::RenderWidgetHostView* view = active_tab->GetRenderWidgetHostView();
+    ASSERT_TRUE(view);
+    float scale = view->GetDeviceScaleFactor();
+    device_pixel_handler.Reply(base::NumberToString(scale));
+  };
+  device_pixel_handler.SetOnRepeatedlySatisfied(
+      base::BindLambdaForTesting(get_device_pixel_ratio));
+
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_jpeg"))
       << message_;
 }
 
 // https://crbug.com/1450933 Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/381277829): Flaky on ASAN and MSAN builds.
+// TODO(crbug.com/451698327): Disabled on Linux dbg due to flakiness.
+#if BUILDFLAG(IS_MAC) || defined(ADDRESS_SANITIZER) || \
+    defined(MEMORY_SANITIZER) || (BUILDFLAG(IS_LINUX) && !defined(NDEBUG))
 #define MAYBE_CaptureVisibleTabPng DISABLED_CaptureVisibleTabPng
 #else
 #define MAYBE_CaptureVisibleTabPng CaptureVisibleTabPng
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleTabPng) {
+  ExtensionTestMessageListener device_pixel_handler("get_device_pixel_ratio",
+                                                    ReplyBehavior::kWillReply);
+  auto get_device_pixel_ratio = [this, &device_pixel_handler](
+                                    const std::string& message) {
+    content::WebContents* active_tab = GetActiveWebContents();
+    ASSERT_TRUE(active_tab);
+    content::RenderWidgetHostView* view = active_tab->GetRenderWidgetHostView();
+    ASSERT_TRUE(view);
+    float scale = view->GetDeviceScaleFactor();
+    device_pixel_handler.Reply(base::NumberToString(scale));
+  };
+  device_pixel_handler.SetOnRepeatedlySatisfied(
+      base::BindLambdaForTesting(get_device_pixel_ratio));
+
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_png"))
       << message_;
 }
@@ -292,15 +337,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
       << message_;
 }
 
-// TODO(crbug.com/40803947): Fix flakiness on Linux and Lacros then reenable.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40803947): Fix flakiness on Linux then reenable.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CaptureVisibleDisabled DISABLED_CaptureVisibleDisabled
 #else
 #define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
 #endif
 IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleDisabled) {
-  browser()->profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots,
-                                               true);
+  profile()->GetPrefs()->SetBoolean(prefs::kDisableScreenshots, true);
   ASSERT_TRUE(RunExtensionTest("tabs/capture_visible_tab/test_disabled"))
       << message_;
 }
@@ -323,7 +367,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, OnUpdated) {
+// TODO(crbug.com/378027647) Failing on ChromeOS and Linux
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_OnUpdated DISABLED_OnUpdated
+#else
+#define MAYBE_OnUpdated OnUpdated
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, MAYBE_OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/backForwardCache/on_updated")) << message_;
 }
 
@@ -372,8 +422,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, MAYBE_UpdateWindowShowState) {
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType,
                        IncognitoDisabledByPref) {
   IncognitoModePrefs::SetAvailability(
-      browser()->profile()->GetPrefs(),
-      policy::IncognitoModeAvailability::kDisabled);
+      profile()->GetPrefs(), policy::IncognitoModeAvailability::kDisabled);
 
   // This makes sure that creating an incognito window fails due to pref
   // (policy) being set.
@@ -406,6 +455,14 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OpenerCraziness) {
 // using chrome.runtime.OnMessage.
 IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, SendMessage) {
   ASSERT_TRUE(RunExtensionTest("tabs/send_message"));
+}
+
+// Tests sending messages from an extension's option page to a tab using
+// chrome.tabs.sendMessage to a webpage in the extension listening for them
+// using chrome.runtime.OnMessage.
+IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, SendMessageFromOptionsPage) {
+  ASSERT_TRUE(RunExtensionTest("tabs/send_message_from_options",
+                               {.extension_url = "options.html"}));
 }
 
 // Tests that extension with "tabs" permission does not leak tab info to another
@@ -466,7 +523,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType,
 
   // Now open a tab and ensure the extension in |ext_dir2| does not see any info
   // that is guarded by "tabs" permission.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
@@ -494,10 +551,10 @@ class IncognitoExtensionApiTabTest
 IN_PROC_BROWSER_TEST_P(IncognitoExtensionApiTabTest, Tabs) {
   bool is_incognito_enabled = GetParam().is_incognito_enabled;
   Browser* incognito_browser =
-      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+      OpenURLOffTheRecord(profile(), GURL("about:blank"));
   std::string args = base::StringPrintf(
       R"({"isIncognito": %s, "windowId": %d})",
-      is_incognito_enabled ? "true" : "false",
+      base::ToString(is_incognito_enabled),
       extensions::ExtensionTabUtil::GetWindowId(incognito_browser));
 
   EXPECT_TRUE(RunExtensionTest("tabs/basics/incognito",

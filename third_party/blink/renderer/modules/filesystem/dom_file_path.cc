@@ -30,7 +30,9 @@
 
 #include "third_party/blink/renderer/modules/filesystem/dom_file_path.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -40,12 +42,14 @@ const char DOMFilePath::kSeparator = '/';
 const char DOMFilePath::kRoot[] = "/";
 
 String DOMFilePath::Append(const String& base, const String& components) {
-  return EnsureDirectoryPath(base) + components;
+  return StrCat({EnsureDirectoryPath(base), components});
 }
 
 String DOMFilePath::EnsureDirectoryPath(const String& path) {
-  if (!DOMFilePath::EndsWithSeparator(path))
-    return path + DOMFilePath::kSeparator;
+  if (!DOMFilePath::EndsWithSeparator(path)) {
+    return StrCat(
+        {path, StringView(base::byte_span_from_ref(DOMFilePath::kSeparator))});
+  }
   return path;
 }
 
@@ -71,8 +75,9 @@ bool DOMFilePath::IsParentOf(const String& parent, const String& may_be_child) {
   if (parent == DOMFilePath::kRoot && may_be_child != DOMFilePath::kRoot)
     return true;
   if (parent.length() >= may_be_child.length() ||
-      !may_be_child.StartsWithIgnoringCase(parent))
+      !may_be_child.DeprecatedStartsWithIgnoringCase(parent)) {
     return false;
+  }
   if (may_be_child[parent.length()] != DOMFilePath::kSeparator)
     return false;
   return true;
@@ -108,19 +113,21 @@ bool DOMFilePath::IsValidPath(const String& path) {
     return true;
 
   // Embedded NULs are not allowed.
-  if (path.find(static_cast<UChar>(0)) != WTF::kNotFound)
+  if (path.find(static_cast<UChar>(0)) != kNotFound) {
     return false;
+  }
 
   // While not [yet] restricted by the spec, '\\' complicates implementation for
   // Chromium.
-  if (path.find('\\') != WTF::kNotFound)
+  if (path.find('\\') != kNotFound) {
     return false;
+  }
 
   // This method is only called on fully-evaluated absolute paths. Any sign of
   // ".." or "." is likely an attempt to break out of the sandbox.
   Vector<String> components;
   path.Split(DOMFilePath::kSeparator, components);
-  return base::ranges::none_of(components, [](const String& component) {
+  return std::ranges::none_of(components, [](const String& component) {
     return component == "." || component == "..";
   });
 }

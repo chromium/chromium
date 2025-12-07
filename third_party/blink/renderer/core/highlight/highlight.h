@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HIGHLIGHT_HIGHLIGHT_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_highlight_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_highlight.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
@@ -40,8 +41,8 @@ class CORE_EXPORT Highlight : public EventTarget, public HighlightSetIterable {
   const int32_t& priority() const { return priority_; }
   void setPriority(const int32_t&);
 
-  AtomicString type() const { return type_; }
-  void setType(const AtomicString& type) { type_ = type; }
+  V8HighlightType type() const { return type_; }
+  void setType(const V8HighlightType& type) { type_ = type; }
 
   bool Contains(AbstractRange*) const;
 
@@ -54,7 +55,7 @@ class CORE_EXPORT Highlight : public EventTarget, public HighlightSetIterable {
    public:
     explicit IterationSource(const Highlight& highlight);
 
-    bool FetchNextItem(ScriptState*, AbstractRange*&, ExceptionState&) override;
+    bool FetchNextItem(ScriptState*, AbstractRange*&) override;
 
     void Trace(blink::Visitor*) const override;
 
@@ -72,12 +73,11 @@ class CORE_EXPORT Highlight : public EventTarget, public HighlightSetIterable {
 
  private:
   HighlightSetIterable::IterationSource* CreateIterationSource(
-      ScriptState*,
-      ExceptionState&) override;
+      ScriptState*) override;
 
   HeapLinkedHashSet<Member<AbstractRange>> highlight_ranges_;
   int32_t priority_ = 0;
-  AtomicString type_{"highlight"};
+  V8HighlightType type_ = V8HighlightType{V8HighlightType::Enum::kHighlight};
   // Since a Highlight can be registered many times under different names in
   // many HighlightRegistries, we need to keep track of the number of times
   // it's present in each registry. If the Highlight is not registered anywhere,

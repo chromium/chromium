@@ -9,13 +9,13 @@ import './os_feedback_shared.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {btRegEx, buildWordMatcher, FeedbackFlowButtonClickEvent, FeedbackFlowState} from './feedback_flow.js';
+import type {FeedbackFlowButtonClickEvent} from './feedback_flow.js';
+import {btRegEx, buildWordMatcher, FeedbackFlowState} from './feedback_flow.js';
 import {showScrollingEffectOnStart, showScrollingEffects} from './feedback_utils.js';
 import {getHelpContentProvider} from './mojo_interface_provider.js';
-import {FeedbackContext, HelpContent, HelpContentProviderInterface, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
+import type {FeedbackContext, HelpContent, HelpContentProviderInterface, SearchRequest, SearchResponse} from './os_feedback_ui.mojom-webui.js';
 import {domainQuestions, questionnaireBegin} from './questionnaire.js';
 import {getTemplate} from './search_page.html.js';
 
@@ -249,7 +249,7 @@ export class SearchPageElement extends SearchPageElementBase {
     }
 
     const request: SearchRequest = {
-      query: stringToMojoString16(query),
+      query: query,
       maxResults: MAX_RESULTS,
     };
 
@@ -291,7 +291,7 @@ export class SearchPageElement extends SearchPageElementBase {
     if (querySeqNo > this.lastPostedQuerySeqNo) {
       this.lastPostedQuerySeqNo = querySeqNo;
       // TODO(xiangdongkong): Use Mojo to communicate with untrusted page.
-      this.iframe!.contentWindow!.postMessage(
+      this.iframe.contentWindow!.postMessage(
           data, OS_FEEDBACK_UNTRUSTED_ORIGIN);
     }
   }

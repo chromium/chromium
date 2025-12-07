@@ -5,11 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_LEAK_DIALOG_DELEGATE_H_
 
-#include <string>
-
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
-
-class GURL;
 
 // An interface for leak detection dialog implemented by
 // ManagePasswordsUIController. Allows to retrieve the current state of the tab

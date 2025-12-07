@@ -20,7 +20,8 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#include "gpu/gpu_export.h"
+#include "gpu/config/gpu_config_export.h"
+#include "gpu/config/gpu_preferences.h"
 #include "gpu/vulkan/buildflags.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/gl_implementation.h"
@@ -33,15 +34,15 @@
 #endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
-#include "gpu/config/vulkan_info.h"
+#include "gpu/vulkan/vulkan_info.h"
 #endif
 
 namespace gpu {
 
 // These values are persistent to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// This should match enum IntelGpuSeriesType in
-//  \tools\metrics\histograms\metadata\gpu\enums.xml
+//
+// LINT.IfChange(IntelGpuSeriesType)
 enum class IntelGpuSeriesType {
   kUnknown = 0,
   // Intel 4th gen
@@ -73,7 +74,7 @@ enum class IntelGpuSeriesType {
   kIcelake = 15,
   kElkhartlake = 19,
   kJasperlake = 20,
-  // Intel 12th gen
+  // Intel Xe
   kTigerlake = 21,
   kRocketlake = 24,
   kDG1 = 25,
@@ -82,14 +83,22 @@ enum class IntelGpuSeriesType {
   kRaptorlake = 27,
   kMeteorlake = 28,
   kArrowlake = 30,
-  // Intel 13th gen
+  // Intel Xe2
   kLunarlake = 29,
   kBattlemage = 31,
-  // Please also update |gpu_series_map| in process_json.py.
-  kMaxValue = kBattlemage,
+  // Intel Xe3
+  kPantherlake = 32,
+  // Please also update `gpu_series_map` in process_json.py.
+  kMaxValue = kPantherlake,
 };
+// clang-format off
+// LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/enums.xml:IntelGpuSeriesType, ./process_json.py)
+// clang-format on
 
-// Video profile.  This *must* match media::VideoCodecProfile.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(VideoCodecProfile)
 enum VideoCodecProfile {
   VIDEO_CODEC_PROFILE_UNKNOWN = -1,
   VIDEO_CODEC_PROFILE_MIN = VIDEO_CODEC_PROFILE_UNKNOWN,
@@ -147,9 +156,12 @@ enum VideoCodecProfile {
   VVCPROFILE_MAIN16_444_STILL_PICTURE = 51,
   VIDEO_CODEC_PROFILE_MAX = VVCPROFILE_MAIN16_444_STILL_PICTURE,
 };
+// clang-format off
+// LINT.ThenChange(//media/base/video_codecs.h:VideoCodecProfile, //tools/metrics/histograms/enums.xml:VideoCodecProfile)
+// clang-format on
 
 // Specification of a decoding profile supported by a hardware decoder.
-struct GPU_EXPORT VideoDecodeAcceleratorSupportedProfile {
+struct GPU_CONFIG_EXPORT VideoDecodeAcceleratorSupportedProfile {
   VideoCodecProfile profile;
   gfx::Size max_resolution;
   gfx::Size min_resolution;
@@ -159,7 +171,7 @@ struct GPU_EXPORT VideoDecodeAcceleratorSupportedProfile {
 using VideoDecodeAcceleratorSupportedProfiles =
     std::vector<VideoDecodeAcceleratorSupportedProfile>;
 
-struct GPU_EXPORT VideoDecodeAcceleratorCapabilities {
+struct GPU_CONFIG_EXPORT VideoDecodeAcceleratorCapabilities {
   VideoDecodeAcceleratorCapabilities();
   VideoDecodeAcceleratorCapabilities(
       const VideoDecodeAcceleratorCapabilities& other);
@@ -169,7 +181,7 @@ struct GPU_EXPORT VideoDecodeAcceleratorCapabilities {
 };
 
 // Specification of an encoding profile supported by a hardware encoder.
-struct GPU_EXPORT VideoEncodeAcceleratorSupportedProfile {
+struct GPU_CONFIG_EXPORT VideoEncodeAcceleratorSupportedProfile {
   VideoCodecProfile profile;
   gfx::Size min_resolution;
   gfx::Size max_resolution;
@@ -195,7 +207,7 @@ enum class ImageDecodeAcceleratorSubsampling {
 };
 
 // Specification of an image decoding profile supported by a hardware decoder.
-struct GPU_EXPORT ImageDecodeAcceleratorSupportedProfile {
+struct GPU_CONFIG_EXPORT ImageDecodeAcceleratorSupportedProfile {
   ImageDecodeAcceleratorSupportedProfile();
   ImageDecodeAcceleratorSupportedProfile(
       const ImageDecodeAcceleratorSupportedProfile& other);
@@ -214,7 +226,7 @@ struct GPU_EXPORT ImageDecodeAcceleratorSupportedProfile {
   gfx::Size min_encoded_dimensions;
   gfx::Size max_encoded_dimensions;
 
-  // Fields specific to |image_type| == kJpeg.
+  // Fields specific to `image_type` == kJpeg.
   // The supported chroma subsampling formats, e.g. 4:2:0.
   std::vector<ImageDecodeAcceleratorSubsampling> subsamplings;
 };
@@ -229,9 +241,9 @@ enum class OverlaySupport {
   kSoftware = 3
 };
 
-GPU_EXPORT const char* OverlaySupportToString(OverlaySupport support);
+GPU_CONFIG_EXPORT const char* OverlaySupportToString(OverlaySupport support);
 
-struct GPU_EXPORT OverlayInfo {
+struct GPU_CONFIG_EXPORT OverlayInfo {
   OverlayInfo() = default;
   OverlayInfo(const OverlayInfo& other) = default;
   OverlayInfo& operator=(const OverlayInfo& other) = default;
@@ -261,11 +273,11 @@ struct GPU_EXPORT OverlayInfo {
 #endif
 
 #if BUILDFLAG(IS_MAC)
-GPU_EXPORT bool ValidateMacOSSpecificTextureTarget(int target);
+GPU_CONFIG_EXPORT bool ValidateMacOSSpecificTextureTarget(int target);
 #endif  // BUILDFLAG(IS_MAC)
 
-struct GPU_EXPORT GPUInfo {
-  struct GPU_EXPORT GPUDevice {
+struct GPU_CONFIG_EXPORT GPUInfo {
+  struct GPU_CONFIG_EXPORT GPUDevice {
     GPUDevice();
     GPUDevice(const GPUDevice& other);
     GPUDevice(GPUDevice&& other) noexcept;
@@ -298,7 +310,7 @@ struct GPU_EXPORT GPUInfo {
     // unique relative its vendor, not to each other. If there are more than one
     // of the same exact graphics card, they all have the same vendor id and
     // device id but different LUIDs.
-    CHROME_LUID luid;
+    CHROME_LUID luid = {};
 #endif  // BUILDFLAG(IS_WIN)
 
     // The 64-bit ID used for GPU selection by ANGLE_platform_angle_device_id.
@@ -314,7 +326,8 @@ struct GPU_EXPORT GPUInfo {
 
     // The strings that describe the GPU.
     // In Linux these strings are obtained through libpci.
-    // In Win/MacOSX, these two strings are not filled at the moment.
+    // In Win, device_string is filled with DXGI_ADAPTER_DESC::Description.
+    // In MacOSX, these two strings are not filled at the moment.
     // In Android, these are respectively GL_VENDOR and GL_RENDERER.
     std::string vendor_string;
     std::string device_string;
@@ -345,6 +358,10 @@ struct GPU_EXPORT GPUInfo {
 #if BUILDFLAG(IS_WIN)
   GPUDevice* FindGpuByLuid(DWORD low_part, LONG high_part);
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_VULKAN)
+  std::vector<uint8_t> SerializeVulkanInfo() const;
+#endif
 
   // The amount of time taken to get from the process starting to the message
   // loop being pumped.
@@ -389,6 +406,9 @@ struct GPU_EXPORT GPUInfo {
 
   // The DisplayType requested from ANGLE.
   std::string display_type;
+
+  // Skia Backend used for rendering and compositing.
+  SkiaBackendType skia_backend_type = SkiaBackendType::kNone;
 
   // The GL_VERSION string.
   std::string gl_version;
@@ -485,14 +505,13 @@ struct GPU_EXPORT GPUInfo {
       video_encode_accelerator_supported_profiles;
   bool jpeg_decode_accelerator_supported;
 
-  ImageDecodeAcceleratorSupportedProfiles
-      image_decode_accelerator_supported_profiles;
-
   bool subpixel_font_rendering;
 
   uint32_t visibility_callback_call_count = 0;
 
 #if BUILDFLAG(ENABLE_VULKAN)
+  bool hardware_supports_vulkan = false;
+
   std::optional<VulkanInfo> vulkan_info;
 #endif
 
@@ -531,11 +550,6 @@ struct GPU_EXPORT GPUInfo {
     // being described.
     virtual void BeginVideoEncodeAcceleratorSupportedProfile() = 0;
     virtual void EndVideoEncodeAcceleratorSupportedProfile() = 0;
-
-    // Markers indicating that an ImageDecodeAcceleratorSupportedProfile is
-    // being described.
-    virtual void BeginImageDecodeAcceleratorSupportedProfile() = 0;
-    virtual void EndImageDecodeAcceleratorSupportedProfile() = 0;
 
     // Markers indicating that "auxiliary" attributes of the GPUInfo
     // (according to the DevTools protocol) are being described.

@@ -1,0 +1,78 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android && !is_chromeos,
+       "Default browser is for desktop platforms only except ChromeOS.")
+
+source_set("default_browser") {
+  friend = [
+    ":unit_tests",
+    ":browser_tests",
+  ]
+
+  public = [
+    "default_browser_controller.h",
+    "default_browser_features.h",
+    "default_browser_manager.h",
+  ]
+
+  sources = [
+    "default_browser_controller.cc",
+    "default_browser_features.cc",
+    "default_browser_manager.cc",
+    "default_browser_monitor.cc",
+    "default_browser_monitor.h",
+    "default_browser_setter.h",
+    "setters/shell_integration_default_browser_setter.cc",
+    "setters/shell_integration_default_browser_setter.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [ "//chrome/browser:shell_integration" ]
+
+  if (is_win) {
+    sources += [ "default_browser_monitor_win.cc" ]
+
+    deps += [ "//chrome/browser/win:registry_watcher" ]
+  } else {
+    sources += [ "default_browser_monitor_stub.cc" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "default_browser_controller_unittest.cc",
+    "default_browser_features_unittest.cc",
+    "default_browser_manager_unittest.cc",
+    "setters/shell_integration_default_browser_setter_unittest.cc",
+  ]
+
+  deps = [
+    ":default_browser",
+    "//base/test:test_support",
+    "//chrome/browser:shell_integration",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "default_browser_manager_browsertest.cc" ]
+
+  deps = [
+    ":default_browser",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//ui/base",
+  ]
+}

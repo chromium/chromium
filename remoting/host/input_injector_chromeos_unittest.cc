@@ -105,10 +105,6 @@ class InputInjectorChromeosTest : public ash::AshTestBase {
   ~InputInjectorChromeosTest() override = default;
 
   void SetUp() override {
-    // Unset the resource bundle set by our own test suite...
-    ui::ResourceBundle::CleanupSharedInstance();
-    // ... since Ash requires that we load their resource bundle.
-    ash::AshTestSuite::LoadTestResources();
     ash::AshTestBase::SetUp();
 
     input_injector_ = std::make_unique<InputInjectorChromeos>(

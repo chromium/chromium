@@ -11,7 +11,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace base {
 class Value;
@@ -53,12 +56,16 @@ syncer::SyncChange CreateDelete(const ExtensionId& extension_id,
                                 syncer::DataType type);
 
 // Returns a callback that provides a SyncableService. The function must be
-// called on the UI thread and |type| must be either APP_SETTINGS or
+// called on the UI thread and `type` must be either APP_SETTINGS or
 // EXTENSION_SETTINGS. The returned callback must be called on the backend
 // sequence.
 base::OnceCallback<base::WeakPtr<syncer::SyncableService>()>
 GetSyncableServiceProvider(content::BrowserContext* context,
                            syncer::DataType type);
+
+// Returns the client tag for an extension or app setting.
+std::string ConstructClientTag(const ExtensionId& extension_id,
+                               const std::string& key);
 
 }  // namespace settings_sync_util
 

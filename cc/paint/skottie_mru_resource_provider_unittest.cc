@@ -74,6 +74,9 @@ class FrameDataStub {
 class SkottieMRUResourceProviderTest : public ::testing::Test {
  protected:
   void Init(std::string_view animation_json) {
+    // Clear the raw pointer before destroying the old provider to avoid
+    // dangling pointer when Init() is called multiple times in a test.
+    provider_base_ = nullptr;
     provider_ = sk_make_sp<SkottieMRUResourceProvider>(
         base::BindRepeating(&FrameDataStub::GetFrameDataForAsset,
                             base::Unretained(&frame_data_stub_)),
@@ -83,7 +86,7 @@ class SkottieMRUResourceProviderTest : public ::testing::Test {
 
   FrameDataStub frame_data_stub_;
   sk_sp<SkottieMRUResourceProvider> provider_;
-  raw_ptr<skresources::ResourceProvider, DanglingUntriaged> provider_base_;
+  raw_ptr<skresources::ResourceProvider> provider_base_;
 };
 
 TEST_F(SkottieMRUResourceProviderTest, ProvidesMostRecentFrameDataForAsset) {

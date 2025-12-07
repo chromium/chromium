@@ -32,21 +32,10 @@ CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair() {
   return CrossUserSharingPublicPrivateKeyPair();
 }
 
-// static
-std::optional<CrossUserSharingPublicPrivateKeyPair>
-CrossUserSharingPublicPrivateKeyPair::CreateByImport(
-    base::span<const uint8_t> private_key) {
-  if (private_key.size() != X25519_PRIVATE_KEY_LEN) {
-    return std::nullopt;
-  }
-  return CrossUserSharingPublicPrivateKeyPair(std::move(private_key));
-}
-
 CrossUserSharingPublicPrivateKeyPair::CrossUserSharingPublicPrivateKeyPair(
-    base::span<const uint8_t> private_key) {
-  CHECK_EQ(static_cast<size_t>(X25519_PRIVATE_KEY_LEN), private_key.size());
+    base::span<const uint8_t, X25519_PRIVATE_KEY_LEN> private_key) {
   CHECK(EVP_HPKE_KEY_init(key_.get(), EVP_hpke_x25519_hkdf_sha256(),
-                          private_key.data(), X25519_PRIVATE_KEY_LEN));
+                          private_key.data(), private_key.size()));
 }
 
 CrossUserSharingPublicPrivateKeyPair::CrossUserSharingPublicPrivateKeyPair() {
@@ -102,7 +91,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthEncrypt(
                         EVP_HPKE_CTX_max_overhead(sender_context.get()));
 
   base::span<uint8_t> ciphertext =
-      base::make_span(encrypted_data).subspan(encapsulated_shared_secret_len);
+      base::span(encrypted_data).subspan(encapsulated_shared_secret_len);
   size_t ciphertext_len;
 
   if (!EVP_HPKE_CTX_seal(
@@ -148,8 +137,7 @@ CrossUserSharingPublicPrivateKeyPair::HpkeAuthDecrypt(
     return std::nullopt;
   }
 
-  base::span<const uint8_t> ciphertext =
-      encrypted_data.subspan(X25519_PUBLIC_VALUE_LEN);
+  auto ciphertext = encrypted_data.subspan<X25519_PUBLIC_VALUE_LEN>();
   std::vector<uint8_t> plaintext(ciphertext.size());
   size_t plaintext_len;
 

@@ -57,10 +57,9 @@ class TemplateURLParserTest : public testing::Test {
   data_decoder::test::InProcessDataDecoder data_decoder_;
 };
 
-TemplateURLParserTest::TemplateURLParserTest() {}
+TemplateURLParserTest::TemplateURLParserTest() = default;
 
-TemplateURLParserTest::~TemplateURLParserTest() {
-}
+TemplateURLParserTest::~TemplateURLParserTest() = default;
 
 void TemplateURLParserTest::SetUp() {
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &osdd_dir_));

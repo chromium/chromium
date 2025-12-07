@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -20,9 +19,8 @@ class FileSystemObservation;
 
 class FileSystemObservationCollection final
     : public GarbageCollected<FileSystemObservationCollection>,
-      public Supplement<ExecutionContext> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
   static FileSystemObservationCollection* From(ExecutionContext* context);
   explicit FileSystemObservationCollection(ExecutionContext& context);
   ~FileSystemObservationCollection() = default;
@@ -42,11 +40,12 @@ class FileSystemObservationCollection final
 
  private:
   Member<ExecutionContext> execution_context_;
+
   // Map of observers with active observations. The observer should stick around
   // for as long as there are active observations. As such, it is a Member of
   // the HeapHashMap.
   HeapHashMap<Member<FileSystemObserver>,
-              Member<HeapHashSet<Member<FileSystemObservation>>>>
+              Member<GCedHeapHashSet<Member<FileSystemObservation>>>>
       observation_map_;
 };
 

@@ -24,6 +24,9 @@ class TabOrganizationUtils {
   // for the given profile.
   bool IsEnabled(Profile* profile);
 
+  // Returns true if the tab organization feature should be visible in settings.
+  bool IsSettingVisible(Profile* profile);
+
  protected:
   TabOrganizationUtils();
   ~TabOrganizationUtils();

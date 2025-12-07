@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -22,12 +21,14 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/base/filename_util.h"
 
 #if !BUILDFLAG(ENABLE_PROCESS_SINGLETON)
@@ -36,7 +37,7 @@
 
 class ChromeMainTest : public InProcessBrowserTest {
  public:
-  ChromeMainTest() {}
+  ChromeMainTest() = default;
 
   void Relaunch(const base::CommandLine& new_command_line) {
     base::LaunchProcess(new_command_line, base::LaunchOptionsForTest());
@@ -67,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunch) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, ReuseBrowserInstanceWhenOpeningFile) {
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("empty.html"));
   base::CommandLine new_command_line(GetCommandLineForRelaunch());
   new_command_line.AppendArgPath(test_file_path);
@@ -85,7 +86,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithIncognitoUrl) {
   ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(browser()->profile()));
 
   // Run with --incognito switch and an URL specified.
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("empty.html"));
   base::CommandLine new_command_line(GetCommandLineForRelaunch());
   new_command_line.AppendSwitch(switches::kIncognito);
@@ -120,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   ASSERT_EQ(0u, chrome::GetTabbedBrowserCount(profile));
 
   // Run with just an URL specified, no --incognito switch.
-  base::FilePath test_file_path = ui_test_utils::GetTestFilePath(
+  base::FilePath test_file_path = chrome_test_utils::GetTestFilePath(
       base::FilePath(), base::FilePath().AppendASCII("empty.html"));
   base::CommandLine new_command_line(GetCommandLineForRelaunch());
   new_command_line.AppendArgPath(test_file_path);
@@ -132,8 +133,8 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchFromIncognitoWithNormalUrl) {
   ASSERT_EQ(1u, chrome::GetTabbedBrowserCount(profile));
 }
 
-// Multi-profile is not supported on Ash.
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+// Multi-profile is not supported on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileDir) {
   const base::FilePath kProfileDir(FILE_PATH_LITERAL("Other"));
   Profile* other_profile = CreateProfile(kProfileDir);
@@ -162,12 +163,12 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileEmail) {
   Profile* profile1 = CreateProfile(kProfileDir1);
   ASSERT_TRUE(profile1);
   storage->GetProfileAttributesWithPath(profile1->GetPath())
-      ->SetAuthInfo("gaia_id_1", base::UTF8ToUTF16(kProfileEmail1),
+      ->SetAuthInfo(GaiaId("gaia_id_1"), base::UTF8ToUTF16(kProfileEmail1),
                     /*is_consented_primary_account=*/false);
   Profile* profile2 = CreateProfile(kProfileDir2);
   ASSERT_TRUE(profile2);
   storage->GetProfileAttributesWithPath(profile2->GetPath())
-      ->SetAuthInfo("gaia_id_2", base::UTF8ToUTF16(kProfileEmail2),
+      ->SetAuthInfo(GaiaId("gaia_id_2"), base::UTF8ToUTF16(kProfileEmail2),
                     /*is_consented_primary_account=*/false);
   base::RunLoop run_loop;
   g_browser_process->FlushLocalStateAndReply(
@@ -188,4 +189,4 @@ IN_PROC_BROWSER_TEST_F(ChromeMainTest, SecondLaunchWithProfileEmail) {
   EXPECT_EQ(new_browser->profile(), profile2);
   EXPECT_EQ(original_browser_count + 2, chrome::GetTotalBrowserCount());
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)

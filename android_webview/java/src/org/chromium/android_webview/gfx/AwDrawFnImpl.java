@@ -6,15 +6,19 @@ package org.chromium.android_webview.gfx;
 
 import android.graphics.Canvas;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.NullMarked;
 
 /** Implementation of draw_fn.h. */
 @JNINamespace("android_webview")
 @Lifetime.WebView
-public class AwDrawFnImpl implements AwFunctor {
+@NullMarked
+public final class AwDrawFnImpl {
     private long mNativeAwDrawFnImpl;
     private final DrawFnAccess mAccess;
     private final int mHandle;
@@ -27,13 +31,13 @@ public class AwDrawFnImpl implements AwFunctor {
     public AwDrawFnImpl(DrawFnAccess access) {
         mAccess = access;
         mNativeAwDrawFnImpl = AwDrawFnImplJni.get().create();
-        mHandle = AwDrawFnImplJni.get().getFunctorHandle(mNativeAwDrawFnImpl, AwDrawFnImpl.this);
+        mHandle = AwDrawFnImplJni.get().getFunctorHandle(mNativeAwDrawFnImpl);
     }
 
-    @Override
+    /** Destroy on UI thread. Client should stop using CompositorFrameConsumer before this */
     public void destroy() {
         assert mNativeAwDrawFnImpl != 0;
-        AwDrawFnImplJni.get().releaseHandle(mNativeAwDrawFnImpl, AwDrawFnImpl.this);
+        AwDrawFnImplJni.get().releaseHandle(mNativeAwDrawFnImpl);
         // Native side is free to destroy itself after ReleaseHandle.
         mNativeAwDrawFnImpl = 0;
     }
@@ -42,33 +46,42 @@ public class AwDrawFnImpl implements AwFunctor {
         AwDrawFnImplJni.get().setDrawFnFunctionTable(functionTablePointer);
     }
 
-    @Override
+    /** Return the raw native pointer to CompositorFrameConsumer */
     public long getNativeCompositorFrameConsumer() {
         assert mNativeAwDrawFnImpl != 0;
-        return AwDrawFnImplJni.get()
-                .getCompositorFrameConsumer(mNativeAwDrawFnImpl, AwDrawFnImpl.this);
+        return AwDrawFnImplJni.get().getCompositorFrameConsumer(mNativeAwDrawFnImpl);
     }
 
-    @Override
+    /** Insert draw functor into recording canvas */
     public boolean requestDraw(Canvas canvas) {
         assert mNativeAwDrawFnImpl != 0;
         mAccess.drawWebViewFunctor(canvas, mHandle);
         return true;
     }
 
-    @Override
-    public void trimMemory() {}
+    /**
+     * Intended for test code.
+     *
+     * @return the number of references from WebView to this class. The remaining references are
+     *     from Android libhwui.
+     */
+    @VisibleForTesting
+    public static int getReferenceInstanceCount() {
+        return AwDrawFnImplJni.get().getReferenceInstanceCount();
+    }
 
     @NativeMethods
     interface Natives {
-        int getFunctorHandle(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+        int getFunctorHandle(long nativeAwDrawFnImpl);
 
-        long getCompositorFrameConsumer(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+        long getCompositorFrameConsumer(long nativeAwDrawFnImpl);
 
-        void releaseHandle(long nativeAwDrawFnImpl, AwDrawFnImpl caller);
+        void releaseHandle(long nativeAwDrawFnImpl);
 
         void setDrawFnFunctionTable(long functionTablePointer);
 
         long create();
+
+        int getReferenceInstanceCount();
     }
 }

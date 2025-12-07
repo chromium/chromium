@@ -69,6 +69,11 @@ class TwoClientWorkspaceDeskSyncTest : public SyncTest {
       const TwoClientWorkspaceDeskSyncTest&) = delete;
   ~TwoClientWorkspaceDeskSyncTest() override = default;
 
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
   base::Time AdvanceAndGetTime(base::TimeDelta delta = base::Milliseconds(10)) {
     clock_.Advance(delta);
     return clock_.Now();
@@ -149,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWorkspaceDeskSyncTest,
           /*creation_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime()),
           /*last_modified_time=*/syncer::TimeToProtoTime(AdvanceAndGetTime())));
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
   // Make sure the template is on both client.
   ASSERT_TRUE(
       workspace_desk_helper::DeskUuidChecker(

@@ -20,7 +20,6 @@ AudioClock::AudioClock(base::TimeDelta start_timestamp, int sample_rate)
       microseconds_per_frame_(
           static_cast<double>(base::Time::kMicrosecondsPerSecond) /
           sample_rate),
-      total_buffered_frames_(0),
       front_timestamp_micros_(start_timestamp.InMicrosecondsF()),
       back_timestamp_micros_(start_timestamp.InMicrosecondsF()) {}
 
@@ -30,10 +29,10 @@ void AudioClock::WroteAudio(int frames_written,
                             int frames_requested,
                             int delay_frames,
                             double playback_rate) {
-  DCHECK_GE(frames_written, 0);
-  DCHECK_LE(frames_written, frames_requested);
-  DCHECK_GE(delay_frames, 0);
-  DCHECK_GE(playback_rate, 0);
+  CHECK_GE(frames_written, 0);
+  CHECK_LE(frames_written, frames_requested);
+  CHECK_GE(delay_frames, 0);
+  CHECK_GE(playback_rate, 0);
 
   // First write: initialize buffer with silence.
   if (start_timestamp_.InMicrosecondsF() == front_timestamp_micros_ &&
@@ -43,14 +42,12 @@ void AudioClock::WroteAudio(int frames_written,
 
   // Move frames from |buffered_| into the computed timestamp based on
   // |delay_frames|.
-  //
-  // The ordering of compute -> push -> pop eliminates unnecessary memory
-  // reallocations in cases where |buffered_| gets emptied.
   int64_t frames_played =
       std::max(INT64_C(0), total_buffered_frames_ - delay_frames);
+  PopBufferedAudioData(frames_played);
+
   PushBufferedAudioData(frames_written, playback_rate);
   PushBufferedAudioData(frames_requested - frames_written, 0.0);
-  PopBufferedAudioData(frames_played);
 
   // Update our front and back timestamps.  The back timestamp is considered the
   // authoritative source of truth, so base the front timestamp on range of data
@@ -95,16 +92,16 @@ base::TimeDelta AudioClock::TimeUntilPlayback(base::TimeDelta timestamp) const {
   double timestamp_us = timestamp.InMicrosecondsF();
   double media_time_us = front_timestamp().InMicrosecondsF();
 
-  for (size_t i = 0; i < buffered_.size(); ++i) {
+  for (const auto& buffer : buffered_) {
     // Leading silence is always accounted prior to anything else.
-    if (buffered_[i].playback_rate == 0) {
-      frames_until_timestamp += buffered_[i].frames;
+    if (buffer.playback_rate == 0) {
+      frames_until_timestamp += buffer.frames;
       continue;
     }
 
     // Calculate upper bound on media time for current block of buffered frames.
-    double delta_us = buffered_[i].frames * buffered_[i].playback_rate *
-                      microseconds_per_frame_;
+    double delta_us =
+        buffer.frames * buffer.playback_rate * microseconds_per_frame_;
     double max_media_time_us = media_time_us + delta_us;
 
     // Determine amount of media time to convert to frames for current block. If
@@ -112,12 +109,12 @@ base::TimeDelta AudioClock::TimeUntilPlayback(base::TimeDelta timestamp) const {
     // based on remaining amount of media time.
     if (timestamp_us <= max_media_time_us) {
       frames_until_timestamp +=
-          buffered_[i].frames * (timestamp_us - media_time_us) / delta_us;
+          buffer.frames * (timestamp_us - media_time_us) / delta_us;
       break;
     }
 
     media_time_us = max_media_time_us;
-    frames_until_timestamp += buffered_[i].frames;
+    frames_until_timestamp += buffer.frames;
   }
 
   return base::Microseconds(
@@ -171,11 +168,11 @@ void AudioClock::PushBufferedAudioData(int64_t frames, double playback_rate) {
 }
 
 void AudioClock::PopBufferedAudioData(int64_t frames) {
-  DCHECK_LE(frames, total_buffered_frames_);
+  CHECK_LE(frames, total_buffered_frames_);
 
   total_buffered_frames_ -= frames;
 
-  while (frames > 0) {
+  while (frames > 0 && !buffered_.empty()) {
     int64_t frames_to_pop = std::min(buffered_.front().frames, frames);
     buffered_.front().frames -= frames_to_pop;
     if (buffered_.front().frames == 0)
@@ -183,12 +180,20 @@ void AudioClock::PopBufferedAudioData(int64_t frames) {
 
     frames -= frames_to_pop;
   }
+
+  // We can get in a bad state on some platforms. We're unsure what conditions
+  // lead to this, but resetting `total_buffered_frames_` here is reasonable.
+  // See crbug.com/413474566.
+  if (buffered_.empty()) {
+    total_buffered_frames_ = 0;
+  }
 }
 
 double AudioClock::ComputeBufferedMediaDurationMicros() const {
   double scaled_frames = 0;
-  for (const auto& buffer : buffered_)
+  for (const auto& buffer : buffered_) {
     scaled_frames += buffer.frames * buffer.playback_rate;
+  }
   return scaled_frames * microseconds_per_frame_;
 }
 

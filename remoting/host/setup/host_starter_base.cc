@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,7 +26,6 @@
 #include "remoting/base/fqdn.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/host/host_config.h"
-#include "remoting/host/pin_hash.h"
 #include "remoting/host/setup/daemon_controller.h"
 #include "remoting/host/setup/host_starter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -34,7 +34,7 @@ namespace remoting {
 
 HostStarterBase::HostStarterBase(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(url_loader_factory) {
+    : oauth_helper_(url_loader_factory) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
 }
 
@@ -44,17 +44,16 @@ void HostStarterBase::StartHost(Params params, CompletionCallback on_done) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!on_done_);
 
+  // |auth_code| and |redirect_url| must either both be populated or both empty.
+  CHECK(params.auth_code.empty() == params.redirect_url.empty());
+
   start_host_params_ = std::move(params);
+  on_done_ = std::move(on_done);
+
   if (start_host_params_.name.empty()) {
     // Use the FQDN if a name was not provided via the command line.
     start_host_params_.name = GetFqdn();
   }
-  // |auth_code| and |redirect_url| must match and either be populated or empty.
-  DCHECK(start_host_params_.auth_code.empty() ==
-         start_host_params_.redirect_url.empty());
-
-  on_done_ = std::move(on_done);
-  key_pair_ = RsaKeyPair::Generate();
 
   // Check to see if there is an existing host instance on this machine which
   // needs to be cleaned up before we can create and start a new host instance.
@@ -77,38 +76,14 @@ void HostStarterBase::OnExistingConfigLoaded(
     }
   }
 
-  if (!start_host_params_.auth_code.empty()) {
-    oauth_helper_.emplace(url_loader_factory_)
-        .FetchTokens(
-            start_host_params_.owner_email, start_host_params_.auth_code,
-            {
-                .client_id = google_apis::GetOAuth2ClientID(
-                    google_apis::CLIENT_REMOTING),
-                .client_secret = google_apis::GetOAuth2ClientSecret(
-                    google_apis::CLIENT_REMOTING),
-                .redirect_uri = start_host_params_.redirect_url,
-            },
-            base::BindOnce(&HostStarterBase::OnUserTokensRetrieved, weak_ptr_),
-            base::BindOnce(&HostStarterBase::HandleError, weak_ptr_));
-  } else {
-    RegisterNewHost(std::string(), key_pair_->GetPublicKey());
-  }
+  RetrieveApiAccessToken();
 }
 
-void HostStarterBase::OnUserTokensRetrieved(const std::string& user_email,
-                                            const std::string& access_token,
-                                            const std::string& refresh_token) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  // If an owner email was not provided, then use the account which created the
-  // authorization code.
-  if (start_host_params_.owner_email.empty()) {
-    start_host_params_.owner_email = base::ToLowerASCII(user_email);
-  }
-
-  // We don't need a `refresh_token` for the user so ignore it even if the
-  // authorization_code was created with the offline param.
-  RegisterNewHost(access_token, key_pair_->GetPublicKey());
+void HostStarterBase::RetrieveApiAccessToken() {
+  // Subclasses which require an access token for their specific provisioning
+  // RPC should override this method and call RegisterNewHost() on completion or
+  // ReportError() if an access token cannot be retrieved.
+  RegisterNewHost(/*access_token=*/std::nullopt);
 }
 
 void HostStarterBase::OnNewHostRegistered(
@@ -153,25 +128,25 @@ void HostStarterBase::OnNewHostRegistered(
     return;
   }
 
-  oauth_helper_.emplace(url_loader_factory_)
-      .FetchTokens(
-          service_account_email, authorization_code,
-          {
-              .client_id = google_apis::GetOAuth2ClientID(
-                  google_apis::CLIENT_REMOTING_HOST),
-              .client_secret = google_apis::GetOAuth2ClientSecret(
-                  google_apis::CLIENT_REMOTING_HOST),
-              // Service account requests do not set |redirect_uri|.
-          },
-          base::BindOnce(&HostStarterBase::OnServiceAccountTokensRetrieved,
-                         weak_ptr_),
-          base::BindOnce(&HostStarterBase::HandleError, weak_ptr_));
+  oauth_helper_.FetchTokens(
+      service_account_email, authorization_code,
+      {
+          .client_id =
+              google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST),
+          .client_secret = google_apis::GetOAuth2ClientSecret(
+              google_apis::CLIENT_REMOTING_HOST),
+          // Service account requests do not set |redirect_uri|.
+      },
+      base::BindOnce(&HostStarterBase::OnServiceAccountTokensRetrieved,
+                     weak_ptr_),
+      base::BindOnce(&HostStarterBase::HandleError, weak_ptr_));
 }
 
 void HostStarterBase::OnServiceAccountTokensRetrieved(
     const std::string& service_account_email,
     const std::string& access_token,
-    const std::string& refresh_token) {
+    const std::string& refresh_token,
+    const std::string& scopes) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (service_account_email_.empty()) {
@@ -228,11 +203,11 @@ void HostStarterBase::GenerateConfigFile() {
   if (!start_host_params_.name.empty()) {
     config.Set(kHostNameConfigPath, start_host_params_.name);
   }
-  if (!start_host_params_.pin.empty()) {
-    std::string host_secret_hash = remoting::MakeHostPinHash(
-        start_host_params_.id, start_host_params_.pin);
-    config.Set(kHostSecretHashConfigPath, host_secret_hash);
-  }
+
+  ApplyConfigValues(config);
+
+  config.Set(kUsageStatsConsentConfigPath,
+             start_host_params_.enable_crash_reporting);
 
   daemon_controller_->SetConfigAndStart(
       std::move(config), start_host_params_.enable_crash_reporting,
@@ -257,10 +232,10 @@ void HostStarterBase::HandleError(const std::string& error_message,
   ReportError(error_message, base::BindOnce(std::move(on_done_), error_result));
 }
 
-void HostStarterBase::HandleHttpStatusError(const ProtobufHttpStatus& status) {
+void HostStarterBase::HandleHttpStatusError(const HttpStatus& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ProtobufHttpStatus::Code error_code = status.error_code();
+  HttpStatus::Code error_code = status.error_code();
   std::string error_message = status.error_message();
   LOG(ERROR) << "\n  Received error code: " << static_cast<int>(error_code)
              << ", message: " << error_message;
@@ -289,9 +264,9 @@ void HostStarterBase::HandleHttpStatusError(const ProtobufHttpStatus& status) {
   }
 
   auto result = NETWORK_ERROR;
-  if (error_code == ProtobufHttpStatus::Code::PERMISSION_DENIED) {
+  if (error_code == HttpStatus::Code::PERMISSION_DENIED) {
     result = PERMISSION_DENIED;
-  } else if (error_code == ProtobufHttpStatus::Code::UNAUTHENTICATED) {
+  } else if (error_code == HttpStatus::Code::UNAUTHENTICATED) {
     result = OAUTH_ERROR;
   }
 

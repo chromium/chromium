@@ -24,4 +24,9 @@ bool TestSafeBrowsingTokenFetcher::WasStartCalled() {
   return was_start_called_;
 }
 
+base::WeakPtr<TestSafeBrowsingTokenFetcher>
+TestSafeBrowsingTokenFetcher::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace safe_browsing

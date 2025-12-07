@@ -32,17 +32,16 @@ requests: [
     "cached": false,
     "cachedInMemory": false,
     "contentData": {
-      "error": null,
       "content": "fake page data",
-      "encoded": false
+      "isEncoded": false
     },
     "remoteAddress": "[::1]:80",
     "resourceType": {},
     "priority": "VeryHigh",
     "finished": true,
     "timing": {
-      "proxyStart": 2.0154479999188335,
-      "proxyEnd": 2.4644479999188333,
+      "proxyStart": 1.5674480810854585,
+      "proxyEnd": 2.0164480810854584,
       "requestTime": 1542746587.755448,
       "dnsStart": -1,
       "dnsEnd": -1,
@@ -54,12 +53,12 @@ requests: [
       "workerReady": -1,
       "workerFetchStart": -1,
       "workerRespondWithSettled": -1,
-      "sendStart": 2.4644479999188333,
-      "sendEnd": 2.534447999918833,
+      "sendStart": 2.0164480810854584,
+      "sendEnd": 2.086448081085458,
       "pushStart": 0,
       "pushEnd": 0,
-      "receiveHeadersStart": 2.534447999918833,
-      "receiveHeadersEnd": 5.624447982991114
+      "receiveHeadersStart": 2.086448081085458,
+      "receiveHeadersEnd": 5.176448064157739
     },
     "endTime": 1542746587.7661417,
     "frames": []
@@ -86,17 +85,16 @@ requests: [
     "cached": false,
     "cachedInMemory": false,
     "contentData": {
-      "error": null,
-      "content": null,
-      "encoded": false
+      "content": "",
+      "isEncoded": false
     },
     "remoteAddress": "[::1]:80",
     "resourceType": {},
     "priority": "Low",
     "finished": true,
     "timing": {
-      "proxyStart": 1.7575360001232476,
-      "proxyEnd": 2.2485360001232477,
+      "proxyStart": 1.2215358768757434,
+      "proxyEnd": 1.7125358768757435,
       "requestTime": 1542746587.8705359,
       "dnsStart": -1,
       "dnsEnd": -1,
@@ -108,12 +106,12 @@ requests: [
       "workerReady": -1,
       "workerFetchStart": -1,
       "workerRespondWithSettled": -1,
-      "sendStart": 2.2485360001232477,
-      "sendEnd": 2.3095360001232477,
+      "sendStart": 1.7125358768757435,
+      "sendEnd": 1.7735358768757434,
       "pushStart": 0,
       "pushEnd": 0,
-      "receiveHeadersStart": 2.3095360001232477,
-      "receiveHeadersEnd": 2.828536113491282
+      "receiveHeadersStart": 1.7735358768757434,
+      "receiveHeadersEnd": 2.2925359902437776
     },
     "endTime": 1542746587.8738945,
     "frames": []
@@ -136,17 +134,16 @@ requests: [
     "cached": false,
     "cachedInMemory": false,
     "contentData": {
-      "error": null,
-      "content": null,
-      "encoded": false
+      "content": "",
+      "isEncoded": false
     },
     "remoteAddress": "[::1]:80",
     "resourceType": {},
     "priority": "Low",
     "finished": true,
     "timing": {
-      "proxyStart": 1.7575360001232476,
-      "proxyEnd": 2.2485360001232477,
+      "proxyStart": 1.2215358768757434,
+      "proxyEnd": 1.7125358768757435,
       "requestTime": 1542746587.8705359,
       "dnsStart": -1,
       "dnsEnd": -1,
@@ -158,12 +155,12 @@ requests: [
       "workerReady": -1,
       "workerFetchStart": -1,
       "workerRespondWithSettled": -1,
-      "sendStart": 2.2485360001232477,
-      "sendEnd": 2.3095360001232477,
+      "sendStart": 1.7125358768757435,
+      "sendEnd": 1.7735358768757434,
       "pushStart": 0,
       "pushEnd": 0,
-      "receiveHeadersStart": 2.3095360001232477,
-      "receiveHeadersEnd": 2.828536113491282
+      "receiveHeadersStart": 1.7735358768757434,
+      "receiveHeadersEnd": 2.2925359902437776
     },
     "endTime": 1542746587.8738945,
     "frames": []
@@ -192,17 +189,16 @@ requests: [
     "cached": false,
     "cachedInMemory": false,
     "contentData": {
-      "error": null,
-      "content": null,
-      "encoded": false
+      "content": "",
+      "isEncoded": false
     },
     "remoteAddress": "[::1]:80",
     "resourceType": {},
     "priority": "Low",
     "finished": true,
     "timing": {
-      "proxyStart": 1.7575360001232476,
-      "proxyEnd": 2.2485360001232477,
+      "proxyStart": 1.2215358768757434,
+      "proxyEnd": 1.7125358768757435,
       "requestTime": 1542746587.8705359,
       "dnsStart": -1,
       "dnsEnd": -1,
@@ -214,12 +210,12 @@ requests: [
       "workerReady": -1,
       "workerFetchStart": -1,
       "workerRespondWithSettled": -1,
-      "sendStart": 2.2485360001232477,
-      "sendEnd": 2.3095360001232477,
+      "sendStart": 1.7125358768757435,
+      "sendEnd": 1.7735358768757434,
       "pushStart": 0,
       "pushEnd": 0,
-      "receiveHeadersStart": 2.3095360001232477,
-      "receiveHeadersEnd": 2.828536113491282
+      "receiveHeadersStart": 1.7735358768757434,
+      "receiveHeadersEnd": 2.2925359902437776
     },
     "endTime": 1542746587.8738945,
     "frames": []
@@ -338,9 +334,8 @@ requests: [
     "cached": false,
     "cachedInMemory": false,
     "contentData": {
-      "error": null,
-      "content": null,
-      "encoded": false
+      "content": "",
+      "isEncoded": false
     },
     "remoteAddress": ":80",
     "resourceType": {},

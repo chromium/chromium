@@ -1,0 +1,20 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_ios) {
+  import("//build/config/ios/ios_sdk.gni")
+  sdk_path = ios_sdk_path
+  use_xcode_symlinks = ios_use_xcode_symlinks
+} else if (is_mac) {
+  import("//build/config/mac/mac_sdk.gni")
+  sdk_path = mac_sdk_path
+  use_xcode_symlinks = mac_use_xcode_symlinks
+} else {
+  use_xcode_symlinks = false
+}
+
+if (is_apple) {
+  frameworks_dir = "${sdk_path}/System/Library/Frameworks"
+  sysroot_include_dir = "${sdk_path}/usr/include"
+}

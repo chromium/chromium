@@ -17,7 +17,7 @@ using ExtendedUpdatesNoticeQuickSettingsViewPixelTest =
 
 TEST_F(ExtendedUpdatesNoticeQuickSettingsViewPixelTest, Basics) {
   AddChildView(std::make_unique<ExtendedUpdatesNoticeQuickSettingsView>());
-  DiffView(/*revision_number=*/1);
+  DiffView(/*revision_number=*/2);
 }
 
 }  // namespace ash

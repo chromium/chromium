@@ -8,8 +8,11 @@
 #include <cstdint>
 #include <string>
 
+#include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "content/common/content_export.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -22,19 +25,34 @@ class CONTENT_EXPORT DirectSocketsDelegate {
  public:
   enum class ProtocolType { kTcp, kConnectedUdp, kBoundUdp, kTcpServer };
 
+  struct RequestDetails {
+    std::string address;
+    uint16_t port;
+    ProtocolType protocol;
+  };
+
   virtual ~DirectSocketsDelegate() = default;
 
-  // Allows embedders to introduce additional rules for API access.
-  virtual bool IsAPIAccessAllowed(content::RenderFrameHost& rfh) = 0;
-
   // Allows embedders to introduce additional rules for specific
-  // addresses/ports. |lock_url| is the URL to which the renderer
-  // process is locked.
-  virtual bool ValidateAddressAndPort(content::BrowserContext* browser_context,
-                                      const GURL& lock_url,
-                                      const std::string& address,
-                                      uint16_t port,
-                                      ProtocolType) = 0;
+  // addresses/ports.
+  virtual bool ValidateRequest(RenderFrameHost& rfh, const RequestDetails&) = 0;
+  virtual bool ValidateRequestForSharedWorker(BrowserContext* browser_context,
+                                              const GURL& shared_worker_url,
+                                              const RequestDetails&) = 0;
+  virtual bool ValidateRequestForServiceWorker(BrowserContext* browser_context,
+                                               const url::Origin& origin,
+                                               const RequestDetails&) = 0;
+
+  // Allows embedders to introduce additional rules for private network access.
+  virtual void RequestPrivateNetworkAccess(
+      RenderFrameHost& rfh,
+      base::OnceCallback<void(/*access_allowed=*/bool)>) = 0;
+  virtual bool IsPrivateNetworkAccessAllowedForSharedWorker(
+      BrowserContext* browser_context,
+      const GURL& shared_worker_url) = 0;
+  virtual bool IsPrivateNetworkAccessAllowedForServiceWorker(
+      BrowserContext* browser_context,
+      const url::Origin& origin) = 0;
 };
 
 }  // namespace content

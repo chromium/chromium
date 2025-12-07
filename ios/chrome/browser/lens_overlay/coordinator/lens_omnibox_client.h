@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OMNIBOX_CLIENT_H_
 #define IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_LENS_OMNIBOX_CLIENT_H_
 
-#include <memory>
+#import <memory>
 
 #import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
@@ -13,9 +13,10 @@
 #import "components/omnibox/browser/omnibox_client.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 
-class ChromeBrowserState;
 @protocol LensOmniboxClientDelegate;
 @protocol LensWebProvider;
+class ProfileIOS;
+
 namespace feature_engagement {
 class Tracker;
 }
@@ -24,7 +25,7 @@ class Tracker;
 /// Interface that allows the omnibox component to interact with its embedder.
 class LensOmniboxClient final : public OmniboxClient {
  public:
-  LensOmniboxClient(ChromeBrowserState* browser_state,
+  LensOmniboxClient(ProfileIOS* profile,
                     feature_engagement::Tracker* tracker,
                     id<LensWebProvider> web_provider,
                     id<LensOmniboxClientDelegate> omnibox_delegate);
@@ -33,6 +34,23 @@ class LensOmniboxClient final : public OmniboxClient {
   LensOmniboxClient& operator=(const LensOmniboxClient&) = delete;
 
   ~LensOmniboxClient() override;
+
+  void SetLensOverlaySuggestInputs(
+      std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs) {
+    lens_overlay_suggest_inputs_ = suggest_inputs;
+  }
+
+  void SetLensResultHasThumbnail(BOOL has_thumbnail) {
+    lens_result_has_thumbnail_ = has_thumbnail;
+  }
+
+  void SetOmniboxSteadyStateText(NSString* text) {
+    omnibox_steady_state_text_ = [text copy];
+  }
+
+  NSString* GetOmniboxSteadyStateText() const {
+    return omnibox_steady_state_text_;
+  }
 
   // OmniboxClient.
   std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
@@ -44,6 +62,7 @@ class LensOmniboxClient final : public OmniboxClient {
   bool IsDefaultSearchProviderEnabled() const override;
   SessionID GetSessionID() const override;
   PrefService* GetPrefs() override;
+  const PrefService* GetPrefs() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
@@ -52,24 +71,33 @@ class LensOmniboxClient final : public OmniboxClient {
   bool ShouldDefaultTypedNavigationsToHttps() const override;
   int GetHttpsPortForTesting() const override;
   bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
-  gfx::Image GetIconIfExtensionMatch(
-      const AutocompleteMatch& match) const override;
+  gfx::Image GetExtensionIcon(const TemplateURL* template_url) const override;
   std::u16string GetFormattedFullURL() const override;
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      OmniboxFocusSource focus_source,
-      bool is_prefetch) override;
+      bool is_prefetch) const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  bool ProcessExtensionKeyword(const std::u16string& text,
-                               const TemplateURL* template_url,
-                               const AutocompleteMatch& match,
-                               WindowOpenDisposition disposition) override;
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputs() const override;
+
+  void ProcessExtensionMatch(const std::u16string& text,
+                             const TemplateURL* template_url,
+                             const AutocompleteMatch& match,
+                             WindowOpenDisposition disposition) override;
   void DiscardNonCommittedNavigations() override;
   const std::u16string& GetTitle() const override;
   gfx::Image GetFavicon() const override;
+  void OnTextChanged(const AutocompleteMatch& current_match,
+                     bool user_input_in_progress,
+                     const std::u16string& user_text,
+                     const AutocompleteResult& result,
+                     bool has_focus) override;
+  void OnThumbnailRemoved() override;
+  void OnFocusChanged(OmniboxFocusState state,
+                      OmniboxFocusChangeReason reason) override;
   void OnAutocompleteAccept(
       const GURL& destination_url,
       TemplateURLRef::PostContent* post_content,
@@ -81,16 +109,23 @@ class LensOmniboxClient final : public OmniboxClient {
       bool destination_url_entered_with_http_scheme,
       const std::u16string& text,
       const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match,
-      IDNA2008DeviationCharacter deviation_char_in_hostname) override;
+      const AutocompleteMatch& alternative_nav_match) override;
+  void OnThumbnailOnlyAccept() override;
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS, DanglingUntriaged> profile_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   raw_ptr<feature_engagement::Tracker> engagement_tracker_;
   __weak id<LensWebProvider> web_provider_;
   __weak id<LensOmniboxClientDelegate> delegate_;
+  BOOL lens_result_has_thumbnail_;
+  // Whether the textfield has been clobbered during this session. (clobber:
+  // becomes empty during the edit).
+  BOOL text_clobbered_in_session_;
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+      lens_overlay_suggest_inputs_;
+  NSString* omnibox_steady_state_text_;
 
   base::WeakPtrFactory<LensOmniboxClient> weak_factory_{this};
 };

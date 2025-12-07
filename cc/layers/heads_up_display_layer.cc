@@ -24,6 +24,7 @@ HeadsUpDisplayLayer::HeadsUpDisplayLayer()
   if (!typeface_.Read(*this)) {
     typeface_.Write(*this) =
         skia::MakeTypefaceFromName("monospace", SkFontStyle::Bold());
+    SetNeedsPushProperties();
   }
   DCHECK(typeface_.Read(*this).get());
   SetIsDrawable(true);
@@ -57,14 +58,6 @@ void HeadsUpDisplayLayer::UpdateLocationAndSize(
   if (layer_tree_host()->GetDebugState().ShowDebugRects() ||
       layer_tree_host()->GetDebugState().debugger_paused) {
     bounds_in_dips = device_viewport_in_dips;
-  } else if (layer_tree_host()->GetDebugState().show_web_vital_metrics ||
-             layer_tree_host()->GetDebugState().show_smoothness_metrics) {
-    // If the HUD is used to display performance metrics (which is on the right
-    // hand side_, make sure the bounds has the correct width, with a fixed
-    // height.
-    bounds_in_dips.set_width(device_viewport_in_dips.width());
-    // Increase HUD layer height to make sure all the metrics are showing.
-    bounds_in_dips.set_height(kDefaultHUDSize * 2);
   }
 
   // DIPs are layout coordinates if painted dsf is 1. If it's not 1, then layout
@@ -92,28 +85,25 @@ const std::vector<gfx::Rect>& HeadsUpDisplayLayer::LayoutShiftRects() const {
 void HeadsUpDisplayLayer::SetLayoutShiftRects(
     const std::vector<gfx::Rect>& rects) {
   layout_shift_rects_.Write(*this) = rects;
+  SetNeedsPushProperties();
 }
 
-void HeadsUpDisplayLayer::UpdateWebVitalMetrics(
-    std::unique_ptr<WebVitalMetrics> web_vital_metrics) {
-  web_vital_metrics_.Write(*this) = std::move(web_vital_metrics);
-}
-
-void HeadsUpDisplayLayer::PushPropertiesTo(
+void HeadsUpDisplayLayer::PushDirtyPropertiesTo(
     LayerImpl* layer,
+    uint8_t dirty_flag,
     const CommitState& commit_state,
     const ThreadUnsafeCommitState& unsafe_state) {
-  Layer::PushPropertiesTo(layer, commit_state, unsafe_state);
-  TRACE_EVENT0("cc", "HeadsUpDisplayLayer::PushPropertiesTo");
-  HeadsUpDisplayLayerImpl* layer_impl =
-      static_cast<HeadsUpDisplayLayerImpl*>(layer);
+  Layer::PushDirtyPropertiesTo(layer, dirty_flag, commit_state, unsafe_state);
 
-  layer_impl->SetHUDTypeface(typeface_.Write(*this));
-  layer_impl->SetLayoutShiftRects(LayoutShiftRects());
-  layout_shift_rects_.Write(*this).clear();
-  auto& metrics = web_vital_metrics_.Write(*this);
-  if (metrics && metrics->HasValue())
-    layer_impl->SetWebVitalMetrics(std::move(metrics));
+  if (dirty_flag & kChangedGeneralProperty) {
+    TRACE_EVENT0("cc", "HeadsUpDisplayLayer::PushPropertiesTo");
+    HeadsUpDisplayLayerImpl* layer_impl =
+        static_cast<HeadsUpDisplayLayerImpl*>(layer);
+
+    layer_impl->SetHUDTypeface(typeface_.Write(*this));
+    layer_impl->SetLayoutShiftRects(LayoutShiftRects());
+    layout_shift_rects_.Write(*this).clear();
+  }
 }
 
 }  // namespace cc

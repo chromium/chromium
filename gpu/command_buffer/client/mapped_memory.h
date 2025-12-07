@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef GPU_COMMAND_BUFFER_CLIENT_MAPPED_MEMORY_H_
 #define GPU_COMMAND_BUFFER_CLIENT_MAPPED_MEMORY_H_
 
@@ -16,20 +11,22 @@
 #include <bit>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/fenced_allocator.h"
+#include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/common/constants.h"
-#include "gpu/gpu_export.h"
 
 namespace gpu {
 
 class CommandBufferHelper;
 
 // Manages a shared memory segment.
-class GPU_EXPORT MemoryChunk {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT MemoryChunk {
  public:
   MemoryChunk(int32_t shm_id,
               scoped_refptr<gpu::Buffer> shm,
@@ -103,8 +100,7 @@ class GPU_EXPORT MemoryChunk {
 
   // Returns true if pointer is in the range of this block.
   bool IsInChunk(void* pointer) const {
-    return pointer >= shm_->memory() &&
-           pointer < static_cast<const int8_t*>(shm_->memory()) + shm_->size();
+    return pointer >= shm_->memory() && pointer <= &shm_->as_byte_span().back();
   }
 
   // Returns true of any memory in this chunk is in use or free pending token.
@@ -124,7 +120,7 @@ class GPU_EXPORT MemoryChunk {
 };
 
 // Manages MemoryChunks.
-class GPU_EXPORT MappedMemoryManager {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT MappedMemoryManager {
  public:
   enum MemoryLimit {
     kNoLimit = 0,
@@ -233,7 +229,7 @@ class GPU_EXPORT MappedMemoryManager {
 };
 
 // A class that will manage the lifetime of a mapped memory allocation
-class GPU_EXPORT ScopedMappedMemoryPtr {
+class GPU_COMMAND_BUFFER_CLIENT_EXPORT ScopedMappedMemoryPtr {
  public:
   ScopedMappedMemoryPtr(uint32_t size,
                         CommandBufferHelper* helper,
@@ -275,6 +271,16 @@ class GPU_EXPORT ScopedMappedMemoryPtr {
 
   void* address() const {
     return buffer_;
+  }
+
+  base::span<uint8_t> as_byte_span() {
+    // TODO(kelsen): Change `buffer_` to raw_span;
+    return UNSAFE_TODO(base::span(static_cast<uint8_t*>(buffer_), size_));
+  }
+
+  base::span<const uint8_t> as_byte_span() const {
+    // TODO(kelsen): Change `buffer_` to raw_span;
+    return UNSAFE_TODO(base::span(static_cast<const uint8_t*>(buffer_), size_));
   }
 
   void Release();

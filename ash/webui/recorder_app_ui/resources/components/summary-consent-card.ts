@@ -9,7 +9,6 @@ import {css, CSSResultGroup, html} from 'chrome://resources/mwc/lit/index.js';
 
 import {i18n} from '../core/i18n.js';
 import {usePlatformHandler} from '../core/lit/context.js';
-import {ModelId} from '../core/on_device_model/types.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings, SummaryEnableState} from '../core/state/settings.js';
 
@@ -51,7 +50,7 @@ export class SummaryConsentCard extends ReactiveLitElement {
 
     #description {
       color: var(--cros-sys-on_surface_variant);
-      font: var(--cros-body-2-font);
+      font: var(--cros-body-1-font);
       margin-top: 8px;
     }
 
@@ -72,12 +71,8 @@ export class SummaryConsentCard extends ReactiveLitElement {
     settings.mutate((s) => {
       s.summaryEnabled = SummaryEnableState.ENABLED;
     });
-    this.platformHandler.downloadModel(ModelId.SUMMARY);
-    // TODO(pihsun): This downloads the model used by title suggestion, and
-    // both model are downloaded together with the same toggle. This currently
-    // doesn't take extra time because it's the base model for summary. Change
-    // this to title suggestion specific model when we have LoRA for that.
-    this.platformHandler.downloadModel(ModelId.GEMINI_XXS_IT_BASE);
+    this.platformHandler.perfLogger.start({kind: 'summaryModelDownload'});
+    this.platformHandler.downloadGenAiModel();
   }
 
   private onDisableClick() {
@@ -89,18 +84,20 @@ export class SummaryConsentCard extends ReactiveLitElement {
   override render(): RenderResult {
     return html`<div id="container">
       <cra-icon name="summarize_auto"></cra-icon>
-      <div id="main">
-        <span id="header">${i18n.summaryDownloadModelHeader}</span>
-        <span id="description">${i18n.summaryDownloadModelDescription}</span>
+      <div id="main" role="dialog" aria-labelledby="header">
+        <span id="header">${i18n.summaryDownloadGenAiModelHeader}</span>
+        <span id="description">
+          ${i18n.summaryDownloadGenAiModelDescription}
+        </span>
         <div id="actions">
           <cra-button
-            .label=${i18n.summaryDownloadModelDisableButton}
+            .label=${i18n.summaryDownloadGenAiModelDisableButton}
             button-style="floating"
             @click=${this.onDisableClick}
           >
           </cra-button>
           <cra-button
-            .label=${i18n.summaryDownloadModelDownloadButton}
+            .label=${i18n.summaryDownloadGenAiModelDownloadButton}
             @click=${this.onDownloadClick}
           >
           </cra-button>

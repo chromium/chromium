@@ -5,9 +5,11 @@
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service_factory.h"
 
 #include "chrome/browser/ash/app_list/search/ranking/util.h"
-#include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace ash {
@@ -45,16 +47,17 @@ FileSuggestKeyedService* FileSuggestKeyedServiceFactory::GetService(
 std::unique_ptr<KeyedService>
 FileSuggestKeyedServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  ApplicationLocaleStorage* application_locale_storage =
+      g_browser_process->GetFeatures()->application_locale_storage();
+
   Profile* profile = Profile::FromBrowserContext(context);
 
-  // TODO(https://crbug.com/1368833): Right now, the service reuses the proto
-  // originally for app list. The service should have its own proto that
-  // contains file ids only.
   PersistentProto<app_list::RemovedResultsProto> proto(
       app_list::RankerStateDirectory(profile).AppendASCII("removed_results.pb"),
       /*write_delay=*/base::TimeDelta());
 
-  return std::make_unique<FileSuggestKeyedService>(profile, std::move(proto));
+  return std::make_unique<FileSuggestKeyedService>(application_locale_storage,
+                                                   profile, std::move(proto));
 }
 
 }  // namespace ash

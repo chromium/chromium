@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HTTP_AUTH_OBSERVER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_HTTP_AUTH_OBSERVER_H_
 
-#include <string>
+#include <string_view>
 
 namespace password_manager {
 
@@ -21,8 +21,8 @@ class HttpAuthObserver {
   // Called by the model when |credentials| has been identified as a match for
   // the pending login prompt. Checks that the realm matches, and passes
   // |credentials| to OnAutofillDataAvailableInternal.
-  virtual void OnAutofillDataAvailable(const std::u16string& username,
-                                       const std::u16string& password) = 0;
+  virtual void OnAutofillDataAvailable(std::u16string_view username,
+                                       std::u16string_view password) = 0;
 
   virtual void OnLoginModelDestroying() = 0;
 

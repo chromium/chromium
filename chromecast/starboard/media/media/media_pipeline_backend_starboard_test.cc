@@ -8,6 +8,8 @@
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
+#include "chromecast/starboard/media/cdm/mock_starboard_drm_wrapper_client.h"
+#include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,12 +24,17 @@ using ::testing::AllOf;
 using ::testing::AnyNumber;
 using ::testing::DoAll;
 using ::testing::DoubleEq;
+using ::testing::Eq;
+using ::testing::ExplainMatchResult;
+using ::testing::Field;
+using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::MockFunction;
 using ::testing::Not;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::SaveArg;
+using ::testing::StrEq;
 using ::testing::WithArg;
 
 // Takes a StarboardPlayerCreationParam* argument and ensures that its max video
@@ -37,8 +44,16 @@ MATCHER(CreationParamHasStreamingEnabled, "") {
     *result_listener << "the StarboardPlayerCreationParam* is null";
     return false;
   }
-  return strcmp(arg->video_sample_info.max_video_capabilities, "streaming=1") ==
-         0;
+
+  const StarboardPlayerCreationParam& creation_param = *arg;
+  if (!creation_param.video_sample_info.max_video_capabilities) {
+    *result_listener << "max_video_capabilities is null";
+    return false;
+  }
+
+  return ExplainMatchResult(
+      StrEq("streaming=1"),
+      creation_param.video_sample_info.max_video_capabilities, result_listener);
 }
 
 // A mock delegate that can be passed to decoders.
@@ -101,6 +116,10 @@ class MediaPipelineBackendStarboardTest : public ::testing::Test {
     ON_CALL(*starboard_, CreatePlayer).WillByDefault(Return(&fake_player_));
     ON_CALL(*starboard_, EnsureInitialized).WillByDefault(Return(true));
     ON_CALL(*starboard_, SetPlaybackRate).WillByDefault(Return(true));
+
+    ON_CALL(starboard_for_drm_, CreateDrmSystem)
+        .WillByDefault(Return(&fake_drm_system_));
+    StarboardDrmWrapper::SetSingletonForTesting(&starboard_for_drm_);
   }
 
   ~MediaPipelineBackendStarboardTest() override = default;
@@ -110,9 +129,13 @@ class MediaPipelineBackendStarboardTest : public ::testing::Test {
   // This will be passed to the MediaPipelineBackendStarboard, and all calls to
   // Starboard will go through it. Thus, we can mock out those calls.
   std::unique_ptr<MockStarboardApiWrapper> starboard_;
-  // Since SbPlayer is just an opaque blob to the MPB, we will simply use an int
-  // to represent it.
+  MockStarboardApiWrapper starboard_for_drm_;
+  // Since SbPlayer is just an opaque blob to cast code, we will simply use an
+  // int to represent it.
   int fake_player_ = 1;
+  // Since SbDrmSystem is just an opaque blob to cast code, we will simply use
+  // an int to represent it.
+  int fake_drm_system_ = 2;
   StarboardVideoPlane video_plane_;
   MediaPipelineDeviceParams device_params_;
 };
@@ -452,6 +475,208 @@ TEST_F(MediaPipelineBackendStarboardTest,
                                     "Starboard capabilities changed");
   Mock::VerifyAndClearExpectations(&audio_delegate);
   Mock::VerifyAndClearExpectations(&video_delegate);
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       PassesDrmSystemToStarboardIfVideoIsEncrypted) {
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(Pointee(Field(&StarboardPlayerCreationParam::drm_system,
+                                 Eq(&fake_drm_system_))),
+                   _))
+      .Times(1);
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+
+  audio_decoder->SetConfig(GetBasicAudioConfig());
+
+  VideoConfig video_config = GetBasicVideoConfig();
+  video_config.encryption_scheme = EncryptionScheme::kAesCbc;
+  video_decoder->SetConfig(video_config);
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       PassesDrmSystemToStarboardIfAudioIsEncrypted) {
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(Pointee(Field(&StarboardPlayerCreationParam::drm_system,
+                                 Eq(&fake_drm_system_))),
+                   _))
+      .Times(1);
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+
+  AudioConfig audio_config = GetBasicAudioConfig();
+  audio_config.encryption_scheme = EncryptionScheme::kAesCtr;
+  audio_decoder->SetConfig(audio_config);
+
+  video_decoder->SetConfig(GetBasicVideoConfig());
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(
+    MediaPipelineBackendStarboardTest,
+    PassesNullDrmSystemToStarboardIfAudioAndVideoAreUnencryptedAndNoCdmExists) {
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(
+          Pointee(Field(&StarboardPlayerCreationParam::drm_system, IsNull())),
+          _))
+      .Times(1);
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+
+  AudioConfig audio_config = GetBasicAudioConfig();
+  audio_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  audio_decoder->SetConfig(audio_config);
+
+  VideoConfig video_config = GetBasicVideoConfig();
+  video_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  video_decoder->SetConfig(video_config);
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(MediaPipelineBackendStarboardTest,
+       PassesDrmSystemToStarboardIfCdmExistsEvenIfAudioAndVideoAreUnencrypted) {
+  // This is a regression test for a scenario that can happen when casting
+  // Peacock. Sometimes playback begins with ads, which are unencrypted, but
+  // later switches to encrypted content (once the TV show or movie begins
+  // playing). We need to pass an SbDrmSystem to starboard in that case, even
+  // when both audio and video streams are unencrypted.
+
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(Pointee(Field(&StarboardPlayerCreationParam::drm_system,
+                                 Eq(&fake_drm_system_))),
+                   _))
+      .Times(1);
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+
+  // Both audio and video are unencrypted.
+  AudioConfig audio_config = GetBasicAudioConfig();
+  audio_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  audio_decoder->SetConfig(audio_config);
+
+  VideoConfig video_config = GetBasicVideoConfig();
+  video_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  video_decoder->SetConfig(video_config);
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  // Construct a MockStarboardDrmWrapperClient to simulate a CDM being created.
+  MockStarboardDrmWrapperClient client;
+
+  EXPECT_TRUE(backend.Initialize());
+}
+
+TEST_F(
+    MediaPipelineBackendStarboardTest,
+    DoesNotPassDrmSystemToStarboardIfCdmIsDestroyedAndAudioAndVideoAreUnencrypted) {
+  EXPECT_CALL(
+      *starboard_,
+      CreatePlayer(
+          Pointee(Field(&StarboardPlayerCreationParam::drm_system, IsNull())),
+          _))
+      .Times(1);
+
+  MediaPipelineBackendStarboard backend(device_params_, &video_plane_);
+  backend.TestOnlySetStarboardApiWrapper(std::move(starboard_));
+
+  MediaPipelineBackend::AudioDecoder* audio_decoder =
+      backend.CreateAudioDecoder();
+  MediaPipelineBackend::VideoDecoder* video_decoder =
+      backend.CreateVideoDecoder();
+
+  ASSERT_THAT(audio_decoder, NotNull());
+  ASSERT_THAT(video_decoder, NotNull());
+
+  // Both audio and video are unencrypted.
+  AudioConfig audio_config = GetBasicAudioConfig();
+  audio_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  audio_decoder->SetConfig(audio_config);
+
+  VideoConfig video_config = GetBasicVideoConfig();
+  video_config.encryption_scheme = EncryptionScheme::kUnencrypted;
+  video_decoder->SetConfig(video_config);
+
+  MockDelegate audio_delegate;
+  MockDelegate video_delegate;
+
+  audio_decoder->SetDelegate(&audio_delegate);
+  video_decoder->SetDelegate(&video_delegate);
+
+  {
+    // Construct a MockStarboardDrmWrapperClient to simulate a CDM being
+    // created.
+    MockStarboardDrmWrapperClient client;
+  }  // client is destructed
+
+  // There should be no CDMs at this point, so a null SbDrmSystem should be
+  // passed to starboard.
+  EXPECT_TRUE(backend.Initialize());
 }
 
 }  // namespace

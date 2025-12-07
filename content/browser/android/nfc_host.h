@@ -16,8 +16,6 @@
 
 namespace content {
 
-class PermissionControllerImpl;
-
 // On Android, NFC requires the Activity associated with the context in order to
 // access the NFC system APIs. NFCHost provides this functionality by mapping
 // NFC context IDs to the WebContents associated with those IDs.
@@ -40,11 +38,11 @@ class NFCHost : public WebContentsObserver {
 
  private:
   void MaybeResumeOrSuspendOperations(Visibility visibility);
-  void OnPermissionStatusChange(blink::mojom::PermissionStatus status);
+  void OnPermissionResultChange(PermissionResult permission_result);
   void Close();
 
   // The permission controller for this browser context.
-  raw_ptr<PermissionControllerImpl> permission_controller_;
+  raw_ptr<PermissionController> permission_controller_;
 
   mojo::Remote<device::mojom::NFCProvider> nfc_provider_;
 

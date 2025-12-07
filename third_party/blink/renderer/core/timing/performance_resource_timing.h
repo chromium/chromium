@@ -33,7 +33,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_PERFORMANCE_RESOURCE_TIMING_H_
 
 #include "base/time/time.h"
-#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/performance_mark_or_measure.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
@@ -48,6 +47,8 @@
 
 namespace blink {
 
+class V8RenderBlockingStatusType;
+
 class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
   friend class PerformanceResourceTimingTest;
@@ -59,7 +60,8 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
                             const AtomicString& initiator_type,
                             base::TimeTicks time_origin,
                             bool cross_origin_isolated_capability,
-                            ExecutionContext* context);
+                            ExecutionContext* context,
+                            uint32_t navigation_id);
   ~PerformanceResourceTiming() override;
 
   const AtomicString& entryType() const override;
@@ -69,8 +71,9 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   AtomicString initiatorType() const { return initiator_type_; }
   virtual AtomicString deliveryType() const;
   AtomicString nextHopProtocol() const;
-  virtual AtomicString renderBlockingStatus() const;
+  virtual V8RenderBlockingStatusType renderBlockingStatus() const;
   virtual AtomicString contentType() const;
+  virtual AtomicString contentEncoding() const;
   DOMHighResTimeStamp workerStart() const;
   DOMHighResTimeStamp workerRouterEvaluationStart() const;
   DOMHighResTimeStamp workerCacheLookupStart() const;
@@ -85,14 +88,16 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DOMHighResTimeStamp requestStart() const;
   DOMHighResTimeStamp responseStart() const;
   DOMHighResTimeStamp firstInterimResponseStart() const;
+  DOMHighResTimeStamp finalResponseHeadersStart() const;
+  AtomicString initiatorUrl() const;
   virtual DOMHighResTimeStamp responseEnd() const;
   uint64_t transferSize() const;
   virtual uint64_t encodedBodySize() const;
   virtual uint64_t decodedBodySize() const;
   uint16_t responseStatus() const;
   const HeapVector<Member<PerformanceServerTiming>>& serverTiming() const;
-  AtomicString matchedSourceType() const;
-  AtomicString finalSourceType() const;
+  AtomicString workerMatchedSourceType() const;
+  AtomicString workerFinalSourceType() const;
 
   void Trace(Visitor*) const override;
 
@@ -123,7 +128,12 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   AtomicString GetNextHopProtocol(const AtomicString& alpn_negotiated_protocol,
                                   const AtomicString& connection_info) const;
 
-  DOMHighResTimeStamp GetAnyFirstResponseStart() const;
+  // Returns true if the response comes from the CacheStorage. This is
+  // regardless of where the response came from whether it is from the `cache`
+  // rule of ServiceWorker static routing API, or the fetch handler's
+  // respondWith().
+  bool IsResponseFromCacheStorage() const;
+
   double WorkerReady() const;
 
   AtomicString initiator_type_;

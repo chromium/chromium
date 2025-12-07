@@ -78,7 +78,7 @@ ChromeDeviceAuthenticatorFactory::GetForProfile(
 std::unique_ptr<device_reauth::DeviceAuthenticator>
 ChromeDeviceAuthenticatorFactory::GetForProfile(
     Profile* profile,
-    const base::android::JavaParamRef<jobject>& activity,
+    const base::android::JavaRef<jobject>& activity,
     const device_reauth::DeviceAuthParams& params) {
   DeviceAuthenticatorProxy* proxy = static_cast<DeviceAuthenticatorProxy*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));

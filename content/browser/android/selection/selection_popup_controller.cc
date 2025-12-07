@@ -9,19 +9,23 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/feature_list.h"
 #include "content/browser/android/selection/composited_touch_handle_drawable.h"
-#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view_android.h"
 #include "content/common/features.h"
+#include "content/public/browser/android/selection_popup_delegate.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/context_menu_data/edit_flags.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
+#include "ui/base/models/menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/point_conversions.h"
+#include "ui/menus/android/menu_model_bridge.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/content_jni_headers/SelectionPopupControllerImpl_jni.h"
@@ -29,7 +33,8 @@
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
+using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace content {
@@ -57,28 +62,21 @@ bool IsOffsetAdjustValid(
 
 namespace {
 
-bool IsAndroidSurfaceControlMagnifierEnabled() {
-  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl();
-  return enabled;
-}
+BASE_FEATURE(kDismissMagnifierOnViewSwap, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
 static jboolean
 JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(
     JNIEnv* env) {
-  GpuDataManagerImpl* manager = GpuDataManagerImpl::GetInstance();
-  return manager->IsGpuFeatureInfoAvailable() &&
-         manager->GetFeatureStatus(
-             gpu::GpuFeatureType::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL) ==
-             gpu::kGpuFeatureStatusEnabled &&
-         IsAndroidSurfaceControlMagnifierEnabled();
+  static bool enabled = gfx::SurfaceControl::SupportsSurfacelessControl();
+  return enabled;
 }
 
-jlong JNI_SelectionPopupControllerImpl_Init(
+static jlong JNI_SelectionPopupControllerImpl_Init(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jweb_contents) {
   WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
   DCHECK(web_contents);
 
@@ -88,10 +86,29 @@ jlong JNI_SelectionPopupControllerImpl_Init(
   return reinterpret_cast<intptr_t>(controller);
 }
 
-SelectionPopupController::SelectionPopupController(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
-    WebContents* web_contents)
+SelectionPopupController* SelectionPopupController::FromWebContents(
+    WebContents& web_contents) {
+  ScopedJavaLocalRef<jobject> jweb_contents = web_contents.GetJavaWebContents();
+  JNIEnv* env = AttachCurrentThread();
+  // Call the Java-side fromWebContents method. This gets the Java
+  // SelectionPopupController if it already exists. Otherwise, this will
+  // instantiate the Java SelectionPopupController and store it in the web
+  // contents.
+  ScopedJavaLocalRef<jobject> jselection_popup_controller =
+      Java_SelectionPopupControllerImpl_fromWebContents(env, jweb_contents);
+  // Then get the native pointer from the newly-created
+  // SelectionPopupController. The Java SelectionPopupController owns the C++
+  // SelectionPopupController.
+  jlong selection_popup_controller =
+      Java_SelectionPopupControllerImpl_getNativePtr(
+          env, jselection_popup_controller);
+  return reinterpret_cast<SelectionPopupController*>(
+      selection_popup_controller);
+}
+
+SelectionPopupController::SelectionPopupController(JNIEnv* env,
+                                                   const JavaRef<jobject>& obj,
+                                                   WebContents* web_contents)
     : RenderWidgetHostConnector(web_contents) {
   java_obj_ = JavaObjectWeakGlobalRef(env, obj);
 }
@@ -117,7 +134,6 @@ ScopedJavaLocalRef<jobject> SelectionPopupController::GetContext() const {
 
 void SelectionPopupController::SetTextHandlesHiddenForDropdownMenu(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean hidden) {
   if (rwhva_) {
     rwhva_->SetTextHandlesHiddenForDropdownMenu(hidden);
@@ -126,15 +142,13 @@ void SelectionPopupController::SetTextHandlesHiddenForDropdownMenu(
 
 void SelectionPopupController::SetTextHandlesTemporarilyHidden(
     JNIEnv* env,
-    const JavaParamRef<jobject>& obj,
     jboolean hidden) {
   if (rwhva_)
     rwhva_->SetTextHandlesTemporarilyHidden(hidden);
 }
 
 ScopedJavaLocalRef<jobjectArray> SelectionPopupController::GetTouchHandleRects(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
+    JNIEnv* env) {
   if (!rwhva_ || !rwhva_->touch_selection_controller()) {
     return nullptr;
   }
@@ -199,6 +213,17 @@ void SelectionPopupController::UpdateRenderProcessConnection(
   if (new_rwhva)
     new_rwhva->set_selection_popup_controller(this);
   rwhva_ = new_rwhva;
+
+  if (!base::FeatureList::IsEnabled(kDismissMagnifierOnViewSwap)) {
+    return;
+  }
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+
+  Java_SelectionPopupControllerImpl_renderWidgetHostViewChanged(env, obj);
 }
 
 void SelectionPopupController::OnSelectionEvent(
@@ -245,16 +270,18 @@ bool SelectionPopupController::ShowSelectionMenu(
     return false;
 
   // Display paste pop-up only when selection is empty and editable.
-  const bool from_touch = params.source_type == ui::MENU_SOURCE_TOUCH ||
-                          params.source_type == ui::MENU_SOURCE_LONG_PRESS ||
-                          params.source_type == ui::MENU_SOURCE_TOUCH_HANDLE ||
-                          params.source_type == ui::MENU_SOURCE_STYLUS;
+  const bool from_touch =
+      params.source_type == ui::mojom::MenuSourceType::kTouch ||
+      params.source_type == ui::mojom::MenuSourceType::kLongPress ||
+      params.source_type == ui::mojom::MenuSourceType::kTouchHandle ||
+      params.source_type == ui::mojom::MenuSourceType::kStylus;
 
-  const bool from_mouse = params.source_type == ui::MENU_SOURCE_MOUSE;
+  const bool from_mouse =
+      params.source_type == ui::mojom::MenuSourceType::kMouse;
 
   const bool from_selection_adjustment =
-      params.source_type == ui::MENU_SOURCE_ADJUST_SELECTION ||
-      params.source_type == ui::MENU_SOURCE_ADJUST_SELECTION_RESET;
+      params.source_type == ui::mojom::MenuSourceType::kAdjustSelection ||
+      params.source_type == ui::mojom::MenuSourceType::kAdjustSelectionReset;
 
   // If source_type is not in the list then return.
   if (!from_touch && !from_mouse && !from_selection_adjustment)
@@ -273,17 +300,30 @@ bool SelectionPopupController::ShowSelectionMenu(
       params.form_control_type == blink::mojom::FormControlType::kInputPassword;
   const ScopedJavaLocalRef<jstring> jselected_text =
       ConvertUTF16ToJavaString(env, params.selection_text);
-  const bool should_suggest = params.source_type == ui::MENU_SOURCE_TOUCH ||
-                              params.source_type == ui::MENU_SOURCE_LONG_PRESS;
+  const bool should_suggest =
+      params.source_type == ui::mojom::MenuSourceType::kTouch ||
+      params.source_type == ui::mojom::MenuSourceType::kLongPress;
 
-  Java_SelectionPopupControllerImpl_showSelectionMenu(
-      env, obj, params.x, params.y, params.selection_rect.x(),
-      params.selection_rect.y(), params.selection_rect.right(),
-      params.selection_rect.bottom(), handle_height, params.is_editable,
-      is_password_type, jselected_text, params.selection_start_offset,
-      can_select_all, can_edit_richly, should_suggest, params.source_type,
-      render_frame_host->GetJavaRenderFrameHost());
-  return true;
+    extra_items_menu_model_.reset();
+    extra_items_menu_model_ =
+        selection_popup_delegate_
+            ? selection_popup_delegate_->GetSelectionPopupExtraItems(
+                  *render_frame_host, params)
+            : nullptr;
+    ui::MenuModel* menu_model = extra_items_menu_model_.get();
+    menu_model_bridge_ = std::make_unique<ui::MenuModelBridge>(
+        menu_model ? menu_model->AsWeakPtr() : nullptr);
+
+    Java_SelectionPopupControllerImpl_showSelectionMenu(
+        env, obj, params.x, params.y, params.selection_rect.x(),
+        params.selection_rect.y(), params.selection_rect.right(),
+        params.selection_rect.bottom(), handle_height, params.is_editable,
+        is_password_type, jselected_text, params.selection_start_offset,
+        can_select_all, can_edit_richly, should_suggest,
+        static_cast<int>(params.source_type),
+        render_frame_host->GetJavaRenderFrameHost(),
+        menu_model_bridge_->GetJavaObject());
+    return true;
 }
 
 void SelectionPopupController::OnSelectAroundCaretAck(
@@ -313,6 +353,8 @@ void SelectionPopupController::HidePopupsAndPreserveSelection() {
   if (obj.is_null())
     return;
 
+  menu_model_bridge_.reset();
+  extra_items_menu_model_.reset();
   Java_SelectionPopupControllerImpl_hidePopupsAndPreserveSelection(env, obj);
 }
 
@@ -321,7 +363,6 @@ void SelectionPopupController::RestoreSelectionPopupsIfNecessary() {
   ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
   if (obj.is_null())
     return;
-
   Java_SelectionPopupControllerImpl_restoreSelectionPopupsIfNecessary(env, obj);
 }
 
@@ -336,3 +377,5 @@ void SelectionPopupController::ChildLocalSurfaceIdChanged() {
 }
 
 }  // namespace content
+
+DEFINE_JNI(SelectionPopupControllerImpl)

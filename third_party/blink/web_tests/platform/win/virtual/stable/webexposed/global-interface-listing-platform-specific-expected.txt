@@ -1,0 +1,97 @@
+This test documents all interface attributes and methods on the global window object and element instances.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+[INTERFACES]
+interface Bluetooth : EventTarget
+    attribute @@toStringTag
+    method constructor
+    method getAvailability
+    method requestDevice
+interface BluetoothCharacteristicProperties
+    attribute @@toStringTag
+    getter authenticatedSignedWrites
+    getter broadcast
+    getter indicate
+    getter notify
+    getter read
+    getter reliableWrite
+    getter writableAuxiliaries
+    getter write
+    getter writeWithoutResponse
+    method constructor
+interface BluetoothDevice : EventTarget
+    attribute @@toStringTag
+    getter gatt
+    getter id
+    getter name
+    getter ongattserverdisconnected
+    method constructor
+    setter ongattserverdisconnected
+interface BluetoothRemoteGATTCharacteristic : EventTarget
+    attribute @@toStringTag
+    getter oncharacteristicvaluechanged
+    getter properties
+    getter service
+    getter uuid
+    getter value
+    method constructor
+    method getDescriptor
+    method getDescriptors
+    method readValue
+    method startNotifications
+    method stopNotifications
+    method writeValue
+    method writeValueWithResponse
+    method writeValueWithoutResponse
+    setter oncharacteristicvaluechanged
+interface BluetoothRemoteGATTDescriptor
+    attribute @@toStringTag
+    getter characteristic
+    getter uuid
+    getter value
+    method constructor
+    method readValue
+    method writeValue
+interface BluetoothRemoteGATTServer
+    attribute @@toStringTag
+    getter connected
+    getter device
+    method connect
+    method constructor
+    method disconnect
+    method getPrimaryService
+    method getPrimaryServices
+interface BluetoothRemoteGATTService
+    attribute @@toStringTag
+    getter device
+    getter isPrimary
+    getter uuid
+    method constructor
+    method getCharacteristic
+    method getCharacteristics
+interface BluetoothUUID
+    static method canonicalUUID
+    static method getCharacteristic
+    static method getDescriptor
+    static method getService
+    attribute @@toStringTag
+    method constructor
+interface Clipboard : EventTarget
+    getter onclipboardchange
+    setter onclipboardchange
+interface ClipboardChangeEvent : Event
+    attribute @@toStringTag
+    getter changeId
+    getter types
+    method constructor
+interface Navigator
+    getter bluetooth
+interface Notification : EventTarget
+    getter image
+[NAMESPACES]
+[GLOBAL OBJECT]
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

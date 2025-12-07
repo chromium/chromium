@@ -7,8 +7,5 @@ source_set("provider") {
 }
 
 source_set("url_constants") {
-  sources = [
-    "web_ui_url_constants.cc",
-    "web_ui_url_constants.h",
-  ]
+  sources = [ "web_ui_url_constants.h" ]
 }

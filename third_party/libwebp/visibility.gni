@@ -1,0 +1,26 @@
+# The Chrome Security team is working on migrating uses of image codecs to go
+# through Skia, for more flexibility about which backend is use. Try to do that
+# instead of adding a new direct dependency on libwep if possible.
+# See crbug.com/40278281 for more information.
+
+# This is appended to the visibility list of every public target
+allowed_visibility = [
+  "//chrome/browser/ui/tab_contents/*",
+  "//chrome/renderer:*",
+  "//chrome/test:*",
+  "//media/gpu/vaapi/*",
+  "//skia:*",
+  "//third_party/blink/renderer/*",
+  "//third_party/libwebp/*",
+]
+
+# This is the visibility list of `cwebp` executable (which is used during
+# Chromium build when targeting Android).  This is a *separate* visibility list
+# because depending on the `cwebp` executable doesn't result in having `libwebp`
+# linked into the browser binary.
+cwebp_exe_allowed_visibility = [
+  "//android_webview/*",
+  "//chrome/android/*",
+  "//clank/android_webview/*",
+  "//clank/java/*",
+]

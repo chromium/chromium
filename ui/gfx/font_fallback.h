@@ -9,24 +9,24 @@
 #include <string_view>
 #include <vector>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "ui/gfx/font.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 class Font;
 
 // Given a font, returns the fonts that are suitable for fallback.
-GFX_EXPORT std::vector<Font> GetFallbackFonts(const Font& font);
+COMPONENT_EXPORT(GFX) std::vector<Font> GetFallbackFonts(const Font& font);
 
 // Finds a fallback font to render the specified |text| with respect to an
 // initial |font|. Returns the resulting font via out param |result|. Returns
 // |true| if a fallback font was found.
-bool GFX_EXPORT GetFallbackFont(const Font& font,
-                                const std::string& locale,
-                                std::u16string_view text,
-                                Font* result);
+bool COMPONENT_EXPORT(GFX) GetFallbackFont(const Font& font,
+                                           const std::string& locale,
+                                           std::u16string_view text,
+                                           Font* result);
 
 }  // namespace gfx
 

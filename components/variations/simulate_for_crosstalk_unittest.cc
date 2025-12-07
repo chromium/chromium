@@ -59,8 +59,9 @@ AssignmentCounts CountAssignments(bool salt) {
     std::string dns_name = CreateDnsStudy(dns_value)->group_name();
 
     std::string instant_study_name = kInstantStudyName;
-    if (salt)
+    if (salt) {
       instant_study_name += "abcdefghijklmnop";
+    }
     double instant_value = provider.GetEntropyForTrial(instant_study_name, 0);
     std::string instant_name = CreateInstantStudy(instant_value)->group_name();
 

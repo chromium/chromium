@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/auto_reset.h"
@@ -17,6 +18,7 @@
 #include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/cpu_performance.mojom-forward.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
@@ -38,12 +40,7 @@ class RenderProcessHost;
 }
 
 namespace IPC {
-class Listener;
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-class MessageFilter;
-#endif
 class SyncChannel;
-class SyncMessageFilter;
 }  // namespace IPC
 
 namespace content {
@@ -64,26 +61,6 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   virtual IPC::SyncChannel* GetChannel() = 0;
   virtual std::string GetLocale() = 0;
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  virtual IPC::SyncMessageFilter* GetSyncMessageFilter() = 0;
-
-  // Called to add or remove a listener for a particular message routing ID.
-  // These methods normally get delegated to a MessageRouter.
-  virtual void AddRoute(int32_t routing_id, IPC::Listener* listener) = 0;
-  // Attach a task runner to run received IPC tasks on for the given routing ID.
-  // This must be called after the route has already been added via AddRoute(),
-  // but it is optional. The default main thread task runner would be used if
-  // this method is not called.
-  virtual void AttachTaskRunnerToRoute(
-      int32_t routing_id,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) = 0;
-  virtual void RemoveRoute(int32_t routing_id) = 0;
-
-  // These map to IPC::ChannelProxy methods.
-  virtual void AddFilter(IPC::MessageFilter* filter) = 0;
-  virtual void RemoveFilter(IPC::MessageFilter* filter) = 0;
-#endif
-
   virtual bool GenerateFrameRoutingID(
       int32_t& routing_id,
       blink::LocalFrameToken& frame_token,
@@ -103,13 +80,13 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   // Retrieve the process ID of the browser process.
   virtual int32_t GetClientId() = 0;
 
-  // Set the renderer process type.
-  virtual void SetRendererProcessType(
-      blink::scheduler::WebRendererProcessType type) = 0;
-
   // Returns the user-agent string.
   virtual blink::WebString GetUserAgent() = 0;
   virtual const blink::UserAgentMetadata& GetUserAgentMetadata() = 0;
+
+  // Returns the CPU performance tier, which exposes some information about how
+  // powerful the user device is.
+  virtual blink::mojom::PerformanceTier GetCpuPerformanceTier();
 
   // Write a representation of the current Renderer process into a trace.
   virtual void WriteIntoTrace(

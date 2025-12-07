@@ -4,12 +4,23 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import android.app.ActivityManager;
+import android.app.ApplicationStartInfo;
+import android.content.Context;
 import android.os.SystemClock;
+import android.view.View;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
+import org.chromium.base.BinderCallsListener;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.page_load_metrics.PageLoadMetrics;
@@ -19,6 +30,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -31,12 +43,18 @@ import org.chromium.url.GURL;
  * <p>Uses different cold start heuristics from {@link LegacyTabStartupMetricsTracker}. These
  * heuristics aim to replace a few metrics from Startup.Android.Cold.*.
  */
+@NullMarked
 public class StartupMetricsTracker {
-
+    private static final long TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS = 2500;
+    private static final String NTP_COLD_START_HISTOGRAM =
+            "Startup.Android.Cold.NewTabPage.TimeToFirstDraw";
+    private static final String TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM =
+            "Startup.Android.Cold.TimeToStartupFcpOrPaintPreview";
+    private static final String COLD_START_TIME_TO_FIRST_FRAME =
+            "Startup.Android.Cold.TimeToFirstFrame";
     private boolean mFirstNavigationCommitted;
 
     private class TabObserver extends TabModelSelectorTabObserver {
-
         private boolean mFirstLoadStarted;
 
         public TabObserver(TabModelSelector selector) {
@@ -45,10 +63,9 @@ public class StartupMetricsTracker {
 
         @Override
         public void onShown(Tab tab, @TabSelectionType int type) {
-            if (tab != null && tab.isNativePage()) {
-                // Avoid recording metrics when the NTP is shown.
-                destroy();
-            }
+            if (tab == null) return;
+            if (tab.isNativePage()) destroy();
+            if (!UrlUtilities.isNtpUrl(tab.getUrl())) mShouldTrackTimeToFirstDraw = false;
         }
 
         @Override
@@ -62,8 +79,7 @@ public class StartupMetricsTracker {
         }
 
         @Override
-        public void onDidFinishNavigationInPrimaryMainFrame(
-                Tab tab, @NonNull NavigationHandle navigation) {
+        public void onDidFinishNavigationInPrimaryMainFrame(Tab tab, NavigationHandle navigation) {
             if (!mShouldTrack || mFirstNavigationCommitted) return;
             boolean shouldTrack =
                     navigation.hasCommitted()
@@ -121,13 +137,14 @@ public class StartupMetricsTracker {
     // The time of the activity onCreate(). All metrics (such as time to first visible content) are
     // reported in uptimeMillis relative to this value.
     private final long mActivityStartTimeMs;
-    private boolean mFirstVisibleContent3Recorded;
-
-    private TabModelSelectorTabObserver mTabObserver;
-    private PageObserver mPageObserver;
+    private boolean mFirstVisibleContentRecorded;
+    private boolean mTimeToStartupFcpOrPaintPreviewRecorded;
+    private @Nullable TabModelSelectorTabObserver mTabObserver;
+    private @Nullable PageObserver mPageObserver;
     private boolean mShouldTrack = true;
+    private boolean mShouldTrackTimeToFirstDraw = true;
+    private boolean mActivityStartInfoMetricsRecorded;
     private @ActivityType int mHistogramSuffix;
-
     // The time it took for SafeBrowsing API to return a Safe Browsing response for the first time.
     // The SB request is on the critical path to navigation commit, and the response may be severely
     // delayed by GmsCore (see http://crbug.com/1296097). The value is recorded only when the
@@ -142,6 +159,20 @@ public class StartupMetricsTracker {
         tabModelSelectorSupplier.addObserver(this::registerObservers);
         SafeBrowsingApiBridge.setOneTimeSafeBrowsingApiUrlCheckObserver(
                 this::updateSafeBrowsingCheckTime);
+    }
+
+    /**
+     * Sets up a listener for ApplicationStartInfo that will eventually report TimeToFirstFrame once
+     * per application lifecycle.
+     */
+    @RequiresApi(35)
+    public void registerApplicationStartInfoListener() {
+        ActivityManager activityManager =
+                (ActivityManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.ACTIVITY_SERVICE);
+        activityManager.addApplicationStartInfoCompletionListener(
+                PostTask.getUiBestEffortExecutor(), this::recordApplicationStartInfoMetrics);
     }
 
     private void updateSafeBrowsingCheckTime(long urlCheckTimeDeltaMicros) {
@@ -167,23 +198,75 @@ public class StartupMetricsTracker {
 
     /**
      * Register an observer to be notified on the first paint of a paint preview if present.
+     *
      * @param startupPaintPreviewHelper the helper to register the observer to.
      */
     public void registerPaintPreviewObserver(StartupPaintPreviewHelper startupPaintPreviewHelper) {
         startupPaintPreviewHelper.addMetricsObserver(
-            new PaintPreviewMetricsObserver() {
-                @Override
-                public void onFirstPaint(long durationMs) {
-                    recordTimeToFirstVisibleContent3(durationMs);
-                }
+                new PaintPreviewMetricsObserver() {
+                    @Override
+                    public void onFirstPaint(long durationMs) {
+                        recordTimeToFirstVisibleContent(durationMs);
+                        recordTimeToStartupFcpOrPaintPreview(durationMs);
+                    }
 
-                @Override
-                public void onUnrecordedFirstPaint() {}
-            });
+                    @Override
+                    public void onUnrecordedFirstPaint() {}
+                });
+    }
+
+    /**
+     * Sets up an onDraw listener for the NTP root view to record the NTP cold start metric exactly
+     * once per application lifecycle. onDraw will not be called if the screen is off.
+     *
+     * @param ntpRootView Root view containing the search provider logo (if available), search box,
+     *     MV tiles etc.
+     */
+    public void registerNtpViewObserver(View ntpRootView) {
+        if (!mShouldTrackTimeToFirstDraw) return;
+        trackTimeToFirstDraw(ntpRootView, NTP_COLD_START_HISTOGRAM);
+    }
+
+    /**
+     * Sets up an onDraw listener for the SearchActivity root view to record the SA cold start
+     * metric exactly once per application lifecycle. onDraw will not be called if the screen is
+     * off.
+     *
+     * @param searchActivityRootView SearchActivity's root view.
+     */
+    public void registerSearchActivityViewObserver(View searchActivityRootView) {
+        if (!mShouldTrackTimeToFirstDraw) return;
+        trackTimeToFirstDraw(
+                searchActivityRootView, "Startup.Android.Cold.SearchActivity.TimeToFirstDraw");
+    }
+
+    private void trackTimeToFirstDraw(View view, String histogram) {
+        if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
+                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
+        FirstDrawDetector.waitForFirstDrawStrict(
+                view,
+                () -> {
+                    long timeToFirstDrawMs = SystemClock.uptimeMillis() - mActivityStartTimeMs;
+                    if (NTP_COLD_START_HISTOGRAM.equals(histogram)) {
+                        recordTimeSpentInBinderCold("NewTabPage");
+                    }
+                    // During a cold start, first draw can be triggered while Chrome is in
+                    // the background, leading to ablated draw times. This early in the startup
+                    // process, events that indicate Chrome has been backgrounded do not run until
+                    // after the first draw pass. To work around this, post a task to be run with
+                    // a delay to record the metric once we can possibly verify if Chrome was ever
+                    // sent to the background during startup.
+                    PostTask.postDelayedTask(
+                            TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                            () -> recordTimeToFirstDraw(histogram, timeToFirstDrawMs),
+                            TIME_TO_DRAW_METRIC_RECORDING_DELAY_MS);
+                    mShouldTrackTimeToFirstDraw = false;
+                });
     }
 
     public void destroy() {
         mShouldTrack = false;
+        mShouldTrackTimeToFirstDraw = false;
         if (mTabObserver != null) {
             mTabObserver.destroy();
             mTabObserver = null;
@@ -201,21 +284,29 @@ public class StartupMetricsTracker {
     }
 
     private void recordExperimentalHistogram(String name, long ms) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
+    }
+
+    private void recordTimeSpentInBinderCold(String variant) {
+        Long binderTimeMs = BinderCallsListener.getInstance().getTimeSpentInBinderCalls();
+        if (binderTimeMs != null) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    "Startup.Android.Cold." + variant + ".TimeSpentInBinder", binderTimeMs);
+        }
     }
 
     private void recordNavigationCommitMetrics(long firstCommitMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit3"
                             + activityTypeToSuffix(mHistogramSuffix),
                     firstCommitMs);
             if (mHistogramSuffix == ActivityType.TABBED) {
                 recordExperimentalHistogram("FirstNavigationCommit", firstCommitMs);
                 recordFirstSafeBrowsingResponseTime();
-                recordTimeToFirstVisibleContent3(firstCommitMs);
+                recordTimeToFirstVisibleContent(firstCommitMs);
             }
         }
     }
@@ -224,27 +315,85 @@ public class StartupMetricsTracker {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
             recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
+            recordTimeToStartupFcpOrPaintPreview(firstFcpMs);
         }
     }
 
-    private void recordTimeToFirstVisibleContent3(long durationMs) {
-        if (mFirstVisibleContent3Recorded) return;
-
-        mFirstVisibleContent3Recorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
-                "Startup.Android.Cold.TimeToFirstVisibleContent3", durationMs);
+    private void recordTimeToFirstVisibleContent(long durationMs) {
+        if (mFirstVisibleContentRecorded) return;
+        mFirstVisibleContentRecorded = true;
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                "Startup.Android.Cold.TimeToFirstVisibleContent4", durationMs);
     }
 
     private void recordFirstSafeBrowsingResponseTime() {
         if (mFirstSafeBrowsingResponseTimeRecorded) return;
         mFirstSafeBrowsingResponseTimeRecorded = true;
-
         if (mFirstSafeBrowsingResponseTimeMicros != 0) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.FirstSafeBrowsingApiResponseTime2.Tabbed",
                     mFirstSafeBrowsingResponseTimeMicros / 1000);
+        }
+    }
+
+    /**
+     * Records a histogram capturing the time taken from a cold start to the first draw event.
+     *
+     * <p>This function logs the time elapsed from application launch to the first draw event,
+     * categorized by what was drawn first (e.g., NTP or SearchActivity).
+     *
+     * @param histogramName The name of the histogram, indicating what was drawn first.
+     * @param timeToFirstDrawMs The elapsed time in milliseconds from cold start to the first draw
+     *     event.
+     */
+    private void recordTimeToFirstDraw(String histogramName, long timeToFirstDrawMs) {
+        if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
+                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) return;
+        RecordHistogram.recordMediumTimesHistogram(histogramName, timeToFirstDrawMs);
+    }
+
+    /**
+     * Records a histogram capturing TimeToStartupFcpOrPaintPreview.
+     *
+     * <p>This metric reports the minimum value of
+     * Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed and
+     * Browser.PaintPreview.TabbedPlayer.TimeToFirstBitmap.
+     *
+     * @param durationMs duration in millis.
+     */
+    private void recordTimeToStartupFcpOrPaintPreview(long durationMs) {
+        if (mTimeToStartupFcpOrPaintPreviewRecorded) return;
+        mTimeToStartupFcpOrPaintPreviewRecorded = true;
+        RecordHistogram.recordMediumTimesHistogram(
+                TIME_TO_STARTUP_FCP_OR_PAINT_PREVIEW_HISTOGRAM, durationMs);
+    }
+
+    /**
+     * Records a histogram capturing TimeToFirstFrame.
+     *
+     * <p>This metric reports the the time it takes from activity start until Android determines the
+     * first frame of the app has been drawn.
+     *
+     * @param applicationStartInfo contains various bits of information regarding app startup.
+     */
+    @RequiresApi(35)
+    private void recordApplicationStartInfoMetrics(ApplicationStartInfo applicationStartInfo) {
+        // TODO(crbug.com/463329742): Replace ColdStartTracker with ApplicationStartInfo when
+        // test-related cold-start tracking issues are mitigated.
+        if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()
+                || !ColdStartTracker.wasColdOnFirstActivityCreationOrNow()
+                || mActivityStartInfoMetricsRecorded) return;
+        mActivityStartInfoMetricsRecorded = true;
+        final long firstFrameTimeMs =
+                applicationStartInfo
+                                .getStartupTimestamps()
+                                .getOrDefault(ApplicationStartInfo.START_TIMESTAMP_FIRST_FRAME, 0L)
+                        / TimeUtils.NANOSECONDS_PER_MILLISECOND;
+        if (firstFrameTimeMs != 0L && mActivityStartTimeMs < firstFrameTimeMs) {
+            RecordHistogram.recordMediumTimesHistogram(
+                    COLD_START_TIME_TO_FIRST_FRAME, firstFrameTimeMs - mActivityStartTimeMs);
         }
     }
 }

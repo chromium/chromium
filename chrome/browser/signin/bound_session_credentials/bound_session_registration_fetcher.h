@@ -9,7 +9,6 @@
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
-#include "url/gurl.h"
 
 // This class makes the network request to the DBSC registration endpoint to
 // get the registration instructions. A new fetcher instance should be created

@@ -29,31 +29,38 @@ import {ElementsTestRunner} from 'elements_test_runner';
     },
 
     function testSetBody(next) {
-      TestRunner.DOMAgent.setOuterHTML(bodyNode.id, '<body>New body content</body>').then(dumpHTML(next));
+      TestRunner.DOMAgent.invoke_setOuterHTML({nodeId: bodyNode.id, outerHTML: '<body>New body content</body>'})
+          .then(dumpHTML(next));
     },
 
     function testInsertComments(next) {
       TestRunner.DOMAgent
-          .setOuterHTML(bodyNode.id, '<!-- new comment between head and body --><body>New body content</body>')
+          .invoke_setOuterHTML({
+            nodeId: bodyNode.id,
+            outerHTML: '<!-- new comment between head and body --><body>New body content</body>'
+          })
           .then(dumpHTML(next));
     },
 
     function testSetHead(next) {
-      TestRunner.DOMAgent.setOuterHTML(headNode.id, '<head><!-- new head content --></head>').then(dumpHTML(next));
+      TestRunner.DOMAgent.invoke_setOuterHTML({nodeId: headNode.id, outerHTML: '<head><!-- new head content --></head>'})
+          .then(dumpHTML(next));
     },
 
     function testSetHTML(next) {
       TestRunner.DOMAgent
-          .setOuterHTML(
-              htmlNode.id,
-              '<html><head><!-- new head content --></head><body>Setting body as a part of HTML.</body></html>')
+          .invoke_setOuterHTML({
+            nodeId: htmlNode.id,
+            outerHTML:
+                '<html><head><!-- new head content --></head><body>Setting body as a part of HTML.</body></html>'
+          })
           .then(dumpHTML(next));
     }
   ]);
 
   function dumpHTML(next) {
     async function dump() {
-      var text = await TestRunner.DOMAgent.getOuterHTML(htmlNode.id);
+      var text = (await TestRunner.DOMAgent.invoke_getOuterHTML({nodeId: htmlNode.id})).outerHTML;
       TestRunner.addResult(text);
       next();
     }

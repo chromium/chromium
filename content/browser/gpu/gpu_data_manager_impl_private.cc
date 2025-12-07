@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -18,6 +15,7 @@
 #include <sddl.h>
 #endif  // BUILDFLAG(IS_WIN)
 
+#include <algorithm>
 #include <array>
 #include <iterator>
 #include <memory>
@@ -35,16 +33,13 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "base/version.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "components/viz/common/features.h"
-#include "content/browser/gpu/gpu_memory_buffer_manager_singleton.h"
 #include "content/browser/gpu/gpu_process_host.h"
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -75,10 +70,12 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/clients/mojo_video_decoder.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gpu_preference.h"
@@ -105,18 +102,6 @@
 namespace content {
 
 namespace {
-
-// On X11, we do not know GpuMemoryBuffer configuration support until receiving
-// the initial GPUInfo.
-bool CanUpdateGmbGpuPreferences() {
-#if BUILDFLAG(IS_OZONE)
-  return !ui::OzonePlatform::GetInstance()
-              ->GetPlatformProperties()
-              .fetch_buffer_formats_for_gmb_on_gpu;
-#else
-  return true;
-#endif
-}
 
 #if BUILDFLAG(IS_ANDROID)
 // NOINLINE to ensure this function is used in crash reports.
@@ -240,7 +225,7 @@ void EnableIntelShaderCache() {
 //  \tools\metrics\histograms\enums.xml
 enum class CanvasOopRasterAndGpuAcceleration {
   kAccelOop = 0,
-  kAccelNoOop = 1,
+  kAccelNoOop = 1,  // obsolete
   kNoAccelOop = 2,
   kNoAccelNoOop = 3,
   kMaxValue = kNoAccelNoOop,
@@ -256,20 +241,15 @@ void RecordCanvasAcceleratedOopRasterHistogram(
               .status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS] ==
           gpu::kGpuFeatureStatusEnabled &&
       !command_line.HasSwitch(switches::kDisableAccelerated2dCanvas);
-  bool oopr_canvas =
-      gpu_feature_info
-          .status_values[gpu::GPU_FEATURE_TYPE_CANVAS_OOP_RASTERIZATION] ==
-      gpu::kGpuFeatureStatusEnabled;
 
   CanvasOopRasterAndGpuAcceleration oop_acceleration_state =
       CanvasOopRasterAndGpuAcceleration::kNoAccelNoOop;
   if (!gpu_compositing_disabled) {
-    if (accelerated_canvas && oopr_canvas)
+    if (accelerated_canvas) {
       oop_acceleration_state = CanvasOopRasterAndGpuAcceleration::kAccelOop;
-    else if (accelerated_canvas && !oopr_canvas)
-      oop_acceleration_state = CanvasOopRasterAndGpuAcceleration::kAccelNoOop;
-    else if (!accelerated_canvas && oopr_canvas)
+    } else {
       oop_acceleration_state = CanvasOopRasterAndGpuAcceleration::kNoAccelOop;
+    }
   }
   UMA_HISTOGRAM_ENUMERATION("GPU.CanvasOopRaster.OopRasterAndGpuAcceleration",
                             oop_acceleration_state);
@@ -277,6 +257,8 @@ void RecordCanvasAcceleratedOopRasterHistogram(
 
 // Send UMA histograms about the enabled features and GPU properties.
 void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
+  constexpr char kGpuBlocklistHistogram[] = "GPU.BlocklistEntriesApplied";
+
   // Update applied entry stats.
   std::unique_ptr<gpu::GpuBlocklist> blocklist(gpu::GpuBlocklist::Create());
   DCHECK(blocklist.get() && blocklist->max_entry_id() > 0);
@@ -285,8 +267,7 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
   // was recorded in this histogram in order to have a convenient
   // denominator to compute blocklist percentages for the rest of the
   // entries.
-  UMA_HISTOGRAM_EXACT_LINEAR("GPU.BlocklistTestResultsPerEntry", 0,
-                             max_entry_id + 1);
+  base::UmaHistogramSparse(kGpuBlocklistHistogram, 0);
   if (!gpu_feature_info.applied_gpu_blocklist_entries.empty()) {
     std::vector<uint32_t> entry_ids = blocklist->GetEntryIDsFromIndices(
         gpu_feature_info.applied_gpu_blocklist_entries);
@@ -294,39 +275,39 @@ void UpdateFeatureStats(const gpu::GpuFeatureInfo& gpu_feature_info) {
               entry_ids.size());
     for (auto id : entry_ids) {
       DCHECK_GE(max_entry_id, id);
-      UMA_HISTOGRAM_EXACT_LINEAR("GPU.BlocklistTestResultsPerEntry", id,
-                                 max_entry_id + 1);
+      base::UmaHistogramSparse(kGpuBlocklistHistogram, id);
     }
   }
 
   // Update feature status stats.
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  const gpu::GpuFeatureType kGpuFeatures[] = {
+  const auto kGpuFeatures = std::to_array<gpu::GpuFeatureType>({
       gpu::GPU_FEATURE_TYPE_ACCELERATED_2D_CANVAS,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_GL,
       gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL,
       gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGL2,
-      gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGPU};
-  const std::string kGpuBlocklistFeatureHistogramNames[] = {
+      gpu::GPU_FEATURE_TYPE_ACCELERATED_WEBGPU,
+  });
+  const auto kGpuBlocklistFeatureHistogramNames = std::to_array<std::string>({
       "GPU.BlocklistFeatureTestResults.Accelerated2dCanvas",
       "GPU.BlocklistFeatureTestResults.GpuCompositing",
       "GPU.BlocklistFeatureTestResults.GpuRasterization",
       "GPU.BlocklistFeatureTestResults.Webgl",
       "GPU.BlocklistFeatureTestResults.Webgl2",
-      "GPU.BlocklistFeatureTestResults.Webgpu"};
-  const bool kGpuFeatureUserFlags[] = {
+      "GPU.BlocklistFeatureTestResults.Webgpu",
+  });
+  const auto kGpuFeatureUserFlags = std::to_array<bool>({
       command_line.HasSwitch(switches::kDisableAccelerated2dCanvas),
       command_line.HasSwitch(switches::kDisableGpu),
       command_line.HasSwitch(switches::kDisableGpuRasterization),
       command_line.HasSwitch(switches::kDisableWebGL),
       (command_line.HasSwitch(switches::kDisableWebGL) ||
        command_line.HasSwitch(switches::kDisableWebGL2)),
-      !command_line.HasSwitch(switches::kEnableUnsafeWebGPU)};
-  const size_t kNumFeatures =
-      sizeof(kGpuFeatures) / sizeof(gpu::GpuFeatureType);
-  for (size_t i = 0; i < kNumFeatures; ++i) {
+      !command_line.HasSwitch(switches::kEnableUnsafeWebGPU),
+  });
+  for (size_t i = 0; i < kGpuFeatures.size(); ++i) {
     // We can't use UMA_HISTOGRAM_ENUMERATION here because the same name is
     // expected if the macro is used within a loop.
     gpu::GpuFeatureStatus value =
@@ -410,14 +391,12 @@ void RequestVideoMemoryUsageStats(
       base::BindOnce(&OnVideoMemoryUsageStats, std::move(callback)));
 }
 
-// Determines if SwiftShader is available as a fallback for WebGL.
-bool SwiftShaderAllowed() {
-#if BUILDFLAG(ENABLE_SWIFTSHADER)
-  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kDisableSoftwareRasterizer);
-#else
-  return false;
-#endif
+// Determines if software GL is available as a fallback for WebGL.
+bool SoftwareGLAllowed() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  return !command_line->HasSwitch(switches::kDisableSoftwareRasterizer) &&
+         features::IsAnySoftwareGLAllowed(command_line);
 }
 
 // These values are logged to UMA. Entries should not be renumbered and numeric
@@ -455,7 +434,7 @@ void CollectExtraDevicePerfInfo(const gpu::GPUInfo& gpu_info,
 class HDRProxy {
  public:
   static void Initialize() {
-    display::win::ScreenWin::SetRequestHDRStatusCallback(
+    display::win::GetScreenWin()->SetRequestHDRStatusCallback(
         base::BindRepeating(&HDRProxy::RequestHDRStatus));
   }
 
@@ -471,7 +450,7 @@ class HDRProxy {
   }
 
   static void GotResult(gfx::mojom::DXGIInfoPtr dxgi_info) {
-    display::win::ScreenWin::SetDXGIInfo(std::move(dxgi_info));
+    display::win::GetScreenWin()->SetDXGIInfo(std::move(dxgi_info));
   }
 };
 
@@ -525,10 +504,11 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
   // Android and Chrome OS can't switch to software compositing. If the GPU
   // process initialization fails or GPU process is too unstable then crash the
   // browser process to reset everything.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   fallback_modes_.push_back(gpu::GpuMode::DISPLAY_COMPOSITOR);
-  if (SwiftShaderAllowed())
-    fallback_modes_.push_back(gpu::GpuMode::SWIFTSHADER);
+  if (SoftwareGLAllowed()) {
+    fallback_modes_.push_back(gpu::GpuMode::SOFTWARE_GL);
+  }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -543,15 +523,17 @@ void GpuDataManagerImplPrivate::InitializeGpuModes() {
 #endif  // BUILDFLAG(IS_CASTOS)
 
 #if (BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CAST_ANDROID)) || \
-    BUILDFLAG(IS_CHROMEOS_ASH)
-    CHECK(false) << "GPU acceleration is required on certain platforms!";
+    BUILDFLAG(IS_CHROMEOS)
+    NOTREACHED() << "GPU acceleration is required on certain platforms!";
 #endif
   } else if (features::IsSkiaGraphiteEnabled(command_line)) {
     // If Graphite is enabled, fall back to Ganesh/GL on platforms that do not
     // support software compositing or sometimes fail dawn initialization.
     // TODO(b/323953910): Eliminate this fallback on each platform once Graphite
     // stability is sufficient on that platform.
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GL);
+#endif
     fallback_modes_.push_back(gpu::GpuMode::HARDWARE_GRAPHITE);
   } else {
     // On Fuchsia Vulkan must be used when it's enabled by the WebEngine
@@ -613,18 +595,18 @@ bool GpuDataManagerImplPrivate::GpuAccessAllowed(std::string* reason) const {
     case gpu::GpuMode::HARDWARE_GRAPHITE:
     case gpu::GpuMode::HARDWARE_VULKAN:
       return true;
-    case gpu::GpuMode::SWIFTSHADER:
-      DCHECK(SwiftShaderAllowed());
+    case gpu::GpuMode::SOFTWARE_GL:
+      DCHECK(SoftwareGLAllowed());
       return true;
     default:
       if (reason) {
         // If SwiftShader is allowed, then we are here because it was blocked.
-        if (SwiftShaderAllowed()) {
-          *reason = "GPU process crashed too many times with SwiftShader.";
+        if (SoftwareGLAllowed()) {
+          *reason = "GPU process crashed too many times with software GL.";
         } else {
           *reason = "GPU access is disabled ";
           // just running with --disable-gpu only will go to
-          // GpuMode::SWIFTSHADER instead. Adding --disable-gpu and
+          // GpuMode::SOFTWARE_GL instead. Adding --disable-gpu and
           // --disable-software-rasterizer makes GpuAccessAllowed false and it
           // comes here.
           if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -799,7 +781,7 @@ void GpuDataManagerImplPrivate::RequestDawnInfo(bool delayed,
   base::OnceClosure task = base::BindOnce(
       [](bool collect_metrics) {
         GpuProcessHost* host = GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED,
-                                                   false /* force_create */);
+                                                   /*force_create=*/false);
         if (!host) {
           return;
         }
@@ -940,7 +922,7 @@ gpu::GpuFeatureStatus GpuDataManagerImplPrivate::GetFeatureStatus(
 void GpuDataManagerImplPrivate::RequestVideoMemoryUsageStatsUpdate(
     GpuDataManager::VideoMemoryUsageStatsCallback callback) const {
   GpuProcessHost::CallOnUI(
-      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
+      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false ,
       base::BindOnce(&RequestVideoMemoryUsageStats, std::move(callback)));
 }
 
@@ -998,6 +980,18 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
 #endif
   gpu_info_ = gpu_info;
   RecordDiscreteGpuHistograms(gpu_info_);
+  RecordNpuHistograms(gpu_info_);
+#if BUILDFLAG(ENABLE_VULKAN)
+  // Remember the initial hardware_supports_vulkan value so it doesn't change
+  // if GPU process restarts as Vulkan might get disabled by GPU mode fallback.
+  if (fixed_gpu_info_.hardware_supports_vulkan.has_value()) {
+    gpu_info_.hardware_supports_vulkan =
+        *fixed_gpu_info_.hardware_supports_vulkan;
+  } else {
+    fixed_gpu_info_.hardware_supports_vulkan =
+        gpu_info.hardware_supports_vulkan;
+  }
+#endif
 #if BUILDFLAG(IS_WIN)
   if (d3d12_feature_level != 0) {
     gpu_info_.d3d12_feature_level = d3d12_feature_level;
@@ -1146,20 +1140,23 @@ void GpuDataManagerImplPrivate::TerminateInfoCollectionGpuProcess() {
   // directly here from TerminateInfoCollectionGpuProcess(), which also runs on
   // the IO thread.
   GpuProcessHost* host = GpuProcessHost::Get(GPU_PROCESS_KIND_INFO_COLLECTION,
-                                             false /* force_create */);
+                                             /*force_create=*/false );
   if (host)
     host->ForceShutdown();
 }
 #endif
 
 void GpuDataManagerImplPrivate::PostCreateThreads() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   // Launch the info collection GPU process to collect Dawn info.
   // Not to affect Chrome startup, this is done in a delayed mode, i.e., 120
   // seconds after Chrome startup.
-  RequestDawnInfo(/*delayed=*/true, /*collect_metrics=*/true);
+  bool delay_dawn_collection =
+      !command_line->HasSwitch(switches::kCollectDawnInfoEagerly);
+  RequestDawnInfo(/*delayed=*/delay_dawn_collection,
+                  /*collect_metrics=*/true);
 
 #if BUILDFLAG(IS_WIN)
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kNoDelayForDX12VulkanInfoCollection)) {
     // This is for the info collection test of the gpu integration tests.
     RequestDx12VulkanVideoGpuInfoIfNeeded(
@@ -1193,16 +1190,22 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const std::optional<gpu::GpuFeatureInfo>&
         gpu_feature_info_for_hardware_gpu) {
-  gpu_feature_info_ = gpu_feature_info;
+  if (gpu_mode_ == gpu::GpuMode::DISPLAY_COMPOSITOR) {
+    // If we're in the display compositor mode, force the feature info to
+    // disable everything. UpdateGpuFeatureInfo calls may come at any time so we
+    // make it sticky here. The gpu_feature_info will be used to initialize
+    // gpu_feature_info_for_hardware_gpu_ below if no
+    // gpu_feature_info_for_hardware_gpu was provided.
+    gpu_feature_info_ = gpu::ComputeGpuFeatureInfoWithNoGpu();
+  } else {
+    gpu_feature_info_ = gpu_feature_info;
+  }
 #if !BUILDFLAG(IS_FUCHSIA)
   // With Vulkan or Graphite, GL might be blocked so don't fallback to it later.
   if (HardwareAccelerationEnabled() &&
       gpu_feature_info_.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL] !=
           gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled) {
-    fallback_modes_.erase(
-        std::remove(fallback_modes_.begin(), fallback_modes_.end(),
-                    gpu::GpuMode::HARDWARE_GL),
-        fallback_modes_.end());
+    std::erase(fallback_modes_, gpu::GpuMode::HARDWARE_GL);
   }
 
   // If Vulkan or Graphite initialization fails, the GPU process can silently
@@ -1228,7 +1231,7 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
       gpu_feature_info_for_hardware_gpu_ =
           gpu_feature_info_for_hardware_gpu.value();
     } else {
-      gpu_feature_info_for_hardware_gpu_ = gpu_feature_info_;
+      gpu_feature_info_for_hardware_gpu_ = gpu_feature_info;
     }
     is_gpu_compositing_disabled_for_hardware_gpu_ = IsGpuCompositingDisabled();
     gpu_access_allowed_for_hardware_gpu_ =
@@ -1240,6 +1243,12 @@ void GpuDataManagerImplPrivate::UpdateGpuFeatureInfo(
     RecordCanvasAcceleratedOopRasterHistogram(gpu_feature_info_,
                                               IsGpuCompositingDisabled());
   }
+
+  is_gpu_rasterization_for_ui_enabled_ =
+      features::IsUiGpuRasterizationEnabled() &&
+      gpu_feature_info_
+              .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
+          gpu::kGpuFeatureStatusEnabled;
 }
 
 void GpuDataManagerImplPrivate::UpdateGpuExtraInfo(
@@ -1313,8 +1322,15 @@ void GpuDataManagerImplPrivate::AppendGpuCommandLine(
     case gpu::GpuMode::HARDWARE_VULKAN:
       use_gl = browser_command_line->GetSwitchValueASCII(switches::kUseGL);
       break;
-    case gpu::GpuMode::SWIFTSHADER:
-      gl::SetSoftwareWebGLCommandLineSwitches(command_line);
+    case gpu::GpuMode::SOFTWARE_GL:
+      // On Fuchsia, always force software GL
+#if !BUILDFLAG(IS_FUCHSIA)
+      if (!gl::HasRequestedSoftwareGLImplementationFromCommandLine(
+              command_line))
+#endif  // BUILDFLAG(IS_FUCHSIA)
+      {
+        gl::SetSoftwareWebGLCommandLineSwitches(command_line);
+      }
       break;
     default:
       use_gl = gl::kGLImplementationDisabledName;
@@ -1328,17 +1344,6 @@ void GpuDataManagerImplPrivate::UpdateGpuPreferences(
     gpu::GpuPreferences* gpu_preferences,
     GpuProcessKind kind) const {
   DCHECK(gpu_preferences);
-
-  // For performance reasons, discourage storing VideoFrames in a biplanar
-  // GpuMemoryBuffer if this is not native, see https://crbug.com/791676.
-  auto* gpu_memory_buffer_manager =
-      GpuMemoryBufferManagerSingleton::GetInstance();
-  if (gpu_memory_buffer_manager && CanUpdateGmbGpuPreferences()) {
-    gpu_preferences->disable_biplanar_gpu_memory_buffers_for_video_frames =
-        !gpu_memory_buffer_manager->IsNativeGpuMemoryBufferConfiguration(
-            gfx::BufferFormat::YUV_420_BIPLANAR,
-            gfx::BufferUsage::GPU_READ_CPU_READ_WRITE);
-  }
 
   gpu_preferences->gpu_program_cache_size = gpu::GetDefaultGpuDiskCacheSize();
 
@@ -1402,12 +1407,15 @@ bool GpuDataManagerImplPrivate::HardwareAccelerationEnabled() const {
   }
 }
 
+bool GpuDataManagerImplPrivate::IsGpuRasterizationForUIEnabled() const {
+  return is_gpu_rasterization_for_ui_enabled_;
+}
+
 void GpuDataManagerImplPrivate::OnGpuBlocked() {
   std::optional<gpu::GpuFeatureInfo> gpu_feature_info_for_hardware_gpu;
   if (gpu_feature_info_.IsInitialized())
     gpu_feature_info_for_hardware_gpu = gpu_feature_info_;
-  gpu::GpuFeatureInfo gpu_feature_info = gpu::ComputeGpuFeatureInfoWithNoGpu();
-  UpdateGpuFeatureInfo(gpu_feature_info, gpu_feature_info_for_hardware_gpu);
+  UpdateGpuFeatureInfo(gpu_feature_info_, gpu_feature_info_for_hardware_gpu);
 
   // Some observers might be waiting.
   NotifyGpuInfoUpdate();
@@ -1447,17 +1455,15 @@ base::Value::List GpuDataManagerImplPrivate::GetLogMessages() const {
 void GpuDataManagerImplPrivate::HandleGpuSwitch() {
   base::AutoUnlock unlock(owner_->lock_);
   // Notify observers in the browser process.
-  ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched(
-      active_gpu_heuristic_);
+  ui::GpuSwitchingManager::GetInstance()->NotifyGpuSwitched();
   // Pass the notification to the GPU process to notify observers there.
-  GpuProcessHost::CallOnUI(
-      FROM_HERE, GPU_PROCESS_KIND_SANDBOXED, false /* force_create */,
-      base::BindOnce(
-          [](gl::GpuPreference active_gpu, GpuProcessHost* host) {
-            if (host)
-              host->gpu_service()->GpuSwitched(active_gpu);
-          },
-          active_gpu_heuristic_));
+  GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
+                           /*force_create=*/false ,
+                           base::BindOnce([](GpuProcessHost* host) {
+                             if (host) {
+                               host->gpu_service()->GpuSwitched();
+                             }
+                           }));
 }
 
 void GpuDataManagerImplPrivate::OnDisplayAdded(
@@ -1468,7 +1474,7 @@ void GpuDataManagerImplPrivate::OnDisplayAdded(
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayAdded();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           false /* force_create */,
+                           /*force_create=*/false ,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayAdded();
@@ -1483,7 +1489,7 @@ void GpuDataManagerImplPrivate::OnDisplaysRemoved(
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayRemoved();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           false /* force_create */,
+                           /*force_create=*/false ,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayRemoved();
@@ -1499,7 +1505,7 @@ void GpuDataManagerImplPrivate::OnDisplayMetricsChanged(
   ui::GpuSwitchingManager::GetInstance()->NotifyDisplayMetricsChanged();
   // Pass the notification to the GPU process to notify observers there.
   GpuProcessHost::CallOnUI(FROM_HERE, GPU_PROCESS_KIND_SANDBOXED,
-                           false /* force_create */,
+                           /*force_create=*/false ,
                            base::BindOnce([](GpuProcessHost* host) {
                              if (host)
                                host->gpu_service()->DisplayMetricsChanged();
@@ -1557,7 +1563,7 @@ std::string GpuDataManagerImplPrivate::GetDomainFromURL(const GURL& url) const {
     return std::string();
   }
 
-  return url.host();
+  return url.GetHost();
 }
 
 void GpuDataManagerImplPrivate::BlockDomainsFrom3DAPIsAtTime(
@@ -1612,9 +1618,9 @@ GpuDataManagerImplPrivate::Are3DAPIsBlockedAtTime(const GURL& url,
   ExpireOldBlockedDomainsAtTime(at_time);
 
   std::string domain = GetDomainFromURL(url);
-  size_t losses_for_domain = base::ranges::count(
-      blocked_domains_, domain,
-      [](const auto& entry) { return entry.second.domain; });
+  size_t losses_for_domain =
+      std::ranges::count(blocked_domains_, domain,
+                         [](const auto& entry) { return entry.second.domain; });
   // Allow one context loss per domain, so block if there are two or more.
   if (losses_for_domain > 1)
     return DomainBlockStatus::kBlocked;
@@ -1673,6 +1679,19 @@ void GpuDataManagerImplPrivate::FallBackToNextGpuMode() {
     OnGpuBlocked();
 }
 
+void GpuDataManagerImplPrivate::FallBackToNextGpuModeDueToCrash() {
+  FallBackToNextGpuMode();
+
+  // If we fell back to sofware GL due to crashes and it is disabled with a
+  // feature. Fall back again.
+  if (gpu_mode_ == gpu::GpuMode::SOFTWARE_GL &&
+      !features::IsSoftwareGLFallbackDueToCrashesAllowed(
+          base::CommandLine::ForCurrentProcess())) {
+    FallBackToNextGpuMode();
+    DCHECK_NE(gpu_mode_, gpu::GpuMode::SOFTWARE_GL);
+  }
+}
+
 void GpuDataManagerImplPrivate::RecordCompositingMode() {
   CompositingMode compositing_mode;
   if (IsGpuCompositingDisabled()) {
@@ -1687,11 +1706,7 @@ void GpuDataManagerImplPrivate::RecordCompositingMode() {
 
 #if BUILDFLAG(IS_LINUX)
 bool GpuDataManagerImplPrivate::IsGpuMemoryBufferNV12Supported() {
-  return is_gpu_memory_buffer_NV12_supported_;
-}
-void GpuDataManagerImplPrivate::SetGpuMemoryBufferNV12Supported(
-    bool supported) {
-  is_gpu_memory_buffer_NV12_supported_ = supported;
+  return gpu_extra_info_.is_gmb_nv12_supported;
 }
 #endif  // BUILDFLAG(IS_LINUX)
 

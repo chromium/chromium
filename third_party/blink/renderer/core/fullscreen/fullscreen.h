@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FULLSCREEN_FULLSCREEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FULLSCREEN_FULLSCREEN_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -39,7 +38,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen_request_type.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -67,11 +65,8 @@ enum class RequestFullscreenError {
 // Document supplement as each document has some fullscreen state, and to
 // actually enter and exit fullscreen it (indirectly) uses FullscreenController.
 class CORE_EXPORT Fullscreen final : public GarbageCollected<Fullscreen>,
-                                     public Supplement<LocalDOMWindow>,
                                      public ExecutionContextLifecycleObserver {
  public:
-  static const char kSupplementName[];
-
   explicit Fullscreen(LocalDOMWindow&);
   ~Fullscreen() override;
 

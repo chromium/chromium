@@ -7,8 +7,10 @@
 
 #include <stdint.h>
 
+#include <compare>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/component_export.h"
 
@@ -147,30 +149,30 @@ class COMPONENT_EXPORT(URL) SchemeHostPort {
   // Note that this comparison is _not_ the same as an origin-based comparison.
   // In particular, invalid SchemeHostPort objects match each other (and
   // themselves). Opaque origins, on the other hand, would not.
-  bool operator==(const SchemeHostPort& other) const {
-    return port_ == other.port() && scheme_ == other.scheme() &&
-           host_ == other.host();
+  friend bool operator==(const SchemeHostPort& left,
+                         const SchemeHostPort& right) = default;
+  friend auto operator<=>(const SchemeHostPort& left,
+                          const SchemeHostPort& right) = default;
+
+  template <typename H>
+  friend H AbslHashValue(H h, const SchemeHostPort& tuple) {
+    return H::combine(std::move(h), tuple.port_, tuple.scheme_, tuple.host_);
   }
-  bool operator!=(const SchemeHostPort& other) const {
-    return !(*this == other);
-  }
-  // Allows SchemeHostPort to be used as a key in STL (for example, a std::set
-  // or std::map).
-  bool operator<(const SchemeHostPort& other) const;
 
   // Whether to discard host and port information for a specific scheme.
   //
   // Note that this hack is required to avoid breaking existing Android WebView
   // behaviors. Currently, Android WebView doesn't use host and port information
   // for non-special URLs. See https://crbug.com/40063064 for details.
-  static bool ShouldDiscardHostAndPort(const std::string_view scheme);
+  static bool ShouldDiscardHostAndPort(std::string_view scheme);
 
   std::string SerializeInternal(url::Parsed* parsed) const;
 
  private:
+  // Note: `port_` is declared first to control the sort order.
+  uint16_t port_ = 0;
   std::string scheme_;
   std::string host_;
-  uint16_t port_ = 0;
 };
 
 COMPONENT_EXPORT(URL)

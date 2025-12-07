@@ -24,11 +24,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/audio/fake_audio_input_stream.h"
 #include "media/base/video_frame.h"
 #include "media/capture/mojom/image_capture_types.h"
-#include "media/capture/video/gpu_memory_buffer_utils.h"
+#include "media/capture/video/mappable_shared_image_utils.h"
 #include "skia/ext/font_utils.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -151,11 +150,8 @@ gfx::ColorSpace GetDefaultColorSpace(VideoPixelFormat format) {
     case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV21:
     case PIXEL_FORMAT_NV24:
-    case PIXEL_FORMAT_YUV420P9:
     case PIXEL_FORMAT_YUV420P10:
-    case PIXEL_FORMAT_YUV422P9:
     case PIXEL_FORMAT_YUV422P10:
-    case PIXEL_FORMAT_YUV444P9:
     case PIXEL_FORMAT_YUV444P10:
     case PIXEL_FORMAT_YUV420P12:
     case PIXEL_FORMAT_YUV422P12:
@@ -286,26 +282,17 @@ class JpegEncodingFrameDeliverer : public FrameDeliverer {
 class GpuMemoryBufferFrameDeliverer : public FrameDeliverer {
  public:
   GpuMemoryBufferFrameDeliverer(
-      std::unique_ptr<PacmanFramePainter> frame_painter,
-      gpu::GpuMemoryBufferSupport* gmb_support);
+      std::unique_ptr<PacmanFramePainter> frame_painter);
   ~GpuMemoryBufferFrameDeliverer() override;
 
   // Implementation of FrameDeliveryStrategy
   void PaintAndDeliverNextFrame(base::TimeDelta timestamp_to_paint) override;
-
- private:
-  raw_ptr<gpu::GpuMemoryBufferSupport> gmb_support_;
 };
 
 FrameDelivererFactory::FrameDelivererFactory(
     FakeVideoCaptureDevice::DeliveryMode delivery_mode,
-    const FakeDeviceState* device_state,
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support)
-    : delivery_mode_(delivery_mode),
-      device_state_(device_state),
-      gmb_support_(gmb_support
-                       ? std::move(gmb_support)
-                       : std::make_unique<gpu::GpuMemoryBufferSupport>()) {}
+    const FakeDeviceState* device_state)
+    : delivery_mode_(delivery_mode), device_state_(device_state) {}
 
 FrameDelivererFactory::~FrameDelivererFactory() = default;
 
@@ -327,8 +314,7 @@ std::unique_ptr<FrameDeliverer> FrameDelivererFactory::CreateFrameDeliverer(
       painter_format = PacmanFramePainter::Format::NV12;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      painter_format = PacmanFramePainter::Format::I420;
+      NOTREACHED();
   }
   auto frame_painter =
       std::make_unique<PacmanFramePainter>(painter_format, device_state_);
@@ -363,9 +349,9 @@ std::unique_ptr<FrameDeliverer> FrameDelivererFactory::CreateFrameDeliverer(
           std::move(frame_painter));
     case FakeVideoCaptureDevice::DeliveryMode::USE_GPU_MEMORY_BUFFERS:
       return std::make_unique<GpuMemoryBufferFrameDeliverer>(
-          std::move(frame_painter), gmb_support_.get());
+          std::move(frame_painter));
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 PacmanFramePainter::PacmanFramePainter(Format pixel_format,
@@ -548,9 +534,10 @@ void FakePhotoDevice::TakePhoto(VideoCaptureDevice::TakePhotoCallback callback,
   // Create a PNG-encoded frame and send it back to |callback|.
   auto required_sk_n32_buffer_size = VideoFrame::AllocationSize(
       PIXEL_FORMAT_ARGB, fake_device_state_->format.frame_size);
-  std::unique_ptr<uint8_t[]> buffer(new uint8_t[required_sk_n32_buffer_size]);
-  memset(buffer.get(), 0, required_sk_n32_buffer_size);
-  sk_n32_painter_->PaintFrame(elapsed_time, buffer.get());
+  // Memory is already zero-initialized:
+  base::HeapArray<uint8_t> buffer =
+      base::HeapArray<uint8_t>::WithSize(required_sk_n32_buffer_size);
+  sk_n32_painter_->PaintFrame(elapsed_time, buffer.data());
   mojom::BlobPtr blob = mojom::Blob::New();
   const gfx::PNGCodec::ColorFormat encoding_source_format =
 #if SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
@@ -558,15 +545,14 @@ void FakePhotoDevice::TakePhoto(VideoCaptureDevice::TakePhotoCallback callback,
 #else
       gfx::PNGCodec::FORMAT_BGRA;
 #endif
-  const bool result = gfx::PNGCodec::Encode(
-      buffer.get(), encoding_source_format,
+  std::optional<std::vector<uint8_t>> result = gfx::PNGCodec::Encode(
+      buffer.data(), encoding_source_format,
       fake_device_state_->format.frame_size,
-      VideoFrame::RowBytes(0 /* plane */, PIXEL_FORMAT_ARGB,
+      VideoFrame::RowBytes(/*plane=*/0, PIXEL_FORMAT_ARGB,
                            fake_device_state_->format.frame_size.width()),
-      true /* discard_transparency */, std::vector<gfx::PNGCodec::Comment>(),
-      &blob->data);
-  DCHECK(result);
+      /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
 
+  blob->data = std::move(result.value());
   blob->mime_type = "image/png";
   std::move(callback).Run(std::move(blob));
 }
@@ -708,6 +694,10 @@ void FakePhotoDevice::GetPhotoState(
                                           ? mojom::BackgroundBlurMode::BLUR
                                           : mojom::BackgroundBlurMode::OFF;
 
+  photo_state->supported_background_segmentation_mask_states = {false, true};
+  photo_state->current_background_segmentation_mask_state =
+      fake_device_state_->background_segmentation_mask;
+
   photo_state->supported_eye_gaze_correction_modes = {
       mojom::EyeGazeCorrectionMode::OFF, mojom::EyeGazeCorrectionMode::ON};
   photo_state->current_eye_gaze_correction_mode =
@@ -771,6 +761,11 @@ void FakePhotoDevice::SetPhotoOptions(
     }
   }
 
+  if (settings->background_segmentation_mask_state.has_value()) {
+    device_state_write_access->background_segmentation_mask =
+        settings->background_segmentation_mask_state.value();
+  }
+
   if (settings->eye_gaze_correction_mode.has_value()) {
     switch (settings->eye_gaze_correction_mode.value()) {
       case mojom::EyeGazeCorrectionMode::OFF:
@@ -832,11 +827,17 @@ void OwnBufferFrameDeliverer::PaintAndDeliverNextFrame(
   memset(buffer_.data(), 0, frame_size);
   frame_painter()->PaintFrame(timestamp_to_paint, buffer_.data());
   base::TimeTicks now = base::TimeTicks::Now();
+
+  VideoFrameMetadata metadata;
+  metadata.source_size = gfx::Size(frame_format.frame_size.width(),
+                                   frame_format.frame_size.height());
+  metadata.device_scale_factor = 1.0f;
   client()->OnIncomingCapturedData(
       buffer_.data(), frame_size, device_state()->format,
       GetDefaultColorSpace(device_state()->format.pixel_format),
       0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now), std::nullopt);
+      CalculateTimeSinceFirstInvocation(now),
+      /*capture_begin_timestamp=*/std::nullopt, metadata);
 }
 
 ClientBufferFrameDeliverer::ClientBufferFrameDeliverer(
@@ -863,9 +864,9 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   }
   auto buffer_access =
       capture_buffer.handle_provider->GetHandleForInProcessAccess();
-  DCHECK(buffer_access->data()) << "Buffer has NO backing memory";
+  DCHECK(!buffer_access->data().empty()) << "Buffer has NO backing memory";
 
-  uint8_t* data_ptr = buffer_access->data();
+  uint8_t* data_ptr = buffer_access->data().data();
   memset(data_ptr, 0, buffer_access->mapped_size());
   frame_painter()->PaintFrame(timestamp_to_paint, data_ptr);
   buffer_access.reset();  // Can't outlive `capture_buffer.handle_provider'.
@@ -873,7 +874,8 @@ void ClientBufferFrameDeliverer::PaintAndDeliverNextFrame(
   base::TimeTicks now = base::TimeTicks::Now();
   client()->OnIncomingCapturedBuffer(
       std::move(capture_buffer), device_state()->format, now,
-      CalculateTimeSinceFirstInvocation(now), std::nullopt);
+      CalculateTimeSinceFirstInvocation(now),
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
 JpegEncodingFrameDeliverer::JpegEncodingFrameDeliverer(
@@ -901,24 +903,27 @@ void JpegEncodingFrameDeliverer::PaintAndDeliverNextFrame(
   SkPixmap src(info, &sk_n32_buffer_[0],
                VideoFrame::RowBytes(0 /* plane */, PIXEL_FORMAT_ARGB,
                                     device_state()->format.frame_size.width()));
-  bool success = gfx::JPEGCodec::Encode(src, kQuality, &jpeg_buffer_);
-  if (!success) {
+  std::optional<std::vector<uint8_t>> jpeg_buffer =
+      gfx::JPEGCodec::Encode(src, kQuality);
+  if (!jpeg_buffer) {
     DLOG(ERROR) << "Jpeg encoding failed";
     return;
   }
 
+  jpeg_buffer_ = std::move(jpeg_buffer.value());
   const size_t frame_size = jpeg_buffer_.size();
   base::TimeTicks now = base::TimeTicks::Now();
   client()->OnIncomingCapturedData(
       &jpeg_buffer_[0], frame_size, device_state()->format,
       gfx::ColorSpace::CreateJpeg(), 0 /* rotation */, false /* flip_y */, now,
-      CalculateTimeSinceFirstInvocation(now), std::nullopt);
+      CalculateTimeSinceFirstInvocation(now),
+      /*capture_begin_timestamp=*/std::nullopt,
+      /*metadata=*/std::nullopt);
 }
 
 GpuMemoryBufferFrameDeliverer::GpuMemoryBufferFrameDeliverer(
-    std::unique_ptr<PacmanFramePainter> frame_painter,
-    gpu::GpuMemoryBufferSupport* gmb_support)
-    : FrameDeliverer(std::move(frame_painter)), gmb_support_(gmb_support) {}
+    std::unique_ptr<PacmanFramePainter> frame_painter)
+    : FrameDeliverer(std::move(frame_painter)) {}
 
 GpuMemoryBufferFrameDeliverer::~GpuMemoryBufferFrameDeliverer() = default;
 
@@ -927,11 +932,11 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
   if (!client())
     return;
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gmb;
+  scoped_refptr<gpu::ClientSharedImage> shared_image;
   VideoCaptureDevice::Client::Buffer capture_buffer;
   const gfx::Size& buffer_size = device_state()->format.frame_size;
-  auto reserve_result = AllocateNV12GpuMemoryBuffer(
-      client(), buffer_size, gmb_support_, &gmb, &capture_buffer);
+  auto reserve_result = AllocateNV12SharedImage(client(), buffer_size,
+                                                &shared_image, &capture_buffer);
   if (reserve_result != VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
     client()->OnFrameDropped(
         ConvertReservationFailureToFrameDropReason(reserve_result));
@@ -943,7 +948,7 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
   // writable access.
   auto buffer_access =
       capture_buffer.handle_provider->GetHandleForInProcessAccess();
-  uint8_t* data_ptr = buffer_access->data();
+  uint8_t* data_ptr = buffer_access->data().data();
   memset(data_ptr, 0, buffer_access->mapped_size());
   frame_painter()->PaintFrame(timestamp_to_paint, data_ptr,
                               buffer_size.width());
@@ -954,13 +959,14 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
     capture_buffer.is_premapped = true;
   }
 #else
-  ScopedNV12GpuMemoryBufferMapping scoped_mapping(std::move(gmb));
-  memset(scoped_mapping.y_plane(), 0,
-         scoped_mapping.y_stride() * buffer_size.height());
-  memset(scoped_mapping.uv_plane(), 0,
-         scoped_mapping.uv_stride() * (buffer_size.height() / 2));
-  frame_painter()->PaintFrame(timestamp_to_paint, scoped_mapping.y_plane(),
-                              scoped_mapping.y_stride());
+  auto scoped_mapping = shared_image->Map();
+  memset(scoped_mapping->GetMemoryForPlane(0).data(), 0,
+         scoped_mapping->Stride(0) * buffer_size.height());
+  memset(scoped_mapping->GetMemoryForPlane(1).data(), 0,
+         scoped_mapping->Stride(1) * (buffer_size.height() / 2));
+  frame_painter()->PaintFrame(timestamp_to_paint,
+                              scoped_mapping->GetMemoryForPlane(0).data(),
+                              scoped_mapping->Stride(0));
 #endif  // if BUILDFLAG(IS_WIN)
   base::TimeTicks now = base::TimeTicks::Now();
   VideoCaptureFormat modified_format = device_state()->format;
@@ -969,7 +975,8 @@ void GpuMemoryBufferFrameDeliverer::PaintAndDeliverNextFrame(
   modified_format.pixel_format = PIXEL_FORMAT_NV12;
   client()->OnIncomingCapturedBuffer(
       std::move(capture_buffer), modified_format, now,
-      CalculateTimeSinceFirstInvocation(now), std::nullopt);
+      CalculateTimeSinceFirstInvocation(now),
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
 void FakeVideoCaptureDevice::BeepAndScheduleNextCapture(

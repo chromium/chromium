@@ -29,19 +29,38 @@ template("system_webview_apk_or_module_tmpl") {
          "If trichrome library is used, static_library_provider must be set " +
              "so that a dep can be added on the library APK.")
 
-  _include_32_bit_webview =
-      !defined(invoker.include_32_bit_webview) || invoker.include_32_bit_webview
+  if (!_is_trichrome) {
+    if (!defined(mergeable_android_manifests)) {
+      mergeable_android_manifests = []
+    }
+    mergeable_android_manifests +=
+        [ "//android_webview/AndroidManifest_standalone_webview.xml" ]
+  }
+
   _include_64_bit_webview =
       android_64bit_target_cpu && (!defined(invoker.include_64_bit_webview) ||
                                    invoker.include_64_bit_webview)
-  if (_is_trichrome) {
-    _is_64_bit_browser = android_64bit_target_cpu && invoker.is_64_bit_browser
-    _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
 
-    # Allow a custom version_code, but always use the default _trichrome_library_version_code
-    _trichrome_library_version_code = _version_code
+  if (defined(invoker.include_32_bit_webview)) {
+    _include_32_bit_webview = invoker.include_32_bit_webview
   } else {
-    _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+    _include_32_bit_webview =
+        !android_64bit_target_cpu || defined(android_app_secondary_abi)
+
+    # Make sure defaults never lead no abi.
+    assert(_include_32_bit_webview || _include_64_bit_webview)
+  }
+
+  # is_64_bit_browser: controls the bitness of the renderer process, and the
+  # bitness of the nonembedded service processes. It doesn't control the browser
+  # process bitness because browser process bitness needs to match app process.
+  _is_64_bit_browser =
+      android_64bit_target_cpu && defined(invoker.is_64_bit_browser) &&
+      invoker.is_64_bit_browser
+  if (_is_trichrome) {
+    _version_code = TRICHROME_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
+  } else {
+    _version_code = WEBVIEW_VERSION_MAP["${android_64bit_target_cpu}_${_is_64_bit_browser}_${_include_64_bit_webview}_${_include_32_bit_webview}"]
   }
 
   if (defined(invoker.version_code)) {
@@ -51,9 +70,6 @@ template("system_webview_apk_or_module_tmpl") {
   # Need to apply override explicitly to have it apply to library version.
   if (android_override_version_code != "") {
     _version_code = android_override_version_code
-    if (_is_trichrome) {
-      _trichrome_library_version_code = android_override_version_code
-    }
   }
 
   if (defined(invoker.manifest_package)) {
@@ -63,18 +79,19 @@ template("system_webview_apk_or_module_tmpl") {
   }
   _android_manifest = "$target_gen_dir/$target_name/AndroidManifest.xml"
   _android_manifest_target_name = "${target_name}__android_manifest"
+
   jinja_template(_android_manifest_target_name) {
     input = "//android_webview/nonembedded/java/AndroidManifest.xml"
     output = _android_manifest
     _force_32_bit = _include_32_bit_webview && _include_64_bit_webview &&
-                    (!_is_trichrome || !_is_64_bit_browser)
+                    !_is_64_bit_browser
     variables = [
       "force_32_bit=$_force_32_bit",
       "manifest_package=$_manifest_package",
     ]
     if (_is_trichrome) {
-      variables += trichrome_jinja_variables +
-                   [ "trichrome_version=$_trichrome_library_version_code" ]
+      variables +=
+          trichrome_jinja_variables + [ "trichrome_version=$_version_code" ]
       if (_is_64_bit_browser) {
         variables += [ "library=libmonochrome_64.so" ]
       } else {
@@ -120,9 +137,6 @@ template("system_webview_apk_or_module_tmpl") {
     _is_bundle_module = _target_type == "android_app_bundle_module"
     _omit_dex = defined(invoker.omit_dex) && invoker.omit_dex
 
-    if (!defined(min_sdk_version) && _is_trichrome) {
-      min_sdk_version = 29
-    }
     if (defined(expected_android_manifest)) {
       if (android_64bit_target_cpu) {
         _version_code_offset = chrome_32_version_code
@@ -140,6 +154,11 @@ template("system_webview_apk_or_module_tmpl") {
       "//android_webview:locale_pak_assets",
       "//android_webview:pak_file_assets",
     ]
+
+    # Only the .build_config.json is used from this target, and it's fine if
+    # it contains more assets than we need (always use the 64_32 variant).
+    # https://crbug.com/357131361
+    suffix_apk_assets_used_by = system_webview_apk_target
 
     deps += [ "//android_webview:android_webview_no_weblayer_java" ]
 
@@ -167,9 +186,9 @@ template("system_webview_apk_or_module_tmpl") {
     _include_primary_support = false
     _include_secondary_support = false
 
-    if (!_is_trichrome) {
-      shared_resources = true
+    app_as_shared_lib = true
 
+    if (!_is_trichrome) {
       if ((!android_64bit_target_cpu && _include_32_bit_webview) ||
           (android_64bit_target_cpu && _include_64_bit_webview)) {
         shared_libraries = [ "//android_webview:libwebviewchromium" ]
@@ -181,26 +200,29 @@ template("system_webview_apk_or_module_tmpl") {
       }
       deps += [ "//third_party/icu:icu_assets" ]
     } else {
-      app_as_shared_lib = true
-
       # Include placeholder libraries to ensure we are treated as the desired
       # architecture.
       if (android_64bit_target_cpu) {
         if (_is_64_bit_browser) {
-          native_lib_placeholders = [ "libplaceholder.so" ]
           if (_include_32_bit_webview) {
             secondary_abi_shared_libraries = [ "//android_webview:monochrome_64($android_secondary_abi_toolchain)" ]
             _include_secondary_support = true
           }
+          assert(_include_64_bit_webview)
+          native_lib_placeholders = [ "libplaceholder.so" ]
         } else {
           if (_include_64_bit_webview) {
             shared_libraries = [ "//android_webview:monochrome" ]
             _include_primary_support = true
+          } else {
+            # trichrome_webview_32_bundle
+            static_library_provider_use_secondary_abi = true
           }
+          assert(_include_32_bit_webview)
           secondary_native_lib_placeholders = [ "libplaceholder.so" ]
-          static_library_provider_use_secondary_abi = true
         }
       } else {
+        assert(_include_32_bit_webview)
         native_lib_placeholders = [ "libplaceholder.so" ]
       }
     }

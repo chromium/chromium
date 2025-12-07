@@ -5,12 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MEDIA_STREAM_VIDEO_SINK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MEDIA_STREAM_VIDEO_SINK_H_
 
-#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
-
 #include "base/memory/weak_ptr.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/blink/public/common/media/video_capture.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
 
 namespace blink {
 

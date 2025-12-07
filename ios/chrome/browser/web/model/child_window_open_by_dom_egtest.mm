@@ -20,8 +20,8 @@ using chrome_test_util::OmniboxText;
 
 namespace {
 // Test link text and ids.
-NSString* kNamedWindowLink = @"openWindowWithName";
-NSString* kUnnamedWindowLink = @"openWindowNoName";
+NSString* const kNamedWindowLink = @"openWindowWithName";
+NSString* const kUnnamedWindowLink = @"openWindowNoName";
 
 // Web view text that indicates window's closed state.
 const char kWindow2NeverOpen[] = "window2.closed: never opened";

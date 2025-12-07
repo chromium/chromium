@@ -4,7 +4,7 @@
 
 #include "net/test/android/net_test_jni_onload.h"
 
-#include "base/android/base_jni_onload.h"
+#include "base/android/base_jni_init.h"
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "net/test/embedded_test_server/android/embedded_test_server_android.h"

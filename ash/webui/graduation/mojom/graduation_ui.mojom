@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.graduation_ui.mojom;
+
+// Struct containing the user's profile info used to display the user's email
+// and icon on the welcome page.
+struct ProfileInfo {
+  // The email of the current user.
+  string email;
+
+  // The URL of the current user's profile photo.
+  string photo_url;
+};
+
+// Screens that can be displayed in the app.
+enum GraduationScreen {
+  kWelcome,
+  kTakeoutUi,
+  kError,
+};
+
+// Webview authentication result.
+enum AuthResult {
+  kSuccess,
+  kError,
+};
+
+// Interface that supports integration between ChromeOS and the Content Transfer
+// System Web App.
+interface GraduationUiHandler {
+  // Performs authentication and sets the credential in the webview.
+  // Returns the authentication result.
+  AuthenticateWebview() => (AuthResult result);
+
+  // Returns a struct containing the current user's email and profile photo URL.
+  GetProfileInfo() => (ProfileInfo profile_info);
+
+  // Indicates that the app has switched to a new screen.
+  OnScreenSwitched(GraduationScreen screen);
+
+  // Indicates that the user has completed the Takeout Transfer Flow.
+  OnTransferComplete();
+};

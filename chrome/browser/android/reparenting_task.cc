@@ -10,13 +10,13 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/ReparentingTask_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using chrome::android::BackgroundTabManager;
 using content::WebContents;
 
 static void JNI_ReparentingTask_AttachTab(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jweb_contents) {
+    const JavaRef<jobject>& jweb_contents) {
   auto* web_contents = content::WebContents::FromJavaWebContents(jweb_contents);
   auto* background_tab_manager =
       BackgroundTabManager::FromWebContents(web_contents);
@@ -28,3 +28,5 @@ static void JNI_ReparentingTask_AttachTab(
     background_tab_manager->UnregisterBackgroundTab();
   }
 }
+
+DEFINE_JNI(ReparentingTask)

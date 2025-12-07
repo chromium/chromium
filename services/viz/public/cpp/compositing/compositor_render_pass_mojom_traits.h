@@ -15,7 +15,6 @@
 #include "services/viz/public/cpp/compositing/copy_output_request_mojom_traits.h"
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 #include "services/viz/public/mojom/compositing/compositor_render_pass.mojom-shared.h"
-#include "ui/gfx/ipc/color/gfx_param_traits.h"
 #include "ui/gfx/mojom/rrect_f_mojom_traits.h"
 #include "ui/gfx/mojom/transform_mojom_traits.h"
 
@@ -55,7 +54,7 @@ struct StructTraits<viz::mojom::CompositorRenderPassDataView,
     return input->backdrop_filters;
   }
 
-  static const std::optional<gfx::RRectF>& backdrop_filter_bounds(
+  static const std::optional<SkPath>& backdrop_filter_bounds(
       const std::unique_ptr<viz::CompositorRenderPass>& input) {
     return input->backdrop_filter_bounds;
   }

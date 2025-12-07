@@ -3,12 +3,14 @@
 // found in the LICENSE file.
 
 #import <UIKit/UIKit.h>
+
 #import <ostream>
 
 #import "base/functional/bind.h"
 #import "base/notreached.h"
 #import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/lens/lens_configuration.h"
+#import "ios/public/provider/chrome/browser/lens/lens_overlay_api.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 
 namespace ios {
@@ -24,12 +26,35 @@ enum ChromiumLensProviderErrors : NSInteger {
   kChromiumLensProviderErrorNotImplemented,
 };
 
-}
+}  // namespace
 
 using LensWebParamsCallback =
     base::OnceCallback<void(web::NavigationManager::WebLoadParams)>;
 
 id<ChromeLensController> NewChromeLensController(LensConfiguration* config) {
+  // Lens is not supported in Chromium.
+  return nil;
+}
+
+UIViewController<ChromeLensViewFinderController>*
+NewChromeLensViewFinderController(LensConfiguration* config) {
+  // Lens is not supported in Chromium.
+  return nil;
+}
+
+UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
+    LensImageSource* imageSource,
+    LensConfiguration* config,
+    NSArray<UIAction*>* precedingMenuItems,
+    NSArray<UIAction*>* additionalMenuItems) {
+  // Lens is not supported in Chromium.
+  return nil;
+}
+
+UIViewController<ChromeLensOverlay>* NewChromeLensOverlay(
+    LensImageSource* imageSource,
+    LensConfiguration* config,
+    NSArray<UIAction*>* additionalMenuItems) {
   // Lens is not supported in Chromium.
   return nil;
 }
@@ -50,7 +75,7 @@ std::optional<LensEntrypoint> GetLensEntryPointFromURL(const GURL& url) {
 
 void GenerateLensLoadParamsAsync(LensQuery* query,
                                  LensWebParamsCallback completion) {
-  NOTREACHED_IN_MIGRATION() << "Lens is not supported.";
+  NOTREACHED() << "Lens is not supported.";
 }
 
 }  // namespace provider

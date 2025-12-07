@@ -4,11 +4,10 @@
 
 #include "chrome/browser/ui/test/test_app_window_icon_observer.h"
 
+#include <algorithm>
 #include <string_view>
 #include <utility>
 
-#include "base/hash/md5.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/aura/client/aura_constants.h"
@@ -24,8 +23,9 @@ TestAppWindowIconObserver::TestAppWindowIconObserver(
 
 TestAppWindowIconObserver::~TestAppWindowIconObserver() {
   extensions::AppWindowRegistry::Get(context_)->RemoveObserver(this);
-  for (aura::Window* window : windows_)
+  for (aura::Window* window : windows_) {
     window->RemoveObserver(this);
+  }
 }
 
 void TestAppWindowIconObserver::WaitForIconUpdate() {
@@ -62,7 +62,7 @@ void TestAppWindowIconObserver::OnAppWindowRemoved(
     extensions::AppWindow* app_window) {
   aura::Window* window = app_window->GetNativeWindow();
   if (window) {
-    windows_.erase(base::ranges::find(windows_, window));
+    windows_.erase(std::ranges::find(windows_, window));
     window->RemoveObserver(this);
   }
 }
@@ -70,10 +70,11 @@ void TestAppWindowIconObserver::OnAppWindowRemoved(
 void TestAppWindowIconObserver::OnWindowPropertyChanged(aura::Window* window,
                                                         const void* key,
                                                         intptr_t old) {
-  if (key != aura::client::kAppIconKey)
+  if (key != aura::client::kAppIconKey) {
     return;
+  }
 
-  std::string app_icon_hash;
+  std::array<uint8_t, crypto::hash::kSha256Size> app_icon_hash;
   const gfx::ImageSkia* image = window->GetProperty(aura::client::kAppIconKey);
   last_app_icon_ = image ? *image : gfx::ImageSkia();
 
@@ -83,22 +84,20 @@ void TestAppWindowIconObserver::OnWindowPropertyChanged(aura::Window* window,
     // The window icon property changes more frequently than the image itself
     // leading to test flakiness. Just record instances where the image actually
     // changes.
-    base::MD5Context ctx;
-    base::MD5Init(&ctx);
+    crypto::hash::Hasher hash(crypto::hash::HashKind::kSha256);
     const size_t row_width = bitmap->bytesPerPixel() * bitmap->width();
     for (int y = 0; y < bitmap->height(); ++y) {
-      base::MD5Update(
-          &ctx,
-          std::string_view(reinterpret_cast<const char*>(bitmap->getAddr(0, y)),
-                           row_width));
+      // SAFETY: Skia guarantees that SkBitmap->getAddr(0, y) will return a
+      // pointer into the buffer with at least row_width bytes left.
+      UNSAFE_BUFFERS(hash.Update(base::span<const uint8_t>(
+          reinterpret_cast<const uint8_t*>(bitmap->getAddr(0, y)), row_width));)
     }
-    base::MD5Digest digest;
-    base::MD5Final(&digest, &ctx);
-    app_icon_hash = base::MD5DigestToBase16(digest);
+    hash.Finish(app_icon_hash);
   }
 
-  if (app_icon_hash == last_app_icon_hash_map_[window])
+  if (app_icon_hash == last_app_icon_hash_map_[window]) {
     return;
+  }
 
   last_app_icon_hash_map_[window] = app_icon_hash;
   ++icon_updates_;

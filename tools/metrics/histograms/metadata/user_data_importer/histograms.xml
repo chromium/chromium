@@ -1,0 +1,237 @@
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of histograms related to
+importing user data along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<!-- LINT.IfChange(ImportDataType) -->
+
+<variants name="ImportDataType">
+  <variant name="Bookmarks" summary="Bookmarks"/>
+  <variant name="History" summary="History"/>
+  <variant name="NotSupported" summary="Not supported"/>
+  <variant name="Passwords" summary="Passwords data type."/>
+  <variant name="PaymentCards" summary="Payment cards data type."/>
+  <variant name="ReadingList" summary="Reading list"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/user_data_importer/utility/importer_metrics_recorder.h:ImportDataType) -->
+
+<!-- LINT.IfChange(ImportSource) -->
+
+<variants name="ImportSource">
+  <variant name="OSMigration" summary="Data import from an OS migration."/>
+  <variant name="Safari" summary="Importing data exported by Safari."/>
+  <variant name="StablePortabilityData"
+      summary="Importing data in the stable portability data format."/>
+</variants>
+
+<!-- LINT.ThenChange(//components/user_data_importer/utility/importer_metrics_recorder.h:ImportSource) -->
+
+<histogram name="UserDataImporter.{ImportSource}.Bookmarks.Error"
+    enum="UserDataImportBookmarksReadingListError" expires_after="2026-01-28">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the specific error encountered when parsing bookmarks. This is
+    independent of other data types; it's possible for this to fail but another
+    data type to subsequently be imported.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.FlowDuration" units="ms"
+    expires_after="2026-04-05">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    The total time taken for the user data import process to complete, end to
+    end, once the input file(s) have been presented to the importer. Note that
+    this may include time waiting for UI actions in some cases.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.Passwords.Error"
+    enum="UserDataImportPasswordsError" expires_after="2026-01-28">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the specific error encountered when preparing passwords, generally
+    indicating an issue with parsing. This is independent of other data types;
+    it's possible for this to fail but another data type to subsequently be
+    imported.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.ReadingList.Error"
+    enum="UserDataImportBookmarksReadingListError" expires_after="2026-01-28">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the specific error encountered when parsing reading list items. This
+    is independent of other data types; it's possible for this to fail but
+    another data type to subsequently be imported.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.TotalFailureError"
+    enum="UserDataImportTotalFailureError" expires_after="2026-05-10">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the specific error which caused the entire import process to fail,
+    if such an error occurred. An error in this histogram would indicate that no
+    data was successfully imported for any data type.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.TotalFileSize" units="KB"
+    expires_after="2026-04-05">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    The total size of the input file or data package provided for the user data
+    import process, in KB.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.FileSize"
+    units="KB" expires_after="2026-04-05">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    The size of the data to be imported for this data type, in KB.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+  <token key="ImportDataType" variants="ImportDataType"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.Flow"
+    enum="BooleanStartedCompleted" expires_after="2026-04-05">
+  <owner>fsenra@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records when the import for the data type has started or completed.
+  </summary>
+  <token key="ImportDataType" variants="ImportDataType"/>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.FlowDuration"
+    units="ms" expires_after="2026-04-05">
+  <owner>fsenra@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The time taken to parse the data and import it into the user's storage for
+    the data type. Recorded once the import for the data type is completed.
+  </summary>
+  <token key="ImportDataType" variants="ImportDataType"/>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram
+    name="UserDataImporter.{ImportSource}.{ImportDataType}.ImportDuration"
+    units="ms" expires_after="2026-04-05">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    The time taken to import the data into the Chrome backends. Note that other
+    parts of the flow, like UI steps, file IO, parsing, etc. may have occurred
+    before this step, so this is not necessarily a total duration.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+  <token key="ImportDataType" variants="ImportDataType"/>
+</histogram>
+
+<histogram
+    name="UserDataImporter.{ImportSource}.{ImportDataType}.ImportedCount"
+    units="count" expires_after="2026-04-05">
+  <owner>fsenra@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    The number of items successfully imported for this data type. Recorded once
+    the import for the data type is completed.
+  </summary>
+  <token key="ImportDataType" variants="ImportDataType"/>
+  <token key="ImportSource" variants="ImportSource"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.Outcome"
+    enum="UserDataImportOutcome" expires_after="2026-04-05">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    Records the final outcome of attempting to import a given data type.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+  <token key="ImportDataType" variants="ImportDataType"/>
+</histogram>
+
+<histogram
+    name="UserDataImporter.{ImportSource}.{ImportDataType}.PreparedCount"
+    units="items" expires_after="2026-04-05">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    The number of items prepared for import for this data type. Note that in
+    certain cases (notably history, which is parsed in a streaming manner) this
+    may be an estimate, with actual parsing to occur later.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+  <token key="ImportDataType" variants="ImportDataType"/>
+</histogram>
+
+<histogram
+    name="UserDataImporter.{ImportSource}.{ImportDataType}.PrepareDuration"
+    units="ms" expires_after="2026-04-05">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    The time taken to prepare the data for import for this data type. Usually
+    this involves parsing, but note that in certain cases (notably history,
+    which is parsed in a streaming manner) this may not encompass all parsing
+    work that is done in the entire pipeline.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+  <token key="ImportDataType" variants="ImportDataType"/>
+</histogram>
+
+<histogram name="UserDataImporter.{ImportSource}.{ImportDataType}.SuccessRate"
+    units="%" expires_after="2026-04-05">
+  <owner>tmartino@chromium.org</owner>
+  <owner>bling-transactions@google.com</owner>
+  <summary>
+    The percentage of prepared items that were successfully imported
+    (ImportedCount / PreparedCount) for this data type. Note that in some cases
+    PreparedCount is an estimate, which means we could get over 100%.
+  </summary>
+  <token key="ImportSource" variants="ImportSource"/>
+  <token key="ImportDataType" variants="ImportDataType"/>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

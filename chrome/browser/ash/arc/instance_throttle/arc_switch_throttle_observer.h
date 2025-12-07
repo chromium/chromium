@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_SWITCH_THROTTLE_OBSERVER_H_
 #define CHROME_BROWSER_ASH_ARC_INSTANCE_THROTTLE_ARC_SWITCH_THROTTLE_OBSERVER_H_
 
-#include "chrome/browser/ash/throttle_observer.h"
+#include "chromeos/ash/components/throttle/throttle_observer.h"
 
 namespace arc {
 

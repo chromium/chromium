@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+
+<dialog>dialog</dialog>
+<div popover=auto>popover</div>
+
+<script>
+const dialog = document.querySelector('dialog');
+const popover = document.querySelector('div');
+const useCounterId = 5215;
+const escapeKey = '\uE00C';
+promise_test(async () => {
+  assert_false(internals.isUseCounted(document, useCounterId),
+    'UseCounter should not be set at the start of the test.');
+
+  await test_driver.bless();
+  dialog.showModal();
+  await test_driver.send_keys(dialog, escapeKey);
+
+  await test_driver.bless();
+  popover.showPopover();
+  await test_driver.send_keys(popover, escapeKey);
+
+  assert_false(internals.isUseCounted(document, useCounterId),
+    'UseCounter should not be set after opening and closing dialog and popover.');
+
+  const watcher = new CloseWatcher();
+  assert_true(internals.isUseCounted(document, useCounterId),
+    'UseCounter should be set after creating a CloseWatcher via script.');
+}, 'UseCounter for CloseWatcher');
+</script>

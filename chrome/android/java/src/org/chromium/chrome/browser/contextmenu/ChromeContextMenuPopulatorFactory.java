@@ -6,34 +6,42 @@ package org.chromium.chrome.browser.contextmenu;
 
 import android.content.Context;
 
-import androidx.annotation.NonNull;
+import androidx.browser.customtabs.CustomContentAction;
 
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
-import org.chromium.components.externalauth.ExternalAuthUtils;
+
+import java.util.List;
+import java.util.function.Supplier;
 
 /** Factory for creating {@link ContextMenuPopulator}s. */
+@NullMarked
 public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     private final TabContextMenuItemDelegate mItemDelegate;
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     private final @ContextMenuMode int mContextMenuMode;
-    private final ExternalAuthUtils mExternalAuthUtils;
+    private final List<CustomContentAction> mCustomContentActions;
 
     public ChromeContextMenuPopulatorFactory(
-            @NonNull TabContextMenuItemDelegate itemDelegate,
+            TabContextMenuItemDelegate itemDelegate,
             Supplier<ShareDelegate> shareDelegateSupplier,
             @ContextMenuMode int contextMenuMode,
-            ExternalAuthUtils externalAuthUtils) {
+            List<CustomContentAction> customContentActions) {
         mItemDelegate = itemDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
         mContextMenuMode = contextMenuMode;
-        mExternalAuthUtils = externalAuthUtils;
+        if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()) {
+            mCustomContentActions = customContentActions;
+        } else {
+            mCustomContentActions = List.of();
+        }
     }
 
     @Override
@@ -47,8 +55,8 @@ public class ChromeContextMenuPopulatorFactory implements ContextMenuPopulatorFa
         return new ChromeContextMenuPopulator(
                 mItemDelegate,
                 mShareDelegateSupplier,
+                mCustomContentActions,
                 mContextMenuMode,
-                mExternalAuthUtils,
                 context,
                 params,
                 nativeDelegate);

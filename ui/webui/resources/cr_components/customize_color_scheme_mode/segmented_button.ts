@@ -24,15 +24,22 @@ export class SegmentedButtonElement extends CrLitElement {
 
   static override get properties() {
     return {
-      selected: {type: String},
+      selected: {
+        type: String,
+        notify: true,
+      },
       selectableElements: {type: String},
       groupAriaLabel: {type: String},
     };
   }
 
-  selected?: string;
-  selectableElements: string = 'segmented-button-option';
-  groupAriaLabel: string = '';
+  accessor selected: string|undefined;
+  accessor selectableElements: string = 'segmented-button-option';
+  accessor groupAriaLabel: string = '';
+
+  protected onSelectedChanged_(e: CustomEvent<{value: string}>) {
+    this.selected = e.detail.value;
+  }
 }
 
 declare global {

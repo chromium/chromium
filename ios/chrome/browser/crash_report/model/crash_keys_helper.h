@@ -7,6 +7,7 @@
 
 @class NSString;
 @class NSArray;
+class ProfileIOS;
 
 namespace crash_keys {
 
@@ -41,19 +42,19 @@ void SetCurrentFreeMemoryInKB(int value);
 // will be incremented twice.
 void SetCurrentTabIsPDF(bool value);
 
-// Sets a key in browser_state dictionary to store the device orientation.
+// Sets a key in profile dictionary to store the device orientation.
 // Each values is 1 digit: first is the UI orientation from the Foundation
 // UIInterfaceOrientation enum (values decimal from 1 to 4) and the second is
 // the device orientation with values from the Foundation UIDeviceOrientation
 // enum (values decimal from 0 to 7).
 void SetCurrentOrientation(int statusBarOrientation, int deviceOrientation);
 
-// Sets a key in browser_state dictionary to store the device horizontal size
+// Sets a key in profile dictionary to store the device horizontal size
 // class. The values are from the UIKit UIUserInterfaceSizeClass enum (decimal
 // values from 0 to 2).
 void SetCurrentHorizontalSizeClass(int horizontalSizeClass);
 
-// Sets a key in browser_state dictionary to store the device user interface
+// Sets a key in profile dictionary to store the device user interface
 // style. The values are from the UIKit UIUserInterfaceStyle enum (decimal
 // values from 0 to 2).
 void SetCurrentUserInterfaceStyle(int userInterfaceStyle);
@@ -64,18 +65,22 @@ void SetConnectedScenesCount(int connectedScenes);
 // Sets the number of foreground scenes. Only reported if not 1.
 void SetForegroundScenesCount(int connectedScenes);
 
-// Sets a key in browser_state dictionary to store the count of regular tabs.
+// Sets a key in profile dictionary to store the count of regular tabs.
 void SetRegularTabCount(int tabCount);
 
-// Sets a key in browser_state dictionary to store the count of inactive tabs.
+// Sets a key in profile dictionary to store the count of inactive tabs.
 void SetInactiveTabCount(int tabCount);
 
-// Sets a key in browser_state dictionary to store the count of incognito tabs.
+// Sets a key in profile dictionary to store the count of incognito tabs.
 void SetIncognitoTabCount(int tabCount);
 
 // Sets a key indicating that destroying and rebuilding the incognito browser
 // state is in progress, otherwise remove the key.
 void SetDestroyingAndRebuildingIncognitoBrowserState(bool in_progress);
+
+// Sets a key in profile dictionary to store the count of bookmark nodes in
+// `profile`.
+void SetBookmarkNodesCount(int bookmarks_count, ProfileIOS* profile);
 
 // Sets a key to help debug a crash when animating from grid to visible tab.
 // `to_view_controller` is the view controller about to be presented. The
@@ -101,6 +106,9 @@ void MediaStreamPlaybackDidStop();
 
 // Sets whether VoiceOver is currently running or not.
 void SetVoiceOverRunning(bool running);
+
+// Sets whether the Reading Mode web state is active on the visible tab.
+void SetCurrentlyInReaderMode(bool is_reader_mode_active);
 
 }  // namespace crash_keys
 

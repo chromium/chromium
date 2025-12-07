@@ -9,11 +9,13 @@
 #include <string_view>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/testing_pref_store.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/pref_model_associator_client.h"
 #include "components/sync_preferences/test_syncable_prefs_database.h"
@@ -36,6 +38,8 @@ constexpr char kMergeableListPref[] = "mergeable.list.pref";
 constexpr char kMergeableDictPref1[] = "mergeable.dict.pref1";
 constexpr char kMergeableDictPref2[] = "mergeable.dict.pref2";
 constexpr char kCustomMergePref[] = "custom.merge.pref";
+constexpr char kAlwaysSyncingPriorityPrefName[] =
+    "always.syncing.priority.pref";
 
 // Assigning an id of 0 to all the test prefs.
 const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
@@ -64,7 +68,14 @@ const TestSyncablePrefsDatabase::PrefsMap kSyncablePrefsDatabase = {
       MergeBehavior::kMergeableDict}},
     {kCustomMergePref,
      {0, syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kCustom}},
+    {kAlwaysSyncingPriorityPrefName,
+     {0, syncer::PRIORITY_PREFERENCES,
+      PrefSensitivity::kExemptFromUserControlWhileSignedIn,
+      MergeBehavior::kNone}},
 };
+
+constexpr char kUserSelectedTypesPrefName[] =
+    "dual_layer_user_pref_store.user_selected_sync_types";
 
 base::Value MakeDict(
     const std::vector<std::pair<std::string, std::string>>& values) {
@@ -169,6 +180,9 @@ class DualLayerUserPrefStoreTestBase : public testing::Test {
       local_store_->NotifyInitializationCompleted();
       account_store_->NotifyInitializationCompleted();
     }
+    // Set preferences user selected type by default.
+    dual_layer_store_->SetUserSelectedTypesForTest(
+        {syncer::UserSelectableType::kPreferences});
   }
 
   TestingPrefStore* local_store() { return local_store_.get(); }
@@ -189,7 +203,7 @@ class DualLayerUserPrefStoreTest : public DualLayerUserPrefStoreTestBase {
     // data types appropriately.
     dual_layer_store_->EnableType(syncer::PREFERENCES);
     dual_layer_store_->EnableType(syncer::PRIORITY_PREFERENCES);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     dual_layer_store_->EnableType(syncer::OS_PREFERENCES);
     dual_layer_store_->EnableType(syncer::OS_PRIORITY_PREFERENCES);
 #endif
@@ -404,7 +418,7 @@ TEST_F(DualLayerUserPrefStoreTest, ReadsFromBothStores) {
   expected_values.SetByDottedPath(kPref3, "account_value3");
   // TODO(crbug.com/40268520): Also set expectations for GetValue() since
   // GetValues() isn't used outside of tests and may not test the real codepath.
-  EXPECT_EQ(store()->GetValues(), expected_values);
+  EXPECT_THAT(store()->GetValues(), testing::IsSupersetOf(expected_values));
 }
 
 TEST_F(DualLayerUserPrefStoreTest, WritesToBothStores) {
@@ -1257,7 +1271,7 @@ class DualLayerUserPrefStoreMergeTest : public testing::Test {
 
     dual_layer_store_->EnableType(syncer::PREFERENCES);
     dual_layer_store_->EnableType(syncer::PRIORITY_PREFERENCES);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     dual_layer_store_->EnableType(syncer::OS_PREFERENCES);
     dual_layer_store_->EnableType(syncer::OS_PRIORITY_PREFERENCES);
 #endif
@@ -2786,6 +2800,175 @@ TEST_F(DualLayerUserPrefStoreHistoryOptInTest,
       ValueInStoreIsAbsent(*account_store(), kHistorySensitivePrefName));
 
   store()->RemoveObserver(&observer);
+}
+
+class DualLayerUserPrefStorePriorityPrefDecoupleTest
+    : public DualLayerUserPrefStoreTest {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kSyncSupportAlwaysSyncingPriorityPreferences};
+};
+
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldGetAllowlistedPrefFromAccountStoreIfUserToggleIsOff) {
+  store()->SetUserSelectedTypesForTest(syncer::UserSelectableTypeSet());
+  account_store()->SetValueSilently(kPriorityPrefName,
+                                    base::Value("account value"), 0);
+  // Allowlisted pref.
+  account_store()->SetValueSilently(kAlwaysSyncingPriorityPrefName,
+                                    base::Value("account value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPriorityPrefName));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAlwaysSyncingPriorityPrefName,
+                             "account value"));
+
+  // Check GetMutableValue().
+  EXPECT_FALSE(store()->GetMutableValue(kPriorityPrefName, nullptr));
+  base::Value* value = nullptr;
+  EXPECT_TRUE(store()->GetMutableValue(kAlwaysSyncingPriorityPrefName, &value));
+  EXPECT_THAT(value, testing::Pointee(testing::Eq("account value")));
+
+  // Check GetValues().
+  base::Value::Dict values = store()->GetValues();
+  EXPECT_FALSE(values.FindByDottedPath(kPriorityPrefName));
+  EXPECT_THAT(values.FindByDottedPath(kAlwaysSyncingPriorityPrefName),
+              testing::Pointee(testing::Eq("account value")));
+}
+
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldGetRegularPrefFromAccountStoreIfUserToggleIsOn) {
+  store()->SetUserSelectedTypesForTest(syncer::UserSelectableTypeSet(
+      {syncer::UserSelectableType::kPreferences}));
+  account_store()->SetValueSilently(kPriorityPrefName,
+                                    base::Value("account value"), 0);
+  // Allowlisted pref.
+  account_store()->SetValueSilently(kAlwaysSyncingPriorityPrefName,
+                                    base::Value("account value"), 0);
+
+  // Check GetValue().
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPriorityPrefName, "account value"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAlwaysSyncingPriorityPrefName,
+                             "account value"));
+
+  // Check GetMutableValue().
+  base::Value* value = nullptr;
+  EXPECT_TRUE(store()->GetMutableValue(kPriorityPrefName, &value));
+  EXPECT_THAT(value, testing::Pointee(testing::Eq("account value")));
+  EXPECT_TRUE(store()->GetMutableValue(kAlwaysSyncingPriorityPrefName, &value));
+  EXPECT_THAT(value, testing::Pointee(testing::Eq("account value")));
+
+  // Check GetValues().
+  base::Value::Dict values = store()->GetValues();
+  EXPECT_THAT(values.FindByDottedPath(kPriorityPrefName),
+              testing::Pointee(testing::Eq("account value")));
+  EXPECT_THAT(values.FindByDottedPath(kAlwaysSyncingPriorityPrefName),
+              testing::Pointee(testing::Eq("account value")));
+}
+
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldObserverUserToggleChange) {
+  syncer::TestSyncService sync_service;
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, syncer::UserSelectableTypeSet());
+  store()->OnSyncServiceInitialized(&sync_service);
+
+  account_store()->SetValueSilently(kPriorityPrefName,
+                                    base::Value("account value"), 0);
+  // Allowlisted pref.
+  account_store()->SetValueSilently(kAlwaysSyncingPriorityPrefName,
+                                    base::Value("account value"), 0);
+
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store(), kPriorityPrefName));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAlwaysSyncingPriorityPrefName,
+                             "account value"));
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  EXPECT_CALL(observer, OnPrefValueChanged(kPriorityPrefName));
+  EXPECT_CALL(observer, OnPrefValueChanged(kAlwaysSyncingPriorityPrefName))
+      .Times(0);
+
+  sync_service.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      syncer::UserSelectableTypeSet(
+          {syncer::UserSelectableType::kPreferences}));
+  sync_service.FireStateChanged();
+
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPriorityPrefName, "account value"));
+  EXPECT_TRUE(ValueInStoreIs(*store(), kAlwaysSyncingPriorityPrefName,
+                             "account value"));
+
+  store()->RemoveObserver(&observer);
+}
+
+// Test to verify that the user selected types are loaded from a pref in the
+// local store.
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldGetUserSelectedTypesFromLocalStore) {
+  // Multiple types.
+  local_store()->SetValueSilently(kUserSelectedTypesPrefName,
+                                  base::Value(base::Value::List()
+                                                  .Append("passwords")
+                                                  .Append("preferences")
+                                                  .Append("typedUrls")),
+                                  0);
+  // Only the interesting types (preferences and history) are returned.
+  EXPECT_EQ(
+      store()->GetUserSelectedTypesForTest(),
+      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPreferences,
+                                     syncer::UserSelectableType::kHistory}));
+
+  // Empty list.
+  local_store()->SetValueSilently(kUserSelectedTypesPrefName,
+                                  base::Value(base::Value::List()), 0);
+  EXPECT_TRUE(store()->GetUserSelectedTypesForTest().empty());
+}
+
+// Test to verify that the user selected types are stored in a pref in the local
+// store.
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldSetUserSelectedTypesToLocalStore) {
+  // Multiple types.
+  store()->SetUserSelectedTypesForTest(
+      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPreferences,
+                                     syncer::UserSelectableType::kHistory}));
+  EXPECT_TRUE(ValueInStoreIs(
+      *local_store(), kUserSelectedTypesPrefName,
+      base::Value(
+          base::Value::List().Append("preferences").Append("typedUrls"))));
+  EXPECT_TRUE(
+      ValueInStoreIsAbsent(*account_store(), kUserSelectedTypesPrefName));
+
+  // Empty list.
+  store()->SetUserSelectedTypesForTest(syncer::UserSelectableTypeSet());
+  EXPECT_TRUE(ValueInStoreIs(*local_store(), kUserSelectedTypesPrefName,
+                             base::Value(base::Value::List())));
+}
+
+// Test to verify that the user selected types pref is cleared from the local
+// store upon sync stop.
+TEST_F(DualLayerUserPrefStorePriorityPrefDecoupleTest,
+       ShouldClearUserSelectedTypesIfLocalStoreUponSyncStop) {
+  store()->SetUserSelectedTypesForTest(
+      syncer::UserSelectableTypeSet({syncer::UserSelectableType::kPreferences,
+                                     syncer::UserSelectableType::kHistory}));
+  const base::Value user_selected_types_value(
+      base::Value::List().Append("preferences").Append("typedUrls"));
+
+  // The pref is only cleared after all the data types are disabled.
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  EXPECT_TRUE(ValueInStoreIs(*local_store(), kUserSelectedTypesPrefName,
+                             user_selected_types_value));
+  store()->DisableTypeAndClearAccountStore(syncer::PRIORITY_PREFERENCES);
+#if BUILDFLAG(IS_CHROMEOS)
+  EXPECT_TRUE(ValueInStoreIs(*local_store(), kUserSelectedTypesPrefName,
+                             user_selected_types_value));
+  store()->DisableTypeAndClearAccountStore(syncer::OS_PREFERENCES);
+  store()->DisableTypeAndClearAccountStore(syncer::OS_PRIORITY_PREFERENCES);
+#endif
+  EXPECT_TRUE(ValueInStoreIs(*local_store(), kUserSelectedTypesPrefName,
+                             base::Value(base::Value::List())));
 }
 
 }  // namespace

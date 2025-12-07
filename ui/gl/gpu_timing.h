@@ -8,10 +8,10 @@
 #include <stdint.h>
 
 #include <memory>
-#include <queue>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "ui/gl/gl_export.h"
 
 // The gpu_timing classes handles the abstraction of GL GPU Timing extensions

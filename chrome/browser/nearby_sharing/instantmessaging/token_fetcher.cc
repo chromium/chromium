@@ -6,11 +6,6 @@
 
 #include "google_apis/gaia/gaia_constants.h"
 
-namespace {
-// The oauth token consumer name.
-const char kOAuthConsumerName[] = "nearby_sharing";
-}  // namespace
-
 TokenFetcher::TokenFetcher(signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {}
 
@@ -23,7 +18,7 @@ void TokenFetcher::GetAccessToken(
 
   token_fetcher_ = identity_manager_->CreateAccessTokenFetcherForAccount(
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      kOAuthConsumerName, {GaiaConstants::kTachyonOAuthScope},
+      signin::OAuthConsumerId::kNearbySharing,
       base::BindOnce(&TokenFetcher::OnOAuthTokenFetched,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       signin::AccessTokenFetcher::Mode::kImmediate);

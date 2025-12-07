@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/sample_rates.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -67,8 +68,12 @@ void WebRtcAudioDeviceImpl::RenderData(
     // samples, so we add the delay multiplied by the number of samples. See
     // https://w3c.github.io/webrtc-stats/#dom-rtcaudioplayoutstats-totalplayoutdelay
     total_playout_delay_ += audio_delay * audio_bus->frames();
-    total_samples_duration_ += media::AudioTimestampHelper::FramesToTime(
-        audio_bus->frames(), sample_rate);
+    // |total_samples_duration_| is the total duration (in seconds) of all audio
+    // samples that have been played out. Includes both synthesized and
+    // non-synthesized samples.
+    total_samples_duration_ += (media::AudioTimestampHelper::FramesToTime(
+                                    audio_bus->frames(), sample_rate) +
+                                glitch_info.duration);
 #if DCHECK_IS_ON()
     DCHECK(!renderer_ || renderer_->CurrentThreadIsRenderingThread());
     if (!audio_renderer_thread_checker_.CalledOnValidThread()) {

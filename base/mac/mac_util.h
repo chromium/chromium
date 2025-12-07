@@ -71,6 +71,9 @@ inline __attribute__((const)) int MacOSMajorVersion() {
   return MacOSVersion() / 1'00'00;
 }
 
+// Returns true if Mac is running in a virtual machine.
+BASE_EXPORT bool IsVirtualMachine();
+
 enum class CPUType {
   kIntel,
   kTranslatedIntel,  // Rosetta
@@ -111,6 +114,9 @@ enum class SystemSettingsPane {
   // Printers & Scanners
   kPrintersScanners,
 
+  // Privacy & Security
+  kPrivacySecurity,
+
   // Privacy & Security > Accessibility
   kPrivacySecurity_Accessibility,
 
@@ -131,6 +137,9 @@ enum class SystemSettingsPane {
 
   // Privacy & Security > Screen Recording
   kPrivacySecurity_ScreenRecording,
+
+  // Privacy & Security > Pasteboard
+  kPrivacySecurity_Pasteboard,
 
   // Trackpad
   kTrackpad,

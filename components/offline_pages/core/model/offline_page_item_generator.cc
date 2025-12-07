@@ -14,7 +14,7 @@ namespace offline_pages {
 
 OfflinePageItemGenerator::OfflinePageItemGenerator() = default;
 
-OfflinePageItemGenerator::~OfflinePageItemGenerator() {}
+OfflinePageItemGenerator::~OfflinePageItemGenerator() = default;
 
 OfflinePageItem OfflinePageItemGenerator::CreateItem() {
   OfflinePageItem item;

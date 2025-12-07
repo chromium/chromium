@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.feed.followmanagement;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+@NullMarked
 class FollowManagementItemViewBinder {
     public static void bind(
             PropertyModel model, FollowManagementItemView view, PropertyKey propertyKey) {

@@ -31,7 +31,7 @@ class AiIntroScreenView {
 };
 
 class AiIntroScreenHandler final : public BaseScreenHandler,
-                                    public AiIntroScreenView {
+                                   public AiIntroScreenView {
  public:
   using TView = AiIntroScreenView;
 

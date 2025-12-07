@@ -5,7 +5,7 @@
 #include "ash/display/cros_display_config.h"
 
 #include <optional>
-#include <strstream>
+#include <sstream>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -91,8 +91,7 @@ crosapi::mojom::DisplayLayoutPosition GetMojomDisplayLayoutPosition(
     case display::DisplayPlacement::LEFT:
       return crosapi::mojom::DisplayLayoutPosition::kLeft;
   }
-  NOTREACHED_IN_MIGRATION();
-  return crosapi::mojom::DisplayLayoutPosition::kLeft;
+  NOTREACHED();
 }
 
 display::DisplayPlacement::Position GetDisplayPlacementPosition(
@@ -107,13 +106,12 @@ display::DisplayPlacement::Position GetDisplayPlacementPosition(
     case crosapi::mojom::DisplayLayoutPosition::kLeft:
       return display::DisplayPlacement::LEFT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return display::DisplayPlacement::LEFT;
+  NOTREACHED();
 }
 
 std::vector<crosapi::mojom::DisplayLayoutPtr> GetDisplayLayouts() {
   auto layouts = std::vector<crosapi::mojom::DisplayLayoutPtr>();
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const std::vector<display::Display>& displays = screen->GetAllDisplays();
   display::DisplayManager* display_manager = GetDisplayManager();
   for (const display::Display& display : displays) {
@@ -213,7 +211,7 @@ crosapi::mojom::DisplayConfigResult SetDisplayLayoutMode(
     }
   } else {
     const std::vector<display::Display>& displays =
-        display::Screen::GetScreen()->GetAllDisplays();
+        display::Screen::Get()->GetAllDisplays();
     for (const display::Display& display : displays) {
       destination_ids.emplace_back(display.id());
     }
@@ -439,7 +437,7 @@ crosapi::mojom::DisplayConfigResult ValidateDisplayProperties(
   // a reasonable bounds.
   if (properties.bounds_origin) {
     const display::Display& primary =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+        display::Screen::Get()->GetPrimaryDisplay();
     if (id == primary.id() || properties.set_primary) {
       LOG(ERROR) << "Not Supported on Internal Display:" << dump_state();
       return crosapi::mojom::DisplayConfigResult::
@@ -760,13 +758,13 @@ void CrosDisplayConfig::GetDisplayUnitInfoList(
   std::vector<display::Display> displays;
   int64_t primary_id;
   if (!display_manager->IsInUnifiedMode()) {
-    displays = display::Screen::GetScreen()->GetAllDisplays();
-    primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    displays = display::Screen::Get()->GetAllDisplays();
+    primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   } else if (single_unified) {
     for (size_t i = 0; i < display_manager->GetNumDisplays(); ++i) {
       displays.push_back(display_manager->GetDisplayAt(i));
     }
-    primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+    primary_id = display::Screen::Get()->GetPrimaryDisplay().id();
   } else {
     displays = display_manager->software_mirroring_display_list();
     primary_id = Shell::Get()
@@ -797,8 +795,7 @@ void CrosDisplayConfig::SetDisplayProperties(
   display::DisplayManager* display_manager = GetDisplayManager();
   DisplayConfigurationController* display_configuration_controller =
       Shell::Get()->display_configuration_controller();
-  const display::Display& primary =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+  const display::Display& primary = display::Screen::Get()->GetPrimaryDisplay();
 
   if (properties->set_primary && display.id() != primary.id()) {
     display_configuration_controller->SetPrimaryDisplayId(
@@ -891,8 +888,7 @@ void CrosDisplayConfig::OverscanCalibration(
     case crosapi::mojom::DisplayConfigOperation::kStart: {
       DVLOG(1) << "OverscanCalibrationStart: " << display_id;
       gfx::Insets insets =
-          Shell::Get()->window_tree_host_manager()->GetOverscanInsets(
-              display.id());
+          Shell::Get()->display_manager()->GetOverscanInsets(display.id());
       if (calibrator) {
         DVLOG(1) << "Replacing existing calibrator for id: " << display_id;
       }
@@ -925,6 +921,11 @@ void CrosDisplayConfig::OverscanCalibration(
       std::move(callback).Run(
           crosapi::mojom::DisplayConfigResult::kInvalidOperationError);
       return;
+    case crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays:
+      DISPLAY_LOG(ERROR) << "Operation not supported: " << op;
+      std::move(callback).Run(
+          crosapi::mojom::DisplayConfigResult::kInvalidOperationError);
+      return;
   }
   std::move(callback).Run(crosapi::mojom::DisplayConfigResult::kSuccess);
 }
@@ -934,6 +935,31 @@ void CrosDisplayConfig::TouchCalibration(
     crosapi::mojom::DisplayConfigOperation op,
     crosapi::mojom::TouchCalibrationPtr calibration,
     TouchCalibrationCallback callback) {
+  // For native touch display mapping.
+  if (op ==
+      crosapi::mojom::DisplayConfigOperation::kShowNativeMappingDisplays) {
+    if (touch_calibrator_ && touch_calibrator_->IsCalibrating()) {
+      DISPLAY_LOG(ERROR) << "Touch calibration already active.";
+      std::move(callback).Run(
+          crosapi::mojom::DisplayConfigResult::kCalibrationInProgressError);
+      return;
+    }
+    if (!touch_calibrator_) {
+      touch_calibrator_ = std::make_unique<TouchCalibratorController>();
+    }
+    // For native calibration, |callback| is not run until calibration
+    // completes.
+    touch_calibrator_->StartNativeTouchscreenMappingExperience(base::BindOnce(
+        [](TouchCalibrationCallback callback, bool result) {
+          std::move(callback).Run(
+              result ? crosapi::mojom::DisplayConfigResult::kSuccess
+                     : crosapi::mojom::DisplayConfigResult::
+                           kCalibrationFailedError);
+        },
+        std::move(callback)));
+    return;
+  }
+
   display::Display display = GetDisplay(display_id);
   if (display.id() == display::kInvalidDisplayId) {
     std::move(callback).Run(
@@ -1071,6 +1097,10 @@ void CrosDisplayConfig::DragDisplayDelta(int64_t display_id,
   DCHECK(features::IsDisplayAlignmentAssistanceEnabled());
   Shell::Get()->display_alignment_controller()->DisplayDragged(
       display_id, delta_x, delta_y);
+}
+
+bool CrosDisplayConfig::IsCalibrating() const {
+  return touch_calibrator_ && touch_calibrator_->IsCalibrating();
 }
 
 }  // namespace ash

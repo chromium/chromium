@@ -24,7 +24,6 @@ class OffsetPathOperation : public GarbageCollected<OffsetPathOperation> {
     return IsSameType(o) && IsEqualAssumingSameType(o) &&
            coord_box_ == o.coord_box_;
   }
-  bool operator!=(const OffsetPathOperation& o) const { return !(*this == o); }
 
   virtual OperationType GetType() const = 0;
   bool IsSameType(const OffsetPathOperation& o) const {

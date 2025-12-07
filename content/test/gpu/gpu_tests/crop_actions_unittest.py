@@ -5,9 +5,9 @@
 
 import unittest
 
-from gpu_tests import crop_actions as ca
-
 from telemetry.util import image_util
+
+from gpu_tests import crop_actions as ca
 
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
@@ -149,6 +149,30 @@ class FixedRectCropActionUnittest(unittest.TestCase):
                             tolerance=0,
                             likely_equal=True))
 
+  def testNegativeBounds(self):
+    """Tests that negative numbers can be used to specify offsets."""
+    image_width = 20
+    # 20 x 5 green image with a group of 4 red pixels towards the top left.
+    # yapf: disable
+    pixels = [
+        *(GREEN * image_width),
+        *(GREEN * image_width),
+        *GREEN, *GREEN, *RED, *RED, *(GREEN * (image_width - 4)),
+        *GREEN, *GREEN, *RED, *RED, *(GREEN * (image_width - 4)),
+        *(GREEN * image_width),
+    ]
+    # yapf: enable
+    image = image_util.FromRGBPixels(20, 5, pixels, bpp=3)
+    action = ca.FixedRectCropAction(2, 2, -16, -1)
+    cropped_image = action.CropScreenshot(image, 1, '', '')
+    expected_pixels = [*(RED * 4)]
+    expected_image = image_util.FromRGBPixels(2, 2, expected_pixels, bpp=3)
+    self.assertTrue(
+        image_util.AreEqual(cropped_image,
+                            expected_image,
+                            tolerance=0,
+                            likely_equal=True))
+
 
 class NonWhiteContentCropAction(unittest.TestCase):
 
@@ -258,7 +282,7 @@ class NonWhiteContentCropAction(unittest.TestCase):
     pixels = [*(RED * 9)]
     image = image_util.FromRGBPixels(3, 3, pixels, bpp=3)
     action = ca.NonWhiteContentCropAction()
-    cropped_image = action.CropScreenshot(image, 1, 'SM-A235M', '')
+    cropped_image = action.CropScreenshot(image, 1, 'SM-A236B', '')
     expected_image = image_util.FromRGBPixels(3, 2, [*(RED * 6)], bpp=3)
     self.assertTrue(
         image_util.AreEqual(cropped_image,

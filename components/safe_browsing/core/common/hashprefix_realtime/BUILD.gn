@@ -11,7 +11,7 @@ static_library("hash_realtime_utils") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//build:branding_buildflags",
     "//components/prefs",
     "//components/safe_browsing/core/common",

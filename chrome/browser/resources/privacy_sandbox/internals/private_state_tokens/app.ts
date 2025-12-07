@@ -52,6 +52,27 @@ export class PrivateStateTokensAppElement extends CrLitElement {
     };
   }
 
+  protected accessor narrowThreshold_: number = 1096;
+  protected accessor narrow_: boolean;
+  protected accessor pageTitle_: string = 'Private State Tokens';
+  protected accessor isDrawerOpen_: boolean = false;
+  accessor data: ListItem[] = [];
+  accessor itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
+
+  protected metadata_?: Metadata;
+  private handleNavigationToMetadata_ =
+      this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_METADATA);
+  private handleNavigationToList_ =
+      this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_LIST);
+
+  private browserProxy: PrivateStateTokensApiBrowserProxy =
+      PrivateStateTokensApiBrowserProxyImpl.getInstance();
+
+  constructor() {
+    super();
+    this.narrow_ = window.innerWidth < this.narrowThreshold_;
+  }
+
   override connectedCallback() {
     super.connectedCallback();
     this.updateIssuerTokenCounts_();
@@ -76,26 +97,6 @@ export class PrivateStateTokensAppElement extends CrLitElement {
         'narrow-changed', this.onNarrowChanged_ as EventListener);
     super.disconnectedCallback();
   }
-
-  constructor() {
-    super();
-    this.narrow_ = window.innerWidth < this.narrowThreshold_;
-  }
-
-  protected narrowThreshold_: number = 1096;
-  protected narrow_: boolean;
-  protected pageTitle_: string = 'Private State Tokens';
-  protected isDrawerOpen_: boolean = false;
-  itemToRender: ItemsToRender = ItemsToRender.ISSUER_LIST;
-  protected metadata_?: Metadata;
-  private handleNavigationToMetadata_ =
-      this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_METADATA);
-  private handleNavigationToList_ =
-      this.handleContentNavigation_.bind(this, ItemsToRender.ISSUER_LIST);
-  data: ListItem[] = [];
-
-  private browserProxy: PrivateStateTokensApiBrowserProxy =
-      PrivateStateTokensApiBrowserProxyImpl.getInstance();
 
   private async updateIssuerTokenCounts_() {
     const newIssuer = await this.browserProxy.handler.getIssuerTokenCounts();

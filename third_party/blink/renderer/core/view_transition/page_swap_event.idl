@@ -8,6 +8,6 @@
   RuntimeEnabled=PageSwapEvent
 ] interface PageSwapEvent : Event {
   constructor(DOMString type, optional PageSwapEventInit eventInitDict = {});
-  [RuntimeEnabled=ViewTransitionOnNavigation] readonly attribute ViewTransition? viewTransition;
+  readonly attribute ViewTransition? viewTransition;
   readonly attribute NavigationActivation? activation;
 };

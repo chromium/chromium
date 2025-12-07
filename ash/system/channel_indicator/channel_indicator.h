@@ -39,9 +39,7 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
   ~ChannelIndicatorView() override;
 
   // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
-  std::u16string GetTooltipText(const gfx::Point& p) const override;
   void OnThemeChanged() override;
 
   // TrayItemView:
@@ -65,10 +63,7 @@ class ASH_EXPORT ChannelIndicatorView : public TrayItemView,
   void Update();
   void SetImageOrText();
   void OnAccessibleNameChanged(const std::u16string& new_name) override;
-  void SetTooltip();
 
-  // The localized string displayed when this view is hovered-over.
-  std::u16string tooltip_;
 
   // The release track on which this devices resides.
   const version_info::Channel channel_;

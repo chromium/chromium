@@ -8,6 +8,7 @@
 #include <string>
 
 #include "components/zucchini/buffer_view.h"
+#include "components/zucchini/image_utils.h"
 #include "components/zucchini/patch_reader.h"
 #include "components/zucchini/patch_writer.h"
 
@@ -19,10 +20,33 @@
 
 namespace zucchini {
 
+// Zucchini-gen options with default values.
+struct GenerateOptions {
+  // The file offset to start element detection. This is a kludge to handle
+  // self-extracting archives that embeds multiple executables in its data
+  // section: In this case it's better to skip the first few bytes to avoid
+  // detecting the "outer" binary, thereby avoiding trating the "inner" binaries
+  // as raw data.
+  offset_t start_scan_at = 0U;
+
+  // Imposed match: Encoded string that encodes how to override default element
+  // detection and matching heuristics with custom element matching. The string
+  // is formatted as:
+  //   "#+#=#+#,#+#=#+#,..."  (e.g., "1+2=3+4", "1+2=3+4,5+6=7+8"),
+  // where "#+#=#+#" encodes a match as 4 unsigned integers:
+  //   [offset in "old", size in "old", offset in "new", size in "new"].
+  // If empty then use default element detection and matching.
+  std::string imposed_matches;
+
+  // Whether to generate raw patch, i.e., do not scan for elements.
+  bool is_raw = false;
+};
+
 namespace status {
 
 // Zucchini status code, which can also be used as process exit code. Therefore
 // success is explicitly 0.
+// LINT.IfChange
 enum Code {
   kStatusSuccess = 0,
   kStatusInvalidParam = 1,
@@ -36,29 +60,30 @@ enum Code {
   kStatusIoError = 9,
   kStatusFatal = 10,
 };
+// LINT.ThenChange(/components/services/patch/public/mojom/file_patcher.mojom)
 
 }  // namespace status
 
-// Generates ensemble patch from |old_image| to |new_image| using the default
-// element detection and matching heuristics, writes the results to
-// |patch_writer|, and returns a status::Code.
+// Generates ensemble patch from |old_image| to |new_image| using the
+// specified |options|, writes the results to |patch_writer|, and returns a
+// status::Code.
+status::Code GenerateBuffer(ConstBufferView old_image,
+                            ConstBufferView new_image,
+                            const GenerateOptions& options,
+                            EnsemblePatchWriter* patch_writer);
+
+// Deprecated: Interface to specify default GenerateOptions.
 status::Code GenerateBuffer(ConstBufferView old_image,
                             ConstBufferView new_image,
                             EnsemblePatchWriter* patch_writer);
 
-// Same as GenerateEnsemble(), but if |imposed_matches| is non-empty, then
-// overrides default element detection and matching heuristics with custom
-// element matching encoded in |imposed_matches|, which should be formatted as:
-//   "#+#=#+#,#+#=#+#,..."  (e.g., "1+2=3+4", "1+2=3+4,5+6=7+8"),
-// where "#+#=#+#" encodes a match as 4 unsigned integers:
-//   [offset in "old", size in "old", offset in "new", size in "new"].
+// Deprecated: Interface to specify GenerateOptions{.imposed_matches}.
 status::Code GenerateBufferImposed(ConstBufferView old_image,
                                    ConstBufferView new_image,
                                    std::string imposed_matches,
                                    EnsemblePatchWriter* patch_writer);
 
-// Generates raw patch from |old_image| to |new_image|, and writes it to
-// |patch_writer|.
+// Deprecated: Interface to specify GenerateOptions{.is_raw = true}.
 status::Code GenerateBufferRaw(ConstBufferView old_image,
                                ConstBufferView new_image,
                                EnsemblePatchWriter* patch_writer);

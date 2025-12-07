@@ -1,7 +1,20 @@
 include_rules = [
+  "+components/account_id",
   "+ios/chrome/browser/enterprise/model/idle",
   "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/ui/scoped_ui_blocker",
-  "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
-  "+ios/chrome/browser/ui/authentication/authentication_ui_util.h",
+  "+ios/chrome/browser/scoped_ui_blocker/ui_bundled",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h",
+  "+ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h",
+  "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+  "+ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h",
+  "+ios/chrome/browser/authentication/ui_bundled/fullscreen_signin/coordinator/fullscreen_signin_coordinator_delegate.h",
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h",
 ]
+
+specific_include_rules = {
+  "^signin_policy_scene_agent.mm": [
+    "+ios/chrome/browser/authentication/ui_bundled/continuation.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin/fullscreen_signin/coordinator/fullscreen_signin_coordinator.h",
+    "+ios/chrome/browser/authentication/ui_bundled/signin/signin_screen_provider.h",
+  ],
+}

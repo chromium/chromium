@@ -16,13 +16,12 @@ void FooPersistedTabDataAndroid::From(
     TabAndroid* tab_android,
     PersistedTabDataAndroid::FromCallback from_callback) {
   PersistedTabDataAndroid::From(
-      tab_android->GetWeakPtr(), FooPersistedTabDataAndroid::UserDataKey(),
-      base::BindOnce(
-          [](TabAndroid* tab_android)
-              -> std::unique_ptr<PersistedTabDataAndroid> {
-            return std::make_unique<FooPersistedTabDataAndroid>(tab_android);
-          },
-          tab_android),
+      tab_android->GetTabAndroidWeakPtr(),
+      FooPersistedTabDataAndroid::UserDataKey(),
+      base::BindOnce([](TabAndroid* tab_android)
+                         -> std::unique_ptr<PersistedTabDataAndroid> {
+        return std::make_unique<FooPersistedTabDataAndroid>(tab_android);
+      }),
       std::move(from_callback));
 }
 
@@ -44,8 +43,8 @@ FooPersistedTabDataAndroid::Serialize() {
   ptd::FooData foo_data;
   foo_data.set_value(foo_value_);
   std::unique_ptr<std::vector<uint8_t>> res =
-      std::make_unique<std::vector<uint8_t>>(foo_data.ByteSize());
-  foo_data.SerializeToArray(res->data(), foo_data.ByteSize());
+      std::make_unique<std::vector<uint8_t>>(foo_data.ByteSizeLong());
+  foo_data.SerializeToArray(res->data(), foo_data.ByteSizeLong());
   return res;
 }
 

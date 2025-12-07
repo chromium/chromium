@@ -1,0 +1,14 @@
+include_rules = [
+  "+device/fido/public"
+]
+
+specific_include_rules = {
+  ".*_android\.(cc|h)": [
+    "+components/payments/content/android/spc/browser_binding_jni",
+    "+third_party/jni_zero",
+  ],
+  ".*_desktop_unittest\.cc": [
+    "+components/unexportable_keys/mock_unexportable_key.h",
+    "+components/unexportable_keys/mock_unexportable_key_provider.h",
+  ]
+}

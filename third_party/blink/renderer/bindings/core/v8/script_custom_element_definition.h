@@ -38,11 +38,14 @@ class CORE_EXPORT ScriptCustomElementDefinition final
 
   v8::Local<v8::Object> Constructor() const;
 
-  HTMLElement* CreateAutonomousCustomElementSync(Document&,
-                                                 const QualifiedName&) override;
+  HTMLElement* CreateAutonomousCustomElementSync(
+      Document&,
+      const QualifiedName&,
+      CustomElementRegistry*) override;
 
   bool HasConnectedCallback() const override;
   bool HasDisconnectedCallback() const override;
+  bool HasConnectedMoveCallback() const override;
   bool HasAdoptedCallback() const override;
   bool HasFormAssociatedCallback() const override;
   bool HasFormResetCallback() const override;
@@ -51,6 +54,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
 
   void RunConnectedCallback(Element&) override;
   void RunDisconnectedCallback(Element&) override;
+  void RunConnectedMoveCallback(Element&) override;
   void RunAdoptedCallback(Element&,
                           Document& old_owner,
                           Document& new_owner) override;
@@ -77,15 +81,11 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   // Calls the constructor. The script scope, etc. must already be set up.
   Element* CallConstructor();
 
-  HTMLElement* HandleCreateElementSyncException(Document&,
-                                                const QualifiedName& tag_name,
-                                                v8::Isolate*,
-                                                ExceptionState&);
-
   Member<ScriptState> script_state_;
   Member<V8CustomElementConstructor> constructor_;
   Member<V8VoidFunction> connected_callback_;
   Member<V8VoidFunction> disconnected_callback_;
+  Member<V8VoidFunction> connected_move_callback_;
   Member<V8CustomElementAdoptedCallback> adopted_callback_;
   Member<V8CustomElementAttributeChangedCallback> attribute_changed_callback_;
   Member<V8CustomElementFormAssociatedCallback> form_associated_callback_;

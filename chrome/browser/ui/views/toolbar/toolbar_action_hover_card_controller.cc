@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_hover_card_types.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
@@ -90,8 +90,9 @@ bool ToolbarActionHoverCardController::IsHoverCardVisible() const {
 bool ToolbarActionHoverCardController::IsHoverCardShowingForAction(
     ToolbarActionView* action_view) const {
   DCHECK(action_view);
-  return action_view->GetCurrentWebContents() && IsHoverCardVisible() &&
-         !fade_animator_->IsFadingOut() && GetTargetAnchorView() == action_view;
+  return extensions_container_->GetCurrentWebContents() &&
+         IsHoverCardVisible() && !fade_animator_->IsFadingOut() &&
+         GetTargetAnchorView() == action_view;
 }
 
 void ToolbarActionHoverCardController::UpdateHoverCard(
@@ -111,21 +112,24 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
   if (target_action_view_ != action_view) {
     delayed_show_timer_.Stop();
     target_action_view_observation_.Reset();
-    if (action_view)
+    if (action_view) {
       target_action_view_observation_.Observe(action_view);
+    }
     target_action_view_ = action_view;
   }
 
   // If there's nothing to attach to then there's no point in creating a card.
-  if (!hover_card_ && (!action_view || !action_view->GetCurrentWebContents() ||
-                       !extensions_container_->GetWidget())) {
+  if (!hover_card_ &&
+      (!action_view || !extensions_container_->GetCurrentWebContents() ||
+       !extensions_container_->GetWidget())) {
     return;
   }
 
   switch (update_type) {
     case ToolbarActionHoverCardUpdateType::kHover:
-      if (!action_view)
+      if (!action_view) {
         last_mouse_exit_timestamp_ = base::TimeTicks::Now();
+      }
       break;
     case ToolbarActionHoverCardUpdateType::kToolbarActionUpdated:
       DCHECK(action_view);
@@ -140,10 +144,11 @@ void ToolbarActionHoverCardController::UpdateHoverCard(
       break;
   }
 
-  if (action_view && action_view->GetCurrentWebContents())
+  if (action_view && extensions_container_->GetCurrentWebContents()) {
     UpdateOrShowHoverCard(action_view, update_type);
-  else
+  } else {
     HideHoverCard();
+  }
 }
 
 void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
@@ -153,8 +158,9 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
 
   // Close is asynchronous, so make sure that if we're closing we clear out all
   // of our data *now* rather than waiting for the deletion message.
-  if (hover_card_ && hover_card_->GetWidget()->IsClosed())
+  if (hover_card_ && hover_card_->GetWidget()->IsClosed()) {
     OnViewIsDeleting(hover_card_);
+  }
 
   // Cancel any pending fades.
   if (hover_card_ && fade_animator_->IsFadingOut()) {
@@ -162,8 +168,6 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
   }
 
   if (hover_card_) {
-    // Card should never exist without an anchor or web contents
-    DCHECK(hover_card_->GetAnchorView());
     UpdateHoverCardContent(action_view);
 
     // If widget is already visible and anchored to the correct action view we
@@ -199,7 +203,8 @@ void ToolbarActionHoverCardController::UpdateOrShowHoverCard(
 void ToolbarActionHoverCardController::UpdateHoverCardContent(
     ToolbarActionView* action_view) {
   DCHECK(action_view);
-  content::WebContents* web_contents = action_view->GetCurrentWebContents();
+  content::WebContents* web_contents =
+      extensions_container_->GetCurrentWebContents();
   DCHECK(web_contents);
 
   // If the hover card is transitioning between extensions, we need to do a
@@ -208,16 +213,15 @@ void ToolbarActionHoverCardController::UpdateHoverCardContent(
     hover_card_->SetTextFade(0.0);
   }
 
-  std::u16string extension_name =
-      action_view->view_controller()->GetActionName();
+  std::u16string extension_name = action_view->view_model()->GetActionName();
   std::u16string action_title =
-      action_view->view_controller()->GetActionTitle(web_contents);
+      action_view->view_model()->GetActionTitle(web_contents);
   // Hover card only uses the action title when it's different than the
   // extension name.
   action_title =
       extension_name == action_title ? std::u16string() : action_title;
-  ToolbarActionViewController::HoverCardState state =
-      action_view->view_controller()->GetHoverCardState(web_contents);
+  ToolbarActionViewModel::HoverCardState state =
+      action_view->view_model()->GetHoverCardState(web_contents);
 
   hover_card_->UpdateCardContent(extension_name, action_title, state,
                                  web_contents);
@@ -256,8 +260,9 @@ void ToolbarActionHoverCardController::ShowHoverCard(
   // Make sure the hover card isn't accidentally shown if it's already visible
   // or if the anchor is gone or changed.
   if (hover_card_ || target_action_view_ != intended_action_view ||
-      !TargetActionViewIsValid())
+      !TargetActionViewIsValid()) {
     return;
+  }
 
   CreateHoverCard(target_action_view_);
   UpdateHoverCardContent(target_action_view_);
@@ -274,8 +279,9 @@ void ToolbarActionHoverCardController::ShowHoverCard(
 }
 
 void ToolbarActionHoverCardController::HideHoverCard() {
-  if (!hover_card_ || hover_card_->GetWidget()->IsClosed())
+  if (!hover_card_ || hover_card_->GetWidget()->IsClosed()) {
     return;
+  }
 
   // Cancel any pending fade-in.
   if (fade_animator_->IsFadingIn()) {
@@ -288,8 +294,9 @@ void ToolbarActionHoverCardController::HideHoverCard() {
     hover_card_->GetWidget()->Close();
     return;
   }
-  if (fade_animator_->IsFadingOut())
+  if (fade_animator_->IsFadingOut()) {
     return;
+  }
 
   fade_animator_->FadeOut();
 }
@@ -315,10 +322,12 @@ bool ToolbarActionHoverCardController::ShouldShowImmediately(
 
 const views::View* ToolbarActionHoverCardController::GetTargetAnchorView()
     const {
-  if (!hover_card_)
+  if (!hover_card_) {
     return nullptr;
-  if (slide_animator_->is_animating())
+  }
+  if (slide_animator_->is_animating()) {
     return slide_animator_->desired_anchor_view();
+  }
   return hover_card_->GetAnchorView();
 }
 
@@ -331,15 +340,17 @@ bool ToolbarActionHoverCardController::TargetActionViewIsValid() const {
 void ToolbarActionHoverCardController::OnFadeAnimationEnded(
     views::WidgetFadeAnimator* animator,
     views::WidgetFadeAnimator::FadeType fade_type) {
-  if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeOut)
+  if (fade_type == views::WidgetFadeAnimator::FadeType::kFadeOut) {
     hover_card_->GetWidget()->Close();
+  }
 }
 
 void ToolbarActionHoverCardController::OnSlideAnimationProgressed(
     views::BubbleSlideAnimator* animator,
     double value) {
-  if (hover_card_)
+  if (hover_card_) {
     hover_card_->SetTextFade(value);
+  }
 }
 
 void ToolbarActionHoverCardController::OnSlideAnimationComplete(
@@ -374,18 +385,15 @@ void ToolbarActionHoverCardController::OnViewIsDeleting(
 
 void ToolbarActionHoverCardController::OnViewVisibilityChanged(
     views::View* observed_view,
-    views::View* starting_view) {
+    views::View* starting_view,
+    bool visible) {
   // Only care about target action view becoming invisible.
-  if (observed_view != target_action_view_)
+  if (observed_view != target_action_view_) {
     return;
-  // Visibility comes from `starting_view` or the widget, if no starting view;
-  // see documentation for ViewObserver::OnViewVisibilityChanged().
-  const bool visible = starting_view
-                           ? starting_view->GetVisible()
-                           : (observed_view->GetWidget() &&
-                              observed_view->GetWidget()->IsVisible());
-  // If visibility changed to false, treat it as if the target action view had
-  // gone away.
-  if (!visible)
+  }
+  // If visibility anywhere in the hierarchy changed to false, then the target
+  // view is not visible, so treat it as if it is going away.
+  if (!visible) {
     OnViewIsDeleting(observed_view);
+  }
 }

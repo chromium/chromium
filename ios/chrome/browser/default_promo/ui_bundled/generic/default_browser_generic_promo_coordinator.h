@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_GENERIC_DEFAULT_BROWSER_GENERIC_PROMO_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_DEFAULT_PROMO_UI_BUNDLED_GENERIC_DEFAULT_BROWSER_GENERIC_PROMO_COORDINATOR_H_
 
-#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
+#import <UIKit/UIKit.h>
+
 #import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_commands.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/generic/default_browser_generic_promo_mediator.h"
+#import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
 @protocol PromosManagerUIHandler;
 
@@ -18,9 +21,16 @@
 // Whether or not the current showing came from a past Remind Me Later.
 @property(nonatomic, assign) BOOL promoWasFromRemindMeLater;
 
+// Whether or not this showing is from the off-cycle promo. If so, the promo
+// will use the Default Apps iOS Settings page, if available (iOS 18.3+).
+@property(nonatomic, assign) BOOL promoWasFromOffCycleTrigger;
+
 // The promos manager ui handler to alert for promo UI changes. Should only be
 // set if this coordinator was a promo presented by the PromosManager.
 @property(nonatomic, weak) id<PromosManagerUIHandler> promosUIHandler;
+
+// The mediator for the generic default browser promo.
+@property(nonatomic, strong) DefaultBrowserGenericPromoMediator* mediator;
 
 @end
 

@@ -33,7 +33,7 @@ export class SharePasswordGroupAvatarElement extends PolymerElement {
     };
   }
 
-  members: chrome.passwordsPrivate.RecipientInfo[];
+  declare members: chrome.passwordsPrivate.RecipientInfo[];
 
   private isMembersCountLessThan_(count: number): boolean {
     return this.members.length < count;

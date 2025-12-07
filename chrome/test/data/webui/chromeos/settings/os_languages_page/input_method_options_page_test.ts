@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsInputMethodOptionsPageElement} from 'chrome://os-settings/lazy_load.js';
+import type {SettingsInputMethodOptionsPageElement} from 'chrome://os-settings/lazy_load.js';
 import {CrSettingsPrefs, Router, routes} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -146,11 +146,11 @@ suite('<settings-input-method-options-page>', () => {
     assertEquals(7, options.length);
     const autoCorrection = options[0]!.querySelector('.start');
     assertTrue(!!autoCorrection);
-    assertEquals('Auto-correction', autoCorrection.textContent!.trim());
+    assertEquals('Auto-correction', autoCorrection.textContent.trim());
     const autoCorrectToggleButton = options[0]!.querySelector('cr-toggle');
     assertTrue(!!autoCorrectToggleButton);
     assertEquals(false, autoCorrectToggleButton.checked);
-    autoCorrectToggleButton!.click();
+    autoCorrectToggleButton.click();
     await waitAfterNextRender(autoCorrectToggleButton);
     assertEquals(true, autoCorrectToggleButton.checked);
     assertEquals(
@@ -160,7 +160,7 @@ suite('<settings-input-method-options-page>', () => {
 
     const soundOnKeypress = options[1]!.querySelector('.start');
     assertTrue(!!soundOnKeypress);
-    assertEquals('Sound on keypress', soundOnKeypress.textContent!.trim());
+    assertEquals('Sound on keypress', soundOnKeypress.textContent.trim());
     const soundToggleButton = options[1]!.querySelector('cr-toggle');
     assertTrue(!!soundToggleButton);
     assertEquals(false, soundToggleButton.checked);

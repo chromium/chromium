@@ -1,0 +1,46 @@
+Verifies Network.setBlockedURLs API.
+Testing `urls` parameter:
+Request for resources/a.html was blocked as expected.
+Request for resources/b.html was not blocked as expected.
+
+Testing `urlPatterns` parameter:
+Request for resources/a.html was not blocked as expected.
+Request for resources/b.html was blocked as expected.
+
+Testing `urls` and `urlPatterns` combined:
+Request for resources/a.html was blocked as expected.
+Request for resources/b.html was blocked as expected.
+Request for resources/c.html was not blocked as expected.
+
+Testing allowlisting
+Request for resources/a.html was blocked as expected.
+Request for resources/b.html was not blocked as expected.
+Request for resources/c.html was blocked as expected.
+
+Testing whether blocking state survives reloads
+Request for resources/a.html was blocked as expected.
+Request for resources/b.html was not blocked as expected.
+Request for resources/c.html was blocked as expected.
+
+Testing clearing blocked URLs:
+Request for resources/a.html was not blocked as expected.
+Request for resources/b.html was not blocked as expected.
+
+Test setting patterns that fail to parse:
+{
+    error : {
+        code : -32602
+        message : Pattern "ht tp://" failed to parse as a URLPattern.
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32602
+        message : Pattern "*.css" failed to parse as a URLPattern.
+    }
+    id : <number>
+    sessionId : <string>
+}
+

@@ -68,8 +68,16 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
     return account_key_;
   }
 
-  void set_account_key(std::vector<uint8_t> account_key) {
+  void set_account_key(const std::vector<uint8_t>& account_key) {
     account_key_ = account_key;
+  }
+
+  const std::optional<uint8_t> key_based_pairing_flags() const {
+    return key_based_pairing_flags_;
+  }
+
+  void set_key_based_pairing_flags(uint8_t key_based_pairing_flags) {
+    key_based_pairing_flags_ = key_based_pairing_flags;
   }
 
   const std::string& metadata_id() const { return metadata_id_; }
@@ -112,6 +120,9 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON) Device
   // for eligible devices (V2 or higher) and used for detecting subsequent
   // pairing scenarios.
   std::optional<std::vector<uint8_t>> account_key_;
+
+  // Flags received during a Key-based Pairing Extended Response.
+  std::optional<uint8_t> key_based_pairing_flags_;
 };
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)

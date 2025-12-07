@@ -38,8 +38,7 @@ RequestHandlerForChromeDesktopReport::HandleRequest(
   em::DeviceManagementResponse device_management_response;
   device_management_response.mutable_chrome_desktop_report_response();
 
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

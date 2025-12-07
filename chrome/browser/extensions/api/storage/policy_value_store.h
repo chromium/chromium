@@ -13,7 +13,10 @@
 
 #include "components/value_store/value_store.h"
 #include "extensions/browser/api/storage/settings_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace policy {
 class PolicyMap;
@@ -37,7 +40,7 @@ class PolicyValueStore : public value_store::ValueStore {
 
   ~PolicyValueStore() override;
 
-  // Stores |policy| in the persistent database represented by the |delegate_|
+  // Stores `policy` in the persistent database represented by the `delegate_`
   // and notifies observers with the changes from the previous policy.
   void SetCurrentPolicy(const policy::PolicyMap& policy);
 
@@ -48,6 +51,7 @@ class PolicyValueStore : public value_store::ValueStore {
   size_t GetBytesInUse(const std::string& key) override;
   size_t GetBytesInUse(const std::vector<std::string>& keys) override;
   size_t GetBytesInUse() override;
+  ReadResult GetKeys() override;
   ReadResult Get(const std::string& key) override;
   ReadResult Get(const std::vector<std::string>& keys) override;
   ReadResult Get() override;

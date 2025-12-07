@@ -36,7 +36,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/content_features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #endif
@@ -59,15 +59,14 @@ using BatterySaverModeState =
 // threshold on those platforms, by being added to the 20% threshold value (so
 // setting this parameter to 3 would result in battery saver being activated at
 // 23% actual battery level).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
+#if BUILDFLAG(IS_CHROMEOS)
 // On ChromeOS, the adjustment generally seems to be around 3%, sometimes 2%. We
 // choose 3% because it gets us close enough, or overestimates (which is better
 // than underestimating in this instance).
 constexpr int kBatterySaverModeThresholdAdjustmentForDisplayLevel = 3;
 #else
 constexpr int kBatterySaverModeThresholdAdjustmentForDisplayLevel = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class FrameThrottlingDelegateImpl
     : public performance_manager::user_tuning::BatterySaverModeManager::
@@ -173,14 +172,11 @@ class FreezingDelegateImpl : public BatterySaverModeManager::FreezingDelegate {
   ~FreezingDelegateImpl() override = default;
 
   void ToggleFreezingOnBatterySaverMode(bool is_enabled) final {
-    PerformanceManagerImpl::CallOnGraph(
-        FROM_HERE,
-        base::BindOnce(
-            [](bool is_enabled, performance_manager::Graph* graph) {
-              CHECK_DEREF(graph->GetRegisteredObjectAs<FreezingPolicy>())
-                  .ToggleFreezingOnBatterySaverMode(is_enabled);
-            },
-            is_enabled));
+    if (PerformanceManager::IsAvailable()) {
+      Graph* graph = PerformanceManager::GetGraph();
+      CHECK_DEREF(graph->GetRegisteredObjectAs<FreezingPolicy>())
+          .ToggleFreezingOnBatterySaverMode(is_enabled);
+    }
   }
 };
 
@@ -212,7 +208,9 @@ class DesktopBatterySaverProvider
             base::Unretained(this)));
 
     on_battery_power_ =
-        base::PowerMonitor::AddPowerStateObserverAndReturnOnBatteryState(this);
+        base::PowerMonitor::GetInstance()
+            ->AddPowerStateObserverAndReturnBatteryPowerStatus(this) ==
+        base::PowerStateObserver::BatteryPowerStatus::kBatteryPower;
 
     base::BatteryStateSampler* battery_state_sampler =
         base::BatteryStateSampler::Get();
@@ -226,7 +224,7 @@ class DesktopBatterySaverProvider
   }
 
   ~DesktopBatterySaverProvider() override {
-    base::PowerMonitor::RemovePowerStateObserver(this);
+    base::PowerMonitor::GetInstance()->RemovePowerStateObserver(this);
   }
 
   // BatterySaverProvider:
@@ -310,15 +308,17 @@ class DesktopBatterySaverProvider
   }
 
   // base::PowerStateObserver:
-  void OnPowerStateChange(bool on_battery_power) override {
-    on_battery_power_ = on_battery_power;
+  void OnBatteryPowerStatusChange(base::PowerStateObserver::BatteryPowerStatus
+                                      battery_power_status) override {
+    on_battery_power_ = (battery_power_status ==
+                         PowerStateObserver::BatteryPowerStatus::kBatteryPower);
 
     // Plugging in the device unsets the temporary disable BSM flag
-    if (!on_battery_power) {
+    if (!on_battery_power_) {
       battery_saver_mode_disabled_for_session_ = false;
     }
 
-    manager_->NotifyOnExternalPowerConnectedChanged(on_battery_power);
+    manager_->NotifyOnExternalPowerConnectedChanged(on_battery_power_);
 
     UpdateBatterySaverModeState();
   }
@@ -403,7 +403,7 @@ class DesktopBatterySaverProvider
   raw_ptr<BatterySaverModeManager> manager_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ChromeOSBatterySaverProvider
     : public BatterySaverModeManager::BatterySaverProvider,
       public chromeos::PowerManagerClient::Observer {
@@ -472,8 +472,7 @@ class ChromeOSBatterySaverProvider
   }
   int SampledBatteryPercentage() const override { return -1; }
   void SetTemporaryBatterySaverDisabledForSession(bool disabled) override {
-    NOTREACHED_IN_MIGRATION();
-    // No-op when BSM is controlled by the OS
+    NOTREACHED();
   }
   bool IsBatterySaverModeDisabledForSession() const override { return false; }
 
@@ -591,7 +590,7 @@ BatterySaverModeManager::BatterySaverModeManager(
 }
 
 void BatterySaverModeManager::Start() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::features::IsBatterySaverAvailable()) {
     battery_saver_provider_ =
         std::make_unique<ChromeOSBatterySaverProvider>(this);
@@ -623,10 +622,7 @@ void BatterySaverModeManager::NotifyOnBatterySaverActiveChanged(
     }
   } else {
     frame_throttling_delegate_->StopThrottlingAllFrameSinks();
-    if (base::FeatureList::IsEnabled(
-            ::features::kBatterySaverModeAlignWakeUps)) {
-      base::MessagePump::ResetAlignWakeUpsState();
-    }
+    base::MessagePump::ResetAlignWakeUpsState();
   }
 
   child_process_tuning_delegate_->SetBatterySaverModeForAllChildProcessHosts(

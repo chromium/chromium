@@ -25,14 +25,14 @@ namespace blink {
 namespace {
 
 void EmitWarningMayBeBlocked(const String& url, Document& document) {
-  String message =
-      "A parser-blocking, cross site (i.e. different eTLD+1) script, " + url +
-      ", is invoked via document.write. The network request for this script "
-      "MAY be blocked by the browser in this or a future page load due to poor "
-      "network connectivity. If blocked in this page load, it will be "
-      "confirmed in a subsequent console message. "
-      "See https://www.chromestatus.com/feature/5718547946799104 "
-      "for more details.";
+  String message = StrCat(
+      {"A parser-blocking, cross site (i.e. different eTLD+1) script, ", url,
+       ", is invoked via document.write. The network request for this script "
+       "MAY be blocked by the browser in this or a future page load due to "
+       "poor network connectivity. If blocked in this page load, it will be "
+       "confirmed in a subsequent console message. See "
+       "https://www.chromestatus.com/feature/5718547946799104 for more "
+       "details."});
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kWarning, message));
@@ -40,23 +40,23 @@ void EmitWarningMayBeBlocked(const String& url, Document& document) {
 }
 
 void EmitWarningNotBlocked(const String& url, Document& document) {
-  String message =
-      "The parser-blocking, cross site (i.e. different eTLD+1) script, " + url +
-      ", invoked via document.write was NOT BLOCKED on this page load, but MAY "
-      "be blocked by the browser in future page loads with poor network "
-      "connectivity.";
+  String message = StrCat(
+      {"The parser-blocking, cross site (i.e. different eTLD+1) script, ", url,
+       ", invoked via document.write was NOT BLOCKED on this page load, but "
+       "MAY be blocked by the browser in future page loads with poor network "
+       "connectivity."});
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kWarning, message));
 }
 
 void EmitErrorBlocked(const String& url, Document& document) {
-  String message =
-      "Network request for the parser-blocking, cross site (i.e. different "
-      "eTLD+1) script, " +
-      url +
-      ", invoked via document.write was BLOCKED by the browser due to poor "
-      "network connectivity. ";
+  String message = StrCat(
+      {"Network request for the parser-blocking, cross site (i.e. different "
+       "eTLD+1) script, ",
+       url,
+       ", invoked via document.write was BLOCKED by the browser due to poor "
+       "network connectivity. "});
   document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kIntervention,
       mojom::ConsoleMessageLevel::kError, message));
@@ -86,8 +86,7 @@ bool IsConnectionEffectively2G(WebEffectiveConnectionType effective_type) {
     case WebEffectiveConnectionType::kTypeOffline:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool ShouldDisallowFetch(Settings* settings,
@@ -134,12 +133,11 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   // Avoid blocking same origin scripts, as they may be used to render main
   // page content, whereas cross-origin scripts inserted via document.write
   // are likely to be third party content.
-  String request_host = params.Url().Host();
+  StringView request_host = params.Url().Host();
   String document_host = document.domWindow()->GetSecurityOrigin()->Domain();
-
-  bool same_site = false;
-  if (request_host == document_host)
-    same_site = true;
+  if (request_host == document_host) {
+    return false;
+  }
 
   // If the hosts didn't match, then see if the domains match. For example, if
   // a script is served from static.example.com for a document served from
@@ -152,10 +150,7 @@ bool MaybeDisallowFetchForDocWrittenScript(FetchParameters& params,
   // already top-level, such as localhost. Thus we only compare domains if we
   // get non-empty results back from getDomainAndRegistry.
   if (!request_domain.empty() && !document_domain.empty() &&
-      request_domain == document_domain)
-    same_site = true;
-
-  if (same_site) {
+      request_domain == document_domain) {
     return false;
   }
 
@@ -209,7 +204,7 @@ void PossiblyFetchBlockedDocWriteScript(
   ExecutionContext* context = element_document.GetExecutionContext();
   FetchParameters params(options.CreateFetchParameters(
       resource->Url(), context->GetSecurityOrigin(), context->GetCurrentWorld(),
-      cross_origin, resource->Encoding(), FetchParameters::kIdleLoad));
+      cross_origin, resource->Encoding(), FetchParameters::kIdleLoad, context));
   params.SetRenderBlockingBehavior(RenderBlockingBehavior::kNonBlocking);
   AddHeader(&params);
 
@@ -218,11 +213,10 @@ void PossiblyFetchBlockedDocWriteScript(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
-  constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
   ScriptResource::Fetch(params, element_document.Fetcher(), nullptr,
                         context->GetIsolate(), ScriptResource::kNoStreaming,
                         kNoCompileHintsProducer, kNoCompileHintsConsumer,
-                        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
+                        v8_compile_hints::MagicCommentMode::kNone);
 }
 
 }  // namespace blink

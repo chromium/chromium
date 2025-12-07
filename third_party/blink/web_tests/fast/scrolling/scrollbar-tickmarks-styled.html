@@ -26,6 +26,11 @@ function highlight()
     if (window.internals) {
         internals.addTextMatchMarker(range, 'kActive');
     }
+
+    // Speculative fix for instability on Mac (crbug.com/40286813). The scroller
+    // isn't scrolled all the way to the top during snapshot comparison. This
+    // leads to image mismatch. Root cause is still unknown.
+    document.documentElement.scrollTop=0;
 }
 </script>
 </head>

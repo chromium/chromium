@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/common/select_file_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/shell_dialogs_export.h"
 
@@ -94,4 +94,4 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
 
 }  // namespace ui
 
-#endif  //  UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_MAC_H_
+#endif  // UI_SHELL_DIALOGS_SELECT_FILE_DIALOG_MAC_H_

@@ -22,8 +22,8 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -47,11 +47,6 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
 
   AccessibilityController* accessibility_controller() {
     return Shell::Get()->accessibility_controller();
-  }
-
-  void TearDown() override {
-    AshTestBase::TearDown();
-    features_.Reset();
   }
 
   FloatingAccessibilityController* controller() {
@@ -105,15 +100,14 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
   }
 
   ImeMenuTray* GetImeTray() {
-    ImeMenuTray* result =
-        menu_view() ? menu_view()->ime_button_.get() : nullptr;
+    ImeMenuTray* result = menu_view() ? menu_view()->ime_button() : nullptr;
     EXPECT_NE(result, nullptr) << "Ime tray is not currently visible";
     return result;
   }
 
   TrayBackgroundView* GetVirtualKeyboardTray() {
     TrayBackgroundView* result =
-        menu_view() ? menu_view()->virtual_keyboard_button_.get() : nullptr;
+        menu_view() ? menu_view()->virtual_keyboard_button() : nullptr;
     EXPECT_NE(result, nullptr)
         << "Virtual keyboard tray is not currently visible";
     return result;
@@ -146,6 +140,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
     return autoclick_menu_view()
                ? autoclick_menu_view()->GetBoundsInScreen()
                : gfx::Rect(-kMenuViewBoundsBuffer, -kMenuViewBoundsBuffer);
+  }
+
+  float GetMenuOpacity() {
+    return controller()->bubble_view()->layer()->opacity();
   }
 
   void Show() { accessibility_controller()->ShowFloatingMenuIfEnabled(); }
@@ -206,17 +204,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
                                /*available_imes=*/{ime_english, ime_pinyin});
   }
 
- protected:
-  base::test::ScopedFeatureList features_;
+  std::u16string GetAccessibleNameForBubble() {
+    return controller()->GetAccessibleNameForBubble();
+  }
 };
-
-TEST_F(FloatingAccessibilityControllerTest, ImeButtonNotShowWhenDisabled) {
-  features_.InitAndDisableFeature(features::kKioskEnableImeButton);
-
-  SetUpVisibleMenu();
-
-  EXPECT_FALSE(IsButtonVisible(FloatingAccessibilityView::ButtonId::kIme));
-}
 
 TEST_F(FloatingAccessibilityControllerTest, ImeButtonShownWhenEnabled) {
   SetUpVisibleMenu();
@@ -755,6 +746,30 @@ TEST_F(FloatingAccessibilityControllerTest, DictationButtonFocus) {
   Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::kFocusShelf, {});
   EXPECT_EQ(focus_manager->GetFocusedView(), settings_button);
+}
+
+TEST_F(FloatingAccessibilityControllerTest,
+       FloatingAccessibilityBubbleViewAccessibleProperties) {
+  SetUpVisibleMenu();
+  auto* bubble_view_ = controller()->bubble_view();
+  ui::AXNodeData data;
+
+  bubble_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+  // FloatingAccessibilityController::Show sets the
+  // FloatingAccessibleBubbleView's CanActivate() to false, so we expect the
+  // accessible name to be empty.
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            std::u16string());
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
+TEST_F(FloatingAccessibilityControllerTest, CheckOpacity) {
+  SetUpVisibleMenu();
+  EXPECT_LT(GetMenuOpacity(), 1.0f);
+
+  controller()->FocusOnMenu();
+  EXPECT_EQ(GetMenuOpacity(), 1.0f);
 }
 
 }  // namespace ash

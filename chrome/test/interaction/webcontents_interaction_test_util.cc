@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <initializer_list>
+#include <memory>
 #include <optional>
 #include <set>
 #include <sstream>
@@ -16,7 +17,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_auto_reset.h"
 #include "base/memory/weak_ptr.h"
@@ -24,23 +24,29 @@
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/uuid.h"
 #include "base/values.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/tracked_element_webcontents.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
+#include "content/public/common/url_utils.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -59,9 +65,15 @@ class RenderFrameHost;
 
 namespace {
 
-content::WebContents* GetWebContents(Browser* browser,
+BrowserWindowInterface* GetBrowserWindowForWebContentsInTab(
+    content::WebContents* contents) {
+  auto* const tab = tabs::TabInterface::MaybeGetFromContents(contents);
+  return tab ? tab->GetBrowserWindowInterface() : nullptr;
+}
+
+content::WebContents* GetWebContents(BrowserWindowInterface* browser,
                                      std::optional<int> tab_index) {
-  auto* const model = browser->tab_strip_model();
+  auto* const model = browser->GetTabStripModel();
   return model->GetWebContentsAt(tab_index.value_or(model->active_index()));
 }
 
@@ -100,8 +112,7 @@ WebContentsInteractionTestUtil::StateChange ValidateAndInferStateChange(
       } else if (has_where) {
         configuration.type = Type::kExists;
       } else {
-        NOTREACHED_NORETURN()
-            << "Unable to infer StateChange type - " << configuration;
+        NOTREACHED() << "Unable to infer StateChange type - " << configuration;
       }
       break;
     case Type::kExists:
@@ -122,6 +133,11 @@ WebContentsInteractionTestUtil::StateChange ValidateAndInferStateChange(
     case Type::kExistsAndConditionTrue:
       CHECK(has_where && has_function)
           << "Expected where and function to be non-empty - " << configuration;
+  }
+  if (!configuration.check_callback.is_null()) {
+    CHECK(has_function)
+        << "Cannot specify check callback without test function - "
+        << configuration;
   }
   return configuration;
 }
@@ -156,7 +172,7 @@ std::string GetStateChangeQuery(
   using Type = WebContentsInteractionTestUtil::StateChange::Type;
   switch (configuration.type) {
     case Type::kAuto:
-      NOTREACHED_NORETURN() << "Auto type should already have been inferred.";
+      NOTREACHED() << "Auto type should already have been inferred.";
     case Type::kExists:
       return GetExistsQuery(
           /* on_not_found = */ "false",
@@ -173,7 +189,7 @@ std::string GetStateChangeQuery(
       }
       const std::string on_found = "(" + configuration.test_function + ")(el)";
       return GetExistsQuery(
-          /* on_not_found = */ "false", on_found.c_str());
+          /* on_not_found = */ "null", on_found.c_str());
   }
 }
 
@@ -184,9 +200,12 @@ void ExecuteScript(content::RenderFrameHost* host, const std::string& script) {
   if (host->GetLifecycleState() !=
       content::RenderFrameHost::LifecycleState::kPrerendering) {
     host->ExecuteJavaScriptWithUserGestureForTests(
-        script16, base::NullCallback());  // IN-TEST
+        script16, base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);  // IN-TEST
   } else {
-    host->ExecuteJavaScriptForTests(script16, base::NullCallback());  // IN-TEST
+    host->ExecuteJavaScriptForTests(
+        script16, base::NullCallback(),
+        content::ISOLATED_WORLD_ID_GLOBAL);  // IN-TEST
   }
 }
 
@@ -227,16 +246,18 @@ content::EvalJsResult EvalJsLocal(
       )",
       token.c_str(), function.c_str());
 
-  if (!host->IsRenderFrameLive())
+  if (!host->IsRenderFrameLive()) {
     return content::EvalJsResult(base::Value(), "Error: frame has crashed.");
+  }
 
   // This will queue up a message to be returned from the runner.
   ExecuteScript(host, runner_script);
 
   std::string json;
-  if (!dom_message_queue.WaitForMessage(&json))
+  if (!dom_message_queue.WaitForMessage(&json)) {
     return content::EvalJsResult(base::Value(),
                                  "Cannot communicate with DOMMessageQueue.");
+  }
 
   auto parsed_json = base::JSONReader::ReadAndReturnValueWithError(
       json, base::JSON_ALLOW_TRAILING_COMMAS);
@@ -269,17 +290,80 @@ void ExecuteJsLocal(const content::ToRenderFrameHost& execution_target,
   ExecuteScript(host, runner_script);
 }
 
+std::string DeepQueryToJSON(
+    const WebContentsInteractionTestUtil::DeepQuery& where) {
+  // Safely convert the selector list in `where` to a JSON/JS list.
+  base::Value::List selector_list;
+  for (const auto& selector : where) {
+    selector_list.Append(selector);
+  }
+  std::string selectors;
+  CHECK(base::JSONWriter::Write(selector_list, &selectors));
+  return selectors;
+}
+
+// Computes the bounds of the element at `where` relative to the top-level
+// render window. This takes into account nested shadow DOMs and iframes.
+// Result is a function that when executed returns a JSON object with
+// {x, y, w, h}.
+std::string GetElementBounds(
+    const WebContentsInteractionTestUtil::DeepQuery& where) {
+  const std::string selectors = DeepQueryToJSON(where);
+  return base::StringPrintf(
+      R"(function() {
+         const selectors = (%s);
+         let cur = document;
+         let offsetX = 0;
+         let offsetY = 0;
+         for (let selector of selectors) {
+           if (cur.shadowRoot) {
+             // Handle shadow DOM case.
+             cur = cur.shadowRoot;
+           } else if (cur.contentDocument) {
+             // Handle iframe case. Iframe bounds are not included in bounds
+             // calculations for elements that reside inside of them, so these
+             // need to be handled explicitly.
+
+             // Grab the bounds - these will contain the border and padding.
+             const bounds = cur.getBoundingClientRect();
+             offsetX += bounds.x;
+             offsetY += bounds.y;
+
+             // Add the internal padding.
+             const style = getComputedStyle(cur);
+             offsetX += parseInt(style.borderLeftWidth) +
+                        parseInt(style.paddingLeft);
+             offsetY += parseInt(style.borderTopWidth) +
+                        parseInt(style.paddingTop);
+
+             // Move inside the iframe.
+             cur = cur.contentDocument;
+           }
+           cur = cur.querySelector(selector);
+           if (!cur) {
+             const err = new Error('Selector not found: ' + selector);
+             err.selector = selector;
+             throw err;
+           }
+         }
+
+         const rect = cur.getBoundingClientRect();
+         return {
+           "x": rect.x + offsetX,
+           "y": rect.y + offsetY,
+           "w": rect.width,
+           "h": rect.height
+         };
+       })",
+      selectors.c_str());
+}
+
 std::string CreateDeepQuery(
     const WebContentsInteractionTestUtil::DeepQuery& where,
     const std::string& function) {
   DCHECK(!function.empty());
 
-  // Safely convert the selector list in `where` to a JSON/JS list.
-  base::Value::List selector_list;
-  for (const auto& selector : where)
-    selector_list.Append(selector);
-  std::string selectors;
-  CHECK(base::JSONWriter::Write(selector_list, &selectors));
+  const std::string selectors = DeepQueryToJSON(where);
 
   return base::StringPrintf(
       R"(function() {
@@ -287,7 +371,11 @@ std::string CreateDeepQuery(
            let cur = document;
            for (let selector of selectors) {
              if (cur.shadowRoot) {
+               // Handle shadow DOM case.
                cur = cur.shadowRoot;
+             } else if (cur.contentDocument) {
+               // Handle iframe case.
+               cur = cur.contentDocument;
              }
              cur = cur.querySelector(selector);
              if (!cur) {
@@ -316,6 +404,95 @@ std::string CreateDeepQuery(
 }
 
 }  // namespace
+
+// Subclass used to handle WebContents in tabs.
+class TabWebContentsInteractionTestUtil : public WebContentsInteractionTestUtil,
+                                          public TabStripModelObserver {
+ public:
+  TabWebContentsInteractionTestUtil(content::WebContents* web_contents,
+                                    ui::ElementIdentifier page_identifier);
+  TabWebContentsInteractionTestUtil(BrowserWindowInterface* to_watch,
+                                    ui::ElementIdentifier page_identifier);
+  ~TabWebContentsInteractionTestUtil() override;
+
+  // WebContentsInteractionTestUtil:
+  void LoadPageInNewTab(const GURL& url, bool activate_tab) override;
+  views::WebView* GetWebView() const override;
+
+ protected:
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+  ui::ElementContext GetElementContext() const override;
+
+ private:
+  void StartWatchingWebContents(content::WebContents* web_contents);
+
+  // Optional object that watches for a new tab to be created, either in a
+  // specific browser or in any browser.
+  class NewTabWatcher;
+  std::unique_ptr<NewTabWatcher> new_tab_watcher_;
+};
+
+// Subclass used to handle WebContents in a WebView.
+class WebViewWebContentsInteractionTestUtil
+    : public WebContentsInteractionTestUtil {
+ public:
+  WebViewWebContentsInteractionTestUtil(views::WebView* web_view,
+                                        ui::ElementIdentifier page_identifier);
+  ~WebViewWebContentsInteractionTestUtil() override;
+
+  views::WebView* GetWebView() const override;
+
+ protected:
+  // TabStripModelObserver:
+  bool ForceNavigateWithController() const override { return true; }
+  ui::ElementContext GetElementContext() const override;
+
+ private:
+  class WebViewData;
+
+  // Tracks the WebView that hosts a non-tab WebContents; null otherwise.
+  std::unique_ptr<WebViewData> web_view_data_;
+};
+
+// Tracks an inner WebContents at a particular index in an outer instrumented
+// WebContents. Valid only when the inner contents and outer contents are both
+// valid and visible.
+class InnerWebContentsInteractionTestUtil
+    : public WebContentsInteractionTestUtil {
+ public:
+  InnerWebContentsInteractionTestUtil(
+      ui::ElementIdentifier outer_webcontents_id,
+      size_t inner_contents_index,
+      ui::ElementIdentifier inner_page_identifier);
+  ~InnerWebContentsInteractionTestUtil() override;
+
+ public:
+  views::WebView* GetWebView() const override;
+  gfx::Rect GetElementBoundsInScreen(const DeepQuery& where) const override;
+  ui::ElementContext GetElementContext() const override;
+
+ private:
+  class ParentWebContentsObserver;
+
+  const WebContentsInteractionTestUtil* parent_util() const {
+    return parent_element_ ? parent_element_->owner() : nullptr;
+  }
+
+  void MaybeObserveChild();
+
+  void OnParentShown(ui::TrackedElement* parent);
+  void OnParentHidden(ui::TrackedElement* parent);
+
+  raw_ptr<const TrackedElementWebContents> parent_element_ = nullptr;
+  const size_t inner_contents_index_;
+  std::unique_ptr<ParentWebContentsObserver> parent_observer_;
+  base::CallbackListSubscription parent_shown_subscription_;
+  base::CallbackListSubscription parent_hidden_subscription_;
+};
 
 WebContentsInteractionTestUtil::DeepQuery::DeepQuery() = default;
 WebContentsInteractionTestUtil::DeepQuery::DeepQuery(
@@ -349,54 +526,6 @@ WebContentsInteractionTestUtil::StateChange::operator=(
     const WebContentsInteractionTestUtil::StateChange& other) = default;
 WebContentsInteractionTestUtil::StateChange::~StateChange() = default;
 
-class WebContentsInteractionTestUtil::NewTabWatcher
-    : public TabStripModelObserver,
-      public BrowserListObserver {
- public:
-  NewTabWatcher(WebContentsInteractionTestUtil* owner, Browser* browser)
-      : owner_(owner), browser_(browser) {
-    if (browser_) {
-      browser_->tab_strip_model()->AddObserver(this);
-    } else {
-      BrowserList::GetInstance()->AddObserver(this);
-      for (Browser* const open_browser : *BrowserList::GetInstance())
-        open_browser->tab_strip_model()->AddObserver(this);
-    }
-  }
-
-  ~NewTabWatcher() override {
-    BrowserList::GetInstance()->RemoveObserver(this);
-  }
-
-  Browser* browser() { return browser_; }
-
- private:
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
-    CHECK(!browser_);
-    browser->tab_strip_model()->AddObserver(this);
-  }
-
-  void OnBrowserRemoved(Browser* browser) override { CHECK(!browser_); }
-
-  // TabStripModelObserver:
-  void OnTabStripModelChanged(
-      TabStripModel* tab_strip_model,
-      const TabStripModelChange& change,
-      const TabStripSelectionChange& selection) override {
-    if (change.type() != TabStripModelChange::Type::kInserted)
-      return;
-
-    auto* const web_contents =
-        change.GetInsert()->contents.front().contents.get();
-    CHECK(!browser_ || browser_ == chrome::FindBrowserWithTab(web_contents));
-    owner_->StartWatchingWebContents(web_contents);
-  }
-
-  const raw_ptr<WebContentsInteractionTestUtil> owner_;
-  const raw_ptr<Browser> browser_;
-};
-
 class WebContentsInteractionTestUtil::Poller {
  public:
   Poller(WebContentsInteractionTestUtil* const owner, StateChange state_change)
@@ -419,8 +548,9 @@ class WebContentsInteractionTestUtil::Poller {
     // Callback can get called again if Evaluate() below stalls. We don't want
     // to stack callbacks because of issues with message passing to/from web
     // contents.
-    if (is_polling_)
+    if (is_polling_) {
       return;
+    }
 
     // If there is no page loaded, then there is nothing to poll.
     if (!owner_->is_page_loaded()) {
@@ -442,13 +572,24 @@ class WebContentsInteractionTestUtil::Poller {
     // At this point, weak_ptr might be invalid since we could have been deleted
     // while we were waiting for Evaluate[At]() to complete.
     if (weak_ptr) {
-      if (IsTruthy(result)) {
+      if (CheckResult(result)) {
         owner_->OnPollEvent(this, state_change_.event);
       } else if (state_change_.timeout.has_value() &&
                  elapsed_.Elapsed() > state_change_.timeout.value()) {
         owner_->OnPollEvent(this, state_change_.timeout_event);
       }
     }
+  }
+
+  // Determines if the result of calling the method passes the check.
+  //
+  // If no explicit check is specified, `value` will be evaluated for
+  // truthiness.
+  bool CheckResult(const base::Value& value) {
+    if (state_change_.check_callback.is_null()) {
+      return IsTruthy(value);
+    }
+    return state_change_.check_callback.Run(value);
   }
 
   const base::ElapsedTimer elapsed_;
@@ -460,181 +601,11 @@ class WebContentsInteractionTestUtil::Poller {
   base::WeakPtrFactory<Poller> weak_factory_{this};
 };
 
-// Class that tracks a WebView and its WebContents in a secondary UI.
-class WebContentsInteractionTestUtil::WebViewData : public views::ViewObserver {
- public:
-  WebViewData(WebContentsInteractionTestUtil* owner, views::WebView* web_view)
-      : owner_(owner), web_view_(web_view) {}
-  ~WebViewData() override {
-    EXPECT_FALSE(minimum_size_data_)
-        << "Minimum size " << minimum_size_data_->webview_size.ToString()
-        << " never reached; event never sent: "
-        << minimum_size_data_->event_type;
-  }
-
-  // Separate init is required from construction so that the util object that
-  // owns this object can store a pointer before any calls back to the util
-  // object are performed.
-  void Init() {
-    scoped_observation_.Observe(web_view_);
-    web_contents_attached_subscription_ =
-        web_view_->AddWebContentsAttachedCallback(base::BindRepeating(
-            &WebViewData::OnWebContentsAttached, base::Unretained(this)));
-    ui::ElementIdentifier id =
-        web_view_->GetProperty(views::kElementIdentifierKey);
-    if (!id) {
-      id = ui::ElementTracker::kTemporaryIdentifier;
-      web_view_->SetProperty(views::kElementIdentifierKey, id);
-    }
-    context_ = views::ElementTrackerViews::GetContextForView(web_view_);
-    CHECK(context_);
-
-    shown_subscription_ =
-        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
-            id, context_,
-            base::BindRepeating(&WebViewData::OnElementShown,
-                                base::Unretained(this)));
-    hidden_subscription_ =
-        ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
-            id, context_,
-            base::BindRepeating(&WebViewData::OnElementHidden,
-                                base::Unretained(this)));
-
-    if (auto* const element =
-            views::ElementTrackerViews::GetInstance()->GetElementForView(
-                web_view_)) {
-      OnElementShown(element);
-    }
-  }
-
-  void SendEventOnMinimumSize(const gfx::Size& minimum_webview_size,
-                              ui::CustomElementEventType event_type,
-                              const DeepQuery& element_to_check,
-                              const gfx::Size& minimum_element_size) {
-    CHECK(!minimum_size_data_)
-        << "Already have a pending minimum webview size with event "
-        << minimum_size_data_->event_type;
-    CHECK(!minimum_webview_size.IsEmpty());
-    CHECK(element_to_check.empty() || !minimum_element_size.IsEmpty());
-
-    minimum_size_data_ = std::make_unique<MinimumSizeData>();
-    minimum_size_data_->webview_size = minimum_webview_size;
-    minimum_size_data_->event_type = event_type;
-    minimum_size_data_->element = element_to_check;
-    minimum_size_data_->element_size = minimum_element_size;
-
-    // If the WebView already meets the minimum size, queue the event now.
-    if (Contains(minimum_webview_size, web_view_->size()))
-      QueueMinimumSizeEvent();
-  }
-
-  ui::ElementContext context() const { return context_; }
-
-  bool visible() const { return visible_; }
-
-  views::WebView* web_view() const { return web_view_; }
-
- private:
-  struct MinimumSizeData {
-    ui::CustomElementEventType event_type;
-    gfx::Size webview_size;
-    DeepQuery element;
-    gfx::Size element_size;
-  };
-
-  void OnElementShown(ui::TrackedElement* element) {
-    if (visible_)
-      return;
-    auto* el = element->AsA<views::TrackedElementViews>();
-    if (!el || el->view() != web_view_)
-      return;
-    visible_ = true;
-    owner_->Observe(web_view_->web_contents());
-    owner_->MaybeCreateElement();
-  }
-
-  void OnElementHidden(ui::TrackedElement* element) {
-    if (!visible_)
-      return;
-    auto* el = element->AsA<views::TrackedElementViews>();
-    if (!el || el->view() != web_view_)
-      return;
-    visible_ = false;
-    owner_->Observe(nullptr);
-    owner_->DiscardCurrentElement();
-  }
-
-  // views::ViewObserver:
-  void OnViewIsDeleting(views::View* view) override {
-    visible_ = false;
-    web_view_ = nullptr;
-    shown_subscription_ = ui::ElementTracker::Subscription();
-    hidden_subscription_ = ui::ElementTracker::Subscription();
-    scoped_observation_.Reset();
-    owner_->Observe(nullptr);
-    owner_->DiscardCurrentElement();
-  }
-
-  void OnViewBoundsChanged(views::View* observed_view) override {
-    if (!minimum_size_data_)
-      return;
-    if (Contains(minimum_size_data_->webview_size, observed_view->size()))
-      QueueMinimumSizeEvent();
-  }
-
-  void OnWebContentsAttached(views::WebView* observed_view) {
-    CHECK_EQ(web_view_.get(), observed_view);
-    content::WebContents* const to_observe =
-        visible_ ? observed_view->web_contents() : nullptr;
-    if (owner_->web_contents() == to_observe) {
-      return;
-    }
-    owner_->Observe(to_observe);
-    owner_->DiscardCurrentElement();
-    owner_->MaybeCreateElement();
-  }
-
-  void QueueMinimumSizeEvent() {
-    if (!owner_->current_element_)
-      return;
-
-    // This clears the current data, allowing us to queue another minimum size
-    // event.
-    std::unique_ptr<MinimumSizeData> data = std::move(minimum_size_data_);
-
-    // The final step is to poke the WebView to determine when the target
-    // element (or page, if one has not been specified) has actually been
-    // rendered at a nonzero size.
-    owner_->SendEventOnElementMinimumSize(data->event_type, data->element,
-                                          data->element_size,
-                                          /* must_already_exist =*/false);
-  }
-
-  static bool Contains(const gfx::Size& bounds, const gfx::Size& size) {
-    return bounds.height() <= size.height() && bounds.width() <= size.width();
-  }
-
-  const raw_ptr<WebContentsInteractionTestUtil> owner_;
-  raw_ptr<views::WebView> web_view_;
-  bool visible_ = false;
-  ui::ElementContext context_;
-  ui::ElementTracker::Subscription shown_subscription_;
-  ui::ElementTracker::Subscription hidden_subscription_;
-  std::unique_ptr<MinimumSizeData> minimum_size_data_;
-  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
-      this};
-  base::CallbackListSubscription web_contents_attached_subscription_;
-  base::WeakPtrFactory<WebViewData> weak_factory_{this};
-};
-
 // static
 constexpr base::TimeDelta
     WebContentsInteractionTestUtil::kDefaultPollingInterval;
 
 WebContentsInteractionTestUtil::~WebContentsInteractionTestUtil() {
-  // Stop observing before eliminating the element, as a callback could cascade
-  // into additional events.
-  new_tab_watcher_.reset();
   Observe(nullptr);
   pollers_.clear();
 }
@@ -678,7 +649,7 @@ WebContentsInteractionTestUtil::ForExistingTabInContext(
 // static
 std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForExistingTabInBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ui::ElementIdentifier page_identifier,
     std::optional<int> tab_index) {
   return ForTabWebContents(GetWebContents(browser, tab_index), page_identifier);
@@ -689,8 +660,8 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForTabWebContents(
     content::WebContents* web_contents,
     ui::ElementIdentifier page_identifier) {
-  return base::WrapUnique(new WebContentsInteractionTestUtil(
-      web_contents, page_identifier, std::nullopt, nullptr));
+  return std::make_unique<TabWebContentsInteractionTestUtil>(web_contents,
+                                                             page_identifier);
 }
 
 // static
@@ -698,8 +669,8 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForNonTabWebView(
     views::WebView* web_view,
     ui::ElementIdentifier page_identifier) {
-  return base::WrapUnique(new WebContentsInteractionTestUtil(
-      web_view->GetWebContents(), page_identifier, std::nullopt, web_view));
+  return std::make_unique<WebViewWebContentsInteractionTestUtil>(
+      web_view, page_identifier);
 }
 
 // static
@@ -707,7 +678,7 @@ std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForNextTabInContext(
     ui::ElementContext context,
     ui::ElementIdentifier page_identifier) {
-  Browser* const browser =
+  auto* const browser =
       InteractionTestUtilBrowser::GetBrowserFromContext(context);
   return ForNextTabInBrowser(browser, page_identifier);
 }
@@ -715,42 +686,34 @@ WebContentsInteractionTestUtil::ForNextTabInContext(
 // static
 std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForNextTabInBrowser(
-    Browser* browser,
+    BrowserWindowInterface* browser,
     ui::ElementIdentifier page_identifier) {
   CHECK(browser);
-  return base::WrapUnique(new WebContentsInteractionTestUtil(
-      nullptr, page_identifier, browser, nullptr));
+  return std::make_unique<TabWebContentsInteractionTestUtil>(browser,
+                                                             page_identifier);
 }
 
 // static
 std::unique_ptr<WebContentsInteractionTestUtil>
 WebContentsInteractionTestUtil::ForNextTabInAnyBrowser(
     ui::ElementIdentifier page_identifier) {
-  return base::WrapUnique(new WebContentsInteractionTestUtil(
-      nullptr, page_identifier, nullptr, nullptr));
+  return std::make_unique<TabWebContentsInteractionTestUtil>(
+      static_cast<Browser*>(nullptr), page_identifier);
+}
+
+// static
+std::unique_ptr<WebContentsInteractionTestUtil>
+WebContentsInteractionTestUtil::ForInnerWebContents(
+    ui::ElementIdentifier outer_page_identifier,
+    size_t inner_contents_index,
+    ui::ElementIdentifier inner_page_identifier) {
+  return base::WrapUnique(new InnerWebContentsInteractionTestUtil(
+      outer_page_identifier, inner_contents_index, inner_page_identifier));
 }
 
 bool WebContentsInteractionTestUtil::HasPageBeenPainted() const {
   return is_page_loaded() &&
          web_contents()->CompletedFirstVisuallyNonEmptyPaint();
-}
-
-views::WebView* WebContentsInteractionTestUtil::GetWebView() {
-  if (web_view_data_)
-    return web_view_data_->web_view();
-
-  if (!current_element_)
-    return nullptr;
-
-  Browser* const browser = InteractionTestUtilBrowser::GetBrowserFromContext(
-      current_element_->context());
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser);
-  CHECK(browser_view);
-  if (web_contents() != browser_view->GetActiveWebContents())
-    return nullptr;
-
-  return browser_view->contents_web_view();
 }
 
 void WebContentsInteractionTestUtil::LoadPage(const GURL& url) {
@@ -759,7 +722,7 @@ void WebContentsInteractionTestUtil::LoadPage(const GURL& url) {
     navigating_away_from_ = web_contents()->GetURL();
     DiscardCurrentElement();
   }
-  if (url.SchemeIs("chrome") || web_view_data_) {
+  if (content::HasWebUIScheme(url) || ForceNavigateWithController()) {
     // Secure pages and non-tab WebViews must be navigated via the controller.
     content::NavigationController::LoadURLParams params(url);
     CHECK(web_contents()->GetController().LoadURLWithParams(params));
@@ -781,24 +744,14 @@ void WebContentsInteractionTestUtil::LoadPage(const GURL& url) {
     // similarly-named `content::ExecJs()`, this helper does not actually
     // validate or wait for the script to execute; hopefully, errors from
     // navigation failures will be obvious enough in subsequent steps.
-    ExecuteJsLocal(web_contents(), content::JsReplace("location = $1", url));
+    ExecuteJsLocal(web_contents(),
+                   content::JsReplace("() => location = $1", url));
   }
 }
 
 void WebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
                                                       bool activate_tab) {
-  // We use tertiary operator rather than value_or to avoid failing if we're in
-  // a wait state.
-  Browser* browser = new_tab_watcher_
-                         ? new_tab_watcher_->browser()
-                         : chrome::FindBrowserWithTab(web_contents());
-  CHECK(browser);
-  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
-  navigate_params.disposition = activate_tab
-                                    ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                                    : WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  auto navigate_result = Navigate(&navigate_params);
-  CHECK(navigate_result);
+  NOTREACHED() << "Should only be called for tab WebContents.";
 }
 
 base::Value WebContentsInteractionTestUtil::Evaluate(
@@ -806,48 +759,21 @@ base::Value WebContentsInteractionTestUtil::Evaluate(
     std::string* error_message) {
   CHECK(is_page_loaded());
   auto result = EvalJsLocal(web_contents(), function);
-  if (!result.error.empty()) {
+  if (!result.is_ok()) {
     if (error_message) {
-      *error_message = result.error;
+      *error_message = result.ExtractError();
       return base::Value();
     } else {
-      NOTREACHED_NORETURN() << "Uncaught JS exception: " << result.error;
+      NOTREACHED() << "Uncaught JS exception: " << result;
     }
   }
 
-  // Despite the fact that EvalJsResult::value is const, base::Value in general
-  // is moveable and nothing special is done on EvalJsResult destructor, which
-  // means it's safe to const-cast and move the value out of the struct.
-  auto& value = const_cast<base::Value&>(result.value);
-
-  return std::move(value);
+  return std::move(result).TakeValue();
 }
 
 void WebContentsInteractionTestUtil::Execute(const std::string& function) {
   CHECK(is_page_loaded());
   ExecuteJsLocal(web_contents(), function);
-}
-
-void WebContentsInteractionTestUtil::SendEventOnElementMinimumSize(
-    ui::CustomElementEventType event_type,
-    const DeepQuery& where,
-    const gfx::Size& minimum_size,
-    bool must_already_exist) {
-  DCHECK(!minimum_size.IsEmpty());
-  StateChange change;
-  change.event = event_type;
-  change.type = must_already_exist ? StateChange::Type::kConditionTrue
-                                   : StateChange::Type::kExistsAndConditionTrue;
-  change.where = where;
-  change.test_function =
-      base::StringPrintf(R"(
-        el => {
-          const rect = el.getBoundingClientRect();
-          return rect.width >= %i && rect.height >= %i;
-        }
-      )",
-                         minimum_size.width(), minimum_size.height());
-  SendEventOnStateChange(change);
 }
 
 void WebContentsInteractionTestUtil::SendEventOnStateChange(
@@ -861,12 +787,16 @@ void WebContentsInteractionTestUtil::SendEventOnStateChange(
 }
 
 bool WebContentsInteractionTestUtil::Exists(const DeepQuery& query,
-                                            std::string* not_found) {
+                                            std::string* not_found) const {
   const std::string full_query =
       CreateDeepQuery(query, GetExistsQuery("err.selector", "''"));
-  const std::string result = Evaluate(full_query).GetString();
-  if (not_found)
+  // Const cast is safe as the query cannot modify the WebContents.
+  const std::string result = const_cast<WebContentsInteractionTestUtil*>(this)
+                                 ->Evaluate(full_query)
+                                 .GetString();
+  if (not_found) {
     *not_found = result;
+  }
   return result.empty();
 }
 
@@ -900,24 +830,15 @@ void WebContentsInteractionTestUtil::ExecuteAt(const std::string& selector,
 }
 
 gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
-    const DeepQuery& where) {
-  if (!current_element_)
+    const DeepQuery& where) const {
+  if (!current_element_) {
     return gfx::Rect();
-
-  views::WebView* web_view = nullptr;
-  if (web_view_data_) {
-    DCHECK(web_view_data_->visible() && web_view_data_->web_view());
-    web_view = web_view_data_->web_view();
-  } else {
-    Browser* const browser = chrome::FindBrowserWithTab(web_contents());
-    if (!browser ||
-        web_contents() != browser->tab_strip_model()->GetActiveWebContents()) {
-      return gfx::Rect();
-    }
-    web_view =
-        BrowserView::GetBrowserViewForBrowser(browser)->contents_web_view();
   }
-  CHECK(web_view);
+
+  views::WebView* const web_view = GetWebView();
+  if (!web_view) {
+    return gfx::Rect();
+  }
 
   // TODO(dfried): Screen bounds returned by GetBoundsInScreen() are in DIPs.
   // We are also assuming that Element.getBoundingClientRect() also returns a
@@ -926,16 +847,12 @@ gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
   // bounds will need to be adjusted by the current display's scale factor.
   const gfx::Point offset = web_view->GetBoundsInScreen().origin();
 
-  const base::Value result = EvaluateAt(where,
-                                        R"(el => {
-      const rect = el.getBoundingClientRect();
-      return {
-        "x": rect.x,
-        "y": rect.y,
-        "w": rect.width,
-        "h": rect.height
-      };
-    })");
+  // Perform our custom bounds calculation, taking into account e.g. iframes.
+  // Note that this does not modify the contents of the frame, so it's safe to
+  // do this const cast.
+  const base::Value result =
+      const_cast<WebContentsInteractionTestUtil*>(this)->Evaluate(
+          GetElementBounds(where));
 
   // This will crash if any of the values are not found, however, since this is
   // test code that's fine; it *should* crash the test.
@@ -949,19 +866,8 @@ gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
 }
 
 gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
-    const std::string& where) {
+    const std::string& where) const {
   return GetElementBoundsInScreen(DeepQuery{where});
-}
-
-void WebContentsInteractionTestUtil::SendEventOnWebViewMinimumSize(
-    const gfx::Size& minimum_webview_size,
-    ui::CustomElementEventType event_type,
-    const DeepQuery& element_to_check,
-    const gfx::Size& minimum_element_size) {
-  CHECK(web_view_data_)
-      << "Only supported for util objects created with ForNonTabWebView()";
-  web_view_data_->SendEventOnMinimumSize(
-      minimum_webview_size, event_type, element_to_check, minimum_element_size);
 }
 
 void WebContentsInteractionTestUtil::DidStopLoading() {
@@ -998,81 +904,26 @@ void WebContentsInteractionTestUtil::DidFirstVisuallyNonEmptyPaint() {
   MaybeSendPaintEvent();
 }
 
-void WebContentsInteractionTestUtil::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  // Don't bother processing if we don't have a target WebContents.
-  if (!web_contents())
-    return;
-
-  // Ensure that if a tab is moved to another browser, we track that move.
-  if (change.type() == TabStripModelChange::Type::kRemoved) {
-    for (auto& removed_tab : change.GetRemove()->contents) {
-      if (removed_tab.contents != web_contents())
-        continue;
-      // We won't handle deleted reason here, since we already capture
-      // WebContentsDestroyed().
-      if (removed_tab.remove_reason ==
-          TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip) {
-        DiscardCurrentElement();
-        Observe(nullptr);
-      }
-    }
-  } else if (change.type() == TabStripModelChange::Type::kReplaced) {
-    auto* const replace = change.GetReplace();
-    if (web_contents() == replace->old_contents) {
-      DiscardCurrentElement();
-      Observe(replace->new_contents);
-      MaybeCreateElement();
-    }
-  }
-}
-
 WebContentsInteractionTestUtil::WebContentsInteractionTestUtil(
     content::WebContents* web_contents,
-    ui::ElementIdentifier page_identifier,
-    std::optional<Browser*> browser,
-    views::WebView* web_view)
+    ui::ElementIdentifier page_identifier)
     : WebContentsObserver(web_contents), page_identifier_(page_identifier) {
   CHECK(page_identifier);
-
-  if (web_view) {
-    // This is specifically for a web view that is not a tab.
-    CHECK(web_contents);
-    CHECK(!browser);
-    CHECK(!chrome::FindBrowserWithTab(web_contents));
-    web_view_data_ = std::make_unique<WebViewData>(this, web_view);
-    web_view_data_->Init();
-  } else if (browser.has_value()) {
-    // Watching for a new tab.
-    CHECK(!web_contents);
-    new_tab_watcher_ = std::make_unique<NewTabWatcher>(this, browser.value());
-  } else {
-    // This has to be a tab, so use standard watching logic.
-    StartWatchingWebContents(web_contents);
-  }
 }
 
 void WebContentsInteractionTestUtil::MaybeCreateElement() {
-  if (current_element_ || !web_contents())
+  if (current_element_ || !web_contents()) {
     return;
+  }
 
   if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() ||
       web_contents()->HasUncommittedNavigationInPrimaryMainFrame()) {
     return;
   }
 
-  ui::ElementContext context = ui::ElementContext();
-  if (web_view_data_) {
-    if (!web_view_data_->visible())
-      return;
-    context = web_view_data_->context();
-  } else {
-    Browser* const browser = chrome::FindBrowserWithTab(web_contents());
-    if (!browser)
-      return;
-    context = browser->window()->GetElementContext();
+  ui::ElementContext context = GetElementContext();
+  if (!context) {
+    return;
   }
 
   // Ignore events on a page we're navigating away from.
@@ -1122,6 +973,10 @@ void WebContentsInteractionTestUtil::DiscardCurrentElement() {
   }
 }
 
+bool WebContentsInteractionTestUtil::ForceNavigateWithController() const {
+  return false;
+}
+
 void WebContentsInteractionTestUtil::OnPollEvent(
     Poller* poller,
     ui::CustomElementEventType event) {
@@ -1139,17 +994,414 @@ void WebContentsInteractionTestUtil::OnPollEvent(
   }
 }
 
-void WebContentsInteractionTestUtil::StartWatchingWebContents(
+class TabWebContentsInteractionTestUtil::NewTabWatcher
+    : public TabStripModelObserver,
+      public BrowserListObserver {
+ public:
+  NewTabWatcher(TabWebContentsInteractionTestUtil* owner,
+                BrowserWindowInterface* browser)
+      : owner_(owner), browser_(browser) {
+    if (browser_) {
+      browser_->GetTabStripModel()->AddObserver(this);
+    } else {
+      BrowserList::GetInstance()->AddObserver(this);
+      ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+          [this](BrowserWindowInterface* browser) {
+            browser->GetTabStripModel()->AddObserver(this);
+            return true;
+          });
+    }
+  }
+
+  ~NewTabWatcher() override {
+    BrowserList::GetInstance()->RemoveObserver(this);
+  }
+
+  BrowserWindowInterface* browser() { return browser_; }
+
+ private:
+  // BrowserListObserver:
+  void OnBrowserAdded(Browser* browser) override {
+    CHECK(!browser_);
+    browser->GetTabStripModel()->AddObserver(this);
+  }
+
+  void OnBrowserRemoved(Browser* browser) override { CHECK(!browser_); }
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override {
+    if (change.type() != TabStripModelChange::Type::kInserted) {
+      return;
+    }
+
+    auto* const web_contents =
+        change.GetInsert()->contents.front().contents.get();
+    CHECK(!browser_ ||
+          browser_ == GetBrowserWindowForWebContentsInTab(web_contents));
+    owner_->StartWatchingWebContents(web_contents);
+  }
+
+  const raw_ptr<TabWebContentsInteractionTestUtil> owner_;
+  const raw_ptr<BrowserWindowInterface> browser_;
+};
+
+TabWebContentsInteractionTestUtil::TabWebContentsInteractionTestUtil(
+    content::WebContents* web_contents,
+    ui::ElementIdentifier page_identifier)
+    : WebContentsInteractionTestUtil(web_contents, page_identifier) {
+  StartWatchingWebContents(web_contents);
+}
+
+TabWebContentsInteractionTestUtil::TabWebContentsInteractionTestUtil(
+    BrowserWindowInterface* to_watch,
+    ui::ElementIdentifier page_identifier)
+    : WebContentsInteractionTestUtil(nullptr, page_identifier),
+      new_tab_watcher_(std::make_unique<NewTabWatcher>(this, to_watch)) {}
+
+TabWebContentsInteractionTestUtil::~TabWebContentsInteractionTestUtil() =
+    default;
+
+void TabWebContentsInteractionTestUtil::LoadPageInNewTab(const GURL& url,
+                                                         bool activate_tab) {
+  // We use tertiary operator rather than value_or to avoid failing if we're in
+  // a wait state.
+  BrowserWindowInterface* browser =
+      new_tab_watcher_ ? new_tab_watcher_->browser()
+                       : GetBrowserWindowForWebContentsInTab(web_contents());
+  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_TYPED);
+  navigate_params.disposition = activate_tab
+                                    ? WindowOpenDisposition::NEW_FOREGROUND_TAB
+                                    : WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  auto navigate_result = Navigate(&navigate_params);
+  CHECK(navigate_result);
+}
+
+views::WebView* TabWebContentsInteractionTestUtil::GetWebView() const {
+  if (!current_element()) {
+    return nullptr;
+  }
+
+  auto* const browser = InteractionTestUtilBrowser::GetBrowserFromContext(
+      current_element()->context());
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  CHECK(browser_view);
+  if (web_contents() != browser_view->GetActiveWebContents()) {
+    return nullptr;
+  }
+
+  return browser_view->contents_web_view();
+}
+
+ui::ElementContext TabWebContentsInteractionTestUtil::GetElementContext()
+    const {
+  ui::ElementContext context;
+  if (auto* const browser =
+          GetBrowserWindowForWebContentsInTab(web_contents())) {
+    context = BrowserElements::From(browser)->GetContext();
+  }
+  return context;
+}
+
+void TabWebContentsInteractionTestUtil::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  // Don't bother processing if we don't have a target WebContents.
+  if (!web_contents()) {
+    return;
+  }
+
+  // Ensure that if a tab is moved to another browser, we track that move.
+  if (change.type() == TabStripModelChange::Type::kRemoved) {
+    for (auto& removed_tab : change.GetRemove()->contents) {
+      if (removed_tab.contents != web_contents()) {
+        continue;
+      }
+      // We won't handle deleted reason here, since we already capture
+      // WebContentsDestroyed().
+      if (removed_tab.remove_reason ==
+          TabStripModelChange::RemoveReason::kInsertedIntoOtherTabStrip) {
+        DiscardCurrentElement();
+        Observe(nullptr);
+      }
+    }
+  } else if (change.type() == TabStripModelChange::Type::kReplaced) {
+    auto* const replace = change.GetReplace();
+    if (web_contents() == replace->old_contents) {
+      DiscardCurrentElement();
+      Observe(replace->new_contents);
+      MaybeCreateElement();
+    }
+  }
+}
+
+void TabWebContentsInteractionTestUtil::StartWatchingWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents);
+  auto* const browser = GetBrowserWindowForWebContentsInTab(web_contents);
   CHECK(browser);
-  browser->tab_strip_model()->AddObserver(this);
+  browser->GetTabStripModel()->AddObserver(this);
   if (new_tab_watcher_) {
     new_tab_watcher_.reset();
     Observe(web_contents);
   }
   MaybeCreateElement();
+}
+
+// Class that tracks a WebView and its WebContents in a secondary UI.
+class WebViewWebContentsInteractionTestUtil::WebViewData
+    : public views::ViewObserver {
+ public:
+  WebViewData(WebViewWebContentsInteractionTestUtil* owner,
+              views::WebView* web_view)
+      : owner_(owner), web_view_(web_view) {}
+  ~WebViewData() override = default;
+
+  // Separate init is required from construction so that the util object that
+  // owns this object can store a pointer before any calls back to the util
+  // object are performed.
+  void Init() {
+    scoped_observation_.Observe(web_view_);
+    web_contents_attached_subscription_ =
+        web_view_->AddWebContentsAttachedCallback(base::BindRepeating(
+            &WebViewData::OnWebContentsAttached, base::Unretained(this)));
+    ui::ElementIdentifier id =
+        web_view_->GetProperty(views::kElementIdentifierKey);
+    if (!id) {
+      id = ui::ElementTracker::kTemporaryIdentifier;
+      web_view_->SetProperty(views::kElementIdentifierKey, id);
+    }
+    context_ = views::ElementTrackerViews::GetContextForView(web_view_);
+    CHECK(context_);
+
+    shown_subscription_ =
+        ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
+            id, context_,
+            base::BindRepeating(&WebViewData::OnElementShown,
+                                base::Unretained(this)));
+    hidden_subscription_ =
+        ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
+            id, context_,
+            base::BindRepeating(&WebViewData::OnElementHidden,
+                                base::Unretained(this)));
+
+    if (auto* const element =
+            views::ElementTrackerViews::GetInstance()->GetElementForView(
+                web_view_)) {
+      OnElementShown(element);
+    }
+  }
+
+  ui::ElementContext context() const { return context_; }
+
+  bool visible() const { return visible_; }
+
+  views::WebView* web_view() const { return web_view_; }
+
+ private:
+  struct MinimumSizeData {
+    ui::CustomElementEventType event_type;
+    gfx::Size webview_size;
+    DeepQuery element;
+    gfx::Size element_size;
+  };
+
+  void OnElementShown(ui::TrackedElement* element) {
+    if (visible_) {
+      return;
+    }
+    auto* el = element->AsA<views::TrackedElementViews>();
+    if (!el || el->view() != web_view_) {
+      return;
+    }
+    visible_ = true;
+    owner_->Observe(web_view_->web_contents());
+    owner_->MaybeCreateElement();
+  }
+
+  void OnElementHidden(ui::TrackedElement* element) {
+    if (!visible_) {
+      return;
+    }
+    auto* el = element->AsA<views::TrackedElementViews>();
+    if (!el || el->view() != web_view_) {
+      return;
+    }
+    visible_ = false;
+    owner_->Observe(nullptr);
+    owner_->DiscardCurrentElement();
+  }
+
+  // views::ViewObserver:
+  void OnViewIsDeleting(views::View* view) override {
+    visible_ = false;
+    web_view_ = nullptr;
+    shown_subscription_ = ui::ElementTracker::Subscription();
+    hidden_subscription_ = ui::ElementTracker::Subscription();
+    scoped_observation_.Reset();
+    owner_->Observe(nullptr);
+    owner_->DiscardCurrentElement();
+  }
+
+  void OnWebContentsAttached(views::WebView* observed_view) {
+    CHECK_EQ(web_view_.get(), observed_view);
+    content::WebContents* const to_observe =
+        visible_ ? observed_view->web_contents() : nullptr;
+    if (owner_->web_contents() == to_observe) {
+      return;
+    }
+    owner_->Observe(to_observe);
+    owner_->DiscardCurrentElement();
+    owner_->MaybeCreateElement();
+  }
+
+  static bool Contains(const gfx::Size& bounds, const gfx::Size& size) {
+    return bounds.height() <= size.height() && bounds.width() <= size.width();
+  }
+
+  const raw_ptr<WebViewWebContentsInteractionTestUtil> owner_;
+  raw_ptr<views::WebView> web_view_;
+  bool visible_ = false;
+  ui::ElementContext context_;
+  ui::ElementTracker::Subscription shown_subscription_;
+  ui::ElementTracker::Subscription hidden_subscription_;
+  base::ScopedObservation<views::View, views::ViewObserver> scoped_observation_{
+      this};
+  base::CallbackListSubscription web_contents_attached_subscription_;
+  base::WeakPtrFactory<WebViewData> weak_factory_{this};
+};
+
+WebViewWebContentsInteractionTestUtil::WebViewWebContentsInteractionTestUtil(
+    views::WebView* web_view,
+    ui::ElementIdentifier page_identifier)
+    : WebContentsInteractionTestUtil(web_view->GetWebContents(),
+                                     page_identifier) {
+  CHECK(web_contents());
+  CHECK(!GetBrowserWindowForWebContentsInTab(web_contents()));
+  web_view_data_ = std::make_unique<WebViewData>(this, web_view);
+  web_view_data_->Init();
+}
+
+WebViewWebContentsInteractionTestUtil::
+    ~WebViewWebContentsInteractionTestUtil() = default;
+
+views::WebView* WebViewWebContentsInteractionTestUtil::GetWebView() const {
+  return web_view_data_->visible() ? web_view_data_->web_view() : nullptr;
+}
+
+ui::ElementContext WebViewWebContentsInteractionTestUtil::GetElementContext()
+    const {
+  ui::ElementContext context;
+  if (web_view_data_->visible()) {
+    context = web_view_data_->context();
+  }
+  return context;
+}
+
+class InnerWebContentsInteractionTestUtil::ParentWebContentsObserver
+    : public WebContentsObserver {
+ public:
+  explicit ParentWebContentsObserver(InnerWebContentsInteractionTestUtil& owner)
+      : owner_(owner) {}
+  ~ParentWebContentsObserver() override = default;
+
+  void StartObserving(content::WebContents* parent_contents) {
+    Observe(parent_contents);
+  }
+
+  void StopObserving() { Observe(nullptr); }
+
+ private:
+  // WebContentsObserver:
+  void InnerWebContentsAttached(content::WebContents* inner_web_contents,
+                                content::RenderFrameHost*) override {
+    owner_->MaybeObserveChild();
+  }
+
+  const raw_ref<InnerWebContentsInteractionTestUtil> owner_;
+};
+
+InnerWebContentsInteractionTestUtil::InnerWebContentsInteractionTestUtil(
+    ui::ElementIdentifier outer_webcontents_id,
+    size_t inner_contents_index,
+    ui::ElementIdentifier page_identifier)
+    : WebContentsInteractionTestUtil(nullptr, page_identifier),
+      inner_contents_index_(inner_contents_index),
+      parent_observer_(std::make_unique<ParentWebContentsObserver>(*this)) {
+  auto* const tracker = ui::ElementTracker::GetElementTracker();
+  parent_shown_subscription_ = tracker->AddElementShownInAnyContextCallback(
+      outer_webcontents_id,
+      base::BindRepeating(&InnerWebContentsInteractionTestUtil::OnParentShown,
+                          base::Unretained(this)));
+  parent_hidden_subscription_ = tracker->AddElementHiddenInAnyContextCallback(
+      outer_webcontents_id,
+      base::BindRepeating(&InnerWebContentsInteractionTestUtil::OnParentHidden,
+                          base::Unretained(this)));
+  if (auto* const parent_el =
+          tracker->GetElementInAnyContext(outer_webcontents_id)) {
+    OnParentShown(parent_el);
+  }
+}
+
+InnerWebContentsInteractionTestUtil::~InnerWebContentsInteractionTestUtil() =
+    default;
+
+views::WebView* InnerWebContentsInteractionTestUtil::GetWebView() const {
+  if (auto* const parent = parent_util()) {
+    return parent->GetWebView();
+  }
+  return nullptr;
+}
+
+gfx::Rect InnerWebContentsInteractionTestUtil::GetElementBoundsInScreen(
+    const DeepQuery& where) const {
+  // TODO(dfried): IMPLEMENT
+  NOTREACHED();
+}
+
+ui::ElementContext InnerWebContentsInteractionTestUtil::GetElementContext()
+    const {
+  if (auto* const parent = parent_util()) {
+    return parent->GetElementContext();
+  }
+  return ui::ElementContext();
+}
+
+void InnerWebContentsInteractionTestUtil::MaybeObserveChild() {
+  if (auto* const parent = parent_observer_->web_contents()) {
+    const auto inner_contents = parent->GetInnerWebContents();
+    if (inner_contents_index_ < inner_contents.size()) {
+      auto* inner = inner_contents[inner_contents_index_];
+      if (web_contents() && web_contents() != inner) {
+        DiscardCurrentElement();
+      }
+      Observe(inner_contents[inner_contents_index_]);
+      MaybeCreateElement();
+      return;
+    }
+  }
+  DiscardCurrentElement();
+}
+
+void InnerWebContentsInteractionTestUtil::OnParentShown(
+    ui::TrackedElement* parent_el) {
+  CHECK(!parent_element_);
+  parent_element_ = parent_el->AsA<TrackedElementWebContents>();
+  CHECK(parent_element_);
+  parent_observer_->StartObserving(parent_element_->owner()->web_contents());
+  MaybeObserveChild();
+}
+
+void InnerWebContentsInteractionTestUtil::OnParentHidden(
+    ui::TrackedElement* parent_el) {
+  CHECK_EQ(parent_el, parent_element_.get());
+  parent_element_ = nullptr;
+  parent_observer_->StopObserving();
+  DiscardCurrentElement();
 }
 
 void PrintTo(const WebContentsInteractionTestUtil::DeepQuery& deep_query,
@@ -1189,7 +1441,7 @@ void PrintTo(const WebContentsInteractionTestUtil::StateChange& state_change,
   *os << ", test_function: \"" << state_change.test_function << "\""
       << ", where: " << state_change.where << ", event: " << state_change.event
       << ", continue_across_navigation: "
-      << (state_change.continue_across_navigation ? "true" : "false")
+      << base::ToString(state_change.continue_across_navigation)
       << ", timeout: " << state_change.timeout.value_or(base::TimeDelta())
       << ", timeout_event: " << state_change.timeout_event << " }";
 }

@@ -1,0 +1,49 @@
+<html>Pages with sensor script</html>
+<script>
+    let sensor;
+    // Handles one event, pushing it to |values| and calling
+    // |pendingResolve| if set.
+    function handleEvent(event) {
+        if (sensor.illuminance) {
+            // For Ambient Sensor.
+            values.push(sensor.illuminance);
+        } else {
+            values.push(sensor.x);
+        }
+        if (pendingResolve !== null) {
+            pendingResolve('event');
+            pendingResolve = null;
+        }
+    }
+    // Collects values that have happened so far.
+    var values = [];
+    // If set, will be called by handleEvent.
+    var pendingResolve = null;
+
+    // Returns a promise that will resolve when the events array has at least
+    // |eventCountMin| elements. Returns the number of elements.
+    function waitForEventsPromise(eventCountMin) {
+      if (values.length >= eventCountMin) {
+        return Promise.resolve(values.length);
+      }
+      return new Promise(resolve => {
+        pendingResolve = resolve;
+      }).then(() => waitForEventsPromise(eventCountMin));
+    }
+
+    // Ensure that that |expected| matches all the values.
+    function validateEvents(expected) {
+      if (expected === null) {
+        return "fail expected === null";
+      }
+      let count = 0;
+      for (value of values) {
+        count++;
+        if (Math.abs(value - expected) > 0.01) {
+          return `fail - ${count}/${values.length}: ` +
+              `${expected} != ${value}`;
+        }
+      }
+      return 'pass';
+    }
+</script>

@@ -5,6 +5,7 @@
 module ash.focus_mode.mojom;
 
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/time.mojom";
 
 // Defines metadata and source URL for a track to play.
 struct TrackDefinition {
@@ -52,13 +53,23 @@ struct PlaybackData {
   // Track media url.
   url.mojom.Url url;
 
-  // Start time in second of the period that the playback event covers. Value is
-  // null when `initial_playback` is true.
-  int32? media_start;
+  // Client current time.
+  mojo_base.mojom.JSTime client_current_time;
 
-  // End time in second of the period that the playback event covers. Value is
-  // null when `initial_playback` is true.
-  int32? media_end;
+  // Playback start offset in seconds.
+  int32 playback_start_offset;
+
+  // Current media time in seconds.
+  int32 media_time_current;
+
+  // Start time in seconds of the period that the playback event covers.
+  int32 media_start;
+
+  // End time in seconds of the period that the playback event covers.
+  int32 media_end;
+
+  // Client start time.
+  mojo_base.mojom.JSTime client_start_time;
 
   // Indicate if it's the initial playback, i.e. first playback after loading.
   bool initial_playback;
@@ -77,4 +88,7 @@ interface TrackProvider {
 
   // Used by the player to report playback.
   ReportPlayback(PlaybackData data);
+
+  // Used by the player to report an error.
+  ReportPlayerError();
 };

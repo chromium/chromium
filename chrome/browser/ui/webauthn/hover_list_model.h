@@ -10,9 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/check.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/vector_icon_types.h"
 
 // List model that controls which item is added to WebAuthN UI views.
 // HoverListModel is observed by Observer which represents the actual

@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/request_coordinator_factory.h"
 #include "chrome/browser/offline_pages/test_offline_page_model_builder.h"
@@ -26,6 +25,7 @@
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/offline_page_test_archiver.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -46,7 +46,7 @@ class TestDelegate: public RecentTabHelper::Delegate {
       OfflinePageTestArchiver::Observer* observer,
       int tab_id,
       bool tab_id_result);
-  ~TestDelegate() override {}
+  ~TestDelegate() override = default;
 
   std::unique_ptr<OfflinePageArchiver> CreatePageArchiver(
         content::WebContents* web_contents) override;
@@ -92,10 +92,9 @@ class RecentTabHelperTest
   RecentTabHelperTest(const RecentTabHelperTest&) = delete;
   RecentTabHelperTest& operator=(const RecentTabHelperTest&) = delete;
 
-  ~RecentTabHelperTest() override {}
+  ~RecentTabHelperTest() override = default;
 
   void SetUp() override;
-  void TearDown() override;
   const std::vector<OfflinePageItem>& GetAllPages();
 
   void FailLoad(const GURL& url);
@@ -173,13 +172,6 @@ class RecentTabHelperTest
   bool all_pages_needs_updating_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 
-  // Mocks the RenderViewHostTestHarness' main thread runner. Needs to be delay
-  // initialized in SetUp() -- can't be a simple member -- since
-  // RenderViewHostTestHarness only initializes its main thread environment in
-  // its SetUp() :(.
-  std::unique_ptr<base::ScopedMockTimeMessageLoopTaskRunner>
-      mocked_main_runner_;
-
   base::WeakPtrFactory<RecentTabHelperTest> weak_ptr_factory_{this};
 };
 
@@ -208,7 +200,9 @@ bool TestDelegate::GetTabId(content::WebContents* web_contents, int* tab_id) {
 }
 
 RecentTabHelperTest::RecentTabHelperTest()
-    : recent_tab_helper_(nullptr),
+    : ChromeRenderViewHostTestHarness(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+      recent_tab_helper_(nullptr),
       model_(nullptr),
       default_test_delegate_(nullptr),
       page_added_count_(0),
@@ -217,9 +211,6 @@ RecentTabHelperTest::RecentTabHelperTest()
 
 void RecentTabHelperTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
-
-  mocked_main_runner_ =
-      std::make_unique<base::ScopedMockTimeMessageLoopTaskRunner>();
 
   // Sets up the factories for testing.
   OfflinePageModelFactory::GetInstance()->SetTestingFactoryAndUse(
@@ -244,11 +235,6 @@ void RecentTabHelperTest::SetUp() {
   histogram_tester_ = std::make_unique<base::HistogramTester>();
 }
 
-void RecentTabHelperTest::TearDown() {
-  mocked_main_runner_.reset();
-  ChromeRenderViewHostTestHarness::TearDown();
-}
-
 void RecentTabHelperTest::FailLoad(const GURL& url) {
   content::NavigationSimulator::NavigateAndFailFromBrowser(
       web_contents(), url, net::ERR_INTERNET_DISCONNECTED);
@@ -270,12 +256,12 @@ void RecentTabHelperTest::OnGetAllPagesDone(
 }
 
 void RecentTabHelperTest::RunUntilIdle() {
-  (*mocked_main_runner_)->RunUntilIdle();
+  task_environment()->RunUntilIdle();
 }
 
 void RecentTabHelperTest::FastForwardSnapshotController() {
   constexpr base::TimeDelta kLongDelay = base::Seconds(100);
-  (*mocked_main_runner_)->FastForwardBy(kLongDelay);
+  task_environment()->FastForwardBy(kLongDelay);
 }
 
 void RecentTabHelperTest::StartAndCommitNavigation(
@@ -1061,7 +1047,8 @@ TEST_F(RecentTabHelperFencedFrameTest, FencedFrameDoesNotChangePageQuality) {
       content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
                                                             fenced_frame_rfh);
   navigation_simulator->Commit();
-  EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
+  EXPECT_TRUE(
+      navigation_simulator->GetFinalRenderFrameHost()->IsFencedFrameRoot());
 
   // Navigating the fenced frame to the fenced frame url should not change the
   // current page quality to POOR.

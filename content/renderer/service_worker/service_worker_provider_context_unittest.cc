@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "content/public/common/content_features.h"
@@ -78,10 +79,10 @@ class MockServiceWorkerObjectHost
   // Implements blink::mojom::ServiceWorkerObjectHost.
   void PostMessageToServiceWorker(
       ::blink::TransferableMessage message) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void TerminateForTesting(TerminateForTestingCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   const int64_t version_id_;
@@ -206,7 +207,9 @@ class FakeControllerServiceWorker
   void Clone(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
       const network::CrossOriginEmbedderPolicy&,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>)
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
+      const network::DocumentIsolationPolicy&,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>)
       override {
     receivers_.Add(this, std::move(receiver));
   }
@@ -478,6 +481,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller1;
   fake_controller1.Clone(remote_controller1.BindNewPipeAndPassReceiver(),
                          network::CrossOriginEmbedderPolicy(),
+                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
                          mojo::NullRemote());
   controller_info1->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
@@ -525,6 +529,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller2;
   fake_controller2.Clone(remote_controller2.BindNewPipeAndPassReceiver(),
                          network::CrossOriginEmbedderPolicy(),
+                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
                          mojo::NullRemote());
   controller_info2->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
@@ -618,6 +623,7 @@ TEST_F(ServiceWorkerProviderContextTest, SetControllerServiceWorker) {
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller4;
   fake_controller4.Clone(remote_controller4.BindNewPipeAndPassReceiver(),
                          network::CrossOriginEmbedderPolicy(),
+                         mojo::NullRemote(), network::DocumentIsolationPolicy(),
                          mojo::NullRemote());
   controller_info4->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
@@ -777,6 +783,7 @@ TEST_F(ServiceWorkerProviderContextTest, OnNetworkProviderDestroyed) {
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
   fake_controller.Clone(remote_controller.BindNewPipeAndPassReceiver(),
                         network::CrossOriginEmbedderPolicy(),
+                        mojo::NullRemote(), network::DocumentIsolationPolicy(),
                         mojo::NullRemote());
   controller_info->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;
@@ -803,7 +810,7 @@ TEST_F(ServiceWorkerProviderContextTest, OnNetworkProviderDestroyed) {
   provider_context->OnNetworkProviderDestroyed();
 
   // Calling these in the weird state shouldn't crash.
-  EXPECT_FALSE(provider_context->container_host());
+  EXPECT_FALSE(provider_context->has_container_host_for_testing());
   EXPECT_FALSE(provider_context->CloneRemoteContainerHost());
   provider_context->DispatchNetworkQuiet();
   provider_context->NotifyExecutionReady();
@@ -827,6 +834,7 @@ TEST_F(ServiceWorkerProviderContextTest,
   mojo::Remote<blink::mojom::ControllerServiceWorker> remote_controller;
   fake_controller.Clone(remote_controller.BindNewPipeAndPassReceiver(),
                         network::CrossOriginEmbedderPolicy(),
+                        mojo::NullRemote(), network::DocumentIsolationPolicy(),
                         mojo::NullRemote());
   controller_info->mode =
       blink::mojom::ControllerServiceWorkerMode::kControlled;

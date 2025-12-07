@@ -14,6 +14,7 @@
 namespace content {
 class ServiceWorkerContext;
 struct ConsoleMessage;
+struct ServiceWorkerRegistrationInformation;
 struct ServiceWorkerRunningInfo;
 
 class ServiceWorkerContextObserver {
@@ -44,8 +45,10 @@ class ServiceWorkerContextObserver {
   // registration ID |registration_id| and scope |scope|.
   //
   // This happens after OnRegistrationCompleted().
-  virtual void OnRegistrationStored(int64_t registration_id,
-                                    const GURL& scope) {}
+  virtual void OnRegistrationStored(
+      int64_t registration_id,
+      const GURL& scope,
+      const ServiceWorkerRegistrationInformation& service_worker_info) {}
 
   // Called when the service worker with id |version_id| changes status to
   // activated.
@@ -131,6 +134,14 @@ class ServiceWorkerContextObserver {
   // |script_url| is the URL of the service worker.
   // |url| is the destination URL.
   virtual void OnClientNavigated(const GURL& script_url, const GURL& url) {}
+
+  // Called when a Service Worker of an ESB user makes network requests during a
+  // push event. |script_url| is the URL of the service worker. |request_chains|
+  // are the network requests (including any redirects) made during the push
+  // event.
+  virtual void OnPushEventFinished(
+      const GURL& script_url,
+      const std::optional<std::vector<GURL>>& requested_urls) {}
 
  protected:
   virtual ~ServiceWorkerContextObserver() {}

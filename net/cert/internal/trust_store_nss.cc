@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/cert/internal/trust_store_nss.h"
 
 #include <cert.h>
@@ -19,8 +14,10 @@
 #include <secmod.h>
 #include <secmodt.h>
 
+#include <variant>
+
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
-#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -28,6 +25,7 @@
 #include "crypto/chaps_support.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
+#include "crypto/obsolete/sha1.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/features.h"
 #include "net/cert/internal/platform_trust_store.h"
@@ -56,6 +54,11 @@ extern "C" CERTCertificate* CERT_FindCertByDERCertForChromium(
 #endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
 
 namespace net {
+
+std::array<uint8_t, crypto::obsolete::Sha1::kSize> Sha1ForNSSTrust(
+    base::span<const uint8_t> data) {
+  return crypto::obsolete::Sha1::Hash(data);
+}
 
 namespace {
 
@@ -89,8 +92,14 @@ GetAllSlotsAndHandlesForCert(CERTCertificate* nss_cert,
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-    for (int i = 0; i < item->module->slotCount; ++i) {
-      PK11SlotInfo* slot = item->module->slots[i];
+    // SAFETY: item->module->slots is an array with item->module->slotCount
+    // elements. slotCount is a signed int so use checked_cast when creating
+    // the span.
+    base::span<PK11SlotInfo*> module_slots = UNSAFE_BUFFERS(
+        base::span(item->module->slots,
+                   base::checked_cast<size_t>(item->module->slotCount)));
+
+    for (PK11SlotInfo* slot : module_slots) {
       if (PK11_IsPresent(slot)) {
         CK_OBJECT_HANDLE handle = PK11_FindCertInSlot(slot, nss_cert, nullptr);
         if (handle != CK_INVALID_HANDLE) {
@@ -109,12 +118,10 @@ bool IsMozillaCaPolicyProvided(PK11SlotInfo* slot,
                               /*haslock=*/PR_FALSE) == CK_TRUE;
 }
 
-bool IsCertOnlyInNSSRoots(CERTCertificate* cert) {
-  // In this path, `cert` could be a client certificate, so we should not skip
-  // the chaps module.
+bool IsCertOnlyInNSSRoots(CERTCertificate* cert, bool ignore_chaps_module) {
   std::vector<std::pair<crypto::ScopedPK11Slot, CK_OBJECT_HANDLE>>
       slots_and_handles_for_cert =
-          GetAllSlotsAndHandlesForCert(cert, /*ignore_chaps_module=*/false);
+          GetAllSlotsAndHandlesForCert(cert, ignore_chaps_module);
   for (const auto& [slot, handle] : slots_and_handles_for_cert) {
     if (IsMozillaCaPolicyProvided(slot.get(), handle)) {
       // Cert is an NSS root. Continue looking to see if it also is present in
@@ -143,9 +150,9 @@ TrustStoreNSS::ListCertsResult& TrustStoreNSS::ListCertsResult::operator=(
 
 TrustStoreNSS::TrustStoreNSS(UserSlotTrustSetting user_slot_trust_setting)
     : user_slot_trust_setting_(std::move(user_slot_trust_setting)) {
-  if (absl::holds_alternative<crypto::ScopedPK11Slot>(
+  if (std::holds_alternative<crypto::ScopedPK11Slot>(
           user_slot_trust_setting_)) {
-    CHECK(absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) !=
+    CHECK(std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_) !=
           nullptr);
   }
 #if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_DEVICE)
@@ -202,8 +209,8 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
     bssl::CertErrors parse_errors;
     std::shared_ptr<const bssl::ParsedCertificate> cur_cert =
         bssl::ParsedCertificate::Create(
-            x509_util::CreateCryptoBuffer(base::make_span(
-                node->cert->derCert.data, node->cert->derCert.len)),
+            x509_util::CreateCryptoBuffer(
+                x509_util::CERTCertificateAsSpan(node->cert)),
             {}, &parse_errors);
 
     if (!cur_cert) {
@@ -218,14 +225,14 @@ void TrustStoreNSS::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
 }
 
 std::vector<TrustStoreNSS::ListCertsResult>
-TrustStoreNSS::ListCertsIgnoringNSSRoots() {
+TrustStoreNSS::ListCertsIgnoringNSSRootsImpl(bool ignore_chaps_module) {
   crypto::EnsureNSSInit();
   std::vector<TrustStoreNSS::ListCertsResult> results;
   crypto::ScopedCERTCertList cert_list;
-  if (absl::holds_alternative<crypto::ScopedPK11Slot>(
+  if (std::holds_alternative<crypto::ScopedPK11Slot>(
           user_slot_trust_setting_)) {
     cert_list.reset(PK11_ListCertsInSlot(
-        absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()));
+        std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()));
   } else {
     cert_list.reset(PK11_ListCerts(PK11CertListUnique, nullptr));
   }
@@ -233,7 +240,7 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
   // that was backing the specified slot is not available anymore.
   // Treat it as no certificates being present on the slot.
   if (!cert_list) {
-    LOG(WARNING) << (absl::holds_alternative<crypto::ScopedPK11Slot>(
+    LOG(WARNING) << (std::holds_alternative<crypto::ScopedPK11Slot>(
                          user_slot_trust_setting_)
                          ? "PK11_ListCertsInSlot"
                          : "PK11_ListCerts")
@@ -244,7 +251,7 @@ TrustStoreNSS::ListCertsIgnoringNSSRoots() {
   CERTCertListNode* node;
   for (node = CERT_LIST_HEAD(cert_list); !CERT_LIST_END(node, cert_list);
        node = CERT_LIST_NEXT(node)) {
-    if (IsCertOnlyInNSSRoots(node->cert)) {
+    if (IsCertOnlyInNSSRoots(node->cert, ignore_chaps_module)) {
       continue;
     }
     results.emplace_back(x509_util::DupCERTCertificate(node->cert),
@@ -341,10 +348,10 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
     DVLOG(1) << "found cert in slot:" << PK11_GetSlotName(slot)
              << " token:" << PK11_GetTokenName(slot)
              << " module trustOrder: " << PK11_GetModule(slot)->trustOrder;
-    if (absl::holds_alternative<crypto::ScopedPK11Slot>(
+    if (std::holds_alternative<crypto::ScopedPK11Slot>(
             user_slot_trust_setting_) &&
         slot !=
-            absl::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()) {
+            std::get<crypto::ScopedPK11Slot>(user_slot_trust_setting_).get()) {
       DVLOG(1) << "skipping slot " << PK11_GetSlotName(slot)
                << ", it's not user_slot_trust_setting_";
       continue;
@@ -379,8 +386,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
   // clear the cache. (There are multiple approaches possible, could cache the
   // hash->trust mappings on a per-slot basis, or just cache the end result for
   // each cert, etc.)
-  base::SHA1Digest cert_sha1 = base::SHA1Hash(
-      base::make_span(nss_cert->derCert.data, nss_cert->derCert.len));
+  std::array<uint8_t, crypto::obsolete::Sha1::kSize> cert_sha1 =
+      Sha1ForNSSTrust(x509_util::CERTCertificateAsSpan(nss_cert));
 
   // Check the slots in trustOrder ordering. Lower trustOrder values are higher
   // priority, so we can return as soon as we find a matching trust object.
@@ -406,13 +413,12 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
         DVLOG(1) << "trust object has no CKA_CERT_SHA1_HASH attr";
         continue;
       }
-      base::span<const uint8_t> trust_obj_sha1 = base::make_span(
-          sha1_hash_attr->data, sha1_hash_attr->data + sha1_hash_attr->len);
+      base::span<const uint8_t> trust_obj_sha1 =
+          x509_util::SECItemAsSpan(*sha1_hash_attr);
       DVLOG(1) << "found trust object for sha1 "
                << base::HexEncode(trust_obj_sha1);
 
-      if (!std::equal(trust_obj_sha1.begin(), trust_obj_sha1.end(),
-                      cert_sha1.begin(), cert_sha1.end())) {
+      if (trust_obj_sha1 != cert_sha1) {
         DVLOG(1) << "trust object does not match target cert hash, skipping";
         continue;
       }
@@ -429,8 +435,7 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
         continue;
       }
       DVLOG(1) << "trust "
-               << base::HexEncode(base::make_span(
-                      trust_attr->data, trust_attr->data + trust_attr->len))
+               << base::HexEncode(x509_util::SECItemAsSpan(*trust_attr))
                << " for sha1 " << base::HexEncode(trust_obj_sha1);
 
       CK_TRUST trust;
@@ -442,7 +447,8 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustIgnoringSystemTrust(
       // This matches how pk11_GetTrustField in NSS converts the raw trust
       // object to a CK_TRUST (actually an unsigned long).
       // https://searchfox.org/nss/source/lib/pk11wrap/pk11nobj.c#37
-      memcpy(&trust, trust_attr->data, trust_attr->len);
+      base::byte_span_from_ref(trust).copy_from(
+          x509_util::SECItemAsSpan(*trust_attr));
 
       // This doesn't handle the "TrustAnchorOrLeaf" combination, it's unclear
       // how that is represented. But it doesn't really matter since the only
@@ -517,7 +523,11 @@ bssl::CertificateTrust TrustStoreNSS::GetTrustForNSSTrust(
 std::vector<PlatformTrustStore::CertWithTrust>
 TrustStoreNSS::GetAllUserAddedCerts() {
   std::vector<PlatformTrustStore::CertWithTrust> user_added_certs;
-  for (const auto& cert_result : ListCertsIgnoringNSSRoots()) {
+  // Do not consider certs from Chaps here, as there should be no way for a
+  // user to have client cert in Chaps with a server auth trust setting.
+  std::vector<ListCertsResult> certs =
+      ListCertsIgnoringNSSRootsImpl(/*ignore_chaps_module=*/true);
+  for (const auto& cert_result : certs) {
     // Skip user certs, unless the user added the user cert with specific
     // server auth trust settings.
     if (cert_result.trust.HasUnspecifiedTrust() &&
@@ -526,8 +536,8 @@ TrustStoreNSS::GetAllUserAddedCerts() {
     }
 
     user_added_certs.emplace_back(
-        base::ToVector(base::make_span(cert_result.cert->derCert.data,
-                                       cert_result.cert->derCert.len)),
+        base::ToVector(
+            x509_util::CERTCertificateAsSpan(cert_result.cert.get())),
         cert_result.trust);
   }
 

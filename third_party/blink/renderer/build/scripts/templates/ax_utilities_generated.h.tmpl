@@ -1,0 +1,78 @@
+{% from "templates/macros.tmpl" import license, source_files_for_generated_file %}
+{{ license(2025) }}
+
+{{ source_files_for_generated_file(template_file, input_files) }}
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_UTILITIES_GENERATED_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_UTILITIES_GENERATED_H_
+
+#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/accessibility/ax_enums.mojom-blink-forward.h"
+
+namespace blink {
+
+class QualifiedName;
+
+// All ARIA attributes.
+CORE_EXPORT Vector<const QualifiedName*> GetAriaAttributes();
+
+// ARIA attributes grouped by type.
+{% for type_info in attributes_by_type.values()|sort(attribute='type_name') %}
+CORE_EXPORT Vector<const QualifiedName*> GetAria{{ type_info.type_name }}Attributes();
+{% endfor %}
+
+// ARIA attribute type classification functions.
+{% for type_info in attributes_by_type.values()|sort(attribute='type_name') %}
+CORE_EXPORT bool IsAria{{ type_info.type_name }}Attribute(const QualifiedName& attribute);
+{% endfor %}
+
+// ARIA attribute enum value accessors.
+{% for type_info in attributes_by_type.values() %}
+{% for attr in type_info.attributes %}
+{% if attr.enum_values %}
+CORE_EXPORT Vector<AtomicString> Get{{ attr.base_name }}Values();
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+// ARIA attribute default/implicit value utilities.
+// Returns the role-specific override if defined, otherwise the attribute's default value (or empty).
+{% for type_info in attributes_by_type.values() %}
+{% for attr in type_info.attributes %}
+{% if attr.default_value or attr.has_role_specific_values %}
+CORE_EXPORT const AtomicString& GetImplicit{{ attr.base_name }}(ax::mojom::blink::Role internal_role);
+{% endif %}
+{% endfor %}
+{% endfor %}
+
+// General lookup function to get valid enum values for any ARIA attribute.
+CORE_EXPORT Vector<AtomicString> GetValidValuesForAriaAttribute(const QualifiedName& attribute);
+
+// ARIA attribute role support utility.
+// Returns true if the given role supports the given ARIA attribute.
+// Takes into account global attributes, supportedOnRoles, and preventedOnRoles.
+CORE_EXPORT bool RoleSupportsAriaAttribute(ax::mojom::blink::Role internal_role,
+                                            const QualifiedName& attribute);
+
+// ARIA role utilities.
+CORE_EXPORT Vector<AtomicString> GetAriaRoleNames();
+CORE_EXPORT ax::mojom::blink::Role AriaRoleToInternalRole(const AtomicString& aria_role_name);
+CORE_EXPORT const AtomicString& InternalRoleToAriaRole(ax::mojom::blink::Role internal_role);
+
+// Name prohibition utility.
+// Returns true if the role has nameFrom: ["prohibited"] in the ARIA spec.
+CORE_EXPORT bool RoleIsNameProhibited(ax::mojom::blink::Role internal_role);
+
+// Name from contents utility.
+// Returns true if the role has "contents" in its nameFrom array in the ARIA spec.
+CORE_EXPORT bool RoleSupportsNameFromContents(ax::mojom::blink::Role internal_role);
+
+// Name from author utility.
+// Returns true if the role has "author" in its nameFrom array in the ARIA spec.
+CORE_EXPORT bool RoleSupportsNameFromAuthor(ax::mojom::blink::Role internal_role);
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ACCESSIBILITY_AX_UTILITIES_GENERATED_H_

@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/window/dialog_delegate.h"
 
 class CreateAppShortcutDialogTest;
@@ -54,7 +55,7 @@ class CreateChromeApplicationShortcutView : public views::DialogDelegateView {
   // DialogDelegateView:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   std::u16string GetWindowTitle() const override;
 
  private:

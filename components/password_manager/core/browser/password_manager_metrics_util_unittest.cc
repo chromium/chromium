@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -19,6 +20,30 @@ constexpr ukm::SourceId kTestSourceId = 0x1234;
 
 using LeakWarningUkmEntry = ukm::builders::PasswordManager_LeakWarningDialog;
 using NewPasswordUkmEntry = ukm::builders::PasswordManager_NewlySavedPassword;
+using SavedPasswordUkmEntry = ukm::builders::PasswordManager_SavedPassword;
+
+const autofill::Suggestion PasswordEntry(
+    const std::u16string& username = u"samsunanligg@gmail.com") {
+  return autofill::Suggestion(username,
+                              autofill::SuggestionType::kPasswordEntry);
+}
+
+const autofill::Suggestion WebAuthnEntry(
+    const std::u16string& username = u"adaletmah@gazaa.com") {
+  return autofill::Suggestion(username,
+                              autofill::SuggestionType::kWebauthnCredential);
+}
+
+const autofill::Suggestion UseAnotherDeviceEntry() {
+  return autofill::Suggestion(
+      u"20horoz20@denizlispor.com",
+      autofill::SuggestionType::kWebauthnSignInWithAnotherDevice);
+}
+
+const autofill::Suggestion GenerationEntry() {
+  return autofill::Suggestion(u"Generate",
+                              autofill::SuggestionType::kGeneratePasswordEntry);
+}
 
 // Create a LeakDialogMetricsRecorder for a test source id.
 // Tests in this unit test are somewhat perfunctory due to the limited
@@ -74,22 +99,9 @@ TEST(PasswordManagerMetricsUtil, LogNewlySavedPasswordMetrics) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  constexpr bool kIsGeneratedPassword = true;
   constexpr bool kIsUsernameEmpty = true;
-  LogNewlySavedPasswordMetrics(
-      /*is_generated_password=*/true, /*is_username_empty=*/true,
-      features_util::PasswordAccountStorageUsageLevel::kNotUsingAccountStorage,
-      kTestSourceId);
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.NewlySavedPasswordIsGenerated", kIsGeneratedPassword, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.NewlySavedPasswordIsGenerated.NotUsingAccountStorage",
-      kIsGeneratedPassword, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.NewlySavedPasswordIsGenerated.UsingAccountStorage", 0);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.NewlySavedPasswordIsGenerated.Syncing", 0);
+  LogNewlySavedPasswordMetrics(/*is_generated_password=*/true,
+                               /*is_username_empty=*/true, kTestSourceId);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.NewlySavedPasswordHasEmptyUsername.Overall",
@@ -104,13 +116,41 @@ TEST(PasswordManagerMetricsUtil, LogNewlySavedPasswordMetrics) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(NewPasswordUkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    EXPECT_EQ(kTestSourceId, entry->source_id);
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, NewPasswordUkmEntry::kHasEmptyUsernameName, true);
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, NewPasswordUkmEntry::kIsPasswordGeneratedName, true);
-  }
+  EXPECT_EQ(kTestSourceId, entries[0]->source_id);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], NewPasswordUkmEntry::kHasEmptyUsernameName, true);
+}
+
+TEST(PasswordManagerMetricsUtil, LogIfSavedPasswordWasGenerated) {
+  // Needed for test ukm recorder.
+  base::test::TaskEnvironment task_environment_;
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  constexpr bool kIsGeneratedPassword = true;
+  LogIfSavedPasswordWasGenerated(
+      /*is_generated_password=*/true,
+      features_util::PasswordAccountStorageUsageLevel::kNotUsingAccountStorage,
+      kTestSourceId);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordIsGenerated", kIsGeneratedPassword, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordIsGenerated.NotUsingAccountStorage",
+      kIsGeneratedPassword, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordIsGenerated.UsingAccountStorage", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordIsGenerated.Syncing", 0);
+
+  // Check that UKM logging is correct.
+  const auto& entries =
+      test_ukm_recorder.GetEntriesByName(SavedPasswordUkmEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  EXPECT_EQ(kTestSourceId, entries[0]->source_id);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], SavedPasswordUkmEntry::kIsPasswordGeneratedName, true);
 }
 
 TEST(PasswordManagerMetricsUtil, LogIsPasswordProtectedMetric) {
@@ -122,5 +162,320 @@ TEST(PasswordManagerMetricsUtil, LogIsPasswordProtectedMetric) {
   // Not testing individual bucket counts since we have 10% random noise
   histogram_tester.ExpectTotalCount("PasswordManager.IsPasswordProtected2", 2);
 }
+
+TEST(PasswordManagerMetricsUtil, LogPasswordDropdownShownNoSuggestions) {
+  base::HistogramTester histogram_tester;
+
+  LogPasswordDropdownShown(std::vector<autofill::Suggestion>());
+
+  histogram_tester.ExpectTotalCount("PasswordManager.PasswordDropdownShown", 0);
+}
+
+TEST(PasswordManagerMetricsUtil,
+     LogPasswordDropdownShownSuggestionsNoGenerate) {
+  base::HistogramTester histogram_tester;
+
+  LogPasswordDropdownShown(std::vector<autofill::Suggestion>{PasswordEntry()});
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.PasswordDropdownShown",
+                                      PasswordDropdownState::kStandard, 1);
+}
+
+TEST(PasswordManagerMetricsUtil,
+     LogPasswordDropdownShownSuggestionsWithGenerate) {
+  base::HistogramTester histogram_tester;
+
+  LogPasswordDropdownShown(
+      std::vector<autofill::Suggestion>{PasswordEntry(), GenerationEntry()});
+
+  histogram_tester.ExpectUniqueSample("PasswordManager.PasswordDropdownShown",
+                                      PasswordDropdownState::kStandardGenerate,
+                                      1);
+}
+
+TEST(PasswordManagerMetricsUtil,
+     MaybeLogMetricsForPasswordAndWebauthnCountsEmpty) {
+  base::HistogramTester histogram_tester;
+
+  MaybeLogMetricsForPasswordAndWebauthnCounts(
+      std::vector<autofill::Suggestion>(),
+      /*is_for_webauthn_request=*/true);
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.TotalCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasswordCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasskeyCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest."
+      "UseAnotherDeviceShown",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.TotalCount", 0);
+}
+
+TEST(PasswordManagerMetricsUtil,
+     MaybeLogMetricsForPasswordAndWebauthnCountsForNonWebauthnRequest) {
+  base::HistogramTester histogram_tester;
+
+  MaybeLogMetricsForPasswordAndWebauthnCounts(
+      std::vector<autofill::Suggestion>{PasswordEntry()},
+      /*is_for_webauthn_request=*/false);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.TotalCount", 1, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasswordCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasskeyCount", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest."
+      "UseAnotherDeviceShown",
+      0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.TotalCount", 0);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.NonWebAuthnRequest.TotalCount", 1,
+      1);
+}
+
+TEST(PasswordManagerMetricsUtil,
+     MaybeLogMetricsForPasswordAndWebauthnCountsForWebauthnRequest) {
+  base::HistogramTester histogram_tester;
+
+  MaybeLogMetricsForPasswordAndWebauthnCounts(
+      std::vector<autofill::Suggestion>{PasswordEntry()},
+      /*is_for_webauthn_request=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.TotalCount", 1, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasswordCount", 1,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasskeyCount", 0,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest."
+      "UseAnotherDeviceShown",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.TotalCount", 1, 1);
+}
+
+TEST(PasswordManagerMetricsUtil,
+     MaybeLogMetricsForPasswordAndWebauthnCountsForWebauthnRequest2) {
+  base::HistogramTester histogram_tester;
+
+  MaybeLogMetricsForPasswordAndWebauthnCounts(
+      std::vector<autofill::Suggestion>{PasswordEntry(), WebAuthnEntry(),
+                                        GenerationEntry()},
+      /*is_for_webauthn_request=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.TotalCount", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasswordCount", 1,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasskeyCount", 1,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest."
+      "UseAnotherDeviceShown",
+      false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.TotalCount", 2, 1);
+}
+
+TEST(
+    PasswordManagerMetricsUtil,
+    MaybeLogMetricsForPasswordAndWebauthnCountsForWebauthnRequestOnlyUseAnotherDevice) {
+  base::HistogramTester histogram_tester;
+
+  MaybeLogMetricsForPasswordAndWebauthnCounts(
+      std::vector<autofill::Suggestion>{UseAnotherDeviceEntry()},
+      /*is_for_webauthn_request=*/true);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.TotalCount", 0, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasswordCount", 0,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.PasskeyCount", 0,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest."
+      "UseAnotherDeviceShown",
+      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.PasswordDropdownShown.WebAuthnRequest.TotalCount", 0, 1);
+}
+
+namespace {
+
+struct DuplicateCredentialsMetricsTestCase {
+  std::vector<autofill::Suggestion> suggestions;
+  bool is_for_webauthn_request;
+  bool expected_has_any_duplicates;
+  std::vector<PasswordDropdownDuplicateCredentialsType>
+      expected_duplicate_types;
+};
+
+class LogDuplicateCredentialsMetricsTest
+    : public ::testing::TestWithParam<DuplicateCredentialsMetricsTestCase> {};
+
+TEST_P(LogDuplicateCredentialsMetricsTest, LogsMetrics) {
+  base::HistogramTester histogram_tester;
+  const DuplicateCredentialsMetricsTestCase& test_case = GetParam();
+
+  LogDuplicateCredentialsMetrics(test_case.suggestions,
+                                 test_case.is_for_webauthn_request);
+
+  std::string request_suffix = test_case.is_for_webauthn_request
+                                   ? "WebAuthnRequest."
+                                   : "NonWebAuthnRequest.";
+
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"PasswordManager.PasswordDropdownShown.", request_suffix,
+                    "HasAnyDuplicateCredentials"}),
+      test_case.expected_has_any_duplicates, 1);
+
+  if (test_case.expected_has_any_duplicates) {
+    for (const auto& type : test_case.expected_duplicate_types) {
+      histogram_tester.ExpectBucketCount(
+          base::StrCat({"PasswordManager.PasswordDropdownShown.",
+                        request_suffix, "DuplicateCredentialsTypesWhenExists"}),
+          type, 1);
+    }
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({"PasswordManager.PasswordDropdownShown.", request_suffix,
+                      "DuplicateCredentialsTypesWhenExists"}),
+        test_case.expected_duplicate_types.size());
+  } else {
+    histogram_tester.ExpectTotalCount(
+        base::StrCat({"PasswordManager.PasswordDropdownShown.", request_suffix,
+                      "DuplicateCredentialsTypesWhenExists"}),
+        0);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    LogDuplicateCredentialsMetricsTest,
+    ::testing::ValuesIn(std::vector<DuplicateCredentialsMetricsTestCase>{
+        // No suggestions
+        {{},
+         /*is_for_webauthn_request=*/false,
+         /*expected_has_any_duplicates=*/false,
+         {}},
+        {{},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/false,
+         {}},
+        // No duplicates
+        {{PasswordEntry(u"user1")},
+         /*is_for_webauthn_request=*/false,
+         /*expected_has_any_duplicates=*/false,
+         {}},
+        {{WebAuthnEntry(u"user1")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/false,
+         {}},
+        // Duplicate Passwords Only
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1")},
+         /*is_for_webauthn_request=*/false,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords}},
+        // Duplicate Passkeys Only
+        {{WebAuthnEntry(u"user1"), WebAuthnEntry(u"user1")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasskeys}},
+        // Password and Passkey for same user
+        {{PasswordEntry(u"user1"), WebAuthnEntry(u"user1")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::
+              kDuplicatePasswordsAndPasskeys}},
+        // Password and Passkey for same user (even with other duplicates for
+        // that user)
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1"),
+          WebAuthnEntry(u"user1")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::
+              kDuplicatePasswordsAndPasskeys}},
+        // Multiple types of duplicates across different users
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1"),
+          WebAuthnEntry(u"user2"), WebAuthnEntry(u"user2")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords,
+          PasswordDropdownDuplicateCredentialsType::kDuplicatePasskeys}},
+        // All three types across different users
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1"),
+          WebAuthnEntry(u"user2"), WebAuthnEntry(u"user2"),
+          PasswordEntry(u"user3"), WebAuthnEntry(u"user3")},
+         /*is_for_webauthn_request=*/true,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords,
+          PasswordDropdownDuplicateCredentialsType::kDuplicatePasskeys,
+          PasswordDropdownDuplicateCredentialsType::
+              kDuplicatePasswordsAndPasskeys}},
+        // Non-credential suggestions should be ignored
+        {{PasswordEntry(u"user1"), PasswordEntry(u"user1"), GenerationEntry()},
+         /*is_for_webauthn_request=*/false,
+         /*expected_has_any_duplicates=*/true,
+         {PasswordDropdownDuplicateCredentialsType::kDuplicatePasswords}},
+    }));
+
+struct CredentialManagerMetricsTestCase {
+  password_manager::CredentialManagerError error;
+  bool success;
+};
+
+class CredentialManagerMetricsTest
+    : public ::testing::TestWithParam<CredentialManagerMetricsTestCase> {};
+
+TEST_P(CredentialManagerMetricsTest, LogCumulativeGetMetrics) {
+  base::HistogramTester histogram_tester;
+  const CredentialManagerMetricsTestCase& test_case = GetParam();
+
+  LogCumulativeGetCredentialsMetrics(/*error=*/test_case.error);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.CredentialRequest.Get.Success", test_case.success, 1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    CredentialManagerMetricsTest,
+    ::testing::ValuesIn(std::vector<CredentialManagerMetricsTestCase>{
+        // Success, the expected behaviour
+        {
+            /*error=*/password_manager::CredentialManagerError::SUCCESS,
+            /*success=*/true,
+        },
+        // Pending request, only applicable to 1sr party requests
+        {
+            /*error=*/password_manager::CredentialManagerError::PENDING_REQUEST,
+            /*success=*/false,
+        },
+        // Password store unavailable, only applicable to 1sr party requests
+        {
+            /*error=*/password_manager::CredentialManagerError::
+                PASSWORDSTOREUNAVAILABLE,
+            /*success=*/false,
+        },
+        // Unknown error
+        {
+            /*error=*/password_manager::CredentialManagerError::UNKNOWN,
+            /*success=*/false,
+        },
+    }));
+}  // namespace
 
 }  // namespace password_manager::metrics_util

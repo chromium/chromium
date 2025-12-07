@@ -2,12 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/v4l2/test/h265_decoder.h"
 
 #include <linux/videodev2.h>
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "media/gpu/macros.h"
 #include "media/parsers/h265_parser.h"
@@ -170,16 +176,20 @@ v4l2_ctrl_hevc_pps SetupPPSCtrl(const H265PPS* pps) {
     PPS_TO_V4L2PPS(num_tile_rows_minus1);
 
     if (!pps->uniform_spacing_flag) {
-      static_assert(std::size(v4l2_pps.column_width_minus1) >=
-                        std::extent<decltype(pps->column_width_minus1)>(),
-                    "column_width_minus1 arrays must be same size");
+      static_assert(
+          std::size(v4l2_pps.column_width_minus1) >=
+              std::tuple_size_v<
+                  std::remove_reference_t<decltype(pps->column_width_minus1)>>,
+          "column_width_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_columns_minus1; ++i) {
         v4l2_pps.column_width_minus1[i] = pps->column_width_minus1[i];
       }
 
-      static_assert(std::size(v4l2_pps.row_height_minus1) >=
-                        std::extent<decltype(pps->row_height_minus1)>(),
-                    "row_height_minus1 arrays must be same size");
+      static_assert(
+          std::size(v4l2_pps.row_height_minus1) >=
+              std::tuple_size_v<
+                  std::remove_reference_t<decltype(pps->row_height_minus1)>>,
+          "row_height_minus1 arrays must be same size");
       for (int i = 0; i <= pps->num_tile_rows_minus1; ++i) {
         v4l2_pps.row_height_minus1[i] = pps->row_height_minus1[i];
       }
@@ -318,7 +328,7 @@ v4l2_ctrl_hevc_scaling_matrix SetupScalingMatrix(const H265SPS* sps,
     }
 
     memcpy(v4l2_scaling_matrix.scaling_list_dc_coef_16x16,
-           scaling_list.scaling_list_dc_coef_16x16,
+           scaling_list.scaling_list_dc_coef_16x16.data(),
            sizeof(v4l2_scaling_matrix.scaling_list_dc_coef_16x16));
     v4l2_scaling_matrix.scaling_list_dc_coef_32x32[0] =
         scaling_list.scaling_list_dc_coef_32x32[0];
@@ -479,7 +489,7 @@ H265Decoder::~H265Decoder() = default;
 std::unique_ptr<H265Decoder> H265Decoder::Create(
     const base::MemoryMappedFile& stream) {
   auto parser = std::make_unique<H265Parser>();
-  parser->SetStream(stream.data(), stream.length());
+  parser->SetStream(stream.bytes());
 
   // Advance through NALUs until the first SPS.  The start of the decodable
   // data in an H.265 bistreams starts with an SPS.
@@ -688,8 +698,9 @@ void H265Decoder::CalcPictureOrderCount(const H265PPS* pps,
                                         const H265SliceHeader* slice_hdr) {
   // 8.3.1 Decoding process for picture order count.
   curr_pic_->valid_for_prev_tid0_pic_ =
-      !pps->temporal_id && (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
-                            slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
+      !slice_hdr->temporal_id &&
+      (slice_hdr->nal_unit_type < H265NALU::RADL_N ||
+       slice_hdr->nal_unit_type > H265NALU::RSV_VCL_N14);
   curr_pic_->slice_pic_order_cnt_lsb_ = slice_hdr->slice_pic_order_cnt_lsb;
 
   // Calculate POC for current picture.
@@ -1319,7 +1330,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
             // |curr_pic_| already exists, so skip to ProcessCurrentSlice().
             state_ = kTryCurrentSlice;
           } else {
-            curr_pic_ = new H265Picture();
+            curr_pic_ = base::MakeRefCounted<H265Picture>();
             CHECK(curr_pic_) << "Ran out of surfaces.";
 
             curr_pic_->first_picture_ = first_picture_;
@@ -1421,7 +1432,7 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
                                                   BitDepth& bit_depth) {
   if (!parser_) {
     parser_ = std::make_unique<H265Parser>();
-    parser_->SetStream(data_stream_->data(), data_stream_->length());
+    parser_->SetStream(data_stream_->bytes());
   }
 
   is_OUTPUT_queue_new_ = !OUTPUT_queue_;
@@ -1442,8 +1453,7 @@ VideoDecoder::Result H265Decoder::DecodeNextFrame(const int frame_number,
   }
 
   if (frames_ready_to_be_outputted_.empty()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Stream ended with |frames_ready_to_be_outputted_| empty";
+    NOTREACHED() << "Stream ended with |frames_ready_to_be_outputted_| empty";
   }
 
   scoped_refptr<H265Picture> picture = frames_ready_to_be_outputted_.front();

@@ -21,7 +21,7 @@ NativeWebKeyboardEvent::NativeWebKeyboardEvent(
     : WebKeyboardEvent(web_event), skip_if_unhandled(false) {}
 
 NativeWebKeyboardEvent::NativeWebKeyboardEvent(gfx::NativeEvent native_event)
-    : WebKeyboardEvent(WebKeyboardEventBuilder::Build(native_event.Get())),
+    : WebKeyboardEvent(WebKeyboardEventBuilder::Build(native_event)),
       os_event(native_event),
       skip_if_unhandled(false) {}
 

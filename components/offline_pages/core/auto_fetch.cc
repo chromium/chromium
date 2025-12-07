@@ -26,10 +26,12 @@ ClientId MakeClientId(const ClientIdMetadata& metadata) {
 }
 
 std::optional<ClientIdMetadata> ExtractMetadata(const ClientId& id) {
-  if (id.name_space != kAutoAsyncNamespace)
+  if (id.name_space != kAutoAsyncNamespace) {
     return std::nullopt;
-  if (id.id.empty() || id.id[0] != 'A')
+  }
+  if (id.id.empty() || id.id[0] != 'A') {
     return std::nullopt;
+  }
   ClientIdMetadata metadata;
   if (!base::StringToInt(std::string_view(id.id).substr(1),
                          &metadata.android_tab_id)) {

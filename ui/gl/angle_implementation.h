@@ -18,7 +18,8 @@ enum class ANGLEImplementation {
   kSwiftShader = 7,
   kMetal = 8,
   kDefault = 9,
-  kMaxValue = kDefault,
+  kD3D11Warp = 10,
+  kMaxValue = kD3D11Warp,
 };
 
 }  // namespace gl

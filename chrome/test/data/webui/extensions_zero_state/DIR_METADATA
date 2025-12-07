@@ -1,0 +1,7 @@
+monorail: {
+  component: "Platform>Extensions"
+}
+team_email: "webstore-consumer@google.com"
+buganizer_public: {
+  component_id: 1456110
+}

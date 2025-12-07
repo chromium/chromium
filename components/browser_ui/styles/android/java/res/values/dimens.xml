@@ -8,10 +8,17 @@ found in the LICENSE file.
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Standard width for overflow menu in Chrome. -->
     <dimen name="menu_width">258dp</dimen>
+    <dimen name="menu_width_lff">292dp</dimen>
     <dimen name="tab_group_menu_width">156dp</dimen>
+    <dimen name="tab_group_menu_with_icons_width">225dp</dimen>
 
     <!-- Button bar dimensions -->
     <dimen name="button_bar_stacked_margin">8dp</dimen>
+
+    <!-- Modal dialog-->
+    <dimen name="modal_dialog_control_vertical_padding_filled">16dp</dimen>
+    <dimen name="modal_dialog_control_horizontal_padding_filled">16dp</dimen>
+    <dimen name="modal_dialog_spinner_size">24dp</dimen>
 
     <!-- Alert dialog -->
     <dimen name="dialog_padding_top">@dimen/abc_dialog_padding_top_material</dimen>
@@ -26,18 +33,7 @@ found in the LICENSE file.
     <item name="icon_animated_faded_alpha" format="float" type="dimen">0.3</item>
     <item name="iph_highlight_alpha" format="float" type="dimen">0.08</item>
     <item name="text_highlight_alpha" format="float" type="dimen">0.2</item>
-    <item name="progress_bar_bg_alpha" format="float" type="dimen">0.2</item>
     <item name="filled_button_bg_disabled_alpha" format="float" type="dimen">0.12</item>
-
-    <!-- Target view values for various things -->
-    <item name="target_view_unfocused_alpha" format="float" type="dimen">.5</item>
-    <item name="target_view_focused_alpha" format="float" type="dimen">.8</item>
-    <dimen name="target_view_stroke_width">2dp</dimen>
-
-    <!-- Surface color elevations -->
-    <dimen name="dialog_bg_color_elev">@dimen/default_elevation_0</dimen>
-    <dimen name="sheet_bg_color_elev">@dimen/default_elevation_0</dimen>
-    <dimen name="snackbar_background_color_elev">@dimen/default_elevation_0</dimen>
 
     <!-- Favicon dimensions -->
     <dimen name="default_favicon_size">16dp</dimen>
@@ -49,10 +45,14 @@ found in the LICENSE file.
     <dimen name="default_favicon_min_size" tools:ignore="PxUsage,UnusedResources">16px</dimen>
     <dimen name="circular_monogram_size">20dp</dimen>
     <dimen name="circular_monogram_text_size">14dp</dimen>
+    <dimen name="navigation_transitions_favicon_size">24dp</dimen>
 
-    <!-- Section tab dimensions -->
-    <dimen name="section_tab_selected_bg_elevation">@dimen/default_elevation_0</dimen>
+    <!-- Site settings zoom -->
+    <dimen name="site_settings_zoom_button_vertical_inset">@dimen/default_elevation_0</dimen>
 
     <!-- NewTabPage dimensions -->
     <dimen name="ntp_search_box_lateral_margin_narrow_window_tablet">16dp</dimen>
+
+    <!-- Bookmark Bar chip -->
+    <dimen name="bookmark_bar_chip_corner_radius">8dp</dimen>
 </resources>

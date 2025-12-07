@@ -20,7 +20,6 @@ class ShellContentClient : public content::ContentClient {
 
   ~ShellContentClient() override;
 
-  void AddPlugins(std::vector<content::ContentPluginInfo>* plugins) override;
   void AddAdditionalSchemes(Schemes* schemes) override;
   std::u16string GetLocalizedString(int message_id) override;
   std::string_view GetDataResource(

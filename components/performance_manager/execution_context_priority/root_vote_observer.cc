@@ -18,6 +18,11 @@ namespace {
 void SetPriorityAndReason(
     const execution_context::ExecutionContext* execution_context,
     const PriorityAndReason& priority_and_reason) {
+  // No property changes while the node is leaving graph.
+  if (execution_context->GetNodeState() == NodeState::kLeavingGraph) {
+    return;
+  }
+
   switch (execution_context->GetType()) {
     case execution_context::ExecutionContextType::kFrameNode:
       FrameNodeImpl::FromNode(execution_context->GetFrameNode())

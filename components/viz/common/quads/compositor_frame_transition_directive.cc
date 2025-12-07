@@ -8,8 +8,23 @@
 #include <utility>
 
 #include "base/time/time.h"
+#include "base/trace_event/traced_value.h"
 
 namespace viz {
+
+namespace {
+const char* TypeToString(CompositorFrameTransitionDirective::Type type) {
+  switch (type) {
+    case CompositorFrameTransitionDirective::Type::kSave:
+      return "kSave";
+    case CompositorFrameTransitionDirective::Type::kAnimateRenderer:
+      return "kAnimateRenderer";
+    case CompositorFrameTransitionDirective::Type::kRelease:
+      return "kRelease";
+  }
+  NOTREACHED();
+}
+}  // namespace
 
 // static
 CompositorFrameTransitionDirective
@@ -87,16 +102,31 @@ CompositorFrameTransitionDirective::SharedElement&
 CompositorFrameTransitionDirective::SharedElement::operator=(SharedElement&&) =
     default;
 
-bool CompositorFrameTransitionDirective::SharedElement::operator==(
-    const SharedElement& other) const {
-  return render_pass_id == other.render_pass_id &&
-         view_transition_element_resource_id ==
-             other.view_transition_element_resource_id;
+void CompositorFrameTransitionDirective::SharedElement::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  value->SetInteger("render_pass_id", render_pass_id.GetUnsafeValue());
+  value->SetString("view_transition_element_resource_id",
+                   view_transition_element_resource_id.ToString());
 }
 
-bool CompositorFrameTransitionDirective::SharedElement::operator!=(
-    const SharedElement& other) const {
-  return !(other == *this);
+void CompositorFrameTransitionDirective::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  value->SetString("type", TypeToString(type_));
+  value->SetInteger("sequence_id", sequence_id_);
+  value->SetString("transition_token", transition_token_.ToString());
+  value->SetBoolean("maybe_cross_frame_sink", maybe_cross_frame_sink_);
+
+  value->BeginDictionary("display_color_spaces");
+  display_color_spaces_.AsValueInto(value);
+  value->EndDictionary();
+
+  value->BeginArray("shared_elements");
+  for (const auto& element : shared_elements_) {
+    value->BeginDictionary();
+    element.AsValueInto(value);
+    value->EndDictionary();
+  }
+  value->EndArray();
 }
 
 }  // namespace viz

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?><!--
-Copyright 2022 The Chromium Authors
+Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -10,12 +10,18 @@ found in the LICENSE file.
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
         android:key="topics_toggle"
         android:title="@string/settings_topics_page_toggle_label"
-        android:summary="@string/settings_topics_page_toggle_sub_label" />
+        android:summary="@string/settings_topics_page_toggle_sub_label_v2"
+        app:allowDividerBelow="false" />
 
-    <org.chromium.chrome.browser.privacy_sandbox.PreferenceCategoryWithClickableSummary
-        android:key="topics_heading"
-        android:title="@string/settings_topics_page_current_topics_heading"
-        android:summary="@string/settings_topics_page_current_topics_description" />
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="topics_explanation"
+        android:layout="@layout/topics_explanation_summary" />
+
+    <org.chromium.chrome.browser.privacy_sandbox.TopicsHeaderPreference
+        android:key="active_topics"
+        android:title="@string/settings_topics_page_active_topics_heading"
+        android:summary="@string/settings_topics_page_active_topics_description"
+        app:allowDividerBelow="false" />
 
     <PreferenceCategory
         android:key="current_topics"
@@ -27,17 +33,29 @@ found in the LICENSE file.
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:key="topics_empty"
-        android:summary="@string/settings_topics_page_current_topics_description_empty" />
+        android:summary="@string/settings_topics_page_current_topics_description_empty_text_v2" />
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="blocked_topics"
-        android:title="@string/settings_topics_page_blocked_topics_heading"
+        android:title="@string/settings_topics_page_blocked_topics_heading_new"
+        android:summary="@string/settings_topics_page_blocked_topics_description_new"
         android:fragment="org.chromium.chrome.browser.privacy_sandbox.TopicsBlockedFragment"
         app:userAction="Settings.PrivacySandbox.Topics.BlockedTopicsOpened" />
 
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:key="manage_topics"
+        android:title="@string/settings_topics_page_manage_topics_heading"
+        android:summary="@string/settings_topics_page_manage_topics_description"
+        android:fragment="org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment" />
+
     <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
         android:key="topics_page_footer"
-        android:summary="@string/settings_topics_page_footer"
+        android:summary="@string/settings_ad_topics_page_footer_v2"
         app:allowDividerBelow="false" />
+
+    <org.chromium.components.browser_ui.settings.ClickableSpansTextMessagePreference
+        android:key="topics_page_disclaimer"
+        android:summary="@string/settings_ad_topics_page_disclaimer_clank"
+        app:allowDividerAbove="false"/>
 
 </PreferenceScreen>

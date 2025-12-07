@@ -8,28 +8,27 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig.DisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Unit tests for helper functions in {@link NewTabPage} and {@link NewTabPageLayout} classes. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NewTabPageUtilUnitTest {
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Test
     public void testIsInNarrowWindowOnTablet() {
@@ -52,5 +51,45 @@ public class NewTabPageUtilUnitTest {
                 NewTabPageLayout.isInNarrowWindowOnTablet(false, uiConfig));
 
         assertTrue(NewTabPageLayout.isInNarrowWindowOnTablet(true, uiConfig));
+    }
+
+    @Test
+    @Features.DisableFeatures({OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2})
+    public void testIsInSingleUrlBarMode() {
+        // Verifies isInSingleUrlBarMode() returns false on tablets.
+        assertFalse(
+                NewTabPage.isInSingleUrlBarMode(
+                        /* isTablet= */ true, /* searchProviderHasLogo= */ false));
+        assertFalse(
+                NewTabPage.isInSingleUrlBarMode(
+                        /* isTablet= */ true, /* searchProviderHasLogo= */ true));
+        // Verifies isInSingleUrlBarMode() depends on searchProviderHasLogo.
+        assertFalse(
+                NewTabPage.isInSingleUrlBarMode(
+                        /* isTablet= */ false, /* searchProviderHasLogo= */ false));
+        assertTrue(
+                NewTabPage.isInSingleUrlBarMode(
+                        /* isTablet= */ false, /* searchProviderHasLogo= */ true));
+    }
+
+    @Test
+    @Features.EnableFeatures({OmniboxFeatureList.OMNIBOX_MOBILE_PARITY_UPDATE_V2})
+    public void testIsInSingleUrlBarMode_OmniboxMobileParityUpdateV2Enabled() {
+        // Verifies isInSingleUrlBarMode() returns false on tablets.
+        assertFalse(
+                NewTabPage.isInSingleUrlBarMode(
+                        /* isTablet= */ true, /* searchProviderHasLogo= */ false));
+        assertFalse(
+                NewTabPage.isInSingleUrlBarMode(
+                        /* isTablet= */ true, /* searchProviderHasLogo= */ true));
+
+        // Verifies that isInSingleUrlBarMode() return true without depending on
+        // searchProviderHasLogo.
+        assertTrue(
+                NewTabPage.isInSingleUrlBarMode(
+                        /* isTablet= */ false, /* searchProviderHasLogo= */ false));
+        assertTrue(
+                NewTabPage.isInSingleUrlBarMode(
+                        /* isTablet= */ false, /* searchProviderHasLogo= */ true));
     }
 }

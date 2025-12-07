@@ -38,6 +38,13 @@ source_set("jsoncpp") {
   if (!is_win || is_clang) {
     cflags_cc = [ "-Wno-implicit-fallthrough" ]
   }
+
+  # jsoncpp makes use of static objects for things like a null singleton.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+  # TODO(https://github.com/open-source-parsers/jsoncpp/pull/1612): Remove this
+  # when the PR is merged.
+  use_libcxx_modules = false
 }
 
 if (build_with_chromium) {

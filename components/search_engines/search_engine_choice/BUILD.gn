@@ -1,0 +1,24 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//components/search_engines/search_engine_choice/buildflags.gni")
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "CHOICE_SCREEN_IN_CHROME=$choice_screen_in_chrome" ]
+}
+
+component("switches") {
+  output_name = "search_engine_choice_switches"
+
+  defines = [ "IS_SEARCH_ENGINE_CHOICE_SWITCHES_IMPL" ]
+
+  sources = [
+    "search_engine_choice_switches.cc",
+    "search_engine_choice_switches.h",
+  ]
+
+  deps = [ "//base" ]
+}

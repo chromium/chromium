@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.widget.ScrollView;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.download.internal.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -18,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * The Coordinator for the Rename Extension Dialog. Manages UI objects like views and model, and
  * handles communication with the {@link ModalDialogManager}.
  */
+@NullMarked
 final class RenameExtensionDialogCoordinator {
     private final ModalDialogManager mModalDialogManager;
     private final ScrollView mRenameExtensionDialogCustomView;

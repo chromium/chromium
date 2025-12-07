@@ -28,8 +28,8 @@ struct ToPhysicalTestCase {
 
 ToPhysicalTestCase to_physical_test_cases[] = {
     {
-        {PositionAreaRegion::kAll, PositionAreaRegion::kAll, PositionAreaRegion::kTop,
-         PositionAreaRegion::kCenter},
+        {PositionAreaRegion::kAll, PositionAreaRegion::kAll,
+         PositionAreaRegion::kTop, PositionAreaRegion::kCenter},
         {PositionAreaRegion::kTop, PositionAreaRegion::kCenter,
          PositionAreaRegion::kLeft, PositionAreaRegion::kRight},
         horizontal_tb_ltr,
@@ -38,14 +38,14 @@ ToPhysicalTestCase to_physical_test_cases[] = {
     {
         {PositionAreaRegion::kXStart, PositionAreaRegion::kXStart,
          PositionAreaRegion::kYStart, PositionAreaRegion::kYStart},
-        {PositionAreaRegion::kTop, PositionAreaRegion::kTop, PositionAreaRegion::kRight,
-         PositionAreaRegion::kRight},
+        {PositionAreaRegion::kTop, PositionAreaRegion::kTop,
+         PositionAreaRegion::kRight, PositionAreaRegion::kRight},
         horizontal_tb_rtl,
         horizontal_tb_ltr,
     },
     {
-        {PositionAreaRegion::kXSelfEnd, PositionAreaRegion::kXSelfEnd,
-         PositionAreaRegion::kYSelfEnd, PositionAreaRegion::kYSelfEnd},
+        {PositionAreaRegion::kSelfXEnd, PositionAreaRegion::kSelfXEnd,
+         PositionAreaRegion::kSelfYEnd, PositionAreaRegion::kSelfYEnd},
         {PositionAreaRegion::kBottom, PositionAreaRegion::kBottom,
          PositionAreaRegion::kLeft, PositionAreaRegion::kLeft},
         horizontal_tb_ltr,
@@ -53,11 +53,13 @@ ToPhysicalTestCase to_physical_test_cases[] = {
     },
     {
         // block-axis (containing block) / inline-axis (containing block) since
-        // both are neutral. First span becomes physical "center right" because
-        // of vertical-rl / ltr. Second becomes "center bottom" because of
-        // horizontal-tb / rtl.
+        // both are neutral. Since the writing-direction is 'vertical-rl / ltr',
+        // the first span becomes physical 'center right' because 'block-start'
+        // is 'right', the second becomes "center bottom" because 'inline-end'
+        // is 'bottom'.
+        // See: https://drafts.csswg.org/css-writing-modes/#logical-to-physical
         {PositionAreaRegion::kStart, PositionAreaRegion::kCenter,
-         PositionAreaRegion::kCenter, PositionAreaRegion::kSelfEnd},
+         PositionAreaRegion::kCenter, PositionAreaRegion::kEnd},
         {PositionAreaRegion::kCenter, PositionAreaRegion::kBottom,
          PositionAreaRegion::kCenter, PositionAreaRegion::kRight},
         vertical_rl_ltr,
@@ -65,12 +67,14 @@ ToPhysicalTestCase to_physical_test_cases[] = {
     },
     {
         // block-axis (self) / inline-axis (self) since both are neutral. First
-        // span becomes physical "right" because of vertical-lr. Second becomes
-        // "bottom" because of rtl.
+        // span becomes physical 'left' because 'block-start' is 'left' for
+        // 'vertical-lr / rtl'. Similarly, the second becomes 'top' for
+        // 'inline-end'.
+        // See: https://drafts.csswg.org/css-writing-modes/#logical-to-physical
         {PositionAreaRegion::kSelfStart, PositionAreaRegion::kSelfStart,
          PositionAreaRegion::kSelfEnd, PositionAreaRegion::kSelfEnd},
-        {PositionAreaRegion::kBottom, PositionAreaRegion::kBottom,
-         PositionAreaRegion::kRight, PositionAreaRegion::kRight},
+        {PositionAreaRegion::kTop, PositionAreaRegion::kTop,
+         PositionAreaRegion::kLeft, PositionAreaRegion::kLeft},
         horizontal_tb_ltr,
         vertical_lr_rtl,
     },
@@ -106,25 +110,6 @@ struct UsedInsetsTestCase {
   ExpectedInset expected_left;
   ExpectedInset expected_right;
 };
-
-namespace {
-
-std::optional<AnchorQuery> ToAnchorQuery(ExpectedInset inset) {
-  switch (inset) {
-    case ExpectedInset::kZero:
-      return std::nullopt;  // 0px
-    case ExpectedInset::kTop:
-      return PositionArea::AnchorTop();
-    case ExpectedInset::kBottom:
-      return PositionArea::AnchorBottom();
-    case ExpectedInset::kLeft:
-      return PositionArea::AnchorLeft();
-    case ExpectedInset::kRight:
-      return PositionArea::AnchorRight();
-  }
-}
-
-}  // namespace
 
 // Note that we use ExpectedInset to express the expected results
 // instead of calling PositionArea::AnchorTop() (etc) directly here,
@@ -167,25 +152,5 @@ UsedInsetsTestCase used_insets_test_cases[] = {
      ExpectedInset::kZero,
      ExpectedInset::kZero},
 };
-
-class PositionAreaUsedInsetsTest
-    : public testing::Test,
-      public testing::WithParamInterface<UsedInsetsTestCase> {};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PositionAreaUsedInsetsTest,
-                         testing::ValuesIn(used_insets_test_cases));
-
-TEST_P(PositionAreaUsedInsetsTest, All) {
-  const UsedInsetsTestCase& test_case = GetParam();
-  EXPECT_EQ(test_case.physical.UsedTop(),
-            ToAnchorQuery(test_case.expected_top));
-  EXPECT_EQ(test_case.physical.UsedBottom(),
-            ToAnchorQuery(test_case.expected_bottom));
-  EXPECT_EQ(test_case.physical.UsedLeft(),
-            ToAnchorQuery(test_case.expected_left));
-  EXPECT_EQ(test_case.physical.UsedRight(),
-            ToAnchorQuery(test_case.expected_right));
-}
 
 }  // namespace blink

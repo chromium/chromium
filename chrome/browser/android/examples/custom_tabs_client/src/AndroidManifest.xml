@@ -19,9 +19,11 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
+   <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <application
+        android:name="org.chromium.customtabsclient.MyApplication"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:allowBackup="false"
@@ -52,6 +54,7 @@
             android:exported="true"/>
         <receiver android:name=".BottomBarManager"/>
         <receiver android:name=".BottomBarManager$SwipeUpReceiver"/>
+        <receiver android:name=".ContextualMenuItemReceiver"/>
 
 
         <service

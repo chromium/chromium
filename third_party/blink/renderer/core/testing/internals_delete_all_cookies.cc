@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/testing/internals_delete_all_cookies.h"
 
 #include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/test/mojom/cookie_manager/cookie_manager_automation.test-mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -29,7 +29,7 @@ ScriptPromise<IDLUndefined> InternalsDeleteAllCookies::deleteAllCookies(
   // Get the interface so `cookie_manager` can be moved below.
   test::mojom::blink::CookieManagerAutomation* raw_cookie_manager =
       cookie_manager.get();
-  raw_cookie_manager->DeleteAllCookies(WTF::BindOnce(
+  raw_cookie_manager->DeleteAllCookies(BindOnce(
       [](ScriptPromiseResolver<IDLUndefined>* resolver,
          mojo::Remote<test::mojom::blink::CookieManagerAutomation>) {
         resolver->Resolve();

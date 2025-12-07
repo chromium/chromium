@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_SCOPED_EVENT_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_SCOPED_EVENT_QUEUE_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -61,7 +60,7 @@ class CORE_EXPORT ScopedEventQueue {
   void DispatchAllEvents();
   void DispatchEvent(Event&) const;
 
-  Persistent<HeapVector<Member<Event>>> queued_events_;
+  Persistent<GCedHeapVector<Member<Event>>> queued_events_;
   unsigned scoping_level_;
 
   static ScopedEventQueue* instance_;

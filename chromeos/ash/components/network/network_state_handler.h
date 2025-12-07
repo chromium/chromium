@@ -222,11 +222,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   void SetShillConnectError(const std::string& service_path,
                             const std::string& shill_connect_error);
 
-  // Called from Chrome's network portal detector when Chrome has detected
-  // that a network is in a captive portal state.
-  void SetNetworkChromePortalState(const std::string& service_path,
-                                   NetworkState::PortalState portal_state);
-
   // Returns the aa:bb formatted hardware (MAC) address for the first connected
   // network matching |type|, or an empty string if none is connected.
   std::string FormattedHardwareAddressForType(const NetworkTypePattern& type);
@@ -834,13 +829,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   bool is_profile_networks_loaded_ = false;
   bool is_user_logged_in_ = false;
 
-  // A set of device path that need to request another GetProperties to get
-  // latest properties. Shill may send a device property update after Chrome
-  // sends a GetProperties request to Shill and before completing Shill's
-  // response. If this occurs, the initial response may not include the changed
-  // property value and we will need to store the device paths to issue another
-  // round of GetProperties.
+  // A set of device or network service paths that need to request another
+  // GetProperties to get latest properties. Shill may send a device property
+  // update after Chrome sends a GetProperties request to Shill and before
+  // completing Shill's response. If this occurs, the initial response may not
+  // include the latest changed property value and we will need to store the
+  // device or service paths to issue another round of GetProperties.
   std::set<std::string> device_paths_with_stale_properties_;
+  std::set<std::string> network_service_paths_with_stale_properties_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

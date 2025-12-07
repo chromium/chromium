@@ -7,7 +7,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -53,7 +52,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
   void FileSelected(const ui::SelectedFileInfo& file, int index) override;
   void FileSelectionCanceled() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Callback for the "getDownloadLocationText" message.  Converts actual
   // paths in chromeos to values suitable to display to users.
   // E.g. /home/chronos/u-<hash>/MyFiles/Downloads => "My Files > Downloads".

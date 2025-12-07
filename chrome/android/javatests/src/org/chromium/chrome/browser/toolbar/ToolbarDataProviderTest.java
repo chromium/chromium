@@ -20,41 +20,37 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Instrumentation tests for {@link ToolbarDataProvider}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 // TODO(crbug.com/344665253): Failing when batched, batch this again.
 public class ToolbarDataProviderTest {
-
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(mActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     @Test
     @MediumTest
-    public void testPrimaryOTRProfileUsedForIncognitoTabbedActivity() {
-        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ true);
+    public void testPrimaryOtrProfileUsedForIncognitoTabbedActivity() {
+        mActivityTestRule.startOnBlankPage().openNewIncognitoTabFast();
         ToolbarPhone toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile = toolbar.getToolbarDataProvider().getProfile();
-                    assertTrue(profile.isPrimaryOTRProfile());
+                    assertTrue(profile.isPrimaryOtrProfile());
                 });
     }
 
     @Test
     @MediumTest
     public void testRegularProfileUsedForRegularTabbedActivity() {
-        mActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
+        mActivityTestRule.startOnBlankPage().openNewTabFast();
         ToolbarPhone toolbar = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

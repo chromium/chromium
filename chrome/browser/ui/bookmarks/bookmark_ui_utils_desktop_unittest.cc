@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/common/bookmark_metrics.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -34,7 +33,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
   const BookmarkNode* page1 = model->AddURL(
       model->bookmark_bar_node(), 0, u"Google", GURL("http://google.com"));
   nodes.push_back(page1);
-  EXPECT_TRUE(chrome::HasBookmarkURLs(nodes));
+  EXPECT_TRUE(bookmarks::HasBookmarkURLs(nodes));
 
   nodes.clear();
 
@@ -42,11 +41,11 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
   const BookmarkNode* folder1 =
       model->AddFolder(model->bookmark_bar_node(), 0, u"Folder1");
   nodes.push_back(folder1);
-  EXPECT_FALSE(chrome::HasBookmarkURLs(nodes));
+  EXPECT_FALSE(bookmarks::HasBookmarkURLs(nodes));
 
   // This verifies if HasBookmarkURLs iterates through immediate children.
   model->AddURL(folder1, 0, u"Foo", GURL("http://randomsite.com"));
-  EXPECT_TRUE(chrome::HasBookmarkURLs(nodes));
+  EXPECT_TRUE(bookmarks::HasBookmarkURLs(nodes));
 
   // This verifies that HasBookmarkURLS does not iterate through descendants.
   // i.e, it should not find an URL inside a two or three level hierarchy.
@@ -61,22 +60,20 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLs) {
 
   // Now add the URL to that |subfolder1|.
   model->AddURL(subfolder1, 0, u"BAR", GURL("http://bar-foo.com"));
-  EXPECT_FALSE(chrome::HasBookmarkURLs(nodes));
+  EXPECT_FALSE(bookmarks::HasBookmarkURLs(nodes));
 }
 
 TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   std::unique_ptr<BookmarkModel> model(
       bookmarks::TestBookmarkClient::CreateModel());
-  TestingProfile profile;
-
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes;
+  const GURL history_page = GURL(chrome::kChromeUIHistoryURL);
 
   // This tests that |nodes| contains an disabled-in-incognito URL.
   const BookmarkNode* page1 =
-      model->AddURL(model->bookmark_bar_node(), 0, u"BookmarkManager",
-                    GURL(chrome::kChromeUIBookmarksURL));
+      model->AddURL(model->bookmark_bar_node(), 0, u"History", history_page);
   nodes.push_back(page1);
-  EXPECT_FALSE(chrome::HasBookmarkURLsAllowedInIncognitoMode(nodes, &profile));
+  EXPECT_FALSE(bookmarks::HasBookmarkURLsAllowedInIncognitoMode(nodes));
   nodes.clear();
 
   // This tests that |nodes| contains an URL that can be opened in incognito
@@ -84,7 +81,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   const BookmarkNode* page2 = model->AddURL(
       model->bookmark_bar_node(), 0, u"Google", GURL("http://google.com"));
   nodes.push_back(page2);
-  EXPECT_TRUE(chrome::HasBookmarkURLsAllowedInIncognitoMode(nodes, &profile));
+  EXPECT_TRUE(bookmarks::HasBookmarkURLsAllowedInIncognitoMode(nodes));
 
   nodes.clear();
 
@@ -92,16 +89,16 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
   const BookmarkNode* folder1 =
       model->AddFolder(model->bookmark_bar_node(), 0, u"Folder1");
   nodes.push_back(folder1);
-  EXPECT_FALSE(chrome::HasBookmarkURLsAllowedInIncognitoMode(nodes, &profile));
+  EXPECT_FALSE(bookmarks::HasBookmarkURLsAllowedInIncognitoMode(nodes));
 
   // This verifies if HasBookmarkURLsAllowedInIncognitoMode iterates through
   // immediate children.
   // Add disabled-in-incognito url.
-  model->AddURL(folder1, 0, u"Foo", GURL(chrome::kChromeUIBookmarksURL));
-  EXPECT_FALSE(chrome::HasBookmarkURLsAllowedInIncognitoMode(nodes, &profile));
+  model->AddURL(folder1, 0, u"Foo", history_page);
+  EXPECT_FALSE(bookmarks::HasBookmarkURLsAllowedInIncognitoMode(nodes));
   // Add normal url.
   model->AddURL(folder1, 0, u"Foo", GURL("http://randomsite.com"));
-  EXPECT_TRUE(chrome::HasBookmarkURLsAllowedInIncognitoMode(nodes, &profile));
+  EXPECT_TRUE(bookmarks::HasBookmarkURLsAllowedInIncognitoMode(nodes));
 
   // This verifies that HasBookmarkURLsAllowedInIncognitoMode does not iterate
   // through descendants.
@@ -117,7 +114,7 @@ TEST_F(BookmarkUIUtilsTest, HasBookmarkURLsAllowedInIncognitoMode) {
 
   // Now add the URL to that |subfolder1|.
   model->AddURL(subfolder1, 0, u"BAR", GURL("http://bar-foo.com"));
-  EXPECT_FALSE(chrome::HasBookmarkURLsAllowedInIncognitoMode(nodes, &profile));
+  EXPECT_FALSE(bookmarks::HasBookmarkURLsAllowedInIncognitoMode(nodes));
 }
 
 }  // namespace

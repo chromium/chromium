@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts.eventfilter;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -13,9 +15,10 @@ import android.view.ViewGroup;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
 import org.chromium.content_public.browser.WebContents;
 
@@ -24,10 +27,10 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 
 /**
- * The {@link MotionEventFilter} used when an overlay panel is being shown. It filters
- * events that happen in the Content View area and propagates them to the appropriate
- * WebContents.
+ * The {@link MotionEventFilter} used when an overlay panel is being shown. It filters events that
+ * happen in the Content View area and propagates them to the appropriate WebContents.
  */
+@NullMarked
 public class OverlayPanelEventFilter extends MotionEventFilter {
     /** The targets that can handle MotionEvents. */
     @IntDef({EventTarget.UNDETERMINED, EventTarget.PANEL, EventTarget.CONTENT_VIEW})
@@ -112,7 +115,7 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
     private float mSyntheticActionDownY;
 
     /** The list of recorded events. */
-    private final ArrayList<MotionEvent> mRecordedEvents = new ArrayList<MotionEvent>();
+    private final ArrayList<MotionEvent> mRecordedEvents = new ArrayList<>();
 
     /** The initial Y position of the current gesture. */
     private float mInitialEventY;
@@ -134,8 +137,8 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
 
     /**
      * Creates a {@link MotionEventFilter} with offset touch events.
+     *
      * @param context The {@link Context} for Android.
-     * @param panelManager The {@link OverlayPanelManager} responsible for showing panels.
      */
     public OverlayPanelEventFilter(Context context, OverlayPanel panel) {
         super(context, panel, false, false);
@@ -575,8 +578,12 @@ public class OverlayPanelEventFilter extends MotionEventFilter {
         }
 
         @Override
-        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-            return handleScroll(e1, e2, distanceY);
+        public boolean onScroll(
+                @Nullable MotionEvent e1,
+                @Nullable MotionEvent e2,
+                float distanceX,
+                float distanceY) {
+            return handleScroll(assumeNonNull(e1), assumeNonNull(e2), distanceY);
         }
     }
 }

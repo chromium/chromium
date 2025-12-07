@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <style name="HubToolbarActionButtonStyleOverlay.Baseline" parent="">
+        <item name="newTabButtonStyle">@style/HubToolbarActionButtonStyle.Baseline</item>
+    </style>
+
+    <style name="HubToolbarActionButtonStyle.Baseline" parent="Widget.Material3Expressive.Button.IconButton.Standard">
+        <item name="android:textAppearance">@style/TextAppearance.TextMediumThick.Primary</item>
+        <item name="android:minWidth">@dimen/min_touch_target_size</item>
+        <item name="android:paddingStart">16dp</item>
+        <item name="android:paddingEnd">16dp</item>
+        <item name="android:textColor">@color/default_text_color_list</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="rippleColor">?attr/globalTextButtonRippleColor</item>
+    </style>
+
+    <style name="NewTabButtonStyle" parent="Widget.Material3Expressive.Button.IconButton.Filled">
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="materialSizeOverlay">@style/SizeOverlay.Material3Expressive.Button.IconButton.Small.Square</item>
+    </style>
+</resources>

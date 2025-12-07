@@ -6,6 +6,7 @@
 #define MEDIA_GPU_COMMAND_BUFFER_HELPER_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -51,8 +52,6 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // PictureBufferManager is waiting for all picture buffers, which results in a
   // decoding softlock. Notification of wait failure (or just context/stub lost)
   // is probably necessary.
-  // TODO(blundell): Consider inlining this method in the one Android caller and
-  // eliminating this class being built on Android altogether.
   virtual void WaitForSyncToken(gpu::SyncToken sync_token,
                                 base::OnceClosure done_cb) = 0;
 
@@ -62,9 +61,9 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
 
   virtual gpu::MemoryTypeTracker* GetMemoryTypeTracker() = 0;
 
-  virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
-
 #endif
+
+  virtual gpu::SharedImageManager* GetSharedImageManager() = 0;
 
  protected:
   explicit CommandBufferHelper(

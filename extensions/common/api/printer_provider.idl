@@ -37,7 +37,7 @@ namespace printerProvider {
   };
 
   // Printing request parameters. Passed to $(ref:onPrintRequested) event.
-  [noinline_doc] dictionary PrintJob {
+  dictionary PrintJob {
     // ID of the printer which should handle the job.
     DOMString printerId;
 

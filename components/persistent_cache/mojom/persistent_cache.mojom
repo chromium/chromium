@@ -1,0 +1,31 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module persistent_cache.mojom;
+
+import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+// The handles needed to open a PersistentCache instance for read-only access.
+struct PendingReadOnlyBackend {
+  mojo_base.mojom.ReadOnlyFile db_file;
+  mojo_base.mojom.ReadOnlyFile journal_file;
+
+  // Read-only views are only possible for backends supporting multiple
+  // connections, so the shared lock is mandatory.
+  mojo_base.mojom.UnsafeSharedMemoryRegion shared_lock;
+};
+
+// The handles needed to open a PersistentCache instance for read-write access.
+struct PendingReadWriteBackend {
+  mojo_base.mojom.File db_file;
+  mojo_base.mojom.File journal_file;
+
+  // An optional write-ahead log file, specified only if this backend uses a
+  // write-ahead log rather than a rollback journal.
+  mojo_base.mojom.File? wal_file;
+
+  // The shared lock is present if this backend supports multiple connections.
+  mojo_base.mojom.UnsafeSharedMemoryRegion? shared_lock;
+};

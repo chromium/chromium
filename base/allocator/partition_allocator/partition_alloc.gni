@@ -4,6 +4,61 @@
 
 import("//build_overrides/partition_alloc.gni")
 
+# -----------------------------------------------------------------------------
+# Note on the use of `xxx_default` variable in partition_alloc.
+#
+# GN provides default_args() instruction. It is meant to be used by embedders,
+# to override the default args declared by the embeddees (e.g. partition_alloc).
+# This is the intended way to use GN. It properly interacts with the args.gn
+# user's file.
+#
+# Unfortunately, Chrome and others embedders aren't using it. Instead, they
+# expect embeddees to import global '.gni' file from the embedder, e.g.
+# `//build_overrides/partition_alloc.gni`. This file sets some `xxx_default`
+# variable that will be transferred to the declared args. For instance
+# a library would use:
+# ```
+#     import("//build_overrides/library.gni")
+#     declare_args() {
+#       xxx = xxx_default
+#     }
+# ```
+#
+# We don't really want to break embedders when introducing new args. Ideally,
+# We would have liked to have defaults for default variables. That would be
+# a recursive problem. To resolve it, we sometimes use the `defined(...)`
+# instruction to check if the embedder has defined the `xxx_default` variable or
+# not.
+#
+# In general, we should aim to support the embedders that are using GN normally,
+# and avoid requiring them to define `xxx_default` in the `//build_overrides`
+# -----------------------------------------------------------------------------
+
+# Some embedders uses `is_debug`, it can be used to set the default value of
+# `partition_alloc_is_debug_default`.
+if (!defined(partition_alloc_is_debug_default)) {
+  if (defined(is_debug)) {
+    partition_alloc_is_debug_default = is_debug
+  } else {
+    partition_alloc_is_debug_default = false
+  }
+}
+
+# Some embedders uses `dcheck_always_on`, it can be used to set the default
+# value of `partition_alloc_dcheck_always_on_default`.
+if (!defined(partition_alloc_dcheck_always_on_default)) {
+  if (defined(dcheck_always_on)) {
+    partition_alloc_dcheck_always_on_default = dcheck_always_on
+  } else {
+    partition_alloc_dcheck_always_on_default = false
+  }
+}
+
+# Allows embedders to optionally disable PartitionAlloc.
+if (!defined(use_partition_alloc_default)) {
+  use_partition_alloc_default = true
+}
+
 # PartitionAlloc have limited support for MSVC's cl.exe compiler. It can only
 # access the generate "buildflags" and the "raw_ptr" definitions implemented
 # with RawPtrNoOpImpl. Everything else is considered not supported.
@@ -15,25 +70,38 @@ is_clang_or_gcc = is_clang || !is_win
 
 # Whether 64-bit pointers are used.
 # A static_assert in partition_alloc_config.h verifies that.
-if (is_nacl) {
-  # NaCl targets don't use 64-bit pointers.
-  has_64_bit_pointers = false
-} else if (current_cpu == "x64" || current_cpu == "arm64" ||
-           current_cpu == "loong64" || current_cpu == "riscv64") {
+if (current_cpu == "x64" || current_cpu == "arm64" || current_cpu == "arm64e" ||
+    current_cpu == "loong64" || current_cpu == "riscv64") {
+  assert(current_cpu != "arm64e" || (is_ios && target_environment == "device"))
   has_64_bit_pointers = true
-} else if (current_cpu == "x86" || current_cpu == "arm") {
+} else if (current_cpu == "x86" || current_cpu == "arm" ||
+           current_cpu == "wasm") {
   has_64_bit_pointers = false
 } else {
   assert(false, "Unknown CPU: $current_cpu")
 }
 
-# Increases the size of the empty slot span ring.
-use_large_empty_slot_span_ring = is_mac
+# Makes the number of empty slot spans that can remain committed larger in
+# foreground mode compared to background mode
+# (see `PartitionRoot::AdjustFor(Background|Foreground)`).
+#
+# Foreground/background modes are used by default on macOS and Windows so this
+# must be true on these platforms. It's also true on other platforms to allow
+# experiments.
+#
+# TODO(crbug.com/329199197): Clean this up when experiments are complete.
+use_large_empty_slot_span_ring = true
 
-has_memory_tagging =
-    current_cpu == "arm64" && is_clang && !is_asan && (is_linux || is_android)
+has_memory_tagging = current_cpu == "arm64" && is_clang && !is_asan &&
+                     !is_hwasan && (is_linux || is_android)
 
 declare_args() {
+  # Debug configuration.
+  partition_alloc_is_debug = partition_alloc_is_debug_default
+
+  # Enable PA_DCHECKs in PartitionAlloc in release mode.
+  partition_alloc_dcheck_always_on = partition_alloc_dcheck_always_on_default
+
   # Causes all the allocations to be routed via allocator_shim.cc. Usually,
   # the allocator shim will, in turn, route them to PartitionAlloc, but
   # other allocators are also supported by the allocator shim.
@@ -56,7 +124,7 @@ declare_args() {
   #     and doesn't wish to incur the library size increase (crbug.com/674570).
   # 2.  On NaCl (through this declaration), where PartitionAlloc doesn't
   #     build at all.
-  use_partition_alloc = !is_nacl && is_clang_or_gcc
+  use_partition_alloc = use_partition_alloc_default && is_clang_or_gcc
 }
 
 if (!is_clang_or_gcc) {
@@ -66,33 +134,27 @@ if (!is_clang_or_gcc) {
          "PartitionAlloc's allocator shim does not support this compiler")
 }
 
-if (is_nacl) {
-  assert(!use_partition_alloc, "PartitionAlloc doesn't build on NaCl")
-}
-
 declare_args() {
   # PartitionAlloc-Everywhere (PA-E). Causes allocator_shim.cc to route
   # calls to PartitionAlloc, rather than some other platform allocator.
   use_partition_alloc_as_malloc = use_partition_alloc && use_allocator_shim &&
                                   use_partition_alloc_as_malloc_default
+
+  shim_supports_sized_dealloc =
+      use_allocator_shim && shim_supports_sized_dealloc_default
 }
 
 declare_args() {
   # Whether PartitionAlloc dispatch can be replaced with another dispatch with
   # some more safety checks at runtime or not.  When true, the allocator shim
   # provides an extended API to swap PartitionAlloc.
-  # TODO(https://crbug.com/351974425): Enable this when `use_partition_alloc_as_malloc` is true.
   enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support =
-      false
+      use_partition_alloc_as_malloc
 }
 
 assert(
     !enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support || use_partition_alloc_as_malloc,
     "PartitionAlloc with advanced checks requires PartitionAlloc itself.")
-
-assert(!use_allocator_shim || (is_android || is_apple || is_chromeos ||
-                                   is_fuchsia || is_linux || is_win),
-       "The allocator shim does not (yet) support the platform.")
 
 if (use_allocator_shim && is_win) {
   # It's hard to override CRT's malloc family in every case in the component
@@ -114,18 +176,11 @@ if (use_allocator_shim && is_win) {
   # If libcxx_is_shared=false, libc++ is a static library. All libc++ code
   # will be run inside the client. The above issue will disappear.
   assert(
-      !is_component_build || (!libcxx_is_shared && !is_debug),
-      "The allocator shim for the Windows component build needs !libcxx_is_shared && !is_debug.")
+      !is_component_build || (!libcxx_is_shared && !partition_alloc_is_debug),
+      "The allocator shim for the Windows component build needs !libcxx_is_shared && !partition_alloc_is_debug.")
 }
 
 declare_args() {
-  use_freeslot_bitmap = false
-
-  # Puts the regular and BRP pools right next to each other, so that we can
-  # check "belongs to one of the two pools" with a single bitmask operation.
-  # TODO(crbug.com/350104111): Fix ios-simulator failures to remove `!is_ios`.
-  glue_core_pools = use_partition_alloc_as_malloc && !is_ios
-
   # Introduces pointer compression support in PA. These are 4-byte
   # pointers that can point within the core pools (regular and BRP).
   #
@@ -147,6 +202,22 @@ declare_args() {
   # through malloc. Useful for using with tools that intercept malloc, e.g.
   # heaptrack.
   forward_through_malloc = false
+
+  # Enable reentrancy checks at `partition_alloc::internal::Lock`.
+  # TODO(crbug.com/371135823): Remove upon completion of investigation.
+  enable_partition_lock_reentrancy_check = false
+
+  # This will write a fixed cookie pattern at the end of each allocation, and
+  # later verify the pattern remain unchanged to ensure there is no OOB write.
+  # It comes with performance and memory cost, hence enabled only in debug.
+  use_partition_cookie =
+      partition_alloc_is_debug || partition_alloc_dcheck_always_on
+
+  # This will change partition cookie size to 4B or 8B, whichever equivalent to
+  # size of InSlotMetadata. This option is useful for InSlotMetadata corruption
+  # investigation.
+  # TODO(crbug.com/371135823): Remove upon completion of investigation.
+  smaller_partition_cookie = false
 }
 
 declare_args() {
@@ -189,7 +260,7 @@ declare_args() {
   # outside of Chromium.
   use_asan_backup_ref_ptr =
       build_with_chromium && is_asan &&
-      (is_win || is_android || is_linux || is_mac || is_chromeos)
+      (is_win || is_android || is_linux || is_apple || is_chromeos)
 
   # Use probe-on-destruct unowned ptr detection with ASAN.
   use_raw_ptr_asan_unowned_impl = false
@@ -216,12 +287,20 @@ declare_args() {
   # Enable the feature flag required to activate backup ref pointers. That is to
   # say `PartitionAllocBackupRefPtr`.
   #
-  # This is meant to be used primarily on bots. It is much easier to override
-  # the feature flags using a binary flag instead of updating multiple bots's
-  # scripts to pass command line arguments.
+  # This is meant to be modified primarily on bots. It is much easier to
+  # override the feature flags using a binary flag instead of updating multiple
+  # bots's scripts to pass command line arguments.
   #
   # TODO(328104161): Remove this flag.
-  enable_backup_ref_ptr_feature_flag = false
+  enable_backup_ref_ptr_feature_flag =
+      enable_backup_ref_ptr_support && use_raw_ptr_backup_ref_impl &&
+      # Platforms where BackupRefPtr hasn't shipped yet:
+      !is_castos
+
+  # While keeping BRP support, override a feature flag to make it disabled
+  # state. This will overwrite `enable_backup_ref_ptr_feature_flag`.
+  # TODO(https://crbug.com/372183586): Fix the bug and remove this arg.
+  force_disable_backup_ref_ptr_feature = enable_backup_ref_ptr_support && false
 
   # Build support for Dangling Ptr Detection (DPD) via BackupRefPtr (BRP),
   # making the raw_ptr<T> implementation to RawPtrBackupRefImpl if active.
@@ -239,9 +318,9 @@ declare_args() {
   # Enable the feature flag required to check for dangling pointers. That is to
   # say `PartitionAllocDanglingPtr`.
   #
-  # This is meant to be used primarily on bots. It is much easier to override
-  # the feature flags using a binary flag instead of updating multiple bots's
-  # scripts to pass command line arguments.
+  # This is meant to be modified primarily on bots. It is much easier to
+  # override the feature flags using a binary flag instead of updating multiple
+  # bots's scripts to pass command line arguments.
   #
   # TODO(328104161): Remove this flag.
   enable_dangling_raw_ptr_feature_flag = enable_dangling_raw_ptr_checks
@@ -253,10 +332,19 @@ declare_args() {
 }
 
 declare_args() {
-  # Shadow metadata is still under development and only supports Linux
-  # for now.
-  enable_shadow_metadata = false
+  # Because of address space issue, this feature cannot be enabled on
+  # 32bit OS and iOS, i.e. has_64_bit_pointers && !is_ios
+  move_metadata_outside_gigacage = has_64_bit_pointers && !is_ios
 }
+
+declare_args() {
+  enable_move_metadata_outside_gigacage_trial = move_metadata_outside_gigacage
+}
+
+assert(!enable_move_metadata_outside_gigacage_trial ||
+           move_metadata_outside_gigacage,
+       "Can't enable PartitionAllocExternalMetadata synthetic trial " +
+           "without move_metadata_outside_gigacage=true.")
 
 declare_args() {
   # Use full MTE protection available by changing the feature flag default
@@ -268,21 +356,30 @@ declare_args() {
   use_full_mte = false
 }
 
-stack_scan_supported =
-    current_cpu == "x64" || current_cpu == "x86" || current_cpu == "arm" ||
-    current_cpu == "arm64" || current_cpu == "riscv64"
+stack_scan_supported = current_cpu == "x64" || current_cpu == "x86" ||
+                       current_cpu == "arm" || current_cpu == "arm64" ||
+                       current_cpu == "riscv64" || current_cpu == "loong64"
 
 # We want to provide assertions that guard against inconsistent build
 # args, but there is no point in having them fire if we're not building
 # PartitionAlloc at all. If `use_partition_alloc` is false, we jam all
 # related args to `false`.
 #
+# We also disable PA-Everywhere and PA-based features in two types of
+# toolchains:
+# - Toolchains that disable PA-Everywhere explicitly.
+# - The rust host build tools toochain, which builds DLLs to dlopen into the
+#   compiler for proc macros. We would want any allocations to use the same
+#   paths as the compiler.
+#
 # Do not clear the following, as they can function outside of PartitionAlloc
 # - has_64_bit_pointers
 # - has_memory_tagging
 if (!use_partition_alloc ||
     (defined(toolchain_allows_use_partition_alloc_as_malloc) &&
-     !toolchain_allows_use_partition_alloc_as_malloc)) {
+     !toolchain_allows_use_partition_alloc_as_malloc) ||
+    (defined(toolchain_for_rust_host_build_tools) &&
+     toolchain_for_rust_host_build_tools)) {
   use_partition_alloc_as_malloc = false
   glue_core_pools = false
   enable_backup_ref_ptr_support = false
@@ -428,7 +525,11 @@ declare_args() {
 }
 
 declare_args() {
-  # Assert that PartitionAlloc and MiraclePtr run on C++20 when set to true.
-  # Embedders may opt-out of using C++ 20 build.
-  assert_cpp20 = assert_cpp20_default
+  # Set to true to enable futex priority inheritance.
+  #
+  # Enabled only on 64-bit Android. On 32 bit Android, PI futexes require an
+  # extra level of indirection, so we don't bother enabling it. See:
+  # https://cs.android.com/android/platform/superproject/+/android14-qpr3-release:bionic/libc/bionic/pthread_mutex.cpp;drc=9108f258adad329a537e10461fbd526d5b9ad8bf;l=242
+  enable_partition_lock_priority_inheritance =
+      is_android && (current_cpu == "x64" || current_cpu == "arm64")
 }

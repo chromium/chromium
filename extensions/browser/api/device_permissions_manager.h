@@ -195,7 +195,8 @@ class DevicePermissionsManager : public KeyedService {
 
   base::ThreadChecker thread_checker_;
   raw_ptr<content::BrowserContext> context_;
-  std::map<std::string, DevicePermissions*> extension_id_to_device_permissions_;
+  std::map<std::string, raw_ptr<DevicePermissions, CtnExperimental>>
+      extension_id_to_device_permissions_;
 };
 
 class DevicePermissionsManagerFactory

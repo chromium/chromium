@@ -6,7 +6,7 @@ import("//build/config/android/rules.gni")
 
 if (enable_java_templates) {
   android_system_java_prebuilt("public_framework_system_java") {
-    jar_path = "//third_party/android_system_sdk/android_system.jar"
+    jar_path = "//third_party/android_system_sdk/cipd/android_system.jar"
   }
 
   android_system_java_prebuilt("android_sdk_java") {
@@ -22,9 +22,10 @@ if (enable_java_templates) {
     jinja_template(_manifest_target) {
       input = "//third_party/android_sdk/AndroidManifest.xml.jinja2"
       output = _manifest_path
-      _library_name = invoker.library_name
       if (defined(invoker.runtime_library_name)) {
         _library_name = invoker.runtime_library_name
+      } else {
+        _library_name = invoker.library_name
       }
       variables = [
         "library_name=$_library_name",
@@ -42,8 +43,9 @@ if (enable_java_templates) {
       if (defined(invoker.input_jars_paths)) {
         input_jars_paths = invoker.input_jars_paths
       } else {
-        input_jars_paths =
-            [ "${android_sdk}/optional/${invoker.library_name}.jar" ]
+        input_jars_paths = [
+          "${android_sdk_platform_root}/optional/${invoker.library_name}.jar",
+        ]
       }
 
       # Adds the <uses-library> tag to the manifest.
@@ -61,6 +63,11 @@ if (enable_java_templates) {
     library_name = "android.car"
     required = false
   }
+  android_sdk_optional_library("android_xr_extensions_java") {
+    runtime_library_name = "com.android.extensions.xr"
+    input_jars_paths = [ "//third_party/android_deps/autorolled/cipd/libs/com_android_extensions_xr_extensions_xr/extensions-xr.jar" ]
+    required = false
+  }
   if (!limit_android_deps) {
     android_sdk_optional_library("android_window_extensions_java") {
       library_name = "androidx.window.extensions"
@@ -68,7 +75,15 @@ if (enable_java_templates) {
       jar_deps = [ "//third_party/android_sdk/window_extensions:androidx_window_extensions" ]
       deps =
           [ "//third_party/androidx:androidx_annotation_annotation_jvm_java" ]
-      input_jars_paths = [ "$root_build_dir/obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.javac.jar" ]
+      input_jars_paths = [ "$root_build_dir/obj/third_party/android_sdk/window_extensions/androidx_window_extensions_java.turbine.jar" ]
     }
+  }
+}
+
+if (android_ndk_api_level >= 29) {
+  config("libbinder_include") {
+    # Use public SDK to ensure LGPL-licensed code can be built without the
+    # internal SDK.
+    include_dirs = [ "$public_android_sdk_platform_root/optional/libbinder_ndk_cpp/" ]
   }
 }

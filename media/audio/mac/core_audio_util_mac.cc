@@ -10,7 +10,6 @@
 
 #include "base/apple/osstatus_logging.h"
 #include "base/containers/heap_array.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -19,15 +18,11 @@
 #include "build/build_config.h"
 #include "media/audio/apple/scoped_audio_unit.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/media_switches.h"
 
 namespace media {
 namespace core_audio_mac {
 namespace {
-
-// Kill switch in case anything explodes. Remove after M132.
-BASE_FEATURE(kExcludeDeviceLatencyFromTotalLatency,
-             "ExcludeDeviceLatencyFromTotalLatency",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 AudioObjectPropertyScope InputOutputScope(bool is_input) {
   return is_input ? kAudioObjectPropertyScopeInput
@@ -221,6 +216,25 @@ std::optional<std::string> TranslateDeviceSource(AudioObjectID device_id,
   return ret;
 }
 
+bool IsOutputTerminal(uint32_t terminal) {
+  // From IOAudioTypes.h
+  //
+  // // Output terminal types
+  // enum {
+  //   OUTPUT_UNDEFINED                     = 0x0300,
+  //   OUTPUT_SPEAKER                       = 0x0301,
+  //   OUTPUT_HEADPHONES                    = 0x0302,
+  //   OUTPUT_HEAD_MOUNTED_DISPLAY_AUDIO    = 0x0303,
+  //   OUTPUT_DESKTOP_SPEAKER               = 0x0304,
+  //   OUTPUT_ROOM_SPEAKER                  = 0x0305,
+  //   OUTPUT_COMMUNICATION_SPEAKER         = 0x0306,
+  //   OUTPUT_LOW_FREQUENCY_EFFECTS_SPEAKER = 0x0307
+  // };
+
+  return terminal >= OUTPUT_UNDEFINED &&
+         terminal <= OUTPUT_LOW_FREQUENCY_EFFECTS_SPEAKER;
+}
+
 }  // namespace
 
 std::vector<AudioObjectID> GetAllAudioDeviceIDs() {
@@ -323,12 +337,21 @@ bool IsPrivateAggregateDevice(AudioObjectID device_id) {
   CFTypeRef value = CFDictionaryGetValue(
       dictionary, CFSTR(kAudioAggregateDeviceIsPrivateKey));
 
-  if (value && CFGetTypeID(value) == CFNumberGetTypeID()) {
+  if (value && CFGetTypeID(value) == CFBooleanGetTypeID()) {
+    CFBooleanRef boolean_ref = static_cast<CFBooleanRef>(value);
+    is_private = CFBooleanGetValue(boolean_ref);
+    base::UmaHistogramBoolean("Media.Audio.Mac.AggregateDeviceIsPrivateBoolean",
+                              is_private);
+  } else if (value && CFGetTypeID(value) == CFNumberGetTypeID()) {
+    // TODO(413285324): Remove this and the UMA if we can confirm that the new
+    // CFBoolean property is covering all cases. Otherwise, just remove the UMA.
     int number = 0;
     if (CFNumberGetValue(reinterpret_cast<CFNumberRef>(value), kCFNumberIntType,
                          &number)) {
       is_private = number != 0;
     }
+    base::UmaHistogramBoolean("Media.Audio.Mac.AggregateDeviceIsPrivateNumber",
+                              is_private);
   }
   CFRelease(dictionary);
 
@@ -339,6 +362,7 @@ bool IsInputDevice(AudioObjectID device_id) {
   std::vector<AudioObjectID> streams =
       GetAudioObjectIDs(device_id, kAudioDevicePropertyStreams);
 
+  int num_voice_processing_input_streams = 0;
   int num_undefined_input_streams = 0;
   int num_defined_input_streams = 0;
   int num_output_streams = 0;
@@ -354,20 +378,61 @@ bool IsInputDevice(AudioObjectID device_id) {
     if (direction == kDirectionOutput) {
       ++num_output_streams;
     } else if (direction == kDirectionInput) {
-      // Filter input streams based on what terminal it claims to be attached
-      // to. Note that INPUT_UNDEFINED comes from a set of terminals declared
-      // in IOKit. CoreAudio defines a number of terminals in
-      // AudioHardwareBase.h but none of them match any of the values I've
-      // seen used in practice, though I've only tested a few devices.
+      // Filter input streams based on the terminal they claim to be attached
+      // to.
+      //
+      // macOS adds input streams to all output devices if a VoiceProcessing
+      // AudioUnit is active. Without this filtering, output devices would be
+      // incorrectly classified as input devices due to these extra input
+      // streams.
+      //
+      // Testing has shown that VoiceProcessing-generated input streams have a
+      // terminal type of 0 or an Output terminal type. The previous code
+      // checked for terminal == INPUT_UNDEFINED, which I haven't observed.
+      // However, I've kept this check to maintain the original behavior, as it
+      // might be necessary for older macOS versions.
       auto terminal =
           GetDeviceUint32Property(stream_id, kAudioStreamPropertyTerminalType,
                                   kAudioObjectPropertyScopeGlobal);
       if (terminal.has_value() && terminal == INPUT_UNDEFINED) {
         ++num_undefined_input_streams;
+      } else if (terminal.has_value() &&
+                 (IsOutputTerminal(*terminal) || terminal == 0)) {
+        ++num_voice_processing_input_streams;
+        // TODO(crbug.com/392938088): Remove this increment when we see that
+        // the change is safe. See the TODO below for info.
+        ++num_defined_input_streams;
       } else {
         ++num_defined_input_streams;
       }
     }
+  }
+
+  // TODO(crbug.com/392938088): The current filter will not remove all
+  // VoiceProcessing-generated input streams. To fully address
+  // crbug.com/392938088, we would also need to include
+  // num_voice_processing_input_streams in the filter (see details in the last
+  // section in this comment).
+  //
+  // Before we make that change, we're testing with UMA histogram to check for
+  // any unknown consequences, specifically whether it would ever
+  // exclude legitimate audio input devices.
+  //
+  // For now, we are just logging and maintaining the existing filter
+  // behavior.
+  //
+  // If the UMA histogram confirms that num_voice_processing_input_streams is
+  // always zero when VoiceProcessing AudioUnit is absent, then it is safe
+  // to include it in the filter (see details below).
+  // We will remove the `++num_defined_input_streams` increment under the TODO
+  // above, and treat the `num_voice_processing_input_streams` and
+  // `num_undefined_input_streams` the same in the return below, e.g. change
+  // `num_undefined_input_streams > 0` to
+  // `num_undefined_input_streams + num_voice_processing_input_streams > 0`.
+  if (!media::IsSystemEchoCancellationEnforced()) {
+    base::UmaHistogramBoolean(
+        "Media.Audio.Mac.VoiceProcessedInputStreamDetectedWithoutNativeAEC",
+        num_voice_processing_input_streams > 0);
   }
 
   // I've only seen INPUT_UNDEFINED introduced by the VoiceProcessing AudioUnit,
@@ -458,10 +523,7 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
   const base::TimeDelta stream_latency =
       AudioTimestampHelper::FramesToTime(stream_latency_frames, sample_rate);
   const base::TimeDelta total_latency =
-      audio_unit_latency +
-      (base::FeatureList::IsEnabled(kExcludeDeviceLatencyFromTotalLatency)
-           ? base::TimeDelta()
-           : device_latency) +
+      audio_unit_latency + (is_input ? base::TimeDelta() : device_latency) +
       stream_latency;
 
   // This function is not currently not called on iOS, but guard against an
@@ -481,6 +543,26 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
 #endif
 
   return total_latency;
+}
+
+std::optional<AudioDeviceID> GetDefaultDevice(bool input) {
+  // Obtain the AudioDeviceID of the default input or output AudioDevice.
+  AudioObjectPropertyAddress pa;
+  pa.mSelector = input ? kAudioHardwarePropertyDefaultInputDevice
+                       : kAudioHardwarePropertyDefaultOutputDevice;
+  pa.mScope = kAudioObjectPropertyScopeGlobal;
+  pa.mElement = kAudioObjectPropertyElementMain;
+
+  AudioDeviceID device;
+
+  UInt32 size = sizeof(AudioDeviceID);
+  OSStatus result = AudioObjectGetPropertyData(kAudioObjectSystemObject, &pa, 0,
+                                               nullptr, &size, &device);
+  if (result != kAudioHardwareNoError || device == kAudioDeviceUnknown) {
+    DLOG(ERROR) << "Error getting default AudioDevice.";
+    return std::nullopt;
+  }
+  return device;
 }
 
 }  // namespace core_audio_mac

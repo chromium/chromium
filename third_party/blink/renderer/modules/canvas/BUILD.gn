@@ -10,6 +10,8 @@ blink_modules_sources("canvas") {
     "canvas2d/base_rendering_context_2d.cc",
     "canvas2d/base_rendering_context_2d.h",
     "canvas2d/cached_color.h",
+    "canvas2d/canvas_2d_recorder_context.cc",
+    "canvas2d/canvas_2d_recorder_context.h",
     "canvas2d/canvas_filter.cc",
     "canvas2d/canvas_filter.h",
     "canvas2d/canvas_filter_operation_resolver.cc",
@@ -30,8 +32,6 @@ blink_modules_sources("canvas") {
     "canvas2d/canvas_style.h",
     "canvas2d/clip_list.cc",
     "canvas2d/clip_list.h",
-    "canvas2d/identifiability_study_helper.cc",
-    "canvas2d/identifiability_study_helper.h",
     "canvas2d/mesh_2d_buffer.h",
     "canvas2d/mesh_2d_index_buffer.h",
     "canvas2d/mesh_2d_uv_buffer.h",
@@ -48,8 +48,8 @@ blink_modules_sources("canvas") {
     "imagebitmap/image_bitmap_factories.h",
     "imagebitmap/image_bitmap_rendering_context.cc",
     "imagebitmap/image_bitmap_rendering_context.h",
-    "imagebitmap/image_bitmap_rendering_context_base.cc",
-    "imagebitmap/image_bitmap_rendering_context_base.h",
+    "imagebitmap/image_bitmap_source_util.cc",
+    "imagebitmap/image_bitmap_source_util.h",
     "offscreencanvas/offscreen_canvas_module.cc",
     "offscreencanvas/offscreen_canvas_module.h",
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.cc",
@@ -58,7 +58,6 @@ blink_modules_sources("canvas") {
   ]
 
   deps = [
-    "//third_party/blink/renderer/modules/formatted_text",
     "//third_party/blink/renderer/modules/webcodecs",
     "//third_party/blink/renderer/modules/webgpu",
   ]

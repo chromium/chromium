@@ -105,6 +105,7 @@ export interface LoadImageRequest {
   maxHeight?: number;
 
   // Parts that control the request flow.
+  imageLoaderRequestId?: string;
   taskId?: number;
   cancel?: boolean;
   crop?: boolean;

@@ -4,20 +4,14 @@
 
 package org.chromium.chrome.browser.notifications.channels;
 
-import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.os.Build;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.text.TextUtils;
 
-import androidx.annotation.RequiresApi;
 import androidx.annotation.StringDef;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.notifications.R;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
-import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.channels.ChannelDefinitions;
 
 import java.lang.annotation.Retention;
@@ -42,17 +36,17 @@ import java.util.Set;
  * <br>
  * See the README.md in this directory for more information before adding or changing any channels.
  */
-@RequiresApi(Build.VERSION_CODES.O)
+@NullMarked
 public class ChromeChannelDefinitions extends ChannelDefinitions {
     /**
      * Version number identifying the current set of channels. This must be incremented whenever the
      * set of channels returned by {@link #getStartupChannelIds()} or {@link #getLegacyChannelIds()}
      * changes.
      */
-    static final int CHANNELS_VERSION = 4;
+    static final int CHANNELS_VERSION = 6;
 
     private static class LazyHolder {
-        private static ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
+        private static final ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
     }
 
     public static ChromeChannelDefinitions getInstance() {
@@ -74,8 +68,10 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
      * and add the ID to the LEGACY_CHANNELS_ID array below. See the README in this directory for
      * more detailed instructions.
      */
+    // LINT.IfChange(ChannelId)
     @StringDef({
         ChannelId.BROWSER,
+        ChannelId.COLLABORATION,
         ChannelId.DOWNLOADS,
         ChannelId.INCOGNITO,
         ChannelId.MEDIA_PLAYBACK,
@@ -93,15 +89,18 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         ChannelId.WEBAPPS,
         ChannelId.WEBAPPS_QUIET,
         ChannelId.WEBRTC_CAM_AND_MIC,
-        ChannelId.PRICE_DROP,
+        ChannelId.PRICE_DROP, // Deprecated, use PRICE_DROP_DEFAULT.
         ChannelId.PRICE_DROP_DEFAULT,
         ChannelId.SECURITY_KEY,
         ChannelId.BLUETOOTH,
-        ChannelId.USB
+        ChannelId.USB,
+        ChannelId.SERIAL,
+        ChannelId.TIPS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
         String BROWSER = "browser";
+        String COLLABORATION = "collaboration";
         String DOWNLOADS = "downloads";
         String INCOGNITO = "incognito";
         String MEDIA_PLAYBACK = "media";
@@ -130,7 +129,12 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String SECURITY_KEY = "security_key";
         String BLUETOOTH = "bluetooth";
         String USB = "usb";
+        String SERIAL = "serial";
+        String TIPS = "tips";
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/histograms.xml:NotificationChannelId)
+    // LINT.ThenChange(//chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationUmaTracker.java:NotificationChannelId)
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
     @Retention(RetentionPolicy.SOURCE)
@@ -168,6 +172,14 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             NotificationManager.IMPORTANCE_LOW,
                             ChannelGroupId.GENERAL));
             startup.add(ChannelId.BROWSER);
+
+            map.put(
+                    ChannelId.COLLABORATION,
+                    PredefinedChannel.create(
+                            ChannelId.COLLABORATION,
+                            R.string.notification_category_collaboration,
+                            NotificationManager.IMPORTANCE_LOW,
+                            ChannelGroupId.GENERAL));
 
             map.put(
                     ChannelId.DOWNLOADS,
@@ -308,35 +320,11 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             // Not added to startup channels because we want this channel to be created on the first
             // use.
             map.put(
-                    ChannelId.PRICE_DROP,
-                    PredefinedChannel.create(
-                            ChannelId.PRICE_DROP,
-                            R.string.notification_category_price_drop,
-                            NotificationManager.IMPORTANCE_DEFAULT,
-                            ChannelGroupId.GENERAL));
-            // TODO(crbug.com/40244973): Make the new channel's behavior consistent with the old
-            // channel's if it's created and modified by the user. Clean this up after one or two
-            // milestones.
-            int priceDropDefaultChannelImportance = NotificationManager.IMPORTANCE_DEFAULT;
-            if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                NotificationManagerProxy notificationManager =
-                        new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
-                NotificationChannel priceDropChannel =
-                        notificationManager.getNotificationChannel(ChannelId.PRICE_DROP);
-                if (priceDropChannel != null) {
-                    startup.add(ChannelId.PRICE_DROP_DEFAULT);
-                    if (priceDropChannel.getImportance() != NotificationManager.IMPORTANCE_LOW) {
-                        priceDropDefaultChannelImportance = priceDropChannel.getImportance();
-                    }
-                    notificationManager.deleteNotificationChannel(ChannelId.PRICE_DROP);
-                }
-            }
-            map.put(
                     ChannelId.PRICE_DROP_DEFAULT,
                     PredefinedChannel.create(
                             ChannelId.PRICE_DROP_DEFAULT,
                             R.string.notification_category_price_drop,
-                            priceDropDefaultChannelImportance,
+                            NotificationManager.IMPORTANCE_DEFAULT,
                             ChannelGroupId.GENERAL));
 
             // The security key notification channel will only appear for users
@@ -368,6 +356,27 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
                             R.string.notification_category_usb,
                             NotificationManager.IMPORTANCE_LOW,
                             ChannelGroupId.GENERAL));
+
+            // The serial notification channel will only appear for users
+            // who are targeted for this feature.
+            map.put(
+                    ChannelId.SERIAL,
+                    PredefinedChannel.create(
+                            ChannelId.SERIAL,
+                            R.string.notification_category_serial,
+                            NotificationManager.IMPORTANCE_LOW,
+                            ChannelGroupId.GENERAL));
+
+            // The tips notification channel will appear for all users but will be defaulted off and
+            // include an opt in promo that directs users to turning it on.
+            map.put(
+                    ChannelId.TIPS,
+                    PredefinedChannel.create(
+                            ChannelId.TIPS,
+                            R.string.notification_category_tips,
+                            NotificationManager.IMPORTANCE_NONE,
+                            ChannelGroupId.GENERAL));
+            startup.add(ChannelId.TIPS);
 
             MAP = Collections.unmodifiableMap(map);
             STARTUP = Collections.unmodifiableSet(startup);
@@ -426,12 +435,12 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     }
 
     @Override
-    public PredefinedChannelGroup getChannelGroup(@ChannelGroupId String groupId) {
+    public @Nullable PredefinedChannelGroup getChannelGroup(@ChannelGroupId String groupId) {
         return PredefinedChannelGroups.MAP.get(groupId);
     }
 
     @Override
-    public PredefinedChannel getChannelFromId(@ChannelId String channelId) {
+    public @Nullable PredefinedChannel getChannelFromId(@ChannelId String channelId) {
         return PredefinedChannels.MAP.get(channelId);
     }
 

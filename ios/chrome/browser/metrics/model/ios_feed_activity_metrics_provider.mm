@@ -5,21 +5,24 @@
 #import "ios/chrome/browser/metrics/model/ios_feed_activity_metrics_provider.h"
 
 #import "base/metrics/histogram_functions.h"
-#import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/metrics/model/constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_utils.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
-IOSFeedActivityMetricsProvider::IOSFeedActivityMetricsProvider(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {
-  DCHECK(pref_service_);
-}
+IOSFeedActivityMetricsProvider::IOSFeedActivityMetricsProvider() = default;
 
-IOSFeedActivityMetricsProvider::~IOSFeedActivityMetricsProvider() {}
+IOSFeedActivityMetricsProvider::~IOSFeedActivityMetricsProvider() = default;
 
 void IOSFeedActivityMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
-  // Retrieve activity bucket from storage.
-  int activityBucket = pref_service_->GetInteger(kActivityBucketKey);
-  base::UmaHistogramExactLinear(kAllFeedsActivityBucketsByProviderHistogram,
-                                activityBucket, 4);
+  // Log the activity bucket of all loaded BrowserStates.
+  for (ProfileIOS* profile :
+       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
+    base::UmaHistogramEnumeration(
+        kAllFeedsActivityBucketsByProviderHistogram,
+        FeedActivityBucketForPrefs(profile->GetPrefs()));
+  }
 }

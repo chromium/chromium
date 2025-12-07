@@ -21,20 +21,36 @@ import "url/mojom/url.mojom";
 interface SpeculationHost {
   // Pushes a new set of speculation candidates, which replaces any previously
   // sent.
-  UpdateSpeculationCandidates(array<SpeculationCandidate> candidates);
+  // `enable_cross_origin_prerender_iframes` is enabled via OT token and
+  // overrides features::kPrerender2CrossOriginIframes.
+  // Once this is true for the page, kPrerender2CrossOriginIframes never been
+  // false to avoid confusing.
+  // TODO(https://crbug.com/440387014): Remove the flag param once OT
+  // is finished.
+  UpdateSpeculationCandidates(array<SpeculationCandidate> candidates,
+                              bool enable_cross_origin_prerender_iframes);
+
   // Called when LCP is predicted.
   OnLCPPredicted();
+
   // Initiates previewing the given `url`.
   // TODO(https://b/292184832): Give more hints, such as gfx.mjom.PointF
   // screen_position.
   InitiatePreview(url.mojom.Url url);
 };
 
-// The action that is proposed.
+// The action that is proposed. The actions can be executed in a pipeline-like
+// way: prefetch -> prerender-until-script -> prerender.
+// TODO(https://crbug.com/428500219): Reorder after kPrefetchWithSubresources is
+// deprecated.
 enum SpeculationAction {
   kPrefetch,
+  // TODO(https://crbug.com/428500219): This action will be meaningless once the
+  // prerender-until-script feature is launched. Remove this action at that
+  // time.
   kPrefetchWithSubresources,
   kPrerender,
+  kPrerenderUntilScript,
 };
 
 // The target hint that is proposed.
@@ -45,19 +61,22 @@ enum SpeculationTargetHint {
 };
 
 // Shows how eager the developer is to perform the speculation action.
+// `kEager` has a less eagerness than `kImmediate` though has a larger number
+// for historical reasons. See crbug.com/40287486.
 // NOTE: These values are persisted to logs. Entries should not be renumbered
 // and numeric values should never be reused.
 enum SpeculationEagerness {
   kConservative = 0,
   kModerate = 1,
-  kEager = 2,
+  kImmediate = 2,
+  kEager = 3,
 };
 
 // Specifies the way in which speculation rules were injected.
 enum SpeculationInjectionType {
-  kNone,                  // Not injected, i.e., statically-inserted script tags.
-  kMainWorldScript,       // Injected by main V8 world's script.
-  kIsolatedWorldScript,   // Injected by an isolated V8 world's script.
+  kNone,  // Not injected, i.e., statically-inserted script tags.
+  kMainWorldScript,  // Injected by main V8 world's script.
+  kIsolatedWorldScript,  // Injected by an isolated V8 world's script.
   kAutoSpeculationRules,  // Injected by the browser as part of the auto speculation rules feature.
 };
 
@@ -89,9 +108,32 @@ struct SpeculationCandidate {
   SpeculationEagerness eagerness = kConservative;
 
   // The expected No-Vary-Search header if specified.
-  // Explainer: https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md#a-referrer-hint
+  // Explainer:
+  // https://github.com/WICG/nav-speculation/blob/main/no-vary-search.md#a-referrer-hint
   network.mojom.NoVarySearch? no_vary_search_hint;
 
   // The way in which the speculation rules were injected.
   SpeculationInjectionType injection_type = kNone;
+
+  // A list of string tags which are associated with the speculation candidate,
+  // and it is optional as both null and empty are valid values. Null and empty
+  // string will be stored as they are into the vector.
+  // Explainer:
+  // https://github.com/WICG/nav-speculation/blob/main/speculation-rules-tags.md
+  //
+  // Mapping:
+  // - An empty string tag is represented as
+  //   - empty `blink::String` in blink/
+  //   - empty `std::string` in content/
+  // - No tag (null tag) is represented as
+  //   - null `blink::String` in blink/
+  //   - nullopt `std::optional<std::string>` in content/
+  //
+  // This must not be empty, as when no tags are specified in rules, this should
+  // contain the null tag.
+  array<string?> tags;
+
+  // If true, this prerender attempt will be set to be a form submission. And
+  // this value should be used for prerender only.
+  bool form_submission = false;
 };

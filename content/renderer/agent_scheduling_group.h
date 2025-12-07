@@ -5,9 +5,8 @@
 #ifndef CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 #define CONTENT_RENDERER_AGENT_SCHEDULING_GROUP_H_
 
-#include <map>
-
 #include "base/containers/id_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/agent_scheduling_group.mojom.h"
@@ -20,8 +19,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/associated_interfaces/associated_interfaces.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
@@ -30,7 +28,6 @@
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 
 namespace IPC {
-class Message;
 class SyncChannel;
 }  // namespace IPC
 
@@ -65,21 +62,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
   AgentSchedulingGroup(const AgentSchedulingGroup&) = delete;
   AgentSchedulingGroup& operator=(const AgentSchedulingGroup&) = delete;
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  bool Send(IPC::Message* message);
-#endif
   void AddFrameRoute(const blink::LocalFrameToken& frame_token,
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-                     int routing_id,
-#endif
                      RenderFrameImpl* render_frame,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-  void RemoveFrameRoute(const blink::LocalFrameToken& frame_token
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-                        ,
-                        int routing_id
-#endif
-  );
+  void RemoveFrameRoute(const blink::LocalFrameToken& frame_token);
   void DidUnloadRenderFrame(const blink::LocalFrameToken& frame_token);
 
   mojom::RouteProvider* GetRemoteRouteProvider();
@@ -103,8 +89,7 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
  private:
   // IPC::Listener:
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnBadMessageReceived(const IPC::Message& message) override;
+  void OnBadMessageReceived() override;
   void OnAssociatedInterfaceRequest(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle handle) override;
@@ -131,16 +116,10 @@ class CONTENT_EXPORT AgentSchedulingGroup
 
   RenderFrameImpl* GetListener(const blink::LocalFrameToken& frame_token);
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  RenderFrameImpl* GetListener(int32_t routing_id);
-#endif
-
   // Map of registered RenderFrames.
-  std::map<blink::LocalFrameToken, RenderFrameImpl*> listener_map_;
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  std::map<int32_t, RenderFrameImpl*> routing_id_map_;
-#endif
+  absl::flat_hash_map<blink::LocalFrameToken,
+                      raw_ptr<RenderFrameImpl, CtnExperimental>>
+      listener_map_;
 
   // A dedicated scheduler for this AgentSchedulingGroup.
   std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>

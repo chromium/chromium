@@ -1,0 +1,7 @@
+Tests Bluetooth GATT operation events handling
+GATT operation received: address: 09:09:09:09:09:09, type: connection
+GATT connect result: true
+GATT operation received: address: 09:09:09:09:09:09, type: discovery
+Get primary services result: No Services found in device.
+Get GATT connected result: false
+

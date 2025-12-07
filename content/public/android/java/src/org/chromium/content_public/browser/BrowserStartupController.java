@@ -5,23 +5,61 @@
 package org.chromium.content_public.browser;
 
 import org.chromium.base.library_loader.LibraryProcessType;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content.browser.BrowserStartupControllerImpl;
 
 /**
  * This class controls how C++ browser main loop is started and ensures it happens only once.
  *
- * It supports kicking off the startup sequence in an asynchronous way. Startup can be called as
+ * <p>It supports kicking off the startup sequence in an asynchronous way. Startup can be called as
  * many times as needed (for instance, multiple activities for the same application), but the
  * browser process will still only be initialized once. All requests to start the browser will
  * always get their callback executed; if the browser process has already been started, the callback
  * is called immediately, else it is called when initialization is complete.
  *
- * All communication with this class must happen on the main thread.
+ * <p>All communication with this class must happen on the main thread.
  */
+@NullMarked
 public interface BrowserStartupController {
+    /** This provides timing metrics for browserprocess startup calls. */
+    final class StartupMetrics {
+        private final long mLongestDurationOfPostedTasksMs;
+        private final long mTotalDurationOfPostedTasksMs;
+
+        public StartupMetrics(
+                long longestDurationOfPostedTasksMs, long totalDurationOfPostedTasksMs) {
+            mLongestDurationOfPostedTasksMs = longestDurationOfPostedTasksMs;
+            mTotalDurationOfPostedTasksMs = totalDurationOfPostedTasksMs;
+        }
+
+        /**
+         * The longest wall-clock duration of tasks posted as part of async browser process startup.
+         * By posted, we mean tasks scheduled to the task runner following a call to {@code
+         * startBrowserProcessesAsync()}.
+         *
+         * <p>This metric is only applicable to FULL_BROWSER startup.
+         */
+        public long getLongestDurationOfPostedTasksMs() {
+            return mLongestDurationOfPostedTasksMs;
+        }
+
+        /**
+         * The total wall-clock duration of tasks posted as part of async browser process startup.
+         * By posted, we mean tasks scheduled to the task runner following a call to {@code
+         * startBrowserProcessesAsync()}.
+         *
+         * <p>This metric is only applicable to FULL_BROWSER startup.
+         */
+        public long getTotalDurationOfPostedTasksMs() {
+            return mTotalDurationOfPostedTasksMs;
+        }
+    }
+
     /** This provides the interface to the callbacks for successful or failed startup */
     interface StartupCallback {
-        void onSuccess();
+        /** metrics is null if FULL_BROWSER startup has not completed. */
+        void onSuccess(@Nullable StartupMetrics metrics);
 
         void onFailure();
     }
@@ -38,23 +76,28 @@ public interface BrowserStartupController {
     /**
      * Start the browser process asynchronously. This will set up a queue of UI thread tasks to
      * initialize the browser process.
-     * <p/>
-     * Note that this can only be called on the UI thread.
+     *
+     * <p>Note that this can only be called on the UI thread.
      *
      * @param libraryProcessType the type of process the shared library is loaded. It must be
-     *                           LibraryProcessType.PROCESS_BROWSER or
-     *                           LibraryProcessType.PROCESS_WEBVIEW.
-     * @param startGpuProcess Whether to start the GPU process if it is not started. Only has
-     *                        effect if browser isn't already started.
+     *     LibraryProcessType.PROCESS_BROWSER or LibraryProcessType.PROCESS_WEBVIEW.
+     * @param startGpuProcess Whether to start the GPU process if it is not started. Only has effect
+     *     if browser isn't already started.
      * @param startMinimalBrowser Whether browser startup will be paused after a minimal environment
-     *                                is started.
+     *     is started.
+     * @param singleProcess true iff the browser should run single-process, ie. keep renderers in
+     *     the browser process
+     * @param scheduleFlushStartupTasks Whether to post a task to flush the startup tasks instead of
+     *     letting them complete asynchronously.
      * @param callback the callback to be called when browser startup is complete.
      */
     void startBrowserProcessesAsync(
             @LibraryProcessType int libraryProcessType,
             boolean startGpuProcess,
             boolean startMinimalBrowser,
-            final StartupCallback callback);
+            boolean singleProcess,
+            boolean scheduleFlushStartupTasks,
+            StartupCallback callback);
 
     /**
      * Start the browser process synchronously. If the browser is already being started
@@ -110,9 +153,9 @@ public interface BrowserStartupController {
     void setContentMainCallbackForTests(Runnable r);
 
     /**
-     * @return how Chrome is launched, either in minimal mode or as full browser, as
-     * well as either cold start or warm start.
-     * See {@link org.chromium.content.browser.ServicificationStartupUma} for more details.
+     * @return how Chrome is launched, either in minimal mode or as full browser, as well as either
+     *     cold start or warm start. See {@link
+     *     org.chromium.content.browser.ServicificationStartupUma} for more details.
      */
     int getStartupMode(boolean startMinimalBrowser);
 }

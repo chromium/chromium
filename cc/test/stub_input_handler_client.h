@@ -30,7 +30,8 @@ class StubInputHandlerClient : public InputHandlerClient {
   void DidFinishImplFrame() override {}
   bool HasQueuedInput() const override;
   void SetScrollEventDispatchMode(
-      InputHandlerClient::ScrollEventDispatchMode mode) override {}
+      InputHandlerClient::ScrollEventDispatchMode mode,
+      double scroll_deadline_ratio) override {}
 };
 
 }  // namespace cc

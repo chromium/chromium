@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+  <head>
+    <script>
+      let clickCount = 0;
+
+      function clickHandler() {
+        const content = document.getElementById("content");
+        content.innerHTML = "";
+        const greeting = document.createElement("div");
+        const world = clickCount === 0 ? "world" : "world ${clickCount}";
+        greeting.textContent = "Hello, " + world + ".";
+        content.appendChild(greeting);
+        const maybeQuery = clickCount === 0 ? "" : `?${clickCount}`;
+        history.pushState({}, "", "/greeting" + maybeQuery);
+        clickCount++;
+      }
+    </script>
+  </head>
+  <body>
+    <div id="click-target" onclick="clickHandler()">Click!</div>
+    <div id="content"></div>
+  </body>
+</html>

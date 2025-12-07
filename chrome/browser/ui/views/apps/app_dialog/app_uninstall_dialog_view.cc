@@ -17,7 +17,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -33,13 +32,13 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
-#include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/google/core/common/google_util.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/url_formatter/elide_url.h"
+#include "components/webapps/isolated_web_apps/scheme.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_url_handlers.h"
@@ -47,6 +46,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
@@ -62,13 +63,9 @@
 #include "ui/aura/window.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/web_app_service_ash.h"
-#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #endif
 
 namespace {
@@ -138,7 +135,7 @@ class UninstallCheckboxView : public views::View,
 BEGIN_METADATA(UninstallCheckboxView)
 END_METADATA
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool IsArcShortcutApp(Profile* profile, const std::string& app_id) {
   ArcAppListPrefs* arc_prefs = ArcAppListPrefs::Get(profile);
   DCHECK(arc_prefs);
@@ -154,7 +151,7 @@ std::u16string GetWindowTitleForApp(Profile* profile,
                                     apps::AppType app_type,
                                     const std::string& app_id,
                                     const std::string& app_name) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, all app types exist, but Arc shortcut apps get the regular
   // extension uninstall title.
   if (app_type == apps::AppType::kArc && IsArcShortcutApp(profile, app_id)) {
@@ -219,8 +216,7 @@ AppUninstallDialogView::AppUninstallDialogView(
       profile_(profile) {
   profile_observation_.Observe(profile);
 
-  SetModalType(ui::MODAL_TYPE_WINDOW);
-  SetTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));
+  SetModalType(ui::mojom::ModalType::kWindow);
 
   SetCloseCallback(base::BindOnce(&AppUninstallDialogView::OnDialogCancelled,
                                   base::Unretained(this)));
@@ -229,7 +225,7 @@ AppUninstallDialogView::AppUninstallDialogView(
   SetAcceptCallback(base::BindOnce(&AppUninstallDialogView::OnDialogAccepted,
                                    base::Unretained(this)));
 
-  InitializeView(profile, app_type, app_id);
+  InitializeView(profile, app_type, app_id, app_name);
 
   g_app_uninstall_dialog_view = this;
 }
@@ -249,9 +245,10 @@ void AppUninstallDialogView::OnProfileWillBeDestroyed(Profile* profile) {
 
 void AppUninstallDialogView::InitializeView(Profile* profile,
                                             apps::AppType app_type,
-                                            const std::string& app_id) {
+                                            const std::string& app_id,
+                                            const std::string& app_name) {
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_APP_BUTTON));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -259,59 +256,56 @@ void AppUninstallDialogView::InitializeView(Profile* profile,
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
+  AddTitle(GetWindowTitleForApp(profile, app_type, app_id, app_name));
+
   switch (app_type) {
     case apps::AppType::kUnknown:
-    case apps::AppType::kBuiltIn:
-    case apps::AppType::kStandaloneBrowser:
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserExtension:
-      NOTREACHED_NORETURN();
-    case apps::AppType::kStandaloneBrowserChromeApp:
-      // Do nothing special for kStandaloneBrowserChromeApp.
-      break;
+      NOTREACHED();
+    // TODO(crbug.com/376071296): Clean up the switch/case items below.
     case apps::AppType::kArc:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       InitializeViewForArcApp(profile, app_id);
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kPluginVm:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      InitializeViewWithMessage(
+#if BUILDFLAG(IS_CHROMEOS)
+      AddSubtitle(
           l10n_util::GetStringUTF16(IDS_PLUGIN_VM_UNINSTALL_PROMPT_BODY));
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kBorealis:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       if (app_id == borealis::kClientAppId) {
-        InitializeViewWithMessage(l10n_util::GetStringUTF16(
+        AddSubtitle(l10n_util::GetStringUTF16(
             IDS_BOREALIS_CLIENT_UNINSTALL_CONFIRM_BODY));
       } else {
-        InitializeViewWithMessage(l10n_util::GetStringUTF16(
+        AddSubtitle(l10n_util::GetStringUTF16(
             IDS_BOREALIS_APPLICATION_UNINSTALL_CONFIRM_BODY));
       }
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kCrostini:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      InitializeViewWithMessage(l10n_util::GetStringUTF16(
+#if BUILDFLAG(IS_CHROMEOS)
+      AddSubtitle(l10n_util::GetStringUTF16(
           IDS_CROSTINI_APPLICATION_UNINSTALL_CONFIRM_BODY));
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
     case apps::AppType::kBruschetta:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // TODO(b/247636749): Implement Bruschetta uninstall.
       break;
 #else
-      NOTREACHED_NORETURN();
+      NOTREACHED();
 #endif
 
     case apps::AppType::kWeb:
@@ -419,7 +413,7 @@ void AppUninstallDialogView::InitializeSubAppList(
   auto sub_apps_container = std::make_unique<views::BoxLayoutView>();
   sub_apps_container->SetOrientation(views::BoxLayout::Orientation::kVertical);
   sub_apps_container->SetBetweenChildSpacing(
-      provider->GetDistanceMetric(DISTANCE_CONTROL_LIST_VERTICAL));
+      provider->GetDistanceMetric(views::DISTANCE_CONTROL_LIST_VERTICAL));
   sub_apps_container->SetInsideBorderInsets(gfx::Insets::TLBR(
       0,
       provider->GetDistanceMetric(views::DISTANCE_UNRELATED_CONTROL_HORIZONTAL),
@@ -480,24 +474,6 @@ void AppUninstallDialogView::LoadSubAppIds(const std::string& short_app_name,
         /*arg_for_shutdown=*/std::vector<std::string>());
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  crosapi::mojom::WebAppProviderBridge* web_app_provider_bridge =
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->web_app_service_ash()
-          ->GetWebAppProviderBridge();
-
-  if (!web_app_provider_bridge) {
-    LOG(ERROR) << "Could not find WebAppProviderBridge.";
-    return;
-  }
-
-  web_app_provider_bridge->GetSubAppIds(
-      parent_app_id,
-      base::BindOnce(&AppUninstallDialogView::GetSubAppsInfo,
-                     weak_ptr_factory_.GetWeakPtr(), short_app_name));
-#endif
 }
 
 void AppUninstallDialogView::GetSubAppsInfo(
@@ -545,40 +521,33 @@ void AppUninstallDialogView::InitializeViewForWebApp(
   DCHECK(app_start_url.is_valid());
 
   // Sub apps are currently only supported for Isolated Web Apps.
-  if (app_start_url.SchemeIs(chrome::kIsolatedAppScheme)) {
+  if (app_start_url.SchemeIs(webapps::kIsolatedAppScheme)) {
     sub_apps_description_ = AddChildView(std::make_unique<views::Label>());
     sub_apps_scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
     sub_apps_description_->SetVisible(false);
     sub_apps_scroll_view_->SetVisible(false);
     LoadSubAppIds(app_name, app_id);
-  } else {
-    // Isolated Web Apps will always have their data cleared as part of
-    // uninstallation.
-    InitializeCheckbox(app_start_url);
+    return;
   }
+  // Isolated Web Apps will always have their data cleared as part of
+  // uninstallation.
+  InitializeCheckbox(app_start_url);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AppUninstallDialogView::InitializeViewForArcApp(
     Profile* profile,
     const std::string& app_id) {
   if (IsArcShortcutApp(profile, app_id)) {
     SetButtonLabel(
-        ui::DIALOG_BUTTON_OK,
+        ui::mojom::DialogButton::kOk,
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_BUTTON));
   } else {
-    InitializeViewWithMessage(l10n_util::GetStringUTF16(
+    AddSubtitle(l10n_util::GetStringUTF16(
         IDS_ARC_APP_UNINSTALL_PROMPT_DATA_REMOVAL_WARNING));
   }
 }
 
-void AppUninstallDialogView::InitializeViewWithMessage(
-    const std::u16string& message) {
-  auto* label = AddChildView(std::make_unique<views::Label>(message));
-  label->SetMultiLine(true);
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetAllowCharacterBreak(true);
-}
 #endif
 
 void AppUninstallDialogView::OnDialogCancelled() {

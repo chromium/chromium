@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
@@ -19,10 +21,10 @@ import android.widget.TextView;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.Nullable;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -32,14 +34,15 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Base class for creating autofill save card prompts that support displaying legal message line.
  */
+@NullMarked
 public abstract class AutofillSaveCardPromptBase implements ModalDialogProperties.Controller {
     private final AutofillSaveCardPromptBaseDelegate mBaseDelegate;
 
     protected PropertyModel mDialogModel;
-    protected ModalDialogManager mModalDialogManager;
+    protected @Nullable ModalDialogManager mModalDialogManager;
     protected Context mContext;
     protected View mDialogView;
-    private SpannableStringBuilder mSpannableStringBuilder;
+    private @Nullable SpannableStringBuilder mSpannableStringBuilder;
 
     interface AutofillSaveCardPromptBaseDelegate {
         /** Called when a link is clicked. */
@@ -77,11 +80,7 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
         mBaseDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(context);
         mDialogView = inflater.inflate(R.layout.autofill_save_card_base_layout, null);
-        boolean useCustomTitleView =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK)
-                        && customTitleLayoutId != Resources.ID_NULL;
+        boolean useCustomTitleView = customTitleLayoutId != Resources.ID_NULL;
 
         if (useCustomTitleView) {
             ViewStub stub = mDialogView.findViewById(R.id.title_with_icon_stub);
@@ -142,9 +141,8 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
     }
 
     /**
-     * Updates the title and icon view. If AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK
-     * feature is enabled, sets title and icon in the customView otherwise uses
-     * PropertyModel.Builder for title and icon.
+     * Updates the title and icon view. If `useCustomTitleView` is true, sets title and icon in the
+     * customView otherwise uses PropertyModel.Builder for title and icon.
      *
      * @param useCustomTitleView Indicates true/false to use custom title view.
      * @param title Title of the prompt dialog.
@@ -201,6 +199,7 @@ public abstract class AutofillSaveCardPromptBase implements ModalDialogPropertie
     }
 
     public void dismiss(@DialogDismissalCause int dismissalCause) {
+        assumeNonNull(mModalDialogManager);
         mModalDialogManager.dismissDialog(mDialogModel, dismissalCause);
     }
 }

@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_BROWSER_RENDERER_PRELAUNCHER_H_
 #define CHROMECAST_BROWSER_RENDERER_PRELAUNCHER_H_
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "ipc/ipc_listener.h"
 #include "url/gurl.h"
 
@@ -40,9 +40,6 @@ class RendererPrelauncher : private IPC::Listener {
   }
 
  private:
-  // IPC::Listener implementation:
-  bool OnMessageReceived(const IPC::Message& message) override;
-
   content::BrowserContext* const browser_context_;
   scoped_refptr<content::SiteInstance> site_instance_;
   const GURL gurl_;

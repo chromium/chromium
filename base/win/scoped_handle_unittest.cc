@@ -5,7 +5,6 @@
 #include "base/win/scoped_handle.h"
 
 #include <windows.h>
-
 #include <winternl.h>
 
 #include <string>
@@ -14,8 +13,12 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/scoped_native_library.h"
+#include "base/test/gmock_expected_support.h"
+#include "base/test/gtest_util.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_timeouts.h"
+#include "base/types/expected.h"
+#include "base/win/windows_handle_util.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -69,6 +72,29 @@ TEST_F(ScopedHandleTest, ScopedHandle) {
   EXPECT_EQ(magic_error, ::GetLastError());
 }
 
+TEST_F(ScopedHandleTest, InvalidHandles) {
+  base::win::ScopedHandle empty;
+  // Should not get INVALID_HANDLE_VALUE from an empty handle.
+  EXPECT_EQ(empty.get(), nullptr);
+  // Do not allow pseudo handles as scoped handles.
+  base::win::ScopedHandle cur_proc(::GetCurrentProcess());
+  EXPECT_FALSE(cur_proc.is_valid());
+  base::win::ScopedHandle cur_thread(::GetCurrentThread());
+  EXPECT_FALSE(cur_thread.is_valid());
+  cur_thread.Set(::GetCurrentThread());
+  EXPECT_FALSE(cur_thread.is_valid());
+  // Should not get INVALID_HANDLE_VALUE from an invalid handle.
+  EXPECT_EQ(cur_thread.get(), nullptr);
+  // Disallow values that come from uint32_t to ensure casting is working right.
+  base::win::ScopedHandle proc_from_u32(Uint32ToHandle(0xfffffffful));
+  EXPECT_FALSE(proc_from_u32.is_valid());
+  proc_from_u32.Set(Uint32ToHandle(0xfffffffful));
+  EXPECT_FALSE(proc_from_u32.is_valid());
+  EXPECT_EQ(proc_from_u32.get(), nullptr);
+  base::win::ScopedHandle thread_from_u32(Uint32ToHandle(0xfffffffeul));
+  EXPECT_FALSE(thread_from_u32.is_valid());
+}
+
 TEST_F(ScopedHandleDeathTest, HandleVerifierTrackedHasBeenClosed) {
   HANDLE handle = ::CreateMutex(nullptr, false, nullptr);
   ASSERT_NE(HANDLE(nullptr), handle);
@@ -111,8 +137,9 @@ TEST_F(ScopedHandleDeathTest, HandleVerifierDoubleTracking) {
 
   base::win::CheckedScopedHandle handle_holder(handle);
 
-  ASSERT_DEATH({ base::win::CheckedScopedHandle handle_holder2(handle); },
-               FailureMessage("Handle Already Tracked"));
+  ASSERT_DEATH(
+      { base::win::CheckedScopedHandle handle_holder2(handle); },
+      FailureMessage("Handle Already Tracked"));
 }
 
 TEST_F(ScopedHandleDeathTest, HandleVerifierWrongOwner) {
@@ -144,6 +171,44 @@ TEST_F(ScopedHandleDeathTest, HandleVerifierUntrackedHandle) {
   ASSERT_TRUE(::CloseHandle(handle));
 }
 
+TEST(TakeHandleOfTypeTest, NullHandle) {
+  auto handle_or_error = TakeHandleOfType(kNullProcessHandle, L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, InvalidHandle) {
+  auto handle_or_error = TakeHandleOfType(INVALID_HANDLE_VALUE, L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeTest, CurrentProcess) {
+  auto handle_or_error = TakeHandleOfType(::GetCurrentProcess(), L"Process");
+  ASSERT_FALSE(handle_or_error.has_value());
+  ASSERT_EQ(handle_or_error.error(), STATUS_INVALID_HANDLE);
+}
+
+TEST(TakeHandleOfTypeDeathTest, CrazyHandle) {
+  EXPECT_DEATH_IF_SUPPORTED(
+      std::ignore = TakeHandleOfType(Uint32ToHandle(0x12345678U), L"Process"),
+      "Received fatal exception 0xc0000008");
+}
+
+TEST(TakeHandleOfTypeTest, ValidTypeMatch) {
+  Process this_process = Process::Open(GetCurrentProcId());
+  HANDLE process_handle = this_process.Handle();
+  ASSERT_OK_AND_ASSIGN(ScopedHandle process,
+                       TakeHandleOfType(this_process.Release(), L"Process"));
+  ASSERT_TRUE(process.is_valid());
+  ASSERT_EQ(process.get(), process_handle);
+}
+
+TEST(TakeHandleOfTypeDeathTest, ValidTypeMismatch) {
+  EXPECT_CHECK_DEATH((void)TakeHandleOfType(
+      Process::Open(GetCurrentProcId()).Release(), L"Section"));
+}
+
 // Under ASan, the multi-process test crashes during process shutdown for
 // unknown reasons. Disable it for now. http://crbug.com/685262
 #if defined(ADDRESS_SANITIZER)
@@ -168,14 +233,17 @@ MULTIPROCESS_TEST_MAIN(HandleVerifierChildProcess) {
   ScopedNativeLibrary module(
       FilePath(FILE_PATH_LITERAL("scoped_handle_test_dll.dll")));
 
-  if (!module.is_valid())
+  if (!module.is_valid()) {
     return 1;
+  }
   auto run_test_function = reinterpret_cast<decltype(&testing::RunTest)>(
       module.GetFunctionPointer("RunTest"));
-  if (!run_test_function)
+  if (!run_test_function) {
     return 1;
-  if (!run_test_function())
+  }
+  if (!run_test_function()) {
     return 1;
+  }
 
   return 0;
 }

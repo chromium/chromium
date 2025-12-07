@@ -11,7 +11,7 @@ namespace payments {
 
 class PaymentRequestBlobUrlTest : public PaymentRequestBrowserTestBase {
  protected:
-  PaymentRequestBlobUrlTest() {}
+  PaymentRequestBlobUrlTest() = default;
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestBlobUrlTest, Rejected) {

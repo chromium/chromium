@@ -4,6 +4,8 @@
 
 #include "gpu/ipc/common/gpu_disk_cache_type.h"
 
+#include <variant>
+
 #include "base/notreached.h"
 
 namespace gpu {
@@ -47,40 +49,41 @@ base::FilePath::StringType GetGpuDiskCacheSubdir(GpuDiskCacheType type) {
     case GpuDiskCacheType::kDawnGraphite:
       return FILE_PATH_LITERAL("DawnGraphiteCache");
   }
-  NOTREACHED_IN_MIGRATION();
-  return FILE_PATH_LITERAL("");
+  NOTREACHED();
 }
 
 GpuDiskCacheType GetHandleType(const GpuDiskCacheHandle& handle) {
-  if (absl::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle))
+  if (std::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle)) {
     return GpuDiskCacheType::kGlShaders;
-  if (absl::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle)) {
+  }
+  if (std::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle)) {
     return GpuDiskCacheType::kDawnWebGPU;
   }
-  DCHECK(absl::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle));
+  DCHECK(std::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle));
   return GpuDiskCacheType::kDawnGraphite;
 }
 
 int32_t GetHandleValue(const GpuDiskCacheHandle& handle) {
-  if (absl::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle))
-    return absl::get<gpu::GpuDiskCacheGlShaderHandle>(handle).value();
-  if (absl::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle)) {
-    return absl::get<gpu::GpuDiskCacheDawnWebGPUHandle>(handle).value();
+  if (std::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle)) {
+    return std::get<gpu::GpuDiskCacheGlShaderHandle>(handle).value();
   }
-  DCHECK(absl::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle));
-  return absl::get<gpu::GpuDiskCacheDawnGraphiteHandle>(handle).value();
+  if (std::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle)) {
+    return std::get<gpu::GpuDiskCacheDawnWebGPUHandle>(handle).value();
+  }
+  DCHECK(std::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle));
+  return std::get<gpu::GpuDiskCacheDawnGraphiteHandle>(handle).value();
 }
 
 bool IsReservedGpuDiskCacheHandle(const GpuDiskCacheHandle& handle) {
-  if (absl::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle)) {
+  if (std::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle)) {
     const auto& gl_shader_handle =
-        absl::get<gpu::GpuDiskCacheGlShaderHandle>(handle);
+        std::get<gpu::GpuDiskCacheGlShaderHandle>(handle);
     return gl_shader_handle == kDisplayCompositorGpuDiskCacheHandle ||
            gl_shader_handle == kGrShaderGpuDiskCacheHandle;
   }
-  if (absl::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle)) {
+  if (std::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle)) {
     const auto& dawn_graphite_handle =
-        absl::get<gpu::GpuDiskCacheDawnGraphiteHandle>(handle);
+        std::get<gpu::GpuDiskCacheDawnGraphiteHandle>(handle);
     return dawn_graphite_handle == kGraphiteDawnGpuDiskCacheHandle;
   }
   return false;

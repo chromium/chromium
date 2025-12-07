@@ -2,28 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/functional/callback_forward.h"
+#include "components/user_education/views/help_bubble_factory_views.h"
+
 #include "base/i18n/rtl.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/views/help_bubble_factory_views.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_view.h"
+#include "components/user_education/views/help_bubble_views.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 
@@ -43,13 +46,13 @@ class HelpBubbleFactoryViewsBrowsertest : public DialogBrowserTest {
 
  protected:
   ui::ElementContext context() {
-    return browser()->window()->GetElementContext();
+    return BrowserElements::From(browser())->GetContext();
   }
 
   user_education::HelpBubbleFactoryRegistry* registry() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->GetFeaturePromoController()
-        ->bubble_factory_registry();
+    return &UserEducationServiceFactory::GetForBrowserContext(
+                browser()->profile())
+                ->help_bubble_factory_registry();
   }
 
   views::TrackedElementViews* GetAnchorElement() {
@@ -115,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryViewsBrowsertest, GetAndUpdateBounds) {
       << "\n  Direction (should be LTR): "
       << (base::i18n::IsRTL() ? "RTL" : "LTR")
       << "\n  Display dimensions (should hold browser window comfortably): "
-      << display::Screen::GetScreen()
+      << display::Screen::Get()
              ->GetDisplayMatching(initial_bounds)
              .bounds()
              .ToString()

@@ -10,13 +10,14 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/pickle.h"
 #include "base/values.h"
 #include "components/viz/common/surfaces/surface_info.h"
 #include "content/common/content_param_traits.h"
 #include "content/public/common/content_constants.h"
-#include "ipc/ipc_message.h"
-#include "ipc/ipc_message_utils.h"
+#include "ipc/param_traits_utils.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/ssl/ssl_info.h"
@@ -35,7 +36,7 @@ TEST(IPCMessageTest, Pair) {
   typedef std::pair<std::string, std::string> TestPair;
 
   TestPair input("foo", "bar");
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::ParamTraits<TestPair>::Write(&msg, input);
 
   TestPair output;
@@ -46,51 +47,6 @@ TEST(IPCMessageTest, Pair) {
 }
 
 // Tests bitmap serialization.
-TEST(IPCMessageTest, Bitmap) {
-  SkBitmap bitmap;
-
-  bitmap.allocN32Pixels(10, 5);
-  memset(bitmap.getPixels(), 'A', bitmap.computeByteSize());
-
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
-  IPC::ParamTraits<SkBitmap>::Write(&msg, bitmap);
-
-  SkBitmap output;
-  base::PickleIterator iter(msg);
-  EXPECT_TRUE(IPC::ParamTraits<SkBitmap>::Read(&msg, &iter, &output));
-
-  EXPECT_EQ(bitmap.colorType(), output.colorType());
-  EXPECT_EQ(bitmap.width(), output.width());
-  EXPECT_EQ(bitmap.height(), output.height());
-  EXPECT_EQ(bitmap.rowBytes(), output.rowBytes());
-  EXPECT_EQ(bitmap.computeByteSize(), output.computeByteSize());
-  EXPECT_EQ(
-      memcmp(bitmap.getPixels(), output.getPixels(), bitmap.computeByteSize()),
-      0);
-
-  // Also test the corrupt case.
-
-  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
-
-  // Copy the first message block over to |bad_msg|.
-  const char* fixed_data;
-  size_t fixed_data_size;
-  iter = base::PickleIterator(msg);
-  EXPECT_TRUE(iter.ReadData(&fixed_data, &fixed_data_size));
-  bad_msg.WriteData(fixed_data, fixed_data_size);
-
-  // Add some bogus pixel data.
-  const size_t bogus_pixels_size = bitmap.computeByteSize() * 2;
-  auto bogus_pixels = base::HeapArray<uint8_t>::Uninit(bogus_pixels_size);
-  base::ranges::fill(bogus_pixels, 'B');
-  bad_msg.WriteData(bogus_pixels);
-
-  // Make sure we don't read out the bitmap!
-  SkBitmap bad_output;
-  iter = base::PickleIterator(bad_msg);
-  EXPECT_FALSE(IPC::ParamTraits<SkBitmap>::Read(&bad_msg, &iter, &bad_output));
-}
-
 TEST(IPCMessageTest, ValueDict) {
   base::Value::Dict input;
   input.Set("null", base::Value());
@@ -109,7 +65,7 @@ TEST(IPCMessageTest, ValueDict) {
 
   input.Set("dict", std::move(subdict));
 
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::WriteParam(&msg, input);
 
   base::Value::Dict output;
@@ -119,7 +75,7 @@ TEST(IPCMessageTest, ValueDict) {
   EXPECT_EQ(input, output);
 
   // Also test the corrupt case.
-  IPC::Message bad_msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle bad_msg;
   bad_msg.WriteInt(99);
   iter = base::PickleIterator(bad_msg);
   EXPECT_FALSE(IPC::ReadParam(&bad_msg, &iter, &output));
@@ -142,7 +98,7 @@ TEST(IPCMessageTest, SSLInfo) {
   in.client_cert_sent = true;
   in.handshake_type = net::SSLInfo::HANDSHAKE_FULL;
   const net::SHA256HashValue kCertPublicKeyHashValue = {{0x01, 0x02}};
-  in.public_key_hashes.push_back(net::HashValue(kCertPublicKeyHashValue));
+  in.public_key_hashes.push_back(kCertPublicKeyHashValue);
   in.encrypted_client_hello = true;
 
   scoped_refptr<net::ct::SignedCertificateTimestamp> sct(
@@ -165,7 +121,7 @@ TEST(IPCMessageTest, SSLInfo) {
   in.ocsp_result.revocation_status = bssl::OCSPRevocationStatus::REVOKED;
 
   // Now serialize and deserialize.
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   IPC::ParamTraits<net::SSLInfo>::Write(&msg, in);
 
   net::SSLInfo out;
@@ -217,7 +173,7 @@ TEST(IPCMessageTest, SSLInfo) {
 static constexpr viz::FrameSinkId kArbitraryFrameSinkId(1, 1);
 
 TEST(IPCMessageTest, SurfaceInfo) {
-  IPC::Message msg(1, 2, IPC::Message::PRIORITY_NORMAL);
+  base::Pickle msg;
   const viz::SurfaceId kArbitrarySurfaceId(
       kArbitraryFrameSinkId,
       viz::LocalSurfaceId(3, base::UnguessableToken::Create()));

@@ -6,6 +6,7 @@
 
 #include "audio_manager_pulse.h"
 #include "pulse_input.h"
+#include "pulse_util.h"
 
 namespace media {
 
@@ -15,12 +16,14 @@ PulseLoopbackAudioStream::PulseLoopbackAudioStream(
     const AudioParameters& params,
     pa_threaded_mainloop* mainloop,
     pa_context* context,
-    AudioManager::LogCallback log_callback)
+    AudioManager::LogCallback log_callback,
+    bool mute_system_audio)
     : release_stream_callback_(std::move(release_stream_callback)),
       params_(params),
       mainloop_(mainloop),
       context_(context),
       log_callback_(std::move(log_callback)),
+      mute_system_audio_(mute_system_audio),
       sink_(nullptr),
       stream_(new PulseAudioInputStream(nullptr,
                                         source_name,
@@ -40,6 +43,14 @@ AudioInputStream::OpenOutcome PulseLoopbackAudioStream::Open() {
   OpenOutcome open_outcome = stream_->Open();
   if (open_outcome == OpenOutcome::kSuccess) {
     stream_opened_ = true;
+    if (mute_system_audio_) {
+      std::string default_sink_name = media::pulse::GetRealDefaultDeviceId(
+          mainloop_, context_, pulse::RequestType::OUTPUT);
+      std::string monitor_source_name =
+          media::pulse::GetMonitorSourceNameForSink(mainloop_, context_,
+                                                    default_sink_name);
+      pulse::MuteAllSinksExcept(mainloop_, context_, monitor_source_name);
+    }
   }
 
   return open_outcome;
@@ -61,6 +72,9 @@ void PulseLoopbackAudioStream::Stop() {
 void PulseLoopbackAudioStream::Close() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!sink_);
+  if (mute_system_audio_) {
+    pulse::UnmuteAllSinks(mainloop_, context_);
+  }
   CloseWrappedStream();
   std::move(release_stream_callback_).Run(this);
 }

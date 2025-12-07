@@ -32,7 +32,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -43,6 +44,8 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MissingDeviceLockMediatorUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
@@ -51,7 +54,6 @@ public class MissingDeviceLockMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivity = Mockito.mock(Activity.class);
         mPackageManager = Mockito.mock(PackageManager.class);
         doReturn(mPackageManager).when(mActivity).getPackageManager();
@@ -76,8 +78,8 @@ public class MissingDeviceLockMediatorUnitTest {
                         (invocation) -> {
                             Intent intent = invocation.getArgument(0);
                             assertEquals(
-                                    intent.getAction(),
-                                    DevicePolicyManager.ACTION_SET_NEW_PASSWORD);
+                                    DevicePolicyManager.ACTION_SET_NEW_PASSWORD,
+                                    intent.getAction());
                             return null;
                         })
                 .when(mActivity)
@@ -93,7 +95,7 @@ public class MissingDeviceLockMediatorUnitTest {
         doAnswer(
                         (invocation) -> {
                             Intent intent = invocation.getArgument(0);
-                            assertEquals(intent.getAction(), Settings.ACTION_SECURITY_SETTINGS);
+                            assertEquals(Settings.ACTION_SECURITY_SETTINGS, intent.getAction());
                             return null;
                         })
                 .when(mActivity)

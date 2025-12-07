@@ -6,8 +6,6 @@
 
 #import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
 
-OVERLAY_USER_DATA_SETUP_IMPL(DefaultInfobarOverlayRequestConfig);
-
 DefaultInfobarOverlayRequestConfig::DefaultInfobarOverlayRequestConfig(
     InfoBarIOS* infobar,
     InfobarOverlayType overlay_type)

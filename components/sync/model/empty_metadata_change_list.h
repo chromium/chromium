@@ -24,6 +24,7 @@ class EmptyMetadataChangeList : public MetadataChangeList {
   void UpdateMetadata(const std::string& storage_key,
                       const sync_pb::EntityMetadata& metadata) override;
   void ClearMetadata(const std::string& storage_key) override;
+  void TransferChangesTo(MetadataChangeList* other) override;
 };
 
 }  // namespace syncer

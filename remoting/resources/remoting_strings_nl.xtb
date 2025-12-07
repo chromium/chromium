@@ -28,6 +28,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="2329392777730037872">Kan <ph name="URL" /> niet openen op de client.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2366718077645204424">Kan de host niet bereiken. Dit komt waarschijnlijk door de configuratie van het netwerk dat je gebruikt.</translation>
+<translation id="242591256144136845">Copyright 2025 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="2504109125669302160">Toegangsrechten verlenen aan <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">Verbonden met <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Wil je deze computer delen zodat een andere gebruiker deze kan bekijken en bedienen?</translation>
@@ -39,6 +40,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="2758123043070977469">Er is een fout opgetreden tijdens het verifiëren. Log opnieuw in.</translation>
 <translation id="2803375539583399270">Pincode invoeren</translation>
 <translation id="2919669478609886916">Je deelt deze computer momenteel met een andere gebruiker. Wil je doorgaan met delen?</translation>
+<translation id="2929683002824598593">Apparaat delen</translation>
 <translation id="2939145106548231838">Verifiëren naar host</translation>
 <translation id="3027681561976217984">Aanraakmodus</translation>
 <translation id="3106379468611574572">De externe computer reageert niet op verbindingsverzoeken. Controleer of deze online is en probeer het opnieuw.</translation>
@@ -91,6 +93,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="4987330545941822761">Chrome Remote Desktop kan niet vaststellen met welke browser URL's lokaal moeten worden geopend. Maak een keuze in de onderstaande lijst.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (offline)</translation>
 <translation id="507204348399810022">Weet je zeker dat je externe verbindingen met <ph name="HOSTNAME" /> wilt uitzetten?</translation>
+<translation id="5095424396646120601">Crashrapportage</translation>
 <translation id="5170982930780719864">Ongeldige host-ID.</translation>
 <translation id="5204575267916639804">Veelgestelde vragen</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
@@ -116,10 +119,12 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="6178645564515549384">Systeemeigen berichthost voor externe support</translation>
 <translation id="618120821413932081">Externe resolutie aanpassen aan venster</translation>
 <translation id="6223301979382383752">Voorkeuren voor Schermopname openen</translation>
+<translation id="6252344563748670011"><ph name="CLIENT_USERNAME" /> heeft toegang gevraagd om je scherm te zien en je toetsenbord en muis te bedienen. Wil je je apparaat delen?</translation>
 <translation id="6284412385303060032">De actieve host op het console-inlogscherm is uitgezet om de gordijnmodus te ondersteunen door over te schakelen naar een host die in een gebruikersspecifieke sessie wordt uitgevoerd.</translation>
 <translation id="6542902059648396432">Een probleem melden…</translation>
 <translation id="6583902294974160967">Support</translation>
 <translation id="6612717000975622067">Ctrl-Alt-Del verzenden</translation>
+<translation id="6625262630437221505">{0,plural, =1{Als je niets doet, wordt je apparaat over # seconde automatisch gedeeld.}other{Als je niets doet, wordt je apparaat over # seconden automatisch gedeeld.}}</translation>
 <translation id="6654753848497929428">Delen</translation>
 <translation id="677755392401385740">Host gestart voor gebruiker: <ph name="HOST_USERNAME" />.</translation>
 <translation id="6902524959760471898">Helper-app waarmee je een URL kunt openen in de <ph name="PRODUCT_NAME" />-client</translation>
@@ -133,6 +138,7 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="7067321367069083429">Scherm werkt als een touchscreen</translation>
 <translation id="7116737094673640201">Welkom bij Chrome Remote Desktop</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
+<translation id="7298392173540380852">Copyright 2025 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="7312846573060934304">Host is offline.</translation>
 <translation id="7319983568955948908">Delen stoppen</translation>
 <translation id="7359298090707901886">De gekozen browser kan niet worden gebruikt om URL's op de lokale machine te openen.</translation>
@@ -149,7 +155,6 @@ Als <ph name="SERVICE_SCRIPT_NAME" /> al is aangevinkt, vink je dit eerst uit en
 <translation id="7693372326588366043">Lijst met hosts vernieuwen</translation>
 <translation id="7714222945760997814">Dit melden</translation>
 <translation id="7868137160098754906">Voer je pincode voor de externe computer in.</translation>
-<translation id="7881455334687220899">Copyright 2024 De auteurs van Chromium. Alle rechten voorbehouden.</translation>
 <translation id="7895403300744144251">Beveiligingsbeleid op de externe computer staat verbindingen vanuit je account niet toe.</translation>
 <translation id="7936528439960309876">Rechts docken</translation>
 <translation id="7970576581263377361">Verificatie mislukt. Log opnieuw in bij Chromium.</translation>
@@ -181,7 +186,6 @@ Als '<ph name="SERVICE_SCRIPT_NAME" />' al is aangevinkt, moet je dit uitvinken 
 <translation id="8747048596626351634">De sessie is gecrasht of kan niet worden gestart. Als ~/.chrome-remote-desktop-session bestaat op de externe computer, moet je ervoor zorgen dat hiermee een langdurig voorgrondproces wordt gestart, zoals een bureaubladomgeving of vensterbeheer.</translation>
 <translation id="8804164990146287819">Privacybeleid</translation>
 <translation id="8906511416443321782">Er is toegang tot de microfoon vereist om audio op te nemen en naar de Chrome Remote Desktop-client te streamen.</translation>
-<translation id="9042277333359847053">Copyright 2024 Google LLC. Alle rechten voorbehouden.</translation>
 <translation id="9111855907838866522">Je bent verbonden met je externe apparaat. Tik met vier vingers op het scherm om het menu te openen.</translation>
 <translation id="9126115402994542723">Niet meer vragen naar een pincode bij het aansluiten van dit apparaat op deze host.</translation>
 <translation id="916856682307586697">De standaard XSession starten</translation>

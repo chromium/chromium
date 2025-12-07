@@ -9,14 +9,14 @@
 
 namespace blink {
 class WebGestureEvent;
-class WebMouseWheelEvent;
-}
+}  // namespace blink
 
 namespace ui {
 struct DidOverscrollParams;
-}
+}  // namespace ui
 
 namespace history_swiper {
+
 enum NavigationDirection {
   kBackwards = 0,
   kForwards,
@@ -48,7 +48,8 @@ enum RecognitionState {
   // Events are forwarded to the renderer.
   kCancelled,
 };
-} // history_swiper
+
+}  // namespace history_swiper
 
 @protocol HistorySwiperDelegate
 // Return NO from this method if the view/render_widget_host should not
@@ -135,18 +136,12 @@ enum RecognitionState {
 //  views no longer reliable receive -touches*WithEvent: callbacks. As such,
 //  once this class invokes the -[NSEvent trackSwipeEventWithOptions:...] API,
 //  it must continue to use that API, since it no longer receives touch events.
-//
-//  TODO(erikchen): Even for users that do not have a Magic Mouse, this class
-//  will sometime transition into Magic Mouse mode. This is very undesirable.
-//  See http://crbug.com/317161 for more details.
 @interface HistorySwiper : NSObject
 
 // Many event types are passed in, but the only one we care about is
 // NSEventTypeScrollWheel. We look at the phase to determine whether to trigger
-// history swiping
+// history swiping.
 - (BOOL)handleEvent:(NSEvent*)event;
-- (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
-                         consumed:(BOOL)consumed;
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed;
 
@@ -168,14 +163,11 @@ enum RecognitionState {
 // the trackpad.
 // Once the method -[NSEvent trackSwipeEventWithOptions:...] is invoked, the
 // methods -touches*WithEvent: are no longer guaranteed to be called for
-// subsequent gestures. http://crbug.com/317161
+// subsequent gestures. https://crbug.com/41072404
 - (void)touchesBeganWithEvent:(NSEvent*)event;
 - (void)touchesMovedWithEvent:(NSEvent*)event;
 - (void)touchesCancelledWithEvent:(NSEvent*)event;
 - (void)touchesEndedWithEvent:(NSEvent*)event;
-
-- (void)beginGestureWithEvent:(NSEvent*)event;
-- (void)endGestureWithEvent:(NSEvent*)event;
 
 // Designated initializer.
 - (instancetype)initWithDelegate:(id<HistorySwiperDelegate>)delegate;
@@ -184,9 +176,4 @@ enum RecognitionState {
 
 @end
 
-// Exposed only for unit testing, do not call directly.
-@interface HistorySwiper (PrivateExposedForTesting)
-+ (void)resetMagicMouseState;
-@end
-
-#endif // CHROME_BROWSER_RENDERER_HOST_CHROME_RENDER_WIDGET_HOST_VIEW_MAC_HISTORY_SWIPER_H_
+#endif  // CHROME_BROWSER_RENDERER_HOST_CHROME_RENDER_WIDGET_HOST_VIEW_MAC_HISTORY_SWIPER_H_

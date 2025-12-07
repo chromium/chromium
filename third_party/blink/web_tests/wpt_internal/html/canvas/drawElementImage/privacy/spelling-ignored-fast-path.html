@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<title>drawElementImage does not draw spelling</title>
+<link rel="help" href="https://github.com/WICG/html-in-canvas">
+<link rel="author" href="mailto:schenney@chromium.org">
+<link rel="match" href="spelling-ignored-fast-path-ref.html">
+<meta name="assert" value="When preserving privacy for readback, do not draw spelling markers when using the fast path.">
+<script src="/wpt_internal/css/support/markers.js"></script>
+<style>
+  #child {
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+  #canvas {
+    background: grey;
+  }
+</style>
+<canvas id=canvas width="200" height="200" layoutsubtree>
+  <div id="child">
+    <div id="editable" contenteditable="true" spellcheck="true" lang="en">Many theng can happen.</div>
+  </div>
+</canvas>
+<script>
+  function runTest() {
+    addSpellingMarker(editable, 5, 10)
+
+    canvas.getContext("2d").drawElementImage(child, 0, 0);
+  }
+
+  onload = () => runTest();
+</script>

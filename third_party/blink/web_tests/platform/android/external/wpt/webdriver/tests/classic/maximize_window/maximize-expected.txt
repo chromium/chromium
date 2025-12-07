@@ -1,0 +1,15 @@
+This is a wdspec test.
+[FAIL] test_no_browsing_context
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_response_payload
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_fully_exit_fullscreen
+  webdriver.error.UnsupportedOperationException: unsupported operation (500): unsupported operation: Fullscreen mode is not supported on Android platform
+[FAIL] test_maximize_from_normal_window
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+[FAIL] test_maximize_with_window_already_at_maximum_size
+  assert (360, 539) == (360, 640)
+[FAIL] test_maximize_twice_is_idempotent
+  AssertionError: unsupported operation (500): unsupported operation: Unable to maximize window on Android platform
+Harness: the test ran to completion.
+

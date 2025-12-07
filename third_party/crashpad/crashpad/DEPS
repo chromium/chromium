@@ -29,25 +29,25 @@ vars = {
 deps = {
   'buildtools':
       Var('chromium_git') + '/chromium/src/buildtools.git@' +
-      '8919328651a559f8a974641d40fe712062cc6718',
+      'efa920ce144e4dc1c1841e73179cd7e23b9f0d5e',
   'buildtools/clang_format/script':
       Var('chromium_git') +
       '/external/github.com/llvm/llvm-project/clang/tools/clang-format.git@' +
       'c912837e0d82b5ca4b6e790b573b3956d3744c1c',
   'crashpad/third_party/edo/edo': {
       'url': Var('chromium_git') + '/external/github.com/google/eDistantObject.git@' +
-      '727e556705278598fce683522beedbb9946bfda0',
+      '38e71ff183d76f702db6966fa7236c98831acd80',
       'condition': 'checkout_ios',
   },
   'crashpad/third_party/googletest/googletest':
       Var('chromium_git') + '/external/github.com/google/googletest@' +
-      'af29db7ec28d6df1c7f0f745186884091e602e07',
+      '3983f67e32fb3e9294487b9d4f9586efa6e5d088',
   'crashpad/third_party/lss/lss':
       Var('chromium_git') + '/linux-syscall-support.git@' +
       '9719c1e1e676814c456b55f5f070eabad6709d31',
   'crashpad/third_party/mini_chromium/mini_chromium':
       Var('chromium_git') + '/chromium/mini_chromium@' +
-      'bd56f6933f2fa021a44766ced638a18f477ef1c1',
+      'e5a8d550e530d504c792af8ec7dbcbd3d80544df',
   'crashpad/third_party/libfuzzer/src':
       Var('chromium_git') + '/chromium/llvm-project/compiler-rt/lib/fuzzer.git@' +
       'fda403cf93ecb8792cb1d061564d89a6553ca020',
@@ -110,7 +110,7 @@ deps = {
     'packages': [
       {
         'package': 'fuchsia/third_party/clang/mac-amd64',
-        'version': 'latest',
+        'version': 'integration',
       },
     ],
     'condition': 'checkout_fuchsia and host_os == "mac"',
@@ -120,11 +120,24 @@ deps = {
     'packages': [
       {
         'package': 'fuchsia/third_party/clang/linux-amd64',
-        'version': 'latest',
+        'version': 'integration',
       },
     ],
     'condition': 'checkout_fuchsia and host_os == "linux"',
     'dep_type': 'cipd'
+  },
+  'crashpad/third_party/windows/clang/win-amd64': {
+    'bucket': 'chromium-browser-clang',
+    'objects': [
+      {
+        'object_name': 'Win/clang-llvmorg-20-init-17108-g29ed6000-2.tar.xz',
+        'sha256sum': '1c71efd923a91480480d4f31c2fd5f1369e01e14f15776a9454abbce0bc13548',
+        'size_bytes': 46357580,
+        'generation': 1737590897363452,
+      },
+    ],
+    'condition': 'checkout_win and host_os == "win"',
+    'dep_type': 'gcs',
   },
   'crashpad/third_party/fuchsia-gn-sdk': {
     'packages': [
@@ -208,47 +221,6 @@ deps = {
 }
 
 hooks = [
-  {
-    'name': 'clang_format_mac',
-    'pattern': '.',
-    'condition': 'host_os == "mac"',
-    'action': [
-      'download_from_google_storage',
-      '--no_resume',
-      '--no_auth',
-      '--bucket=chromium-clang-format',
-      '--sha1_file',
-      'buildtools/mac/clang-format.{host_cpu}.sha1',
-      '--output',
-      'buildtools/mac/clang-format',
-    ],
-  },
-  {
-    'name': 'clang_format_linux',
-    'pattern': '.',
-    'condition': 'host_os == "linux"',
-    'action': [
-      'download_from_google_storage',
-      '--no_resume',
-      '--no_auth',
-      '--bucket=chromium-clang-format',
-      '--sha1_file',
-      'buildtools/linux64/clang-format.sha1',
-    ],
-  },
-  {
-    'name': 'clang_format_win',
-    'pattern': '.',
-    'condition': 'host_os == "win"',
-    'action': [
-      'download_from_google_storage',
-      '--no_resume',
-      '--no_auth',
-      '--bucket=chromium-clang-format',
-      '--sha1_file',
-      'buildtools/win/clang-format.exe.sha1',
-    ],
-  },
   {
     # If using a local clang ("pull_linux_clang" above), also pull down a
     # sysroot.

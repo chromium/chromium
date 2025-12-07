@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogTestUtils;
@@ -37,6 +36,9 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.ViewUtils;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 
 /**
  * TestRule for permissions UI testing on Android.
@@ -64,6 +66,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
         PromptDecision.DENY,
         PromptDecision.NONE
     })
+    @Retention(RetentionPolicy.SOURCE)
     public @interface PromptDecision {
         int ALLOW = 0;
         int ALLOW_ONCE = 1;
@@ -76,8 +79,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * of times. The page title is expected to be of the form <prefix>: <count>.
      */
     public static class PermissionUpdateWaiter extends EmptyTabObserver {
-        private CallbackHelper mCallbackHelper;
-        private String mPrefix;
+        private final CallbackHelper mCallbackHelper;
+        private final String mPrefix;
         private String mExpectedTitle;
         private final ChromeActivity mActivity;
 
@@ -89,8 +92,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
 
         @Override
         public void onTitleUpdated(Tab tab) {
-            if (ChromeTabUtils.getTitleOnUiThread(mActivity.getActivityTab())
-                    .equals(mExpectedTitle)) {
+            if (getTitle().equals(mExpectedTitle)) {
                 mCallbackHelper.notifyCalled();
             }
         }
@@ -102,7 +104,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
          *
          * @param numUpdates The number that should be after the prefix for the wait to be over. `0`
          *     to only wait for the prefix.
-         * @throws Exception
          */
         public void waitForNumUpdates(int numUpdates) throws Exception {
             int callbackCountBefore = mCallbackHelper.getCallCount();
@@ -110,12 +111,15 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
             // Update might have already happened, check before waiting for title udpdates.
             mExpectedTitle = mPrefix;
             if (numUpdates != 0) mExpectedTitle += numUpdates;
-            if (ChromeTabUtils.getTitleOnUiThread(mActivity.getActivityTab())
-                    .equals(mExpectedTitle)) {
+            if (getTitle().equals(mExpectedTitle)) {
                 return;
             }
 
             mCallbackHelper.waitForCallback(callbackCountBefore);
+        }
+
+        private String getTitle() {
+            return ThreadUtils.runOnUiThreadBlocking(() -> mActivity.getActivityTab().getTitle());
         }
     }
 
@@ -187,7 +191,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture to trigger the prompt.
      * @param isDialog True if we are expecting a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runAllowTest(
             PermissionUpdateWaiter updateWaiter,
@@ -217,7 +220,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture to trigger the prompt.
      * @param isDialog True if we are expecting a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runDenyTest(
             PermissionUpdateWaiter updateWaiter,
@@ -247,7 +249,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture.
      * @param isDialog True if we are testing a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runNoPromptTest(
             PermissionUpdateWaiter updateWaiter,
@@ -290,14 +291,14 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                     PermissionDialogController.getInstance().isDialogShownForTest());
         } else {
             Assert.assertEquals(
-                    "Permission infobar shown when none expected", getInfoBars().size(), 0);
+                    "Permission infobar shown when none expected", 0, getInfoBars().size());
         }
     }
 
     public void runJavaScriptCodeInCurrentTabWithGesture(String javascript)
             throws java.util.concurrent.TimeoutException {
         runJavaScriptCodeInCurrentTab("functionToRun = '" + javascript + "'");
-        TouchCommon.singleClickView(getActivity().getActivityTab().getView());
+        TouchCommon.singleClickView(getActivityTab().getView());
     }
 
     /**

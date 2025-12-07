@@ -11,11 +11,9 @@ import org.chromium.base.TraceEvent;
 import org.chromium.support_lib_boundary.ServiceWorkerWebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
-import java.util.Set;
-
 /** Adapter between AwServiceWorkerSettings and ServiceWorkerWebSettingsBoundaryInterface. */
 class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettingsBoundaryInterface {
-    private AwServiceWorkerSettings mAwServiceWorkerSettings;
+    private final AwServiceWorkerSettings mAwServiceWorkerSettings;
 
     SupportLibServiceWorkerSettingsAdapter(AwServiceWorkerSettings settings) {
         mAwServiceWorkerSettings = settings;
@@ -106,24 +104,22 @@ class SupportLibServiceWorkerSettingsAdapter implements ServiceWorkerWebSettings
     }
 
     @Override
-    public void setRequestedWithHeaderOriginAllowList(Set<String> allowedOriginRules) {
-        try (TraceEvent event =
+    public void setIncludeCookiesOnIntercept(boolean includeCookiesOnIntercept) {
+        try (TraceEvent ignored =
                 TraceEvent.scoped(
-                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
-            recordApiCall(
-                    ApiCall.SERVICE_WORKER_SETTINGS_SET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
-            mAwServiceWorkerSettings.setRequestedWithHeaderOriginAllowList(allowedOriginRules);
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT")) {
+            recordApiCall(ApiCall.SERVICE_WORKER_SET_INCLUDE_COOKIES_ON_INTERCEPT);
+            mAwServiceWorkerSettings.setIncludeCookiesOnIntercept(includeCookiesOnIntercept);
         }
     }
 
     @Override
-    public Set<String> getRequestedWithHeaderOriginAllowList() {
-        try (TraceEvent event =
+    public boolean getIncludeCookiesOnIntercept() {
+        try (TraceEvent ignored =
                 TraceEvent.scoped(
-                        "WebView.APICall.AndroidX.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST")) {
-            recordApiCall(
-                    ApiCall.SERVICE_WORKER_SETTINGS_GET_REQUESTED_WITH_HEADER_ORIGIN_ALLOWLIST);
-            return mAwServiceWorkerSettings.getRequestedWithHeaderOriginAllowList();
+                        "WebView.APICall.AndroidX.SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT")) {
+            recordApiCall(ApiCall.SERVICE_WORKER_GET_INCLUDE_COOKIES_ON_INTERCEPT);
+            return mAwServiceWorkerSettings.getIncludeCookiesOnIntercept();
         }
     }
 }

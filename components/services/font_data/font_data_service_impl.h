@@ -9,12 +9,15 @@
 
 #include <map>
 #include <memory>
+#include <tuple>
 #include <vector>
 
+#include "base/files/file.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sequence_checker.h"
 #include "components/services/font_data/public/mojom/font_data_service.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
@@ -60,10 +63,44 @@ class FontDataServiceImpl : public mojom::FontDataService {
                        mojom::TypefaceStylePtr style,
                        MatchFamilyNameCallback callback) override;
 
+  // Provides fallback font data for `character`.
+  void MatchFamilyNameCharacter(
+      const std::string& family_name,
+      mojom::TypefaceStylePtr style,
+      const std::vector<std::string>& bcp47s,
+      int32_t character,
+      MatchFamilyNameCharacterCallback callback) override;
+
+  // Gets all the available font families on the system. Usage of this function
+  // is strongly discouraged as it iterates over all installed fonts.
+  void GetAllFamilyNames(GetAllFamilyNamesCallback callback) override;
+
+  // Gets a typeface matching `family_name` and `style`, or the default typeface
+  // if `family_name` is `nullopt`.
+  void LegacyMakeTypeface(const std::optional<std::string>& family_name,
+                          mojom::TypefaceStylePtr style,
+                          LegacyMakeTypefaceCallback callback) override;
+
+ protected:
+  // Returns a file handle based on the SkTypeface. The file handle may be empty
+  // if there is no file associated with the typeface or if the typeface is
+  // null. This is a helper method that can be overridden for testing purposes.
+  // The second member of the tuple is an ID that uniquely identifies a given
+  // file on disk, even for multiple different file handles to that same file.
+  virtual std::tuple<base::File, uint64_t> GetFileHandle(SkTypeface& typeface);
+
  private:
   // Checks the shared memory region cache and returns an index if found. On
   // cache miss, creates a new entry caching the data.
   size_t GetOrCreateAssetIndex(std::unique_ptr<SkStreamAsset> asset);
+
+  // Gets or generate an ID that uniquely represents `path`.
+  uint64_t GetUniqueFileId(base::FilePath path);
+
+  // Prepares a MatchFamilyNameResult representing `typeface` that can be sent
+  // over mojo from `MatchFamilyName*` calls.
+  mojom::MatchFamilyNameResultPtr CreateMatchFamilyNameResult(
+      sk_sp<SkTypeface> typeface);
 
   mojo::ReceiverSet<mojom::FontDataService> receivers_;
 
@@ -97,11 +134,13 @@ class FontDataServiceImpl : public mojom::FontDataService {
   };
   // A mapping of a typeface's identifier to the index in the cache (i.e.,
   // assets_).
-  std::map<SkTypefaceID, MappedTypeface> typeface_to_asset_index_;
+  absl::flat_hash_map<SkTypefaceID, MappedTypeface> typeface_to_asset_index_;
 
   // A mapping from a font data's base address to its index in the primary font
   // cache (i.e., assets_).
-  std::map<intptr_t, size_t> address_to_asset_index_;
+  absl::flat_hash_map<intptr_t, size_t> address_to_asset_index_;
+
+  absl::flat_hash_map<base::FilePath, uint64_t> unique_path_ids_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {ColorScheme} from '../../color_scheme.mojom-webui.js';
-import {SampleColorScheme} from '../../personalization_app.mojom-webui.js';
+import type {ColorScheme} from '../../color_scheme.mojom-webui.js';
+import type {SampleColorScheme} from '../../personalization_app.mojom-webui.js';
 
 
 /**
@@ -20,6 +20,7 @@ export interface ThemeState {
   geolocationPermissionEnabled: boolean|null;
   sunriseTime: string|null;
   sunsetTime: string|null;
+  geolocationIsUserModifiable: boolean|null;
 }
 
 export function emptyState(): ThemeState {
@@ -32,5 +33,6 @@ export function emptyState(): ThemeState {
     geolocationPermissionEnabled: null,
     sunriseTime: null,
     sunsetTime: null,
+    geolocationIsUserModifiable: null,
   };
 }

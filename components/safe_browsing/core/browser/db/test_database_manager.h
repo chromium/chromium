@@ -21,9 +21,8 @@ namespace safe_browsing {
 // non-abstract methods in the base class are not overridden.
 class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
  public:
-  TestSafeBrowsingDatabaseManager(
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+  explicit TestSafeBrowsingDatabaseManager(
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // SafeBrowsingDatabaseManager implementation:
   void CancelCheck(Client* client) override;
@@ -38,10 +37,9 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
                          Client* client) override;
-  std::optional<HighConfidenceAllowlistCheckLoggingDetails>
-  CheckUrlForHighConfidenceAllowlist(
+  void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
-      base::OnceCallback<void(bool)> callback) override;
+      CheckUrlForHighConfidenceAllowlistCallback callback) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   void MatchDownloadAllowlistUrl(
       const GURL& url,
@@ -49,10 +47,10 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   safe_browsing::ThreatSource GetBrowseUrlThreatSource(
       CheckBrowseUrlType check_type) const override;
   safe_browsing::ThreatSource GetNonBrowseUrlThreatSource() const override;
-  void StartOnSBThread(
+  void StartOnUIThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const V4ProtocolConfig& config) override;
-  void StopOnSBThread(bool shutdown) override;
+  void StopOnUIThread(bool shutdown) override;
   bool IsDatabaseReady() const override;
 
  protected:

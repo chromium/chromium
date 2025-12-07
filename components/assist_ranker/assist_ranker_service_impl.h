@@ -10,7 +10,7 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "components/assist_ranker/assist_ranker_service.h"
 #include "components/assist_ranker/predictor_config.h"

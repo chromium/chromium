@@ -41,7 +41,7 @@ constexpr int kElevatedSystemShelfSizeTabletMode = 136;
 
 int IsDenseForCurrentScreen() {
   const gfx::Rect screen_size =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
 
   return screen_size.width() <= kDenseShelfScreenSizeThreshold ||
          screen_size.height() <= kDenseShelfScreenSizeThreshold;
@@ -166,7 +166,7 @@ void ShelfConfig::Init() {
   shell->overview_controller()->AddObserver(this);
   shell->session_controller()->AddObserver(this);
 
-  in_tablet_mode_ = display::Screen::GetScreen()->InTabletMode();
+  in_tablet_mode_ = display::Screen::Get()->InTabletMode();
   UpdateConfig(is_app_list_visible_, /*tablet_mode_changed=*/false);
 }
 
@@ -454,22 +454,27 @@ ui::ColorId ShelfConfig::GetShelfBaseLayerColorId() const {
     return cros_tokens::kCrosSysSystemBase;
   }
 
-  return cros_tokens::kCrosSysSystemBaseElevated;
+  return chromeos::features::IsSystemBlurEnabled()
+             ? cros_tokens::kCrosSysSystemBaseElevated
+             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 }
 
 SkColor ShelfConfig::GetDefaultShelfColor(const views::Widget* widget) const {
   DCHECK(widget);
 
   const auto* color_provider = widget->GetColorProvider();
-  if (!features::IsBackgroundBlurEnabled())
-    return color_provider->GetColor(kColorAshShieldAndBase90);
-
   return color_provider->GetColor(GetShelfBaseLayerColorId());
 }
 
+ui::ColorId ShelfConfig::GetDefaultShelfColorId() const {
+  return GetShelfBaseLayerColorId();
+}
+
 int ShelfConfig::GetShelfControlButtonBlurRadius() const {
-  if (features::IsBackgroundBlurEnabled() && in_tablet_mode_ && !is_in_app_)
+  if (chromeos::features::IsSystemBlurEnabled() && in_tablet_mode_ &&
+      !is_in_app_) {
     return shelf_blur_radius_;
+  }
   return 0;
 }
 

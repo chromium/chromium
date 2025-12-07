@@ -17,13 +17,13 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "content/public/android/public_common_jni/ResourceRequestBody_jni.h"
 
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 
 namespace content {
 
 namespace {
 
-base::android::ScopedJavaLocalRef<jbyteArray>
+static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_ResourceRequestBody_ConvertResourceRequestBodyToJavaArray(
     JNIEnv* env,
     const network::ResourceRequestBody& body) {
@@ -33,10 +33,10 @@ JNI_ResourceRequestBody_ConvertResourceRequestBodyToJavaArray(
 
 }  // namespace
 
-base::android::ScopedJavaLocalRef<jbyteArray>
+static base::android::ScopedJavaLocalRef<jbyteArray>
 JNI_ResourceRequestBody_CreateResourceRequestBodyFromBytes(
     JNIEnv* env,
-    const JavaParamRef<jbyteArray>& j_post_data) {
+    const JavaRef<jbyteArray>& j_post_data) {
   base::android::ScopedJavaLocalRef<jbyteArray> result;
   if (!j_post_data)
     return result;
@@ -44,8 +44,7 @@ JNI_ResourceRequestBody_CreateResourceRequestBodyFromBytes(
   std::vector<uint8_t> post_data;
   base::android::JavaByteArrayToByteVector(env, j_post_data, &post_data);
   scoped_refptr<network::ResourceRequestBody> body =
-      network::ResourceRequestBody::CreateFromBytes(
-          reinterpret_cast<const char*>(post_data.data()), post_data.size());
+      network::ResourceRequestBody::CreateFromBytes(std::move(post_data));
 
   return JNI_ResourceRequestBody_ConvertResourceRequestBodyToJavaArray(
       env, static_cast<const network::ResourceRequestBody&>(*body));
@@ -69,7 +68,7 @@ ConvertResourceRequestBodyToJavaObject(
 scoped_refptr<network::ResourceRequestBody>
 ExtractResourceRequestBodyFromJavaObject(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_body) {
+    const base::android::JavaRef<jobject>& j_body) {
   if (!j_body)
     return nullptr;
 
@@ -81,8 +80,9 @@ ExtractResourceRequestBodyFromJavaObject(
   std::vector<uint8_t> encoded;
   base::android::JavaByteArrayToByteVector(env, j_encoded, &encoded);
 
-  return blink::DecodeResourceRequestBody(
-      reinterpret_cast<const char*>(encoded.data()), encoded.size());
+  return blink::DecodeResourceRequestBody(encoded);
 }
 
 }  // namespace content
+
+DEFINE_JNI(ResourceRequestBody)

@@ -36,7 +36,7 @@ class SendTabToSelfClientServiceFactory : public ProfileKeyedServiceFactory {
   SendTabToSelfClientServiceFactory();
   ~SendTabToSelfClientServiceFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // BrowserContextKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* context) const override;
 

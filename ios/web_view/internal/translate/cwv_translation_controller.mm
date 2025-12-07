@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
-
 #import <memory>
 #import <string>
 
@@ -12,10 +10,14 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/translate/core/browser/translate_download_manager.h"
+#import "components/translate/core/common/language_detection_details.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ios/web_view/internal/cwv_web_view_configuration_internal.h"
+#import "ios/web_view/internal/translate/cwv_translation_controller_internal.h"
+#import "ios/web_view/internal/translate/cwv_translation_language_detection_details_internal.h"
 #import "ios/web_view/internal/translate/cwv_translation_language_internal.h"
 #import "ios/web_view/internal/translate/web_view_translate_client.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
@@ -53,8 +55,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case translate::TranslateErrors::SCRIPT_LOAD_ERROR:
       return CWVTranslationErrorScriptLoadError;
     case translate::TranslateErrors::TRANSLATE_ERROR_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return CWVTranslationErrorNone;
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -80,6 +81,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
 
 @synthesize delegate = _delegate;
 @synthesize supportedLanguagesByCode = _supportedLanguagesByCode;
+@synthesize languageDetectionDetails = _languageDetectionDetails;
 
 #pragma mark - Internal Methods
 
@@ -131,8 +133,8 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
   switch (step) {
     case translate::TRANSLATE_STEP_BEFORE_TRANSLATE: {
       if ([_delegate respondsToSelector:@selector
-                     (translationController:canOfferTranslationFromLanguage
-                                              :toLanguage:)]) {
+                     (translationController:
+                         canOfferTranslationFromLanguage:toLanguage:)]) {
         [_delegate translationController:self
             canOfferTranslationFromLanguage:source
                                  toLanguage:target];
@@ -140,9 +142,10 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
       break;
     }
     case translate::TRANSLATE_STEP_TRANSLATING:
-      if ([_delegate respondsToSelector:@selector
-                     (translationController:didStartTranslationFromLanguage
-                                              :toLanguage:userInitiated:)]) {
+      if ([_delegate
+              respondsToSelector:@selector
+              (translationController:
+                  didStartTranslationFromLanguage:toLanguage:userInitiated:)]) {
         [_delegate translationController:self
             didStartTranslationFromLanguage:source
                                  toLanguage:target
@@ -152,8 +155,8 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case translate::TRANSLATE_STEP_AFTER_TRANSLATE:
     case translate::TRANSLATE_STEP_TRANSLATE_ERROR:
       if ([_delegate respondsToSelector:@selector
-                     (translationController:didFinishTranslationFromLanguage
-                                              :toLanguage:error:)]) {
+                     (translationController:
+                         didFinishTranslationFromLanguage:toLanguage:error:)]) {
         [_delegate translationController:self
             didFinishTranslationFromLanguage:source
                                   toLanguage:target
@@ -166,7 +169,32 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
   }
 }
 
+- (void)onLanguageDetermined:
+    (const translate::LanguageDetectionDetails&)details {
+  CWVTranslationLanguageDetectionDetails* languageDetectionDetails =
+      [CWVTranslationLanguageDetectionDetails
+          languageDetectionDetailsFrom:details];
+  _languageDetectionDetails = languageDetectionDetails;
+  if ([_delegate
+          respondsToSelector:@selector(translationController:
+                                 didDeterminePageLanguageDetectionDetails:)]) {
+    [_delegate translationController:self
+        didDeterminePageLanguageDetectionDetails:languageDetectionDetails];
+  }
+}
+
 #pragma mark - Public Methods
+
+- (void)startLanguageDetection {
+  // Do not start language detection if the language has already been
+  // determined.
+  if (_languageDetectionDetails != nil) {
+    return;
+  }
+  language::IOSLanguageDetectionTabHelper* tabHelper =
+      language::IOSLanguageDetectionTabHelper::FromWebState(_webState);
+  tabHelper->StartLanguageDetection();
+}
 
 - (NSSet*)supportedLanguages {
   return [NSSet setWithArray:self.supportedLanguagesByCode.allValues];
@@ -251,8 +279,7 @@ CWVTranslationError CWVConvertTranslateError(translate::TranslateErrors type) {
     case CWVTranslationPolicyAuto: {
       // TODO(crbug.com/41310094): Support auto translation policies for
       // websites.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 }

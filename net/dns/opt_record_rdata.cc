@@ -7,8 +7,11 @@
 #include <algorithm>
 #include <memory>
 #include <numeric>
+#include <optional>
+#include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "base/big_endian.h"
 #include "base/check_is_test.h"
@@ -16,17 +19,23 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/containers/span_writer.h"
+#include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_view_util.h"
 #include "base/types/optional_util.h"
+#include "base/values.h"
+#include "net/base/features.h"
 #include "net/dns/public/dns_protocol.h"
 
 namespace net {
 
 namespace {
-std::string SerializeEdeOpt(uint16_t info_code, std::string_view extra_text) {
-  std::string buf(2 + extra_text.size(), '\0');
+std::vector<uint8_t> SerializeEdeOpt(uint16_t info_code,
+                                     std::string_view extra_text) {
+  std::vector<uint8_t> buf(2 + extra_text.size());
 
   auto writer = base::SpanWriter(base::as_writable_byte_span(buf));
   CHECK(writer.WriteU16BigEndian(info_code));
@@ -34,16 +43,61 @@ std::string SerializeEdeOpt(uint16_t info_code, std::string_view extra_text) {
   CHECK_EQ(writer.remaining(), 0u);
   return buf;
 }
+
+std::optional<std::string> GetFilteringDetailsString(
+    const base::Value::Dict& dict,
+    std::string_view key) {
+  const std::string* val = dict.FindString(key);
+  if (!val) {
+    return std::nullopt;
+  }
+  if (!base::IsStringUTF8(*val)) {
+    return std::nullopt;
+  }
+  return *val;
+}
+
+// Parses the Filtering Details (db and id from fdbs) from the EDE extra text.
+std::vector<OptRecordRdata::EdeOpt::FilteringDetails> ParseFilteringDetails(
+    std::string_view json) {
+  std::optional<base::Value> value =
+      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
+  if (!value || !value->is_dict()) {
+    return {};
+  }
+  const base::Value::Dict& dict = value->GetDict();
+  const base::ListValue* dbs = dict.FindList("fdbs");
+  if (!dbs) {
+    return {};
+  }
+  std::vector<OptRecordRdata::EdeOpt::FilteringDetails> filtering_details;
+  for (const auto& fdb : *dbs) {
+    if (!fdb.is_dict()) {
+      continue;
+    }
+    const base::Value::Dict& entry = fdb.GetDict();
+    auto db = GetFilteringDetailsString(entry, "db");
+    auto id = GetFilteringDetailsString(entry, "id");
+    if (db && id) {
+      OptRecordRdata::EdeOpt::FilteringDetails meta;
+      meta.resolver_operator_id = std::move(*db);
+      meta.filtering_incident_id = std::move(*id);
+      filtering_details.push_back(std::move(meta));
+    }
+  }
+  return filtering_details;
+}
 }  // namespace
 
-OptRecordRdata::Opt::Opt(std::string data) : data_(std::move(data)) {}
+OptRecordRdata::Opt::~Opt() = default;
+
+OptRecordRdata::Opt::Opt(base::span<const uint8_t> data)
+    : data_(data.begin(), data.end()) {}
+
+OptRecordRdata::Opt::Opt(std::vector<uint8_t> data) : data_(std::move(data)) {}
 
 bool OptRecordRdata::Opt::operator==(const OptRecordRdata::Opt& other) const {
   return IsEqual(other);
-}
-
-bool OptRecordRdata::Opt::operator!=(const OptRecordRdata::Opt& other) const {
-  return !IsEqual(other);
 }
 
 bool OptRecordRdata::Opt::IsEqual(const OptRecordRdata::Opt& other) const {
@@ -56,13 +110,25 @@ OptRecordRdata::EdeOpt::EdeOpt(uint16_t info_code, std::string extra_text)
       extra_text_(std::move(extra_text)) {
   CHECK(base::IsStringUTF8(extra_text_));
 }
+OptRecordRdata::EdeOpt::FilteringDetails::FilteringDetails() = default;
+OptRecordRdata::EdeOpt::FilteringDetails::~FilteringDetails() = default;
+OptRecordRdata::EdeOpt::FilteringDetails::FilteringDetails(
+    const FilteringDetails&) = default;
+OptRecordRdata::EdeOpt::FilteringDetails&
+OptRecordRdata::EdeOpt::FilteringDetails::operator=(const FilteringDetails&) =
+    default;
+OptRecordRdata::EdeOpt::FilteringDetails::FilteringDetails(
+    FilteringDetails&&) noexcept = default;
+OptRecordRdata::EdeOpt::FilteringDetails&
+OptRecordRdata::EdeOpt::FilteringDetails::operator=(
+    FilteringDetails&&) noexcept = default;
 
 OptRecordRdata::EdeOpt::~EdeOpt() = default;
 
 std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
-    std::string data) {
+    base::span<const uint8_t> data) {
   uint16_t info_code;
-  auto edeReader = base::SpanReader(base::as_byte_span(data));
+  auto edeReader = base::SpanReader(data);
 
   // size must be at least 2: info_code + optional extra_text
   base::span<const uint8_t> extra_text;
@@ -75,9 +141,17 @@ std::unique_ptr<OptRecordRdata::EdeOpt> OptRecordRdata::EdeOpt::Create(
   if (!base::IsStringUTF8(base::as_string_view(extra_text))) {
     return nullptr;
   }
-
-  return std::make_unique<EdeOpt>(
+  auto ede = std::make_unique<EdeOpt>(
       info_code, std::string(base::as_string_view(extra_text)));
+  if (base::FeatureList::IsEnabled(net::features::kUseStructuredDnsErrors)) {
+    ede->filtering_details_ = ParseFilteringDetails(ede->extra_text());
+  }
+  return ede;
+}
+
+std::unique_ptr<OptRecordRdata::EdeOpt>
+OptRecordRdata::EdeOpt::CreateStructuredErrorsRequest() {
+  return std::make_unique<EdeOpt>(EdeInfoCode::kOtherError, /*extra_text=*/"");
 }
 
 uint16_t OptRecordRdata::EdeOpt::GetCode() const {
@@ -154,10 +228,11 @@ OptRecordRdata::EdeOpt::EdeInfoCode OptRecordRdata::EdeOpt::GetEnumFromInfoCode(
 }
 
 OptRecordRdata::PaddingOpt::PaddingOpt(std::string padding)
-    : Opt(std::move(padding)) {}
+    : Opt(base::as_byte_span(padding)) {}
 
 OptRecordRdata::PaddingOpt::PaddingOpt(uint16_t padding_len)
-    : Opt(std::string(base::checked_cast<size_t>(padding_len), '\0')) {}
+    : Opt(base::span<const uint8_t>(
+          std::vector<uint8_t>(base::checked_cast<size_t>(padding_len)))) {}
 
 OptRecordRdata::PaddingOpt::~PaddingOpt() = default;
 
@@ -168,14 +243,16 @@ uint16_t OptRecordRdata::PaddingOpt::GetCode() const {
 OptRecordRdata::UnknownOpt::~UnknownOpt() = default;
 
 std::unique_ptr<OptRecordRdata::UnknownOpt>
-OptRecordRdata::UnknownOpt::CreateForTesting(uint16_t code, std::string data) {
+OptRecordRdata::UnknownOpt::CreateForTesting(uint16_t code,
+                                             base::span<const uint8_t> data) {
   CHECK_IS_TEST();
   return base::WrapUnique(
       new OptRecordRdata::UnknownOpt(code, std::move(data)));
 }
 
-OptRecordRdata::UnknownOpt::UnknownOpt(uint16_t code, std::string data)
-    : Opt(std::move(data)), code_(code) {
+OptRecordRdata::UnknownOpt::UnknownOpt(uint16_t code,
+                                       base::span<const uint8_t> data)
+    : Opt(data), code_(code) {
   CHECK(!base::Contains(kOptsWithDedicatedClasses, code));
 }
 
@@ -191,20 +268,16 @@ bool OptRecordRdata::operator==(const OptRecordRdata& other) const {
   return IsEqual(&other);
 }
 
-bool OptRecordRdata::operator!=(const OptRecordRdata& other) const {
-  return !IsEqual(&other);
-}
-
 // static
-std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(std::string_view data) {
+std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(
+    base::span<const uint8_t> data) {
   auto rdata = std::make_unique<OptRecordRdata>();
   rdata->buf_.assign(data.begin(), data.end());
 
-  auto reader = base::SpanReader(base::as_byte_span(data));
+  auto reader = base::SpanReader(data);
   while (reader.remaining() > 0u) {
     uint16_t opt_code, opt_data_size;
     base::span<const uint8_t> opt_data;
-
     if (!reader.ReadU16BigEndian(opt_code) ||
         !reader.ReadU16BigEndian(opt_data_size) ||
         !base::OptionalUnwrapTo(reader.Read(opt_data_size), opt_data)) {
@@ -224,12 +297,11 @@ std::unique_ptr<OptRecordRdata> OptRecordRdata::Create(std::string_view data) {
             std::string(base::as_string_view(opt_data)));
         break;
       case dns_protocol::kEdnsExtendedDnsError:
-        opt = OptRecordRdata::EdeOpt::Create(
-            std::string(base::as_string_view(opt_data)));
+        opt = OptRecordRdata::EdeOpt::Create(opt_data);
         break;
       default:
-        opt = base::WrapUnique(new OptRecordRdata::UnknownOpt(
-            opt_code, std::string(base::as_string_view(opt_data))));
+        opt = base::WrapUnique(
+            new OptRecordRdata::UnknownOpt(opt_code, opt_data));
         break;
     }
 
@@ -258,7 +330,7 @@ bool OptRecordRdata::IsEqual(const RecordRdata* other) const {
 }
 
 void OptRecordRdata::AddOpt(std::unique_ptr<Opt> opt) {
-  std::string_view opt_data = opt->data();
+  base::span<const uint8_t> opt_data = opt->data();
 
   // Resize buffer to accommodate new OPT.
   const size_t orig_rdata_size = buf_.size();

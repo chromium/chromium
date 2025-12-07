@@ -1,0 +1,112 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+component("interaction") {
+  output_name = "ui_base_interaction"
+  defines = [ "IS_UI_BASE_INTERACTION_IMPL" ]
+
+  public = [
+    "element_events.h",
+    "element_identifier.h",
+    "element_specifier.h",
+    "element_tracker.h",
+    "framework_specific_implementation.h",
+    "framework_specific_registration_list.h",
+    "interaction_sequence.h",
+    "typed_data.h",
+    "typed_data_collection.h",
+    "typed_identifier.h",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/gfx:native_widget_types",
+    "//ui/gfx/geometry",
+  ]
+
+  sources = [
+    "element_events.cc",
+    "element_identifier.cc",
+    "element_specifier.cc",
+    "element_tracker.cc",
+    "framework_specific_implementation.cc",
+    "interaction_sequence.cc",
+    "typed_data_collection.cc",
+  ]
+
+  if (is_mac) {
+    public += [ "element_tracker_mac.h" ]
+    sources += [ "element_tracker_mac.mm" ]
+    frameworks = [ "Foundation.framework" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "element_test_util.cc",
+    "element_test_util.h",
+    "expect_call_in_scope.h",
+    "interaction_sequence_test_util.h",
+    "interaction_test_util.cc",
+    "interaction_test_util.h",
+    "interactive_test.cc",
+    "interactive_test.h",
+    "interactive_test_definitions.h",
+    "interactive_test_internal.cc",
+    "interactive_test_internal.h",
+    "polling_state_observer.h",
+    "scoped_typed_data.h",
+    "state_observer.h",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "interaction_test_util_mac.h",
+      "interaction_test_util_mac.mm",
+    ]
+  }
+
+  public_deps = [
+    ":interaction",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    "//base",
+    "//ui/base",
+    "//ui/menus",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "element_identifier_unittest.cc",
+    "element_tracker_unittest.cc",
+    "framework_specific_implementation_unittest.cc",
+    "framework_specific_registration_list_unittest.cc",
+    "interaction_sequence_unittest.cc",
+    "interaction_test_util_unittest.cc",
+    "interactive_test_unittest.cc",
+    "typed_data_collection_unittest.cc",
+  ]
+
+  if (is_mac) {
+    sources += [ "element_tracker_mac_unittest.mm" ]
+    frameworks = [ "Foundation.framework" ]
+  }
+
+  deps = [
+    ":interaction",
+    ":test_support",
+    "//ui/base",
+  ]
+}

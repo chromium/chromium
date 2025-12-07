@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -26,13 +27,11 @@
 
 namespace ash {
 
-namespace {
-
 // A login implementation of WidgetDelegate.
 class LoginTestWidgetDelegate : public views::WidgetDelegate {
  public:
   explicit LoginTestWidgetDelegate(views::Widget* widget) : widget_(widget) {
-    SetOwnedByWidget(true);
+    SetOwnedByWidget(OwnedByWidgetPassKey());
     SetFocusTraversesOut(true);
   }
 
@@ -49,8 +48,6 @@ class LoginTestWidgetDelegate : public views::WidgetDelegate {
  private:
   raw_ptr<views::Widget> widget_;
 };
-
-}  // namespace
 
 class LockLayoutManagerTest : public AshTestBase {
  public:
@@ -108,7 +105,7 @@ class LockLayoutManagerTest : public AshTestBase {
 
 TEST_F(LockLayoutManagerTest, NorwmalWindowBoundsArePreserved) {
   gfx::Rect screen_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
 
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
@@ -133,12 +130,12 @@ TEST_F(LockLayoutManagerTest, NorwmalWindowBoundsArePreserved) {
 
 TEST_F(LockLayoutManagerTest, MaximizedFullscreenWindowBoundsAreEqualToScreen) {
   gfx::Rect screen_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
 
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_MAXIMIZED;
+  widget_params.show_state = ui::mojom::WindowShowState::kMaximized;
   const gfx::Rect bounds = gfx::Rect(10, 10, 300, 300);
   widget_params.bounds = bounds;
   // Maximized TYPE_WINDOW_FRAMELESS windows needs a delegate defined otherwise
@@ -146,7 +143,7 @@ TEST_F(LockLayoutManagerTest, MaximizedFullscreenWindowBoundsAreEqualToScreen) {
   std::unique_ptr<aura::Window> maximized_window(
       CreateTestLoginWindow(std::move(widget_params), true /* use_delegate */));
 
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   widget_params.delegate = nullptr;
   std::unique_ptr<aura::Window> fullscreen_window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
@@ -197,12 +194,12 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanel) {
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
 
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
 
   gfx::Rect target_bounds = primary_display.bounds();
   target_bounds.Inset(gfx::Insets().set_top(accessibility_panel_height));
@@ -222,13 +219,13 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanel) {
 
 TEST_F(LockLayoutManagerTest, KeyboardBounds) {
   display::Display primary_display =
-      display::Screen::GetScreen()->GetPrimaryDisplay();
+      display::Screen::Get()->GetPrimaryDisplay();
   gfx::Rect screen_bounds = primary_display.bounds();
 
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
 
@@ -257,7 +254,7 @@ TEST_F(LockLayoutManagerTest, KeyboardBounds) {
   display_manager()->SetDisplayRotation(
       primary_display.id(), display::Display::ROTATE_90,
       display::Display::RotationSource::ACTIVE);
-  primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  primary_display = display::Screen::Get()->GetPrimaryDisplay();
   screen_bounds = primary_display.bounds();
   EXPECT_EQ(screen_bounds.ToString(), window->GetBoundsInScreen().ToString());
   display_manager()->SetDisplayRotation(
@@ -270,7 +267,7 @@ TEST_F(LockLayoutManagerTest, KeyboardBounds) {
       keyboard::KeyboardOverscrollBehavior::kDisabled);
   ShowKeyboard(true);
 
-  primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  primary_display = display::Screen::Get()->GetPrimaryDisplay();
   screen_bounds = primary_display.bounds();
   gfx::Rect target_bounds(screen_bounds);
   target_bounds.set_height(target_bounds.height() -
@@ -284,7 +281,7 @@ TEST_F(LockLayoutManagerTest, KeyboardBounds) {
                              gfx::Rect() /* target_bounds */,
                              base::BindOnce([](bool success) {}));
   ShowKeyboard(true);
-  primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
+  primary_display = display::Screen::Get()->GetPrimaryDisplay();
   screen_bounds = primary_display.bounds();
   EXPECT_EQ(screen_bounds.ToString(), window->GetBoundsInScreen().ToString());
   ShowKeyboard(false);
@@ -293,13 +290,13 @@ TEST_F(LockLayoutManagerTest, KeyboardBounds) {
 TEST_F(LockLayoutManagerTest, MultipleMonitors) {
   UpdateDisplay("300x400,400x500");
   gfx::Rect screen_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
 
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
   window->SetProperty(aura::client::kResizeBehaviorKey,
@@ -314,7 +311,8 @@ TEST_F(LockLayoutManagerTest, MultipleMonitors) {
 
   // Maximize the window with as the restore bounds is inside 2nd display but
   // lock container windows are always on primary display.
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
   EXPECT_EQ("0,0 300x400", window->GetBoundsInScreen().ToString());
 
@@ -323,7 +321,8 @@ TEST_F(LockLayoutManagerTest, MultipleMonitors) {
   EXPECT_EQ("0,0 300x400", window->GetBoundsInScreen().ToString());
 
   window_state->SetRestoreBoundsInScreen(gfx::Rect(280, 0, 30, 40));
-  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  window->SetProperty(aura::client::kShowStateKey,
+                      ui::mojom::WindowShowState::kFullscreen);
   EXPECT_EQ(root_windows[0], window->GetRootWindow());
   EXPECT_EQ("0,0 300x400", window->GetBoundsInScreen().ToString());
 
@@ -359,14 +358,14 @@ TEST_F(LockLayoutManagerTest, AccessibilityPanelWithMultipleMonitors) {
   views::Widget::InitParams widget_params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
+  widget_params.show_state = ui::mojom::WindowShowState::kFullscreen;
   std::unique_ptr<aura::Window> window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
   window->SetProperty(aura::client::kResizeBehaviorKey,
                       aura::client::kResizeBehaviorCanMaximize);
 
   gfx::Rect target_bounds =
-      display::Screen::GetScreen()->GetPrimaryDisplay().bounds();
+      display::Screen::Get()->GetPrimaryDisplay().bounds();
   target_bounds.Inset(gfx::Insets::TLBR(kAccessibilityPanelHeight, 0, 0, 0));
   EXPECT_EQ(target_bounds, window->GetBoundsInScreen());
 

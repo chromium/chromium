@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("edu_coexistence") {
   sources = [
@@ -15,13 +14,17 @@ static_library("edu_coexistence") {
     "edu_coexistence_state_tracker.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
     "//ash/constants",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:channel_info",
     "//chrome/common:non_code_constants",
@@ -34,6 +37,8 @@ static_library("edu_coexistence") {
     "//net",
     "//ui/base",
   ]
+
+  allow_circular_includes_from = [ "//chrome/browser/ash/account_manager" ]
 }
 
 source_set("browser_tests") {

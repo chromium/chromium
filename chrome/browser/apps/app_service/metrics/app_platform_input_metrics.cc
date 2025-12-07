@@ -4,7 +4,10 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_platform_input_metrics.h"
 
+#include <string_view>
+
 #include "ash/shell.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
@@ -36,19 +39,13 @@ constexpr char kInputEventStylusKey[] = "stylus";
 constexpr char kInputEventTouchKey[] = "touch";
 constexpr char kInputEventKeyboardKey[] = "keyboard";
 
-base::flat_map<std::string, InputEventSource>& GetInputEventSourceMap() {
-  static base::NoDestructor<base::flat_map<std::string, InputEventSource>>
-      input_event_source_map;
-  if (input_event_source_map->empty()) {
-    *input_event_source_map = {
+constexpr auto kInputEventSourceMap =
+    base::MakeFixedFlatMap<std::string_view, InputEventSource>({
         {kInputEventMouseKey, InputEventSource::kMouse},
         {kInputEventStylusKey, InputEventSource::kStylus},
         {kInputEventTouchKey, InputEventSource::kTouch},
         {kInputEventKeyboardKey, InputEventSource::kKeyboard},
-    };
-  }
-  return *input_event_source_map;
-}
+    });
 
 InputEventSource GetInputEventSource(ui::EventPointerType type) {
   switch (type) {
@@ -68,10 +65,9 @@ InputEventSource GetInputEventSource(ui::EventPointerType type) {
 // Returns the input event source for the given `event_source` string.
 InputEventSource GetInputEventSourceFromString(
     const std::string& event_source) {
-  const auto& input_event_source_map = GetInputEventSourceMap();
-  auto it = input_event_source_map.find(event_source);
-  return (it != input_event_source_map.end()) ? it->second
-                                              : InputEventSource::kUnknown;
+  auto it = kInputEventSourceMap.find(event_source);
+  return (it != kInputEventSourceMap.end()) ? it->second
+                                            : InputEventSource::kUnknown;
 }
 
 // Returns the string key for `event_source` to save input events in the user
@@ -255,7 +251,7 @@ void AppPlatformInputMetrics::SetAppInfoForActivatedWindow(
   // For apps opened in browser windows, get the top level window, and modify
   // `browser_to_tab_list_` to save the activated tab app id.
   if (IsAppOpenedWithBrowserWindow(profile_, app_type, app_id)) {
-    window = IsLacrosWindow(window) ? window : window->GetToplevelWindow();
+    window = window->GetToplevelWindow();
     if (IsAppOpenedInTab(app_type_name, app_id)) {
       // When the tab is pulled to a separate browser window, the instance id is
       // not changed, but the parent browser window is changed. So remove the
@@ -288,14 +284,12 @@ void AppPlatformInputMetrics::SetAppInfoForInactivatedWindow(
 
   auto app_id = browser_to_tab_list_.GetActivatedTabAppId(browser_window);
   if (app_id.empty()) {
-    app_id = IsLacrosWindow(browser_window) ? app_constants::kLacrosAppId
-                                            : app_constants::kChromeAppId;
+    app_id = app_constants::kChromeAppId;
   }
 
   window_to_app_info_[browser_window].app_id = app_id;
   window_to_app_info_[browser_window].app_type_name =
-      IsLacrosWindow(browser_window) ? apps::AppTypeName::kStandaloneBrowser
-                                     : apps::AppTypeName::kChromeBrowser;
+      apps::AppTypeName::kChromeBrowser;
 }
 
 void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,

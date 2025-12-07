@@ -2,32 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/events/ash/event_rewriter_ash.h"
 
 #include <fcntl.h>
 #include <stddef.h>
 
+#include <algorithm>
 #include <cstdint>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "device/udev_linux/scoped_udev.h"
-#include "ui/base/accelerators/ash/right_alt_event_property.h"
+#include "ui/base/accelerators/ash/quick_insert_event_property.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -200,10 +196,10 @@ constexpr struct ModifierRemapping {
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
       VKEY_ASSISTANT}},
     {EF_NONE,
-     ui::mojom::ModifierKey::kRightAlt,
+     ui::mojom::ModifierKey::kQuickInsert,
      nullptr,
      {EF_NONE, DomCode::LAUNCH_ASSISTANT, DomKey::LAUNCH_ASSISTANT,
-      VKEY_RIGHT_ALT}},
+      VKEY_QUICK_INSERT}},
     {EF_FUNCTION_DOWN,
      ui::mojom::ModifierKey::kFunction,
      nullptr,
@@ -433,7 +429,7 @@ bool RewriteWithKeyboardRemappings(
     EventRewriterAsh::MutableKeyState* remapped_state,
     bool strict = false) {
   for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = mappings[i];
+    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
     if (MatchKeyboardRemapping(input_state, map.condition, strict)) {
       remapped_state->flags = (input_state.flags & ~map.condition.flags);
       ApplyRemapping(map.result, remapped_state);
@@ -452,7 +448,7 @@ ui::KeyboardCode MatchedDeprecatedRemapping(
     size_t num_mappings,
     const EventRewriterAsh::MutableKeyState& input_state) {
   for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = mappings[i];
+    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
     if (MatchKeyboardRemapping(input_state, map.condition, /*strict=*/false)) {
       return map.result.key_code;
     }
@@ -522,7 +518,7 @@ bool IsKeyCodeInMappings(KeyboardCode key_code,
                          const KeyboardRemapping* mappings,
                          size_t num_mappings) {
   for (size_t i = 0; i < num_mappings; ++i) {
-    const KeyboardRemapping& map = mappings[i];
+    const KeyboardRemapping& map = UNSAFE_TODO(mappings[i]);
     if (key_code == map.condition.key_code) {
       return true;
     }
@@ -581,8 +577,7 @@ void RecordSearchPlusDigitFKeyRewrite(ui::EventType event_type,
       base::RecordAction(base::UserMetricsAction("SearchPlusDigitRewrite_F12"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -629,8 +624,7 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
             base::UserMetricsAction("SearchBasedKeyRewrite_PageDown"));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } else {
     switch (key_code) {
@@ -657,8 +651,7 @@ void RecordSixPackEventRewrites(EventRewriterAsh::Delegate* delegate,
             base::UserMetricsAction("AltBasedKeyRewrite_PageDown"));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -730,8 +723,7 @@ void RecordFunctionKeyFromKeyCode(ui::KeyboardCode key_code,
                                 event_enum);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1031,7 +1023,7 @@ bool MaybeNotifyTopRowKeyBlockedByFnKey(
   }
   const auto& scan_code_vector = *scan_code_vector_ptr;
   const auto& key_iter =
-      base::ranges::find(scan_code_vector, key_event.scan_code());
+      std::ranges::find(scan_code_vector, key_event.scan_code());
 
   // If the scan code appears in the top row mapping it is an action key then
   // notify the user the key has been blocked.
@@ -1242,11 +1234,11 @@ void EventRewriterAsh::BuildRewrittenKeyEvent(
   if (key_event.properties()) {
     key_event_ptr->SetProperties(*key_event.properties());
   }
-  // Rewrite to VKEY_RIGHT_ALT and set the property on the event to mark it as
-  // being VKEY_RIGHT_ALT.
-  if (state.key_code == VKEY_RIGHT_ALT) {
+  // Rewrite to VKEY_QUICK_INSERT and set the property on the event to mark it
+  // as being VKEY_QUICK_INSERT.
+  if (state.key_code == VKEY_QUICK_INSERT) {
     key_event_ptr->set_key_code(VKEY_ASSISTANT);
-    SetRightAltProperty(key_event_ptr.get());
+    SetQuickInsertProperty(key_event_ptr.get());
   }
   *rewritten_event = std::move(key_event_ptr);
 }
@@ -1398,9 +1390,9 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
                          prefs::kLanguageRemapBackspaceKeyTo, delegate_);
       break;
     case DomCode::LAUNCH_ASSISTANT:
-      if (keyboard_capability_->HasRightAltKey(device_id)) {
-        remapped_key = GetRemappedKey(device_id, mojom::ModifierKey::kRightAlt,
-                                      "", delegate_);
+      if (keyboard_capability_->HasQuickInsertKey(device_id)) {
+        remapped_key = GetRemappedKey(
+            device_id, mojom::ModifierKey::kQuickInsert, "", delegate_);
         break;
       }
       remapped_key =
@@ -1479,9 +1471,10 @@ bool EventRewriterAsh::RewriteModifierKeys(const KeyEvent& key_event,
     // same, too, but actually CapsLock will trigger to change the
     // EF_CAPS_LOCK_ON flag of the original event. Instead, check whether the
     // current key is already pressed or not.
-    bool is_repeat = base::ranges::find(
+    bool is_repeat = std::ranges::find(
                          pressed_key_states_,
-                         std::tuple(key_event.code(), key_event.GetDomKey(),
+                         std::tuple(key_event.code(),
+                                    DomKey::Base{key_event.GetDomKey()},
                                     key_event.key_code()),
                          [](auto entry) {
                            return std::tuple(entry.first.code, entry.first.key,
@@ -1509,10 +1502,10 @@ int EventRewriterAsh::GetRemappedModifierMasks(int device_id,
   for (size_t i = 0; unmodified_flags && (i < std::size(kModifierRemappings));
        ++i) {
     const ModifierRemapping* remapped_key = nullptr;
-    if (!(unmodified_flags & kModifierRemappings[i].flag)) {
+    if (!(unmodified_flags & UNSAFE_TODO(kModifierRemappings[i]).flag)) {
       continue;
     }
-    switch (kModifierRemappings[i].flag) {
+    switch (UNSAFE_TODO(kModifierRemappings[i]).flag) {
       case EF_COMMAND_DOWN:
         remapped_key =
             GetSearchRemappedKey(delegate_, device_id, *keyboard_capability_);
@@ -1540,16 +1533,18 @@ int EventRewriterAsh::GetRemappedModifierMasks(int device_id,
     }
     // ISO Level 5 Shift should already be handled, so do not try to remap it
     // here.
-    if (!remapped_key &&
-        &kModifierRemappings[i] != kModifierRemappingIsoLevel5ShiftMod3) {
-      const std::string pref_name = kModifierRemappings[i].pref_name
-                                        ? kModifierRemappings[i].pref_name
-                                        : "";
-      remapped_key = GetRemappedKey(device_id, kModifierRemappings[i].remap_to,
-                                    pref_name, delegate_);
+    if (!remapped_key && &UNSAFE_TODO(kModifierRemappings[i]) !=
+                             kModifierRemappingIsoLevel5ShiftMod3) {
+      const std::string pref_name =
+          UNSAFE_TODO(kModifierRemappings[i]).pref_name
+              ? UNSAFE_TODO(kModifierRemappings[i]).pref_name
+              : "";
+      remapped_key = GetRemappedKey(
+          device_id, UNSAFE_TODO(kModifierRemappings[i]).remap_to, pref_name,
+          delegate_);
     }
     if (remapped_key) {
-      unmodified_flags &= ~kModifierRemappings[i].flag;
+      unmodified_flags &= ~UNSAFE_TODO(kModifierRemappings[i]).flag;
       rewritten_flags |= remapped_key->flag;
     }
   }
@@ -1674,44 +1669,13 @@ EventRewriteStatus EventRewriterAsh::RewriteKeyEvent(
     return EVENT_REWRITE_DISCARD;
   }
 
-  // Records metric if the `key_event` is for a modifier key press event.
-  const bool should_record_modifier_key_press_metrics =
-      !(key_event.flags() & EF_IS_REPEAT) &&
-      key_event.type() == EventType::kKeyPressed &&
-      !ash::features::IsKeyboardRewriterFixEnabled();
-  if (should_record_modifier_key_press_metrics) {
-    RecordModifierKeyPressedBeforeRemapping(*keyboard_capability_, device_id,
-                                            key_event.code());
-  }
-
   MutableKeyState state = {key_event.flags(), key_event.code(),
                            key_event.GetDomKey(), key_event.key_code()};
 
   // Do not rewrite an event sent by ui_controls::SendKeyPress(). See
   // crbug.com/136465.
   if (!(key_event.flags() & EF_FINAL)) {
-    if (!ash::features::IsKeyboardRewriterFixEnabled()) {
-      // If RewriteModifierKeys() returns true there should be no more
-      // processing done to the key event. It will only return true if the key
-      // event is rewritten to ALTGR. A false return is not an error.
-      if (RewriteModifierKeys(key_event, device_id, &state)) {
-        if (should_record_modifier_key_press_metrics) {
-          RecordModifierKeyPressedAfterRemapping(
-              *keyboard_capability_, device_id, state.code, key_event.code(),
-              state.key_code == VKEY_RIGHT_ALT);
-        }
-        // Early exit with completed event.
-        BuildRewrittenKeyEvent(key_event, state, rewritten_event);
-        return EVENT_REWRITE_REWRITTEN;
-      }
-    }
     RewriteNumPadKeys(key_event, &state);
-  }
-
-  if (should_record_modifier_key_press_metrics) {
-    RecordModifierKeyPressedAfterRemapping(*keyboard_capability_, device_id,
-                                           state.code, key_event.code(),
-                                           state.key_code == VKEY_RIGHT_ALT);
   }
 
   if (delegate_ &&
@@ -2067,18 +2031,9 @@ void EventRewriterAsh::RewriteFunctionKeys(const KeyEvent& key_event,
 }
 
 int EventRewriterAsh::RewriteLocatedEvent(const Event& event) {
-  if (!delegate_) {
-    return event.flags();
-  }
-
-  if (ash::features::IsKeyboardRewriterFixEnabled()) {
-    // Return the events flags as modifiers should already be remapped via
-    // the KeyboardModifierEventRewriter.
-    return event.flags();
-  }
-
-  // Use the keyboard device_id for the last KeyEvent.
-  return GetRemappedModifierMasks(last_keyboard_device_id_, event.flags());
+  // Return the events flags as modifiers should already be remapped via
+  // the KeyboardModifierEventRewriter.
+  return event.flags();
 }
 
 int EventRewriterAsh::RewriteModifierClick(const MouseEvent& mouse_event,
@@ -2131,192 +2086,63 @@ EventDispatchDetails EventRewriterAsh::RewriteKeyEventInContext(
     return DiscardEvent(continuation);
   }
 
-  if (ash::features::IsKeyboardRewriterFixEnabled()) {
-    internal::PhysicalKey key = {
-        key_event.code(),
-        key_event.source_device_id(),
-    };
-    MutableKeyState key_state(rewritten_event ? rewritten_event->AsKeyEvent()
-                                              : &key_event);
-    auto it = pressed_physical_keys_.find(key);
-    bool is_rewritten_differently =
-        it != pressed_physical_keys_.end() &&
-        (it->second.code != key_state.code || it->second.key != key_state.key ||
-         it->second.key_code != key_state.key_code);
-
-    if (key_event.type() == EventType::kKeyPressed) {
-      // If a key press event for an already pressed key is rewritten in
-      // a different way, we send an release event, just before dispatching
-      // the (newly) rewritten pressed key, so that following stage can
-      // make pairs of key-pressed/-released events or rewritten ones.
-      if (is_rewritten_differently) {
-        auto dispatched_event = std::make_unique<KeyEvent>(
-            ui::EventType::kKeyReleased, it->second.key_code, it->second.code,
-            key_event.flags() & ~it->second.flags, it->second.key,
-            key_event.time_stamp());
-        dispatched_event->set_source_device_id(key_event.source_device_id());
-        std::ignore = SendEvent(continuation, dispatched_event.get());
-      }
-      // Remember consumed flags on rewriting.
-      key_state.flags = key_event.flags() & ~key_state.flags;
-      pressed_physical_keys_.insert_or_assign(key, key_state);
-    } else {
-      if (is_rewritten_differently) {
-        // Restore the originally rewritten key under the current modifiers.
-        // Note that modifier flags cannot be restored (and that's why the
-        // key is rewritten differently), so here as a best effort just
-        // mask the consumed key from the current key event flags.
-        auto rewritten_key_event = std::make_unique<KeyEvent>(
-            ui::EventType::kKeyReleased, it->second.key_code, it->second.code,
-            key_event.flags() & ~key_state.flags, it->second.key,
-            key_event.time_stamp());
-        rewritten_key_event->set_source_device_id(key_event.source_device_id());
-        rewritten_key_event->set_scan_code(key_event.scan_code());
-        rewritten_event = std::move(rewritten_key_event);
-        status = EventRewriteStatus::EVENT_REWRITE_REWRITTEN;
-      }
-      pressed_physical_keys_.erase(key);
-    }
-
-    if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
-      return SendEvent(continuation, &key_event);
-    }
-
-    EventDispatchDetails details =
-        SendEvent(continuation, rewritten_event.get());
-    if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
-        !details.dispatcher_destroyed) {
-      return SendStickyKeysReleaseEvents(std::move(rewritten_event),
-                                         continuation);
-    }
-    return details;
-  }
-
-  MutableKeyState current_key_state;
-  auto key_state_comparator =
-      [&current_key_state](
-          const std::pair<MutableKeyState, MutableKeyState>& key_state) {
-        return (current_key_state.code == key_state.first.code) &&
-               (current_key_state.key == key_state.first.key) &&
-               (current_key_state.key_code == key_state.first.key_code);
-      };
-
-  const int mapped_flag = ModifierDomKeyToEventFlag(key_event.GetDomKey());
+  internal::PhysicalKey key = {
+      key_event.code(),
+      key_event.source_device_id(),
+  };
+  MutableKeyState key_state(rewritten_event ? rewritten_event->AsKeyEvent()
+                                            : &key_event);
+  auto it = pressed_physical_keys_.find(key);
+  bool is_rewritten_differently =
+      it != pressed_physical_keys_.end() &&
+      (it->second.code != key_state.code || it->second.key != key_state.key ||
+       it->second.key_code != key_state.key_code);
 
   if (key_event.type() == EventType::kKeyPressed) {
-    current_key_state = MutableKeyState(
-        rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
-                        : &key_event);
-    MutableKeyState original_key_state(&key_event);
-    auto iter =
-        base::ranges::find_if(pressed_key_states_, key_state_comparator);
-
-    // When a key is pressed, store |current_key_state| if it is not stored
-    // before.
-    if (iter == pressed_key_states_.end()) {
-      pressed_key_states_.emplace_back(current_key_state, original_key_state);
+    // If a key press event for an already pressed key is rewritten in
+    // a different way, we send an release event, just before dispatching
+    // the (newly) rewritten pressed key, so that following stage can
+    // make pairs of key-pressed/-released events or rewritten ones.
+    if (is_rewritten_differently) {
+      auto dispatched_event = std::make_unique<KeyEvent>(
+          ui::EventType::kKeyReleased, it->second.key_code, it->second.code,
+          key_event.flags() & ~it->second.flags, it->second.key,
+          key_event.time_stamp());
+      dispatched_event->set_source_device_id(key_event.source_device_id());
+      std::ignore = SendEvent(continuation, dispatched_event.get());
     }
-
-    if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
-      return SendEvent(continuation, &key_event);
+    // Remember consumed flags on rewriting.
+    key_state.flags = key_event.flags() & ~key_state.flags;
+    pressed_physical_keys_.insert_or_assign(key, key_state);
+  } else {
+    if (is_rewritten_differently) {
+      // Restore the originally rewritten key under the current modifiers.
+      // Note that modifier flags cannot be restored (and that's why the
+      // key is rewritten differently), so here as a best effort just
+      // mask the consumed key from the current key event flags.
+      auto rewritten_key_event = std::make_unique<KeyEvent>(
+          ui::EventType::kKeyReleased, it->second.key_code, it->second.code,
+          key_event.flags() & ~key_state.flags, it->second.key,
+          key_event.time_stamp());
+      rewritten_key_event->set_source_device_id(key_event.source_device_id());
+      rewritten_key_event->set_scan_code(key_event.scan_code());
+      rewritten_event = std::move(rewritten_key_event);
+      status = EventRewriteStatus::EVENT_REWRITE_REWRITTEN;
     }
-
-    EventDispatchDetails details =
-        SendEvent(continuation, rewritten_event.get());
-    if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
-        !details.dispatcher_destroyed) {
-      return SendStickyKeysReleaseEvents(std::move(rewritten_event),
-                                         continuation);
-    }
-    return details;
+    pressed_physical_keys_.erase(key);
   }
 
-  DCHECK_EQ(key_event.type(), EventType::kKeyReleased);
-
-  if (mapped_flag != EF_NONE) {
-    // The released key is a modifier
-
-    DomKey::Base current_key = key_event.GetDomKey();
-    auto key_state_iter = pressed_key_states_.begin();
-    int event_flags =
-        rewritten_event ? rewritten_event->flags() : key_event.flags();
-    Event::Properties properties =
-        (rewritten_event && rewritten_event->properties())
-            ? *rewritten_event->properties()
-            : Event::Properties();
-    rewritten_event.reset();
-
-    // Iterate the keys being pressed. Release the key events which satisfy one
-    // of the following conditions:
-    // (1) the key event's original key code (before key event rewriting if
-    // any) is the same with the key to be released.
-    // (2) the key event is rewritten and its original flags are influenced by
-    // the key to be released.
-    // Example: Press the Launcher button, Press the Up Arrow button, Release
-    // the Launcher button. When Launcher is released: the key event whose key
-    // code is Launcher should be released because it satisfies the condition 1;
-    // the key event whose key code is PageUp should be released because it
-    // satisfies the condition 2.
-    EventDispatchDetails details;
-    while (key_state_iter != pressed_key_states_.end() &&
-           !details.dispatcher_destroyed) {
-      const bool is_rewritten =
-          (key_state_iter->first.key != key_state_iter->second.key);
-      const bool flag_affected = key_state_iter->second.flags & mapped_flag;
-      const bool should_release = key_state_iter->second.key == current_key ||
-                                  (flag_affected && is_rewritten);
-
-      if (should_release) {
-        // If the key should be released, create a key event for it.
-        auto dispatched_event = std::make_unique<KeyEvent>(
-            key_event.type(), key_state_iter->first.key_code,
-            key_state_iter->first.code, event_flags, key_state_iter->first.key,
-            key_event.time_stamp());
-        dispatched_event->set_scan_code(key_event.scan_code());
-        dispatched_event->set_source_device_id(key_event.source_device_id());
-        if (!properties.empty()) {
-          dispatched_event->SetProperties(properties);
-        }
-        details = SendEvent(continuation, dispatched_event.get());
-
-        key_state_iter = pressed_key_states_.erase(key_state_iter);
-        continue;
-      }
-      key_state_iter++;
-    }
-    return details;
+  if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
+    return SendEvent(continuation, &key_event);
   }
 
-  // The released key is not a modifier
-
-  current_key_state = MutableKeyState(
-      rewritten_event ? static_cast<const KeyEvent*>(rewritten_event.get())
-                      : &key_event);
-  auto iter = base::ranges::find_if(pressed_key_states_, key_state_comparator);
-  if (iter != pressed_key_states_.end()) {
-    pressed_key_states_.erase(iter);
-
-    if (status == EventRewriteStatus::EVENT_REWRITE_CONTINUE) {
-      return SendEvent(continuation, &key_event);
-    }
-
-    EventDispatchDetails details =
-        SendEvent(continuation, rewritten_event.get());
-    if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
-        !details.dispatcher_destroyed) {
-      return SendStickyKeysReleaseEvents(std::move(rewritten_event),
-                                         continuation);
-    }
-    return details;
+  EventDispatchDetails details = SendEvent(continuation, rewritten_event.get());
+  if (status == EventRewriteStatus::EVENT_REWRITE_DISPATCH_ANOTHER &&
+      !details.dispatcher_destroyed) {
+    return SendStickyKeysReleaseEvents(std::move(rewritten_event),
+                                       continuation);
   }
-
-  // Event rewriting may create a meaningless key event.
-  // For example: press the Up Arrow button, press the Launcher button,
-  // release the Up Arrow. When the Up Arrow button is released, key event
-  // rewriting happens. However, the rewritten event is not among
-  // |pressed_key_states_|. So it should be blocked and the original event
-  // should be propagated.
-  return SendEvent(continuation, &key_event);
+  return details;
 }
 
 // New CrOS keyboards differ from previous Chrome OS keyboards in a few
@@ -2368,13 +2194,13 @@ bool EventRewriterAsh::RewriteTopRowKeysForCustomLayout(
 
   const auto& scan_code_vector = *scan_code_vector_ptr;
   const auto& key_iter =
-      base::ranges::find(scan_code_vector, key_event.scan_code());
+      std::ranges::find(scan_code_vector, key_event.scan_code());
 
   // If the scan code appears in the top row mapping it is an action key.
   const bool is_action_key = (key_iter != scan_code_vector.end());
   if (is_action_key) {
     if (should_flip_top_row_mapping != ForceTopRowAsFunctionKeys(device_id)) {
-      ApplyRemapping(kCustomTopRowLayoutFKeys[std::distance(
+      ApplyRemapping(UNSAFE_TODO(kCustomTopRowLayoutFKeys)[std::distance(
                          scan_code_vector.begin(), key_iter)],
                      state);
     }

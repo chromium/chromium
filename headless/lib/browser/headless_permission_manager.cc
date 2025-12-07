@@ -5,7 +5,6 @@
 #include "headless/lib/browser/headless_permission_manager.h"
 
 #include "base/functional/callback.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -14,22 +13,20 @@
 
 namespace headless {
 
-HeadlessPermissionManager::HeadlessPermissionManager(
-    content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+HeadlessPermissionManager::HeadlessPermissionManager() = default;
 
 HeadlessPermissionManager::~HeadlessPermissionManager() = default;
 
 void HeadlessPermissionManager::RequestPermissions(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
-  // In headless mode we just pretent the user "closes" any permission prompt,
+  // In headless mode we just pretend the user "closes" any permission prompt,
   // without accepting or denying.
-  std::vector<blink::mojom::PermissionStatus> result(
+  std::vector<content::PermissionResult> result(
       request_description.permissions.size(),
-      blink::mojom::PermissionStatus::ASK);
+      content::PermissionResult(blink::mojom::PermissionStatus::ASK));
   std::move(callback).Run(result);
 }
 
@@ -41,18 +38,18 @@ void HeadlessPermissionManager::ResetPermission(
 void HeadlessPermissionManager::RequestPermissionsFromCurrentDocument(
     content::RenderFrameHost* render_frame_host,
     const content::PermissionRequestDescription& request_description,
-    base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
+    base::OnceCallback<void(const std::vector<content::PermissionResult>&)>
         callback) {
   // In headless mode we just pretent the user "closes" any permission prompt,
   // without accepting or denying.
-  std::vector<blink::mojom::PermissionStatus> result(
+  std::vector<content::PermissionResult> result(
       request_description.permissions.size(),
-      blink::mojom::PermissionStatus::ASK);
+      content::PermissionResult(blink::mojom::PermissionStatus::ASK));
   std::move(callback).Run(result);
 }
 
 blink::mojom::PermissionStatus HeadlessPermissionManager::GetPermissionStatus(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
   return blink::mojom::PermissionStatus::ASK;
@@ -60,52 +57,38 @@ blink::mojom::PermissionStatus HeadlessPermissionManager::GetPermissionStatus(
 
 content::PermissionResult
 HeadlessPermissionManager::GetPermissionResultForOriginWithoutContext(
-    blink::PermissionType permission,
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     const url::Origin& requesting_origin,
     const url::Origin& embedding_origin) {
-  blink::mojom::PermissionStatus status = GetPermissionStatus(
-      permission, requesting_origin.GetURL(), embedding_origin.GetURL());
+  blink::mojom::PermissionStatus status =
+      GetPermissionStatus(permission_descriptor, requesting_origin.GetURL(),
+                          embedding_origin.GetURL());
 
-  return content::PermissionResult(
-      status, content::PermissionStatusSource::UNSPECIFIED);
+  return content::PermissionResult(status);
 }
 
-blink::mojom::PermissionStatus
-HeadlessPermissionManager::GetPermissionStatusForCurrentDocument(
-    blink::PermissionType permission,
+content::PermissionResult
+HeadlessPermissionManager::GetPermissionResultForCurrentDocument(
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     bool should_include_device_status) {
-  return blink::mojom::PermissionStatus::ASK;
+  return content::PermissionResult(blink::mojom::PermissionStatus::ASK);
 }
 
-blink::mojom::PermissionStatus
-HeadlessPermissionManager::GetPermissionStatusForWorker(
-    blink::PermissionType permission,
+content::PermissionResult
+HeadlessPermissionManager::GetPermissionResultForWorker(
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderProcessHost* render_process_host,
     const GURL& worker_origin) {
-  return blink::mojom::PermissionStatus::ASK;
+  return content::PermissionResult(blink::mojom::PermissionStatus::ASK);
 }
 
-blink::mojom::PermissionStatus
-HeadlessPermissionManager::GetPermissionStatusForEmbeddedRequester(
-    blink::PermissionType permission,
+content::PermissionResult
+HeadlessPermissionManager::GetPermissionResultForEmbeddedRequester(
+    const blink::mojom::PermissionDescriptorPtr& permission_descriptor,
     content::RenderFrameHost* render_frame_host,
     const url::Origin& overridden_origin) {
-  return blink::mojom::PermissionStatus::ASK;
+  return content::PermissionResult(blink::mojom::PermissionStatus::ASK);
 }
-
-HeadlessPermissionManager::SubscriptionId
-HeadlessPermissionManager::SubscribeToPermissionStatusChange(
-    blink::PermissionType permission,
-    content::RenderProcessHost* render_process_host,
-    content::RenderFrameHost* render_frame_host,
-    const GURL& requesting_origin,
-    bool should_include_device_status,
-    base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback) {
-  return SubscriptionId();
-}
-
-void HeadlessPermissionManager::UnsubscribeFromPermissionStatusChange(
-    SubscriptionId subscription_id) {}
 
 }  // namespace headless

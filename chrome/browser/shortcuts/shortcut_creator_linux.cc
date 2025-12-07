@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/safe_base_name.h"
-#include "base/hash/md5.h"
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
@@ -30,6 +29,7 @@
 #include "chrome/browser/shortcuts/linux_xdg_wrapper.h"
 #include "chrome/browser/shortcuts/linux_xdg_wrapper_impl.h"
 #include "chrome/browser/shortcuts/shortcut_creator.h"
+#include "crypto/hash.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_family.h"
@@ -39,7 +39,7 @@ namespace shortcuts {
 namespace {
 
 base::SafeBaseName GenerateIconFilename(const GURL& url) {
-  std::string url_hash = base::MD5String(url.spec());
+  std::string url_hash = base::HexEncodeLower(crypto::hash::Sha256(url.spec()));
   std::optional<base::SafeBaseName> base_name =
       base::SafeBaseName::Create(base::StrCat({"shortcut-", url_hash, ".png"}));
   CHECK(base_name);

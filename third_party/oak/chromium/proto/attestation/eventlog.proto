@@ -1,0 +1,83 @@
+//
+// Copyright 2024 The Project Oak Authors
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto3";
+
+package oak.attestation.v1;
+
+import "proto/chromium_types/any.proto";
+import "proto/digest.proto";
+
+option go_package = "proto/oak/attestation/v1";
+option java_multiple_files = true;
+option java_package = "com.google.oak.attestation.v1";
+
+// All the related measurements for Stage 0.
+message Stage0Measurements {
+  // Kernel setup data digest.
+  bytes setup_data_digest = 1;
+  // Kernel digest.
+  bytes kernel_measurement = 2;
+  // Initial RAM disk digest.
+  bytes ram_disk_digest = 3;
+  // E820 table digest.
+  bytes memory_map_digest = 4;
+  // ACPI table generation digest
+  bytes acpi_digest = 5;
+  // Kernel Command line.
+  string kernel_cmdline = 6;
+}
+
+// All the related measurements for Oak Container's Stage 1.
+message Stage1Measurements {
+  // replaced by SystemLayerData, which holds the same data. Will be removed.
+  option deprecated = true;
+  // System image digest.
+  oak.RawDigest system_image = 1;
+}
+
+// All the related measurements for Oak Container's Stage 1.
+message OrchestratorMeasurements {
+  // replaced by ContainerLayerData, which holds the same data. Will be removed.
+  option deprecated = true;
+  oak.RawDigest container_image = 1;
+  oak.RawDigest config = 2;
+}
+
+// Represents an event intended for inclusion in attestation.
+// For example, in an attested measured boot, each event is a reference to the
+// code identity of the boot layer being launched next.
+// An Event message contain what's necessary for an attestation verifier to
+// verify the Event against a Reference Value.
+// TODO: b/333748757 - Make other CB layers use this definition.
+message Event {
+  // Represents what is contained in the event. For example, the tag for
+  // TaskConfig for the Layer 2 is "layer2".
+  // TODO: b/333748757 - Consider making the tag a UUID instead of string.
+  string tag = 1;
+  Any event = 2;
+}
+
+// A sequence of Events intended for inclusion in attestation evidence.
+message EventLog {
+  reserved 1;
+  // Holds serialized instances of the the [`Event`] message. The serialized
+  // form is used instead of `repeated Event events` as proto serialization is
+  // non-deterministic and attestation evidence contains signatures over the
+  // digest of serialized events.
+  // TODO: b/389059744 - Use a repeated Variant field instead.
+  repeated bytes encoded_events = 2;
+}

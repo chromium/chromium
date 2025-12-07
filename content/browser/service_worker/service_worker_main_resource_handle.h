@@ -8,8 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_accessed_callback.h"
 #include "content/common/content_export.h"
-#include "services/network/public/mojom/network_context.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
+#include "net/base/isolation_info.h"
+
+namespace network {
+struct ResourceRequest;
+}
 
 namespace content {
 
@@ -39,6 +42,7 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   ServiceWorkerMainResourceHandle(
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       ServiceWorkerAccessedCallback on_service_worker_accessed,
+      std::string fetch_event_client_id,
       base::WeakPtr<ServiceWorkerClient> parent_service_worker_client =
           nullptr);
 
@@ -54,12 +58,16 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   }
 
   void set_service_worker_client(
-      ScopedServiceWorkerClient scoped_service_worker_client);
+      ScopedServiceWorkerClient scoped_service_worker_client,
+      const net::IsolationInfo& isolation_info);
 
   base::WeakPtr<ServiceWorkerClient> service_worker_client();
 
   base::WeakPtr<ServiceWorkerClient> parent_service_worker_client() {
     return parent_service_worker_client_;
+  }
+  const std::string& fetch_event_client_id() const {
+    return fetch_event_client_id_;
   }
 
   const ServiceWorkerAccessedCallback& service_worker_accessed_callback() {
@@ -73,6 +81,22 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
   base::WeakPtr<ServiceWorkerMainResourceHandle> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
+
+  static std::optional<url::Origin> TopFrameOriginForInitializeForRequest(
+      const network::ResourceRequest& resource_request);
+
+  // Updates `ServiceWorkerClient` and `isolation_info_` for the next request.
+  // Must be called on the initial request and every redirect requests.
+  // `url` and `top_frame_origin` must come from the same ResourceRequest
+  // through network::ResourceRequest::url and the above
+  // TopFrameOriginForInitializeForRequest();
+  // `client_for_prefetch` is non-null when serving the request from prefetch
+  // and inheriting the controller from `client_for_prefetch`.
+  // Returns `false` if `client_for_prefetch` is set but can't be used. In such
+  // cases, `this` and underlying `service_worker_client()` remains unchanged.
+  bool InitializeForRequest(const GURL& url,
+                            std::optional<url::Origin> top_frame_origin,
+                            const ServiceWorkerClient* client_for_prefetch);
 
  private:
   // In term of the spec, this is the request's reserved client
@@ -91,6 +115,25 @@ class CONTENT_EXPORT ServiceWorkerMainResourceHandle {
 
   // Only set and used for workers with a blob URL.
   const base::WeakPtr<ServiceWorkerClient> parent_service_worker_client_;
+
+  // FetchEvent.clientId
+  // https://w3c.github.io/ServiceWorker/#fetch-event-clientid
+  //
+  // TODO(crbug.com/368087661): In the spec, this should be navigation request's
+  // client's ID, so `fetch_event_client_id_` and
+  // `parent_service_worker_client_` should be merged as e.g.
+  // `fetch_request_client_`.
+  // https://fetch.spec.whatwg.org/#concept-request-client
+  // But this hasn't been the case in the implementation, so currently they are
+  // plumbed separately here.
+  const std::string fetch_event_client_id_;
+
+  // Updated on redirects.
+  // TODO(https://crbug.com/367755492): This is managed separately from
+  // `network::ResourceRequest::TrustedParams::isolation_info` but both of the
+  // two `IsolationInfo`s are used/mixed in the code. Investigate why and
+  // clarify the logic.
+  net::IsolationInfo isolation_info_;
 
   const ServiceWorkerAccessedCallback service_worker_accessed_callback_;
 

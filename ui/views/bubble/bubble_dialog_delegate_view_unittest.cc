@@ -19,10 +19,14 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/interaction/element_test_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/animation/ink_drop.h"
@@ -32,6 +36,7 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
@@ -53,20 +58,20 @@ namespace views {
 using test::TestInkDrop;
 
 namespace {
-
 constexpr gfx::Size kContentSize = gfx::Size(200, 200);
+}
 
 class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   METADATA_HEADER(TestBubbleDialogDelegateView, BubbleDialogDelegateView)
 
  public:
-  explicit TestBubbleDialogDelegateView(View* anchor_view)
+  explicit TestBubbleDialogDelegateView(BubbleAnchor anchor_view)
       : BubbleDialogDelegateView(anchor_view,
                                  BubbleBorder::TOP_LEFT,
                                  BubbleBorder::NO_SHADOW,
                                  true) {
     view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    AddChildView(view_.get());
+    AddChildViewRaw(view_.get());
   }
   ~TestBubbleDialogDelegateView() override = default;
   TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
@@ -120,7 +125,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
     // and ShouldShowCloseButton() respectively to determine the button area.
     GetBubbleFrameView()->ResetWindowControls();
 
-    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+    DialogDelegate::SetButtons(
+        static_cast<int>(ui::mojom::DialogButton::kNone));
   }
   void set_should_show_window_title(bool should_show_window_title) {
     should_show_window_title_ = should_show_window_title;
@@ -138,6 +144,8 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
 
 BEGIN_METADATA(TestBubbleDialogDelegateView)
 END_METADATA
+
+namespace {
 
 class TestAlertBubbleDialogDelegateView : public TestBubbleDialogDelegateView {
   METADATA_HEADER(TestAlertBubbleDialogDelegateView,
@@ -215,7 +223,7 @@ TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
-  bubble_delegate->set_color(SK_ColorGREEN);
+  bubble_delegate->SetBackgroundColor(SK_ColorGREEN);
   Widget* bubble_widget =
       BubbleDialogDelegateView::CreateBubble(bubble_delegate);
   EXPECT_EQ(bubble_delegate, bubble_widget->widget_delegate());
@@ -224,7 +232,7 @@ TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
   bubble_widget->Show();
 
   BubbleBorder* border = bubble_delegate->GetBubbleFrameView()->bubble_border_;
-  EXPECT_EQ(bubble_delegate->color(), border->color());
+  EXPECT_EQ(bubble_delegate->background_color(), border->color());
   EXPECT_EQ(anchor_widget.get(), bubble_widget->parent());
 
   EXPECT_FALSE(bubble_observer.widget_closed());
@@ -701,6 +709,9 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   // calculations are simpler (e.g. platform font discrepancies can be ignored).
   bubble_delegate->hide_buttons();
 
+  // hide_buttons() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble_widget);
+
   // Use GetContentsBounds() to exclude the bubble border, which can change per
   // platform.
   gfx::Rect frame_size = bubble_frame->GetContentsBounds();
@@ -713,6 +724,10 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   // about custom title views, so there should still be margins for it while the
   // WidgetDelegate says it should be shown, even if its preferred size is zero.
   title_view->SetPreferredSize(gfx::Size());
+
+  // SetPreferredSize() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble_widget);
+
   frame_size = bubble_frame->GetContentsBounds();
   EXPECT_EQ(
       content_margins.height() + kContentSize.height() + title_margins.height(),
@@ -722,11 +737,9 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
   // Now hide the title properly. The margins should also disappear.
   bubble_delegate->set_should_show_window_title(false);
   bubble_widget->UpdateWindowTitle();
-  // UpdateWindowTitle() will not trigger InvalidateLayout() when window_title
-  // not changed.
-  // TODO(crbug.com/330198011) Remove this InvalidateLayout() once this bug
-  // fixed.
-  bubble_frame->InvalidateLayout();
+
+  // UpdateWindowTitle() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble_widget);
   frame_size = bubble_frame->GetContentsBounds();
   EXPECT_EQ(content_margins.height() + kContentSize.height(),
             frame_size.height());
@@ -752,6 +765,8 @@ TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
       bubble_widget->GetWindowBoundsInScreen().size();
   title_view->SetText(u"12");
 
+  // SetText() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble_widget);
   // A shorter title should change nothing, since both will be within the
   // minimum dialog width.
   EXPECT_EQ(size_before_new_title,
@@ -759,6 +774,8 @@ TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
 
   title_view->SetText(base::UTF8ToUTF16(std::string(200, '0')));
 
+  // SetText() will trigger an asynchronous autosize task.
+  views::test::RunScheduledLayout(bubble_widget);
   // A (much) longer title should increase the height, but not the width.
   EXPECT_EQ(size_before_new_title.width(),
             bubble_widget->GetWindowBoundsInScreen().width());
@@ -870,17 +887,14 @@ const int kScreenHeight = 768;
 struct ArrowTestParameters {
   views::BubbleBorder::Arrow arrow;
   bool adjust_if_offscreen;
-  gfx::Rect anchor_rect;
+  gfx::Rect anchor_rect_in_window;
   views::BubbleBorder::Arrow expected_arrow;
 
-  gfx::Size ExpectedSpace() const {
-    gfx::Rect adjusted_anchor_rect = anchor_rect;
-    adjusted_anchor_rect.Offset(
-        0, ViewsTestBase::GetSystemReservedHeightAtTopOfScreen());
+  gfx::Size ExpectedSpace(gfx::Rect anchor_rect_in_screen) const {
     gfx::Rect screen_rect = gfx::Rect(0, 0, kScreenWidth, kScreenHeight);
 
     return BubbleDialogDelegate::GetAvailableSpaceToPlaceBubble(
-        expected_arrow, adjusted_anchor_rect, screen_rect);
+        expected_arrow, anchor_rect_in_screen, screen_rect);
   }
 };
 
@@ -938,14 +952,30 @@ TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {
   bubble_delegate->SetArrow(kParam.arrow);
   bubble_delegate->set_adjust_if_offscreen(kParam.adjust_if_offscreen);
   anchor_widget->GetContentsView()->SetBounds(
-      kParam.anchor_rect.x(), kParam.anchor_rect.y(),
-      kParam.anchor_rect.width(), kParam.anchor_rect.height());
+      kParam.anchor_rect_in_window.x(),
+      kParam.anchor_rect_in_window.y(),
+      kParam.anchor_rect_in_window.width(),
+      kParam.anchor_rect_in_window.height());
+  gfx::Rect anchor_rect_in_screen =
+      bubble_delegate->GetAnchorView()->GetBoundsInScreen();
   gfx::Size available_space =
       BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
           bubble_delegate->GetAnchorView(), bubble_delegate->arrow(),
           bubble_delegate->adjust_if_offscreen(),
           BubbleFrameView::PreferredArrowAdjustment::kMirror);
-  EXPECT_EQ(available_space, kParam.ExpectedSpace());
+  EXPECT_EQ(available_space, kParam.ExpectedSpace(anchor_rect_in_screen));
+
+  // Repeat via TrackedElement.
+  ui::TrackedElement* as_tracked_element =
+      ElementTrackerViews::GetInstance()->GetElementForView(
+          bubble_delegate->GetAnchorView(),
+          /*assign_temporary_id=*/true);
+  available_space =
+      BubbleDialogDelegate::GetMaxAvailableScreenSpaceToPlaceBubble(
+          as_tracked_element, bubble_delegate->arrow(),
+          bubble_delegate->adjust_if_offscreen(),
+          BubbleFrameView::PreferredArrowAdjustment::kMirror);
+  EXPECT_EQ(available_space, kParam.ExpectedSpace(anchor_rect_in_screen));
 }
 
 const int kAnchorFarRightX = 840;
@@ -1011,39 +1041,25 @@ INSTANTIATE_TEST_SUITE_P(AnchorAtFarScreenCorners,
                          testing::ValuesIn(kAnchorAtFarScreenCornersParams));
 
 // Tests whether the BubbleDialogDelegateView will create a layer backed
-// ClientView when SetPaintClientToLayer is set to true.
-TEST_F(BubbleDialogDelegateViewTest, WithClientLayerTest) {
+// ClientView.
+TEST_F(BubbleDialogDelegateViewTest, ClientViewIsPaintedToLayer) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
-      nullptr, BubbleBorder::TOP_LEFT);
-  bubble_delegate->SetPaintClientToLayer(true);
+      BubbleDialogDelegateView::CreatePassKey(), nullptr,
+      BubbleBorder::TOP_LEFT);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
 
   WidgetAutoclosePtr bubble_widget(
       BubbleDialogDelegateView::CreateBubble(std::move(bubble_delegate)));
 
-  EXPECT_NE(nullptr, bubble_widget->client_view()->layer());
-}
-
-// Tests to ensure BubbleDialogDelegateView does not create a layer backed
-// ClientView when SetPaintClientToLayer is set to false.
-TEST_F(BubbleDialogDelegateViewTest, WithoutClientLayerTest) {
-  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
-      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
-      nullptr, BubbleBorder::TOP_LEFT);
-  bubble_delegate->SetPaintClientToLayer(false);
-  bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
-
-  WidgetAutoclosePtr bubble_widget(
-      BubbleDialogDelegateView::CreateBubble(std::move(bubble_delegate)));
-
-  EXPECT_EQ(nullptr, bubble_widget->client_view()->layer());
+  auto* client_view_layer = bubble_widget->client_view()->layer();
+  EXPECT_TRUE(client_view_layer);
+  EXPECT_EQ(client_view_layer->type(), ui::LAYER_TEXTURED);
 }
 
 TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
-  views::test::AXEventCounter counter(views::AXEventManager::Get());
+  views::test::AXEventCounter counter(views::AXUpdateNotifier::Get());
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<TestBubbleDialogDelegateView>(
@@ -1065,9 +1081,49 @@ TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
 
-// Anchoring Tests -------------------------------------------------------------
+// Tests that GetAnchorRect() properly updates from a TrackedElement's
+// GetScreenBounds() when the element is set as the anchor.
+TEST_F(BubbleDialogDelegateViewTest, TrackedElementAnchorUpdates) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementId);
 
-namespace {
+  // Create an anchor widget with a tracked view.
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  View* anchor_view = anchor_widget->GetContentsView();
+  anchor_view->SetProperty(kElementIdentifierKey, kTestElementId);
+
+  // Set initial bounds for the anchor view.
+  const gfx::Rect initial_bounds(100, 150, 50, 60);
+  anchor_view->SetBoundsRect(initial_bounds);
+  anchor_widget->Show();
+
+  // Get the TrackedElement for the view.
+  ui::TrackedElement* tracked_element =
+      ElementTrackerViews::GetInstance()->GetElementForView(anchor_view);
+  ASSERT_TRUE(tracked_element);
+
+  // Create a bubble anchored to the tracked element.
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(tracked_element);
+  bubble_delegate->set_close_on_deactivate(false);
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  // Verify the anchor rect matches the tracked element's screen bounds.
+  const gfx::Rect initial_screen_bounds = tracked_element->GetScreenBounds();
+  EXPECT_EQ(initial_screen_bounds, bubble_delegate->GetAnchorRect());
+
+  // Update the anchor view's bounds.
+  const gfx::Rect updated_bounds(200, 250, 70, 80);
+  anchor_view->SetBoundsRect(updated_bounds);
+
+  // Verify GetAnchorRect() returns the updated bounds.
+  const gfx::Rect updated_screen_bounds = tracked_element->GetScreenBounds();
+  EXPECT_EQ(updated_screen_bounds, bubble_delegate->GetAnchorRect());
+}
+
+// Anchoring Tests -------------------------------------------------------------
 
 class AnchorTestBubbleDialogDelegateView : public BubbleDialogDelegateView {
  public:
@@ -1154,8 +1210,6 @@ class BubbleDialogDelegateViewAnchorTest : public test::WidgetTest {
  private:
   WidgetAutoclosePtr dummy_widget_;
 };
-
-}  // namespace
 
 TEST_F(BubbleDialogDelegateViewAnchorTest,
        AnchoredToWidgetShouldPaintAsActive) {
@@ -1397,6 +1451,7 @@ TEST_F(BubbleUmaLoggerTest, LogMetricFromDelegate) {
   auto anchored_view = std::make_unique<View>();
   BubbleDialogDelegate delegate(anchored_view.get(),
                                 BubbleBorder::Arrow::TOP_LEFT);
+  delegate.SetOwnedByWidget(WidgetDelegate::OwnedByWidgetPassKey());
   delegate.SetContentsView(std::make_unique<Label>());
 
   TestBubbleUmaLogger logger;

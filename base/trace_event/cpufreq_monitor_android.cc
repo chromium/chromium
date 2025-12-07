@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/cpufreq_monitor_android.h"
 
 #include <fcntl.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -22,6 +18,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/fixed_array.h"
 
 namespace base {
 
@@ -35,7 +32,7 @@ const char kEventTitle[] = "CPU Frequency";
 
 }  // namespace
 
-CPUFreqMonitorDelegate::CPUFreqMonitorDelegate() {}
+CPUFreqMonitorDelegate::CPUFreqMonitorDelegate() = default;
 
 std::string CPUFreqMonitorDelegate::GetScalingCurFreqPathString(
     unsigned int cpu_id) const {
@@ -73,19 +70,20 @@ void CPUFreqMonitorDelegate::GetCPUIds(std::vector<unsigned int>* ids) const {
   unsigned int kernel_max_cpu = GetKernelMaxCPUs();
   // CPUs related to one that's already marked for monitoring get set to "false"
   // so we don't needlessly monitor CPUs with redundant frequency information.
-  char cpus_to_monitor[kernel_max_cpu + 1];
-  std::memset(cpus_to_monitor, 1, kernel_max_cpu + 1);
+  base::FixedArray<bool> cpus_to_monitor(kernel_max_cpu + 1, true);
 
   // Rule out the related CPUs for each one so we only end up with the CPUs
   // that are representative of the cluster.
   for (unsigned int i = 0; i <= kernel_max_cpu; i++) {
-    if (!cpus_to_monitor[i])
+    if (!cpus_to_monitor[i]) {
       continue;
+    }
 
     std::string filename = GetRelatedCPUsPathString(i);
     std::string line;
-    if (!base::ReadFileToString(base::FilePath(filename), &line))
+    if (!base::ReadFileToString(base::FilePath(filename), &line)) {
       continue;
+    }
     // When reading the related_cpus file, we expected the format to be
     // something like "0 1 2 3" for CPU0-3 if they're all in one cluster.
     for (auto& str_piece :
@@ -93,8 +91,9 @@ void CPUFreqMonitorDelegate::GetCPUIds(std::vector<unsigned int>* ids) const {
                            base::SplitResult::SPLIT_WANT_NONEMPTY)) {
       unsigned int cpu_id;
       if (base::StringToUint(str_piece, &cpu_id)) {
-        if (cpu_id != i && cpu_id <= kernel_max_cpu)
-          cpus_to_monitor[cpu_id] = 0;
+        if (cpu_id != i && cpu_id <= kernel_max_cpu) {
+          cpus_to_monitor[cpu_id] = false;
+        }
       }
     }
     ids->push_back(i);
@@ -102,8 +101,9 @@ void CPUFreqMonitorDelegate::GetCPUIds(std::vector<unsigned int>* ids) const {
 
   // If none of the files were readable, we assume CPU0 exists and fall back to
   // using that.
-  if (ids->size() == 0)
+  if (ids->size() == 0) {
     ids->push_back(0);
+  }
 }
 
 void CPUFreqMonitorDelegate::RecordFrequency(unsigned int cpu_id,
@@ -161,14 +161,16 @@ void CPUFreqMonitor::Start() {
   for (unsigned int id : cpu_ids) {
     std::string fstr = delegate_->GetScalingCurFreqPathString(id);
     int fd = open(fstr.c_str(), O_RDONLY);
-    if (fd == -1)
+    if (fd == -1) {
       continue;
+    }
 
     fds.emplace_back(std::make_pair(id, base::ScopedFD(fd)));
   }
   // We failed to read any scaling_cur_freq files, no point sampling nothing.
-  if (fds.size() == 0)
+  if (fds.size() == 0) {
     return;
+  }
 
   is_enabled_.store(true, std::memory_order_release);
 
@@ -188,8 +190,9 @@ void CPUFreqMonitor::Sample(
   // is in transition and we use acquire ordering then we'll never shut down our
   // original Sample tasks until the next Stop, so it's still the responsibility
   // of callers to sync Start/Stop.
-  if (!is_enabled_.load(std::memory_order_relaxed))
+  if (!is_enabled_.load(std::memory_order_relaxed)) {
     return;
+  }
 
   for (auto& id_fd : fds) {
     int fd = id_fd.second.get();
@@ -201,11 +204,13 @@ void CPUFreqMonitor::Sample(
 
     ssize_t bytes_read = read(fd, data, kNumBytesToReadForSampling);
     if (bytes_read > 0) {
-      if (static_cast<size_t>(bytes_read) < kNumBytesToReadForSampling)
-        data[static_cast<size_t>(bytes_read)] = '\0';
-      int ret = sscanf(data, "%d", &freq);
-      if (ret == 0 || ret == std::char_traits<char>::eof())
+      if (static_cast<size_t>(bytes_read) < kNumBytesToReadForSampling) {
+        UNSAFE_TODO(data[static_cast<size_t>(bytes_read)]) = '\0';
+      }
+      int ret = UNSAFE_TODO(sscanf(data, "%d", &freq));
+      if (ret == 0 || ret == std::char_traits<char>::eof()) {
         freq = 0;
+      }
     }
 
     delegate_->RecordFrequency(id_fd.first, freq);
@@ -224,8 +229,9 @@ bool CPUFreqMonitor::IsEnabledForTesting() {
 
 const scoped_refptr<SingleThreadTaskRunner>&
 CPUFreqMonitor::GetOrCreateTaskRunner() {
-  if (!task_runner_)
+  if (!task_runner_) {
     task_runner_ = delegate_->CreateTaskRunner();
+  }
   return task_runner_;
 }
 

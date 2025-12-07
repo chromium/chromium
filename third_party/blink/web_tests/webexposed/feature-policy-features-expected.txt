@@ -3,7 +3,9 @@ All changes to this list should go through Blink's feature review process: http:
 
 accelerometer
 ambient-light-sensor
+aria-notify
 attribution-reporting
+autofill
 autoplay
 browsing-topics
 camera
@@ -23,6 +25,7 @@ ch-ua-bitness
 ch-ua-form-factors
 ch-ua-full-version
 ch-ua-full-version-list
+ch-ua-high-entropy-values
 ch-ua-mobile
 ch-ua-model
 ch-ua-platform
@@ -36,6 +39,9 @@ clipboard-write
 compute-pressure
 cross-origin-isolated
 deferred-fetch
+deferred-fetch-minimal
+device-attributes
+digital-credentials-create
 digital-credentials-get
 display-capture
 encrypted-media
@@ -52,11 +58,16 @@ idle-detection
 interest-cohort
 join-ad-interest-group
 keyboard-map
+language-detector
+language-model
 local-fonts
+local-network-access
 magnetometer
+manual-text
 media-playback-while-not-visible
 microphone
 midi
+on-device-speech-recognition
 otp-credentials
 payment
 picture-in-picture
@@ -65,18 +76,23 @@ private-state-token-issuance
 private-state-token-redemption
 publickey-credentials-create
 publickey-credentials-get
+record-ad-auction-events
+rewriter
 run-ad-auction
 screen-wake-lock
 serial
-shared-autofill
 shared-storage
 shared-storage-select-url
 speaker-selection
 storage-access
+summarizer
 sync-xhr
+translator
 unload
 usb
 vertical-scroll
+web-app-installation
 window-management
+writer
 xr-spatial-tracking
 

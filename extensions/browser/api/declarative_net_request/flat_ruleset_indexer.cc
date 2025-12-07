@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/declarative_net_request/flat_ruleset_indexer.h"
 
 #include <string>
@@ -17,6 +12,7 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "extensions/browser/api/declarative_net_request/constants.h"
+#include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/browser/api/declarative_net_request/indexed_rule.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 
@@ -51,14 +47,16 @@ FlatStringListOffset BuildVectorOfSharedStringsImpl(
     flatbuffers::FlatBufferBuilder* builder,
     const T& container,
     bool is_lower_case) {
-  if (container.empty())
+  if (container.empty()) {
     return FlatStringListOffset();
+  }
 
   std::vector<FlatStringOffset> offsets;
   offsets.reserve(container.size());
-  for (const std::string& str : container)
+  for (const std::string& str : container) {
     offsets.push_back(builder->CreateSharedString(
         is_lower_case ? base::ToLowerASCII(str) : str));
+  }
   return builder->CreateVector(offsets);
 }
 
@@ -85,8 +83,9 @@ FlatStringListOffset BuildVectorOfSharedLowercaseStrings(
 
 FlatIntListOffset BuildIntVector(flatbuffers::FlatBufferBuilder* builder,
                                  const base::flat_set<int>& input) {
-  if (input.empty())
+  if (input.empty()) {
     return FlatIntListOffset();
+  }
 
   return builder->CreateVector(
       std::vector<int32_t>(input.begin(), input.end()));
@@ -116,13 +115,14 @@ FlatOffset<flat::UrlTransform> BuildTransformOffset(
 
   auto skip_separator_and_create_string_offset =
       [builder](const std::optional<std::string>& str, char separator) {
-        if (!str)
+        if (!str) {
           return FlatStringOffset();
+        }
 
         DCHECK(!str->empty());
         DCHECK_EQ(separator, str->at(0));
 
-        return builder->CreateSharedString(str->c_str() + 1, str->length() - 1);
+        return builder->CreateSharedString(std::string_view(*str).substr(1));
       };
 
   auto should_clear_component = [](const std::optional<std::string>& str) {
@@ -226,8 +226,24 @@ FlatVectorOffset<flat::ModifyHeaderInfo> BuildModifyHeaderInfoOffset(
 
     FlatStringOffset header_name =
         builder->CreateSharedString(base::ToLowerASCII(header_info.header));
+    FlatStringOffset header_regex_filter =
+        header_info.regex_filter
+            ? builder->CreateSharedString(*header_info.regex_filter)
+            : FlatStringOffset();
+    FlatStringOffset header_substitution_filter =
+        header_info.regex_substitution
+            ? builder->CreateSharedString(*header_info.regex_substitution)
+            : FlatStringOffset();
+
+    flatbuffers::Offset<flat::RegexFilterOptions> header_regex_options =
+        header_info.regex_options
+            ? flat::CreateRegexFilterOptions(
+                  *builder, *header_info.regex_options->match_all)
+            : flat::CreateRegexFilterOptions(*builder);
+
     flat_modify_header_list.push_back(flat::CreateModifyHeaderInfo(
-        *builder, operation, header_name, header_value));
+        *builder, operation, header_name, header_value, header_regex_filter,
+        header_substitution_filter, header_regex_options));
   }
 
   return builder->CreateVector(flat_modify_header_list);
@@ -259,6 +275,8 @@ FlatOffset<flatbuffers::Vector<uint8_t>> BuildEmbedderConditionsOffset(
     flatbuffers::FlatBufferBuilder* builder,
     const IndexedRule& indexed_rule) {
   if (indexed_rule.tab_ids.empty() && indexed_rule.excluded_tab_ids.empty() &&
+      indexed_rule.top_domains.empty() &&
+      indexed_rule.excluded_top_domains.empty() &&
       indexed_rule.response_headers.empty() &&
       indexed_rule.excluded_response_headers.empty()) {
     return FlatOffset<flatbuffers::Vector<uint8_t>>();
@@ -278,8 +296,15 @@ FlatOffset<flatbuffers::Vector<uint8_t>> BuildEmbedderConditionsOffset(
         BuildHeaderConditionsOffset(&nested_builder,
                                     indexed_rule.excluded_response_headers);
 
+    FlatStringListOffset top_domains_included_offset =
+        BuildVectorOfSharedStrings(&nested_builder, indexed_rule.top_domains);
+    FlatStringListOffset top_domains_excluded_offset =
+        BuildVectorOfSharedStrings(&nested_builder,
+                                   indexed_rule.excluded_top_domains);
+
     auto nested_flatbuffer_root_offset = flat::CreateEmbedderConditions(
         nested_builder, tab_ids_included_offset, tab_ids_excluded_offset,
+        top_domains_included_offset, top_domains_excluded_offset,
         response_headers_offset, excluded_response_headers_offset);
     nested_builder.Finish(nested_flatbuffer_root_offset,
                           kEmbedderConditionsBufferIdentifier);
@@ -336,8 +361,9 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
       url_pattern_index::flat::UrlPatternType_REGEXP) {
     std::vector<UrlPatternIndexBuilder*> builders = GetBuilders(indexed_rule);
     CHECK(!builders.empty());
-    for (UrlPatternIndexBuilder* builder : builders)
+    for (UrlPatternIndexBuilder* builder : builders) {
       builder->IndexUrlRule(offset);
+    }
   } else {
     // A UrlPatternIndex is not built for regex rules. These are stored
     // separately as part of flat::ExtensionIndexedRuleset.
@@ -449,8 +475,7 @@ FlatRulesetIndexer::GetBuilders(const IndexedRule& indexed_rule) {
     case dnr_api::RuleActionType::kNone:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 }  // namespace extensions::declarative_net_request

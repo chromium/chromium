@@ -59,7 +59,7 @@ TEST(SwapPromiseManagerTest, SwapPromises) {
   // Now that we've taken the promises, this shouldn't trigger a call.
   manager.WillCommit();
 
-  EXPECT_EQ(1, static_cast<int>(swap_promise_list.size()));
+  EXPECT_EQ(1u, swap_promise_list.size());
 }
 
 }  // namespace

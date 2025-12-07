@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++textField inputType='url' value='example.com' textSelStart=0 textSelEnd=0 invalidState=true
+++++++++genericContainer
+++++++++++staticText name='example.com'
+++++++++++++inlineTextBox name='example.com'

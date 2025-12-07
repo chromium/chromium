@@ -32,6 +32,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_util.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "components/prefs/pref_service.h"
@@ -159,13 +160,7 @@ void GameDashboardContext::EnableFeatures(
     SetToolbarVisibility(/*visible=*/true);
   } else {
     CloseWelcomeDialogIfAny();
-    // Hide the toolbar if the system is in tablet mode or if the window
-    // is undergoing a resize animation. The toolbar is still visible in
-    // clamshell, overview mode.
-    SetToolbarVisibility(
-        /*visible=*/!(display::Screen::GetScreen()->InTabletMode() ||
-                      main_menu_toggle_method ==
-                          GameDashboardMainMenuToggleMethod::kAnimation));
+    SetToolbarVisibility(/*visible=*/false);
     if (main_menu_widget_) {
       CloseMainMenu(main_menu_toggle_method);
     }
@@ -402,7 +397,7 @@ void GameDashboardContext::OnVideoFileFinalized() {
 
 void GameDashboardContext::SetGameDashboardButtonVisibility(bool visible) {
   if (visible && !game_dashboard_button_widget_->IsVisible() &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !display::Screen::Get()->InTabletMode()) {
     // Show the Game Dashboard button if it's not visible.
     // When the top edge timer fires, it's going to try to show the Game
     // Dashboard button. Because this is already showing the button, stop
@@ -560,10 +555,10 @@ void GameDashboardContext::OnPreWindowStateTypeChange(
     chromeos::WindowStateType old_type) {
   // Hide the Game Dashboard button before the window switches to fullscreen.
   if (window_state->IsFullscreen()) {
-    DCHECK(!game_dashboard_button_reveal_controller_);
-    game_dashboard_button_reveal_controller_ =
-        std::make_unique<GameDashboardButtonRevealController>(this);
-
+    if (!game_dashboard_button_reveal_controller_) {
+      game_dashboard_button_reveal_controller_ =
+          std::make_unique<GameDashboardButtonRevealController>(this);
+    }
     if (!chromeos::IsMinimizedWindowStateType(old_type)) {
       // When the window goes from minimized to fullscreen, hide the Game
       // Dashboard widget.
@@ -607,7 +602,8 @@ void GameDashboardContext::RemoveCursorHandler() {
 void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
   auto game_dashboard_button = std::make_unique<GameDashboardButton>(
       base::BindRepeating(&GameDashboardContext::OnGameDashboardButtonPressed,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          weak_ptr_factory_.GetWeakPtr()),
+      game_dashboard_utils::GetFrameHeaderHeight(game_window_) / 2.0f);
   DCHECK(!game_dashboard_button_);
   game_dashboard_button_ = game_dashboard_button.get();
   // Allow the Game Dashboard button to be activatable so that it can be
@@ -622,7 +618,18 @@ void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
       wm::GetTransientParent(game_dashboard_button_widget_->GetNativeWindow()));
   UpdateGameDashboardButtonWidgetBounds();
   if (game_dashboard_utils::ShouldEnableFeatures()) {
-    SetGameDashboardButtonVisibility(/*visible=*/true);
+    const WindowState* window_state = WindowState::Get(game_window_);
+    // If the window is starting in fullscreen, create the
+    // GameDashboardButtonRevealController.
+    if (window_state->IsFullscreen()) {
+      DCHECK(!game_dashboard_button_reveal_controller_);
+      game_dashboard_button_reveal_controller_ =
+          std::make_unique<GameDashboardButtonRevealController>(this);
+    }
+    // If the window is minimized or fullscreen, the Game Dashboard button
+    // should not be visible
+    SetGameDashboardButtonVisibility(
+        !(window_state->IsMinimized() || window_state->IsFullscreen()));
   }
 }
 
@@ -778,7 +785,8 @@ void GameDashboardContext::AnimateToolbarWidgetBoundsChange(
 
 void GameDashboardContext::MaybeShowToolbar() {
   if (game_dashboard_utils::ShouldShowToolbar() && !toolbar_widget_ &&
-      !display::Screen::GetScreen()->InTabletMode()) {
+      !OverviewController::Get()->InOverviewSession() &&
+      !display::Screen::Get()->InTabletMode()) {
     // Show the toolbar, if it's not already showing.
     ToggleToolbar();
     DCHECK(toolbar_widget_);

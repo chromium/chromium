@@ -26,7 +26,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -46,15 +45,13 @@ public final class TopicsManageFragmentTest {
     public SettingsActivityTestRule<TopicsManageFragment> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(TopicsManageFragment.class);
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mUserActionTester;
 
     @Before
     public void setUp() {
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
 
         mUserActionTester = new UserActionTester();
     }

@@ -29,8 +29,6 @@ void OverlayRequestQueue::CreateForWebState(web::WebState* web_state) {
 
 #pragma mark - OverlayRequestQueueImpl::Container
 
-WEB_STATE_USER_DATA_KEY_IMPL(OverlayRequestQueueImpl::Container)
-
 OverlayRequestQueueImpl::Container::Container(web::WebState* web_state)
     : web_state_(web_state) {}
 OverlayRequestQueueImpl::Container::~Container() = default;
@@ -38,8 +36,9 @@ OverlayRequestQueueImpl::Container::~Container() = default;
 OverlayRequestQueueImpl* OverlayRequestQueueImpl::Container::QueueForModality(
     OverlayModality modality) {
   auto& queue = queues_[modality];
-  if (!queue)
+  if (!queue) {
     queue = base::WrapUnique(new OverlayRequestQueueImpl(web_state_));
+  }
   return queue.get();
 }
 
@@ -72,10 +71,12 @@ OverlayRequestQueueImpl::~OverlayRequestQueueImpl() {
 #pragma mark Public
 
 void OverlayRequestQueueImpl::SetDelegate(Delegate* delegate) {
-  if (delegate_ == delegate)
+  if (delegate_ == delegate) {
     return;
-  if (delegate_)
+  }
+  if (delegate_) {
     delegate_->OverlayRequestQueueWillReplaceDelegate(this);
+  }
   delegate_ = delegate;
 }
 
@@ -161,8 +162,9 @@ void OverlayRequestQueueImpl::RemoveRequest(size_t index, bool cancelled) {
   auto iter = request_storages_.begin() + index;
   std::unique_ptr<OverlayRequest> request = std::move((*iter).request);
   request_storages_.erase(iter);
-  if (delegate_)
+  if (delegate_) {
     delegate_->OverlayRequestRemoved(this, std::move(request), cancelled);
+  }
 }
 
 #pragma mark OverlayRequestStorage

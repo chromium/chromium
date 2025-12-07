@@ -11,7 +11,7 @@
 PrefStoreObserverMock::PrefStoreObserverMock()
     : initialized(false), initialization_success(false) {}
 
-PrefStoreObserverMock::~PrefStoreObserverMock() {}
+PrefStoreObserverMock::~PrefStoreObserverMock() = default;
 
 void PrefStoreObserverMock::VerifyAndResetChangedKey(
     const std::string& expected) {

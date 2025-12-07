@@ -59,7 +59,9 @@ namespace device {
 XrPosef PoseIdentity();
 gfx::Transform XrPoseToGfxTransform(const XrPosef& pose);
 device::Pose XrPoseToDevicePose(const XrPosef& pose);
+device::Pose ZNormalXrPoseToYNormalDevicePose(const XrPosef& pose);
 XrPosef GfxTransformToXrPose(const gfx::Transform& transform);
+XrQuaternionf GfxQuaternionToXrQuaternion(const gfx::Quaternion& quaternion);
 mojom::VRFieldOfViewPtr XrFovToMojomFov(const XrFovf& xr_fov);
 bool IsPoseValid(XrSpaceLocationFlags locationFlags);
 

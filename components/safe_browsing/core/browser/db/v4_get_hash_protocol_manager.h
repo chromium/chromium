@@ -15,6 +15,7 @@
 // Design doc: go/design-doc-v4-full-hash-manager
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -28,6 +29,7 @@
 #include "base/timer/timer.h"
 #include "components/safe_browsing/core/browser/db/safebrowsing.pb.h"
 #include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_config.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/proto/webui.pb.h"
 
@@ -65,8 +67,7 @@ struct FullHashInfo {
   FullHashInfo(const FullHashInfo& other);
   ~FullHashInfo();
 
-  bool operator==(const FullHashInfo& other) const;
-  bool operator!=(const FullHashInfo& other) const;
+  friend bool operator==(const FullHashInfo&, const FullHashInfo&) = default;
 
  private:
   FullHashInfo();
@@ -183,7 +184,7 @@ class V4GetHashProtocolManager {
 
   // Callback when the request completes
   void OnURLLoaderComplete(network::SimpleURLLoader* url_loader,
-                           std::unique_ptr<std::string> response_body);
+                           std::optional<std::string> response_body);
 
   // Populates the protobuf with the FullHashCache data.
   void CollectFullHashCacheInfo(FullHashCacheInfo* full_hash_cache_info);
@@ -363,14 +364,14 @@ class V4GetHashProtocolManager {
 // Interface of a factory to create V4GetHashProtocolManager.  Useful for tests.
 class V4GetHashProtocolManagerFactory {
  public:
-  V4GetHashProtocolManagerFactory() {}
+  V4GetHashProtocolManagerFactory() = default;
 
   V4GetHashProtocolManagerFactory(const V4GetHashProtocolManagerFactory&) =
       delete;
   V4GetHashProtocolManagerFactory& operator=(
       const V4GetHashProtocolManagerFactory&) = delete;
 
-  virtual ~V4GetHashProtocolManagerFactory() {}
+  virtual ~V4GetHashProtocolManagerFactory() = default;
   virtual std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,

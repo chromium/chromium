@@ -19,9 +19,9 @@
 #include "base/base_switches.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_sending_event.h"
@@ -45,14 +45,27 @@
 #include "chrome/common/mac/app_mode_common.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "components/crash/core/app/crashpad.h"
-#include "content/public/common/content_features.h"
+#include "components/remote_cocoa/app_shim/application_bridge.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/features.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
+#include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
+#include "mojo/public/cpp/system/functions.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
+
+namespace {
+
+// Called when the app shim process receives a bad IPC message.
+void HandleBadMessage(const std::string& error) {
+  LOG(ERROR) << "Mojo error in app shim process: " << error;
+  mojo::debug::ScopedMessageErrorCrashKey crash_key_value(error);
+  base::debug::DumpWithoutCrashing();
+}
+
+}  // namespace
 
 // The NSApplication for app shims is a vanilla NSApplication, but
 // implements the CrAppProtocol and CrAppControlPrototocol protocols to skip
@@ -96,27 +109,16 @@
 
 - (void)accessibilitySetValue:(id)value forAttribute:(NSString*)attribute {
   // This is an undocumented attribute that's set when VoiceOver is turned
-  // on/off or Text To Speech is triggered. In addition, some apps use it to
-  // request accessibility activation.
+  // on/off. We track VoiceOver state changes using KVO, but monitor this
+  // attribute in case other ATs use it to request accessibility activation.
   if ([attribute isEqualToString:@"AXEnhancedUserInterface"]) {
-    // `sonomaAccessibilityRefinementsAreActive` has the same purpose with
-    // BrowserCrApplication. See chrome_browser_application_mac.mm to learn
-    // more.
-    BOOL sonomaAccessibilityRefinementsAreActive =
-        base::mac::MacOSVersion() >= 14'00'00 &&
-        base::FeatureList::IsEnabled(
-            features::kSonomaAccessibilityActivationRefinements);
-    // When there are ATs that want to access this PWA app's accessibility, we
-    // need to notify browser proces to enable accessibility. When ATs no
-    // longer need access to this PWA app's accessibility, we don't want it to
+    // When there are ATs that want to access this PWA's accessibility, we
+    // need to notify the browser process to enable accessibility. When ATs no
+    // longer need access to this PWA's accessibility, we don't want it to
     // affect the browser in case other PWA apps or the browser itself still
     // need to use accessbility.
-    if (sonomaAccessibilityRefinementsAreActive) {
-      [self enableScreenReaderCompleteModeAfterDelay:[value boolValue]];
-    } else {
-      if ([value boolValue]) {
-        [self enableScreenReaderCompleteMode];
-      }
+    if ([value boolValue]) {
+      [self enableScreenReaderCompleteModeAfterDelay:YES];
     }
   }
   return [super accessibilitySetValue:value forAttribute:attribute];
@@ -169,14 +171,12 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     // <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/.
     const base::FilePath user_data_dir =
         base::FilePath(info->user_data_dir).DirName().DirName().DirName();
-
-    // TODO(crbug.com/40807881): Specify `user_data_dir` to  CrashPad.
-    ChromeCrashReporterClient::Create();
-    crash_reporter::InitializeCrashpad(true, "app_shim");
-
     base::PathService::OverrideAndCreateIfNeeded(
         chrome::DIR_USER_DATA, user_data_dir, /*is_absolute=*/false,
         /*create=*/false);
+
+    ChromeCrashReporterClient::Create();
+    crash_reporter::InitializeCrashpad(true, "app_shim");
 
     // Initialize features and field trials, either from command line or from
     // file in user data dir.
@@ -203,7 +203,33 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
         preferred_localization = base::SysNSStringToUTF8(language);
         break;
       }
-      // Check for language support without the region component.
+
+      // For Chinese and Serbian, the preferred and supported languages don't
+      // match due to script components and causes us to fall back to the next
+      // matched language. e.g. Simplified Chinese is presented as 'zh_CN' in
+      // supported_languages, but as 'zh_Hans_CN' in preferred_languages.
+      // Instead of falling back, adjust those 3 language codes to match
+      // language codes provided in supported_languages.
+      if ([language hasPrefix:@"zh_Hans"]) {
+        language = @"zh_CN";
+      } else if ([language hasPrefix:@"zh_Hant"]) {
+        language = @"zh_TW";
+      } else if ([language hasPrefix:@"sr_Latn"]) {
+        language = @"sr_Latn_RS";
+      } else {
+        // Check for language support without the region component.
+        language = [language componentsSeparatedByString:@"_"][0];
+      }
+
+      if ([supported_languages containsObject:language]) {
+        preferred_localization = base::SysNSStringToUTF8(language);
+        break;
+      }
+
+      // Avoid defaulting to English or another unintended language when no
+      // clear match is found. e.g. if there is no specific match for
+      // "sr_Latn_RS" in supported_languages, it can at least fall back to a
+      // generic Serbian language code ("sr").
       language = [language componentsSeparatedByString:@"_"][0];
       if ([supported_languages containsObject:language]) {
         preferred_localization = base::SysNSStringToUTF8(language);
@@ -219,6 +245,8 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
 
     ChromeContentClient chrome_content_client;
     content::SetContentClient(&chrome_content_client);
+
+    remote_cocoa::ApplicationBridge::SetIsOutOfProcessAppShim();
 
     // Local histogram to let tests verify that histograms are emitted properly.
     LOCAL_HISTOGRAM_BOOLEAN("AppShim.Launched", true);
@@ -242,6 +270,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
     mojo::core::Configuration config;
     config.is_broker_process = true;
     mojo::core::Init(config);
+    mojo::SetDefaultProcessErrorHandler(base::BindRepeating(&HandleBadMessage));
     mojo::core::ScopedIPCSupport ipc_support(
         io_thread->task_runner(),
         mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);

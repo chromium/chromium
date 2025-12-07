@@ -12,7 +12,9 @@
 #include <atomic>
 #include <limits>
 
+#include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -25,6 +27,11 @@ namespace {
 // memory_order_relaxed because there are no dependent memory accesses.
 std::atomic<bool> g_subsampling_always_sample = false;
 std::atomic<bool> g_subsampling_never_sample = false;
+
+MetricsSubSampler* GetSharedSubsampler() {
+  static thread_local MetricsSubSampler g_shared_subsampler;
+  return &g_shared_subsampler;
+}
 
 }  // namespace
 
@@ -53,6 +60,12 @@ double RandDouble() {
 
 float RandFloat() {
   return BitsToOpenEndedUnitIntervalF(base::RandUint64());
+}
+
+bool RandBool() {
+  uint8_t number;
+  RandBytes(span_from_ref(number));
+  return number & 1;
 }
 
 TimeDelta RandTimeDelta(TimeDelta start, TimeDelta limit) {
@@ -132,7 +145,7 @@ void InsecureRandomGenerator::ReseedForTesting(uint64_t seed) {
   b_ = seed;
 }
 
-uint64_t InsecureRandomGenerator::RandUint64() {
+uint64_t InsecureRandomGenerator::RandUint64() const {
   // Using XorShift128+, which is simple and widely used. See
   // https://en.wikipedia.org/wiki/Xorshift#xorshift+ for details.
   uint64_t t = a_;
@@ -147,7 +160,7 @@ uint64_t InsecureRandomGenerator::RandUint64() {
   return t + s;
 }
 
-uint32_t InsecureRandomGenerator::RandUint32() {
+uint32_t InsecureRandomGenerator::RandUint32() const {
   // The generator usually returns an uint64_t, truncate it.
   //
   // It is noted in this paper (https://arxiv.org/abs/1810.05313) that the
@@ -156,7 +169,7 @@ uint32_t InsecureRandomGenerator::RandUint32() {
   return this->RandUint64() >> 32;
 }
 
-double InsecureRandomGenerator::RandDouble() {
+double InsecureRandomGenerator::RandDouble() const {
   uint64_t x = RandUint64();
   // From https://vigna.di.unimi.it/xorshift/.
   // 53 bits of mantissa, hence the "hexadecimal exponent" 1p-53.
@@ -164,7 +177,7 @@ double InsecureRandomGenerator::RandDouble() {
 }
 
 MetricsSubSampler::MetricsSubSampler() = default;
-bool MetricsSubSampler::ShouldSample(double probability) {
+bool MetricsSubSampler::ShouldSample(double probability) const {
   if (g_subsampling_always_sample.load(std::memory_order_relaxed)) {
     return true;
   }
@@ -172,7 +185,12 @@ bool MetricsSubSampler::ShouldSample(double probability) {
     return false;
   }
 
+  DCHECK(probability >= 0 && probability <= 1);
   return generator_.RandDouble() < probability;
+}
+
+void MetricsSubSampler::Reseed() {
+  generator_ = InsecureRandomGenerator();
 }
 
 MetricsSubSampler::ScopedAlwaysSampleForTesting::
@@ -199,6 +217,14 @@ MetricsSubSampler::ScopedNeverSampleForTesting::~ScopedNeverSampleForTesting() {
   DCHECK(!g_subsampling_always_sample);
   DCHECK(g_subsampling_never_sample);
   g_subsampling_never_sample.store(false, std::memory_order_relaxed);
+}
+
+bool ShouldRecordSubsampledMetric(double probability) {
+  return GetSharedSubsampler()->ShouldSample(probability);
+}
+
+void ReseedSharedMetricsSubsampler() {
+  GetSharedSubsampler()->Reseed();
 }
 
 }  // namespace base

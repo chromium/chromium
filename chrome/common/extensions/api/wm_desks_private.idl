@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Private API for trusted extensions/apps to do desk related operations.
-[platforms=("chromeos","lacros"),
+[platforms=("chromeos"),
  implemented_in="chrome/browser/chromeos/extensions/wm/wm_desks_private_api.h"]
 namespace wmDesksPrivate {
   enum SavedDeskType {

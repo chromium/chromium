@@ -4,10 +4,10 @@
 
 #include "components/permissions/bluetooth_chooser_controller.h"
 
+#include <algorithm>
+
 #include "base/check_op.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -74,10 +74,9 @@ std::u16string BluetoothChooserController::GetOption(size_t index) const {
   DCHECK_LT(index, devices_.size());
   const std::string& device_id = devices_[index].id;
   const auto& device_name_it = device_id_to_name_map_.find(device_id);
-  CHECK(device_name_it != device_id_to_name_map_.end(),
-        base::NotFatalUntil::M130);
+  CHECK(device_name_it != device_id_to_name_map_.end());
   const auto& it = device_name_counts_.find(device_name_it->second);
-  CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
+  CHECK(it != device_name_counts_.end());
   return it->second == 1
              ? device_name_it->second
              : l10n_util::GetStringFUTF16(
@@ -123,8 +122,7 @@ void BluetoothChooserController::OnAdapterPresenceChanged(
   ClearAllDevices();
   switch (presence) {
     case content::BluetoothChooser::AdapterPresence::ABSENT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case content::BluetoothChooser::AdapterPresence::POWERED_OFF:
       if (view()) {
         view()->OnAdapterEnabledChanged(
@@ -178,7 +176,7 @@ void BluetoothChooserController::AddOrUpdateDevice(
       name_it->second = device_name;
 
       const auto& it = device_name_counts_.find(previous_device_name);
-      CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
+      CHECK(it != device_name_counts_.end());
       DCHECK_GT(it->second, 0);
 
       if (--(it->second) == 0)
@@ -188,9 +186,9 @@ void BluetoothChooserController::AddOrUpdateDevice(
     }
 
     auto device_it =
-        base::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
+        std::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
 
-    CHECK(device_it != devices_.end(), base::NotFatalUntil::M130);
+    CHECK(device_it != devices_.end());
     // When Bluetooth device scanning stops, the |signal_strength_level|
     // is -1, and in this case, should still use the previously stored
     // signal strength level value.
@@ -217,14 +215,14 @@ void BluetoothChooserController::RemoveDevice(const std::string& device_id) {
     return;
 
   auto device_it =
-      base::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
+      std::ranges::find(devices_, device_id, &BluetoothDeviceInfo::id);
 
   if (device_it != devices_.end()) {
     size_t index = device_it - devices_.begin();
     devices_.erase(device_it);
 
     const auto& it = device_name_counts_.find(name_it->second);
-    CHECK(it != device_name_counts_.end(), base::NotFatalUntil::M130);
+    CHECK(it != device_name_counts_.end());
     DCHECK_GT(it->second, 0);
 
     if (--(it->second) == 0)

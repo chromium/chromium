@@ -3,10 +3,10 @@ include_rules = [
     "+gpu/command_buffer/client/gles2_interface.h",
     "+gpu/command_buffer/client/gles2_interface_stub.h",
     "+gpu/command_buffer/client/shared_image_interface.h",
+    "+gpu/command_buffer/client/shared_image_pool.h",
     "+gpu/command_buffer/client/webgpu_interface.h",
     "+gpu/command_buffer/client/webgpu_interface_stub.h",
     "+gpu/command_buffer/common/capabilities.h",
-    "+gpu/command_buffer/common/gpu_memory_buffer_support.h",
     "+gpu/command_buffer/common/mailbox_holder.h",
     "+gpu/command_buffer/common/shared_image_usage.h",
     "+gpu/config/gpu_driver_bug_workaround_type.h",
@@ -15,3 +15,12 @@ include_rules = [
     "+ui/gl/buildflags.h",
     "+ui/gl/gpu_preference.h",
 ]
+
+specific_include_rules = {
+  "drawing_buffer.h": [
+    "+base/containers/flat_set.h",
+  ],
+  "xr_webgl_drawing_buffer.h": [
+    "+base/containers/flat_set.h",
+  ],
+}

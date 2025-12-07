@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/serial/bluetooth_serial_port_impl.h"
 
 #include <limits.h>
@@ -14,17 +9,28 @@
 #include <algorithm>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/device_event_log/device_event_log.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
-#include "services/device/public/cpp/device_features.h"
 
 namespace device {
+
+namespace {
+
+void RecordOpenSocketResult(bool success) {
+  static constexpr std::string_view kOpenSocketResult =
+      "Bluetooth.Serial.OpenSocketResult";
+  base::UmaHistogramBoolean(kOpenSocketResult, success);
+}
+
+}  // namespace
 
 // static
 void BluetoothSerialPortImpl::Open(
@@ -35,9 +41,6 @@ void BluetoothSerialPortImpl::Open(
     mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
     OpenCallback callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kEnableBluetoothSerialPortProfileInSerialApi));
-
   // This BluetoothSerialPortImpl is owned by its |receiver_| and |watcher_| and
   // will self-destruct on connection failure.
   auto* port = new BluetoothSerialPortImpl(
@@ -106,6 +109,7 @@ void BluetoothSerialPortImpl::OnSocketConnected(
       base::BindOnce([](BluetoothSerialPortImpl* self) { delete self; },
                      base::Unretained(this)));
   std::move(open_callback_).Run(std::move(port));
+  RecordOpenSocketResult(/*success=*/true);
 }
 
 void BluetoothSerialPortImpl::OnSocketConnectedError(
@@ -114,6 +118,7 @@ void BluetoothSerialPortImpl::OnSocketConnectedError(
   BLUETOOTH_LOG(ERROR) << "Failed to connect socket: address: " << address_
                        << ", message: " << message;
   std::move(open_callback_).Run(mojo::NullRemote());
+  RecordOpenSocketResult(/*success=*/false);
   delete this;
 }
 
@@ -189,7 +194,7 @@ void BluetoothSerialPortImpl::ReadFromSocketAndWriteOut(
       out_stream_.reset();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected Mojo result: " << result;
+      NOTREACHED() << "Unexpected Mojo result: " << result;
   }
 }
 
@@ -232,10 +237,8 @@ void BluetoothSerialPortImpl::ReadMore() {
     const size_t num_remaining_bytes =
         receive_buffer_size_ - receive_buffer_next_byte_pos_;
     const size_t bytes_to_copy = std::min(num_remaining_bytes, buffer.size());
-    base::as_writable_chars(buffer)
-        .first(bytes_to_copy)
-        .copy_from(receive_buffer_->span().subspan(
-            receive_buffer_next_byte_pos_, bytes_to_copy));
+    buffer.copy_prefix_from(receive_buffer_->span().subspan(
+        receive_buffer_next_byte_pos_, bytes_to_copy));
     out_stream_->EndWriteData(bytes_to_copy);
     if (bytes_to_copy == num_remaining_bytes) {  // If copied the last byte.
       ResetReceiveBuffer();
@@ -285,7 +288,8 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceive(
   DCHECK(out_stream_);
   size_t bytes_to_copy = std::min(pending_write_buffer_.size(),
                                   static_cast<size_t>(num_bytes_received));
-  std::copy(receive_buffer->data(), receive_buffer->data() + bytes_to_copy,
+  std::copy(receive_buffer->data(),
+            UNSAFE_TODO(receive_buffer->data() + bytes_to_copy),
             pending_write_buffer_.data());
   out_stream_->EndWriteData(bytes_to_copy);
   if (pending_write_buffer_.size() < static_cast<size_t>(num_bytes_received)) {
@@ -314,8 +318,7 @@ void BluetoothSerialPortImpl::OnBluetoothSocketReceiveError(
           client_->OnReadError(mojom::SerialReceiveError::DISCONNECTED);
           break;
         case BluetoothSocket::ErrorReason::kIOPending:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
         case BluetoothSocket::ErrorReason::kSystemError:
           client_->OnReadError(mojom::SerialReceiveError::SYSTEM_ERROR);
           break;
@@ -352,7 +355,7 @@ void BluetoothSerialPortImpl::WriteToSocket(
         std::move(drain_callback_).Run();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected Mojo result: " << result;
+      NOTREACHED() << "Unexpected Mojo result: " << result;
   }
 }
 
@@ -391,7 +394,7 @@ void BluetoothSerialPortImpl::WriteMore() {
   // Copying the buffer because we might want to close in_stream_, thus
   // invalidating |buffer|, which is passed to Send().
   auto io_buffer = base::MakeRefCounted<net::IOBufferWithSize>(buffer.size());
-  io_buffer->span().copy_from(base::as_chars(buffer));
+  io_buffer->span().copy_from(buffer);
 
   // The call to EndReadData() will be delayed until after Send() completes.
   bluetooth_socket_->Send(

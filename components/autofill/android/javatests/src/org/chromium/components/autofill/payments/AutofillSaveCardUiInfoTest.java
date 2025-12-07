@@ -5,7 +5,6 @@
 package org.chromium.components.autofill.payments;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 
 import android.annotation.SuppressLint;
@@ -30,6 +29,7 @@ public class AutofillSaveCardUiInfoTest {
     private static AutofillSaveCardUiInfo.Builder defaultBuilder() {
         return new AutofillSaveCardUiInfo.Builder()
                 .withLogoIcon(0)
+                .withLogoIconDescription("")
                 .withIsForUpload(false)
                 .withCardDetail(new CardDetail(0, "", ""))
                 .withCardDescription("")
@@ -40,27 +40,6 @@ public class AutofillSaveCardUiInfoTest {
                 .withDescriptionText("")
                 .withLoadingDescription("")
                 .withIsGooglePayBrandingEnabled(false);
-    }
-
-    @Test
-    public void testConstructor_createsEmptyListWhenLegalMessageLinesIsNull() {
-        var uiInfo =
-                new AutofillSaveCardUiInfo(
-                        /* isForUpload= */ false,
-                        /* logoIcon= */ 0,
-                        /* issuerIcon= */ 0,
-                        /* legalMessageLines= */ null,
-                        /* cardLabel= */ null,
-                        /* cardSubLabel= */ null,
-                        /* cardDescription= */ null,
-                        /* titleText= */ null,
-                        /* confirmText= */ null,
-                        /* cancelText= */ null,
-                        /* descriptionText= */ null,
-                        /* loadingDescription= */ null,
-                        /* isGooglePayBrandingEnabled= */ false);
-
-        assertThat(uiInfo.getLegalMessageLines(), empty());
     }
 
     @Test
@@ -76,6 +55,15 @@ public class AutofillSaveCardUiInfoTest {
         AutofillSaveCardUiInfo uiInfo = defaultBuilder().withLogoIcon(1234).build();
 
         assertThat(uiInfo.getLogoIcon(), equalTo(1234));
+    }
+
+    @Test
+    public void testBuilder_setsLogoIconDescription() {
+        @SuppressLint("ResourceType")
+        AutofillSaveCardUiInfo uiInfo =
+                defaultBuilder().withLogoIconDescription("logoIconDescription").build();
+
+        assertThat(uiInfo.getLogoIconDescription(), equalTo("logoIconDescription"));
     }
 
     @Test

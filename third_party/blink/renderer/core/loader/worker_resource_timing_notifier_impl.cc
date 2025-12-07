@@ -5,13 +5,14 @@
 #include "third_party/blink/renderer/core/loader/worker_resource_timing_notifier_impl.h"
 
 #include <memory>
+
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/cross_thread_resource_timing_info_copier.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_mojo.h"
@@ -24,13 +25,11 @@ namespace {
 Performance* GetPerformance(ExecutionContext& execution_context) {
   DCHECK(execution_context.IsContextThread());
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context))
-    return DOMWindowPerformance::performance(*window);
+    return GlobalPerformance::performance(*window);
   if (auto* global_scope = DynamicTo<WorkerGlobalScope>(execution_context))
-    return WorkerGlobalScopePerformance::performance(*global_scope);
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected execution context, it should be either Window "
-         "or WorkerGlobalScope";
-  return nullptr;
+    return GlobalPerformance::performance(*global_scope);
+  NOTREACHED() << "Unexpected execution context, it should be either Window or "
+                  "WorkerGlobalScope";
 }
 
 }  // namespace

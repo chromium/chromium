@@ -36,8 +36,8 @@ void TestSpiralIterate(int source_line_number,
     actual_reverse.push_back(it.index());
   }
 
-  std::vector<std::pair<int, int>> reversed_expected = expected;
-  std::reverse(reversed_expected.begin(), reversed_expected.end());
+  std::vector<std::pair<int, int>> reversed_expected = {expected.rbegin(),
+                                                        expected.rend()};
   EXPECT_EQ(reversed_expected, actual_reverse)
       << "Error from line " << source_line_number;
 }

@@ -8,7 +8,6 @@
 
 #include "base/auto_reset.h"
 #include "base/check.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -19,11 +18,11 @@ namespace ui {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr bool kDoubleTapPlatformSupport = true;
 #else
 constexpr bool kDoubleTapPlatformSupport = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -95,6 +94,10 @@ bool GestureProviderAura::RequiresDoubleTapGestureEvents() const {
   return gesture_consumer_->RequiresDoubleTapGestureEvents();
 }
 
+void GestureProviderAura::OnUnconfirmedTapConvertedToTap() {
+  filtered_gesture_provider_.OnUnconfirmedTapConvertedToTap();
+}
+
 std::vector<std::unique_ptr<GestureEvent>>
 GestureProviderAura::GetAndResetPendingGestures() {
   std::vector<std::unique_ptr<GestureEvent>> result;
@@ -102,12 +105,11 @@ GestureProviderAura::GetAndResetPendingGestures() {
   return result;
 }
 
-void GestureProviderAura::OnTouchEnter(int pointer_id, float x, float y) {
+void GestureProviderAura::OnTouchEnter(const ui::TouchEvent& event) {
   auto touch_event = std::make_unique<TouchEvent>(
       EventType::kTouchPressed, gfx::Point(), ui::EventTimeForNow(),
-      PointerDetails(ui::EventPointerType::kTouch, pointer_id),
-      EF_IS_SYNTHESIZED);
-  gfx::PointF point(x, y);
+      event.pointer_details(), EF_IS_SYNTHESIZED);
+  gfx::PointF point(event.x(), event.y());
   touch_event->set_location_f(point);
   touch_event->set_root_location_f(point);
 

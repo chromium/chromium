@@ -66,15 +66,15 @@ public class MediaImageManagerTest {
         mMediaImageManager = new MediaImageManager(MIN_IMAGE_SIZE_PX, IDEAL_IMAGE_SIZE_PX);
         mMediaImageManager.setWebContents(mWebContents);
 
-        mImages = new ArrayList<MediaImage>();
-        mImages.add(new MediaImage(IMAGE_URL_1, "", new ArrayList<Rect>()));
+        mImages = new ArrayList<>();
+        mImages.add(new MediaImage(IMAGE_URL_1, "", new ArrayList<>()));
 
-        mBitmaps = new ArrayList<Bitmap>();
+        mBitmaps = new ArrayList<>();
         mBitmaps.add(
                 Bitmap.createBitmap(
                         IDEAL_IMAGE_SIZE_PX, IDEAL_IMAGE_SIZE_PX, Bitmap.Config.ARGB_8888));
 
-        mOriginalImageSizes = new ArrayList<Rect>();
+        mOriginalImageSizes = new ArrayList<>();
         mOriginalImageSizes.add(new Rect(0, 0, IDEAL_IMAGE_SIZE_PX, IDEAL_IMAGE_SIZE_PX));
     }
 
@@ -162,7 +162,7 @@ public class MediaImageManagerTest {
                 .downloadImage(
                         any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
         mImages.clear();
-        mImages.add(new MediaImage(IMAGE_URL_2, "", new ArrayList<Rect>()));
+        mImages.add(new MediaImage(IMAGE_URL_2, "", new ArrayList<>()));
 
         mMediaImageManager.downloadImage(mImages, mCallback);
         mMediaImageManager.onFinishDownloadImage(
@@ -197,7 +197,7 @@ public class MediaImageManagerTest {
                 .downloadImage(
                         any(), anyBoolean(), anyInt(), anyBoolean(), any(MediaImageManager.class));
         mImages.clear();
-        mImages.add(new MediaImage(IMAGE_URL_2, "", new ArrayList<Rect>()));
+        mImages.add(new MediaImage(IMAGE_URL_2, "", new ArrayList<>()));
 
         mMediaImageManager.downloadImage(mImages, mCallback);
 
@@ -252,7 +252,7 @@ public class MediaImageManagerTest {
     @Test
     public void testTinyImagesRemovedBeforeDownloading() {
         mImages.clear();
-        ArrayList<Rect> sizes = new ArrayList<Rect>();
+        ArrayList<Rect> sizes = new ArrayList<>();
         sizes.add(new Rect(0, 0, TINY_IMAGE_SIZE_PX, TINY_IMAGE_SIZE_PX));
         mImages.add(new MediaImage(IMAGE_URL_1, "", sizes));
         mMediaImageManager.downloadImage(mImages, mCallback);
@@ -287,7 +287,7 @@ public class MediaImageManagerTest {
     public void testDownloadImageFails() {
         mMediaImageManager.downloadImage(mImages, mCallback);
         mMediaImageManager.onFinishDownloadImage(
-                REQUEST_ID_1, 404, IMAGE_URL_1, new ArrayList<Bitmap>(), new ArrayList<Rect>());
+                REQUEST_ID_1, 404, IMAGE_URL_1, new ArrayList<>(), new ArrayList<>());
 
         verify(mCallback).onImageDownloaded((Bitmap) isNull());
         verify(mCallback, times(0)).onImageDownloaded((Bitmap) isNotNull());

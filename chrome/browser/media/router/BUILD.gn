@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
@@ -46,12 +45,15 @@ static_library("media_router_feature") {
     "media_router_feature.cc",
     "media_router_feature.h",
   ]
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//extensions/buildflags",
+  ]
   deps = [
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common:constants",
-    "//components/media_router/common:common",
+    "//components/media_router/common",
     "//components/prefs",
     "//components/user_prefs",
     "//content/public/browser",
@@ -61,7 +63,7 @@ static_library("media_router_feature") {
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/browser_context_helper" ]
   }
 }
@@ -75,7 +77,6 @@ static_library("router") {
   ]
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/media/webrtc",
     "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
@@ -107,13 +108,9 @@ static_library("router") {
 
   if (!is_android) {
     sources += [
-      "mojo/media_router_debugger_impl.cc",
       "mojo/media_router_debugger_impl.h",
-      "mojo/media_router_desktop.cc",
       "mojo/media_router_desktop.h",
-      "mojo/media_router_mojo_metrics.cc",
       "mojo/media_router_mojo_metrics.h",
-      "mojo/media_sink_service_status.cc",
       "mojo/media_sink_service_status.h",
       "providers/cast/app_activity.cc",
       "providers/cast/app_activity.h",
@@ -153,10 +150,8 @@ static_library("router") {
       "providers/dial/dial_media_route_provider.h",
       "providers/dial/dial_media_route_provider_metrics.cc",
       "providers/dial/dial_media_route_provider_metrics.h",
-      "providers/wired_display/wired_display_media_route_provider.cc",
       "providers/wired_display/wired_display_media_route_provider.h",
       "providers/wired_display/wired_display_presentation_receiver.h",
-      "providers/wired_display/wired_display_presentation_receiver_factory.cc",
       "providers/wired_display/wired_display_presentation_receiver_factory.h",
     ]
 
@@ -177,10 +172,10 @@ static_library("router") {
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/profiles:profile",
       "//components/access_code_cast/common:metrics",
-      "//components/embedder_support:browser_util",
+      "//components/embedder_support:user_agent",
       "//components/mirroring/mojom:service",
-      "//components/ukm/content:content",
-      "//components/version_info:version_info",
+      "//components/ukm/content",
+      "//components/version_info",
       "//media/cast:common",
       "//media/remoting:remoting_device_capability",
       "//mojo/public/cpp/bindings",
@@ -199,8 +194,8 @@ static_library("router") {
 
     if (enable_openscreen_protocol) {
       sources += [
-        "providers/openscreen/discovery/open_screen_listener.cc",
-        "providers/openscreen/discovery/open_screen_listener.h",
+        "providers/openscreen/discovery/open_screen_listener_delegate.cc",
+        "providers/openscreen/discovery/open_screen_listener_delegate.h",
         "providers/openscreen/network_service_async_packet_sender.cc",
         "providers/openscreen/network_service_async_packet_sender.h",
         "providers/openscreen/network_service_quic_packet_writer.cc",
@@ -223,10 +218,63 @@ static_library("router") {
 }
 
 if (!is_android) {
-  static_library("test_support") {
-    testonly = true
+  source_set("mojo_impl") {
+    sources = [
+      "mojo/media_router_debugger_impl.cc",
+      "mojo/media_router_desktop.cc",
+      "mojo/media_router_mojo_metrics.cc",
+      "mojo/media_sink_service_status.cc",
+    ]
     deps = [
+      ":media_router_feature",
+      ":router",
+      "//chrome/browser:browser_process",
       "//chrome/browser/media/router/discovery",
+      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+      "//chrome/browser/media/webrtc",
+      "//components/media_router/common/providers/cast/channel",
+      "//components/openscreen_platform",
+      "//media/cast:common",
+      "//services/metrics/public/cpp:ukm_builders",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}
+
+if (!is_android) {
+  source_set("providers_wired_display_impl") {
+    sources = [
+      "providers/wired_display/wired_display_media_route_provider.cc",
+      "providers/wired_display/wired_display_presentation_receiver_factory.cc",
+    ]
+    deps = [
+      ":router",
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/ui/media_router",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  deps = []
+  sources = []
+
+  if (!is_android || is_desktop_android) {
+    deps += [
+      "//base",
+      "//chrome/browser/media/router/discovery",
+      "//testing/gmock",
+    ]
+    sources += [
+      "test/mock_dns_sd_registry.cc",
+      "test/mock_dns_sd_registry.h",
+    ]
+  }
+
+  if (!is_android) {
+    deps += [
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
       "//chrome/test:test_support",
@@ -237,10 +285,9 @@ if (!is_android) {
       "//components/media_router/common/providers/cast/channel",
       "//components/media_router/common/providers/cast/channel:capability",
       "//components/media_router/common/providers/cast/channel:test_support",
-      "//testing/gmock",
     ]
     public_deps = [ ":router" ]
-    sources = [
+    sources += [
       "discovery/access_code/access_code_test_util.cc",
       "discovery/access_code/access_code_test_util.h",
       "discovery/mdns/cast_media_sink_service_test_helpers.cc",
@@ -249,8 +296,6 @@ if (!is_android) {
       "providers/test/test_media_route_provider.h",
       "test/media_router_mojo_test.cc",
       "test/media_router_mojo_test.h",
-      "test/mock_dns_sd_registry.cc",
-      "test/mock_dns_sd_registry.h",
       "test/mock_mojo_media_router.cc",
       "test/mock_mojo_media_router.h",
       "test/provider_test_helpers.cc",
@@ -293,6 +338,7 @@ source_set("unittests") {
       # In-browser discovery is not used by Android for now.
       "discovery/access_code/access_code_cast_discovery_interface_unittest.cc",
       "discovery/access_code/access_code_cast_feature_unittest.cc",
+      "discovery/access_code/access_code_cast_pref_updater_impl_unittest.cc",
       "discovery/access_code/access_code_cast_pref_updater_unittest.cc",
       "discovery/access_code/access_code_cast_sink_service_factory_unittest.cc",
       "discovery/access_code/access_code_cast_sink_service_unittest.cc",
@@ -352,10 +398,10 @@ source_set("unittests") {
       ":logger_list",
       ":test_support",
       "//chrome/browser/media/router/discovery",
-      "//chrome/browser/media/router/discovery:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
+      "//chrome/browser/prefs",
       "//chrome/test:test_support",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",
@@ -363,26 +409,24 @@ source_set("unittests") {
       "//services/preferences/public/cpp",
       "//third_party/openscreen/src/cast/common:public",
     ]
+  }
 
-    if (is_chromeos_lacros) {
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
-    } else {
-      sources += [
-        "discovery/access_code/access_code_cast_pref_updater_impl_unittest.cc",
-      ]
-    }
+  # Traditional desktop platforms and desktop android with extensions support.
+  if (!is_android || enable_desktop_android_extensions) {
+    deps += [ "//chrome/browser/media/router/discovery:test_support" ]
   }
 
   if (enable_openscreen_protocol) {
     include_dirs = [ "//third_party/openscreen/src" ]
     sources += [
-      "providers/openscreen/discovery/open_screen_listener_unittest.cc",
+      "providers/openscreen/discovery/open_screen_listener_delegate_unittest.cc",
       "providers/openscreen/network_service_quic_packet_writer_unittest.cc",
     ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 # TODO(issuetracker.google.com/236160471): CDDL compiler doesn't build
@@ -399,17 +443,21 @@ if (!is_win) {
   }
 }
 
-fuzzer_test("dial_internal_message_fuzzer") {
-  sources = [ "providers/dial/dial_internal_message_fuzzer.cc" ]
-  deps = [
-    ":router",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser",
-    "//chrome/test:test_support",
-    "//components/mirroring/mojom:service",
-    "//components/translate/content/common",
-  ]
-  dict = "providers/dial/fuzzer_data/dial_internal_message_fuzzer.dict"
-  seed_corpus = "providers/dial/fuzzer_data/corpus/"
+# This fuzzer targets DialInternalMessage defined in "providers/dial/dial_internal_message_util.h."
+# This api is excluded from ":router" on android.
+if (!is_android) {
+  fuzzer_test("dial_internal_message_fuzzer") {
+    sources = [ "providers/dial/dial_internal_message_fuzzer.cc" ]
+    deps = [
+      ":router",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/test:test_support",
+      "//components/mirroring/mojom:service",
+      "//components/translate/content/common",
+    ]
+    dict = "providers/dial/fuzzer_data/dial_internal_message_fuzzer.dict"
+    seed_corpus = "providers/dial/fuzzer_data/corpus/"
+  }
 }

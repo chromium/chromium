@@ -64,6 +64,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputPredictor {
   // Return the time interval based on current points.
   virtual base::TimeDelta TimeInterval() const = 0;
 
+  // Returns the latency offset to apply for resampling.
+  // Default implementation returns zero, indicating no offset.
+  virtual base::TimeDelta ResampleLatency(base::TimeDelta frame_interval) const;
+
  protected:
   static constexpr base::TimeDelta kMaxTimeDelta = base::Milliseconds(20);
 

@@ -5,9 +5,9 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_page_handler.h"
 
 #include <utility>
+#include <variant>
 
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -19,6 +19,7 @@
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace ash::app_install {
 
@@ -86,7 +87,7 @@ void AppInstallPageHandler::CloseDialog() {
   base::ScopedClosureRunner close_callback_runner(
       std::move(close_dialog_callback_));
 
-  if (auto* app_info_args = absl::get_if<AppInfoArgs>(&dialog_args_.value())) {
+  if (auto* app_info_args = std::get_if<AppInfoArgs>(&dialog_args_.value())) {
     if (!app_info_args->dialog_accepted_callback) {
       return;
     }
@@ -113,7 +114,7 @@ void AppInstallPageHandler::InstallApp(InstallAppCallback callback) {
     return;
   }
 
-  AppInfoArgs& app_info_args = absl::get<AppInfoArgs>(dialog_args_.value());
+  AppInfoArgs& app_info_args = std::get<AppInfoArgs>(dialog_args_.value());
 
   base::RecordAction(
       base::UserMetricsAction("ChromeOS.AppInstallDialog.Installed"));
@@ -150,7 +151,7 @@ void AppInstallPageHandler::OnInstallComplete(
 
   if (!success) {
     CHECK(retry_callback.has_value());
-    absl::get<AppInfoArgs>(dialog_args_.value()).dialog_accepted_callback =
+    std::get<AppInfoArgs>(dialog_args_.value()).dialog_accepted_callback =
         std::move(retry_callback.value());
   }
   if (install_app_callback_) {
@@ -164,7 +165,7 @@ void AppInstallPageHandler::LaunchApp() {
   }
 
   std::optional<std::string> app_id = apps_util::GetAppWithPackageId(
-      &*profile_, absl::get<AppInfoArgs>(dialog_args_.value()).package_id);
+      &*profile_, std::get<AppInfoArgs>(dialog_args_.value()).package_id);
   if (!app_id.has_value()) {
     mojo::ReportBadMessage("Unable to launch app without an app_id.");
     return;
@@ -181,7 +182,7 @@ void AppInstallPageHandler::TryAgain() {
   }
 
   base::OnceClosure& callback =
-      absl::get<ConnectionErrorArgs>(dialog_args_.value()).try_again_callback;
+      std::get<ConnectionErrorArgs>(dialog_args_.value()).try_again_callback;
   if (callback) {
     std::move(callback).Run();
   }
@@ -189,8 +190,8 @@ void AppInstallPageHandler::TryAgain() {
 
 mojom::DialogArgsPtr AppInstallPageHandler::ConvertDialogArgsToMojom(
     const AppInstallDialogArgs& dialog_args) {
-  return absl::visit(
-      base::Overloaded(
+  return std::visit(
+      absl::Overload(
           [&](const AppInfoArgs& app_info_args) {
             return mojom::DialogArgs::NewAppInfoArgs(mojom::AppInfoArgs::New(
                 app_info_args.data.Clone(),

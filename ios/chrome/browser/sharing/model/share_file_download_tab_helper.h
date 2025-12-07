@@ -114,8 +114,6 @@ class ShareFileDownloadTabHelper
 
   // Headers of the last response received for the current navigation.
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARING_MODEL_SHARE_FILE_DOWNLOAD_TAB_HELPER_H_

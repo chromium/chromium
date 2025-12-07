@@ -8,3 +8,8 @@ include_rules = [
   "+net/cookies/site_for_cookies.h",
   "+third_party/blink/public",
 ]
+specific_include_rules = {
+  "content_settings_agent_impl_browsertest.cc": [
+    "+components/persistent_cache"
+  ]
+}

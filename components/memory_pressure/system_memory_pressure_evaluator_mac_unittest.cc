@@ -48,28 +48,28 @@ class TestSystemMemoryPressureEvaluator : public SystemMemoryPressureEvaluator {
 
 TEST(MacSystemMemoryPressureEvaluatorTest,
      MemoryPressureFromMacMemoryPressure) {
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE,
             TestSystemMemoryPressureEvaluator::
                 MemoryPressureLevelForMacMemoryPressureLevel(
                     DISPATCH_MEMORYPRESSURE_NORMAL));
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE,
             TestSystemMemoryPressureEvaluator::
                 MemoryPressureLevelForMacMemoryPressureLevel(
                     DISPATCH_MEMORYPRESSURE_WARN));
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL,
             TestSystemMemoryPressureEvaluator::
                 MemoryPressureLevelForMacMemoryPressureLevel(
                     DISPATCH_MEMORYPRESSURE_CRITICAL));
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE,
             TestSystemMemoryPressureEvaluator::
                 MemoryPressureLevelForMacMemoryPressureLevel(0));
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE,
             TestSystemMemoryPressureEvaluator::
                 MemoryPressureLevelForMacMemoryPressureLevel(3));
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE,
             TestSystemMemoryPressureEvaluator::
                 MemoryPressureLevelForMacMemoryPressureLevel(5));
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE,
             TestSystemMemoryPressureEvaluator::
                 MemoryPressureLevelForMacMemoryPressureLevel(-1));
 }
@@ -79,15 +79,10 @@ TEST(MacSystemMemoryPressureEvaluatorTest, CurrentMemoryPressure) {
       base::test::TaskEnvironment::MainThreadType::UI);
   TestSystemMemoryPressureEvaluator evaluator(nullptr);
 
-  base::MemoryPressureListener::MemoryPressureLevel memory_pressure =
-      evaluator.current_vote();
-  EXPECT_TRUE(
-      memory_pressure ==
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE ||
-      memory_pressure ==
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE ||
-      memory_pressure ==
-          base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::MemoryPressureLevel memory_pressure = evaluator.current_vote();
+  EXPECT_TRUE(memory_pressure == base::MEMORY_PRESSURE_LEVEL_NONE ||
+              memory_pressure == base::MEMORY_PRESSURE_LEVEL_MODERATE ||
+              memory_pressure == base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
 TEST(MacSystemMemoryPressureEvaluatorTest, MemoryPressureConversion) {
@@ -97,19 +92,16 @@ TEST(MacSystemMemoryPressureEvaluatorTest, MemoryPressureConversion) {
 
   evaluator.macos_pressure_level_for_testing_ = DISPATCH_MEMORYPRESSURE_NORMAL;
   evaluator.UpdatePressureLevel();
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE,
-            evaluator.current_vote());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_NONE, evaluator.current_vote());
 
   evaluator.macos_pressure_level_for_testing_ = DISPATCH_MEMORYPRESSURE_WARN;
   evaluator.UpdatePressureLevel();
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE,
-            evaluator.current_vote());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_MODERATE, evaluator.current_vote());
 
   evaluator.macos_pressure_level_for_testing_ =
       DISPATCH_MEMORYPRESSURE_CRITICAL;
   evaluator.UpdatePressureLevel();
-  EXPECT_EQ(base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL,
-            evaluator.current_vote());
+  EXPECT_EQ(base::MEMORY_PRESSURE_LEVEL_CRITICAL, evaluator.current_vote());
 }
 
 }  // namespace mac

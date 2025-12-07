@@ -4,17 +4,17 @@
 
 package org.chromium.base.process_launcher;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.os.Binder;
 import android.os.Build;
-import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.os.Parcelable;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
@@ -24,45 +24,52 @@ import android.util.SparseArray;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AndroidInfo;
+import org.chromium.base.ApkInfo;
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.EarlyTraceEvent;
 import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.memory.MemoryPressureMonitor;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.version_info.VersionConstantsBridge;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.List;
 
 import javax.annotation.concurrent.GuardedBy;
 
 /**
- * This is the base class for child services.
- * Pre-Q, and for privileged services, the embedding application should contain ProcessService0,
- * 1, etc subclasses that provide the concrete service entry points, so it can connect to more than
- * one distinct process (i.e. one process per service number, up to limit of N).
- * The embedding application must declare these service instances in the application section
- * of its AndroidManifest.xml, first with some meta-data describing the services:
- *     <meta-data android:name="org.chromium.test_app.SERVICES_NAME"
- *           android:value="org.chromium.test_app.ProcessService"/>
- * and then N entries of the form:
- *     <service android:name="org.chromium.test_app.ProcessServiceX"
- *              android:process=":processX" />
+ * This is the base class for child services. Pre-Q, and for privileged services, the embedding
+ * application should contain ProcessService0, 1, etc subclasses that provide the concrete service
+ * entry points, so it can connect to more than one distinct process (i.e. one process per service
+ * number, up to limit of N). The embedding application must declare these service instances in the
+ * application section of its AndroidManifest.xml, first with some meta-data describing the
+ * services: <meta-data android:name="org.chromium.test_app.SERVICES_NAME"
+ * android:value="org.chromium.test_app.ProcessService"/> and then N entries of the form: <service
+ * android:name="org.chromium.test_app.ProcessServiceX" android:process=":processX" />
  *
- * Q added bindIsolatedService which supports creating multiple instances from a single manifest
+ * <p>Q added bindIsolatedService which supports creating multiple instances from a single manifest
  * declaration for isolated services. In this case, only need to declare instance 0 in the manifest.
  *
- * Subclasses must also provide a delegate in this class constructor. That delegate is responsible
- * for loading native libraries and running the main entry point of the service.
+ * <p>Subclasses must also provide a delegate in this class constructor. That delegate is
+ * responsible for loading native libraries and running the main entry point of the service.
  *
- * This class does not directly inherit from Service because the logic may be used by a Service
- * implementation which cannot directly inherit from this class (e.g. for WebLayer child services).
+ * <p>This class does not directly inherit from Service because the logic may be used by a Service
+ * implementation which cannot directly inherit from this class.
  */
 @JNINamespace("base::android")
+@SuppressWarnings("SynchronizeOnNonFinalField") // mMainThread assigned in onCreate().
+@NullMarked
 public class ChildProcessService {
     private static final String MAIN_THREAD_NAME = "ChildProcessMain";
     private static final String TAG = "ChildProcessService";
@@ -80,25 +87,18 @@ public class ChildProcessService {
     private final Object mBinderLock = new Object();
     private final Object mLibraryInitializedLock = new Object();
 
-    // True if we should enforce that bindToCaller() is called before setupConnection().
-    // Only set once in bind(), does not require synchronization.
-    private boolean mBindToCallerCheck;
-
     // PID of the client of this service, set in bindToCaller(), if mBindToCallerCheck is true.
     @GuardedBy("mBinderLock")
     private int mBoundCallingPid;
 
     @GuardedBy("mBinderLock")
-    private String mBoundCallingClazz;
+    private @Nullable String mBoundCallingClazz;
 
     // This is the native "Main" thread for the renderer / utility process.
     private Thread mMainThread;
 
-    // Parameters received via IPC, only accessed while holding the mMainThread monitor.
-    private String[] mCommandLineParams;
-
-    // File descriptors that should be registered natively.
-    private FileDescriptorInfo[] mFdInfos;
+    // All args needed for the main thread to start.
+    private @Nullable IChildProcessArgs mChildProcessArgs;
 
     @GuardedBy("mLibraryInitializedLock")
     private boolean mLibraryInitialized;
@@ -108,7 +108,7 @@ public class ChildProcessService {
     private boolean mServiceBound;
 
     // Interface to send notifications to the parent process.
-    private IParentProcess mParentProcess;
+    private @Nullable IParentProcess mParentProcess;
 
     public ChildProcessService(
             ChildProcessServiceDelegate delegate, Service service, Context applicationContext) {
@@ -117,13 +117,23 @@ public class ChildProcessService {
         mApplicationContext = applicationContext;
     }
 
+    // These are the strings we will use to compare a child to parent process to ensure they are
+    // running the same code.
+    public static String[] convertToStrings(ApplicationInfo appInfo) {
+        String sourceDir = appInfo.sourceDir;
+        String sharedLibraryFiles = null;
+        if (appInfo.sharedLibraryFiles != null) {
+            sharedLibraryFiles = TextUtils.join(":", appInfo.sharedLibraryFiles);
+        }
+        return new String[] {sourceDir, sharedLibraryFiles};
+    }
+
     // Binder object used by clients for this service.
     private final IChildProcessService.Stub mBinder =
             new IChildProcessService.Stub() {
                 // NOTE: Implement any IChildProcessService methods here.
                 @Override
                 public boolean bindToCaller(String clazz) {
-                    assert mBindToCallerCheck;
                     assert mServiceBound;
                     synchronized (mBinderLock) {
                         int callingPid = Binder.getCallingPid();
@@ -150,20 +160,20 @@ public class ChildProcessService {
                 }
 
                 @Override
-                public ApplicationInfo getAppInfo() {
-                    return mApplicationContext.getApplicationInfo();
+                public String[] getAppInfoStrings() {
+                    ApplicationInfo appInfo = mApplicationContext.getApplicationInfo();
+                    return convertToStrings(appInfo);
                 }
 
                 @Override
                 public void setupConnection(
-                        Bundle args,
+                        IChildProcessArgs args,
                         IParentProcess parentProcess,
-                        List<IBinder> callbacks,
-                        IBinder binderBox)
+                        List<IBinder> callbacks)
                         throws RemoteException {
                     assert mServiceBound;
                     synchronized (mBinderLock) {
-                        if (mBindToCallerCheck && mBoundCallingPid == 0) {
+                        if (args.bindToCaller && mBoundCallingPid == 0) {
                             Log.e(TAG, "Service has not been bound with bindToCaller()");
                             parentProcess.finishSetupConnection(-1, 0, 0, null);
                             return;
@@ -173,7 +183,7 @@ public class ChildProcessService {
                     int pid = Process.myPid();
                     int zygotePid = 0;
                     long startupTimeMillis = -1;
-                    Bundle relroBundle = null;
+                    IRelroLibInfo relroInfo = null;
                     if (LibraryLoader.getInstance().isLoadedByZygote()) {
                         zygotePid = sZygotePid;
                         startupTimeMillis = sZygoteStartupTimeMillis;
@@ -182,16 +192,15 @@ public class ChildProcessService {
                         m.initInChildProcess();
                         // In a number of cases the app zygote decides not to produce a RELRO FD.
                         // The bundle will tell the receiver to silently ignore it.
-                        relroBundle = new Bundle();
-                        m.putSharedRelrosToBundle(relroBundle);
+                        relroInfo = m.getSharedRelrosAidl();
                     }
                     // After finishSetupConnection() the parent process will stop accepting
-                    // |relroBundle| from this process to ensure that another FD to shared memory
+                    // |relroInfo| from this process to ensure that another FD to shared memory
                     // is not sent later.
                     parentProcess.finishSetupConnection(
-                            pid, zygotePid, startupTimeMillis, relroBundle);
+                            pid, zygotePid, startupTimeMillis, relroInfo);
                     mParentProcess = parentProcess;
-                    processConnectionBundle(args, callbacks, binderBox);
+                    processConnectionArgs(args, callbacks);
                 }
 
                 @Override
@@ -231,6 +240,17 @@ public class ChildProcessService {
                 }
 
                 @Override
+                public void onSelfFreeze() {
+                    synchronized (mLibraryInitializedLock) {
+                        if (!mLibraryInitialized) {
+                            Log.w(TAG, "Cannot do SelfFreeze before native is loaded");
+                            return;
+                        }
+                    }
+                    ChildProcessServiceJni.get().onSelfFreeze();
+                }
+
+                @Override
                 public void dumpProcessStack() {
                     assert mServiceBound;
                     synchronized (mLibraryInitializedLock) {
@@ -243,13 +263,13 @@ public class ChildProcessService {
                 }
 
                 @Override
-                public void consumeRelroBundle(Bundle bundle) {
-                    mDelegate.consumeRelroBundle(bundle);
+                public void consumeRelroLibInfo(IRelroLibInfo libInfo) {
+                    mDelegate.consumeRelroLibInfo(libInfo);
                 }
             };
 
     /** Loads Chrome's native libraries and initializes a ChildProcessService. */
-    // For sCreateCalled check.
+    @Initializer
     public void onCreate() {
         Log.i(TAG, "Creating new ChildProcessService pid=%d", Process.myPid());
         if (sCreateCalled) {
@@ -274,16 +294,30 @@ public class ChildProcessService {
         mMainThread.start();
     }
 
+    private void sendBuildInfoToNative() {
+        assert mChildProcessArgs != null;
+        AndroidInfo.sendToNative(mChildProcessArgs.androidInfo);
+        ApkInfo.sendToNative(mChildProcessArgs.apkInfo);
+        DeviceInfo.sendToNative(mChildProcessArgs.deviceInfo);
+        VersionConstantsBridge.setChannel(mChildProcessArgs.channel);
+    }
+
     private void mainThreadMain() {
+        assumeNonNull(mParentProcess);
         try {
             // CommandLine must be initialized before everything else.
             synchronized (mMainThread) {
-                while (mCommandLineParams == null) {
+                while (mChildProcessArgs == null) {
                     mMainThread.wait();
                 }
             }
             assert mServiceBound;
-            CommandLine.init(mCommandLineParams);
+            CommandLine.init(mChildProcessArgs.commandLine);
+
+            if (CommandLine.getInstance()
+                    .hasSwitch(BaseSwitches.ANDROID_SKIP_CHILD_SERVICE_INIT_FOR_TESTING)) {
+                return;
+            }
 
             if (CommandLine.getInstance().hasSwitch(BaseSwitches.RENDERER_WAIT_FOR_JAVA_DEBUGGER)) {
                 android.os.Debug.waitForDebugger();
@@ -296,22 +330,17 @@ public class ChildProcessService {
                 mLibraryInitialized = true;
                 mLibraryInitializedLock.notifyAll();
             }
-            synchronized (mMainThread) {
-                mMainThread.notifyAll();
-                while (mFdInfos == null) {
-                    mMainThread.wait();
-                }
-            }
-
+            sendBuildInfoToNative();
             SparseArray<String> idsToKeys = mDelegate.getFileDescriptorsIdsToKeys();
 
-            int[] fileIds = new int[mFdInfos.length];
-            String[] keys = new String[mFdInfos.length];
-            int[] fds = new int[mFdInfos.length];
-            long[] regionOffsets = new long[mFdInfos.length];
-            long[] regionSizes = new long[mFdInfos.length];
-            for (int i = 0; i < mFdInfos.length; i++) {
-                FileDescriptorInfo fdInfo = mFdInfos[i];
+            int numFdInfos = mChildProcessArgs.fileDescriptorInfos.length;
+            int[] fileIds = new int[numFdInfos];
+            String[] keys = new String[numFdInfos];
+            int[] fds = new int[numFdInfos];
+            long[] regionOffsets = new long[numFdInfos];
+            long[] regionSizes = new long[numFdInfos];
+            for (int i = 0; i < numFdInfos; i++) {
+                IFileDescriptorInfo fdInfo = mChildProcessArgs.fileDescriptorInfos[i];
                 String key = idsToKeys != null ? idsToKeys.get(fdInfo.id) : null;
                 if (key != null) {
                     keys[i] = key;
@@ -343,8 +372,10 @@ public class ChildProcessService {
             long startTime = SystemClock.uptimeMillis() - Process.getStartUptimeMillis();
             String baseHistogramName = "Android.ChildProcessStartTimeV2";
             String suffix = ContextUtils.isIsolatedProcess() ? ".Isolated" : ".NotIsolated";
-            RecordHistogram.recordMediumTimesHistogram(baseHistogramName + ".All", startTime);
-            RecordHistogram.recordMediumTimesHistogram(baseHistogramName + suffix, startTime);
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                    baseHistogramName + ".All", startTime);
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                    baseHistogramName + suffix, startTime);
         }
 
         mDelegate.runMain();
@@ -362,11 +393,12 @@ public class ChildProcessService {
         System.exit(0);
     }
 
-    /*
+    /**
      * Returns the communication channel to the service. Note that even if multiple clients were to
      * connect, we should only get one call to this method. So there is no need to synchronize
      * member variables that are only set in this method and accessed from binder methods, as binder
      * methods can't be called until this method returns.
+     *
      * @param intent The intent that was used to bind to the service.
      * @return the binder used by the client to setup the connection.
      */
@@ -379,8 +411,6 @@ public class ChildProcessService {
         // time.
         mService.stopSelf();
 
-        mBindToCallerCheck =
-                intent.getBooleanExtra(ChildProcessConstants.EXTRA_BIND_TO_CALLER, false);
         mServiceBound = true;
         mDelegate.onServiceBound(intent);
 
@@ -402,28 +432,10 @@ public class ChildProcessService {
         sZygoteStartupTimeMillis = zygoteStartupTimeMillis;
     }
 
-    private void processConnectionBundle(
-            Bundle bundle, List<IBinder> clientInterfaces, IBinder binderBox) {
-        // Required to unparcel FileDescriptorInfo.
-        ClassLoader classLoader = getApplicationContext().getClassLoader();
-        bundle.setClassLoader(classLoader);
+    private void processConnectionArgs(IChildProcessArgs args, List<IBinder> clientInterfaces) {
         synchronized (mMainThread) {
-            if (mCommandLineParams == null) {
-                mCommandLineParams =
-                        bundle.getStringArray(ChildProcessConstants.EXTRA_COMMAND_LINE);
-                mMainThread.notifyAll();
-            }
-            // We must have received the command line by now
-            assert mCommandLineParams != null;
-            Parcelable[] fdInfosAsParcelable =
-                    bundle.getParcelableArray(ChildProcessConstants.EXTRA_FILES);
-            if (fdInfosAsParcelable != null) {
-                // For why this arraycopy is necessary:
-                // http://stackoverflow.com/questions/8745893/i-dont-get-why-this-classcastexception-occurs
-                mFdInfos = new FileDescriptorInfo[fdInfosAsParcelable.length];
-                System.arraycopy(fdInfosAsParcelable, 0, mFdInfos, 0, fdInfosAsParcelable.length);
-            }
-            mDelegate.onConnectionSetup(bundle, clientInterfaces, binderBox);
+            mChildProcessArgs = args;
+            mDelegate.onConnectionSetup(args, clientInterfaces);
             mMainThread.notifyAll();
         }
     }
@@ -447,5 +459,8 @@ public class ChildProcessService {
 
         /** Dumps the child process stack without crashing it. */
         void dumpProcessStack();
+
+        /** Calls pending background tasks, then compacts the process's memory. */
+        void onSelfFreeze();
     }
 }

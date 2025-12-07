@@ -25,12 +25,11 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/prefs/prefs_export.h"
@@ -61,15 +60,6 @@ namespace subtle {
 class PrefMemberBase;
 class ScopedUserPrefUpdateBase;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace pref_service_util {
-// Gets all the dotted paths from `dict`. For example if values stored are
-// `{"a" : { "b" : true, "c": false }}`, then `paths` gets ["a.b", "a.c"].
-void COMPONENTS_PREFS_EXPORT GetAllDottedPaths(const base::Value::Dict& dict,
-                                               std::vector<std::string>& paths);
-}  // namespace pref_service_util
-#endif
 
 // Base class for PrefServices. You can use the base class to read and
 // interact with preferences, but not to register new preferences; for
@@ -108,7 +98,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     Preference(const PrefService* service,
                std::string name,
                base::Value::Type type);
-    ~Preference() {}
+    ~Preference() = default;
 
     // Returns the name of the Preference (i.e., the key, e.g.,
     // browser.window_placement).
@@ -170,17 +160,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     // the Preference.
     bool IsExtensionModifiable() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Returns true if the Preference value is currently being controlled by a
-    // standalone browser (lacros) and not by any higher-priority source.
-    bool IsStandaloneBrowserControlled() const;
-
-    // Returns true if a standalone browser (lacros) can change the Preference
-    // value, which is the case if no higher-priority source than the standalone
-    // browser store controls the Preference.
-    bool IsStandaloneBrowserModifiable() const;
-#endif
-
     // Return the registration flags for this pref as a bitmask of
     // PrefRegistry::PrefRegistrationFlags.
     uint32_t registration_flags() const { return registration_flags_; }
@@ -207,7 +186,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   PrefService(std::unique_ptr<PrefNotifierImpl> pref_notifier,
               std::unique_ptr<PrefValueStore> pref_value_store,
               scoped_refptr<PersistentPrefStore> user_prefs,
-              scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
               scoped_refptr<PrefRegistry> pref_registry,
               base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
                   read_error_callback,
@@ -370,6 +348,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // Takes ownership of the store.
   virtual void UpdateCommandLinePrefStore(PrefStore* command_line_store);
 
+  // Tells the PrefValueStore to update itself with `extension_store`.
+  // Takes ownership of the store.
+  void UpdateExtensionPrefStore(PrefStore* extension_store);
+
   // We run the callback once, when initialization completes. The bool
   // parameter will be set to true for successful initialization,
   // false for unsuccessful.
@@ -409,18 +391,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   void AddPrefObserverAllPrefs(PrefObserver* obs);
   void RemovePrefObserverAllPrefs(PrefObserver* obs);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Write extension-controlled prefs from Lacros in ash.
-  void SetStandaloneBrowserPref(std::string_view path,
-                                const base::Value& value);
-  // Clear extension-controlled prefs from Lacros in ash.
-  void RemoveStandaloneBrowserPref(std::string_view path);
-
-  // Clear all prefs in standalone_browser_pref_store_. Use it when rolling back
-  // to Ash (i.e. disabling Lacros).
-  void RemoveAllStandaloneBrowserPrefs();
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 #endif
@@ -440,7 +410,6 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 
   // Pref Stores and profile that we passed to the PrefValueStore.
   const scoped_refptr<PersistentPrefStore> user_pref_store_;
-  const scoped_refptr<PersistentPrefStore> standalone_browser_pref_store_;
 
   // Callback to call when a read error occurs. Always invoked on the sequence
   // this PrefService was created own.
@@ -481,9 +450,9 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   virtual void RemovePrefObserver(std::string_view path, PrefObserver* obs);
 
   // A PrefStore::Observer which reports loading errors from
-  // PersistentPrefStores after they are loaded. Usually this is only user_prefs
-  // however in ash it additionally includes standalone_browser_prefs. Errors
-  // are only reported once even though multiple files may be loaded.
+  // PersistentPrefStores after they are loaded. Usually this is only
+  // user_prefs. Errors are only reported once even though multiple files may
+  // be loaded.
   class PersistentPrefStoreLoadingObserver : public PrefStore::Observer {
    public:
     explicit PersistentPrefStoreLoadingObserver(PrefService* pref_service_);

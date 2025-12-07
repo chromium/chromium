@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Синхронізовані пристрої, вкладки з яких доступні для відновлення, можна змінити за допомогою дотику. Торкніться екрана, щоб переглянути або відновити вибрані вкладки з указаного вами пристрою. Клавіатуру сховано.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Відкрити <ph name="TABS_COUNT_ONE" /> вкладку}one{Відкрити <ph name="TABS_COUNT_MANY" /> вкладку}few{Відкрити <ph name="TABS_COUNT_MANY" /> вкладки}many{Відкрити <ph name="TABS_COUNT_MANY" /> вкладок}other{Відкрити <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
 <translation id="4509609396389120020">Відновіть вкладки з інших пристроїв</translation>
+<translation id="4619615317237390068">Вкладки з інших пристроїв</translation>
 <translation id="4811934403802581334">Усі вибрані вкладки буде відновлено з указаного пристрою.</translation>
 <translation id="5336031759968328813">Переглянути всі вкладки</translation>
 <translation id="5494920125229734069">Вибрати все</translation>

@@ -17,10 +17,14 @@ namespace commerce {
 
 inline constexpr char kDialogArgsName[] = "name";
 inline constexpr char kDialogArgsUrls[] = "urls";
+inline constexpr char kDialogArgsSetId[] = "set_id";
 inline constexpr char kDialogArgsInNewTab[] = "in_new_tab";
 
 struct DialogArgs {
-  DialogArgs(std::vector<GURL> urls, std::string name, bool in_new_tab);
+  DialogArgs(std::vector<GURL> urls,
+             std::string name,
+             std::string set_id,
+             bool in_new_tab);
   ~DialogArgs();
   DialogArgs(const DialogArgs&);
   DialogArgs& operator=(const DialogArgs&);
@@ -29,6 +33,7 @@ struct DialogArgs {
 
   std::vector<GURL> urls;
   std::string name;
+  std::string set_id;
   bool in_new_tab;
 };
 
@@ -41,6 +46,10 @@ class ProductSpecificationsDisclosureDialog : public ui::WebDialogDelegate {
   static void ShowDialog(content::BrowserContext* browser_context,
                          content::WebContents* web_contents,
                          DialogArgs dialog_args);
+
+  // Close the current instance of dialog if there is a dialog showing. Returns
+  // whether the attempt to close dialog succeeded.
+  static bool CloseDialog();
 
   ProductSpecificationsDisclosureDialog(
       const ProductSpecificationsDisclosureDialog&) = delete;

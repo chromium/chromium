@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/tabs",
+  "+components/translate/core/browser",
+  "+components/optimization_guide/core/model_quality",
+  "+components/optimization_guide/proto",
+  "+components/proto_extras",
+]

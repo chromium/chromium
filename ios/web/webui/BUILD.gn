@@ -19,7 +19,7 @@ source_set("webui") {
     "//mojo/public/js:resources",
     "//net",
     "//ui/base",
-    "//ui/resources",
+    "//ui/webui/resources",
     "//url",
   ]
 
@@ -49,4 +49,8 @@ source_set("webui") {
     "web_ui_messaging_java_script_feature.h",
     "web_ui_messaging_java_script_feature.mm",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

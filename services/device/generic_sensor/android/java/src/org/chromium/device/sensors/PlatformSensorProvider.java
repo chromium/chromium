@@ -15,6 +15,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.device.mojom.SensorType;
 
 import java.util.HashSet;
@@ -23,22 +25,24 @@ import java.util.Set;
 
 /** Lifetime is controlled by device::PlatformSensorProviderAndroid. */
 @JNINamespace("device")
+@NullMarked
 class PlatformSensorProvider {
     /**
      * SensorManager that is shared among PlatformSensor objects. It is used for Sensor object
      * creation and @see android.hardware.SensorEventListener registration.
+     *
      * @see android.hardware.SensorManager
      */
-    private SensorManager mSensorManager;
+    private @Nullable SensorManager mSensorManager;
 
     /** Thread that is handling all sensor events. */
-    private HandlerThread mSensorsThread;
+    private @Nullable HandlerThread mSensorsThread;
 
     /**
-     * Processes messages on #mSensorsThread message queue. Provided to #mSensorManager when
-     * sensor should start polling for data.
+     * Processes messages on #mSensorsThread message queue. Provided to #mSensorManager when sensor
+     * should start polling for data.
      */
-    private Handler mHandler;
+    private @Nullable Handler mHandler;
 
     /** Set of currently active PlatformSensor objects. */
     private final Set<PlatformSensor> mActiveSensors = new HashSet<PlatformSensor>();
@@ -48,22 +52,25 @@ class PlatformSensorProvider {
      *
      * @return Handler thread handler.
      */
-    public Handler getHandler() {
+    public @Nullable Handler getHandler() {
         return mHandler;
     }
 
-    /**
-     * Returns shared SensorManager.
-     *
-     * @return SensorManager sensor manager.
-     */
-    public SensorManager getSensorManager() {
+    /** Returns shared SensorManager. Might be null. */
+    public @Nullable SensorManager getSensorManager() {
         return mSensorManager;
     }
 
+    /** Returns shared SensorManager. Asserts that its non-null. */
+    public final SensorManager getSensorManagerNonNull() {
+        SensorManager ret = getSensorManager();
+        assert ret != null;
+        return ret;
+    }
+
     /**
-     * Notifies PlatformSensorProvider that sensor started polling for data. Adds sensor to
-     * a set of active sensors, creates and starts new thread if needed.
+     * Notifies PlatformSensorProvider that sensor started polling for data. Adds sensor to a set of
+     * active sensors, creates and starts new thread if needed.
      */
     public void sensorStarted(PlatformSensor sensor) {
         synchronized (mActiveSensors) {

@@ -3,23 +3,21 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
 import("//components/compose/features.gni")
-import("//components/nacl/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/sharing_message/buildflags.gni")
 import("//components/signin/features.gni")
 import("//components/supervised_user/buildflags.gni")
+import("//content/public/common/features.gni")
 import("//crypto/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//media/media_options.gni")
 import("//net/features.gni")
 import("//pdf/features.gni")
-import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//services/screen_ai/buildflags/features.gni")
 import("//ui/base/ui_features.gni")
@@ -45,13 +43,18 @@ declare_args() {
   enable_background_mode = !is_android && !is_chromeos
 
   # Enables usage of notifications via Chrome's MessageCenter.
-  enable_chrome_notifications = is_mac || is_win || is_linux || is_fuchsia
+  enable_chrome_notifications = is_mac || is_win || is_linux
+
+  # Enables inclusion of glic in the build.
+  enable_glic = is_mac || is_win || is_linux || is_chromeos
 
   # Hangout services is an extension that adds extra features to Hangouts.
   # It is enableable separately to facilitate testing.
-  enable_hangout_services_extension = is_chrome_branded
+  enable_hangout_services_extension = enable_src_internal
 
-  enable_service_discovery = (enable_mdns && !is_android) || is_mac
+  # TODO(crbug.com/429684535): Document this argument. It's not immediately
+  # clear what it controls.
+  enable_service_discovery = enable_mdns
 
   # Enables use of the session service, which is enabled by default.
   # Android stores them separately on the Java side.
@@ -70,7 +73,7 @@ assert(!chrome_enable_logging_by_default || !is_official_build,
        "Logging must be disabled by default in Official builds")
 
 # Use brlapi from brltty for braille display support.
-use_brlapi = is_chromeos_ash
+use_brlapi = is_chromeos
 
 # Every grit target in //chrome should apply these defines so that the
 # proper build flags can be set.
@@ -81,13 +84,15 @@ chrome_grit_defines = [
   "enable_openxr=$enable_openxr",
   "enable_printing=$enable_printing",
   "enable_extensions=$enable_extensions",
+  "enable_extensions_core=$enable_extensions_core",
+  "enable_glic=$enable_glic",
   "enable_hangout_services_extension=$enable_hangout_services_extension",
-  "enable_ink=$enable_ink",
   "enable_pdf_ink2=$enable_pdf_ink2",
-  "enable_nacl=$enable_nacl",
+  "enable_pdf_save_to_drive=$enable_pdf_save_to_drive",
   "enable_dice_support=$enable_dice_support",
   "enable_pdf=$enable_pdf",
   "enable_print_preview=$enable_print_preview",
+  "enable_screen_capture=$enable_screen_capture",
   "enable_supervised_users=$enable_supervised_users",
   "enable_vr=$enable_vr",
   "enable_webui_certificate_viewer=$enable_webui_certificate_viewer",

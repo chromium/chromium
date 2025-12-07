@@ -1,0 +1,59 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_linux)
+
+import("//third_party/libdisplay-info/visibility.gni")
+
+config("libdisplay_info_public_config") {
+  include_dirs = [ "src/include" ]
+}
+
+source_set("libdisplay_info") {
+  testonly = true
+
+  cflags_c = [
+    # cflags as per upstream meson.build:
+    "-D_POSIX_C_SOURCE=200809L",
+    "-Wundef",
+    "-Wmissing-prototypes",
+    "-Walloca",
+    "-Wdeclaration-after-statement",
+    "-Wconversion",
+    "-Wno-unused-parameter",
+    "-Wno-missing-field-initializers",
+    "-Werror=implicit",
+  ]
+
+  sources = [
+    "src/cta-vic-table.c",
+    "src/cta.c",
+    "src/cvt.c",
+    "src/displayid.c",
+    "src/dmt-table.c",
+    "src/edid.c",
+    "src/gtf.c",
+    "src/info.c",
+    "src/log.c",
+    "src/memory-stream.c",
+  ]
+
+  sources += [ "pnp-id-table.c" ]
+
+  if (!is_debug) {
+    # libdisplay-info code assumes it is always built with assertions. Enable
+    # assertions so that it compiles without throwing an unused function error
+    # as `di_cta_data_block_allowed_multiple()` is used only in an assert [1].
+    #
+    # [1]
+    # https://gitlab.freedesktop.org/emersion/libdisplay-info/-/merge_requests/189
+    configs -= [ "//build/config:release" ]
+    configs += [ "//build/config:debug" ]
+  }
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":libdisplay_info_public_config" ]
+}

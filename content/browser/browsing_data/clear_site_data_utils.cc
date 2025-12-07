@@ -5,7 +5,6 @@
 #include "content/public/browser/clear_site_data_utils.h"
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -34,22 +33,22 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
  public:
   SiteDataClearer(
       BrowserContext* browser_context,
-      const std::optional<StoragePartitionConfig> storage_partition_config,
+      std::optional<StoragePartitionConfig> storage_partition_config,
       const url::Origin& origin,
       const ClearSiteDataTypeSet clear_site_data_types,
       const std::set<std::string>& storage_buckets_to_remove,
       bool avoid_closing_connections,
-      const std::optional<net::CookiePartitionKey> cookie_partition_key,
-      const std::optional<blink::StorageKey> storage_key,
+      std::optional<net::CookiePartitionKey> cookie_partition_key,
+      std::optional<blink::StorageKey> storage_key,
       bool partitioned_state_allowed_only,
       base::OnceClosure callback)
-      : storage_partition_config_(storage_partition_config),
+      : storage_partition_config_(std::move(storage_partition_config)),
         origin_(origin),
         clear_site_data_types_(clear_site_data_types),
         storage_buckets_to_remove_(storage_buckets_to_remove),
         avoid_closing_connections_(avoid_closing_connections),
-        cookie_partition_key_(cookie_partition_key),
-        storage_key_(storage_key),
+        cookie_partition_key_(std::move(cookie_partition_key)),
+        storage_key_(std::move(storage_key)),
         partitioned_state_allowed_only_(partitioned_state_allowed_only),
         callback_(std::move(callback)),
         pending_task_count_(0),
@@ -89,8 +88,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
               BrowsingDataFilterBuilder::Mode::kDelete));
       cookie_filter_builder->AddRegisterableDomain(domain);
       cookie_filter_builder->SetCookiePartitionKeyCollection(
-          net::CookiePartitionKeyCollection::FromOptional(
-              cookie_partition_key_));
+          net::CookiePartitionKeyCollection(cookie_partition_key_));
       cookie_filter_builder->SetPartitionedCookiesOnly(
           partitioned_state_allowed_only_);
       if (storage_partition_config_.has_value()) {
@@ -99,7 +97,9 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       }
 
       pending_task_count_++;
-      uint64_t remove_mask = BrowsingDataRemover::DATA_TYPE_COOKIES;
+      uint64_t remove_mask =
+          BrowsingDataRemover::DATA_TYPE_COOKIES |
+          BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
       if (avoid_closing_connections_) {
         remove_mask |= BrowsingDataRemover::DATA_TYPE_AVOID_CLOSING_CONNECTIONS;
       }
@@ -130,12 +130,25 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
     if (clear_site_data_types_.Has(ClearSiteDataType::kStorage)) {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_DOM_STORAGE;
       remove_mask |= BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX;
+      remove_mask |= BrowsingDataRemover::DATA_TYPE_DEVICE_BOUND_SESSIONS;
       // Internal data should not be removed by site-initiated deletions.
       remove_mask &= ~BrowsingDataRemover::DATA_TYPE_PRIVACY_SANDBOX_INTERNAL;
+      // Some deletions should also be more narrow for Clear-Site-Data, to avoid
+      // sites from hostilely interfering with each other where a user-initiated
+      // deletion would be conservative.
+      remove_mask &= ~BrowsingDataRemover::DATA_TYPE_INTEREST_GROUPS_USER_CLEAR;
     }
 
     if (clear_site_data_types_.Has(ClearSiteDataType::kCache)) {
       remove_mask |= BrowsingDataRemover::DATA_TYPE_CACHE;
+    }
+
+    if (clear_site_data_types_.Has(ClearSiteDataType::kPrefetchCache)) {
+      remove_mask |= BrowsingDataRemover::DATA_TYPE_PREFETCH_CACHE;
+    }
+
+    if (clear_site_data_types_.Has(ClearSiteDataType::kPrerenderCache)) {
+      remove_mask |= BrowsingDataRemover::DATA_TYPE_PRERENDER_CACHE;
     }
 
     if (remove_mask) {
@@ -206,13 +219,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
 
 void ClearSiteData(
     base::WeakPtr<BrowserContext> browser_context,
-    const std::optional<StoragePartitionConfig> storage_partition_config,
+    std::optional<StoragePartitionConfig> storage_partition_config,
     const url::Origin& origin,
     const ClearSiteDataTypeSet clear_site_data_types,
     const std::set<std::string>& storage_buckets_to_remove,
     bool avoid_closing_connections,
-    const std::optional<net::CookiePartitionKey> cookie_partition_key,
-    const std::optional<blink::StorageKey> storage_key,
+    std::optional<net::CookiePartitionKey> cookie_partition_key,
+    std::optional<blink::StorageKey> storage_key,
     bool partitioned_state_allowed_only,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

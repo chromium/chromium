@@ -5,7 +5,7 @@
 module blink.mojom;
 
 import "services/network/public/mojom/web_sandbox_flags.mojom";
-import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "third_party/blink/public/mojom/frame/frame_policy.mojom";
 import "third_party/blink/public/mojom/frame/tree_scope_type.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
@@ -53,7 +53,7 @@ struct FrameReplicationState {
 
   // Parsed permissions policy header. May be empty if no header was sent with
   // the document.
-  array<blink.mojom.ParsedPermissionsPolicyDeclaration>
+  array<network.mojom.ParsedPermissionsPolicyDeclaration>
     permissions_policy_header;
 
   // Contains the currently active sandbox flags for this frame, including flags

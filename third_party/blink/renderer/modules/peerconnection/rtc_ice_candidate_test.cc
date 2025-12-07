@@ -6,6 +6,7 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_ice_server_transport_protocol.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_ice_candidate_platform.h"
 
 namespace blink {
@@ -31,7 +32,8 @@ TEST(RTCIceCandidateTest, RelayProtocol) {
       RTCIceCandidate::Create(MakeGarbageCollected<RTCIceCandidatePlatform>(
           kUdpRelayCandidateStr, kMid, kSdpMLineIndex, kUsernameFragment,
           kUrl)));
-  EXPECT_EQ(candidate->relayProtocol(), String("udp"));
+  EXPECT_EQ(candidate->relayProtocol(),
+            V8RTCIceServerTransportProtocol::Enum::kUdp);
 }
 
 }  // namespace blink

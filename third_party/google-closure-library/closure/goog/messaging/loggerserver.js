@@ -85,7 +85,7 @@ class LoggerServer extends Disposable {
   /** @override */
   disposeInternal() {
     super.disposeInternal();
-    this.channel_.registerService(this.serviceName_, goog.nullFunction, true);
+    this.channel_.registerService(this.serviceName_, () => {}, true);
     delete this.channel_;
   }
 }

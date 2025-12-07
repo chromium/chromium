@@ -26,21 +26,21 @@
 
 #include <memory>
 #include <optional>
+#include <variant>
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
+#include "base/memory/memory_pressure_listener.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/base/big_buffer.h"
-#include "net/base/schemeful_site.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/scheduler/web_scoped_virtual_time_pauser.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_status.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
+#include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
@@ -107,7 +108,9 @@ enum class ResourceType : uint8_t {
 // requested data has arrived. This class also does the actual communication
 // with the loader to obtain the resource from the network.
 class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
-                                 public MemoryPressureListener {
+                                 public base::MemoryPressureListener {
+  USING_PRE_FINALIZER(Resource, Dispose);
+
  public:
   // An enum representing whether a resource match with another resource.
   // There are three kinds of status.
@@ -157,14 +160,16 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   Resource& operator=(const Resource&) = delete;
   ~Resource() override;
 
-  void Trace(Visitor*) const override;
+  virtual void Trace(Visitor*) const;
 
-  virtual WTF::TextEncoding Encoding() const { return WTF::TextEncoding(); }
+  void Dispose();
+
+  virtual TextEncoding Encoding() const { return TextEncoding(); }
   // If a BackgroundResponseProcessor consumed the body data on the background
   // thread, this method is called with a SegmentedBuffer data. Otherwise, it is
   // called with a span<const char> data several times.
   virtual void AppendData(
-      absl::variant<SegmentedBuffer, base::span<const char>>);
+      std::variant<SegmentedBuffer, base::span<const char>>);
   virtual void FinishAsError(const ResourceError&,
                              base::SingleThreadTaskRunner*);
 
@@ -201,14 +206,20 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   void UpdateResourceWidth(const AtomicString& resource_width);
 
+  virtual void UpdateResourceInfoFromObservers() {}
+
   // Returns two priorities:
   // - `first` is the priority with the fix of https://crbug.com/1369823.
   // - `second` is the priority without the fix, ignoring the priority from
   //   ImageLoader.
-  virtual std::pair<ResourcePriority, ResourcePriority>
-  PriorityFromObservers() {
-    return std::make_pair(ResourcePriority(), ResourcePriority());
+  virtual std::pair<std::optional<ResourcePriority>,
+                    std::optional<ResourcePriority>>
+  PriorityFromObservers() const {
+    return std::make_pair(std::nullopt, std::nullopt);
   }
+
+  virtual bool HasNonDegenerateContentSize() const { return false; }
+  virtual bool IsAboveSpeculativeDecodeSizeThreshold() const { return false; }
 
   // If this Resource is already finished when AddClient is called, the
   // ResourceClient will be notified asynchronously by a task scheduled
@@ -229,6 +240,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   ResourceStatus GetStatus() const { return status_; }
   void SetStatus(ResourceStatus status) { status_ = status; }
+  virtual ResourceStatus GetContentStatus() const { return status_; }
 
   size_t size() const { return EncodedSize() + DecodedSize() + OverheadSize(); }
 
@@ -280,6 +292,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
       std::unique_ptr<ParkableStringImpl::SecureDigest> digest) {}
   void SetResponse(const ResourceResponse&);
   const ResourceResponse& GetResponse() const { return response_; }
+  ResourceResponse& GetMutableResponseForTesting() { return response_; }
 
   // Sets the serialized metadata retrieved from the platform's cache.
   // The default implementation does nothing. Subclasses interested in the data
@@ -337,12 +350,25 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   const IntegrityMetadataSet& IntegrityMetadata() const {
     return options_.integrity_metadata;
   }
-  ResourceIntegrityDisposition IntegrityDisposition() const {
-    return integrity_disposition_;
+  bool PassedIntegrityChecks() const {
+    return integrity_disposition_ == ResourceIntegrityDisposition::kPassed;
   }
-  const SubresourceIntegrity::ReportInfo& IntegrityReportInfo() const {
-    return integrity_report_info_;
-  }
+
+  // Caching makes it possible for a resource that was requested with integrity
+  // metadata to be reused for a request that didn't itself require integrity
+  // checks. In that case, the integrity check can be skipped, as the integrity
+  // may not have been "meant" for this specific request. If the resource is
+  // being served from the preload cache however, we know any associated
+  // integrity metadata and checks were destined for this request, so we cannot
+  // skip the integrity check.
+  //
+  // We also force integrity checks for resources that declare their own
+  // integrity information via an `Unencoded-Digest` header. Those should be
+  // checked regardless of any given page's assertion through `integrity`
+  // attributes.
+  bool ForceIntegrityChecks() const;
+
+  const blink::IntegrityReport& IntegrityReport() const { return integrity_report_; }
   bool MustRefetchDueToIntegrityMetadata(const FetchParameters&) const;
 
   bool IsAlive() const { return is_alive_; }
@@ -431,11 +457,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
     return CalculateOverheadSize();
   }
 
-  // Appends the top-frame site derived from |origin| to
-  // |existing_top_frame_sites_in_cache_| and returns true if the same site
-  // already exists.
-  bool AppendTopFrameSiteForMetrics(const SecurityOrigin& origin);
-
   // Sets the ResourceRequest to be tagged as an ad.
   void SetIsAdResource();
 
@@ -444,10 +465,6 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   void SetIsPreloadedByEarlyHints() { is_preloaded_by_early_hints_ = true; }
 
   bool IsPreloadedByEarlyHints() const { return is_preloaded_by_early_hints_; }
-
-  void SetIsLoadedFromMemoryCache() { is_loaded_from_memory_cache_ = true; }
-
-  bool IsLoadedFromMemoryCache() { return is_loaded_from_memory_cache_; }
 
   virtual std::unique_ptr<BackgroundResponseProcessorFactory>
   MaybeCreateBackgroundResponseProcessorFactory();
@@ -519,6 +536,10 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   virtual void SetEncoding(const String&) {}
 
+  // Call this when the resource is successfully retrieved from MemoryCache.
+  void IncrementMemoryCacheHitCount() { ++memory_cache_hit_count_; }
+  uint32_t MemoryCacheHitCount() const { return memory_cache_hit_count_; }
+
  private:
   friend class ResourceLoader;
   friend class MemoryCache;
@@ -532,7 +553,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   String ReasonNotDeletable() const;
 
   // MemoryPressureListener overrides:
-  void OnPurgeMemory() override;
+  void OnMemoryPressure(base::MemoryPressureLevel) override;
 
   void CheckResourceIntegrity();
   void TriggerNotificationForFinishObservers(base::SingleThreadTaskRunner*);
@@ -545,26 +566,27 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   void AppendDataImpl(base::span<const char>);
 
   ResourceType type_;
-  ResourceStatus status_;
+  ResourceStatus status_ = ResourceStatus::kNotStarted;
 
   std::optional<ResourceError> error_;
 
   base::TimeTicks load_response_end_;
   base::TimeTicks memory_cache_last_accessed_;
 
-  size_t encoded_size_;
-  size_t decoded_size_;
+  size_t encoded_size_ = 0u;
+  size_t decoded_size_ = 0u;
 
   String cache_identifier_;
 
-  bool link_preload_;
-  bool is_alive_;
-  bool is_add_remove_client_prohibited_;
+  bool link_preload_ = false;
+  bool is_alive_ = false;
+  bool is_add_remove_client_prohibited_ = false;
   bool is_revalidation_start_forbidden_ = false;
   bool is_unused_preload_ = false;
   bool stale_revalidation_started_ = false;
   bool is_preloaded_by_early_hints_ = false;
-  bool is_loaded_from_memory_cache_ = false;
+
+  uint32_t memory_cache_hit_count_ = 0;
 
   enum class RevalidationStatus {
     kNoRevalidatingOrFailed,  // not in revalidate procedure or
@@ -573,10 +595,12 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
                               // network response
     kRevalidated,             // revalidate success by 304 Not Modified
   };
-  RevalidationStatus revalidation_status_;
+  RevalidationStatus revalidation_status_ =
+      RevalidationStatus::kNoRevalidatingOrFailed;
 
-  ResourceIntegrityDisposition integrity_disposition_;
-  SubresourceIntegrity::ReportInfo integrity_report_info_;
+  ResourceIntegrityDisposition integrity_disposition_ =
+      ResourceIntegrityDisposition::kNotChecked;
+  class IntegrityReport integrity_report_;
 
   // Ordered list of all redirects followed while fetching this resource.
   Vector<RedirectPair> redirect_chain_;
@@ -607,13 +631,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   WebScopedVirtualTimePauser virtual_time_pauser_;
 
-  // To compute metrics for measuring the efficacy of the
-  // memory cache if it was partitioned by top-frame site (in addition to the
-  // current origin which it is already partitioned by).
-  // TODO(crbug.com/1127971): Remove this once the decision is made to partition
-  // the cache using either Network Isolation Key or scoped to per-document.
-  std::set<net::SchemefulSite> existing_top_frame_sites_in_cache_
-      ALLOW_DISCOURAGED_TYPE("TODO(crbug.com/1404327)");
+  MemoryPressureListenerRegistration memory_pressure_listener_registration_;
 };
 
 class ResourceFactory {

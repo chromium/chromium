@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/accessibility/ui/accessibility_focus_ring.h"
 
 #include <stddef.h>
@@ -108,7 +103,7 @@ AccessibilityFocusRing CreateFromThreeRects(const gfx::Rect& top,
   // Now ensure all the points are on the correct display.
   gfx::Rect bounds_in_display = gfx::Rect(ring.bounds_in_screen);
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayMatching(bounds_in_display);
+      display::Screen::Get()->GetDisplayMatching(bounds_in_display);
   aura::Window* root_window = Shell::GetRootWindowForDisplayId(display.id());
   ::wm::ConvertRectFromScreen(root_window, &bounds_in_display);
 
@@ -269,8 +264,8 @@ gfx::Rect AccessibilityFocusRing::GetScreenBoundsForRect(
   if (!screen_bounds_for_testing_.IsEmpty())
     return screen_bounds_for_testing_;
 
-  DCHECK(display::Screen::GetScreen());
-  return display::Screen::GetScreen()->GetDisplayMatching(rect).bounds();
+  DCHECK(display::Screen::Get());
+  return display::Screen::Get()->GetDisplayMatching(rect).bounds();
 }
 
 }  // namespace ash

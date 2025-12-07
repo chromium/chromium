@@ -102,7 +102,6 @@ def ProcessResults(options, is_unittest=False):
           max_num_values=options.max_values_per_test_case,
           test_path_format=options.test_path_format,
           trace_processor_path=options.trace_processor_path,
-          enable_tbmv3=options.experimental_tbmv3_metrics,
           fetch_power_profile=options.fetch_power_profile),
       test_results,
       on_failure=util.SetUnexpectedFailure,
@@ -126,10 +125,15 @@ def ProcessResults(options, is_unittest=False):
 
     print('View results at file://', output_file, sep='')
 
-  if options.fetch_device_data:
-    PullDeviceArtifacts(options)
+  exit_code = GenerateExitCode(test_results)
 
-  return GenerateExitCode(test_results)
+  if options.fetch_device_data:
+    if options.fetch_device_data_on_success and exit_code != 0:
+      logging.warning('Not fetching device data due to non zero exit code.')
+    else:
+      PullDeviceArtifacts(options)
+
+  return exit_code
 
 
 def _AmortizeProcessingDuration(processing_duration, test_results):
@@ -160,21 +164,19 @@ def _AddExtraMetrics(test_results, extra_metrics):
 
 def ProcessTestResult(test_result, upload_bucket, results_label, run_identifier,
                       test_suite_start, should_compute_metrics, max_num_values,
-                      test_path_format, trace_processor_path, enable_tbmv3,
+                      test_path_format, trace_processor_path,
                       fetch_power_profile):
   ConvertProtoTraces(test_result, trace_processor_path)
   AggregateTBMv2Traces(test_result)
-  if enable_tbmv3:
-    AggregateTBMv3Traces(test_result)
+  AggregateTBMv3Traces(test_result)
   if upload_bucket is not None:
     UploadArtifacts(test_result, upload_bucket, run_identifier)
 
   if should_compute_metrics:
     test_result['_histograms'] = histogram_set.HistogramSet()
     compute_metrics.ComputeTBMv2Metrics(test_result)
-    if enable_tbmv3:
-      compute_metrics.ComputeTBMv3Metrics(test_result, trace_processor_path,
-                                          fetch_power_profile)
+    compute_metrics.ComputeTBMv3Metrics(test_result, trace_processor_path,
+                                        fetch_power_profile)
     ExtractMeasurements(test_result)
     num_values = len(test_result['_histograms'])
     if max_num_values is not None and num_values > max_num_values:
@@ -362,7 +364,7 @@ def UploadArtifacts(test_result, upload_bucket, run_identifier):
 
 def GetTraceUrl(test_result):
   artifacts = test_result.get('outputArtifacts', {})
-  trace_artifact = artifacts.get(compute_metrics.HTML_TRACE_NAME, {})
+  trace_artifact = artifacts.get(compute_metrics.CONCATENATED_PROTO_NAME, {})
   if 'viewUrl' in trace_artifact:
     return trace_artifact['viewUrl']
   if 'filePath' in trace_artifact:
@@ -498,8 +500,27 @@ def PullDeviceArtifacts(options):
     # Each docker host in chrome-swarming has one device attached, so we'll use
     # the first AdbWrapper instance as the assumed attached device in question
     utils = device_utils.DeviceUtils(devices[0])
+    if device_path == 'auto':
+      cmd = ('find /data_mirror/data_ce/null -type f -name "*.profraw" '
+             '-print -quit | xargs dirname')
+      output = utils.RunShellCommand(cmd, shell=True)
+      if output:
+        device_path = output[0]
+        logging.info('Dynamically detected device path: %s', device_path)
+      else:
+        logging.warning('Could not dynamically detect device path.')
+        return
+
     logging.info('Pulling files from %s to %s', device_path, local_path)
     utils.PullFile(device_path, local_path)
+    local_profile_dir = os.path.join(local_path, os.path.basename(device_path))
+    for root, _, filenames in os.walk(local_profile_dir):
+      for filename in filenames:
+        relative_path = os.path.relpath(os.path.join(root, filename),
+                                        local_profile_dir)
+        to_be_removed = f"{device_path}/{relative_path}"
+        utils.RemovePath(to_be_removed)
+        logging.info('Removed %s', to_be_removed)
     logging.info('Finished pulling files.')
   elif platform == 'chromeos':
     logging.warning('Searching for devices')

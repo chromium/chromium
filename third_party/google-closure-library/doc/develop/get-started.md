@@ -49,8 +49,8 @@ You will use this later to generate a `deps.js` file for your application.
 
 ## Create Closure JavaScript
 
-Create a `hello.js` JavaScript file in `path/to/myapp/` with the
-following contents:
+Create a `hello.js` JavaScript file in `path/to/myapp/` with the following
+contents:
 
 ```js
 /**

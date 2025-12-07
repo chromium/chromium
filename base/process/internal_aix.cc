@@ -4,18 +4,16 @@
 
 #include "base/process/internal_aix.h"
 
-#include <sys/procfs.h>
-
 #include <errno.h>
 #include <fcntl.h>
 #include <limits.h>
+#include <sys/procfs.h>
 #include <unistd.h>
 
 #include <map>
 #include <string>
 #include <vector>
 
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -44,15 +42,15 @@ pid_t ProcDirSlotToPid(const char* d_name) {
       return 0;
     }
   }
-  if (i == NAME_MAX)
+  if (i == NAME_MAX) {
     return 0;
+  }
 
   // Read the process's command line.
   pid_t pid;
   std::string pid_string(d_name);
   if (!StringToInt(pid_string, &pid)) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
   return pid;
 }
@@ -130,22 +128,26 @@ size_t GetProcStatsFieldAsSizeT(const std::vector<std::string>& proc_stats,
 
 int64_t ReadProcStatsAndGetFieldAsInt64(pid_t pid, ProcStatsFields field_num) {
   struct psinfo stats_data;
-  if (!ReadProcStats(pid, &stats_data))
+  if (!ReadProcStats(pid, &stats_data)) {
     return 0;
+  }
   std::vector<std::string> proc_stats;
-  if (!ParseProcStats(stats_data, &proc_stats))
+  if (!ParseProcStats(stats_data, &proc_stats)) {
     return 0;
+  }
 
   return GetProcStatsFieldAsInt64(proc_stats, field_num);
 }
 
 size_t ReadProcStatsAndGetFieldAsSizeT(pid_t pid, ProcStatsFields field_num) {
   struct psinfo stats_data;
-  if (!ReadProcStats(pid, &stats_data))
+  if (!ReadProcStats(pid, &stats_data)) {
     return 0;
+  }
   std::vector<std::string> proc_stats;
-  if (!ParseProcStats(stats_data, &proc_stats))
+  if (!ParseProcStats(stats_data, &proc_stats)) {
     return 0;
+  }
   return GetProcStatsFieldAsSizeT(proc_stats, field_num);
 }
 

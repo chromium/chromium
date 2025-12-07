@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_WITH_APP_LOCK_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_LOCKS_SHARED_WEB_CONTENTS_WITH_APP_LOCK_H_
 
-#include <memory>
-
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -18,7 +16,6 @@
 
 namespace content {
 class WebContents;
-struct PartitionedLockHolder;
 }  // namespace content
 
 namespace web_app {
@@ -40,25 +37,26 @@ class SharedWebContentsWithAppLockDescription : public LockDescription {
   ~SharedWebContentsWithAppLockDescription();
 };
 
-// Holding this lock means that the user has exclusive access to the app id/s
-// and the background web contents in use by the WebAppProvider system. This
-// does not ensure that the app/s are installed when the lock is granted. Checks
-// for that will need to be handled by the user of the lock.
-// The web contents will be prepared for use via
-// WebAppUrlLoader::PrepareForLoad() prior to being granted access.
+// Holding this lock means that the holder has exclusive access to the given app
+// id(s) and the background web contents used by the WebAppProvider system. This
+// does not ensure that the app(s) are installed when the lock is granted.
+// Checks for that will need to be handled by the user of the lock. The web
+// contents will be prepared for use via WebAppUrlLoader::PrepareForLoad() prior
+// to the lock being granted.
 //
 // See `WebAppLockManager` for how to use locks. Destruction of this class will
 // release the lock or cancel the lock request if it is not acquired yet.
 //
-// Note: Accessing a lock will CHECK-fail if the WebAppProvider system has
-// shutdown (or the profile has shut down).
+// Note: Accessing a lock before it is granted or after the WebAppProvider
+// system has shutdown (or the profile has shut down) will CHECK-fail.
 class SharedWebContentsWithAppLock : public Lock,
                                      public WithSharedWebContentsResources,
                                      public WithAppResources {
  public:
   using LockDescription = SharedWebContentsWithAppLockDescription;
 
-  ~SharedWebContentsWithAppLock();
+  SharedWebContentsWithAppLock();
+  ~SharedWebContentsWithAppLock() override;
 
   base::WeakPtr<SharedWebContentsWithAppLock> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -66,10 +64,8 @@ class SharedWebContentsWithAppLock : public Lock,
 
  private:
   friend class WebAppLockManager;
-  SharedWebContentsWithAppLock(
-      base::WeakPtr<WebAppLockManager> lock_manager,
-      std::unique_ptr<content::PartitionedLockHolder> holder,
-      content::WebContents& web_contents);
+  void GrantLock(WebAppLockManager& lock_manager,
+                 content::WebContents& web_contents);
 
   base::WeakPtrFactory<SharedWebContentsWithAppLock> weak_factory_{this};
 };

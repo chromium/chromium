@@ -9,6 +9,8 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
@@ -18,17 +20,19 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** A SceneLayer to render a static tab. */
+@NullMarked
 @JNINamespace("android")
 public class StaticTabSceneLayer extends SceneLayer {
     /**
      * ViewBinder for the StaticTabSceneLayer.
+     *
      * @param model The model to bind.
      * @param view The View that the model bind to.
      * @param propertyKey The property of the view that changed. This is NULL until SceneLayer is
-     *                    able to do partial update.
+     *     able to do partial update.
      */
     public static void bind(
-            PropertyModel model, StaticTabSceneLayer view, PropertyKey propertyKey) {
+            PropertyModel model, StaticTabSceneLayer view, @Nullable PropertyKey propertyKey) {
         view.update(model);
     }
 
@@ -55,16 +59,13 @@ public class StaticTabSceneLayer extends SceneLayer {
         StaticTabSceneLayerJni.get()
                 .updateTabLayer(
                         mNativePtr,
-                        StaticTabSceneLayer.this,
-                        model.get(LayoutTab.IS_ACTIVE_LAYOUT_SUPPLIER).isActiveLayout()
+                        model.get(LayoutTab.IS_ACTIVE_LAYOUT)
                                 ? model.get(LayoutTab.TAB_ID)
                                 : Tab.INVALID_TAB_ID,
                         model.get(LayoutTab.CAN_USE_LIVE_TEXTURE),
                         model.get(LayoutTab.BACKGROUND_COLOR),
                         x,
                         y,
-                        model.get(LayoutTab.STATIC_TO_VIEW_BLEND),
-                        model.get(LayoutTab.SATURATION),
                         model.get(LayoutTab.CONTENT_OFFSET_TAG));
     }
 
@@ -74,14 +75,13 @@ public class StaticTabSceneLayer extends SceneLayer {
      * @param tabContentManager {@link TabContentManager} to set.
      */
     public void setTabContentManager(TabContentManager tabContentManager) {
-        StaticTabSceneLayerJni.get()
-                .setTabContentManager(mNativePtr, StaticTabSceneLayer.this, tabContentManager);
+        StaticTabSceneLayerJni.get().setTabContentManager(mNativePtr, tabContentManager);
     }
 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr = StaticTabSceneLayerJni.get().init(StaticTabSceneLayer.this);
+            mNativePtr = StaticTabSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
@@ -95,23 +95,18 @@ public class StaticTabSceneLayer extends SceneLayer {
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public interface Natives {
-        long init(StaticTabSceneLayer caller);
+        long init(StaticTabSceneLayer self);
 
         void updateTabLayer(
                 long nativeStaticTabSceneLayer,
-                StaticTabSceneLayer caller,
                 int id,
                 boolean canUseLiveLayer,
                 int backgroundColor,
                 float x,
                 float y,
-                float staticToViewBlend,
-                float saturation,
-                OffsetTag contentLayerOffsetToken);
+                @Nullable OffsetTag contentLayerOffsetToken);
 
         void setTabContentManager(
-                long nativeStaticTabSceneLayer,
-                StaticTabSceneLayer caller,
-                TabContentManager tabContentManager);
+                long nativeStaticTabSceneLayer, TabContentManager tabContentManager);
     }
 }

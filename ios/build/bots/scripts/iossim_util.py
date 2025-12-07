@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from collections import OrderedDict
 import json
 import logging
 import os
+import plistlib
 import subprocess
 import time
 import typing
@@ -14,16 +16,13 @@ import test_runner
 import test_runner_errors
 import mac_util
 
-from collections import OrderedDict
 
 LOGGER = logging.getLogger(__name__)
 
-MAX_WAIT_TIME_TO_DELETE_RUNTIME = 45  # 45 seconds
+MAX_WAIT_TIME_TO_DELETE_RUNTIME = 60  # 60 seconds
 
 SIMULATOR_DEFAULT_PATH = os.path.expanduser(
     '~/Library/Developer/CoreSimulator/Devices')
-
-IOS18_SIM_RUNTIME_ID = 'com.apple.CoreSimulator.SimRuntime.iOS-18-0'
 
 # TODO(crbug.com/40910268): remove Legacy Download once iOS 15.5 is deprecated
 IOS_SIM_RUNTIME_BUILTIN_STATE = ['Legacy Download', 'Bundled with Xcode']
@@ -45,7 +44,7 @@ def get_simulator_list(path=SIMULATOR_DEFAULT_PATH):
                                '-j']).decode('utf-8'))
 
 
-def get_simulator(platform, version):
+def get_simulator(platform, version, out_dir=None):
   """Gets a simulator or creates a new one if not exist by platform and version.
 
   Args:
@@ -55,7 +54,8 @@ def get_simulator(platform, version):
   Returns:
     A udid of a simulator device.
   """
-  udids = get_simulator_udids_by_platform_and_version(platform, version)
+  udids = get_simulator_udids_by_platform_and_version(platform, version,
+                                                      out_dir)
   if udids:
     return udids[0]
   return create_device_by_platform_and_version(platform, version)
@@ -83,11 +83,59 @@ def get_simulator_device_type_by_platform(simulators, platform):
       (platform, simulators['devicetypes']))
 
 
-def get_simulator_runtime_by_version(simulators, version):
-  """Gets runtime based on iOS version.
+def debug_missing_simulator(checked_runtimes, out_dir=None):
+  if out_dir == None:
+    return
+  # where we looked and didn't find the given version
+  checked_runtimes_path = os.path.join(
+      os.path.abspath(out_dir), 'checked_runtimes.json')
+  with open(checked_runtimes_path, "w") as f:
+    f.write(json.dumps(checked_runtimes, indent=2))
+
+  # sanity check of 'xcrun simctl runtime list -j'
+  runtimes_path = os.path.join(os.path.abspath(out_dir), 'runtimes.json')
+  runtimes = subprocess.check_output(
+      ['xcrun', 'simctl', 'runtime', 'list', '-j']).decode('utf-8')
+  with open(runtimes_path, "w") as f:
+    f.write(runtimes)
+
+  # is the runtime DMG still mounted?
+  coresim_volumes_path = os.path.join(
+      os.path.abspath(out_dir), 'coresim_volumes.txt')
+  target_vol_path = '/Library/Developer/CoreSimulator/Volumes'
+  if os.path.exists(target_vol_path):
+    coresim_volumes_list = os.listdir(target_vol_path)
+    coresim_volumes_str = "\n".join(
+        coresim_volumes_list)  # Convert list to string
+  else:
+    coresim_volumes_str = "DIRECTORY MISSING"
+  try:
+    all_mounts = subprocess.check_output(['mount']).decode('utf-8')
+    # Filter for the relevant lines in Python
+    relevant_mounts = [
+        line for line in all_mounts.splitlines()
+        if '/Library/Developer/CoreSimulator/Volumes' in line
+    ]
+    coresim_mounts_str = "\n".join(relevant_mounts)
+  except subprocess.CalledProcessError as e:
+    coresim_mounts_str = f"Error running mount: {str(e)}"
+
+  with open(coresim_volumes_path, "w") as f:
+    f.write("--- os.listdir contents ---\n")
+    f.write(coresim_volumes_str)
+    f.write("\n\n--- 'mount' command output ---\n")
+    f.write(coresim_mounts_str)
+
+
+def get_simulator_runtime_by_platform_and_version(simulators,
+                                                  platform,
+                                                  version,
+                                                  out_dir=None):
+  """Finds the simulator runtime identifier for a given platform and OS version.
 
   Args:
     simulators: (dict) A list of available simulators.
+    platform: (str) A platform name, e.g. "iPhone 11"
     version: (str) A version name, e.g. "13.4"
 
   Returns:
@@ -101,8 +149,12 @@ def get_simulator_runtime_by_version(simulators, version):
     # The output might use version with a patch number (e.g. 17.0.1)
     # but the passed in version does not have a patch number (e.g. 17.0)
     # Therefore, we should use startswith for substring match.
-    if runtime['version'].startswith(version) and 'iOS' in runtime['name']:
-      return runtime['identifier']
+    if runtime['version'].startswith(version):
+      if any(supported_device_type['name'] == platform
+             for supported_device_type in runtime['supportedDeviceTypes']):
+        return runtime['identifier']
+  # TODO(crbug.com/454911750): remove debugging after bug is resolved
+  debug_missing_simulator(simulators['runtimes'], out_dir)
   raise test_runner.SimulatorNotFoundError('Not found "%s" SDK in runtimes %s' %
                                            (version, simulators['runtimes']))
 
@@ -123,7 +175,9 @@ def get_simulator_runtime_by_device_udid(simulator_udid):
                                                             simulator_list))
 
 
-def get_simulator_udids_by_platform_and_version(platform, version):
+def get_simulator_udids_by_platform_and_version(platform,
+                                                version,
+                                                out_dir=None):
   """Gets list of simulators UDID based on platform name and iOS version.
 
     Args:
@@ -132,12 +186,30 @@ def get_simulator_udids_by_platform_and_version(platform, version):
   """
   simulators = get_simulator_list()
   devices = simulators['devices']
-  sdk_id = get_simulator_runtime_by_version(simulators, version)
+  sdk_id = get_simulator_runtime_by_platform_and_version(
+      simulators, platform, version, out_dir)
   results = []
   for device in devices.get(sdk_id, []):
     if device['name'] == _compose_simulator_name(platform, version):
       results.append(device['udid'])
   return results
+
+
+def get_platform_type_by_platform(platform) -> constants.IOSPlatformType:
+  """Returns the iOS-based target platform (e.g. iOS, tvOS) based on a given
+  platform name.
+
+    Args:
+      platform: (str) A platform name, e.g. "iPhone 11"
+  """
+  device_type = get_simulator_device_type_by_platform(get_simulator_list(),
+                                                      platform)
+  if device_type.startswith('com.apple.CoreSimulator.SimDeviceType.Apple-TV'):
+    return constants.IOSPlatformType.TVOS
+  elif (device_type.startswith('com.apple.CoreSimulator.SimDeviceType.iPad') or
+        device_type.startswith('com.apple.CoreSimulator.SimDeviceType.iPhone')):
+    return constants.IOSPlatformType.IPHONEOS
+  raise test_runner.UnsupportedDeviceTypeError(device_type)
 
 
 def create_device_by_platform_and_version(platform, version):
@@ -151,7 +223,8 @@ def create_device_by_platform_and_version(platform, version):
   LOGGER.info('Creating simulator %s', name)
   simulators = get_simulator_list()
   device_type = get_simulator_device_type_by_platform(simulators, platform)
-  runtime = get_simulator_runtime_by_version(simulators, version)
+  runtime = get_simulator_runtime_by_platform_and_version(
+      simulators, platform, version)
   try:
     udid = subprocess.check_output(
         ['xcrun', 'simctl', 'create', name, device_type,
@@ -279,7 +352,6 @@ def copy_trusted_certificate(cert_path, udid):
     cert_path: (str) A path for the cert
     udid: (str) UDID of a simulator.
   """
-  # TODO(crbug.com/40234635): Update wpr runner to use this function.
   if not os.path.exists(cert_path):
     LOGGER.error('Failed to find the cert path %s', cert_path)
     return
@@ -342,7 +414,8 @@ def get_simulator_runtime_info_by_build(runtime_build):
   """
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
-    if runtime['build'].lower() == runtime_build.lower():
+    build = runtime.get('build')
+    if build and build.lower() == runtime_build.lower():
       return runtime
   return None
 
@@ -368,20 +441,23 @@ def get_simulator_runtime_info_by_id(identifier):
   """
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
-    if runtime['identifier'].lower() == identifier.lower():
+    runtime_id = runtime.get('identifier')
+    if runtime_id and runtime_id.lower() == identifier.lower():
       return runtime
   return None
 
 
-def get_simulator_runtime_info(ios_version):
+def get_simulator_runtime_info(platform_type: constants.IOSPlatformType,
+                               platform_version: str):
   """Gets runtime object based on iOS version.
 
   Args:
-    version: (str) A version name, e.g. "13.4"
+    platform_type: (IOSPlatformType) iOS-based platform in use
+    platform_version: (str) A version name, e.g. "13.4"
 
   Returns:
     a simulator runtime json object that contains all the info of an
-    iOS runtime
+    iOS/tvOS runtime
     e.g.
     {
       "build" : "19F70",
@@ -389,17 +465,27 @@ def get_simulator_runtime_info(ios_version):
       "identifier" : "FD9ED7F9-96A7-4621-B328-4C317893EC8A",
       etc...
     }
-    if no runtime for the corresponding iOS version is found, then
+    if no runtime for the corresponding iOS/tvOS version is found, then
     return None.
   """
+  if platform_type == constants.IOSPlatformType.IPHONEOS:
+    platform_identifier = "com.apple.platform.iphonesimulator"
+  elif platform_type == constants.IOSPlatformType.TVOS:
+    platform_identifier = "com.apple.platform.appletvsimulator"
+  else:
+    raise ValueError('Invalid platform_type value: %s' % platform_type)
+
   runtimes = get_simulator_runtime_list()
   for runtime in runtimes.values():
     # The output might use version with a patch number (e.g. 17.0.1)
     # but the passed in version does not have a patch number (e.g. 17.0)
     # Therefore, we should use startswith for substring match.
-    if runtime['version'].startswith(ios_version):
+    version = runtime.get('version')
+    if version and version.startswith(platform_version) and runtime.get(
+        'platformIdentifier') == platform_identifier:
       return runtime
   return None
+
 
 def is_simulator_runtime_builtin(runtime):
   if (runtime is None or runtime['kind'] not in IOS_SIM_RUNTIME_BUILTIN_STATE):
@@ -452,39 +538,44 @@ def override_default_iphonesim_runtime(runtime_id, ios_version):
 
 
 def add_simulator_runtime(runtime_dmg_path):
-  cmd = ['xcrun', 'simctl', 'runtime', 'add', runtime_dmg_path]
+  cmd = ['xcrun', 'simctl', 'runtime', 'add', runtime_dmg_path, '--verbose']
   LOGGER.debug('Adding runtime with command %s' % cmd)
-  return subprocess.check_output(cmd).decode('utf-8')
+  return subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode('utf-8')
 
 
 def delete_simulator_runtime(runtime_id, should_wait=False):
   cmd = ['xcrun', 'simctl', 'runtime', 'delete', runtime_id]
   LOGGER.debug('Deleting runtime with command %s' % cmd)
-  subprocess.check_output(cmd)
+  try:
+    subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+  except subprocess.CalledProcessError as e:
+    # The error message contains "Cannot stage disk image" when trying to
+    # delete a runtime that is already deleted.
+    if (b'Cannot stage disk image or bundle for delete' in e.output):
+      LOGGER.warning(
+          'Error when deleting runtime %s. It may have been already deleted. '
+          'Error: %s', runtime_id, e.output.decode('utf-8', 'ignore'))
+      return
+    else:
+      raise
 
   if should_wait:
     # runtime takes a few seconds to delete
     time_waited = 0
     runtime_to_delete = get_simulator_runtime_info_by_id(runtime_id)
-    while (runtime_to_delete is not None):
+    while runtime_to_delete is not None:
       LOGGER.debug('Waiting for runtime to be deleted. Current state is %s' %
                    runtime_to_delete['state'])
       time.sleep(1)
       time_waited += 1
       if (time_waited > MAX_WAIT_TIME_TO_DELETE_RUNTIME):
-        raise test_runner_errors.SimRuntimeDeleteTimeoutError(ios_version)
+        raise test_runner_errors.SimRuntimeDeleteTimeoutError(runtime_id)
       runtime_to_delete = get_simulator_runtime_info_by_id(runtime_id)
     LOGGER.debug('Runtime successfully deleted!')
 
 
-def delete_simulator_runtime_after_days(days):
-  cmd = ['xcrun', 'simctl', 'runtime', 'delete', '--notUsedSinceDays', days]
-  LOGGER.debug('Deleting unused runtime with command %s' % cmd)
-  subprocess.run(cmd, check=False)
-
-
 def delete_least_recently_used_simulator_runtimes(
-    max_to_keep=constants.MAX_RUNTIME_KETP_COUNT):
+    max_to_keep=constants.MAX_RUNTIME_KEPT_COUNT):
   """Delete least recently used simulator runtimes.
 
   Delete simulator runtimes that are least recently used, based
@@ -509,32 +600,29 @@ def delete_least_recently_used_simulator_runtimes(
                    (runtime_id, value['version']))
       continue
     if keep_count < max_to_keep:
-      LOGGER.debug('Runtime %s with iOS %s should be kept undeleted' %
-                   (runtime_id, value['version']))
+      LOGGER.debug('Runtime %s should be kept. Current runtime count %s', value,
+                   keep_count)
       keep_count += 1
     else:
+      LOGGER.debug(
+          'Runtime %s should be deleted due to exceeding max runtime count %s',
+          value, max_to_keep)
       delete_simulator_runtime(runtime_id, True)
 
 
-def delete_simulator_runtime_and_wait(ios_version):
-  runtime_to_delete = get_simulator_runtime_info(ios_version)
-  if runtime_to_delete == None:
-    LOGGER.debug('Runtime %s does not exist in Xcode, no need to cleanup...' %
-                 ios_version)
-    return
+def delete_stale_simulator_runtimes():
+  """Delete stale simulator runtimes.
 
-  delete_simulator_runtime(runtime_to_delete['identifier'], True)
+  Delete simulator runtimes that are unusable
 
+  """
 
-def delete_other_ios18_runtimes(current_runtime_build_id: str):
-  LOGGER.info(f'Deleting other iOS18 runtimes, i.e. with runtime identifier '
-              f'{IOS18_SIM_RUNTIME_ID} and build NOT equal to '
-              f'{current_runtime_build_id}')
   runtimes = get_simulator_runtime_list()
-  for runtime in runtimes.values():
-    if (runtime['runtimeIdentifier'] == IOS18_SIM_RUNTIME_ID and
-        runtime['build'] != current_runtime_build_id):
-      delete_simulator_runtime(runtime['identifier'], True)
+
+  for runtime_id, value in runtimes.items():
+    if value['state'] == "Unusable":
+      LOGGER.debug('Runtime %s should be deleted due to stale state', value)
+      delete_simulator_runtime(runtime_id, True)
 
 
 def disable_hardware_keyboard(udid: str) -> None:
@@ -547,43 +635,20 @@ def disable_hardware_keyboard(udid: str) -> None:
   Args:
     udid: (str) UDID of the simulator to disable hw keyboard for.
   """
-
   path = os.path.expanduser(
       '~/Library/Preferences/com.apple.iphonesimulator.plist')
-
   try:
-    if not os.path.exists(path):
-      subprocess.check_call(['plutil', '-create', 'binary1', path])
-
-    plist, error = mac_util.plist_as_dict(path)
-    if error:
-      raise error
-
-    if 'DevicePreferences' not in plist:
-      subprocess.check_call(
-          ['plutil', '-insert', 'DevicePreferences', '-dictionary', path])
-      plist['DevicePreferences'] = {}
-
-    if 'DevicePreferences' in plist and udid not in plist['DevicePreferences']:
-      subprocess.check_call([
-          'plutil', '-insert', 'DevicePreferences.{}'.format(udid),
-          '-dictionary', path
-      ])
-      plist['DevicePreferences'][udid] = {}
-
-    subprocess.check_call([
-        'plutil', '-replace',
-        'DevicePreferences.{}.ConnectHardwareKeyboard'.format(udid), '-bool',
-        'NO', path
-    ])
-
-  except subprocess.CalledProcessError as e:
-    message = 'Unable to disable hardware keyboard. Error: %s' % e.stderr
-    LOGGER.error(message)
-  except json.JSONDecodeError as e:
-    message = 'Unable to disable hardware keyboard. Error: %s' % e.msg
-    LOGGER.error(message)
-
+    plist = {}
+    if os.path.exists(path):
+      with open(path, 'rb') as f:
+        plist = plistlib.load(f, fmt=plistlib.FMT_BINARY)
+    prefs_val = plist.setdefault('DevicePreferences', {})
+    udid_val = prefs_val.setdefault(udid, {})
+    udid_val['ConnectHardwareKeyboard'] = False
+    with open(path, 'wb') as f:
+      plistlib.dump(plist, f, fmt=plistlib.FMT_BINARY)
+  except Exception:
+    LOGGER.exception('Failed to disable hardware keyboard.')
 
 def disable_simulator_keyboard_tutorial(udid):
   """Disables keyboard tutorial for the given simulator.

@@ -11,7 +11,7 @@ namespace media {
 GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple() {}
 
 GpuMemoryBufferTrackerApple::GpuMemoryBufferTrackerApple(
-    base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface)
+    gfx::ScopedIOSurface io_surface)
     : is_external_io_surface_(true), io_surface_(std::move(io_surface)) {}
 
 GpuMemoryBufferTrackerApple::~GpuMemoryBufferTrackerApple() {}
@@ -21,13 +21,11 @@ bool GpuMemoryBufferTrackerApple::Init(const gfx::Size& dimensions,
                                        const mojom::PlaneStridesPtr& strides) {
   DCHECK(!io_surface_);
   if (format != PIXEL_FORMAT_NV12) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unsupported VideoPixelFormat " << VideoPixelFormatToString(format);
-    return false;
+    NOTREACHED() << "Unsupported VideoPixelFormat "
+                 << VideoPixelFormatToString(format);
   }
-  if ((io_surface_ =
-           CreateIOSurface(dimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
-                           /*should_clear=*/false))) {
+  if ((io_surface_ = CreateIOSurface(dimensions, viz::MultiPlaneFormat::kNV12,
+                                     /*should_clear=*/false))) {
     DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_.get());
     return true;
   } else {
@@ -42,7 +40,7 @@ bool GpuMemoryBufferTrackerApple::IsSameGpuMemoryBuffer(
     return false;
   }
   return IOSurfaceGetID(io_surface_.get()) ==
-         IOSurfaceGetID(handle.io_surface.get());
+         IOSurfaceGetID(handle.io_surface().get());
 }
 
 bool GpuMemoryBufferTrackerApple::IsReusableForFormat(
@@ -63,24 +61,18 @@ uint32_t GpuMemoryBufferTrackerApple::GetMemorySizeInBytes() {
 
 std::unique_ptr<VideoCaptureBufferHandle>
 GpuMemoryBufferTrackerApple::GetMemoryMappedAccess() {
-  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
-  return std::make_unique<NullHandle>();
+  NOTREACHED() << "Unsupported operation";
 }
 
 base::UnsafeSharedMemoryRegion
 GpuMemoryBufferTrackerApple::DuplicateAsUnsafeRegion() {
-  NOTREACHED_IN_MIGRATION() << "Unsupported operation";
-  return base::UnsafeSharedMemoryRegion();
+  NOTREACHED() << "Unsupported operation";
 }
 
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerApple::GetGpuMemoryBufferHandle() {
   DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_.get());
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  gmb_handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
-  gmb_handle.io_surface = io_surface_;
-  return gmb_handle;
+  return gfx::GpuMemoryBufferHandle(io_surface_);
 }
 
 VideoCaptureBufferType GpuMemoryBufferTrackerApple::GetBufferType() {

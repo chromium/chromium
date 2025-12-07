@@ -1,0 +1,15 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.sanitize_ui.mojom;
+
+import "url/mojom/url.mojom";
+
+// Implemented in ash and used by WebUI to reset settings. Currently this resets
+// default search engine, homepage, website content settings, extensions,
+// startup pages, pinned tabs, NTP customizations, languages, and DNS settings.
+interface SettingsResetter {
+  // Used to kickstart the sanitize process.
+  PerformSanitizeSettings();
+};

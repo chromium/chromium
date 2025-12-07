@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -80,7 +81,7 @@ class Response;
 //   dbus::Bus::Options options;
 //   // Set up the bus options here.
 //   ...
-//   dbus::Bus bus(options);
+//   dbus::Bus bus(std::move(options));
 //
 //   dbus::ObjectProxy* object_proxy =
 //       bus.GetObjectProxy(service_name, object_path);
@@ -192,8 +193,9 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
     Options(Options&&);
     Options& operator=(Options&&);
 
-    BusType bus_type;  // SESSION by default.
-    ConnectionType connection_type;  // PRIVATE by default.
+    BusType bus_type{SESSION};
+    ConnectionType connection_type{PRIVATE};
+
     // If dbus_task_runner is set, the bus object will use that
     // task runner to process asynchronous operations.
     //
@@ -215,7 +217,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
     //   options.bus_type = CUSTOM_ADDRESS;
     //   options.address.assign("unix:path=/tmp/dbus-XXXXXXX");
     //   // Set up other options
-    //   dbus::Bus bus(options);
+    //   dbus::Bus bus(std::move(options));
     //
     //   // Do something.
     //
@@ -224,7 +226,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
 
   // Creates a Bus object. The actual connection will be established when
   // Connect() is called.
-  explicit Bus(const Options& options);
+  explicit Bus(Options options);
 
   Bus(const Bus&) = delete;
   Bus& operator=(const Bus&) = delete;
@@ -266,13 +268,13 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // |object_path| looks like "/org/freedesktop/NetworkManager/Devices/0".
   //
   // Must be called in the origin thread.
-  virtual ObjectProxy* GetObjectProxy(const std::string& service_name,
+  virtual ObjectProxy* GetObjectProxy(std::string_view service_name,
                                       const ObjectPath& object_path);
 
   // Same as above, but also takes a bitfield of ObjectProxy::Options.
   // See object_proxy.h for available options.
   virtual ObjectProxy* GetObjectProxyWithOptions(
-      const std::string& service_name,
+      std::string_view service_name,
       const ObjectPath& object_path,
       int options);
 
@@ -300,13 +302,13 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   // never called. The |callback| argument must not be null.
   //
   // Must be called in the origin thread.
-  virtual bool RemoveObjectProxy(const std::string& service_name,
+  virtual bool RemoveObjectProxy(std::string_view service_name,
                                  const ObjectPath& object_path,
                                  base::OnceClosure callback);
 
   // Same as above, but also takes a bitfield of ObjectProxy::Options.
   // See object_proxy.h for available options.
-  virtual bool RemoveObjectProxyWithOptions(const std::string& service_name,
+  virtual bool RemoveObjectProxyWithOptions(std::string_view service_name,
                                             const ObjectPath& object_path,
                                             int options,
                                             base::OnceClosure callback);
@@ -619,7 +621,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
 
   // Return the unique name of the bus connection if it is connected to
   // D-BUS. Otherwise, return an empty string.
-  std::string GetConnectionName();
+  virtual std::string GetConnectionName();
 
   // Returns true if the bus is connected to D-Bus.
   virtual bool IsConnected();

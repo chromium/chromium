@@ -5,7 +5,7 @@
 // clang-format off
 import 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 
-import {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import type {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue, assertLT, assertGT} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
@@ -105,7 +105,7 @@ suite('cr-radio-button', function() {
         'rect(0px, 0px, 0px, 0px)');
     assertEquals(radioButton.$.button.getAttribute('aria-labelledby'), 'label');
     assertEquals(
-        radioButton.shadowRoot!.querySelector('#label')!.textContent!.trim(),
+        radioButton.shadowRoot!.querySelector('#label')!.textContent.trim(),
         'foo');
 
     // Setting hideLabelText true clips label from screen reader.
@@ -115,7 +115,7 @@ suite('cr-radio-button', function() {
         'rect(0px, 0px, 0px, 0px)');
     assertEquals(radioButton.$.button.getAttribute('aria-labelledby'), 'label');
     assertEquals(
-        radioButton.shadowRoot!.querySelector('#label')!.textContent!.trim(),
+        radioButton.shadowRoot!.querySelector('#label')!.textContent.trim(),
         'foo');
   });
 

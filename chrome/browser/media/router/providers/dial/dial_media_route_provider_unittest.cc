@@ -59,8 +59,9 @@ class TestDialMediaSinkServiceImpl : public DialMediaSinkServiceImpl {
       const SinkQueryByAppCallback& callback) override {
     DoStartMonitoringAvailableSinksForApp(app_name);
     auto& cb_list = sink_query_cbs_[app_name];
-    if (!cb_list)
+    if (!cb_list) {
       cb_list = std::make_unique<SinkQueryByAppCallbackList>();
+    }
     return cb_list->Add(callback);
   }
   MOCK_METHOD1(DoStartMonitoringAvailableSinksForApp,
@@ -69,14 +70,16 @@ class TestDialMediaSinkServiceImpl : public DialMediaSinkServiceImpl {
   void SetAvailableSinks(const std::string& app_name,
                          const std::vector<MediaSinkInternal>& sinks) {
     available_sinks_[app_name] = sinks;
-    for (const auto& sink : sinks)
+    for (const auto& sink : sinks) {
       AddOrUpdateSink(sink);
+    }
   }
 
   void NotifyAvailableSinks(const std::string& app_name) {
     auto& cb_list = sink_query_cbs_[app_name];
-    if (cb_list)
+    if (cb_list) {
       cb_list->Notify(app_name);
+    }
   }
 
   std::vector<MediaSinkInternal> GetAvailableSinks(
@@ -171,8 +174,9 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     std::vector<RouteMessagePtr> received_messages;
     EXPECT_CALL(mock_router_, OnRouteMessagesReceived(route_id, _))
         .WillOnce([&](const auto& route_id, auto messages) {
-          for (auto& message : messages)
+          for (auto& message : messages) {
             received_messages.emplace_back(std::move(message));
+          }
         });
     task_environment_.RunUntilIdle();
 
@@ -229,8 +233,9 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     std::vector<RouteMessagePtr> received_messages;
     EXPECT_CALL(mock_router_, OnRouteMessagesReceived(route_id, _))
         .WillOnce([&](const auto& route_id, auto messages) {
-          for (auto& message : messages)
+          for (auto& message : messages) {
             received_messages.emplace_back(std::move(message));
+          }
         });
     std::move(app_info_cb)
         .Run(sink_.sink().id(), "YouTube",
@@ -353,8 +358,9 @@ class DialMediaRouteProviderTest : public ::testing::Test {
     std::vector<RouteMessagePtr> received_messages;
     EXPECT_CALL(mock_router_, OnRouteMessagesReceived(route_id, _))
         .WillOnce([&](const auto& route_id, auto messages) {
-          for (auto& message : messages)
+          for (auto& message : messages) {
             received_messages.emplace_back(std::move(message));
+          }
         });
     EXPECT_CALL(
         mock_router_,

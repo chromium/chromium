@@ -12,6 +12,8 @@ extern const char kDriveSearchFolderResultSuccessful[];
 extern const char kDriveSearchFolderResultErrorCode[];
 extern const char kDriveCreateFolderResultSuccessful[];
 extern const char kDriveCreateFolderResultErrorCode[];
+extern const char kDriveFetchClientFolderResultSuccessful[];
+extern const char kDriveFetchClientFolderResultErrorCode[];
 extern const char kDriveFileUploadResultSuccessful[];
 extern const char kDriveFileUploadResultErrorCode[];
 extern const char kDriveStorageQuotaResultSuccessful[];

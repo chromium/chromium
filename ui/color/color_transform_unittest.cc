@@ -225,8 +225,9 @@ TEST(ColorTransformTest, SelectBasedOnDarkInput) {
 TEST(ColorTransformTest, SetAlpha) {
   constexpr SkAlpha kAlpha = 0x20;
   const ColorTransform transform = SetAlpha(FromTransformInput(), kAlpha);
-  for (auto color : {SK_ColorBLACK, SK_ColorRED, SK_ColorTRANSPARENT})
+  for (auto color : {SK_ColorBLACK, SK_ColorRED, SK_ColorTRANSPARENT}) {
     EXPECT_EQ(SkColorSetA(color, kAlpha), transform.Run(color, ColorMixer()));
+  }
 }
 
 // Tests that PickGoogleColor() produces a transform that picks a Google color

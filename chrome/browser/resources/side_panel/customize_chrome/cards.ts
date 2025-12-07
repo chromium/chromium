@@ -6,7 +6,8 @@ import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_indicator.js';
-import './strings.m.js';
+import '/strings.m.js';
+import './button_label.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -54,12 +55,12 @@ export class CardsElement extends CrLitElement {
     };
   }
 
-  protected modules_: ModuleSettings[] = [];
-  protected show_: boolean = false;
-  protected managedByPolicy_: boolean = false;
+  protected accessor modules_: ModuleSettings[] = [];
+  protected accessor show_: boolean = false;
+  protected accessor managedByPolicy_: boolean = false;
   private pageHandler_: CustomizeChromePageHandlerInterface;
   private setModulesSettingsListenerId_: number|null = null;
-  protected initialized_: boolean = false;
+  protected accessor initialized_: boolean = false;
 
   constructor() {
     super();
@@ -99,6 +100,10 @@ export class CardsElement extends CrLitElement {
   }
 
   protected onShowToggleClick_() {
+    if (this.managedByPolicy_) {
+      return;
+    }
+
     this.setShow_(!this.show_);
   }
 
@@ -120,6 +125,10 @@ export class CardsElement extends CrLitElement {
   }
 
   protected onCardClick_(e: Event) {
+    if (this.managedByPolicy_) {
+      return;
+    }
+
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const module = this.modules_[index]!;
     this.setModuleStatus(index, !module.enabled);

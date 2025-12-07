@@ -37,23 +37,19 @@
 namespace blink {
 
 // static
-const char NoStatePrefetchClient::kSupplementName[] = "NoStatePrefetchClient";
-
-// static
 NoStatePrefetchClient* NoStatePrefetchClient::From(Page* page) {
-  return Supplement<Page>::From<NoStatePrefetchClient>(page);
+  return page->GetNoStatePrefetchClient();
 }
 
-NoStatePrefetchClient::NoStatePrefetchClient(Page& page,
-                                             WebNoStatePrefetchClient* client)
-    : Supplement<Page>(page), client_(client) {}
+NoStatePrefetchClient::NoStatePrefetchClient(WebNoStatePrefetchClient* client)
+    : client_(client) {}
 
 bool NoStatePrefetchClient::IsPrefetchOnly() {
   return client_ && client_->IsPrefetchOnly();
 }
 
 void ProvideNoStatePrefetchClientTo(Page& page, NoStatePrefetchClient* client) {
-  NoStatePrefetchClient::ProvideTo(page, client);
+  page.SetNoStatePrefetchClient(client);
 }
 
 }  // namespace blink

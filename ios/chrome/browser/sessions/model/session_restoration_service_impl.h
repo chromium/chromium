@@ -32,7 +32,6 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   SessionRestorationServiceImpl(
       base::TimeDelta save_delay,
       bool enable_pinned_web_states,
-      bool enable_tab_groups,
       const base::FilePath& storage_path,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
@@ -45,7 +44,6 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   void AddObserver(SessionRestorationObserver* observer) final;
   void RemoveObserver(SessionRestorationObserver* observer) final;
   void SaveSessions() final;
-  void ScheduleSaveSessions() final;
   void SetSessionID(Browser* browser, const std::string& identifier) final;
   void LoadSession(Browser* browser) final;
   void LoadWebStateStorage(Browser* browser,
@@ -67,6 +65,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
       WebStateStorageIterationCompleteCallback done) final;
 
  private:
+  // Helper type used to record information about an orphaned WebState.
+  struct OrphanInfo;
+
   // Helper type used to record information about a single WebStateList.
   class WebStateListInfo;
 
@@ -74,6 +75,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   // contained WebStates (see SessionRestorationWebStateListObserver for
   // details).
   void MarkWebStateListDirty(WebStateList* web_state_list);
+
+  // Updates the map of orphaned WebStates.
+  void UpdateOrphanInfoMap();
 
   // Helper method that post a task to save state to storage.
   void SaveDirtySessions();
@@ -92,7 +96,6 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
   // allow easily testing code controlled by this boolean independently of
   // whether the feature is enabled in the application).
   const bool enable_pinned_web_states_;
-  const bool enable_tab_groups_;
 
   // Root directory in which the data should be written to or loaded from.
   const base::FilePath storage_path_;
@@ -110,6 +113,9 @@ class SessionRestorationServiceImpl final : public SessionRestorationService {
 
   // Used to enforce that the identifier are not shared between Browser.
   std::set<std::string> identifiers_;
+
+  // Information about orphaned WebStates.
+  std::map<web::WebStateID, OrphanInfo> orphaned_map_;
 
   // List of pending requests from CreateUnrealizedWebState(...).
   ios::sessions::IORequestList pending_requests_;

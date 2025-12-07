@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '/shared/key_value_pair_viewer/key_value_pair_viewer.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import './js/jelly_colors.js';
 
 // </if>
@@ -44,8 +44,8 @@ export class AutofillMetadataAppElement extends CrLitElement {
     };
   }
 
-  protected entries_: KeyValuePairEntry[] = [];
-  protected loading_: boolean = true;
+  protected accessor entries_: KeyValuePairEntry[] = [];
+  protected accessor loading_: boolean = true;
 
   override connectedCallback() {
     super.connectedCallback();

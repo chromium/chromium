@@ -1,0 +1,8 @@
+WebView focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View text:"Apple" hint:"Fruit" canOpenPopUp clickable focusable focused expandedState:1 actions:[CLEAR_FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="comboBoxSelect", clickableScore="300", hint="Fruit", roleDescription="menu pop up button"]
+++++++View notVisibleToUser CollectionInfo:[rows=3, cols=1] actions:[AX_FOCUS] bundle:[chromeRole="menuListPopup"]
+++++++++View viewIdResName:"select-popover-options" notVisibleToUser actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++++++++View text:"Apple" clickable focusable selected CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=0, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
+++++++++++View text:"Orange" clickable focusable notVisibleToUser CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=1, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]
+++++++++++View text:"Banana" clickable focusable notVisibleToUser CollectionItemInfo:[rowSpan=0, colSpan=0, rowIndex=2, colIndex=0] actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuListOption", clickableScore="300"]

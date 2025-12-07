@@ -46,21 +46,28 @@ struct BoundEdges {
 // would be the end. However, this flips for RTL, and vertical writing modes
 // additionally complicated matters.
 BoundEdges GetBoundEdges(WritingMode writing_mode, bool is_ltr) {
-  if (IsHorizontalWritingMode(writing_mode)) {
-    if (is_ltr)
-      return {RectEdge::kTopLeftToBottomLeft, RectEdge::kTopRightToBottomRight};
-    else
-      return {RectEdge::kTopRightToBottomRight, RectEdge::kTopLeftToBottomLeft};
-  } else if (IsFlippedBlocksWritingMode(writing_mode)) {
-    if (is_ltr)
-      return {RectEdge::kTopLeftToTopRight, RectEdge::kBottomRightToBottomLeft};
-    else
-      return {RectEdge::kBottomLeftToBottomRight, RectEdge::kTopRightToTopLeft};
-  } else {
-    if (is_ltr)
-      return {RectEdge::kTopRightToTopLeft, RectEdge::kBottomLeftToBottomRight};
-    else
-      return {RectEdge::kBottomRightToBottomLeft, RectEdge::kTopLeftToTopRight};
+  switch (writing_mode) {
+    case WritingMode::kHorizontalTb:
+      return is_ltr ? BoundEdges{RectEdge::kTopLeftToBottomLeft,
+                                 RectEdge::kTopRightToBottomRight}
+                    : BoundEdges{RectEdge::kTopRightToBottomRight,
+                                 RectEdge::kTopLeftToBottomLeft};
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      return is_ltr ? BoundEdges{RectEdge::kTopLeftToTopRight,
+                                 RectEdge::kBottomRightToBottomLeft}
+                    : BoundEdges{RectEdge::kBottomLeftToBottomRight,
+                                 RectEdge::kTopRightToTopLeft};
+    case WritingMode::kVerticalLr:
+      return is_ltr ? BoundEdges{RectEdge::kTopRightToTopLeft,
+                                 RectEdge::kBottomLeftToBottomRight}
+                    : BoundEdges{RectEdge::kBottomRightToBottomLeft,
+                                 RectEdge::kTopLeftToTopRight};
+    case WritingMode::kSidewaysLr:
+      return is_ltr ? BoundEdges{RectEdge::kBottomLeftToBottomRight,
+                                 RectEdge::kTopLeftToTopRight}
+                    : BoundEdges{RectEdge::kTopLeftToTopRight,
+                                 RectEdge::kBottomLeftToBottomRight};
   }
 }
 
@@ -95,20 +102,8 @@ void SetBoundEdge(gfx::Rect selection_rect,
       bound.edge_end = selection_rect.bottom_left();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-}
-
-PhysicalOffset GetSamplePointForVisibility(const PhysicalOffset& edge_start,
-                                           const PhysicalOffset& edge_end,
-                                           float zoom_factor) {
-  gfx::Vector2dF diff(edge_start - edge_end);
-  // Adjust by ~1px to avoid integer snapping error. This logic is the same
-  // as that in ComputeViewportSelectionBound in cc.
-  diff.Scale(zoom_factor / diff.Length());
-  PhysicalOffset sample_point = edge_end;
-  sample_point += PhysicalOffset::FromVector2dFRound(diff);
-  return sample_point;
 }
 
 }  // namespace
@@ -118,14 +113,12 @@ SelectionBoundsRecorder::SelectionBoundsRecorder(
     PhysicalRect selection_rect,
     PaintController& paint_controller,
     TextDirection text_direction,
-    WritingMode writing_mode,
-    const LayoutObject& layout_object)
+    WritingMode writing_mode)
     : state_(state),
       selection_rect_(selection_rect),
       paint_controller_(paint_controller),
       text_direction_(text_direction),
-      writing_mode_(writing_mode),
-      selection_layout_object_(layout_object) {}
+      writing_mode_(writing_mode) {}
 
 SelectionBoundsRecorder::~SelectionBoundsRecorder() {
   paint_controller_.RecordAnySelectionWasPainted();
@@ -144,9 +137,6 @@ SelectionBoundsRecorder::~SelectionBoundsRecorder() {
     start->type = is_ltr ? gfx::SelectionBound::Type::LEFT
                          : gfx::SelectionBound::Type::RIGHT;
     SetBoundEdge(selection_rect, edges.start, *start);
-    start->hidden =
-        !IsVisible(selection_layout_object_, PhysicalOffset(start->edge_start),
-                   PhysicalOffset(start->edge_end));
   }
 
   if (state_ == SelectionState::kStartAndEnd ||
@@ -155,9 +145,6 @@ SelectionBoundsRecorder::~SelectionBoundsRecorder() {
     end->type = is_ltr ? gfx::SelectionBound::Type::RIGHT
                        : gfx::SelectionBound::Type::LEFT;
     SetBoundEdge(selection_rect, edges.end, *end);
-    end->hidden =
-        !IsVisible(selection_layout_object_, PhysicalOffset(end->edge_start),
-                   PhysicalOffset(end->edge_end));
   }
 
   paint_controller_.RecordSelection(start, end, "");
@@ -183,38 +170,6 @@ bool SelectionBoundsRecorder::ShouldRecordSelection(
     return false;
 
   return true;
-}
-
-// Returns whether this position is not visible on the screen (because
-// clipped out).
-bool SelectionBoundsRecorder::IsVisible(const LayoutObject& rect_layout_object,
-                                        const PhysicalOffset& edge_start,
-                                        const PhysicalOffset& edge_end) {
-  Node* const node = rect_layout_object.GetNode();
-  if (!node)
-    return true;
-  TextControlElement* text_control = EnclosingTextControl(node);
-  if (!text_control)
-    return true;
-  if (!IsA<HTMLInputElement>(text_control))
-    return true;
-
-  LayoutObject* layout_object = text_control->GetLayoutObject();
-  if (!layout_object || !layout_object->IsBox())
-    return true;
-
-  PhysicalOffset sample_point = GetSamplePointForVisibility(
-      edge_start, edge_end, rect_layout_object.GetFrame()->LayoutZoomFactor());
-
-  // Convert from paint coordinates to local layout coordinates.
-  sample_point -= layout_object->FirstFragment().PaintOffset();
-
-  auto* const text_control_object = To<LayoutBox>(layout_object);
-  const PhysicalOffset position_in_input =
-      rect_layout_object.LocalToAncestorPoint(sample_point, text_control_object,
-                                              kTraverseDocumentBoundaries);
-  return text_control_object->PhysicalBorderBoxRect().Contains(
-      position_in_input);
 }
 
 }  // namespace blink

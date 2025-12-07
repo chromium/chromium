@@ -26,13 +26,13 @@ namespace {
 class ExpandDeviceSelectorLabel;
 class ExpandDeviceSelectorButton;
 
-const char kAudioDevicesCountHistogramName[] =
+inline constexpr char kAudioDevicesCountHistogramName[] =
     "Media.GlobalMediaControls.NumberOfAvailableAudioDevices";
-const char kCastDeviceCountHistogramName[] =
+inline constexpr char kCastDeviceCountHistogramName[] =
     "Media.GlobalMediaControls.CastDeviceCount";
-const char kDeviceSelectorAvailableHistogramName[] =
+inline constexpr char kDeviceSelectorAvailableHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorAvailable";
-const char kDeviceSelectorOpenedHistogramName[] =
+inline constexpr char kDeviceSelectorOpenedHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorOpened";
 }  // anonymous namespace
 
@@ -51,9 +51,8 @@ class MediaItemUIDeviceSelectorView
   METADATA_HEADER(MediaItemUIDeviceSelectorView,
                   global_media_controls::MediaItemUIDeviceSelector)
  public:
-
   // media_color_theme is only set when this device selector view is used on
-  // Chrome OS ash and media::kGlobalMediaControlsCrOSUpdatedUI is enabled.
+  // Chrome OS ash.
   MediaItemUIDeviceSelectorView(
       const std::string& item_id,
       MediaItemUIDeviceSelectorDelegate* delegate,
@@ -92,6 +91,7 @@ class MediaItemUIDeviceSelectorView
   // mojom::DeviceObserver
   void OnDevicesUpdated(
       std::vector<global_media_controls::mojom::DevicePtr> devices) override;
+  void OnPermissionRejected() override {}
 
   // MediaItemUIFooterView::Delegate
   void OnDeviceSelected(int tag) override;
@@ -149,6 +149,7 @@ class MediaItemUIDeviceSelectorView
   raw_ptr<ExpandDeviceSelectorLabel> expand_label_ = nullptr;
   raw_ptr<ExpandDeviceSelectorButton> dropdown_button_ = nullptr;
   raw_ptr<views::View> device_entry_views_container_ = nullptr;
+  raw_ptr<views::View> permission_error_view_container_ = nullptr;
 
   base::CallbackListSubscription audio_device_subscription_;
   base::CallbackListSubscription is_device_switching_enabled_subscription_;
@@ -160,7 +161,7 @@ class MediaItemUIDeviceSelectorView
   // Each button has a unique tag, which is used to look up DeviceEntryUI* in
   // |device_entry_ui_map_|.
   int next_tag_ = 0;
-  std::map<int, DeviceEntryUI*> device_entry_ui_map_;
+  std::map<int, raw_ptr<DeviceEntryUI, CtnExperimental>> device_entry_ui_map_;
 
   mojo::Remote<global_media_controls::mojom::DeviceListHost> device_list_host_;
   mojo::Receiver<global_media_controls::mojom::DeviceListClient> receiver_;

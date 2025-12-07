@@ -25,10 +25,8 @@
       <startup-settings-card prefs="{{prefs}}"></startup-settings-card>
     </template>
 
-    <template is="dom-if" if="[[shouldShowMultitaskingCard_]]">
-      <multitasking-settings-card prefs="{{prefs}}">
-      </multitasking-settings-card>
-    </template>
+    <multitasking-settings-card prefs="{{prefs}}">
+    </multitasking-settings-card>
 
     <template is="dom-if" if="[[shouldShowResetSettingsCard_]]">
       <reset-settings-card></reset-settings-card>
@@ -37,7 +35,8 @@
 
   <!-- Date and Time subpages -->
   <template is="dom-if" route-path="/dateTime/timeZone">
-    <os-settings-subpage page-title="$i18n{timeZoneSubpageTitle}">
+    <os-settings-subpage page-title="$i18n{timeZoneSubpageTitle}"
+        learn-more-url="$i18n{timeZoneSettingsLearnMoreURL}">
       <timezone-subpage prefs="{{prefs}}"
           active-time-zone-display-name="{{activeTimeZoneDisplayName_}}">
       </timezone-subpage>
@@ -97,21 +96,12 @@
     </os-settings-subpage>
   </template>
 
-  <!-- Search and Assistant subpages -->
+  <!-- Search subpages -->
   <template is="dom-if" if="[[isQuickAnswersSupported_]]">
     <template is="dom-if" route-path="/osSearch/search">
       <os-settings-subpage page-title="$i18n{searchSubpageTitle}">
         <settings-search-subpage prefs="{{prefs}}">
         </settings-search-subpage>
-      </os-settings-subpage>
-    </template>
-  </template>
-
-  <template is="dom-if" if="[[isAssistantAllowed_]]">
-    <template is="dom-if" route-path="/googleAssistant">
-      <os-settings-subpage page-title="$i18n{googleAssistantPageTitle}">
-        <settings-google-assistant-subpage prefs="{{prefs}}">
-        </settings-google-assistant-subpage>
       </os-settings-subpage>
     </template>
   </template>

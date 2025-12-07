@@ -1,0 +1,58 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ui.gni")
+
+assert(use_aura)
+
+source_set("accessibility") {
+  sources = [ "automation_manager_aura.h" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/browser/api",
+    "//ui/accessibility",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "automation_manager_aura.cc" ]
+
+  deps = [
+    ":accessibility",
+    "//base",
+    "//extensions/browser/api",
+    "//ui/accessibility",
+    "//ui/aura",
+    "//ui/display",
+    "//ui/views",
+    "//ui/wm",
+    "//ui/wm/public",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "automation_manager_aura_browsertest.cc" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/aura/accessibility",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/browser/api/automation_internal",
+    "//ui/accessibility",
+    "//ui/base",
+    "//ui/gfx/geometry",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

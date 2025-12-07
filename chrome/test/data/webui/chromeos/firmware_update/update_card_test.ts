@@ -5,11 +5,10 @@
 import 'chrome://accessory-update/update_card.js';
 
 import {fakeCriticalFirmwareUpdate, fakeFirmwareUpdate} from 'chrome://accessory-update/fake_data.js';
-import {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
-import {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
+import type {FirmwareUpdate} from 'chrome://accessory-update/firmware_update.mojom-webui.js';
+import type {UpdateCardElement} from 'chrome://accessory-update/update_card.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -30,8 +29,7 @@ suite('UpdateCardTest', () => {
     assertFalse(!!updateCardElement);
 
     // Add the update card to the DOM.
-    updateCardElement =
-        document.createElement('update-card') as UpdateCardElement;
+    updateCardElement = document.createElement('update-card');
     assertTrue(!!updateCardElement);
     updateCardElement.update = update;
     document.body.appendChild(updateCardElement);
@@ -44,7 +42,7 @@ suite('UpdateCardTest', () => {
     const name =
         strictQuery('#name', updateCardElement.shadowRoot, HTMLElement);
     assertTrue(!!name);
-    return name!.innerText;
+    return name.innerText;
   }
 
   function getVersionText(): string {
@@ -52,19 +50,18 @@ suite('UpdateCardTest', () => {
     const version =
         strictQuery('#version', updateCardElement.shadowRoot, HTMLElement);
     assertTrue(!!version);
-    return version!.innerText;
+    return version.innerText;
   }
 
   function getPriorityTextElement(): HTMLSpanElement {
     assert(updateCardElement);
     return strictQuery(
-        '#priorityText', updateCardElement.shadowRoot, HTMLSpanElement)!;
+        '#priorityText', updateCardElement.shadowRoot, HTMLSpanElement);
   }
 
   test('UpdateCardPopulated', () => {
     return initializeUpdateList(fakeFirmwareUpdate).then(() => {
-      assertEquals(
-          mojoString16ToString(fakeFirmwareUpdate.deviceName), getNameText());
+      assertEquals(fakeFirmwareUpdate.deviceName, getNameText());
       assertEquals(
           `Version ${fakeFirmwareUpdate.deviceVersion}`, getVersionText());
       assertFalse(isVisible(getPriorityTextElement()));

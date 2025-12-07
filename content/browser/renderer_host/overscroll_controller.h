@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/overscroll_behavior.h"
 #include "content/common/content_export.h"
@@ -188,6 +189,8 @@ class CONTENT_EXPORT OverscrollController {
   // overscroll if it is not completed yet.
   // Timestamp for the first inertial event (fling) in current stream.
   std::optional<base::TimeTicks> first_inertial_event_time_;
+
+  base::WeakPtrFactory<OverscrollController> weak_factory_{this};
 };
 
 }  // namespace content

@@ -5,8 +5,7 @@
   "description": "Browser test for chrome.runtime.setUninstallURL",
   "permissions": [
     "management",
-    "tabs",
-    "<all_urls>"
+    "tabs"
   ],
   "background": {
     "scripts": ["test.js"],

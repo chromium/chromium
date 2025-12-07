@@ -4,8 +4,6 @@
 
 #include "cc/trees/layer_tree_host_client.h"
 
-#include "cc/metrics/web_vital_metrics.h"
-
 namespace cc {
 
 std::string LayerTreeHostClient::GetPausedDebuggerLocalizedMessage() {

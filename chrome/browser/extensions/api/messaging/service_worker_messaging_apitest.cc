@@ -2,24 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
-#include "chrome/browser/extensions/browsertest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/service_worker_test_helpers.h"
 #include "extensions/browser/api/messaging/message_service.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_frame_host.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/browser/extension_web_contents_observer.h"
+#include "extensions/browser/message_tracker.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
+#include "extensions/buildflags/buildflags.h"
+#include "extensions/common/mojom/frame.mojom-test-utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -88,11 +97,18 @@ class ServiceWorkerMessagingTest : public ExtensionApiTest {
   void StopServiceWorker(const Extension& extension) {
     // TODO(lazyboy): Ideally we'd want to test worker shutdown on idle, do that
     // once //content API allows to override test timeouts for Service Workers.
-    browsertest_util::StopServiceWorkerForExtensionGlobalScope(
-        browser()->profile(), extension.id());
+    browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                               extension.id());
   }
 
+  content::WebContents* AddTab(const GURL& url) {
+    EXPECT_TRUE(NavigateToURLInNewTab(url)) << url;
+    return GetActiveWebContents();
+  }
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   extensions::ScopedTestNativeMessagingHost test_host_;
+#endif
 };
 
 class ServiceWorkerMessagingTestWithActivityLog
@@ -119,8 +135,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, TabToWorkerOneWay) {
     ASSERT_TRUE(StartEmbeddedTestServer());
     const GURL url =
         embedded_test_server()->GetURL("/extensions/test_file.html");
-    content::WebContents* new_web_contents =
-        browsertest_util::AddTab(browser(), url);
+    content::WebContents* new_web_contents = AddTab(url);
     EXPECT_TRUE(new_web_contents);
   }
 
@@ -142,8 +157,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, TabToWorker) {
     ASSERT_TRUE(StartEmbeddedTestServer());
     const GURL url =
         embedded_test_server()->GetURL("/extensions/test_file.html");
-    content::WebContents* new_web_contents =
-        browsertest_util::AddTab(browser(), url);
+    content::WebContents* new_web_contents = AddTab(url);
     EXPECT_TRUE(new_web_contents);
   }
 
@@ -197,9 +211,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   // Wait for the extension to register runtime.onConnect listener.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 
+  auto* web_contents = GetActiveWebContents();
   GURL url =
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   // Wait for the content script to connect to the worker's port.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -211,14 +226,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Regression test for https://crbug.com/1176400.
 // Tests that service worker shutdown closes messaging channel properly.
+// TODO(crbug.com/417786914): Support native messaging tests on desktop Android.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        WorkerShutsDownWhileNativeMessagePortIsOpen) {
   // Set up an observer to wait for the registration to be stored before
   // calling StopServiceWorker below.
   service_worker_test_utils::TestServiceWorkerContextObserver observer(
-      browser()->profile());
+      profile());
   ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(false));
 
   ResultCatcher catcher;
@@ -237,6 +254,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
 }
 
 // Tests chrome.tabs.sendMessage from SW extension to content script.
+// TODO(crbug.com/371432155): Support chrome.tabs on desktop Android.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, WorkerToTab) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(
@@ -248,6 +266,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, WorkerToTab) {
 // callback doesn't crash.
 //
 // Regression test for https://crbug.com/1218569.
+// TODO(crbug.com/371432155): Support chrome.tabs on desktop Android.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        TabsSendMessageWithoutCallback) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -255,6 +274,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
       "service_worker/messaging/tabs_send_message_without_callback"))
       << message_;
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Tests port creation (chrome.runtime.connect) from content script to an
 // extension SW and disconnecting the port.
@@ -270,9 +290,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   ResultCatcher catcher;
   {
     ASSERT_TRUE(StartEmbeddedTestServer());
-    content::WebContents* new_web_contents = browsertest_util::AddTab(
-        browser(),
-        embedded_test_server()->GetURL("/extensions/test_file.html"));
+    content::WebContents* new_web_contents =
+        AddTab(embedded_test_server()->GetURL("/extensions/test_file.html"));
     EXPECT_TRUE(new_web_contents);
   }
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -293,9 +312,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   ResultCatcher catcher;
   {
     ASSERT_TRUE(StartEmbeddedTestServer());
-    content::WebContents* new_web_contents = browsertest_util::AddTab(
-        browser(),
-        embedded_test_server()->GetURL("/extensions/test_file.html"));
+    content::WebContents* new_web_contents =
+        AddTab(embedded_test_server()->GetURL("/extensions/test_file.html"));
     EXPECT_TRUE(new_web_contents);
   }
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -357,9 +375,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
 
   // Load the content script for |message_port_extension|, and wait for the
   // content script to connect to its background's port.
+  auto* web_contents = GetActiveWebContents();
   GURL url =
       embedded_test_server()->GetURL("example.com", "/extensions/body1.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_TRUE(content_script_connected_catcher.GetNextResult())
       << content_script_connected_catcher.message();
 
@@ -398,9 +417,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTestWithActivityLog, ActivityLog) {
   ASSERT_TRUE(friend_extension);
   {
     ResultCatcher catcher;
-    content::WebContents* new_web_contents = browsertest_util::AddTab(
-        browser(),
-        embedded_test_server()->GetURL("/extensions/test_file.html"));
+    content::WebContents* new_web_contents =
+        AddTab(embedded_test_server()->GetURL("/extensions/test_file.html"));
     EXPECT_TRUE(new_web_contents);
     EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   }
@@ -417,7 +435,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, LongLivedChannelNoMessage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   service_worker_test_utils::TestServiceWorkerContextObserver observer(
-      browser()->profile());
+      profile());
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/messaging/connect_to_worker/connect"));
   ASSERT_TRUE(extension);
@@ -426,9 +444,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, LongLivedChannelNoMessage) {
   // Load the tab with content script to open a Port to |extension|.
   ResultCatcher catcher;
   {
-    content::WebContents* new_web_contents = browsertest_util::AddTab(
-        browser(),
-        embedded_test_server()->GetURL("/extensions/test_file.html"));
+    content::WebContents* new_web_contents =
+        AddTab(embedded_test_server()->GetURL("/extensions/test_file.html"));
     EXPECT_TRUE(new_web_contents);
   }
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -437,8 +454,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, LongLivedChannelNoMessage) {
   // external request.
   base::RunLoop().RunUntilIdle();
   content::ServiceWorkerContext* context =
-      util::GetServiceWorkerContextForExtensionId(extension->id(),
-                                                  browser()->profile());
+      util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
   EXPECT_FALSE(
       content::TriggerTimeoutAndCheckRunningState(context, version_id));
 }
@@ -449,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, OneTimeChannel) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   service_worker_test_utils::TestServiceWorkerContextObserver observer(
-      browser()->profile());
+      profile());
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/messaging/connect_to_worker/send_message"));
   ASSERT_TRUE(extension);
@@ -458,9 +474,8 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, OneTimeChannel) {
   // Load the tab with content script to open a Port to |extension|.
   ResultCatcher catcher;
   {
-    content::WebContents* new_web_contents = browsertest_util::AddTab(
-        browser(),
-        embedded_test_server()->GetURL("/extensions/test_file.html"));
+    content::WebContents* new_web_contents =
+        AddTab(embedded_test_server()->GetURL("/extensions/test_file.html"));
     EXPECT_TRUE(new_web_contents);
   }
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -471,19 +486,122 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, OneTimeChannel) {
   // request is not finished.
   base::RunLoop().RunUntilIdle();
   content::ServiceWorkerContext* context =
-      util::GetServiceWorkerContextForExtensionId(extension->id(),
-                                                  browser()->profile());
+      util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
   EXPECT_TRUE(content::TriggerTimeoutAndCheckRunningState(context, version_id));
 }
 
+namespace {
+// Helper class to intercept `OpenChannelToExtension` call.
+class ExtensionFrameHostHelper
+    : public mojom::LocalFrameHostInterceptorForTesting {
+ public:
+  ExtensionFrameHostHelper(content::WebContents* web_contents,
+                           base::OnceClosure open_channel_to_extension_cb)
+      : scoped_swap_impl_(
+            ExtensionWebContentsObserver::GetForWebContents(web_contents)
+                ->extension_frame_host_for_testing()
+                ->receivers_for_testing(),
+            this),
+        open_channel_to_extension_cb_(std::move(open_channel_to_extension_cb)) {
+  }
+
+ private:
+  mojom::LocalFrameHost* GetForwardingInterface() override {
+    return scoped_swap_impl_.old_impl();
+  }
+
+  // mojom::LocalFrameHostInterceptorForTesting:
+  void OpenChannelToExtension(
+      mojom::ExternalConnectionInfoPtr info,
+      mojom::ChannelType channel_type,
+      const std::string& channel_name,
+      const PortId& port_id,
+      mojo::PendingAssociatedRemote<mojom::MessagePort> port,
+      mojo::PendingAssociatedReceiver<mojom::MessagePortHost> port_host)
+      override {
+    GetForwardingInterface()->OpenChannelToExtension(
+        std::move(info), channel_type, channel_name, port_id, std::move(port),
+        std::move(port_host));
+
+    if (open_channel_to_extension_cb_) {
+      std::move(open_channel_to_extension_cb_).Run();
+    }
+  }
+
+  const mojo::test::ScopedSwapImplForTesting<mojom::LocalFrameHost>
+      scoped_swap_impl_;
+  base::OnceClosure open_channel_to_extension_cb_;
+};
+}  // namespace
+
+// Tests that removing a MV3 extension with a pending message from incognito
+// does not crash. See https://crbug.com/443038597
+IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest, RemoveWithPending) {
+  service_worker_test_utils::TestServiceWorkerContextObserver observer(
+      profile());
+  auto* extension = LoadExtension(
+      test_data_dir_.AppendASCII("service_worker/remove_with_pending"),
+      {.allow_in_incognito = true});
+  ASSERT_TRUE(extension);
+  const int64_t version_id = observer.WaitForWorkerStarted();
+
+  // Simulate idle timeout to terminate the service worker.
+  content::ServiceWorkerContext* context =
+      util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
+  content::SetServiceWorkerIdleDelay(context, version_id, base::Seconds(0));
+  observer.WaitForWorkerStopped();
+
+  // Open the test page in an incognito window.
+  ExtensionTestMessageListener ready("ready", ReplyBehavior::kWillReply);
+  content::WebContents* const contents = PlatformOpenURLOffTheRecord(
+      profile(), extension->GetResourceURL("test.html"));
+  ASSERT_TRUE(ready.WaitUntilSatisfied());
+
+  base::RunLoop wait_for_open;
+  ExtensionFrameHostHelper helper(contents, wait_for_open.QuitClosure());
+
+  // Triggers a `chrome.runtime.sendMessage` while the service worker is not
+  // active.
+  ready.Reply("go");
+
+  // Wait for `OpenChannelToExtension`.
+  wait_for_open.Run();
+
+  // Unload the extension with a pending connection. No crash should happen.
+  ASSERT_TRUE(
+      MessageService::Get(profile())->HasPendingLazyContextChannelsForExtension(
+          extension->id()));
+
+  base::HistogramTester histograms;
+  UnloadExtension(extension->id());
+
+  // `UnloadExtension` will call `ServiceWorkerTaskQueue::DeactivateExtension`
+  // down the line, which will run pending tasks with null context.
+  ASSERT_FALSE(
+      MessageService::Get(profile())->HasPendingLazyContextChannelsForExtension(
+          extension->id()));
+
+  histograms.ExpectUniqueSample(
+      "Extensions.MessagePipeline.OpenChannelStatus.SendMessageChannel",
+      /*sample=*/MessageTracker::OpenChannelMessagePipelineResult::kNoReceivers,
+      /*expected_bucket_count=*/1);
+  histograms.ExpectUniqueSample(
+      "Extensions.MessagePipeline.OpenChannelWorkerWakeUpStatus."
+      "SendMessageChannel",
+      /*sample=*/MessageTracker::OpenChannelMessagePipelineResult::kNoReceivers,
+      /*expected_bucket_count=*/1);
+}
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // Tests post messages through a long-lived channel from content script to an
 // extension SW should extend SW lifetime.
+// TODO(crbug.com/383366125): Flaky on desktop Android.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
                        LongLivedChannelPostMessage) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
   service_worker_test_utils::TestServiceWorkerContextObserver observer(
-      browser()->profile());
+      profile());
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "service_worker/messaging/connect_to_worker/connect_and_post"));
   ASSERT_TRUE(extension);
@@ -491,16 +609,14 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
 
   // Set idle timeout to 1 second.
   content::ServiceWorkerContext* context =
-      util::GetServiceWorkerContextForExtensionId(extension->id(),
-                                                  browser()->profile());
+      util::GetServiceWorkerContextForExtensionId(extension->id(), profile());
   content::SetServiceWorkerIdleDelay(context, version_id, base::Seconds(1));
 
   // Load the tab with content script to open a Port to |extension|.
   ResultCatcher catcher;
   {
-    content::WebContents* new_web_contents = browsertest_util::AddTab(
-        browser(),
-        embedded_test_server()->GetURL("/extensions/test_file.html"));
+    content::WebContents* new_web_contents =
+        AddTab(embedded_test_server()->GetURL("/extensions/test_file.html"));
     EXPECT_TRUE(new_web_contents);
   }
   // Catching the succeed test message means the service worker has been alive
@@ -513,5 +629,6 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerMessagingTest,
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(content::CheckServiceWorkerIsRunning(context, version_id));
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

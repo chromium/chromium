@@ -270,11 +270,9 @@ void ThrottlingNetworkInterceptor::StopThrottle(
 void ThrottlingNetworkInterceptor::RemoveRecord(
     ThrottleRecords* records,
     const ThrottleCallback& callback) {
-  records->erase(std::remove_if(records->begin(), records->end(),
-                                [&callback](const ThrottleRecord& record) {
-                                  return record.callback == callback;
-                                }),
-                 records->end());
+  std::erase_if(*records, [&callback](const ThrottleRecord& record) {
+    return record.callback == callback;
+  });
 }
 
 bool ThrottlingNetworkInterceptor::IsOffline() {

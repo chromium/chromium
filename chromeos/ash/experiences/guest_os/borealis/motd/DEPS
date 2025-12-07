@@ -1,0 +1,9 @@
+include_rules = [
+  "+ash/public/cpp/shell_window_ids.h",
+  "+ash/shell.h",
+  "+ash/strings/grit/ash_strings.h",
+  "+components/version_info/version_info.h",
+  "+content/public/browser",
+  "+content/public/common/url_constants.h",
+  "+third_party/blink/public/mojom/window_features/window_features.mojom.h",
+]

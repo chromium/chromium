@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 
 #include "base/trace_event/traced_value.h"
@@ -38,7 +33,7 @@ bool AggregatedRenderPassDrawQuad::Equals(
          backdrop_filter_quality == other.backdrop_filter_quality &&
          force_anti_aliasing_off == other.force_anti_aliasing_off &&
          intersects_damage_under == other.intersects_damage_under &&
-         // DrawQuad. Skip resources.ids[kMaskResourceIdIndex].
+         // DrawQuad. Skip `resource_id`.
          material == other.material && rect == other.rect &&
          visible_rect == other.visible_rect &&
          needs_blending == other.needs_blending &&
@@ -53,15 +48,15 @@ void AggregatedRenderPassDrawQuad::SetNew(
     ResourceId mask_resource_id,
     const gfx::RectF& mask_uv_rect,
     const gfx::Size& mask_texture_size,
-    const gfx::Vector2dF& filters_scale,
-    const gfx::PointF& filters_origin,
     const gfx::RectF& tex_coord_rect,
-    bool force_anti_aliasing_off,
-    float backdrop_filter_quality) {
+    bool force_anti_aliasing_off) {
   DCHECK(render_pass);
 
   bool needs_blending = true;
   bool intersects_damage_under = true;
+  filters_scale = gfx::Vector2dF(1.0f, 1.0f);
+  filters_origin = gfx::PointF();
+  float backdrop_filter_quality = 1.0f;
   SetAll(shared_quad_state, rect, visible_rect, needs_blending, render_pass,
          mask_resource_id, mask_uv_rect, mask_texture_size, filters_scale,
          filters_origin, tex_coord_rect, force_anti_aliasing_off,
@@ -76,9 +71,7 @@ void AggregatedRenderPassDrawQuad::SetAll(
   DrawQuad::SetAll(other.shared_quad_state,
                    DrawQuad::Material::kAggregatedRenderPass, other.rect,
                    other.visible_rect, other.needs_blending);
-  resources.ids[kMaskResourceIdIndex] =
-      other.resources.ids[kMaskResourceIdIndex];
-  resources.count = other.resources.count;
+  resource_id = other.resource_id;
 
   // RenderPassDrawQuadInternal
   mask_uv_rect = other.mask_uv_rect;
@@ -111,8 +104,7 @@ void AggregatedRenderPassDrawQuad::SetAll(
   DrawQuad::SetAll(shared_quad_state, DrawQuad::Material::kAggregatedRenderPass,
                    rect, visible_rect, needs_blending);
   render_pass_id = render_pass;
-  resources.ids[kMaskResourceIdIndex] = mask_resource_id;
-  resources.count = mask_resource_id ? 1 : 0;
+  resource_id = mask_resource_id;
   this->mask_uv_rect = mask_uv_rect;
   this->mask_texture_size = mask_texture_size;
   this->filters_scale = filters_scale;
@@ -131,8 +123,10 @@ const AggregatedRenderPassDrawQuad* AggregatedRenderPassDrawQuad::MaterialCast(
 
 void AggregatedRenderPassDrawQuad::ExtendValue(
     base::trace_event::TracedValue* value) const {
+  // render_pass_id.value() is a 64-bit uint even on 32-bit architectures, so
+  // using reinterpret_cast for the intentional conversion to a TracedValue::Id.
   TracedValue::SetIDRef(
-      reinterpret_cast<void*>(static_cast<uint64_t>(render_pass_id)), value,
+      TracedValue::Id(reinterpret_cast<void*>(render_pass_id.value())), value,
       "render_pass_id");
   RenderPassDrawQuadInternal::ExtendValue(value);
 }

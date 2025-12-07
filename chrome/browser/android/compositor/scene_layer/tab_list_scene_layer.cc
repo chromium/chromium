@@ -16,7 +16,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/TabListSceneLayer_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace android {
@@ -31,10 +30,9 @@ TabListSceneLayer::TabListSceneLayer(JNIEnv* env, const JavaRef<jobject>& jobj)
   layer()->AddChild(own_tree_);
 }
 
-TabListSceneLayer::~TabListSceneLayer() {}
+TabListSceneLayer::~TabListSceneLayer() = default;
 
-void TabListSceneLayer::BeginBuildingFrame(JNIEnv* env,
-                                           const JavaParamRef<jobject>& jobj) {
+void TabListSceneLayer::BeginBuildingFrame(JNIEnv* env) {
   content_obscures_self_ = false;
 
   // Remove (and re-add) all layers every frame to guarantee that z-order
@@ -44,8 +42,7 @@ void TabListSceneLayer::BeginBuildingFrame(JNIEnv* env,
   }
 }
 
-void TabListSceneLayer::FinishBuildingFrame(JNIEnv* env,
-                                            const JavaParamRef<jobject>& jobj) {
+void TabListSceneLayer::FinishBuildingFrame(JNIEnv* env) {
   // Destroy all tabs that weren't used this frame.
   for (auto it = tab_map_.cbegin(); it != tab_map_.cend();) {
     if (visible_tabs_this_frame_.find(it->first) ==
@@ -60,7 +57,6 @@ void TabListSceneLayer::FinishBuildingFrame(JNIEnv* env,
 
 void TabListSceneLayer::UpdateLayer(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jobj,
     jint background_color,
     jfloat viewport_x,
     jfloat viewport_y,
@@ -72,7 +68,6 @@ void TabListSceneLayer::UpdateLayer(
 }
 
 void TabListSceneLayer::PutTabLayer(JNIEnv* env,
-                                    const JavaParamRef<jobject>& jobj,
                                     jint id,
                                     jint toolbar_resource_id,
                                     jint shadow_resource_id,
@@ -147,13 +142,12 @@ void TabListSceneLayer::PutTabLayer(JNIEnv* env,
 
 void TabListSceneLayer::PutBackgroundLayer(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jobj,
     jint resource_id,
     jfloat alpha,
     jint top_offset) {
   int ui_resource_id = resource_manager_->GetUIResourceId(
       ui::ANDROID_RESOURCE_TYPE_DYNAMIC, resource_id);
-  if (ui_resource_id == 0) {
+  if (ui_resource_id == ui::Resource::kInvalidResourceId) {
     return;
   }
 
@@ -175,9 +169,8 @@ void TabListSceneLayer::PutBackgroundLayer(
 
 void TabListSceneLayer::SetDependencies(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jobj,
-    const base::android::JavaParamRef<jobject>& jtab_content_manager,
-    const base::android::JavaParamRef<jobject>& jresource_manager) {
+    const base::android::JavaRef<jobject>& jtab_content_manager,
+    const base::android::JavaRef<jobject>& jresource_manager) {
   if (!tab_content_manager_) {
     tab_content_manager_ =
         TabContentManager::FromJavaObject(jtab_content_manager);
@@ -205,10 +198,12 @@ SkColor TabListSceneLayer::GetBackgroundColor() {
 }
 
 static jlong JNI_TabListSceneLayer_Init(JNIEnv* env,
-                                        const JavaParamRef<jobject>& jobj) {
+                                        const JavaRef<jobject>& jobj) {
   // This will automatically bind to the Java object and pass ownership there.
   TabListSceneLayer* scene_layer = new TabListSceneLayer(env, jobj);
   return reinterpret_cast<intptr_t>(scene_layer);
 }
 
 }  // namespace android
+
+DEFINE_JNI(TabListSceneLayer)

@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_PRELOADING_PRERENDER_PRERENDER_MANAGER_H_
 #define CHROME_BROWSER_PRELOADING_PRERENDER_PRERENDER_MANAGER_H_
 
+#include <optional>
 #include <string>
 
+#include "chrome/browser/preloading/preloading_features.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
@@ -32,7 +34,7 @@ extern const char kHistogramPrerenderPredictionStatusDirectUrlInput[];
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// LINT.IfChange
+// LINT.IfChange(PrerenderPredictionStatus)
 enum class PrerenderPredictionStatus {
   // The prerender was not started at all for this omnibox interaction.
   kNotStarted = 0,
@@ -58,8 +60,22 @@ class PrerenderManager : public content::WebContentsObserver,
   ~PrerenderManager() override;
 
   // content::WebContentsObserver
+  void DidStartNavigation(
+      content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
+
+  // Maybe start prerendering a prewarm page if we haven't prewarm it yet for
+  // the underlying WebContents. Returns true if a new prerender is started.
+  // TODO(https://crbug.com/423465927): Decide a better timing to close.
+  bool MaybeStartPrewarmSearchResult();
+
+  // Deletes the existing prewarm page to start another one for testing.
+  void StopPrewarmSearchResultForTesting();
+
+  // Sets the prewarm page URL for testing as it's difficult to set the testing
+  // server's URL as a Finch parameter in the tests.
+  void SetPrewarmUrlForTesting(const GURL& url);
 
   // Calling this method will lead to the cancellation of the previous prerender
   // if the given `canonical_search_url` differs from the ongoing one's.
@@ -70,30 +86,7 @@ class PrerenderManager : public content::WebContentsObserver,
 
   // Cancels the prerender that is prerendering the given
   // `canonical_search_url`.
-  // TODO(crbug.com/40214220): Use the creator's address to identify the
-  // owner that can cancels the corresponding prerendering?
   void StopPrerenderSearchResult(const GURL& canonical_search_url);
-
-  // The entry of bookmark prerender.
-  // Calling this method will return WeakPtr of the started prerender, and lead
-  // to the cancellation of the previous prerender if the given url is different
-  // from the on-going one. If the url given is already on-going, this function
-  // will return the weak pointer to the on-going prerender handle.
-  base::WeakPtr<content::PrerenderHandle> StartPrerenderBookmark(
-      const GURL& prerendering_url);
-  void StopPrerenderBookmark(
-      base::WeakPtr<content::PrerenderHandle> prerender_handle);
-
-  // The entry of new tab page prerender.
-  // Calling this method will return WeakPtr of the started prerender, and lead
-  // to the cancellation of the previous prerender if the given url is different
-  // from the on-going one. If the url given is already on-going, this function
-  // will return the weak pointer to the on-going prerender handle.
-  base::WeakPtr<content::PrerenderHandle> StartPrerenderNewTabPage(
-      const GURL& prerendering_url,
-      content::PreloadingPredictor predictor);
-  void StopPrerenderNewTabPage(
-      base::WeakPtr<content::PrerenderHandle> prerender_handle);
 
   // The entry of direct url input prerender.
   // Calling this method will return WeakPtr of the started prerender, and lead
@@ -119,30 +112,47 @@ class PrerenderManager : public content::WebContentsObserver,
  private:
   class SearchPrerenderTask;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(PrewarmDecision)
+  enum class PrewarmDecision {
+    kReady = 0,
+    kAlreadyExists = 1,
+    kDisabled = 2,
+    kInHeadlessMode = 3,
+    kDebuggerAttached = 4,
+    kInvalidUrl = 5,
+    kNoTemplateUrlService = 6,
+    kNoDefaultSearchProvider = 7,
+    kNotSameOriginWithDSE = 8,
+    kInPictureInPicture = 9,
+    kInIsolatedWebApp = 10,
+    kInKioskSession = 11,
+    kMaxValue = kInKioskSession,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderPrewarmDecision)
+
   explicit PrerenderManager(content::WebContents* web_contents);
   friend class content::WebContentsUserData<PrerenderManager>;
 
   void ResetPrerenderHandlesOnPrimaryPageChanged(
       content::NavigationHandle* navigation_handle);
 
-  // Maybe cancel the ongoing search prerender to restart a new one if this
-  // finds the callers' intentions changed. The number of concurrence search
-  // prerender is limited to 1, so it is needed to cancel the old one in order
-  // to start a new one. Returns true if this finds the caller wants to
-  // prerender another search result. Here `attempt` represents the
-  // PreloadingAttempt corresponding to this prerender attempt to log metrics.
-  bool ResetSearchPrerenderTaskIfNecessary(
-      const GURL& canonical_search_url,
-      base::WeakPtr<content::PreloadingAttempt> attempt);
+  // Decides if prewarm should be triggered. If not, returns the reason why.
+  // Otherwise, returns kReady and sets `prewarm_url`.
+  PrewarmDecision ShouldPrewarm(GURL& prewarm_url);
+
+  void OnPrerenderNavigationHandle(
+      content::NavigationHandle& navigation_handle);
+
+  std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
+  std::optional<GURL> prewarm_url_for_testing_;
 
   // Stores the prerender which serves for search results. It is responsible for
   // tracking a started search prerender, and informing `SearchPrefetchService`
   // of the prerender status.
   std::unique_ptr<SearchPrerenderTask> search_prerender_task_;
-
-  std::unique_ptr<content::PrerenderHandle> bookmark_prerender_handle_;
-
-  std::unique_ptr<content::PrerenderHandle> new_tab_page_prerender_handle_;
 
   std::unique_ptr<content::PrerenderHandle> direct_url_input_prerender_handle_;
 

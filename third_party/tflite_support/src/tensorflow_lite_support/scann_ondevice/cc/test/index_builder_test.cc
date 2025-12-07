@@ -18,7 +18,7 @@ limitations under the License.
 #include <cstdint>
 #include <string>
 
-#include "absl/flags/flag.h"  // from @com_google_absl
+#include <gtest/gtest.h>
 #include "absl/memory/memory.h"  // from @com_google_absl
 #include "absl/status/status.h"  // from @com_google_absl
 #include "absl/strings/str_format.h"  // from @com_google_absl
@@ -132,7 +132,7 @@ class PopulateIndexFileTest : public TestWithParam<bool /*compression*/> {};
 
 TEST_P(PopulateIndexFileTest, WritesHashedDatabaseWithPartitioner) {
   const std::string db_path =
-      tflite::task::JoinPath(getenv("TEST_TMPDIR"), "hashed");
+      tflite::task::JoinPath(::testing::TempDir(), "hashed");
   const bool compression = GetParam();
 
   {
@@ -248,7 +248,7 @@ TEST_P(PopulateIndexFileTest, WritesHashedDatabaseWithPartitioner) {
 
 TEST_P(PopulateIndexFileTest, WritesHashedDatabaseWithoutPartitioner) {
   const std::string db_path =
-      tflite::task::JoinPath(getenv("TEST_TMPDIR"), "float");
+      tflite::task::JoinPath(::testing::TempDir(), "float");
   const bool compression = GetParam();
 
   {
@@ -337,7 +337,7 @@ TEST_P(PopulateIndexFileTest, WritesHashedDatabaseWithoutPartitioner) {
 
 TEST_P(PopulateIndexFileTest, WritesFloatDatabaseWithPartitioner) {
   const std::string db_path =
-      tflite::task::JoinPath(getenv("TEST_TMPDIR"), "float");
+      tflite::task::JoinPath(::testing::TempDir(), "float");
   const bool compression = GetParam();
 
   {
@@ -456,7 +456,7 @@ TEST_P(PopulateIndexFileTest, WritesFloatDatabaseWithPartitioner) {
 
 TEST_P(PopulateIndexFileTest, WritesFloatDatabaseWithoutPartitioner) {
   const std::string db_path =
-      tflite::task::JoinPath(getenv("TEST_TMPDIR"), "float");
+      tflite::task::JoinPath(::testing::TempDir(), "float");
   const bool compression = GetParam();
 
   {

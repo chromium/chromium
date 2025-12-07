@@ -58,7 +58,7 @@ COMPONENT_EXPORT(AX_PLATFORM) HWND GetHwndForProcess(base::ProcessId pid);
 
 // Returns HWND of window matching a given tree selector.
 COMPONENT_EXPORT(AX_PLATFORM)
-HWND GetHWNDBySelector(const ui::AXTreeSelector& selector);
+HWND GetHWNDBySelector(const AXTreeSelector& selector);
 
 COMPONENT_EXPORT(AX_PLATFORM)
 std::u16string RoleVariantToU16String(const base::win::ScopedVariant& role);
@@ -140,10 +140,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) MSAAChildren final {
       operator++();
       return tmp;
     }
-    bool operator==(const Iterator& rhs) const {
-      return children_ == rhs.children_ && index_ == rhs.index_;
-    }
-    bool operator!=(const Iterator& rhs) const { return !operator==(rhs); }
+    friend bool operator==(const Iterator&, const Iterator&) = default;
     const MSAAChild& operator*() { return children_->ChildAt(index_); }
 
    private:

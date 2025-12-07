@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -37,6 +38,7 @@
 #include "components/sync/protocol/unique_position.pb.h"
 #include "components/sync/test/fake_data_type_sync_bridge.h"
 #include "components/sync/test/mock_data_type_worker.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -50,22 +52,20 @@ using sync_pb::EntitySpecifics;
 using testing::Not;
 using testing::NotNull;
 
-const char kDefaultAuthenticatedAccountId[] = "DefaultAccountId";
+const GaiaId::Literal kDefaultAuthenticatedGaiaId("DefaultGaiaId");
 
-const char kKey1[] = "key1";
-const char kKey2[] = "key2";
-const char kKey3[] = "key3";
-const char kKey4[] = "key4";
-const char kKey5[] = "key5";
-const char kValue1[] = "value1";
-const char kValue2[] = "value2";
-const char kValue3[] = "value3";
+constexpr char kKey1[] = "key1";
+constexpr char kKey2[] = "key2";
+constexpr char kKey3[] = "key3";
+constexpr char kKey4[] = "key4";
+constexpr char kKey5[] = "key5";
+constexpr char kValue1[] = "value1";
+constexpr char kValue2[] = "value2";
+constexpr char kValue3[] = "value3";
+constexpr char kValue4[] = "value4";
+constexpr char kValue5[] = "value5";
 
-const char kCacheGuid[] = "TestCacheGuid";
-
-// Typically used for verification after a delete. The specifics given to the
-// worker/processor will not have been initialized and thus empty.
-const EntitySpecifics kEmptySpecifics;
+constexpr char kCacheGuid[] = "TestCacheGuid";
 
 ClientTagHash GetHash(DataType type, const std::string& key) {
   return ClientTagHash::FromUnhashed(
@@ -208,11 +208,6 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
     FakeDataTypeSyncBridge::OnSyncPaused();
   }
 
-  std::string GetStorageKey(const EntityData& entity_data) override {
-    get_storage_key_call_count_++;
-    return FakeDataTypeSyncBridge::GetStorageKey(entity_data);
-  }
-
   sync_pb::EntitySpecifics TrimAllSupportedFieldsFromRemoteSpecifics(
       const sync_pb::EntitySpecifics& entity_specifics) const override {
     if (entity_specifics.has_preference()) {
@@ -231,14 +226,17 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
     data_type_state.set_cache_guid(kCacheGuid);
     data_type_state.mutable_progress_marker()->set_data_type_id(
         GetSpecificsFieldNumberFromDataType(type()));
-    data_type_state.set_authenticated_account_id(
-        kDefaultAuthenticatedAccountId);
+    data_type_state.set_authenticated_obfuscated_gaia_id(
+        kDefaultAuthenticatedGaiaId.ToString());
     db_->set_data_type_state(data_type_state);
+  }
+
+  void SetMergeFullSyncDataError(const ModelError& error) {
+    merge_full_sync_data_error_ = error;
   }
 
   int merge_call_count() const { return merge_call_count_; }
   int apply_call_count() const { return apply_call_count_; }
-  int get_storage_key_call_count() const { return get_storage_key_call_count_; }
   int commit_failures_count() const { return commit_failures_count_; }
 
   bool sync_started() const { return sync_started_; }
@@ -253,6 +251,11 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
       std::unique_ptr<MetadataChangeList> metadata_change_list,
       EntityChangeList entity_data) override {
     merge_call_count_++;
+
+    if (merge_full_sync_data_error_.has_value()) {
+      return merge_full_sync_data_error_;
+    }
+
     if (!SupportsIncrementalUpdates()) {
       // If the bridge does not support incremental updates, it should clear
       // local data in MergeFullSyncData.
@@ -300,7 +303,6 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
   // The number of times MergeFullSyncData has been called.
   int merge_call_count_ = 0;
   int apply_call_count_ = 0;
-  int get_storage_key_call_count_ = 0;
   int commit_failures_count_ = 0;
 
   CommitAttemptFailedBehavior commit_attempt_failed_behaviour_ =
@@ -308,6 +310,7 @@ class TestDataTypeSyncBridge : public FakeDataTypeSyncBridge {
 
   base::OnceCallback<void(const FailedCommitResponseDataList&)>
       on_commit_attempt_errors_callback_;
+  std::optional<ModelError> merge_full_sync_data_error_;
 };
 
 }  // namespace
@@ -359,23 +362,22 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
     WaitForStartCallbackIfNeeded();
   }
 
-  void OnSyncStarting(const std::string& authenticated_account_id =
-                          kDefaultAuthenticatedAccountId,
-                      const std::string& cache_guid = kCacheGuid,
-                      SyncMode sync_mode = SyncMode::kFull) {
+  void OnSyncStarting(
+      const GaiaId& authenticated_gaia_id = kDefaultAuthenticatedGaiaId,
+      const std::string& cache_guid = kCacheGuid,
+      SyncMode sync_mode = SyncMode::kFull) {
     DataTypeActivationRequest request;
-    request.error_handler = base::BindRepeating(
-        &ClientTagBasedDataTypeProcessorTest::ErrorReceived,
-        base::Unretained(this));
+    request.error_handler =
+        base::BindRepeating(&ClientTagBasedDataTypeProcessorTest::ErrorReceived,
+                            base::Unretained(this));
     request.cache_guid = cache_guid;
-    request.authenticated_account_id =
-        CoreAccountId::FromString(authenticated_account_id);
+    request.authenticated_gaia_id = authenticated_gaia_id;
     request.sync_mode = sync_mode;
     request.configuration_start_time = base::Time::Now();
 
     error_reported_ = false;
 
-    // |run_loop_| may exist here if OnSyncStarting is called without resetting
+    // `run_loop_` may exist here if OnSyncStarting is called without resetting
     // state. But it is safe to remove it.
     ASSERT_TRUE(!run_loop_ || !run_loop_->running());
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -391,7 +393,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
     worker_ = nullptr;
   }
 
-  // Writes data for |key| and simulates a commit response for it.
+  // Writes data for `key` and simulates a commit response for it.
   EntitySpecifics WriteItemAndAck(const std::string& key,
                                   const std::string& value) {
     EntitySpecifics specifics = WritePrefItem(bridge(), key, value);
@@ -460,8 +462,9 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   // Return the number of entities the processor has metadata for.
   size_t ProcessorEntityCount() const {
-    if (type_processor()->entity_tracker_)
+    if (type_processor()->entity_tracker_) {
       return type_processor()->entity_tracker_->size();
+    }
     return 0;
   }
 
@@ -509,8 +512,10 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
   void ErrorReceived(const ModelError& error) {
     EXPECT_TRUE(expect_error_);
-    histogram_tester_->ExpectBucketCount("Sync.DataTypeErrorSite.PREFERENCE",
-                                         *expect_error_, /*count=*/1);
+    histogram_tester_->ExpectBucketCount(
+        base::StrCat({"Sync.DataTypeErrorSite.",
+                      DataTypeToHistogramSuffix(GetDataType())}),
+        *expect_error_, /*count=*/1);
     expect_error_ = std::nullopt;
     error_reported_ = true;
     // Do not expect for a start callback anymore.
@@ -553,57 +558,62 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
   bool error_reported_ = false;
 };
 
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldExposeNewlyTrackedAccountId) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldExposeNewlyTrackedGaiaId) {
   ModelReadyToSync();
-  ASSERT_EQ("", type_processor()->TrackedAccountId());
+  ASSERT_EQ(GaiaId(), type_processor()->TrackedGaiaId());
   OnSyncStarting();
   worker()->UpdateFromServer();
-  EXPECT_EQ(kDefaultAuthenticatedAccountId,
-            type_processor()->TrackedAccountId());
+  EXPECT_EQ(kDefaultAuthenticatedGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldExposePreviouslyTrackedAccountId) {
+       ShouldExposePreviouslyTrackedGaiaId) {
+  const GaiaId kPersistedGaiaId("PersistedGaiaId");
+
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::DataTypeState data_type_state(metadata_batch->GetDataTypeState());
   data_type_state.set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   data_type_state.set_cache_guid(kCacheGuid);
-  data_type_state.set_authenticated_account_id("PersistedAccountId");
+  data_type_state.set_authenticated_obfuscated_gaia_id(
+      kPersistedGaiaId.ToString());
   data_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
-  // Even prior to starting sync, the account ID should already be tracked.
-  EXPECT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+  // Even prior to starting sync, the Gaia ID should already be tracked.
+  EXPECT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 
   // If sync gets started, the account should still be tracked.
-  OnSyncStarting("PersistedAccountId");
-  EXPECT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+  OnSyncStarting(kPersistedGaiaId);
+  EXPECT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldExposeNewlyTrackedAccountIdIfChanged) {
+       ShouldExposeNewlyTrackedGaiaIdIfChanged) {
+  const GaiaId kPersistedGaiaId("PersistedGaiaId");
+
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::DataTypeState data_type_state(metadata_batch->GetDataTypeState());
   data_type_state.set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   data_type_state.set_cache_guid(kCacheGuid);
-  data_type_state.set_authenticated_account_id("PersistedAccountId");
+  data_type_state.set_authenticated_obfuscated_gaia_id(
+      kPersistedGaiaId.ToString());
   data_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   // Even prior to starting sync, the account ID should already be tracked.
-  ASSERT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+  ASSERT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 
   // If sync gets started, the new account should be tracked.
-  OnSyncStarting("NewAccountId");
+  const GaiaId kNewGaiaId("NewGaiaId");
+  OnSyncStarting(kNewGaiaId);
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
-  EXPECT_EQ("NewAccountId", type_processor()->TrackedAccountId());
+  EXPECT_EQ(kNewGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
@@ -625,8 +635,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(inv_2.version(), data_type_state.invalidations(1).version());
 }
 
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldExposeNewlyTrackedCacheGuid) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldExposeNewlyTrackedCacheGuid) {
   ModelReadyToSync();
   ASSERT_EQ("", type_processor()->TrackedCacheGuid());
   OnSyncStarting();
@@ -641,7 +650,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   data_type_state.set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   data_type_state.set_cache_guid("PersistedCacheGuid");
-  data_type_state.set_authenticated_account_id(kDefaultAuthenticatedAccountId);
+  data_type_state.set_authenticated_obfuscated_gaia_id(
+      kDefaultAuthenticatedGaiaId.ToString());
   data_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
@@ -651,7 +661,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ("PersistedCacheGuid", type_processor()->TrackedCacheGuid());
 
   // If sync gets started, the cache guid should still be set.
-  OnSyncStarting(kDefaultAuthenticatedAccountId, "PersistedCacheGuid");
+  OnSyncStarting(kDefaultAuthenticatedGaiaId, "PersistedCacheGuid");
   EXPECT_EQ("PersistedCacheGuid", type_processor()->TrackedCacheGuid());
 }
 
@@ -761,8 +771,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldApplyIncrementalUpdates) {
   EXPECT_EQ(2U, db()->metadata_count());
 }
 
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldReportErrorDuringActivation) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringActivation) {
   InitializeToMetadataLoaded();
 
   std::optional<ModelError> received_error;
@@ -771,8 +780,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       [&](const ModelError& error) { received_error = error; });
 
   request.cache_guid = kCacheGuid;
-  request.authenticated_account_id =
-      CoreAccountId::FromString(kDefaultAuthenticatedAccountId);
+  request.authenticated_gaia_id = kDefaultAuthenticatedGaiaId;
   request.sync_mode = SyncMode::kFull;
   request.configuration_start_time = base::Time::Now();
 
@@ -792,7 +800,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
   // Report error while the activation is in flight, i.e. before ConnectSync()
   // is invoked.
-  ModelError error{FROM_HERE, "boom"};
+  ModelError error{FROM_HERE, syncer::ModelError::Type::kGenericTestError};
   type_processor()->ReportError(error);
 
   // Mimic completion.
@@ -815,9 +823,10 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringMerge) {
   worker()->UpdateFromServer();
 }
 
-// Test that errors before it's called are passed to |start_callback| correctly.
+// Test that errors before it's called are passed to `start_callback` correctly.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
-  type_processor()->ReportError({FROM_HERE, "boom"});
+  type_processor()->ReportError(
+      {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 
@@ -825,7 +834,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   ResetState(false);
   OnSyncStarting();
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
-  type_processor()->ReportError({FROM_HERE, "boom"});
+  type_processor()->ReportError(
+      {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
 
   // Test an error loading pending data.
   ResetStateWriteItem(kKey1, kValue1);
@@ -836,7 +846,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
 
   // Test an error prior to metadata load.
   ResetState(false);
-  type_processor()->ReportError({FROM_HERE, "boom"});
+  type_processor()->ReportError(
+      {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
   ModelReadyToSync();
@@ -844,7 +855,8 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   // Test an error prior to pending data load.
   ResetStateWriteItem(kKey1, kValue1);
   InitializeToMetadataLoaded();
-  type_processor()->ReportError({FROM_HERE, "boom"});
+  type_processor()->ReportError(
+      {FROM_HERE, syncer::ModelError::Type::kGenericTestError});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
   OnSyncStarting();
 }
@@ -877,6 +889,10 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldHandleSynchronousDataLoad) {
 //
 // This results in 1 + 4 = 5 orderings of the events.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldLoadPendingDelete) {
+  // Typically used for verification after a delete. The specifics given to the
+  // worker/processor will not have been initialized and thus empty.
+  const EntitySpecifics kEmptySpecifics;
+
   // Connect.
   ResetStateDeleteItem(kKey1, kValue1);
   InitializeToMetadataLoaded();
@@ -994,8 +1010,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldCommitLocalCreation) {
 
 // Creates a new item locally while another item exists for the same client tag
 // hash.
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       CommitShouldOverwriteExistingItem) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, CommitShouldOverwriteExistingItem) {
   base::HistogramTester histogram_tester;
   // Provide custom client tags for this test.
   bridge()->SetSupportsGetClientTag(false);
@@ -1038,7 +1053,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorApplyingAck) {
   worker()->AckOnePendingCommit();
 }
 
-// The purpose of this test case is to test setting |client_tag_hash| and |id|
+// The purpose of this test case is to test setting `client_tag_hash` and `id`
 // on the EntityData object as we pass it into the Put method of the processor.
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldOverrideFieldsForLocalUpdate) {
@@ -1424,8 +1439,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 
 // Tests that after committing entity fails, processor includes this entity in
 // consecutive commits.
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldRetryCommitAfterServerError) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldRetryCommitAfterServerError) {
   InitializeToReadyState();
   WritePrefItem(bridge(), kKey1, kValue1);
   worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
@@ -1972,8 +1986,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
 }
 
 // Tests that a real remote change wins over a local encryption-only change.
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldIgnoreLocalEncryptionChange) {
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldIgnoreLocalEncryptionChange) {
   InitializeToReadyState();
   EntitySpecifics specifics = WriteItemAndAck(kKey1, kValue1);
   worker()->UpdateWithEncryptionKey("k1");
@@ -2006,7 +2019,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldReportEphemeralConfigurationTime) {
   InitializeToMetadataLoaded(
       sync_pb::DataTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
-  OnSyncStarting(kDefaultAuthenticatedAccountId, kCacheGuid,
+  OnSyncStarting(kDefaultAuthenticatedGaiaId, kCacheGuid,
                  SyncMode::kTransportOnly);
 
   base::HistogramTester histogram_tester;
@@ -2051,31 +2064,238 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       /*count=*/1);
 }
 
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldApplyIncrementalUpdateOnGcDirective) {
+  InitializeToReadyState();
+
+  // Synced item, will be deleted (not present in the update below).
+  WriteItemAndAck(kKey1, kValue1);
+  // Synced item, will be updated with a new value.
+  WriteItemAndAck(kKey3, kValue3);
+  // Synced item, will be updated with the same value.
+  WriteItemAndAck(kKey4, kValue4);
+  // Unsynced item, will be kept.
+  WritePrefItem(bridge(), kKey2, kValue2);
+
+  ASSERT_EQ(4U, ProcessorEntityCount());
+  ASSERT_EQ(4U, db()->metadata_count());
+  ASSERT_TRUE(db()->HasData(kKey1));
+  ASSERT_TRUE(db()->HasData(kKey2));
+  ASSERT_TRUE(db()->HasData(kKey3));
+  ASSERT_TRUE(db()->HasData(kKey4));
+
+  // Store the version of `kKey4` before the update.
+  const int64_t kKey4Version = db()->GetMetadata(kKey4).server_version();
+
+  // `kKey2` is the only unsynced item.
+  ASSERT_EQ(1U, worker()->GetNumPendingCommits());
+
+  // The full update will contain an update for `kKey3`, the same value for
+  // `kKey4` and a new item `kKey5`.
+  UpdateResponseDataList updates;
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey3), GeneratePrefSpecifics(kKey3, "new value")));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey4), GeneratePrefSpecifics(kKey4, kValue4)));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey5), GeneratePrefSpecifics(kKey5, kValue5)));
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+  worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
+
+  // `kKey1` should be deleted.
+  EXPECT_FALSE(db()->HasData(kKey1));
+  EXPECT_FALSE(db()->HasMetadata(kKey1));
+  EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
+
+  // `kKey2` should be kept as it is (unsynced, not present in the update).
+  EXPECT_TRUE(db()->HasData(kKey2));
+  EXPECT_TRUE(db()->HasMetadata(kKey2));
+  EXPECT_NE(nullptr, GetEntityForStorageKey(kKey2));
+  EXPECT_TRUE(type_processor()->IsEntityUnsynced(kKey2));
+
+  // `kKey3` should be updated.
+  EXPECT_TRUE(db()->HasData(kKey3));
+  EXPECT_EQ("new value", GetPrefValue(db()->GetData(kKey3)));
+  EXPECT_TRUE(db()->HasMetadata(kKey3));
+
+  // `kKey4` should be kept as is but with new version.
+  EXPECT_TRUE(db()->HasData(kKey4));
+  EXPECT_TRUE(db()->HasMetadata(kKey4));
+  EXPECT_GT(db()->GetMetadata(kKey4).server_version(), kKey4Version);
+
+  // `kKey5` should be added.
+  EXPECT_TRUE(db()->HasData(kKey5));
+  EXPECT_TRUE(db()->HasMetadata(kKey5));
+
+  // In total, 4 entities should be tracked.
+  EXPECT_EQ(4U, ProcessorEntityCount());
+
+  // `kKey2` is still pending for commit.
+  worker()->VerifyPendingCommits({{GetPrefHash(kKey2)}});
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldApplyIncrementalUpdateOnGcDirective_ResolveConflict) {
+  InitializeToReadyState();
+
+  const std::string kEncryptionKeyName =
+      db()->data_type_state().encryption_key_name();
+
+  WriteItemAndAck(kKey1, kValue1);
+  WriteItemAndAck(kKey2, kValue2);
+  WriteItemAndAck(kKey4, kValue4);
+  WriteItemAndAck(kKey5, kValue5);
+
+  // Unsynced item, will be updated with a new version (prefer remote on
+  // conflict).
+  WritePrefItem(bridge(), kKey1, "new local value 1");
+
+  // Unsynced item, will be kept unsynced with local value, as remote update
+  // contains the same remote value but a newer version.
+  WritePrefItem(bridge(), kKey2, "new local value 2");
+
+  // Unsynced item, local creation, will be updated with a new remote value.
+  WritePrefItem(bridge(), kKey3, "new local value 3");
+
+  // Unsynced item, local deletion. Will be restored by the remote update.
+  bridge()->DeleteItem(kKey4);
+
+  // Unsynced item, local deletion. Will be deleted as it's not present in the
+  // remote update.
+  bridge()->DeleteItem(kKey5);
+
+  ASSERT_EQ(5U, ProcessorEntityCount());
+  ASSERT_EQ(5U, db()->metadata_count());
+  ASSERT_TRUE(db()->HasData(kKey1));
+  ASSERT_TRUE(db()->HasData(kKey2));
+  ASSERT_TRUE(db()->HasData(kKey3));
+  ASSERT_FALSE(db()->HasData(kKey4));
+  ASSERT_FALSE(db()->HasData(kKey5));
+  ASSERT_EQ(5U, worker()->GetNumPendingCommits());
+
+  UpdateResponseDataList updates;
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, "new remote value 1")));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey2), GeneratePrefSpecifics(kKey2, kValue2)));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey3), GeneratePrefSpecifics(kKey3, "new remote value 3")));
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey4), GeneratePrefSpecifics(kKey4, kValue4)));
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+  worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
+
+  // `kKey1` should be updated with a remote value.
+  EXPECT_TRUE(db()->HasData(kKey1));
+  EXPECT_TRUE(db()->HasMetadata(kKey1));
+  EXPECT_FALSE(type_processor()->IsEntityUnsynced(kKey1));
+  EXPECT_EQ("new remote value 1", GetPrefValue(db()->GetData(kKey1)));
+
+  // `kKey2` should be kept as it is (unsynced, not present in the update).
+  EXPECT_TRUE(db()->HasData(kKey2));
+  EXPECT_TRUE(db()->HasMetadata(kKey2));
+  EXPECT_TRUE(type_processor()->IsEntityUnsynced(kKey2));
+  EXPECT_EQ("new local value 2", GetPrefValue(db()->GetData(kKey2)));
+
+  // `kKey3` should be updated with a remote value.
+  EXPECT_TRUE(db()->HasData(kKey3));
+  EXPECT_TRUE(db()->HasMetadata(kKey3));
+  EXPECT_FALSE(type_processor()->IsEntityUnsynced(kKey3));
+  EXPECT_EQ("new remote value 3", GetPrefValue(db()->GetData(kKey3)));
+
+  // `kKey4` should be restored, and become synced.
+  EXPECT_TRUE(db()->HasData(kKey4));
+  EXPECT_TRUE(db()->HasMetadata(kKey4));
+  EXPECT_FALSE(type_processor()->IsEntityUnsynced(kKey4));
+  EXPECT_EQ(kValue4, GetPrefValue(db()->GetData(kKey4)));
+
+  // `kKey5` should be deleted.
+  EXPECT_FALSE(db()->HasData(kKey5));
+  EXPECT_FALSE(db()->HasMetadata(kKey5));
+  EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey5));
+
+  // In total, 3 entities should be tracked.
+  EXPECT_EQ(4U, ProcessorEntityCount());
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldIgnoreRemoteNoOpUpdateWithGcDirectiveOnLocalDeletion) {
+  InitializeToReadyState();
+
+  // Create and acknowledge an item.
+  WriteItemAndAck(kKey1, kValue1);
+  ASSERT_EQ(1U, db()->data_count());
+  ASSERT_EQ(1U, db()->metadata_count());
+
+  // Delete the item locally. This creates a pending commit for deletion.
+  bridge()->DeleteItem(kKey1);
+  ASSERT_EQ(0U, db()->data_count());
+  ASSERT_EQ(1U, db()->metadata_count());
+  ASSERT_TRUE(db()->GetMetadata(kKey1).is_deleted());
+  worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
+
+  // Simulate a remote update for the same item with the same server version and
+  // specifics as the original item. This should be ignored.
+  UpdateResponseDataList updates;
+  updates.push_back(worker()->GenerateUpdateData(
+      GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, kValue1),
+      /*version_offset=*/0, /*ekn=*/"k1"));
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+  worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
+
+  worker()->VerifyPendingCommits({{GetPrefHash(kKey1)}});
+  EXPECT_TRUE(db()->GetMetadata(kKey1).is_deleted());
+
+  // Acknowledge the local deletion.
+  worker()->AckOnePendingCommit();
+  EXPECT_EQ(0U, db()->data_count());
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(0U, worker()->GetNumPendingCommits());
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorTest,
+       ShouldCallMergeFullSyncDataOnInitialSyncWithGcDirective) {
+  ModelReadyToSync();
+  OnSyncStarting();
+  ASSERT_FALSE(type_processor()->IsTrackingMetadata());
+  ASSERT_EQ(0, bridge()->merge_call_count());
+
+  sync_pb::GarbageCollectionDirective garbage_collection_directive;
+  garbage_collection_directive.set_version_watermark(1);
+  worker()->UpdateFromServer(UpdateResponseDataList(),
+                             garbage_collection_directive);
+
+  EXPECT_EQ(1, bridge()->merge_call_count());
+  EXPECT_EQ(0, bridge()->apply_call_count());
+}
+
 class FullUpdateClientTagBasedDataTypeProcessorTest
     : public ClientTagBasedDataTypeProcessorTest {
  protected:
   bool SupportsIncrementalUpdates() override { return false; }
 };
 
-// Tests that ClientTagBasedDataTypeProcessor can do garbage collection by
-// version.
-// Garbage collection by version is used by the server to replace all data on
-// the client, and is implemented by calling MergeFullSyncData on the bridge.
+// Tests that ClientTagBasedDataTypeProcessor can do garbage collection.
+// Garbage collection is used by the server to replace all data on the client,
+// and is implemented by calling MergeFullSyncData on the bridge.
 TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
        ShouldApplyGarbageCollectionByVersionFullUpdate) {
   InitializeToReadyState();
   UpdateResponseDataList updates;
   updates.push_back(worker()->GenerateUpdateData(
-      ClientTagHash(), GeneratePrefSpecifics(kKey1, kValue1), 1, "k1"));
+      GetPrefHash(kKey1), GeneratePrefSpecifics(kKey1, kValue1), 1, "k1"));
   updates.push_back(worker()->GenerateUpdateData(
-      ClientTagHash(), GeneratePrefSpecifics(kKey2, kValue2), 2, "k2"));
+      GetPrefHash(kKey2), GeneratePrefSpecifics(kKey2, kValue2), 2, "k2"));
 
-  // Create 2 entries, one is version 3, another is version 1.
   sync_pb::GarbageCollectionDirective garbage_collection_directive;
   garbage_collection_directive.set_version_watermark(1);
   worker()->UpdateFromServer(std::move(updates), garbage_collection_directive);
-  WriteItemAndAck(kKey1, kValue1);
-  WriteItemAndAck(kKey2, kValue2);
 
   // Verify entries are created correctly.
   ASSERT_EQ(2U, ProcessorEntityCount());
@@ -2095,13 +2315,14 @@ TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(0U, db()->metadata_count());
   EXPECT_EQ(0U, worker()->GetNumPendingCommits());
 }
+
 // Tests that full updates for transport-only mode (called "ephemeral storage"
 // for historical reasons) result in reporting setup duration.
 TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
        ShouldReportEphemeralConfigurationTimeOnlyForFirstFullUpdate) {
   InitializeToMetadataLoaded(
       sync_pb::DataTypeState::INITIAL_SYNC_STATE_UNSPECIFIED);
-  OnSyncStarting(kDefaultAuthenticatedAccountId, kCacheGuid,
+  OnSyncStarting(kDefaultAuthenticatedGaiaId, kCacheGuid,
                  SyncMode::kTransportOnly);
 
   UpdateResponseDataList updates1;
@@ -2189,6 +2410,43 @@ TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
                              GeneratePrefSpecifics(kKey1, kValue1));
 }
 
+TEST_F(FullUpdateClientTagBasedDataTypeProcessorTest,
+       ShouldClearMetadataIfHasUnsyncedEntities) {
+  ModelReadyToSync();
+  OnSyncStarting();
+
+  worker()->UpdateFromServer(GetPrefHash(kKey1),
+                             GeneratePrefSpecifics(kKey1, kValue1));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->metadata_count());
+  ASSERT_NE(nullptr, GetEntityForStorageKey(kKey1));
+
+  // Simulate a local update of the entity (e.g. due to a previous bug or
+  // corrupted data on the disk) and browser restart. `updated_metadata` is
+  // created before the ResetState() call so the processor still exists.
+  EntityMetadata updated_metadata = GetEntityForStorageKey(kKey1)->metadata();
+  updated_metadata.set_sequence_number(
+      updated_metadata.acked_sequence_number() + 1);
+  ResetState(/*keep_db=*/true);
+
+  std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
+
+  // First, remove all the metadata from the batch.
+  EntityMetadataMap metadata_map = metadata_batch->TakeAllMetadata();
+  ASSERT_TRUE(metadata_map.contains(kKey1));
+  ASSERT_EQ(metadata_batch->GetAllMetadata().size(), 0U);
+
+  // Update the metadata for kKey1 with an unsynced item.
+  metadata_batch->AddMetadata(
+      kKey1, std::make_unique<EntityMetadata>(updated_metadata));
+  type_processor()->ModelReadyToSync(std::move(metadata_batch));
+  OnSyncStarting();
+
+  // The processor should not be tracking metadata anymore as it contains
+  // unsynced entities.
+  EXPECT_FALSE(type_processor()->IsTrackingMetadata());
+}
+
 // Tests that a real local change wins over a remote encryption-only change.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldIgnoreRemoteEncryption) {
   InitializeToReadyState();
@@ -2255,13 +2513,12 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldUpdateStorageKey) {
   const std::string storage_key1 = bridge()->GetLastGeneratedStorageKey();
   EXPECT_TRUE(db()->HasMetadata(storage_key1));
   EXPECT_EQ(1U, db()->metadata_count());
-  EXPECT_EQ(0, bridge()->get_storage_key_call_count());
 
   // Local update should affect the same entity. This ensures that storage key
   // to client tag hash mapping was updated on the previous step.
   WritePrefItem(bridge(), storage_key1, kValue2);
-  EXPECT_EQ(1U, ProcessorEntityCount());
-  EXPECT_EQ(1U, db()->metadata_count());
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->metadata_count());
 
   // Second update from server should be handled by ApplyIncrementalSyncChanges.
   // Similarly It should call UpdateStorageKey, not GetStorageKey.
@@ -2272,7 +2529,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldUpdateStorageKey) {
   EXPECT_NE(storage_key1, storage_key2);
   EXPECT_TRUE(db()->HasMetadata(storage_key2));
   EXPECT_EQ(2U, db()->metadata_count());
-  EXPECT_EQ(0, bridge()->get_storage_key_call_count());
 }
 
 // Tests that reencryption scenario works correctly for types that don't support
@@ -2313,7 +2569,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldUntrackEntity) {
   // removed and no storage key got propagated to MetadataChangeList.
   EXPECT_FALSE(db()->HasMetadata(kKey1));
   EXPECT_EQ(0U, db()->metadata_count());
-  EXPECT_EQ(0, bridge()->get_storage_key_call_count());
 }
 
 // Tests that UntrackEntityForStorage won't propagate storage key to
@@ -2396,19 +2651,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(nullptr, GetEntityForStorageKey(kKey1));
 }
 
-// Tests that the processor reports an error for updates with a version GC
-// directive that are received for types that support incremental updates.
-TEST_F(ClientTagBasedDataTypeProcessorTest,
-       ShouldNotApplyGarbageCollectionByVersion) {
-  InitializeToReadyState();
-
-  ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::
-                  kSupportsIncrementalUpdatesMismatch);
-  sync_pb::GarbageCollectionDirective garbage_collection_directive;
-  garbage_collection_directive.set_version_watermark(2);
-  worker()->UpdateFromServer({}, garbage_collection_directive);
-}
-
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldDeleteMetadataWhenCacheGuidMismatch) {
   // Commit item.
@@ -2428,7 +2670,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
   ASSERT_TRUE(type_processor()->IsModelReadyToSyncForTest());
 
-  OnSyncStarting("DefaultAuthenticatedAccountId", "TestCacheGuid");
+  OnSyncStarting(kDefaultAuthenticatedGaiaId, "TestCacheGuid");
 
   // Model should still be ready to sync.
   ASSERT_TRUE(type_processor()->IsModelReadyToSyncForTest());
@@ -2694,63 +2936,80 @@ class CommitOnlyClientTagBasedDataTypeProcessorTest
 };
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
-       ShouldExposeNewlyTrackedAccountId) {
+       ShouldExposeNewlyTrackedGaiaId) {
   ModelReadyToSync();
-  ASSERT_EQ("", type_processor()->TrackedAccountId());
+  ASSERT_EQ(GaiaId(), type_processor()->TrackedGaiaId());
   OnSyncStarting();
-  EXPECT_EQ(kDefaultAuthenticatedAccountId,
-            type_processor()->TrackedAccountId());
+  EXPECT_EQ(kDefaultAuthenticatedGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
-       ShouldExposePreviouslyTrackedAccountId) {
+       ShouldExposePreviouslyTrackedGaiaId) {
+  const GaiaId kPersistedGaiaId("PersistedGaiaId");
+
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::DataTypeState data_type_state(metadata_batch->GetDataTypeState());
 
   data_type_state.set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   data_type_state.set_cache_guid(kCacheGuid);
-  data_type_state.set_authenticated_account_id("PersistedAccountId");
+  data_type_state.set_authenticated_obfuscated_gaia_id(
+      kPersistedGaiaId.ToString());
   data_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
-  // Even prior to starting sync, the account ID should already be tracked.
-  EXPECT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+  // Even prior to starting sync, the Gaia ID should already be tracked.
+  EXPECT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 
   // If sync gets started, the account should still be tracked.
-  OnSyncStarting("PersistedAccountId");
-  EXPECT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+  OnSyncStarting(kPersistedGaiaId);
+  EXPECT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 }
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
        ShouldCallMergeWhenSyncEnabled) {
   ModelReadyToSync();
-  ASSERT_EQ("", type_processor()->TrackedAccountId());
+  ASSERT_TRUE(type_processor()->TrackedGaiaId().empty());
   ASSERT_EQ(0, bridge()->merge_call_count());
   OnSyncStarting();
   EXPECT_EQ(1, bridge()->merge_call_count());
 }
 
 TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
+       ShouldHandleErrorsDuringInitialUpdate) {
+  ModelReadyToSync();
+  ASSERT_EQ(0, bridge()->merge_call_count());
+  bridge()->SetMergeFullSyncDataError(
+      ModelError(FROM_HERE, ModelError::Type::kGenericTestError));
+  ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kApplyFullUpdates);
+  OnSyncStarting();
+  ASSERT_EQ(1, bridge()->merge_call_count());
+  EXPECT_TRUE(type_processor()->GetError().has_value());
+}
+
+TEST_F(CommitOnlyClientTagBasedDataTypeProcessorTest,
        ShouldNotCallMergeAfterRestart) {
+  const GaiaId kPersistedGaiaId("PersistedGaiaId");
+
   std::unique_ptr<MetadataBatch> metadata_batch = db()->CreateMetadataBatch();
   sync_pb::DataTypeState data_type_state(metadata_batch->GetDataTypeState());
   data_type_state.set_initial_sync_state(
       sync_pb::DataTypeState_InitialSyncState_INITIAL_SYNC_DONE);
   data_type_state.set_cache_guid(kCacheGuid);
-  data_type_state.set_authenticated_account_id("PersistedAccountId");
+  data_type_state.set_authenticated_obfuscated_gaia_id(
+      kPersistedGaiaId.ToString());
   data_type_state.mutable_progress_marker()->set_data_type_id(
       GetSpecificsFieldNumberFromDataType(GetDataType()));
   metadata_batch->SetDataTypeState(data_type_state);
   type_processor()->ModelReadyToSync(std::move(metadata_batch));
 
   // Even prior to starting sync, the account ID should already be tracked.
-  ASSERT_EQ("PersistedAccountId", type_processor()->TrackedAccountId());
+  ASSERT_EQ(kPersistedGaiaId, type_processor()->TrackedGaiaId());
 
   // When sync gets started, MergeFullSyncData() should not be called.
-  OnSyncStarting("PersistedAccountId");
+  OnSyncStarting(kPersistedGaiaId);
   ASSERT_EQ(0, bridge()->merge_call_count());
 }
 
@@ -2877,11 +3136,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // Initial update.
   worker()->UpdateFromServer();
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
-
-  histogram_tester.ExpectBucketCount(
-      "Sync.DataTypeEntityMetadataWithoutInitialSync",
-      /*sample=*/DataTypeHistogramValue(GetDataType()),
-      /*expected_count=*/1);
 }
 
 // Regression test for crbug.com/1427000.
@@ -2910,10 +3164,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(2U, db()->metadata_count());
   EXPECT_EQ(2U, ProcessorEntityCount());
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
-
-  histogram_tester.ExpectTotalCount(
-      "Sync.DataTypeEntityMetadataWithoutInitialSync",
-      /*expected_count=*/0);
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
@@ -2952,6 +3202,47 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
       "Sync.DataTypeOrphanMetadata.ModelReadyToSync",
       /*sample=*/DataTypeHistogramValue(GetDataType()),
       /*expected_count=*/2);
+}
+
+TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldResetForMissingStorageKey) {
+  base::HistogramTester histogram_tester;
+
+  const syncer::ClientTagHash kClientTagHash1 =
+      ClientTagHash::FromUnhashed(GetDataType(), "tag1");
+  const syncer::ClientTagHash kClientTagHash2 =
+      ClientTagHash::FromUnhashed(GetDataType(), "tag2");
+  const syncer::ClientTagHash kClientTagHash3 =
+      ClientTagHash::FromUnhashed(GetDataType(), "tag3");
+  sync_pb::EntityMetadata entity_metadata1;
+  entity_metadata1.set_client_tag_hash(kClientTagHash1.value());
+  entity_metadata1.set_creation_time(0);
+  sync_pb::EntityMetadata entity_metadata2;
+  entity_metadata2.set_client_tag_hash(kClientTagHash2.value());
+  entity_metadata2.set_creation_time(0);
+  sync_pb::EntityMetadata entity_metadata3;
+  entity_metadata3.set_client_tag_hash(kClientTagHash3.value());
+  entity_metadata3.set_creation_time(0);
+
+  db()->PutMetadata(kKey1, std::move(entity_metadata1));
+  // One of the storage keys is empty!
+  db()->PutMetadata("", std::move(entity_metadata2));
+  db()->PutMetadata(kKey3, std::move(entity_metadata3));
+
+  InitializeToReadyState();
+
+  // With a missing storage key, metadata should have been cleared.
+  EXPECT_EQ(0U, db()->metadata_count());
+  EXPECT_EQ(0U, ProcessorEntityCount());
+  EXPECT_FALSE(type_processor()->IsTrackingMetadata());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sync.ClearMetadataDueToEmptyStorageKey",
+      /*sample=*/DataTypeHistogramValue(GetDataType()),
+      /*expected_bucket_count=*/1);
+
+  // Initial update.
+  worker()->UpdateFromServer();
+  EXPECT_TRUE(type_processor()->IsTrackingMetadata());
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,
@@ -3008,7 +3299,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   type_processor()->OnSyncStopping(KEEP_METADATA);
   ASSERT_FALSE(error_reported());
 
-  ModelError error{FROM_HERE, "boom"};
+  ModelError error{FROM_HERE, syncer::ModelError::Type::kGenericTestError};
   type_processor()->ReportError(error);
   // Error was raised but did not trigger ErrorReceived().
   // Note: If an error is issued to the error_handler but the expectation is not

@@ -10,7 +10,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
-#include "components/supervised_user/core/browser/supervised_user_error_page.h"
+#include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -34,19 +34,19 @@ class SupervisedUserInterstitial {
 
   // For use in the kInterstitialCommandHistogramName histogram.
   //
-  // The enum values should remain synchronized with the enum
-  // ManagedModeBlockingCommand in tools/metrics/histograms/enums.xml.
-  //
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(ManagedModeBlockingCommand)
   enum class Commands {
     // PREVIEW = 0,
     BACK = 1,
     // NTP = 2,
     REMOTE_ACCESS_REQUEST = 3,
     LOCAL_ACCESS_REQUEST = 4,
-    HISTOGRAM_BOUNDING_VALUE = 5
+    LEARN_MORE = 5,
+    HISTOGRAM_BOUNDING_VALUE = 6
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/families/enums.xml:ManagedModeBlockingCommand)
 
   // For use in the kInterstitialPermissionSourceHistogramName histogram.
   //
@@ -75,17 +75,29 @@ class SupervisedUserInterstitial {
       const std::u16string& supervised_user_name,
       FilteringBehaviorReason reason);
 
-  static std::string GetHTMLContents(
+#if BUILDFLAG(IS_ANDROID)
+  // Returns the HTML contents of the error page without the approvals section.
+  static std::string GetHTMLContentsWithoutApprovals(
+      const GURL& url,
+      const std::string& application_locale);
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Returns the HTML contents of the error page with the approvals section.
+  static std::string GetHTMLContentsWithApprovals(
       SupervisedUserService* supervised_user_service,
       PrefService* pref_service,
       FilteringBehaviorReason reason,
       bool already_sent_request,
       bool is_main_frame,
-      const std::string& application_locale);
+      const std::string& application_locale,
+      std::optional<float> font_size_multiplier = std::nullopt);
 
   void GoBack();
   void RequestUrlAccessRemote(base::OnceCallback<void(bool)> callback);
   void RequestUrlAccessLocal(base::OnceCallback<void(bool)> callback);
+#if BUILDFLAG(IS_ANDROID)
+  void LearnMore(base::OnceClosure open_help_page);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Getter methods.
   const GURL& url() const { return url_; }

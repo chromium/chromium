@@ -1,0 +1,25 @@
+include_rules = [
+  # //chrome/browser/ui/ash/quick_answers will contain implementation supporting
+  # the ash browser.
+  "+ash",
+  "+content/browser/speech",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ash/magic_boost",
+  "+chrome/browser/ui/ash/read_write_cards",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/ash/editor_menu/utils/focus_search.h",
+  "+chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h",
+]
+
+specific_include_rules = {
+  ".*test.*": [
+    "+chrome/browser/ash/accessibility",
+    "+chrome/browser/ash/login/users",
+    "+chrome/browser/ash/profiles",
+    "+chrome/browser/global_features.h",
+    "+chrome/browser/notifications",
+  ],
+  ".*pixeltest\.cc": [
+    "+chrome/browser/ui/browser.h",
+  ],
+}

@@ -3,12 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//extensions/common/api/schema.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core)
 
 # The set of all targets needed to build out the extension API implementations
 # and any necessary steps to register or instantiate them.
@@ -22,65 +22,83 @@ group("api") {
 }
 
 # The collection of API implementations.
+# TODO(https://crbug.com/356905053): Remove this if-block once APIs are compiled
+# on desktop android. Individual APIs can be toggled instead of the entire
+# group.
 group("api_implementations") {
+  # The group of APIs included in both normal desktop builds and the
+  # experimental desktop-android build.
+  # TODO(https://crbug.com/356905053): Continue moving more APIs here.
   public_deps = [
-    "//extensions/browser:browser_sources",
     "//extensions/browser/api/alarms",
-    "//extensions/browser/api/app_current_window_internal",
-    "//extensions/browser/api/app_runtime",
-    "//extensions/browser/api/app_window",
-    "//extensions/browser/api/audio",
-    "//extensions/browser/api/automation_internal",
-    "//extensions/browser/api/bluetooth",
-    "//extensions/browser/api/bluetooth_low_energy",
-    "//extensions/browser/api/bluetooth_socket",
     "//extensions/browser/api/declarative_net_request",
     "//extensions/browser/api/dns",
-    "//extensions/browser/api/feedback_private",
     "//extensions/browser/api/file_handlers",
-    "//extensions/browser/api/file_system",
     "//extensions/browser/api/i18n",
     "//extensions/browser/api/idle",
     "//extensions/browser/api/management",
     "//extensions/browser/api/messaging",
     "//extensions/browser/api/messaging:native_messaging",
     "//extensions/browser/api/metrics_private",
-    "//extensions/browser/api/mime_handler_private",
-    "//extensions/browser/api/networking_private",
     "//extensions/browser/api/offscreen",
     "//extensions/browser/api/power",
-    "//extensions/browser/api/printer_provider",
     "//extensions/browser/api/runtime",
-    "//extensions/browser/api/serial",
-    "//extensions/browser/api/socket",
-    "//extensions/browser/api/sockets_tcp",
-    "//extensions/browser/api/sockets_tcp_server",
-    "//extensions/browser/api/sockets_udp",
     "//extensions/browser/api/storage",
     "//extensions/browser/api/system_cpu",
-    "//extensions/browser/api/system_info",
     "//extensions/browser/api/system_memory",
     "//extensions/browser/api/system_network",
-    "//extensions/browser/api/system_storage",
     "//extensions/browser/api/test",
     "//extensions/browser/api/user_scripts",
-    "//extensions/browser/api/virtual_keyboard_private",
   ]
 
-  if (is_chromeos) {
+  # APIs that are currently not supported on desktop-android.
+  if (enable_extensions) {
     public_deps += [
-      "//extensions/browser/api/cec_private",
-      "//extensions/browser/api/virtual_keyboard",
-      "//extensions/browser/api/webcam_private",
+      "//extensions/browser:browser_sources",
+      "//extensions/browser/api/app_current_window_internal",
+      "//extensions/browser/api/app_runtime",
+      "//extensions/browser/api/app_window",
+      "//extensions/browser/api/audio",
+      "//extensions/browser/api/automation_internal",
+      "//extensions/browser/api/bluetooth",
+      "//extensions/browser/api/bluetooth_low_energy",
+      "//extensions/browser/api/bluetooth_socket",
+      "//extensions/browser/api/content_settings",
+      "//extensions/browser/api/feedback_private",
+      "//extensions/browser/api/file_system",
+      "//extensions/browser/api/mime_handler_private",
+      "//extensions/browser/api/networking_private",
+      "//extensions/browser/api/printer_provider",
+      "//extensions/browser/api/protocol_handlers",
+      "//extensions/browser/api/serial",
+      "//extensions/browser/api/socket",
+      "//extensions/browser/api/sockets_tcp",
+      "//extensions/browser/api/sockets_tcp_server",
+      "//extensions/browser/api/sockets_udp",
+      "//extensions/browser/api/system_display",
+      "//extensions/browser/api/system_info",
+      "//extensions/browser/api/system_storage",
+      "//extensions/browser/api/virtual_keyboard_private",
     ]
-  }
 
-  if (is_chromeos_ash) {
-    public_deps += [
-      "//extensions/browser/api/diagnostics",
-      "//extensions/browser/api/lock_screen_data",
-      "//extensions/browser/api/media_perception_private",
-    ]
+    if (is_chromeos) {
+      public_deps += [
+        "//extensions/browser/api/cec_private",
+        "//extensions/browser/api/clipboard",
+        "//extensions/browser/api/diagnostics",
+        "//extensions/browser/api/media_perception_private",
+        "//extensions/browser/api/virtual_keyboard",
+        "//extensions/browser/api/webcam_private",
+      ]
+    }
+
+    if (enable_guest_view) {
+      public_deps += [
+        "//extensions/browser/api/guest_view",
+        "//extensions/browser/api/guest_view/app_view",
+        "//extensions/browser/api/guest_view/web_view",
+      ]
+    }
   }
 }
 
@@ -98,7 +116,7 @@ source_set("api_keyed_service_factories") {
     "//build:chromeos_buildflags",
     "//extensions/browser/api",
     "//extensions/browser/api:api_implementations",
-    "//extensions/buildflags:buildflags",
+    "//extensions/buildflags",
   ]
 }
 
@@ -131,5 +149,32 @@ function_registration("api_registration") {
     "//extensions/browser/api:api_implementations",
     "//extensions/common/api",
     "//skia",
+  ]
+}
+
+# Glue layer for API-specific stuff.
+source_set("extensions_api_client") {
+  sources = [
+    "extensions_api_client.cc",
+    "extensions_api_client.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/guest_view/buildflags",
+    "//extensions/browser/api/storage:settings_namespace",
+    "//extensions/browser/api/storage:settings_observer",
+    "//extensions/common",
+  ]
+
+  if (is_chromeos) {
+    public_deps += [ "//extensions/browser/api/clipboard:clipboard_types" ]
+  }
+
+  deps = [
+    "//extensions/browser/api/messaging:native_messaging",
+    "//extensions/browser/api/system_display:display_info_provider",
+    "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
   ]
 }

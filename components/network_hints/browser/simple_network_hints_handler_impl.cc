@@ -14,7 +14,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
-#include "ipc/ipc_message_macros.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/address_list.h"
@@ -23,6 +22,7 @@
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/resolve_host_client_base.h"
+#include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
@@ -68,8 +68,8 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     if (!render_frame_host) {
       OnComplete(net::ERR_NAME_NOT_RESOLVED,
                  net::ResolveErrorInfo(net::ERR_FAILED),
-                 /*resolved_addresses=*/std::nullopt,
-                 /*endpoint_results_with_metadata=*/std::nullopt);
+                 /*resolved_addresses=*/{},
+                 /*alternative_endpoints=*/{});
       return;
     }
 
@@ -81,8 +81,6 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     // Make a note that this is a speculative resolve request. This allows
     // separating it from real navigations in the observer's callback.
     resolve_host_parameters->is_speculative = true;
-    // TODO(crbug.com/40641818): Pass in a non-empty
-    // NetworkAnonymizationKey.
     // TODO(crbug.com/40235854): Consider passing a SchemeHostPort to trigger
     // HTTPS DNS resource record query.
     render_frame_host->GetProcess()
@@ -95,17 +93,16 @@ class DnsLookupRequest : public network::ResolveHostClientBase {
     receiver_.set_disconnect_handler(base::BindOnce(
         &DnsLookupRequest::OnComplete, base::Unretained(this),
         net::ERR_NAME_NOT_RESOLVED, net::ResolveErrorInfo(net::ERR_FAILED),
-        /*resolved_addresses=*/std::nullopt,
-        /*endpoint_results_with_metadata=*/std::nullopt));
+        net::AddressList(), net::HostResolverEndpointResults()));
   }
 
  private:
   // network::mojom::ResolveHostClient:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const std::optional<net::AddressList>& resolved_addresses,
-                  const std::optional<net::HostResolverEndpointResults>&
-                      endpoint_results_with_metadata) override {
+  void OnComplete(
+      int result,
+      const net::ResolveErrorInfo& resolve_error_info,
+      const net::AddressList& resolved_addresses,
+      const net::HostResolverEndpointResults& alternative_endpoints) override {
     VLOG(2) << __FUNCTION__ << ": " << url_.Serialize()
             << ", result=" << resolve_error_info.error;
     request_.reset();
@@ -132,7 +129,7 @@ SimpleNetworkHintsHandlerImpl::~SimpleNetworkHintsHandlerImpl() = default;
 void SimpleNetworkHintsHandlerImpl::Create(
     content::RenderFrameHost* frame_host,
     mojo::PendingReceiver<mojom::NetworkHintsHandler> receiver) {
-  int render_process_id = frame_host->GetProcess()->GetID();
+  int render_process_id = frame_host->GetProcess()->GetDeprecatedID();
   int render_frame_id = frame_host->GetRoutingID();
   mojo::MakeSelfOwnedReceiver(
       base::WrapUnique(new SimpleNetworkHintsHandlerImpl(render_process_id,
@@ -168,11 +165,12 @@ void SimpleNetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
 
   render_frame_host->GetStoragePartition()
       ->GetNetworkContext()
-      ->PreconnectSockets(/*num_streams=*/1, url.GetURL(),
-                          allow_credentials
-                              ? network::mojom::CredentialsMode::kInclude
-                              : network::mojom::CredentialsMode::kOmit,
-                          network_anonymization_key);
+      ->PreconnectSockets(
+          /*num_streams=*/1, url.GetURL(),
+          allow_credentials ? network::mojom::CredentialsMode::kInclude
+                            : network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag(),
+          /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 }  // namespace network_hints

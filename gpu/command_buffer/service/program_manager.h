@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <map>
 #include <memory>
 #include <string>
@@ -102,7 +103,7 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
     bool IsSampler() const {
       switch (type) {
         case GL_SAMPLER_2D:
-        case GL_SAMPLER_2D_RECT_ARB:
+        case GL_SAMPLER_2D_RECT_ANGLE:
         case GL_SAMPLER_CUBE:
         case GL_SAMPLER_EXTERNAL_OES:
         case GL_SAMPLER_3D:
@@ -568,8 +569,9 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   GLuint service_id_;
 
   // Shaders by type of shader.
-  scoped_refptr<Shader> attached_shaders_[kMaxAttachedShaders];
-  scoped_refptr<Shader> shaders_from_last_successful_link_[kMaxAttachedShaders];
+  std::array<scoped_refptr<Shader>, kMaxAttachedShaders> attached_shaders_;
+  std::array<scoped_refptr<Shader>, kMaxAttachedShaders>
+      shaders_from_last_successful_link_;
 
   // True if this program is marked as deleted.
   bool deleted_;

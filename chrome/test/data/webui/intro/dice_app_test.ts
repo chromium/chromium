@@ -30,7 +30,7 @@ suite('DiceAppTest', function() {
   });
 
   function isSelectorActive(selector: string) {
-    return testElement.shadowRoot!.querySelector(selector)!.classList.contains(
+    return testElement.shadowRoot.querySelector(selector)!.classList.contains(
         'active');
   }
 
@@ -41,7 +41,7 @@ suite('DiceAppTest', function() {
 
   test(
       '"signInPromo" is the active view without the noAnimations param',
-      async function() {
+      function() {
         const searchParams = new URLSearchParams(window.location.search);
         searchParams.append('noAnimations', 'true');
         testElement.setupViewManagerForTest(searchParams);

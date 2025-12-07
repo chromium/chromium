@@ -74,7 +74,7 @@ void OnAllowCertificate(SSLErrorHandler* handler,
       // ContinueRequest() gets posted to a different thread. Calling
       // AllowCert() first ensures deterministic ordering.
       if (record_decision && state_delegate) {
-        state_delegate->AllowCert(handler->request_url().host(),
+        state_delegate->AllowCert(handler->request_url().GetHost(),
                                   *handler->ssl_info().cert.get(),
                                   handler->cert_error(), storage_partition);
       }
@@ -258,14 +258,9 @@ void SSLManager::DidRunMixedContent(const GURL& security_origin) {
   if (!entry)
     return;
 
-  SiteInstance* site_instance = entry->site_instance();
-  if (!site_instance)
-    return;
-
   if (ssl_host_state_delegate_) {
     ssl_host_state_delegate_->HostRanInsecureContent(
-        security_origin.host(), site_instance->GetProcess()->GetID(),
-        SSLHostStateDelegate::MIXED_CONTENT);
+        security_origin.GetHost(), SSLHostStateDelegate::MIXED_CONTENT);
   }
   // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
@@ -278,14 +273,9 @@ void SSLManager::DidRunContentWithCertErrors(const GURL& security_origin) {
   if (!entry)
     return;
 
-  SiteInstance* site_instance = entry->site_instance();
-  if (!site_instance)
-    return;
-
   if (ssl_host_state_delegate_) {
     ssl_host_state_delegate_->HostRanInsecureContent(
-        security_origin.host(), site_instance->GetProcess()->GetID(),
-        SSLHostStateDelegate::CERT_ERRORS_CONTENT);
+        security_origin.GetHost(), SSLHostStateDelegate::CERT_ERRORS_CONTENT);
   }
   // TODO(crbug.com/40223471): Ensure proper notify_changes is passed to
   // UpdateEntry.
@@ -307,7 +297,7 @@ void SSLManager::OnCertError(std::unique_ptr<SSLErrorHandler> handler) {
     judgment = SSLHostStateDelegate::ALLOWED;
   } else if (ssl_host_state_delegate_) {
     judgment = ssl_host_state_delegate_->QueryPolicy(
-        handler->request_url().host(), *handler->ssl_info().cert.get(),
+        handler->request_url().GetHost(), *handler->ssl_info().cert.get(),
         handler->cert_error(),
         controller_->frame_tree().GetMainFrame()->GetStoragePartition());
   } else {
@@ -331,14 +321,14 @@ bool SSLManager::HasAllowExceptionForAnyHost() {
       controller_->frame_tree().GetMainFrame()->GetStoragePartition());
 }
 
-bool SSLManager::DidStartResourceResponse(
+void SSLManager::DidStartResourceResponse(
     const url::SchemeHostPort& final_response_url,
     bool has_certificate_errors) {
   const std::string& scheme = final_response_url.scheme();
   const std::string& host = final_response_url.host();
 
   if (!GURL::SchemeIsCryptographic(scheme) || has_certificate_errors) {
-    return false;
+    return;
   }
   // If the scheme is https: or wss and the cert did not have any errors, revoke
   // any previous decisions that have occurred.
@@ -346,7 +336,7 @@ bool SSLManager::DidStartResourceResponse(
       !ssl_host_state_delegate_->HasAllowException(
           host,
           controller_->frame_tree().GetMainFrame()->GetStoragePartition())) {
-    return false;
+    return;
   }
 
   // If there's no certificate error, a good certificate has been seen, so
@@ -354,7 +344,6 @@ bool SSLManager::DidStartResourceResponse(
   // certificates. This intentionally does not apply to cached resources
   // (see https://crbug.com/634553 for an explanation).
   ssl_host_state_delegate_->RevokeUserAllowExceptions(host);
-  return true;
 }
 
 void SSLManager::OnCertErrorInternal(std::unique_ptr<SSLErrorHandler> handler) {
@@ -397,11 +386,7 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
   entry->GetSSL().content_status &= ~remove_content_status_flags;
   entry->GetSSL().content_status |= add_content_status_flags;
 
-  SiteInstance* site_instance = entry->site_instance();
-  // Note that |site_instance| can be NULL here because NavigationEntries don't
-  // necessarily have site instances.  Without a process, the entry can't
-  // possibly have insecure content.  See bug https://crbug.com/12423.
-  if (site_instance && ssl_host_state_delegate_) {
+  if (ssl_host_state_delegate_) {
     const std::optional<url::Origin>& entry_origin =
         entry->root_node()->frame_entry->committed_origin();
     // In some cases (e.g., unreachable URLs), navigation entries might not have
@@ -409,9 +394,8 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
     // those cases.
     if (entry_origin.has_value()) {
       const std::string& host = entry_origin->host();
-      int process_id = site_instance->GetProcess()->GetID();
       if (ssl_host_state_delegate_->DidHostRunInsecureContent(
-              host, process_id, SSLHostStateDelegate::MIXED_CONTENT)) {
+              host, SSLHostStateDelegate::MIXED_CONTENT)) {
         entry->GetSSL().content_status |= SSLStatus::RAN_INSECURE_CONTENT;
       }
 
@@ -420,7 +404,7 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
       if (entry->GetURL().SchemeIsCryptographic() &&
           entry->GetSSL().certificate &&
           ssl_host_state_delegate_->DidHostRunInsecureContent(
-              host, process_id, SSLHostStateDelegate::CERT_ERRORS_CONTENT)) {
+              host, SSLHostStateDelegate::CERT_ERRORS_CONTENT)) {
         entry->GetSSL().content_status |=
             SSLStatus::RAN_CONTENT_WITH_CERT_ERRORS;
       }

@@ -9,7 +9,7 @@
 #import "base/apple/bundle_locations.h"
 #import "base/memory/ref_counted_memory.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/web/public/webui/url_data_source_ios.h"
 #import "ios/web/public/webui/web_ui_ios.h"
@@ -27,9 +27,9 @@ class TermsUIHTMLSource : public web::URLDataSourceIOS {
   // web::URLDataSourceIOS implementation.
   std::string GetSource() const override;
   void StartDataRequest(
-      const std::string& path,
+      std::string_view path,
       web::URLDataSourceIOS::GotDataCallback callback) override;
-  std::string GetMimeType(const std::string& path) const override;
+  std::string GetMimeType(std::string_view path) const override;
   bool ShouldDenyXFrameOptions() const override;
 
   // Send the response data.
@@ -54,7 +54,7 @@ std::string TermsUIHTMLSource::GetSource() const {
 }
 
 void TermsUIHTMLSource::StartDataRequest(
-    const std::string& path,
+    std::string_view path,
     web::URLDataSourceIOS::GotDataCallback callback) {
   NSString* terms_of_service_path =
       base::SysUTF8ToNSString(GetTermsOfServicePath());
@@ -77,7 +77,7 @@ void TermsUIHTMLSource::FinishDataRequest(
   std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>(html));
 }
 
-std::string TermsUIHTMLSource::GetMimeType(const std::string& path) const {
+std::string TermsUIHTMLSource::GetMimeType(std::string_view path) const {
   return "text/html";
 }
 
@@ -87,7 +87,7 @@ bool TermsUIHTMLSource::ShouldDenyXFrameOptions() const {
 
 TermsUI::TermsUI(web::WebUIIOS* web_ui, const std::string& host)
     : web::WebUIIOSController(web_ui, host) {
-  web::URLDataSourceIOS::Add(ChromeBrowserState::FromWebUIIOS(web_ui),
+  web::URLDataSourceIOS::Add(ProfileIOS::FromWebUIIOS(web_ui),
                              new TermsUIHTMLSource(host));
 }
 

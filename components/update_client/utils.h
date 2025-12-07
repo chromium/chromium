@@ -11,16 +11,18 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/function_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/update_client/update_client.h"
 
 class GURL;
 
 namespace update_client {
 
-class Component;
 struct CrxComponent;
 
 extern const char kArchAmd64[];
@@ -31,9 +33,6 @@ extern const char kArchArm64[];
 // Installer attributes are component-specific metadata, which may be serialized
 // in an update check request.
 using InstallerAttribute = std::pair<std::string, std::string>;
-
-// Returns true if the |component| contains a valid differential update url.
-bool HasDiffUpdate(const Component& component);
 
 // Returns true if the |status_code| represents a server error 5xx.
 bool IsHttpServerError(int status_code);
@@ -85,18 +84,6 @@ CrxInstaller::Result InstallFunctionWrapper(
 std::optional<base::Value::Dict> ReadManifest(
     const base::FilePath& unpack_path);
 
-// Converts a custom, specific installer error (and optionally extended error)
-// to an installer result.
-template <typename T>
-CrxInstaller::Result ToInstallerResult(const T& error, int extended_error = 0) {
-  static_assert(std::is_enum<T>::value,
-                "Use an enum class to define custom installer errors");
-  return CrxInstaller::Result(
-      static_cast<int>(update_client::InstallError::CUSTOM_ERROR_BASE) +
-          static_cast<int>(error),
-      extended_error);
-}
-
 // Returns a string representation of the processor architecture. Uses
 // `base::win::OSInfo::IsWowX86OnARM64` and
 // `base::win::OSInfo::IsWowAMD64OnARM64` if available on Windows (more
@@ -105,19 +92,40 @@ CrxInstaller::Result ToInstallerResult(const T& error, int extended_error = 0) {
 // `base::SysInfo().OperatingSystemArchitecture`.
 std::string GetArchitecture();
 
-// Retries recursively deleting the given path five times using
-// `base::DeletePathRecursively`, sleeping for a second between successive
-// tries. Returns true if successful, false otherwise. This function is used
-// when there is a likelihood that the files in `path` can be locked
-// temporarily, such as by antivirus software.
-bool RetryDeletePathRecursively(const base::FilePath& path);
-
-// Similar to `RetryDeletePathRecursively`above, but allows specifying the
-// number of `tries` and the `seconds_between_tries`.
-bool RetryDeletePathRecursivelyCustom(
+// Retries the given `file_operation` on the given path `tries` times, sleeping
+// for `time_between_tries` between successive tries. Returns true if
+// successful, false otherwise. This function is used with file delete
+// operations when there is a likelihood that the file(s) in `path` can be
+// locked temporarily, such as by antivirus software.
+bool RetryFileOperation(
+    base::FunctionRef<bool(const base::FilePath&)> file_operation,
     const base::FilePath& path,
-    size_t tries,
-    const base::TimeDelta& seconds_between_tries);
+    size_t tries = 5,
+    base::TimeDelta time_between_tries = base::Seconds(1));
+
+// Creates a temporary directory, with platform specific overrides
+// for ChromeOS where `/tmp` can have insufficient space.
+bool CreateTempDirectory(const base::FilePath::StringType& prefix,
+                         base::FilePath* new_temp_path);
+
+// Creates a temporary directory with a ScopedTempDir, with platform specific
+// overrides for ChromeOS where `/tmp` can have insufficient space.
+bool CreateScopedTempDirectory(base::ScopedTempDir& dir);
+
+// UTF8 conversions between `std::string` and the `StringType` type found in
+// the `base::FilePath` and `base::CommandLine` classes.
+#if BUILDFLAG(IS_WIN)
+base::FilePath::StringType UTF8ToStringType(const std::string& utf8);
+std::string StringTypeToUTF8(const base::FilePath::StringType& stringtype);
+#else   // BUILDFLAG(IS_WIN)
+constexpr base::FilePath::StringType UTF8ToStringType(const std::string& utf8) {
+  return utf8;
+}
+constexpr std::string StringTypeToUTF8(
+    const base::FilePath::StringType& stringtype) {
+  return stringtype;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace update_client
 

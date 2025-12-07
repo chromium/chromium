@@ -126,8 +126,7 @@ class WebAppShortcutLinuxTest : public WebAppTest {
         // The icon is generated to a temporary path, but the file name
         // should be known Confirm the file name is what we expect, and use
         // the parameter passed in.
-        ASSERT_GT(argv.size(), 6u)
-            << base::JoinString(base::make_span(argv), " ");
+        ASSERT_GT(argv.size(), 6u) << base::JoinString(argv, " ");
         EXPECT_TRUE(argv[6].find("chrome-test_extension-Profile_1.png") !=
                     std::string::npos);
         expected_argv.push_back("xdg-icon-resource");
@@ -267,7 +266,7 @@ TEST_F(WebAppShortcutLinuxTest, GetExistingShortcutLocations) {
 
 TEST_F(WebAppShortcutLinuxTest, GetExtensionShortcutFilename) {
   EXPECT_EQ(base::FilePath("chrome-extensionid-Profile_1.desktop"),
-            GetAppShortcutFilename(GetProfilePath(), "extensionid"));
+            GetAppDesktopShortcutFilename(GetProfilePath(), "extensionid"));
 }
 
 TEST_F(WebAppShortcutLinuxTest, DeleteDesktopShortcuts) {

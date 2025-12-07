@@ -21,11 +21,11 @@ PasswordReuseManagerSigninNotifierImpl::~PasswordReuseManagerSigninNotifierImpl(
 void PasswordReuseManagerSigninNotifierImpl::SubscribeToSigninEvents(
     PasswordReuseManager* reuse_manager) {
   reuse_manager_ = reuse_manager;
-  identity_manager_->AddObserver(this);
+  identity_manager_observation_.Observe(identity_manager_);
 }
 
 void PasswordReuseManagerSigninNotifierImpl::UnsubscribeFromSigninEvents() {
-  identity_manager_->RemoveObserver(this);
+  identity_manager_observation_.Reset();
 }
 
 void PasswordReuseManagerSigninNotifierImpl::NotifySignedOut(
@@ -74,6 +74,12 @@ void PasswordReuseManagerSigninNotifierImpl::OnExtendedAccountInfoRemoved(
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync)) {
     NotifySignedOut(info.email, /*syncing_account=*/false);
   }
+}
+
+void PasswordReuseManagerSigninNotifierImpl::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  identity_manager_observation_.Reset();
+  identity_manager_ = nullptr;
 }
 
 }  // namespace password_manager

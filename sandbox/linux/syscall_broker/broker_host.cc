@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "sandbox/linux/syscall_broker/broker_host.h"
 
 #include <errno.h>
@@ -25,6 +20,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -61,7 +57,7 @@ int sys_open(const char* pathname, int flags) {
 std::optional<std::string> BrokerHost::RewritePathname(const char* pathname) {
   if (base::StartsWith(pathname, kProcSelf)) {
     return base::StringPrintf("/proc/%d/%s", sandboxed_process_pid_,
-                              pathname + kProcSelfNumChars);
+                              UNSAFE_TODO(pathname + kProcSelfNumChars));
   }
 
   return std::nullopt;
@@ -527,7 +523,7 @@ void BrokerHost::LoopAndHandleRequests() {
 
     BrokerSimpleMessage reply;
     base::ScopedFD opened_file;
-    if (!HandleRemoteCommand(&message, recv_fds.subspan(1), &reply,
+    if (!HandleRemoteCommand(&message, recv_fds.subspan<1>(), &reply,
                              &opened_file)) {
       // Does not exit if we received a malformed message.
       LOG(ERROR) << "Received malformed message from the client";

@@ -12,6 +12,7 @@
 #include "ash/wm/window_restore/informed_restore_constants.h"
 #include "ash/wm/window_restore/informed_restore_item_view.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/number_formatting.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -19,6 +20,7 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
@@ -57,8 +59,7 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetBetweenChildSpacing(informed_restore::kScreenshotIconRowChildSpacing);
   SetInsideBorderInsets(kIconRowInsets);
-  SetBackground(
-      views::CreateThemedSolidBackground(kColorAshShieldAndBaseOpaque));
+  SetBackground(views::CreateSolidBackground(kColorAshShieldAndBaseOpaque));
   // Do not flip this view in RTL, since the cutout in
   // `InformedRestoreContentsView` is not flipped.
   SetMirrored(false);
@@ -96,8 +97,8 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
               .SetText(u"+" + base::FormatNumber(elements_size - num_icon))
               .SetPreferredSize(
                   informed_restore::kScreenshotIconRowImageViewSize)
-              .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
-              .SetBackground(views::CreateThemedRoundedRectBackground(
+              .SetEnabledColor(cros_tokens::kCrosSysOnPrimaryContainer)
+              .SetBackground(views::CreateRoundedRectBackground(
                   cros_tokens::kCrosSysPrimaryContainer,
                   informed_restore::kScreenshotIconRowIconSize / 2.0))
               .Build());
@@ -105,10 +106,10 @@ InformedRestoreScreenshotIconRowView::InformedRestoreScreenshotIconRowView(
                                             *count_label);
     }
   }
-  int child_number =
-      std::min(informed_restore::kScreenshotIconRowMaxElements,
-               one_browser_window ? static_cast<int>(apps_infos[0].tab_count)
-                                  : elements_size);
+  int child_number = std::min(
+      informed_restore::kScreenshotIconRowMaxElements,
+      one_browser_window ? static_cast<int>(apps_infos[0].tab_infos.size())
+                         : elements_size);
   // Add the browser icon when there is only one browser window opened.
   if (one_browser_window) {
     child_number++;

@@ -6,34 +6,31 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/accessibility/accessibility_controller.h"
-#include "base/memory/weak_ptr.h"
-#include "base/notreached.h"
-#include "base/scoped_observation.h"
+#include "base/check.h"
+#include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
-#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_policy_handler.h"
-#include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_update_service.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_update_service_factory.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
-#include "chrome/browser/lifetime/application_lifetime.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_browser_window_handler.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/manifest_handlers/offline_enabled_info.h"
+#include "content/public/browser/web_contents.h"
 
 namespace ash {
 
@@ -48,93 +45,25 @@ void StartFloatingAccessibilityMenu() {
   }
 }
 
-bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  if (!extension_registry) {
-    // If Lacros is enabled, extensions are running in Lacros. So Ash does not
-    // have `extension_registry`.
-    return false;
-  }
-
-  const extensions::Extension* primary_app =
-      extension_registry->GetInstalledExtension(app_id);
-  if (!primary_app) {
-    return false;
-  }
-
-  return extensions::OfflineEnabledInfo::IsOfflineEnabled(primary_app);
-}
-
-bool IsLacrosEnabled() {
-  return crosapi::browser_util::IsLacrosEnabledInChromeKioskSession() ||
-         crosapi::browser_util::IsLacrosEnabledInWebKioskSession();
-}
-
 }  // namespace
 
-class KioskSystemSession::LacrosWatcher
-    : public crosapi::BrowserManagerObserver {
- public:
-  explicit LacrosWatcher(Profile* profile, const ash::KioskAppId& kiosk_app_id)
-      : profile_(profile), kiosk_app_id_(kiosk_app_id) {
-    observation_.Observe(crosapi::BrowserManager::Get());
-  }
-
-  LacrosWatcher(const LacrosWatcher&) = delete;
-  LacrosWatcher& operator=(const LacrosWatcher&) = delete;
-  ~LacrosWatcher() override = default;
-
-  // `crosapi::BrowserManagerObserver`:
-  void OnStateChanged() override {
-    if (!crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
-      LOG(WARNING) << "Lacros crashed, restarting Kiosk app in Lacros";
-      RestartKioskSession();
-    }
-  }
-
- private:
-  void RestartKioskSession() {
-    recovery_launcher_ =
-        std::make_unique<CrashRecoveryLauncher>(*profile_, kiosk_app_id_);
-    recovery_launcher_->Start(
-        base::BindOnce(&LacrosWatcher::OnKioskRelaunchComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnKioskRelaunchComplete(bool success,
-                               const std::optional<std::string>& _) {
-    recovery_launcher_.reset();
-    if (!success) {
-      LOG(WARNING) << "Unable to restart kiosk, ending kiosk session";
-      chrome::AttemptUserExit();
-    }
-  }
-
-  const raw_ptr<Profile> profile_;
-  const ash::KioskAppId kiosk_app_id_;
-  std::unique_ptr<CrashRecoveryLauncher> recovery_launcher_;
-  base::ScopedObservation<crosapi::BrowserManager,
-                          crosapi::BrowserManagerObserver>
-      observation_{this};
-  base::WeakPtrFactory<LacrosWatcher> weak_ptr_factory_{this};
-};
-
 KioskSystemSession::KioskSystemSession(
+    PrefService& local_state,
     Profile* profile,
     const KioskAppId& kiosk_app_id,
     const std::optional<std::string>& app_name)
-    : profile_(profile),
+    : local_state_(local_state),
+      profile_(profile),
       browser_session_(profile),
       kiosk_app_id_(kiosk_app_id),
       network_metrics_service_(
-          std::make_unique<NetworkConnectivityMetricsService>()),
-      periodic_metrics_service_(std::make_unique<PeriodicMetricsService>(
-          g_browser_process->local_state())),
+          std::make_unique<NetworkConnectivityMetricsService>(local_state)),
+      periodic_metrics_service_(std::make_unique<PeriodicMetricsService>()),
       device_weekly_scheduled_suspend_controller_(
           std::make_unique<DeviceWeeklyScheduledSuspendController>(
-              g_browser_process->local_state())),
-      kiosk_vision_(g_browser_process->local_state()) {
+              &local_state)),
+      low_disk_metrics_service_(local_state),
+      network_state_observer_(profile->GetPrefs()) {
   switch (kiosk_app_id_.type) {
     case KioskAppType::kChromeApp:
       InitForChromeAppKiosk();
@@ -142,9 +71,13 @@ KioskSystemSession::KioskSystemSession(
     case KioskAppType::kWebApp:
       InitForWebKiosk(app_name);
       break;
-  }
-  if (IsLacrosEnabled()) {
-    lacros_watcher_ = std::make_unique<LacrosWatcher>(profile, kiosk_app_id_);
+    case KioskAppType::kIsolatedWebApp:
+      InitForIwaKiosk(app_name);
+      break;
+    case KioskAppType::kArcvmApp:
+      // TODO(crbug.com/418950414): Implement kiosk system session for ARCVM
+      // kiosk. Decide if KioskBrowserSession and metrics are needed.
+      NOTIMPLEMENTED() << "No KioskSystemSession init for Arcvm kiosk";
   }
 }
 
@@ -153,24 +86,26 @@ KioskSystemSession::~KioskSystemSession() = default;
 void KioskSystemSession::InitForChromeAppKiosk() {
   const std::string& app_id = kiosk_app_id_.app_id.value();
   browser_session_.InitForChromeAppKiosk(app_id);
-  StartFloatingAccessibilityMenu();
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
-
-  periodic_metrics_service_->RecordPreviousSessionMetrics();
-  periodic_metrics_service_->StartRecordingPeriodicMetrics(
-      IsOfflineEnabledForApp(app_id, profile()));
+  InitCommon();
 }
 
 void KioskSystemSession::InitForWebKiosk(
     const std::optional<std::string>& app_name) {
   browser_session_.InitForWebKiosk(app_name);
-  StartFloatingAccessibilityMenu();
+  InitCommon();
+}
 
-  periodic_metrics_service_->RecordPreviousSessionMetrics();
-  // Web apps always support offline mode.
-  periodic_metrics_service_->StartRecordingPeriodicMetrics(
-      /*is_offline_enabled=*/true);
+void KioskSystemSession::InitForIwaKiosk(
+    const std::optional<std::string>& app_name) {
+  browser_session_.InitForIwaKiosk(app_name);
+  InitCommon();
+}
+
+void KioskSystemSession::InitCommon() {
+  StartFloatingAccessibilityMenu();
+  periodic_metrics_service_->StartRecordingPeriodicMetrics();
 }
 
 void KioskSystemSession::ShuttingDown() {
@@ -190,11 +125,8 @@ void KioskSystemSession::InitKioskAppUpdateService(const std::string& app_id) {
 }
 
 void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
-  policy::BrowserPolicyConnectorAsh* connector =
-      g_browser_process->platform_part()->browser_policy_connector_ash();
-  if (!connector->IsDeviceEnterpriseManaged()) {
-    PrefService* local_state = g_browser_process->local_state();
-    local_state->SetBoolean(::prefs::kRebootAfterUpdate, true);
+  if (!ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    local_state_->SetBoolean(::prefs::kRebootAfterUpdate, true);
     KioskModeIdleAppNameNotification::Initialize();
   }
 }
@@ -202,6 +134,12 @@ void KioskSystemSession::SetRebootAfterUpdateIfNecessary() {
 void KioskSystemSession::OnGuestAdded(
     content::WebContents* guest_web_contents) {
   browser_session_.OnGuestAdded(guest_web_contents);
+}
+
+void KioskSystemSession::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterBooleanPref(
+      prefs::kKioskActiveWiFiCredentialsScopeChangeEnabled, false);
 }
 
 Profile* KioskSystemSession::profile() const {

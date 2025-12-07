@@ -4,20 +4,25 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {ToolbarEvent, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
-import {hasStyle} from 'chrome-untrusted://webui-test/test_util.js';
+import type {AppElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {BrowserProxy, setInstance, SpeechBrowserProxyImpl, SpeechController, ToolbarEvent, VoiceLanguageController} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {hasStyle, microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
-import {emitEvent, suppressInnocuousErrors} from './common.js';
+import {createApp, createSpeechSynthesisVoice, emitEvent, mockMetrics, setContent, setupBasicSpeech} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
-import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
+import type {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+import {TestReadAloudModelBrowserProxy} from './test_read_aloud_browser_proxy.js';
+import {TestSpeechBrowserProxy} from './test_speech_browser_proxy.js';
 
 suite('AppReceivesToolbarChanges', () => {
-  let testBrowserProxy: TestColorUpdaterBrowserProxy;
-  let app: ReadAnythingElement;
+  let app: AppElement;
+  let speech: TestSpeechBrowserProxy;
+  let metrics: TestMetricsBrowserProxy;
+  let voiceLanguageController: VoiceLanguageController;
+  let speechController: SpeechController;
+  let readAloudModel: TestReadAloudModelBrowserProxy;
 
   function containerLetterSpacing(): number {
     return +window.getComputedStyle(app.$.container)
@@ -72,15 +77,27 @@ suite('AppReceivesToolbarChanges', () => {
     emitEvent(app, ToolbarEvent.THEME);
   }
 
-  setup(() => {
-    suppressInnocuousErrors();
-    testBrowserProxy = new TestColorUpdaterBrowserProxy();
-    BrowserProxy.setInstance(testBrowserProxy);
+  function emitPlayPause(): Promise<void> {
+    emitEvent(app, ToolbarEvent.PLAY_PAUSE);
+    return microtasksFinished();
+  }
+
+  setup(async () => {
+    // Clearing the DOM should always be done first.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    BrowserProxy.setInstance(new TestColorUpdaterBrowserProxy());
+    speech = new TestSpeechBrowserProxy();
+    SpeechBrowserProxyImpl.setInstance(speech);
     const readingMode = new FakeReadingMode();
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
-    app = document.createElement('read-anything-app');
-    document.body.appendChild(app);
+    metrics = mockMetrics();
+    readAloudModel = new TestReadAloudModelBrowserProxy();
+    setInstance(readAloudModel);
+    voiceLanguageController = new VoiceLanguageController();
+    VoiceLanguageController.setInstance(voiceLanguageController);
+    speechController = new SpeechController();
+    SpeechController.setInstance(speechController);
+    app = await createApp();
   });
 
   test('on letter spacing change container letter spacing updated', () => {
@@ -113,11 +130,6 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   suite('on color theme change', () => {
-    setup(() => {
-      app = document.createElement('read-anything-app');
-      document.body.appendChild(app);
-    });
-
     test('color theme updates container colors', () => {
       // Set background color css variables. In prod code this is done in a
       // parent element.
@@ -128,6 +140,14 @@ suite('AppReceivesToolbarChanges', () => {
       app.style.setProperty(
           '--color-read-anything-background-yellow', 'yellow');
       app.style.setProperty('--color-read-anything-background-blue', 'blue');
+      app.style.setProperty(
+          '--color-read-anything-background-high-contrast', 'HighContrast');
+      app.style.setProperty(
+          '--color-read-anything-background-low-contrast', 'LowContrast');
+      app.style.setProperty(
+          '--color-read-anything-background-sepia-light', 'SepiaLight');
+      app.style.setProperty(
+          '--color-read-anything-background-sepia-dark', 'SepiaDark');
 
       emitColorTheme(chrome.readingMode.darkTheme);
       assertTrue(
@@ -141,6 +161,20 @@ suite('AppReceivesToolbarChanges', () => {
 
       emitColorTheme(chrome.readingMode.blueTheme);
       assertTrue(hasStyle(app.$.container, '--background-color', 'blue'));
+
+      emitColorTheme(chrome.readingMode.highContrastTheme);
+      assertTrue(
+          hasStyle(app.$.container, '--background-color', 'HighContrast'));
+
+      emitColorTheme(chrome.readingMode.lowContrastTheme);
+      assertTrue(
+          hasStyle(app.$.container, '--background-color', 'LowContrast'));
+
+      emitColorTheme(chrome.readingMode.sepiaLightTheme);
+      assertTrue(hasStyle(app.$.container, '--background-color', 'SepiaLight'));
+
+      emitColorTheme(chrome.readingMode.sepiaDarkTheme);
+      assertTrue(hasStyle(app.$.container, '--background-color', 'SepiaDark'));
     });
 
     test('default theme uses default colors', () => {
@@ -164,155 +198,91 @@ suite('AppReceivesToolbarChanges', () => {
   });
 
   suite('on language toggle', () => {
-    function emitLanguageToggle(lang: string): void {
+    function emitLanguageToggle(lang: string) {
       emitEvent(app, ToolbarEvent.LANGUAGE_TOGGLE, {detail: {language: lang}});
     }
 
     test('enabled languages are added', () => {
-      const firstLanguage = 'English';
+      const firstLanguage = 'en-us';
       emitLanguageToggle(firstLanguage);
-      assertTrue(app.enabledLangs.includes(firstLanguage));
-      assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
-        .includes(firstLanguage));
+      assertTrue(voiceLanguageController.isLangEnabled(firstLanguage));
+      assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          firstLanguage));
 
-      const secondLanguage = 'French';
+      const secondLanguage = 'fr';
       emitLanguageToggle(secondLanguage);
-      assertTrue(app.enabledLangs.includes(secondLanguage));
-      assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
-        .includes(secondLanguage));
+      assertTrue(voiceLanguageController.isLangEnabled(secondLanguage));
+      assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          secondLanguage));
     });
 
     test('disabled languages are removed', () => {
-      const firstLanguage = 'English';
+      const firstLanguage = 'en-us';
       emitLanguageToggle(firstLanguage);
-      assertTrue(app.enabledLangs.includes(firstLanguage));
-      assertTrue(chrome.readingMode.getLanguagesEnabledInPref()
-        .includes(firstLanguage));
+      assertTrue(voiceLanguageController.isLangEnabled(firstLanguage));
+      assertTrue(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          firstLanguage));
 
       emitLanguageToggle(firstLanguage);
-      assertFalse(app.enabledLangs.includes(firstLanguage));
-      assertFalse(chrome.readingMode.getLanguagesEnabledInPref()
-        .includes(firstLanguage));
+      assertFalse(voiceLanguageController.isLangEnabled(firstLanguage));
+      assertFalse(chrome.readingMode.getLanguagesEnabledInPref().includes(
+          firstLanguage));
     });
-
-    suite('with language downloading enabled', () => {
-      let sentInstallRequestFor: string;
-
-      setup(() => {
-        chrome.readingMode.isLanguagePackDownloadingEnabled = true;
-
-        sentInstallRequestFor = '';
-        // Monkey patch sendInstallVoicePackRequest() to spy on the method
-        chrome.readingMode.sendInstallVoicePackRequest = (language) => {
-          sentInstallRequestFor = language;
-        };
-      });
-
-      test(
-          'when previous language install failed, directly installs lang without usual protocol of sending status request first',
-          () => {
-            const lang = 'en-us';
-            app.updateVoicePackStatus(lang, 'kOther');
-            emitLanguageToggle(lang);
-
-            assertEquals(lang, sentInstallRequestFor);
-            assertEquals(
-                app.getVoicePackStatusForTesting(lang).client,
-                VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
-          });
-
-      test(
-          'when there is no status for lang, directly sends install request',
-          () => {
-            emitLanguageToggle('en-us');
-
-            assertEquals('en-us', sentInstallRequestFor);
-          });
-
-
-      test(
-          'when language status is uninstalled, does not directly install lang',
-          () => {
-            const lang = 'en-us';
-            app.updateVoicePackStatus(lang, 'kNotInstalled');
-            emitLanguageToggle(lang);
-
-            assertEquals('', sentInstallRequestFor);
-          });
-      });
-
   });
 
-  suite('on speech rate change', () => {
-    function emitRate(): void {
-      emitEvent(app, ToolbarEvent.RATE);
-    }
+  test('on speech rate change speech rate updated', async () => {
+    setupBasicSpeech(speech);
+    readAloudModel.setInitialized(true);
+    setContent('we mean no harm', readAloudModel);
+    app.updateContent();
+    await emitPlayPause();
 
-    test('speech rate updated', () => {
-      const speechSynthesis = new FakeSpeechSynthesis();
-      app.synth = speechSynthesis;
-      app.playSpeech();
+    const speechRate1 = 2;
+    chrome.readingMode.speechRate = speechRate1;
+    emitEvent(app, ToolbarEvent.RATE);
+    assertEquals(2, speech.getCallCount('speak'));
 
-      const speechRate1 = 2;
-      chrome.readingMode.speechRate = speechRate1;
-      emitRate();
-      assertTrue(speechSynthesis.spokenUtterances.every(
-          utterance => utterance.rate === speechRate1));
+    const speechRate2 = 0.5;
+    chrome.readingMode.speechRate = speechRate2;
+    emitEvent(app, ToolbarEvent.RATE);
+    assertEquals(3, speech.getCallCount('speak'));
 
-      const speechRate2 = 0.5;
-      chrome.readingMode.speechRate = speechRate2;
-      emitRate();
-      assertTrue(speechSynthesis.spokenUtterances.every(
-          utterance => utterance.rate === speechRate2));
+    const speechRate3 = 4;
+    chrome.readingMode.speechRate = speechRate3;
+    emitEvent(app, ToolbarEvent.RATE);
+    assertEquals(4, speech.getCallCount('speak'));
 
-      const speechRate3 = 4;
-      chrome.readingMode.speechRate = speechRate3;
-      emitRate();
-      assertTrue(speechSynthesis.spokenUtterances.every(
-          utterance => utterance.rate === speechRate3));
-    });
+    const speechRates =
+        speech.getArgs('speak').map(utterance => utterance.rate);
+    assertArrayEquals([1, 2, 0.5, 4], speechRates);
+  });
+
+  test('on voice selected, current voice updated', () => {
+    const voice = createSpeechSynthesisVoice({lang: 'es-us', name: 'Poodle'});
+    emitEvent(app, ToolbarEvent.VOICE, {detail: {selectedVoice: voice}});
+    assertEquals(voice, voiceLanguageController.getCurrentVoice());
   });
 
   suite('play/pause', () => {
-    let propagatedActiveState: boolean;
-
     setup(() => {
-      chrome.readingMode.onSpeechPlayingStateChanged = isSpeechActive => {
-        propagatedActiveState = isSpeechActive;
-      };
-      app.updateContent();
+      readAloudModel.setInitialized(true);
+      setContent('We come in peace', readAloudModel);
     });
 
-    function emitPlayPause(): void {
-      emitEvent(app, ToolbarEvent.PLAY_PAUSE);
-    }
-
-    test('by default is paused', () => {
-      assertFalse(app.speechPlayingState.isSpeechActive);
-      assertFalse(propagatedActiveState);
-      assertFalse(app.speechPlayingState.hasSpeechBeenTriggered);
-
-      // isSpeechTreeInitialized is set in updateContent
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
+    test('on first click starts speech', async () => {
+      await emitPlayPause();
+      assertTrue(speechController.isSpeechActive());
+      assertTrue(speechController.isSpeechTreeInitialized());
+      assertTrue(speechController.hasSpeechBeenTriggered());
     });
 
+    test('on second click stops speech', async () => {
+      await emitPlayPause();
+      await emitPlayPause();
 
-    test('on first click starts speech', () => {
-      emitPlayPause();
-      assertTrue(app.speechPlayingState.isSpeechActive);
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
-      assertTrue(app.speechPlayingState.hasSpeechBeenTriggered);
-      assertTrue(propagatedActiveState);
-    });
-
-    test('on second click stops speech', () => {
-      emitPlayPause();
-      emitPlayPause();
-
-      assertFalse(app.speechPlayingState.isSpeechActive);
-      assertTrue(app.speechPlayingState.isSpeechTreeInitialized);
-      assertTrue(app.speechPlayingState.hasSpeechBeenTriggered);
-      assertFalse(propagatedActiveState);
+      assertFalse(speechController.isSpeechActive());
+      assertTrue(speechController.isSpeechTreeInitialized());
+      assertTrue(speechController.hasSpeechBeenTriggered());
     });
 
     suite('on keyboard k pressed', () => {
@@ -322,60 +292,61 @@ suite('AppReceivesToolbarChanges', () => {
         kPress = new KeyboardEvent('keydown', {key: 'k'});
       });
 
-      test('first press plays', () => {
-        app.$.appFlexParent!.dispatchEvent(kPress);
-        assertTrue(app.speechPlayingState.isSpeechActive);
-        assertTrue(propagatedActiveState);
+      test('first press plays', async () => {
+        app.$.appFlexParent.dispatchEvent(kPress);
+        await microtasksFinished();
+
+        assertTrue(speechController.isSpeechActive());
+        assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
       });
 
-      test('second press pauses', () => {
-        app.$.appFlexParent!.dispatchEvent(kPress);
-        app.$.appFlexParent!.dispatchEvent(kPress);
-        assertFalse(app.speechPlayingState.isSpeechActive);
-        assertFalse(propagatedActiveState);
+      test('second press pauses', async () => {
+        app.$.appFlexParent.dispatchEvent(kPress);
+        app.$.appFlexParent.dispatchEvent(kPress);
+        await microtasksFinished();
+
+        assertFalse(speechController.isSpeechActive());
+        assertEquals(
+            chrome.readingMode.keyboardShortcutStopSource,
+            await metrics.whenCalled('recordSpeechStopSource'));
+      });
+
+      test('other key presses do not play', async () => {
+        const fPress = new KeyboardEvent('keydown', {key: 'f'});
+        app.$.appFlexParent.dispatchEvent(fPress);
+        await microtasksFinished();
+
+        assertFalse(speechController.isSpeechActive());
+        assertEquals(0, metrics.getCallCount('recordSpeechStopSource'));
       });
     });
   });
 
-  suite('on highlight toggle', () => {
+  suite('with highlight granularity menu', () => {
     function highlightColor(): string {
       return window.getComputedStyle(app.$.container)
           .getPropertyValue('--current-highlight-bg-color');
     }
 
-    function emitHighlight(highlightOn: boolean): void {
-      if (highlightOn) {
-        chrome.readingMode.turnedHighlightOn();
-      } else {
-        chrome.readingMode.turnedHighlightOff();
-      }
-      emitEvent(app, ToolbarEvent.HIGHLIGHT_TOGGLE);
+    function emitHighlight(granularity: number) {
+      chrome.readingMode.onHighlightGranularityChanged(granularity);
+      emitEvent(app, ToolbarEvent.HIGHLIGHT_CHANGE, {
+        detail: {data: granularity},
+      });
     }
 
     setup(() => {
-      emitColorTheme(chrome.readingMode.defaultTheme);
       app.updateContent();
-      app.playSpeech();
-    });
-
-    test('on hide, uses transparent highlight', () => {
-      emitHighlight(false);
-      assertEquals('transparent', highlightColor());
-    });
-
-    test('on show, uses colored highlight', () => {
-      emitHighlight(true);
-      assertNotEquals('transparent', highlightColor());
     });
 
     test('new theme uses colored highlight with highlights on', () => {
-      emitHighlight(true);
+      emitHighlight(chrome.readingMode.wordHighlighting);
       emitColorTheme(chrome.readingMode.blueTheme);
       assertNotEquals('transparent', highlightColor());
     });
 
     test('new theme uses transparent highlight with highlights off', () => {
-      emitHighlight(false);
+      emitHighlight(chrome.readingMode.noHighlighting);
       emitColorTheme(chrome.readingMode.yellowTheme);
       assertEquals('transparent', highlightColor());
     });
@@ -383,53 +354,25 @@ suite('AppReceivesToolbarChanges', () => {
 
   suite('on granularity change', () => {
     setup(() => {
+      setupBasicSpeech(speech);
+      readAloudModel.setInitialized(true);
+      setContent('we mean no harm', readAloudModel);
       app.updateContent();
+      return emitPlayPause();
     });
 
-    function emitNextGranularity(): void {
+    test('next highlights text', () => {
       emitEvent(app, ToolbarEvent.NEXT_GRANULARITY);
-    }
-
-    function emitPreviousGranularity(): void {
-      emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
-    }
-
-    suite('next', () => {
-      test('propagates change', () => {
-        let movedToNext = false;
-        chrome.readingMode.movePositionToNextGranularity = () => {
-          movedToNext = true;
-        };
-
-        emitNextGranularity();
-
-        assertTrue(movedToNext);
-      });
-
-      test('highlights text', () => {
-        emitNextGranularity();
-        const currentHighlight =
-            app.$.container.querySelector('.current-read-highlight');
-        assertTrue(!!currentHighlight!.textContent);
-      });
-    });
-
-    test('previous propagates change', () => {
-      let movedToPrevious: boolean = false;
-      chrome.readingMode.movePositionToPreviousGranularity = () => {
-        movedToPrevious = true;
-      };
-
-      emitPreviousGranularity();
-
-      assertTrue(movedToPrevious);
-    });
-
-    test('previous highlights text', () => {
-      emitPreviousGranularity();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(!!currentHighlight!.textContent);
     });
+
+    test('previous highlights text', () => {
+      emitEvent(app, ToolbarEvent.PREVIOUS_GRANULARITY);
+      const currentHighlight =
+          app.$.container.querySelector('.current-read-highlight');
+      assertTrue(!!currentHighlight!.textContent);
     });
+  });
 });

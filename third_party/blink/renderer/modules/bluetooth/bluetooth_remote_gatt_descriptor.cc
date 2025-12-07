@@ -26,7 +26,7 @@ BluetoothRemoteGATTDescriptor::BluetoothRemoteGATTDescriptor(
 void BluetoothRemoteGATTDescriptor::ReadValueCallback(
     ScriptPromiseResolver<NotShared<DOMDataView>>* resolver,
     mojom::blink::WebBluetoothResult result,
-    const std::optional<Vector<uint8_t>>& value) {
+    base::span<const uint8_t> value) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
@@ -39,11 +39,8 @@ void BluetoothRemoteGATTDescriptor::ReadValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    DCHECK(value);
-    DOMDataView* dom_data_view =
-        BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value.value());
-    value_ = dom_data_view;
-    resolver->Resolve(NotShared(dom_data_view));
+    value_ = BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
+    resolver->Resolve(value_);
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
   }
@@ -73,15 +70,15 @@ ScriptPromise<NotShared<DOMDataView>> BluetoothRemoteGATTDescriptor::readValue(
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetBluetooth()->Service()->RemoteDescriptorReadValue(
       descriptor_->instance_id,
-      WTF::BindOnce(&BluetoothRemoteGATTDescriptor::ReadValueCallback,
-                    WrapPersistent(this), WrapPersistent(resolver)));
+      blink::BindOnce(&BluetoothRemoteGATTDescriptor::ReadValueCallback,
+                      WrapPersistent(this), WrapPersistent(resolver)));
 
   return promise;
 }
 
 void BluetoothRemoteGATTDescriptor::WriteValueCallback(
     ScriptPromiseResolver<IDLUndefined>* resolver,
-    const Vector<uint8_t>& value,
+    DOMDataView* new_value,
     mojom::blink::WebBluetoothResult result) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
@@ -96,7 +93,7 @@ void BluetoothRemoteGATTDescriptor::WriteValueCallback(
   }
 
   if (result == mojom::blink::WebBluetoothResult::SUCCESS) {
-    value_ = BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value);
+    value_ = NotShared(new_value);
     resolver->Resolve();
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
@@ -105,7 +102,7 @@ void BluetoothRemoteGATTDescriptor::WriteValueCallback(
 
 ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
     ScriptState* script_state,
-    const DOMArrayPiece& value,
+    base::span<const uint8_t> value,
     ExceptionState& exception_state) {
   if (!GetGatt()->connected() || !GetBluetooth()->IsServiceBound()) {
     exception_state.ThrowDOMException(
@@ -121,47 +118,41 @@ ScriptPromise<IDLUndefined> BluetoothRemoteGATTDescriptor::writeValue(
     return EmptyPromise();
   }
 
-  if (value.IsDetached()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Value buffer has been detached.");
-    return EmptyPromise();
-  }
-
   // Partial implementation of writeValue algorithm:
   // https://webbluetoothcg.github.io/web-bluetooth/#dom-bluetoothremotegattdescriptor-writevalue
 
   // If bytes is more than 512 bytes long (the maximum length of an attribute
   // value, per Long Attribute Values) return a promise rejected with an
   // InvalidModificationError and abort.
-  if (value.ByteLength() > 512) {
+  if (value.size() > 512) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
         "Value can't exceed 512 bytes.");
     return EmptyPromise();
   }
 
-  // Let valueVector be a copy of the bytes held by value.
-  Vector<uint8_t> value_vector;
-  value_vector.Append(value.Bytes(),
-                      static_cast<wtf_size_t>(value.ByteLength()));
+  // Let newValue be a copy of the bytes held by value.
+  NotShared<DOMDataView> new_value =
+      BluetoothRemoteGATTUtils::ConvertSpanToDataView(value);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);
   GetBluetooth()->Service()->RemoteDescriptorWriteValue(
-      descriptor_->instance_id, value_vector,
-      WTF::BindOnce(&BluetoothRemoteGATTDescriptor::WriteValueCallback,
-                    WrapPersistent(this), WrapPersistent(resolver),
-                    value_vector));
+      descriptor_->instance_id, value,
+      BindOnce(&BluetoothRemoteGATTDescriptor::WriteValueCallback,
+               WrapPersistent(this), WrapPersistent(resolver),
+               WrapPersistent(new_value.Get())));
 
   return promise;
 }
 
 String BluetoothRemoteGATTDescriptor::CreateInvalidDescriptorErrorMessage() {
-  return "Descriptor with UUID " + uuid() +
-         " is no longer valid. Remember to retrieve the Descriptor again "
-         "after reconnecting.";
+  return StrCat(
+      {"Descriptor with UUID ", uuid(),
+       " is no longer valid. Remember to retrieve the Descriptor again "
+       "after reconnecting."});
 }
 
 void BluetoothRemoteGATTDescriptor::Trace(Visitor* visitor) const {

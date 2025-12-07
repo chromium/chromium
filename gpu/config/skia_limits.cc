@@ -8,81 +8,65 @@
 
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 
 namespace gpu {
 
 namespace {
 
-BASE_FEATURE(kGrCacheLimitsFeature,
-             "GrCacheLimitsFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGrCacheLimitsFeature, base::FEATURE_ENABLED_BY_DEFAULT);
 
-MIRACLE_PARAMETER_FOR_INT(GetMaxGaneshResourceCacheBytes,
-                          kGrCacheLimitsFeature,
-                          "MaxGaneshResourceCacheBytes",
-                          96 * 1024 * 1024)
+// Limits for the Graphite client image provider which is responsible for
+// uploading non-GPU backed images (e.g. raster, lazy/generated) to Graphite.
+// The limits are smallish since only a small number of images take this path
+// instead of being uploaded via the transfer cache.
+BASE_FEATURE_PARAM(size_t, kMaxGpuMainGraphiteImageProviderBytes,
+                    &kGrCacheLimitsFeature,
+                    "MaxGpuMainGraphiteImageProviderBytes",
+                    16 * 1024 * 1024);
 
-MIRACLE_PARAMETER_FOR_INT(GetMaxDefaultGlyphCacheTextureBytes,
-                          kGrCacheLimitsFeature,
-                          "MaxDefaultGlyphCacheTextureBytes",
-                          2048 * 1024 * 4)
-
-#if !BUILDFLAG(IS_NACL)
-// The limit of the bytes allocated toward GPU resources in the GrContext's
-// GPU cache.
-MIRACLE_PARAMETER_FOR_INT(GetMaxLowEndGaneshResourceCacheBytes,
-                          kGrCacheLimitsFeature,
-                          "MaxLowEndGaneshResourceCacheBytes",
-                          48 * 1024 * 1024)
-
-MIRACLE_PARAMETER_FOR_INT(GetMaxHighEndGaneshResourceCacheBytes,
-                          kGrCacheLimitsFeature,
-                          "MaxHighEndGaneshResourceCacheBytes",
-                          256 * 1024 * 1024)
-
-// Limits for glyph cache textures.
-MIRACLE_PARAMETER_FOR_INT(GetMaxLowEndGlyphCacheTextureBytes,
-                          kGrCacheLimitsFeature,
-                          "MaxLowEndGlyphCacheTextureBytes",
-                          1024 * 512 * 4)
-
-// High-end / low-end memory cutoffs.
-MIRACLE_PARAMETER_FOR_INT(GetHighEndMemoryThresholdMB,
-                          kGrCacheLimitsFeature,
-                          "HighEndMemoryThresholdMB",
-                          4096)
-#endif
+// The limits for the Viz compositor's image provider are even smaller since
+// the only time we encounter such images is via reference image filters on
+// composited layers which is a pretty uncommon case.
+BASE_FEATURE_PARAM(size_t, kMaxVizCompositorGraphiteImageProviderBytes,
+                    &kGrCacheLimitsFeature,
+                    "MaxVizCompositorGraphiteImageProviderBytes",
+                    4 * 1024 * 1024);
 
 }  // namespace
 
-size_t DetermineGraphiteImageProviderCacheLimitFromAvailableMemory() {
-  // Use the same value as that for the Ganesh resource cache.
-  size_t max_resource_cache_bytes;
-  size_t dont_care;
-  DetermineGrCacheLimitsFromAvailableMemory(&max_resource_cache_bytes,
-                                            &dont_care);
-
-  return max_resource_cache_bytes;
+void DetermineGraphiteImageProviderCacheLimits(
+    size_t* max_gpu_main_image_provider_cache_bytes,
+    size_t* max_viz_compositor_image_provider_cache_bytes) {
+  *max_gpu_main_image_provider_cache_bytes =
+      kMaxGpuMainGraphiteImageProviderBytes.Get();
+  *max_viz_compositor_image_provider_cache_bytes =
+      kMaxVizCompositorGraphiteImageProviderBytes.Get();
 }
 
 void DetermineGrCacheLimitsFromAvailableMemory(
     size_t* max_resource_cache_bytes,
     size_t* max_glyph_cache_texture_bytes) {
+  constexpr size_t kMaxGaneshResourceCacheBytes = 96 * 1024 * 1024;
+  constexpr size_t kMaxDefaultGlyphCacheTextureBytes = 2048 * 1024 * 4;
   // Default limits.
-  *max_resource_cache_bytes = GetMaxGaneshResourceCacheBytes();
-  *max_glyph_cache_texture_bytes = GetMaxDefaultGlyphCacheTextureBytes();
+  *max_resource_cache_bytes = kMaxGaneshResourceCacheBytes;
+  *max_glyph_cache_texture_bytes = kMaxDefaultGlyphCacheTextureBytes;
 
-// We can't call AmountOfPhysicalMemory under NACL, so leave the default.
-#if !BUILDFLAG(IS_NACL)
+  // The limit of the bytes allocated toward GPU resources in the GrContext's
+  // GPU cache.
+  constexpr size_t kMaxLowEndGaneshResourceCacheBytes = 48 * 1024 * 1024;
+  constexpr size_t kMaxHighEndGaneshResourceCacheBytes = 256 * 1024 * 1024;
+  // Limits for glyph cache textures.
+  constexpr size_t kMaxLowEndGlyphCacheTextureBytes = 1024 * 512 * 4;
+  // High-end / low-end memory cutoffs.
+  constexpr int64_t kHighEndMemoryThresholdInMB = 4096;
   if (base::SysInfo::IsLowEndDevice()) {
-    *max_resource_cache_bytes = GetMaxLowEndGaneshResourceCacheBytes();
-    *max_glyph_cache_texture_bytes = GetMaxLowEndGlyphCacheTextureBytes();
-  } else if (base::SysInfo::AmountOfPhysicalMemoryMB() >=
-             GetHighEndMemoryThresholdMB()) {
-    *max_resource_cache_bytes = GetMaxHighEndGaneshResourceCacheBytes();
+    *max_resource_cache_bytes = kMaxLowEndGaneshResourceCacheBytes;
+    *max_glyph_cache_texture_bytes = kMaxLowEndGlyphCacheTextureBytes;
+  } else if (base::SysInfo::AmountOfPhysicalMemory().InMiB() >=
+             kHighEndMemoryThresholdInMB) {
+    *max_resource_cache_bytes = kMaxHighEndGaneshResourceCacheBytes;
   }
-#endif
 }
 
 void DefaultGrCacheLimitsForTests(size_t* max_resource_cache_bytes,

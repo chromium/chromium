@@ -10,6 +10,7 @@
 
 #if BUILDFLAG(USE_SECCOMP_BPF)
 #include <memory>
+#include <utility>
 
 #include "sandbox/linux/bpf_dsl/policy.h"
 #include "sandbox/linux/seccomp-bpf-helpers/baseline_policy_android.h"

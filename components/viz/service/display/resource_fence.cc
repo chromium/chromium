@@ -20,9 +20,15 @@ void ResourceFence::TrackDeferredResource(ResourceId id) {
 }
 
 void ResourceFence::FencePassed() {
-  if (resource_provider_) {
-    resource_provider_->OnResourceFencePassed(this,
-                                              std::move(deferred_resources_));
+  if (auto* resource_provider = resource_provider_.get()) {
+    // Disallow access to GPU thread for Android WebView since the fence will be
+    // processed asynchronously after we exit the RenderThread runloop. This is
+    // not needed for Chromium, but we can't distinguish between Chromium and
+    // Android WebView here, so always disallow GPU thread access.
+    DisplayResourceProvider::ScopedBatchReturnResources returner(
+        resource_provider, /*allow_access_to_gpu_thread=*/false);
+    resource_provider->OnResourceFencePassed(this,
+                                             std::move(deferred_resources_));
   }
 }
 

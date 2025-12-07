@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <map>
 #include <memory>
 #include <set>
 
@@ -16,14 +15,11 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/common/content_export.h"
+#include "crypto/hash.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-
-namespace crypto {
-class SecureHash;
-}  // namespace crypto
 
 namespace content {
 
@@ -372,7 +368,7 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // Calculate the hash string for the written bytes. This will be used for the
   // experiment which needs to identify some specific service worker scripts
   // (crbug.com/1371756).
-  std::unique_ptr<crypto::SecureHash> checksum_;
+  crypto::hash::Hasher checksum_{crypto::hash::kSha256};
 
   base::WeakPtrFactory<ServiceWorkerCacheWriter> weak_factory_{this};
 };

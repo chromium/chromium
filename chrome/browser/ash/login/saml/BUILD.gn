@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("saml") {
   sources = [
@@ -57,6 +55,8 @@ static_library("saml") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
+    "//chrome/browser/notifications",
+    "//chrome/browser/signin",
     "//chrome/common:chrome_features",
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/auth/public:authpublic",
@@ -82,6 +82,7 @@ static_library("test_support") {
     "lockscreen_reauth_dialog_test_helper.h",
     "mock_lock_handler.cc",
     "mock_lock_handler.h",
+    "saml_test_utils.h",
     "security_token_saml_test.cc",
     "security_token_saml_test.h",
     "test_client_cert_saml_idp_mixin.cc",
@@ -90,7 +91,7 @@ static_library("test_support") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/certificate_provider:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/proximity_auth",
@@ -107,14 +108,15 @@ static_library("test_support") {
     "//ash/constants",
     "//base/test:test_support",
     "//chrome/browser",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash/login/ui:test_support",
+    "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/net",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/lock_screen_reauth",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common:constants",
     "//chromeos/ash/components/dbus/attestation",
     "//components/policy:generated",
@@ -138,7 +140,6 @@ source_set("browser_tests") {
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   sources = [
-    "password_change_extension_browsertest.cc",
     "password_change_success_detection_browsertest.cc",
     "saml_browsertest.cc",
     "saml_lockscreen_browsertest.cc",
@@ -156,14 +157,15 @@ source_set("browser_tests") {
     "//chrome/app:generated_resources",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/floating_sso",
+    "//chrome/browser/ash/floating_sso:test_support",
     "//chrome/browser/ash/login/enrollment",
     "//chrome/browser/ash/login/lock:test_support",
     "//chrome/browser/ash/login/lock/online_reauth",
-    "//chrome/browser/ash/login/ui",
+    "//chrome/browser/ash/login/session:test_support",
+    "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/login/users",
     "//chrome/browser/ash/net",
     "//chrome/browser/ash/policy/affiliation:test_support",
@@ -171,12 +173,16 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/lock_screen_reauth",
     "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/ui/webui/signin",
+    "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/attestation",
@@ -189,10 +195,12 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    "//chromeos/ash/components/http_auth_dialog",
     "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/ash/components/settings",
     "//components/account_id",
     "//components/content_settings/core/browser",
@@ -222,6 +230,7 @@ source_set("browser_tests") {
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:mojom_platform_shared_cpp_sources",
     "//ui/base",
+    "//ui/events:test_support",
     "//url",
   ]
 }
@@ -246,6 +255,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/login/lock/online_reauth",
+    "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/userdataauth",
     "//chromeos/ash/components/login/auth/public:authpublic",

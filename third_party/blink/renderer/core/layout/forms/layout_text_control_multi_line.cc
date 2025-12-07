@@ -19,8 +19,9 @@ HTMLElement* LayoutTextControlMultiLine::InnerEditorElement() const {
 
 void LayoutTextControlMultiLine::StyleDidChange(
     StyleDifference style_diff,
-    const ComputedStyle* old_style) {
-  LayoutBlockFlow::StyleDidChange(style_diff, old_style);
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
+  LayoutBlockFlow::StyleDidChange(style_diff, old_style, style_change_context);
   layout_text_control::StyleDidChange(InnerEditorElement(), old_style,
                                       StyleRef());
 }

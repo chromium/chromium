@@ -1,0 +1,32 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_chromeos)
+
+build_webui("build") {
+  grd_prefix = "ash_boca_receiver_untrusted_ui"
+  static_files = [ "index.html" ]
+
+  ts_files = [
+    "app/boca_receiver_app.ts",
+    "app/browser_proxy.ts",
+  ]
+
+  ts_composite = true
+
+  mojo_files_deps =
+      [ "//ash/webui/boca_receiver_app_ui/mojom:mojom_ts__generator" ]
+
+  mojo_base_path = "mojom"
+
+  mojo_files = [ "$root_gen_dir/ash/webui/boca_receiver_app_ui/mojom/boca_receiver.mojom-webui.ts" ]
+
+  ts_definitions = []
+
+  ts_deps = [ "//ui/webui/resources/mojo:build_ts" ]
+
+  grit_output_dir = "$root_gen_dir/ash/webui"
+}

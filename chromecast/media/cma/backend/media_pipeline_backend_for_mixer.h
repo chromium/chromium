@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/media/cma/backend/video_decoder_for_mixer.h"
 #include "chromecast/public/media/media_pipeline_backend.h"

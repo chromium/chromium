@@ -14,8 +14,9 @@ proto_library("soda_api_proto") {
 source_set("soda") {
   sources = [
     "soda_async_impl.h",
-    "soda_client.cc",
     "soda_client.h",
+    "soda_client_impl.cc",
+    "soda_client_impl.h",
     "soda_test_paths.h",
   ]
 
@@ -27,7 +28,7 @@ source_set("soda") {
     "//media/mojo/mojom",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cros_soda_client.cc",
       "cros_soda_client.h",
@@ -44,7 +45,7 @@ source_set("unit_tests") {
   testonly = true
 
   if (enable_soda_integration_tests) {
-    sources = [ "soda_client_unittest.cc" ]
+    sources = [ "soda_client_impl_unittest.cc" ]
 
     if (is_mac) {
       data_deps = [ "//third_party/soda-mac64:soda_resources" ]
@@ -64,4 +65,17 @@ source_set("unit_tests") {
       "//testing/gtest",
     ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_soda_client.cc",
+    "mock_soda_client.h",
+  ]
+  deps = [
+    ":soda",
+    "//base",
+    "//testing/gmock",
+  ]
 }

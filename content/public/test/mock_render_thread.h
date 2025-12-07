@@ -15,17 +15,10 @@
 #include "build/build_config.h"
 #include "content/public/common/widget_type.h"
 #include "content/public/renderer/render_thread.h"
-#include "ipc/ipc_test_sink.h"
-#include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/browser_interface_broker.mojom.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
-
-namespace IPC {
-class MessageFilter;
-class MessageReplyDeserializer;
-}
 
 namespace content {
 
@@ -43,28 +36,12 @@ class MockRenderThread : public RenderThread {
   MockRenderThread();
   ~MockRenderThread() override;
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  // Provides access to the messages that have been received by this thread.
-  IPC::TestSink& sink() { return sink_; }
-#endif
-
   void SetIOTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
     io_task_runner_ = std::move(task_runner);
   }
 
   // RenderThread implementation:
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  bool Send(IPC::Message* msg) override;
-  IPC::SyncMessageFilter* GetSyncMessageFilter() override;
-  void AddRoute(int32_t routing_id, IPC::Listener* listener) override;
-  void AttachTaskRunnerToRoute(
-      int32_t routing_id,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
-  void RemoveRoute(int32_t routing_id) override;
-  void AddFilter(IPC::MessageFilter* filter) override;
-  void RemoveFilter(IPC::MessageFilter* filter) override;
-#endif
   IPC::SyncChannel* GetChannel() override;
   std::string GetLocale() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetIOTaskRunner() override;
@@ -81,8 +58,6 @@ class MockRenderThread : public RenderThread {
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
   base::WaitableEvent* GetShutdownEvent() override;
   int32_t GetClientId() override;
-  void SetRendererProcessType(
-      blink::scheduler::WebRendererProcessType type) override;
   blink::WebString GetUserAgent() override;
   const blink::UserAgentMetadata& GetUserAgentMetadata() override;
 #if BUILDFLAG(IS_WIN)
@@ -99,11 +74,6 @@ class MockRenderThread : public RenderThread {
   // widget, or frame.
   int32_t GetNextRoutingID();
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  // Dispatches control messages to observers.
-  bool OnControlMessageReceived(const IPC::Message& msg);
-#endif
-
   base::ObserverList<RenderThreadObserver>::Unchecked& observers() {
     return observers_;
   }
@@ -111,7 +81,7 @@ class MockRenderThread : public RenderThread {
   // The View expects to be returned a valid |reply.route_id| different from its
   // own. We do not keep track of the newly created widget in MockRenderThread,
   // so it must be cleaned up on its own.
-  void OnCreateWindow(const mojom::CreateNewWindowParams& params,
+  void OnCreateWindow(mojom::CreateNewWindowParams& params,
                       mojom::CreateNewWindowReply* reply);
 
   // Releases any `blink::WebView`s that are being held onto by PageBroadcast
@@ -133,14 +103,6 @@ class MockRenderThread : public RenderThread {
       const blink::LocalFrameToken& frame_token);
 
  protected:
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  // This function operates as a regular IPC listener. Subclasses
-  // overriding this should first delegate to this implementation.
-  virtual bool OnMessageReceived(const IPC::Message& msg);
-
-  IPC::TestSink sink_;
-#endif
-
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // Routing ID what will be assigned to the next view, widget, or frame.
@@ -151,14 +113,6 @@ class MockRenderThread : public RenderThread {
   std::map<blink::LocalFrameToken,
            mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>>
       frame_token_to_initial_browser_brokers_;
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  // The last known good deserializer for sync messages.
-  std::unique_ptr<IPC::MessageReplyDeserializer> reply_deserializer_;
-
-  // A list of message filters added to this thread.
-  std::vector<scoped_refptr<IPC::MessageFilter> > filters_;
-#endif
 
   // `blink::WebView`s associated with CreateNewWindow have their
   // lifecycle associated with the mojo channel provided to them.

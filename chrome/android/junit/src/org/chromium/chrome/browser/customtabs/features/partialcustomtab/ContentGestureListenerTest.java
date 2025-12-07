@@ -13,11 +13,13 @@ import static org.mockito.Mockito.when;
 import android.view.MotionEvent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
@@ -28,6 +30,7 @@ import org.chromium.chrome.browser.customtabs.features.partialcustomtab.PartialC
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content.browser.RenderCoordinatesImpl;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.function.BooleanSupplier;
 
@@ -38,11 +41,13 @@ import java.util.function.BooleanSupplier;
 public class ContentGestureListenerTest {
     private static final float DISTX = 0.f;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
     @Mock private BooleanSupplier mIsFullyExpanded;
     @Mock private DragEventCallback mCallback;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
     @Mock private ContentView mTabContentView;
+    @Mock private WebContents mWebContents;
     @Mock private MotionEvent mEventSrc;
 
     private ContentGestureListener mListener;
@@ -50,10 +55,10 @@ public class ContentGestureListenerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mListener = new ContentGestureListener(() -> mTab, mCallback, mIsFullyExpanded);
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
         when(mTab.getContentView()).thenReturn(mTabContentView);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
 
         mListener.onDown(Mockito.mock(MotionEvent.class));
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);

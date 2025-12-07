@@ -102,6 +102,12 @@ enum HotspotControlResult {
   kAborted,
   // Invalid hotspot enable request.
   kInvalid,
+  // There's already an ongoing request.
+  kBusy,
+  // Failed due to concurrency conflict.
+  kConcurrencyNotSupported,
+  // Operation failed when starting hotspot.
+  kOperationFailure,
   kUnknownFailure,
 };
 
@@ -135,6 +141,8 @@ enum DisableReason {
   kStartTimeout,
   // Upstream network not available.
   kUpstreamNotAvailable,
+  // Disabled due to concurrency resource conflict.
+  kResourceBusy,
   // Received an unknown error from shill.
   kUnknownError,
 };

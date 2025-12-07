@@ -7,7 +7,6 @@
 
 #include <optional>
 
-#include "ui/accessibility/ax_enums.mojom-forward.h"
 
 namespace aura {
 class Window;

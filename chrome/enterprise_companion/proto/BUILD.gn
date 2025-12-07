@@ -16,10 +16,7 @@ group("proto") {
 }
 
 proto_library("proto_internal") {
-  sources = [
-    "enterprise_companion_event.proto",
-    "log_request.proto",
-  ]
+  sources = [ "enterprise_companion_event.proto" ]
   proto_out_dir = "chrome/enterprise_companion/proto"
   visibility = [ ":proto" ]
 }

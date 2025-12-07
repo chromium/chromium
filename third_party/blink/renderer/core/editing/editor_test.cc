@@ -131,7 +131,7 @@ TEST_F(EditorTest, RedoWithDisconnectedEditable) {
   target.Focus();
   GetDocument().execCommand("insertHtml", false, "<b>xyz</b>",
                             ASSERT_NO_EXCEPTION);
-  ASSERT_EQ("<b>xyz</b>", target.innerHTML());
+  ASSERT_EQ("<b>xyz</b>", target.GetInnerHTMLString());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 
@@ -172,7 +172,7 @@ TEST_F(EditorTest, UndoWithDisconnectedEditable) {
   target.Focus();
   GetDocument().execCommand("insertHtml", false, "<b>xyz</b>",
                             ASSERT_NO_EXCEPTION);
-  ASSERT_EQ("<b>xyz</b>", target.innerHTML());
+  ASSERT_EQ("<b>xyz</b>", target.GetInnerHTMLString());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 

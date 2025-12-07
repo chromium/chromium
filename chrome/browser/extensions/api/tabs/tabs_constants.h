@@ -7,123 +7,64 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_CONSTANTS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_TABS_TABS_CONSTANTS_H_
 
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 namespace tabs_constants {
 
 // Keys used in serializing tab data & events.
-extern const char kActiveKey[];
-extern const char kAllFramesKey[];
-extern const char kAlwaysOnTopKey[];
-extern const char kBypassCache[];
-extern const char kCodeKey[];
-extern const char kCurrentWindowKey[];
-extern const char kFaviconUrlKey[];
-extern const char kFileKey[];
-extern const char kFocusedKey[];
-extern const char kFormatKey[];
-extern const char kFromIndexKey[];
-extern const char kGroupIdKey[];
-extern const char kHeightKey[];
-extern const char kHighlightedKey[];
-extern const char kIdKey[];
-extern const char kIncognitoKey[];
-extern const char kIndexKey[];
-extern const char kLastFocusedWindowKey[];
-extern const char kLeftKey[];
-extern const char kNewPositionKey[];
-extern const char kNewWindowIdKey[];
-extern const char kOldPositionKey[];
-extern const char kOldWindowIdKey[];
-extern const char kOpenerTabIdKey[];
-extern const char kPinnedKey[];
-extern const char kAudibleKey[];
-extern const char kDiscardedKey[];
-extern const char kAutoDiscardableKey[];
-extern const char kMutedKey[];
-extern const char kMutedInfoKey[];
-extern const char kQualityKey[];
-extern const char kRunAtKey[];
-extern const char kSelectedKey[];
-extern const char kShowStateKey[];
-extern const char kStatusKey[];
-extern const char kTabIdKey[];
-extern const char kTabIdsKey[];
-extern const char kTabsKey[];
-extern const char kTitleKey[];
-extern const char kToIndexKey[];
-extern const char kTopKey[];
-extern const char kUrlKey[];
-extern const char kPendingUrlKey[];
-extern const char kWidthKey[];
-extern const char kWindowClosing[];
-extern const char kWindowIdKey[];
-extern const char kWindowTypeKey[];
-extern const char kWindowTypeLongKey[];
-extern const char kWindowTypesKey[];
-extern const char kZoomSettingsMode[];
-extern const char kZoomSettingsScope[];
-
-// Value consts.
-extern const char kCanOnlyMoveTabsWithinNormalWindowsError[];
-extern const char kCanOnlyMoveTabsWithinSameProfileError[];
-extern const char kShowStateValueNormal[];
-extern const char kShowStateValueMinimized[];
-extern const char kShowStateValueMaximized[];
-extern const char kShowStateValueFullscreen[];
-extern const char kShowStateValueLockedFullscreen[];
-extern const char kWindowTypeValueNormal[];
-extern const char kWindowTypeValuePopup[];
-extern const char kWindowTypeValueApp[];
-extern const char kWindowTypeValueDevTools[];
+inline constexpr char kActiveKey[] = "active";
+inline constexpr char kFaviconUrlKey[] = "favIconUrl";
+inline constexpr char kIsWindowClosingKey[] = "isWindowClosing";
+inline constexpr char kSelectedKey[] = "selected";
+inline constexpr char kStatusKey[] = "status";
+inline constexpr char kTitleKey[] = "title";
+inline constexpr char kUrlKey[] = "url";
+inline constexpr char kPendingUrlKey[] = "pendingUrl";
+inline constexpr char kWindowIdKey[] = "windowId";
 
 // Error messages.
-extern const char kCannotZoomDisabledTabError[];
-extern const char kFileUrlsNotAllowedInExtensionNavigations[];
-extern const char kFrameNotFoundError[];
-extern const char kNoCrashBrowserError[];
-extern const char kNoCurrentWindowError[];
-extern const char kNoLastFocusedWindowError[];
-extern const char kNoTabInBrowserWindowError[];
-extern const char kPerOriginOnlyInAutomaticError[];
-extern const char kWindowNotFoundError[];
-extern const char kTabIndexNotFoundError[];
-extern const char kNotFoundNextPageError[];
-extern const char kTabNotFoundError[];
-extern const char kCannotDiscardTab[];
-extern const char kCannotDuplicateTab[];
-extern const char kCannotFindTabToDiscard[];
-extern const char kSavedTabGroupNotEditableError[];
-extern const char kTabStripNotEditableError[];
-extern const char kTabStripNotEditableQueryError[];
-extern const char kTabStripDoesNotSupportTabGroupsError[];
-extern const char kNoHighlightedTabError[];
-extern const char kNoSelectedTabError[];
-extern const char kIncognitoModeIsDisabled[];
-extern const char kIncognitoModeIsForced[];
-extern const char kURLsNotAllowedInIncognitoError[];
-extern const char kInvalidUrlError[];
-extern const char kNotImplementedError[];
-extern const char kSupportedInWindowsOnlyError[];
-extern const char kInvalidWindowTypeError[];
-extern const char kInvalidWindowStateError[];
-extern const char kInvalidWindowBoundsError[];
-extern const char kScreenshotsDisabled[];
-extern const char kScreenshotsDisabledByDlp[];
-extern const char kCannotUpdateMuteCaptured[];
-extern const char kCannotDetermineLanguageOfUnloadedTab[];
-extern const char kMissingLockWindowFullscreenPrivatePermission[];
-extern const char kJavaScriptUrlsNotAllowedInExtensionNavigations[];
-extern const char kBrowserWindowNotAllowed[];
-extern const char kLockedFullscreenModeNewTabError[];
-extern const char kGroupParamsError[];
-extern const char kCannotNavigateToDevtools[];
-extern const char kCannotNavigateToChromeUntrusted[];
-extern const char kCannotHighlightTabs[];
-extern const char kNotAllowedForDevToolsError[];
-extern const char kWindowCreateSupportsOnlySingleIwaUrlError[];
-extern const char kWindowCreateCannotParseIwaUrlError[];
-extern const char kWindowCreateCannotUseTabIdWithIwaError[];
-extern const char kWindowCreateCannotMoveIwaTabError[];
+inline constexpr char kCannotZoomDisabledTabError[] =
+    "Cannot zoom a tab in disabled mode.";
+inline constexpr char kCannotSetZoomThisTabError[] =
+    "Cannot set zoom or zoom settings on this tab.";
+inline constexpr char kCannotGetZoomThisTabError[] =
+    "Cannot get zoom or zoom settings on this tab.";
+inline constexpr char kNoLastFocusedWindowError[] = "No last-focused window";
+inline constexpr char kNoTabInBrowserWindowError[] =
+    "There is no tab in browser window.";
+inline constexpr char kInvalidTabIndexBreaksGroupContiguity[] =
+    "Tab operation is invalid as the specified input would disrupt group "
+    "continuity in the tab strip.";
+inline constexpr char kPerOriginOnlyInAutomaticError[] =
+    "Can only set scope to \"per-origin\" in \"automatic\" mode.";
+inline constexpr char kNotFoundNextPageError[] =
+    "Cannot find a next page in history.";
+inline constexpr char kCannotDiscardTab[] = "Cannot discard tab with id: *.";
+inline constexpr char kCannotDuplicateTab[] =
+    "Cannot duplicate tab with id: *.";
+inline constexpr char kNoSelectedTabError[] = "No selected tab";
+inline constexpr char kIncognitoModeIsDisabled[] =
+    "Incognito mode is disabled.";
+inline constexpr char kIncognitoModeIsForced[] =
+    "Incognito mode is forced. Cannot open normal windows.";
+inline constexpr char kURLsNotAllowedInIncognitoError[] =
+    "Cannot open URL \"*\" in an incognito window.";
+inline constexpr char kInvalidWindowStateError[] = "Invalid value for state";
+inline constexpr char kInvalidWindowBoundsError[] =
+    "Invalid value for bounds. Bounds must be at least 50% within visible "
+    "screen space.";
+inline constexpr char kScreenshotsDisabled[] =
+    "Taking screenshots has been disabled";
+inline constexpr char kScreenshotsDisabledByDlp[] =
+    "Administrator policy disables screen capture when confidential content is "
+    "visible";
+inline constexpr char kGroupParamsError[] =
+    "Cannot specify 'createProperties' along with a 'groupId'.";
+inline constexpr char kNotAllowedForDevToolsError[] =
+    "Operation not allowed for DevTools windows";
 
 }  // namespace tabs_constants
 }  // namespace extensions

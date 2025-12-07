@@ -34,12 +34,10 @@ class WorkerBackingThread;
 // backing thread. The entire class is used for off-thread CSS Paint.
 class MODULES_EXPORT PaintWorkletProxyClient
     : public GarbageCollected<PaintWorkletProxyClient>,
-      public Supplement<WorkerClients>,
       public PaintWorkletPainter {
  public:
-  // blink::Supplement hook to retrieve the PaintWorkletProxyClient for a given
-  // WorkerClients.
-  static const char kSupplementName[];
+  // Hook to etrieve the PaintWorkletProxyClient for a given WorkerClients.
+
   static PaintWorkletProxyClient* From(WorkerClients*);
 
   // Create the PaintWorkletProxyClient for a given PaintWorklet, represented by

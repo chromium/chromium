@@ -87,7 +87,7 @@ void ObjectPermissionContextBase::RemoveObserver(PermissionObserver* observer) {
 }
 
 bool ObjectPermissionContextBase::CanRequestObjectPermission(
-    const url::Origin& origin) {
+    const url::Origin& origin) const {
   if (!guard_content_settings_type_)
     return true;
 
@@ -99,7 +99,7 @@ bool ObjectPermissionContextBase::CanRequestObjectPermission(
 
 std::unique_ptr<ObjectPermissionContextBase::Object>
 ObjectPermissionContextBase::GetGrantedObject(const url::Origin& origin,
-                                              const std::string_view key) {
+                                              std::string_view key) {
   if (!CanRequestObjectPermission(origin))
     return nullptr;
 
@@ -205,7 +205,7 @@ void ObjectPermissionContextBase::RevokeObjectPermission(
 
 void ObjectPermissionContextBase::RevokeObjectPermission(
     const url::Origin& origin,
-    const std::string_view key) {
+    std::string_view key) {
   auto origin_objects_it = objects().find(origin);
   if (origin_objects_it == objects().end()) {
     return;

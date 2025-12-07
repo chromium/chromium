@@ -52,6 +52,14 @@ NearbyShareSettings::NearbyShareSettings(
     base::UmaHistogramEnumeration("Nearby.Share.VisibilityChoice",
                                   GetVisibility());
   }
+
+  // In Quick Share v2, the 'Selected contacts' visibility is deprecated. Set
+  // user visibility, if in 'Selected contacts', to 'Your devices'.
+  if (chromeos::features::IsQuickShareV2Enabled()) {
+    if (GetVisibility() == nearby_share::mojom::Visibility::kSelectedContacts) {
+      SetVisibility(nearby_share::mojom::Visibility::kYourDevices);
+    }
+  }
 }
 
 NearbyShareSettings::~NearbyShareSettings() {
@@ -218,6 +226,8 @@ void NearbyShareSettings::GetVisibility(
 
 void NearbyShareSettings::SetVisibility(
     nearby_share::mojom::Visibility visibility) {
+  DCHECK(pref_service_);
+
   pref_service_->SetInteger(prefs::kNearbySharingBackgroundVisibilityName,
                             static_cast<int>(visibility));
 }

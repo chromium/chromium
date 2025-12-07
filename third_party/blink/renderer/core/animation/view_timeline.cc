@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/css/resolver/element_resolve_context.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
@@ -180,14 +179,13 @@ Length InsetValueToLength(const CSSValue* inset_value,
         CSSToLengthConversionData::ViewportSize(document.GetLayoutView()),
         CSSToLengthConversionData::ContainerSizes(subject),
         CSSToLengthConversionData::AnchorData(),
-        subject->GetComputedStyle()->EffectiveZoom(), ignored_flags);
+        subject->GetComputedStyle()->EffectiveZoom(), ignored_flags, subject);
 
     return DynamicTo<CSSPrimitiveValue>(inset_value)
         ->ConvertToLength(length_conversion_data);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return Length(Length::Type::kAuto);
+  NOTREACHED();
 }
 
 enum class StickinessRange {
@@ -377,6 +375,7 @@ void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
 
   state->scroll_offsets = scroll_offsets;
   state->view_offsets = view_offsets;
+  CalculateScrollLimits(scrollable_area, physical_orientation, state);
 }
 
 void ViewTimeline::ApplyStickyAdjustments(ScrollOffsets& scroll_offsets,
@@ -524,7 +523,7 @@ std::optional<gfx::SizeF> ViewTimeline::SubjectSize() const {
   }
 
   if (auto* layout_box = DynamicTo<LayoutBox>(subject_layout_object)) {
-    return gfx::SizeF(layout_box->Size());
+    return gfx::SizeF(layout_box->StitchedSize());
   }
 
   if (auto* layout_inline = DynamicTo<LayoutInline>(subject_layout_object)) {
@@ -580,6 +579,8 @@ CSSNumericValue* ViewTimeline::getCurrentTime(const String& rangeName) {
     range_start.name = TimelineOffset::NamedRange::kExit;
   } else if (rangeName == "exit-crossing") {
     range_start.name = TimelineOffset::NamedRange::kExitCrossing;
+  } else if (rangeName == "scroll") {
+    range_start.name = TimelineOffset::NamedRange::kScroll;
   } else {
     return nullptr;
   }

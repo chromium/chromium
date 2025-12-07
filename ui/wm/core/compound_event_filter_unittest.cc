@@ -5,7 +5,6 @@
 #include "ui/wm/core/compound_event_filter.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -21,11 +20,11 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 base::TimeTicks GetTime() {
   return ui::EventTimeForNow();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 }
 
 namespace wm {
@@ -52,14 +51,17 @@ class ConsumeGestureEventFilter : public ui::EventHandler {
 
 typedef aura::test::AuraTestBase CompoundEventFilterTest;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // A keypress only hides the cursor on ChromeOS (crbug.com/304296).
 TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
   std::unique_ptr<CompoundEventFilter> compound_filter(new CompoundEventFilter);
   aura::Env::GetInstance()->AddPreTargetHandler(compound_filter.get());
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowWithDelegate(
-      &delegate, 1234, gfx::Rect(5, 5, 100, 100), root_window()));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {5, 5, 100, 100},
+                                    .window_id = 1234});
   window->Show();
   window->SetCapture();
 
@@ -113,16 +115,19 @@ TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
 
   aura::Env::GetInstance()->RemovePreTargetHandler(compound_filter.get());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // Touch visually hides the cursor on ChromeOS and Windows.
 TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
   std::unique_ptr<CompoundEventFilter> compound_filter(new CompoundEventFilter);
   aura::Env::GetInstance()->AddPreTargetHandler(compound_filter.get());
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowWithDelegate(
-      &delegate, 1234, gfx::Rect(5, 5, 100, 100), root_window()));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {5, 5, 100, 100},
+                                    .window_id = 1234});
   window->Show();
   window->SetCapture();
 
@@ -173,7 +178,7 @@ TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
   EXPECT_FALSE(cursor_client.IsCursorVisible());
   aura::Env::GetInstance()->RemovePreTargetHandler(compound_filter.get());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 // Tests that if an event filter consumes a gesture, then it doesn't focus the
 // window.
@@ -185,8 +190,11 @@ TEST_F(CompoundEventFilterTest, FilterConsumedGesture) {
   aura::Env::GetInstance()->AddPreTargetHandler(compound_filter.get());
   aura::test::TestWindowDelegate delegate;
   DCHECK(root_window());
-  std::unique_ptr<aura::Window> window(CreateTestWindowWithDelegate(
-      &delegate, 1234, gfx::Rect(5, 5, 100, 100), root_window()));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {5, 5, 100, 100},
+                                    .window_id = 1234});
   window->Show();
 
   EXPECT_TRUE(window->CanFocus());
@@ -210,8 +218,11 @@ TEST_F(CompoundEventFilterTest, DontHideWhenMouseDown) {
   std::unique_ptr<CompoundEventFilter> compound_filter(new CompoundEventFilter);
   aura::Env::GetInstance()->AddPreTargetHandler(compound_filter.get());
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowWithDelegate(
-      &delegate, 1234, gfx::Rect(5, 5, 100, 100), root_window()));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {5, 5, 100, 100},
+                                    .window_id = 1234});
   window->Show();
 
   aura::test::TestCursorClient cursor_client(root_window());
@@ -237,8 +248,11 @@ TEST_F(CompoundEventFilterTest, DontShowCursorOnMouseMovesFromTouch) {
   std::unique_ptr<CompoundEventFilter> compound_filter(new CompoundEventFilter);
   aura::Env::GetInstance()->AddPreTargetHandler(compound_filter.get());
   aura::test::TestWindowDelegate delegate;
-  std::unique_ptr<aura::Window> window(CreateTestWindowWithDelegate(
-      &delegate, 1234, gfx::Rect(5, 5, 100, 100), root_window()));
+  std::unique_ptr<aura::Window> window =
+      aura::test::CreateTestWindow({.delegate = &delegate,
+                                    .parent = root_window(),
+                                    .bounds = {5, 5, 100, 100},
+                                    .window_id = 1234});
   window->Show();
   window->SetCapture();
 

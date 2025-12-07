@@ -56,7 +56,13 @@ class CORE_EXPORT OffsetMappingUnit {
   // Returns associated node for this unit or null if this unit is associated
   // to generated content.
   const Node* AssociatedNode() const;
+
   OffsetMappingUnitType GetType() const { return type_; }
+  // Returns true if GetType() is OffsetMappingUnitType::kCollapsed.
+  bool IsCollapsed() const {
+    return type_ == OffsetMappingUnitType::kCollapsed;
+  }
+
   const LayoutObject& GetLayoutObject() const { return *layout_object_; }
   // Returns |Node| for this unit. If this unit comes from CSS generated
   // content, we can't use this function.
@@ -283,17 +289,12 @@ class CORE_EXPORT OffsetMapping final : public GarbageCollected<OffsetMapping> {
 
 CORE_EXPORT LayoutBlockFlow* NGInlineFormattingContextOf(const Position&);
 
-}  // namespace blink
-
-namespace WTF {
-
 template <>
-struct VectorTraits<blink::OffsetMappingUnit>
-    : VectorTraitsBase<blink::OffsetMappingUnit> {
+struct VectorTraits<OffsetMappingUnit> : VectorTraitsBase<OffsetMappingUnit> {
   static constexpr bool kCanClearUnusedSlotsWithMemset = true;
   static constexpr bool kCanTraceConcurrently = true;
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_OFFSET_MAPPING_H_

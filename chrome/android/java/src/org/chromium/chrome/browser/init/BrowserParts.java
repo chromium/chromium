@@ -4,14 +4,16 @@
 
 package org.chromium.chrome.browser.init;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Interface that any {@link AsyncInitializationActivity} can use to interact with this delegate
- * during start up. Functions called by
- * {@link ChromeBrowserInitializer#handlePreNativeStartupAndLoadLibraries(BrowserParts)} are called
- * in the order they are listed.
+ * during start up. Functions called by {@link
+ * ChromeBrowserInitializer#handlePreNativeStartupAndLoadLibraries(BrowserParts)} are called in the
+ * order they are listed.
  */
+@NullMarked
 public interface BrowserParts {
     /**
      * Called during {@link

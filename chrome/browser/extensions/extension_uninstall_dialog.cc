@@ -9,10 +9,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/chrome_app_icon_service.h"
 #include "chrome/browser/extensions/extension_management.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -21,8 +21,10 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/image_loader.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
@@ -34,8 +36,10 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
-#include "ui/views/native_window_tracker.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 #include "url/origin.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -46,10 +50,12 @@ constexpr int kIconSize = 64;
 constexpr char16_t kExtensionRemovedError[] =
     u"Extension was removed before dialog closed.";
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kReferrerId[] = "chrome-remove-extension-dialog";
+#endif
 
 float GetScaleFactor(gfx::NativeWindow window) {
-  const display::Screen* screen = display::Screen::GetScreen();
+  const display::Screen* screen = display::Screen::Get();
   if (!screen) {
     return 1.0;  // Happens in unit_tests.
   }
@@ -74,7 +80,7 @@ ExtensionUninstallDialog::ExtensionUninstallDialog(
     : profile_(profile), parent_(parent), delegate_(delegate) {
   DCHECK(delegate_);
   if (parent)
-    parent_window_tracker_ = views::NativeWindowTracker::Create(parent);
+    parent_window_tracker_ = ui::NativeWindowTracker::Create(parent);
   profile_observation_.Observe(profile_.get());
 }
 
@@ -215,7 +221,7 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
                                            : u"User canceled uninstall dialog";
       break;
     case CLOSE_ACTION_LAST:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   delegate_->OnExtensionUninstallDialogClosed(success, error);
 }
@@ -231,15 +237,15 @@ bool ExtensionUninstallDialog::Uninstall(std::u16string* error) {
           "Extensions.RemovedDefaultInstalledExtension"));
     }
 
-    return ExtensionSystem::Get(profile_)
-        ->extension_service()
-        ->UninstallExtension(extension_->id(), uninstall_reason_, error);
+    return ExtensionRegistrar::Get(profile_)->UninstallExtension(
+        extension_->id(), uninstall_reason_, error);
   }
   *error = kExtensionRemovedError;
   return false;
 }
 
 void ExtensionUninstallDialog::HandleReportAbuse() {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK(profile_);
   NavigateParams params(
       profile_,
@@ -247,6 +253,11 @@ void ExtensionUninstallDialog::HandleReportAbuse() {
       ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&params);
+#else   // BUILDFLAG(ENABLE_EXTENSIONS)
+  // TODO(crbug.com/424011073): Implement this method once we compile `Navigate`
+  // on Desktop Android.
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
 }  // namespace extensions

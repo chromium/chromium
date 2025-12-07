@@ -3,20 +3,22 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/computed_hashes.h"
+
+#include <array>
+
 #include "base/base64.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "crypto/sha2.h"
+#include "crypto/hash.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-constexpr bool kIsDotSpaceSuffixIgnored =
-    extensions::content_verifier_utils::IsDotSpaceFilenameSuffixIgnored();
 constexpr bool kIsFileAccessCaseInsensitive =
     !extensions::content_verifier_utils::IsFileAccessCaseSensitive();
 
@@ -30,8 +32,9 @@ testing::AssertionResult WriteThenReadComputedHashes(
     const std::vector<HashInfo>& hash_infos,
     extensions::ComputedHashes* result) {
   base::ScopedTempDir scoped_dir;
-  if (!scoped_dir.CreateUniqueTempDir())
+  if (!scoped_dir.CreateUniqueTempDir()) {
     return testing::AssertionFailure() << "Failed to create temp dir.";
+  }
 
   base::FilePath computed_hashes_path =
       scoped_dir.GetPath().AppendASCII("computed_hashes.json");
@@ -48,10 +51,11 @@ testing::AssertionResult WriteThenReadComputedHashes(
   std::optional<extensions::ComputedHashes> computed_hashes =
       extensions::ComputedHashes::CreateFromFile(computed_hashes_path,
                                                  &computed_hashes_status);
-  if (!computed_hashes)
+  if (!computed_hashes) {
     return testing::AssertionFailure()
            << "Failed to read computed_hashes.json (status: "
            << static_cast<int>(computed_hashes_status) << ")";
+  }
   *result = std::move(computed_hashes.value());
 
   return testing::AssertionSuccess();
@@ -68,9 +72,11 @@ TEST(ComputedHashesTest, ComputedHashes) {
   base::FilePath path1(FILE_PATH_LITERAL("foo.txt"));
   base::FilePath path2 =
       base::FilePath(FILE_PATH_LITERAL("foo")).AppendASCII("bar.txt");
-  std::vector<std::string> hashes1 = {crypto::SHA256HashString("first")};
-  std::vector<std::string> hashes2 = {crypto::SHA256HashString("second"),
-                                      crypto::SHA256HashString("third")};
+  std::vector<std::string> hashes1 = {
+      std::string(base::as_string_view(crypto::hash::Sha256("first")))};
+  std::vector<std::string> hashes2 = {
+      std::string(base::as_string_view(crypto::hash::Sha256("second"))),
+      std::string(base::as_string_view(crypto::hash::Sha256("third")))};
   const int kBlockSize1 = 4096;
   const int kBlockSize2 = 2048;
 
@@ -139,9 +145,9 @@ TEST(ComputedHashesTest, GetHashesForContent) {
   std::string content2;
   for (int i = 0; i < 500; i++)
     content2 += "hello world";
-  const char* content2_expected_hashes[] = {
-      "bvtt5hXo8xvHrlzGAhhoqPL/r+4zJXHx+6wAvkv15V8=",
-      "lTD45F7P6I/HOdi8u7FLRA4qzAYL+7xSNVeusG6MJI0="};
+  auto content2_expected_hashes = std::to_array<const char*>(
+      {"bvtt5hXo8xvHrlzGAhhoqPL/r+4zJXHx+6wAvkv15V8=",
+       "lTD45F7P6I/HOdi8u7FLRA4qzAYL+7xSNVeusG6MJI0="});
   std::vector<std::string> hashes2 =
       ComputedHashes::GetHashesForContent(content2, block_size);
   ASSERT_EQ(2u, hashes2.size());
@@ -155,67 +161,6 @@ TEST(ComputedHashesTest, GetHashesForContent) {
   ASSERT_EQ(1u, hashes3.size());
   ASSERT_EQ(std::string("47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU="),
             base::Base64Encode(hashes3[0]));
-}
-
-// Tests that dot/space path suffixes are treated correctly in
-// ComputedHashes::InitFromFile.
-//
-// Regression test for https://crbug.com/696208.
-TEST(ComputedHashesTest, DotSpaceSuffix) {
-  const std::string hash_value = crypto::SHA256HashString("test");
-  ComputedHashes computed_hashes{ComputedHashes::Data()};
-  // Add hashes for "foo.html" to computed_hashes.json.
-  ASSERT_TRUE(WriteThenReadComputedHashes(
-      {
-          {base::FilePath(FILE_PATH_LITERAL("foo.html")),
-           extension_misc::kContentVerificationDefaultBlockSize,
-           {hash_value}},
-      },
-      &computed_hashes));
-
-  struct TestCase {
-    const char* path;
-    bool expect_hash;
-
-    std::string ToString() const {
-      return base::StringPrintf("path = %s, expect_hash = %d", path,
-                                expect_hash);
-    }
-  } test_cases[] = {
-      // Sanity check: existing file.
-      {"foo.html", true},
-      // Sanity check: non existent file.
-      {"notfound.html", false},
-      // Path with "." suffix, along with incorrect case for the same.
-      {"foo.html.", kIsDotSpaceSuffixIgnored},
-      {"fOo.html.", kIsDotSpaceSuffixIgnored},
-      // Path with " " suffix, along with incorrect case for the same.
-      {"foo.html ", kIsDotSpaceSuffixIgnored},
-      {"fOo.html ", kIsDotSpaceSuffixIgnored},
-      // Path with ". " suffix, along with incorrect case for the same.
-      {"foo.html. ", kIsDotSpaceSuffixIgnored},
-      {"fOo.html. ", kIsDotSpaceSuffixIgnored},
-      // Path with " ." suffix, along with incorrect case for the same.
-      {"foo.html .", kIsDotSpaceSuffixIgnored},
-      {"fOo.html .", kIsDotSpaceSuffixIgnored},
-  };
-
-  for (const auto& test_case : test_cases) {
-    SCOPED_TRACE(test_case.ToString());
-    int block_size = 0;
-    std::vector<std::string> read_hashes;
-    EXPECT_EQ(
-        test_case.expect_hash,
-        computed_hashes.GetHashes(base::FilePath().AppendASCII(test_case.path),
-                                  &block_size, &read_hashes));
-
-    if (test_case.expect_hash) {
-      EXPECT_EQ(block_size,
-                extension_misc::kContentVerificationDefaultBlockSize);
-      ASSERT_EQ(1u, read_hashes.size());
-      EXPECT_EQ(hash_value, read_hashes[0]);
-    }
-  }
 }
 
 }  // namespace extensions

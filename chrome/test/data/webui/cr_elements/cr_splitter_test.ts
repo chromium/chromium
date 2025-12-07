@@ -55,7 +55,7 @@ suite('cr-splitter', function() {
     crSplitter.dispatchEvent(up);
 
     const afterWidth = previousElement.getBoundingClientRect().width;
-    assertEquals(100, afterWidth - beforeWidth);
+    assertEquals(100, Math.round(afterWidth - beforeWidth));
   });
 
   test('resize next element', function() {
@@ -81,6 +81,6 @@ suite('cr-splitter', function() {
     crSplitter.dispatchEvent(up);
 
     const afterWidth = nextElement.getBoundingClientRect().width;
-    assertEquals(100, afterWidth - beforeWidth);
+    assertEquals(100, Math.round(afterWidth - beforeWidth));
   });
 });

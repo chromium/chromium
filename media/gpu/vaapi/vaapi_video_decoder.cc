@@ -6,6 +6,11 @@
 
 #include <vulkan/vulkan.h>
 
+// vulkan.h includes <X11/Xlib.h> when VK_USE_PLATFORM_XLIB_KHR is defined
+// after https://github.com/KhronosGroup/Vulkan-Headers/pull/534.
+// This defines some macros which break build, so undefine them here.
+#undef Status
+
 #include <limits>
 #include <vector>
 
@@ -17,12 +22,12 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "media/base/format_utils.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
@@ -41,19 +46,18 @@
 #include "media/gpu/vaapi/vp8_vaapi_video_decoder_delegate.h"
 #include "media/gpu/vaapi/vp9_vaapi_video_decoder_delegate.h"
 #include "media/media_buildflags.h"
-#include "ui/gfx/buffer_format_util.h"
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 #include "media/gpu/vaapi/h265_vaapi_video_decoder_delegate.h"
 #endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // gn check does not account for BUILDFLAG(), so including these headers will
-// make gn check fail for builds other than ash-chrome. See gn help nogncheck
+// make gn check fail for builds other than ChromeOS. See gn help nogncheck
 // for more information.
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"  // nogncheck
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace media {
 
@@ -63,16 +67,17 @@ namespace {
 constexpr size_t kTimestampCacheSize = 128;
 
 std::optional<VideoPixelFormat> GetPixelFormatForBitDepth(uint8_t bit_depth) {
-  constexpr auto kSupportedBitDepthAndGfxFormats = base::MakeFixedFlatMap<
-      uint8_t, gfx::BufferFormat>({
-    {8u, gfx::BufferFormat::YUV_420_BIPLANAR}, {10u, gfx::BufferFormat::P010},
-  });
-  if (!base::Contains(kSupportedBitDepthAndGfxFormats, bit_depth)) {
+  constexpr auto kSupportedBitDepthAndVizFormats =
+      base::MakeFixedFlatMap<uint8_t, viz::SharedImageFormat>({
+          {8u, viz::MultiPlaneFormat::kNV12},
+          {10u, viz::MultiPlaneFormat::kP010},
+      });
+  if (!base::Contains(kSupportedBitDepthAndVizFormats, bit_depth)) {
     VLOGF(1) << "Unsupported bit depth: " << base::strict_cast<int>(bit_depth);
     return std::nullopt;
   }
-  return GfxBufferFormatToVideoPixelFormat(
-      kSupportedBitDepthAndGfxFormats.at(bit_depth));
+  return SharedImageFormatToVideoPixelFormat(
+      kSupportedBitDepthAndVizFormats.at(bit_depth));
 }
 
 inline int RoundDownToEven(int x) {
@@ -157,7 +162,7 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
   decoder_ = nullptr;
   if (vaapi_wrapper_) {
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.Clear();
+    allocated_va_surfaces_.clear();
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
@@ -197,7 +202,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     DCHECK(vaapi_wrapper_);
     // To clear |allocated_va_surfaces_|, we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
-    allocated_va_surfaces_.Clear();
+    allocated_va_surfaces_.clear();
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
@@ -207,7 +212,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     // don't want |decoder_| to have a dangling pointer. We also destroy
     // |cdm_event_cb_registration_| before |cdm_context_ref_| so that we have a
     // CDM at the moment of destroying the callback registration.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     cdm_event_cb_registration_ = nullptr;
 #endif
     cdm_context_ref_ = nullptr;
@@ -224,7 +229,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(output_frames_.empty());
 
   if (config.is_encrypted()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     SetErrorState("encrypted content is not supported");
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
@@ -237,9 +242,6 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     bool encrypted_av1_support = false;
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_AV1)
     encrypted_av1_support = true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    encrypted_av1_support = base::CommandLine::ForCurrentProcess()->HasSwitch(
-        switches::kLacrosUseChromeosProtectedAv1);
 #endif
     if (config.codec() != VideoCodec::kH264 &&
         config.codec() != VideoCodec::kVP9 &&
@@ -264,7 +266,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   const VideoCodecProfile profile = config.profile();
   if (!IsConfiguredForTesting()) {
     auto vaapi_wrapper_or_error = VaapiWrapper::CreateForVideoCodec(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         (!cdm_context_ref_ || transcryption_) ? VaapiWrapper::kDecode
                                               : VaapiWrapper::kDecodeProtected,
 #else
@@ -370,7 +372,7 @@ void VaapiVideoDecoder::ScheduleNextDecodeTask() {
   decode_task_queue_.pop();
   if (!current_decode_task_->buffer_->end_of_stream()) {
     decoder_->SetStream(current_decode_task_->buffer_id_,
-                        *current_decode_task_->buffer_);
+                        current_decode_task_->buffer_);
   }
 
   decoder_task_runner_->PostTask(
@@ -436,7 +438,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
       // If we have lost our protected HW session, it should be recoverable, so
       // indicate that we have lost our decoder state so it can be reloaded.
       if (decoder_delegate_->HasInitiatedProtectedRecovery()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
         // We only do the VAContext recreation for Chrome playback because there
         // is no mechanism in ARC to re-seek so we would end up using invalid
         // reference frames.
@@ -449,7 +451,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
           // destroyed.
           CHECK(!!vaapi_wrapper_);
           CHECK(!vaapi_wrapper_->HasContext());
-          allocated_va_surfaces_.Clear();
+          allocated_va_surfaces_.clear();
           const gfx::Size decoder_pic_size = decoder_->GetPicSize();
           if (decoder_pic_size.IsEmpty()) {
             SetErrorState("|decoder_| returned an empty picture size");
@@ -460,7 +462,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
             return;
           }
         }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
         waiting_cb_.Run(WaitingReason::kDecoderStateLost);
       }
       break;
@@ -501,11 +503,10 @@ std::unique_ptr<VASurfaceHandle> VaapiVideoDecoder::CreateSurface() {
     return nullptr;
   }
 
-  DCHECK(frame->GetSharedMemoryId().is_valid());
-  const auto frame_id = frame->GetSharedMemoryId().id;
-  const auto* surface = allocated_va_surfaces_.Lookup(frame_id);
+  const auto tracking_token = frame->tracking_token();
 
-  if (!surface) {
+  auto iter = allocated_va_surfaces_.find(tracking_token);
+  if (iter == allocated_va_surfaces_.end()) {
     std::unique_ptr<ScopedVASurface> va_surface =
         vaapi_wrapper_->CreateVASurfaceForFrameResource(
             *frame, cdm_context_ref_ || transcryption_);
@@ -513,16 +514,20 @@ std::unique_ptr<VASurfaceHandle> VaapiVideoDecoder::CreateSurface() {
       SetErrorState("failed to create VASurface from FrameResource");
       return nullptr;
     }
-    allocated_va_surfaces_.AddWithID(std::move(va_surface), frame_id);
+    const auto result = allocated_va_surfaces_.insert_or_assign(
+        tracking_token, std::move(va_surface));
+    CHECK(result.second);
+    iter = result.first;
   } else {
-    DCHECK_EQ(frame->coded_size(), surface->size());
+    DCHECK_EQ(frame->coded_size(), iter->second->size());
   }
 
   // Store the mapping between surface and video frame, so we know which video
   // frame to output when the surface is ready. It's also important to keep a
   // reference to the video frame during decoding, as the frame will be
   // automatically returned to the pool when the last reference is dropped.
-  const ScopedVASurface* va_surface = allocated_va_surfaces_.Lookup(frame_id);
+  CHECK(iter != allocated_va_surfaces_.end());
+  const ScopedVASurface* va_surface = iter->second.get();
   const VASurfaceID surface_id = va_surface->id();
   DCHECK_EQ(output_frames_.count(surface_id), 0u);
   output_frames_[surface_id] = frame;
@@ -554,7 +559,7 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
   // produces multiple surfaces with the same |buffer_id|, so we shouldn't
   // remove the timestamp from the cache.
   const auto it = buffer_id_to_timestamp_.Peek(buffer_id);
-  CHECK(it != buffer_id_to_timestamp_.end(), base::NotFatalUntil::M130);
+  CHECK(it != buffer_id_to_timestamp_.end());
   base::TimeDelta timestamp = it->second;
 
   // Find the frame associated with the surface. We won't erase it from
@@ -562,10 +567,9 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
   DCHECK_EQ(output_frames_.count(va_surface_id), 1u);
   scoped_refptr<FrameResource> frame = output_frames_[va_surface_id];
 
-  CHECK(
-      gfx::Rect(
-          allocated_va_surfaces_.Lookup(frame->GetSharedMemoryId().id)->size())
-          .Contains(visible_rect));
+  const auto iter = allocated_va_surfaces_.find(frame->tracking_token());
+  CHECK(iter != allocated_va_surfaces_.end());
+  CHECK(gfx::Rect(iter->second->size()).Contains(visible_rect));
 
   // Set the timestamp at which the decode operation started on the
   // |frame|. If the frame has been outputted before (e.g. because of VP9
@@ -586,7 +590,7 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
     frame = std::move(wrapped_frame);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (cdm_context_ref_ && !transcryption_) {
     // Store the VA-API protected session ID so that it can be re-used for
     // scaling the decoded video frame later in the pipeline.
@@ -601,7 +605,7 @@ void VaapiVideoDecoder::SurfaceReady(VASurfaceID va_surface_id,
         "does not match the type exposed by VaapiWrapper");
     frame->metadata().hw_va_protected_session_id = va_protected_session_id;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const auto gfx_color_space = color_space.ToGfxColorSpace();
   if (gfx_color_space.IsValid())
@@ -629,7 +633,7 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     // protected content requires overlays currently.
     // NOTE: Only use this for protected content as other requirements for using
     // it are tied to protected content.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     cdm_context_ref_->GetCdmContext()
         ->GetChromeOsCdmContext()
         ->GetScreenResolutions(
@@ -674,7 +678,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
   // resolution change, so we can safely DestroyContext() here; that, in turn,
   // allows for clearing the |allocated_va_surfaces_|.
   vaapi_wrapper_->DestroyContext();
-  allocated_va_surfaces_.Clear();
+  allocated_va_surfaces_.clear();
 
   const gfx::Rect decoder_visible_rect = decoder_->GetVisibleRect();
   const gfx::Size decoder_pic_size = decoder_->GetPicSize();
@@ -755,7 +759,7 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     profile_ = decoder_->GetProfile();
     auto new_vaapi_wrapper =
         VaapiWrapper::CreateForVideoCodec(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
             (!cdm_context_ref_ || transcryption_)
                 ? VaapiWrapper::kDecode
                 : VaapiWrapper::kDecodeProtected,
@@ -785,13 +789,6 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
 #if BUILDFLAG(IS_LINUX)
   std::optional<DmabufVideoFramePool::CreateFrameCB> allocator =
       base::BindRepeating(&AllocateCustomFrameProxy, weak_this_);
-  std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {
-      {.fourcc = *format_fourcc,
-       .size = decoder_pic_size,
-       .modifier = gfx::NativePixmapHandle::kNoModifier}};
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<DmabufVideoFramePool::CreateFrameCB> allocator = std::nullopt;
-
   std::vector<ImageProcessor::PixelLayoutCandidate> candidates = {
       {.fourcc = *format_fourcc,
        .size = decoder_pic_size,
@@ -902,7 +899,7 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
     case PIXEL_FORMAT_ARGB: {
       surface = vaapi_wrapper_->CreateVASurfaceWithUsageHints(
           VA_RT_FORMAT_RGB32, coded_size,
-          {VaapiWrapper::SurfaceUsageHint::kVideoProcessWrite});
+          {VaapiWrapper::SurfaceUsageHint::kGeneric});
       break;
     }
     default: {
@@ -923,8 +920,8 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
   if (!frame)
     return CroStatus::Codes::kFailedToCreateVideoFrame;
 
-  allocated_va_surfaces_.AddWithID(std::move(surface),
-                                   frame->GetSharedMemoryId().id);
+  allocated_va_surfaces_.insert_or_assign(frame->tracking_token(),
+                                          std::move(surface));
 
   return frame;
 }
@@ -932,17 +929,15 @@ VaapiVideoDecoder::AllocateCustomFrame(VideoPixelFormat format,
 bool VaapiVideoDecoder::NeedsBitstreamConversion() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(output_cb_) << "VaapiVideoDecoder hasn't been initialized";
-  NOTREACHED_IN_MIGRATION();
-  return (profile_ >= H264PROFILE_MIN && profile_ <= H264PROFILE_MAX) ||
-         (profile_ >= HEVCPROFILE_MIN && profile_ <= HEVCPROFILE_MAX);
+  NOTREACHED();
 }
 
 bool VaapiVideoDecoder::CanReadWithoutStalling() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 int VaapiVideoDecoder::GetMaxDecodeRequests() const {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 VideoDecoderType VaapiVideoDecoder::GetDecoderType() const {
@@ -957,7 +952,7 @@ bool VaapiVideoDecoder::NeedsTranscryption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::kWaitingForInput);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // We do not need to invoke transcryption if this is coming from a remote CDM
   // since it will already have been done.
   if (cdm_context_ref_ &&
@@ -967,7 +962,7 @@ bool VaapiVideoDecoder::NeedsTranscryption() {
           ->IsRemoteCdm()) {
     return false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return transcryption_;
 }
 

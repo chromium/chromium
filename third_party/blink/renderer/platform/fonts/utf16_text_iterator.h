@@ -18,16 +18,12 @@
  *
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UTF16_TEXT_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_UTF16_TEXT_ITERATOR_H_
 
 #include <unicode/utf16.h>
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -43,10 +39,10 @@ class PLATFORM_EXPORT UTF16TextIterator {
   // the range [offset, endOffset].
   // 'length' denotes the maximum length of the UChar array, which might exceed
   // 'endOffset'.
-  UTF16TextIterator(const UChar* characters, unsigned size)
-      : characters_(characters),
-        characters_end_(characters + size),
-        size_(size) {}
+  explicit UTF16TextIterator(base::span<const UChar> characters)
+      : characters_(base::to_address(characters.begin())),
+        characters_end_(base::to_address(characters.end())),
+        size_(base::checked_cast<wtf_size_t>(characters.size())) {}
 
   UTF16TextIterator(const UTF16TextIterator&) = delete;
   UTF16TextIterator& operator=(const UTF16TextIterator&) = delete;
@@ -65,14 +61,16 @@ class PLATFORM_EXPORT UTF16TextIterator {
   }
 
   void Advance() {
-    characters_ += current_glyph_length_;
+    UNSAFE_TODO(characters_ += current_glyph_length_);
     offset_ += current_glyph_length_;
   }
 
   unsigned Offset() const { return offset_; }
   unsigned Size() const { return size_; }
   const UChar* Characters() const { return characters_; }
-  const UChar* GlyphEnd() const { return characters_ + current_glyph_length_; }
+  const UChar* GlyphEnd() const {
+    return UNSAFE_TODO(characters_ + current_glyph_length_);
+  }
 
  private:
   bool IsValidSurrogatePair(UChar32&);

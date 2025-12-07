@@ -10,9 +10,9 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 
@@ -20,10 +20,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -35,12 +37,15 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -49,6 +54,9 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TileGroupDelegateImplUnitTest {
+    private static final GURL NON_SEARCH_URL = JUnitTestGURLs.URL_1;
+    private static final GURL SEARCH_URL = JUnitTestGURLs.URL_2;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
@@ -57,6 +65,7 @@ public class TileGroupDelegateImplUnitTest {
     @Mock private MostVisitedSites mMostVisitedSites;
     @Mock private SuggestionsNavigationDelegate mNavigationDelegate;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private TemplateUrlService mTemplateUrlService;
 
     private Context mContext;
     private TileGroupDelegateImpl mTileGroupDelegateImpl;
@@ -66,28 +75,39 @@ public class TileGroupDelegateImplUnitTest {
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
 
-        when(mSuggestionsDependencyFactory.createMostVisitedSites(any(Profile.class)))
+        lenient()
+                .when(mSuggestionsDependencyFactory.createMostVisitedSites(any(Profile.class)))
                 .thenReturn(mMostVisitedSites);
         mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
 
         mTileGroupDelegateImpl =
                 new TileGroupDelegateImpl(
                         mContext, mProfile, mNavigationDelegate, mSnackbarManager);
+
+        doReturn(false)
+                .when(mTemplateUrlService)
+                .isSearchResultsPageFromDefaultSearchProvider(any());
+        doReturn(true)
+                .when(mTemplateUrlService)
+                .isSearchResultsPageFromDefaultSearchProvider(SEARCH_URL);
+
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
     }
 
     @After
     public void tearDown() {
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
         mTileGroupDelegateImpl.destroy();
     }
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_DisableSelectExisting() {
-        GURL url = JUnitTestGURLs.URL_1;
+    @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_DisableReselect() {
+        GURL url = NON_SEARCH_URL;
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
-        verify(mNavigationDelegate, never()).maybeSelectTabWithUrl(anyString());
+        verify(mNavigationDelegate, never()).maybeSelectTabWithUrl(any(GURL.class));
         verify(mNavigationDelegate)
                 .navigateToSuggestionUrl(
                         eq(WindowOpenDisposition.CURRENT_TAB), eq(url.getSpec()), eq(false));
@@ -95,14 +115,13 @@ public class TileGroupDelegateImplUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_EnableSelectExistingTriggered() {
-        GURL url = JUnitTestGURLs.URL_1;
-        // Attempt to select tab with `url` but fail.
-        doReturn(false).when(mNavigationDelegate).maybeSelectTabWithUrl(anyString());
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_EnableReselectSearchUrl() {
+        GURL url = SEARCH_URL;
+        // Search `url` used, doesn't attempt to reselect tab.
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
-        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url.getSpec()));
+        verify(mNavigationDelegate, never()).maybeSelectTabWithUrl(any(GURL.class));
         verify(mNavigationDelegate)
                 .navigateToSuggestionUrl(
                         eq(WindowOpenDisposition.CURRENT_TAB), eq(url.getSpec()), eq(false));
@@ -110,16 +129,59 @@ public class TileGroupDelegateImplUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_SELECT_EXISTING_TAB})
-    public void testOpenMostVisitedItem_EnableSelectExistingFallback() {
-        GURL url = JUnitTestGURLs.URL_1;
-        // Attempt to select tab with `url` and succeed.
-        doReturn(true).when(mNavigationDelegate).maybeSelectTabWithUrl(anyString());
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_EnableReselectTriggered() {
+        GURL url = NON_SEARCH_URL;
+        // Attempt to reselect tab with `url` but fail.
+        doReturn(false).when(mNavigationDelegate).maybeSelectTabWithUrl(any(GURL.class));
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
-        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url.getSpec()));
+        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url));
+        verify(mNavigationDelegate)
+                .navigateToSuggestionUrl(
+                        eq(WindowOpenDisposition.CURRENT_TAB), eq(url.getSpec()), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_EnableReselectFallback() {
+        GURL url = NON_SEARCH_URL;
+        // Attempt to reselect tab with `url` and succeed.
+        doReturn(true).when(mNavigationDelegate).maybeSelectTabWithUrl(any(GURL.class));
+        mTileGroupDelegateImpl.openMostVisitedItem(
+                WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
+        verify(mNavigationDelegate).maybeSelectTabWithUrl(eq(url));
         verify(mNavigationDelegate, never())
                 .navigateToSuggestionUrl(anyInt(), anyString(), anyBoolean());
+    }
+
+    @Test
+    @SmallTest
+    public void testRemoveMostVisitedItem_ShowsSnackbar() {
+        mTileGroupDelegateImpl.removeMostVisitedItem(makeTile("Foo", NON_SEARCH_URL, 0));
+
+        verify(mMostVisitedSites).addBlocklistedUrl(NON_SEARCH_URL);
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Assert.assertEquals(
+                mContext.getString(R.string.most_visited_item_removed),
+                snackbarCaptor.getValue().getTextForTesting());
+    }
+
+    @Test
+    @SmallTest
+    public void testShowTileUnpinSnackbar() {
+        // Unlike `removeMostVisitedItem()`, `deleteCustomLink()` relies on the caller to show a
+        // snackbar. This test is therefore limited to verifying the snackbar logic via
+        // `showTileUnpinSnackbar()`, rather than the full unpin flow.
+        mTileGroupDelegateImpl.showTileUnpinSnackbar(() -> {});
+
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        Assert.assertEquals(
+                mContext.getString(R.string.custom_tile_unpinned),
+                snackbarCaptor.getValue().getTextForTesting());
     }
 
     private Tile makeTile(String title, GURL url, int index) {

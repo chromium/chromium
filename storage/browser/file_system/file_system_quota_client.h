@@ -7,14 +7,13 @@
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/file_system/file_system_quota_util.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/common/file_system/file_system_types.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -39,15 +38,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemQuotaClient
   // mojom::QuotaClient methods.
   void GetBucketUsage(const BucketLocator& bucket,
                       GetBucketUsageCallback callback) override;
-  void GetStorageKeysForType(blink::mojom::StorageType type,
-                             GetStorageKeysForTypeCallback callback) override;
+  void GetDefaultStorageKeys(GetDefaultStorageKeysCallback callback) override;
   void DeleteBucketData(const BucketLocator& bucket,
                         DeleteBucketDataCallback callback) override;
-  void PerformStorageCleanup(blink::mojom::StorageType type,
-                             PerformStorageCleanupCallback callback) override;
+  void PerformStorageCleanup(PerformStorageCleanupCallback callback) override;
 
  private:
   base::SequencedTaskRunner* file_task_runner() const;
+
+  // Gets available FileSystemTypes for a FileSystemContext.
+  std::vector<FileSystemType> GetFileSystemTypes() const;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

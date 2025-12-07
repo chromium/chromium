@@ -12,7 +12,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "net/base/auth.h"
 #include "net/base/network_anonymization_key.h"
-#include "url/gurl.h"
 
 namespace content {
 class NavigationHandle;
@@ -69,7 +68,7 @@ class LoginTabHelper : public content::WebContentsObserver,
   virtual std::unique_ptr<LoginHandler> CreateLoginHandler(
       const net::AuthChallengeInfo& auth_info,
       content::WebContents* web_contents,
-      LoginAuthRequiredCallback auth_required_callback);
+      content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
  private:
   friend class content::WebContentsUserData<LoginTabHelper>;

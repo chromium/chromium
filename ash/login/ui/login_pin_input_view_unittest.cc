@@ -7,11 +7,14 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "ash/login/ui/login_test_base.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/test/event_generator.h"
@@ -46,8 +49,8 @@ class LoginPinInputViewTest
     SetWidget(CreateWidgetWithContent(view_));
   }
 
-  void OnPinSubmit(const std::u16string& pin) {
-    submitted_pin_ = std::make_optional(pin);
+  void OnPinSubmit(std::u16string_view pin) {
+    submitted_pin_ = std::make_optional(std::u16string(pin));
   }
 
   void OnPinChanged(const bool is_empty) {
@@ -70,7 +73,10 @@ class LoginPinInputViewTest
   }
 
   void ExpectDescription(const std::string& value) {
-    ExpectAttribute(value, ax::mojom::StringAttribute::kDescription);
+    LoginPinInputView::TestApi test_api(view_);
+    EXPECT_EQ(
+        base::UTF8ToUTF16(value),
+        test_api.code_input()->GetViewAccessibility().GetCachedDescription());
   }
 
   void ExpectTextValue(const std::string& value) {

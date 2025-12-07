@@ -10,7 +10,5 @@ source_set("public") {
     "properties.cc",
     "properties.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

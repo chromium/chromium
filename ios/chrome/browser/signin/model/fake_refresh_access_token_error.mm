@@ -8,10 +8,15 @@
 
 @implementation FakeRefreshAccessTokenError
 
-- (instancetype)initWithCallback:(HandleMDMNotificationCallback)callback {
+- (instancetype)initWithIdentity:(id<SystemIdentity>)identity
+             isScopeLimitedError:(BOOL)isScopeLimitedError
+                        callback:(HandleMDMNotificationCallback)callback {
   if ((self = [super init])) {
-    DCHECK(!callback.is_null());
+    CHECK(identity);
+    CHECK(!callback.is_null());
+    _identity = identity;
     _callback = callback;
+    _isScopeLimitedError = isScopeLimitedError;
   }
   return self;
 }

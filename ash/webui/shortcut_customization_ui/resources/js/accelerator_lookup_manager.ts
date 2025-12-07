@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
-import {Accelerator, AcceleratorCategory, AcceleratorId, AcceleratorSource, AcceleratorSubcategory, LayoutInfo, LayoutStyle, MetaKey, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import type {Accelerator, AcceleratorId, AcceleratorSubcategory, LayoutInfo, MojoAcceleratorConfig, MojoAcceleratorInfo, MojoLayoutInfo, StandardAcceleratorInfo, TextAcceleratorInfo} from './shortcut_types.js';
+import {AcceleratorCategory, AcceleratorSource, LayoutStyle, MetaKey} from './shortcut_types.js';
 import {getAcceleratorId, getSourceAndActionFromAcceleratorId, isStandardAcceleratorInfo, isTextAcceleratorInfo} from './shortcut_utils.js';
 
 // Convert from Mojo types to the app types.
@@ -37,8 +37,7 @@ function createSanitizedAccelInfo(info: MojoAcceleratorInfo):
     layoutProperties: {
       standardAccelerator: {
         accelerator: sanitizedAccelerator,
-        keyDisplay: mojoString16ToString(
-            layoutProperties.standardAccelerator.keyDisplay),
+        keyDisplay: layoutProperties.standardAccelerator.keyDisplay,
         originalAccelerator: sanitizedOriginalAccelerator,
       },
     },
@@ -274,7 +273,7 @@ let managerInstance: AcceleratorLookupManager|null = null;
 
 
 function createSanitizedLayoutInfo(entry: MojoLayoutInfo): LayoutInfo {
-  return {...entry, description: mojoString16ToString(entry.description)};
+  return {...entry, description: entry.description};
 }
 
 type AcceleratorLayoutLookupMap =

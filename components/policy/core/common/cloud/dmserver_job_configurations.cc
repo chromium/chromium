@@ -6,11 +6,13 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -25,8 +27,7 @@ const char* JobTypeToRequestType(
     DeviceManagementService::JobConfiguration::JobType type) {
   switch (type) {
     case DeviceManagementService::JobConfiguration::TYPE_INVALID:
-      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type" << type;
-      return "Invalid";
+      NOTREACHED() << "Not a DMServer request type" << type;
     case DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT:
       return dm_protocol::kValueRequestAutoEnrollment;
     case DeviceManagementService::JobConfiguration::TYPE_REGISTRATION:
@@ -83,8 +84,7 @@ const char* JobTypeToRequestType(
       return dm_protocol::kValueRequestPublicSamlUser;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_REAL_TIME_REPORT:
-      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type " << type;
-      break;
+      NOTREACHED() << "Not a DMServer request type " << type;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_OS_USER_REPORT:
       return dm_protocol::kValueRequestChromeOsUserReport;
     case DeviceManagementService::JobConfiguration::
@@ -100,8 +100,7 @@ const char* JobTypeToRequestType(
       return dm_protocol::kValueBrowserUploadPublicKey;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_ENCRYPTED_REPORT:
-      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type " << type;
-      break;
+      NOTREACHED() << "Not a DMServer request type " << type;
     case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
       return dm_protocol::kValueRequestUploadEuiccInfo;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
@@ -109,9 +108,14 @@ const char* JobTypeToRequestType(
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_FM_REGISTRATION_TOKEN:
       return dm_protocol::kValueRequestFmRegistrationTokenUpload;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_POLICY_AGENT_REGISTRATION:
+      return dm_protocol::kValueRequestRegisterPolicyAgent;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_DETERMINE_PROMOTION_ELIGIBILITY:
+      return dm_protocol::kValueRequestDeterminePromotionEligibility;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid job type " << type;
-  return "";
+  NOTREACHED() << "Invalid job type " << type;
 }
 
 }  // namespace
@@ -179,6 +183,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(CreateParams params)
     : JobConfigurationBase(params.type,
                            std::move(params.auth_data),
                            std::move(params.oauth_token),
+                           params.use_cookies,
                            params.factory),
       server_url_(params.service->configuration()->GetDMServerUrl()),
       callback_(std::move(params.callback)) {
@@ -235,15 +240,16 @@ DMServerJobConfiguration::DMServerJobConfiguration(
                                    client->GetURLLoaderFactory(),
                                    std::move(callback))) {}
 
-DMServerJobConfiguration::~DMServerJobConfiguration() {}
+DMServerJobConfiguration::~DMServerJobConfiguration() = default;
 
 DeviceManagementStatus
 DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
     int net_error,
     int response_code,
     const std::string& response_body) {
-  if (net_error != net::OK)
+  if (net_error != net::OK) {
     return DM_STATUS_REQUEST_FAILED;
+  }
 
   switch (response_code) {
     case DeviceManagementService::kSuccess:
@@ -301,11 +307,14 @@ DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(
       return DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE;
     case DeviceManagementService::kInvalidPackagedDeviceForKiosk:
       return DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK;
+    case DeviceManagementService::kOrgUnitEnrollmentLimitExceeded:
+      return DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED;
     default:
       // Handle all unknown 5xx HTTP error codes as temporary and any other
       // unknown error as one that needs more time to recover.
-      if (response_code >= 500 && response_code <= 599)
+      if (response_code >= 500 && response_code <= 599) {
         return DM_STATUS_TEMPORARY_UNAVAILABLE;
+      }
 
       return DM_STATUS_HTTP_STATUS_ERROR;
   }
@@ -358,7 +367,7 @@ GURL DMServerJobConfiguration::GetURL(int last_error) const {
 
   GURL url(server_url_);
   url = net::AppendQueryParameter(url, dm_protocol::kParamRetry,
-                                  last_error == 0 ? "false" : "true");
+                                  base::ToString(last_error != 0));
 
   if (last_error != 0) {
     url = net::AppendQueryParameter(url, dm_protocol::kParamLastError,

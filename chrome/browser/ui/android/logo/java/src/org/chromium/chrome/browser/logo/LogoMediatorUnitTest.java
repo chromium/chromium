@@ -4,7 +4,10 @@
 
 package org.chromium.chrome.browser.logo;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -13,6 +16,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -24,20 +28,22 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.Features;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.components.image_fetcher.ImageFetcher;
+import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -46,17 +52,17 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class LogoMediatorUnitTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
 
     @Mock LogoBridge.Natives mLogoBridgeJniMock;
 
     @Mock LogoBridge mLogoBridge;
 
-    @Mock ImageFetcher mImageFetcher;
-
     @Mock TemplateUrlService mTemplateUrlService;
+
+    @Mock TemplateUrl mTemplateUrl;
 
     @Mock Callback<LoadUrlParams> mLogoClickedCallback;
 
@@ -71,25 +77,25 @@ public class LogoMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
-
         mContext = ApplicationProvider.getApplicationContext();
 
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+        when(mTemplateUrlService.getDefaultSearchEngineTemplateUrl()).thenReturn(mTemplateUrl);
+        when(mTemplateUrl.getKeyword()).thenReturn(null);
 
-        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
+        LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> HomepageManager.getInstance().setPrefHomepageEnabled(true));
+                () -> HomepageManager.getInstance().setJavaPrefHomepageEnabled(true));
 
         mLogoModel = new PropertyModel(LogoProperties.ALL_KEYS);
     }
 
     @Test
-    public void testDseChangedAndGoogleIsDseAndDoodleIsSupported() {
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR)
+    public void testDseChangedAndGoogleIsDseAndDoodleIsSupported_disabled() {
         LogoMediator logoMediator = createMediator();
         Assert.assertNotNull(logoMediator.getDefaultGoogleLogo(mContext));
 
@@ -101,24 +107,36 @@ public class LogoMediatorUnitTest {
     }
 
     @Test
-    public void testDseChangedAndGoogleIsDseAndDoodleIsNotSupported() {
-        // If doodle isn't supported, getSearchProviderLogo() shouldn't be called by
-        // onTemplateURLServiceChanged().
-        LogoMediator logoMediator = createMediator(false);
-        Assert.assertNotNull(logoMediator.getDefaultGoogleLogo(mContext));
+    public void testDseChangedAndGoogleIsDseAndDoodleIsSupported() {
+        LogoMediator logoMediator = createMediator(mContext.getDrawable(R.drawable.ic_google_logo));
+        Assert.assertNotNull(logoMediator.getDefaultGoogleLogoDrawable());
 
         verify(mTemplateUrlService)
                 .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
         mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
 
-        verify(mLogoBridge, times(0)).getCurrentLogo(any());
+        verify(mLogoBridge, times(1)).getCurrentLogo(any());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.ANDROID_LOGO_VIEW_REFACTOR)
+    public void testDseChangedAndGoogleIsNotDse_disabled() {
+        LogoMediator logoMediator = createMediator();
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        Assert.assertNull(logoMediator.getDefaultGoogleLogo(mContext));
+
+        verify(mTemplateUrlService)
+                .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
+        mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
+
+        verify(mLogoBridge, times(1)).getCurrentLogo(any());
     }
 
     @Test
     public void testDseChangedAndGoogleIsNotDse() {
-        LogoMediator logoMediator = createMediator();
+        LogoMediator logoMediator = createMediator(mContext.getDrawable(R.drawable.ic_google_logo));
         when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
-        Assert.assertNull(logoMediator.getDefaultGoogleLogo(mContext));
+        Assert.assertNull(logoMediator.getDefaultGoogleLogoDrawable());
 
         verify(mTemplateUrlService)
                 .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
@@ -163,23 +181,24 @@ public class LogoMediatorUnitTest {
 
     @Test
     public void testInitWithNativeWhenParentSurfaceIsVisible() {
-        LogoMediator logoMediator = createMediatorWithoutNative(true);
+        LogoMediator logoMediator = createMediatorWithoutNative();
         logoMediator.updateVisibility(/* animationEnabled= */ false);
 
-        Assert.assertTrue(logoMediator.isLogoVisible());
+        assertTrue(logoMediator.isLogoVisible());
         // When parent surface is shown while native library isn't loaded, calling
         // updateVisibilityAndMaybeCleanUp() will add a pending load task.
-        Assert.assertTrue(logoMediator.getIsLoadPendingForTesting());
-        logoMediator.initWithNative();
+        assertTrue(logoMediator.getIsLoadPendingForTesting());
+        logoMediator.initWithNative(mProfile);
 
-        Assert.assertTrue(logoMediator.isLogoVisible());
+        assertTrue(logoMediator.isLogoVisible());
         verify(mLogoBridge, times(1)).getCurrentLogo(any());
         verify(mTemplateUrlService).addObserver(logoMediator);
     }
 
+    @SuppressWarnings("DirectInvocationOnMock")
     @Test
     public void testInitWithoutNativeWhenDseDoesNotHaveLogo() {
-        LogoMediator logoMediator = createMediatorWithoutNative(true);
+        LogoMediator logoMediator = createMediatorWithoutNative();
         boolean originKeyValue =
                 ChromeSharedPreferences.getInstance()
                         .readBoolean(
@@ -203,7 +222,7 @@ public class LogoMediatorUnitTest {
         // destroyed.
         logoMediator.setLogoBridgeForTesting(mLogoBridge);
         logoMediator.updateVisibility(/* animationEnabled= */ false);
-        Assert.assertTrue(logoMediator.isLogoVisible());
+        assertTrue(logoMediator.isLogoVisible());
         verify(mLogoBridge).getCurrentLogo(any());
         verify(mLogoBridge, never()).destroy();
         Assert.assertFalse(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
@@ -211,7 +230,7 @@ public class LogoMediatorUnitTest {
         // Attached the test for animationEnabled.
         logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
         logoMediator.updateVisibility(/* animationEnabled= */ true);
-        Assert.assertTrue(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
+        assertTrue(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
     }
 
     @Test
@@ -222,29 +241,64 @@ public class LogoMediatorUnitTest {
         verify(mTemplateUrlService).removeObserver(logoMediator);
     }
 
-    private LogoMediator createMediator(boolean shouldFetchDoodle) {
-        LogoMediator logoMediator = createMediatorWithoutNative(shouldFetchDoodle);
-        logoMediator.initWithNative();
-        return logoMediator;
+    @Test
+    public void testIsDefaultGoogleLogoShown() {
+        LogoMediator logoMediator = createMediator();
+        Logo logo = mock(Logo.class);
+
+        logoMediator.setShouldShowLogoForTesting(true);
+        mLogoModel.set(LogoProperties.VISIBILITY, true);
+        mLogoModel.set(LogoProperties.LOGO, null);
+        assertTrue(logoMediator.isDefaultGoogleLogoShown());
+
+        logoMediator.setShouldShowLogoForTesting(false);
+        Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
+
+        logoMediator.setShouldShowLogoForTesting(true);
+        mLogoModel.set(LogoProperties.VISIBILITY, false);
+        Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
+
+        logoMediator.setShouldShowLogoForTesting(true);
+        mLogoModel.set(LogoProperties.VISIBILITY, true);
+        mLogoModel.set(LogoProperties.LOGO, logo);
+        Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
+    }
+
+    @Test
+    public void testUpdateDefaultGoogleLogo() {
+        LogoMediator logoMediator = createMediator();
+        Drawable drawable = mock(Drawable.class);
+        logoMediator.updateDefaultGoogleLogo(drawable);
+
+        assertEquals(drawable, logoMediator.getDefaultGoogleLogoDrawable());
+        assertTrue(mLogoModel.get(LogoProperties.SHOW_DEFAULT_GOOGLE_LOGO));
     }
 
     private LogoMediator createMediator() {
-        LogoMediator logoMediator = createMediatorWithoutNative(true);
-        logoMediator.initWithNative();
+        return createMediator(null);
+    }
+
+    private LogoMediator createMediator(@Nullable Drawable defaultGoogleLogoDrawable) {
+        LogoMediator logoMediator = createMediatorWithoutNative(defaultGoogleLogoDrawable);
+        logoMediator.initWithNative(mProfile);
         return logoMediator;
     }
 
-    private LogoMediator createMediatorWithoutNative(boolean shouldFetchDoodle) {
+    private LogoMediator createMediatorWithoutNative() {
+        return createMediatorWithoutNative(null);
+    }
+
+    private LogoMediator createMediatorWithoutNative(@Nullable Drawable defaultGoogleLogoDrawable) {
         LogoMediator logoMediator =
                 new LogoMediator(
                         mContext,
                         mLogoClickedCallback,
                         mLogoModel,
-                        shouldFetchDoodle,
                         mOnLogoAvailableCallback,
                         null,
                         new CachedTintedBitmap(
-                                R.drawable.google_logo, R.color.google_logo_tint_color));
+                                R.drawable.google_logo, R.color.google_logo_tint_color),
+                        defaultGoogleLogoDrawable);
         logoMediator.setLogoBridgeForTesting(mLogoBridge);
         return logoMediator;
     }

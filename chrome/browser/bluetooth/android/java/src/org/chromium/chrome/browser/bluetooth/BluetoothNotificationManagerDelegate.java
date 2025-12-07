@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.bluetooth;
 
 import android.content.Intent;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** Delegate for {@link BluetoothNotificationManager}. */
+@NullMarked
 public interface BluetoothNotificationManagerDelegate {
     /**
      * Creates an Intent to bring an Activity for a particular Tab back to the

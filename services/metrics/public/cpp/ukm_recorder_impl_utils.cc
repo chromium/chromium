@@ -33,10 +33,6 @@ void RecordDroppedEntry(uint64_t event_hash, DroppedDataReason reason) {
     case DroppedDataReason::SAMPLED_OUT:
       UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.SampledOut.ByEntryHash", value);
       break;
-    case DroppedDataReason::REJECTED_BY_FILTER:
-      UMA_HISTOGRAM_SPARSE("UKM.Entries.Dropped.RejectedByFilter.ByEntryHash",
-                           value);
-      break;
     default:
       break;
   }

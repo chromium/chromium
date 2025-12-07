@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("intent_helper") {
   sources = [
@@ -18,25 +18,30 @@ static_library("intent_helper") {
     "custom_tab_session_impl.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+  ]
 
   deps = [
     "//ash",
-    "//ash/components/arc",
     "//ash/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/system",
+    "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/common",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",
-    "//components/arc",
-    "//components/arc/common",
-    "//components/arc/common:arc_intent_helper_constants",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc/intent_helper",
+    "//chromeos/ash/experiences/arc/intent_helper:arc_intent_helper_constants",
     "//components/language/core/browser",
     "//components/live_caption",
     "//components/live_caption:constants",
@@ -60,12 +65,10 @@ source_set("unit_tests") {
 
   deps = [
     ":intent_helper",
-    "//ash/components/arc",
-    "//ash/components/arc:arc_test_support",
     "//ash/constants",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/browser/ash/settings",
@@ -75,7 +78,8 @@ source_set("unit_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/network",
-    "//components/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/language/core/browser",
     "//components/live_caption",
     "//components/live_caption:constants",
@@ -97,10 +101,9 @@ source_set("browser_tests") {
 
   deps = [
     ":intent_helper",
-    "//ash/components/arc:arc_test_support",
     "//base",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
@@ -108,7 +111,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/network",
-    "//components/arc:arc_test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
     "//components/exo",
     "//components/exo:test_support",
     "//components/policy:generated",

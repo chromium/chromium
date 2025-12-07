@@ -5,7 +5,6 @@
 #ifndef UI_COMPOSITOR_COMPOSITOR_SWITCHES_H_
 #define UI_COMPOSITOR_COMPOSITOR_SWITCHES_H_
 
-#include "base/feature_list.h"
 #include "ui/compositor/compositor_export.h"
 
 namespace switches {
@@ -20,17 +19,9 @@ COMPOSITOR_EXPORT extern const char kDisableVsyncForTests[];
 
 }  // namespace switches
 
-namespace features {
-
-COMPOSITOR_EXPORT BASE_DECLARE_FEATURE(kEnablePixelCanvasRecording);
-
-}  // namespace features
-
 namespace ui {
 
 bool IsUIZeroCopyEnabled();
-
-bool COMPOSITOR_EXPORT IsPixelCanvasRecordingEnabled();
 
 }  // namespace ui
 

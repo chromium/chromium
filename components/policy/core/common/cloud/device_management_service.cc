@@ -4,6 +4,8 @@
 
 #include "components/policy/core/common/cloud/device_management_service.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -151,6 +153,8 @@ std::string ResponseCodeToString(int response_code) {
       return "IllegalAccountForPackagedEDULicense";
     case DeviceManagementService::kInvalidPackagedDeviceForKiosk:
       return "InvalidPackagedDeviceForKiosk";
+    case DeviceManagementService::kOrgUnitEnrollmentLimitExceeded:
+      return "OrgUnitEnrollmentLimitExceeded";
   }
 
   return base::NumberToString(response_code);
@@ -185,6 +189,7 @@ const int DeviceManagementService::kInvalidDomainlessCustomer;
 const int DeviceManagementService::kTosHasNotBeenAccepted;
 const int DeviceManagementService::kIllegalAccountForPackagedEDULicense;
 const int DeviceManagementService::kInvalidPackagedDeviceForKiosk;
+const int DeviceManagementService::kOrgUnitEnrollmentLimitExceeded;
 
 // static
 std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
@@ -275,14 +280,19 @@ std::string DeviceManagementService::JobConfiguration::GetJobTypeAsString(
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_FM_REGISTRATION_TOKEN:
       return "UploadFmRegistrationToken";
+    case DeviceManagementService::JobConfiguration::
+        TYPE_POLICY_AGENT_REGISTRATION:
+      return "PolicyAgentRegistration";
     // TODO(b/263367348): Remove the Active Directory types below, after they're
     // removed from the corresponding enum.
     case DeviceManagementService::JobConfiguration::
         TYPE_ACTIVE_DIRECTORY_ENROLL_PLAY_USER:
     case DeviceManagementService::JobConfiguration::
         TYPE_ACTIVE_DIRECTORY_PLAY_ACTIVITY:
-      NOTREACHED_IN_MIGRATION() << "Invalid job type: " << type;
-      return "";
+      NOTREACHED() << "Invalid job type: " << type;
+    case DeviceManagementService::JobConfiguration::
+        TYPE_DETERMINE_PROMOTION_ELIGIBILITY:
+      return "DeterminePromotionEligibility";
   }
 }
 
@@ -290,15 +300,17 @@ JobConfigurationBase::JobConfigurationBase(
     JobType type,
     DMAuth auth_data,
     std::optional<std::string> oauth_token,
+    bool use_cookies,
     scoped_refptr<network::SharedURLLoaderFactory> factory)
     : type_(type),
       factory_(factory),
       auth_data_(std::move(auth_data)),
-      oauth_token_(std::move(oauth_token)) {
+      oauth_token_(std::move(oauth_token)),
+      use_cookies_(use_cookies) {
   CHECK(!auth_data_.has_oauth_token()) << "Use |oauth_token| instead";
 
 #if !BUILDFLAG(IS_IOS)
-  if (oauth_token_ && auth_data.token_type() != DMAuthTokenType::kOidc) {
+  if (oauth_token_ && auth_data_.token_type() != DMAuthTokenType::kOidc) {
     // Put the oauth token in the query parameters for platforms that are not
     // iOS. On iOS we are trying the oauth token in the request headers
     // (crbug.com/1312158). We might want to use the iOS approach on all
@@ -326,6 +338,14 @@ void JobConfigurationBase::AddParameter(const std::string& name,
 
 const DMAuth& JobConfigurationBase::GetAuth() const {
   return auth_data_;
+}
+
+std::string JobConfigurationBase::GetContentType() {
+  return kPostContentType;
+}
+
+bool JobConfigurationBase::AreCookiesUsed() {
+  return use_cookies_;
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -356,7 +376,8 @@ JobConfigurationBase::GetTrafficAnnotationTag() {
       destination: GOOGLE_OWNED_SERVICE
     }
     policy {
-      cookies_allowed: NO
+      cookies_allowed: YES
+      cookies_store: "user"
       setting:
         "This feature cannot be controlled by Chrome settings, but users "
         "can sign out of Chrome to disable it."
@@ -380,11 +401,18 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
     url = net::AppendQueryParameter(url, entry->first, entry->second);
   }
 
-  rr->url = url;
+  rr->url = std::move(url);
   rr->method = "POST";
   rr->load_flags =
       net::LOAD_DISABLE_CACHE | (bypass_proxy ? net::LOAD_BYPASS_PROXY : 0);
-  rr->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+  if (use_cookies_) {
+    rr->credentials_mode = network::mojom::CredentialsMode::kInclude;
+    rr->site_for_cookies = net::SiteForCookies::FromUrl(rr->url);
+  } else {
+    rr->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  }
+
   // Disable secure DNS for requests related to device management to allow for
   // recovery in the event of a misconfigured secure DNS policy.
   rr->trusted_params = network::ResourceRequest::TrustedParams();
@@ -423,14 +451,21 @@ JobConfigurationBase::GetResourceRequest(bool bypass_proxy, int last_error) {
       // OAuth token is transferred as a HTTP query parameter.
       break;
     case DMAuthTokenType::kOidc:
-      // Send OIDC Auth token and ID token in auth header, send profile ID in
-      // URL parameter
-      rr->headers.SetHeader(
-          dm_protocol::kAuthHeader,
-          base::StrCat({dm_protocol::kOidcAuthHeaderPrefix,
-                        dm_protocol::kOidcAuthTokenHeaderPrefix, *oauth_token_,
-                        ",", dm_protocol::kOidcIdTokenHeaderPrefix,
-                        auth_data_.oidc_id_token()}));
+      if (oauth_token_ && !oauth_token_.value().empty()) {
+        rr->headers.SetHeader(
+            dm_protocol::kAuthHeader,
+            base::StrCat({dm_protocol::kOidcAuthHeaderPrefix,
+                          dm_protocol::kOidcAuthTokenHeaderPrefix,
+                          *oauth_token_, ",",
+                          dm_protocol::kOidcIdTokenHeaderPrefix,
+                          auth_data_.oidc_id_token()}));
+      } else {
+        rr->headers.SetHeader(
+            dm_protocol::kAuthHeader,
+            base::StrCat({dm_protocol::kOidcAuthHeaderPrefix,
+                          dm_protocol::kOidcEncryptedUserInfoPrefix,
+                          auth_data_.oidc_id_token()}));
+      }
       break;
   }
 
@@ -472,7 +507,7 @@ class DeviceManagementService::JobImpl : public Job {
 
   // Callback for `SimpleURLLoader`. Extracts data from |response_body| and
   // |url_loader_| and passes it on to |OnURLLoaderCompleteInternal|.
-  void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnURLLoaderComplete(std::optional<std::string> response_body);
 
   // Interprets URL loading data and either schedules a retry or hands the data
   // off to |HandleResponseData|.
@@ -515,7 +550,8 @@ void DeviceManagementService::JobImpl::CreateUrlLoader() {
   auto rr = config_->GetResourceRequest(bypass_proxy_, last_error_);
   auto annotation = config_->GetTrafficAnnotationTag();
   url_loader_ = network::SimpleURLLoader::Create(std::move(rr), annotation);
-  url_loader_->AttachStringForUpload(config_->GetPayload(), kPostContentType);
+  url_loader_->AttachStringForUpload(config_->GetPayload(),
+                                     config_->GetContentType());
   url_loader_->SetAllowHttpErrorResults(true);
   if (config_->GetTimeoutDuration()) {
     url_loader_->SetTimeoutDuration(config_->GetTimeoutDuration().value());
@@ -523,7 +559,7 @@ void DeviceManagementService::JobImpl::CreateUrlLoader() {
 }
 
 void DeviceManagementService::JobImpl::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   int response_code = 0;
   bool was_fetched_via_proxy = false;
   std::string mime_type;
@@ -537,12 +573,7 @@ void DeviceManagementService::JobImpl::OnURLLoaderComplete(
     }
   }
 
-  std::string response_body_str;
-  if (response_body.get()) {
-    response_body_str = std::move(*response_body.get());
-  }
-
-  OnURLLoaderCompleteInternal(response_body_str, mime_type,
+  OnURLLoaderCompleteInternal(std::move(response_body).value_or(""), mime_type,
                               url_loader_->NetError(), response_code,
                               was_fetched_via_proxy);
 }
@@ -570,9 +601,10 @@ DeviceManagementService::JobImpl::OnURLLoaderCompleteInternal(
   LOG_POLICY(WARNING, CBCM_ENROLLMENT)
       << "Request of type "
       << JobConfiguration::GetJobTypeAsString(config_->GetType())
-      << " failed (net_error = " << net_error
-      << ", response_code = " << response_code << "), retrying in "
-      << retry_delay << "ms.";
+      << " failed (net_error = " << net::ErrorToString(net_error) << " ("
+      << net_error
+      << "), response_code = " << ResponseCodeToString(response_code) << "( "
+      << response_code << ")), retrying in " << retry_delay << "ms.";
   if (!is_test) {
     task_runner_->PostDelayedTask(
         FROM_HERE,
@@ -676,8 +708,7 @@ int DeviceManagementService::JobImpl::GetRetryDelay(RetryMethod method) {
     case RETRY_IMMEDIATELY:
       return 0;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -733,6 +764,10 @@ DeviceManagementService::CreateJobForTesting(
   auto job = std::make_unique<JobImpl>(task_runner_, std::move(config));
   JobForTesting job_for_testing(job.get());  // IN-TEST
   return std::make_pair(std::move(job), std::move(job_for_testing));
+}
+
+const scoped_refptr<base::SequencedTaskRunner> DeviceManagementService::GetTaskRunnerForTesting() {
+  return task_runner_;
 }
 
 std::unique_ptr<DeviceManagementService::Job>

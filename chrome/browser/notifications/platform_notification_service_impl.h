@@ -14,7 +14,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_trigger_scheduler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -109,6 +108,24 @@ class PlatformNotificationServiceImpl
   FRIEND_TEST_ALL_PREFIXES(
       PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       FindWebAppIconAndTitle);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
+      UpdateNotificationDatabaseMetadata);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      RecordSuspiciousNotification);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      NotSuspiciousNoEngagementRecorded);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      RevokeNotificationPermission);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      DoNotRevokeWhenFeatureDisabled);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_AutoRevokeSuspiciousNotification,
+      RevokeNotificationPermission_UpdateNotificationDatabaseMetadata);
 
   struct WebAppIconAndTitle {
     gfx::ImageSkia icon;
@@ -161,6 +178,46 @@ class PlatformNotificationServiceImpl
   // Clears |closed_notifications_|. Should only be used for testing purposes.
   void ClearClosedNotificationsForTesting() { closed_notifications_.clear(); }
 
+  // Update the notification entry in the `NotificationDatabase` with
+  // `serialized_content_detection_metadata` for possible MQLS logging later.
+  // Update `persistent_metadata`, given the value of `should_show_warning`, to
+  // tell the front end whether to display the notification or the warning.
+  // Increment warning shown count based on `should_show_warning` and revoke
+  // notification permission if applicable.
+  void HandleOnDeviceModelResponseThenMaybeDisplay(
+      const message_center::Notification& notification,
+      std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+      bool should_show_warning,
+      std::optional<std::string> serialized_content_detection_metadata);
+
+  // Logs metrics when displaying a persistent notification.
+  void LogPersistentNotificationShownMetrics(
+      const blink::PlatformNotificationData& notification_data,
+      const GURL& origin,
+      const GURL& notification_origin);
+
+  // Returns true if the user tapped "Always allow" on a notification warning
+  // for `origin`.
+  bool AreSuspiciousNotificationsAllowlistedByUser(const GURL& origin);
+
+  // `WriteResourcesResultCallback` callback that updates the
+  // `persistent_metadata` and displays the notification with a call to
+  // `DoUpdatePersistentMetadataThenDisplay`, after updating the notification
+  // database with serialized metadata. Note the `success` value is currently
+  // unused.
+  void DidUpdatePersistentMetadata(
+      std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+      message_center::Notification notification,
+      bool should_show_warning,
+      bool success);
+
+  // Helper method for updating `persistent_metadata`, given the value of
+  // `should_show_warning` then displaying the notification.
+  void DoUpdatePersistentMetadataThenDisplay(
+      std::unique_ptr<PersistentNotificationMetadata> persistent_metadata,
+      message_center::Notification notification,
+      bool should_show_warning);
+
   // The profile for this instance or NULL if the initial profile has been
   // shutdown already.
   raw_ptr<Profile> profile_;
@@ -174,6 +231,8 @@ class PlatformNotificationServiceImpl
 
   // Testing-only closure to observe when a UKM event has been recorded.
   base::OnceClosure ukm_recorded_closure_for_testing_;
+
+  base::WeakPtrFactory<PlatformNotificationServiceImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_PLATFORM_NOTIFICATION_SERVICE_IMPL_H_

@@ -1,0 +1,59 @@
+<style include="settings-shared settings-columned-section">
+  cr-icon {
+    flex-shrink: 0;
+  }
+</style>
+
+<settings-subpage page-title="$i18n{tabOrganizationSettingLabel}"
+    route-path$="[[routePath]]">
+<settings-ai-policy-indicator pref="[[enterprisePref_]]">
+</settings-ai-policy-indicator>
+<div class="cr-row first">
+  <div class="flex cr-padded-text">
+    <div id="tabOrganizationLabel">$i18n{tabOrganizationSettingLabel}</div>
+    <div class="secondary">
+      $i18n{tabOrganizationSettingSublabelV2}$i18n{sentenceEnd}
+      <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+          aria-label="$i18n{tabOrganizationSettingLearnMoreA11y}"
+          aria-description="$i18n{opensInNewTab}"
+          on-click="onLearnMoreClick_" target="_blank">
+        $i18n{learnMore}
+      </a>
+    </div>
+  </div>
+</div>
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingWhenUsed}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:auto-tab-group" aria-hidden="true"></cr-icon>
+        <div class="secondary">
+          $i18n{tabOrganizationSettingWhenOnAutoGroups}
+        </div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:tab" aria-hidden="true"></cr-icon>
+        <div class="secondary">
+          $i18n{tabOrganizationSettingWhenOnImproveFocus}
+        </div>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{tabOrganizationSettingConsiderData}</div>
+      </li>
+      <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+      </settings-ai-logging-info-bullet>
+    </ul>
+  </div>
+</div>
+</settings-subpage>

@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -18,7 +17,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
@@ -26,7 +24,6 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/browser/unified_consent/unified_consent_service_factory.h"
@@ -47,6 +44,7 @@
 #include "components/sync/service/sync_user_settings.h"
 #include "components/unified_consent/unified_consent_service.h"
 #include "components/user_manager/user_manager.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace {
 
@@ -89,9 +87,6 @@ constexpr base::TimeDelta kWaitTimeoutForTest = base::Milliseconds(1);
 std::optional<bool> sync_disabled_by_policy_for_test;
 std::optional<bool> sync_engine_initialized_for_test;
 
-SyncConsentScreen::SyncConsentScreenExitTestDelegate* test_exit_delegate_ =
-    nullptr;
-
 syncer::SyncService* GetSyncService(Profile* profile) {
   if (SyncServiceFactory::HasSyncService(profile))
     return SyncServiceFactory::GetForProfile(profile);
@@ -108,7 +103,7 @@ void RecordUmaReviewFollowingSetup(bool value) {
 // capability value is unknown.
 bool IsMinorMode(Profile* profile, const user_manager::User* user) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  std::string gaia_id = user->GetAccountId().GetGaiaId();
+  GaiaId gaia_id = user->GetAccountId().GetGaiaId();
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
   auto capability =
@@ -145,32 +140,26 @@ std::string SyncConsentScreen::GetResultString(Result result) {
 
 // static
 void SyncConsentScreen::MaybeLaunchSyncConsentSettings(Profile* profile) {
+  // TODO(alemate): In a very special case when chrome is exiting at the very
+  // moment we show Settings, it might crash here because profile could be
+  // already destroyed. This needs to be fixed.
   if (profile->GetPrefs()->GetBoolean(
           ::prefs::kShowSyncSettingsOnSessionStart)) {
-    // TODO (alemate): In a very special case when chrome is exiting at the very
-    // moment we show Settings, it might crash here because profile could be
-    // already destroyed. This needs to be fixed.
-    if (crosapi::browser_util::IsLacrosEnabled()) {
-      profile->GetPrefs()->ClearPref(::prefs::kShowArcSettingsOnSessionStart);
-      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-          profile, chromeos::settings::mojom::kSyncSetupSubpagePath);
-    } else {
-      // SyncSetupSubPage here is shown in the browser instead of the OS
-      // Settings. We delay showing chrome sync settings by
-      // kSyncConsentSettingsShowDelay to make the settings tab shows on top of
-      // the restored tabs and windows.
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](Profile* profile) {
-                profile->GetPrefs()->ClearPref(
-                    ::prefs::kShowSyncSettingsOnSessionStart);
-                chrome::ShowSettingsSubPageForProfile(
-                    profile, chrome::kSyncSetupSubPage);
-              },
-              base::Unretained(profile)),
-          kSyncConsentSettingsShowDelay);
-    }
+    // SyncSetupSubPage here is shown in the browser instead of the OS
+    // Settings. We delay showing chrome sync settings by
+    // kSyncConsentSettingsShowDelay to make the settings tab shows on top of
+    // the restored tabs and windows.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](Profile* profile) {
+              profile->GetPrefs()->ClearPref(
+                  ::prefs::kShowSyncSettingsOnSessionStart);
+              chrome::ShowSettingsSubPageForProfile(profile,
+                                                    chrome::kSyncSetupSubPage);
+            },
+            base::Unretained(profile)),
+        kSyncConsentSettingsShowDelay);
   }
 }
 
@@ -205,12 +194,7 @@ void SyncConsentScreen::Finish(Result result) {
   bool sync_enabled = service && service->IsSyncFeatureEnabled() &&
                       service->GetUserSettings()->IsSyncEverythingEnabled();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled", sync_enabled);
-  if (test_exit_delegate_) {
-    CHECK_IS_TEST();
-    test_exit_delegate_->OnSyncConsentScreenExit(result, exit_callback_);
-  } else {
-    exit_callback_.Run(result);
-  }
+  exit_callback_.Run(result);
 }
 
 bool SyncConsentScreen::MaybeSkip(WizardContext& context) {
@@ -250,14 +234,14 @@ void SyncConsentScreen::ShowImpl() {
     start_time_ = base::TimeTicks::Now();
   } else {
     PrepareScreenBasedOnCapability();
-    view_->ShowLoadedStep(IsOsSyncLacros());
+    view_->ShowLoadedStep();
   }
 
   // Show the entire screen.
   // If SyncScreenBehavior is show, this should show the sync consent screen.
   // If SyncScreenBehavior is unknown, this should show the loading throbber.
   if (view_) {
-    view_->Show(crosapi::browser_util::IsLacrosEnabled());
+    view_->Show();
   }
 
   if (context()->extra_factors_token) {
@@ -269,12 +253,16 @@ void SyncConsentScreen::ShowImpl() {
 void SyncConsentScreen::HideImpl() {
   session_refresher_.reset();
   sync_service_observation_.Reset();
-  timeout_waiter_.AbandonAndStop();
+  timeout_waiter_.Stop();
 }
 
 void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
   DCHECK(context());
   UpdateScreen(*context());
+}
+
+void SyncConsentScreen::OnSyncShutdown(syncer::SyncService* sync) {
+  sync_service_observation_.Reset();
 }
 
 void SyncConsentScreen::MaybeEnableSyncForSkip() {
@@ -283,8 +271,7 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
   switch (behavior_) {
     case SyncScreenBehavior::kUnknown:
     case SyncScreenBehavior::kShow:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case SyncScreenBehavior::kSkipNonGaiaAccount:
     case SyncScreenBehavior::kSkipPublicAccount:
     case SyncScreenBehavior::kSkipPermissionsPolicy:
@@ -309,12 +296,6 @@ void SyncConsentScreen::OnTimeout() {
 void SyncConsentScreen::SetDelegateForTesting(
     SyncConsentScreen::SyncConsentScreenTestDelegate* delegate) {
   test_delegate_ = delegate;
-}
-
-// static
-void SyncConsentScreen::SetSyncConsentScreenExitTestDelegate(
-    SyncConsentScreen::SyncConsentScreenExitTestDelegate* test_delegate) {
-  test_exit_delegate_ = test_delegate;
 }
 
 SyncConsentScreen::SyncConsentScreenTestDelegate*
@@ -377,10 +358,10 @@ void SyncConsentScreen::UpdateScreen(const WizardContext& context) {
     PrepareScreenBasedOnCapability();
 
     if (view_) {
-      view_->ShowLoadedStep(IsOsSyncLacros());
+      view_->ShowLoadedStep();
     }
     GetSyncService(profile_)->RemoveObserver(this);
-    timeout_waiter_.AbandonAndStop();
+    timeout_waiter_.Stop();
     base::UmaHistogramCustomTimes("OOBE.SyncConsentScreen.LoadingTime",
                                   base::TimeTicks::Now() - start_time_,
                                   base::Milliseconds(1), base::Seconds(10), 50);
@@ -397,9 +378,10 @@ void SyncConsentScreen::RecordConsent(
   consent_auditor::ConsentAuditor* consent_auditor =
       ConsentAuditorFactory::GetForProfile(profile_);
   // The user might not consent to browser sync, so use the "unconsented" ID.
-  const CoreAccountId& google_account_id =
-      IdentityManagerFactory::GetForProfile(profile_)->GetPrimaryAccountId(
-          signin::ConsentLevel::kSignin);
+  const GaiaId gaia_id =
+      IdentityManagerFactory::GetForProfile(profile_)
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
   // TODO(alemate): Support unified_consent_enabled
   sync_pb::UserConsentTypes::SyncConsent sync_consent;
   sync_consent.set_confirmation_grd_id(consent_confirmation);
@@ -409,7 +391,7 @@ void SyncConsentScreen::RecordConsent(
   sync_consent.set_status(consent_given == CONSENT_GIVEN
                               ? sync_pb::UserConsentTypes::GIVEN
                               : sync_pb::UserConsentTypes::NOT_GIVEN);
-  consent_auditor->RecordSyncConsent(google_account_id, sync_consent);
+  consent_auditor->RecordSyncConsent(gaia_id, sync_consent);
 
   if (test_delegate_) {
     test_delegate_->OnConsentRecordedIds(consent_given, consent_description,
@@ -443,19 +425,11 @@ void SyncConsentScreen::PrepareScreenBasedOnCapability() {
                             is_minor_mode);
   // Turn on "sync everything" toggle for non-minor users; turn off all data
   // types for minor users for the ash sync.
-  if (!IsOsSyncLacros()) {
-    SetSyncEverythingEnabled(!is_minor_mode);
-  }
+  SetSyncEverythingEnabled(!is_minor_mode);
 
   if (view_) {
     view_->SetIsMinorMode(is_minor_mode);
   }
-}
-
-// Check if OSSyncRevamp and Lacros are enabled.
-bool SyncConsentScreen::IsOsSyncLacros() {
-  return crosapi::browser_util::IsLacrosEnabled() &&
-         features::IsOsSyncConsentRevampEnabled();
 }
 
 void SyncConsentScreen::SetSyncEverythingEnabled(bool enabled) {
@@ -564,13 +538,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     syncer::UserSelectableOsTypeSet os_empty_set;
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true, os_empty_set);
 
-    if (test_exit_delegate_) {
-      CHECK_IS_TEST();
-      test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
-                                                   exit_callback_);
-    } else {
-      exit_callback_.Run(Result::NEXT);
-    }
+    exit_callback_.Run(Result::NEXT);
 
     return;
   }
@@ -586,13 +554,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                       os_empty_set);
 
-    if (test_exit_delegate_) {
-      CHECK_IS_TEST();
-      test_exit_delegate_->OnSyncConsentScreenExit(Result::DECLINE,
-                                                   exit_callback_);
-    } else {
-      exit_callback_.Run(Result::DECLINE);
-    }
+    exit_callback_.Run(Result::DECLINE);
     return;
   }
   if (action_id == kUserActionLacrosCustom) {
@@ -636,14 +598,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     profile_->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
                                      wallpaper_synced);
 
-    if (test_exit_delegate_) {
-      CHECK_IS_TEST();
-      test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
-                                                   exit_callback_);
-    } else {
-      exit_callback_.Run(Result::NEXT);
-    }
-
+    exit_callback_.Run(Result::NEXT);
     return;
   }
   BaseScreen::OnUserAction(args);

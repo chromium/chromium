@@ -43,7 +43,7 @@ public class RadioButtonLayoutTest {
         RadioButtonLayout layout = new RadioButtonLayout(mContext);
 
         // Add one set of options.
-        List<CharSequence> messages = new ArrayList<CharSequence>();
+        List<CharSequence> messages = new ArrayList<>();
         messages.add("a");
         messages.add("b");
         messages.add("c");
@@ -57,7 +57,7 @@ public class RadioButtonLayoutTest {
         }
 
         // Add more options.
-        List<CharSequence> moreMessages = new ArrayList<CharSequence>();
+        List<CharSequence> moreMessages = new ArrayList<>();
         moreMessages.add("d");
         moreMessages.add("e");
         moreMessages.add("f");
@@ -78,7 +78,7 @@ public class RadioButtonLayoutTest {
         RadioButtonLayout layout = new RadioButtonLayout(mContext);
 
         // Add one set of options.
-        List<CharSequence> messages = new ArrayList<CharSequence>();
+        List<CharSequence> messages = new ArrayList<>();
         messages.add("a");
         messages.add("b");
         messages.add("c");
@@ -91,7 +91,7 @@ public class RadioButtonLayoutTest {
         }
 
         // Add even more options, but without tags.
-        List<CharSequence> moreMessages = new ArrayList<CharSequence>();
+        List<CharSequence> moreMessages = new ArrayList<>();
         moreMessages.add("d");
         moreMessages.add("e");
         moreMessages.add("f");
@@ -115,7 +115,7 @@ public class RadioButtonLayoutTest {
         final RadioButtonLayout layout = new RadioButtonLayout(mContext);
 
         // Add one set of options.
-        List<CharSequence> messages = new ArrayList<CharSequence>();
+        List<CharSequence> messages = new ArrayList<>();
         messages.add("a");
         messages.add("b");
         messages.add("c");
@@ -136,7 +136,7 @@ public class RadioButtonLayoutTest {
         }
 
         // Add even more options.
-        List<CharSequence> moreMessages = new ArrayList<CharSequence>();
+        List<CharSequence> moreMessages = new ArrayList<>();
         moreMessages.add("d");
         moreMessages.add("e");
         moreMessages.add("f");

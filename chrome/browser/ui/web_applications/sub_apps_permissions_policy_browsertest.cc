@@ -4,20 +4,21 @@
 
 #include <string_view>
 
-#include "base/files/file_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "chrome/browser/ui/web_applications/sub_apps_service_impl.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
+#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
-#include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "third_party/blink/public/common/features.h"
@@ -31,60 +32,6 @@ namespace web_app {
 class SubAppsPermissionsPolicyBrowserTest
     : public IsolatedWebAppBrowserTestHarness {
   base::ScopedTempDir scoped_temp_dir_;
-  base::FilePath bundle_path_;
-  web_package::WebBundleSigner::Ed25519KeyPair key_pair_ =
-      web_package::WebBundleSigner::Ed25519KeyPair::CreateRandom();
-
-  TestSignedWebBundle CreateBundle() const {
-    constexpr std::string_view manifest =
-        R"({
-          "name": "Sub apps test app",
-          "id": "/",
-          "version": "1.0.0",
-          "scope": "/",
-          "short_name": "Sub apps app",
-          "start_url": "/index.html",
-          "display": "standalone",
-          "background_color": "#0000FF",
-          "theme_color": "#000077",
-          "icons": [
-            {
-              "src": "/256x256-green.png",
-              "sizes": "256x256",
-              "type": "image/png"
-            }
-          ],
-          "permissions_policy": {
-            "cross-origin-isolated": ["self"]
-          }
-        })";
-
-    auto builder = TestSignedWebBundleBuilder(key_pair_);
-    builder.AddManifest(manifest);
-
-    builder.AddPngImage(
-        "/256x256-green.png",
-        test::EncodeAsPng(CreateSquareIcon(256, SK_ColorGREEN)));
-
-    builder.AddHtml("/index.html", R"(
-      <head>
-        <link rel="manifest" href="/manifest.webmanifest">
-        <title>Test App</title>
-      </head>
-      <body>
-        <h1>Hello world!</h1>
-      </body>
-    )");
-
-    return builder.Build();
-  }
-
-  void WriteBundle(TestSignedWebBundle bundle) {
-    ASSERT_THAT(scoped_temp_dir_.CreateUniqueTempDir(), testing::IsTrue());
-    bundle_path_ = scoped_temp_dir_.GetPath().Append(
-        base::FilePath::FromASCII("bundle.swbn"));
-    CHECK(base::WriteFile(bundle_path_, bundle.data));
-  }
 
  protected:
   base::test::ScopedFeatureList features_{blink::features::kDesktopPWAsSubApps};
@@ -92,45 +39,38 @@ class SubAppsPermissionsPolicyBrowserTest
  public:
   webapps::AppId parent_app_id_;
 
-  void SetUp() override {
-    auto bundle = CreateBundle();
-    WriteBundle(bundle);
-
-    IsolatedWebAppBrowserTestHarness::SetUp();
-  }
-
   void InstallIwaApp() {
-    auto install_source = IsolatedWebAppInstallSource::FromGraphicalInstaller(
-        IwaSourceBundleProdModeWithFileOp(bundle_path_,
-                                          IwaSourceBundleProdFileOp::kCopy));
-
     IsolatedWebAppUrlInfo url_info =
-        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-            web_package::SignedWebBundleId::CreateForPublicKey(
-                key_pair_.public_key));
+        *web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()
+                                            .SetName("Parent apps test app")
+                                            .SetVersion("1.0.0"))
+             .BuildBundle()
+             ->Install(profile());
 
     parent_app_id_ = url_info.app_id();
 
-    base::test::TestFuture<InstallResult> future;
     auto installed_version = base::Version("1.0.0");
 
-    SetTrustedWebBundleIdsForTesting({url_info.web_bundle_id()});
-    provider().scheduler().InstallIsolatedWebApp(
-        url_info, install_source, installed_version,
-        /*optional_keep_alive*/ nullptr,
-        /*optional_profile_keep_alive*/ nullptr, future.GetCallback());
+    std::unique_ptr<ScopedBundledIsolatedWebApp> bundle =
+        IsolatedWebAppBuilder(ManifestBuilder()
+                                  .SetName("Sub apps test app")
+                                  .SetVersion(installed_version.GetString()))
+            .BuildBundle();
 
-    ASSERT_THAT(future.Take(), base::test::HasValue());
+    *bundle->Install(profile());
 
     const WebApp* web_app =
         provider().registrar_unsafe().GetAppById(parent_app_id_);
 
-    EXPECT_TRUE(provider().registrar_unsafe().IsInstalled(parent_app_id_));
-    EXPECT_TRUE(provider().registrar_unsafe().IsIsolated(parent_app_id_));
+    EXPECT_EQ(proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
+              provider().registrar_unsafe().GetInstallState(parent_app_id_));
+
+    EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
+        parent_app_id_, WebAppFilter::IsIsolatedApp()));
 
     ASSERT_THAT(web_app, Pointee(test::Property(
                              "untranslated_name", &WebApp::untranslated_name,
-                             testing::Eq("Sub apps test app"))));
+                             testing::Eq("Parent apps test app"))));
   }
 };
 

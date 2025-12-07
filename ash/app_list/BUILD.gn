@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("app_list") {
   sources = [
@@ -36,6 +34,8 @@ source_set("app_list") {
     "app_list_util.h",
     "app_list_view_delegate.h",
     "app_list_view_provider.h",
+    "app_waiter.cc",
+    "app_waiter.h",
     "apps_collections_controller.cc",
     "apps_collections_controller.h",
     "apps_grid_row_change_animator.cc",
@@ -57,7 +57,6 @@ source_set("app_list") {
     "views/app_list_bubble_search_page.h",
     "views/app_list_bubble_view.cc",
     "views/app_list_bubble_view.h",
-    "views/app_list_drag_and_drop_host.h",
     "views/app_list_folder_controller.h",
     "views/app_list_folder_view.cc",
     "views/app_list_folder_view.h",
@@ -95,16 +94,8 @@ source_set("app_list") {
     "views/apps_grid_view.cc",
     "views/apps_grid_view.h",
     "views/apps_grid_view_folder_delegate.h",
-    "views/assistant/app_list_bubble_assistant_page.cc",
-    "views/assistant/app_list_bubble_assistant_page.h",
-    "views/assistant/assistant_dialog_plate.cc",
-    "views/assistant/assistant_dialog_plate.h",
-    "views/assistant/assistant_main_stage.cc",
-    "views/assistant/assistant_main_stage.h",
-    "views/assistant/assistant_main_view.cc",
-    "views/assistant/assistant_main_view.h",
-    "views/assistant/assistant_page_view.cc",
-    "views/assistant/assistant_page_view.h",
+    "views/button_focus_skipper.cc",
+    "views/button_focus_skipper.h",
     "views/contents_view.cc",
     "views/contents_view.h",
     "views/continue_section_view.cc",
@@ -171,11 +162,6 @@ source_set("app_list") {
 
   deps = [
     "//ash/app_menu",
-    "//ash/assistant/model",
-    "//ash/assistant/ui",
-    "//ash/assistant/ui:constants",
-    "//ash/assistant/ui/colors:assistant_colors_views",
-    "//ash/assistant/util",
     "//ash/keyboard/ui",
     "//ash/public/cpp/app_list/vector_icons",
     "//ash/public/cpp/resources:ash_public_unscaled_resources",
@@ -186,7 +172,6 @@ source_set("app_list") {
     "//base",
     "//base:i18n",
     "//cc/paint",
-    "//chromeos",
     "//chromeos/ash/components/feature_usage",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/ui/vector_icons",
@@ -235,12 +220,17 @@ source_set("app_list") {
     "//base",
     "//mojo/public/cpp/bindings",
     "//ui/aura",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
     "//ui/gfx/geometry",
     "//ui/views",
     "//ui/wm",
     "//ui/wm/public",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("test_support") {
@@ -264,6 +254,7 @@ source_set("test_support") {
     "//base",
     "//chromeos/ash/services/assistant/public/cpp",
     "//ui/base",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor:test_support",
     "//ui/events",
     "//ui/events:test_support",
@@ -286,6 +277,7 @@ source_set("unit_tests") {
     "app_list_presenter_impl_unittest.cc",
     "app_list_presenter_unittest.cc",
     "app_list_unittest.cc",
+    "app_waiter_unittest.cc",
     "apps_collections_controller_unittest.cc",
     "folder_image_unittest.cc",
     "model/app_list_item_list_unittest.cc",
@@ -307,9 +299,6 @@ source_set("unit_tests") {
     "views/apps_collection_section_view_unittest.cc",
     "views/apps_container_view_unittest.cc",
     "views/apps_grid_view_unittest.cc",
-    "views/assistant/assistant_dialog_plate_unittest.cc",
-    "views/assistant/assistant_main_stage_unittest.cc",
-    "views/assistant/assistant_page_view_unittest.cc",
     "views/continue_section_view_unittest.cc",
     "views/folder_header_view_unittest.cc",
     "views/paged_apps_grid_view_unittest.cc",
@@ -326,10 +315,6 @@ source_set("unit_tests") {
     ":test_support",
     "//ash:test_support",
     "//ash/app_menu",
-    "//ash/assistant/model",
-    "//ash/assistant/ui",
-    "//ash/assistant/ui:constants",
-    "//ash/assistant/ui/colors:assistant_colors_views",
     "//ash/constants",
     "//ash/keyboard/ui",
     "//ash/keyboard/ui:test_support",
@@ -341,6 +326,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chromeos/ash/components/feature_usage",
+    "//chromeos/ash/services/assistant:test_support",
     "//chromeos/ash/services/assistant/public/cpp",
     "//components/feature_engagement/public",
     "//mojo/core/embedder",
@@ -351,6 +337,7 @@ source_set("unit_tests") {
     "//ui/aura:test_support",
     "//ui/base",
     "//ui/base:test_support",
+    "//ui/base/mojom:ui_base_types",
     "//ui/chromeos/styles:cros_tokens_color_mappings",
     "//ui/color",
     "//ui/compositor",
@@ -358,6 +345,7 @@ source_set("unit_tests") {
     "//ui/display:display_manager_test_api",
     "//ui/events:test_support",
     "//ui/gfx:test_support",
+    "//ui/gl:gl_headers",
     "//ui/gl:test_support",
     "//ui/message_center",
     "//ui/native_theme",
@@ -367,8 +355,9 @@ source_set("unit_tests") {
     "//ui/views:test_support",
   ]
 
-  data_deps = [
-    "//third_party/mesa_headers",
-    "//ui/resources:ui_test_pak_data",
-  ]
+  data_deps = [ "//ui/resources:ui_test_pak_data" ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

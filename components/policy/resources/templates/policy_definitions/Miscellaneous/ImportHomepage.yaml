@@ -3,6 +3,7 @@ desc: |-
   Setting the policy to Enabled imports the homepage from the previous default browser on first run. Setting the policy to Disabled or leaving it unset means the homepage isn't imported on first run.
 
         Users can trigger an import dialog and the homepage checkbox will be checked or unchecked to match this policy's value.
+default: false
 example_value: true
 features:
   dynamic_refresh: true

@@ -93,6 +93,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkInterceptor {
   // Calculates buffer len to pass to network transaction Read call.
   int GetReadBufLen(int buf_len) const;
 
+  const NetworkConditions& conditions() const { return conditions_; }
+
  private:
   struct ThrottleRecord {
    public:

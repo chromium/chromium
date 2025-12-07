@@ -5,10 +5,14 @@
 package org.chromium.content_public.browser.selection;
 
 import android.content.pm.ResolveInfo;
+import android.view.View;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.base.SelectionActionMenuClientWrapper.DefaultItem;
+import org.chromium.base.SelectionActionMenuClientWrapper.MenuType;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.WebContents;
 
 import java.util.List;
 
@@ -16,48 +20,79 @@ import java.util.List;
  * Interface for modifying text selection menu functionality. Content embedders can provide
  * implementation to provide text selection menu item custom behavior.
  */
+@NullMarked
 public interface SelectionActionMenuDelegate {
+    static @DefaultItem int[] getDefaultMenuItemOrder() {
+        return new @DefaultItem int[] {
+            DefaultItem.CUT,
+            DefaultItem.COPY,
+            DefaultItem.PASTE,
+            DefaultItem.PASTE_AS_PLAIN_TEXT,
+            DefaultItem.SHARE,
+            DefaultItem.SELECT_ALL,
+            DefaultItem.WEB_SEARCH
+        };
+    }
+
     /**
-     * Allows the delegate make changes to default menu items created by {@link
-     * SelectionPopupController}. These menu items are present in both text selection and no text
-     * selection scenario if they satisfy respective conditions and are present before additional
-     * menu items from {@link #getAdditionalNonSelectionItems()} and {@link
-     * #getAdditionalTextProcessingItems()}.
+     * Returns an array of menu items representing the order in which they should be shown in the
+     * menu. Delegate implementations can either return their custom order or use the default order
+     * by calling the super (default) implementation below.
      *
-     * @param menuItemBuilders default menu item builder list which need to be modified.
-     * @param isSelectionPassword True if current selection is of password type, False otherwise.
-     * @param selectedText The selected text (empty if no text selected).
+     * @param menuType whether the menu is a floating action mode menu or a dropdown menu.
+     * @return the desired order.
      */
-    void modifyDefaultMenuItems(
-            List<SelectionMenuItem.Builder> menuItemBuilders,
+    default @DefaultItem int[] getDefaultMenuItemOrder(@MenuType int menuType) {
+        return SelectionActionMenuDelegate.getDefaultMenuItemOrder();
+    }
+
+    /**
+     * Lets a delegate implementation provide additional menu items for the selection menu.
+     * Delegates may wish to show different menu items based on the arguments provided.
+     *
+     * @param menuType whether the menu is a floating action mode menu or a dropdown menu.
+     * @param isSelectionPassword {@code true} if the input field is a password field.
+     * @param isSelectionReadOnly {@code true} if the input field is not editable.
+     * @param selectedText the highlighted text for which this menu is being shown.
+     * @return a list of additional menu items or an empty list otherwise.
+     */
+    List<SelectionMenuItem> getAdditionalMenuItems(
+            @MenuType int menuType,
             boolean isSelectionPassword,
-            @NonNull String selectedText);
+            boolean isSelectionReadOnly,
+            String selectedText);
 
     /**
      * Allows filtering of text processing activities.
      *
-     * @param activities list to text processing activities to be filtered.
+     * @param menuType whether the menu is a floating action mode menu or a dropdown menu.
+     * @param activities list of text processing activities to be filtered.
      * @return list of text processing activities after filtering.
      */
-    List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities);
+    List<ResolveInfo> filterTextProcessingActivities(
+            @MenuType int menuType, List<ResolveInfo> activities);
 
     /**
-     * Provides additional menu items when no text is selected and while editing text with a cursor.
-     * These menu items are ordered after default menu items from {@link
-     * #modifyDefaultMenuItems(List)} if any.
+     * Queries if selection menu item cache can be reused. Selection menu's items can be cached for
+     * repeated selections. Delegate can add menu items using {@link #getAdditionalMenuItems(int,
+     * boolean, boolean, String)} API due to which repeated selections can result in different
+     * selection menu items being shown.
      *
-     * @return list of additional non selection secondary menu items if any.
+     * @param menuType whether the menu is a floating action mode menu or a dropdown menu.
+     * @return True, if cached selection menu items can be reused for repeated selection, False
+     *     otherwise.
      */
-    @NonNull
-    List<SelectionMenuItem> getAdditionalNonSelectionItems();
+    boolean canReuseCachedSelectionMenu(@MenuType int menuType);
 
     /**
-     * Provides additional menu items which registers for text processing when text is selected.
-     * These menu items are ordered after default menu items from {@link
-     * #modifyDefaultMenuItems(List)} if any.
+     * Handles when an item in the selection menu is clicked by the user or activated using the
+     * relevant shortcut. This method is only called for menu items supplied via the
+     * getAdditionalMenuItems method.
      *
-     * @return list of additional text selection menu items handling text processing if any.
+     * @return True if the click was handled by this class or false otherwise.
      */
-    @NonNull
-    List<SelectionMenuItem> getAdditionalTextProcessingItems();
+    default boolean handleMenuItemClick(
+            SelectionMenuItem item, WebContents webContents, @Nullable View containerView) {
+        return false;
+    }
 }

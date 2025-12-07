@@ -9,23 +9,19 @@
 namespace blink {
 
 // static
-const char RTCPeerConnectionController::kSupplementName[] =
-    "RTCPeerConnectionController";
-
-// static
 RTCPeerConnectionController& RTCPeerConnectionController::From(
     Document& document) {
   RTCPeerConnectionController* supplement =
-      Supplement<Document>::From<RTCPeerConnectionController>(document);
+      document.GetRTCPeerConnectionController();
   if (!supplement) {
     supplement = MakeGarbageCollected<RTCPeerConnectionController>(document);
-    Supplement<Document>::ProvideTo(document, supplement);
+    document.SetRTCPeerConnectionController(supplement);
   }
   return *supplement;
 }
 
 RTCPeerConnectionController::RTCPeerConnectionController(Document& document)
-    : Supplement<Document>(document) {}
+    : document_(&document) {}
 
 void RTCPeerConnectionController::MaybeReportComplexSdp(
     ComplexSdpCategory complex_sdp_category) {
@@ -35,14 +31,14 @@ void RTCPeerConnectionController::MaybeReportComplexSdp(
   // Report only the first observation for the document and ignore all others.
   // This provides a good balance between privacy and meaningful metrics.
   has_reported_ukm_ = true;
-  ukm::SourceId source_id = GetSupplementable()->UkmSourceID();
+  ukm::SourceId source_id = document_->UkmSourceID();
   ukm::builders::WebRTC_ComplexSdp(source_id)
       .SetCategory(static_cast<int64_t>(complex_sdp_category))
-      .Record(GetSupplementable()->UkmRecorder());
+      .Record(document_->UkmRecorder());
 }
 
 void RTCPeerConnectionController::Trace(Visitor* visitor) const {
-  Supplement<Document>::Trace(visitor);
+  visitor->Trace(document_);
 }
 
 }  // namespace blink

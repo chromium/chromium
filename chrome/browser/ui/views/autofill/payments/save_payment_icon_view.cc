@@ -17,8 +17,10 @@
 #include "chrome/browser/ui/views/autofill/payments/save_card_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/save_iban_bubble_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_method_and_virtual_card_enroll_confirmation_bubble_views.h"
+#include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -48,8 +50,8 @@ SavePaymentIconView::SavePaymentIconView(
   }
   command_id_ = command_id;
   SetUpForInOutAnimation();
-  GetViewAccessibility().SetProperties(/*role*/ std::nullopt,
-                                       GetTextForTooltipAndAccessibleName());
+  GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 }
 
 SavePaymentIconView::~SavePaymentIconView() = default;
@@ -70,9 +72,21 @@ void SavePaymentIconView::UpdateImpl() {
 
   bool command_enabled =
       SetCommandEnabled(controller && controller->IsIconVisible());
-  SetVisible(command_enabled);
+  bool should_show =
+      command_enabled && !delegate()->ShouldHidePageActionIcon(this);
+
+  // Show the icon if the Desktop to iOS payment promo is currently being shown,
+  // and check the command_id_ to only show for one of the instances of
+  // SavePaymentIconView.
+  should_show =
+      should_show || (command_id_ == IDC_SAVE_CREDIT_CARD_FOR_PAGE &&
+                      IOSPromoBubble::IsPromoTypeVisible(
+                          desktop_to_mobile_promos::PromoType::kPayment));
+
+  SetVisible(should_show);
 
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
+  UpdateTooltipText();
 
   if (command_enabled && controller->ShouldShowSavingPaymentAnimation()) {
     SetEnabled(false);

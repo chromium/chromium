@@ -47,9 +47,9 @@ export class SharePasswordRecipientElement extends PolymerElement {
       },
     };
   }
-  disabled: boolean;
-  selected: boolean;
-  recipient: chrome.passwordsPrivate.RecipientInfo;
+  declare disabled: boolean;
+  declare selected: boolean;
+  declare recipient: chrome.passwordsPrivate.RecipientInfo;
 
   override ready() {
     super.ready();

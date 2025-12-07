@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/html/forms/menu_list_inner_element.h"
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -20,6 +20,11 @@ MenuListInnerElement::MenuListInnerElement(Document& document)
 const ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   const ComputedStyle& parent_style = OwnerShadowHost()->ComputedStyleRef();
+
+  if (parent_style.HasBaseEffectiveAppearance()) {
+    return HTMLDivElement::CustomStyleForLayoutObject(style_recalc_context);
+  }
+
   ComputedStyleBuilder style_builder =
       GetDocument().GetStyleResolver().CreateAnonymousStyleBuilderWithDisplay(
           parent_style, EDisplay::kBlock);
@@ -40,7 +45,7 @@ const ComputedStyle* MenuListInnerElement::CustomStyleForLayoutObject(
   if (style_builder.HasInitialLineHeight()) {
     // line-height should be consistent with MenuListIntrinsicBlockSize()
     // in layout_box.cc.
-    const SimpleFontData* font_data = style_builder.GetFont().PrimaryFont();
+    const SimpleFontData* font_data = style_builder.GetFont()->PrimaryFont();
     if (font_data) {
       style_builder.SetLineHeight(
           Length::Fixed(font_data->GetFontMetrics().Height()));

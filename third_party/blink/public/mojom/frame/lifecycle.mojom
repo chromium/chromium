@@ -21,9 +21,6 @@ enum FrameLifecycleState {
   // Paused state is used for nested event loops. Does not fire
   // frozen, resumed events on the document.
   kPaused,
-  // State is frozen, pause all media. Do not resume media
-  // when moving to kRunning.
+  // State is frozen.
   kFrozen,
-  // State is frozen, auto resume media when moving to kRunning.
-  kFrozenAutoResumeMedia,
 };

@@ -1,0 +1,126 @@
+[
+  {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "hardware.external_storage_allowlist": {
+            "location": "user_profile",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Empty policy.",
+        "policies": {
+          "ExternalStorageAllowlist": []
+        },
+        "prefs": {
+          "hardware.external_storage_allowlist": {
+            "location": "user_profile",
+            "value": []
+          }
+        }
+      },
+      {
+        "note": "Policy set with values.",
+        "policies": {
+          "ExternalStorageAllowlist": [
+            {
+              "vendor_id": 4660,
+              "product_id": 22136
+            },
+            {
+              "vendor_id": 39612,
+              "product_id": 57072
+            }
+          ]
+        },
+        "prefs": {
+          "hardware.external_storage_allowlist": {
+            "location": "user_profile",
+            "value": [
+              {
+                "vendor_id": 4660,
+                "product_id": 22136
+              },
+              {
+                "vendor_id": 39612,
+                "product_id": 57072
+              }
+            ]
+          }
+        }
+      },
+      {
+        "note": "Missing vendor_id.",
+        "policies": {
+          "ExternalStorageAllowlist": [
+            {
+              "product_id": 22136
+            }
+          ]
+        },
+        "prefs": {
+          "hardware.external_storage_allowlist": {
+            "location": "user_profile",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Missing product_id.",
+        "policies": {
+          "ExternalStorageAllowlist": [
+            {
+              "vendor_id": 4660
+            }
+          ]
+        },
+        "prefs": {
+          "hardware.external_storage_allowlist": {
+            "location": "user_profile",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "vendor_id is greater than 0xFFFF (eq 0x10000).",
+        "policies": {
+          "ExternalStorageAllowlist": [
+            {
+              "vendor_id": 65536,
+              "product_id": 22136
+            }
+        ]
+        },
+        "prefs": {
+          "hardware.external_storage_allowlist": {
+            "location": "user_profile",
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "product_id is negative.",
+        "policies": {
+          "ExternalStorageAllowlist": [
+            {
+              "vendor_id": 4660,
+              "product_id": -1
+            }
+        ]
+        },
+        "prefs": {
+          "hardware.external_storage_allowlist": {
+            "location": "user_profile",
+            "default_value": []
+          }
+        }
+      }
+    ]
+  }
+]

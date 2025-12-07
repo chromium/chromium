@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/mediastream/webaudio_media_stream_audio_sink.h"
 
 #include <stddef.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/test/bind.h"
@@ -74,22 +70,24 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
             /*context_sample_rate=*/44100,
             /*platform_buffer_duration=*/base::Milliseconds(10));
 
-  // Point the WebVector into memory owned by |sink_bus_|.
-  WebVector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
-  for (int i = 0; i < sink_bus_->channels(); ++i)
-    audio_data[i] = sink_bus_->channel(i);
+  // Point the std::vector into memory owned by |sink_bus_|.
+  std::vector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
+  for (int i = 0; i < sink_bus_->channels(); ++i) {
+    audio_data[i] = sink_bus_->channel_span(i).data();
+  }
 
   // Enable the |source_provider_| by asking for data. This will inject
   // source_params_.frames_per_buffer() of zero into the resampler since there
   // no available data in the FIFO.
   source_provider_->ProvideInput(audio_data, sink_params_.frames_per_buffer());
-  EXPECT_EQ(0, sink_bus_->channel(0)[0]);
+  EXPECT_EQ(0, sink_bus_->channel_span(0)[0]);
 
   // Create a source AudioBus with channel data filled with non-zero values.
   const std::unique_ptr<media::AudioBus> source_bus =
       media::AudioBus::Create(source_params_);
-  std::fill(source_bus->channel(0),
-            source_bus->channel(0) + source_bus->frames(), 0.5f);
+  std::ranges::for_each(source_bus->AllChannels(), [](const auto& channel) {
+    std::ranges::fill(channel, 0.5f);
+  });
 
   // Deliver data to |source_provider_|.
   base::TimeTicks estimated_capture_time = base::TimeTicks::Now();
@@ -105,8 +103,8 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
     sink_bus_->Zero();
     source_provider_->ProvideInput(audio_data,
                                    sink_params_.frames_per_buffer());
-    EXPECT_DOUBLE_EQ(0.0, sink_bus_->channel(0)[0]);
-    EXPECT_DOUBLE_EQ(0.0, sink_bus_->channel(1)[0]);
+    EXPECT_DOUBLE_EQ(0.0, sink_bus_->channel_span(0)[0]);
+    EXPECT_DOUBLE_EQ(0.0, sink_bus_->channel_span(1)[0]);
   }
 
   // Make a second data delivery.
@@ -121,9 +119,10 @@ TEST_F(WebAudioMediaStreamAudioSinkTest, VerifyDataFlow) {
     sink_bus_->Zero();
     source_provider_->ProvideInput(audio_data,
                                    sink_params_.frames_per_buffer());
-    EXPECT_NEAR(0.5f, sink_bus_->channel(0)[0], 0.001f);
-    EXPECT_NEAR(0.5f, sink_bus_->channel(1)[0], 0.001f);
-    EXPECT_DOUBLE_EQ(sink_bus_->channel(0)[0], sink_bus_->channel(1)[0]);
+    EXPECT_NEAR(0.5f, sink_bus_->channel_span(0)[0], 0.001f);
+    EXPECT_NEAR(0.5f, sink_bus_->channel_span(1)[0], 0.001f);
+    EXPECT_DOUBLE_EQ(sink_bus_->channel_span(0)[0],
+                     sink_bus_->channel_span(1)[0]);
   }
 }
 
@@ -178,10 +177,10 @@ TEST_P(WebAudioMediaStreamAudioSinkFifoTest, VerifyFifo) {
 
   // 2. Sink preparation.
 
-  // Point the WebVector into memory owned by |sink_bus_|.
-  WebVector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
+  // Point the std::vector into memory owned by |sink_bus_|.
+  std::vector<float*> audio_data(static_cast<size_t>(sink_bus_->channels()));
   for (int i = 0; i < sink_bus_->channels(); ++i) {
-    audio_data[i] = sink_bus_->channel(i);
+    audio_data[i] = sink_bus_->channel_span(i).data();
   }
 
   // FIFO simulating callbacks from AudioContext output.

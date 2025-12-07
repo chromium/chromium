@@ -9,7 +9,7 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/slim/layer.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -42,13 +42,10 @@ class SceneLayer {
   virtual void OnDetach();
 
   // Remove this SceneLayer from its current parent.
-  virtual void RemoveFromParent(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jobj);
+  virtual void RemoveFromParent(JNIEnv* env);
 
   // Java SceneLayer can use this method to destroy its native-side counterpart.
-  virtual void Destroy(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& jobj);
+  virtual void Destroy(JNIEnv* env);
 
   // Returns cc::slim::Layer object that this SceneLayer contains.
   scoped_refptr<cc::slim::Layer> layer() { return layer_; }

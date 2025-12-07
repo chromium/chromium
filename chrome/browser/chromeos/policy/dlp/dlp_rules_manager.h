@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_DLP_RULES_MANAGER_H_
 
+#include <array>
 #include <map>
 #include <set>
 #include <string>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/data_controls/chrome_dlp_rules_manager.h"
 #include "components/enterprise/data_controls/core/browser/component.h"
 #include "components/enterprise/data_controls/core/browser/dlp_rules_manager_base.h"

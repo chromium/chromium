@@ -22,6 +22,30 @@ export function getHtml(this: AppElement) {
     </app-management-uninstall-button>
   </div>
   <div class="permission-list">
+    ${this.isIsolatedWebApp_() ? html`
+      <div class="permission-card-row" id="appVersion">
+        <div class="app-detail">
+          <div>$i18n{appManagementAppVersionTitle}</div>
+          <div class="secondary-text">${this.app_.version}</div>
+        </div>
+      </div>
+      ${this.app_.appSize ? html`
+        <div class="permission-card-row" id="appSize">
+          <div class="app-detail">
+            <div>$i18n{appManagementAppSizeTitle}</div>
+            <div class="secondary-text">${this.app_.appSize}</div>
+          </div>
+        </div>
+      ` : ''}
+      ${this.app_.dataSize ? html`
+        <div class="permission-card-row" id="dataSize">
+          <div class="app-detail">
+            <div>$i18n{appManagementAppDataSizeTitle}</div>
+            <div class="secondary-text">${this.app_.dataSize}</div>
+          </div>
+        </div>
+      ` : ''}
+    ` : ''}
     <app-management-run-on-os-login-item
         class="permission-card-row separated-row"
         login-mode-label="$i18n{appManagementRunOnOsLoginModeLabel}"

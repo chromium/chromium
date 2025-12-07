@@ -62,11 +62,11 @@ export class PasskeyEditDialogElement extends PasskeyEditDialogElementBase {
     };
   }
 
-  username: string;
-  relyingPartyId: string;
-  private usernameInputInvalid_: boolean;
-  private usernameInputErrorMessage_: string|null;
-  private dialogFootnote_: string|null;
+  declare username: string;
+  declare relyingPartyId: string;
+  declare private usernameInputInvalid_: boolean;
+  declare private usernameInputErrorMessage_: string|null;
+  declare private dialogFootnote_: string|null;
 
   override ready() {
     super.ready();

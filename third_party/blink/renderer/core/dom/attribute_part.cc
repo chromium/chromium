@@ -22,6 +22,12 @@ AttributePart* AttributePart::Create(PartRootUnion* root_union,
         "An AttributePart must be constructed on an Element.");
     return nullptr;
   }
+  if (!IsAcceptableNodeType(*node)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidNodeTypeError,
+        "The provided node is not a valid node for a AttributePart.");
+    return nullptr;
+  }
   return MakeGarbageCollected<AttributePart>(
       *PartRoot::GetPartRootFromUnion(root_union), *element, local_name, init);
 }

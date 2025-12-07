@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/pinned_tab_strip_item_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="@dimen/pinned_tab_strip_item_vertical_margin"
+    android:layout_marginHorizontal="@dimen/pinned_tab_strip_item_horizontal_margin"
+    android:background="@drawable/pinned_tab_strip_item_background"
+    android:paddingHorizontal="@dimen/pinned_tab_strip_item_horizontal_padding"
+    android:clickable="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/tab_favicon"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/pinned_tab_strip_item_favicon_height"
+            android:layout_gravity="center_vertical"
+            android:adjustViewBounds="true"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tab_title"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/pinned_tab_strip_item_height"
+            android:ellipsize="none"
+            android:fadingEdgeLength="@dimen/tab_grid_card_title_fading_length"
+            android:paddingStart="@dimen/pinned_tab_strip_item_title_padding_start"
+            android:gravity="center_vertical"
+            android:requiresFadingEdge="horizontal"
+            android:singleLine="true"
+            android:textAlignment="viewStart"
+            android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/trailing_icon"
+            app:layout_constraintStart_toEndOf="@id/tab_favicon"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/trailing_icon"
+            android:layout_width="@dimen/pinned_tab_strip_item_icon_size"
+            android:layout_height="@dimen/pinned_tab_strip_item_icon_size"
+            android:layout_gravity="end"
+            android:cropToPadding="true"
+            android:importantForAccessibility="no"
+            android:padding="0dp"
+            android:tint="@macro/default_icon_color"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</org.chromium.chrome.browser.tasks.tab_management.pinned_tabs_strip.PinnedTabStripItemView>

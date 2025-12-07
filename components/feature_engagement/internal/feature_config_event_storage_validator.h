@@ -61,7 +61,7 @@ class FeatureConfigEventStorageValidator : public EventStorageValidator {
   // |event_config|.
   void InitializeEventConfig(const EventConfig& event_config);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Updates the internal allowed prefixes set.
   void InitializeEventPrefixes(const Configuration& configuration);
 #endif

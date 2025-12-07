@@ -18,6 +18,7 @@ Recipes to help you work with Chrome UI.
 
 Details on Chrome UI.
 
+* [ActionManager and ActionItems](/ui/actions/README.md)
 * [Activation and Focus](/docs/ui/learn/activation_and_focus.md)
 * [Animation Builder](/docs/ui/animation_builder/animation_builder.md)
 * [Best Practices](/docs/ui/learn/index.md#best-practices)

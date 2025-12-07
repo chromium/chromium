@@ -87,18 +87,11 @@ void PluginData::Trace(Visitor* visitor) const {
   visitor->Trace(mimes_);
 }
 
-// static
-void PluginData::RefreshBrowserSidePluginCache() {
-  mojo::Remote<mojom::blink::PluginRegistry> registry;
-  Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
-      registry.BindNewPipeAndPassReceiver());
-  Vector<mojom::blink::PluginInfoPtr> plugins;
-  registry->GetPlugins(true, &plugins);
-}
-
 void PluginData::UpdatePluginList() {
-  if (updated_)
+  if (updated_) {
     return;
+  }
+
   ResetPluginData();
   updated_ = true;
 
@@ -106,7 +99,7 @@ void PluginData::UpdatePluginList() {
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       registry.BindNewPipeAndPassReceiver());
   Vector<mojom::blink::PluginInfoPtr> plugins;
-  registry->GetPlugins(false, &plugins);
+  registry->GetPlugins(&plugins);
   for (const auto& plugin : plugins) {
     auto* plugin_info = MakeGarbageCollected<PluginInfo>(
         std::move(plugin->name), FilePathToWebString(plugin->filename),
@@ -126,12 +119,12 @@ void PluginData::UpdatePluginList() {
   std::sort(
       plugins_.begin(), plugins_.end(),
       [](const Member<PluginInfo>& lhs, const Member<PluginInfo>& rhs) -> bool {
-        return WTF::CodeUnitCompareLessThan(lhs->Name(), rhs->Name());
+        return CodeUnitCompareLessThan(lhs->Name(), rhs->Name());
       });
   std::sort(mimes_.begin(), mimes_.end(),
             [](const Member<MimeClassInfo>& lhs,
                const Member<MimeClassInfo>& rhs) -> bool {
-              return WTF::CodeUnitCompareLessThan(lhs->Type(), rhs->Type());
+              return CodeUnitCompareLessThan(lhs->Type(), rhs->Type());
             });
 }
 
@@ -156,8 +149,7 @@ Color PluginData::PluginBackgroundColorForMimeType(
     if (info->type_ == mime_type)
       return info->Plugin()->BackgroundColor();
   }
-  NOTREACHED_IN_MIGRATION();
-  return Color();
+  NOTREACHED();
 }
 
 bool PluginData::IsExternalPluginMimeType(const String& mime_type) const {

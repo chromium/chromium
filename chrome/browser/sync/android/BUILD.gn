@@ -12,13 +12,75 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//components/sync/android:sync_java",
+    "//components/sync_preferences/cross_device_pref_tracker/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
 
   srcjar_deps = [ ":jni_headers" ]
-  sources =
-      [ "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/sync/prefs/CrossDevicePrefTrackerFactory.java",
+  ]
+}
+
+android_library("ui_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/sync/ui/BatchUploadDialogCoordinator.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardBinder.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardCoordinator.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardMediator.java",
+    "java/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardProperties.java",
+  ]
+  deps = [
+    "//base:callback_java",
+    "//base:supplier_java",
+    "//base:tasks_java",
+    "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/ui/android/signin:java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/device_reauth:device_reauth_java_enums",
+    "//components/sync/android:sync_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//ui/android:ui_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.sync"
+}
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [ "junit/src/org/chromium/chrome/browser/sync/ui/batch_upload_card/BatchUploadCardMediatorTest.java" ]
+
+  deps = [
+    ":ui_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base:callback_java",
+    "//base:supplier_java",
+    "//chrome/browser/device_reauth/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/signin/public/android:java",
+    "//components/sync/android:sync_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_ext_junit_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+    "//ui/android:ui_java_test_support",
+  ]
+  resources_package = "org.chromium.chrome.browser.sync"
 }
 
 generate_jni("jni_headers") {
@@ -27,6 +89,8 @@ generate_jni("jni_headers") {
     "//chrome/browser",
     "//chrome/browser/sync",
   ]
-  sources =
-      [ "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/sync/SyncServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/sync/prefs/CrossDevicePrefTrackerFactory.java",
+  ]
 }

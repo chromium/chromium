@@ -4,4 +4,4 @@ rootWebArea name='done'
 ++++++genericContainer
 ++++++++group className='hidden' name='Label'
 ++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible name='Label'
+++++++++++++staticText ignored invisible

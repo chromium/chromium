@@ -8,7 +8,10 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "ui/gfx/buffer_types.h"
+
+namespace viz {
+class SharedImageFormat;
+}  // namespace viz
 
 namespace ui {
 
@@ -29,7 +32,7 @@ class COMPONENT_EXPORT(OZONE_BASE) DrmModifiersFilter {
   virtual ~DrmModifiersFilter() = default;
 
   virtual std::vector<uint64_t> Filter(
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       const std::vector<uint64_t>& modifiers) = 0;
 };
 

@@ -5,9 +5,9 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_METRICS_CWV_METRICS_PROVIDER_INTERNAL_H_
 #define IOS_WEB_VIEW_INTERNAL_METRICS_CWV_METRICS_PROVIDER_INTERNAL_H_
 
-#import "ios/web_view/public/cwv_metrics_provider.h"
-
 #include <memory>
+
+#import "ios/web_view/public/cwv_metrics_provider.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

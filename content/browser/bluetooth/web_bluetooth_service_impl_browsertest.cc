@@ -172,7 +172,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
                             PairPromptCallback callback,
                             PairingKind pairing_kind,
                             const std::optional<std::u16string>& pin) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   blink::WebBluetoothDeviceId GetWebBluetoothDeviceId(
@@ -208,6 +208,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
                                 const device::BluetoothUUID& service) override {
     return false;
   }
+  bool MayUseBluetooth(RenderFrameHost* rfh) override { return true; }
   bool IsAllowedToAccessAtLeastOneService(
       RenderFrameHost* frame,
       const blink::WebBluetoothDeviceId& device_id) override {
@@ -408,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/empty.html");
   // The prerendering doesn't affect the current scanning.
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   RenderFrameHost* prerendered_frame_host =
@@ -420,7 +421,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   auto result = EvalJs(prerendered_frame_host, R"(
       navigator.bluetooth.requestLEScan({acceptAllAdvertisements: true});)",
                        content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(::testing::HasSubstr(kUserGestureError)));
 
   // The prerendering doesn't show the bluetoothscanning prompt.
   EXPECT_FALSE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
@@ -503,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/empty.html");
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   content::RenderFrameHost* prerendered_frame_host =
@@ -517,7 +519,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
       navigator.bluetooth.requestDevice({
           filters: [{name: 'Test Device', services: ['heart_rate']}]}))",
                       content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
-  EXPECT_THAT(result.error, ::testing::HasSubstr(kUserGestureError));
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(::testing::HasSubstr(kUserGestureError)));
 
   // WebBluetoothService is not created for `prerendered_frame_host`.
   EXPECT_EQ(GetWebBluetoothServiceOverride(prerendered_frame_host), nullptr);
@@ -565,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/empty.html");
   // The prerendering doesn't affect the current scanning.
-  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  FrameTreeNodeId host_id = prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*GetWebContents(),
                                                      host_id);
   RenderFrameHost* prerendered_frame_host =
@@ -709,7 +712,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplFencedFramesBrowserTest,
   auto result = content::EvalJs(render_frame_host, R"(
       navigator.bluetooth.requestDevice({
           filters: [{name: 'Test Device', services: ['heart_rate']}]}))");
-  EXPECT_THAT(result.error, ::testing::HasSubstr(kFencedFrameError));
+  EXPECT_THAT(result,
+              EvalJsResult::ErrorIs(::testing::HasSubstr(kFencedFrameError)));
 
   // No service should be created, as this is a fenced-frame
   EXPECT_EQ(nullptr, GetWebBluetoothServiceOverride(render_frame_host));

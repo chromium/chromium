@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/cursor_client.h"
 
 namespace ui {
@@ -43,6 +44,10 @@ class TestCursorClient : public aura::client::CursorClient {
   void HideCursor() override;
   void SetCursorSize(ui::CursorSize cursor_size) override;
   ui::CursorSize GetCursorSize() const override;
+  void SetLargeCursorSizeInDip(int large_cursor_size_in_dip) override;
+  int GetLargeCursorSizeInDip() const override;
+  void SetCursorColor(SkColor color) override;
+  SkColor GetCursorColor() const override;
   bool IsCursorVisible() const override;
   void EnableMouseEvents() override;
   void DisableMouseEvents() override;
@@ -71,4 +76,4 @@ class TestCursorClient : public aura::client::CursorClient {
 }  // namespace test
 }  // namespace aura
 
-#endif // UI_AURA_TEST_TEST_CURSOR_CLIENT_H_
+#endif  // UI_AURA_TEST_TEST_CURSOR_CLIENT_H_

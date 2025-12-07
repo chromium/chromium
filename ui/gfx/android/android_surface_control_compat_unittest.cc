@@ -6,7 +6,7 @@
 
 #include <android/data_space.h>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -199,8 +199,8 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
   }
 
   // Before S, only sRGB and P3 are supported.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_S) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_S) {
     return;
   }
 
@@ -212,7 +212,8 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         rec2020, 1.f, dataspace, extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, STANDARD_BT2020 | TRANSFER_SRGB | RANGE_FULL);
+    EXPECT_EQ(dataspace, ADATASPACE_STANDARD_BT2020 | ADATASPACE_TRANSFER_SRGB |
+                             ADATASPACE_RANGE_FULL);
     EXPECT_EQ(extended_range_brightness_ratio, 1.f);
   }
 
@@ -224,14 +225,15 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         gfx::ColorSpace::CreateSRGB(), 4.f, dataspace,
         extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, STANDARD_BT709 | TRANSFER_SRGB | RANGE_EXTENDED);
+    EXPECT_EQ(dataspace, ADATASPACE_STANDARD_BT709 | ADATASPACE_TRANSFER_SRGB |
+                             ADATASPACE_RANGE_EXTENDED);
     EXPECT_EQ(extended_range_brightness_ratio, 1.f);
   }
 
   // P3, extended by 2x.
   {
     skcms_TransferFunction trfn_srgb_scaled =
-        skia::ScaleTransferFunction(SkNamedTransferFnExt::kSRGB, 2.f);
+        skia::ScaleTransferFunction(SkNamedTransferFn::kSRGB, 2.f);
     gfx::ColorSpace p3_scaled(
         gfx::ColorSpace::PrimaryID::P3, gfx::ColorSpace::TransferID::CUSTOM_HDR,
         gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL, nullptr,
@@ -240,7 +242,8 @@ TEST(SurfaceControl, ColorSpaceToADataSpace) {
     float extended_range_brightness_ratio = 0.f;
     EXPECT_TRUE(SurfaceControl::ColorSpaceToADataSpace(
         p3_scaled, 1.f, dataspace, extended_range_brightness_ratio));
-    EXPECT_EQ(dataspace, STANDARD_DCI_P3 | TRANSFER_SRGB | RANGE_EXTENDED);
+    EXPECT_EQ(dataspace, ADATASPACE_STANDARD_DCI_P3 | ADATASPACE_TRANSFER_SRGB |
+                             ADATASPACE_RANGE_EXTENDED);
     EXPECT_NEAR(extended_range_brightness_ratio, 2.f, 0.0001f);
   }
 }

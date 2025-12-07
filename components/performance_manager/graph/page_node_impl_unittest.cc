@@ -9,11 +9,13 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/graph_impl_operations.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/test_support/graph/mock_page_node_observer.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -89,19 +91,19 @@ TEST_F(PageNodeImplTest, RemoveFrame) {
   EXPECT_EQ(0u, GraphImplOperations::GetFrameNodes(page_node.get()).size());
 }
 
-TEST_F(PageNodeImplTest, GetTimeSinceLastVisibilityChange) {
+TEST_F(PageNodeImplTest, GetLastVisibilityChangeTime) {
   MockSinglePageInSingleProcessGraph mock_graph(graph());
 
+  base::TimeTicks t0 = base::TimeTicks::Now();
   mock_graph.page->SetIsVisible(true);
   EXPECT_TRUE(mock_graph.page->IsVisible());
   AdvanceClock(base::Seconds(42));
-  EXPECT_EQ(base::Seconds(42),
-            mock_graph.page->GetTimeSinceLastVisibilityChange());
+  EXPECT_EQ(t0, mock_graph.page->GetLastVisibilityChangeTime());
 
+  base::TimeTicks t1 = base::TimeTicks::Now();
   mock_graph.page->SetIsVisible(false);
   AdvanceClock(base::Seconds(23));
-  EXPECT_EQ(base::Seconds(23),
-            mock_graph.page->GetTimeSinceLastVisibilityChange());
+  EXPECT_EQ(t1, mock_graph.page->GetLastVisibilityChangeTime());
   EXPECT_FALSE(mock_graph.page->IsVisible());
 }
 
@@ -241,40 +243,29 @@ TEST_F(PageNodeImplTest, HadUserEdits) {
 
 namespace {
 
-class LenientMockObserver : public PageNodeImpl::Observer {
+class MockObserver : public MockPageNodeObserver {
  public:
-  LenientMockObserver() {}
-  ~LenientMockObserver() override {}
-
-  MOCK_METHOD1(OnPageNodeAdded, void(const PageNode*));
-  MOCK_METHOD1(OnBeforePageNodeRemoved, void(const PageNode*));
-  // Note that opener/embedder functionality is actually tested in the
-  // FrameNodeImpl and GraphImpl unittests.
-  MOCK_METHOD2(OnOpenerFrameNodeChanged,
-               void(const PageNode*, const FrameNode*));
-  MOCK_METHOD3(OnEmbedderFrameNodeChanged,
-               void(const PageNode*, const FrameNode*, EmbeddingType));
-  MOCK_METHOD2(OnTypeChanged, void(const PageNode*, PageType));
-  MOCK_METHOD1(OnIsFocusedChanged, void(const PageNode*));
-  MOCK_METHOD1(OnIsVisibleChanged, void(const PageNode*));
-  MOCK_METHOD1(OnIsAudibleChanged, void(const PageNode*));
-  MOCK_METHOD1(OnHasPictureInPictureChanged, void(const PageNode*));
-  MOCK_METHOD2(OnLoadingStateChanged,
-               void(const PageNode*, PageNode::LoadingState));
-  MOCK_METHOD1(OnUkmSourceIdChanged, void(const PageNode*));
-  MOCK_METHOD1(OnPageLifecycleStateChanged, void(const PageNode*));
-  MOCK_METHOD1(OnPageIsHoldingWebLockChanged, void(const PageNode*));
-  MOCK_METHOD1(OnPageIsHoldingIndexedDBLockChanged, void(const PageNode*));
-  MOCK_METHOD1(OnMainFrameUrlChanged, void(const PageNode*));
-  MOCK_METHOD1(OnMainFrameDocumentChanged, void(const PageNode*));
-  MOCK_METHOD1(OnTitleUpdated, void(const PageNode*));
-  MOCK_METHOD1(OnFaviconUpdated, void(const PageNode*));
-  MOCK_METHOD1(OnHadFormInteractionChanged, void(const PageNode*));
-  MOCK_METHOD1(OnHadUserEditsChanged, void(const PageNode*));
-  MOCK_METHOD2(OnAboutToBeDiscarded, void(const PageNode*, const PageNode*));
+  explicit MockObserver(Graph* graph = nullptr) {
+    // If a `graph` is passed, automatically start observing it.
+    if (graph) {
+      scoped_observation_.Observe(graph);
+    }
+  }
 
   void SetNotifiedPageNode(const PageNode* page_node) {
     notified_page_node_ = page_node;
+  }
+
+  void TestNotifiedPageNode(const PageNode* page_node) const {
+    EXPECT_EQ(notified_page_node_, page_node);
+  }
+
+  void ExpectNoEdges(const PageNode* page_node) {
+    // Node should be created without edges.
+    EXPECT_FALSE(page_node->GetOpenerFrameNode());
+    EXPECT_FALSE(page_node->GetEmbedderFrameNode());
+    EXPECT_FALSE(page_node->GetMainFrameNode());
+    EXPECT_TRUE(page_node->GetMainFrameNodes().empty());
   }
 
   const PageNode* TakeNotifiedPageNode() {
@@ -284,14 +275,15 @@ class LenientMockObserver : public PageNodeImpl::Observer {
   }
 
  private:
+  base::ScopedObservation<Graph, PageNodeObserver> scoped_observation_{this};
   raw_ptr<const PageNode, DanglingUntriaged> notified_page_node_ = nullptr;
 };
 
-using MockObserver = ::testing::StrictMock<LenientMockObserver>;
-
-using testing::_;
-using testing::Invoke;
-using testing::InvokeWithoutArgs;
+using ::testing::_;
+using ::testing::DoAll;
+using ::testing::InSequence;
+using ::testing::Invoke;
+using ::testing::InvokeWithoutArgs;
 
 }  // namespace
 
@@ -307,16 +299,24 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
 
   // Remove observers at the head and tail of the list inside a callback, and
   // expect that `obs` is still notified correctly.
-  EXPECT_CALL(head_obs, OnPageNodeAdded(_)).WillOnce(InvokeWithoutArgs([&] {
-    graph()->RemovePageNodeObserver(&head_obs);
-    graph()->RemovePageNodeObserver(&tail_obs);
-  }));
+  EXPECT_CALL(head_obs, OnBeforePageNodeAdded(_))
+      .WillOnce(InvokeWithoutArgs([&] {
+        graph()->RemovePageNodeObserver(&head_obs);
+        graph()->RemovePageNodeObserver(&tail_obs);
+      }));
   // `tail_obs` should not be notified as it was removed.
-  EXPECT_CALL(tail_obs, OnPageNodeAdded(_)).Times(0);
+  EXPECT_CALL(tail_obs, OnBeforePageNodeAdded(_)).Times(0);
 
-  // Create a page node and expect a matching call to "OnPageNodeAdded".
-  EXPECT_CALL(obs, OnPageNodeAdded(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  // Create a page node and expect a matching call to both "OnBeforePageNodeAdded" and
+  // "OnPageNodeAdded".
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforePageNodeAdded(_))
+        .WillOnce(DoAll(Invoke(&obs, &MockObserver::SetNotifiedPageNode),
+                        Invoke(&obs, &MockObserver::ExpectNoEdges)));
+    EXPECT_CALL(obs, OnPageNodeAdded(_))
+        .WillOnce(Invoke(&obs, &MockObserver::TestNotifiedPageNode));
+  }
   auto page_node = CreateNode<PageNodeImpl>();
   const PageNode* raw_page_node = page_node.get();
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
@@ -336,6 +336,16 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->SetIsAudible(true);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
+  EXPECT_CALL(obs, OnHasPictureInPictureChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page_node->SetHasPictureInPicture(true);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
+  EXPECT_CALL(obs, OnPageHasFreezingOriginTrialOptOutChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  page_node->SetHasFreezingOriginTrialOptOutForTesting(true);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
   EXPECT_CALL(obs, OnLoadingStateChanged(_, _))
       .WillOnce(testing::WithArg<0>(
           Invoke(&obs, &MockObserver::SetNotifiedPageNode)));
@@ -352,10 +362,21 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   page_node->SetLifecycleStateForTesting(PageNodeImpl::LifecycleState::kFrozen);
   EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
+  EXPECT_CALL(obs, OnPageNotificationPermissionStatusChange(
+                       _, std::optional<blink::mojom::PermissionStatus>()))
+      .WillOnce(testing::WithArg<0>(
+          Invoke(&obs, &MockObserver::SetNotifiedPageNode)));
+  page_node->OnNotificationPermissionStatusChange(
+      blink::mojom::PermissionStatus::GRANTED);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
   const GURL kTestUrl = GURL("https://foo.com/");
   int64_t navigation_id = 0x1234;
   EXPECT_CALL(obs, OnMainFrameUrlChanged(_))
       .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  EXPECT_CALL(
+      obs, OnPageNotificationPermissionStatusChange(
+               _, std::make_optional(blink::mojom::PermissionStatus::GRANTED)));
   // Expect no OnMainFrameDocumentChanged for same-document navigation
   page_node->OnMainFrameNavigationCommitted(
       true, base::TimeTicks::Now(), ++navigation_id, kTestUrl, kHtmlMimeType,
@@ -385,13 +406,38 @@ TEST_F(PageNodeImplTest, ObserverWorks) {
   EXPECT_CALL(obs, OnIsVisibleChanged(raw_page_node));
   page_node->SetIsFocused(false);
 
-  // Release the page node and expect a call to "OnBeforePageNodeRemoved".
-  EXPECT_CALL(obs, OnBeforePageNodeRemoved(_))
-      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  // Release the page node and expect a call to both "OnBeforePageNodeRemoved" and
+  // "OnPageNodeRemoved".
+  {
+    InSequence seq;
+    EXPECT_CALL(obs, OnBeforePageNodeRemoved(raw_page_node));
+    EXPECT_CALL(obs, OnPageNodeRemoved(raw_page_node));
+  }
   page_node.reset();
-  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
 
   graph()->RemovePageNodeObserver(&obs);
+}
+
+TEST_F(PageNodeImplTest, SetMainFrameRestoredState) {
+  const GURL kUrl("http://www.example.org");
+  auto page = CreateNode<PageNodeImpl>();
+  const PageNode* raw_page_node = page.get();
+  EXPECT_EQ(page->GetNotificationPermissionStatus(), std::nullopt);
+
+  MockObserver obs(graph());
+
+  EXPECT_CALL(obs, OnMainFrameUrlChanged(_))
+      .WillOnce(Invoke(&obs, &MockObserver::SetNotifiedPageNode));
+  EXPECT_CALL(obs, OnPageNotificationPermissionStatusChange(
+                       _, std::optional<blink::mojom::PermissionStatus>()));
+  page->SetMainFrameRestoredState(kUrl,
+                                  /* notification_permission_status=*/blink::
+                                      mojom::PermissionStatus::GRANTED);
+  EXPECT_EQ(raw_page_node, obs.TakeNotifiedPageNode());
+
+  EXPECT_EQ(page->GetMainFrameUrl(), kUrl);
+  EXPECT_EQ(page->GetNotificationPermissionStatus(),
+            blink::mojom::PermissionStatus::GRANTED);
 }
 
 TEST_F(PageNodeImplTest, PublicInterface) {
@@ -431,16 +477,14 @@ TEST_F(PageNodeImplTest, EmbedderFrameNode) {
   auto embedded_page_node = CreateNode<PageNodeImpl>();
   const PageNode* public_embedded_page_node = embedded_page_node.get();
 
-  embedded_page_node->SetEmbedderFrameNodeAndEmbeddingType(
-      embedder_frame_node.get(), PageNode::EmbeddingType::kGuestView);
+  embedded_page_node->SetEmbedderFrameNode(embedder_frame_node.get());
 
-  EXPECT_EQ(embedded_page_node->GetEmbeddingType(),
-            PageNode::EmbeddingType::kGuestView);
   EXPECT_EQ(embedded_page_node->embedder_frame_node(),
             embedder_frame_node.get());
   EXPECT_EQ(public_embedded_page_node->GetEmbedderFrameNode(),
             embedder_frame_node.get());
 }
+
 TEST_F(PageNodeImplTest, GetMainFrameNodes) {
   auto process = CreateNode<ProcessNodeImpl>();
   auto page = CreateNode<PageNodeImpl>();
@@ -450,6 +494,23 @@ TEST_F(PageNodeImplTest, GetMainFrameNodes) {
   auto frames = ToPublic(page.get())->GetMainFrameNodes();
   EXPECT_THAT(frames, testing::UnorderedElementsAre(ToPublic(frame1.get()),
                                                     ToPublic(frame2.get())));
+}
+
+TEST_F(PageNodeImplTest, IsHoldingBlockingIndexedDBLock) {
+  auto process = CreateNode<ProcessNodeImpl>();
+  auto page_node = CreateNode<PageNodeImpl>();
+  CreateFrameNodeAutoId(process.get(), page_node.get());
+  const PageNode* raw_page_node = page_node.get();
+
+  MockObserver obs(graph());
+
+  EXPECT_CALL(obs, OnPageIsHoldingBlockingIndexedDBLockChanged(raw_page_node));
+  page_node->SetIsHoldingBlockingIndexedDBLockForTesting(true);
+  EXPECT_TRUE(page_node->IsHoldingBlockingIndexedDBLock());
+
+  EXPECT_CALL(obs, OnPageIsHoldingBlockingIndexedDBLockChanged(raw_page_node));
+  page_node->SetIsHoldingBlockingIndexedDBLockForTesting(false);
+  EXPECT_FALSE(page_node->IsHoldingBlockingIndexedDBLock());
 }
 
 }  // namespace performance_manager

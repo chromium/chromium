@@ -44,7 +44,7 @@ NSString* const kActiveKeyPath = @"active";
 @synthesize constrainedFrameView = _constrainedFrameView;
 
 - (instancetype)initWithName:(GuideName*)name {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _name = name;
     _constrainedFrame = CGRectNull;
   }

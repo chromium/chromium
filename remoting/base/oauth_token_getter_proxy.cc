@@ -17,16 +17,15 @@ void ResolveCallback(
     OAuthTokenGetter::TokenCallback on_access_token,
     scoped_refptr<base::SequencedTaskRunner> original_task_runner,
     OAuthTokenGetter::Status status,
-    const std::string& user_email,
-    const std::string& access_token) {
+    const OAuthTokenInfo& token_info) {
   if (!original_task_runner->RunsTasksInCurrentSequence()) {
     original_task_runner->PostTask(
-        FROM_HERE, base::BindOnce(std::move(on_access_token), status,
-                                  user_email, access_token));
+        FROM_HERE,
+        base::BindOnce(std::move(on_access_token), status, token_info));
     return;
   }
 
-  std::move(on_access_token).Run(status, user_email, access_token);
+  std::move(on_access_token).Run(status, token_info);
 }
 
 }  // namespace
@@ -72,6 +71,10 @@ void OAuthTokenGetterProxy::InvalidateCache() {
   if (token_getter_) {
     token_getter_->InvalidateCache();
   }
+}
+
+base::WeakPtr<OAuthTokenGetter> OAuthTokenGetterProxy::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace remoting

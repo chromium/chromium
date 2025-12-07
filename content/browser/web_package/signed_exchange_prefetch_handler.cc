@@ -23,7 +23,7 @@
 namespace content {
 
 SignedExchangePrefetchHandler::SignedExchangePrefetchHandler(
-    int frame_tree_node_id,
+    FrameTreeNodeId frame_tree_node_id,
     const network::ResourceRequest& resource_request,
     network::mojom::URLResponseHeadPtr response_head,
     mojo::ScopedDataPipeConsumerHandle response_body,
@@ -82,14 +82,14 @@ SignedExchangePrefetchHandler::TakePrefetchedSignedExchangeCacheEntry() {
 
 void SignedExchangePrefetchHandler::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangePrefetchHandler::OnReceiveResponse(
     network::mojom::URLResponseHeadPtr head,
     mojo::ScopedDataPipeConsumerHandle body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangePrefetchHandler::OnReceiveRedirect(
@@ -102,14 +102,14 @@ void SignedExchangePrefetchHandler::OnUploadProgress(
     int64_t current_position,
     int64_t total_size,
     base::OnceCallback<void()> callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangePrefetchHandler::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
   network::RecordOnTransferSizeUpdatedUMA(
       network::OnTransferSizeUpdatedFrom::kSignedExchangePrefetchHandler);
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SignedExchangePrefetchHandler::OnComplete(

@@ -14,6 +14,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StreamUtil;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.url.GURL;
@@ -30,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /** This class provides methods to write/read most visited sites related info to devices. */
+@NullMarked
 public class MostVisitedSitesMetadataUtils {
     private static final String TAG = "TopSites";
 
@@ -48,12 +51,12 @@ public class MostVisitedSitesMetadataUtils {
     /** Current version of the cache, to be updated when the cache structure or meaning changes. */
     private static final int CACHE_VERSION = 1;
 
-    private static File sStateDirectory;
-    private static String sStateDirName = "top_sites";
-    private static String sStateFileName = "top_sites";
+    private static @Nullable File sStateDirectory;
+    private static final String STATE_DIR_NAME = "top_sites";
+    private static final String STATE_FILENAME = "top_sites";
 
-    private Runnable mCurrentTask;
-    private Runnable mPendingTask;
+    private @Nullable Runnable mCurrentTask;
+    private @Nullable Runnable mPendingTask;
 
     private int mPendingTaskTilesNumForTesting;
 
@@ -95,10 +98,10 @@ public class MostVisitedSitesMetadataUtils {
      * stale files and throw an exception, then the UI thread will know there is no cache file and
      * show something else.
      */
-    public static List<Tile> restoreFileToSuggestionLists() throws IOException {
+    public static @Nullable List<Tile> restoreFileToSuggestionLists() throws IOException {
         List<Tile> tiles;
         try {
-            byte[] listData = restoreFileToBytes(getOrCreateTopSitesDirectory(), sStateFileName);
+            byte[] listData = restoreFileToBytes(getOrCreateTopSitesDirectory(), STATE_FILENAME);
             tiles = deserializeTopSitesData(listData);
         } catch (IOException e) {
             getOrCreateTopSitesDirectory().delete();
@@ -114,7 +117,7 @@ public class MostVisitedSitesMetadataUtils {
      *     deserialize data, remove the stale files and throw an exception, then the UI thread will
      *     know there is no cache file and show something else.
      */
-    public static List<Tile> restoreFileToSuggestionListsOnUiThread() throws IOException {
+    public static @Nullable List<Tile> restoreFileToSuggestionListsOnUiThread() throws IOException {
         return restoreFileToSuggestionLists();
     }
 
@@ -124,15 +127,15 @@ public class MostVisitedSitesMetadataUtils {
      * @param suggestionTiles The site suggestion tiles.
      * @param callback Callback function after saving file.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void saveSuggestionListsToFile(List<Tile> suggestionTiles, Runnable callback) {
-        new AsyncTask<Void>() {
+        new AsyncTask<@Nullable Void>() {
             @Override
-            protected Void doInBackground() {
+            protected @Nullable Void doInBackground() {
                 try {
                     byte[] listData = serializeTopSitesData(suggestionTiles);
                     saveSuggestionListsToFile(
-                            getOrCreateTopSitesDirectory(), sStateFileName, listData);
+                            getOrCreateTopSitesDirectory(), STATE_FILENAME, listData);
                 } catch (IOException e) {
                     Log.e(TAG, "Fail to save file.");
                 }
@@ -140,7 +143,7 @@ public class MostVisitedSitesMetadataUtils {
             }
 
             @Override
-            protected void onPostExecute(Void aVoid) {
+            protected void onPostExecute(@Nullable Void aVoid) {
                 if (callback != null) {
                     callback.run();
                 }
@@ -175,7 +178,8 @@ public class MostVisitedSitesMetadataUtils {
         return output.toByteArray();
     }
 
-    private static List<Tile> deserializeTopSitesData(byte[] listData) throws IOException {
+    private static @Nullable List<Tile> deserializeTopSitesData(byte[] listData)
+            throws IOException {
         if (listData == null || listData.length == 0) {
             return null;
         }
@@ -198,7 +202,7 @@ public class MostVisitedSitesMetadataUtils {
             if (url.isEmpty()) throw new IOException("GURL deserialization failed.");
 
             // Read the allowlistIconPath, which is always an empty string.
-            String allowlistIconPath = stream.readUTF();
+            stream.readUTF();
             int titleSource = stream.readInt();
             int source = stream.readInt();
             int sectionType = stream.readInt();
@@ -259,13 +263,13 @@ public class MostVisitedSitesMetadataUtils {
         return data;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static File getOrCreateTopSitesDirectory() {
         synchronized (DIR_CREATION_LOCK) {
             if (sStateDirectory == null) {
                 sStateDirectory =
                         ContextUtils.getApplicationContext()
-                                .getDir(sStateDirName, Context.MODE_PRIVATE);
+                                .getDir(STATE_DIR_NAME, Context.MODE_PRIVATE);
             }
         }
         return sStateDirectory;
@@ -280,7 +284,7 @@ public class MostVisitedSitesMetadataUtils {
         }
     }
 
-    public Runnable getCurrentTaskForTesting() {
+    public @Nullable Runnable getCurrentTaskForTesting() {
         return mCurrentTask;
     }
 

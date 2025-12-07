@@ -19,7 +19,7 @@
 #include "base/android/jni_android.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "components/safe_browsing/content/browser/unsafe_resource_util.h"
+#include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -96,7 +96,7 @@ void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
 void AwUrlCheckerDelegateImpl::
     StartObservingInteractionsForDelayedBlockingPageHelper(
         const security_interstitials::UnsafeResource& resource) {
-  NOTREACHED_IN_MIGRATION() << "Delayed warnings not implemented for WebView";
+  NOTREACHED() << "Delayed warnings not implemented for WebView";
 }
 
 bool AwUrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
@@ -128,7 +128,8 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
       return true;
     }
   } else if (!render_frame_token.has_value()) {
-    client = AwContentsIoThreadClient::FromID(frame_tree_node_id);
+    client = AwContentsIoThreadClient::FromID(
+        content::FrameTreeNodeId(frame_tree_node_id));
   } else {
     client =
         AwContentsIoThreadClient::FromToken(content::GlobalRenderFrameHostToken(
@@ -150,19 +151,14 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
   // of the on-device setting. See https://crbug.com/938538.
   bool is_hardcoded_url =
       original_url.SchemeIs(content::kChromeUIScheme) &&
-      original_url.host() == safe_browsing::kChromeUISafeBrowsingHost;
+      original_url.GetHost() == safe_browsing::kChromeUISafeBrowsingHost;
   if (is_hardcoded_url)
     return false;
 
-  // Proceed with the request iff GMS is present, enabled, accessible to
-  // WebView and has minimum version to support safe browsing
-  if (base::FeatureList::IsEnabled(
-          safe_browsing::kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheck) ||
-      base::FeatureList::IsEnabled(safe_browsing::kHashPrefixRealTimeLookups)) {
-    bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
-    if (!can_use_gms) {
-      return true;
-    }
+  // Skip the check if we can't call GMS APIs.
+  bool can_use_gms = Java_AwSafeBrowsingConfigHelper_canUseGms(env);
+  if (!can_use_gms) {
+    return true;
   }
 
   // For other requests, follow user consent.
@@ -174,6 +170,17 @@ bool AwUrlCheckerDelegateImpl::ShouldSkipRequestCheck(
 void AwUrlCheckerDelegateImpl::NotifySuspiciousSiteDetected(
     const base::RepeatingCallback<content::WebContents*()>&
         web_contents_getter) {}
+
+void AwUrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+    std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report,
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {}
+
+bool AwUrlCheckerDelegateImpl::AreBackgroundHashRealTimeSampleLookupsAllowed(
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+  return false;
+}
 
 const safe_browsing::SBThreatTypeSet&
 AwUrlCheckerDelegateImpl::GetThreatTypes() {
@@ -200,7 +207,10 @@ void AwUrlCheckerDelegateImpl::StartApplicationResponse(
   security_interstitials::SecurityInterstitialTabHelper*
       security_interstitial_tab_helper = security_interstitials::
           SecurityInterstitialTabHelper::FromWebContents(web_contents);
-  if (ui_manager->IsAllowlisted(resource) && security_interstitial_tab_helper &&
+  bool is_allowlisted =
+      ui_manager->IsAllowlisted(resource.url, resource.rfh_locator,
+                                resource.navigation_id, resource.threat_type);
+  if (is_allowlisted && security_interstitial_tab_helper &&
       security_interstitial_tab_helper->IsDisplayingInterstitial()) {
     // In this case we are about to leave an interstitial due to the user
     // clicking proceed on it, we shouldn't call OnSafeBrowsingHit again.
@@ -274,7 +284,7 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
       proceed = false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (!proceed) {
@@ -309,3 +319,6 @@ void AwUrlCheckerDelegateImpl::StartDisplayingDefaultBlockingPage(
 }
 
 }  // namespace android_webview
+
+DEFINE_JNI(AwSafeBrowsingConfigHelper)
+DEFINE_JNI(AwSafeBrowsingSafeModeAction)

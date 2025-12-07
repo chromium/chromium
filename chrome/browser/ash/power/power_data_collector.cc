@@ -80,7 +80,6 @@ PowerDataCollector::PowerSupplySample::PowerSupplySample()
       battery_discharge_rate(0.0) {
 }
 
-PowerDataCollector::SystemResumedSample::SystemResumedSample() {
-}
+PowerDataCollector::SystemResumedSample::SystemResumedSample() = default;
 
 }  // namespace ash

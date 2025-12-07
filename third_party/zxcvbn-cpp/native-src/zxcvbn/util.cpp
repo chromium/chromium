@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include <cassert>
@@ -16,7 +17,7 @@ namespace util {
 
 bool utf8_valid(std::string::const_iterator start,
                 std::string::const_iterator end) {
-  return base::IsStringUTF8(base::MakeStringPiece(start, end));
+  return base::IsStringUTF8(std::string_view(start, end));
 }
 
 bool utf8_valid(const std::string & str) {

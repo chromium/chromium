@@ -10,15 +10,45 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile_statistics_common.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/password_manager/core/browser/password_store/password_store_interface.h"
+#include "device/fido/platform_credential_store.h"
 
-class Profile;
+class PrefService;
 class ProfileStatisticsAggregator;
+
+namespace autofill {
+class EntityDataManager;
+class PersonalDataManager;
+}  // namespace autofill
+
+namespace bookmarks {
+class BookmarkModel;
+}  // namespace bookmarks
+
+namespace history {
+class HistoryService;
+}  // namespace history
 
 // Instances of ProfileStatistics should be created directly. Use
 // ProfileStatisticsFactory instead.
 class ProfileStatistics : public KeyedService {
  public:
+  // Uses ProfileStatisticsFactory::BuildServiceInstanceForBrowserContext
+  // instead.
+  ProfileStatistics(
+      scoped_refptr<autofill::AutofillWebDataService> autofill_web_data_service,
+      autofill::PersonalDataManager* personal_data_manager,
+      const autofill::EntityDataManager* entity_data_manager,
+      bookmarks::BookmarkModel* bookmark_model,
+      history::HistoryService* history_service,
+      scoped_refptr<password_manager::PasswordStoreInterface>
+          profile_password_store,
+      PrefService* pref_service,
+      std::unique_ptr<device::fido::PlatformCredentialStore>
+          platform_credential_store);
+  ~ProfileStatistics() override;
   // Profile Statistics --------------------------------------------------------
 
   // This function collects statistical information about |profile|, also
@@ -29,13 +59,20 @@ class ProfileStatistics : public KeyedService {
   void GatherStatistics(profiles::ProfileStatisticsCallback callback);
 
  private:
-  friend class ProfileStatisticsFactory;
-
-  explicit ProfileStatistics(Profile* profile);
-  ~ProfileStatistics() override;
   void DeregisterAggregator();
 
-  raw_ptr<Profile> profile_;
+  const scoped_refptr<autofill::AutofillWebDataService>
+      autofill_web_data_service_;
+  const raw_ptr<autofill::PersonalDataManager> personal_data_manager_;
+  const raw_ptr<const autofill::EntityDataManager> entity_data_manager_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<history::HistoryService> history_service_;
+  const scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  const raw_ptr<PrefService> pref_service_;
+
+  std::unique_ptr<device::fido::PlatformCredentialStore>
+      platform_credential_store_;
   std::unique_ptr<ProfileStatisticsAggregator> aggregator_;
   base::WeakPtrFactory<ProfileStatistics> weak_ptr_factory_{this};
 };

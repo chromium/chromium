@@ -16,9 +16,7 @@
 #include "content/public/renderer/render_thread_observer.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/test/test_render_frame.h"
-#include "ipc/ipc_message_utils.h"
-#include "ipc/ipc_sync_message.h"
-#include "ipc/message_filter.h"
+#include "ipc/param_traits_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -41,77 +39,7 @@ static const blink::UserAgentMetadata kUserAgentMetadata;
 MockRenderThread::MockRenderThread()
     : next_routing_id_(kFirstGeneratedRoutingId) {}
 
-MockRenderThread::~MockRenderThread() {
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-  while (!filters_.empty()) {
-    scoped_refptr<IPC::MessageFilter> filter = filters_.back();
-    filters_.pop_back();
-    filter->OnFilterRemoved();
-  }
-#endif
-}
-
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-// Called by the Widget. Used to send messages to the browser.
-// We short-circuit the mechanism and handle the messages right here on this
-// class.
-bool MockRenderThread::Send(IPC::Message* msg) {
-  // We need to simulate a synchronous channel, thus we are going to receive
-  // through this function messages, messages with reply and reply messages.
-  // We can only handle one synchronous message at a time.
-  if (msg->is_reply()) {
-    if (reply_deserializer_) {
-      reply_deserializer_->SerializeOutputParameters(*msg);
-      reply_deserializer_.reset();
-    }
-  } else {
-    if (msg->is_sync()) {
-      // We actually need to handle deleting the reply deserializer for sync
-      // messages.
-      reply_deserializer_ =
-          static_cast<IPC::SyncMessage*>(msg)->TakeReplyDeserializer();
-    }
-    if (msg->routing_id() == MSG_ROUTING_CONTROL)
-      OnControlMessageReceived(*msg);
-    else
-      OnMessageReceived(*msg);
-  }
-  delete msg;
-  return true;
-}
-
-IPC::SyncMessageFilter* MockRenderThread::GetSyncMessageFilter() {
-  return nullptr;
-}
-
-void MockRenderThread::AddRoute(int32_t routing_id, IPC::Listener* listener) {}
-
-void MockRenderThread::AttachTaskRunnerToRoute(
-    int32_t routing_id,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {}
-
-void MockRenderThread::RemoveRoute(int32_t routing_id) {}
-
-void MockRenderThread::AddFilter(IPC::MessageFilter* filter) {
-  filter->OnFilterAdded(&sink());
-  // Add this filter to a vector so the MockRenderThread::RemoveFilter function
-  // can check if this filter is added.
-  filters_.push_back(base::WrapRefCounted(filter));
-}
-
-void MockRenderThread::RemoveFilter(IPC::MessageFilter* filter) {
-  // Emulate the IPC::ChannelProxy::OnRemoveFilter function.
-  for (size_t i = 0; i < filters_.size(); ++i) {
-    if (filters_[i].get() == filter) {
-      filter->OnFilterRemoved();
-      filters_.erase(filters_.begin() + i);
-      return;
-    }
-  }
-  NOTREACHED_IN_MIGRATION() << "filter to be removed not found";
-}
-
-#endif
+MockRenderThread::~MockRenderThread() = default;
 
 IPC::SyncChannel* MockRenderThread::GetChannel() {
   return nullptr;
@@ -167,9 +95,6 @@ int32_t MockRenderThread::GetClientId() {
   return 1;
 }
 
-void MockRenderThread::SetRendererProcessType(
-    blink::scheduler::WebRendererProcessType type) {}
-
 blink::WebString MockRenderThread::GetUserAgent() {
   return blink::WebString();
 }
@@ -221,62 +146,24 @@ void MockRenderThread::OnCreateChildFrame(
       child_frame_token, std::move(browser_interface_broker));
 }
 
-#if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
-bool MockRenderThread::OnControlMessageReceived(const IPC::Message& msg) {
-  for (auto& observer : observers_) {
-    if (observer.OnControlMessageReceived(msg))
-      return true;
-  }
-  return OnMessageReceived(msg);
-}
-
-bool MockRenderThread::OnMessageReceived(const IPC::Message& msg) {
-  // Save the message in the sink.
-  sink_.OnMessageReceived(msg);
-  return false;
-}
-#endif
-
 // The View expects to be returned a valid route_id different from its own.
-void MockRenderThread::OnCreateWindow(
-    const mojom::CreateNewWindowParams& params,
-    mojom::CreateNewWindowReply* reply) {
-  reply->frame = TestRenderFrame::CreateStubFrameReceiver();
+void MockRenderThread::OnCreateWindow(mojom::CreateNewWindowParams& params,
+                                      mojom::CreateNewWindowReply* reply) {
+  params.associated_interface_provider.EnableUnassociatedUsage();
+  params.widget_host.EnableUnassociatedUsage();
+  params.frame_widget_host.EnableUnassociatedUsage();
   reply->main_frame_route_id = GetNextRoutingID();
   frame_token_to_initial_browser_brokers_.emplace(
-      reply->main_frame_token,
-      reply->main_frame_interface_broker.InitWithNewPipeAndPassReceiver());
-  reply->associated_interface_provider =
-      TestRenderFrame::CreateStubAssociatedInterfaceProviderRemote();
+      reply->main_frame_token, std::move(params.main_frame_interface_broker));
   reply->cloned_session_storage_namespace_id =
       blink::AllocateSessionStorageNamespaceId();
 
-  auto widget_params = mojom::CreateFrameWidgetParams::New();
-  widget_params->routing_id = GetNextRoutingID();
-  mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
-      blink_frame_widget_receiver =
-          blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
-  mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
-  std::ignore =
-      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-  mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
-  mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
-      blink_widget.BindNewEndpointAndPassDedicatedReceiver();
-  mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-  std::ignore = blink_widget_host.BindNewEndpointAndPassDedicatedReceiver();
-
-  widget_params->frame_widget = std::move(blink_frame_widget_receiver);
-  widget_params->frame_widget_host = blink_frame_widget_host.Unbind();
-  widget_params->widget = std::move(blink_widget_receiver);
-  widget_params->widget_host = blink_widget_host.Unbind();
-  widget_params->visual_properties.screen_infos =
+  reply->widget_routing_id = GetNextRoutingID();
+  reply->visual_properties.screen_infos =
       display::ScreenInfos(display::ScreenInfo());
-  reply->widget_params = std::move(widget_params);
 
   mojo::AssociatedRemote<blink::mojom::PageBroadcast> page_broadcast;
-  reply->page_broadcast =
-      page_broadcast.BindNewEndpointAndPassDedicatedReceiver();
+  page_broadcast.Bind(std::move(params.page_broadcast_remote));
   page_broadcasts_.push_back(std::move(page_broadcast));
 }
 

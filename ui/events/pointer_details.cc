@@ -9,7 +9,7 @@
 
 namespace ui {
 
-PointerDetails::PointerDetails() {}
+PointerDetails::PointerDetails() = default;
 
 PointerDetails::PointerDetails(EventPointerType pointer_type,
                                PointerId pointer_id)

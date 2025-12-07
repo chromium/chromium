@@ -56,11 +56,9 @@ Section Headers:
   [21] .got              PROGBITS       02ddc834 2ddc834 00a7cc 00  WA  0   0  4
   [22] .data             PROGBITS       02de7000 2de7000 018d88 00  WA  0   0 32
   [23] .bss              NOBITS         02dffda0 2dffda0 13d7e8 00  WA  0   0 32
-  [35] .note.gnu.gold-version NOTE     00000000 22700c98 00001c 00      0   0  4
-  [36] .ARM.attributes  ARM_ATTRIBUTES 00000000 22700cb4 00003c 00      0   0  1
-  [37] .symtab           SYMTAB    00000000 22700cf0 105ef20 10     38 901679  4
-  [38] .strtab           STRTAB       00000000 234c4950 213a4fe 00      0   0  1
-  [39] .shstrtab         STRTAB        00000000 257b46da 0001b4 00      0   0  1
+  [24] .part.end         NOBITS         02f3d588 2f3d588 000010 00  WA  0   0 32
+  [25] .ARM.attributes  ARM_ATTRIBUTES  00000000 2f3d598 00003c 00      0   0  1
+  [26] .shstrtab         STRTAB         00000000 257b46da 0001b4 00     0   0  1
 Key to Flags:
   W (write), A (alloc), X (execute), M (merge), S (strings)
   I (info), L (link order), G (group), T (TLS), E (exclude), x (unknown)

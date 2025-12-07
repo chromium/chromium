@@ -1,0 +1,45 @@
+# This file lists all target triples (as spelled/expected by `rustc`) that
+# Chromium supports when building Rust libraries.
+#
+# Contents of this file are manually built, by trying to list all possible
+# values of `rust_abi_target` as set in  `//build/config/rust.gni`.
+#
+# `gnrt`'s `build.rs` uses this file to ask `rustc` how to translate Rust's
+# conditional dependency expressions (e.g. `#[cfg(target_env = "msvc")]`) into
+# GN equivalents.
+aarch64-apple-darwin
+aarch64-apple-ios
+aarch64-apple-ios-macabi
+aarch64-apple-ios-sim
+aarch64-apple-tvos
+aarch64-apple-tvos-sim
+aarch64-linux-android
+aarch64-pc-windows-msvc
+aarch64-unknown-fuchsia
+aarch64-unknown-linux-gnu
+arm64e-apple-ios
+arm-unknown-linux-gnueabi
+arm-unknown-linux-gnueabihf
+armv7-linux-androideabi
+armv7-unknown-linux-gnueabi
+armv7-unknown-linux-gnueabihf
+armv7s-apple-ios
+i386-apple-ios
+i686-linux-android
+i686-pc-windows-msvc
+i686-unknown-linux-gnu
+loongarch64-unknown-linux-gnu
+riscv64-linux-android
+riscv64gc-unknown-linux-gnu
+thumbv7neon-linux-androideabi
+thumbv7neon-unknown-linux-gnueabihf
+x86_64-apple-darwin
+x86_64-apple-ios
+x86_64-apple-ios-macabi
+x86_64-apple-tvos
+x86_64-linux-android
+x86_64-pc-windows-msvc
+x86_64-unknown-fuchsia
+x86_64-unknown-linux-gnu
+powerpc64le-unknown-linux-gnu
+s390x-unknown-linux-gnu

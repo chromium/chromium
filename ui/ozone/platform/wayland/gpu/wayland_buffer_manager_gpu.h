@@ -12,6 +12,8 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -20,7 +22,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/frame_data.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/gl/gl_display.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
 #include "ui/ozone/public/drm_modifiers_filter.h"
@@ -63,9 +66,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
       bool supports_viewporter,
       bool supports_acquire_fence,
       bool supports_overlays,
-      uint32_t supported_surface_augmentor_version,
-      bool supports_single_pixel_buffer,
-      const base::Version& server_version) override;
+      bool supports_single_pixel_buffer) override;
 
   // These two calls get the surface, which backs the |widget| and notifies it
   // about the submission and the presentation. After the surface receives the
@@ -103,6 +104,8 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                const std::vector<uint64_t>& modifiers,
                                uint32_t current_format,
                                uint32_t planes_count,
+                               const gfx::ColorSpace& color_space,
+                               const gfx::HDRMetadata& hdr_metadata,
                                uint32_t buffer_id);
 
   // Asks Wayland to create a shared memory based wl_buffer.
@@ -110,12 +113,6 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                             size_t length,
                             gfx::Size size,
                             uint32_t buffer_id);
-
-  // Asks Wayland to create a solid color wl_buffer that is not backed by
-  // anything on the gpu side. Requires surface-augmenter protocol.
-  void CreateSolidColorBuffer(SkColor4f color,
-                              const gfx::Size& size,
-                              uint32_t buf_id);
 
   // Asks Wayland to create a single pixel wl_buffer that is not backed by
   // anything on the gpu side. Requires single pixel buffer protocol.
@@ -157,29 +154,14 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Returns a gbm_device based on a DRM render node.
   GbmDevice* GetGbmDevice();
 #endif
+  gl::EGLDisplayPlatform GetNativeDisplay();
 
   bool supports_acquire_fence() const { return supports_acquire_fence_; }
   bool supports_viewporter() const { return supports_viewporter_; }
   bool supports_overlays() const { return supports_overlays_; }
-  bool supports_non_backed_solid_color_buffers() const {
-    return supports_non_backed_solid_color_buffers_;
-  }
   bool supports_single_pixel_buffer() const {
     return supports_single_pixel_buffer_;
   }
-  bool supports_subpixel_accurate_position() const {
-    return supports_subpixel_accurate_position_;
-  }
-  bool supports_surface_background_color() const {
-    return supports_surface_background_color_;
-  }
-  bool supports_clip_rect() const { return supports_clip_rect_; }
-  bool supports_affine_transform() const { return supports_affine_transform_; }
-  bool supports_out_of_window_clip_rect() const {
-    return supports_out_of_window_clip_rect_;
-  }
-  bool has_transformation_fix() const { return has_transformation_fix_; }
-
   void set_drm_modifiers_filter(
       std::unique_ptr<DrmModifiersFilter> drm_modifiers_filter) {
     drm_modifiers_filter_ = std::move(drm_modifiers_filter);
@@ -189,9 +171,11 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   void AddBindingWaylandBufferManagerGpu(
       mojo::PendingReceiver<ozone::mojom::WaylandBufferManagerGpu> receiver);
 
-  // Returns supported modifiers for the supplied |buffer_format|.
-  const std::vector<uint64_t> GetModifiersForBufferFormat(
-      gfx::BufferFormat buffer_format) const;
+  // Returns supported modifiers for the supplied |format|.
+  const std::vector<uint64_t> GetModifiersForFormat(
+      viz::SharedImageFormat format) const;
+  // Returns whether implicit modifier is allowed.
+  bool AllowsImplicitModifierForFormat(viz::SharedImageFormat format) const;
 
   // Allocates a unique buffer ID.
   uint32_t AllocateBufferID();
@@ -249,14 +233,13 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                    const std::vector<uint64_t>& modifiers,
                                    uint32_t current_format,
                                    uint32_t planes_count,
+                                   const gfx::ColorSpace& color_space,
+                                   const gfx::HDRMetadata& hdr_metadata,
                                    uint32_t buffer_id);
   void CreateShmBasedBufferTask(base::ScopedFD shm_fd,
                                 size_t length,
                                 gfx::Size size,
                                 uint32_t buffer_id);
-  void CreateSolidColorBufferTask(SkColor4f color,
-                                  const gfx::Size& size,
-                                  uint32_t buf_id);
   void CreateSinglePixelBufferTask(SkColor4f color, uint32_t buf_id);
   void CommitOverlaysTask(gfx::AcceleratedWidget widget,
                           uint32_t frame_id,
@@ -268,6 +251,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Uses |drm_node_path| to open the handle and store it into
   // |drm_render_node_fd|.
   void OpenAndStoreDrmRenderNodeFd(const base::FilePath& drm_node_path);
+  // Creates `gbm_device_` from the `drm_render_node_fd_`, also a
+  // `gl::EGLDisplayPlatform` with it.
+  void MaybeCreateGbmDevice();
   // Used by the gbm_device for self creation.
   base::ScopedFD drm_render_node_fd_;
   // A DRM render node based gbm device.
@@ -277,6 +263,9 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // CreateSurfaceCheckGbm for example.
   bool use_fake_gbm_device_for_test_ = false;
 #endif
+  // Used to initialize GL display.
+  gl::EGLDisplayPlatform native_display_;
+
   // Whether Wayland server allows buffer submission with acquire fence.
   bool supports_acquire_fence_ = false;
 
@@ -287,37 +276,13 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Whether delegated overlays should be used for this Wayland server.
   bool supports_overlays_ = false;
 
-  // Determines whether solid color overlays can be delegated without a backing
-  // image via a wayland protocol.
-  bool supports_non_backed_solid_color_buffers_ = false;
-
   // Determines whether single pixel buffer are supported via a wayland
   // protocol.
   bool supports_single_pixel_buffer_ = false;
 
-  // Determines whether subpixel accurate position is supported.
-  bool supports_subpixel_accurate_position_ = false;
-
-  // Determines whether background information for surfaces is supported.
-  bool supports_surface_background_color_ = false;
-
   // Determines whether Wayland server supports Wayland protocols that allow to
   // export wl_buffers backed by dmabuf.
   bool supports_dmabuf_ = true;
-
-  bool supports_clip_rect_ = false;
-
-  // Determines whether Wayland server supports delegating non axis-aligned 2d
-  // transforms.
-  bool supports_affine_transform_ = false;
-
-  // Whether wayland server supports clip delegation for quads that are
-  // partially or fully outside of the window.
-  bool supports_out_of_window_clip_rect_ = false;
-
-  // Whether wayland server has the fix that applies transformations in the
-  // correct order.
-  bool has_transformation_fix_ = false;
 
   // A DRM modifiers filter to ensure we don't allocate buffers with modifiers
   // not supported by Vulkan.
@@ -332,12 +297,15 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   mojo::AssociatedReceiver<ozone::mojom::WaylandBufferManagerGpu>
       associated_receiver_{this};
 
-  std::map<gfx::AcceleratedWidget, WaylandSurfaceGpu*>
+  std::map<gfx::AcceleratedWidget, raw_ptr<WaylandSurfaceGpu, CtnExperimental>>
       widget_to_surface_map_;  // Guarded by |lock_|.
 
   // Supported buffer formats and modifiers sent by the Wayland compositor to
   // the client. Corresponds to the map stored in WaylandZwpLinuxDmabuf and
   // passed from it during initialization of this gpu host.
+  // If `DRM_FORMAT_MOD_INVALID` is in the modifiers list, it means implicit
+  // modifier is also supported as fallback if creation with explicit modifier
+  // fails, the effective modifier will be derived from dmabuf.
   base::flat_map<gfx::BufferFormat, std::vector<uint64_t>>
       supported_buffer_formats_with_modifiers_;
 

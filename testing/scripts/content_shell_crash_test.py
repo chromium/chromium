@@ -26,6 +26,9 @@ def main(argv):
                       type=str,
                       required=False)
   parser.add_argument('--isolated-script-test-filter', type=str, required=False)
+  parser.add_argument('--isolated-script-test-launcher-retry-limit',
+                      type=int,
+                      required=False)
   parser.add_argument('--platform',
                       type=str,
                       default=sys.platform,

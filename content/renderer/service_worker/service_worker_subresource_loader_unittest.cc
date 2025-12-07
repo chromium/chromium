@@ -5,6 +5,7 @@
 #include "content/renderer/service_worker/service_worker_subresource_loader.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -62,14 +64,14 @@ class FakeBlob final : public blink::mojom::Blob {
   }
   void AsDataPipeGetter(
       mojo::PendingReceiver<network::mojom::DataPipeGetter>) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void ReadRange(
       uint64_t offset,
       uint64_t length,
       mojo::ScopedDataPipeProducerHandle handle,
       mojo::PendingRemote<blink::mojom::BlobReaderClient> client) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void ReadAll(
       mojo::ScopedDataPipeProducerHandle handle,
@@ -86,16 +88,19 @@ class FakeBlob final : public blink::mojom::Blob {
             const std::string& method,
             const net::HttpRequestHeaders&,
             mojo::PendingRemote<network::mojom::URLLoaderClient>) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void ReadSideData(ReadSideDataCallback callback) override {
-    std::move(callback).Run(side_data_);
+    std::move(callback).Run(
+        side_data_.has_value()
+            ? std::make_optional(base::as_byte_span(*side_data_))
+            : std::nullopt);
   }
   void CaptureSnapshot(CaptureSnapshotCallback callback) override {
     std::move(callback).Run(body_.size(), std::nullopt);
   }
   void GetInternalUUID(GetInternalUUIDCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   mojo::ReceiverSet<blink::mojom::Blob> receivers_;
@@ -245,7 +250,7 @@ class FakeControllerServiceWorker
       // Copy the content to |out_string|.
       mojo::BlockingCopyToString(std::move(consumer_handle), out_string);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -375,7 +380,9 @@ class FakeControllerServiceWorker
   void Clone(
       mojo::PendingReceiver<blink::mojom::ControllerServiceWorker> receiver,
       const network::CrossOriginEmbedderPolicy&,
-      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>)
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>,
+      const network::DocumentIsolationPolicy&,
+      mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>)
       override {
     receivers_.Add(this, std::move(receiver));
   }
@@ -483,9 +490,10 @@ class FakeServiceWorkerContainerHost
     get_controller_service_worker_count_++;
     if (!fake_controller_)
       return;
-    fake_controller_->Clone(std::move(receiver),
-                            network::CrossOriginEmbedderPolicy(),
-                            mojo::NullRemote());
+    fake_controller_->Clone(
+        std::move(receiver), network::CrossOriginEmbedderPolicy(),
+        mojo::NullRemote(), network::DocumentIsolationPolicy(),
+        mojo::NullRemote());
   }
   void CloneContainerHost(
       mojo::PendingReceiver<blink::mojom::ServiceWorkerContainerHost> receiver)
@@ -1556,7 +1564,7 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, FollowNonexistentRedirect) {
 TEST_F(ServiceWorkerSubresourceLoaderTest, FallbackWithRequestBody_String) {
   const std::string kData = "Hi, this is the request body (string)";
   auto request_body = base::MakeRefCounted<network::ResourceRequestBody>();
-  request_body->AppendBytes(kData.c_str(), kData.length());
+  request_body->AppendCopyOfBytes(base::as_byte_span(kData));
 
   RunFallbackWithRequestBodyTest(std::move(request_body), kData);
 }
@@ -1609,9 +1617,8 @@ TEST_F(ServiceWorkerSubresourceLoaderTest, RangeRequest_206Response) {
   // Test the response.
   auto& info = client->response_head();
   EXPECT_EQ(206, info->headers->response_code());
-  std::string range;
-  ASSERT_TRUE(info->headers->GetNormalizedHeader("Content-Range", &range));
-  EXPECT_EQ("bytes 5-13/33", range);
+  EXPECT_EQ(info->headers->GetNormalizedHeader("Content-Range"),
+            "bytes 5-13/33");
   EXPECT_EQ(9, info->content_length);
   EXPECT_EQ("is sample", TakeResponseBody(client.get()));
 }
@@ -1633,9 +1640,8 @@ TEST_F(ServiceWorkerSubresourceLoaderTest,
   // Test the response.
   auto& info = client->response_head();
   EXPECT_EQ(206, info->headers->response_code());
-  std::string range;
-  ASSERT_TRUE(info->headers->GetNormalizedHeader("Content-Range", &range));
-  EXPECT_EQ("bytes 5-32/33", range);
+  EXPECT_EQ(info->headers->GetNormalizedHeader("Content-Range"),
+            "bytes 5-32/33");
   EXPECT_EQ(28, info->content_length);
   EXPECT_EQ("is sample text for the Blob.", TakeResponseBody(client.get()));
 }

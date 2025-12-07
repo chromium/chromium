@@ -13,7 +13,7 @@
 
 #include "printing/mojom/print.mojom.h"
 #include "printing/printing_context_win.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace printing {
 
@@ -21,7 +21,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextSystemDialogWin
     : public PrintingContextWin {
  public:
   PrintingContextSystemDialogWin(Delegate* delegate,
-                                 ProcessBehavior process_behavior);
+                                 OutOfProcessBehavior out_of_process_behavior);
   PrintingContextSystemDialogWin(const PrintingContextSystemDialogWin&) =
       delete;
   PrintingContextSystemDialogWin& operator=(

@@ -60,7 +60,7 @@ class DialService {
     virtual ~Client() = default;
   };
 
-  virtual ~DialService() {}
+  virtual ~DialService() = default;
 
   // Starts a new round of discovery.  Returns |true| if discovery was started
   // successfully or there is already one active. Returns |false| on error.

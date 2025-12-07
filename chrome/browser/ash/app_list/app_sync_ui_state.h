@@ -76,6 +76,7 @@ class AppSyncUIState : public KeyedService,
 
   // syncer::SyncServiceObserver overrides:
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   // extensions::ExtensionRegistryObserver overrides:
   void OnExtensionLoaded(content::BrowserContext* browser_context,

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/stack_trace.h"
 
 #include <windows.h>
@@ -19,12 +14,13 @@
 #include <iterator>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
 
@@ -43,6 +39,9 @@ DWORD g_init_error = ERROR_SUCCESS;
 // header creates a conflict with base/win/windows_types.h, so re-declaring it
 // here.
 DWORD g_status_info_length_mismatch = 0xC0000004;
+
+// Are symbolized in-process stack dumps enabled?
+bool g_in_process_stack_dumps_enabled = false;
 
 // Prints the exception call stack.
 // This is the unit tests exception filter.
@@ -111,22 +110,23 @@ long WINAPI StackDumpExceptionFilter(EXCEPTION_POINTERS* info) {
       std::cerr << "EXCEPTION_STACK_OVERFLOW";
       break;
     default:
-      std::cerr << "0x" << std::hex << exc_code;
+      std::cerr << base::StringPrintf("0x%08x", exc_code);
       break;
   }
   std::cerr << "\n";
 
   debug::StackTrace(info).Print();
-  if (g_previous_filter)
+  if (g_previous_filter) {
     return g_previous_filter(info);
+  }
   return EXCEPTION_CONTINUE_SEARCH;
 }
 
 FilePath GetExePath() {
-  wchar_t system_buffer[MAX_PATH];
-  GetModuleFileName(NULL, system_buffer, MAX_PATH);
-  system_buffer[MAX_PATH - 1] = L'\0';
-  return FilePath(system_buffer);
+  std::array<wchar_t, MAX_PATH> system_buffer;
+  GetModuleFileName(NULL, system_buffer.data(), system_buffer.size());
+  system_buffer.back() = L'\0';
+  return FilePath(system_buffer.data());
 }
 
 constexpr size_t kSymInitializeRetryCount = 3;
@@ -137,12 +137,14 @@ constexpr size_t kSymInitializeRetryCount = 3;
 // See crbug.com/1339753
 bool SymInitializeWrapper(HANDLE handle, BOOL invade_process) {
   for (size_t i = 0; i < kSymInitializeRetryCount; ++i) {
-    if (SymInitialize(handle, nullptr, invade_process))
+    if (SymInitialize(handle, nullptr, invade_process)) {
       return true;
+    }
 
     g_init_error = GetLastError();
-    if (g_init_error != g_status_info_length_mismatch)
+    if (g_init_error != g_status_info_length_mismatch) {
       return false;
+    }
   }
   DLOG(ERROR) << "SymInitialize failed repeatedly.";
   return false;
@@ -150,13 +152,15 @@ bool SymInitializeWrapper(HANDLE handle, BOOL invade_process) {
 
 bool SymInitializeCurrentProc() {
   const HANDLE current_process = GetCurrentProcess();
-  if (SymInitializeWrapper(current_process, TRUE))
+  if (SymInitializeWrapper(current_process, TRUE)) {
     return true;
+  }
 
   // g_init_error is updated by SymInitializeWrapper.
   // No need to do "g_init_error = GetLastError()" here.
-  if (g_init_error != ERROR_INVALID_PARAMETER)
+  if (g_init_error != ERROR_INVALID_PARAMETER) {
     return false;
+  }
 
   // SymInitialize() can fail with ERROR_INVALID_PARAMETER when something has
   // already called SymInitialize() in this process. For example, when absl
@@ -164,8 +168,9 @@ bool SymInitializeCurrentProc() {
   // almost immediately after startup. In such a case, try to reinit to see if
   // that succeeds.
   SymCleanup(current_process);
-  if (SymInitializeWrapper(current_process, TRUE))
+  if (SymInitializeWrapper(current_process, TRUE)) {
     return true;
+  }
 
   return false;
 }
@@ -180,9 +185,7 @@ bool InitializeSymbols() {
   g_initialized_symbols = true;
   // Defer symbol load until they're needed, use undecorated names, and get line
   // numbers.
-  SymSetOptions(SYMOPT_DEFERRED_LOADS |
-                SYMOPT_UNDNAME |
-                SYMOPT_LOAD_LINES);
+  SymSetOptions(SYMOPT_DEFERRED_LOADS | SYMOPT_UNDNAME | SYMOPT_LOAD_LINES);
   if (!SymInitializeCurrentProc()) {
     // When it fails, we should not call debugbreak since it kills the current
     // process (prevents future tests from running or kills the browser
@@ -239,8 +242,7 @@ class SymbolContext {
   static SymbolContext* GetInstance() {
     // We use a leaky singleton because code may call this during process
     // termination.
-    return
-      Singleton<SymbolContext, LeakySingletonTraits<SymbolContext> >::get();
+    return Singleton<SymbolContext, LeakySingletonTraits<SymbolContext>>::get();
   }
 
   SymbolContext(const SymbolContext&) = delete;
@@ -266,20 +268,18 @@ class SymbolContext {
 
       // Code adapted from MSDN example:
       // http://msdn.microsoft.com/en-us/library/ms680578(VS.85).aspx
-      ULONG64 buffer[
-        (sizeof(SYMBOL_INFO) +
-          kMaxNameLength * sizeof(wchar_t) +
-          sizeof(ULONG64) - 1) /
-        sizeof(ULONG64)];
-      memset(buffer, 0, sizeof(buffer));
+      ULONG64 buffer[(sizeof(SYMBOL_INFO) + kMaxNameLength * sizeof(wchar_t) +
+                      sizeof(ULONG64) - 1) /
+                     sizeof(ULONG64)];
+      UNSAFE_TODO(memset(buffer, 0, sizeof(buffer)));
 
       // Initialize symbol information retrieval structures.
       DWORD64 sym_displacement = 0;
       PSYMBOL_INFO symbol = reinterpret_cast<PSYMBOL_INFO>(&buffer[0]);
       symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
       symbol->MaxNameLen = kMaxNameLength - 1;
-      BOOL has_symbol = SymFromAddr(GetCurrentProcess(), frame,
-                                    &sym_displacement, symbol);
+      BOOL has_symbol =
+          SymFromAddr(GetCurrentProcess(), frame, &sym_displacement, symbol);
 
       // Attempt to retrieve line number information.
       DWORD line_displacement = 0;
@@ -291,14 +291,15 @@ class SymbolContext {
       // Output the backtrace line.
       (*os) << prefix_string << "\t";
       if (has_symbol) {
-        (*os) << symbol->Name << " [0x" << traces[i] << "+" << sym_displacement
-              << "]";
+        (*os) << symbol->Name << " "
+              << base::StringPrintf("[%p+%x]", traces[i], sym_displacement);
       } else {
         // If there is no symbol information, add a spacer.
-        (*os) << "(No symbol) [0x" << traces[i] << "]";
+        (*os) << "(No symbol) " << base::StringPrintf("[%p]", traces[i]);
       }
       if (has_line) {
-        (*os) << " (" << line.FileName << ":" << line.LineNumber << ")";
+        (*os) << " (" << line.FileName << ":"
+              << base::StringPrintf("%lu", line.LineNumber) << ")";
       }
       (*os) << "\n";
     }
@@ -307,12 +308,22 @@ class SymbolContext {
  private:
   friend struct DefaultSingletonTraits<SymbolContext>;
 
-  SymbolContext() {
-    InitializeSymbols();
-  }
+  SymbolContext() { InitializeSymbols(); }
 
   Lock lock_;
 };
+
+// Raw output when symbols are not available.
+void OutputAddressesWithPrefix(std::ostream* os,
+                               cstring_view prefix_string,
+                               span<const void* const> addresses) {
+  for (const void* const addr : addresses) {
+    (*os) << prefix_string << "\t" << base::StringPrintf("%p", addr) << "\n";
+    if (!os->good()) {
+      break;
+    }
+  }
+}
 
 }  // namespace
 
@@ -324,7 +335,18 @@ bool EnableInProcessStackDumping() {
   // Need to initialize symbols early in the process or else this fails on
   // swarming (since symbols are in different directory than in the exes) and
   // also release x64.
-  return InitializeSymbols();
+  g_in_process_stack_dumps_enabled = InitializeSymbols();
+  return g_in_process_stack_dumps_enabled;
+}
+
+bool InProcessStackDumpingEnabled() {
+  return g_in_process_stack_dumps_enabled;
+}
+
+bool DisableInProcessStackDumpingForTesting() {
+  g_previous_filter = SetUnhandledExceptionFilter(g_previous_filter);
+  g_in_process_stack_dumps_enabled = false;
+  return true;
 }
 
 NOINLINE size_t CollectStackTrace(span<const void*> trace) {
@@ -344,7 +366,7 @@ StackTrace::StackTrace(const CONTEXT* context) {
 void StackTrace::InitTrace(const CONTEXT* context_record) {
   if (ShouldSuppressOutput()) {
     CHECK_EQ(count_, 0U);
-    base::ranges::fill(trace_, nullptr);
+    std::ranges::fill(trace_, nullptr);
     return;
   }
 
@@ -353,14 +375,13 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
   // context may have had more register state (YMM, etc) than we need to unwind
   // the stack. Typically StackWalk64 only needs integer and control registers.
   CONTEXT context_copy;
-  memcpy(&context_copy, context_record, sizeof(context_copy));
+  UNSAFE_TODO(memcpy(&context_copy, context_record, sizeof(context_copy)));
   context_copy.ContextFlags = CONTEXT_INTEGER | CONTEXT_CONTROL;
 
   // When walking an exception stack, we need to use StackWalk64().
   count_ = 0;
   // Initialize stack walking.
-  STACKFRAME64 stack_frame;
-  memset(&stack_frame, 0, sizeof(stack_frame));
+  STACKFRAME64 stack_frame = {};
 #if defined(ARCH_CPU_X86_64)
   DWORD machine_type = IMAGE_FILE_MACHINE_AMD64;
   stack_frame.AddrPC.Offset = context_record->Rip;
@@ -389,7 +410,7 @@ void StackTrace::InitTrace(const CONTEXT* context_record) {
     trace_[count_++] = reinterpret_cast<void*>(stack_frame.AddrPC.Offset);
   }
 
-  base::ranges::fill(span(trace_).last(trace_.size() - count_), nullptr);
+  std::ranges::fill(span(trace_).last(trace_.size() - count_), nullptr);
 }
 
 // static
@@ -405,15 +426,18 @@ void StackTrace::PrintWithPrefixImpl(cstring_view prefix_string) const {
 void StackTrace::OutputToStreamWithPrefixImpl(
     std::ostream* os,
     cstring_view prefix_string) const {
-  SymbolContext* context = SymbolContext::GetInstance();
-  if (g_init_error != ERROR_SUCCESS) {
-    (*os) << "Error initializing symbols (" << g_init_error
-          << ").  Dumping unresolved backtrace:\n";
-    for (size_t i = 0; (i < count_) && os->good(); ++i) {
-      (*os) << prefix_string << "\t" << trace_[i] << "\n";
-    }
+  if (!InProcessStackDumpingEnabled()) {
+    (*os) << "Symbols not available. Dumping unresolved backtrace:\n";
+    OutputAddressesWithPrefix(os, prefix_string, addresses());
   } else {
-    context->OutputTraceToStream(addresses(), os, prefix_string);
+    SymbolContext* context = SymbolContext::GetInstance();
+    if (g_init_error != ERROR_SUCCESS) {
+      (*os) << "Error initializing symbols (" << g_init_error
+            << ").  Dumping unresolved backtrace:\n";
+      OutputAddressesWithPrefix(os, prefix_string, addresses());
+    } else {
+      context->OutputTraceToStream(addresses(), os, prefix_string);
+    }
   }
 }
 

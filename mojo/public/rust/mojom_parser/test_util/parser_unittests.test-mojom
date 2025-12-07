@@ -1,0 +1,229 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file defines several datatypes used for testing our parser/deparser
+// implementation. For each, we will validate that it corresponds to the
+// expected MojomType and packs to the right MojomWireType, and that values of
+// that type can be correctly converted to/from MojomValues.
+// The corresponding tests can be found in //mojo/public/rust/mojom_parser/test
+
+module parser_unittests.mojom;
+
+struct Empty {};
+
+// Packing: a [pad 8] b c d
+struct FourInts {
+    int8 a;
+    int16 b;
+    int32 c;
+    int64 d;
+};
+
+// Packing: d c b a [pad 8]
+struct FourIntsReversed {
+    int64 d;
+    int32 c;
+    int16 b;
+    int8 a;
+};
+
+// Packing: a d c b
+struct FourIntsIntermixed {
+    int8 a;
+    int32 b;
+    int16 c;
+    int8 d;
+};
+
+// Packing: f1 a b [pad 8] c f2 f3
+struct OnceNested {
+    FourInts f1;
+    uint32 a;
+    int8 b;
+    FourIntsReversed f2;
+    FourIntsIntermixed f3;
+    uint16 c;
+};
+
+// Packing: o a b [pad 16] f c [pad 32]
+struct TwiceNested {
+  OnceNested o;
+  int16 a;
+  FourInts f;
+  int32 b;
+  int32 c;
+};
+
+// Test that bools get packed into bytes as expected
+// Packing: [b0..b7] n1 [b8,b9,0..]
+struct TenBoolsAndAByte {
+  bool b0;
+  bool b1;
+  bool b2;
+  bool b3;
+  bool b4;
+  uint8 n1;
+  bool b5;
+  bool b6;
+  bool b7;
+  bool b8;
+  bool b9;
+};
+
+// Packing: [b0..b7] [b8,b9,0..] n1
+struct TenBoolsAndTwoBytes {
+  bool b0;
+  bool b1;
+  bool b2;
+  bool b3;
+  bool b4;
+  uint16 n1;
+  bool b5;
+  bool b6;
+  bool b7;
+  bool b8;
+  bool b9;
+};
+
+enum TestEnum {
+    Zero,
+    Three = 3,
+    Four,
+    Seven = 7,
+};
+
+enum TestEnum2 {
+  Eleven = 11,
+  Twelve,
+  Four = 4,
+  FourtyTwo = 42
+};
+
+// Packing: e1 e2 n1
+struct SomeEnums {
+  TestEnum e1;
+  uint64 n1;
+  TestEnum2 e2;
+};
+
+union BaseUnion {
+  int8 n1;
+  uint64 u1;
+  TestEnum e1;
+  bool b1;
+  bool b2;
+  Empty em1;
+  FourInts f1;
+};
+
+union NestedUnion {
+  int32 n;
+  BaseUnion u; // Represented as a pointer
+};
+
+// Packing: n1 u n2 [pad 32]
+struct WithNestedUnion {
+  int64 n1;
+  NestedUnion u; // Represented as itself
+  int32 n2;
+};
+
+union NestederUnion {
+  bool b;
+  int8 n;
+  NestedUnion u;
+  WithNestedUnion w;
+};
+
+// This is extra complicated to make sure nested union pointers work from
+// various positions in the struct
+// Packing: u1 i1 i3 [pad 24] u2 i2 u3 u4
+struct WithManyUnions {
+  NestedUnion u1;
+  int8 i1;
+  NestederUnion u2;
+  int64 i2;
+  BaseUnion u3;
+  NestederUnion u4;
+  int32 i3;
+  int32 i4;
+};
+
+struct Arrays {
+  array<int16> ints;
+  array<uint64, 3> ints_sized;
+  array<bool> bools; // Will be packed as bitfields
+  array<bool, 13> bool_sized; // Will still be packed as bitfields
+  array<TestEnum> enums;
+  array<BaseUnion> unions;
+  array<NestedUnion> unions_nested;
+  array<FourInts> fourints;
+  array<array<uint8>> nested;
+  array<array<uint8, 2>, 3> nested_sized;
+};
+
+struct Maps {
+  map<uint8, uint8> eights;
+  map<bool, uint16> bools;
+  map<TestEnum, int32> enums;
+  map<int8, FourInts> to_struct;
+  map<int8, NestedUnion> to_union;
+  map<int8, map<int16, uint32>> to_map;
+};
+
+struct Strings {
+  string str;
+  array<string> arr;
+  map<uint8, string> to_str;
+  map<string, int16> from_str;
+};
+
+// Now that we have arrays, maps, and strings, we should
+// make sure a union can hold all of them properly.
+union HoldsComplexTypes {
+  string str;
+  array<int16> arr;
+  map<uint8, uint8> m;
+};
+
+struct ComplexUnionHolder {
+  HoldsComplexTypes u;
+};
+
+////// TESTS FOR NULLABLES //////
+
+// Packing: [b, nullable tags] n2 n1 e empty fourints
+struct NullableBasics {
+  bool? b;
+  uint16? n1;
+  int8? n2;
+  Empty? empty;
+  TestEnum? e;
+  FourInts? fourints;
+};
+
+struct ArraysOfNullables {
+  array<bool?> bools;
+  array<Empty?> empties;
+  array<TestEnum?> enums;
+  array<BaseUnion?> unions;
+};
+
+struct NullableArrays {
+  array<bool>? null_arr;
+  array<bool?>? double_null_arr;
+};
+
+union UnionWithNullables {
+  // Nullable primitives aren't allowed in unions
+  Empty? e;
+  string? str;
+  BaseUnion? u;
+};
+
+struct NullableOthers {
+  UnionWithNullables? u;
+  map<uint8, uint8>? m;
+  string? str;
+};

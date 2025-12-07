@@ -1,0 +1,14 @@
+include_rules = [
+  "+chrome/browser/ash/magic_boost",
+  "+chrome/browser/ui/ash/editor_menu/utils",
+  "+chrome/browser/ui/ash/read_write_cards",
+]
+
+specific_include_rules = {
+  "magic_boost_card_controller_unittest.cc": [
+      "+ash/system/mahi",
+  ],
+  ".*unittest\\.cc": [
+    "+chrome/browser/global_features.h",
+  ],
+}

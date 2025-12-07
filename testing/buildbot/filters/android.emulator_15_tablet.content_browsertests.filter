@@ -1,0 +1,31 @@
+# crbug.com/343335591
+-FormControlsBrowserTest.Button
+-FormControlsBrowserTest.Checkbox
+-FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select
+
+# crbug.com/343343035
+-ZoomScrollIntoViewBrowserTest.DesktopViewportMustZoom/LocalFrame
+-ZoomScrollIntoViewBrowserTest.DesktopViewportMustZoom/RemoteFrame
+
+# crbug.com/375482988
+-All/SitePerProcessBrowserTest.TouchscreenAnimateDoubleTapZoomInOOPIF/*
+
+# crbug.com/375483294
+-CrossPlatformAccessibilityBrowserTest.EnsureHorizontalScrollSendScrollUpdatesOnly
+
+# crbug.com/375485604
+-WebContentsImplBrowserTest.SameInitialScaleAcrossNavigations
+-WebContentsImplBrowserTest.ToggleFullscreen
+
+# crbug.com/382588633
+-Default/MediaTest.VideoBearWavPcm3kHz*
+
+# crbug.com/353818063
+-CrossPlatformAccessibilityBrowserTest.ImplicitRootScroller
+
+# crbug.com/393625992
+-All/SitePerProcessProgrammaticScrollTest.ScrolledOutOfView/*
+
+# crbug.com/422528199
+-All/SitePerProcessBrowserTestWithoutSadFrameTabReload.ChildFrameCrashMetrics_ScrolledIntoViewAfterTabIsShown/*

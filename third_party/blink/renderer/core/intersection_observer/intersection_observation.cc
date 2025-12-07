@@ -20,16 +20,6 @@
 
 namespace blink {
 
-namespace {
-
-Document& TrackingDocument(const IntersectionObservation* observation) {
-  if (observation->Observer()->RootIsImplicit())
-    return observation->Target()->GetDocument();
-  return (observation->Observer()->root()->GetDocument());
-}
-
-}  // namespace
-
 IntersectionObservation::IntersectionObservation(IntersectionObserver& observer,
                                                  Element& target)
     : observer_(observer), target_(&target) {}
@@ -38,9 +28,14 @@ int64_t IntersectionObservation::ComputeIntersection(
     unsigned compute_flags,
     gfx::Vector2dF accumulated_scroll_delta_since_last_update,
     ComputeIntersectionsContext& context) {
-  DCHECK(Observer());
-  cached_rects_.min_scroll_delta_to_update -=
-      accumulated_scroll_delta_since_last_update;
+  if (!CanCompute()) {
+    return 0;
+  }
+  if (compute_flags & kConsumeScrollDelta) {
+    cached_rects_.min_scroll_delta_to_update -=
+        accumulated_scroll_delta_since_last_update;
+    accumulated_scroll_delta_since_last_update = gfx::Vector2dF();
+  }
 
   // If we're processing post-layout deliveries only and we don't have a
   // post-layout delivery observer, then return early. Likewise, return if we
@@ -61,7 +56,7 @@ int64_t IntersectionObservation::ComputeIntersection(
     needs_update_ = true;
   }
 
-  if (!ShouldCompute(compute_flags)) {
+  if (!CanCompute() || !ShouldCompute(compute_flags)) {
     return 0;
   }
   if (MaybeDelayAndReschedule(compute_flags, context)) {
@@ -74,10 +69,11 @@ int64_t IntersectionObservation::ComputeIntersection(
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
   std::optional<IntersectionGeometry::CachedRects> cached_rects_backup;
 #endif
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      !has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
-      cached_rects_.min_scroll_delta_to_update.x() > 0 &&
-      cached_rects_.min_scroll_delta_to_update.y() > 0) {
+  if (!has_pending_update && (compute_flags & kScrollAndVisibilityOnly) &&
+      cached_rects_.min_scroll_delta_to_update.x() >
+          accumulated_scroll_delta_since_last_update.x() &&
+      cached_rects_.min_scroll_delta_to_update.y() >
+          accumulated_scroll_delta_since_last_update.y()) {
 #if CHECK_SKIPPED_UPDATE_ON_SCROLL()
     cached_rects_backup.emplace(cached_rects_);
 #else
@@ -114,13 +110,6 @@ int64_t IntersectionObservation::ComputeIntersection(
   return geometry.DidComputeGeometry() ? 1 : 0;
 }
 
-void IntersectionObservation::ComputeIntersectionImmediately(
-    ComputeIntersectionsContext& context) {
-  ComputeIntersection(kImplicitRootObserversNeedUpdate |
-                          kExplicitRootObserversNeedUpdate | kIgnoreDelay,
-                      IntersectionGeometry::kInfiniteScrollDelta, context);
-}
-
 gfx::Vector2dF IntersectionObservation::MinScrollDeltaToUpdate() const {
   if (cached_rects_.valid) {
     return cached_rects_.min_scroll_delta_to_update;
@@ -141,11 +130,10 @@ void IntersectionObservation::Disconnect() {
     ElementIntersectionObserverData* observer_data =
         target_->IntersectionObserverData();
     observer_data->RemoveObservation(*this);
-    if (target_->isConnected()) {
-      IntersectionObserverController* controller =
-          target_->GetDocument().GetIntersectionObserverController();
-      if (controller)
-        controller->RemoveTrackedObservation(*this);
+    IntersectionObserverController* controller =
+        target_->GetDocument().GetIntersectionObserverController();
+    if (controller) {
+      controller->RemoveTrackedObservation(*this);
     }
   }
   entries_.clear();
@@ -178,11 +166,12 @@ bool IntersectionObservation::CanUseCachedRectsForTesting(
   return geometry.CanUseCachedRectsForTesting();
 }
 
+bool IntersectionObservation::CanCompute() const {
+  return !!target_ && !!observer_ && observer_->RootIsValid() &&
+         observer_->GetExecutionContext();
+}
+
 bool IntersectionObservation::ShouldCompute(unsigned flags) const {
-  if (!target_ || !observer_->RootIsValid() ||
-      !observer_->GetExecutionContext()) {
-    return false;
-  }
   if (!needs_update_) {
     return false;
   }
@@ -190,11 +179,14 @@ bool IntersectionObservation::ShouldCompute(unsigned flags) const {
       Observer()->trackVisibility()) {
     mojom::blink::FrameOcclusionState occlusion_state =
         target_->GetDocument().GetFrame()->GetOcclusionState();
-    // If we're tracking visibility, and we don't have occlusion information
-    // from our parent frame, then postpone computing intersections until a
-    // later lifecycle when the occlusion information is known.
-    if (occlusion_state == mojom::blink::FrameOcclusionState::kUnknown)
+    // If we're tracking visibility, and we aren't currently reporting the
+    // target visible, and we don't have occlusion information from our parent
+    // frame, then postpone computing intersections until a later lifecycle when
+    // the occlusion information is known.
+    if (!last_is_visible_ &&
+        occlusion_state == mojom::blink::FrameOcclusionState::kUnknown) {
       return false;
+    }
   }
   return true;
 }
@@ -211,13 +203,7 @@ bool IntersectionObservation::MaybeDelayAndReschedule(
   base::TimeDelta delay = observer_->GetEffectiveDelay() -
                           (context.GetMonotonicTime() - last_run_time_);
   if (delay.is_positive()) {
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      context.UpdateNextRunDelay(delay);
-    } else {
-      // TODO(crbug.com/40873583): Handle the case that the frame becomes
-      // throttled during the delay,
-      TrackingDocument(this).View()->ScheduleAnimation(delay);
-    }
+    context.UpdateNextRunDelay(delay);
     return true;
   }
   return false;
@@ -233,6 +219,9 @@ unsigned IntersectionObservation::GetIntersectionGeometryFlags(
     geometry_flags |= IntersectionGeometry::kShouldReportRootBounds;
   if (Observer()->trackVisibility())
     geometry_flags |= IntersectionGeometry::kShouldComputeVisibility;
+  if (Observer()->ShouldExposeOccluderNodeId()) {
+    geometry_flags |= IntersectionGeometry::kShouldExposeOccluderNodeId;
+  }
   if (Observer()->trackFractionOfRoot())
     geometry_flags |= IntersectionGeometry::kShouldTrackFractionOfRoot;
   if (Observer()->UseOverflowClipEdge())

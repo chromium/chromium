@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents.h"
 
 #include <dispatch/dispatch.h>
@@ -17,19 +12,26 @@
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.h"
 
 namespace content {
 
 namespace {
 
 // The latency parameter passed to FSEventsStreamCreate().
-const CFAbsoluteTime kEventLatencySeconds = 0.3;
+const CFAbsoluteTime kEventLatencySeconds = 0.7;
 
 // Resolve any symlinks in the path.
 base::FilePath ResolvePath(const base::FilePath& path) {
@@ -90,6 +92,10 @@ FilePathWatcherFSEvents::~FilePathWatcherFSEvents() {
       << "Cancel() must be called before FilePathWatcher is destroyed.";
 }
 
+size_t FilePathWatcherFSEvents::current_usage() const {
+  return kNumberOfFSEventStreamCreateCalls;
+}
+
 bool FilePathWatcherFSEvents::Watch(const base::FilePath& path,
                                     Type type,
                                     const FilePathWatcher::Callback& callback) {
@@ -101,13 +107,25 @@ bool FilePathWatcherFSEvents::Watch(const base::FilePath& path,
   if (type != Type::kRecursive) {
     return false;
   }
+  return WatchWithChangeInfo(
+      path, WatchOptions{.type = type},
+      base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
+          base::BindRepeating(std::move(callback))),
+      base::DoNothingAs<void(size_t, size_t)>());
+}
 
+bool FilePathWatcherFSEvents::WatchWithChangeInfo(
+    const base::FilePath& path,
+    const WatchOptions& options,
+    const FilePathWatcher::CallbackWithChangeInfo& callback,
+    const FilePathWatcher::UsageChangeCallback& usage_callback) {
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
+  change_tracker_ = FilePathWatcherFSEventsChangeTracker(
+      callback, path, options.type, options.report_modified_path);
   callback_ = callback;
 
   FSEventStreamEventId start_event = kFSEventStreamEventIdSinceNow;
-  StartEventStream(start_event, path);
-  return true;
+  return StartEventStream(start_event, path);
 }
 
 void FilePathWatcherFSEvents::Cancel() {
@@ -131,76 +149,103 @@ void FilePathWatcherFSEvents::FSEventsCallback(
     const FSEventStreamEventId event_ids[]) {
   FilePathWatcherFSEvents* watcher =
       reinterpret_cast<FilePathWatcherFSEvents*>(event_watcher);
-  bool root_changed = watcher->ResolveTargetPath();
-  std::vector<base::FilePath> paths;
+  bool is_root_changed_event = false;
+
+  // The `root_changed_at` value represents the highest-numbered FSEvents event
+  // id, given that FSEvents events have unique + increasing event id values
+  // over time. The highest event id is updated upon receiving an event, and
+  // just before invoking the client's callback
+  // (https://developer.apple.com/documentation/coreservices/1446030-fseventstreamgetlatesteventid).
   FSEventStreamEventId root_change_at = FSEventStreamGetLatestEventId(stream);
+  CFArrayRef cf_event_paths = base::apple::CFCast<CFArrayRef>(event_paths);
+  std::map<FSEventStreamEventId, ChangeEvent> events;
+
+  // SAFETY: Creating spans from external C API arrays is a justified exception
+  // to buffer safety rules. These arrays are provided by macOS FSEvents API
+  // with guaranteed validity for exactly `num_events` elements during this
+  // callback's execution.
+  UNSAFE_BUFFERS(
+      base::span<const FSEventStreamEventFlags> flags_span(flags, num_events));
+  UNSAFE_BUFFERS(base::span<const FSEventStreamEventId> event_ids_span(
+      event_ids, num_events));
   for (size_t i = 0; i < num_events; i++) {
-    if (flags[i] & kFSEventStreamEventFlagRootChanged) {
-      root_changed = true;
-    }
-    if (event_ids[i]) {
-      root_change_at = std::min(root_change_at, event_ids[i]);
-    }
-    paths.push_back(base::FilePath(reinterpret_cast<char**>(event_paths)[i])
-                        .StripTrailingSeparators());
-  }
+    const FSEventStreamEventFlags event_flags = flags_span[i];
 
-  // Reinitialize the event stream if we find changes to the root. This is
-  // necessary since FSEvents doesn't report any events for the subtree after
-  // the directory to be watched gets created.
-  if (root_changed) {
-    // Resetting the event stream from within the callback fails (FSEvents spews
-    // bad file descriptor errors), so do the reset asynchronously.
-    watcher->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<FilePathWatcherFSEvents> weak_watcher,
-                          FSEventStreamEventId root_change_at) {
-                         if (!weak_watcher) {
-                           return;
-                         }
-                         FilePathWatcherFSEvents* watcher = weak_watcher.get();
-                         watcher->UpdateEventStream(root_change_at);
-                       },
-                       watcher->weak_factory_.GetWeakPtr(), root_change_at));
-  }
+    // Ignore this sentinel event, per FSEvents guidelines:
+    // (https://developer.apple.com/documentation/coreservices/1455361-fseventstreameventflags/kfseventstreameventflaghistorydone).
+    if (event_flags & kFSEventStreamEventFlagHistoryDone) {
+      continue;
+    }
 
-  watcher->OnFilePathsChanged(paths);
+    if (event_flags & kFSEventStreamEventFlagRootChanged) {
+      is_root_changed_event = true;
+    }
+
+    const FSEventStreamEventId event_id = event_ids_span[i];
+    if (event_id) {
+      root_change_at = std::min(root_change_at, event_id);
+    }
+
+    // Determine the inode value for the event.
+    CFDictionaryRef cf_dict = base::apple::CFCast<CFDictionaryRef>(
+        CFArrayGetValueAtIndex(cf_event_paths, i));
+    CFStringRef cf_path = base::apple::GetValueFromDictionary<CFStringRef>(
+        cf_dict, kFSEventStreamEventExtendedDataPathKey);
+    const base::FilePath event_path = base::apple::CFStringToFilePath(cf_path);
+
+    // Only report events with a non-empty path.
+    if (event_path.empty()) {
+      continue;
+    }
+
+    CFNumberRef cf_inode = base::apple::GetValueFromDictionary<CFNumberRef>(
+        cf_dict, kFSEventStreamEventExtendedFileIDKey);
+    if (cf_inode) {
+      SInt64 sint_inode;
+      if (CFNumberGetValue(cf_inode, kCFNumberSInt64Type, &sint_inode)) {
+        events[event_id] = ChangeEvent(event_flags, event_path,
+                                       static_cast<uint64_t>(sint_inode));
+        continue;
+      }
+    }
+    events[event_id] = ChangeEvent(event_flags, event_path, std::nullopt);
+  }
+  watcher->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FilePathWatcherFSEvents::OnFilePathsChanged,
+                     watcher->weak_factory_.GetWeakPtr(), is_root_changed_event,
+                     root_change_at, std::move(events)));
 }
 
 void FilePathWatcherFSEvents::OnFilePathsChanged(
-    const std::vector<base::FilePath>& paths) {
-  DCHECK(!resolved_target_.empty());
-  task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&FilePathWatcherFSEvents::DispatchEvents,
-                                weak_factory_.GetWeakPtr(), paths, target_,
-                                resolved_target_));
-}
+    bool is_root_changed_event,
+    FSEventStreamEventId root_change_at,
+    std::map<FSEventStreamEventId, ChangeEvent> events) {
+  // If we receive a root changed event, or the resolved target path has
+  // changed, update the FSEvents event stream.
+  if (is_root_changed_event || ResolveTargetPath()) {
+    WatchWithChangeInfoResult update_stream_result =
+        UpdateEventStream(root_change_at);
 
-void FilePathWatcherFSEvents::DispatchEvents(
-    const std::vector<base::FilePath>& paths,
-    const base::FilePath& target,
-    const base::FilePath& resolved_target) {
-  DCHECK(task_runner()->RunsTasksInCurrentSequence());
-
-  // Don't issue callbacks after Cancel() has been called.
-  if (is_cancelled() || callback_.is_null()) {
-    return;
-  }
-
-  for (const base::FilePath& path : paths) {
-    if (resolved_target.IsParent(path) || resolved_target == path) {
-      callback_.Run(target, false);
-      return;
+    if (update_stream_result != WatchWithChangeInfoResult::kSuccess) {
+      // Failed to re-initialize the FSEvents event stream.
+      RecordCallbackErrorUma(update_stream_result);
+      ReportError(target_);
     }
   }
+
+  // Only call `DispatchEvents` when there are events to process.
+  if (!events.empty()) {
+    change_tracker_->DispatchEvents(std::move(events));
+  }
 }
 
-void FilePathWatcherFSEvents::UpdateEventStream(
+WatchWithChangeInfoResult FilePathWatcherFSEvents::UpdateEventStream(
     FSEventStreamEventId start_event) {
   // It can happen that the watcher gets canceled while tasks that call this
   // function are still in flight, so abort if this situation is detected.
   if (resolved_target_.empty()) {
-    return;
+    return WatchWithChangeInfoResult::kFSEventsResolvedTargetError;
   }
 
   if (fsevent_stream_) {
@@ -209,9 +254,8 @@ void FilePathWatcherFSEvents::UpdateEventStream(
 
   base::apple::ScopedCFTypeRef<CFStringRef> cf_path =
       base::apple::FilePathToCFString(resolved_target_);
-  base::apple::ScopedCFTypeRef<CFStringRef> cf_dir_path =
-      base::apple::FilePathToCFString(resolved_target_.DirName());
-  CFStringRef paths_array[] = {cf_path.get(), cf_dir_path.get()};
+  CFStringRef paths_array[] = {cf_path.get()};
+
   base::apple::ScopedCFTypeRef<CFArrayRef> watched_paths(
       CFArrayCreate(NULL, reinterpret_cast<const void**>(paths_array),
                     std::size(paths_array), &kCFTypeArrayCallBacks));
@@ -223,51 +267,74 @@ void FilePathWatcherFSEvents::UpdateEventStream(
   context.release = NULL;
   context.copyDescription = NULL;
 
+  // Ensure that if more `FSEventStreamCreate` calls are added that
+  // `kNumberOfFSEventStreamCreateCalls` is updated to match.
+
+  // The parameters of `FSEventStreamCreate` are defined by the FSEvents API:
+  // (https://developer.apple.com/documentation/coreservices/1443980-fseventstreamcreate).
   fsevent_stream_ = FSEventStreamCreate(
       NULL, &FSEventsCallback, &context, watched_paths.get(), start_event,
-      kEventLatencySeconds, kFSEventStreamCreateFlagWatchRoot);
+      kEventLatencySeconds,
+      kFSEventStreamCreateFlagWatchRoot | kFSEventStreamCreateFlagFileEvents |
+          kFSEventStreamCreateFlagNoDefer | kFSEventStreamCreateFlagUseCFTypes |
+          kFSEventStreamCreateFlagUseExtendedData);
+
+  // Schedule the stream on the `queue_`
+  // (https://developer.apple.com/documentation/coreservices/1444164-fseventstreamsetdispatchqueue).
   FSEventStreamSetDispatchQueue(fsevent_stream_, queue_.get());
 
-  if (!FSEventStreamStart(fsevent_stream_)) {
-    task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&FilePathWatcherFSEvents::ReportError,
-                                  weak_factory_.GetWeakPtr(), target_));
+  // Start the event stream, by attempting to register with the FSEvents service
+  // to receive events, according to the stream parameters
+  // (https://developer.apple.com/documentation/coreservices/1448000-fseventstreamstart).
+  if (FSEventStreamStart(fsevent_stream_)) {
+    return WatchWithChangeInfoResult::kSuccess;
   }
+  return WatchWithChangeInfoResult::kFSEventsEventStreamStartError;
 }
 
 bool FilePathWatcherFSEvents::ResolveTargetPath() {
   base::FilePath resolved = ResolvePath(target_).StripTrailingSeparators();
   bool changed = resolved != resolved_target_;
   resolved_target_ = resolved;
-  if (resolved_target_.empty()) {
-    task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&FilePathWatcherFSEvents::ReportError,
-                                  weak_factory_.GetWeakPtr(), target_));
-  }
   return changed;
 }
 
 void FilePathWatcherFSEvents::ReportError(const base::FilePath& target) {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
   if (!callback_.is_null()) {
-    callback_.Run(target, true);
+    callback_.Run(FilePathWatcher::ChangeInfo(), target, true);
   }
 }
 
 void FilePathWatcherFSEvents::DestroyEventStream() {
+  // Unregister the FSEvents service. The client callback will not be called for
+  // this stream while it is stopped
+  // (https://developer.apple.com/documentation/coreservices/1447673-fseventstreamstop).
   FSEventStreamStop(fsevent_stream_);
+
+  // Stream will be unscheduled from any run loops or dispatch queues
+  // (https://developer.apple.com/documentation/coreservices/1446990-fseventstreaminvalidate).
   FSEventStreamInvalidate(fsevent_stream_);
+
+  // Decrement the stream's event count. If the refcount reaches zero, the
+  // stream will be deallocated
+  // (https://developer.apple.com/documentation/coreservices/1445989-fseventstreamrelease).
   FSEventStreamRelease(fsevent_stream_);
   fsevent_stream_ = nullptr;
 }
 
-void FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,
+bool FilePathWatcherFSEvents::StartEventStream(FSEventStreamEventId start_event,
                                                const base::FilePath& path) {
   DCHECK(resolved_target_.empty());
 
   target_ = path;
   ResolveTargetPath();
-  UpdateEventStream(start_event);
+  WatchWithChangeInfoResult stream_start_result =
+      UpdateEventStream(start_event);
+
+  RecordWatchWithChangeInfoResultUma(stream_start_result);
+
+  return stream_start_result == WatchWithChangeInfoResult::kSuccess;
 }
 
 }  // namespace content

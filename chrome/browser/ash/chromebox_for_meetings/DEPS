@@ -14,9 +14,7 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/policy/core",
   "+chrome/browser/ash/settings",
   "+chrome/browser/media/webrtc",
   "+chrome/browser/memory_details.h",
-  "+chrome/common/channel_info.h",
 ]

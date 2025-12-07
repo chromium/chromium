@@ -9,8 +9,9 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher_impl.h"
+#include "google_apis/gaia/oauth2_response.h"
 
 class OAuth2AccessTokenConsumer;
 

@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_repeat_style_value.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -35,8 +36,8 @@ static int ComputeNumberOfTracks(const CSSValueList* value_list) {
     }
     if (auto* repeat_value =
             DynamicTo<cssvalue::CSSGridIntegerRepeatValue>(*value)) {
-      number_of_tracks +=
-          repeat_value->Repetitions() * ComputeNumberOfTracks(repeat_value);
+      number_of_tracks += *repeat_value->GetRepetitionsIfKnown() *
+                          ComputeNumberOfTracks(repeat_value);
       continue;
     }
     ++number_of_tracks;
@@ -46,8 +47,7 @@ static int ComputeNumberOfTracks(const CSSValueList* value_list) {
 
 static bool IsValidPropertyValueForStyleRule(CSSPropertyID property_id,
                                              const String& value) {
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
       property_id, /*allow_important_annotation=*/false, stream,
@@ -232,7 +232,8 @@ static int GetGridPositionInteger(const CSSValue& value) {
   DCHECK_EQ(list.length(), static_cast<size_t>(1));
   const auto& primitive_value = To<CSSPrimitiveValue>(list.Item(0));
   DCHECK(primitive_value.IsNumber());
-  return primitive_value.ComputeInteger(CSSToLengthConversionData());
+  return primitive_value.ComputeInteger(
+      CSSToLengthConversionData(/*element=*/nullptr));
 }
 
 TEST(CSSPropertyParserTest, GridPositionLimit1) {
@@ -343,7 +344,7 @@ TEST(CSSPropertyParserTest, GradientUseCount) {
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSGradient;
   EXPECT_FALSE(document.IsUseCounted(feature));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style>* { background-image: linear-gradient(red, blue); }</style>");
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
@@ -360,7 +361,7 @@ TEST(CSSPropertyParserTest, PaintUseCount) {
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kCSSPaintFunction;
   EXPECT_FALSE(document.IsUseCounted(feature));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style>span { background-image: paint(geometry); }</style>");
   EXPECT_TRUE(document.IsUseCounted(feature));
 }
@@ -373,7 +374,7 @@ TEST(CSSPropertyParserTest, CrossFadeUseCount) {
   Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
   WebFeature feature = WebFeature::kWebkitCrossFade;
   EXPECT_FALSE(document.IsUseCounted(feature));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<style>div { background-image: -webkit-cross-fade(url('from.png'), "
       "url('to.png'), 0.2); }</style>");
   EXPECT_TRUE(document.IsUseCounted(feature));
@@ -389,7 +390,7 @@ TEST(CSSPropertyParserTest, TwoValueOverflowOverlayCount) {
   WebFeature feature2 = WebFeature::kTwoValuedOverflow;
   EXPECT_FALSE(document.IsUseCounted(feature));
   EXPECT_FALSE(document.IsUseCounted(feature2));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div style=\"height: 10px; width: 10px; overflow: overlay overlay;\">"
       "<div style=\"height: 50px; width: 50px;\"></div></div>");
   EXPECT_TRUE(document.IsUseCounted(feature));
@@ -406,7 +407,7 @@ TEST(CSSPropertyParserTest, OneValueOverflowOverlayCount) {
   WebFeature feature2 = WebFeature::kTwoValuedOverflow;
   EXPECT_FALSE(document.IsUseCounted(feature));
   EXPECT_FALSE(document.IsUseCounted(feature2));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div style=\"height: 10px; width: 10px; overflow: overlay;\">"
       "<div style=\"height: 50px; width: 50px;\"></div></div>");
   EXPECT_TRUE(document.IsUseCounted(feature));
@@ -423,7 +424,7 @@ TEST(CSSPropertyParserTest, OverflowXOverlayCount) {
   WebFeature feature2 = WebFeature::kTwoValuedOverflow;
   EXPECT_FALSE(document.IsUseCounted(feature));
   EXPECT_FALSE(document.IsUseCounted(feature2));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div style=\"height: 10px; width: 10px; overflow-x: overlay;\">"
       "<div style=\"height: 50px; width: 50px;\"></div></div>");
   EXPECT_TRUE(document.IsUseCounted(feature));
@@ -440,7 +441,7 @@ TEST(CSSPropertyParserTest, OverflowYOverlayCount) {
   WebFeature feature2 = WebFeature::kTwoValuedOverflow;
   EXPECT_FALSE(document.IsUseCounted(feature));
   EXPECT_FALSE(document.IsUseCounted(feature2));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div style=\"height: 10px; width: 10px; overflow-y: overlay;\">"
       "<div style=\"height: 50px; width: 50px;\"></div></div>");
   EXPECT_TRUE(document.IsUseCounted(feature));
@@ -457,7 +458,7 @@ TEST(CSSPropertyParserTest, OverflowFirstValueOverlayCount) {
   WebFeature feature2 = WebFeature::kTwoValuedOverflow;
   EXPECT_FALSE(document.IsUseCounted(feature));
   EXPECT_FALSE(document.IsUseCounted(feature2));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div style=\"height: 10px; width: 10px; overflow: overlay scroll;\">"
       "<div style=\"height: 50px; width: 50px;\"></div></div>");
   EXPECT_TRUE(document.IsUseCounted(feature));
@@ -474,7 +475,7 @@ TEST(CSSPropertyParserTest, OverflowSecondValueOverlayCount) {
   WebFeature feature2 = WebFeature::kTwoValuedOverflow;
   EXPECT_FALSE(document.IsUseCounted(feature));
   EXPECT_FALSE(document.IsUseCounted(feature2));
-  document.documentElement()->setInnerHTML(
+  document.documentElement()->SetInnerHTMLWithoutTrustedTypes(
       "<div style=\"height: 10px; width: 10px; overflow: scroll overlay;\">"
       "<div style=\"height: 50px; width: 50px;\"></div></div>");
   EXPECT_TRUE(document.IsUseCounted(feature));
@@ -592,7 +593,7 @@ TEST_F(CSSPropertyUseCounterTest, CSSPropertyCyUnitlessUseCount) {
 TEST_F(CSSPropertyUseCounterTest, UnitlessPresentationAttributesNotCounted) {
   WebFeature feature = WebFeature::kSVGGeometryPropertyHasNonZeroUnitlessValue;
   EXPECT_FALSE(IsCounted(feature));
-  GetDocument().body()->setInnerHTML(R"HTML(
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
     <svg>
       <rect x="42" y="42" rx="42" ry="42"/>
       <circle cx="42" cy="42" r="42"/>
@@ -880,7 +881,8 @@ TEST(CSSPropertyParserTest, ImageSetNegativeResolution) {
 }
 
 TEST(CSSPropertyParserTest, ImageSetOnlyOneGradientColor) {
-  TestImageSetParsingFailure("image-set(linear-gradient(red) 1x)");
+  TestImageSetParsing("image-set(linear-gradient(red) 1x)",
+                      "image-set(linear-gradient(red) 1x)");
 }
 
 TEST(CSSPropertyParserTest, ImageSetAddCalcMissingUnit1) {
@@ -948,14 +950,14 @@ TEST(CSSPropertyParserTest, UALightDarkBackgroundImage) {
   }
 }
 
-TEST(CSSPropertyParserTest, UAAppearanceAutoBaseSelectSerialization) {
-  auto* ua_context = MakeGarbageCollected<CSSParserContext>(
-      kUASheetMode, SecureContextMode::kInsecureContext);
-  const CSSValue* value = CSSParser::ParseSingleValue(
-      CSSPropertyID::kBackgroundColor,
-      "-internal-appearance-auto-base-select(red, blue)", ua_context);
+TEST(CSSPropertyParserTest, UAAutoBaseSerialization) {
+  // Note: we're not using CSSParser::ParseSingleValue, because it expects
+  // arbitrary function substitution to already have happened.
+  const CSSPropertyValueSet* set = css_test_helpers::ParseDeclarationBlock(
+      "color:-internal-auto-base(red, blue)", kUASheetMode);
+  const CSSValue* value = set->GetPropertyCSSValue(CSSPropertyID::kColor);
   ASSERT_TRUE(value);
-  EXPECT_EQ("-internal-appearance-auto-base-select(red, blue)",
+  EXPECT_EQ("-internal-auto-base(red, blue)",
             value->CssText());
 }
 
@@ -964,8 +966,7 @@ namespace {
 bool ParseCSSValue(CSSPropertyID property_id,
                    const String& value,
                    const CSSParserContext* context) {
-  CSSTokenizer tokenizer(value);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(value);
   HeapVector<CSSPropertyValue, 64> parsed_properties;
   return CSSPropertyParser::ParseValue(
       property_id, /*allow_important_annotation=*/false, stream, context,
@@ -1007,8 +1008,7 @@ TEST(CSSPropertyParserTest, ParseRevert) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   String string = " revert";
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
 
   const CSSValue* value = CSSPropertyParser::ParseSingleValue(
       CSSPropertyID::kMarginLeft, stream, context);
@@ -1021,31 +1021,12 @@ TEST(CSSPropertyParserTest, ParseRevertLayer) {
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
 
   String string = " revert-layer";
-  CSSTokenizer tokenizer(string);
-  CSSParserTokenStream stream(tokenizer);
+  CSSParserTokenStream stream(string);
 
   const CSSValue* value = CSSPropertyParser::ParseSingleValue(
       CSSPropertyID::kMarginLeft, stream, context);
   ASSERT_TRUE(value);
   EXPECT_TRUE(value->IsRevertLayerValue());
-}
-
-// anchor() and anchor-size() shouldn't parse when the feature is disabled.
-TEST(CSSPropertyParserTest, AnchorPositioningDisabled) {
-  ScopedHTMLSelectListElementForTest select_list_disabled(false);
-  ScopedCSSAnchorPositioningForTest anchor_positioning_disabled(false);
-
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-
-  EXPECT_FALSE(
-      ParseCSSValue(CSSPropertyID::kTop, "anchor(--foo top)", context));
-  EXPECT_FALSE(
-      ParseCSSValue(CSSPropertyID::kBottom, "anchor(--foo bottom)", context));
-  EXPECT_FALSE(ParseCSSValue(CSSPropertyID::kWidth, "anchor-size(--foo width)",
-                             context));
-  EXPECT_FALSE(ParseCSSValue(CSSPropertyID::kHeight,
-                             "anchor-size(--foo height)", context));
 }
 
 void TestRepeatStyleParsing(const String& testValue,

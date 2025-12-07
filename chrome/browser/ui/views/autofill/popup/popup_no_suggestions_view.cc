@@ -7,6 +7,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
@@ -21,7 +22,7 @@ PopupNoSuggestionsView::PopupNoSuggestionsView(const std::u16string& message) {
   AddChildView(
       views::Builder<views::Label>()
           .SetText(message)
-          .SetEnabledColorId(ui::kColorLabelForegroundSecondary)
+          .SetEnabledColor(ui::kColorLabelForegroundSecondary)
           .SetTextStyle(views::style::TextStyle::STYLE_BODY_4)
           .SetLineHeight(kHeight)
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)

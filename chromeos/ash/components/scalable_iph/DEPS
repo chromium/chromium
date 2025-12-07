@@ -1,5 +1,0 @@
-include_rules = [
-  "+ash/constants/ash_features.h",
-  "+components/feature_engagement/public",
-  "+components/keyed_service/core",
-]

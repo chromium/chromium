@@ -30,6 +30,17 @@
   visibility: hidden;
   animation-duration: 500s;
 }
+
+::view-transition-old(*) {
+  animation: unset;
+  opacity: 1;
+}
+
+::view-transition-new(*) {
+  animation: unset;
+  opacity: 0;
+}
+
 ::view-transition {
   background: pink;
 }

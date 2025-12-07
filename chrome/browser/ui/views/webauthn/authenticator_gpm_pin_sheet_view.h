@@ -12,6 +12,8 @@
 #include "chrome/browser/ui/views/webauthn/authenticator_gpm_pin_view.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
 class View;
@@ -21,7 +23,11 @@ class View;
 // user to enter GPM pin code used in passkeys flow.
 class AuthenticatorGpmPinSheetView : public AuthenticatorRequestSheetView,
                                      public AuthenticatorGPMPinView::Delegate {
+  METADATA_HEADER(AuthenticatorGpmPinSheetView, AuthenticatorRequestSheetView)
+
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kGpmPinSheetViewId);
+
   explicit AuthenticatorGpmPinSheetView(
       std::unique_ptr<AuthenticatorGpmPinSheetModel> sheet_model);
 
@@ -38,6 +44,7 @@ class AuthenticatorGpmPinSheetView : public AuthenticatorRequestSheetView,
   std::unique_ptr<views::View> BuildStepSpecificHeader() override;
   std::pair<std::unique_ptr<views::View>, AutoFocus> BuildStepSpecificContent()
       override;
+  int GetSpacingBetweenTitleAndDescription() override;
 
   // AuthenticatorGPMPinView::Delegate:
   void OnPinChanged(std::u16string pin) override;

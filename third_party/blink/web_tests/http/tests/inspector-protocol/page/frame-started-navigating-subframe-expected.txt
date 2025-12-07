@@ -1,0 +1,38 @@
+Tests frameStartedNavigating events when navigation is initiated by cdp command
+
+Prepare
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 0>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html
+    }
+    sessionId : <string>
+}
+
+Create an iframe
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 1>
+        navigationType : differentDocument
+        url : http://oopif.test:8000/inspector-protocol/resources/empty.html?1
+    }
+    sessionId : <string>
+}
+
+Navigate iframe
+frameStartedNavigating{
+    method : Page.frameStartedNavigating
+    params : {
+        frameId : <string>
+        loaderId : <string 2>
+        navigationType : differentDocument
+        url : http://127.0.0.1:8000/inspector-protocol/resources/empty.html?2
+    }
+    sessionId : <string>
+}
+

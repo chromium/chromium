@@ -23,7 +23,7 @@
 #include "third_party/leveldatabase/src/include/leveldb/options.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
 
-namespace content {
+namespace content::indexed_db {
 class LevelDBScope;
 class LevelDBState;
 class PartitionedLockManager;
@@ -81,8 +81,7 @@ class LevelDBScopes {
 
   void Rollback(int64_t scope_id, std::vector<PartitionedLock> locks);
 
-  void OnCleanupTaskResult(base::OnceClosure on_complete,
-                           leveldb::Status result);
+  void OnCleanupTaskResult(leveldb::Status result);
 
   SEQUENCE_CHECKER(sequence_checker_);
   const std::vector<uint8_t> metadata_key_prefix_;
@@ -102,9 +101,14 @@ class LevelDBScopes {
   bool initialize_called_ = false;
 #endif
 
+  // This task runner executes cleanup tasks in the background. When `this` is
+  // deleted, existing cleanup tasks may be dropped. This allows for faster
+  // handling of database deletion. See crbug.com/370844779
+  scoped_refptr<base::SequencedTaskRunner> cleanup_runner_;
+
   base::WeakPtrFactory<LevelDBScopes> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // COMPONENTS_SERVICES_STORAGE_INDEXED_DB_SCOPES_LEVELDB_SCOPES_H_

@@ -12,10 +12,10 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_detected_barcode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_point_2d.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
-#include "third_party/blink/renderer/core/html/canvas/canvas_image_source.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
+#include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_source_util.h"
 #include "third_party/blink/renderer/modules/shapedetection/barcode_detector_statics.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -24,35 +24,40 @@ namespace blink {
 
 namespace {
 
-shape_detection::mojom::blink::BarcodeFormat StringToBarcodeFormat(
-    const WebString& format_string) {
-  if (format_string == "aztec")
-    return shape_detection::mojom::blink::BarcodeFormat::AZTEC;
-  if (format_string == "code_128")
-    return shape_detection::mojom::blink::BarcodeFormat::CODE_128;
-  if (format_string == "code_39")
-    return shape_detection::mojom::blink::BarcodeFormat::CODE_39;
-  if (format_string == "code_93")
-    return shape_detection::mojom::blink::BarcodeFormat::CODE_93;
-  if (format_string == "codabar")
-    return shape_detection::mojom::blink::BarcodeFormat::CODABAR;
-  if (format_string == "data_matrix")
-    return shape_detection::mojom::blink::BarcodeFormat::DATA_MATRIX;
-  if (format_string == "ean_13")
-    return shape_detection::mojom::blink::BarcodeFormat::EAN_13;
-  if (format_string == "ean_8")
-    return shape_detection::mojom::blink::BarcodeFormat::EAN_8;
-  if (format_string == "itf")
-    return shape_detection::mojom::blink::BarcodeFormat::ITF;
-  if (format_string == "pdf417")
-    return shape_detection::mojom::blink::BarcodeFormat::PDF417;
-  if (format_string == "qr_code")
-    return shape_detection::mojom::blink::BarcodeFormat::QR_CODE;
-  if (format_string == "upc_a")
-    return shape_detection::mojom::blink::BarcodeFormat::UPC_A;
-  if (format_string == "upc_e")
-    return shape_detection::mojom::blink::BarcodeFormat::UPC_E;
-  return shape_detection::mojom::blink::BarcodeFormat::UNKNOWN;
+shape_detection::mojom::blink::BarcodeFormat IdlEnumToBarcodeFormat(
+    V8BarcodeFormat format) {
+  using IdlFormat = V8BarcodeFormat::Enum;
+  using MojoFormat = shape_detection::mojom::blink::BarcodeFormat;
+  switch (format.AsEnum()) {
+    case IdlFormat::kAztec:
+      return MojoFormat::AZTEC;
+    case IdlFormat::kCode128:
+      return MojoFormat::CODE_128;
+    case IdlFormat::kCode39:
+      return MojoFormat::CODE_39;
+    case IdlFormat::kCode93:
+      return MojoFormat::CODE_93;
+    case IdlFormat::kCodabar:
+      return MojoFormat::CODABAR;
+    case IdlFormat::kDataMatrix:
+      return MojoFormat::DATA_MATRIX;
+    case IdlFormat::kEan13:
+      return MojoFormat::EAN_13;
+    case IdlFormat::kEan8:
+      return MojoFormat::EAN_8;
+    case IdlFormat::kItf:
+      return MojoFormat::ITF;
+    case IdlFormat::kPdf417:
+      return MojoFormat::PDF417;
+    case IdlFormat::kQrCode:
+      return MojoFormat::QR_CODE;
+    case IdlFormat::kUpcA:
+      return MojoFormat::UPC_A;
+    case IdlFormat::kUpcE:
+      return MojoFormat::UPC_E;
+    case IdlFormat::kUnknown:
+      return MojoFormat::UNKNOWN;
+  }
 }
 
 }  // anonymous namespace
@@ -75,7 +80,7 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
     // TODO(https://github.com/WICG/shape-detection-api/issues/66):
     // potentially process UNKNOWN as platform-specific formats.
     for (const auto& format_string : options->formats()) {
-      auto format = StringToBarcodeFormat(IDLEnumAsString(format_string));
+      auto format = IdlEnumToBarcodeFormat(format_string);
       if (format != shape_detection::mojom::blink::BarcodeFormat::UNKNOWN)
         barcode_detector_options->formats.push_back(format);
     }
@@ -92,8 +97,8 @@ BarcodeDetector::BarcodeDetector(ExecutionContext* context,
   BarcodeDetectorStatics::From(context)->CreateBarcodeDetection(
       service_.BindNewPipeAndPassReceiver(task_runner),
       std::move(barcode_detector_options));
-  service_.set_disconnect_handler(WTF::BindOnce(
-      &BarcodeDetector::OnConnectionError, WrapWeakPersistent(this)));
+  service_.set_disconnect_handler(
+      BindOnce(&BarcodeDetector::OnConnectionError, WrapWeakPersistent(this)));
 }
 
 // static
@@ -105,37 +110,37 @@ BarcodeDetector::getSupportedFormats(ScriptState* script_state) {
 }
 
 // static
-String BarcodeDetector::BarcodeFormatToString(
+V8BarcodeFormat::Enum BarcodeDetector::BarcodeFormatToEnum(
     const shape_detection::mojom::BarcodeFormat format) {
   switch (format) {
     case shape_detection::mojom::BarcodeFormat::AZTEC:
-      return "aztec";
+      return V8BarcodeFormat::Enum::kAztec;
     case shape_detection::mojom::BarcodeFormat::CODE_128:
-      return "code_128";
+      return V8BarcodeFormat::Enum::kCode128;
     case shape_detection::mojom::BarcodeFormat::CODE_39:
-      return "code_39";
+      return V8BarcodeFormat::Enum::kCode39;
     case shape_detection::mojom::BarcodeFormat::CODE_93:
-      return "code_93";
+      return V8BarcodeFormat::Enum::kCode93;
     case shape_detection::mojom::BarcodeFormat::CODABAR:
-      return "codabar";
+      return V8BarcodeFormat::Enum::kCodabar;
     case shape_detection::mojom::BarcodeFormat::DATA_MATRIX:
-      return "data_matrix";
+      return V8BarcodeFormat::Enum::kDataMatrix;
     case shape_detection::mojom::BarcodeFormat::EAN_13:
-      return "ean_13";
+      return V8BarcodeFormat::Enum::kEan13;
     case shape_detection::mojom::BarcodeFormat::EAN_8:
-      return "ean_8";
+      return V8BarcodeFormat::Enum::kEan8;
     case shape_detection::mojom::BarcodeFormat::ITF:
-      return "itf";
+      return V8BarcodeFormat::Enum::kItf;
     case shape_detection::mojom::BarcodeFormat::PDF417:
-      return "pdf417";
+      return V8BarcodeFormat::Enum::kPdf417;
     case shape_detection::mojom::BarcodeFormat::QR_CODE:
-      return "qr_code";
+      return V8BarcodeFormat::Enum::kQrCode;
     case shape_detection::mojom::BarcodeFormat::UNKNOWN:
-      return "unknown";
+      return V8BarcodeFormat::Enum::kUnknown;
     case shape_detection::mojom::BarcodeFormat::UPC_A:
-      return "upc_a";
+      return V8BarcodeFormat::Enum::kUpcA;
     case shape_detection::mojom::BarcodeFormat::UPC_E:
-      return "upc_e";
+      return V8BarcodeFormat::Enum::kUpcE;
   }
 }
 
@@ -143,8 +148,8 @@ ScriptPromise<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
     ScriptState* script_state,
     const V8ImageBitmapSource* image_source,
     ExceptionState& exception_state) {
-  std::optional<SkBitmap> bitmap =
-      GetBitmapFromSource(script_state, image_source, exception_state);
+  std::optional<SkBitmap> bitmap = GetBitmapFromV8ImageBitmapSource(
+      script_state, image_source, exception_state);
   if (!bitmap) {
     return ScriptPromise<IDLSequence<DetectedBarcode>>();
   }
@@ -164,10 +169,9 @@ ScriptPromise<IDLSequence<DetectedBarcode>> BarcodeDetector::detect(
     return promise;
   }
   detect_requests_.insert(resolver);
-  service_->Detect(
-      std::move(*bitmap),
-      WTF::BindOnce(&BarcodeDetector::OnDetectBarcodes, WrapPersistent(this),
-                    WrapPersistent(resolver)));
+  service_->Detect(std::move(*bitmap),
+                   BindOnce(&BarcodeDetector::OnDetectBarcodes,
+                            WrapPersistent(this), WrapPersistent(resolver)));
   return promise;
 }
 
@@ -193,7 +197,7 @@ void BarcodeDetector::OnDetectBarcodes(
     detected_barcode->setBoundingBox(DOMRectReadOnly::Create(
         barcode->bounding_box.x(), barcode->bounding_box.y(),
         barcode->bounding_box.width(), barcode->bounding_box.height()));
-    detected_barcode->setFormat(BarcodeFormatToString(barcode->format));
+    detected_barcode->setFormat(BarcodeFormatToEnum(barcode->format));
     detected_barcode->setCornerPoints(corner_points);
     detected_barcodes.push_back(detected_barcode);
   }
@@ -223,7 +227,7 @@ void BarcodeDetector::OnConnectionError() {
 }
 
 void BarcodeDetector::Trace(Visitor* visitor) const {
-  ShapeDetector::Trace(visitor);
+  ScriptWrappable::Trace(visitor);
   visitor->Trace(service_);
   visitor->Trace(detect_requests_);
 }

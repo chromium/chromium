@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GFX_X_XPROTO_INTERNAL_H_
 #define UI_GFX_X_XPROTO_INTERNAL_H_
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 
 #ifndef IS_X11_IMPL
@@ -32,13 +28,14 @@ namespace x11 {
 
 class Connection;
 
-template <typename T, typename Enable = void>
+template <typename T>
 struct EnumBase {
   using type = T;
 };
 
 template <typename T>
-struct EnumBase<T, typename std::enable_if_t<std::is_enum<T>::value>> {
+  requires(std::is_enum_v<T>)
+struct EnumBase<T> {
   using type = typename std::underlying_type<T>::type;
 };
 
@@ -124,7 +121,7 @@ template <typename T>
 void Read(T* t, ReadBuffer* buf) {
   static_assert(std::is_trivially_copyable<T>::value, "");
   detail::VerifyAlignment(t, buf->offset);
-  memcpy(t, buf->data->bytes() + buf->offset, sizeof(*t));
+  UNSAFE_TODO(memcpy(t, buf->data->bytes() + buf->offset, sizeof(*t)));
   buf->offset += sizeof(*t);
 }
 

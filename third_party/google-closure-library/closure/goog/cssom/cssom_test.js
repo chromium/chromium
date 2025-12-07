@@ -8,9 +8,12 @@ goog.module('goog.cssomTest');
 goog.setTestOnly();
 
 const CssRuleType = goog.require('goog.cssom.CssRuleType');
+const DomHelper = goog.require('goog.dom.DomHelper');
 const cssom = goog.require('goog.cssom');
 const testSuite = goog.require('goog.testing.testSuite');
 const userAgent = goog.require('goog.userAgent');
+const {assertIsHtmlIFrameElement} = goog.require('goog.asserts.dom');
+const {getStyleNonce} = goog.require('goog.dom.safe');
 
 // Since sheet cssom_test1.css's first line is to import
 // cssom_test2.css, we should get 2 before one in the string.
@@ -109,6 +112,21 @@ testSuite({
     // Sanity check.
     cssRules = cssom.getAllCssStyleRules();
     assertEquals(6, cssRules.length);
+  },
+
+  testAddCssTextUsesIframeNonce() {
+    const iframeWindow =
+        assertIsHtmlIFrameElement(document.getElementById('frame'))
+            .contentWindow;
+    assert(iframeWindow.document !== document);
+
+    const newCssNode = cssom.addCssText(
+        '.css-add-1 { display: block; }', new DomHelper(iframeWindow.document));
+    // Cannot assert on a string literal because IE11 doesn't support nonces
+    // whatsoever. getStyleNonce returns an empty string if nonce isn't present.
+    assertEquals(
+        getStyleNonce(iframeWindow),
+        newCssNode['nonce'] || newCssNode.getAttribute('nonce') || '');
   },
 
   /** @suppress {missingProperties} cssRules not defined on StyleSheet */

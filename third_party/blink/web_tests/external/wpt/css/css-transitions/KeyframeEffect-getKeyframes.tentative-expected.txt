@@ -1,5 +1,7 @@
 This is a testharness.js-based test.
 [FAIL] KeyframeEffect.getKeyframes() returns expected frames for a transition after resetting the effect target
   assert_equals: properties on ComputedKeyframe #0 expected "composite,computedOffset,easing,left,offset" but got "composite,computedOffset,easing,offset"
+[FAIL] KeyframeEffect.getKeyframes() returns expected frames for a custom property transition
+  Cannot read properties of undefined (reading 'effect')
 Harness: the test ran to completion.
 

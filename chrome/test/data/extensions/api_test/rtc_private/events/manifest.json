@@ -1,9 +1,0 @@
-{
-  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCefVITdQJ4vgVKTcldCJNWOqOLH+HMnUIV8fYkO0yaFzhO467toPQ2XZZIszU0KO41ZRE7p8D0dDnIB8D9a0/btKE3QhQ/eJmcPLcGj1t0oyeaNDU/LwmeP1q85Xt9PGCkFYASyynfGhVibxGoAYOIcpZka+/nH/HO1yukGrIK4wIDAQAB",
-  "name": "rtc_private_api_event_handler",
-  "version": "1.0",
-  "manifest_version": 2,
-  "description": "Test that makes sure RTC-related events are properly raised.",
-  "background": { "scripts": ["background.js"] },
-  "permissions": [ "rtcPrivate" ]
-}

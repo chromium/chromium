@@ -16,12 +16,20 @@ extern NSString* const kGoogleDriveITunesItemIdentifier;
 // app is installed.
 extern NSString* const kGoogleDriveAppURLScheme;
 
+// Custom URL scheme for Google Maps app. Can be used to check if Google Maps
+// app is installed.
+extern NSString* const kGoogleMapsAppURLScheme;
+
 // Bundle ID of Google Drive application.
 extern NSString* const kGoogleDriveAppBundleID;
 
 // Returns URL which can be used to check if Google Drive app is installed via
 // -[UIApplication canOpenURL:] call.
-NSURL* GetGoogleDriveAppUrl();
+NSURL* GetGoogleDriveAppURL();
+
+// Returns URL which can be used to check if Google Maps app is installed via
+// -[UIApplication canOpenURL:] call.
+NSURL* GetGoogleMapsAppURL();
 
 // Returns true if Google Drive app is installed.
 bool IsGoogleDriveAppInstalled();

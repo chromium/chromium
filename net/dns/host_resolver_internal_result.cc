@@ -52,9 +52,8 @@ std::string MaybeCanonicalizeName(std::string domain_name) {
   url::StdStringCanonOutput output(&canonicalized);
   url::CanonHostInfo host_info;
 
-  url::CanonicalizeHostVerbose(domain_name.data(),
-                               url::Component(0, domain_name.size()), &output,
-                               &host_info);
+  url::CanonicalizeHostVerbose(
+      domain_name, url::Component(0, domain_name.size()), &output, &host_info);
 
   if (host_info.family == url::CanonHostInfo::Family::NEUTRAL) {
     output.Complete();
@@ -101,8 +100,8 @@ std::optional<DnsQueryType> QueryTypeFromValue(const base::Value& value) {
   if (!query_type_string)
     return std::nullopt;
   const auto query_type_it =
-      base::ranges::find(kDnsQueryTypes, *query_type_string,
-                         &decltype(kDnsQueryTypes)::value_type::second);
+      std::ranges::find(kDnsQueryTypes, *query_type_string,
+                        &decltype(kDnsQueryTypes)::value_type::second);
   if (query_type_it == kDnsQueryTypes.end())
     return std::nullopt;
 
@@ -282,8 +281,8 @@ bool HostResolverInternalResult::ValidateValueBaseDict(
   if (!query_type_string)
     return false;
   const auto query_type_it =
-      base::ranges::find(kDnsQueryTypes, *query_type_string,
-                         &decltype(kDnsQueryTypes)::value_type::second);
+      std::ranges::find(kDnsQueryTypes, *query_type_string,
+                        &decltype(kDnsQueryTypes)::value_type::second);
   if (query_type_it == kDnsQueryTypes.end())
     return false;
 
@@ -423,7 +422,7 @@ base::Value HostResolverInternalDataResult::ToValue() const {
 
   base::Value::List endpoints_list;
   endpoints_list.reserve(endpoints_.size());
-  for (IPEndPoint endpoint : endpoints_) {
+  for (const IPEndPoint& endpoint : endpoints_) {
     endpoints_list.Append(endpoint.ToValue());
   }
   dict.Set(kValueEndpointsKey, std::move(endpoints_list));

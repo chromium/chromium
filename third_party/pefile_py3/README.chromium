@@ -3,6 +3,7 @@ Short Name: pefile
 URL: https://github.com/erocarrera/pefile
 Version: 2021.5.24
 Revision: 95b6541e42fa0596c87809d7e96645ddeab6700d
+Update Mechanism: Manual
 License: MIT
 License File: LICENSE
 Security Critical: no

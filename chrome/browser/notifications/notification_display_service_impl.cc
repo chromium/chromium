@@ -13,21 +13,20 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/non_persistent_notification_handler.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/persistent_notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/message_center/public/cpp/notification.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #endif
 
@@ -37,7 +36,7 @@
 #include "chrome/browser/sharing/sharing_notification_handler.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/nearby_sharing/nearby_notification_handler.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
@@ -47,13 +46,9 @@
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 #endif
 
-namespace {
-
-void OperationCompleted() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
-
-}  // namespace
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/tailored_security/notification_handler_desktop.h"
+#endif
 
 // static
 NotificationDisplayServiceImpl* NotificationDisplayServiceImpl::GetForProfile(
@@ -88,14 +83,15 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
             profile_));
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+     BUILDFLAG(IS_WIN)) &&                                                 \
+    BUILDFLAG(SAFE_BROWSING_AVAILABLE)
     AddNotificationHandler(
         NotificationHandler::Type::TAILORED_SECURITY,
         std::make_unique<safe_browsing::TailoredSecurityNotificationHandler>());
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
     AddNotificationHandler(
         NotificationHandler::Type::EXTENSION,
         std::make_unique<extensions::ExtensionNotificationHandler>());
@@ -116,7 +112,7 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
         std::move(screen_capture_blocker));
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     if (NearbySharingServiceFactory::IsNearbyShareSupportedForBrowserContext(
             profile_)) {
       AddNotificationHandler(NotificationHandler::Type::NEARBY_SHARE,
@@ -144,36 +140,50 @@ void NotificationDisplayServiceImpl::ProcessNotificationOperation(
     const std::string& notification_id,
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
-    const std::optional<bool>& by_user) {
+    const std::optional<bool>& by_user,
+    const std::optional<bool>& is_suspicious,
+    base::OnceClosure on_completed_cb) {
   NotificationHandler* handler = GetNotificationHandler(notification_type);
   DCHECK(handler);
   if (!handler) {
     LOG(ERROR) << "Unable to find a handler for "
                << static_cast<int>(notification_type);
+    std::move(on_completed_cb).Run();
     return;
   }
-
-  // TODO(crbug.com/40540804): Plumb this through from the notification platform
-  // bridges so they can report completion of the operation as needed.
-  base::OnceClosure completed_closure = base::BindOnce(&OperationCompleted);
 
   switch (operation) {
     case NotificationOperation::kClick:
       handler->OnClick(profile_, origin, notification_id, action_index, reply,
-                       std::move(completed_closure));
+                       std::move(on_completed_cb));
       break;
     case NotificationOperation::kClose:
       DCHECK(by_user.has_value());
       handler->OnClose(profile_, origin, notification_id, by_user.value(),
-                       std::move(completed_closure));
+                       std::move(on_completed_cb));
       for (auto& observer : observers_)
         observer.OnNotificationClosed(notification_id);
       break;
     case NotificationOperation::kDisablePermission:
-      handler->DisableNotifications(profile_, origin);
+      handler->DisableNotifications(profile_, origin, notification_id,
+                                    is_suspicious);
       break;
     case NotificationOperation::kSettings:
       handler->OpenSettings(profile_, origin);
+      break;
+    case NotificationOperation::kReportAsSafe:
+      handler->ReportNotificationAsSafe(notification_id, origin, profile_);
+      break;
+    case NotificationOperation::kReportWarnedAsSpam:
+      handler->ReportWarnedNotificationAsSpam(notification_id, origin,
+                                              profile_);
+      break;
+    case NotificationOperation::kReportUnwarnedAsSpam:
+      handler->ReportUnwarnedNotificationAsSpam(notification_id, origin,
+                                                profile_);
+      break;
+    case NotificationOperation::kShowOriginalNotification:
+      handler->OnShowOriginalNotification(origin, notification_id, profile_);
       break;
   }
 }
@@ -299,19 +309,22 @@ void NotificationDisplayServiceImpl::ProfileLoadedCallback(
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
     const std::optional<bool>& by_user,
+    const std::optional<bool>& is_suspicious,
+    base::OnceClosure on_completed_cb,
     Profile* profile) {
   base::UmaHistogramBoolean("Notifications.LoadProfileResult",
                             profile != nullptr);
   if (!profile) {
     LOG(WARNING) << "Profile not loaded correctly";
+    std::move(on_completed_cb).Run();
     return;
   }
 
   NotificationDisplayServiceImpl* display_service =
       NotificationDisplayServiceImpl::GetForProfile(profile);
-  display_service->ProcessNotificationOperation(operation, notification_type,
-                                                origin, notification_id,
-                                                action_index, reply, by_user);
+  display_service->ProcessNotificationOperation(
+      operation, notification_type, origin, notification_id, action_index,
+      reply, by_user, is_suspicious, std::move(on_completed_cb));
 }
 
 void NotificationDisplayServiceImpl::SetBlockersForTesting(

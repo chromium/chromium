@@ -8,11 +8,14 @@ import android.content.SharedPreferences;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Grabs the URL that points to the Android Market page for Chrome.
  * This incurs I/O, so don't use it from the main thread.
  */
+@NullMarked
 public class MarketURLGetter {
 
     private static final class LazyHolder {
@@ -31,7 +34,7 @@ public class MarketURLGetter {
         ResettersForTesting.register(() -> sInstanceForTests = null);
     }
 
-    private static MarketURLGetter sInstanceForTests;
+    private static @Nullable MarketURLGetter sInstanceForTests;
 
     protected MarketURLGetter() {}
 

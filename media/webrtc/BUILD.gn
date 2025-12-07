@@ -26,11 +26,12 @@ component("webrtc") {
   deps = [
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
+    "//components/optimization_guide/core/inference:op_resolver",
     "//media",
-    "//media:shared_memory_support",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  public_deps = [ "//third_party/tflite" ]
 }
 
 source_set("unit_tests") {

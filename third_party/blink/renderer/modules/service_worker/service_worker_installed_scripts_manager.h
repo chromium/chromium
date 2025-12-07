@@ -29,7 +29,7 @@ class MODULES_EXPORT ServiceWorkerInstalledScriptsManager final
   ServiceWorkerInstalledScriptsManager(
       std::unique_ptr<WebServiceWorkerInstalledScriptsManagerParams>,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner);
-  virtual ~ServiceWorkerInstalledScriptsManager() = default;
+  ~ServiceWorkerInstalledScriptsManager() = default;
 
   // InstalledScriptsManager implementation.
   bool IsScriptInstalled(const KURL& script_url) const override;

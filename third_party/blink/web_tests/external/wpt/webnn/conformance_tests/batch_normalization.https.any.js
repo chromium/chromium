@@ -1,5 +1,5 @@
 // META: title=test WebNN API batchNormalization operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -22,15 +22,54 @@
 //     MLOperand input, MLOperand mean, MLOperand, variance,
 //     optional MLBatchNormalizationOptions options = {});
 
-
-const getBatchNormPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 6, float16: 6};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const batchNormTests = [
+  {
+    'name': 'batchNormalization float32 1D tensor options.axis=0',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.30733108520508,  64.08863830566406, -63.376670837402344,
+            -46.790367126464844, 83.02227020263672, -80.08049011230469
+          ],
+          'descriptor': {shape: [6], dataType: 'float32'}
+        },
+        'bnMean': {
+          'data': [
+            -7.814267635345459, -95.64129638671875, 38.15440368652344,
+            -55.95203399658203, -87.86500549316406, -41.63645553588867
+          ],
+          'descriptor': {shape: [6], dataType: 'float32'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [
+            60.31186294555664,  26.43260383605957, 53.275634765625,
+            40.146121978759766, 59.41098403930664, 35.99981689453125
+          ],
+          'descriptor': {shape: [6], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'},
+          {'options': {'axis': 0}}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -4.312741756439209, 31.068212509155273, -13.910240173339844,
+            1.4459478855133057, 22.170541763305664, -6.407354354858398
+          ],
+          'descriptor': {shape: [6], dataType: 'float32'}
+        }
+      }
+    }
+  },
   {
     'name':
         'batchNormalization float32 2D tensor (mean and variance are non-constant) default options',
@@ -47,21 +86,21 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         },
         'bnMean': {
           'data': [
             -7.814267635345459, -95.64129638671875, 38.15440368652344,
             -55.95203399658203, -87.86500549316406, -41.63645553588867
           ],
-          'descriptor': {'dimensions': [6], 'dataType': 'float32'}
+          'descriptor': {shape: [6], dataType: 'float32'}
         },
         'bnVariance': {
           'data': [
             60.31186294555664, 26.43260383605957, 53.275634765625,
             40.146121978759766, 59.41098403930664, 35.99981689453125
           ],
-          'descriptor': {'dimensions': [6], 'dataType': 'float32'}
+          'descriptor': {shape: [6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -83,66 +122,7 @@ const batchNormTests = [
             -0.1989477425813675, 34.203548431396484, -16.923160552978516,
             18.671411514282227,  2.5159497261047363, 4.921559810638428
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
-        }
-      }
-    }
-  },
-  {
-    'name': 'batchNormalization float32 2D constant tensor default options',
-    'graph': {
-      'inputs': {
-        'bnInput': {
-          'data': [
-            -41.30733108520508,  64.08863830566406,    -63.376670837402344,
-            -46.790367126464844, 83.02227020263672,    -80.08049011230469,
-            -62.144378662109375, -0.10012771934270859, -40.90216064453125,
-            56.96306228637695,   37.37249755859375,    57.046478271484375,
-            82.05680084228516,   -86.1164321899414,    76.8831787109375,
-            97.03362274169922,   -21.35103988647461,   -96.93824005126953,
-            -9.359310150146484,  80.20824432373047,    -85.36802673339844,
-            62.35185241699219,   -68.4724349975586,    -12.10716724395752
-          ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'},
-          'constant': true
-        },
-        'bnMean': {
-          'data': [
-            -7.814267635345459, -95.64129638671875, 38.15440368652344,
-            -55.95203399658203, -87.86500549316406, -41.63645553588867
-          ],
-          'descriptor': {'dimensions': [6], 'dataType': 'float32'},
-          'constant': true
-        },
-        'bnVariance': {
-          'data': [
-            60.31186294555664, 26.43260383605957, 53.275634765625,
-            40.146121978759766, 59.41098403930664, 35.99981689453125
-          ],
-          'descriptor': {'dimensions': [6], 'dataType': 'float32'},
-          'constant': true
-        }
-      },
-      'operators': [{
-        'name': 'batchNormalization',
-        'arguments': [
-          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'}
-        ],
-        'outputs': 'bnOutput'
-      }],
-      'expectedOutputs': {
-        'bnOutput': {
-          'data': [
-            -4.312741756439209,  31.068212509155273, -13.910240173339844,
-            1.4459478855133057,  22.170541763305664, -6.407354354858398,
-            -6.995829105377197,  18.583200454711914, -10.831125259399414,
-            17.820920944213867,  16.2480411529541,   16.447195053100586,
-            11.57226848602295,   1.8526301383972168, 5.306026458740234,
-            24.145092010498047,  8.629376411437988,  -9.216986656188965,
-            -0.1989477425813675, 34.203548431396484, -16.923160552978516,
-            18.671411514282227,  2.5159497261047363, 4.921559810638428
-          ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -162,14 +142,14 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         },
         'bnMean': {
           'data': [
             -7.814267635345459, -95.64129638671875, 38.15440368652344,
             -55.95203399658203, -87.86500549316406, -41.63645553588867
           ],
-          'descriptor': {'dimensions': [6], 'dataType': 'float32'},
+          'descriptor': {shape: [6], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
@@ -177,7 +157,7 @@ const batchNormTests = [
             60.31186294555664, 26.43260383605957, 53.275634765625,
             40.146121978759766, 59.41098403930664, 35.99981689453125
           ],
-          'descriptor': {'dimensions': [6], 'dataType': 'float32'},
+          'descriptor': {shape: [6], dataType: 'float32'},
           'constant': true
         }
       },
@@ -200,7 +180,7 @@ const batchNormTests = [
             -0.1989477425813675, 34.203548431396484, -16.923160552978516,
             18.671411514282227,  2.5159497261047363, 4.921559810638428
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -220,16 +200,16 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         },
         'bnMean': {
           'data': [12.810380935668945, 63.13715362548828, -61.62983322143555],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [18.358240127563477, 41.847232818603516, 16.12828254699707],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -252,7 +232,7 @@ const batchNormTests = [
             -11.206846237182617, 2.638929843902588,   -5.910898208618164,
             30.871898651123047,  -1.7038332223892212, 12.331327438354492
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       }
     }
@@ -272,16 +252,16 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         },
         'bnMean': {
           'data': [51.629150390625, 99.36075592041016, -96.1473617553711],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [30.448015213012695, 86.36219024658203, 73.88455200195312],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -304,7 +284,7 @@ const batchNormTests = [
             -11.698976516723633, -2.0609331130981445, 1.2540507316589355,
             18.43954849243164,   3.2196571826934814,  9.777103424072266
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -324,16 +304,16 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [6, 1, 1, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [6, 1, 1, 2, 2], dataType: 'float32'}
         },
         'bnMean': {
           'data': [35.4078254699707],
-          'descriptor': {'dimensions': [1], 'dataType': 'float32'},
+          'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [40.93109893798828],
-          'descriptor': {'dimensions': [1], 'dataType': 'float32'},
+          'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -356,7 +336,7 @@ const batchNormTests = [
             -6.99733304977417,   7.002535343170166,   -18.877885818481445,
             4.211489677429199,   -16.237018585205078, -7.42683744430542
           ],
-          'descriptor': {'dimensions': [6, 1, 1, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [6, 1, 1, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -376,16 +356,16 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         },
         'bnMean': {
           'data': [51.629150390625, 99.36075592041016, -96.1473617553711],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [30.448015213012695, 86.36219024658203, 73.88455200195312],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -409,7 +389,7 @@ const batchNormTests = [
             -11.698976516723633, -2.0609331130981445, 1.2540507316589355,
             18.43954849243164,   3.2196571826934814,  9.777103424072266
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -429,16 +409,16 @@ const batchNormTests = [
             76.8831787109375,    -9.359310150146484,   -68.4724349975586,
             97.03362274169922,   80.20824432373047,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'bnMean': {
           'data': [51.629150390625, 99.36075592041016, -96.1473617553711],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [30.448015213012695, 86.36219024658203, 73.88455200195312],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -462,7 +442,7 @@ const batchNormTests = [
             4.576685905456543,   -11.698976516723633, 3.2196571826934814,
             8.228469848632812,   -2.0609331130981445, 9.777103424072266
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -482,21 +462,21 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         },
         'bnMean': {
           'data': [51.629150390625, 99.36075592041016, -96.1473617553711],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [30.448015213012695, 86.36219024658203, 73.88455200195312],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnScale': {
           'data': [65.50171661376953, -71.007568359375, -5.569730758666992],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -520,7 +500,7 @@ const batchNormTests = [
             830.7158813476562,   146.3418426513672,   -6.984724998474121,
             -102.70331573486328, -17.9326229095459,   -54.455833435058594
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -540,21 +520,21 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         },
         'bnMean': {
           'data': [51.629150390625, 99.36075592041016, -96.1473617553711],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [30.448015213012695, 86.36219024658203, 73.88455200195312],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnBias': {
           'data': [64.2044677734375, 75.28591918945312, -84.57243347167969],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -578,7 +558,7 @@ const batchNormTests = [
             63.586944580078125, 73.22498321533203,  -83.3183822631836,
             -66.13288879394531, -81.35277557373047, -74.79533386230469
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -598,16 +578,16 @@ const batchNormTests = [
             -9.359310150146484,  80.20824432373047,    -85.36802673339844,
             62.35185241699219,   -68.4724349975586,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         },
         'bnMean': {
           'data': [51.629150390625, 99.36075592041016, -96.1473617553711],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [30.448015213012695, 86.36219024658203, 73.88455200195312],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -631,7 +611,7 @@ const batchNormTests = [
             -11.698976516723633, -2.0609331130981445, 1.254050850868225,
             18.43954849243164,   3.2196574211120605,  9.777103424072266
           ],
-          'descriptor': {'dimensions': [2, 3, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float32'}
         }
       }
     }
@@ -651,26 +631,26 @@ const batchNormTests = [
             76.8831787109375,    -9.359310150146484,   -68.4724349975586,
             97.03362274169922,   80.20824432373047,    -12.10716724395752
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         },
         'bnMean': {
           'data': [51.629150390625, 99.36075592041016, -96.1473617553711],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnVariance': {
           'data': [30.448015213012695, 86.36219024658203, 73.88455200195312],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnScale': {
           'data': [65.50171661376953, -71.007568359375, -5.569730758666992],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         },
         'bnBias': {
           'data': [64.2044677734375, 75.28591918945312, -84.57243347167969],
-          'descriptor': {'dimensions': [3], 'dataType': 'float32'},
+          'descriptor': {shape: [3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -701,18 +681,584 @@ const batchNormTests = [
             363.98524710447384,  906.0018322105,     -102.5050592863526,
             603.1834043179756,   221.6277675074517,  -139.02827100419768
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'batchNormalization float16 1D tensor options.axis=0',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [-41.3125, 64.0625, -63.375, -46.78125, 83, -80.0625],
+          'descriptor': {shape: [6], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [-7.8125, -95.625, 38.15625, -55.9375, -87.875, -41.625],
+          'descriptor': {shape: [6], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [60.3125, 26.4375, 53.28125, 40.15625, 59.40625, 36],
+          'descriptor': {shape: [6], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'},
+          {'options': {'axis': 0}}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [-4.3125, 31.0625, -13.90625, 1.4453125, 22.171875, -6.40625],
+          'descriptor': {shape: [6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'batchNormalization float16 2D tensor (mean and variance are non-constant) default options',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [-7.8125, -95.625, 38.15625, -55.9375, -87.875, -41.625],
+          'descriptor': {shape: [6], dataType: 'float16'}
+        },
+        'bnVariance': {
+          'data': [60.3125, 26.4375, 53.28125, 40.15625, 59.40625, 36],
+          'descriptor': {shape: [6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -4.3125,    31.0625,     -13.90625,   1.4453125,   22.171875,
+            -6.40625,   -6.99609375, 18.578125,   -10.828125,  17.8125,
+            16.25,      16.4375,     11.5703125,  1.84765625,  5.3046875,
+            24.140625,  8.6328125,   -9.21875,    -0.19921875, 34.1875,
+            -16.921875, 18.671875,   2.513671875, 4.91796875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 2D tensor default options',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [-7.8125, -95.625, 38.15625, -55.9375, -87.875, -41.625],
+          'descriptor': {shape: [6], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [60.3125, 26.4375, 53.28125, 40.15625, 59.40625, 36],
+          'descriptor': {shape: [6], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -4.3125,    31.0625,     -13.90625,   1.4453125,   22.171875,
+            -6.40625,   -6.99609375, 18.578125,   -10.828125,  17.8125,
+            16.25,      16.4375,     11.5703125,  1.84765625,  5.3046875,
+            24.140625,  8.6328125,   -9.21875,    -0.19921875, 34.1875,
+            -16.921875, 18.671875,   2.513671875, 4.91796875
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 3D tensor default options',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [12.8125, 63.125, -61.625],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [18.359375, 41.84375, 16.125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -12.6328125, 11.9609375,  -17.78125,     -13.90625,  3.072265625,
+            -22.140625,  -19.375,     -9.7734375,    5.16015625, 29.53125,
+            24.65625,    29.546875,   16.15625,      -23.09375,  14.953125,
+            19.65625,    -13.0546875, -24.75,        -11.203125, 2.638671875,
+            -5.9140625,  30.875,      -1.7119140625, 12.328125
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 4D tensor default options',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [51.625, 99.375, -96.125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [30.453125, 86.375, 73.875],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -16.84375,    2.25390625,  -20.84375,  -17.828125, -1.76171875,
+            -19.3125,     -17.375,     -10.703125, 6.42578125, 17.8125,
+            15.53125,     17.8125,     5.515625,   -24.96875,  4.57421875,
+            8.234375,     -12.9921875, -21.125,    -11.703125, -2.064453125,
+            1.2509765625, 18.4375,     3.21484375, 9.7734375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 5D tensor default options',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [6, 1, 1, 2, 2], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [35.40625],
+          'descriptor': {shape: [1], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [40.9375],
+          'descriptor': {shape: [1], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -11.9921875,  4.48046875, -15.4375,    -12.84375,   7.4375,
+            -18.046875,   -15.25,     -5.55078125, -11.9296875, 3.369140625,
+            0.3076171875, 3.37890625, 7.29296875,  -19,         6.48046875,
+            9.6328125,    -8.8671875, -20.6875,    -6.99609375, 7,
+            -18.875,      4.2109375,  -16.234375,  -7.42578125
+          ],
+          'descriptor': {shape: [6, 1, 1, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 4D NCHW tensor options.axis=1',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [51.625, 99.375, -96.125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [30.453125, 86.375, 73.875],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'},
+          {'options': {'axis': 1}}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -16.84375,    2.25390625,  -20.84375,  -17.828125, -1.76171875,
+            -19.3125,     -17.375,     -10.703125, 6.42578125, 17.8125,
+            15.53125,     17.8125,     5.515625,   -24.96875,  4.57421875,
+            8.234375,     -12.9921875, -21.125,    -11.703125, -2.064453125,
+            1.2509765625, 18.4375,     3.21484375, 9.7734375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 4D NHWC tensor options.axis=3',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125,       83,       -40.90625, 64.0625,   -80.0625,
+            56.96875,       -63.375,  -62.15625, 37.375,    -46.78125,
+            -0.10009765625, 57.03125, 82.0625,   -21.34375, -85.375,
+            -86.125,        -96.9375, 62.34375,  76.875,    -9.359375,
+            -68.5,          97.0625,  80.1875,   -12.109375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [51.625, 99.375, -96.125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [30.453125, 86.375, 73.875],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'},
+          {'options': {'axis': 3}}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -16.84375,  -1.76171875, 6.42578125,   2.25390625,  -19.3125,
+            17.8125,    -20.84375,   -17.375,      15.53125,    -17.828125,
+            -10.703125, 17.8125,     5.515625,     -12.9921875, 1.2509765625,
+            -24.96875,  -21.125,     18.4375,      4.57421875,  -11.703125,
+            3.21484375, 8.234375,    -2.064453125, 9.7734375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 4D NCHW tensor options.scale',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [51.625, 99.375, -96.125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [30.453125, 86.375, 73.875],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnScale': {
+          'data': [65.5, -71, -5.5703125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'},
+          {'options': {'scale': 'bnScale'}}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -1103,  147.625, -1365,     -1168,     125.125,   1371,
+            1234,   760,     -35.78125, -99.1875,  -86.5,     -99.25,
+            361.25, -1635,   299.75,    539.5,     922,       1500,
+            830.5,  146.625, -6.96875,  -102.6875, -17.90625, -54.4375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 4D NCHW tensor options.bias',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [51.625, 99.375, -96.125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [30.453125, 86.375, 73.875],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnBias': {
+          'data': [64.1875, 75.3125, -84.5625],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'},
+          {'options': {'bias': 'bnBias'}}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            47.34375, 66.4375,  43.34375, 46.34375, 73.5625, 56,
+            57.9375,  64.625,   -78.125,  -66.75,   -69,     -66.75,
+            69.6875,  39.21875, 68.75,    72.4375,  62.3125, 54.1875,
+            63.625,   73.25,    -83.3125, -66.125,  -81.375, -74.8125
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 4D NCHW tensor options.epsilon',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125, 64.0625,   -63.375,        -46.78125, 83,
+            -80.0625, -62.15625, -0.10009765625, -40.90625, 56.96875,
+            37.375,   57.03125,  82.0625,        -86.125,   76.875,
+            97.0625,  -21.34375, -96.9375,       -9.359375, 80.1875,
+            -85.375,  62.34375,  -68.5,          -12.109375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [51.625, 99.375, -96.125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [30.453125, 86.375, 73.875],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'},
+          {'options': {'epsilon': 0.000001}}
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -16.84375,    2.25390625,  -20.84375,  -17.828125, -1.76171875,
+            -19.3125,     -17.375,     -10.703125, 6.42578125, 17.8125,
+            15.53125,     17.8125,     5.515625,   -24.96875,  4.57421875,
+            8.234375,     -12.9921875, -21.125,    -11.703125, -2.064453125,
+            1.2509765625, 18.4375,     3.21484375, 9.7734375
+          ],
+          'descriptor': {shape: [2, 3, 2, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'batchNormalization float16 4D NHWC tensor all options',
+    'graph': {
+      'inputs': {
+        'bnInput': {
+          'data': [
+            -41.3125,       83,       -40.90625, 64.0625,   -80.0625,
+            56.96875,       -63.375,  -62.15625, 37.375,    -46.78125,
+            -0.10009765625, 57.03125, 82.0625,   -21.34375, -85.375,
+            -86.125,        -96.9375, 62.34375,  76.875,    -9.359375,
+            -68.5,          97.0625,  80.1875,   -12.109375
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        },
+        'bnMean': {
+          'data': [51.625, 99.375, -96.125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnVariance': {
+          'data': [30.453125, 86.375, 73.875],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnScale': {
+          'data': [65.5, -71, -5.5703125],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        },
+        'bnBias': {
+          'data': [64.1875, 75.3125, -84.5625],
+          'descriptor': {shape: [3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'batchNormalization',
+        'arguments': [
+          {'input': 'bnInput'}, {'mean': 'bnMean'}, {'variance': 'bnVariance'},
+          {
+            'options': {
+              'scale': 'bnScale',
+              'bias': 'bnBias',
+              'axis': 3,
+              'epsilon': 0.000001
+            }
+          }
+        ],
+        'outputs': 'bnOutput'
+      }],
+      'expectedOutputs': {
+        'bnOutput': {
+          'data': [
+            -1039, 200.375, -120.375,  211.75, 1446,    -183.75,
+            -1301, 1309,    -171.125,  -1104,  835.5,   -183.875,
+            425.5, 997.5,   -91.5,     -1571,  1575,    -187.25,
+            364,   906,     -102.4375, 603.5,  221.875, -139
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  batchNormTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getBatchNormPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    batchNormTests, buildAndExecuteGraph, getPrecisionTolerance);

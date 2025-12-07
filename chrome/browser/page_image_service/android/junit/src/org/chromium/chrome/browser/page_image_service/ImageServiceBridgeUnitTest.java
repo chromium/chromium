@@ -32,7 +32,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.page_image_service.ImageServiceMetrics.SalientImageUrlFetchResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -46,7 +45,6 @@ import org.chromium.url.JUnitTestGURLs;
 @Config(manifest = Config.NONE)
 public final class ImageServiceBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private static final GURL PAGE_URL = JUnitTestGURLs.URL_1;
     private static final GURL SALIENT_IMAGE_URL = JUnitTestGURLs.URL_2;
@@ -65,7 +63,7 @@ public final class ImageServiceBridgeUnitTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(ImageServiceBridgeJni.TEST_HOOKS, mImageServiceBridgeJni);
+        ImageServiceBridgeJni.setInstanceForTesting(mImageServiceBridgeJni);
 
         mImageServiceBridge =
                 new ImageServiceBridge(

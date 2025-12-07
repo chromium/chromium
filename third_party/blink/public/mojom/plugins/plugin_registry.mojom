@@ -25,9 +25,6 @@ struct PluginInfo {
 
 interface PluginRegistry {
   // Retrieves the list of plugins available to the renderer.
-  //
-  // If `refresh` is true, then cached information should not be used to
-  // satisfy this call.
   [Sync]
-  GetPlugins(bool refresh) => (array<PluginInfo> plugins);
+  GetPlugins() => (array<PluginInfo> plugins);
 };

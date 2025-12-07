@@ -16,6 +16,10 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 
+namespace media {
+class PaintCanvasVideoRenderer;
+}  // namespace media
+
 namespace blink {
 
 class ExceptionState;
@@ -114,9 +118,11 @@ class GPUExternalTexture : public DawnObject<wgpu::ExternalTexture> {
   GPUExternalTexture(const GPUExternalTexture&) = delete;
   GPUExternalTexture& operator=(const GPUExternalTexture&) = delete;
 
+  // gpu_external_texture.idl {{{
   bool isZeroCopy() const;
-  bool isReadLockFenceEnabled() const;
+  // }}} End of WebIDL binding implementation.
 
+  bool IsReadLockFenceEnabled() const;
   void Destroy();
   void Expire();
   void Refresh();
@@ -160,7 +166,7 @@ class GPUExternalTexture : public DawnObject<wgpu::ExternalTexture> {
       std::optional<media::VideoFrame::ID> media_video_frame_unique_id,
       ExceptionState& exception_state);
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }
@@ -177,9 +183,9 @@ class GPUExternalTexture : public DawnObject<wgpu::ExternalTexture> {
   // frame multiple time cases.
   void RemoveFromCache();
 
-  bool active() const;
-  bool expired() const;
-  bool destroyed() const;
+  bool IsActive() const;
+  bool IsExpired() const;
+  bool IsDestroyed() const;
 
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
   bool is_zero_copy_ = false;

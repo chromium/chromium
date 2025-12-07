@@ -45,6 +45,15 @@ void SequenceTest::setElementSequence(const HeapVector<Member<Element>>& arg) {
   element_sequence_ = arg;
 }
 
+void SequenceTest::setElementSequenceOfSequences(
+    const HeapVector<HeapVector<Member<Element>>>& arg) {
+  HeapVector<Member<Element>> flattened_arg;
+  for (const auto& vec : arg) {
+    flattened_arg.AppendVector(vec);
+  }
+  element_sequence_ = flattened_arg;
+}
+
 bool SequenceTest::unionReceivedSequence(
     const V8UnionDoubleOrDoubleSequence* arg) {
   return arg->IsDoubleSequence();

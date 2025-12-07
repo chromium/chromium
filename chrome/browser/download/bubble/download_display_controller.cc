@@ -22,11 +22,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
@@ -101,11 +103,11 @@ DownloadDisplayController::DownloadDisplayController(
   if (display) {
     MaybeShowButtonWhenCreated();
   }
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 }
 
 DownloadDisplayController::~DownloadDisplayController() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 void DownloadDisplayController::OnNewItem(bool show_animation) {
@@ -118,7 +120,8 @@ void DownloadDisplayController::OnNewItem(bool show_animation) {
   if (display_->ShouldShowExclusiveAccessBubble()) {
     fullscreen_notification_shown_ = true;
     // ExclusiveAccessContext can be null in tests.
-    if (auto* context = browser_->exclusive_access_manager()->context()) {
+    if (auto* context =
+            browser_->GetFeatures().exclusive_access_manager()->context()) {
       context->UpdateExclusiveAccessBubble(
           {.has_download = true, .force_update = true}, base::NullCallback());
     }
@@ -147,8 +150,8 @@ void DownloadDisplayController::OnUpdatedItem(bool is_done,
     should_show_details_on_exit_fullscreen_ =
         display_->ShouldShowExclusiveAccessBubble();
     // Show the details if we are in immersive fullscreen.
-    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
-    will_show_details = browser_view && browser_view->IsImmersiveModeEnabled();
+    auto* const controller = ImmersiveModeController::From(browser_);
+    will_show_details = controller && controller->IsEnabled();
   }
 
   // At this point, we are possibly in fullscreen. If we're in immersive
@@ -195,17 +198,17 @@ void DownloadDisplayController::HandleButtonPressed() {
 }
 
 void DownloadDisplayController::ShowToolbarButton() {
-  if (!display_->IsShowing()) {
-    display_->Enable();
-    display_->Show();
-  }
+  // If toolbar pinning is enabled Show should be called regardless of whether
+  // the toolbar button is showing because it may be already showing due to
+  // being pinned and should remain showing even if unpinned until
+  // HideToolbarButton is called.
+  display_->Enable();
+  display_->Show();
 }
 
 void DownloadDisplayController::HideToolbarButton() {
   // TODO(chlily): This should only hide the bubble/button when it is not open.
-  if (display_->IsShowing()) {
-    display_->Hide();
-  }
+  display_->Hide();
 }
 
 void DownloadDisplayController::HideBubble() {
@@ -214,21 +217,10 @@ void DownloadDisplayController::HideBubble() {
   }
 }
 
-bool DownloadDisplayController::OpenMostSpecificDialog(
-    const offline_items_collection::ContentId& content_id) {
-  // This method is currently used only for Lacros download notifications.
-  // This is called when a notification is clicked, and shows the download
-  // bubble in the Lacros browser window. In Lacros browser fullscreen (always
-  // immersive), the immersive fullscreen toolbar is shown (handled by display_)
-  // so no special case is needed here. In Lacros tab fullscreen (not
-  // immersive), the notification is not visible and can't be clicked, so we
-  // don't need to check display_->IsFullscreenWithParentViewHidden() here.
-  return display_->OpenMostSpecificDialog(content_id);
-}
-
 void DownloadDisplayController::ListenToFullScreenChanges() {
-  observation_.Observe(
-      browser_->exclusive_access_manager()->fullscreen_controller());
+  observation_.Observe(browser_->GetFeatures()
+                           .exclusive_access_manager()
+                           ->fullscreen_controller());
 }
 
 void DownloadDisplayController::OnFullscreenStateChanged() {

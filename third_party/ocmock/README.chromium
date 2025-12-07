@@ -2,7 +2,8 @@ Name: ocmock
 URL: https://github.com/erikdoe/ocmock
 Version: 3.9.1
 Revision: afd2c6924e8a36cb872bc475248b978f743c6050
-License: Apache Version 2.0
+Update Mechanism: Manual
+License: Apache-2.0
 License File: License.txt
 Security Critical: no
 Shipped: no
@@ -18,6 +19,11 @@ This is only a partial inclusion of the OCMock tree. This only includes
 The License.txt and Changes.txt file are also present from /Source.
 
 Chromium adds gtest_support.h/.mm and ocmock_extensions.h/.mm.
+
+Each expectation must be followed by a verify. If the verify is
+ommitted, a failure is reported when the object is deallocated.
+See pending PR:
+ - https://github.com/erikdoe/ocmock/pull/547
 
 Chromium patches in a fix for iOS15 ptrauth failures in OCMArg to cache all
 OCMPassByRefSetters rather than checking with object_getClass. See pending

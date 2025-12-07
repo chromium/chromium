@@ -18,15 +18,18 @@ class DesktopDataControlsDialogTestHelper
  public:
   explicit DesktopDataControlsDialogTestHelper(
       DataControlsDialog::Type expected_dialog_type);
-  ~DesktopDataControlsDialogTestHelper();
+  virtual ~DesktopDataControlsDialogTestHelper();
 
   // DesktopDataControlsDialog::TestObserver:
-  void OnConstructed(DesktopDataControlsDialog* dialog) override;
-  void OnWidgetInitialized(DesktopDataControlsDialog* dialog) override;
+  void OnConstructed(DesktopDataControlsDialog* dialog,
+                     views::DialogDelegate* dialog_delegate) override;
+  void OnWidgetInitialized(DesktopDataControlsDialog* dialog,
+                           views::DialogDelegate* dialog_delegate) override;
   void OnDestructed(DesktopDataControlsDialog* dialog) override;
 
   // Returns null if no dialog is currently being shown.
   DesktopDataControlsDialog* dialog();
+  views::DialogDelegate* dialog_delegate();
 
   // Mimics the user pressing either of the available dialog buttons.
   void BypassWarning();
@@ -40,6 +43,7 @@ class DesktopDataControlsDialogTestHelper
 
  private:
   raw_ptr<DesktopDataControlsDialog> dialog_ = nullptr;
+  raw_ptr<views::DialogDelegate> dialog_delegate_ = nullptr;
   DataControlsDialog::Type expected_dialog_type_;
 
   // Members used to track the dialog being initialized.

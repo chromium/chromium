@@ -4,10 +4,10 @@
 
 import {FakeMethodResolver} from '../fake_method_resolver.js';
 
-import {AcceleratorAction} from './accelerator_actions.mojom-webui.js';
-import {AcceleratorFetcherInterface, AcceleratorFetcherObserverInterface} from './accelerator_fetcher.mojom-webui.js';
-import {StandardAcceleratorProperties} from './accelerator_info.mojom-webui.js';
-import {MetaKey} from './shortcut_utils.js';
+import type {AcceleratorAction} from './accelerator_actions.mojom-webui.js';
+import type {AcceleratorFetcherInterface, AcceleratorFetcherObserverInterface} from './accelerator_fetcher.mojom-webui.js';
+import type {StandardAcceleratorProperties} from './accelerator_info.mojom-webui.js';
+import type {MetaKey} from './shortcut_utils.js';
 
 export class FakeAcceleratorFetcher implements AcceleratorFetcherInterface {
   private methods = new FakeMethodResolver();

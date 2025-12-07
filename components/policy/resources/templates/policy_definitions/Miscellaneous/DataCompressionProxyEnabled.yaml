@@ -10,7 +10,7 @@ features:
   per_profile: true
 owners:
 - bolian@chromium.org
-- pmarko@chromium.org
+- acostinas@google.com
 schema:
   type: boolean
 supported_on:

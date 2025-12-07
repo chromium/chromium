@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "ai_prototyping_calendar_view_controller.h",
+    "ai_prototyping_calendar_view_controller.mm",
+    "ai_prototyping_consumer.h",
+    "ai_prototyping_freeform_view_controller.h",
+    "ai_prototyping_freeform_view_controller.mm",
+    "ai_prototyping_mutator.h",
+    "ai_prototyping_tab_organization_view_controller.h",
+    "ai_prototyping_tab_organization_view_controller.mm",
+    "ai_prototyping_view_controller.h",
+    "ai_prototyping_view_controller.mm",
+    "ai_prototyping_view_controller_protocol.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide:optimization_guide_buildflags",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/ai_prototyping/model",
+    "//ios/chrome/browser/ai_prototyping/utils",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/common/ui/colors",
+    "//ios/web/public",
+    "//ui/base",
+  ]
+}

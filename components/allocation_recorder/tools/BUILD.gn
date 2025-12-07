@@ -1,0 +1,26 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (current_toolchain == host_toolchain) {
+  executable("dump_allocation_recorder_data") {
+    testonly = true
+
+    sources = [ "dump_allocation_recorder.cc" ]
+
+    deps = [
+      "//base",
+      "//components/allocation_recorder/crash_handler:memory_operation_report",
+      "//components/allocation_recorder/internal",
+      "//third_party/crashpad/crashpad/minidump",
+      "//third_party/crashpad/crashpad/snapshot",
+      "//third_party/crashpad/crashpad/util",
+    ]
+  }
+} else {
+  group("dump_allocation_recorder_data") {
+    testonly = true
+
+    public_deps = [ ":dump_allocation_recorder_data($host_toolchain)" ]
+  }
+}

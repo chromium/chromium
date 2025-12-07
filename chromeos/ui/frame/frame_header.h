@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_observer.h"
@@ -39,8 +39,7 @@ class LayerTreeOwner;
 namespace views {
 enum class CaptionButtonLayoutSize;
 class FrameCaptionButton;
-class NonClientFrameView;
-class View;
+class FrameView;
 class Widget;
 }  // namespace views
 
@@ -97,7 +96,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   // frame animator view to still be at the bottom of the z-order while also
   // keeping the rest of the frame view's children on top of the client view.
   static views::View::Views GetAdjustedChildrenInZOrder(
-      views::NonClientFrameView* frame_view);
+      views::FrameView* frame_view);
 
   FrameHeader(const FrameHeader&) = delete;
   FrameHeader& operator=(const FrameHeader&) = delete;
@@ -137,7 +136,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   virtual void SetPaintAsActive(bool paint_as_active);
 
   // Called when frame show state is changed.
-  void OnShowStateChanged(ui::WindowShowState show_state);
+  void OnShowStateChanged(ui::mojom::WindowShowState show_state);
 
   void OnFloatStateChanged();
 
@@ -155,9 +154,6 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameHeader
   // Updates the frame header painting to reflect a change in frame colors and a
   // change in mode.
   virtual void UpdateFrameColors() = 0;
-
-  // Returns window mask for the rounded corner of the frame header.
-  virtual SkPath GetWindowMaskForFrameHeader(const gfx::Size& size);
 
   // Sets text to display in place of the window's title. This will be shown
   // regardless of what ShouldShowWindowTitle() returns.

@@ -5,6 +5,11 @@
 
 [Exposed=Window]
 interface CSSContainerRule : CSSConditionRule {
-    readonly attribute CSSOMString containerName;
-    readonly attribute CSSOMString containerQuery;
+  readonly attribute CSSOMString containerName;
+  readonly attribute CSSOMString containerQuery;
+};
+
+[Exposed=Window]
+interface CSSSupportsConditionRule : CSSGroupingRule {
+  readonly attribute CSSOMString name;
 };

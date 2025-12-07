@@ -1,0 +1,44 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/url_constants/ExtensionsUrlOverrideRegistry.java",
+    "java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolver.java",
+    "java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolverFactory.java",
+  ]
+  deps = [
+    "//base:base_shared_preferences_java",
+    "//base:features_java",
+    "//base:resetters_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//url:gurl_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolverFactoryUnitTest.java",
+    "java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolverUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//url:url_java",
+  ]
+}

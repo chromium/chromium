@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 
 # This file defines a template to invoke grit repack in a consistent manner.
@@ -154,34 +155,36 @@ template("repack_locales") {
   foreach(_input_locale, invoker.input_locales) {
     _output_locale = _output_locales[_current_index]
 
-    # Compute the name of the target for the current file. Save it for the deps.
-    _current_name = "${target_name}_${_input_locale}"
-    _locale_targets += [ ":$_current_name" ]
+    foreach(_gender_suffix, gender_suffixes) {
+      # Compute the name of the target for the current file. Save it for the deps.
+      _current_name = "${target_name}_${_input_locale}${_gender_suffix}"
+      _locale_targets += [ ":$_current_name" ]
 
-    repack(_current_name) {
-      forward_variables_from(invoker,
-                             [
-                               "bundle_output",
-                               "compress",
-                               "copy_data_to_bundle",
-                               "deps",
-                               "mark_as_data",
-                               "repack_allowlist",
-                               "testonly",
-                             ])
-      visibility = [ ":${invoker.target_name}" ]
-      if (is_ios) {
-        output = "$_output_dir/${_output_locale}.lproj/locale.pak"
-      } else {
-        output = "$_output_dir/${_output_locale}.pak"
-      }
-      if (defined(copy_data_to_bundle) && copy_data_to_bundle) {
-        bundle_output =
-            "{{bundle_resources_dir}}/${_output_locale}.lproj/locale.pak"
-      }
-      sources = []
-      foreach(_pattern, invoker.source_patterns) {
-        sources += [ "${_pattern}${_input_locale}.pak" ]
+      repack(_current_name) {
+        forward_variables_from(invoker,
+                               [
+                                 "bundle_output",
+                                 "compress",
+                                 "copy_data_to_bundle",
+                                 "deps",
+                                 "mark_as_data",
+                                 "repack_allowlist",
+                                 "testonly",
+                               ])
+        visibility = [ ":${invoker.target_name}" ]
+        if (is_ios) {
+          output =
+              "$_output_dir/${_output_locale}${_gender_suffix}.lproj/locale.pak"
+        } else {
+          output = "$_output_dir/${_output_locale}${_gender_suffix}.pak"
+        }
+        if (defined(copy_data_to_bundle) && copy_data_to_bundle) {
+          bundle_output = "{{bundle_resources_dir}}/${_output_locale}${_gender_suffix}.lproj/locale.pak"
+        }
+        sources = []
+        foreach(_pattern, invoker.source_patterns) {
+          sources += [ "${_pattern}${_input_locale}${_gender_suffix}.pak" ]
+        }
       }
     }
 

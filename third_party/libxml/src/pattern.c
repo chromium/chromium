@@ -8,13 +8,13 @@
  *
  * See Copyright for the status of this software.
  *
- * daniel@veillard.com
+ * Author: Daniel Veillard
  */
 
 /*
  * TODO:
  * - compilation flags to check for specific syntaxes
- *   using flags of xmlPatterncompile()
+ *   using flags of #xmlPatterncompile
  * - making clear how pattern starting with / or . need to be handled,
  *   currently push(NULL, NULL) means a reset of the streaming context
  *   and indicating we are on / (the document node), probably need
@@ -33,6 +33,9 @@
 #include <libxml/dict.h>
 #include <libxml/xmlerror.h>
 #include <libxml/parserInternals.h>
+
+#include "private/memory.h"
+#include "private/parser.h"
 
 #ifdef LIBXML_PATTERN_ENABLED
 
@@ -190,11 +193,9 @@ struct _xmlPatParserContext {
  ************************************************************************/
 
 /**
- * xmlNewPattern:
- *
  * Create a new XSLT Pattern
  *
- * Returns the newly allocated xmlPatternPtr or NULL in case of error
+ * @returns the newly allocated xmlPattern or NULL in case of error
  */
 static xmlPatternPtr
 xmlNewPattern(void) {
@@ -207,25 +208,18 @@ xmlNewPattern(void) {
 	return(NULL);
     }
     memset(cur, 0, sizeof(xmlPattern));
-    cur->maxStep = 10;
-    cur->steps = (xmlStepOpPtr) xmlMalloc(cur->maxStep * sizeof(xmlStepOp));
-    if (cur->steps == NULL) {
-        xmlFree(cur);
-	ERROR(NULL, NULL, NULL,
-		"xmlNewPattern : malloc failed\n");
-	return(NULL);
-    }
+    cur->steps = NULL;
+    cur->maxStep = 0;
     return(cur);
 }
 
 /**
- * xmlFreePattern:
- * @comp:  an XSLT comp
+ * Free up the memory allocated by `comp`
  *
- * Free up the memory allocated by @comp
+ * @param comp  an XSLT comp
  */
 void
-xmlFreePattern(xmlPatternPtr comp) {
+xmlFreePattern(xmlPattern *comp) {
     xmlFreePatternList(comp);
 }
 
@@ -260,13 +254,12 @@ xmlFreePatternInternal(xmlPatternPtr comp) {
 }
 
 /**
- * xmlFreePatternList:
- * @comp:  an XSLT comp list
+ * Free up the memory allocated by all the elements of `comp`
  *
- * Free up the memory allocated by all the elements of @comp
+ * @param comp  an XSLT comp list
  */
 void
-xmlFreePatternList(xmlPatternPtr comp) {
+xmlFreePatternList(xmlPattern *comp) {
     xmlPatternPtr cur;
 
     while (comp != NULL) {
@@ -278,15 +271,13 @@ xmlFreePatternList(xmlPatternPtr comp) {
 }
 
 /**
- * xmlNewPatParserContext:
- * @pattern:  the pattern context
- * @dict:  the inherited dictionary or NULL
- * @namespaces: the prefix definitions, array of [URI, prefix] terminated
- *              with [NULL, NULL] or NULL if no namespace is used
- *
  * Create a new XML pattern parser context
  *
- * Returns the newly allocated xmlPatParserContextPtr or NULL in case of error
+ * @param pattern  the pattern context
+ * @param dict  the inherited dictionary or NULL
+ * @param namespaces  the prefix definitions, array of [URI, prefix] terminated
+ *              with [NULL, NULL] or NULL if no namespace is used
+ * @returns the newly allocated xmlPatParserContext or NULL in case of error
  */
 static xmlPatParserContextPtr
 xmlNewPatParserContext(const xmlChar *pattern, xmlDictPtr dict,
@@ -319,10 +310,9 @@ xmlNewPatParserContext(const xmlChar *pattern, xmlDictPtr dict,
 }
 
 /**
- * xmlFreePatParserContext:
- * @ctxt:  an XSLT parser context
+ * Free up the memory allocated by `ctxt`
  *
- * Free up the memory allocated by @ctxt
+ * @param ctxt  an XSLT parser context
  */
 static void
 xmlFreePatParserContext(xmlPatParserContextPtr ctxt) {
@@ -332,77 +322,56 @@ xmlFreePatParserContext(xmlPatParserContextPtr ctxt) {
     xmlFree(ctxt);
 }
 
+static int
+xmlPatternGrow(xmlPatternPtr comp) {
+    xmlStepOpPtr temp;
+    int newSize;
+
+    newSize = xmlGrowCapacity(comp->maxStep, sizeof(temp[0]),
+                              10, XML_MAX_ITEMS);
+    if (newSize < 0)
+        return(-1);
+    temp = xmlRealloc(comp->steps, newSize * sizeof(temp[0]));
+    if (temp == NULL)
+        return(-1);
+    comp->steps = temp;
+    comp->maxStep = newSize;
+
+    return(0);
+}
+
 /**
- * xmlPatternAdd:
- * @comp:  the compiled match expression
- * @op:  an op
- * @value:  the first value
- * @value2:  the second value
- *
  * Add a step to an XSLT Compiled Match
  *
- * Returns -1 in case of failure, 0 otherwise.
+ * @param ctxt  the pattern parser context
+ * @param comp  the compiled match expression
+ * @param op  an op
+ * @param value  the first value
+ * @param value2  the second value
+ * @returns -1 in case of failure, 0 otherwise.
  */
 static int
 xmlPatternAdd(xmlPatParserContextPtr ctxt, xmlPatternPtr comp,
               xmlPatOp op, xmlChar * value, xmlChar * value2)
 {
     if (comp->nbStep >= comp->maxStep) {
-        xmlStepOpPtr temp;
-	temp = (xmlStepOpPtr) xmlRealloc(comp->steps, comp->maxStep * 2 *
-	                                 sizeof(xmlStepOp));
-        if (temp == NULL) {
-	    ERROR(ctxt, NULL, NULL,
-			     "xmlPatternAdd: realloc failed\n");
+        if (xmlPatternGrow(comp) < 0) {
             ctxt->error = -1;
-	    return (-1);
-	}
-	comp->steps = temp;
-	comp->maxStep *= 2;
+            return(-1);
+        }
     }
     comp->steps[comp->nbStep].op = op;
     comp->steps[comp->nbStep].value = value;
     comp->steps[comp->nbStep].value2 = value2;
     comp->nbStep++;
-    return (0);
+    return(0);
 }
 
-#if 0
 /**
- * xsltSwapTopPattern:
- * @comp:  the compiled match expression
- *
- * reverse the two top steps.
- */
-static void
-xsltSwapTopPattern(xmlPatternPtr comp) {
-    int i;
-    int j = comp->nbStep - 1;
-
-    if (j > 0) {
-	register const xmlChar *tmp;
-	register xmlPatOp op;
-	i = j - 1;
-	tmp = comp->steps[i].value;
-	comp->steps[i].value = comp->steps[j].value;
-	comp->steps[j].value = tmp;
-	tmp = comp->steps[i].value2;
-	comp->steps[i].value2 = comp->steps[j].value2;
-	comp->steps[j].value2 = tmp;
-	op = comp->steps[i].op;
-	comp->steps[i].op = comp->steps[j].op;
-	comp->steps[j].op = op;
-    }
-}
-#endif
-
-/**
- * xmlReversePattern:
- * @comp:  the compiled match expression
- *
  * reverse all the stack of expressions
  *
- * returns 0 in case of success and -1 in case of error.
+ * @param comp  the compiled match expression
+ * @returns 0 in case of success and -1 in case of error.
  */
 static int
 xmlReversePattern(xmlPatternPtr comp) {
@@ -419,18 +388,15 @@ xmlReversePattern(xmlPatternPtr comp) {
 	}
 	comp->nbStep--;
     }
+
+    /*
+     * Grow to add OP_END later
+     */
     if (comp->nbStep >= comp->maxStep) {
-        xmlStepOpPtr temp;
-	temp = (xmlStepOpPtr) xmlRealloc(comp->steps, comp->maxStep * 2 *
-	                                 sizeof(xmlStepOp));
-        if (temp == NULL) {
-	    ERROR(ctxt, NULL, NULL,
-			     "xmlReversePattern: realloc failed\n");
-	    return (-1);
-	}
-	comp->steps = temp;
-	comp->maxStep *= 2;
+        if (xmlPatternGrow(comp) < 0)
+            return(-1);
     }
+
     i = 0;
     j = comp->nbStep - 1;
     while (j > i) {
@@ -448,6 +414,7 @@ xmlReversePattern(xmlPatternPtr comp) {
 	j--;
 	i++;
     }
+
     comp->steps[comp->nbStep].value = NULL;
     comp->steps[comp->nbStep].value2 = NULL;
     comp->steps[comp->nbStep++].op = XML_OP_END;
@@ -462,37 +429,31 @@ xmlReversePattern(xmlPatternPtr comp) {
 
 static int
 xmlPatPushState(xmlStepStates *states, int step, xmlNodePtr node) {
-    if ((states->states == NULL) || (states->maxstates <= 0)) {
-        states->maxstates = 4;
-	states->nbstates = 0;
-	states->states = xmlMalloc(4 * sizeof(xmlStepState));
-    }
-    else if (states->maxstates <= states->nbstates) {
+    if (states->maxstates <= states->nbstates) {
         xmlStepState *tmp;
+        int newSize;
 
-	tmp = (xmlStepStatePtr) xmlRealloc(states->states,
-			       2 * states->maxstates * sizeof(xmlStepState));
+        newSize = xmlGrowCapacity(states->maxstates, sizeof(tmp[0]),
+                                  4, XML_MAX_ITEMS);
+        if (newSize < 0)
+	    return(-1);
+	tmp = xmlRealloc(states->states, newSize * sizeof(tmp[0]));
 	if (tmp == NULL)
 	    return(-1);
 	states->states = tmp;
-	states->maxstates *= 2;
+	states->maxstates = newSize;
     }
     states->states[states->nbstates].step = step;
     states->states[states->nbstates++].node = node;
-#if 0
-    fprintf(stderr, "Push: %d, %s\n", step, node->name);
-#endif
     return(0);
 }
 
 /**
- * xmlPatMatch:
- * @comp: the precompiled pattern
- * @node: a node
- *
  * Test whether the node matches the pattern
  *
- * Returns 1 if it matches, 0 if it doesn't and -1 in case of failure
+ * @param comp  the precompiled pattern
+ * @param node  a node
+ * @returns 1 if it matches, 0 if it doesn't and -1 in case of failure
  */
 static int
 xmlPatMatch(xmlPatternPtr comp, xmlNodePtr node) {
@@ -685,9 +646,6 @@ rollback:
     states.nbstates--;
     i = states.states[states.nbstates].step;
     node = states.states[states.nbstates].node;
-#if 0
-    fprintf(stderr, "Pop: %d, %s\n", i, node->name);
-#endif
     goto restart;
 }
 
@@ -713,77 +671,7 @@ rollback:
 #define PUSH(op, val, val2)						\
     if (xmlPatternAdd(ctxt, ctxt->comp, (op), (val), (val2))) goto error;
 
-#if 0
 /**
- * xmlPatScanLiteral:
- * @ctxt:  the XPath Parser context
- *
- * Parse an XPath Literal:
- *
- * [29] Literal ::= '"' [^"]* '"'
- *                | "'" [^']* "'"
- *
- * Returns the Literal parsed or NULL
- */
-
-static xmlChar *
-xmlPatScanLiteral(xmlPatParserContextPtr ctxt) {
-    const xmlChar *q, *cur;
-    xmlChar *ret = NULL;
-    int val, len;
-
-    SKIP_BLANKS;
-    if (CUR == '"') {
-        NEXT;
-	cur = q = CUR_PTR;
-	val = xmlStringCurrentChar(NULL, cur, &len);
-	while ((IS_CHAR(val)) && (val != '"')) {
-	    cur += len;
-	    val = xmlStringCurrentChar(NULL, cur, &len);
-	}
-	if (!IS_CHAR(val)) {
-	    ctxt->error = 1;
-	    return(NULL);
-	} else {
-	    if (ctxt->dict)
-		ret = (xmlChar *) xmlDictLookup(ctxt->dict, q, cur - q);
-	    else
-		ret = xmlStrndup(q, cur - q);
-        }
-	cur += len;
-	CUR_PTR = cur;
-    } else if (CUR == '\'') {
-        NEXT;
-	cur = q = CUR_PTR;
-	val = xmlStringCurrentChar(NULL, cur, &len);
-	while ((IS_CHAR(val)) && (val != '\'')) {
-	    cur += len;
-	    val = xmlStringCurrentChar(NULL, cur, &len);
-	}
-	if (!IS_CHAR(val)) {
-	    ctxt->error = 1;
-	    return(NULL);
-	} else {
-	    if (ctxt->dict)
-		ret = (xmlChar *) xmlDictLookup(ctxt->dict, q, cur - q);
-	    else
-		ret = xmlStrndup(q, cur - q);
-        }
-	cur += len;
-	CUR_PTR = cur;
-    } else {
-	/* XP_ERROR(XPATH_START_LITERAL_ERROR); */
-	ctxt->error = 1;
-	return(NULL);
-    }
-    return(ret);
-}
-#endif
-
-/**
- * xmlPatScanName:
- * @ctxt:  the XPath Parser context
- *
  * [4] NameChar ::= Letter | Digit | '.' | '-' | '_' |
  *                  CombiningChar | Extender
  *
@@ -791,30 +679,21 @@ xmlPatScanLiteral(xmlPatParserContextPtr ctxt) {
  *
  * [6] Names ::= Name (S Name)*
  *
- * Returns the Name parsed or NULL
+ * @param ctxt  the XPath Parser context
+ * @returns the Name parsed or NULL
  */
 
 static xmlChar *
 xmlPatScanName(xmlPatParserContextPtr ctxt) {
     const xmlChar *q, *cur;
     xmlChar *ret = NULL;
-    int val, len;
 
     SKIP_BLANKS;
 
-    cur = q = CUR_PTR;
-    val = xmlStringCurrentChar(NULL, cur, &len);
-    if (!IS_LETTER(val) && (val != '_') && (val != ':'))
-	return(NULL);
-
-    while ((IS_LETTER(val)) || (IS_DIGIT(val)) ||
-           (val == '.') || (val == '-') ||
-	   (val == '_') ||
-	   (IS_COMBINING(val)) ||
-	   (IS_EXTENDER(val))) {
-	cur += len;
-	val = xmlStringCurrentChar(NULL, cur, &len);
-    }
+    q = CUR_PTR;
+    cur = xmlScanName(q, XML_MAX_NAME_LENGTH, 0);
+    if ((cur == NULL) || (cur == q))
+        return(NULL);
     if (ctxt->dict)
 	ret = (xmlChar *) xmlDictLookup(ctxt->dict, q, cur - q);
     else
@@ -824,35 +703,23 @@ xmlPatScanName(xmlPatParserContextPtr ctxt) {
 }
 
 /**
- * xmlPatScanNCName:
- * @ctxt:  the XPath Parser context
- *
  * Parses a non qualified name
  *
- * Returns the Name parsed or NULL
+ * @param ctxt  the XPath Parser context
+ * @returns the Name parsed or NULL
  */
 
 static xmlChar *
 xmlPatScanNCName(xmlPatParserContextPtr ctxt) {
     const xmlChar *q, *cur;
     xmlChar *ret = NULL;
-    int val, len;
 
     SKIP_BLANKS;
 
-    cur = q = CUR_PTR;
-    val = xmlStringCurrentChar(NULL, cur, &len);
-    if (!IS_LETTER(val) && (val != '_'))
-	return(NULL);
-
-    while ((IS_LETTER(val)) || (IS_DIGIT(val)) ||
-           (val == '.') || (val == '-') ||
-	   (val == '_') ||
-	   (IS_COMBINING(val)) ||
-	   (IS_EXTENDER(val))) {
-	cur += len;
-	val = xmlStringCurrentChar(NULL, cur, &len);
-    }
+    q = CUR_PTR;
+    cur = xmlScanName(q, XML_MAX_NAME_LENGTH, XML_SCAN_NC);
+    if ((cur == NULL) || (cur == q))
+        return(NULL);
     if (ctxt->dict)
 	ret = (xmlChar *) xmlDictLookup(ctxt->dict, q, cur - q);
     else
@@ -863,37 +730,10 @@ xmlPatScanNCName(xmlPatParserContextPtr ctxt) {
     return(ret);
 }
 
-#if 0
 /**
- * xmlPatScanQName:
- * @ctxt:  the XPath Parser context
- * @prefix:  the place to store the prefix
- *
- * Parse a qualified name
- *
- * Returns the Name parsed or NULL
- */
-
-static xmlChar *
-xmlPatScanQName(xmlPatParserContextPtr ctxt, xmlChar **prefix) {
-    xmlChar *ret = NULL;
-
-    *prefix = NULL;
-    ret = xmlPatScanNCName(ctxt);
-    if (CUR == ':') {
-        *prefix = ret;
-	NEXT;
-	ret = xmlPatScanNCName(ctxt);
-    }
-    return(ret);
-}
-#endif
-
-/**
- * xmlCompileAttributeTest:
- * @ctxt:  the compilation context
- *
  * Compile an attribute test.
+ *
+ * @param ctxt  the compilation context
  */
 static void
 xmlCompileAttributeTest(xmlPatParserContextPtr ctxt) {
@@ -981,14 +821,13 @@ error:
 }
 
 /**
- * xmlCompileStepPattern:
- * @ctxt:  the compilation context
- *
  * Compile the Step Pattern and generates a precompiled
  * form suitable for fast matching.
  *
  * [3]    Step    ::=    '.' | NameTest
  * [4]    NameTest    ::=    QName | '*' | NCName ':' '*'
+ *
+ * @param ctxt  the compilation context
  */
 
 static void
@@ -1158,10 +997,10 @@ xmlCompileStepPattern(xmlPatParserContextPtr ctxt) {
 			    goto error;
 			}
 		    } else {
-			PUSH(XML_OP_CHILD, token, URL);
+			PUSH(XML_OP_ELEM, token, URL);
 		    }
 		} else
-		    PUSH(XML_OP_CHILD, name, NULL);
+		    PUSH(XML_OP_ELEM, name, NULL);
 		return;
 	    } else if (xmlStrEqual(name, (const xmlChar *) "attribute")) {
 		XML_PAT_FREE_STRING(ctxt, name)
@@ -1204,13 +1043,12 @@ error:
 }
 
 /**
- * xmlCompilePathPattern:
- * @ctxt:  the compilation context
- *
  * Compile the Path Pattern and generates a precompiled
  * form suitable for fast matching.
  *
  * [5]    Path    ::=    ('.//')? ( Step '/' )* ( Step | '@' NameTest )
+ *
+ * @param ctxt  the compilation context
  */
 static void
 xmlCompilePathPattern(xmlPatParserContextPtr ctxt) {
@@ -1303,13 +1141,12 @@ error:
 }
 
 /**
- * xmlCompileIDCXPathPath:
- * @ctxt:  the compilation context
- *
  * Compile the Path Pattern and generates a precompiled
  * form suitable for fast matching.
  *
  * [5]    Path    ::=    ('.//')? ( Step '/' )* ( Step | '@' NameTest )
+ *
+ * @param ctxt  the compilation context
  */
 static void
 xmlCompileIDCXPathPath(xmlPatParserContextPtr ctxt) {
@@ -1400,7 +1237,6 @@ error_unfinished:
     ctxt->error = 1;
     ERROR5(NULL, NULL, NULL,
 	"Unfinished expression '%s'.\n", ctxt->base);
-    return;
 }
 
 /************************************************************************
@@ -1410,12 +1246,10 @@ error_unfinished:
  ************************************************************************/
 
 /**
- * xmlNewStreamComp:
- * @size: the number of expected steps
- *
  * build a new compiled pattern for streaming
  *
- * Returns the new structure or NULL in case of error.
+ * @param size  the number of expected steps
+ * @returns the new structure or NULL in case of error.
  */
 static xmlStreamCompPtr
 xmlNewStreamComp(int size) {
@@ -1444,10 +1278,9 @@ xmlNewStreamComp(int size) {
 }
 
 /**
- * xmlFreeStreamComp:
- * @comp: the compiled pattern for streaming
- *
  * Free the compiled pattern for streaming
+ *
+ * @param comp  the compiled pattern for streaming
  */
 static void
 xmlFreeStreamComp(xmlStreamCompPtr comp) {
@@ -1461,15 +1294,14 @@ xmlFreeStreamComp(xmlStreamCompPtr comp) {
 }
 
 /**
- * xmlStreamCompAddStep:
- * @comp: the compiled pattern for streaming
- * @name: the first string, the name, or NULL for *
- * @ns: the second step, the namespace name
- * @flags: the flags for that step
- *
  * Add a new step to the compiled pattern
  *
- * Returns -1 in case of error or the step index if successful
+ * @param comp  the compiled pattern for streaming
+ * @param name  the first string, the name, or NULL for *
+ * @param ns  the second step, the namespace name
+ * @param nodeType  the node type
+ * @param flags  the flags for that step
+ * @returns -1 in case of error or the step index if successful
  */
 static int
 xmlStreamCompAddStep(xmlStreamCompPtr comp, const xmlChar *name,
@@ -1477,15 +1309,24 @@ xmlStreamCompAddStep(xmlStreamCompPtr comp, const xmlChar *name,
     xmlStreamStepPtr cur;
 
     if (comp->nbStep >= comp->maxStep) {
-	cur = (xmlStreamStepPtr) xmlRealloc(comp->steps,
-				 comp->maxStep * 2 * sizeof(xmlStreamStep));
+        xmlStreamStepPtr tmp;
+        int newSize;
+
+        newSize = xmlGrowCapacity(comp->maxStep, sizeof(tmp[0]),
+                                  4, XML_MAX_ITEMS);
+        if (newSize < 0) {
+	    ERROR(NULL, NULL, NULL,
+		  "xmlNewStreamComp: growCapacity failed\n");
+	    return(-1);
+        }
+	cur = xmlRealloc(comp->steps, newSize * sizeof(tmp[0]));
 	if (cur == NULL) {
 	    ERROR(NULL, NULL, NULL,
 		  "xmlNewStreamComp: malloc failed\n");
 	    return(-1);
 	}
 	comp->steps = cur;
-        comp->maxStep *= 2;
+        comp->maxStep = newSize;
     }
     cur = &comp->steps[comp->nbStep++];
     cur->flags = flags;
@@ -1496,12 +1337,10 @@ xmlStreamCompAddStep(xmlStreamCompPtr comp, const xmlChar *name,
 }
 
 /**
- * xmlStreamCompile:
- * @comp: the precompiled pattern
- *
  * Tries to stream compile a pattern
  *
- * Returns -1 in case of failure and 0 in case of success.
+ * @param comp  the precompiled pattern
+ * @returns -1 in case of failure and 0 in case of success.
  */
 static int
 xmlStreamCompile(xmlPatternPtr comp) {
@@ -1675,12 +1514,10 @@ error:
 }
 
 /**
- * xmlNewStreamCtxt:
- * @size: the number of expected states
- *
  * build a new stream context
  *
- * Returns the new structure or NULL in case of error.
+ * @param stream  the copmiled stream
+ * @returns the new structure or NULL in case of error.
  */
 static xmlStreamCtxtPtr
 xmlNewStreamCtxt(xmlStreamCompPtr stream) {
@@ -1693,15 +1530,9 @@ xmlNewStreamCtxt(xmlStreamCompPtr stream) {
 	return(NULL);
     }
     memset(cur, 0, sizeof(xmlStreamCtxt));
-    cur->states = (int *) xmlMalloc(4 * 2 * sizeof(int));
-    if (cur->states == NULL) {
-	xmlFree(cur);
-	ERROR(NULL, NULL, NULL,
-	      "xmlNewStreamCtxt: malloc failed\n");
-	return(NULL);
-    }
+    cur->states = NULL;
     cur->nbState = 0;
-    cur->maxState = 4;
+    cur->maxState = 0;
     cur->level = 0;
     cur->comp = stream;
     cur->blockLevel = -1;
@@ -1709,13 +1540,12 @@ xmlNewStreamCtxt(xmlStreamCompPtr stream) {
 }
 
 /**
- * xmlFreeStreamCtxt:
- * @stream: the stream context
- *
  * Free the stream context
+ *
+ * @param stream  the stream context
  */
 void
-xmlFreeStreamCtxt(xmlStreamCtxtPtr stream) {
+xmlFreeStreamCtxt(xmlStreamCtxt *stream) {
     xmlStreamCtxtPtr next;
 
     while (stream != NULL) {
@@ -1728,13 +1558,12 @@ xmlFreeStreamCtxt(xmlStreamCtxtPtr stream) {
 }
 
 /**
- * xmlStreamCtxtAddState:
- * @comp: the stream context
- * @idx: the step index for that streaming state
- *
  * Add a new state to the stream context
  *
- * Returns -1 in case of error or the state index if successful
+ * @param comp  the stream context
+ * @param idx  the step index for that streaming state
+ * @param level  the level
+ * @returns -1 in case of error or the state index if successful
  */
 static int
 xmlStreamCtxtAddState(xmlStreamCtxtPtr comp, int idx, int level) {
@@ -1747,17 +1576,24 @@ xmlStreamCtxtAddState(xmlStreamCtxtPtr comp, int idx, int level) {
 	}
     }
     if (comp->nbState >= comp->maxState) {
-        int *cur;
+        int *tmp;
+        int newSize;
 
-	cur = (int *) xmlRealloc(comp->states,
-				 comp->maxState * 4 * sizeof(int));
-	if (cur == NULL) {
+        newSize = xmlGrowCapacity(comp->maxState, sizeof(tmp[0]) * 2,
+                                  4, XML_MAX_ITEMS);
+        if (newSize < 0) {
+	    ERROR(NULL, NULL, NULL,
+		  "xmlNewStreamCtxt: growCapacity failed\n");
+	    return(-1);
+        }
+	tmp = xmlRealloc(comp->states, newSize * sizeof(tmp[0]) * 2);
+	if (tmp == NULL) {
 	    ERROR(NULL, NULL, NULL,
 		  "xmlNewStreamCtxt: malloc failed\n");
 	    return(-1);
 	}
-	comp->states = cur;
-        comp->maxState *= 2;
+	comp->states = tmp;
+        comp->maxState = newSize;
     }
     comp->states[2 * comp->nbState] = idx;
     comp->states[2 * comp->nbState++ + 1] = level;
@@ -1765,19 +1601,17 @@ xmlStreamCtxtAddState(xmlStreamCtxtPtr comp, int idx, int level) {
 }
 
 /**
- * xmlStreamPushInternal:
- * @stream: the stream context
- * @name: the current name
- * @ns: the namespace name
- * @nodeType: the type of the node
- *
- * Push new data onto the stream. NOTE: if the call xmlPatterncompile()
+ * Push new data onto the stream. NOTE: if the call #xmlPatterncompile
  * indicated a dictionary, then strings for name and ns will be expected
  * to come from the dictionary.
- * Both @name and @ns being NULL means the / i.e. the root of the document.
+ * Both `name` and `ns` being NULL means the / i.e. the root of the document.
  * This can also act as a reset.
  *
- * Returns: -1 in case of error, 1 if the current state in the stream is a
+ * @param stream  the stream context
+ * @param name  the current name
+ * @param ns  the namespace name
+ * @param nodeType  the type of the node
+ * @returns -1 in case of error, 1 if the current state in the stream is a
  *    match and 0 otherwise.
  */
 static int
@@ -1951,22 +1785,6 @@ xmlStreamPushInternal(xmlStreamCtxtPtr stream,
 	    {
 		match = 1;
 	    }
-#if 0
-/*
-* TODO: Pointer comparison won't work, since not guaranteed that the given
-*  values are in the same dict; especially if it's the namespace name,
-*  normally coming from ns->href. We need a namespace dict mechanism !
-*/
-	    } else if (comp->dict) {
-		if (step.name == NULL) {
-		    if (step.ns == NULL)
-			match = 1;
-		    else
-			match = (step.ns == ns);
-		} else {
-		    match = ((step.name == name) && (step.ns == ns));
-		}
-#endif /* if 0 ------------------------------------------------------- */
 	    if (match) {
 		final = step.flags & XML_STREAM_STEP_FINAL;
                 if (final) {
@@ -2105,48 +1923,44 @@ stream_next:
 }
 
 /**
- * xmlStreamPush:
- * @stream: the stream context
- * @name: the current name
- * @ns: the namespace name
- *
- * Push new data onto the stream. NOTE: if the call xmlPatterncompile()
+ * Push new data onto the stream. NOTE: if the call #xmlPatterncompile
  * indicated a dictionary, then strings for name and ns will be expected
  * to come from the dictionary.
- * Both @name and @ns being NULL means the / i.e. the root of the document.
+ * Both `name` and `ns` being NULL means the / i.e. the root of the document.
  * This can also act as a reset.
  * Otherwise the function will act as if it has been given an element-node.
  *
- * Returns: -1 in case of error, 1 if the current state in the stream is a
+ * @param stream  the stream context
+ * @param name  the current name
+ * @param ns  the namespace name
+ * @returns -1 in case of error, 1 if the current state in the stream is a
  *    match and 0 otherwise.
  */
 int
-xmlStreamPush(xmlStreamCtxtPtr stream,
+xmlStreamPush(xmlStreamCtxt *stream,
               const xmlChar *name, const xmlChar *ns) {
     return (xmlStreamPushInternal(stream, name, ns, XML_ELEMENT_NODE));
 }
 
 /**
- * xmlStreamPushNode:
- * @stream: the stream context
- * @name: the current name
- * @ns: the namespace name
- * @nodeType: the type of the node being pushed
- *
- * Push new data onto the stream. NOTE: if the call xmlPatterncompile()
+ * Push new data onto the stream. NOTE: if the call #xmlPatterncompile
  * indicated a dictionary, then strings for name and ns will be expected
  * to come from the dictionary.
- * Both @name and @ns being NULL means the / i.e. the root of the document.
+ * Both `name` and `ns` being NULL means the / i.e. the root of the document.
  * This can also act as a reset.
- * Different from xmlStreamPush() this function can be fed with nodes of type:
+ * Different from #xmlStreamPush this function can be fed with nodes of type:
  * element-, attribute-, text-, cdata-section-, comment- and
  * processing-instruction-node.
  *
- * Returns: -1 in case of error, 1 if the current state in the stream is a
+ * @param stream  the stream context
+ * @param name  the current name
+ * @param ns  the namespace name
+ * @param nodeType  the type of the node being pushed
+ * @returns -1 in case of error, 1 if the current state in the stream is a
  *    match and 0 otherwise.
  */
 int
-xmlStreamPushNode(xmlStreamCtxtPtr stream,
+xmlStreamPushNode(xmlStreamCtxt *stream,
 		  const xmlChar *name, const xmlChar *ns,
 		  int nodeType)
 {
@@ -2155,37 +1969,36 @@ xmlStreamPushNode(xmlStreamCtxtPtr stream,
 }
 
 /**
-* xmlStreamPushAttr:
-* @stream: the stream context
-* @name: the current name
-* @ns: the namespace name
-*
-* Push new attribute data onto the stream. NOTE: if the call xmlPatterncompile()
-* indicated a dictionary, then strings for name and ns will be expected
-* to come from the dictionary.
-* Both @name and @ns being NULL means the / i.e. the root of the document.
-* This can also act as a reset.
-* Otherwise the function will act as if it has been given an attribute-node.
-*
-* Returns: -1 in case of error, 1 if the current state in the stream is a
-*    match and 0 otherwise.
-*/
+ * Push new attribute data onto the stream.
+ *
+ * NOTE: If the call to #xmlPatterncompile indicated a dictionary,
+ * then strings for `name` and `ns` will be expected to come from
+ * the dictionary.
+ *
+ * Both `name` and `ns` being NULL means the root of the document.
+ * This can also act as a reset. Otherwise the function will act as
+ * if it has been given an attribute-node.
+ *
+ * @param stream  the stream context
+ * @param name  the current name
+ * @param ns  the namespace name
+ * @returns -1 in case of error, 1 if the current state in the stream
+ * is a match and 0 otherwise.
+ */
 int
-xmlStreamPushAttr(xmlStreamCtxtPtr stream,
+xmlStreamPushAttr(xmlStreamCtxt *stream,
 		  const xmlChar *name, const xmlChar *ns) {
     return (xmlStreamPushInternal(stream, name, ns, XML_ATTRIBUTE_NODE));
 }
 
 /**
- * xmlStreamPop:
- * @stream: the stream context
- *
  * push one level from the stream.
  *
- * Returns: -1 in case of error, 0 otherwise.
+ * @param stream  the stream context
+ * @returns -1 in case of error, 0 otherwise.
  */
 int
-xmlStreamPop(xmlStreamCtxtPtr stream) {
+xmlStreamPop(xmlStreamCtxt *stream) {
     int i, lev;
 
     if (stream == NULL)
@@ -2221,19 +2034,17 @@ xmlStreamPop(xmlStreamCtxtPtr stream) {
 }
 
 /**
- * xmlStreamWantsAnyNode:
- * @streamCtxt: the stream context
- *
  * Query if the streaming pattern additionally needs to be fed with
  * text-, cdata-section-, comment- and processing-instruction-nodes.
  * If the result is 0 then only element-nodes and attribute-nodes
  * need to be pushed.
  *
- * Returns: 1 in case of need of nodes of the above described types,
+ * @param streamCtxt  the stream context
+ * @returns 1 in case of need of nodes of the above described types,
  *          0 otherwise. -1 on API errors.
  */
 int
-xmlStreamWantsAnyNode(xmlStreamCtxtPtr streamCtxt)
+xmlStreamWantsAnyNode(xmlStreamCtxt *streamCtxt)
 {
     if (streamCtxt == NULL)
 	return(-1);
@@ -2252,20 +2063,20 @@ xmlStreamWantsAnyNode(xmlStreamCtxtPtr streamCtxt)
  ************************************************************************/
 
 /**
- * xmlPatterncompile:
- * @pattern: the pattern to compile
- * @dict: an optional dictionary for interned strings
- * @flags: compilation flags, see xmlPatternFlags
- * @namespaces: the prefix definitions, array of [URI, prefix] or NULL
- * @patternOut: output pattern
- *
  * Compile a pattern.
  *
- * Returns 0 on success, 1 on error, -1 if a memory allocation failed.
+ * @since 2.13.0
+ *
+ * @param pattern  the pattern to compile
+ * @param dict  an optional dictionary for interned strings
+ * @param flags  compilation flags, see xmlPatternFlags
+ * @param namespaces  the prefix definitions, array of [URI, prefix] or NULL
+ * @param patternOut  output pattern
+ * @returns 0 on success, 1 on error, -1 if a memory allocation failed.
  */
 int
 xmlPatternCompileSafe(const xmlChar *pattern, xmlDict *dict, int flags,
-                      const xmlChar **namespaces, xmlPatternPtr *patternOut) {
+                      const xmlChar **namespaces, xmlPattern **patternOut) {
     xmlPatternPtr ret = NULL, cur;
     xmlPatParserContextPtr ctxt = NULL;
     const xmlChar *or, *start;
@@ -2273,6 +2084,9 @@ xmlPatternCompileSafe(const xmlChar *pattern, xmlDict *dict, int flags,
     int type = 0;
     int streamable = 1;
     int error;
+
+    if (patternOut == NULL)
+        return(1);
 
     if (pattern == NULL) {
         error = 1;
@@ -2377,17 +2191,15 @@ error:
 }
 
 /**
- * xmlPatterncompile:
- * @pattern: the pattern to compile
- * @dict: an optional dictionary for interned strings
- * @flags: compilation flags, see xmlPatternFlags
- * @namespaces: the prefix definitions, array of [URI, prefix] or NULL
- *
  * Compile a pattern.
  *
- * Returns the compiled form of the pattern or NULL in case of error
+ * @param pattern  the pattern to compile
+ * @param dict  an optional dictionary for interned strings
+ * @param flags  compilation flags, see xmlPatternFlags
+ * @param namespaces  the prefix definitions, array of [URI, prefix] or NULL
+ * @returns the compiled form of the pattern or NULL in case of error
  */
-xmlPatternPtr
+xmlPattern *
 xmlPatterncompile(const xmlChar *pattern, xmlDict *dict, int flags,
                   const xmlChar **namespaces) {
     xmlPatternPtr ret;
@@ -2396,16 +2208,14 @@ xmlPatterncompile(const xmlChar *pattern, xmlDict *dict, int flags,
 }
 
 /**
- * xmlPatternMatch:
- * @comp: the precompiled pattern
- * @node: a node
- *
  * Test whether the node matches the pattern
  *
- * Returns 1 if it matches, 0 if it doesn't and -1 in case of failure
+ * @param comp  the precompiled pattern
+ * @param node  a node
+ * @returns 1 if it matches, 0 if it doesn't and -1 in case of failure
  */
 int
-xmlPatternMatch(xmlPatternPtr comp, xmlNodePtr node)
+xmlPatternMatch(xmlPattern *comp, xmlNode *node)
 {
     int ret = 0;
 
@@ -2422,16 +2232,14 @@ xmlPatternMatch(xmlPatternPtr comp, xmlNodePtr node)
 }
 
 /**
- * xmlPatternGetStreamCtxt:
- * @comp: the precompiled pattern
- *
  * Get a streaming context for that pattern
- * Use xmlFreeStreamCtxt to free the context.
+ * Use #xmlFreeStreamCtxt to free the context.
  *
- * Returns a pointer to the context or NULL in case of failure
+ * @param comp  the precompiled pattern
+ * @returns a pointer to the context or NULL in case of failure
  */
-xmlStreamCtxtPtr
-xmlPatternGetStreamCtxt(xmlPatternPtr comp)
+xmlStreamCtxt *
+xmlPatternGetStreamCtxt(xmlPattern *comp)
 {
     xmlStreamCtxtPtr ret = NULL, cur;
 
@@ -2460,16 +2268,14 @@ failed:
 }
 
 /**
- * xmlPatternStreamable:
- * @comp: the precompiled pattern
- *
- * Check if the pattern is streamable i.e. xmlPatternGetStreamCtxt()
+ * Check if the pattern is streamable i.e. #xmlPatternGetStreamCtxt
  * should work.
  *
- * Returns 1 if streamable, 0 if not and -1 in case of error.
+ * @param comp  the precompiled pattern
+ * @returns 1 if streamable, 0 if not and -1 in case of error.
  */
 int
-xmlPatternStreamable(xmlPatternPtr comp) {
+xmlPatternStreamable(xmlPattern *comp) {
     if (comp == NULL)
         return(-1);
     while (comp != NULL) {
@@ -2481,16 +2287,14 @@ xmlPatternStreamable(xmlPatternPtr comp) {
 }
 
 /**
- * xmlPatternMaxDepth:
- * @comp: the precompiled pattern
- *
  * Check the maximum depth reachable by a pattern
  *
- * Returns -2 if no limit (using //), otherwise the depth,
+ * @param comp  the precompiled pattern
+ * @returns -2 if no limit (using //), otherwise the depth,
  *         and -1 in case of error
  */
 int
-xmlPatternMaxDepth(xmlPatternPtr comp) {
+xmlPatternMaxDepth(xmlPattern *comp) {
     int ret = 0, i;
     if (comp == NULL)
         return(-1);
@@ -2508,17 +2312,14 @@ xmlPatternMaxDepth(xmlPatternPtr comp) {
 }
 
 /**
- * xmlPatternMinDepth:
- * @comp: the precompiled pattern
- *
  * Check the minimum depth reachable by a pattern, 0 mean the / or . are
  * part of the set.
  *
- * Returns -1 in case of error otherwise the depth,
- *
+ * @param comp  the precompiled pattern
+ * @returns -1 in case of error otherwise the depth,
  */
 int
-xmlPatternMinDepth(xmlPatternPtr comp) {
+xmlPatternMinDepth(xmlPattern *comp) {
     int ret = 12345678;
     if (comp == NULL)
         return(-1);
@@ -2535,15 +2336,13 @@ xmlPatternMinDepth(xmlPatternPtr comp) {
 }
 
 /**
- * xmlPatternFromRoot:
- * @comp: the precompiled pattern
- *
  * Check if the pattern must be looked at from the root.
  *
- * Returns 1 if true, 0 if false and -1 in case of error
+ * @param comp  the precompiled pattern
+ * @returns 1 if true, 0 if false and -1 in case of error
  */
 int
-xmlPatternFromRoot(xmlPatternPtr comp) {
+xmlPatternFromRoot(xmlPattern *comp) {
     if (comp == NULL)
         return(-1);
     while (comp != NULL) {

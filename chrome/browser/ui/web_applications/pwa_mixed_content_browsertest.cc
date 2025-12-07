@@ -5,11 +5,12 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/ssl_test_utils.h"
@@ -102,7 +103,7 @@ class PWAMixedContentBrowserTestWithAutoupgradesDisabled
 };
 
 // Tests that creating a shortcut app but not installing a PWA is available for
-// a non-installable site, unless the universal install feature flag is enabled.
+// a non-installable site.
 IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTest,
                        ShortcutMenuOptionsForNonInstallableSite) {
   EXPECT_FALSE(
@@ -110,12 +111,7 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTest,
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, browser()), kEnabled);
 
-  AppMenuCommandState expected_command_state =
-      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
-          ? kEnabled
-          : kNotPresent;
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()),
-            expected_command_state);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kEnabled);
 }
 
 // Tests that mixed content is loaded inside PWA windows.
@@ -185,24 +181,26 @@ IN_PROC_BROWSER_TEST_F(PWAMixedContentBrowserTestWithAutoupgradesDisabled,
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
             kEnabled);
 
-  Browser* app_browser =
+  BrowserWindowInterface* app_browser =
       ReparentWebContentsIntoAppBrowser(tab_contents, app_id);
 
   ASSERT_NE(app_browser, browser());
-  ASSERT_EQ(GetMixedContentAppURL(), app_browser->tab_strip_model()
+  ASSERT_EQ(GetMixedContentAppURL(), app_browser->GetFeatures()
+                                         .tab_strip_model()
                                          ->GetActiveWebContents()
                                          ->GetLastCommittedURL());
 
   // After reparenting, the WebContents should still have its mixed content
   // loaded.
-  CheckMixedContentLoaded(app_browser);
+  CheckMixedContentLoaded(app_browser->GetBrowserForMigrationOnly());
 
   ui_test_utils::UrlLoadObserver url_observer(GetMixedContentAppURL());
-  chrome::Reload(app_browser, WindowOpenDisposition::CURRENT_TAB);
+  chrome::Reload(app_browser->GetBrowserForMigrationOnly(),
+                 WindowOpenDisposition::CURRENT_TAB);
   url_observer.Wait();
 
   // Mixed content should be able to load in web app windows.
-  CheckMixedContentLoaded(app_browser);
+  CheckMixedContentLoaded(app_browser->GetBrowserForMigrationOnly());
 }
 
 // Tests that mixed content is not loaded inside iframes in PWA windows.
@@ -227,26 +225,26 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), app_url));
   CheckMixedContentFailedToLoad(browser());
 
-  Browser* const app_browser = ReparentWebContentsIntoAppBrowser(
+  BrowserWindowInterface* const app_browser = ReparentWebContentsIntoAppBrowser(
       browser()->tab_strip_model()->GetActiveWebContents(), app_id);
-  CheckMixedContentFailedToLoad(app_browser);
+  CheckMixedContentFailedToLoad(app_browser->GetBrowserForMigrationOnly());
 
   // Change the mixed content to be acceptable.
-  content::RenderFrameHost* main_frame = app_browser->tab_strip_model()
+  content::RenderFrameHost* main_frame = app_browser->GetFeatures()
+                                             .tab_strip_model()
                                              ->GetActiveWebContents()
                                              ->GetPrimaryMainFrame();
   content::RenderFrameHost* iframe = content::ChildFrameAt(main_frame, 0);
   EXPECT_TRUE(TryToLoadImage(
       iframe, embedded_test_server()->GetURL("foo.com", kImagePath)));
 
-  CheckMixedContentLoaded(app_browser);
+  CheckMixedContentLoaded(app_browser->GetBrowserForMigrationOnly());
 }
 
 // Tests that iframes can't dynamically load mixed content in a regular browser
 // tab, when the iframe was created in a PWA window.
 // https://crbug.com/1087382: Flaky on Windows, CrOS and ASAN
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
 #define MAYBE_IFrameDynamicMixedContentInPWAOpenInChrome \
   DISABLED_IFrameDynamicMixedContentInPWAOpenInChrome
 #else

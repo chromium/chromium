@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_METRICS_MODEL_IOS_CHROME_METRICS_SERVICE_ACCESSOR_H_
 
 #include <stdint.h>
+
 #include <string>
 
 #include "base/gtest_prod_util.h"
@@ -15,15 +16,15 @@
 class ApplicationBreadcrumbsLogger;
 class DiscoverFeedExperimentsTracker;
 class IOSChromeSyncClient;
-class IOSChromeVariationsServiceClient;
 class OptimizationGuideService;
-
-namespace {
 class CrashesDOMHandler;
-}
 
 namespace segmentation_platform {
 class IOSFieldTrialRegisterImpl;
+}
+
+namespace tab_groups {
+class TabGroupSyncServiceFactory;
 }
 
 // This class limits and documents access to metrics service helper methods.
@@ -44,11 +45,10 @@ class IOSChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
 
  private:
   friend class IOSChromeMetricsServicesManagerClient;
-  friend class IOSChromeVariationsServiceClient;
-
   friend class ApplicationBreadcrumbsLogger;
   friend class CrashesDOMHandler;
   friend class DiscoverFeedExperimentsTracker;
+  friend class tab_groups::TabGroupSyncServiceFactory;
   friend class IOSChromeMainParts;
   friend class IOSChromeSyncClient;
   friend class OptimizationGuideService;

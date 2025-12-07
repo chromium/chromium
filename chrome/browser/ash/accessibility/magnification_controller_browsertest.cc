@@ -9,6 +9,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/browsertest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
@@ -65,6 +67,9 @@ class FullscreenMagnifierControllerTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     // Make screens sufficiently wide to host 2 browsers side by side.
     command_line->AppendSwitchASCII("ash-host-window-bounds", "1200x800");
+    scoped_feature_list_.InitWithFeatureStates(
+        {{::features::kAccessibilityManifestV3AccessibilityCommon, true}});
+    AccessibilityFeatureBrowserTest::SetUpCommandLine(command_line);
   }
 
   void SetUpOnMainThread() override {
@@ -87,6 +92,7 @@ class FullscreenMagnifierControllerTest
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<FullscreenMagnifierTestHelper> helper_;
   std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(FullscreenMagnifierControllerTest,

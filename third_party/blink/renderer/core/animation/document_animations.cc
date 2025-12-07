@@ -37,17 +37,20 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
+#include "third_party/blink/renderer/core/animation/css/css_animation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/pending_animations.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_controller.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
@@ -63,18 +66,65 @@ void UpdateAnimationTiming(
     Document& document,
     HeapHashSet<WeakMember<AnimationTimeline>>& timelines,
     TimingUpdateReason reason) {
+  if (RuntimeEnabledFeatures::TimelineTriggerEnabled()) {
+    // First service all triggers because servicing a trigger might result in an
+    // animation's timeline being "dirtied", i.e. marked with an outdated
+    // animation whose currentTime was updated. This can happen if an
+    // animation's timeline is serviced first and then the trigger's timeline is
+    // serviced afterwards.
+    for (auto& timeline : timelines) {
+      timeline->ServiceTriggers();
+    }
+  }
+
   for (auto& timeline : timelines)
     timeline->ServiceAnimations(reason);
   document.GetWorkletAnimationController().UpdateAnimationTimings(reason);
 }
-
-bool CompareAnimations(const Member<Animation>& left,
-                       const Member<Animation>& right) {
-  return Animation::HasLowerCompositeOrdering(
-      left.Get(), right.Get(),
-      Animation::CompareAnimationsOrdering::kTreeOrder);
-}
 }  // namespace
+
+// static
+void DocumentAnimations::UpdateTriggerAttachment(
+    CSSAnimation& animation,
+    base::FunctionRef<void(AnimationTrigger& trigger,
+                           const StyleTriggerAttachment& attachment)>
+        attach_function) {
+  const Member<const StyleTriggerAttachmentVector>&
+      animation_trigger_attachments = animation.GetTriggerAttachments();
+  if (!animation_trigger_attachments) {
+    return;
+  }
+
+  const Element* element = animation.OwningElement();
+
+  while (element) {
+    const LayoutBox* element_box = element->GetLayoutBox();
+    if (!element_box) {
+      element = element->parentElement();
+      continue;
+    }
+
+    for (const auto& fragment : element_box->PhysicalFragments()) {
+      const GCedNamedAnimationTriggerMap* named_triggers =
+          fragment.NamedTriggers();
+      if (!named_triggers) {
+        continue;
+      }
+
+      for (auto& entry : *named_triggers) {
+        AnimationTrigger* trigger = entry.value.Get();
+
+        for (auto attachment : *animation_trigger_attachments) {
+          if (attachment->TriggerName()->GetName() == entry.key->GetName()) {
+            attach_function(*trigger, *attachment);
+          }
+        }
+      }
+    }
+
+    element = element->parentElement();
+  }
+}
 
 DocumentAnimations::DocumentAnimations(Document* document)
     : document_(document) {}
@@ -131,6 +181,8 @@ void DocumentAnimations::UpdateAnimations(
     document_->View()->ScheduleAnimation();
   }
 
+  UpdateCompositorAnimationTriggers();
+
   document_->GetWorkletAnimationController().UpdateAnimationStates();
   document_->GetFrame()->ScheduleNextServiceForScrollSnapshotClients();
   for (auto& timeline : timelines_) {
@@ -180,7 +232,7 @@ HeapVector<Member<Animation>> DocumentAnimations::getAnimations(
   else
     GetAnimationsTargetingTreeScope(animations, tree_scope);
 
-  std::sort(animations.begin(), animations.end(), CompareAnimations);
+  std::sort(animations.begin(), animations.end(), Animation::CompareAnimations);
   return animations;
 }
 
@@ -203,9 +255,32 @@ void DocumentAnimations::DetachCompositorTimelines() {
   }
 }
 
+void DocumentAnimations::DetachCompositorTriggers() {
+  if (!Platform::Current()->IsThreadedAnimationEnabled() ||
+      !document_->GetSettings()->GetAcceleratedCompositingEnabled() ||
+      !document_->GetPage()) {
+    return;
+  }
+
+  for (auto& trigger : triggers_) {
+    cc::AnimationTrigger* compositor_trigger = trigger->CompositorTrigger();
+    if (!compositor_trigger) {
+      continue;
+    }
+
+    if (cc::AnimationHost* host =
+            document_->GetPage()->GetChromeClient().GetCompositorAnimationHost(
+                *document_->GetFrame())) {
+      host->DetachTrigger(compositor_trigger);
+    }
+  }
+}
+
 void DocumentAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(timelines_);
+  visitor->Trace(triggers_);
+  visitor->Trace(pending_trigger_attachment_updates_);
 }
 
 void DocumentAnimations::GetAnimationsTargetingTreeScope(
@@ -236,7 +311,7 @@ void DocumentAnimations::RemoveReplacedAnimations(
     DocumentAnimations::ReplaceableAnimationsMap* replaceable_animations_map) {
   HeapVector<Member<Animation>> animations_to_remove;
   for (auto& elem_it : *replaceable_animations_map) {
-    HeapVector<Member<Animation>>* animations = elem_it.value;
+    GCedHeapVector<Member<Animation>>* animations = elem_it.value;
 
     // Only elements with multiple animations in the replaceable state need to
     // be checked.
@@ -245,7 +320,8 @@ void DocumentAnimations::RemoveReplacedAnimations(
 
     // By processing in decreasing order by priority, we can perform a single
     // pass for discovery of replaced properties.
-    std::sort(animations->begin(), animations->end(), CompareAnimations);
+    std::sort(animations->begin(), animations->end(),
+              Animation::CompareAnimations);
     PropertyHandleSet replaced_properties;
     for (auto anim_it = animations->rbegin(); anim_it != animations->rend();
          anim_it++) {
@@ -260,9 +336,8 @@ void DocumentAnimations::RemoveReplacedAnimations(
       // the process of iterating over properties if not removable to update
       // the set of properties being replaced.
       bool replace = (*anim_it)->ReplaceStateActive();
-      PropertyHandleSet animation_properties =
-          To<KeyframeEffect>((*anim_it)->effect())->Model()->Properties();
-      for (const auto& property : animation_properties) {
+      for (const auto& property :
+           To<KeyframeEffect>((*anim_it)->effect())->Model()->Properties()) {
         auto inserted = replaced_properties.insert(property);
         if (inserted.is_new_entry) {
           // Top-most compositor order animation affecting this property.
@@ -283,9 +358,84 @@ void DocumentAnimations::RemoveReplacedAnimations(
   for (auto it = animations_to_remove.rbegin();
        it != animations_to_remove.rend(); it++) {
     Animation* animation = *it;
-    event_loop->EnqueueMicrotask(WTF::BindOnce(
-        &Animation::RemoveReplacedAnimation, WrapWeakPersistent(animation)));
+    event_loop->EnqueueMicrotask(BindOnce(&Animation::RemoveReplacedAnimation,
+                                          WrapWeakPersistent(animation)));
   }
+}
+
+void DocumentAnimations::UpdateAnimationTriggerAttachments() {
+  if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
+    ExecutePendingTriggerAttachmentUpdates();
+  } else {
+    for (const auto& timeline : timelines_) {
+      timeline->UpdateAnimationTriggerAttachments();
+    }
+  }
+}
+
+void DocumentAnimations::AddAnimationTrigger(AnimationTrigger& trigger) {
+  triggers_.insert(&trigger);
+}
+
+void DocumentAnimations::UpdateCompositorAnimationTriggers() {
+  if (!RuntimeEnabledFeatures::AnimationTriggerEnabled() ||
+      !Platform::Current()->IsThreadedAnimationEnabled()) {
+    return;
+  }
+
+  for (AnimationTrigger* trigger : triggers_) {
+    trigger->UpdateCompositorTrigger();
+  }
+}
+
+void DocumentAnimations::AddPendingTriggerAttachmentUpdate(
+    CSSAnimation* animation) {
+  pending_trigger_attachment_updates_.insert(animation);
+}
+
+void DocumentAnimations::RemovePendingTriggerAttachmentUpdate(
+    CSSAnimation* animation) {
+  pending_trigger_attachment_updates_.erase(animation);
+}
+
+void DocumentAnimations::ExecutePendingTriggerAttachmentUpdates() {
+  // Track animations whose attachments weren't completely fulfilled.
+  HeapHashSet<WeakMember<CSSAnimation>> defer;
+
+  for (CSSAnimation* animation : pending_trigger_attachment_updates_) {
+    const Member<const StyleTriggerAttachmentVector>&
+        animation_trigger_attachments = animation->GetTriggerAttachments();
+    if (!animation_trigger_attachments) {
+      continue;
+    }
+
+    wtf_size_t expected_attachments_size =
+        animation_trigger_attachments->size();
+    HeapHashMap<WeakMember<AnimationTrigger>,
+                WeakMember<const StyleTriggerAttachment>>
+        relevant_attachments;
+
+    auto attach_function = [&](AnimationTrigger& trigger,
+                               const StyleTriggerAttachment& attachment) {
+      relevant_attachments.Set(&trigger, &attachment);
+    };
+
+    UpdateTriggerAttachment(*animation, attach_function);
+
+    for (const auto& [trigger, attachment] : relevant_attachments) {
+      attachment->Attach(*trigger, *animation);
+    }
+
+    if (expected_attachments_size != relevant_attachments.size()) {
+      // We didn't find all the triggers with the names declared in this
+      // animation's animation-trigger declaration. Queue this animation up for
+      // another attempt to find its triggers after we've run style and layout
+      // again.
+      defer.insert(animation);
+    }
+  }
+
+  pending_trigger_attachment_updates_.swap(defer);
 }
 
 }  // namespace blink

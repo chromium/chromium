@@ -8,6 +8,7 @@
 
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "content/renderer/accessibility/render_accessibility_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "third_party/blink/public/common/features.h"
@@ -85,7 +86,7 @@ void RenderAccessibilityManager::SetMode(const ui::AXMode& new_mode,
 
 void RenderAccessibilityManager::FatalError() {
   NO_CODE_FOLDING();
-  CHECK(false) << "Invalid accessibility tree.";
+  NOTREACHED() << "Invalid accessibility tree.";
 }
 
 void RenderAccessibilityManager::HitTest(
@@ -108,13 +109,15 @@ void RenderAccessibilityManager::Reset(uint32_t reset_token) {
   render_accessibility_->Reset(reset_token);
 }
 
-void RenderAccessibilityManager::HandleAccessibilityEvents(
+void RenderAccessibilityManager::HandleAXEvents(
     ui::AXUpdatesAndEvents& updates_and_events,
+    ui::AXLocationAndScrollUpdates& location_and_scroll_updates,
     uint32_t reset_token,
     blink::mojom::RenderAccessibilityHost::HandleAXEventsCallback callback) {
   CHECK(reset_token);
   GetOrCreateRemoteRenderAccessibilityHost()->HandleAXEvents(
-      updates_and_events, reset_token, std::move(callback));
+      updates_and_events, location_and_scroll_updates, reset_token,
+      std::move(callback));
 }
 
 mojo::Remote<blink::mojom::RenderAccessibilityHost>&

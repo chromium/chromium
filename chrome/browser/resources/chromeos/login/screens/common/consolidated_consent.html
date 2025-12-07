@@ -165,10 +165,10 @@ found in the LICENSE file.
     read-more>
   <iron-icon slot="icon" icon="oobe-32:googleg"></iron-icon>
   <h1 slot="title">
-    [[getTitle(locale, isTosHidden, isChildAccount)]]
+    [[getTitle(locale, isTosHidden, isChildAccount, isDemo)]]
   </h1>
   <div id="subtitle" slot="subtitle">
-    <div inner-h-t-m-l="[[getSubtitleArcEnabled(locale)]]"
+    <div inner-h-t-m-l="[[getSubtitleArcEnabled(locale, isDemo)]]"
         hidden="[[!shouldShowArcTos(isTosHidden, isArcEnabled)]]">
     </div>
     <div hidden="[[shouldShowArcTos(isTosHidden, isArcEnabled)]]">
@@ -197,17 +197,18 @@ found in the LICENSE file.
         <span id="usageTitle" class="oobe-optin-title">
           [[i18nDynamic(locale, 'consolidatedConsentUsageOptInTitle')]]
         </span>
-        [[i18nDynamic(locale, 'consolidatedConsentUsageOptIn')]]
+        [[getUsageOptIn(locale, isDemo)]]
         <a id="usageLearnMore" on-click="onUsageLearnMoreClick"
-            class="oobe-local-link" is="action-link">
+            class="oobe-local-link" is="action-link" hidden="[[isDemo]]">
           [[i18nDynamic(locale,
                         'consolidatedConsentUsageOptInLearnMoreLink')]]
         </a>
       </div>
       <iron-icon class="managed-icon" icon="oobe-32:enterprise"
-          hidden="[[!usageManaged]]"></iron-icon>
+          hidden="[[!usageManaged || isDemo]]"></iron-icon>
       <cr-toggle id="usageOptin" checked="{{usageChecked}}"
-          disabled="[[usageManaged]]" aria-describedby="usageTitle">
+          disabled="[[usageManaged]]" aria-describedby="usageTitle"
+          hidden="[[isDemo]]">
       </cr-toggle>
     </div>
 

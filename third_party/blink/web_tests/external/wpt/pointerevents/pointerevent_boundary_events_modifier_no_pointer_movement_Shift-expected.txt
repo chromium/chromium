@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Test shiftKey of pointer boundary events (modifiers are changed before move): shiftKey of pointerover should be true
+  assert_true: expected true got false
+[FAIL] Test shiftKey of pointer boundary events (modifiers are changed before move): shiftKey of pointerout should be true
+  assert_true: expected true got false
+[FAIL] Test shiftKey of pointer boundary events (modifiers are changed after move): shiftKey of pointerover should be true
+  assert_true: expected true got false
+[FAIL] Test shiftKey of pointer boundary events (modifiers are changed after move): shiftKey of pointerout should be true
+  assert_true: expected true got false
+Harness: the test ran to completion.
+

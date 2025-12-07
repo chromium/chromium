@@ -5,18 +5,21 @@
 #include "remoting/host/resizing_host_observer.h"
 
 #include <list>
+#include <optional>
 #include <utility>
 
+#include "base/callback_list.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/base/screen_resolution.h"
 #include "remoting/host/desktop_display_info.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "remoting/host/desktop_resizer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -24,16 +27,6 @@
 namespace remoting {
 
 using Monitors = std::map<webrtc::ScreenId, ScreenResolution>;
-
-std::ostream& operator<<(std::ostream& os, const ScreenResolution& resolution) {
-  return os << resolution.dimensions().width() << "x"
-            << resolution.dimensions().height() << " @ " << resolution.dpi().x()
-            << "x" << resolution.dpi().y();
-}
-
-bool operator==(const ScreenResolution& a, const ScreenResolution& b) {
-  return a.Equals(b);
-}
 
 const int kDefaultDPI = 96;
 
@@ -47,16 +40,13 @@ ScreenResolution MakeResolution(int width, int height) {
 DesktopDisplayInfo ToDisplayInfo(const Monitors& monitors) {
   DesktopDisplayInfo result;
   for (const auto& [id, resolution] : monitors) {
-    DisplayGeometry geo = {
-        .id = id,
-        .x = 0,
-        .y = 0,
-        .width = static_cast<uint32_t>(resolution.dimensions().width()),
-        .height = static_cast<uint32_t>(resolution.dimensions().height()),
-        .dpi = static_cast<uint32_t>(resolution.dpi().x()),
-        .bpp = 32,
-        .is_default = false};
-    result.AddDisplay(geo);
+    result.AddDisplay({id, /* x */ 0, /* y */ 0,
+                       static_cast<uint32_t>(resolution.dimensions().width()),
+                       static_cast<uint32_t>(resolution.dimensions().height()),
+                       /* dpi */ static_cast<uint32_t>(resolution.dpi().x()),
+                       /* bpp */ 32,
+                       /* is_default */ false,
+                       /* display_name */ "test display"});
   }
   return result;
 }
@@ -137,6 +127,24 @@ class FakeDesktopResizer : public DesktopResizer {
   bool check_final_resolution_;
 };
 
+class FakeDesktopDisplayInfoMonitor : public DesktopDisplayInfoMonitor {
+ public:
+  void Start() override {}
+
+  bool IsStarted() const override { return false; }
+
+  const DesktopDisplayInfo* GetLatestDisplayInfo() const override {
+    return info ? &info.value() : nullptr;
+  }
+
+  void AddCallback(base::RepeatingClosure callback) override {
+    callbacks.AddUnsafe(std::move(callback));
+  }
+
+  std::optional<DesktopDisplayInfo> info;
+  base::RepeatingClosureList callbacks;
+};
+
 class ResizingHostObserverTest : public testing::Test {
  public:
   ResizingHostObserverTest() { clock_.SetNowTicks(base::TimeTicks::Now()); }
@@ -154,27 +162,21 @@ class ResizingHostObserverTest : public testing::Test {
             &call_counts_, restore_resolution),
         restore_resolution);
     resizing_host_observer_->SetClockForTesting(&clock_);
-  }
-
-  void SetScreenResolution(const ScreenResolution& client_size) {
-    resizing_host_observer_->SetScreenResolution(client_size, std::nullopt);
-    if (auto_advance_clock_) {
-      clock_.Advance(base::Seconds(1));
-    }
+    resizing_host_observer_->RegisterForDisplayChanges(display_info_monitor_);
   }
 
   void SetScreenResolution(const ScreenResolution& client_size,
-                           webrtc::ScreenId id) {
+                           std::optional<webrtc::ScreenId> id = std::nullopt) {
     resizing_host_observer_->SetScreenResolution(client_size, id);
     if (auto_advance_clock_) {
       clock_.Advance(base::Seconds(1));
     }
   }
 
-  // Should be used only for single-monitor tests.
-  ScreenResolution GetBestResolution(const ScreenResolution& client_size) {
-    SetScreenResolution(client_size);
-    return monitors_.begin()->second;
+  ScreenResolution GetBestResolution(const ScreenResolution& client_size,
+                           std::optional<webrtc::ScreenId> id = std::nullopt) {
+    SetScreenResolution(client_size, id);
+    return id.has_value() ? monitors_[*id] : monitors_.begin()->second;
   }
 
   // Should be used only for single-monitor tests.
@@ -192,10 +194,12 @@ class ResizingHostObserverTest : public testing::Test {
 
   // Sends the current display-info to the ResizingHostObserver.
   void NotifyDisplayInfo() {
-    resizing_host_observer_->SetDisplayInfoForTesting(ToDisplayInfo(monitors_));
+    display_info_monitor_.info = ToDisplayInfo(monitors_);
+    display_info_monitor_.callbacks.Notify();
   }
 
   Monitors monitors_;
+  FakeDesktopDisplayInfoMonitor display_info_monitor_;
   FakeDesktopResizer::CallCounts call_counts_;
   std::unique_ptr<ResizingHostObserver> resizing_host_observer_;
   base::SimpleTestTickClock clock_;
@@ -368,6 +372,21 @@ TEST_F(ResizingHostObserverTest, RateLimited) {
 
   // If the QuitClosure fired before the final resize, it's a test failure.
   EXPECT_EQ(MakeResolution(300, 300), monitors_[123]);
+}
+
+// Check that desktop resizes for different monitors are not rate-limited.
+TEST_F(ResizingHostObserverTest, NotRateLimitedForDifferentMonitors) {
+  InitDesktopResizer(
+      {{123, MakeResolution(640, 480)}, {234, MakeResolution(800, 600)}}, true,
+      std::vector<ScreenResolution>(), false);
+  NotifyDisplayInfo();
+  auto_advance_clock_ = false;
+
+  EXPECT_EQ(MakeResolution(100, 100),
+            GetBestResolution(MakeResolution(100, 100), 123));
+  clock_.Advance(base::Milliseconds(900));
+  EXPECT_EQ(MakeResolution(200, 200),
+            GetBestResolution(MakeResolution(200, 200), 234));
 }
 
 TEST_F(ResizingHostObserverTest, PendingResolutionAppliedToFirstMonitor) {

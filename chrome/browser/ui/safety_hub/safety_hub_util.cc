@@ -6,6 +6,17 @@
 
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/content_settings/core/common/features.h"
+#include "components/safety_check/safety_check.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/values.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/webui/version/version_ui.h"
+#include "chrome/browser/upgrade_detector/build_state.h"
+#include "chrome/grit/branded_strings.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace safety_hub_util {
 
@@ -16,8 +27,7 @@ base::TimeDelta GetCleanUpThreshold() {
           .Get()) {
     return safety_hub::kRevocationCleanUpThresholdWithDelayForTesting;
   }
-  return content_settings::features::
-      kSafetyCheckUnusedSitePermissionsRevocationCleanUpThreshold.Get();
+  return safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold();
 }
 
 // TODO(crbug/342210522): Refactor this to be cleaner.
@@ -106,27 +116,35 @@ bool IsAbusiveNotificationRevocationIgnored(HostContentSettingsMap* hcsm,
   return false;
 }
 
-void SetRevokedAbusiveNotificationPermission(
-    HostContentSettingsMap* hcsm,
-    GURL url,
-    bool is_ignored,
-    const content_settings::ContentSettingConstraints& constraints) {
-  DCHECK(url.is_valid());
-  // If the `url` should be ignore during future auto revocation, then the
-  // constraint should not expire. If the lifetime is zero, then the setting
-  // does not expire.
-  if (is_ignored) {
-    DCHECK(constraints.lifetime().is_zero());
-    DCHECK(constraints.expiration() == base::Time());
+#if !BUILDFLAG(IS_ANDROID)
+base::Value::Dict GetVersionCardData() {
+  base::Value::Dict result;
+  switch (g_browser_process->GetBuildState()->update_type()) {
+    case BuildState::UpdateType::kNone:
+      result.Set(safety_hub::kCardHeaderKey,
+                 l10n_util::GetStringUTF16(
+                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_UPDATED));
+      result.Set(safety_hub::kCardSubheaderKey,
+                 VersionUI::GetAnnotatedVersionStringForUi());
+      result.Set(safety_hub::kCardStateKey,
+                 static_cast<int>(safety_hub::SafetyHubCardState::kSafe));
+      break;
+    case BuildState::UpdateType::kNormalUpdate:
+    // `kEnterpriseRollback` and `kChannelSwitchRollback` are fairly rare state,
+    // they will be handled same as there is waiting updates.
+    case BuildState::UpdateType::kEnterpriseRollback:
+    case BuildState::UpdateType::kChannelSwitchRollback:
+      result.Set(safety_hub::kCardHeaderKey,
+                 l10n_util::GetStringUTF16(
+                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_HEADER_RESTART));
+      result.Set(safety_hub::kCardSubheaderKey,
+                 l10n_util::GetStringUTF16(
+                     IDS_SETTINGS_SAFETY_HUB_VERSION_CARD_SUBHEADER_RESTART));
+      result.Set(safety_hub::kCardStateKey,
+                 static_cast<int>(safety_hub::SafetyHubCardState::kWarning));
   }
-  hcsm->SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(url),
-      ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
-      base::Value(base::Value::Dict().Set(
-          safety_hub::kRevokedStatusDictKeyStr,
-          is_ignored ? safety_hub::kIgnoreStr : safety_hub::kRevokeStr)),
-      constraints);
+  return result;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace safety_hub_util

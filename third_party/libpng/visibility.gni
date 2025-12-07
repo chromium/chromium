@@ -1,0 +1,73 @@
+# This list tracks all current users of libpng.
+#
+# libpng is actively being migrated, and calls to libpng should instead go
+# through Skia's `SkPngRustDecoder`. No new entries should be added to this
+# list.
+
+import("//build/config/gclient_args.gni")
+
+# Chrome does not (and should not) depend on `libpng`.
+visibility = []
+
+# Dependency edges that are used in projects outside of Chromium that pull in
+# this directory (e.g. ones only needed in standalone PDFium builds).
+if (!build_with_chromium) {
+  # PDFium => libpng dependency (when `!pdf_enable_rust_png` or
+  # `!pdf_use_skia`).
+  #
+  # TODO(https://crbug.com/458078747): Remove if/when PDFium stops supporting
+  # `libpng`.
+  visibility += [ "//third_party:png" ]
+}
+
+# Dependencies that do not really flow into Chrome binaries.
+visibility += [
+  # `build/config/android/*.gni` =>
+  #     => `libwebp:cwebp` (`executable`)
+  #     => `libwebp:imagedec`
+  #     => `libpng` dependency.
+  # The `cwebp` `executable` is used during build process, but depending on it
+  # does not result in linking the `libpng` library into Chrome binary.  See
+  # also `cwebp_exe_allowed_visibility` in
+  # `//third_party/libwebp/visibility.gni`.
+  "//third_party/libwebp:imagedec",
+
+  # `weston` => `libpng` is a test-only dependency as described in
+  # `//third_party/weston/README.chromium`.  The `weston` targets are not
+  # marked as `testonly` but their `visibility` is restricted and (in build
+  # configurations meant for testing) the only dependency of product code is
+  # the `data_deps` edge from `//ui/ozone/platform/wayland` to the
+  # `//third_party/weston` target (the latter one is an `executable`).
+  "//third_party/weston:cairo_shared",
+]
+
+# Test/tool-only dependencies under `//third_party/angle`
+# (migrating these to `libpng_testonly_visibility` would require editing
+# ANGLE's `BUILD.gn` files to depend on the `libpng_for_testonly` target).
+visibility += [
+  "//third_party/angle/src/tests:angle_deqp_framework_qphelper",
+  "//third_party/angle/third_party/glmark2:glmark2_common_gl",
+  "//third_party/angle/third_party/glmark2:glmark2_common_gles",
+  "//third_party/angle/util:angle_png_utils",
+]
+
+# Test/tool-only dependencies.
+libpng_testonly_visibility = [
+  "//chrome/test:accessibility_live_site_tests",
+  "//chrome/test:captured_sites_interactive_tests",
+  "//chrome/test:interactive_ui_tests",
+  "//tools/imagediff",
+
+  # Using a wildcard, to cover template-generated targets (e.g.
+  # `run_libpng_progressive_read_fuzzer` on `ios-catalyst` trybot).
+  "//testing/libfuzzer/fuzzers:*",
+
+  # Using a wildcard, to cover template-generated targets (e.g.
+  # `//ui/gfx:gfx_unittests__library__jni_registration__native_sources` or
+  # `//ui/gfx:gfx_unittests__exec`).
+  "//ui/gfx:*",
+]
+
+# Self-dependency (for internal targets defined in
+# `//third_party/libpng/BUILD.gn`).
+visibility += [ "//third_party/libpng/*" ]

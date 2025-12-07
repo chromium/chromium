@@ -31,6 +31,26 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Received activation"/>
 </enum>
 
+<!-- LINT.IfChange(AdvertisedAltSvcState) -->
+
+<enum name="AdvertisedAltSvcState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="QuicNotBroken"/>
+  <int value="2" label="QuicBroken"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/public/mojom/load_timing_internal_info.mojom:AdvertisedAltSvcState) -->
+
+<!-- LINT.IfChange(ConnectionReuseStatus) -->
+
+<enum name="ConnectionReuseStatus">
+  <int value="0" label="kNonReuse"/>
+  <int value="1" label="kDNSReused"/>
+  <int value="2" label="kReused"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:ConnectionReuseStatus) -->
+
 <enum name="CookieReadStatus">
   <int value="0" label="kNone"/>
   <int value="1" label="kNotOnboardedAllowed"/>
@@ -79,6 +99,21 @@ chromium-metrics-reviews@google.com.
       label="Ad Creative Origin Differs from Main Frame and Ad Not Throttled"/>
 </enum>
 
+<!-- LINT.IfChange(GwsWarmUpType) -->
+
+<enum name="GwsWarmUpType">
+  <int value="0" label="RegularSignedIn"/>
+  <int value="1" label="RegularPrewarmed"/>
+  <int value="2" label="ReegularCold"/>
+  <int value="3" label="OffTheRecordSignedIn"/>
+  <int value="4" label="OffTheRecordPrewarmed"/>
+  <int value="5" label="OffTheRecordColdButRegularSignedIn"/>
+  <int value="6" label="OffTheRecordColdButRegularPrewarmed"/>
+  <int value="7" label="OffTheRecordAndRegularCold"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/gws_page_load_metrics_observer.cc:WarmUpType) -->
+
 <enum name="HeavyAdStatus2">
   <int value="0" label="Not heavy"/>
   <int value="1" label="Network">
@@ -120,16 +155,6 @@ chromium-metrics-reviews@google.com.
   <int value="17"
       label="PageLoadFeatures received from browser process while not
              tracking a relevant committed load"/>
-</enum>
-
-<enum name="LargestContentfulPaintImageLoadStartLessThanDocumentTtfbCauses">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Image is loaded from memory cache"/>
-  <int value="2"
-      label="Image is preloaded after receiving a 103 (Early Hints) response"/>
-  <int value="3"
-      label="Image is loaded from memory and preloaded after receiving a 103
-             (Early Hints) response"/>
 </enum>
 
 <enum name="LcppPredictResult">
@@ -189,6 +214,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kNewHistoryNavigation"/>
   <int value="12" label="kNewOtherNavigationBrowserInitiated"/>
   <int value="13" label="kNewOtherNavigationRendererInitiated"/>
+  <int value="14" label="kNewDuplicateNavigation"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:AbandonReason) -->
@@ -218,30 +244,32 @@ chromium-metrics-reviews@google.com.
   <int value="19" label="kHeaderChunkEnd"/>
   <int value="20" label="kBodyChunkStart"/>
   <int value="21" label="kBodyChunkEnd"/>
+  <int value="22" label="kSecondRedirectedRequestStart"/>
+  <int value="23" label="kSecondedirectResponseStart"/>
+  <int value="24" label="kCommitReplySent"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/abandoned_page_load_metrics_observer.h:NavigationMilestone) -->
 
-<enum name="OriginTrialStatusChange">
-  <int value="0"
-      label="kDisabled: Origin-specific origin trial token was disabled (i.e.
-             removed from the top-level site's partition)"/>
-  <int value="1"
-      label="kDisabled_MatchesSubdomains: Subdomain-matching origin trial
-             token was disabled (i.e. removed from the top-level site's
-             partition)"/>
-  <int value="2"
-      label="kEnabled: Origin-specific token was used to enable the origin
-             trial"/>
-  <int value="3"
-      label="kEnabled_MatchesSubdomains: Subdomain-matching token was used to
-             enable the origin trial"/>
+<!-- LINT.IfChange(NavigationSourceTypeEnum) -->
+
+<enum name="NavigationSourceTypeEnum">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kFromNewTabPage"/>
+  <int value="2" label="kStartedInBackground"/>
+  <int value="3" label="kStartedInBackgroundFromNewTabPage"/>
+  <int value="4" label="kFromGWSPage"/>
+  <int value="5" label="kStartedInBackgroundFromGWSPage"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/gws_page_load_metrics_observer.h:NavigationSourceType) -->
 
 <enum name="PageActionCTREvent">
   <int value="0" label="Shown"/>
   <int value="1" label="Clicked"/>
 </enum>
+
+<!-- LINT.IfChange(PageActionIconType) -->
 
 <enum name="PageActionIconType">
   <int value="0" label="Bookmarks Star"/>
@@ -251,30 +279,41 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Find"/>
   <int value="5" label="Memory Saver"/>
   <int value="6" label="Intent Picker"/>
-  <int value="7" label="Local Card Migration"/>
+  <int value="7" label="(Deprecated) Local Card Migration"/>
   <int value="8" label="Manage Passwords"/>
   <int value="9" label="Payments Offer Notification"/>
   <int value="10" label="Price Tracking"/>
   <int value="11" label="PWA Install"/>
-  <int value="12" label="QR Code Generator"/>
+  <int value="12" label="(Deprecated) QR Code Generator"/>
   <int value="13" label="(Deprecated) Reader Mode"/>
   <int value="14" label="Autofill Address"/>
   <int value="15" label="Save Card"/>
-  <int value="16" label="Send Tab to Self"/>
+  <int value="16" label="(Deprecated) Send Tab to Self"/>
   <int value="17" label="Sharing Hub"/>
-  <int value="18" label="Side Search"/>
-  <int value="19" label="SMS Remote Fetcher"/>
+  <int value="18" label="(Deprecated) Side Search"/>
+  <int value="19" label="(Deprecated) SMS Remote Fetcher"/>
   <int value="20" label="Translate"/>
   <int value="21" label="Virtual Card Enroll"/>
-  <int value="22" label="Virtual Card Manual Fallback"/>
+  <int value="22" label="Filled card information"/>
   <int value="23" label="Zoom"/>
   <int value="24" label="Save IBAN"/>
   <int value="25" label="Mandatory Reauth"/>
   <int value="26" label="Price Insights"/>
-  <int value="27" label="Read Anything"/>
+  <int value="27" label="(Deprecated) Read Anything"/>
   <int value="28" label="Product Specifications"/>
   <int value="29" label="Lens Overlay"/>
+  <int value="30" label="Discounts"/>
+  <int value="31" label="Optimization Guide"/>
+  <int value="32" label="Collaboration Messaging"/>
+  <int value="33" label="(Deprecated) Change Password"/>
+  <int value="34" label="Lens Overlay Homework"/>
+  <int value="35" label="AI Mode"/>
+  <int value="36" label="Reading mode"/>
+  <int value="37" label="Contextual Task"/>
+  <int value="38" label="JS Optimizations"/>
 </enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/page_action/page_action_icon_type.h:PageActionIconType) -->
 
 <enum name="PageActionPageEvent">
   <int value="0" label="Page Shown"/>
@@ -290,25 +329,6 @@ chromium-metrics-reviews@google.com.
 <enum name="PageLoadPrerenderEvent">
   <int value="0" label="Prerendered Main Frame Navigation"/>
   <int value="1" label="Prerender Activation Navigation"/>
-</enum>
-
-<enum name="PageLoadPrerenderObserverEvent">
-  <int value="0" label="OnPrerenderStart"/>
-  <int value="1" label="DidActivatePrerenderedPage"/>
-  <int value="2" label="OnFirstPaintInPage"/>
-  <int value="3" label="OnFirstContentfulPaintInPage"/>
-  <int value="4" label="OnFirstInputInPage"/>
-  <int value="5" label="OnComplete"/>
-  <int value="6" label="FlushMetricsOnAppEnterBackground"/>
-  <int value="7" label="RecordSessionEndHistograms"/>
-  <int value="8" label="RecordLayoutShiftScoreMetrics"/>
-  <int value="9" label="RecordNormalizedResponsivenessMetrics"/>
-</enum>
-
-<enum name="PageLoadPrerenderVisibilityAtActivation">
-  <int value="0" label="Hidden"/>
-  <int value="1" label="Occluded"/>
-  <int value="2" label="Visible"/>
 </enum>
 
 <!-- LINT.IfChange(PageLoadTimingStatus) -->
@@ -350,12 +370,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/page_load_metrics/browser/page_load_metrics_update_dispatcher.h:PageLoadTimingStatus) -->
 
-<enum name="PageLoadTrackerPageType">
-  <int value="0" label="Primary Page"/>
-  <int value="1" label="Prerender Page"/>
-  <int value="2" label="FencedFrames Page"/>
-</enum>
-
 <enum name="PageVisitType">
   <int value="0"
       label="Independent Visit; the page is opened from UI or in new tab, and
@@ -384,6 +398,27 @@ chromium-metrics-reviews@google.com.
       label="Origin UI Visit; the page is opened from UI, and followed by a
              link navigation."/>
 </enum>
+
+<!-- LINT.IfChange(PaidContentState) -->
+
+<enum name="PaidContentState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Has paid content"/>
+  <int value="2" label="No paid content found"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/observers/paid_content_page_load_metrics_observer.cc:PaidContentState) -->
+
+<!-- LINT.IfChange(PrerenderPrewarmNavigationStatus) -->
+
+<enum name="PrerenderPrewarmNavigationStatus">
+  <int value="0" label="Not prewarmed, prerender host not reused"/>
+  <int value="1" label="Not prewarmed, prerender host reused"/>
+  <int value="2" label="Prewarmed, prerender host not reused"/>
+  <int value="3" label="Prewarmed, prerender host reused"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/page_load_metrics/google/browser/prerender_prewarm_navigation_data.h:PrerenderPrewarmNavigationStatus) -->
 
 <enum name="PreviewFinalStatus">
   <int value="0" label="just previewed"/>
@@ -450,7 +485,20 @@ chromium-metrics-reviews@google.com.
   <int value="20"
       label="kAllowByTrackingProtectionException: Allowed by explicit
              tracking protection content setting."/>
+  <int value="21"
+      label="kAllowBySandboxValue: Allowed by sandbox value
+             `allow-same-site-none-cookies`"/>
 </enum>
+
+<!-- LINT.IfChange(WebViewPageAttemptResult) -->
+
+<enum name="WebViewPageAttemptResult">
+  <int value="0" label="Success: Reached FirstContentfulPaint"/>
+  <int value="1" label="Early Finish: Load ended before FirstContentfulPaint"/>
+  <int value="2" label="Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//android_webview/browser/page_load_metrics/service_level_page_load_metrics_observer.h:WebViewPageAttemptResult) -->
 
 </enums>
 

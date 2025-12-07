@@ -7,14 +7,13 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/not_fatal_until.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/push_messaging/push_messaging_app_identifier.h"
-#include "chrome/browser/push_messaging/push_messaging_constants.h"
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
-#include "chrome/browser/push_messaging/push_messaging_utils.h"
 #include "chrome/common/pref_names.h"
+#include "components/push_messaging/push_messaging_constants.h"
+#include "components/push_messaging/push_messaging_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/push_messaging_service.h"
 #include "content/public/common/content_features.h"
@@ -30,7 +29,7 @@ size_t PushMessagingRefresher::GetCount() const {
 }
 
 void PushMessagingRefresher::Refresh(
-    PushMessagingAppIdentifier old_app_identifier,
+    push_messaging::AppIdentifier old_app_identifier,
     const std::string& new_app_id,
     const std::string& sender_id) {
   RefreshObject refresh_object = {old_app_identifier, sender_id,
@@ -77,9 +76,9 @@ void PushMessagingRefresher::OnUnsubscribed(const std::string& old_app_id) {
   refresh_map_.erase(found_new_app_id);
 
   RefreshInfo::iterator result = old_subscriptions_.find(new_app_id);
-  CHECK(result != old_subscriptions_.end(), base::NotFatalUntil::M130);
+  CHECK(result != old_subscriptions_.end());
 
-  PushMessagingAppIdentifier old_identifier = result->second.old_identifier;
+  push_messaging::AppIdentifier old_identifier = result->second.old_identifier;
   old_subscriptions_.erase(result);
 
   for (Observer& obs : observers_)
@@ -97,9 +96,9 @@ void PushMessagingRefresher::GotMessageFrom(const std::string& app_id) {
   }
 }
 
-std::optional<PushMessagingAppIdentifier>
+std::optional<push_messaging::AppIdentifier>
 PushMessagingRefresher::FindActiveAppIdentifier(const std::string& app_id) {
-  std::optional<PushMessagingAppIdentifier> app_identifier;
+  std::optional<push_messaging::AppIdentifier> app_identifier;
   RefreshMap::iterator refresh_map_it = refresh_map_.find(app_id);
   if (refresh_map_it != refresh_map_.end()) {
     RefreshInfo::iterator result =

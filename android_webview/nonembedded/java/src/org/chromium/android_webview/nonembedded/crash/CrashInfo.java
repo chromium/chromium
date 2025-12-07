@@ -18,7 +18,7 @@ import java.util.Map;
 /** A class that bundles various information about a crash. */
 public class CrashInfo {
     /** Crash file report/minidump upload status. */
-    public static enum UploadState {
+    public enum UploadState {
         SKIPPED,
         PENDING,
         PENDING_USER_REQUESTED,

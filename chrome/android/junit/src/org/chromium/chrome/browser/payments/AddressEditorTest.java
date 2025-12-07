@@ -11,15 +11,14 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,9 +32,12 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_REQUIRED_INDICATOR;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isEditable;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
 
 import android.app.Activity;
@@ -51,26 +53,28 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
-import org.chromium.chrome.browser.autofill.AutofillProfileBridge.AutofillAddressUiComponent;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridgeJni;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtilJni;
 import org.chromium.chrome.browser.autofill.SubKeyRequesterFactory;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownKeyValue;
-import org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldItem;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties;
+import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorItem;
+import org.chromium.components.autofill.AutofillAddressEditorUiInfo;
+import org.chromium.components.autofill.AutofillAddressUiComponent;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.components.autofill.FieldType;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.ui.base.TestActivity;
@@ -147,7 +151,7 @@ public class AddressEditorTest {
                     .setLanguageCode("en-US")
                     .build();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
     @Mock private PhoneNumberUtil.Natives mPhoneNumberUtilJni;
@@ -173,27 +177,20 @@ public class AddressEditorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         Locale.setDefault(Locale.US);
 
         // PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
-        doAnswer(
-                        invocation -> {
-                            List<Integer> requiredFields =
-                                    (List<Integer>) invocation.getArguments()[1];
-                            requiredFields.addAll(
-                                    List.of(
-                                            FieldType.NAME_FULL,
-                                            FieldType.ADDRESS_HOME_CITY,
-                                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
-                                            FieldType.ADDRESS_HOME_ZIP));
-                            return null;
-                        })
-                .when(mAutofillProfileBridgeJni)
-                .getRequiredFields(anyString(), anyList());
-        mJniMocker.mock(PhoneNumberUtilJni.TEST_HOOKS, mPhoneNumberUtilJni);
+        AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
+        when(mAutofillProfileBridgeJni.getRequiredFields(anyString()))
+                .thenReturn(
+                        new int[] {
+                            FieldType.NAME_FULL,
+                            FieldType.ADDRESS_HOME_CITY,
+                            FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
+                            FieldType.ADDRESS_HOME_ZIP
+                        });
+        PhoneNumberUtilJni.setInstanceForTesting(mPhoneNumberUtilJni);
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
         mActivity = Robolectric.setupActivity(TestActivity.class);
@@ -212,65 +209,27 @@ public class AddressEditorTest {
     }
 
     private void setUpSupportedCountries(List<DropdownKeyValue> supportedCountries) {
-        doAnswer(
-                        invocation -> {
-                            List<String> contryCodes = (List<String>) invocation.getArguments()[0];
-                            List<String> contryNames = (List<String>) invocation.getArguments()[1];
-
-                            for (DropdownKeyValue keyValue : supportedCountries) {
-                                contryCodes.add(keyValue.getKey());
-                                contryNames.add(keyValue.getValue().toString());
-                            }
-
-                            return null;
-                        })
-                .when(mAutofillProfileBridgeJni)
-                .getSupportedCountries(anyList(), anyList());
+        when(mAutofillProfileBridgeJni.getSupportedCountries()).thenReturn(supportedCountries);
     }
 
     private void setUpAddressUiComponents(
             List<AutofillAddressUiComponent> addressUiComponents, String countryCode) {
-        doAnswer(
-                        invocation -> {
-                            List<Integer> componentIds =
-                                    (List<Integer>) invocation.getArguments()[3];
-                            List<String> componentNames =
-                                    (List<String>) invocation.getArguments()[4];
-                            List<Integer> componentRequired =
-                                    (List<Integer>) invocation.getArguments()[5];
-                            List<Integer> componentLength =
-                                    (List<Integer>) invocation.getArguments()[6];
-
-                            for (AutofillAddressUiComponent component : addressUiComponents) {
-                                componentIds.add(component.id);
-                                componentNames.add(component.label);
-                                componentRequired.add(component.isRequired ? 1 : 0);
-                                componentLength.add(component.isFullLine ? 1 : 0);
-                            }
-                            return "EN";
-                        })
-                .when(mAutofillProfileBridgeJni)
-                .getAddressUiComponents(
-                        eq(countryCode),
-                        anyString(),
-                        anyInt(),
-                        anyList(),
-                        anyList(),
-                        anyList(),
-                        anyList());
+        when(mAutofillProfileBridgeJni.getAddressEditorUiInfo(
+                        eq(countryCode), anyString(), anyInt()))
+                .thenReturn(new AutofillAddressEditorUiInfo("EN", addressUiComponents));
     }
 
     private static void validateTextField(
-            FieldItem fieldItem,
+            EditorItem item,
             String value,
             int textFieldType,
             String label,
             boolean isRequired,
             boolean isFullLine) {
-        assertEquals(TEXT_INPUT, fieldItem.type);
-        assertEquals(isFullLine, fieldItem.isFullLine);
+        assertEquals(TEXT_INPUT, item.type);
+        assertEquals(isFullLine, item.isFullLine);
 
-        PropertyModel field = fieldItem.model;
+        PropertyModel field = item.model;
         assertEquals(value, field.get(VALUE));
         assertEquals(textFieldType, field.get(TEXT_FIELD_TYPE));
         assertEquals(label, field.get(LABEL));
@@ -279,7 +238,7 @@ public class AddressEditorTest {
 
     private void validateShownFields(PropertyModel editorModel, AutofillProfile profile) {
         assertNotNull(editorModel);
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - full name field.
         // editorFields[2] - admin area field.
@@ -290,19 +249,20 @@ public class AddressEditorTest {
         // editorFields[7] - postal code field.
         // editorFields[8] - street address field.
         // editorFields[9] - phone number field.
-        assertEquals(10, editorFields.size());
+        // editorFields[10] - required notice.
+        assertEquals(11, editorFields.size());
 
         // Fields obtained from backend must be placed after the country dropdown.
         validateTextField(
                 editorFields.get(1),
-                profile.getFullName(),
+                profile.getInfo(FieldType.NAME_FULL),
                 FieldType.NAME_FULL,
                 /* label= */ "full name label",
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
         validateTextField(
                 editorFields.get(2),
-                profile.getRegion(),
+                profile.getInfo(FieldType.ADDRESS_HOME_STATE),
                 FieldType.ADDRESS_HOME_STATE,
                 /* label= */ "admin area label",
                 /* isRequired= */ true,
@@ -310,7 +270,7 @@ public class AddressEditorTest {
         // Locality field is forced to occupy full line.
         validateTextField(
                 editorFields.get(3),
-                profile.getLocality(),
+                profile.getInfo(FieldType.ADDRESS_HOME_CITY),
                 FieldType.ADDRESS_HOME_CITY,
                 /* label= */ "locality label",
                 /* isRequired= */ true,
@@ -322,7 +282,7 @@ public class AddressEditorTest {
         // profiles.
         validateTextField(
                 editorFields.get(4),
-                profile.getDependentLocality(),
+                profile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY),
                 FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY,
                 /* label= */ "dependent locality label",
                 /* isRequired= */ true,
@@ -330,7 +290,7 @@ public class AddressEditorTest {
 
         validateTextField(
                 editorFields.get(5),
-                profile.getCompanyName(),
+                profile.getInfo(FieldType.COMPANY_NAME),
                 FieldType.COMPANY_NAME,
                 /* label= */ "organization label",
                 /* isRequired= */ false,
@@ -338,28 +298,28 @@ public class AddressEditorTest {
 
         validateTextField(
                 editorFields.get(6),
-                profile.getSortingCode(),
+                profile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE),
                 FieldType.ADDRESS_HOME_SORTING_CODE,
                 /* label= */ "sorting code label",
                 /* isRequired= */ false,
                 /* isFullLine= */ false);
         validateTextField(
                 editorFields.get(7),
-                profile.getPostalCode(),
+                profile.getInfo(FieldType.ADDRESS_HOME_ZIP),
                 FieldType.ADDRESS_HOME_ZIP,
                 /* label= */ "postal code label",
                 /* isRequired= */ true,
                 /* isFullLine= */ false);
         validateTextField(
                 editorFields.get(8),
-                profile.getStreetAddress(),
+                profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS),
                 FieldType.ADDRESS_HOME_STREET_ADDRESS,
                 /* label= */ "street address label",
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
         validateTextField(
                 editorFields.get(9),
-                profile.getPhoneNumber(),
+                profile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
                 FieldType.PHONE_HOME_WHOLE_NUMBER,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /* isRequired= */ true,
@@ -368,8 +328,8 @@ public class AddressEditorTest {
 
     private void validateErrorMessages(PropertyModel editorModel, boolean errorsPresent) {
         assertNotNull(editorModel);
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
-        assertEquals(10, editorFields.size());
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        assertEquals(11, editorFields.size());
 
         Matcher<String> requiredFieldMatcher =
                 errorsPresent ? not(isEmptyString()) : anyOf(nullValue(), isEmptyString());
@@ -385,27 +345,7 @@ public class AddressEditorTest {
         assertThat(editorFields.get(7).model.get(ERROR_MESSAGE), requiredFieldMatcher);
         assertThat(editorFields.get(8).model.get(ERROR_MESSAGE), requiredFieldMatcher);
         assertThat(editorFields.get(9).model.get(ERROR_MESSAGE), requiredFieldMatcher);
-    }
-
-    @Test
-    @SmallTest
-    public void validateRequiredFieldIndicator() {
-        setUpAddressUiComponents(new ArrayList(), /* countryCode= */ "US");
-        doAnswer(
-                        unused -> {
-                            mAddressEditor.onSubKeysReceived(null, null);
-                            return null;
-                        })
-                .when(mSubKeyRequester)
-                .getRegionSubKeys(anyString(), any());
-
-        mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
-        mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
-                new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
-
-        assertNotNull(mAddressEditor.getEditorModelForTesting());
-        assertTrue(mAddressEditor.getEditorModelForTesting().get(SHOW_REQUIRED_INDICATOR));
+        assertFalse(isEditable(editorFields.get(10)));
     }
 
     @Test
@@ -422,20 +362,21 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
-        ListModel<FieldItem> editorFields =
+        ListModel<EditorItem> editorFields =
                 mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
         // editorFields[1] - phone field.
-        assertEquals(2, editorFields.size());
+        // editorFields[2] - required notice.
+        assertEquals(3, editorFields.size());
 
-        FieldItem countryDropdownItem = editorFields.get(0);
-        assertEquals(countryDropdownItem.type, DROPDOWN);
+        EditorItem countryDropdownItem = editorFields.get(0);
+        assertEquals(DROPDOWN, countryDropdownItem.type);
         assertTrue(countryDropdownItem.isFullLine);
 
         PropertyModel countryDropdown = countryDropdownItem.model;
@@ -453,11 +394,21 @@ public class AddressEditorTest {
 
         validateTextField(
                 editorFields.get(1),
-                sProfile.getPhoneNumber(),
+                sProfile.getInfo(FieldType.PHONE_HOME_WHOLE_NUMBER),
                 FieldType.PHONE_HOME_WHOLE_NUMBER,
                 mActivity.getString(R.string.autofill_profile_editor_phone_number),
                 /* isRequired= */ true,
                 /* isFullLine= */ true);
+
+        EditorItem requiredNoticeItem = editorFields.get(2);
+        assertEquals(NOTICE, requiredNoticeItem.type);
+        assertTrue(requiredNoticeItem.isFullLine);
+
+        PropertyModel requiredNotice = requiredNoticeItem.model;
+        assertEquals(
+                mActivity.getString(R.string.payments_required_field_message),
+                requiredNotice.get(NOTICE_TEXT));
+        assertFalse(requiredNotice.get(IMPORTANT_FOR_ACCESSIBILITY));
     }
 
     @Test
@@ -483,20 +434,21 @@ public class AddressEditorTest {
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
-        ListModel<FieldItem> editorFields =
+        ListModel<EditorItem> editorFields =
                 mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
         // editorFields[1] - admin area dropdown.
         // editorFields[2] - phone field.
-        assertEquals(3, editorFields.size());
+        // editorFields[3] - required notice.
+        assertEquals(4, editorFields.size());
 
-        FieldItem adminAreaDropdownItem = editorFields.get(1);
+        EditorItem adminAreaDropdownItem = editorFields.get(1);
         assertEquals(DROPDOWN, adminAreaDropdownItem.type);
         assertTrue(adminAreaDropdownItem.isFullLine);
 
@@ -510,8 +462,8 @@ public class AddressEditorTest {
                 adminAreas,
                 containsInAnyOrder(adminAreaDropdown.get(DROPDOWN_KEY_VALUE_LIST).toArray()));
 
-        assertEquals(adminAreaDropdown.get(VALUE), sProfile.getRegion());
-        assertEquals(adminAreaDropdown.get(LABEL), "admin area label");
+        assertEquals(adminAreaDropdown.get(VALUE), sProfile.getInfo(FieldType.ADDRESS_HOME_STATE));
+        assertEquals("admin area label", adminAreaDropdown.get(LABEL));
     }
 
     @Test
@@ -528,7 +480,7 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(null, unused -> {});
+        mAddressEditor.showEditPrompt(null, unused -> {});
 
         validateShownFields(
                 mAddressEditor.getEditorModelForTesting(), AutofillProfile.builder().build());
@@ -547,7 +499,7 @@ public class AddressEditorTest {
                 .when(mSubKeyRequester)
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, sProfile, mPersonalDataManager), unused -> {});
 
         validateShownFields(mAddressEditor.getEditorModelForTesting(), sProfile);
@@ -555,7 +507,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_ChangeCountry_FieldsSetChanges() {
+    public void showEditPrompt_ChangeCountry_FieldsSetChanges() {
         setUpAddressUiComponents(
                 List.of(
                         new AutofillAddressUiComponent(
@@ -581,22 +533,24 @@ public class AddressEditorTest {
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(null, unused -> {});
+        mAddressEditor.showEditPrompt(null, unused -> {});
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
-        ListModel<FieldItem> editorFields =
+        ListModel<EditorItem> editorFields =
                 mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
 
         // editorFields[0] - country dropdown.
         // editorFields[1] - sorting code field.
         // editorFields[2] - phone number field.
-        assertEquals(3, editorFields.size());
+        // editorFields[3] - required notice.
+        assertEquals(4, editorFields.size());
         assertThat(
                 StreamSupport.stream(
                                 Spliterators.spliteratorUnknownSize(
                                         editorFields.iterator(), Spliterator.ORDERED),
                                 false)
                         .skip(1)
+                        .limit(2)
                         .map(
                                 item -> {
                                     return item.model.get(TEXT_FIELD_TYPE);
@@ -607,18 +561,20 @@ public class AddressEditorTest {
         PropertyModel countryDropdown = editorFields.get(0).model;
 
         setDropdownKey(countryDropdown, "DE");
-        ListModel<FieldItem> editorFieldsGermany =
+        ListModel<EditorItem> editorFieldsGermany =
                 mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - street address field.
         // editorFields[2] - phone number field.
-        assertEquals(3, editorFieldsGermany.size());
+        // editorFields[3] - required notice.
+        assertEquals(4, editorFieldsGermany.size());
         assertThat(
                 StreamSupport.stream(
                                 Spliterators.spliteratorUnknownSize(
                                         editorFieldsGermany.iterator(), Spliterator.ORDERED),
                                 false)
                         .skip(1)
+                        .limit(2)
                         .map(
                                 item -> {
                                     return item.model.get(TEXT_FIELD_TYPE);
@@ -630,7 +586,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AlterAddressProfile_Cancel() {
+    public void showEditPrompt_AlterAddressProfile_Cancel() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
                         unused -> {
@@ -641,15 +597,15 @@ public class AddressEditorTest {
                 .getRegionSubKeys(anyString(), any());
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
                 mDoneCallback,
                 mCancelCallback);
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
-        assertEquals(10, editorFields.size());
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        assertEquals(11, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
         editorFields.get(1).model.set(VALUE, "New Name");
@@ -663,7 +619,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AlterAddressProfile_CommitChanges() {
+    public void showEditPrompt_AlterAddressProfile_CommitChanges() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
                         unused -> {
@@ -675,15 +631,15 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
                 mDoneCallback,
                 mCancelCallback);
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
-        assertEquals(10, editorFields.size());
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        assertEquals(11, editorFields.size());
 
         // Verify behaviour only on the relevant subset of fields.
         editorFields.get(3).model.set(VALUE, "New locality");
@@ -695,16 +651,18 @@ public class AddressEditorTest {
         verify(mCancelCallback, times(0)).onResult(any());
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
-        assertEquals("New locality", address.getProfile().getLocality());
-        assertEquals("New dependent locality", address.getProfile().getDependentLocality());
-        assertEquals("New organization", address.getProfile().getCompanyName());
+        assertEquals("New locality", address.getProfile().getInfo(FieldType.ADDRESS_HOME_CITY));
+        assertEquals(
+                "New dependent locality",
+                address.getProfile().getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
+        assertEquals("New organization", address.getProfile().getInfo(FieldType.COMPANY_NAME));
     }
 
     @Test
     @SmallTest
-    public void edit_AlterAddressProfile_CommitChanges_InvisibleFieldsNotReset() {
+    public void showEditPrompt_AlterAddressProfile_CommitChanges_InvisibleFieldsNotReset() {
         // Make all fields optional to avoid setting them manually.
-        doNothing().when(mAutofillProfileBridgeJni).getRequiredFields(anyString(), anyList());
+        when(mAutofillProfileBridgeJni.getRequiredFields(anyString())).thenReturn(new int[0]);
         // Whitelist only full name, admin area and locality.
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS.subList(0, 3), /* countryCode= */ "US");
         doAnswer(
@@ -717,20 +675,21 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
                 mDoneCallback,
                 mCancelCallback);
 
         assertNotNull(mAddressEditor.getEditorModelForTesting());
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
-        ListModel<FieldItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - full name field.
         // editorFields[2] - admin area field.
         // editorFields[3] - locality field.
         // editorFields[4] - phone number field.
-        assertEquals(5, editorFields.size());
+        // editorFields[5] - required notice.
+        assertEquals(6, editorFields.size());
 
         editorModel.get(DONE_RUNNABLE).run();
         verify(mDoneCallback, times(1)).onResult(mAddressCapture.capture());
@@ -739,16 +698,16 @@ public class AddressEditorTest {
         AutofillAddress address = mAddressCapture.getValue();
         assertNotNull(address);
         AutofillProfile profile = address.getProfile();
-        assertEquals(profile.getStreetAddress(), "111 First St");
-        assertEquals(profile.getDependentLocality(), "");
-        assertEquals(profile.getCompanyName(), "Google");
-        assertEquals(profile.getPostalCode(), "90291");
-        assertEquals(profile.getSortingCode(), "");
+        assertEquals("111 First St", profile.getInfo(FieldType.ADDRESS_HOME_STREET_ADDRESS));
+        assertEquals("", profile.getInfo(FieldType.ADDRESS_HOME_DEPENDENT_LOCALITY));
+        assertEquals("Google", profile.getInfo(FieldType.COMPANY_NAME));
+        assertEquals("90291", profile.getInfo(FieldType.ADDRESS_HOME_ZIP));
+        assertEquals("", profile.getInfo(FieldType.ADDRESS_HOME_SORTING_CODE));
     }
 
     @Test
     @SmallTest
-    public void edit_NewAddressProfile_NoInitialValidation() {
+    public void showEditPrompt_NewAddressProfile_NoInitialValidation() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
                         unused -> {
@@ -760,7 +719,7 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(null, unused -> {});
+        mAddressEditor.showEditPrompt(null, unused -> {});
 
         validateErrorMessages(
                 mAddressEditor.getEditorModelForTesting(), /* errorsPresent= */ false);
@@ -768,7 +727,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_NewAddressProfile_FieldsAreValidatedAfterSave() {
+    public void showEditPrompt_NewAddressProfile_FieldsAreValidatedAfterSave() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
                         unused -> {
@@ -780,7 +739,7 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(null, unused -> {});
+        mAddressEditor.showEditPrompt(null, unused -> {});
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
@@ -791,7 +750,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AccountAddressProfile_FieldsAreImmediatelyValidated() {
+    public void showEditPrompt_AccountAddressProfile_FieldsAreImmediatelyValidated() {
         AutofillProfile profile = new AutofillProfile(sProfile);
         profile.setInfo(FieldType.ADDRESS_HOME_STATE, "");
         profile.setInfo(FieldType.ADDRESS_HOME_CITY, "");
@@ -810,7 +769,7 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, profile, mPersonalDataManager), unused -> {});
 
         validateErrorMessages(mAddressEditor.getEditorModelForTesting(), /* errorsPresent= */ true);
@@ -818,7 +777,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AccountAddressProfile_FieldsAreValidatedAfterSave() {
+    public void showEditPrompt_AccountAddressProfile_FieldsAreValidatedAfterSave() {
         AutofillProfile profile = new AutofillProfile(sProfile);
         profile.setInfo(FieldType.ADDRESS_HOME_STATE, "");
         profile.setInfo(FieldType.ADDRESS_HOME_CITY, "");
@@ -837,7 +796,7 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, profile, mPersonalDataManager), unused -> {});
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
@@ -849,7 +808,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void edit_AccountAddressProfile_EmptyFieldsAreValidatedAfterSave() {
+    public void showEditPrompt_AccountAddressProfile_EmptyFieldsAreValidatedAfterSave() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS, /* countryCode= */ "US");
         doAnswer(
                         unused -> {
@@ -861,17 +820,17 @@ public class AddressEditorTest {
 
         mAddressEditor = new AddressEditor(mPersonalDataManager, /* saveToDisk= */ false);
         mAddressEditor.setEditorDialog(mEditorDialog);
-        mAddressEditor.edit(
+        mAddressEditor.showEditPrompt(
                 new AutofillAddress(mActivity, new AutofillProfile(sProfile), mPersonalDataManager),
                 unused -> {});
 
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
-        ListModel<FieldItem> model = editorModel.get(EDITOR_FIELDS);
-        assertEquals(10, model.size());
-        for (FieldItem item : model) {
-            if (item.model.get(IS_REQUIRED)) {
+        ListModel<EditorItem> model = editorModel.get(EDITOR_FIELDS);
+        assertEquals(11, model.size());
+        for (EditorItem item : model) {
+            if (EditorProperties.isEditable(item) && item.model.get(IS_REQUIRED)) {
                 item.model.set(VALUE, "");
             }
         }

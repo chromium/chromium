@@ -113,7 +113,8 @@ TailoredSecurityDesktopDialogManager::~TailoredSecurityDesktopDialogManager() =
     default;
 
 void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
-    Browser* browser) {
+    Browser* browser,
+    base::OnceCallback<void()> on_destroyed_callback) {
   auto model_delegate = std::make_unique<EnabledDialogModelDelegate>();
   auto* model_delegate_ptr = model_delegate.get();
 
@@ -144,6 +145,7 @@ void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
               ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON)))
+          .SetDialogDestroyingCallback(std::move(on_destroyed_callback))
           .Build();
 
   // `window` should always be non-null unless this is called before
@@ -161,7 +163,8 @@ void TailoredSecurityDesktopDialogManager::ShowEnabledDialogForBrowser(
 }
 
 void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
-    Browser* browser) {
+    Browser* browser,
+    base::OnceCallback<void()> on_destroyed_callback) {
   auto model_delegate = std::make_unique<DisabledDialogModelDelegate>();
   auto* model_delegate_ptr = model_delegate.get();
 
@@ -188,6 +191,7 @@ void TailoredSecurityDesktopDialogManager::ShowDisabledDialogForBrowser(
               ui::DialogModel::Button::Params().SetLabel(
                   l10n_util::GetStringUTF16(
                       IDS_TAILORED_SECURITY_DIALOG_SETTINGS_BUTTON)))
+          .SetDialogDestroyingCallback(std::move(on_destroyed_callback))
           .Build();
 
   // `window` should always be non-null unless this is called before

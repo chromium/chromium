@@ -51,8 +51,8 @@ std::ostream& operator<<(std::ostream& out, WMEventType type) {
       return out << "WM_EVENT_PIN";
     case WM_EVENT_PIP:
       return out << "WM_EVENT_PIP";
-    case WM_EVENT_TRUSTED_PIN:
-      return out << "WM_EVENT_TRUSTED_PIN";
+    case WM_EVENT_LOCKED_FULLSCREEN:
+      return out << "WM_EVENT_LOCKED_FULLSCREEN";
     case WM_EVENT_FLOAT:
       return out << "WM_EVENT_FLOAT";
   }
@@ -95,7 +95,7 @@ bool WMEvent::IsCompoundEvent() const {
 bool WMEvent::IsPinEvent() const {
   switch (type_) {
     case WM_EVENT_PIN:
-    case WM_EVENT_TRUSTED_PIN:
+    case WM_EVENT_LOCKED_FULLSCREEN:
       return true;
     default:
       break;
@@ -118,7 +118,7 @@ bool WMEvent::IsTransitionEvent() const {
     case WM_EVENT_RESTORE:
     case WM_EVENT_SHOW_INACTIVE:
     case WM_EVENT_PIN:
-    case WM_EVENT_TRUSTED_PIN:
+    case WM_EVENT_LOCKED_FULLSCREEN:
     case WM_EVENT_PIP:
     case WM_EVENT_FLOAT:
       return true;

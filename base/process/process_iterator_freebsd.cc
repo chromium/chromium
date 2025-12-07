@@ -5,9 +5,9 @@
 #include "base/process/process_iterator.h"
 
 #include <errno.h>
-#include <sys/types.h>
 #include <stddef.h>
 #include <sys/sysctl.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #include "base/logging.h"
@@ -18,7 +18,7 @@ namespace base {
 
 ProcessIterator::ProcessIterator(const ProcessFilter* filter)
     : filter_(filter) {
-  int mib[] = { CTL_KERN, KERN_PROC, KERN_PROC_UID, getuid() };
+  int mib[] = {CTL_KERN, KERN_PROC, KERN_PROC_UID, getuid()};
 
   bool done = false;
   int try_num = 1;
@@ -68,10 +68,11 @@ bool ProcessIterator::CheckForNextProcess() {
   for (; index_of_kinfo_proc_ < kinfo_procs_.size(); ++index_of_kinfo_proc_) {
     size_t length;
     struct kinfo_proc kinfo = kinfo_procs_[index_of_kinfo_proc_];
-    int mib[] = { CTL_KERN, KERN_PROC_ARGS, kinfo.ki_pid };
+    int mib[] = {CTL_KERN, KERN_PROC_ARGS, kinfo.ki_pid};
 
-    if ((kinfo.ki_pid > 0) && (kinfo.ki_stat == SZOMB))
+    if ((kinfo.ki_pid > 0) && (kinfo.ki_stat == SZOMB)) {
       continue;
+    }
 
     length = 0;
     if (sysctl(mib, std::size(mib), NULL, &length, NULL, 0) < 0) {
@@ -88,8 +89,8 @@ bool ProcessIterator::CheckForNextProcess() {
 
     std::string delimiters;
     delimiters.push_back('\0');
-    entry_.cmd_line_args_ = SplitString(data, delimiters,
-                                        KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
+    entry_.cmd_line_args_ =
+        SplitString(data, delimiters, KEEP_WHITESPACE, SPLIT_WANT_NONEMPTY);
 
     size_t exec_name_end = data.find('\0');
     if (exec_name_end == std::string::npos) {
@@ -118,8 +119,9 @@ bool ProcessIterator::CheckForNextProcess() {
 }
 
 bool NamedProcessIterator::IncludeEntry() {
-  if (executable_name_ != entry().exe_file())
+  if (executable_name_ != entry().exe_file()) {
     return false;
+  }
 
   return ProcessIterator::IncludeEntry();
 }

@@ -8,7 +8,6 @@ import android.content.Context;
 
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
 
@@ -17,6 +16,7 @@ import org.chromium.content_public.browser.ChildProcessCreationParams;
  * SplitChromeApplication} for more info.
  */
 public class SplitMonochromeApplication extends SplitChromeApplication {
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
     private static @IdentifierNameString String sImplClassName =
             "org.chromium.chrome.browser.MonochromeApplicationImpl";
 
@@ -27,9 +27,6 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
             if (getApplication().isWebViewProcess()) {
                 WebViewApkApplication.checkForAppRecovery();
             }
-            if (!VersionInfo.isStableBuild() && getApplication().isWebViewProcess()) {
-                WebViewApkApplication.postDeveloperUiLauncherIconTask();
-            }
         }
     }
 
@@ -39,6 +36,9 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
 
     @Override
     public void attachBaseContext(Context context) {
+        // Preloader has to happen first since we may load the native library in the super's
+        // attachBaseContext.
+        WebViewApkApplication.maybeSetPreloader();
         super.attachBaseContext(context);
         initializeMonochromeProcessCommon(getPackageName());
     }
@@ -59,10 +59,8 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
         boolean ignoreVisibilityForImportance = false;
         ChildProcessCreationParams.set(
                 packageName,
-                /* privilegedServicesName= */ null,
                 packageName,
-                /* sandboxedServicesName= */ null,
-                /* isExternalService= */ true,
+                /* isExternalSandboxedService= */ true,
                 LibraryProcessType.PROCESS_CHILD,
                 bindToCaller,
                 ignoreVisibilityForImportance);

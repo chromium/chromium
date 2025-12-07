@@ -7,7 +7,6 @@
 namespace sync_sessions {
 
 BASE_FEATURE(kOptimizeAssociateWindowsAndroid,
-             "OptimizeAssociateWindowsAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace sync_sessions

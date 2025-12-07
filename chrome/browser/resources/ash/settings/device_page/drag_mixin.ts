@@ -8,10 +8,11 @@
  */
 
 import {assert} from 'chrome://resources/js/assert.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {cast} from '../assert_extras.js';
-import {Constructor} from '../common/types.js';
+import type {Constructor} from '../common/types.js';
 
 export interface Position {
   x: number;

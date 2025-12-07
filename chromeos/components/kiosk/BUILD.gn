@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 assert(is_chromeos)
 
 static_library("kiosk") {
@@ -12,16 +10,9 @@ static_library("kiosk") {
     "kiosk_utils.h",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
+    "//components/user_manager",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//components/user_manager" ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
 }
 
 static_library("test_support") {
@@ -31,17 +22,9 @@ static_library("test_support") {
     "kiosk_test_utils.h",
   ]
   deps = [
-    "//build:chromeos_buildflags",
     "//chromeos/crosapi/mojom",
+    "//components/account_id",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
   ]
-  if (is_chromeos_ash) {
-    deps += [
-      "//components/account_id",
-      "//components/user_manager",
-      "//components/user_manager:test_support",
-    ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
 }

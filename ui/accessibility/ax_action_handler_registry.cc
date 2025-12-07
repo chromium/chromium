@@ -7,6 +7,7 @@
 #include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_base.h"
 
 namespace ui {
@@ -22,8 +23,7 @@ void AXActionHandlerRegistry::SetFrameIDForAXTreeID(
     const AXTreeID& ax_tree_id) {
   auto it = frame_to_ax_tree_id_map_.find(frame_id);
   if (it != frame_to_ax_tree_id_map_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   frame_to_ax_tree_id_map_[frame_id] = ax_tree_id;
@@ -39,11 +39,8 @@ void AXActionHandlerRegistry::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void AXActionHandlerRegistry::PerformAction(
-    const ui::AXActionData& action_data) {
-  for (AXActionHandlerObserver& observer : observers_) {
-    observer.PerformAction(action_data);
-  }
+void AXActionHandlerRegistry::PerformAction(const AXActionData& action_data) {
+  observers_.Notify(&AXActionHandlerObserver::PerformAction, action_data);
 }
 
 AXActionHandlerRegistry::FrameID AXActionHandlerRegistry::GetFrameID(
@@ -61,7 +58,7 @@ AXTreeID AXActionHandlerRegistry::GetAXTreeID(
   if (it != frame_to_ax_tree_id_map_.end())
     return it->second;
 
-  return ui::AXTreeIDUnknown();
+  return AXTreeIDUnknown();
 }
 
 AXTreeID AXActionHandlerRegistry::GetOrCreateAXTreeID(
@@ -83,7 +80,7 @@ AXActionHandlerBase* AXActionHandlerRegistry::GetActionHandler(
   return it->second;
 }
 
-void AXActionHandlerRegistry::SetAXTreeID(const ui::AXTreeID& id,
+void AXActionHandlerRegistry::SetAXTreeID(const AXTreeID& id,
                                           AXActionHandlerBase* action_handler) {
   DCHECK(id_to_action_handler_.find(id) == id_to_action_handler_.end());
   id_to_action_handler_[id] = action_handler;
@@ -100,8 +97,7 @@ void AXActionHandlerRegistry::RemoveAXTreeID(AXTreeID ax_tree_id) {
   if (action_it != id_to_action_handler_.end())
     id_to_action_handler_.erase(action_it);
 
-  for (AXActionHandlerObserver& observer : observers_)
-    observer.TreeRemoved(ax_tree_id);
+  observers_.Notify(&AXActionHandlerObserver::TreeRemoved, ax_tree_id);
 }
 
 AXActionHandlerRegistry::AXActionHandlerRegistry() = default;

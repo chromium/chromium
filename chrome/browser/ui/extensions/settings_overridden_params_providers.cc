@@ -4,14 +4,16 @@
 
 #include "chrome/browser/ui/extensions/settings_overridden_params_providers.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/extensions/controlled_home_bubble_delegate.h"
+#include "chrome/browser/ui/extensions/controlled_home_dialog_controller.h"
 #include "chrome/browser/ui/extensions/settings_api_bubble_helpers.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/url_constants.h"
@@ -19,10 +21,13 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/google/core/common/google_util.h"
 #include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_url_handler.h"
+#include "extensions/browser/extension_pref_value_map.h"
+#include "extensions/browser/extension_pref_value_map_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
@@ -40,8 +45,8 @@ size_t GetNumberOfExtensionsThatOverrideSearch(Profile* profile) {
     auto* const settings = extensions::SettingsOverrides::Get(extension.get());
     return settings && settings->search_engine;
   };
-  return base::ranges::count_if(registry->enabled_extensions(),
-                                overrides_search);
+  return std::ranges::count_if(registry->enabled_extensions(),
+                               overrides_search);
 }
 
 // Returns true if the given |template_url| corresponds to Google search.
@@ -99,20 +104,40 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
   // the search engine.
   DCHECK_GE(num_overriding_extensions, 1u);
 
+  // Another extension would take over.
+  std::optional<const TemplateURL> secondary_extension_search;
   if (num_overriding_extensions > 1) {
-    // Another extension would take over.
-    // NOTE(devlin): Theoretically, we could try and figure out exactly which
-    // extension would take over, and include the origin of the secondary
-    // search. However, this (>1 overriding extension) is an uncommon case, and
-    // all that will happen is that we'll prompt the user that the new extension
-    // is overriding search.
-    return {SecondarySearchInfo::Type::kOther};
+    const std::string& search_pref_key =
+        DefaultSearchManager::kDefaultSearchProviderDataPrefName;
+
+    ExtensionPrefValueMap* extension_prefs_value_map =
+        ExtensionPrefValueMapFactory::GetForBrowserContext(profile);
+
+    std::string primary_ext_id =
+        extension_prefs_value_map->GetExtensionControllingPref(search_pref_key);
+
+    const base::Value* secondary_pref =
+        extension_prefs_value_map->GetEffectivePrefValue(
+            search_pref_key, profile->IsIncognitoProfile(),
+            /* from_incognito= */ nullptr,
+            /* ignore_extension_id= */ primary_ext_id);
+
+    if (secondary_pref) {
+      std::unique_ptr<TemplateURLData> url_data =
+          TemplateURLDataFromDictionary(secondary_pref->GetDict());
+      if (url_data) {
+        secondary_extension_search.emplace(std::move(*url_data));
+      }
+    }
   }
 
   const TemplateURLService* const template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile);
   const TemplateURL* const secondary_search =
-      template_url_service->GetDefaultSearchProviderIgnoringExtensions();
+      secondary_extension_search
+          ? &(*secondary_extension_search)
+          : template_url_service->GetDefaultSearchProviderIgnoringExtensions();
+
   if (!secondary_search) {
     // We couldn't find a default (this could potentially happen if e.g. the
     // default search engine is disabled by policy).
@@ -124,8 +149,9 @@ SecondarySearchInfo GetSecondarySearchInfo(Profile* profile) {
   const GURL search_url = secondary_search->GenerateSearchURL(
       template_url_service->search_terms_data());
   const GURL origin = search_url.DeprecatedGetOriginAsURL();
-  if (google_util::IsGoogleSearchUrl(search_url))
+  if (google_util::IsGoogleSearchUrl(search_url)) {
     return {SecondarySearchInfo::Type::kGoogle, origin};
+  }
 
   if (!template_url_service->ShowInDefaultList(secondary_search)) {
     // Found another search engine, but it's not one of the default options.
@@ -144,8 +170,9 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
   const GURL ntp_url(chrome::kChromeUINewTabURL);
   const extensions::Extension* extension =
       ExtensionWebUI::GetExtensionControllingURL(ntp_url, profile);
-  if (!extension)
+  if (!extension) {
     return std::nullopt;
+  }
 
   // This preference tracks whether users have acknowledged the extension's
   // control, so that they are not warned twice about the same extension.
@@ -156,7 +183,7 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
                                                                      profile);
   // We already know that the extension is the primary NTP controller.
   DCHECK(!possible_rewrites.empty());
-  DCHECK_EQ(extension->url().host_piece(), possible_rewrites[0].host_piece())
+  DCHECK_EQ(extension->url().host(), possible_rewrites[0].host())
       << "Unexpected NTP URL: " << possible_rewrites[0];
 
   // Find whether the default NTP would take over if the extension were to be
@@ -205,7 +232,7 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
 
   std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_NTP_OVERRIDDEN_DIALOG_BODY_GENERIC,
-      base::UTF8ToUTF16(extension->name().c_str()));
+      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
 
   return ExtensionSettingsOverriddenDialog::Params(
       extension->id(), preference_name, histogram_name, std::move(dialog_title),
@@ -216,15 +243,16 @@ std::optional<ExtensionSettingsOverriddenDialog::Params>
 GetSearchOverriddenParams(Profile* profile) {
   const extensions::Extension* extension =
       extensions::GetExtensionOverridingSearchEngine(profile);
-  if (!extension)
+  if (!extension) {
     return std::nullopt;
+  }
 
   // For historical reasons, the search override preference is the same as the
   // one we use for the controlled home setting. We continue this so that
   // users won't see the bubble or dialog UI if they've already acknowledged
   // an older version.
   const char* preference_name =
-      ControlledHomeBubbleDelegate::kAcknowledgedPreference;
+      ControlledHomeDialogController::kAcknowledgedPreference;
 
   // Find the active search engine (which is provided by the extension).
   TemplateURLService* template_url_service =
@@ -295,7 +323,7 @@ GetSearchOverriddenParams(Profile* profile) {
   }
   std::u16string dialog_message = l10n_util::GetStringFUTF16(
       IDS_EXTENSION_SEARCH_OVERRIDDEN_DIALOG_BODY_GENERIC, formatted_search_url,
-      base::UTF8ToUTF16(extension->name().c_str()));
+      extensions::util::GetFixupExtensionNameForUIDisplay(extension->name()));
 
   return ExtensionSettingsOverriddenDialog::Params(
       extension->id(), preference_name, histogram_name, std::move(dialog_title),

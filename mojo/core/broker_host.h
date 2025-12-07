@@ -51,7 +51,8 @@ class BrokerHost : public Channel::Delegate,
   // Channel::Delegate:
   void OnChannelMessage(const void* payload,
                         size_t payload_size,
-                        std::vector<PlatformHandle> handles) override;
+                        std::vector<PlatformHandle> handles,
+                        scoped_refptr<ipcz_driver::Envelope>) override;
   void OnChannelError(Channel::Error error) override;
 
   // base::CurrentThread::DestructionObserver:

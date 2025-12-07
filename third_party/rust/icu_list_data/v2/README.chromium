@@ -1,0 +1,11 @@
+Name: icu_list_data
+URL: https://crates.io/crates/icu_list_data
+Version: 2.1.1
+Revision: 38a49da495248dd1ded84cf306e4ca42e64d5bb3
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/icu_list_data-v2/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Data for the icu_list crate

@@ -12,6 +12,8 @@ option optimize_for = LITE_RUNTIME;
 // //tools/metrics/histograms/metadata/phonehub/enums.xml, and should always
 // reflect it (do not change one without changing the other). Entries should be
 // never modified or deleted. Only additions possible.
+//
+// LINT.IfChange(PhoneHubMessageType)
 enum MessageType {
   PROVIDE_CROS_STATE = 0;
   PHONE_STATUS_SNAPSHOT = 1;
@@ -45,6 +47,7 @@ enum MessageType {
   APP_LIST_UPDATE = 29;
   APP_LIST_INCREMENTAL_UPDATE = 30;
 }
+// LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubMessageTypes)
 
 enum NotificationSetting {
   NOTIFICATIONS_OFF = 0;

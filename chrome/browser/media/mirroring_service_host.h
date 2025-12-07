@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_MIRRORING_SERVICE_HOST_H_
 
 #include "components/mirroring/mojom/mirroring_service.mojom.h"
+#include "content/public/browser/frame_tree_node_id.h"
 #include "url/gurl.h"
 
 namespace mirroring {
@@ -33,7 +34,7 @@ class MirroringServiceHost {
 
   // Replies back with the current tab source id of the active mirroring
   // session if exist. Doesn't need to be called on UI thread.
-  virtual std::optional<int> GetTabSourceId() const = 0;
+  virtual std::optional<content::FrameTreeNodeId> GetTabSourceId() const = 0;
 
   // Fetches the statistics of the current mirroring sessions.
   virtual void GetMirroringStats(
@@ -66,7 +67,7 @@ class MirroringServiceHostFactory {
       delete;
 
   virtual std::unique_ptr<MirroringServiceHost> GetForTab(
-      int32_t frame_tree_node_id) = 0;
+      content::FrameTreeNodeId frame_tree_node_id) = 0;
 
   virtual std::unique_ptr<MirroringServiceHost> GetForDesktop(
       const std::optional<std::string>& media_id) = 0;
@@ -74,7 +75,7 @@ class MirroringServiceHostFactory {
   virtual std::unique_ptr<MirroringServiceHost> GetForOffscreenTab(
       const GURL& presentation_url,
       const std::string& presentation_id,
-      int32_t frame_tree_node_id) = 0;
+      content::FrameTreeNodeId frame_tree_node_id) = 0;
 
  protected:
   MirroringServiceHostFactory();

@@ -54,7 +54,7 @@ class COMPONENT_EXPORT(AUDIO_PUBLIC_CPP) InputIPC
   void OnError(media::mojom::InputStreamErrorCode code) override;
   void OnMutedStateChanged(bool is_muted) override;
 
-  void StreamCreated(media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
+  void StreamCreated(media::mojom::ReadWriteAudioDataPipePtr data_pipe,
                      bool is_muted,
                      const std::optional<base::UnguessableToken>& stream_id);
 

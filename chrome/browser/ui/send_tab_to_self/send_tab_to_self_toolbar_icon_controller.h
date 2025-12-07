@@ -6,22 +6,22 @@
 #define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_ICON_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/send_tab_to_self/receiving_ui_handler.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 
+class BrowserWindowInterface;
 class Profile;
+class ProfileBrowserCollection;
 
 namespace send_tab_to_self {
 
-class SendTabToSelfToolbarIconControllerDelegate;
-
-// Controller for the SendTabToSelfToolbarIconView that decides when to show
+// Controller for send tab to self's toolbar button that decides when to show
 // or hide the icon from the toolbar.
-// Owned by send_tab_to_self::ReceivingUiHandlerRegistry.
 class SendTabToSelfToolbarIconController
     : public send_tab_to_self::ReceivingUiHandler,
-      public BrowserListObserver {
+      public BrowserCollectionObserver {
  public:
   explicit SendTabToSelfToolbarIconController(Profile* profile);
   SendTabToSelfToolbarIconController(
@@ -30,36 +30,34 @@ class SendTabToSelfToolbarIconController
       const SendTabToSelfToolbarIconController&) = delete;
   ~SendTabToSelfToolbarIconController() override;
 
+  // Returns true if the toolbar button can be shown for the provided browser.
+  static bool CanShowOnBrowser(BrowserWindowInterface* bwi);
+
   // ReceivingUiHandler implementation.
   void DisplayNewEntries(
       const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
           new_entries) override;
   void DismissEntries(const std::vector<std::string>& guids) override;
 
-  // BrowserListObserver implementation
-  void OnBrowserSetLastActive(Browser* browser) override;
-
-  void ShowToolbarButton(const SendTabToSelfEntry& entry);
-
-  void AddDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
-
-  void RemoveDelegate(SendTabToSelfToolbarIconControllerDelegate* delegate);
-
-  const Profile* profile() const override;
-
-  void LogNotificationOpened();
-
-  void LogNotificationDismissed();
+  // BrowserCollectionObserver implementation
+  void OnBrowserActivated(BrowserWindowInterface* browser) override;
 
  private:
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  void StorePendingEntry(
+      const SendTabToSelfEntry* new_entry_pending_notification);
 
-  std::unique_ptr<SendTabToSelfEntry> entry_;
+  void ShowToolbarButton(const SendTabToSelfEntry& entry,
+                         BrowserWindowInterface* browser = nullptr);
 
-  std::vector<raw_ptr<SendTabToSelfToolbarIconControllerDelegate>>
-      delegate_list_;
+  const raw_ptr<Profile, DanglingUntriaged> profile_;
 
-  SendTabToSelfToolbarIconControllerDelegate* GetActiveDelegate();
+  // In the case that we cannot immediately display a new entry
+  // (e.g. the active browser is incognito or a different profile), we store it
+  // here and wait until an appropriate browser becomes active to display it.
+  std::unique_ptr<SendTabToSelfEntry> pending_entry_;
+
+  base::ScopedObservation<ProfileBrowserCollection, BrowserCollectionObserver>
+      browser_collection_observer_{this};
 };
 
 }  // namespace send_tab_to_self

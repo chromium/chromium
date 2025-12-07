@@ -13,6 +13,9 @@
   width: 600px;
   height: 300px;
 }
+html.no-parent-height .parent {
+  height: auto;
+}
 .target {
   display: block;
 }
@@ -128,7 +131,7 @@
       { at: 0, expect: `${expected}px` },
       { at: 0.75, expect: `${expected * 0.25 + 50 * 0.75}px` },
       { at: 1, expect: `50px` },
-      { at: 1.25, expect: `${50 * 1.25 - expected * 0.25}px` },
+      { at: 1.1, expect: `${50 * 1.1 - expected * 0.1}px` },
     ]);
 
     test_interpolation({
@@ -136,7 +139,7 @@
       from: 'calc-size(any, 50px)',
       to: `calc-size(${keyword}, size * 2)`,
     }, [
-      { at: -0.1, expect: `${50 * 1.1 - expected * 0.2}px` },
+      { at: -0.05, expect: `${50 * 1.05 - expected * 0.1}px` },
       { at: 0, expect: "50px" },
       { at: 0.75, expect: `${50 * 0.25 + expected * 1.5}px` },
       { at: 1, expect: `${expected * 2}px` },
@@ -331,5 +334,66 @@
     from: 'calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(calc-size(auto, size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2), size / 2 + size / 2)',
     to: 'calc-size(auto, size * 3)',
   });
+
+  test_interpolation({
+    property: 'height',
+    from: 'calc-size(20%, size)',
+    to: 'calc-size(60%, size)',
+  }, [
+    { at: 0, expect: '60px' },
+    { at: 0.5, expect: '120px' },
+    { at: 1, expect: '180px' },
+  ]);
+
+  document.documentElement.classList.add("no-parent-height");
+
+  // repeat the previous test, but with height:auto on the parent
+  test_interpolation({
+    property: 'height',
+    from: 'calc-size(20%, size)',
+    to: 'calc-size(60%, size)',
+  }, [
+    { at: 0, expect: '100px' },
+    { at: 0.5, expect: '100px' },
+    { at: 1, expect: '100px' },
+  ]);
+
+  test_interpolation({
+    property: 'height',
+    from: 'calc-size(50px, size)',
+    to: 'calc-size(60%, size)',
+  }, [
+    { at: 0, expect: '100px' },
+    { at: 0.5, expect: '100px' },
+    { at: 1, expect: '100px' },
+  ]);
+
+  test_interpolation({
+    property: 'height',
+    from: 'calc-size(50px, size)',
+    to: 'calc-size(200px, size)',
+  }, [
+    { at: 0, expect: '50px' },
+    { at: 0.5, expect: '125px' },
+    { at: 1, expect: '200px' },
+  ]);
+
+  document.documentElement.classList.remove("no-parent-height");
+
+  test_no_interpolation({
+    property: 'height',
+    from: 'calc-size(50%, size)',
+    to: 'calc-size(min-content, size)',
+  });
+
+  test_interpolation({
+    property: 'height',
+    from: 'calc-size(50px, size)',
+    to: 'calc-size(min-content, size)',
+  }, [
+    { at: 0, expect: '50px' },
+    { at: 0.5, expect: '75px' },
+    { at: 1, expect: '100px' },
+  ]);
 
 </script>

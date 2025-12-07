@@ -35,6 +35,22 @@ enum class AnnotationType {
 
 std::string AnnotationTypeToString(AnnotationType type);
 
+enum class CategoryType {
+  kEducation = 0,
+
+  // Add new types above this line.
+  kMaxValue = kEducation,
+};
+
+struct Category {
+  // The classified category.
+  CategoryType category_type;
+
+  // A score from 0 to 1, inclusive. The higher the more likely a piece of text
+  // is to be classified as the category type.
+  float score;
+};
+
 }  // namespace page_content_annotations
 
 #endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_TYPE_H_

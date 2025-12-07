@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <sstream>
 #include <string>
 #include <utility>
 
@@ -21,6 +22,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/profiles/delete_profile_helper.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/nuke_profile_directory_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -46,17 +49,20 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/fake_profile_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/supervised_user/core/common/pref_names.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -67,33 +73,31 @@
 #include "chrome/test/base/test_browser_window.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/session/arc_management_transition.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
-#include "chrome/browser/ui/ash/test_wallpaper_controller.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
+#include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
+#include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/session/arc_management_transition.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "components/user_manager/user_names.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_test_helper.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::ASCIIToUTF16;
 
@@ -182,37 +186,24 @@ class ProfileManagerTest : public testing::Test {
     MOCK_METHOD1(OnProfileCreated, void(Profile* profile));
   };
 
-  ProfileManagerTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
-  }
+  ProfileManagerTest() = default;
 
   ProfileManagerTest(const ProfileManagerTest&) = delete;
   ProfileManagerTest& operator=(const ProfileManagerTest&) = delete;
   ~ProfileManagerTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
-    lacros_service_test_helper_ =
-        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
-
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ProfileManagerTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-#endif
-
     // Create a new temporary directory, and store the path
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         CreateProfileManagerForTest());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     ash::UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
+        CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()),
         std::make_unique<wallpaper_handlers::TestWallpaperFetcherDelegate>());
     wallpaper_controller_client_->InitForTesting(&test_wallpaper_controller_);
 
@@ -232,7 +223,7 @@ class ProfileManagerTest : public testing::Test {
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
     content::RunAllTasksUntilIdle();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     session_type_.reset();
     wallpaper_controller_client_.reset();
 #endif
@@ -301,25 +292,26 @@ class ProfileManagerTest : public testing::Test {
     entry->SetIsEphemeral(true);
   }
 
-  TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Helper function to register an user with id |user_id| and create profile
   // with a correct path.
   void RegisterUser(const AccountId& account_id) {
-    ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
+    auto* user_manager = user_manager::UserManager::Get();
+
+    // Add user for testing.
+    {
+      user_manager::TestHelper test_helper(user_manager);
+      if (account_id == user_manager::GuestAccountId()) {
+        ASSERT_TRUE(test_helper.AddGuestUser());
+      } else {
+        ASSERT_TRUE(test_helper.AddRegularUser(account_id));
+      }
+    }
+
     const std::string user_id_hash =
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-    user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash,
-                                                   false /* browser_restart */,
-                                                   false /* is_child */);
+        user_manager::TestHelper::GetFakeUsernameHash(account_id);
+    user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash);
+    ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
     g_browser_process->profile_manager()->GetProfile(
         profile_helper->GetProfilePathByUserIdHash(user_id_hash));
   }
@@ -336,11 +328,20 @@ class ProfileManagerTest : public testing::Test {
 
     const std::string user_email = "user_for_transition@example.com";
     const AccountId account_id =
-        AccountId::FromUserEmailGaiaId(user_email, "1");
+        AccountId::FromUserEmailGaiaId(user_email, GaiaId("1"));
     const std::string user_id_hash =
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
+        user_manager::TestHelper::GetFakeUsernameHash(account_id);
     const base::FilePath dest_path =
         profile_helper->GetProfilePathByUserIdHash(user_id_hash);
+
+    {
+      user_manager::TestHelper test_helper(user_manager);
+      if (user_is_child) {
+        CHECK(test_helper.AddChildUser(account_id));
+      } else {
+        CHECK(test_helper.AddRegularUser(account_id));
+      }
+    }
 
     TestingProfile::Builder builder;
     builder.SetPath(dest_path);
@@ -359,8 +360,7 @@ class ProfileManagerTest : public testing::Test {
                                       *arc_is_managed);
     }
 
-    user_manager->UserLoggedIn(account_id, user_id_hash,
-                               false /* browser_restart */, user_is_child);
+    user_manager->UserLoggedIn(account_id, user_id_hash);
     g_browser_process->profile_manager()->InitProfileUserPrefs(profile.get());
 
     return profile;
@@ -369,29 +369,24 @@ class ProfileManagerTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 #endif
 
-  // The path to temporary directory used to contain the test operations. These
-  // come before |task_environment_| to avoid issues around backend threads
+  // The path to temporary directory used to contain the test operations. This
+  // comes before |task_environment_| to avoid issues around backend threads
   // still using the temp directories upon teardown.
   base::ScopedTempDir temp_dir_;
-  ScopedTestingLocalState local_state_;
 
   content::BrowserTaskEnvironment task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_manager::ScopedUserManager test_user_manager_{
-      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
+#if BUILDFLAG(IS_CHROMEOS)
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<ash::UserManagerDelegateImpl>(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
+          ash::CrosSettings::Get())};
   std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_type_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
-      lacros_service_test_helper_;
-
-  base::CallbackListSubscription create_services_subscription_;
 #endif
 };
 
@@ -412,9 +407,8 @@ TEST_F(ProfileManagerTest, GetProfile) {
 TEST_F(ProfileManagerTest, DefaultProfileDir) {
   base::FilePath expected_default =
       base::FilePath().AppendASCII(chrome::kInitialProfile);
-  EXPECT_EQ(
-      expected_default.value(),
-      g_browser_process->profile_manager()->GetInitialProfileDir().value());
+  EXPECT_EQ(expected_default.value(),
+            ProfileManager::GetInitialProfileDir().value());
 }
 
 MATCHER(SameNotNull, "The same non-NULL value for all calls.") {
@@ -423,18 +417,17 @@ MATCHER(SameNotNull, "The same non-NULL value for all calls.") {
   return arg && arg == g_created_profile;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // This functionality only exists on Chrome OS.
 TEST_F(ProfileManagerTest, LoggedInProfileDir) {
   base::FilePath expected_default =
       base::FilePath().AppendASCII(chrome::kInitialProfile);
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
   EXPECT_EQ(expected_default.value(),
-            profile_manager->GetInitialProfileDir().value());
+            ProfileManager::GetInitialProfileDir().value());
 
   constexpr char kTestUserName[] = "test-user@example.com";
-  constexpr char kTestUserGaiaId[] = "0123456789";
+  constexpr GaiaId::Literal kTestUserGaiaId("0123456789");
   const AccountId test_account_id(
       AccountId::FromUserEmailGaiaId(kTestUserName, kTestUserGaiaId));
   auto* user_manager = new ash::FakeChromeUserManager();
@@ -448,9 +441,9 @@ TEST_F(ProfileManagerTest, LoggedInProfileDir) {
   base::FilePath expected_logged_in(
       ash::ProfileHelper::GetUserProfileDir(active_user->username_hash()));
   EXPECT_EQ(expected_logged_in.value(),
-            profile_manager->GetInitialProfileDir().value());
+            ProfileManager::GetInitialProfileDir().value());
   VLOG(1) << temp_dir_.GetPath()
-                 .Append(profile_manager->GetInitialProfileDir())
+                 .Append(ProfileManager::GetInitialProfileDir())
                  .value();
 }
 
@@ -471,13 +464,14 @@ TEST_F(ProfileManagerTest, UserProfileLoading) {
       ProfileManager::GetLastUsedProfile()->IsSameOrParent(signin_profile));
 
   // User signs in but user profile loading has not started.
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test-user@example.com", "0123456789");
+  const AccountId account_id = AccountId::FromUserEmailGaiaId(
+      "test-user@example.com", GaiaId("0123456789"));
   const std::string user_id_hash =
-      user_manager::FakeUserManager::GetFakeUsernameHash(account_id);
-  user_manager::UserManager::Get()->UserLoggedIn(account_id, user_id_hash,
-                                                 false /* browser_restart */,
-                                                 false /* is_child */);
+      user_manager::TestHelper::GetFakeUsernameHash(account_id);
+  auto* user_manager = user_manager::UserManager::Get();
+  ASSERT_TRUE(
+      user_manager::TestHelper(user_manager).AddRegularUser(account_id));
+  user_manager->UserLoggedIn(account_id, user_id_hash);
 
   // Sign-in profile should be returned at this stage. Otherwise, login code
   // ends up in an invalid state. Strange things as in http://crbug.com/728683
@@ -506,7 +500,7 @@ TEST_F(ProfileManagerTest, UserProfileLoading) {
       ProfileManager::GetLastUsedProfile()->IsSameOrParent(user_profile));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfileManagerTest, CreateAndUseTwoProfiles) {
   base::FilePath dest_path1 = temp_dir_.GetPath();
@@ -752,7 +746,7 @@ TEST_F(ProfileManagerTest,
   params_1.profile_path =
       profile_manager->user_data_dir().AppendASCII("Profile 1");
   params_1.profile_name = u"name_1";
-  params_1.gaia_id = "12345";
+  params_1.gaia_id = GaiaId("12345");
   params_1.is_consented_primary_account = true;
   profile_manager->GetProfileAttributesStorage().AddProfile(
       std::move(params_1));
@@ -801,10 +795,11 @@ TEST_F(ProfileManagerTest,
   ASSERT_NE(entry1, nullptr);
 
   // Decrement next profile number to simulate it was never incremented.
-  EXPECT_EQ(local_state()->GetUserPref(prefs::kProfilesNumCreated)->GetInt(),
+  EXPECT_EQ(TestingBrowserProcess::GetGlobal()->local_state()->GetInteger(
+                prefs::kProfilesNumCreated),
             2);
-  local_state()->SetUserPref(prefs::kProfilesNumCreated,
-                             std::make_unique<base::Value>(1));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+      prefs::kProfilesNumCreated, std::make_unique<base::Value>(1));
   // Wipe the profile from profile attributes storage to simulate it got deleted
   // but not wiped from disk.
   profile_manager->GetProfileAttributesStorage().RemoveProfile(
@@ -878,8 +873,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
 
   const base::FilePath supervised_path =
       temp_dir_.GetPath().AppendASCII("Supervised");
-  auto supervised_profile =
-      std::make_unique<TestingProfile>(supervised_path, nullptr);
+  auto supervised_profile = std::make_unique<TestingProfile>(
+      supervised_path, nullptr, Profile::CreateMode::kSynchronous);
   supervised_profile->GetPrefs()->SetString(prefs::kSupervisedUserId,
                                             supervised_user::kChildAccountSUID);
 
@@ -892,8 +887,8 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
 
   const base::FilePath nonsupervised_path =
       temp_dir_.GetPath().AppendASCII("Non-Supervised");
-  auto nonsupervised_profile =
-      std::make_unique<TestingProfile>(nonsupervised_path, nullptr);
+  auto nonsupervised_profile = std::make_unique<TestingProfile>(
+      nonsupervised_path, nullptr, Profile::CreateMode::kSynchronous);
   profile_manager->RegisterTestingProfile(std::move(nonsupervised_profile),
                                           true);
 
@@ -908,14 +903,14 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   EXPECT_FALSE(entry->IsOmitted());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileManagerTest, GetSystemProfilePath) {
   base::FilePath system_profile_path = ProfileManager::GetSystemProfilePath();
   base::FilePath expected_path = temp_dir_.GetPath();
   expected_path = expected_path.Append(chrome::kSystemProfileDir);
   EXPECT_EQ(expected_path, system_profile_path);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 // Test profile manager that creates all profiles as guest by default.
 class UnittestGuestProfileManager : public FakeProfileManager {
@@ -925,12 +920,14 @@ class UnittestGuestProfileManager : public FakeProfileManager {
 
   std::unique_ptr<TestingProfile> BuildTestingProfile(
       const base::FilePath& path,
-      Delegate* delegate) override {
+      Delegate* delegate,
+      Profile::CreateMode create_mode) override {
     TestingProfile::Builder builder;
     if (create_profiles_as_guest_)
       builder.SetGuestSession();
     builder.SetPath(path);
     builder.SetDelegate(delegate);
+    builder.SetCreateMode(create_mode);
     return builder.Build();
   }
 
@@ -950,7 +947,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
   ~ProfileManagerGuestTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
     cl->AppendSwitch(ash::switches::kGuestSession);
     cl->AppendSwitch(::switches::kIncognito);
@@ -958,7 +955,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
 
     ProfileManagerTest::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     RegisterUser(user_manager::GuestAccountId());
 #endif
   }
@@ -977,13 +974,6 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
     return profile_manager_unique;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::FakeChromeUserManager* GetFakeUserManager() const {
-    return static_cast<ash::FakeChromeUserManager*>(
-        user_manager::UserManager::Get());
-  }
-#endif
-
  private:
   raw_ptr<UnittestGuestProfileManager, DanglingUntriaged>
       unittest_profile_manager_ = nullptr;
@@ -999,7 +989,7 @@ TEST_F(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
   EXPECT_TRUE(profile->IsOffTheRecord());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileManagerGuestTest, GuestProfileIncognito) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   EXPECT_TRUE(primary_profile->IsOffTheRecord());
@@ -1038,15 +1028,17 @@ TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  local_state()->SetUserPref(prefs::kBackgroundModeEnabled,
-                             std::make_unique<base::Value>(true));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+      prefs::kBackgroundModeEnabled, std::make_unique<base::Value>(true));
 
   // Setting a pref which is not applicable to a system (i.e., Android in this
   // case) does not necessarily create it. Don't bother continuing with the
   // test if this pref doesn't exist because it will not load the profiles if
   // it cannot verify that the pref for background mode is enabled.
-  if (!local_state()->HasPrefPath(prefs::kBackgroundModeEnabled))
+  if (!TestingBrowserProcess::GetGlobal()->local_state()->HasPrefPath(
+          prefs::kBackgroundModeEnabled)) {
     return;
+  }
 
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
@@ -1054,21 +1046,21 @@ TEST_F(ProfileManagerTest, AutoloadProfilesWithBackgroundApps) {
   params_1.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_1");
   params_1.profile_name = u"name_1";
-  params_1.gaia_id = "12345";
+  params_1.gaia_id = GaiaId("12345");
   params_1.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_1));
   ProfileAttributesInitParams params_2;
   params_2.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_2");
   params_2.profile_name = u"name_2";
-  params_2.gaia_id = "23456";
+  params_2.gaia_id = GaiaId("23456");
   params_2.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_2));
   ProfileAttributesInitParams params_3;
   params_3.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_3");
   params_3.profile_name = u"name_3";
-  params_3.gaia_id = "34567";
+  params_3.gaia_id = GaiaId("34567");
   params_3.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_3));
 
@@ -1088,8 +1080,8 @@ TEST_F(ProfileManagerTest, DoNotAutoloadProfilesIfBackgroundModeOff) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
       profile_manager->GetProfileAttributesStorage();
-  local_state()->SetUserPref(prefs::kBackgroundModeEnabled,
-                             std::make_unique<base::Value>(false));
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetUserPref(
+      prefs::kBackgroundModeEnabled, std::make_unique<base::Value>(false));
 
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
@@ -1097,14 +1089,14 @@ TEST_F(ProfileManagerTest, DoNotAutoloadProfilesIfBackgroundModeOff) {
   params_1.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_1");
   params_1.profile_name = u"name_1";
-  params_1.gaia_id = "12345";
+  params_1.gaia_id = GaiaId("12345");
   params_1.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_1));
   ProfileAttributesInitParams params_2;
   params_2.profile_path =
       profile_manager->user_data_dir().AppendASCII("path_2");
   params_2.profile_name = u"name_2";
-  params_2.gaia_id = "23456";
+  params_2.gaia_id = GaiaId("23456");
   params_2.is_consented_primary_account = true;
   storage.AddProfile(std::move(params_2));
 
@@ -1170,7 +1162,7 @@ TEST_F(ProfileManagerTest, InitProfileAttributesStorageForAProfile) {
   EXPECT_EQ(avatar_index, entry->GetAvatarIconIndex());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileManagerTest, InitProfileForChildOnFirstSignIn) {
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       true /* profile_is_new */, false /* arc_signed_in */,
@@ -1210,10 +1202,6 @@ TEST_F(ProfileManagerTest, InitProfileForChildToRegularTransition) {
 }
 
 TEST_F(ProfileManagerTest, InitProfileForUnmanagedToManagedTransition) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       false /* profile_is_child */, false /* user_is_child */,
@@ -1225,10 +1213,6 @@ TEST_F(ProfileManagerTest, InitProfileForUnmanagedToManagedTransition) {
 }
 
 TEST_F(ProfileManagerTest, InitProfileForManagedUserOnFirstSignIn) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       true /* profile_is_new */, false /* arc_signed_in */,
       false /* profile_is_child */, false /* user_is_child */,
@@ -1254,10 +1238,6 @@ TEST_F(ProfileManagerTest,
 
 TEST_F(ProfileManagerTest,
        InitProfileForManagedUserForFirstSignInOnNewVersion) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       false /* profile_is_child */, false /* user_is_child */,
@@ -1269,10 +1249,6 @@ TEST_F(ProfileManagerTest,
 }
 
 TEST_F(ProfileManagerTest, InitProfileForChildUserForFirstSignInOnNewVersion) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(
-      arc::kEnableUnmanagedToManagedTransitionFeature);
-
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       false /* profile_is_new */, true /* arc_signed_in */,
       true /* profile_is_child */, true /* user_is_child */,
@@ -1291,12 +1267,12 @@ TEST_F(ProfileManagerTest, GetLastUsedProfileAllowedByPolicy) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On CrOS, profile returned by GetLastUsedProfile is a sign-in profile that
   // is forced to be off-the-record. That's why we need to create at least one
   // user to get a regular profile.
-  RegisterUser(
-      AccountId::FromUserEmailGaiaId("test-user@example.com", "1234567890"));
+  RegisterUser(AccountId::FromUserEmailGaiaId("test-user@example.com",
+                                              GaiaId("1234567890")));
 #endif
 
   Profile* profile = profile_manager->GetLastUsedProfileAllowedByPolicy();
@@ -1506,7 +1482,7 @@ TEST_F(ProfileManagerTest, LastOpenedProfilesDoesNotContainIncognito) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // There's no Browser object on Android and there's no multi-profiles on Chrome.
 TEST_F(ProfileManagerTest, EphemeralProfilesDontEndUpAsLastProfile) {
   base::FilePath dest_path = temp_dir_.GetPath();
@@ -1630,7 +1606,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   ASSERT_TRUE(base::CreateDirectory(path2));
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, profile_name1);
 
   // Set the last used profiles.
@@ -1701,7 +1677,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, guest_profile_name);
 
   // Set the last used profiles.
@@ -1748,7 +1724,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfilesWithGuestLastUsedProfile) {
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, std::string("Guest Profile"));
 
   profile_manager->GetDeleteProfileHelper().CleanUpEphemeralProfiles();
@@ -1824,18 +1800,35 @@ TEST_F(ProfileManagerTest, DestroyEphemeralProfileOnBrowserClose) {
   std::unique_ptr<Browser> browser2(
       CreateBrowserWithTestWindowForParams(profile_params2));
 
+  // All asynchronous profile loading must complete to prevent accidental
+  // reconstruction of profile2's path. This happens because
+  // SimpleBackendImpl::InitializeIndex() is performed async which, if not
+  // allowed to complete, may be performed after browser2.reset() and profile
+  // path deletion.
+  content::RunAllTasksUntilIdle();
+
   ProfileDeletionWaiter waiter(profile2);
-  // Close the browser for profile2.
+
+  // Confirm that we are not currently waiting for the profile to be destroyed.
+  ASSERT_FALSE(IsProfileDirectoryMarkedForDeletion(dest_path2));
+
+  // Destroy the browser and let browser close tasks run.
   browser2.reset();
+  content::RunAllTasksUntilIdle();
+
+  // Confirm that either we have marked profile2's path for deletion or the path
+  // has been deleted.
+  ASSERT_TRUE(IsProfileDirectoryMarkedForDeletion(dest_path2) ||
+              !base::PathExists(dest_path2));
+
   waiter.Wait();
+  EXPECT_FALSE(base::PathExists(dest_path2));
 
   last_used_profile = profile_manager->GetLastUsedProfile();
   EXPECT_NE(profile1, last_used_profile);
   EXPECT_NE(profile2, last_used_profile);
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
   EXPECT_TRUE(base::PathExists(dest_path1));
-  // |dest_path2| should've been cleaned up from disk.
-  EXPECT_FALSE(base::PathExists(dest_path2));
 }
 
 TEST_F(ProfileManagerTest, ActiveProfileDeleted) {
@@ -1865,7 +1858,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeleted) {
       2u, profile_manager->GetProfileAttributesStorage().GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile.
@@ -1900,7 +1893,7 @@ TEST_F(ProfileManagerTest, LastProfileDeleted) {
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set it as the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile.
@@ -1962,7 +1955,7 @@ TEST_F(ProfileManagerGuestTest, LastProfileDeletedWithGuestActiveProfile) {
   EXPECT_EQ(1u, storage.GetNumberOfProfiles());
 
   // Set the Guest profile as the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, guest_profile_basename);
 
   // Delete the other profile.
@@ -1996,14 +1989,14 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameResetsDefaultName) {
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
   const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile();
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile();
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(profile_name1,
@@ -2032,7 +2025,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesCustomName) {
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
   const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile();
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
@@ -2048,7 +2041,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesCustomName) {
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile();
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(custom_profile_name,
@@ -2077,7 +2070,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
   // Only one local profile means we display IDS_SINGLE_PROFILE_DISPLAY_NAME.
   const std::u16string default_profile_name =
       l10n_util::GetStringUTF16(IDS_SINGLE_PROFILE_DISPLAY_NAME);
-  const std::u16string profile_name1 = storage.ChooseNameForNewProfile(0u);
+  const std::u16string profile_name1 = storage.ChooseNameForNewProfile();
   Profile* profile1 = AddProfileToStorage(profile_manager,
                                           "path_1", profile_name1);
   EXPECT_EQ(default_profile_name,
@@ -2087,14 +2080,14 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
   ProfileAttributesEntry* entry = storage.GetAllProfilesAttributes()[0];
   // For a signed in profile with a default name we still display
   // IDS_SINGLE_PROFILE_DISPLAY_NAME.
-  entry->SetAuthInfo("12345", u"user@gmail.com", true);
+  entry->SetAuthInfo(GaiaId("12345"), u"user@gmail.com", true);
   EXPECT_EQ(profile_name1, entry->GetName());
   EXPECT_EQ(default_profile_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // For a signed in profile with a non-default Gaia given name we display the
   // Gaia given name.
-  entry->SetAuthInfo("12345", u"user@gmail.com", true);
+  entry->SetAuthInfo(GaiaId("12345"), u"user@gmail.com", true);
   const std::u16string gaia_given_name(u"given name");
   entry->SetGAIAGivenName(gaia_given_name);
   EXPECT_EQ(gaia_given_name, entry->GetName());
@@ -2102,7 +2095,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 
   // Multiple profiles means displaying the actual profile names.
-  const std::u16string profile_name2 = storage.ChooseNameForNewProfile(1u);
+  const std::u16string profile_name2 = storage.ChooseNameForNewProfile();
   Profile* profile2 = AddProfileToStorage(profile_manager,
                                           "path_2", profile_name2);
   EXPECT_EQ(gaia_given_name,
@@ -2118,7 +2111,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
   EXPECT_EQ(gaia_given_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 // GetAvatarNameForProfile() is not defined on Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -2148,28 +2141,28 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
       storage.GetProfileAttributesWithPath(profile1->GetPath());
 
   ASSERT_NE(entry, nullptr);
-  entry->SetAuthInfo("12345", email1, true);
+  entry->SetAuthInfo(GaiaId("12345"), email1, true);
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAName(std::u16string());
 
   entry = storage.GetProfileAttributesWithPath(profile2->GetPath());
   ASSERT_NE(entry, nullptr);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // (Default profile, Batman,..) are legacy profile names on Desktop and are
   // not considered default profile names for newly created profiles.
   // We use "Person %n" as the default profile name. Set |SetIsUsingDefaultName|
   // manually to mimick pre-existing profiles.
   entry->SetLocalProfileName(u"Default Profile", true);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-  entry->SetAuthInfo("23456", email2, true);
+  entry->SetAuthInfo(GaiaId("23456"), email2, true);
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAName(std::u16string());
 
   entry = storage.GetProfileAttributesWithPath(profile3->GetPath());
   ASSERT_NE(entry, nullptr);
 
-  entry->SetAuthInfo("34567", email3, true);
+  entry->SetAuthInfo(GaiaId("34567"), email3, true);
   entry->SetGAIAGivenName(std::u16string());
   entry->SetGAIAName(std::u16string());
 
@@ -2221,7 +2214,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
   ProfileAttributesInitParams params;
   params.profile_path = profile_path2;
   params.profile_name = ASCIIToUTF16(profile_basename2);
-  params.gaia_id = "23456";
+  params.gaia_id = GaiaId("23456");
   params.is_consented_primary_account = true;
   storage.AddProfile(std::move(params));
   content::RunAllTasksUntilIdle();
@@ -2230,7 +2223,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNeedsToLoadNextProfile) {
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed, profile_basename1);
 
   // Delete the active profile. This should switch and load the unloaded
@@ -2280,7 +2273,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   ProfileAttributesInitParams params2;
   params2.profile_path = profile_path2;
   params2.profile_name = ASCIIToUTF16(profile_basename2);
-  params2.gaia_id = "23456";
+  params2.gaia_id = GaiaId("23456");
   params2.user_name = ASCIIToUTF16(profile_basename2);
   params2.is_consented_primary_account = true;
   params2.icon_index = 1;
@@ -2288,7 +2281,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   ProfileAttributesInitParams params3;
   params3.profile_path = profile_path3;
   params3.profile_name = ASCIIToUTF16(profile_basename3);
-  params3.gaia_id = "34567";
+  params3.gaia_id = GaiaId("34567");
   params3.user_name = ASCIIToUTF16(profile_basename3);
   params3.is_consented_primary_account = true;
   params3.icon_index = 2;
@@ -2300,7 +2293,7 @@ TEST_F(ProfileManagerTest, ActiveProfileDeletedNextProfileDeletedToo) {
   EXPECT_EQ(3u, storage.GetNumberOfProfiles());
 
   // Set the active profile.
-  PrefService* local_state = g_browser_process->local_state();
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
   local_state->SetString(prefs::kProfileLastUsed,
                          profile_path1.BaseName().MaybeAsASCII());
 
@@ -2355,10 +2348,108 @@ TEST_F(ProfileManagerTest, CannotCreateProfileOutsideUserDirAsync) {
   content::RunAllTasksUntilIdle();
 }
 
-TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
-  base::test::ScopedFeatureList features;
-  features.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+struct ProfileKeepAliveParam {
+  ProfileKeepAliveOrigin origin;
+  bool should_clear_waiting_for_first_browser_window = false;
+};
 
+constexpr ProfileKeepAliveParam params[] = {
+    // Origins that clears
+    // `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow`.
+    {.origin = ProfileKeepAliveOrigin::kBrowserWindow,
+     .should_clear_waiting_for_first_browser_window = true},
+    {.origin = ProfileKeepAliveOrigin::kProfileCreationFlow,
+     .should_clear_waiting_for_first_browser_window = true},
+    {.origin = ProfileKeepAliveOrigin::kProfileStatistics,
+     .should_clear_waiting_for_first_browser_window = true},
+    {.origin = ProfileKeepAliveOrigin::kProfilePickerView,
+     .should_clear_waiting_for_first_browser_window = true},
+    {.origin = ProfileKeepAliveOrigin::kWaitingForGlicView,
+     .should_clear_waiting_for_first_browser_window = true},
+
+    // Origins that do NOT clear
+    // `ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow`.
+    {.origin = ProfileKeepAliveOrigin::kBackgroundMode,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kOffTheRecordProfile,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kDownloadInProgress,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kClearingBrowsingData,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kAppWindow,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kBackgroundSync,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kNotification,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kPendingNotificationClickEvent,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kInFlightPushMessage,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kSessionRestore,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kChromeViewsDelegate,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kDevToolsWindow,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kWebAppPermissionDialogWindow,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kExtensionUpdater,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kPendingNotificationCloseEvent,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kFeedbackDialog,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kWebAppUpdate,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kGettingWebAppInfo,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kCrxInstaller,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kHistoryMenuBridge,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kProfileCreationSamlFlow,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kProfileDeletionProcess,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kIsolatedWebAppInstall,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kIsolatedWebAppUpdate,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kWebAppUninstall,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kOsIntegrationForceUnregistration,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kRemoteDebugging,
+     .should_clear_waiting_for_first_browser_window = false},
+    {.origin = ProfileKeepAliveOrigin::kHeadlessCommand,
+     .should_clear_waiting_for_first_browser_window = false},
+};
+
+std::string ParamsToTestSuffix(
+    const ::testing::TestParamInfo<ProfileKeepAliveParam>& info) {
+  std::stringstream stream;
+  stream << info.param.origin;
+  return stream.str();
+}
+
+class ProfileManagerTestWithParam
+    : public ProfileManagerTest,
+      public testing::WithParamInterface<ProfileKeepAliveParam> {
+ public:
+  ProfileManagerTestWithParam() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDestroySystemProfiles,
+         features::kDestroyProfileOnBrowserClose},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(ProfileManagerTestWithParam, ScopedProfileKeepAlive) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
 
   base::FilePath dest_path = temp_dir_.GetPath().AppendASCII("New Profile");
@@ -2370,67 +2461,75 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
                   ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 1)));
 
   {
-    // Set |profile| refcount to 1. This will cause the profile to get deleted
-    // at the end of this block.
-    ScopedProfileKeepAlive keep_alive(profile,
-                                      ProfileKeepAliveOrigin::kBrowserWindow);
+    // Set |profile| refcount to 1. If this added keep alive has an origin that
+    // should remove the `kWaitingForFirstBrowserWindow` keep alive, it will
+    // cause the profile to get deleted at the end of this block.
+    ScopedProfileKeepAlive keep_alive(profile, GetParam().origin);
 
-    // We added the first browser window. There should be no more
-    // kWaitingForFirstBrowserWindow ref.
+    // We added a keep alive that should be part of the list of keep alives.
+    // Whether `kWaitingForFirstBrowserWindow` ref is removed depends on
+    // `GetParam().should_clear_waiting_for_first_browser_window`.
     EXPECT_THAT(
         profile_manager->GetProfileInfoByPath(dest_path)->keep_alives,
         ::testing::UnorderedElementsAre(
             std::pair<ProfileKeepAliveOrigin, int>(
-                ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow, 0),
-            std::pair<ProfileKeepAliveOrigin, int>(
-                ProfileKeepAliveOrigin::kBrowserWindow, 1)));
+                ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow,
+                GetParam().should_clear_waiting_for_first_browser_window ? 0
+                                                                         : 1),
+            std::pair<ProfileKeepAliveOrigin, int>(GetParam().origin, 1)));
   }
 
   base::RunLoop().RunUntilIdle();
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Profile* should've been destroyed by now.
-  EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  if (GetParam().should_clear_waiting_for_first_browser_window) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+    // Profile* should've been destroyed by now.
+    EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+  } else {
+    // `profile` is still valid since `kWaitingForFirstBrowserWindow` was not
+    // cleared.
+    EXPECT_EQ(profile, profile_manager->GetProfileByPath(dest_path));
+  }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(ProfileManagerTest, RegularSession) {
-  // Setup regular session in LaCrOS.
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      crosapi::mojom::BrowserInitParams::New();
-  init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+INSTANTIATE_TEST_SUITE_P(,
+                         ProfileManagerTestWithParam,
+                         testing::ValuesIn(params),
+                         &ParamsToTestSuffix);
 
-  base::FilePath dest_path = temp_dir_.GetPath();
-  dest_path = dest_path.Append(FILE_PATH_LITERAL("Regular Profile"));
+TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
+  using base::Bucket;
+  using base::BucketsAre;
 
-  // Create and initialize a profile.
+  base::HistogramTester histogram_tester;
+  const std::string kHistogramName = "Profile.NumberOfProfilesAtProfileInit";
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = profile_manager->GetProfile(dest_path);
-
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            std::string());
-  EXPECT_FALSE(profile->IsChild());
-}
-
-TEST_F(ProfileManagerTest, ChildSession) {
-  // Setup child session in LaCrOS.
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      crosapi::mojom::BrowserInitParams::New();
-  init_params->session_type = crosapi::mojom::SessionType::kChildSession;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
-  // Create and initialize a profile.
   base::FilePath dest_path = temp_dir_.GetPath();
-  dest_path = dest_path.Append(FILE_PATH_LITERAL("New Profile"));
 
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const Profile* profile = profile_manager->GetProfile(dest_path);
+  base::FilePath path_1 = dest_path.Append(FILE_PATH_LITERAL("Profile 1"));
+  profile_manager->GetProfile(path_1);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1)));
 
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            supervised_user::kChildAccountSUID);
-  EXPECT_TRUE(profile->IsChild());
+  Profile* profile_2 = profile_manager->GetProfile(
+      dest_path.Append(FILE_PATH_LITERAL("Profile 2")));
+  EXPECT_EQ(profile_manager->GetNumberOfProfiles(), 2u);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+
+  // Incognito profile should not affect the count.
+  EXPECT_TRUE(profile_2->GetPrimaryOTRProfile(/*create_if_needed=*/true));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 1)));
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Delete one profile to decrement the count.
+  profile_manager->GetDeleteProfileHelper().MaybeScheduleProfileForDeletion(
+      path_1, base::DoNothing(), ProfileMetrics::DELETE_PROFILE_USER_MANAGER);
+  content::RunAllTasksUntilIdle();
+
+  profile_manager->GetProfile(dest_path.Append(FILE_PATH_LITERAL("Profile 3")));
+  EXPECT_THAT(histogram_tester.GetAllSamples(kHistogramName),
+              BucketsAre(Bucket(1, 1), Bucket(2, 2)));
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
-#endif

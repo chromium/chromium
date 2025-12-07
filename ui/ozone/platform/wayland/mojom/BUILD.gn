@@ -29,7 +29,7 @@ mojom("mojom") {
         },
         {
           mojom = "wl.mojom.TransformUnion"
-          cpp = "::absl::variant<::gfx::OverlayTransform, ::gfx::Transform>"
+          cpp = "::std::variant<::gfx::OverlayTransform, ::gfx::Transform>"
         },
       ]
       traits_sources = [ "wayland_overlay_config_mojom_traits.cc" ]

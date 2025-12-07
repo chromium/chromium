@@ -16,6 +16,38 @@ TransformNode::TransformNode() = default;
 TransformNode::TransformNode(const TransformNode&) = default;
 TransformNode& TransformNode::operator=(const TransformNode&) = default;
 
+void TransformNode::SetScrollOffset(const gfx::PointF& offset,
+                                    DamageReason damage_reason) {
+  scroll_offset_ = offset;
+  damage_reasons_.Put(damage_reason);
+}
+
+void TransformNode::SetTransformChanged(DamageReason damage_reason) {
+  transform_changed_ = true;
+  damage_reasons_.Put(damage_reason);
+}
+
+void TransformNode::ClearTransformChanged() {
+  transform_changed_ = false;
+  damage_reasons_.Clear();
+}
+
+void TransformNode::CopyTransformChangedFrom(const TransformNode& other) {
+  transform_changed_ = other.transform_changed_;
+  damage_reasons_.PutAll(other.damage_reasons_);
+}
+
+bool TransformNode::SetDamageReasonsForDeserialization(
+    DamageReasonSet reasons) {
+  for (DamageReason reason : reasons) {
+    if (reason > DamageReason::kMaxValue) {
+      return false;
+    }
+  }
+  damage_reasons_ = reasons;
+  return true;
+}
+
 #if DCHECK_IS_ON()
 bool TransformNode::operator==(const TransformNode& other) const = default;
 #endif  // DCHECK_IS_ON()
@@ -31,8 +63,9 @@ void TransformNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetBoolean("flattens_inherited_transform",
                     flattens_inherited_transform);
   value->SetBoolean("will_change_transform", will_change_transform);
-  MathUtil::AddToTracedValue("scroll_offset", scroll_offset, value);
+  MathUtil::AddToTracedValue("scroll_offset", scroll_offset_, value);
   MathUtil::AddToTracedValue("snap_amount", snap_amount, value);
+  value->SetInteger("damage_reasons", damage_reasons_.ToEnumBitmask());
 }
 
 TransformCachedNodeData::TransformCachedNodeData() = default;

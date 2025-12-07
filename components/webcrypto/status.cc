@@ -264,7 +264,7 @@ Status Status::ErrorImportRsaEmptyModulus() {
 Status Status::ErrorGenerateRsaUnsupportedModulus() {
   return Status(blink::kWebCryptoErrorTypeOperation,
                 "The modulus length must be a multiple of 8 bits and >= 256 "
-                "and <= 16384");
+                "and <= 8192");
 }
 
 Status Status::ErrorImportRsaEmptyExponent() {
@@ -374,10 +374,7 @@ Status Status::ErrorHkdfLengthNotWholeByte() {
 }
 
 Status Status::ErrorHkdfDeriveBitsLengthNotSpecified() {
-  // TODO(nharper): The spec might change so that an OperationError should be
-  // thrown here instead of a TypeError.
-  // (https://www.w3.org/Bugs/Public/show_bug.cgi?id=27771)
-  return Status(blink::kWebCryptoErrorTypeType,
+  return Status(blink::kWebCryptoErrorTypeOperation,
                 "No length was specified for the HKDF Derive Bits operation.");
 }
 
@@ -391,12 +388,6 @@ Status Status::ErrorPbkdf2DeriveBitsLengthNotSpecified() {
   return Status(
       blink::kWebCryptoErrorTypeOperation,
       "No length was specified for the PBKDF2 Derive Bits operation.");
-}
-
-Status Status::ErrorPbkdf2DeriveBitsLengthZero() {
-  return Status(
-      blink::kWebCryptoErrorTypeOperation,
-      "A length of 0 was specified for PBKDF2's Derive Bits operation.");
 }
 
 Status Status::ErrorPbkdf2Iterations0() {

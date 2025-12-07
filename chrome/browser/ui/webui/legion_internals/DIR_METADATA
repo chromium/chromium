@@ -1,0 +1,4 @@
+team_email: "chrome-browser-privacy-team@google.com"
+buganizer_public: {
+  component_id: 1457231 # Chromium > Privacy
+}

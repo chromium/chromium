@@ -15,23 +15,13 @@
 #include "snapshot/ios/system_snapshot_ios_intermediate_dump.h"
 
 #include <mach/mach.h>
-#include <stddef.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <sys/utsname.h>
 
-#include <algorithm>
-
-#include "base/apple/mach_logging.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "snapshot/cpu_context.h"
 #include "snapshot/ios/intermediate_dump_reader_util.h"
-#include "snapshot/posix/timezone.h"
-#include "util/ios/ios_intermediate_dump_data.h"
-#include "util/mac/mac_util.h"
-#include "util/numeric/in_range_cast.h"
 
 namespace crashpad {
 

@@ -5,17 +5,16 @@
 #ifndef CHROME_BROWSER_FILE_SELECT_HELPER_H_
 #define CHROME_BROWSER_FILE_SELECT_HELPER_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/files_scan_data.h"
-#include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/directory_lister.h"
@@ -27,6 +26,8 @@
 #endif
 
 class Profile;
+class ScopedDisallowPictureInPicture;
+class ScopedTuckPictureInPicture;
 
 namespace content {
 class FileSelectListener;
@@ -34,6 +35,7 @@ class WebContents;
 }
 
 namespace ui {
+class DialogModel;
 struct SelectedFileInfo;
 }
 
@@ -74,6 +76,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   friend class base::RefCountedThreadSafe<FileSelectHelper>;
   friend class base::DeleteHelper<FileSelectHelper>;
   friend class FileSelectHelperContactsAndroid;
+  friend class FileSelectHelperTest;
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::UI>;
 
@@ -108,6 +111,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       ContentAnalysisCompletionCallback_FolderUpload_OKBad);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, MultipleFileExtensionsForMime);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, ConfirmationDialog);
   FRIEND_TEST_ALL_PREFIXES(policy::DlpFilesControllerAshBrowserTest,
                            FilesUploadCallerPassed);
 
@@ -120,16 +124,6 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   void GetFileTypesInThreadPool(blink::mojom::FileChooserParamsPtr params);
   void GetSanitizedFilenameOnUIThread(
       blink::mojom::FileChooserParamsPtr params);
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-  // Safe Browsing checks are only applied when `params->mode` is
-  // `kSave`, which is only for PPAPI requests.
-  void CheckDownloadRequestWithSafeBrowsing(
-      const base::FilePath& default_path,
-      blink::mojom::FileChooserParamsPtr params);
-  void ProceedWithSafeBrowsingVerdict(const base::FilePath& default_path,
-                                      blink::mojom::FileChooserParamsPtr params,
-                                      bool allowed_by_safe_browsing);
-#endif
   void RunFileChooserOnUIThread(const base::FilePath& default_path,
                                 blink::mojom::FileChooserParamsPtr params);
 
@@ -155,16 +149,19 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
       const base::FilePath& path);
 
   // Kicks off a new directory enumeration.
-  void StartNewEnumeration(const base::FilePath& path);
+  void StartNewEnumeration(const base::FilePath& path,
+                           const std::u16string& display_name);
 
   // net::DirectoryLister::DirectoryListerDelegate overrides.
   void OnListFile(
       const net::DirectoryLister::DirectoryListerData& data) override;
   void OnListDone(int error) override;
 
-  void LaunchConfirmationDialog(
-      const base::FilePath& path,
-      std::vector<ui::SelectedFileInfo> selected_files);
+  std::unique_ptr<ui::DialogModel> CreateConfirmationDialog(
+      const std::u16string& display_name,
+      std::vector<blink::mojom::FileChooserFileInfoPtr> selected_files,
+      base::OnceCallback<
+          void(std::vector<blink::mojom::FileChooserFileInfoPtr>)> callback);
 
   // Cleans up and releases this instance. This must be called after the last
   // callback is received from the enumeration code.
@@ -324,15 +321,17 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   bool abort_on_missing_web_contents_in_tests_ = true;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // True if we've called `PictureInPictureWindowManager::OnFileDialogOpened()`
-  // but have not yet called
-  // `PictureInPictureWindowManager::OnFileDialogClosed()`.
-  bool has_notified_picture_in_picture_window_manager_of_open_dialog_ = false;
+  // When not null, this prevents picture-in-picture windows from opening.
+  std::unique_ptr<ScopedDisallowPictureInPicture>
+      scoped_disallow_picture_in_picture_;
+
+  // When not null, this tucks picture-in-picture windows out of the way.
+  std::unique_ptr<ScopedTuckPictureInPicture> scoped_tuck_picture_in_picture_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   base::WeakPtrFactory<FileSelectHelper> weak_ptr_factory_{this};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_FILE_SELECT_HELPER_H_

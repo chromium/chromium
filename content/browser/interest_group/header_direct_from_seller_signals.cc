@@ -15,7 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -210,14 +210,12 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
     const base::Value* maybe_seller_signals = maybe_dict->Find("sellerSignals");
     std::optional<std::string> seller_signals;
     if (maybe_seller_signals) {
-      seller_signals.emplace();
-      JSONStringValueSerializer serializer(&seller_signals.value());
-      if (!serializer.Serialize(*maybe_seller_signals)) {
+      seller_signals = base::WriteJson(*maybe_seller_signals);
+      if (!seller_signals.has_value()) {
         errors.push_back(base::StringPrintf(
             "directFromSellerSignalsHeaderAdSlot: failed to re-serialize "
             "sellerSignals: Ad-Auction-Signals=%s",
             unprocessed_response.response_json.c_str()));
-        seller_signals.reset();
       }
     }
 
@@ -225,14 +223,12 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
         maybe_dict->Find("auctionSignals");
     std::optional<std::string> auction_signals;
     if (maybe_auction_signals) {
-      auction_signals.emplace();
-      JSONStringValueSerializer serializer(&auction_signals.value());
-      if (!serializer.Serialize(*maybe_auction_signals)) {
+      auction_signals = base::WriteJson(*maybe_auction_signals);
+      if (!auction_signals.has_value()) {
         errors.push_back(base::StringPrintf(
             "directFromSellerSignalsHeaderAdSlot: failed to re-serialize "
             "auctionSignals: Ad-Auction-Signals=%s",
             unprocessed_response.response_json.c_str()));
-        auction_signals.reset();
       }
     }
 
@@ -254,11 +250,10 @@ void HeaderDirectFromSellerSignals::ProcessOneResponse(
               item.first.c_str(), unprocessed_response.response_json.c_str()));
           continue;
         }
-        std::string origin_signals;
-        JSONStringValueSerializer serializer(&origin_signals);
-        if (serializer.Serialize(item.second)) {
+        if (std::optional<std::string> origin_signals =
+                base::WriteJson(item.second)) {
           per_buyer_signals_vec.emplace_back(std::move(origin),
-                                             std::move(origin_signals));
+                                             *std::move(origin_signals));
         } else {
           errors.push_back(base::StringPrintf(
               "directFromSellerSignalsHeaderAdSlot: failed to re-serialize "

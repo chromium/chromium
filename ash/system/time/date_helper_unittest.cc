@@ -118,7 +118,7 @@ TEST_F(DateHelperUnittest, GetFormattedInterval) {
 
   SetDefaultLocale("ar");
   EXPECT_EQ(u"10:00–11:45 ص", Format12HrClockInterval(date1, date2));
-  EXPECT_EQ(u"10:00 ص – 10:30 م", Format12HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00 ص – 10:30 م", Format12HrClockInterval(date1, date3));
   EXPECT_EQ(u"10:00–11:45", Format24HrClockInterval(date1, date2));
   EXPECT_EQ(u"10:00–22:30", Format24HrClockInterval(date1, date3));
 }

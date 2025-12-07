@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="pl">
+<translation id="1293272072740285747">Zachowaj tę grupę, aby później dodać karty, lub usuń ją, jeśli nie będzie Ci już potrzebna.
+
+Jeśli ją usuniesz, wszyscy natychmiast utracą dostęp do grupy kart „<ph name="TITLE_OF_GROUP" />” i zostanie ona usunięta ze wszystkich urządzeń.</translation>
+<translation id="1340839264183302272">Opuść grupę</translation>
+<translation id="1419023007528516122">Spowoduje to trwałe usunięcie grupy z urządzenia</translation>
+<translation id="1501480321619201731">Usuń grupę</translation>
+<translation id="2677748264148917807">Wyjdź</translation>
+<translation id="3547352561153509682">Spowoduje to usunięcie grupy ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
+<translation id="381219490185664296">Rozgrupować grupę kart?</translation>
+<translation id="4139634748112164403">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie trwale usunięta</translation>
+<translation id="4431937619879060901">Natychmiast utracisz dostęp do grupy kart „<ph name="GROUP_NAME" />” i zostanie ona usunięta ze wszystkich Twoich urządzeń</translation>
+<translation id="4460014764210899310">Rozgrupuj</translation>
+<translation id="4777866634702576038">Usunąć grupę kart?</translation>
+<translation id="5094423602314093681">Usunąć karty i grupę?</translation>
+<translation id="5647702255748985085">Opuścić grupę?</translation>
+<translation id="742664698522525515">Zachować grupę?</translation>
+<translation id="750886945254958667">Zachowaj tę grupę, aby później dodać karty, lub opuść ją, jeśli nie chcesz już mieć do niej dostępu</translation>
+<translation id="8261506727792406068">Usuń</translation>
+<translation id="870736955561925754">Zamknąć kartę i usunąć grupę?</translation>
+<translation id="8804742093141782941">Zachowaj grupę</translation>
+<translation id="9169141410816678175">Wszyscy natychmiast utracą dostęp do grupy kart „<ph name="GROUP_NAME" />” i zostanie ona usunięta ze wszystkich urządzeń</translation>
+<translation id="9216898458513705996">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" /></translation>
+<translation id="94870150074703282">Usunąć grupę?</translation>
+</translationbundle>

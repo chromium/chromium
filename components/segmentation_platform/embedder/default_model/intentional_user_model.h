@@ -16,6 +16,11 @@ struct Config;
 // TODO(crbug.com/40236552): Add support for non-android platforms.
 class IntentionalUserModel : public DefaultModelProvider {
  public:
+  enum Feature {
+    kFeatureLaunchCauseMainLauncherIcon,
+    kFeatureCount,
+  };
+
   IntentionalUserModel();
   ~IntentionalUserModel() override = default;
 

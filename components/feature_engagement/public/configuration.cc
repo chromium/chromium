@@ -20,8 +20,7 @@ std::ostream& operator<<(std::ostream& os, const SessionRateImpact::Type type) {
       return os << "EXPLICIT";
     default:
       // All cases should be covered.
-      NOTREACHED_IN_MIGRATION();
-      return os;
+      NOTREACHED();
   }
 }
 
@@ -35,8 +34,7 @@ std::ostream& operator<<(std::ostream& os, BlockedBy::Type type) {
       return os << "EXPLICIT";
     default:
       // All cases should be covered.
-      NOTREACHED_IN_MIGRATION();
-      return os;
+      NOTREACHED();
   }
 }
 
@@ -48,8 +46,7 @@ std::ostream& operator<<(std::ostream& os, Blocking::Type type) {
       return os << "NONE";
     default:
       // All cases should be covered.
-      NOTREACHED_IN_MIGRATION();
-      return os;
+      NOTREACHED();
   }
 }
 
@@ -80,8 +77,7 @@ bool Comparator::MeetsCriteria(uint32_t v) const {
       return v != value;
     default:
       // All cases should be covered.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -103,8 +99,7 @@ std::ostream& operator<<(std::ostream& os, const Comparator& comparator) {
       return os << "!=" << comparator.value;
     default:
       // All cases should be covered.
-      NOTREACHED_IN_MIGRATION();
-      return os;
+      NOTREACHED();
   }
 }
 
@@ -195,52 +190,11 @@ std::ostream& operator<<(std::ostream& os, const SessionRateImpact& impact) {
   return os << "] }";
 }
 
-bool operator==(const SessionRateImpact& lhs, const SessionRateImpact& rhs) {
-  return std::tie(lhs.type, lhs.affected_features) ==
-         std::tie(rhs.type, rhs.affected_features);
-}
-
-bool operator==(const BlockedBy& lhs, const BlockedBy& rhs) {
-  return std::tie(lhs.type, lhs.affected_features) ==
-         std::tie(rhs.type, rhs.affected_features);
-}
-
-bool operator==(const Blocking& lhs, const Blocking& rhs) {
-  return lhs.type == rhs.type;
-}
-
-bool operator==(const SnoozeParams& lhs, const SnoozeParams& rhs) {
-  return std::tie(lhs.max_limit, lhs.snooze_interval) ==
-         std::tie(rhs.max_limit, rhs.snooze_interval);
-}
-
 FeatureConfig::FeatureConfig() = default;
 
 FeatureConfig::FeatureConfig(const FeatureConfig& other) = default;
 
 FeatureConfig::~FeatureConfig() = default;
-
-bool operator==(const Comparator& lhs, const Comparator& rhs) {
-  return std::tie(lhs.type, lhs.value) == std::tie(rhs.type, rhs.value);
-}
-
-bool operator<(const Comparator& lhs, const Comparator& rhs) {
-  return std::tie(lhs.type, lhs.value) < std::tie(rhs.type, rhs.value);
-}
-
-bool operator==(const EventConfig& lhs, const EventConfig& rhs) {
-  return std::tie(lhs.name, lhs.comparator, lhs.window, lhs.storage) ==
-         std::tie(rhs.name, rhs.comparator, rhs.window, rhs.storage);
-}
-
-bool operator!=(const EventConfig& lhs, const EventConfig& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const EventConfig& lhs, const EventConfig& rhs) {
-  return std::tie(lhs.name, lhs.comparator, lhs.window, lhs.storage) <
-         std::tie(rhs.name, rhs.comparator, rhs.window, rhs.storage);
-}
 
 bool operator==(const FeatureConfig& lhs, const FeatureConfig& rhs) {
   return std::tie(lhs.valid, lhs.used, lhs.trigger, lhs.event_configs,
@@ -271,12 +225,6 @@ GroupConfig::GroupConfig() = default;
 GroupConfig::GroupConfig(const GroupConfig& other) = default;
 
 GroupConfig::~GroupConfig() = default;
-
-bool operator==(const GroupConfig& lhs, const GroupConfig& rhs) {
-  return std::tie(lhs.valid, lhs.trigger, lhs.event_configs,
-                  lhs.session_rate) ==
-         std::tie(rhs.valid, rhs.trigger, rhs.event_configs, rhs.session_rate);
-}
 
 std::ostream& operator<<(std::ostream& os, const GroupConfig& group_config) {
   os << "{ valid: " << group_config.valid

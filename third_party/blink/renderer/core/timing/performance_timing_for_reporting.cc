@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 
 namespace blink {
@@ -86,11 +87,8 @@ LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
           timing.largest_contentful_paint_image_bpp,
           largest_text_paint_time,
           timing.largest_text_paint_size,
-          timing.largest_contentful_paint_time,
 
           timing.largest_contentful_paint_image_request_priority,
-          timing.is_loaded_from_memory_cache,
-          timing.is_preloaded_with_early_hints,
           merged_unclamped_paint_time};
 }
 
@@ -132,23 +130,23 @@ PerformanceTimingForReporting::BackForwardCacheRestore() const {
   if (!interactive_detector)
     return {};
 
-  WTF::Vector<base::TimeTicks> navigation_starts =
+  Vector<base::TimeTicks> navigation_starts =
       load_timing->BackForwardCacheRestoreNavigationStarts();
-  WTF::Vector<base::TimeTicks> first_paints =
+  Vector<base::TimeTicks> first_paints =
       paint_timing->FirstPaintsAfterBackForwardCacheRestore();
-  WTF::Vector<std::array<
+  Vector<std::array<
       base::TimeTicks,
       WebPerformanceMetricsForReporting::
           kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>>
       request_animation_frames =
           paint_timing->RequestAnimationFramesAfterBackForwardCacheRestore();
-  WTF::Vector<std::optional<base::TimeDelta>> first_input_delays =
+  Vector<std::optional<base::TimeDelta>> first_input_delays =
       interactive_detector->GetFirstInputDelaysAfterBackForwardCacheRestore();
   DCHECK_EQ(navigation_starts.size(), first_paints.size());
   DCHECK_EQ(navigation_starts.size(), request_animation_frames.size());
   DCHECK_EQ(navigation_starts.size(), first_input_delays.size());
 
-  WTF::Vector<BackForwardCacheRestoreTiming> restore_timings(
+  Vector<BackForwardCacheRestoreTiming> restore_timings(
       navigation_starts.size());
   for (wtf_size_t i = 0; i < restore_timings.size(); i++) {
     restore_timings[i].navigation_start =
@@ -172,6 +170,15 @@ uint64_t PerformanceTimingForReporting::FirstPaintForMetrics() const {
   return MonotonicTimeToIntegerMilliseconds(timing->FirstPaintForMetrics());
 }
 
+base::TimeTicks
+PerformanceTimingForReporting::FirstPaintAsMonotonicTimeForMetrics() const {
+  const PaintTiming* timing = GetPaintTiming();
+  if (!timing) {
+    return base::TimeTicks();
+  }
+  return timing->FirstPaintForMetrics();
+}
+
 uint64_t PerformanceTimingForReporting::FirstImagePaint() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
@@ -180,15 +187,12 @@ uint64_t PerformanceTimingForReporting::FirstImagePaint() const {
   return MonotonicTimeToIntegerMilliseconds(timing->FirstImagePaint());
 }
 
-uint64_t
-PerformanceTimingForReporting::FirstContentfulPaintIgnoringSoftNavigations()
-    const {
+uint64_t PerformanceTimingForReporting::FirstContentfulPaint() const {
   const PaintTiming* timing = GetPaintTiming();
   if (!timing)
     return 0;
 
-  return MonotonicTimeToIntegerMilliseconds(
-      timing->FirstContentfulPaintIgnoringSoftNavigations());
+  return MonotonicTimeToIntegerMilliseconds(timing->FirstContentfulPaint());
 }
 
 base::TimeTicks PerformanceTimingForReporting::
@@ -207,7 +211,7 @@ PerformanceTimingForReporting::FirstContentfulPaintAsMonotonicTimeForMetrics()
   if (!timing)
     return base::TimeTicks();
 
-  return timing->FirstContentfulPaintIgnoringSoftNavigations();
+  return timing->FirstContentfulPaint();
 }
 
 uint64_t PerformanceTimingForReporting::FirstMeaningfulPaint() const {
@@ -242,13 +246,13 @@ PerformanceTimingForReporting::LargestContentfulPaintDetailsForMetrics() const {
 
 LargestContentfulPaintDetailsForReporting PerformanceTimingForReporting::
     SoftNavigationLargestContentfulPaintDetailsForMetrics() const {
-  PaintTimingDetector* paint_timing_detector = GetPaintTimingDetector();
-  if (!paint_timing_detector) {
+  SoftNavigationHeuristics* heuristics = GetSoftNavigationHeuristics();
+  if (!heuristics) {
     return {};
   }
 
-  auto timing = paint_timing_detector
-                    ->SoftNavigationLargestContentfulPaintDetailsForMetrics();
+  auto timing =
+      heuristics->SoftNavigationLargestContentfulPaintDetailsForMetrics();
 
   return PopulateLargestContentfulPaintDetailsForReporting(timing);
 }
@@ -499,6 +503,14 @@ PaintTimingDetector* PerformanceTimingForReporting::GetPaintTimingDetector()
   if (!DomWindow())
     return nullptr;
   return &DomWindow()->GetFrame()->View()->GetPaintTimingDetector();
+}
+
+SoftNavigationHeuristics*
+PerformanceTimingForReporting::GetSoftNavigationHeuristics() const {
+  if (!DomWindow()) {
+    return nullptr;
+  }
+  return DomWindow()->GetSoftNavigationHeuristics();
 }
 
 std::optional<base::TimeDelta>

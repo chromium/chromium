@@ -7,6 +7,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/test/test_file_util.h"
 #include "chrome/browser/ash/arc/tracing/test/overview_tracing_test_handler.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
 #include "content/public/test/browser_task_environment.h"
@@ -14,17 +15,16 @@
 namespace arc {
 
 OverviewTracingTestBase::OverviewTracingTestBase()
-    : ash::AshTestBase(std::unique_ptr<base::test::TaskEnvironment>(
-          std::make_unique<content::BrowserTaskEnvironment>(
-              base::test::TaskEnvironment::TimeSource::MOCK_TIME))) {}
+    : ChromeAshTestBase(std::make_unique<content::BrowserTaskEnvironment>(
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
 OverviewTracingTestBase::~OverviewTracingTestBase() = default;
 
 void OverviewTracingTestBase::SetUp() {
-  ash::AshTestBase::SetUp();
-
+  arc_app_test_.PreProfileSetUp();
+  ChromeAshTestBase::SetUp();
   profile_ = std::make_unique<TestingProfile>();
-  arc_app_test_.SetUp(profile_.get());
+  arc_app_test_.PostProfileSetUp(profile_.get());
 
   // WMHelper constructor sets a global instance which the Handler constructor
   // requires.
@@ -48,11 +48,12 @@ void OverviewTracingTestBase::TearDown() {
 
   wm_helper_.reset();
 
-  arc_app_test_.TearDown();
+  arc_app_test_.PreProfileTearDown();
 
   profile_.reset();
 
-  ash::AshTestBase::TearDown();
+  ChromeAshTestBase::TearDown();
+  arc_app_test_.PostProfileTearDown();
 }
 
 void OverviewTracingTestBase::CommitAndPresentFrames(

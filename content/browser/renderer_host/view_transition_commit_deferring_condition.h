@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_VIEW_TRANSITION_COMMIT_DEFERRING_CONDITION_H_
 #define CONTENT_BROWSER_RENDERER_HOST_VIEW_TRANSITION_COMMIT_DEFERRING_CONDITION_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 
@@ -37,6 +36,7 @@ class CONTENT_EXPORT ViewTransitionCommitDeferringCondition
   ~ViewTransitionCommitDeferringCondition() override;
 
   Result WillCommitNavigation(base::OnceClosure resume) override;
+  const char* TraceEventName() const override;
 
  private:
   explicit ViewTransitionCommitDeferringCondition(

@@ -9,6 +9,8 @@
 
 #include "third_party/blink/renderer/core/animation/interpolable_transform_list.h"
 #include "third_party/blink/renderer/core/animation/length_units_checker.h"
+#include "third_party/blink/renderer/core/animation/tree_counting_checker.h"
+#include "third_party/blink/renderer/core/animation/underlying_value_owner.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
@@ -86,11 +88,13 @@ InterpolationValue CSSTransformInterpolationType::MaybeConvertInherit(
 
 InterpolationValue CSSTransformInterpolationType::MaybeConvertValue(
     const CSSValue& value,
-    const StyleResolverState* state,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
-  CHECK(state);
+  const CSSToLengthConversionData& conversion_data =
+      state.CssToLengthConversionData();
   if (auto* list_value = DynamicTo<CSSValueList>(value)) {
     CSSPrimitiveValue::LengthTypeFlags types;
+    bool needs_tree_counting_checker = false;
     for (const CSSValue* item : *list_value) {
       const auto& transform_function = To<CSSFunctionValue>(*item);
       if (transform_function.FunctionType() == CSSValueID::kMatrix ||
@@ -107,9 +111,14 @@ InterpolationValue CSSTransformInterpolationType::MaybeConvertValue(
         DCHECK(primitive_value ||
                (transform_function.FunctionType() == CSSValueID::kPerspective &&
                 argument->IsIdentifierValue()));
-        if (!primitive_value ||
-            (!primitive_value->IsLength() &&
-             !primitive_value->IsCalculatedPercentageWithLength())) {
+        if (!primitive_value) {
+          continue;
+        }
+        if (primitive_value->IsElementDependent()) {
+          needs_tree_counting_checker = true;
+        }
+        if (!primitive_value || (!primitive_value->IsLength() &&
+                                 primitive_value->IsResolvableBeforeLayout())) {
           continue;
         }
         primitive_value->AccumulateLengthUnitTypes(types);
@@ -117,13 +126,17 @@ InterpolationValue CSSTransformInterpolationType::MaybeConvertValue(
     }
 
     if (InterpolationType::ConversionChecker* length_units_checker =
-            LengthUnitsChecker::MaybeCreate(types, *state)) {
+            LengthUnitsChecker::MaybeCreate(types, state)) {
       conversion_checkers.push_back(length_units_checker);
+    }
+    if (needs_tree_counting_checker) {
+      conversion_checkers.push_back(
+          TreeCountingChecker::Create(conversion_data));
     }
   }
 
   return InterpolationValue(InterpolableTransformList::ConvertCSSValue(
-      value, state->CssToLengthConversionData(),
+      value, conversion_data,
       TransformOperations::BoxSizeDependentMatrixBlending::kAllow));
 }
 
@@ -182,7 +195,7 @@ void CSSTransformInterpolationType::Composite(
     double interpolation_fraction) const {
   // We do our compositing behavior in |PreInterpolationCompositeIfNeeded|; see
   // the documentation on that method.
-  underlying_value_owner.Set(*this, value);
+  underlying_value_owner.Set(this, value);
 }
 
 void CSSTransformInterpolationType::ApplyStandardPropertyValue(

@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] customElementRegistry on a newly constrcuted element should return window.customElements by default
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] customElementRegistry on an element inside a declarative shadow DOM should return window.customElements by default
+  assert_equals: expected (object) object "[object CustomElementRegistry]" but got (undefined) undefined
+[FAIL] customElementRegistry on an element inside a declarative shadow DOM with shadowrootcustomelementregistry should return null
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] customElementRegistry on a clone of a declarative shadow tree with shadowrootcustomelementregistry should return null
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] customElementRegistry on a clone of a declarative shadow tree with shadowrootcustomelementregistry should return the global registry after getting inserted into a document
+  assert_equals: expected (object) null but got (undefined) undefined
+[FAIL] customElementRegistry on an element inside a declarative shadow DOM with shadowrootcustomelementregistry should return the scoped registry after calling initialize
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] customElementRegistry on a builtin element created by calling createElement on CustomElementRegistry should return the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] customElementRegistry on an upgarde candidate created by calling createElement on CustomElementRegistry should return the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] customElementRegistry on an unknown element created by calling createElement on CustomElementRegistry should return the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+[FAIL] customElementRegistry on a defined custom element created by calling createElement on CustomElementRegistry should return the registry
+  Failed to construct 'CustomElementRegistry': Illegal constructor
+Harness: the test ran to completion.
+

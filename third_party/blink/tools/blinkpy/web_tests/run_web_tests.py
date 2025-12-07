@@ -35,10 +35,9 @@ import traceback
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host import Host
-from blinkpy.common.system import command_line
+from blinkpy.web_tests import command_line
 from blinkpy.web_tests.controllers.manager import Manager
 from blinkpy.web_tests.models import test_run_results
-from blinkpy.web_tests.port import factory
 from blinkpy.web_tests.views import printing
 
 _log = logging.getLogger(__name__)
@@ -47,7 +46,7 @@ _log = logging.getLogger(__name__)
 def main(argv, stderr):
     options, args = parse_args(argv)
 
-    if options.platform and 'test' in options.platform and not 'browser_test' in options.platform:
+    if options.platform and 'test' in options.platform:
         # It's a bit lame to import mocks into real code, but this allows the user
         # to run tests against the test platform interactively, which is useful for
         # debugging test failures.
@@ -91,8 +90,8 @@ def parse_args(args):
         description=('Runs Blink web tests as described in '
                      '//docs/testing/web_tests.md'))
 
-    factory.add_platform_options_group(parser)
-    factory.add_configuration_options_group(parser)
+    command_line.add_platform_options_group(parser)
+    command_line.add_configuration_options_group(parser)
     printing.add_print_options_group(parser)
 
     fuchsia_group = parser.add_argument_group('Fuchsia-specific Options')
@@ -107,8 +106,8 @@ def parse_args(args):
     fuchsia_group.add_argument('--logs-dir',
                                help='Location of diagnostics logs')
 
-    factory.add_results_options_group(parser)
-    factory.add_testing_options_group(parser)
+    command_line.add_results_options_group(parser)
+    command_line.add_testing_options_group(parser)
 
     # FIXME: Move these into json_results_generator.py.
     json_group = parser.add_argument_group('Result JSON Options')
@@ -183,11 +182,10 @@ def _set_up_derived_options(port, options, args):
                 port.host.filesystem.abspath(path))
         options.additional_platform_directory = additional_platform_directories
 
-    has_explicit_tests = args or options.test_list or options.exclude_test_lists
-    if not has_explicit_tests and options.smoke is None:
+    if not args and not options.test_list and options.smoke is None:
         options.smoke = port.default_smoke_test_only()
     if options.smoke:
-        if not has_explicit_tests and options.num_retries is None:
+        if not args and not options.test_list and options.num_retries is None:
             # Retry failures 3 times if we're running a smoke test without
             # additional tests. SmokeTests is an explicit list of tests, so we
             # wouldn't retry by default without this special case.

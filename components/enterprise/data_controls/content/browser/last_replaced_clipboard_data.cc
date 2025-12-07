@@ -5,10 +5,50 @@
 #include "components/enterprise/data_controls/content/browser/last_replaced_clipboard_data.h"
 
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_util.h"
 
 namespace data_controls {
+
+std::vector<std::u16string> LastReplacedClipboardData::GetAvailableTypes()
+    const {
+  std::vector<std::u16string> types;
+
+  if (!clipboard_paste_data.text.empty()) {
+    types.push_back(ui::kMimeTypePlainText16);
+  }
+
+  if (!clipboard_paste_data.html.empty()) {
+    types.push_back(ui::kMimeTypeHtml16);
+  }
+
+  if (!clipboard_paste_data.svg.empty()) {
+    types.push_back(ui::kMimeTypeSvg16);
+  }
+
+  if (!clipboard_paste_data.rtf.empty()) {
+    types.push_back(ui::kMimeTypeRtf16);
+  }
+
+  if (!clipboard_paste_data.png.empty()) {
+    types.push_back(ui::kMimeTypePng16);
+  }
+
+  if (!clipboard_paste_data.bitmap.empty()) {
+    types.push_back(u"image/bmp");
+  }
+
+  if (!clipboard_paste_data.file_paths.empty()) {
+    types.push_back(ui::kMimeTypeUriList16);
+  }
+
+  for (const auto& entry : clipboard_paste_data.custom_data) {
+    types.push_back(entry.first);
+  }
+
+  return types;
+}
 
 LastReplacedClipboardData& GetLastReplacedClipboardData() {
   static base::NoDestructor<LastReplacedClipboardData> data;

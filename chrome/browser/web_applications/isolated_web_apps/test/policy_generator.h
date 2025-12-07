@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_POLICY_GENERATOR_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_POLICY_GENERATOR_H_
 
+#include <optional>
+
 #include "base/values.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
+#include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "url/gurl.h"
 namespace web_app {
 
@@ -17,17 +21,17 @@ class PolicyGenerator {
   PolicyGenerator();
   ~PolicyGenerator();
 
-  void AddForceInstalledIwa(web_package::SignedWebBundleId id,
-                            GURL update_manifest_url);
+  void AddForceInstalledIwa(
+      const web_package::SignedWebBundleId& web_bundle_id,
+      const GURL& update_manifest_url,
+      const std::optional<UpdateChannel>& update_channel = std::nullopt,
+      const std::optional<IwaVersion>& pinned_version = std::nullopt,
+      bool allow_downgrades = false);
+
   base::Value Generate();
 
  private:
-  struct IwaForceInstalledPolicy {
-    web_package::SignedWebBundleId id_;
-    GURL update_manifest_url_;
-  };
-
-  std::vector<IwaForceInstalledPolicy> app_policies_;
+  base::Value::List app_policies_;
 };
 }  // namespace web_app
 

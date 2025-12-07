@@ -30,7 +30,7 @@ public class RouterTestUtils {
     public static View waitForRouteButton(
             final FragmentManager fragmentManager, final String chromecastName) {
         return waitForView(
-                new Callable<View>() {
+                new Callable<>() {
                     @Override
                     public View call() {
                         Dialog mediaRouteListDialog = getDialog(fragmentManager);
@@ -44,7 +44,7 @@ public class RouterTestUtils {
                             Log.w(TAG, "Cannot find device list");
                             return null;
                         }
-                        ArrayList<View> routesWanted = new ArrayList<View>();
+                        ArrayList<View> routesWanted = new ArrayList<>();
                         mediaRouteList.findViewsWithText(
                                 routesWanted, chromecastName, View.FIND_VIEWS_WITH_TEXT);
                         if (routesWanted.size() == 0) {

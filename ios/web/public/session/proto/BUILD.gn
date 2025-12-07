@@ -31,6 +31,15 @@ source_set("proto_util") {
   ]
 }
 
+source_set("proto_test_util") {
+  sources = [
+    "proto_test_util.cc",
+    "proto_test_util.h",
+  ]
+  public_deps = [ ":proto" ]
+  deps = [ "//third_party/protobuf:protobuf_lite" ]
+}
+
 source_set("unittests") {
   testonly = true
   sources = [ "proto_util_unittest.cc" ]

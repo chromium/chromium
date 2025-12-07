@@ -17,7 +17,7 @@ test(function(t) {
   ctx.fillStyle = 'green';
   ctx.fillRect(0, 0, 10, 10);
 
-  internals.disableCanvasAcceleration(canvas);
+  internals.disableCanvasAccelerationForCanvas2D(canvas);
 
   ctx.fillStyle = 'blue';
   ctx.fillRect(10, 0, 10, 10);
@@ -35,7 +35,7 @@ test(function(t) {
   // Read the canvas content to force rasterization.
   checkPixel(ctx, 5, 5, [0, 128, 0]);
 
-  internals.disableCanvasAcceleration(canvas);
+  internals.disableCanvasAccelerationForCanvas2D(canvas);
 
   ctx.fillStyle = 'blue';
   ctx.fillRect(10, 0, 10, 10);

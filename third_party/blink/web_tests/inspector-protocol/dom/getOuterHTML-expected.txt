@@ -1,0 +1,38 @@
+Tests how DOM domain works with getOuterHTML.
+
+getOuterHTML(declarativeId, includeShadowDOM=false):
+{
+    id : <number>
+    result : {
+        outerHTML : <div id="declarative">            </div>
+    }
+    sessionId : <string>
+}
+
+getOuterHTML(declarativeId, includeShadowDOM=true):
+{
+    id : <number>
+    result : {
+        outerHTML : <div id="declarative"><template shadowrootmode="open">         <div>contents</div>       </template>            </div>
+    }
+    sessionId : <string>
+}
+
+getOuterHTML(jsId, includeShadowDOM=false):
+{
+    id : <number>
+    result : {
+        outerHTML : <div id="js">     </div>
+    }
+    sessionId : <string>
+}
+
+getOuterHTML(jsId, includeShadowDOM=true):
+{
+    id : <number>
+    result : {
+        outerHTML : <div id="js"><template shadowrootmode="open"><div>more contents</div></template>     </div>
+    }
+    sessionId : <string>
+}
+

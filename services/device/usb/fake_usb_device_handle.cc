@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "services/device/usb/usb_device.h"
 
 namespace device {
@@ -78,20 +78,20 @@ void FakeUsbDeviceHandle::ControlTransfer(
     return;
   }
 
-  if (data_[position_++] % 2) {
+  if (UNSAFE_TODO(data_[position_++]) % 2) {
     size_t bytes_transferred = 0;
     if (position_ + 2 <= size_) {
-      bytes_transferred = data_[position_] | data_[position_ + 1] << 8;
+      bytes_transferred = UNSAFE_TODO(data_[position_]) |
+                          UNSAFE_TODO(data_[position_ + 1]) << 8;
       position_ += 2;
       bytes_transferred = std::min(bytes_transferred, buffer->size());
       bytes_transferred = std::min(bytes_transferred, size_ - position_);
     }
 
     if (direction == UsbTransferDirection::INBOUND) {
-      auto source_data = UNSAFE_BUFFERS(base::span(data_.get(), size_));
+      auto source_data = UNSAFE_TODO(base::span(data_.get(), size_));
       base::span(buffer->as_vector())
-          .first(bytes_transferred)
-          .copy_from(source_data.subspan(position_, bytes_transferred));
+          .copy_prefix_from(source_data.subspan(position_, bytes_transferred));
       position_ += bytes_transferred;
     }
 

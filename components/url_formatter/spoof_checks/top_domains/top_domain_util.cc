@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
+
 #include "base/strings/string_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
-namespace url_formatter {
-
-namespace top_domains {
+namespace url_formatter::top_domains {
 
 namespace {
 
@@ -37,6 +36,4 @@ std::string HostnameWithoutRegistry(const std::string& hostname) {
   return out;
 }
 
-}  // namespace top_domains
-
-}  // namespace url_formatter
+}  // namespace url_formatter::top_domains

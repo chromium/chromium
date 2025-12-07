@@ -3,28 +3,29 @@
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-import static android.os.Process.THREAD_PRIORITY_LOWEST;
-
 import android.content.Context;
 import android.os.Process;
 import android.os.SystemClock;
 import android.util.Base64;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.net.CronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
+import org.chromium.net.ProxyOptions;
 import org.chromium.net.impl.CronetLogger.CronetSource;
 
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.net.IDN;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -127,8 +128,6 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
     private static final Pattern INVALID_PKP_HOST_NAME = Pattern.compile("^[0-9\\.]*$");
 
-    private static final int INVALID_THREAD_PRIORITY = THREAD_PRIORITY_LOWEST + 1;
-
     @VisibleForTesting
     static int sApiLevel = VersionSafeCallbacks.ApiVersion.getMaximumAvailableApiLevel();
 
@@ -137,9 +136,8 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     // Private fields are simply storage of configuration for the resulting CronetEngine.
     // See setters below for verbose descriptions.
     private final Context mApplicationContext;
-    private final List<QuicHint> mQuicHints = new LinkedList<>();
-    private final List<Pkp> mPkps = new LinkedList<>();
-    private final CronetSource mSource;
+    private final List<QuicHint> mQuicHints = new ArrayList<>();
+    private final List<Pkp> mPkps = new ArrayList<>();
     private boolean mPublicKeyPinningBypassForLocalTrustAnchorsEnabled;
     private String mUserAgent;
     private String mStoragePath;
@@ -151,19 +149,21 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private String mExperimentalOptions;
     protected long mMockCertVerifier;
     private boolean mNetworkQualityEstimatorEnabled;
-    private int mThreadPriority = INVALID_THREAD_PRIORITY;
+    private @Nullable VersionSafeProxyOptions mProxyOptions;
+
+    private final CronetSource mCronetSource;
 
     /**
      * Default config enables SPDY and QUIC, disables SDCH and HTTP cache.
      *
      * @param context Android {@link Context} for engine to use.
      */
-    public CronetEngineBuilderImpl(Context context, CronetSource source) {
+    public CronetEngineBuilderImpl(Context context, CronetSource cronetSource) {
         var startUptimeMillis = SystemClock.uptimeMillis();
         boolean successful = false;
         mApplicationContext = context.getApplicationContext();
-        mSource = source;
-        mLogger = CronetLoggerFactory.createLogger(mApplicationContext, mSource);
+        mCronetSource = cronetSource;
+        mLogger = CronetLoggerFactory.createLogger(mApplicationContext, cronetSource);
         try {
             enableQuic(true);
             enableHttp2(true);
@@ -174,7 +174,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
             successful = true;
         } finally {
-            maybeLogCronetEngineBuilderInitializedInfo(startUptimeMillis, successful);
+            maybeLogCronetEngineBuilderInitializedInfo(startUptimeMillis, successful, cronetSource);
         }
     }
 
@@ -184,7 +184,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     }
 
     private void maybeLogCronetEngineBuilderInitializedInfo(
-            long startUptimeMillis, boolean successful) {
+            long startUptimeMillis, boolean successful, CronetSource cronetSource) {
         // Normally, the API code is responsible for logging this. However this only happens if the
         // app is bundling an API jar that is recent enough to include the logging code. If it does
         // not, we are on the hook for doing the logging here in impl code.
@@ -199,7 +199,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
             logInfo.author = CronetLogger.CronetEngineBuilderInitializedInfo.Author.IMPL;
             logInfo.uid = Process.myUid();
             logInfo.implVersion = new CronetLogger.CronetVersion(ImplVersion.getCronetVersion());
-            logInfo.source = mSource;
+            logInfo.source = cronetSource;
             logInfo.apiVersion =
                     new CronetLogger.CronetVersion(
                             VersionSafeCallbacks.ApiVersion.getCronetVersion());
@@ -212,13 +212,9 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         }
     }
 
-    CronetSource getCronetSource() {
-        return mSource;
-    }
-
     @Override
     public String getDefaultUserAgent() {
-        return UserAgent.from(mApplicationContext);
+        return UserAgent.from(mApplicationContext, mCronetSource, ImplVersion.getCronetVersion());
     }
 
     @Override
@@ -282,7 +278,10 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
      * @return QUIC User Agent ID string.
      */
     String getDefaultQuicUserAgentId() {
-        return mQuicEnabled ? UserAgent.getQuicUserAgentIdFrom(mApplicationContext) : "";
+        return mQuicEnabled
+                ? UserAgent.getQuicUserAgentIdFrom(
+                        mApplicationContext, ImplVersion.getCronetVersion())
+                : "";
     }
 
     @Override
@@ -500,11 +499,28 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
 
     @Override
     public CronetEngineBuilderImpl setThreadPriority(int priority) {
-        if (priority > THREAD_PRIORITY_LOWEST || priority < -20) {
-            throw new IllegalArgumentException("Thread priority invalid");
-        }
-        mThreadPriority = priority;
+        // Not supported
         return this;
+    }
+
+    @Override
+    public CronetEngineBuilderImpl setProxyOptions(@Nullable ProxyOptions proxyOptions) {
+        if (proxyOptions != null) {
+            mProxyOptions = new VersionSafeProxyOptions(proxyOptions);
+        }
+        return this;
+    }
+
+    @Nullable
+    VersionSafeProxyOptions getProxyOptions() {
+        return mProxyOptions;
+    }
+
+    @Override
+    public Set<Integer> getSupportedConfigOptions() {
+        Set<Integer> supportedConfigOptions = new HashSet<>();
+        supportedConfigOptions.add(PROXY_OPTIONS);
+        return Collections.unmodifiableSet(supportedConfigOptions);
     }
 
     @Override
@@ -512,13 +528,11 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return 0;
     }
 
-    /**
-     * @return thread priority provided by user, or {@code defaultThreadPriority} if none provided.
-     */
+    // Empirical field experiments suggest that, across a variety of devices and apps, DEFAULT
+    // priority is the best tradeoff. Lower priorities come with negative latency impact, while
+    // higher priorities quickly hit diminishing returns.
     @VisibleForTesting
-    int threadPriority(int defaultThreadPriority) {
-        return mThreadPriority == INVALID_THREAD_PRIORITY ? defaultThreadPriority : mThreadPriority;
-    }
+    public static final int NETWORK_THREAD_PRIORITY = Process.THREAD_PRIORITY_DEFAULT;
 
     /**
      * Returns {@link Context} for builder.
@@ -540,7 +554,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
                 /* httpCacheMode= */ publicBuilderHttpCacheMode(),
                 /* experimentalOptions= */ experimentalOptions(),
                 /* networkQualityEstimatorEnabled= */ networkQualityEstimatorEnabled(),
-                /* threadPriority= */ threadPriority(THREAD_PRIORITY_BACKGROUND),
+                /* threadPriority= */ NETWORK_THREAD_PRIORITY,
                 /* cronetInitializationRef= */ getLogCronetInitializationRef());
     }
 }

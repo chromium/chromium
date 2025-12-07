@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.download.home.list.mutator;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.list.ListItem;
 import org.chromium.chrome.browser.download.home.list.ListItem.OfflineItemListItem;
@@ -17,9 +19,10 @@ import java.util.List;
  * - Image item span width.
  * - Margins between {@link OfflineItemFilter} types (image, document, etc.).
  */
+@NullMarked
 public class ListItemPropertySetter implements ListConsumer {
     private final DownloadManagerUiConfig mConfig;
-    private ListConsumer mListConsumer;
+    private @Nullable ListConsumer mListConsumer;
 
     /** Constructor. */
     public ListItemPropertySetter(DownloadManagerUiConfig config) {
@@ -28,6 +31,7 @@ public class ListItemPropertySetter implements ListConsumer {
 
     @Override
     public void onListUpdated(List<ListItem> inputList) {
+        if (mListConsumer == null) return;
         setProperties(inputList);
         mListConsumer.onListUpdated(inputList);
     }

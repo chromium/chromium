@@ -8,7 +8,6 @@
 #include "ash/shell.h"
 #include "ash/webui/print_management/url_constants.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
-#include "base/callback_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/printing/history/print_job_database.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
@@ -17,10 +16,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/test/base/ash/interactive/interactive_ash_test.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/events/test/event_generator.h"
@@ -73,18 +73,6 @@ std::unique_ptr<KeyedService> BuildPrintJobHistoryService(
 
 class PrintManagementInteractiveUiTest : public InteractiveAshTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(
-                base::BindRepeating([](content::BrowserContext* context) {
-                  ash::PrintJobHistoryServiceFactory::GetInstance()
-                      ->SetTestingFactory(
-                          context,
-                          base::BindRepeating(&BuildPrintJobHistoryService));
-                }));
-  }
-
   // InteractiveAshTest:
   void SetUpOnMainThread() override {
     InteractiveAshTest::SetUpOnMainThread();
@@ -95,6 +83,13 @@ class PrintManagementInteractiveUiTest : public InteractiveAshTest {
     // Ensure the OS Settings and Print Management system web apps (SWA) are
     // installed.
     InstallSystemApps();
+  }
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    InteractiveAshTest::SetUpBrowserContextKeyedServices(context);
+    ash::PrintJobHistoryServiceFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating(&BuildPrintJobHistoryService));
   }
 
   ui::test::InteractiveTestApi::MultiStep LaunchPrintManagementApp(
@@ -112,7 +107,7 @@ class PrintManagementInteractiveUiTest : public InteractiveAshTest {
     return Do([]() {
       // Printer settings is opened last so it'll be the last active browser.
       ASSERT_FALSE(BrowserList::GetInstance()->empty());
-      chrome::CloseWindow(BrowserList::GetInstance()->GetLastActive());
+      chrome::CloseWindow(GetLastActiveBrowserWindowInterfaceWithAnyProfile());
     });
   }
 
@@ -121,15 +116,11 @@ class PrintManagementInteractiveUiTest : public InteractiveAshTest {
       // The test always starts from an empty state so the Print Management app
       // will always be the first browser.
       ASSERT_FALSE(BrowserList::GetInstance()->empty());
-      chrome::Reload(BrowserList::GetInstance()->get(0),
+      chrome::Reload(GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+                         ->GetBrowserForMigrationOnly(),
                      WindowOpenDisposition::CURRENT_TAB);
     });
   }
-
- private:
-  // Used for substituting the fake Print Job History keyed service during
-  // startup.
-  base::CallbackListSubscription create_services_subscription_;
 };
 
 IN_PROC_BROWSER_TEST_F(PrintManagementInteractiveUiTest,

@@ -9,13 +9,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,6 +26,7 @@ import java.util.List;
  * associated with Trusted Web Activity client app, which has just been uninstalled or had its data
  * cleared.
  */
+@NullMarked
 public class ClearDataDialogActivity extends AppCompatActivity {
     private static final String EXTRA_APP_NAME = "org.chromium.chrome.extra.app_name";
     private static final String EXTRA_DOMAINS = "org.chromium.chrome.extra.domains";
@@ -38,7 +39,7 @@ public class ClearDataDialogActivity extends AppCompatActivity {
      */
     public static Intent createIntent(
             Context context,
-            String appName,
+            @Nullable String appName,
             Collection<String> linkedDomains,
             Collection<String> linkedOrigins,
             boolean appUninstalled) {
@@ -65,19 +66,16 @@ public class ClearDataDialogActivity extends AppCompatActivity {
                         .setPositiveButton(
                                 R.string.settings,
                                 (ignored1, ignored2) -> {
-                                    recordDecision(true);
                                     openSettings();
                                     finish();
                                 })
                         .setNegativeButton(
                                 R.string.twa_clear_data_dialog_keep_data,
                                 (ignored1, ignored2) -> {
-                                    recordDecision(false);
                                     finish();
                                 })
                         .setOnCancelListener(
                                 (ignored) -> {
-                                    recordDecision(false);
                                     finish();
                                 });
 
@@ -91,23 +89,16 @@ public class ClearDataDialogActivity extends AppCompatActivity {
             assert false : "Invalid extras for ClearDataDialogActivity";
             return;
         }
-        TrustedWebActivitySettingsLauncher.launch(this, origins, domains);
-    }
-
-    private void recordDecision(boolean accepted) {
-        boolean appUninstalled = getIsAppUninstalledFromIntent(getIntent());
-        ChromeApplicationImpl.getComponent()
-                .resolveClearDataDialogResultRecorder()
-                .handleDialogResult(accepted, appUninstalled);
+        TrustedWebActivitySettingsNavigation.launch(this, origins, domains);
     }
 
     @VisibleForTesting
-    static List<String> getOriginsFromIntent(Intent intent) {
+    static @Nullable List<String> getOriginsFromIntent(Intent intent) {
         return IntentUtils.safeGetStringArrayListExtra(intent, EXTRA_ORIGINS);
     }
 
     @VisibleForTesting
-    static List<String> getDomainsFromIntent(Intent intent) {
+    static @Nullable List<String> getDomainsFromIntent(Intent intent) {
         return IntentUtils.safeGetStringArrayListExtra(intent, EXTRA_DOMAINS);
     }
 
@@ -117,7 +108,7 @@ public class ClearDataDialogActivity extends AppCompatActivity {
     }
 
     @VisibleForTesting
-    static String getAppNameFromIntent(Intent intent) {
+    static @Nullable String getAppNameFromIntent(Intent intent) {
         return IntentUtils.safeGetStringExtra(intent, EXTRA_APP_NAME);
     }
 }

@@ -1,0 +1,5 @@
+[document web]
+++[section]
+++++[section]
+++++++[static] name='target'
+++++[push button] name='anchor'

@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_view_spec.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
@@ -31,8 +32,6 @@
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
-
-SVGViewSpec::SVGViewSpec() : zoom_and_pan_(kSVGZoomAndPanUnknown) {}
 
 void SVGViewSpec::Trace(Visitor* visitor) const {
   visitor->Trace(view_box_);
@@ -61,12 +60,21 @@ const SVGViewSpec* SVGViewSpec::CreateForViewElement(
   return view_spec;
 }
 
+const SVGViewSpec* SVGViewSpec::CreateFromAspectRatio(
+    const SVGPreserveAspectRatio* preserve_aspect_ratio) {
+  if (!preserve_aspect_ratio) {
+    return nullptr;
+  }
+  SVGViewSpec* view_spec = MakeGarbageCollected<SVGViewSpec>();
+  view_spec->preserve_aspect_ratio_ = preserve_aspect_ratio;
+  return view_spec;
+}
+
 bool SVGViewSpec::ParseViewSpec(const String& spec) {
   if (spec.empty())
     return false;
-  return WTF::VisitCharacters(spec, [&](const auto* chars, unsigned length) {
-    return ParseViewSpecInternal(chars, chars + length);
-  });
+  return VisitCharacters(
+      spec, [&](auto chars) { return ParseViewSpecInternal(chars); });
 }
 
 namespace {
@@ -81,27 +89,32 @@ enum ViewSpecFunctionType {
 };
 
 template <typename CharType>
-static ViewSpecFunctionType ScanViewSpecFunction(const CharType*& ptr,
-                                                 const CharType* end) {
-  DCHECK_LT(ptr, end);
-  switch (*ptr) {
+static ViewSpecFunctionType ScanViewSpecFunction(
+    const base::span<const CharType> chars,
+    size_t& position) {
+  switch (chars[position]) {
     case 'v':
-      if (SkipToken(ptr, end, "viewBox"))
+      if (SkipToken(chars, "viewBox", position)) {
         return kViewBox;
-      if (SkipToken(ptr, end, "viewTarget"))
+      }
+      if (SkipToken(chars, "viewTarget", position)) {
         return kViewTarget;
+      }
       break;
     case 'z':
-      if (SkipToken(ptr, end, "zoomAndPan"))
+      if (SkipToken(chars, "zoomAndPan", position)) {
         return kZoomAndPan;
+      }
       break;
     case 'p':
-      if (SkipToken(ptr, end, "preserveAspectRatio"))
+      if (SkipToken(chars, "preserveAspectRatio", position)) {
         return kPreserveAspectRatio;
+      }
       break;
     case 't':
-      if (SkipToken(ptr, end, "transform"))
+      if (SkipToken(chars, "transform", position)) {
         return kTransform;
+      }
       break;
   }
   return kUnknown;
@@ -110,21 +123,24 @@ static ViewSpecFunctionType ScanViewSpecFunction(const CharType*& ptr,
 }  // namespace
 
 template <typename CharType>
-bool SVGViewSpec::ParseViewSpecInternal(const CharType* ptr,
-                                        const CharType* end) {
-  if (!SkipToken(ptr, end, "svgView"))
+bool SVGViewSpec::ParseViewSpecInternal(base::span<const CharType> chars) {
+  if (!SkipToken(chars, "svgView")) {
     return false;
+  }
 
-  if (!SkipExactly<CharType>(ptr, end, '('))
+  size_t position = 0;
+  if (!SkipExactly<CharType>(chars, '(', position)) {
     return false;
+  }
 
-  while (ptr < end && *ptr != ')') {
-    ViewSpecFunctionType function_type = ScanViewSpecFunction(ptr, end);
+  while (position < chars.size() && chars[position] != ')') {
+    ViewSpecFunctionType function_type = ScanViewSpecFunction(chars, position);
     if (function_type == kUnknown)
       return false;
 
-    if (!SkipExactly<CharType>(ptr, end, '('))
+    if (!SkipExactly<CharType>(chars, '(', position)) {
       return false;
+    }
 
     switch (function_type) {
       case kViewBox: {
@@ -132,45 +148,56 @@ bool SVGViewSpec::ParseViewSpecInternal(const CharType* ptr,
         float y = 0.0f;
         float width = 0.0f;
         float height = 0.0f;
-        if (!(ParseNumber(ptr, end, x) && ParseNumber(ptr, end, y) &&
-              ParseNumber(ptr, end, width) &&
-              ParseNumber(ptr, end, height, kDisallowWhitespace)))
+        auto span = chars.subspan(position);
+        if (!(ParseNumber(span, x) && ParseNumber(span, y) &&
+              ParseNumber(span, width) &&
+              ParseNumber(span, height, kDisallowWhitespace))) {
           return false;
+        }
         if (width < 0 || height < 0)
           return false;
         view_box_ = MakeGarbageCollected<SVGRect>(x, y, width, height);
+        position = span.data() - chars.data();
         break;
       }
       case kViewTarget: {
         // Ignore arguments.
-        SkipUntil<CharType>(ptr, end, ')');
+        position = SkipUntil<CharType>(chars, position, ')');
         break;
       }
       case kZoomAndPan:
-        zoom_and_pan_ = SVGZoomAndPan::Parse(ptr, end);
+        zoom_and_pan_ = SVGZoomAndPan::Parse(chars, position);
         if (zoom_and_pan_ == kSVGZoomAndPanUnknown)
           return false;
         break;
-      case kPreserveAspectRatio:
-        preserve_aspect_ratio_ = MakeGarbageCollected<SVGPreserveAspectRatio>();
-        if (!preserve_aspect_ratio_->Parse(ptr, end, false))
+      case kPreserveAspectRatio: {
+        auto* preserve_aspect_ratio =
+            MakeGarbageCollected<SVGPreserveAspectRatio>();
+        auto span = chars.subspan(position);
+        if (!preserve_aspect_ratio->Parse(span, false)) {
           return false;
+        }
+        position = span.data() - chars.data();
+        preserve_aspect_ratio_ = preserve_aspect_ratio;
         break;
-      case kTransform:
-        transform_ = MakeGarbageCollected<SVGTransformList>();
-        transform_->Parse(ptr, end);
+      }
+      case kTransform: {
+        auto* transform = MakeGarbageCollected<SVGTransformList>();
+        transform->Parse(chars, position);
+        transform_ = transform;
         break;
+      }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
-    if (!SkipExactly<CharType>(ptr, end, ')'))
+    if (!SkipExactly<CharType>(chars, ')', position)) {
       return false;
+    }
 
-    SkipExactly<CharType>(ptr, end, ';');
+    SkipExactly<CharType>(chars, ';', position);
   }
-  return SkipExactly<CharType>(ptr, end, ')');
+  return SkipExactly<CharType>(chars, ')', position);
 }
 
 }  // namespace blink

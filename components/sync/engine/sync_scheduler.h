@@ -36,11 +36,11 @@ class SyncScheduler : public SyncCycle::Delegate {
 
   // Start the scheduler with the given mode.  If the scheduler is already
   // started, switch to the given mode, although some scheduled tasks from the
-  // old mode may still run. |last_poll_time| is used to schedule the initial
+  // old mode may still run. `last_poll_time` is used to schedule the initial
   // poll timer.
   virtual void Start(Mode mode, base::Time last_poll_time) = 0;
 
-  // Schedules the configuration task. |ready_task| is invoked when the
+  // Schedules the configuration task. `ready_task` is invoked when the
   // configuration finishes.
   // Note: must already be in CONFIGURATION mode.
   virtual void ScheduleConfiguration(
@@ -55,11 +55,11 @@ class SyncScheduler : public SyncCycle::Delegate {
   // The meat and potatoes. All three of the following methods will post a
   // delayed task to attempt the actual nudge (see ScheduleNudgeImpl).
   //
-  // NOTE: |desired_delay| is best-effort. If a nudge is already scheduled to
+  // NOTE: `desired_delay` is best-effort. If a nudge is already scheduled to
   // depart earlier than Now() + delay, the scheduler can and will prefer to
   // batch the two so that only one nudge is sent (at the earlier time). Also,
   // as always with delayed tasks and timers, it's possible the task gets run
-  // any time after |desired_delay|.
+  // any time after `desired_delay`.
 
   // The LocalNudge indicates that we've made a local change, and that the
   // syncer should plan to commit this to the server some time soon.

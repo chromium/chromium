@@ -27,8 +27,7 @@ const char* LoggingScopeToString(LoggingScope scope) {
     // Clean up.
 #undef AUTOFILL_TEMPLATE
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 LogBuffer& operator<<(LogBuffer& buf, LoggingScope scope) {

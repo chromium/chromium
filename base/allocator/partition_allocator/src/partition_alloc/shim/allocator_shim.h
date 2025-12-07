@@ -14,6 +14,7 @@
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_base/component_export.h"
 #include "partition_alloc/partition_alloc_base/types/strong_alias.h"
+#include "partition_alloc/scheduler_loop_quarantine.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
 #include "partition_alloc/tagging.h"
 
@@ -59,6 +60,11 @@ void SetCallNewHandlerOnMallocFailure(bool value);
 // Allocates |size| bytes or returns nullptr. It does NOT call the new_handler,
 // regardless of SetCallNewHandlerOnMallocFailure().
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) void* UncheckedAlloc(size_t size);
+
+// Allocates |n| zeroed elements of size |size| or returns nullptr. It does NOT
+// call the new_handler, regardless of SetCallNewHandlerOnMallocFailure().
+PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
+void* UncheckedCalloc(size_t n, size_t size);
 
 // Reallocates |ptr| to point at |size| bytes with the same alignment as |ptr|,
 // or returns nullptr while leaving the |ptr| unchanged. It does NOT call the
@@ -142,33 +148,30 @@ using EnableBrp =
 using EnableMemoryTagging =
     partition_alloc::internal::base::StrongAlias<class EnableMemoryTaggingTag,
                                                  bool>;
-enum class BucketDistribution : uint8_t { kNeutral, kDenser };
-using SchedulerLoopQuarantine = partition_alloc::internal::base::
-    StrongAlias<class SchedulerLoopQuarantineTag, bool>;
-using ZappingByFreeFlags =
-    partition_alloc::internal::base::StrongAlias<class ZappingByFreeFlagsTag,
+using EnableFreeWithSize =
+    partition_alloc::internal::base::StrongAlias<class EnableFreeWithSizeTag,
                                                  bool>;
-
-using UsePoolOffsetFreelists = partition_alloc::internal::base::
-    StrongAlias<class UsePoolOffsetFreelistsTag, bool>;
-
-using UseSmallSingleSlotSpans = partition_alloc::internal::base::
-    StrongAlias<class UseSmallSingleSlotSpansTag, bool>;
-
+enum class BucketDistribution : uint8_t { kNeutral, kDenser };
+using EventuallyZeroFreedMemory = partition_alloc::internal::base::
+    StrongAlias<class EventuallyZeroFreedMemoryTag, bool>;
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
 // thread-cache on the main (malloc) partition will be disabled.
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
 void ConfigurePartitions(
     EnableBrp enable_brp,
+    size_t brp_extra_extras_size,
     EnableMemoryTagging enable_memory_tagging,
     partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode,
     BucketDistribution distribution,
-    SchedulerLoopQuarantine scheduler_loop_quarantine,
-    size_t scheduler_loop_quarantine_branch_capacity_in_bytes,
-    ZappingByFreeFlags zapping_by_free_flags,
-    UsePoolOffsetFreelists use_pool_offset_freelists,
-    UseSmallSingleSlotSpans use_small_single_slot_spans);
+    partition_alloc::internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_global_config,
+    partition_alloc::internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_thread_local_config,
+    partition_alloc::internal::SchedulerLoopQuarantineConfig
+        scheduler_loop_quarantine_for_advanced_memory_safety_checks_config,
+    EventuallyZeroFreedMemory eventually_zero_freed_memory,
+    EnableFreeWithSize enable_free_with_size);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 

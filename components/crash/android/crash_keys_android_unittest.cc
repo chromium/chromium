@@ -19,23 +19,18 @@ class CrashKeysAndroidTest : public testing::Test {
   void TearDown() override { crash_reporter::ResetCrashKeysForTesting(); }
 };
 
-TEST_F(CrashKeysAndroidTest, Default) {
-  EXPECT_TRUE(GetCrashKeyValue("loaded_dynamic_module").empty());
-  EXPECT_TRUE(GetCrashKeyValue("active_dynamic_module").empty());
-}
-
 TEST_F(CrashKeysAndroidTest, SetAndClear) {
-  SetAndroidCrashKey(CrashKeyIndex::LOADED_DYNAMIC_MODULE, "foobar");
-  SetAndroidCrashKey(CrashKeyIndex::ACTIVE_DYNAMIC_MODULE, "blurp");
-  EXPECT_TRUE(GetCrashKeyValue("loaded_dynamic_module").empty());
-  EXPECT_TRUE(GetCrashKeyValue("active_dynamic_module").empty());
+  EXPECT_TRUE(GetCrashKeyValue("installed_modules").empty());
 
-  ClearAndroidCrashKey(CrashKeyIndex::ACTIVE_DYNAMIC_MODULE);
+  SetAndroidCrashKey(CrashKeyIndex::INSTALLED_MODULES, "foobar");
+  EXPECT_TRUE(GetCrashKeyValue("installed_modules").empty());
+
+  ClearAndroidCrashKey(CrashKeyIndex::APPLICATION_STATUS);
   FlushAndroidCrashKeys();
-  EXPECT_EQ(GetCrashKeyValue("loaded_dynamic_module"), "foobar");
-  EXPECT_TRUE(GetCrashKeyValue("active_dynamic_module").empty());
+  EXPECT_EQ(GetCrashKeyValue("installed_modules"), "foobar");
+  EXPECT_TRUE(GetCrashKeyValue("application_status").empty());
 
-  ClearAndroidCrashKey(CrashKeyIndex::LOADED_DYNAMIC_MODULE);
-  EXPECT_TRUE(GetCrashKeyValue("loaded_dynamic_module").empty());
-  EXPECT_TRUE(GetCrashKeyValue("active_dynamic_module").empty());
+  ClearAndroidCrashKey(CrashKeyIndex::INSTALLED_MODULES);
+  EXPECT_TRUE(GetCrashKeyValue("installed_modules").empty());
+  EXPECT_TRUE(GetCrashKeyValue("application_status").empty());
 }

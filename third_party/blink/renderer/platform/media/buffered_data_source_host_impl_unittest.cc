@@ -4,19 +4,18 @@
 
 #include "third_party/blink/renderer/platform/media/buffered_data_source_host_impl.h"
 
-#include "base/functional/bind.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
 class BufferedDataSourceHostImplTest : public testing::Test {
  public:
   BufferedDataSourceHostImplTest()
-      : host_(base::BindRepeating(
-                  &BufferedDataSourceHostImplTest::ProgressCallback,
-                  base::Unretained(this)),
+      : host_(BindRepeating(&BufferedDataSourceHostImplTest::ProgressCallback,
+                            Unretained(this)),
               &clock_) {}
   BufferedDataSourceHostImplTest(const BufferedDataSourceHostImplTest&) =
       delete;

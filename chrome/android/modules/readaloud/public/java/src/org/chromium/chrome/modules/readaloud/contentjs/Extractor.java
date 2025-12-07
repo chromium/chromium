@@ -5,9 +5,11 @@
 package org.chromium.chrome.modules.readaloud.contentjs;
 
 import org.chromium.base.Promise;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 
 /** Interface for javascript-based extraction of the dateModified tag. */
+@NullMarked
 public interface Extractor {
 
     /**

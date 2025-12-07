@@ -9,6 +9,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -17,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/time/time.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/cancelation_signal.h"
@@ -27,12 +29,16 @@
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"
-#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/data_type_state.pb.h"
 
 namespace sync_pb {
+class DataTypeContext;
+class DataTypeProgressMarker;
+class DataTypeState;
+class GarbageCollectionDirective;
+class GetUpdateTriggers;
 class SyncEntity;
-}
+}  // namespace sync_pb
 
 namespace syncer {
 
@@ -99,8 +105,8 @@ enum class PendingInvalidationStatus {
 //
 // Lives on the sync sequence.
 class DataTypeWorker : public UpdateHandler,
-                        public CommitContributor,
-                        public CommitQueue {
+                       public CommitContributor,
+                       public CommitQueue {
  public:
   // Public for testing.
   enum DecryptionStatus { SUCCESS, DECRYPTION_PENDING, FAILED_TO_DECRYPT };
@@ -119,7 +125,7 @@ class DataTypeWorker : public UpdateHandler,
     kAllNudgedLocalChangesInFlight,
   };
 
-  // |cryptographer|, |nudge_handler| and |cancelation_signal| must be non-null
+  // `cryptographer`, `nudge_handler` and `cancelation_signal` must be non-null
   // and outlive the worker. Calling this will construct the object but not
   // more, ConnectSync() must be called immediately afterwards.
   DataTypeWorker(DataType type,
@@ -136,7 +142,7 @@ class DataTypeWorker : public UpdateHandler,
   ~DataTypeWorker() override;
 
   // Public for testing.
-  // |response_data| must be not null.
+  // `response_data` must be not null.
   static DecryptionStatus PopulateUpdateResponseData(
       const Cryptographer& cryptographer,
       DataType data_type,
@@ -185,6 +191,7 @@ class DataTypeWorker : public UpdateHandler,
   void ApplyUpdates(StatusController* status, bool cycle_done) override;
   void RecordRemoteInvalidation(
       std::unique_ptr<SyncInvalidation> incoming) override;
+  void RecordDownloadFailure(NudgedUpdateResult failure_result) const override;
   void CollectPendingInvalidations(sync_pb::GetUpdateTriggers* msg) override;
   bool HasPendingInvalidations() const override;
 
@@ -215,23 +222,28 @@ class DataTypeWorker : public UpdateHandler,
     // (cf. Cryptographer::CanEncrypt()).
     int get_updates_while_should_have_been_known = 0;
   };
+
   struct PendingInvalidation {
-    PendingInvalidation();
     PendingInvalidation(const PendingInvalidation&) = delete;
     PendingInvalidation& operator=(const PendingInvalidation&) = delete;
     PendingInvalidation(PendingInvalidation&&);
     PendingInvalidation& operator=(PendingInvalidation&&);
     PendingInvalidation(std::unique_ptr<SyncInvalidation> invalidation,
-                        bool is_processed);
+                        bool is_processed,
+                        std::optional<base::TimeTicks> received_time);
     ~PendingInvalidation();
 
     std::unique_ptr<SyncInvalidation> pending_invalidation;
-    // |is_processed| is true, if the invalidation included to GetUpdates
+    // `is_processed` is true, if the invalidation included to GetUpdates
     // trigger message.
     bool is_processed = false;
+
+    // The time when the invalidation was received. Available only during the
+    // browser session, not persisted.
+    std::optional<base::TimeTicks> received_time;
   };
 
-  // Sends |pending_updates_| and |data_type_state_| to the processor if there
+  // Sends `pending_updates_` and `data_type_state_` to the processor if there
   // are no encryption pendencies and initial sync is done. This is called in
   // ApplyUpdates() during a GetUpdates cycle, but also if the processor must be
   // informed of a new encryption key, or the worker just managed to decrypt
@@ -245,14 +257,14 @@ class DataTypeWorker : public UpdateHandler,
   // settings in a good state.
   bool CanCommitItems() const;
 
-  // If |encryption_enabled_| is false, sets the encryption key name in
-  // |data_type_state_| to the empty string. This should usually be a no-op.
-  // If |encryption_enabled_| is true *and* the cryptographer has selected a
+  // If `encryption_enabled_` is false, sets the encryption key name in
+  // `data_type_state_` to the empty string. This should usually be a no-op.
+  // If `encryption_enabled_` is true *and* the cryptographer has selected a
   // (non-empty) default key, sets the value to that default key.
-  // Returns whether the |data_type_state_| key name changed.
+  // Returns whether the `data_type_state_` key name changed.
   bool UpdateTypeEncryptionKeyName();
 
-  // Iterates through all elements in |entries_pending_decryption_| and tries to
+  // Iterates through all elements in `entries_pending_decryption_` and tries to
   // decrypt anything that has encrypted data.
   // Should only be called during a GetUpdates cycle.
   void DecryptStoredEntities();
@@ -262,15 +274,15 @@ class DataTypeWorker : public UpdateHandler,
   // ready (doesn't have pending keys).
   void NudgeIfReadyToCommit();
 
-  // Filters our duplicate updates from |pending_updates_| based on the server
+  // Filters our duplicate updates from `pending_updates_` based on the server
   // id. It discards all of them except the last one.
   void DeduplicatePendingUpdatesBasedOnServerId();
 
-  // Filters our duplicate updates from |pending_updates_| based on the client
+  // Filters our duplicate updates from `pending_updates_` based on the client
   // tag hash. It discards all of them except the last one.
   void DeduplicatePendingUpdatesBasedOnClientTagHash();
 
-  // Filters our duplicate updates from |pending_updates_| based on the
+  // Filters our duplicate updates from `pending_updates_` based on the
   // originator item ID (in practice used for bookmarks only). It discards all
   // of them except the last one.
   void DeduplicatePendingUpdatesBasedOnOriginatorClientItemId();
@@ -287,22 +299,22 @@ class DataTypeWorker : public UpdateHandler,
   // Returns true for keys that have remained unknown for so long that they are
   // not expected to arrive anytime soon. The worker ignores incoming updates
   // encrypted with them, and drops pending ones on the next GetUpdates.
-  // Those keys remain in |unknown_encryption_keys_by_name_|.
+  // Those keys remain in `unknown_encryption_keys_by_name_`.
   bool ShouldIgnoreUpdatesEncryptedWith(const std::string& key_name);
 
-  // If |key_name| should be ignored (cf. ShouldIgnoreUpdatesEncryptedWith()),
-  // drops elements of |entries_pending_decryption_| encrypted with it.
+  // If `key_name` should be ignored (cf. ShouldIgnoreUpdatesEncryptedWith()),
+  // drops elements of `entries_pending_decryption_` encrypted with it.
   void MaybeDropPendingUpdatesEncryptedWith(const std::string& key_name);
 
-  // Removes elements of |unknown_encryption_keys_by_name_| that no longer fit
-  // the definition of an unknown key, and returns their info.
-  std::vector<UnknownEncryptionKeyInfo> RemoveKeysNoLongerUnknown();
+  // Removes elements of `unknown_encryption_keys_by_name_` that no longer fit
+  // the definition of an unknown key.
+  void RemoveKeysNoLongerUnknown();
 
-  // Sends copy of |pending_invalidations_| vector to |data_type_processor_|
-  // to store them in storage along |data_type_state_|.
+  // Sends copy of `pending_invalidations_` vector to `data_type_processor_`
+  // to store them in storage along `data_type_state_`.
   void SendPendingInvalidationsToProcessor();
 
-  // Copies |pending_invalidations_| vector to |data_type_state_|.
+  // Copies `pending_invalidations_` vector to `data_type_state_`.
   void UpdateDataTypeStateInvalidations();
 
   // Encrypts the specifics and hides the title if necessary.
@@ -325,11 +337,11 @@ class DataTypeWorker : public UpdateHandler,
   // GetUpdates cycle.
   bool has_dropped_invalidation_ = false;
 
-  // Returns whether |pending_updates_| contain any non-deletion update.
+  // Returns whether `pending_updates_` contain any non-deletion update.
   bool HasNonDeletionUpdates() const;
 
-  // Extraxts GC directive from the progress marker to handle it independently
-  // of |data_type_state_|.
+  // Extracts GC directive from the progress marker to handle it independently
+  // of `data_type_state_`.
   void ExtractGcDirective();
 
   const DataType type_;
@@ -365,7 +377,7 @@ class DataTypeWorker : public UpdateHandler,
   std::map<std::string, sync_pb::SyncEntity> entries_pending_decryption_;
 
   // A key is said to be unknown if one of these is true:
-  // a) It encrypts some updates(s) in |entries_pending_decryption_|.
+  // a) It encrypts some updates(s) in `entries_pending_decryption_`.
   // b) (a) happened for so long that the worker dropped those updates in an
   // attempt to unblock itself (cf. ShouldIgnoreUpdatesEncryptedWith()).
   // The key is added here when the worker receives the first update entity
@@ -424,7 +436,7 @@ class GetLocalChangesRequest
   // cancelation_signal_ is signaled.
   void WaitForResponseOrCancelation(CancelationSignal* cancelation_signal);
 
-  // SetResponse takes ownership of |local_changes| and unblocks
+  // SetResponse takes ownership of `local_changes` and unblocks
   // WaitForResponseOrCancelation call. It is called by data type through
   // callback passed to GetLocalChanges.
   void SetResponse(CommitRequestDataList&& local_changes);

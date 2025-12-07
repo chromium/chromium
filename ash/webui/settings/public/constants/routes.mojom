@@ -15,18 +15,19 @@ enum Section {
   kPeople = 3,
   kDevice = 4,
   kPersonalization = 5,
-  kSearchAndAssistant = 6,
+  // Note: Value 6 was for deprecated kSearchAndAssistant. Do not reuse.
   kApps = 7,
-  kCrostini = 8,
+  // Note: Value 8 was for deprecated kCrostini. Do not reuse.
   // Note: Value 9 was for deprecated Plugin VM section - see
   // https://crbug.com/1074101. Do not reuse.
-  kDateAndTime = 10,
+  // Note: Value 10 was for deprecated kDateAndTime. Do not reuse.
   kPrivacyAndSecurity = 11,
-  kLanguagesAndInput = 12,
-  kFiles = 13,
-  kPrinting = 14,
+  // Note: Value 12 was used for deprecated kLanguagesAndInput. Do not reuse.
+  // Note: Value 13 was for deprecated kFiles. Do not reuse.
+  // Note: Value 14 was for deprecated kPrinting. Do not reuse.
   kAccessibility = 15,
-  kReset = 16,
+  // Deprecated, do not reuse. http://crbug/370836853
+  // kReset = 16,
   kAboutChromeOs = 17,
   kKerberos = 18,
   kSystemPreferences = 19,
@@ -61,8 +62,8 @@ enum Subpage {
   kNearbyShare = 202,
 
   // People section.
-  kMyAccounts = 300,
-  kSync = 301,
+  // Note: Value 300 was used for kMyAccounts. Do not reuse.
+  kSyncControls = 301,
   kSyncSetup = 302,
   kSyncDeprecatedAdvanced = 303,  // Used if split-sync flag is off.
   // Note: Value 304 was for kSecurityAndSignIn. Do not reuse.
@@ -103,8 +104,8 @@ enum Subpage {
   // 506 was used for kWallpaperImages. Do not reuse.
   // 507 was used for kDarkMode. Do not reuse.
 
-  // Search and Assistant section.
-  kAssistant = 600,
+  // Search section.
+  // 600 was used for kAssistant. Do not reuse.
   kSearch = 601,
 
   // Apps section.
@@ -125,7 +126,8 @@ enum Subpage {
   kCrostiniManageSharedFolders = 801,
   kCrostiniUsbPreferences = 802,
   kCrostiniBackupAndRestore = 803,
-  kCrostiniDevelopAndroidApps = 804,
+  // Note: Value 804 was for deprecated kCrostiniDevelopAndroidApps.
+  // Do not reuse.
   kCrostiniPortForwarding = 805,
   kCrostiniExtraContainers = 806,
   kBruschettaDetails = 850,
@@ -181,6 +183,7 @@ enum Subpage {
   kSelectToSpeak = 1510,
   kChromeVox = 1511,
   kFaceGazeSettings = 1512,
+  kMouseKeysSettings = 1513,
 
   // Note: Reset section has no subpages.
 
@@ -222,9 +225,8 @@ const string kNearbyShareSubpagePath = "multidevice/nearbyshare";
 
 // People section.
 const string kPeopleSectionPath = "osPeople";
-const string kMyAccountsSubpagePath = "accountManager";
-const string kSyncSubpagePath = "osSync";
 const string kSyncSetupSubpagePath = "osSyncSetup";
+const string kSyncControlsSubpagePath = "osSync";
 const string kSyncDeprecatedAdvancedSubpagePath = "osSyncSetup/advanced";
 
 // Device section.
@@ -254,9 +256,7 @@ const string kCustomizePenButtonsSubpagePath =
 // Personalization section.
 const string kPersonalizationSectionPath = "personalization";
 
-// Search and Assistant section.
-const string kSearchAndAssistantSectionPath = "osSearch";
-const string kAssistantSubpagePath = "googleAssistant";
+// Search section.
 const string kSearchSubpagePath = "osSearch/search";
 
 // Apps section.
@@ -276,12 +276,10 @@ const string kManageIsolatedWebAppsSubpagePath = "manage-isolated-web-apps";
 const string kAppParentalControlsSubpagePath = "app-parental-controls";
 
 // Crostini section.
-const string kCrostiniSectionPath = "crostini";
 const string kCrostiniDetailsSubpagePath = "crostini/details";
 const string kCrostiniManageSharedFoldersSubpagePath = "crostini/sharedPaths";
 const string kCrostiniUsbPreferencesSubpagePath = "crostini/sharedUsbDevices";
 const string kCrostiniBackupAndRestoreSubpagePath = "crostini/exportImport";
-const string kCrostiniDevelopAndroidAppsSubpagePath = "crostini/androidAdb";
 const string kCrostiniPortForwardingSubpagePath = "crostini/portForwarding";
 const string kCrostiniExtraContainersSubpagePath = "crostini/extraContainers";
 const string kBruschettaDetailsSubpagePath = "bruschetta/details";
@@ -291,7 +289,6 @@ const string kBruschettaManageSharedFoldersSubpagePath =
      "bruschetta/sharedPaths";
 
 // Date and Time section.
-const string kDateAndTimeSectionPath = "dateTime";
 const string kTimeZoneSubpagePath = "dateTime/timeZone";
 
 // Privacy and Security section.
@@ -310,7 +307,6 @@ const string kPrivacyHubGeolocationAdvancedSubpagePath =
       "osPrivacy/privacyHub/geolocation/advanced";
 
 // Languages and Input section.
-const string kLanguagesAndInputSectionPath = "osLanguages";
 const string kInputMethodOptionsSubpagePath = "osLanguages/inputMethodOptions";
 const string kLanguagesSubpagePath = "osLanguages/languages";
 const string kInputSubpagePath = "osLanguages/input";
@@ -320,14 +316,12 @@ const string kJapaneseManageUserDictionarySubpagePath =
 const string kAppLanguagesSubpagePath = "osLanguages/languages/appLanguages";
 
 // Files section.
-const string kFilesSectionPath = "files";
 const string kGoogleDriveSubpagePath = "googleDrive";
 const string kOneDriveSubpagePath = "oneDrive";
 const string kOfficeFilesSubpagePath = "officeFiles";
 const string kNetworkFileSharesSubpagePath = "smbShares";
 
 // Printing section.
-const string kPrintingSectionPath = "osPrinting";
 const string kPrintingDetailsSubpagePath = "cupsPrinters";
 
 // Accessibility section.
@@ -345,9 +339,8 @@ const string kSwitchAccessOptionsSubpagePath =
     "manageAccessibility/switchAccess";
 const string kFaceGazeSettingsSubpagePath =
     "manageAccessibility/faceGaze";
-
-// Reset section.
-const string kResetSectionPath = "osReset";
+const string kMouseKeysSettingsSubpagePath =
+    "manageAccessibility/mouseKeys";
 
 // About Chrome OS section.
 const string kAboutChromeOsSectionPath = "help";

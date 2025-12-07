@@ -16,31 +16,25 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
-
-namespace {
 
 template <typename T>
 class GlobalCookieStoreImpl final
     : public GarbageCollected<GlobalCookieStoreImpl<T>>,
-      public Supplement<T> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   static GlobalCookieStoreImpl& From(T& supplementable) {
     GlobalCookieStoreImpl* supplement =
-        Supplement<T>::template From<GlobalCookieStoreImpl>(supplementable);
+        supplementable.GetGlobalCookieStoreImpl();
     if (!supplement) {
-      supplement = MakeGarbageCollected<GlobalCookieStoreImpl>(supplementable);
-      Supplement<T>::ProvideTo(supplementable, supplement);
+      supplement = MakeGarbageCollected<GlobalCookieStoreImpl>();
+      supplementable.SetGlobalCookieStoreImpl(supplement);
     }
     return *supplement;
   }
 
-  explicit GlobalCookieStoreImpl(T& supplementable)
-      : Supplement<T>(supplementable) {}
+  GlobalCookieStoreImpl() = default;
 
   CookieStore* GetCookieStore(T& scope) {
     if (!cookie_store_) {
@@ -61,21 +55,11 @@ class GlobalCookieStoreImpl final
     return cookie_store_.Get();
   }
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(cookie_store_);
-    Supplement<T>::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override { visitor->Trace(cookie_store_); }
 
  private:
   Member<CookieStore> cookie_store_;
 };
-
-// static
-template <typename T>
-const char GlobalCookieStoreImpl<T>::kSupplementName[] =
-    "GlobalCookieStoreImpl";
-
-}  // namespace
 
 // static
 CookieStore* GlobalCookieStore::cookieStore(LocalDOMWindow& window) {
@@ -84,11 +68,10 @@ CookieStore* GlobalCookieStore::cookieStore(LocalDOMWindow& window) {
 }
 
 // static
-CookieStore* GlobalCookieStore::cookieStore(ServiceWorkerGlobalScope& worker) {
-  // ServiceWorkerGlobalScope is Supplementable<WorkerGlobalScope>, not
-  // Supplementable<ServiceWorkerGlobalScope>.
-  return GlobalCookieStoreImpl<WorkerGlobalScope>::From(worker).GetCookieStore(
-      worker);
+CookieStore* GlobalCookieStore::cookieStore(
+    ServiceWorkerGlobalScope& service_worker) {
+  return GlobalCookieStoreImpl<ServiceWorkerGlobalScope>::From(service_worker)
+      .GetCookieStore(service_worker);
 }
 
 }  // namespace blink

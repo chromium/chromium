@@ -8,10 +8,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/scoped_file.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/client_native_pixmap.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -21,7 +22,7 @@ class Size;
 // The Ozone interface allows external implementations to hook into Chromium to
 // provide a client pixmap for non-GPU processes (though ClientNativePixmap
 // instances created using this interface can be used in the GPU process).
-class GFX_EXPORT ClientNativePixmapFactory {
+class COMPONENT_EXPORT(GFX) ClientNativePixmapFactory {
  public:
   virtual ~ClientNativePixmapFactory() {}
 
@@ -32,7 +33,7 @@ class GFX_EXPORT ClientNativePixmapFactory {
   virtual std::unique_ptr<ClientNativePixmap> ImportFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) = 0;
 };
 

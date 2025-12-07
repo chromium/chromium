@@ -9,9 +9,9 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
-#include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
@@ -27,7 +27,7 @@
 #include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -469,7 +469,7 @@ TEST(AttributionInteropParserTest, ValidConfig) {
   typedef void (*MakeInteropConfigFunc)(AttributionInteropConfig&);
 
   using MakeExpectedFunc =
-      absl::variant<MakeAttributionConfigFunc, MakeInteropConfigFunc>;
+      std::variant<MakeAttributionConfigFunc, MakeInteropConfigFunc>;
 
   const struct {
     const char* json;
@@ -535,11 +535,21 @@ TEST(AttributionInteropParserTest, ValidConfig) {
       {R"json({"max_event_level_channel_capacity_navigation":"0.2"})json",
        false,
        [](AttributionConfig& c) {
-         c.event_level_limit.max_navigation_info_gain = 0.2;
+         c.privacy_math_config.max_channel_capacity_navigation = 0.2;
        }},
       {R"json({"max_event_level_channel_capacity_event":"0.2"})json", false,
        [](AttributionConfig& c) {
-         c.event_level_limit.max_event_info_gain = 0.2;
+         c.privacy_math_config.max_channel_capacity_event = 0.2;
+       }},
+      {R"json({"max_event_level_channel_capacity_scopes_navigation":"0.2"})json",
+       false,
+       [](AttributionConfig& c) {
+         c.privacy_math_config.max_channel_capacity_scopes_navigation = 0.2;
+       }},
+      {R"json({"max_event_level_channel_capacity_scopes_event":"0.2"})json",
+       false,
+       [](AttributionConfig& c) {
+         c.privacy_math_config.max_channel_capacity_scopes_event = 0.2;
        }},
       {R"json({"max_trigger_state_cardinality":"4294967295"})json", false,
        [](AttributionInteropConfig& c) {
@@ -566,6 +576,10 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        [](AttributionConfig& c) {
          c.aggregatable_debug_rate_limit.max_reports_per_source = 3;
        }},
+      {R"json({"max_aggregatable_reports_per_source":"3"})json", false,
+       [](AttributionConfig& c) {
+         c.aggregate_limit.max_aggregatable_reports_per_source = 3;
+       }},
       {R"json({
         "max_sources_per_origin":"10",
         "max_destinations_per_source_site_reporting_site":"10",
@@ -583,13 +597,16 @@ TEST(AttributionInteropParserTest, ValidConfig) {
         "max_event_level_reports_per_destination":"10",
         "max_event_level_channel_capacity_navigation":"5.5",
         "max_event_level_channel_capacity_event":"0.5",
+        "max_event_level_channel_capacity_scopes_navigation":"5.55",
+        "max_event_level_channel_capacity_scopes_event":"0.55",
         "max_trigger_state_cardinality":"10",
         "max_aggregatable_reports_per_destination":"10",
         "aggregatable_report_min_delay":"10",
         "aggregatable_report_delay_span":"20",
         "aggregation_coordinator_origins":["https://c.test/123"],
         "max_aggregatable_debug_budget_per_context_site": "1024",
-        "max_aggregatable_debug_reports_per_source": "10"
+        "max_aggregatable_debug_reports_per_source": "10",
+        "max_aggregatable_reports_per_source": "12"
       })json",
        true, [](AttributionInteropConfig& config) {
          AttributionConfig& c = config.attribution_config;
@@ -606,13 +623,16 @@ TEST(AttributionInteropParserTest, ValidConfig) {
 
          config.max_event_level_epsilon = 0.2;
          c.event_level_limit.max_reports_per_destination = 10;
-         c.event_level_limit.max_navigation_info_gain = 5.5;
-         c.event_level_limit.max_event_info_gain = 0.5;
+         c.privacy_math_config.max_channel_capacity_navigation = 5.5;
+         c.privacy_math_config.max_channel_capacity_event = 0.5;
+         c.privacy_math_config.max_channel_capacity_scopes_navigation = 5.55;
+         c.privacy_math_config.max_channel_capacity_scopes_event = 0.55;
          config.max_trigger_state_cardinality = 10;
 
          c.aggregate_limit.max_reports_per_destination = 10;
          c.aggregate_limit.min_delay = base::Minutes(10);
          c.aggregate_limit.delay_span = base::Minutes(20);
+         c.aggregate_limit.max_aggregatable_reports_per_source = 12;
 
          c.destination_rate_limit = {
              .max_total = 2,
@@ -632,13 +652,13 @@ TEST(AttributionInteropParserTest, ValidConfig) {
     SCOPED_TRACE(test_case.json);
 
     AttributionInteropConfig expected;
-    absl::visit(base::Overloaded{
-                    [&](MakeAttributionConfigFunc f) {
-                      f(expected.attribution_config);
-                    },
-                    [&](MakeInteropConfigFunc f) { f(expected); },
-                },
-                test_case.make_expected);
+    std::visit(absl::Overload{
+                   [&](MakeAttributionConfigFunc f) {
+                     f(expected.attribution_config);
+                   },
+                   [&](MakeInteropConfigFunc f) { f(expected); },
+               },
+               test_case.make_expected);
 
     base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
     if (test_case.required) {
@@ -669,7 +689,9 @@ TEST(AttributionInteropParserTest, InvalidConfigPositiveIntegers) {
       "max_event_level_reports_per_destination",
       "max_aggregatable_reports_per_destination",
       "max_aggregatable_debug_budget_per_context_site",
-      "max_aggregatable_debug_reports_per_source"};
+      "max_aggregatable_debug_reports_per_source",
+      "max_aggregatable_reports_per_source",
+  };
 
   {
     auto result = ParseAttributionInteropConfig(base::Value::Dict());

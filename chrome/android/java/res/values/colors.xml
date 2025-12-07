@@ -15,25 +15,20 @@ found in the LICENSE file.
 
     <!-- App menu colors -->
     <color name="update_menu_item_text_color">@color/default_red</color>
+    <macro name="menu_button_dot_primary">@macro/default_icon_color_accent1</macro>
 
     <!--  Distilled Page Prefs colors -->
     <color name="distilled_page_prefs_selected">#999999</color>
-
-    <!-- Compositor Tab Title Colors -->
-    <color name="compositor_tab_title_bar_text">@color/default_text_color_list</color>
-    <color name="compositor_tab_title_bar_text_incognito">@android:color/white</color>
 
     <!-- Account Signin Colors -->
     <!-- As in dimens.xml, signin uses values from the First Run Experience -->
     <macro name="signin_head_background">@macro/default_bg_color</macro>
     <macro name="signin_body_background">@macro/default_bg_color</macro>
-    <color name="signin_header_animation_background">@color/baseline_neutral_95</color>
-    <color name="signin_header_animation_line_light">#E8E9EB</color>
-    <color name="signin_header_animation_line_dark">#BDC0C5</color>
-    <color name="signin_header_animation_laptop_screen">#F4F4F4</color>
 
     <!-- NTP and Home sheet colors. Also used on the bookmarks and recent tabs pages. -->
     <color name="ntp_bg_incognito">@color/default_bg_color_dark</color>
+    <color name="status_bar_background_color_on_ntp_with_toolbar_expanding">@color/default_bg_color_baseline</color>
+    <color name="status_bar_background_color_on_ntp_with_toolbar_collapsed">@color/default_bg_color_dark</color>
 
     <!-- Incognito NTP Colors. -->
     <color name="incognito_emphasis">@android:color/white</color>
@@ -53,13 +48,12 @@ found in the LICENSE file.
 
     <!-- Bookmark widget colors -->
     <color name="bookmark_widget_pressed_highlight">@color/black_alpha_11</color>
-    <color name="bookmark_widget_background">@color/default_bg_color_baseline</color>
 
     <!-- History Navigation UI colors -->
     <color name="navigation_bubble_arrow">@android:color/black</color>
 
     <!-- Scrollbar colors -->
-    <color name="default_scroll_thumb">@color/modern_grey_800_alpha_38</color>
+    <color name="default_scroll_thumb">@color/baseline_neutral_20_alpha_38</color>
 
     <!-- Offline indicator v2 colors -->
     <color name="offline_indicator_offline_color">@android:color/black</color>
@@ -67,8 +61,17 @@ found in the LICENSE file.
     <!-- Model selector button background TSR colors -->
     <color name="model_selector_button_bg_color">@color/default_icon_color_inverse_dark</color>
 
+    <!-- Settings -->
+    <color name="settings_search_logo_color_1">@color/material_primary_90</color>
+    <color name="settings_search_logo_color_2">@color/material_primary_60</color>
+    <color name="settings_search_logo_color_3">@color/material_primary_40</color>
+
     <!-- Tab strip button hover background color -->
     <color name="tab_strip_button_hover_bg_color">@color/baseline_neutral_90</color>
+
+    <!-- Tab strip incognito background tints -->
+    <color name="tab_strip_bg_incognito_default_tint">@color/gm3_baseline_surface_container_dark</color>
+    <color name="tab_strip_bg_incognito_pressed_tint">@color/gm3_baseline_surface_container_highest_dark</color>
 
     <!-- Other colors -->
     <color name="media_viewer_bg">#000000</color>
@@ -76,4 +79,14 @@ found in the LICENSE file.
     <color name="thumbnail_placeholder_on_primary_bg" tools:ignore="UnusedResources">@color/default_bg_color_secondary</color>
     <macro name="tab_layout_selected_tab_color">@macro/default_text_color_accent1</macro>
 
+    <!-- Swipe Refresh Handler -->
+    <color name="incognito_swipe_refresh_layout_bg">@color/gm3_baseline_surface_container_dark</color>
+
+    <!-- Tab Strip Dragged Tab Shadow Color -->
+    <color name="tab_strip_reorder_shadow_color">@color/black_alpha_11</color>
+
+    <!-- Tab strip media indicators-->
+    <!-- TODO(crbug.com/454048975): Check with UX about the color.  -->
+    <color name="tab_recording_media_color">@color/google_red_600</color>
+    <color name="tab_sharing_media_color">@color/tab_group_color_picker_blue_dark</color>
 </resources>

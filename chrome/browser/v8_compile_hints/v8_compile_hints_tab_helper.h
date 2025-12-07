@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_V8_COMPILE_HINTS_V8_COMPILE_HINTS_TAB_HELPER_H_
 
 #include "base/cancelable_callback.h"
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/browser/v8_compile_hints/proto/v8_compile_hints_metadata.pb.h"

@@ -137,8 +137,6 @@ void FastPairScannerImpl::OnSessionStarted(
 
 void FastPairScannerImpl::OnSessionInvalidated(
     device::BluetoothLowEnergyScanSession* scan_session) {
-  // TODO(crbug.com/1227519) Handle Session Invalidation by adding exponential
-  // retry to restart the scanner.
   background_scan_session_.reset();
 }
 

@@ -61,7 +61,7 @@ buttons: 24
 x: 100
 y: 200
 -----Event-----
-type: mousewheel
+type: wheel
 button: 0
 buttons: 0
 x: 100

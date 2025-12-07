@@ -66,6 +66,7 @@ class CC_EXPORT BeginFrameTracker {
   // **Must** only be called when **not** between the start and finish method
   // calls.
   const viz::BeginFrameArgs& Last() const;
+  bool HasLast() const;
 
   // Helper method to try and return a valid interval property. Defaults to
   // BFA::DefaultInterval() is no other interval can be found. Can be called at

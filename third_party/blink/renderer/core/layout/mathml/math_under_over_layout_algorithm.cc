@@ -36,7 +36,7 @@ UnderOverVerticalParameters GetUnderOverVerticalParameters(
     bool is_base_large_operator,
     bool is_base_stretchy_in_inline_axis) {
   UnderOverVerticalParameters parameters;
-  const SimpleFontData* font_data = style.GetFont().PrimaryFont();
+  const SimpleFontData* font_data = style.GetFont()->PrimaryFont();
   if (!font_data)
     return parameters;
 
@@ -151,7 +151,8 @@ void MathUnderOverLayoutAlgorithm::GatherChildren(BlockNode* base,
     BlockNode block_child = To<BlockNode>(child);
     if (child.IsOutOfFlowPositioned()) {
       container_builder_.AddOutOfFlowChildCandidate(
-          block_child, BorderScrollbarPadding().StartOffset());
+          block_child,
+          LogicalStaticPosition(BorderScrollbarPadding().StartOffset()));
       continue;
     }
     if (!*base) {
@@ -176,7 +177,7 @@ void MathUnderOverLayoutAlgorithm::GatherChildren(BlockNode* base,
         *over = block_child;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

@@ -227,6 +227,13 @@ TEST_F(URLConversionTest, TestURLWithStringDoesNotModifyAlreadyEscapedURLs) {
   }
 }
 
+// Document cases where GURL is valid, but NSURLwithGURL returns nil.
+TEST_F(URLConversionTest, TestNSURLWithGURLCanBeNil) {
+  GURL url("https://{}");
+  EXPECT_TRUE(url.is_valid());
+  EXPECT_EQ(nil, NSURLWithGURL(url));
+}
+
 }  // namespace
 
 }  // namespace net

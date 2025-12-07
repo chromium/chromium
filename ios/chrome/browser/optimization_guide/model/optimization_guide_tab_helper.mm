@@ -9,7 +9,7 @@
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "url/gurl.h"
 
@@ -37,12 +37,12 @@ void IOSOptimizationGuideNavigationData::NotifyNavigationRedirect(
 
 OptimizationGuideTabHelper::OptimizationGuideTabHelper(web::WebState* web_state)
     : optimization_guide_service_(
-          OptimizationGuideServiceFactory::GetForBrowserState(
-              ChromeBrowserState::FromBrowserState(
-                  web_state->GetBrowserState()))) {
+          OptimizationGuideServiceFactory::GetForProfile(
+              ProfileIOS::FromBrowserState(web_state->GetBrowserState()))) {
   DCHECK(web_state);
-  if (optimization_guide_service_)
+  if (optimization_guide_service_) {
     web_state->AddObserver(this);
+  }
 }
 
 OptimizationGuideTabHelper::~OptimizationGuideTabHelper() {
@@ -54,8 +54,9 @@ void OptimizationGuideTabHelper::DidStartNavigation(
     web::NavigationContext* navigation_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS())
+  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   IOSOptimizationGuideNavigationData* navigation_data =
       GetOrCreateOptimizationGuideNavigationData(navigation_context);
@@ -68,8 +69,9 @@ void OptimizationGuideTabHelper::DidRedirectNavigation(
     web::NavigationContext* navigation_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS())
+  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   IOSOptimizationGuideNavigationData* navigation_data =
       GetOrCreateOptimizationGuideNavigationData(navigation_context);
@@ -82,8 +84,9 @@ void OptimizationGuideTabHelper::DidFinishNavigation(
     web::NavigationContext* navigation_context) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS())
+  if (!navigation_context->GetUrl().SchemeIsHTTPOrHTTPS()) {
     return;
+  }
 
   IOSOptimizationGuideNavigationData* navigation_data =
       GetOrCreateOptimizationGuideNavigationData(navigation_context);
@@ -132,8 +135,9 @@ void OptimizationGuideTabHelper::NotifyNavigationFinish(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto nav_data_iter =
       inflight_optimization_guide_navigation_datas_.find(navigation_id);
-  if (nav_data_iter == inflight_optimization_guide_navigation_datas_.end())
+  if (nav_data_iter == inflight_optimization_guide_navigation_datas_.end()) {
     return;
+  }
 
   optimization_guide_service_->OnNavigationFinish(navigation_redirect_chain);
 
@@ -144,5 +148,3 @@ void OptimizationGuideTabHelper::NotifyNavigationFinish(
   last_navigation_data_ = std::move(nav_data_iter->second);
   inflight_optimization_guide_navigation_datas_.erase(navigation_id);
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(OptimizationGuideTabHelper)

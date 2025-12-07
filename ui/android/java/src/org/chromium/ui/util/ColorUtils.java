@@ -13,8 +13,12 @@ import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 
 import org.chromium.base.MathUtils;
+import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Helper functions for working with colors. */
+@NullMarked
 public class ColorUtils {
     // Value used by ui::OptionalSkColorToJavaColor() to represent invalid color.
     public static final long INVALID_COLOR = ((long) Integer.MAX_VALUE) + 1;
@@ -28,13 +32,23 @@ public class ColorUtils {
     /** Percentage to darken a color by when setting the status bar color. */
     private static final float DARKEN_COLOR_FRACTION = 0.6f;
 
+    private static @Nullable Boolean sInNightModeForTesting;
+
     /**
      * @param context <b>Activity</b> context.
      * @return Whether the activity is currently in night mode.
      */
     public static boolean inNightMode(Context context) {
+        if (sInNightModeForTesting != null) {
+            return sInNightModeForTesting;
+        }
         int uiMode = context.getResources().getConfiguration().uiMode;
         return (uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES;
+    }
+
+    public static void setInNightModeForTesting(@Nullable Boolean inNightMode) {
+        sInNightModeForTesting = inNightMode;
+        ResettersForTesting.register(() -> sInNightModeForTesting = null);
     }
 
     /** Computes the lightness value in HSL standard for the given color. */
@@ -60,7 +74,7 @@ public class ColorUtils {
         bgG = (bgG < 0.03928f) ? bgG / 12.92f : (float) Math.pow((bgG + 0.055f) / 1.055f, 2.4f);
         bgB = (bgB < 0.03928f) ? bgB / 12.92f : (float) Math.pow((bgB + 0.055f) / 1.055f, 2.4f);
         float bgL = 0.2126f * bgR + 0.7152f * bgG + 0.0722f * bgB;
-        return Math.abs((1.05f) / (bgL + 0.05f));
+        return Math.abs(1.05f / (bgL + 0.05f));
     }
 
     /**
@@ -273,6 +287,21 @@ public class ColorUtils {
     public static @ColorInt int setAlphaComponentWithFloat(
             @ColorInt int color, @FloatRange(from = 0f, to = 1f) float alpha) {
         return setAlphaComponent(color, (int) (alpha * 255));
+    }
+
+    /**
+     * Applies a transparency to the given color. Takes into account the color's existing alpha,
+     * combining it with the passed in alpha param.
+     *
+     * @param color The original color to fade. If fully opaque, this will have the safe effect as
+     *     the setAlphaComponent methods.
+     * @param alpha The alpha to fade the color by, should be between (inclusive) 0 and 1.
+     * @return The new faded color.
+     */
+    public static @ColorInt int applyAlphaFloat(
+            @ColorInt int color, @FloatRange(from = 0f, to = 1f) float alpha) {
+        int newAlpha = Math.round(Color.alpha(color) * alpha);
+        return setAlphaComponent(color, newAlpha);
     }
 
     /**

@@ -22,7 +22,7 @@ OutputSurfaceUnified::~OutputSurfaceUnified() = default;
 
 void OutputSurfaceUnified::SwapBuffers(OutputSurfaceFrame frame) {
   // This OutputSurface is not intended to be drawn into and should never swap.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::OverlayTransform OutputSurfaceUnified::GetDisplayTransform() {

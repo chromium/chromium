@@ -42,53 +42,47 @@ namespace blink {
 // next sibling for the subtree at index 5, by adding its subtree size (5 + 2)
 // it's equal to its parent's next sibling (aka parent's end index), so we can
 // determine that such subtree doesn't have a next sibling.
-template <typename SubtreeType, typename GridTreePtr>
+template <typename GridTree>
 class GridSubtree {
  public:
-  explicit operator bool() const { return static_cast<bool>(grid_tree_); }
-
-  SubtreeType FirstChild() const {
-    return SubtreeType(grid_tree_, /* parent_end_index */ NextSiblingIndex(),
-                       /* subtree_root */ subtree_root_ + 1);
-  }
-
-  SubtreeType NextSibling() const {
-    return SubtreeType(grid_tree_, /* parent_end_index */ parent_end_index_,
-                       /* subtree_root */ NextSiblingIndex());
-  }
+  explicit operator bool() const { return subtree_root_ != kNotFound; }
 
  protected:
   GridSubtree() = default;
 
-  explicit GridSubtree(GridTreePtr grid_tree, wtf_size_t subtree_root)
-      : grid_tree_(std::move(grid_tree)), subtree_root_(subtree_root) {
-    parent_end_index_ = NextSiblingIndex();
+  void SetSubtreeRoot(const GridTree& grid_tree, wtf_size_t subtree_root) {
+    subtree_root_ = subtree_root;
+    parent_end_index_ = NextSiblingIndex(grid_tree);
   }
 
-  GridSubtree(GridTreePtr grid_tree,
-              wtf_size_t parent_end_index,
-              wtf_size_t subtree_root) {
-    DCHECK_LE(subtree_root, parent_end_index);
-
-    // If the subtree root is beyond the parent's end index, we will keep this
-    // instance as a null subtree to indicate the end iterator for siblings.
-    if (subtree_root < parent_end_index) {
-      grid_tree_ = std::move(grid_tree);
-      parent_end_index_ = parent_end_index;
-      subtree_root_ = subtree_root;
-    }
+  GridSubtree FirstChild(const GridTree& grid_tree) const {
+    return GridSubtree(
+        /*parent_end_index=*/NextSiblingIndex(grid_tree),
+        /*subtree_root=*/subtree_root_ + 1);
   }
 
-  // Pointer to the tree shared by multiple subtree instances.
-  GridTreePtr grid_tree_{nullptr};
+  GridSubtree NextSibling(const GridTree& grid_tree) const {
+    return GridSubtree(/*parent_end_index=*/parent_end_index_,
+                       /*subtree_root=*/NextSiblingIndex(grid_tree));
+  }
 
   // Index of this subtree's root node.
   wtf_size_t subtree_root_{kNotFound};
 
  private:
-  wtf_size_t NextSiblingIndex() const {
-    DCHECK(grid_tree_);
-    const wtf_size_t subtree_size = grid_tree_->SubtreeSize(subtree_root_);
+  GridSubtree(wtf_size_t parent_end_index, wtf_size_t subtree_root) {
+    DCHECK_LE(subtree_root, parent_end_index);
+
+    // If the subtree root is beyond the parent's end index, we will keep this
+    // instance as a null subtree to indicate the end iterator for siblings.
+    if (subtree_root < parent_end_index) {
+      parent_end_index_ = parent_end_index;
+      subtree_root_ = subtree_root;
+    }
+  }
+
+  wtf_size_t NextSiblingIndex(const GridTree& grid_tree) const {
+    const auto subtree_size = grid_tree.SubtreeSize(subtree_root_);
 
     DCHECK_GT(subtree_size, 0u);
     return subtree_root_ + subtree_size;

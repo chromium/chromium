@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef UI_GFX_GEOMETRY_TRANSFORM_H_
 #define UI_GFX_GEOMETRY_TRANSFORM_H_
 
@@ -15,9 +10,16 @@
 #include <optional>
 #include <string>
 
+#include "base/compiler_specific.h"
+#include "base/component_export.h"
+#include "base/containers/span.h"
 #include "ui/gfx/geometry/axis_transform2d.h"
-#include "ui/gfx/geometry/geometry_skia_export.h"
 #include "ui/gfx/geometry/matrix44.h"
+
+namespace mojo {
+template <typename DataView, typename T>
+struct UnionTraits;
+}  // namespace mojo
 
 namespace gfx {
 
@@ -33,6 +35,10 @@ class Vector2dF;
 class Vector3dF;
 struct DecomposedTransform;
 
+namespace mojom {
+class TransformDataDataView;
+}  // namespace mojom
+
 // 4x4 Transformation matrix. Depending on the complexity of the matrix, it may
 // be internally stored as an AxisTransform2d (float precision) or a full
 // Matrix44 (4x4 double precision). Which one is used only affects precision and
@@ -47,7 +53,7 @@ struct DecomposedTransform;
 //   in the method comments.
 // - On assignment, the new matrix will keep the choice of the rhs matrix.
 //
-class GEOMETRY_SKIA_EXPORT Transform {
+class COMPONENT_EXPORT(GEOMETRY_SKIA) Transform {
  public:
   constexpr Transform() : axis_2d_() {}
 
@@ -138,7 +144,6 @@ class GEOMETRY_SKIA_EXPORT Transform {
       return matrix_ == rhs.matrix_;
     return GetFullMatrix() == rhs.GetFullMatrix();
   }
-  bool operator!=(const Transform& rhs) const { return !(*this == rhs); }
 
   // Gets a value at |row|, |col| from the matrix.
   constexpr double rc(int row, int col) const {
@@ -149,7 +154,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
                        {0, axis_2d_.scale().y(), 0, axis_2d_.translation().y()},
                        {0, 0, 1, 0},
                        {0, 0, 0, 1}};
-      return m[row][col];
+      return UNSAFE_TODO(m[row][col]);
     }
     return matrix_.rc(row, col);
   }
@@ -164,16 +169,16 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Constructs Transform from a double col-major array.
   // Always creates a double precision 4x4 matrix.
-  static Transform ColMajor(const double a[16]);
+  static Transform ColMajor(base::span<const double, 16> a);
 
   // Constructs Transform from a float col-major array. Creates an
   // AxisTransform2d or a Matrix44 depending on the values. GetColMajorF() and
   // ColMajorF() are used when passing a Transform through mojo.
-  static Transform ColMajorF(const float a[16]);
+  static Transform ColMajorF(base::span<const float, 16> a);
 
   // Gets col-major data.
-  void GetColMajor(double a[16]) const;
-  void GetColMajorF(float a[16]) const;
+  void GetColMajor(base::span<double, 16> a) const;
+  void GetColMajorF(base::span<float, 16> a) const;
   double ColMajorData(int index) const { return rc(index % 4, index / 4); }
 
   // Applies a transformation on the current transformation,
@@ -433,7 +438,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
 
   // Applies the transformation to the vector. The results are clamped with
   // ClampFloatGeometry().
-  void TransformVector4(float vector[4]) const;
+  void TransformVector4(base::span<float, 4> vector) const;
 
   // Returns the point with reverse transformation applied to `point`, clamped
   // with ClampFloatGeometry(), or `std::nullopt` if the transformation cannot
@@ -544,6 +549,9 @@ class GEOMETRY_SKIA_EXPORT Transform {
   // Rounds 2d translation components rc(0, 3), rc(1, 3) to integers.
   void Round2dTranslationComponents();
 
+  // Makes rc(0, 3) and rc(1, 3) components integers by flooring.
+  void Floor2dTranslationComponents();
+
   // Rounds translation components to integers, and all other components to
   // identity. Normally this function is meaningful only if
   // IsApproximatelyIdentityOrIntegerTranslation() is true.
@@ -583,6 +591,7 @@ class GEOMETRY_SKIA_EXPORT Transform {
   }
 
   void EnsureFullMatrixForTesting() { EnsureFullMatrix(); }
+  bool IsFullMatrixForTesting() const { return full_matrix_; }
 
   // Returns a string in the format of "[ row0\n, row1\n, row2\n, row3 ]\n".
   std::string ToString() const;
@@ -591,6 +600,8 @@ class GEOMETRY_SKIA_EXPORT Transform {
   std::string ToDecomposedString() const;
 
  private:
+  friend struct mojo::UnionTraits<gfx::mojom::TransformDataDataView, Transform>;
+
   // Used internally to construct Transform with parameters in col-major order.
   // clang-format off
   constexpr Transform(double r0c0, double r1c0, double r2c0, double r3c0,

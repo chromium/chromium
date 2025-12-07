@@ -3,9 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_base.h"
 #include "chrome/browser/media/webrtc/webrtc_browsertest_common.h"
@@ -33,13 +31,13 @@
 
 class MediaStreamPermissionTest : public WebRtcTestBase {
  public:
-  MediaStreamPermissionTest() {}
+  MediaStreamPermissionTest() = default;
 
   MediaStreamPermissionTest(const MediaStreamPermissionTest&) = delete;
   MediaStreamPermissionTest& operator=(const MediaStreamPermissionTest&) =
       delete;
 
-  ~MediaStreamPermissionTest() override {}
+  ~MediaStreamPermissionTest() override = default;
 
   // InProcessBrowserTest:
   void SetUp() override {

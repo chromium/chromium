@@ -6,20 +6,20 @@
 
 namespace autofill {
 
-VirtualCardManualFallbackBubbleOptions::
-    VirtualCardManualFallbackBubbleOptions() = default;
-VirtualCardManualFallbackBubbleOptions::VirtualCardManualFallbackBubbleOptions(
-    const VirtualCardManualFallbackBubbleOptions&) = default;
-VirtualCardManualFallbackBubbleOptions&
-VirtualCardManualFallbackBubbleOptions::operator=(
-    const VirtualCardManualFallbackBubbleOptions&) = default;
-VirtualCardManualFallbackBubbleOptions::
-    ~VirtualCardManualFallbackBubbleOptions() = default;
+FilledCardInformationBubbleOptions::FilledCardInformationBubbleOptions() =
+    default;
+FilledCardInformationBubbleOptions::FilledCardInformationBubbleOptions(
+    const FilledCardInformationBubbleOptions&) = default;
+FilledCardInformationBubbleOptions&
+FilledCardInformationBubbleOptions::operator=(
+    const FilledCardInformationBubbleOptions&) = default;
+FilledCardInformationBubbleOptions::~FilledCardInformationBubbleOptions() =
+    default;
 
-bool VirtualCardManualFallbackBubbleOptions::IsValid() const {
+bool FilledCardInformationBubbleOptions::IsValid() const {
   return !masked_card_name.empty() && !masked_card_number_last_four.empty() &&
-         virtual_card.HasValidCardNumber() && virtual_card.HasNameOnCard() &&
-         virtual_card.HasValidExpirationDate() && !virtual_card_cvc.empty() &&
+         filled_card.HasValidCardNumber() && filled_card.HasNameOnCard() &&
+         filled_card.HasValidExpirationDate() && !cvc.empty() &&
          !card_image.IsEmpty();
 }
 

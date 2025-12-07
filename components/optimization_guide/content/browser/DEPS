@@ -2,9 +2,34 @@ include_rules = [
   "+components/optimization_guide/core",
   "+components/optimization_guide/proto",
   "+content/public/browser",
+  "+content/public/common",
+  "+content/public/android",
   "+content/public/test",
+  "+content/test",
   "+mojo/public",
   "+services/metrics/public",
   "+services/service_manager/public",
   "+third_party/blink/public",
+  "+ui",
 ]
+
+specific_include_rules = {
+  "page_content_proto_provider_browsertest\.cc": [
+    "+content/shell",
+    "+components/network_session_configurator/common/network_switches.h",
+    "+components/ukm/test_ukm_recorder.h",
+    "+services/media_session/public/cpp/test/mock_media_session.h",
+    "+services/metrics/public/cpp/ukm_builders.h",
+  ],
+  "frame_metadata_observer_browsertest\.cc": [
+    "+content/shell",
+    "+components/network_session_configurator/common/network_switches.h",
+  ],
+  "page_content_metadata_observer_browsertest\.cc": [
+    "+content/shell",
+    "+components/network_session_configurator/common/network_switches.h",
+  ],
+  "page_content_proto_util_unittest\.cc": [
+    "+third_party/skia/include/core/SkColor.h",
+  ],
+}

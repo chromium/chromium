@@ -29,15 +29,12 @@ class GPU_IPC_SERVICE_EXPORT WebGPUCommandBufferStub final
   // CommandBufferStub current, so the GpuChannel can initialize
   // the gpu::Capabilities.
   gpu::ContextResult Initialize(
-      CommandBufferStub* share_group,
       const mojom::CreateCommandBufferParams& init_params,
       base::UnsafeSharedMemoryRegion shared_state_shm) override;
   MemoryTracker* GetContextGroupMemoryTracker() const override;
   base::WeakPtr<CommandBufferStub> AsWeakPtr() override;
 
  private:
-  void OnSwapBuffers(uint64_t swap_id, uint32_t flags) override;
-
   base::WeakPtrFactory<WebGPUCommandBufferStub> weak_ptr_factory_{this};
 };
 

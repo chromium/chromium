@@ -4,16 +4,15 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.NonNullObservableSupplier;
+import org.chromium.base.supplier.ObservableSuppliers;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
-import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 
-import java.util.LinkedList;
+import java.util.ArrayDeque;
 
 /**
  * Manages back navigations between Panes.
@@ -25,11 +24,14 @@ import java.util.LinkedList;
  * of the stack) {@link Pane} is focused, but the previous {@link Pane} is not re-added to the stack
  * to prevent an infinite loop.
  */
+@NullMarked
 public class PaneBackStackHandler implements BackPressHandler {
-    private final @NonNull PaneManager mPaneManager;
-    private final @NonNull ObservableSupplierImpl<Boolean> mHandleBackPressSupplier;
-    private final @NonNull LinkedList<Pane> mBackStack;
-    private final @NonNull Callback<Pane> mOnPaneFocusedCallback;
+    private final PaneManager mPaneManager;
+    private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressSupplier =
+            ObservableSuppliers.createNonNull(false);
+
+    private final ArrayDeque<Pane> mBackStack;
+    private final Callback<Pane> mOnPaneFocusedCallback;
     private @Nullable Pane mCurrentPane;
 
     /**
@@ -37,12 +39,9 @@ public class PaneBackStackHandler implements BackPressHandler {
      *
      * @param paneManager The {@link PaneManager} of the Hub.
      */
-    public PaneBackStackHandler(@NonNull PaneManager paneManager) {
+    public PaneBackStackHandler(PaneManager paneManager) {
         mPaneManager = paneManager;
-        mHandleBackPressSupplier = new ObservableSupplierImpl<>();
-        mHandleBackPressSupplier.set(false);
-
-        mBackStack = new LinkedList<>();
+        mBackStack = new ArrayDeque<>();
 
         mOnPaneFocusedCallback = this::onPaneFocused;
         paneManager.getFocusedPaneSupplier().addObserver(mOnPaneFocusedCallback);
@@ -92,13 +91,13 @@ public class PaneBackStackHandler implements BackPressHandler {
     }
 
     @Override
-    public ObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
+    public NonNullObservableSupplier<Boolean> getHandleBackPressChangedSupplier() {
         return mHandleBackPressSupplier;
     }
 
     private void onPaneFocused(Pane pane) {
         // `pane` is the newly focused pane. At this point mCurrentPane is the previous pane.
-        if (mCurrentPane != null && mCurrentPane.getReferenceButtonDataSupplier().hasValue()) {
+        if (mCurrentPane != null && mCurrentPane.getReferenceButtonDataSupplier().get() != null) {
             mBackStack.addFirst(mCurrentPane);
             mHandleBackPressSupplier.set(true);
         }

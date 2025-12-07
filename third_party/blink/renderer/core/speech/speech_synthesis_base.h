@@ -8,10 +8,7 @@
 #include "base/functional/callback.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -47,7 +44,7 @@ class CORE_EXPORT SpeechSynthesisBase : public GarbageCollectedMixin {
   static SpeechSynthesisBase* Create(LocalDOMWindow& window);
 
   // Overridden in speech_synthesis.cc.
-  virtual void Speak(const WTF::String& text, const WTF::String& lang) = 0;
+  virtual void Speak(const String& text, const String& lang) = 0;
   virtual void Cancel() = 0;
   virtual void Pause() = 0;
   virtual void Resume() = 0;

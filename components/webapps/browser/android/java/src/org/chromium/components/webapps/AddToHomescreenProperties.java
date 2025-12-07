@@ -8,10 +8,12 @@ import android.graphics.Bitmap;
 import android.util.Pair;
 import android.view.View.OnClickListener;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Contains the properties that an add-to-homescreen {@link PropertyModel} can have. */
+@NullMarked
 public class AddToHomescreenProperties {
     public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
             new PropertyModel.WritableObjectPropertyKey<>();

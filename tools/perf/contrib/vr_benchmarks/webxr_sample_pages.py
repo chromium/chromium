@@ -5,6 +5,13 @@
 from contrib.vr_benchmarks.vr_sample_page import XrSamplePage
 from contrib.vr_benchmarks.vr_story_set import VrStorySet
 
+from core import path_util
+
+path_util.AddAndroidPylibToPath()
+from devil.android import device_errors  # pylint: disable=import-error
+
+import time
+
 
 class WebXrSamplePage(XrSamplePage):
 
@@ -21,7 +28,26 @@ class WebXrSamplePage(XrSamplePage):
     # element's "title" attribute is currently always "Enter XR".
     action_runner.WaitForElement(selector='button[title="Enter XR"]')
     action_runner.TapElement(selector='button[title="Enter XR"]')
+
+    if (self.platform.GetOSName().lower() == 'android'
+        and '--deny-permission-prompts'
+        not in action_runner.tab.browser.startup_args):
+      # Grant the Chrome permission for the site.
+      try:
+        app_ui = action_runner.tab.browser.GetAppUi()
+        allow_this_time_button = app_ui.WaitForUiNode(
+            timeout=10, retries=1, content_desc='Allow this time')
+        allow_this_time_button.Tap()
+      except device_errors.CommandTimeoutError:
+        # It is possible that the permission has been granted in this browser
+        # session.
+        pass
+
     action_runner.MeasureMemory(True)
+
+    # Keep the page in immersive mode for a while.
+    time.sleep(5)
+
     # We don't want to be in VR or on a page with a WebGL canvas at the end of
     # the test, as this generates unnecessary heat while the trace data is being
     # processed, so navigate to a blank page if we're on a platform that cares

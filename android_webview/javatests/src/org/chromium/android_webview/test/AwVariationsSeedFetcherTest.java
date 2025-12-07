@@ -47,7 +47,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -66,7 +65,7 @@ public class AwVariationsSeedFetcherTest {
     private static final long START_TIME = 100;
 
     // A test JobScheduler which only holds one job, and never does anything with it.
-    private class TestJobScheduler extends JobScheduler {
+    private static class TestJobScheduler extends JobScheduler {
         public JobInfo mJob;
 
         public void clear() {
@@ -155,7 +154,7 @@ public class AwVariationsSeedFetcherTest {
     }
 
     // A test VariationsSeedFetcher that fails all seed requests.
-    private class FailingVariationsSeedFetcher extends VariationsSeedFetcher {
+    private static class FailingVariationsSeedFetcher extends VariationsSeedFetcher {
         @Override
         public SeedFetchInfo downloadContent(
                 VariationsSeedFetcher.SeedFetchParameters params, SeedInfo currInfo) {
@@ -166,7 +165,7 @@ public class AwVariationsSeedFetcherTest {
     }
 
     // A fake clock instance with a controllable timestamp.
-    private class TestClock implements AwVariationsSeedFetcher.Clock {
+    private static class TestClock implements AwVariationsSeedFetcher.Clock {
         public long timestamp;
 
         @Override
@@ -176,8 +175,8 @@ public class AwVariationsSeedFetcherTest {
     }
 
     // A test AwVariationsSeedFetcher that doesn't call JobFinished.
-    private class TestAwVariationsSeedFetcher extends AwVariationsSeedFetcher {
-        public CallbackHelper helper = new CallbackHelper();
+    private static class TestAwVariationsSeedFetcher extends AwVariationsSeedFetcher {
+        public final CallbackHelper helper = new CallbackHelper();
         private JobParameters mJobParameters;
         private boolean mNeededReschedule;
 
@@ -198,9 +197,9 @@ public class AwVariationsSeedFetcherTest {
         }
     }
 
-    private TestJobScheduler mScheduler = new TestJobScheduler();
-    private TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
-    private TestClock mClock = new TestClock();
+    private final TestJobScheduler mScheduler = new TestJobScheduler();
+    private final TestVariationsSeedFetcher mDownloader = new TestVariationsSeedFetcher();
+    private final TestClock mClock = new TestClock();
     private Context mContext;
 
     @Mock private JobParameters mMockJobParameters;
@@ -258,8 +257,8 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertTrue("Fast mode jobs should be persisted", pendingJob.isPersisted());
             Assert.assertEquals(
                     "Fast Mode backoff policy should be linear.",
-                    pendingJob.getBackoffPolicy(),
-                    JobInfo.BACKOFF_POLICY_LINEAR);
+                    JobInfo.BACKOFF_POLICY_LINEAR,
+                    pendingJob.getBackoffPolicy());
         } finally {
             mScheduler.clear();
         }
@@ -439,7 +438,6 @@ public class AwVariationsSeedFetcherTest {
     public void testFastFetchJitterPeriodSettings() throws IOException, TimeoutException {
         try {
             TestAwVariationsSeedFetcher fetcher = new TestAwVariationsSeedFetcher();
-            final Date date = mock(Date.class);
             PersistableBundle bundle = new PersistableBundle();
             bundle.putBoolean(AwVariationsSeedFetcher.JOB_REQUEST_FAST_MODE, true);
 
@@ -515,7 +513,7 @@ public class AwVariationsSeedFetcherTest {
                     fetcher.getFinishedJobParameters()
                             .getExtras()
                             .getInt(AwVariationsSeedFetcher.JOB_REQUEST_COUNT_KEY);
-            Assert.assertEquals("Request count should have increased", requestCount, 1);
+            Assert.assertEquals("Request count should have increased", 1, requestCount);
 
         } finally {
             VariationsTestUtils.deleteSeeds(); // Remove the stamp file.
@@ -698,7 +696,7 @@ public class AwVariationsSeedFetcherTest {
             Assert.assertEquals(seedInfo.country, updatedSeedInfo.country);
             Assert.assertEquals(seedInfo.isGzipCompressed, updatedSeedInfo.isGzipCompressed);
             Assert.assertEquals(67890L, updatedSeedInfo.date);
-            Arrays.equals(seedInfo.seedData, updatedSeedInfo.seedData);
+            Assert.assertArrayEquals(seedInfo.seedData, updatedSeedInfo.seedData);
         } finally {
             VariationsUtils.closeSafely(out);
             VariationsTestUtils.deleteSeeds(); // Remove seed files.

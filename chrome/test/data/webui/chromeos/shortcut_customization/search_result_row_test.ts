@@ -4,14 +4,13 @@
 import 'chrome://shortcut-customization/js/search/search_result_row.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
-import {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
+import type {ShortcutInputKeyElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input_key.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
-import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {AcceleratorLookupManager} from 'chrome://shortcut-customization/js/accelerator_lookup_manager.js';
 import {CycleTabsTextSearchResult, fakeAcceleratorConfig, fakeLayoutInfo, SnapWindowLeftSearchResult, TakeScreenshotSearchResult} from 'chrome://shortcut-customization/js/fake_data.js';
 import {getBoldedDescription} from 'chrome://shortcut-customization/js/search/search_result_bolding.js';
-import {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
+import type {SearchResultRowElement} from 'chrome://shortcut-customization/js/search/search_result_row.js';
 import {TextAcceleratorElement} from 'chrome://shortcut-customization/js/text_accelerator.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -57,7 +56,7 @@ suite('searchResultRowTest', function() {
     searchResultRowElement = initSearchResultRowElement();
     await flush();
     const searchResultTextElement =
-        searchResultRowElement!.shadowRoot!.querySelector('#description');
+        searchResultRowElement.shadowRoot!.querySelector('#description');
     assertTrue(!!searchResultTextElement);
 
     searchResultRowElement.searchResult = SnapWindowLeftSearchResult;
@@ -108,7 +107,7 @@ suite('searchResultRowTest', function() {
         searchResultDescription.textContent?.trim());
 
     const acceleratorElements =
-        searchResultRowElement.shadowRoot!.querySelectorAll<HTMLDivElement>(
+        searchResultRowElement.shadowRoot!.querySelectorAll<HTMLElement>(
             '.accelerator-keys');
     // Two accelerators are expected.
     assertEquals(2, acceleratorElements.length);
@@ -119,7 +118,7 @@ suite('searchResultRowTest', function() {
     assertEquals(2, keys1.length);
     assertEquals(
         'ctrl',
-        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent!.trim());
+        keys1[0]!.shadowRoot!.querySelector('#key')!.textContent.trim());
     assertEquals(
         'show windows',
         keys1[1]!.shadowRoot!.querySelector('#keyIcon')!.getAttribute(
@@ -144,7 +143,7 @@ suite('searchResultRowTest', function() {
     assertTrue(keys2[0]!.highlighted);
   });
 
-  test('Standard accelerators have correct text dividers', async () => {
+  test('Standard accelerators have correct text dividers', () => {
     searchResultRowElement = initSearchResultRowElement();
     searchResultRowElement.searchResult = TakeScreenshotSearchResult;
     flush();
@@ -174,7 +173,7 @@ suite('searchResultRowTest', function() {
             .length);
   });
 
-  test('Query-matching bolded results show up correctly', async () => {
+  test('Query-matching bolded results show up correctly', () => {
     const query = 'Take screenshot';
     searchResultRowElement = initSearchResultRowElement();
     searchResultRowElement.searchQuery = query;
@@ -182,8 +181,8 @@ suite('searchResultRowTest', function() {
     flush();
     assertEquals(
         getBoldedDescription(
-            mojoString16ToString(searchResultRowElement.searchResult
-                                     .acceleratorLayoutInfo.description),
+            searchResultRowElement.searchResult.acceleratorLayoutInfo
+                .description,
             query)
             .toString(),
         strictQuery(

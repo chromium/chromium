@@ -17,18 +17,19 @@
 namespace chromecast {
 namespace shell {
 
-CastUIDevTools::CastUIDevTools(network::mojom::NetworkContext* network_context)
-    : devtools_server_(CreateServer(network_context)) {}
+CastUIDevTools::CastUIDevTools(
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner)
+    : devtools_server_(CreateServer(std::move(io_thread_task_runner))) {}
 
 CastUIDevTools::~CastUIDevTools() = default;
 
 std::unique_ptr<ui_devtools::UiDevToolsServer> CastUIDevTools::CreateServer(
-    network::mojom::NetworkContext* network_context) const {
+    scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner) const {
   constexpr int kUiDevToolsDefaultPort = 9223;
   int port = GetSwitchValueInt(ui_devtools::switches::kEnableUiDevTools,
                                kUiDevToolsDefaultPort);
-  auto server =
-      ui_devtools::UiDevToolsServer::CreateForViews(network_context, port);
+  auto server = ui_devtools::UiDevToolsServer::CreateForViews(
+      std::move(io_thread_task_runner), port);
   DCHECK(server);
   auto client = std::make_unique<ui_devtools::UiDevToolsClient>(
       "UiDevToolsClient", server.get());

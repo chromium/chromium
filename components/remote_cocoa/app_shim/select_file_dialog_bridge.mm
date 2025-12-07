@@ -20,6 +20,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
 #import "components/remote_cocoa/app_shim/native_widget_mac_nswindow.h"
+#import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #include "ui/strings/grit/ui_strings.h"
 
@@ -59,7 +60,11 @@ NSView* CreateAccessoryView() {
                                        IDS_SAVE_PAGE_FILE_FORMAT_PROMPT_MAC)];
   label.translatesAutoresizingMaskIntoConstraints = NO;
   label.textColor = NSColor.secondaryLabelColor;
-  label.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
+  if (base::mac::MacOSMajorVersion() >= 26) {
+    label.font = [NSFont systemFontOfSize:NSFont.systemFontSize];
+  } else {
+    label.font = [NSFont systemFontOfSize:NSFont.smallSystemFontSize];
+  }
 
   // The popup.
   NSPopUpButton* popup = [[NSPopUpButton alloc] initWithFrame:NSZeroRect
@@ -102,13 +107,25 @@ NSView* CreateAccessoryView() {
       addObject:[label.leadingAnchor constraintEqualToAnchor:group.leadingAnchor
                                                     constant:10]];
 
-  // Horizontal and vertical baseline between the label and popup.
+  // Horizontal and vertical between the label and popup.
   [constraints addObject:[popup.leadingAnchor
                              constraintEqualToAnchor:label.trailingAnchor
                                             constant:8]];
-  [constraints
-      addObject:[popup.firstBaselineAnchor
-                    constraintEqualToAnchor:label.firstBaselineAnchor]];
+  if (base::mac::MacOSMajorVersion() >= 26) {
+    // Since macOS 26, using the firstBaselineAnchor property for auto layout
+    // with NSPopUpButton causes frequent computations on the main thread of the
+    // main process, resulting in higher CPU usage. Referring to Safari's
+    // implementation, switching to the centerYAnchor property reduces CPU
+    // overhead. Visually, since NSPopUpButton and label fonts share the same
+    // size on macOS, centering alignment creates little noticeable difference
+    // compared to the previous firstBaseline alignment.
+    [constraints addObject:[label.centerYAnchor
+                               constraintEqualToAnchor:popup.centerYAnchor]];
+  } else {
+    [constraints
+        addObject:[popup.firstBaselineAnchor
+                      constraintEqualToAnchor:label.firstBaselineAnchor]];
+  }
 
   // Trailing.
   [constraints addObject:[group.trailingAnchor
@@ -220,7 +237,7 @@ NSSavePanel* __weak g_last_created_panel_for_testing = nil;
   // Unfortunately, there's no great way to do strict type matching with
   // NSOpenPanel. Setting explicit extensions via -allowedFileTypes is
   // deprecated, and there's no way to specify that strict type equality should
-  // be used for -allowedContentTypes (FB13721802).
+  // be used for -allowedContentTypes (https://crbug.com/41275486, FB13721802).
   //
   // -[NSOpenSavePanelDelegate panel:shouldEnableURL:] could be used to enforce
   // strict type matching, however its presence on the delegate means that all
@@ -230,6 +247,10 @@ NSSavePanel* __weak g_last_created_panel_for_testing = nil;
   //
   // Therefore, use the deprecated API, because it's the only way to remain
   // performant while achieving strict type matching.
+  //
+  // TODO(https://crbug.com/440106155): Possibly reconsider using
+  // -panel:shouldEnableURL: if the speed impact is judged to be acceptable
+  // nowadays.
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -255,6 +276,26 @@ namespace remote_cocoa {
 
 using mojom::SelectFileDialogType;
 using mojom::SelectFileTypeInfoPtr;
+
+class SelectFileDialogBridge::ScopedPreventKeyWindow {
+ public:
+  ScopedPreventKeyWindow(NativeWidgetMacNSWindow* window) {
+    bridge_ = window.bridge->GetWeakPtr();
+    window.preventKeyWindow = YES;
+  }
+
+  ScopedPreventKeyWindow(const SelectFileDialogBridge&) = delete;
+  ScopedPreventKeyWindow& operator=(const SelectFileDialogBridge&) = delete;
+
+  ~ScopedPreventKeyWindow() {
+    if (bridge_) {
+      bridge_->ns_window().preventKeyWindow = NO;
+    }
+  }
+
+ private:
+  base::WeakPtr<NativeWidgetNSWindowBridge> bridge_;
+};
 
 SelectFileDialogBridge::SelectFileDialogBridge(NSWindow* owning_window)
     : owning_window_(owning_window), weak_factory_(this) {}
@@ -405,6 +446,18 @@ void SelectFileDialogBridge::Show(
           base::apple::ObjCCast<NativeWidgetMacNSWindow>(sheet_parent)) {
     sheet_parent = [sheet_parent_widget_window preferredSheetParent];
   }
+
+  // The sheet parent will be activated by AppKit on sheet close, which may
+  // cause auto-dismissal of the owning window (e.g. extension popup).
+  // Therefore, prevent the sheet parent from becoming key.
+  if (sheet_parent != owning_window_) {
+    if (NativeWidgetMacNSWindow* sheet_parent_widget_window =
+            base::apple::ObjCCast<NativeWidgetMacNSWindow>(sheet_parent)) {
+      scoped_prevent_key_window_ =
+          std::make_unique<ScopedPreventKeyWindow>(sheet_parent_widget_window);
+    }
+  }
+
   [panel_ beginSheetModalForWindow:sheet_parent
                  completionHandler:^(NSInteger result) {
                    ended_callback.Run(result != NSModalResponseOK);
@@ -462,8 +515,8 @@ void SelectFileDialogBridge::SetAccessoryView(
 
       // See -[ExtensionDropdownHandler popupAction:] as to why file extensions
       // are collected here rather than being converted to UTTypes.
-      // TODO(FB13721802): Use UTTypes when strict type matching can be
-      // specified.
+      // TODO(https://crbug.com/440106155, FB13721802): Use UTTypes when strict
+      // type matching can be specified.
       NSString* ext_ns = base::SysUTF8ToNSString(ext);
       if (![file_extensions_array containsObject:ext_ns]) {
         [file_extensions_array addObject:ext_ns];
@@ -554,18 +607,45 @@ void SelectFileDialogBridge::OnPanelEnded(bool did_cancel) {
         }
         NSString* path = url.path;
 
-        // There is a bug in macOS where, despite a request to disallow file
-        // selection, files/packages are able to be selected. If indeed file
-        // selection was disallowed, drop any files selected.
-        // https://crbug.com/40861123, FB11405008
-        if (!open_panel.canChooseFiles) {
+        if (base::mac::MacOSMajorVersion() < 14) {
+          // There is a bug in macOS (https://crbug.com/40861123, FB11405008)
+          // where, despite a request to disallow file selection, files/packages
+          // are able to be selected. If indeed file selection was disallowed,
+          // drop any files selected. This issue is fixed in macOS 14, so only
+          // do the workaround on previous releases.
+          if (!open_panel.canChooseFiles) {
+            BOOL is_directory;
+            BOOL exists =
+                [NSFileManager.defaultManager fileExistsAtPath:path
+                                                   isDirectory:&is_directory];
+            BOOL is_package =
+                [NSWorkspace.sharedWorkspace isFilePackageAtPath:path];
+            if (!exists || !is_directory || is_package) {
+              continue;
+            }
+          }
+        }
+
+        // As long as FB13721802 remains unfixed, this class uses extensions to
+        // filter what files are available rather than UTTypes. This deprecated
+        // API has a problem, however. If you specify an extension to be shown
+        // as available, then the NSOpenPanel will assume that any directory
+        // that has that extension is a package, and will offer it to the user
+        // for selection even if directory selection isn't otherwise allowed.
+        // Therefore, if directories are disallowed, filter out any that find
+        // their way in if they're not actually packages.
+        //
+        // TODO(https://crbug.com/440106155, FB13721802): Possibly reconsider
+        // using -panel:shouldEnableURL: if the speed impact is judged to be
+        // acceptable nowadays, and drop this band-aid.
+        if (!open_panel.canChooseDirectories) {
           BOOL is_directory;
           BOOL exists =
               [NSFileManager.defaultManager fileExistsAtPath:path
                                                  isDirectory:&is_directory];
           BOOL is_package =
               [NSWorkspace.sharedWorkspace isFilePackageAtPath:path];
-          if (!exists || !is_directory || is_package) {
+          if (!exists || (is_directory && !is_package)) {
             continue;
           }
         }

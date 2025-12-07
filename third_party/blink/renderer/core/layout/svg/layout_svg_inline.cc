@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 
 namespace blink {
@@ -91,13 +92,16 @@ void LayoutSVGInline::ObjectBoundingBoxForCursor(InlineCursor& cursor,
 
 gfx::RectF LayoutSVGInline::ObjectBoundingBox() const {
   NOT_DESTROYED();
-  gfx::RectF bounds;
-  if (IsInLayoutNGInlineFormattingContext()) {
-    InlineCursor cursor;
-    cursor.MoveToIncludingCulledInline(*this);
-    ObjectBoundingBoxForCursor(cursor, bounds);
+  if (needs_update_bounding_box_) {
+    needs_update_bounding_box_ = false;
+    bounding_box_ = gfx::RectF();
+    if (IsInLayoutNGInlineFormattingContext()) {
+      InlineCursor cursor;
+      cursor.MoveToIncludingCulledInline(*this);
+      ObjectBoundingBoxForCursor(cursor, bounding_box_);
+    }
   }
-  return bounds;
+  return bounding_box_;
 }
 
 gfx::RectF LayoutSVGInline::DecoratedBoundingBox() const {
@@ -114,12 +118,6 @@ gfx::RectF LayoutSVGInline::VisualRectInLocalSVGCoordinates() const {
   return SVGLayoutSupport::ComputeVisualRectForText(*this, ObjectBoundingBox());
 }
 
-PhysicalRect LayoutSVGInline::VisualRectInDocument(
-    VisualRectFlags flags) const {
-  NOT_DESTROYED();
-  return SVGLayoutSupport::VisualRectInAncestorSpace(*this, *View(), flags);
-}
-
 void LayoutSVGInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
                                          TransformState& transform_state,
                                          MapCoordinatesFlags flags) const {
@@ -127,8 +125,10 @@ void LayoutSVGInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   SVGLayoutSupport::MapLocalToAncestor(this, ancestor, transform_state, flags);
 }
 
-void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
-                                    MapCoordinatesFlags mode) const {
+void LayoutSVGInline::QuadsInAncestorInternal(
+    Vector<gfx::QuadF>& quads,
+    const LayoutBoxModelObject* ancestor,
+    MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
     InlineCursor cursor;
@@ -136,10 +136,10 @@ void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
          cursor.MoveToNextForSameLayoutObject()) {
       const FragmentItem& item = *cursor.CurrentItem();
       if (item.IsSvgText()) {
-        quads.push_back(LocalToAbsoluteQuad(
+        quads.push_back(LocalToAncestorQuad(
             gfx::QuadF(SVGLayoutSupport::ExtendTextBBoxWithStroke(
                 *this, cursor.Current().ObjectBoundingBox(cursor))),
-            mode));
+            ancestor, mode));
       }
     }
   }
@@ -161,6 +161,16 @@ void LayoutSVGInline::AddOutlineRects(OutlineRectCollector& collector,
     *info = OutlineInfo::GetUnzoomedFromStyle(StyleRef());
 }
 
+void LayoutSVGInline::Paint(const PaintInfo& paint_info) const {
+  NOT_DESTROYED();
+
+  // Inlines should paint from their ancestor <text>. An exception is made if
+  // directly painting an inline SVG reference (e.g., `<feImage href=tspan>`),
+  // in which case the inline should render "according to the behavior of the
+  // use element", which is nothing for a standalone tspan.
+  CHECK(paint_info.IsRenderingResourceSubtree());
+}
+
 void LayoutSVGInline::WillBeDestroyed() {
   NOT_DESTROYED();
   SVGResources::ClearEffects(*this);
@@ -168,8 +178,10 @@ void LayoutSVGInline::WillBeDestroyed() {
   LayoutInline::WillBeDestroyed();
 }
 
-void LayoutSVGInline::StyleDidChange(StyleDifference diff,
-                                     const ComputedStyle* old_style) {
+void LayoutSVGInline::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   if (diff.HasDifference()) {
     if (auto* svg_text = LayoutSVGText::LocateLayoutSVGTextAncestor(this)) {
@@ -177,7 +189,7 @@ void LayoutSVGInline::StyleDidChange(StyleDifference diff,
         diff.SetNeedsFullLayout();
     }
   }
-  LayoutInline::StyleDidChange(diff, old_style);
+  LayoutInline::StyleDidChange(diff, old_style, style_change_context);
 
   if (diff.NeedsFullLayout()) {
     // The boundaries affect mask clip and clip path mask/clip.

@@ -77,7 +77,7 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
   // Runs `exit_callback_` - used to prevent `exit_callback_` from running after
   // `this` has been destroyed (by wrapping it with a callback bound to a weak
   // ptr).
-  void RunExitCallback(Result result) { exit_callback_.Run(result); }
+  void RunExitCallback(Result result);
 
  private:
   // Handles update notifications regarding the auto-enrollment check.
@@ -113,16 +113,6 @@ class AutoEnrollmentCheckScreen : public BaseScreen,
 
   // The user requested a connection attempt to be performed.
   void OnConnectRequested();
-
-  // Returns true if the `error` blocks the state determination process and must
-  // be addressed.
-  bool IsBlockingError(const policy::AutoEnrollmentError& error) const;
-
-  // Returns true if an error response from the server should cause a network
-  // error screen to be displayed and block the wizard from continuing. If false
-  // is returned, an error response from the server is treated as "no enrollment
-  // necessary".
-  bool ShouldBlockOnServerError() const;
 
   // Clears the cached state so that the check can be retried.
   void ClearState();

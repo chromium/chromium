@@ -39,8 +39,8 @@ MoveToDesksMenuDelegate::MoveToDesksMenuDelegate(views::Widget* widget)
     : widget_(widget) {}
 
 // static
-bool MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(aura::Window* window) {
-  return DesksHelper::Get(window)->GetNumberOfDesks() > 1;
+bool MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu() {
+  return DesksHelper::Get()->GetNumberOfDesks() > 1;
 }
 
 bool MoveToDesksMenuDelegate::IsCommandIdChecked(int command_id) const {
@@ -48,9 +48,8 @@ bool MoveToDesksMenuDelegate::IsCommandIdChecked(int command_id) const {
   if (IsAssignToAllDesksCommand(command_id))
     return assigned_to_all_desks;
 
-  return !assigned_to_all_desks &&
-         MapCommandIdToDeskIndex(command_id) ==
-             DesksHelper::Get(widget_->GetNativeWindow())->GetActiveDeskIndex();
+  return !assigned_to_all_desks && MapCommandIdToDeskIndex(command_id) ==
+                                       DesksHelper::Get()->GetActiveDeskIndex();
 }
 
 bool MoveToDesksMenuDelegate::IsCommandIdEnabled(int command_id) const {
@@ -62,7 +61,7 @@ bool MoveToDesksMenuDelegate::IsCommandIdEnabled(int command_id) const {
     return false;
 
   return MapCommandIdToDeskIndex(command_id) <
-         DesksHelper::Get(widget_->GetNativeWindow())->GetNumberOfDesks();
+         DesksHelper::Get()->GetNumberOfDesks();
 }
 
 bool MoveToDesksMenuDelegate::IsCommandIdVisible(int command_id) const {
@@ -89,15 +88,13 @@ std::u16string MoveToDesksMenuDelegate::GetLabelForCommandId(
   // It gets desk name for all the desks, and desk items are all dynamic here.
   // Therefore, for the desk a user adds, it returns the name of the desk.
   // Otherwise, the desk name is empty string.
-  return DesksHelper::Get(widget_->GetNativeWindow())
-      ->GetDeskName(MapCommandIdToDeskIndex(command_id));
+  return DesksHelper::Get()->GetDeskName(MapCommandIdToDeskIndex(command_id));
 }
 
 void MoveToDesksMenuDelegate::ExecuteCommand(int command_id, int event_flags) {
   if (!IsAssignToAllDesksCommand(command_id)) {
-    DesksHelper::Get(widget_->GetNativeWindow())
-        ->SendToDeskAtIndex(widget_->GetNativeWindow(),
-                            MapCommandIdToDeskIndex(command_id));
+    DesksHelper::Get()->SendToDeskAtIndex(widget_->GetNativeWindow(),
+                                          MapCommandIdToDeskIndex(command_id));
     return;
   }
 

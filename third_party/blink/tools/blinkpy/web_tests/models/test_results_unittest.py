@@ -32,6 +32,7 @@ import unittest
 from blinkpy.web_tests.models.test_results import TestResult
 from blinkpy.web_tests.port.driver import DriverOutput
 from blinkpy.web_tests.models import test_failures
+from blinkpy.web_tests.models.typ_types import ResultType
 
 
 class TestResultsTest(unittest.TestCase):
@@ -84,3 +85,7 @@ class TestResultsTest(unittest.TestCase):
         TestResult('foo', failures=failure_timeout)
         with self.assertRaises(AssertionError):
             TestResult('foo', failures=failure_early_exit)
+
+    def test_coerce_device_failure(self):
+        result = TestResult(test_name='foo', device_failed=True)
+        self.assertEqual(ResultType.Timeout, result.type)

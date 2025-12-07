@@ -10,10 +10,12 @@ class SmartLockMetricsRecorder {
   SmartLockMetricsRecorder();
   ~SmartLockMetricsRecorder();
 
-  // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // This enum is tied directly to the SmartLockAuthResultFailureReason UMA enum
+  // in //tools/metrics/histograms/metadata/cross_device/enums.xml, and should
+  // always reflect it (do not change one without changing the other). Entries
+  // should be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(SmartLockAuthResultFailureReason)
   enum class SmartLockAuthResultFailureReason {
     kUnlockNotAllowed = 0,
     // kDeprecatedAlreadyAttemptingAuth = 1, (obsolete)
@@ -32,21 +34,27 @@ class SmartLockMetricsRecorder {
     // kUserControllerSignInFailure = 14, (obsolete)
     kMaxValue = kUnlockRequestSentButNotAttemptingAuth
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:SmartLockAuthResultFailureReason)
 
-  // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // This enum is tied directly to the SmartLockAuthMethodChoice UMA enum in
+  // //tools/metrics/histograms/metadata/cross_device/enums.xml, and should
+  // always reflect it (do not change one without changing the other). Entries
+  // should be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(SmartLockAuthMethodChoice)
   enum class SmartLockAuthMethodChoice {
     kSmartLock = 0,
     kOther = 1,
     kMaxValue = kOther
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:SmartLockAuthMethodChoice)
 
-  // This enum is tied directly to a UMA enum defined in
-  // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
-  // change one without changing the other). Entries should be never modified
-  // or deleted. Only additions possible.
+  // This enum is tied directly to the SmartLockAuthEventPasswordState UMA enum
+  // in //tools/metrics/histograms/metadata/cross_device/enums.xml, and should
+  // always reflect it (do not change one without changing the other). Entries
+  // should be never modified or deleted. Only additions possible.
+  //
+  // LINT.IfChange(SmartLockAuthEventPasswordState)
   enum class SmartLockAuthEventPasswordState {
     kUnknownState = 0,
     // kNoPairing = 1, (obsolete)
@@ -70,6 +78,7 @@ class SmartLockMetricsRecorder {
     kPrimaryUserAbsent = 19,
     kMaxValue = kPrimaryUserAbsent
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/cross_device/enums.xml:SmartLockAuthEventPasswordState)
 
   static void RecordSmartLockUnlockAuthMethodChoice(
       SmartLockAuthMethodChoice auth_method_choice);

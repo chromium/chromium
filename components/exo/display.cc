@@ -5,6 +5,7 @@
 #include "components/exo/display.h"
 
 #include <GLES2/gl2extchromium.h>
+
 #include <iterator>
 #include <memory>
 #include <utility>
@@ -31,8 +32,6 @@
 #include "components/exo/toast_surface.h"
 #include "components/exo/toast_surface_manager.h"
 #include "components/exo/xdg_shell_surface.h"
-#include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
-#include "gpu/ipc/common/gpu_memory_buffer_impl_native_pixmap.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
 #include "ui/gfx/linux/client_native_pixmap_factory_dmabuf.h"
@@ -93,21 +92,18 @@ std::unique_ptr<SharedMemory> Display::CreateSharedMemory(
 
 std::unique_ptr<Buffer> Display::CreateLinuxDMABufBuffer(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::NativePixmapHandle handle,
     bool y_invert) {
   TRACE_EVENT1("exo", "Display::CreateLinuxDMABufBuffer", "size",
                size.ToString());
 
-  gfx::GpuMemoryBufferHandle gmb_handle;
-  gmb_handle.type = gfx::NATIVE_PIXMAP;
-  gmb_handle.native_pixmap_handle = std::move(handle);
+  gfx::GpuMemoryBufferHandle gmb_handle(std::move(handle));
 
   const gfx::BufferUsage buffer_usage = gfx::BufferUsage::GPU_READ;
 
-  // COMMANDS_COMPLETED queries are required by native pixmaps.
-  const unsigned query_type = GL_COMMANDS_COMPLETED_CHROMIUM;
-
+  // Using readlock fence instead of query for zero-copy.
+  const unsigned query_type = 0;
   // Using zero-copy for optimal performance.
   const bool use_zero_copy = true;
   const bool is_overlay_candidate = true;

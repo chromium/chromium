@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 
 #include "base/component_export.h"
@@ -75,19 +76,22 @@ enum class ProtoDbType {
   DISCOUNTS_DATABASE = 48,
   COMMERCE_PARCEL_TRACKING_DATABASE = 49,
   CLIENT_CERTIFICATES_DATABASE = 50,
+  AUTOFILL_AI_MODEL_CACHE = 51,
+  DISCOUNT_INFOS_DATABASE = 52,
+  NOTIFICATION_TELEMETRY_STORE = 53,
   LAST,
 };
 
 // List of databases that need to keep using unique db instances. New databases
 // shouldn't be here unless they have a good reason.
-constexpr ProtoDbType kBlocklistedDbForSharedImpl[]{
+constexpr auto kBlocklistedDbForSharedImpl = std::to_array<ProtoDbType>({
     // DB is not tied to a profile, will always be unique.
     ProtoDbType::GCM_KEY_STORE,
     // DB Used by shared database, will always be unique.
     ProtoDbType::SHARED_DB_METADATA,
     // Marks the end of list.
     ProtoDbType::LAST,
-};
+});
 
 // Add any obsolete databases in this list so that, if the data is no longer
 // needed.

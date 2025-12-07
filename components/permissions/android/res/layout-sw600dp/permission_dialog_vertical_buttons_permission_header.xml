@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="viewStart">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp">
+            <LinearLayout
+                android:id="@+id/icon_container"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true" >
+                <ImageView
+                    android:id="@+id/icon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="top"
+                    android:importantForAccessibility="no" />
+            </LinearLayout>
+
+            <org.chromium.ui.widget.ChromeImageButton
+                tools:ignore="InconsistentLayout"
+                android:id="@+id/close_button"
+                android:layout_width="@dimen/small_icon_background_size"
+                android:layout_height="@dimen/small_icon_background_size"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/small_icon_background"
+                android:contentDescription="@string/close"
+                android:src="@drawable/btn_close"
+                app:tint="@macro/default_icon_color" />
+        </RelativeLayout>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="0dp"
+            android:gravity="top|center"
+            android:textDirection="locale"
+            android:textAppearance="@style/TextAppearance.Headline2"/>
+
+    </LinearLayout>
+
+</merge>

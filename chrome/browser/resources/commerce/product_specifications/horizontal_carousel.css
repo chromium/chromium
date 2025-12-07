@@ -1,0 +1,91 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --horizontal-carousel-button-size: 32px;
+
+  display: flex;
+  isolation: isolate;
+  max-width: 100%;
+  position: relative;
+}
+
+.carousel-button,
+.hover-layer {
+  border-radius: 50%;
+  position: absolute;
+}
+
+.carousel-button {
+  --cr-icon-button-fill-color: var(
+      --color-product-specifications-tonal-button-icon);
+  --cr-icon-button-size: var(--horizontal-carousel-button-size);
+  background-color: var(--color-button-background-tonal);
+  margin: 0;
+}
+
+.carousel-button-container {
+  height: 0;
+  position: sticky;
+  top: 44%;
+  width: 0;
+  z-index: 1; /* Buttons should display on top of any overflowing text. */
+}
+
+.hover-layer {
+  background: var(--cr-hover-background-color);
+  display: none;
+  height: var(--horizontal-carousel-button-size);
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  width: var(--horizontal-carousel-button-size);
+  z-index: 1;
+}
+
+#backButton, #backHoverLayer {
+  left: calc(-1 * var(--horizontal-carousel-button-size));
+}
+
+#forwardButton, #forwardHoverLayer {
+  right: calc(-1 * var(--horizontal-carousel-button-size));
+}
+
+#backButton:hover~#backHoverLayer,
+#forwardButton:hover~#forwardHoverLayer {
+  display: block;
+}
+
+#carouselContainer {
+  display: flex;
+  flex-wrap: nowrap;
+  min-width: 0;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: x mandatory;
+}
+
+:host(:not([can-scroll_])) #carouselContainer {
+  scrollbar-width: none;
+}
+
+:host([can-scroll_]) #carouselContainer::-webkit-scrollbar {
+  background: transparent;
+  height: 6px;
+  width: 0;
+}
+
+:host([can-scroll_]) #carouselContainer::-webkit-scrollbar-thumb {
+  background:
+    var(--color-product-specifications-horizontal-carousel-scrollbar-thumb);
+  border-radius: 8px;
+}

@@ -20,7 +20,7 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/root_view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #endif
 
@@ -60,20 +60,23 @@ class WebAppIdentityUpdateConfirmationViewBrowserTest
   }
 
   bool VerifyUi() override {
-    if (!DialogBrowserTest::VerifyUi())
+    if (!DialogBrowserTest::VerifyUi()) {
       return false;
+    }
 
     views::Widget::Widgets widgets;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    for (aura::Window* root_window : ash::Shell::GetAllRootWindows())
-      views::Widget::GetAllChildWidgets(root_window, &widgets);
+#if BUILDFLAG(IS_CHROMEOS)
+    for (aura::Window* root_window : ash::Shell::GetAllRootWindows()) {
+      widgets.merge(views::Widget::GetAllChildWidgets(root_window));
+    }
 #else
     widgets = views::test::WidgetTest::GetAllWidgets();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
     for (views::Widget* widget : widgets) {
-      if (!widget->GetRootView())
+      if (!widget->GetRootView()) {
         continue;
+      }
       views::View* view = widget->GetRootView()->GetViewByID(
           VIEW_ID_APP_IDENTITY_UPDATE_HEADER);
       if (view) {
@@ -144,8 +147,9 @@ IN_PROC_BROWSER_TEST_F(WebAppIdentityUpdateConfirmationViewBrowserTest,
   base::RunLoop run_loop;
   observer.set_closing_callback(
       base::BindLambdaForTesting([&](views::Widget* widget) {
-        if (widget == dialog_widget)
+        if (widget == dialog_widget) {
           run_loop.Quit();
+        }
       }));
   // Uninstalling the app will abort its App Identity Update dialog.
   web_app::test::UninstallWebApp(browser()->profile(), app_id_);

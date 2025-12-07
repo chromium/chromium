@@ -10,10 +10,10 @@
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -22,12 +22,12 @@
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
-#include "chrome/browser/ash/login/ui/webui_login_view.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_status.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
+#include "chrome/browser/ui/ash/login/webui_login_view.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/browser/ui/webui/ash/login/tpm_error_screen_handler.h"
@@ -37,6 +37,7 @@
 #include "chromeos/test/chromeos_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,7 +54,7 @@ const test::UIPath kEnterpriseEnrollmentDialogue = {kEnterpriseEnrollment,
                                                     "step-signin"};
 
 constexpr char kTestUserEmail[] = "testuser@test.com";
-constexpr char kTestUserGaiaId[] = "test_user_gaia_id";
+constexpr GaiaId::Literal kTestUserGaiaId("test_user_gaia_id");
 constexpr char kTestUserPassword[] = "test_user_password";
 
 const test::UIPath kEnterpriseEnrollmentSkipDialogue = {
@@ -123,12 +124,9 @@ class EnrollmentScreenTest : public OobeBaseTest {
     return signin_artifacts;
   }
 
-  policy::EnrollmentConfig CreateConfig(
-      policy::EnrollmentConfig::Mode mode,
-      policy::EnrollmentConfig::AuthMechanism auth_mechanism) {
+  policy::EnrollmentConfig CreateConfig(policy::EnrollmentConfig::Mode mode) {
     policy::EnrollmentConfig config;
     config.mode = mode;
-    config.auth_mechanism = auth_mechanism;
     return config;
   }
 
@@ -176,8 +174,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, EnrollAfterRollbackSuccess) {
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
@@ -201,8 +197,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
@@ -248,8 +242,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED);
@@ -291,8 +283,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, AttestationEnrollmentSuccess) {
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED);
@@ -315,8 +305,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED;
 
   enrollment_helper_.ExpectEnrollmentMode(
       policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED);
@@ -359,8 +347,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, SkipEnrollmentDialogueGoBack) {
   enrollment_ui_.SetExitHandler();
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
 
   enrollment_config.is_license_packaged_with_device = true;
 
@@ -390,8 +376,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
 
   // Set enrollment config to Forced Re-enrollment.
   enrollment_config.mode = policy::EnrollmentConfig::MODE_LOCAL_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
 
   enrollment_config.is_license_packaged_with_device = true;
 
@@ -418,8 +402,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   enrollment_ui_.SetExitHandler();
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
 
   enrollment_config.is_license_packaged_with_device = true;
 
@@ -450,8 +432,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, SkipEnrollmentDialogueNoLPDevice) {
   enrollment_ui_.SetExitHandler();
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode = policy::EnrollmentConfig::MODE_MANUAL;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE;
 
   enrollment_config.is_license_packaged_with_device = false;
 
@@ -505,9 +485,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   WizardContext context;
   enrollment_helper_.ExpectAttestationEnrollmentSuccess();
   enrollment_helper_.DisableAttributePromptUpdate();
-  enrollment_screen()->SetEnrollmentConfig(CreateConfig(
-      policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-      policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED));
+  enrollment_screen()->SetEnrollmentConfig(
+      CreateConfig(policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED));
   enrollment_screen()->Show(&context);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepSuccess);
 
@@ -524,8 +503,7 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
                        ShowsWorkingStepOnAttestationFlow) {
   WizardContext context;
   enrollment_screen()->SetEnrollmentConfig(
-      CreateConfig(policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-                   policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION));
+      CreateConfig(policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED));
 
   enrollment_screen()->Show(&context);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepWorking);
@@ -536,11 +514,10 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   WizardContext context;
   enrollment_helper_.ExpectAttestationEnrollmentError(
       policy::EnrollmentStatus::ForRegistrationError(
-          policy::DeviceManagementStatus::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
+          policy::DeviceManagementStatus::DM_STATUS_TEMPORARY_UNAVAILABLE));
   enrollment_helper_.SetupClearAuth();
   enrollment_screen()->SetEnrollmentConfig(
-      CreateConfig(policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-                   policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION));
+      CreateConfig(policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED));
   enrollment_screen()->Show(&context);
   enrollment_ui_.WaitForStep(test::ui::kEnrollmentStepError);
 
@@ -554,8 +531,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TokenBasedEnrollmentSuccess) {
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
   enrollment_config.enrollment_token = kTestEnrollmentToken;
 
   enrollment_helper_.ExpectEnrollmentTokenConfig(kTestEnrollmentToken);
@@ -572,6 +547,31 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest, TokenBasedEnrollmentSuccess) {
   EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
 }
 
+IN_PROC_BROWSER_TEST_F(
+    EnrollmentScreenTest,
+    TokenBasedEnrollmentOobeConfigSkipEnrollmentSuccessScreen) {
+  enrollment_ui_.SetExitHandler();
+  policy::EnrollmentConfig enrollment_config;
+  enrollment_config.mode =
+      policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
+  enrollment_config.enrollment_token = kTestEnrollmentToken;
+
+  enrollment_helper_.ExpectEnrollmentTokenConfig(kTestEnrollmentToken);
+  enrollment_helper_.ExpectTokenBasedEnrollmentSuccess();
+  enrollment_helper_.DisableAttributePromptUpdate();
+  enrollment_helper_.SetupClearAuth();
+
+  enrollment_screen()->SetEnrollmentConfig(enrollment_config);
+
+  WizardContext context;
+  context.configuration.Set(configuration::kSkipEnrollmentSuccessScreen, true);
+  enrollment_screen()->Show(&context);
+
+  enrollment_ui_.WaitForScreenExit();
+
+  EXPECT_TRUE(StartupUtils::IsDeviceRegistered());
+}
+
 // TODO(b/320497330): Add more browser tests for token-based kiosk enrollment
 // and non-fallback error handling.
 IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
@@ -580,8 +580,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
   policy::EnrollmentConfig enrollment_config;
   enrollment_config.mode =
       policy::EnrollmentConfig::MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED;
-  enrollment_config.auth_mechanism =
-      policy::EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED;
   enrollment_config.enrollment_token = kTestEnrollmentToken;
 
   enrollment_helper_.ExpectEnrollmentTokenConfig(kTestEnrollmentToken);
@@ -624,7 +622,6 @@ IN_PROC_BROWSER_TEST_F(EnrollmentScreenTest,
 
 struct EnrollmentErrorScreenTestParams {
   policy::EnrollmentConfig::Mode enrollment_mode;
-  policy::EnrollmentConfig::AuthMechanism enrollment_auth_mechanism;
 };
 
 class EnrollmentErrorScreenTest
@@ -634,7 +631,6 @@ class EnrollmentErrorScreenTest
   policy::EnrollmentConfig GetEnrollmentConfigParam() {
     policy::EnrollmentConfig config;
     config.mode = GetParam().enrollment_mode;
-    config.auth_mechanism = GetParam().enrollment_auth_mechanism;
     return config;
   }
 
@@ -644,7 +640,7 @@ class EnrollmentErrorScreenTest
   bool IsManualEnrollmentMode(policy::EnrollmentConfig::Mode mode) const {
     switch (mode) {
       case policy::EnrollmentConfig::MODE_NONE:
-        NOTREACHED_NORETURN() << "Bad enrollment mode " << mode;
+        NOTREACHED() << "Bad enrollment mode " << mode;
       case policy::EnrollmentConfig::MODE_MANUAL:
       case policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT:
       case policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED:
@@ -666,6 +662,8 @@ class EnrollmentErrorScreenTest
           MODE_ENROLLMENT_TOKEN_INITIAL_SERVER_FORCED:
       case policy::EnrollmentConfig::
           MODE_ENROLLMENT_TOKEN_INITIAL_MANUAL_FALLBACK:
+      case policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_SERVER_FORCED:
+      case policy::EnrollmentConfig::MODE_REMOTE_DEPLOYMENT_MANUAL_FALLBACK:
         return false;
     }
   }
@@ -755,31 +753,22 @@ INSTANTIATE_TEST_SUITE_P(
     ForcedEnrollment,
     ManualEnrollmentErrorScreenTest,
     testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
-        {policy::EnrollmentConfig::MODE_LOCAL_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
-        {policy::EnrollmentConfig::MODE_SERVER_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
-        {policy::EnrollmentConfig::MODE_RECOVERY,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
-        {policy::EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
-        {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
-        {policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE}}));
+        {policy::EnrollmentConfig::MODE_LOCAL_FORCED},
+        {policy::EnrollmentConfig::MODE_SERVER_FORCED},
+        {policy::EnrollmentConfig::MODE_RECOVERY},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_MANUAL_FALLBACK},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_MANUAL_FALLBACK},
+        {policy::EnrollmentConfig::
+             MODE_ATTESTATION_ROLLBACK_MANUAL_FALLBACK}}));
 
 INSTANTIATE_TEST_SUITE_P(
     NotForcedEnrollment,
     ManualEnrollmentErrorScreenTest,
     testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
-        {policy::EnrollmentConfig::MODE_MANUAL,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
-        {policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
-        {policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE},
-        {policy::EnrollmentConfig::MODE_SERVER_ADVERTISED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE}}));
+        {policy::EnrollmentConfig::MODE_MANUAL},
+        {policy::EnrollmentConfig::MODE_MANUAL_REENROLLMENT},
+        {policy::EnrollmentConfig::MODE_LOCAL_ADVERTISED},
+        {policy::EnrollmentConfig::MODE_SERVER_ADVERTISED}}));
 
 using AttestationEnrollmentErrorScreenTest = EnrollmentErrorScreenTest;
 
@@ -787,7 +776,7 @@ IN_PROC_BROWSER_TEST_P(AttestationEnrollmentErrorScreenTest,
                        AttestationEnrollmentErrorAndScreenData) {
   enrollment_ui_.SetExitHandler();
   const policy::EnrollmentConfig enrollment_config = GetEnrollmentConfigParam();
-  ASSERT_TRUE(enrollment_config.should_enroll_with_attestation());
+  ASSERT_TRUE(enrollment_config.is_automatic_enrollment());
   ASSERT_TRUE(enrollment_config.is_mode_attestation());
 
   // The test expects the error screen to be shown. Avoid automatic fallback
@@ -853,21 +842,16 @@ INSTANTIATE_TEST_SUITE_P(
     ForcedEnrollment,
     AttestationEnrollmentErrorScreenTest,
     testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
-        {policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION},
-        {policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED},
-        {policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED},
-        {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED,
-         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED}}));
+        {policy::EnrollmentConfig::MODE_ATTESTATION_LOCAL_FORCED},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_SERVER_FORCED},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED},
+        {policy::EnrollmentConfig::MODE_ATTESTATION_INITIAL_SERVER_FORCED}}));
 
 INSTANTIATE_TEST_SUITE_P(
     NotForcedEnrollment,
     AttestationEnrollmentErrorScreenTest,
     testing::ValuesIn(std::vector<EnrollmentErrorScreenTestParams>{
-        {policy::EnrollmentConfig::MODE_ATTESTATION,
-         policy::EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED}}));
+        {policy::EnrollmentConfig::MODE_ATTESTATION}}));
 
 // Class to test TPM pre-enrollment check that happens only with
 // --tpm-is-dynamic switch enabled. Test parameter represents take TPM
@@ -973,98 +957,6 @@ INSTANTIATE_TEST_SUITE_P(All,
                                            ::tpm_manager::STATUS_DEVICE_ERROR,
                                            ::tpm_manager::STATUS_NOT_AVAILABLE,
                                            ::tpm_manager::STATUS_DBUS_ERROR));
-
-class AttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
- public:
-  AttestationAuthEnrollmentScreenTest() = default;
-
-  AttestationAuthEnrollmentScreenTest(
-      const AttestationAuthEnrollmentScreenTest&) = delete;
-  AttestationAuthEnrollmentScreenTest& operator=(
-      const AttestationAuthEnrollmentScreenTest&) = delete;
-
-  ~AttestationAuthEnrollmentScreenTest() override = default;
-
- private:
-  // EnrollmentScreenTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnrollmentScreenTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnterpriseEnableZeroTouchEnrollment);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(AttestationAuthEnrollmentScreenTest, TestCancel) {
-  enrollment_helper_.SetupClearAuth();
-  ASSERT_FALSE(enrollment_screen()->AdvanceToNextAuth());
-  enrollment_ui_.SetExitHandler();
-  enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, screen_result);
-}
-
-class ForcedAttestationAuthEnrollmentScreenTest : public EnrollmentScreenTest {
- public:
-  ForcedAttestationAuthEnrollmentScreenTest() = default;
-
-  ForcedAttestationAuthEnrollmentScreenTest(
-      const ForcedAttestationAuthEnrollmentScreenTest&) = delete;
-  ForcedAttestationAuthEnrollmentScreenTest& operator=(
-      const ForcedAttestationAuthEnrollmentScreenTest&) = delete;
-
-  ~ForcedAttestationAuthEnrollmentScreenTest() override = default;
-
- private:
-  // EnrollmentScreenTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnrollmentScreenTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitchASCII(
-        switches::kEnterpriseEnableZeroTouchEnrollment, "forced");
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ForcedAttestationAuthEnrollmentScreenTest, TestCancel) {
-  enrollment_helper_.SetupClearAuth();
-  ASSERT_FALSE(enrollment_screen()->AdvanceToNextAuth());
-  enrollment_ui_.SetExitHandler();
-  enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
-            screen_result);
-}
-
-class MultiAuthEnrollmentScreenTest : public EnrollmentScreenTest {
- public:
-  MultiAuthEnrollmentScreenTest() = default;
-
-  MultiAuthEnrollmentScreenTest(const MultiAuthEnrollmentScreenTest&) = delete;
-  MultiAuthEnrollmentScreenTest& operator=(
-      const MultiAuthEnrollmentScreenTest&) = delete;
-
-  ~MultiAuthEnrollmentScreenTest() override = default;
-
- private:
-  // EnrollmentScreenTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnrollmentScreenTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kEnterpriseEnableZeroTouchEnrollment);
-    // Kiosk mode will force OAuth enrollment.
-    base::FilePath test_data_dir;
-    ASSERT_TRUE(chromeos::test_utils::GetTestDataPath(
-        "app_mode", "kiosk_manifest", &test_data_dir));
-    command_line->AppendSwitchPath(
-        switches::kAppOemManifestFile,
-        test_data_dir.AppendASCII("kiosk_manifest.json"));
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(MultiAuthEnrollmentScreenTest, TestCancel) {
-  ASSERT_TRUE(enrollment_screen()->AdvanceToNextAuth());
-  enrollment_ui_.SetExitHandler();
-  enrollment_screen()->OnCancel();
-  EnrollmentScreen::Result screen_result = enrollment_ui_.WaitForScreenExit();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
-            screen_result);
-}
 
 class ProvisionedEnrollmentScreenTest : public EnrollmentScreenTest {
  public:

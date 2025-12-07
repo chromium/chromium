@@ -5,10 +5,9 @@
 #ifndef NET_QUIC_ADDRESS_UTILS_H_
 #define NET_QUIC_ADDRESS_UTILS_H_
 
-#include <string.h>
-
 #include "base/containers/span.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_address_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_ip_address.h"
 #include "net/third_party/quiche/src/quiche/common/quiche_ip_address_family.h"
@@ -29,7 +28,7 @@ inline IPEndPoint ToIPEndPoint(quic::QuicSocketAddress address) {
   return result;
 }
 
-inline IPAddress ToIPAddress(quic::QuicIpAddress address) {
+inline IPAddress ToIPAddress(quiche::QuicheIpAddress address) {
   if (!address.IsInitialized()) {
     return IPAddress();
   }
@@ -63,24 +62,16 @@ inline quic::QuicSocketAddress ToQuicSocketAddress(IPEndPoint address) {
   return quic::QuicSocketAddress(result);
 }
 
-inline quic::QuicIpAddress ToQuicIpAddress(net::IPAddress address) {
+inline quiche::QuicheIpAddress ToQuicheIpAddress(net::IPAddress address) {
   if (address.IsIPv4()) {
-    in_addr result;
-    static_assert(sizeof(result) == IPAddress::kIPv4AddressSize,
-                  "Address size mismatch");
-    memcpy(&result, address.bytes().data(), IPAddress::kIPv4AddressSize);
-    return quic::QuicIpAddress(result);
+    return quiche::QuicheIpAddress(ToInAddr(address));
   }
   if (address.IsIPv6()) {
-    in6_addr result;
-    static_assert(sizeof(result) == IPAddress::kIPv6AddressSize,
-                  "Address size mismatch");
-    memcpy(&result, address.bytes().data(), IPAddress::kIPv6AddressSize);
-    return quic::QuicIpAddress(result);
+    return quiche::QuicheIpAddress(ToIn6Addr(address));
   }
 
   DCHECK(address.empty());
-  return quic::QuicIpAddress();
+  return quiche::QuicheIpAddress();
 }
 
 }  // namespace net

@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/audio/alsa/audio_manager_alsa.h"
 
 #include <stddef.h>
+
+#include <algorithm>
+#include <array>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/metrics/histogram.h"
+#include "base/strings/string_view_util.h"
 #include "media/audio/alsa/alsa_input.h"
 #include "media/audio/alsa/alsa_output.h"
 #include "media/audio/alsa/alsa_wrapper.h"
@@ -41,14 +40,18 @@ static const int kDefaultSampleRate = 48000;
 // real devices, we remove them from the list to avoiding duplicate counting.
 // In addition, note that we support no more than 2 channels for recording,
 // hence surround devices are not stored in the list.
-static const char* const kInvalidAudioInputDevices[] = {
-    "default", "dmix", "null", "pulse", "surround",
-};
+constexpr auto kInvalidAudioInputDevices = std::to_array<std::string_view>({
+    "default",
+    "dmix",
+    "null",
+    "pulse",
+    "surround",
+});
 
 AudioManagerAlsa::AudioManagerAlsa(std::unique_ptr<AudioThread> audio_thread,
                                    AudioLogFactory* audio_log_factory)
     : AudioManagerBase(std::move(audio_thread), audio_log_factory),
-      wrapper_(new AlsaWrapper()) {
+      wrapper_(std::make_unique<AlsaWrapper>()) {
   SetMaxOutputStreamsAllowed(kMaxOutputStreams);
 }
 
@@ -89,7 +92,7 @@ AudioParameters AudioManagerAlsa::GetInputStreamParameters(
                          kDefaultInputBufferSize);
 }
 
-const char* AudioManagerAlsa::GetName() {
+const std::string_view AudioManagerAlsa::GetName() {
   return "ALSA";
 }
 
@@ -101,7 +104,7 @@ void AudioManagerAlsa::GetAlsaAudioDevices(StreamType type,
 
   // Loop through the physical sound cards to get ALSA device hints.
   while (!wrapper_->CardNext(&card) && card >= 0) {
-    void** hints = NULL;
+    void** hints = nullptr;
     int error = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
     if (!error) {
       GetAlsaDevicesInfo(type, hints, device_names);
@@ -122,15 +125,19 @@ void AudioManagerAlsa::GetAlsaDevicesInfo(AudioManagerAlsa::StreamType type,
   static const char kNameHintName[] = "NAME";
   static const char kDescriptionHintName[] = "DESC";
 
-  const char* unwanted_device_type = UnwantedDeviceTypeWhenEnumerating(type);
+  const std::string_view unwanted_device_type =
+      UnwantedDeviceTypeWhenEnumerating(type);
 
-  for (void** hint_iter = hints; *hint_iter != NULL; hint_iter++) {
+  // SAFETY: the ALSA API guarantees that `hint_iter` will dereference to
+  // nullptr as the last element before it goes out of bounds.
+  for (void** hint_iter = hints; *hint_iter != nullptr;
+       UNSAFE_BUFFERS(++hint_iter)) {
     // Only examine devices of the right type.  Valid values are
     // "Input", "Output", and NULL which means both input and output.
-    std::unique_ptr<char, base::FreeDeleter> io(
-        wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName));
-    if (io != NULL && strcmp(unwanted_device_type, io.get()) == 0)
+    auto io = wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName);
+    if (base::as_string_view(io) == unwanted_device_type) {
       continue;
+    }
 
     // Found a device, prepend the default device since we always want
     // it to be on the top of the list for all platforms. And there is
@@ -141,28 +148,25 @@ void AudioManagerAlsa::GetAlsaDevicesInfo(AudioManagerAlsa::StreamType type,
       device_names->push_front(AudioDeviceName::CreateDefault());
 
     // Get the unique device name for the device.
-    std::unique_ptr<char, base::FreeDeleter> unique_device_name(
-        wrapper_->DeviceNameGetHint(*hint_iter, kNameHintName));
+    auto unique_device_name =
+        wrapper_->DeviceNameGetHint(*hint_iter, kNameHintName);
 
     // Find out if the device is available.
-    if (IsAlsaDeviceAvailable(type, unique_device_name.get())) {
+    if (IsAlsaDeviceAvailable(type, unique_device_name.data())) {
       // Get the description for the device.
-      std::unique_ptr<char, base::FreeDeleter> desc(
-          wrapper_->DeviceNameGetHint(*hint_iter, kDescriptionHintName));
+      auto desc = wrapper_->DeviceNameGetHint(*hint_iter, kDescriptionHintName);
 
       AudioDeviceName name;
-      name.unique_id = unique_device_name.get();
-      if (desc) {
+      name.unique_id = base::as_string_view(unique_device_name);
+      if (!desc.empty()) {
         // Use the more user friendly description as name.
         // Replace '\n' with '-'.
-        char* pret = strchr(desc.get(), '\n');
-        if (pret)
-          *pret = '-';
-        name.device_name = desc.get();
+        std::ranges::replace(desc, '\n', '-');
+        name.device_name = base::as_string_view(desc);
       } else {
         // Virtual devices don't necessarily have descriptions.
         // Use their names instead.
-        name.device_name = unique_device_name.get();
+        name.device_name = base::as_string_view(unique_device_name);
       }
 
       // Store the device information.
@@ -172,20 +176,20 @@ void AudioManagerAlsa::GetAlsaDevicesInfo(AudioManagerAlsa::StreamType type,
 }
 
 // static
-bool AudioManagerAlsa::IsAlsaDeviceAvailable(
-    AudioManagerAlsa::StreamType type,
-    const char* device_name) {
-  if (!device_name)
+bool AudioManagerAlsa::IsAlsaDeviceAvailable(AudioManagerAlsa::StreamType type,
+                                             std::string_view device_name) {
+  if (device_name.empty()) {
     return false;
+  }
 
   // We do prefix matches on the device name to see whether to include
   // it or not.
   if (type == kStreamCapture) {
     // Check if the device is in the list of invalid devices.
-    for (size_t i = 0; i < std::size(kInvalidAudioInputDevices); ++i) {
-      if (strncmp(kInvalidAudioInputDevices[i], device_name,
-                  strlen(kInvalidAudioInputDevices[i])) == 0)
+    for (const auto kInvalidAudioInputDevice : kInvalidAudioInputDevices) {
+      if (device_name.starts_with(kInvalidAudioInputDevice)) {
         return false;
+      }
     }
     return true;
   }
@@ -195,9 +199,8 @@ bool AudioManagerAlsa::IsAlsaDeviceAvailable(
   // goes through software conversion if needed (e.g. incompatible
   // sample rate).
   // TODO(joi): Should we prefer "hw" instead?
-  static const char kDeviceTypeDesired[] = "plughw";
-  return strncmp(kDeviceTypeDesired, device_name,
-                 std::size(kDeviceTypeDesired) - 1) == 0;
+  static constexpr std::string_view kDeviceTypeDesired = "plughw";
+  return device_name.starts_with(kDeviceTypeDesired);
 }
 
 // static
@@ -231,7 +234,7 @@ void AudioManagerAlsa::AddAlsaDeviceFromSwitch(const char* switch_name,
 }
 
 // static
-const char* AudioManagerAlsa::UnwantedDeviceTypeWhenEnumerating(
+std::string_view AudioManagerAlsa::UnwantedDeviceTypeWhenEnumerating(
     AudioManagerAlsa::StreamType wanted_type) {
   return wanted_type == kStreamPlayback ? "Input" : "Output";
 }
@@ -240,7 +243,7 @@ bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
     AudioManagerAlsa::StreamType stream) {
   static const char kPcmInterfaceName[] = "pcm";
   static const char kIoHintName[] = "IOID";
-  void** hints = NULL;
+  void** hints = nullptr;
   bool has_device = false;
   int card = -1;
 
@@ -250,14 +253,19 @@ bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
   while (!wrapper_->CardNext(&card) && (card >= 0) && !has_device) {
     int error = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);
     if (!error) {
-      for (void** hint_iter = hints; *hint_iter != NULL; hint_iter++) {
+      const std::string_view unwanted_type =
+          UnwantedDeviceTypeWhenEnumerating(stream);
+
+      // SAFETY: the ALSA API guarantees that `hint_iter` will dereference to
+      // nullptr as the last element before it goes out of bounds.
+      for (void** hint_iter = hints; *hint_iter != nullptr;
+           UNSAFE_BUFFERS(++hint_iter)) {
         // Only examine devices that are |stream| capable.  Valid values are
         // "Input", "Output", and NULL which means both input and output.
-        std::unique_ptr<char, base::FreeDeleter> io(
-            wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName));
-        const char* unwanted_type = UnwantedDeviceTypeWhenEnumerating(stream);
-        if (io != NULL && strcmp(unwanted_type, io.get()) == 0)
+        auto io = wrapper_->DeviceNameGetHint(*hint_iter, kIoHintName);
+        if (base::as_string_view(io) == unwanted_type) {
           continue;  // Wrong type, skip the device.
+        }
 
         // Found an input device.
         has_device = true;
@@ -266,7 +274,7 @@ bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
 
       // Destroy the hints now that we're done with it.
       wrapper_->DeviceNameFreeHint(hints);
-      hints = NULL;
+      hints = nullptr;
     } else {
       DLOG(WARNING) << "HasAnyAudioDevice: unable to get device hints: "
                     << wrapper_->StrError(error);

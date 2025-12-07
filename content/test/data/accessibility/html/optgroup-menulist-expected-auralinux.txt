@@ -1,0 +1,13 @@
+[document web] enabled
+++[section] enabled
+++++[combo box] name='Transformer' enabled posinset:1 setsize:7
+++++++[menu] enabled setsize:7
+++++++++[menu item] name='Random Transformer' enabled selectable selected posinset:1 setsize:7
+++++++++[panel] name='group 1' enabled
+++++++++++[menu item] name='Optimus Prime' enabled selectable posinset:2 setsize:7
+++++++++++[menu item] name='Bumblebee' enabled selectable posinset:3 setsize:7
+++++++++++[menu item] name='Jazz' enabled selectable posinset:4 setsize:7
+++++++++[panel] name='group 2' enabled
+++++++++++[menu item] name='Megatron' enabled selectable posinset:5 setsize:7
+++++++++++[menu item] name='Starscream' enabled selectable posinset:6 setsize:7
+++++++++++[menu item] name='Brawl' enabled selectable posinset:7 setsize:7

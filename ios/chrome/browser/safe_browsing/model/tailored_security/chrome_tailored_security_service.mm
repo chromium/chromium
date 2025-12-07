@@ -9,7 +9,7 @@
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/safe_browsing_policy_handler.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/web_state.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
@@ -17,13 +17,13 @@
 namespace safe_browsing {
 
 ChromeTailoredSecurityService::ChromeTailoredSecurityService(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service)
     : TailoredSecurityService(identity_manager,
                               sync_service,
-                              browser_state->GetPrefs()),
-      browser_state_(browser_state) {
+                              profile->GetPrefs()),
+      profile_(profile) {
   base::WeakPtr<ChromeTailoredSecurityService> weak_ptr =
       weak_ptr_factory_.GetWeakPtr();
   application_backgrounding_observer_ = [[NSNotificationCenter defaultCenter]
@@ -61,7 +61,7 @@ ChromeTailoredSecurityService::~ChromeTailoredSecurityService() {
 
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromeTailoredSecurityService::GetURLLoaderFactory() {
-  return browser_state_->GetSharedURLLoaderFactory();
+  return profile_->GetSharedURLLoaderFactory();
 }
 
 void ChromeTailoredSecurityService::AppDidEnterBackground() {

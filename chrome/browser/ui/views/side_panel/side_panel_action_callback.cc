@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 
 namespace {
@@ -20,16 +21,16 @@ DEFINE_UI_CLASS_PROPERTY_KEY(std::underlying_type_t<SidePanelOpenTrigger>,
 
 actions::ActionItem::InvokeActionCallback CreateToggleSidePanelActionCallback(
     SidePanelEntryKey key,
-    Browser* browser) {
+    BrowserWindowInterface* bwi) {
   return base::BindRepeating(
-      [](SidePanelEntryKey key, Browser* browser, actions::ActionItem* item,
-         actions::ActionInvocationContext context) {
+      [](SidePanelEntryKey key, BrowserWindowInterface* bwi,
+         actions::ActionItem* item, actions::ActionInvocationContext context) {
         const SidePanelOpenTrigger open_trigger =
             static_cast<SidePanelOpenTrigger>(
                 context.GetProperty(kSidePanelOpenTriggerKey));
         CHECK_GE(open_trigger, SidePanelOpenTrigger::kMinValue);
         CHECK_LE(open_trigger, SidePanelOpenTrigger::kMaxValue);
-        browser->GetFeatures().side_panel_ui()->Toggle(key, open_trigger);
+        bwi->GetFeatures().side_panel_ui()->Toggle(key, open_trigger);
       },
-      key, browser);
+      key, bwi);
 }

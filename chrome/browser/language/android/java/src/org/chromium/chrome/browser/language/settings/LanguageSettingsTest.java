@@ -8,13 +8,15 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
+import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.core.AllOf.allOf;
 
+import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -31,7 +33,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -44,8 +46,8 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.RecyclerViewTestUtils;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.listmenu.ListMenuButton;
-import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for the "Languages" settings screen. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -53,7 +55,7 @@ import org.chromium.ui.test.util.UiRestriction;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "disable-features=" + ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS
 })
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+@Restriction(DeviceFormFactor.PHONE)
 public class LanguageSettingsTest {
     @Rule
     public final SettingsActivityTestRule<LanguageSettings> mSettingsActivityTestRule =
@@ -83,8 +85,9 @@ public class LanguageSettingsTest {
                 .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
 
         // Back to "Language" screen.
-        Assert.assertEquals(mActivity.getString(R.string.language_settings), mActivity.getTitle());
         acceptLanguageList = mActivity.findViewById(R.id.language_list);
+        RecyclerViewTestUtils.waitForStableRecyclerView(acceptLanguageList);
+        Assert.assertEquals(mActivity.getString(R.string.language_settings), mActivity.getTitle());
         Assert.assertEquals(
                 "Failed to add a new language.",
                 originalAcceptLanguageCount + 1,
@@ -93,14 +96,17 @@ public class LanguageSettingsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "Flaky - https://crbug.com/1115695")
+    @DisableIf.Build(sdk_equals = Build.VERSION_CODES.Q, message = "crbug.com/40711481")
     public void testRemoveLanguage() {
+        onView(withId(R.id.language_list)).check(matches(isDisplayed()));
         RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
         int originalAcceptLanguageCount = acceptLanguageList.getChildCount();
 
         // Enter "Add language" screen.
         addLanguage();
 
+        // The view is recreated so take it once again.
+        acceptLanguageList = mActivity.findViewById(R.id.language_list);
         View newLangView =
                 acceptLanguageList.findViewHolderForAdapterPosition(originalAcceptLanguageCount)
                         .itemView;
@@ -119,26 +125,21 @@ public class LanguageSettingsTest {
 
     @Test
     @SmallTest
+    @DisableIf.Build(
+            sdk_is_less_than = Build.VERSION_CODES.S,
+            message = "Flaky in Q and R, crbug.com/40190787")
     public void testToggleOfferToTranslate() {
-        RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
-        int originalAcceptLanguageCount = acceptLanguageList.getChildCount();
-
-        // Enter "Add language" screen.
         addLanguage();
 
-        Assert.assertEquals(mActivity.getString(R.string.language_settings), mActivity.getTitle());
-        acceptLanguageList = mActivity.findViewById(R.id.language_list);
-        Assert.assertEquals(
-                "Failed to add a new language.",
-                originalAcceptLanguageCount + 1,
-                acceptLanguageList.getChildCount());
+        // The view is recreated so take it once again.
+        RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
+        int originalAcceptLanguageCount = acceptLanguageList.getChildCount();
         View newLangView =
-                acceptLanguageList.findViewHolderForAdapterPosition(originalAcceptLanguageCount)
+                acceptLanguageList.findViewHolderForAdapterPosition(originalAcceptLanguageCount - 1)
                         .itemView;
         LanguageItem languageItem =
                 ((LanguageListBaseAdapter) acceptLanguageList.getAdapter())
-                        .getLanguageItemList()
-                        .get(originalAcceptLanguageCount);
+                        .getItemByPosition(originalAcceptLanguageCount - 1);
 
         // Turn on "offer to translate".
         ThreadUtils.runOnUiThreadBlocking(
@@ -164,11 +165,16 @@ public class LanguageSettingsTest {
 
         onView(withText(R.string.languages_item_option_offer_to_translate))
                 .check(matches(isDisplayed()));
+
+        // The view has to 1. have an id of menu_item_end_icon 2. have a parent with a descendant
+        // that has the text languages_item_option_offer_to_translate.
         onView(
                         allOf(
-                                hasSibling(
-                                        withText(
-                                                R.string.languages_item_option_offer_to_translate)),
+                                withParent(
+                                        hasDescendant(
+                                                withText(
+                                                        R.string
+                                                                .languages_item_option_offer_to_translate))),
                                 withId(R.id.menu_item_end_icon)))
                 .check(
                         (v, e) -> {
@@ -196,9 +202,11 @@ public class LanguageSettingsTest {
 
         onView(
                         allOf(
-                                hasSibling(
-                                        withText(
-                                                R.string.languages_item_option_offer_to_translate)),
+                                withParent(
+                                        hasDescendant(
+                                                withText(
+                                                        R.string
+                                                                .languages_item_option_offer_to_translate))),
                                 withId(R.id.menu_item_end_icon)))
                 .check(
                         (v, e) -> {
@@ -216,6 +224,7 @@ public class LanguageSettingsTest {
     @Test
     @SmallTest
     public void testEnabledAndDisableOfferToTranslate() {
+        onView(withId(R.id.language_list)).check(matches(isDisplayed()));
         RecyclerView acceptLanguageList = mActivity.findViewById(R.id.language_list);
         View langView = acceptLanguageList.findViewHolderForAdapterPosition(0).itemView;
         ListMenuButton moreButton = langView.findViewById(R.id.more);

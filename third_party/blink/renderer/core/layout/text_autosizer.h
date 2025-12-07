@@ -48,6 +48,7 @@ class Size;
 
 namespace blink {
 
+class BlockNode;
 class Document;
 class Frame;
 class LayoutBlock;
@@ -63,11 +64,6 @@ inline bool operator==(const mojom::blink::TextAutosizerPageInfo& lhs,
   return lhs.main_frame_width == rhs.main_frame_width &&
          lhs.main_frame_layout_width == rhs.main_frame_layout_width &&
          lhs.device_scale_adjustment == rhs.device_scale_adjustment;
-}
-
-inline bool operator!=(const mojom::blink::TextAutosizerPageInfo& lhs,
-                       const mojom::blink::TextAutosizerPageInfo& rhs) {
-  return !(lhs == rhs);
 }
 
 // Single-pass text autosizer. Documentation at:
@@ -97,10 +93,13 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   bool PageNeedsAutosizing() const;
 
-  // Register the specified |inline_size| for |ng_block| if the document has
-  // a TextAutosizer instance and it should handle layout.
-  static void MaybeRegisterInlineSize(const LayoutBlock& ng_block,
-                                      LayoutUnit inline_size);
+  // Override the inline-size when entering a column in a multicol container.
+  // Called when entering a column inside a multicol container.
+  //
+  // TODO(layout-dev): This approach is wrong for column spanners (if we care)
+  // (since those aren't part of columns), but this has never worked anyway.
+  static void ForceInlineSizeForColumn(const BlockNode& multicol_container,
+                                       LayoutUnit inline_size);
 
   void Trace(Visitor*) const;
 
@@ -147,8 +146,8 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   };
 
  private:
-  typedef HeapHashSet<Member<LayoutBlock>> BlockSet;
-  typedef HeapHashSet<Member<const LayoutBlock>> ConstBlockSet;
+  using BlockSet = GCedHeapHashSet<Member<LayoutBlock>>;
+  using ConstBlockSet = GCedHeapHashSet<Member<const LayoutBlock>>;
 
   enum HasEnoughTextToAutosize {
     kUnknownAmountOfText,
@@ -236,28 +235,6 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
   };
 
   enum TextLeafSearch { kFirst, kLast };
-
-  struct FingerprintSourceData {
-    STACK_ALLOCATED();
-
-   public:
-    FingerprintSourceData()
-        : parent_hash_(0),
-          qualified_name_hash_(0),
-          packed_style_properties_(0),
-          column_(0),
-          width_(0) {}
-
-    unsigned parent_hash_;
-    unsigned qualified_name_hash_;
-    // Style specific selection of signals
-    unsigned packed_style_properties_;
-    unsigned column_;
-    float width_;
-  };
-  // Ensures efficient hashing using StringHasher.
-  static_assert(!(sizeof(FingerprintSourceData) % sizeof(UChar)),
-                "sizeof(FingerprintSourceData) must be a multiple of UChar");
 
   typedef unsigned Fingerprint;
   typedef HeapVector<Member<Cluster>> ClusterStack;
@@ -379,14 +356,14 @@ class CORE_EXPORT TextAutosizer final : public GarbageCollected<TextAutosizer> {
 
   Member<const Document> document_;
   Member<const LayoutBlock> first_block_to_begin_layout_;
-  // WeakMember because we don't call UnregisterInlineSize() for
-  // LayoutMultiColumnFlowThread.
+  // TODO(layout-dev): Probably doesn't need to be WeakMember anymore, since the
+  // legacy multicol implementation is gone.
   HeapHashMap<WeakMember<const LayoutBlock>, LayoutUnit> inline_size_map_;
 
 #if DCHECK_IS_ON()
   // Used to ensure we don't compute properties of a block before beginLayout()
   // is called on it.
-  ConstBlockSet blocks_that_have_begun_layout_;
+  HeapHashSet<Member<const LayoutBlock>> blocks_that_have_begun_layout_;
 #endif
 
   // Clusters are created and destroyed during layout

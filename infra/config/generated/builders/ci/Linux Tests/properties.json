@@ -10,7 +10,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
               "builder_group": "chromium.linux",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
@@ -38,7 +37,6 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-linux-archive",
               "builder_group": "chromium.linux",
               "execution_mode": "TEST",
               "legacy_chromium_config": {
@@ -86,11 +84,16 @@
           "group": "tryserver.chromium.linux"
         },
         {
+          "builder": "linux-rel-test-selection",
+          "group": "tryserver.chromium.linux"
+        },
+        {
           "builder": "linux_chromium_compile_rel_ng",
           "group": "tryserver.chromium.linux"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux Tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

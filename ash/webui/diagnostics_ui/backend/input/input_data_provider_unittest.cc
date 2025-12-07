@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
 
 #include <cstdint>
@@ -16,7 +11,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
@@ -30,6 +24,7 @@
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -268,7 +263,8 @@ class FakeDeviceManager : public ui::DeviceManager {
 };
 
 class FakeInputDataEventWatcher;
-typedef std::map<uint32_t, FakeInputDataEventWatcher*> watchers_t;
+typedef std::map<uint32_t, raw_ptr<FakeInputDataEventWatcher, CtnExperimental>>
+    watchers_t;
 
 // Fake evdev watcher class that lets us manually post input
 // events into an InputDataProvider; this keeps an external
@@ -737,7 +733,8 @@ class InputDataProviderTest : public AshTestBase {
     size_t i;
 
     i = 0;
-    for (auto* iter = list.begin(); iter != list.end(); iter++, i++) {
+    for (auto* iter = list.begin(); iter != list.end();
+         UNSAFE_TODO(iter++), i++) {
       (*provider_->watchers_)[id]->PostKeyEvent(iter->down, iter->key.key_code,
                                                 iter->key.at_scan_code);
     }
@@ -746,7 +743,8 @@ class InputDataProviderTest : public AshTestBase {
     ASSERT_EQ(std::size(list), fake_observer->events_.size());
 
     i = 0;
-    for (auto* iter = list.begin(); iter != list.end(); iter++, i++) {
+    for (auto* iter = list.begin(); iter != list.end();
+         UNSAFE_TODO(iter++), i++) {
       EXPECT_EQ(
           *fake_observer->events_[i].second,
           mojom::KeyEvent(/*id=*/id,
@@ -885,12 +883,6 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_HasInternalKeyboard) {
 TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  auto ignore_modifier_split_secret_key =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   // Initialize one split modifier keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;
@@ -910,15 +902,9 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
   ASSERT_TRUE(future.IsReady());
 }
 
-TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboard) {
+TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboardWithoutConfig) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  auto ignore_modifier_split_secret_key =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   // Initialize one split modifier keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;
@@ -2695,7 +2681,7 @@ TEST_F(InputDataProviderTest, MoveAppToTestingScreen) {
 
   // Set up three fake displays.
   UpdateDisplay("500x400, 600x400, 800x600");
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const int64_t primary_display_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_display_id = screen->GetAllDisplays()[1].id();
   const int64_t third_display_id = screen->GetAllDisplays()[2].id();
@@ -2762,7 +2748,7 @@ TEST_F(InputDataProviderTest, MoveAppBackToPreviousScreen) {
 
   // Set up two fake displays.
   UpdateDisplay("500x400, 600x400");
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   const int64_t primary_display_id = screen->GetAllDisplays()[0].id();
   const int64_t secondary_display_id = screen->GetAllDisplays()[1].id();
 

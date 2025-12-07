@@ -24,6 +24,7 @@ namespace {
 constexpr char kSafeBrowsing[] = "safe_browsing";
 constexpr char kNotificationPermissions[] = "notification_permissions";
 constexpr char kRevokedPermissions[] = "revoked_permissions";
+constexpr char kPasswords[] = "passwords";
 
 std::string ModuleTypeToString(safety_hub::SafetyHubModuleType module) {
   switch (module) {
@@ -33,8 +34,10 @@ std::string ModuleTypeToString(safety_hub::SafetyHubModuleType module) {
       return kNotificationPermissions;
     case safety_hub::SafetyHubModuleType::UNUSED_SITE_PERMISSIONS:
       return kRevokedPermissions;
+    case safety_hub::SafetyHubModuleType::PASSWORDS:
+      return kPasswords;
     default:
-      NOTREACHED_NORETURN() << "Module not supported on Android.";
+      NOTREACHED() << "Module not supported on Android.";
   }
 }
 
@@ -47,27 +50,40 @@ base::android::ScopedJavaLocalRef<jobject> ToJavaMagicStackEntry(
                                      ModuleTypeToString(obj.module));
 }
 
-std::optional<MenuNotificationEntry> JNI_MagicStackBridge_GetModuleToShow(
-    JNIEnv* env,
-    Profile* profile) {
+static std::optional<MenuNotificationEntry>
+JNI_MagicStackBridge_GetModuleToShow(JNIEnv* env, Profile* profile) {
   SafetyHubMenuNotificationService* service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
   CHECK(service);
   return service->GetNotificationToShow();
 }
 
-void JNI_MagicStackBridge_DismissActiveModule(JNIEnv* env, Profile* profile) {
+static void JNI_MagicStackBridge_DismissActiveModule(JNIEnv* env,
+                                                     Profile* profile) {
   SafetyHubMenuNotificationService* service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
   CHECK(service);
   service->DismissActiveNotification();
 }
 
-void JNI_MagicStackBridge_DismissSafeBrowsingModule(JNIEnv* env,
-                                                    Profile* profile) {
+static void JNI_MagicStackBridge_DismissSafeBrowsingModule(JNIEnv* env,
+                                                           Profile* profile) {
   SafetyHubMenuNotificationService* service =
       SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
   CHECK(service);
   service->DismissActiveNotificationOfModule(
       safety_hub::SafetyHubModuleType::SAFE_BROWSING);
 }
+
+static void JNI_MagicStackBridge_DismissCompromisedPasswordsModule(
+    JNIEnv* env,
+    Profile* profile) {
+  SafetyHubMenuNotificationService* service =
+      SafetyHubMenuNotificationServiceFactory::GetForProfile(profile);
+  CHECK(service);
+  service->DismissActiveNotificationOfModule(
+      safety_hub::SafetyHubModuleType::PASSWORDS);
+}
+
+DEFINE_JNI(MagicStackBridge)
+DEFINE_JNI(MagicStackEntry)

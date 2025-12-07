@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/blob/testing/fake_file_backed_blob_factory.h"
 
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -34,17 +35,22 @@ void FakeFileBackedBlobFactory::RegisterBlobSync(
     const String& content_type,
     mojom::blink::DataElementFilePtr file,
     RegisterBlobSyncCallback callback) {
+  std::optional<std::vector<uint8_t>> content =
+      base::ReadFileToBytes(file->path);
+  Vector<uint8_t> body_bytes(content ? *content : std::vector<uint8_t>());
   registrations.push_back(Registration{uuid, content_type, std::move(file)});
 
-  PostCrossThreadTask(
-      *base::ThreadPool::CreateSingleThreadTaskRunner({}), FROM_HERE,
-      CrossThreadBindOnce(
-          [](const String& uuid,
-             mojo::PendingReceiver<mojom::blink::Blob> receiver) {
-            mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid),
-                                        std::move(receiver));
-          },
-          uuid, std::move(blob)));
+  PostCrossThreadTask(*base::ThreadPool::CreateSingleThreadTaskRunner({}),
+                      FROM_HERE,
+                      CrossThreadBindOnce(
+                          [](const String& uuid,
+                             mojo::PendingReceiver<mojom::blink::Blob> receiver,
+                             Vector<uint8_t> body_bytes) {
+                            mojo::MakeSelfOwnedReceiver(
+                                std::make_unique<FakeBlob>(uuid, body_bytes),
+                                std::move(receiver));
+                          },
+                          uuid, std::move(blob), std::move(body_bytes)));
   if (callback) {
     std::move(callback).Run();
   }

@@ -4,6 +4,7 @@ desc: |-
   Setting the policy to Enabled or leaving it unset has enrolled devices report the active kiosk session information such as application ID and version.
 
         Setting the policy to Disabled means enrolled devices don't report kiosk session information.
+default: true
 device_only: true
 example_value: false
 features:

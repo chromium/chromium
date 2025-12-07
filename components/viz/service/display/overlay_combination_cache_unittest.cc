@@ -35,7 +35,7 @@ class TestOverlayProcessor : public OverlayProcessorUsingStrategy {
   bool IsOverlaySupported() const override { return true; }
   bool NeedsSurfaceDamageRectList() const override { return false; }
   void CheckOverlaySupportImpl(
-      const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+      const std::optional<OverlayCandidate>& primary_plane,
       OverlayCandidateList* surfaces) override {}
   size_t GetStrategyCount() const { return 1; }
 };
@@ -85,7 +85,7 @@ class OverlayCombinationCacheTest : public testing::Test {
     CompositorRenderPassId id{1};
     RenderPassBuilder pass_builder(id, gfx::Rect(0, 0, 100, 100));
     for (size_t i = 0; i < power_gains.size(); ++i) {
-      ResourceId resource_id(i);
+      ResourceId resource_id(i + 1);
       pass_builder.AddTextureQuad(gfx::Rect(0, 0, 10, 10), resource_id);
     }
     render_pass_ = pass_builder.Build();
@@ -406,7 +406,7 @@ TEST_F(OverlayCombinationCacheTest, GetIds) {
   ASSERT_THAT(ids, ElementsAre(0, 1, 2, 3));
 
   // Reverse the list.
-  std::reverse(considered_candidates.begin(), considered_candidates.end());
+  std::ranges::reverse(considered_candidates);
   ids = GetIds(considered_candidates);
   // Ids are cached, so the ids list is also reverse.
   ASSERT_THAT(ids, ElementsAre(3, 2, 1, 0));

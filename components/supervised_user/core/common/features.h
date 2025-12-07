@@ -7,130 +7,106 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "extensions/buildflags/buildflags.h"
 
 namespace supervised_user {
 
-// Experiment to enable kid-friendly content feed.
-BASE_DECLARE_FEATURE(kKidFriendlyContentFeed);
-
 BASE_DECLARE_FEATURE(kLocalWebApprovals);
 
-// Applies the updated extension approval flow, which can skip parent-approvals
-// on extension installations.
-BASE_DECLARE_FEATURE(
-    kEnableSupervisedUserSkipParentApprovalToInstallExtensions);
+// Whether supervised user can request local web approval from a blocked
+// subframe.
+BASE_DECLARE_FEATURE(kAllowSubframeLocalWebApprovals);
 
-// Applies new informative strings during the parental extension approval flow.
-BASE_DECLARE_FEATURE(kUpdatedSupervisedUserExtensionApprovalStrings);
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_WIN)
+extern const base::FeatureParam<int> kLocalWebApprovalBottomSheetLoadTimeoutMs;
+#endif  // BUILDFLAG(IS_IOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
-#endif
+// Whether we show an error screen in case of failure of a local web approval.
+BASE_DECLARE_FEATURE(kEnableLocalWebApprovalErrorDialog);
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// Returns whether a new installation state for supervised users
-// on new extension installations is offered to the Webstore.
-BASE_DECLARE_FEATURE(kExposedParentalControlNeededForExtensionInstallation);
+// Whether the Pacp widget can process a url payload as part of the local
+// approval request.
+BASE_DECLARE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload);
 
-// Returns whether the new mode for extension approval management is enabled.
-// Under this mode, supervised users may request parent approval on each
-// extension installation or the parent allows and approves by default all
-// extension installations.
-// On Win/Linux/Mac enabling the new mode requires that the feature
-// `kEnableExtensionsPermissionsForSupervisedUsersOnDesktop` is also enabled.
-bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-// Enable different web sign in interception behaviour for supervised users:
-//
-// 1. Supervised user signs in to existing signed out Profile: show modal
-//    explaining that supervision features will apply.
-// 2. Supervised user signs in as secondary account in existing signed in
-//    Profile
-//
-// Only affects Desktop platforms. This is split into two flags, one controlling
-// the infrastructure and one controlling the UI changes.
-
-// Waits for the async signal that a user is supervised.
-BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
-
-// Displays custom UI based on the async signal above. Only used if
-// kCustomWebSignInInterceptForSupervisedUsers is enabled.
-BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi);
-
-// Displays a Family Link kite badge on the supervised user avatar in various
-// surfaces.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kShowKiteForSupervisedUsers);
-#endif
+// Whether supervised users see an updated URL filter interstitial.
+BASE_DECLARE_FEATURE(kSupervisedUserBlockInterstitialV3);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// This hides the following guest mode entry points for supervised users:
-//
-// * In the Profile menu for supervised profiles
-// * In the Profile picker, if there are one or more supervised profiles
-BASE_DECLARE_FEATURE(kHideGuestModeForSupervisedUsers);
-#endif
-
-// Force enable SafeSearch for a supervised profile with an
-// unauthenticated (e.g. signed out of the content area) account.
-BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Force re-authentication when an unauthenticated supervised user tries to
-// access YouTube, so that content restrictions can be applied.
-BASE_DECLARE_FEATURE(kForceSupervisedUserReauthenticationForYouTube);
-#endif
-
-// Fallback to sending un-credentialed filtering requests for supervised users
-// if they do not have a valid access token.
-BASE_DECLARE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers);
-
-// Uses PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable for
-// ClassifyUrl fetches.
-BASE_DECLARE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl);
-
-#if BUILDFLAG(IS_IOS)
-// Replaces usages of prefs::kSupervisedUserID with AccountInfo capabilities on
-// iOS.
-BASE_DECLARE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
-// Replaces usages of system capabilities with AccountInfo capabilities on iOS.
-BASE_DECLARE_FEATURE(
-    kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
+// Uses supervised user strings on the signout dialog.
+BASE_DECLARE_FEATURE(kEnableSupervisedUserVersionSignOutDialog);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-// Updates usages of Profile.isChild() in Profile.java to use the account
-// capability to determine if account is supervised.
-BASE_DECLARE_FEATURE(kReplaceProfileIsChildWithAccountCapabilitiesOnAndroid);
+// The flags below are used to control the local supervision feature on
+// Android. To read them, use accessors declared below.
+//
+// - kPropagateDeviceContentFiltersToSupervisedUser,
+// kAllowNonFamilyLinkUrlFilterMode and
+// are kSupervisedUserInterstitialWithoutApprovals the three main switches for
+// local supervision. They work best when enabled together.
+// kPropagateDeviceContentFiltersToSupervisedUser is the main switch that
+// enables the feature, kAllowNonFamilyLinkUrlFilterMode gives access to feature
+// for signed out users, and kSupervisedUserInterstitialWithoutApprovals enables
+// interstitial UI optimized for local supervision.
+//
+// - kSupervisedUserLocalSupervisionPreview is a convenience feature that
+// enables all of the above features if the experimental platform supports them.
+// When this feature is enabled and the platform supports local supervision,
+// none of the three features are ever read. This allows offering local
+// supervision as dogfood feature. Use
+// kSupervisedUserLocalSupervisionPreviewBuildVersionMajor parameters to adjust
+// the platform build version if needed.
+//
+// - kSupervisedUserBrowserContentFiltersKillSwitch and
+// kSupervisedUserSearchContentFiltersKillSwitch are subswitches of
+// kPropagateDeviceContentFiltersToSupervisedUser that control individual
+// content filter settings.
+// - kSupervisedUserOverrideLocalSupervision is a convenience feature that will
+// disable effects of Android Parental Controls if the user is a Family Link
+// account. With the flag disabled, the browser strictly expects that at most
+// only of of Family Link or Android Parental Controls apply, and terminates the
+// browser otherwise.
+
+BASE_DECLARE_FEATURE(kAllowNonFamilyLinkUrlFilterMode);
+BASE_DECLARE_FEATURE(kPropagateDeviceContentFiltersToSupervisedUser);
+BASE_DECLARE_FEATURE(kSupervisedUserBrowserContentFiltersKillSwitch);
+BASE_DECLARE_FEATURE(kSupervisedUserSearchContentFiltersKillSwitch);
+BASE_DECLARE_FEATURE(kSupervisedUserInterstitialWithoutApprovals);
+BASE_DECLARE_FEATURE(kSupervisedUserLocalSupervisionPreview);
+BASE_DECLARE_FEATURE(
+    kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts);
+
+// The major version of the build that supports local supervision.
+extern const base::FeatureParam<std::string>
+    kSupervisedUserLocalSupervisionPreviewBuildVersionMajor;
+
+// Returns true when the browser reads the values of content filters for
+// local supervision. This is the main gate to local supervision.
+bool UseLocalSupervision();
+// Indicates if supervised user interstitial should be optimized for local
+// supervision, without parent information and approval features.
+bool UseInterstitialForLocalSupervision();
+// Allows non-signed in users to use url classification feature of local
+// supervision.
+bool ClassifyUrlWithoutCredentialsForLocalSupervision();
 #endif
 
-// Updates the ListFamilyMembers service to fetch family account info for
-// accounts with the relevant capability rather than just for supervised
-// accounts.
-BASE_DECLARE_FEATURE(kFetchListFamilyMembersWithCapability);
-
-// Uses `prefs::kFamilyLinkUserMemberRole` to populate the family member role
-// for feedback if it is available.
-BASE_DECLARE_FEATURE(kUseFamilyMemberRolePrefsForFeedback);
-
-// Alters the behavior of the supervised_user::SupervisedUserNavigationThrottle
-// so that the decision whether to proceed or cancel is made when the response
-// is ready to be rendered, rather than before the request (or any redirect) is
-// issued.
-BASE_DECLARE_FEATURE(kClassifyUrlOnProcessResponseEvent);
+// Returns whether the V3 version of the URL filter interstitial is
+// enabled.
+bool IsBlockInterstitialV3Enabled();
 
 // Returns whether local parent approvals on Family Link user's device are
 // enabled.
-// Local web approvals are only available when refreshed version of web
-// filter interstitial is enabled.
 bool IsLocalWebApprovalsEnabled();
 
-// Returns whether the experiment to display a kid-friendly content stream on
-// the New Tab page has been enabled.
-bool IsKidFriendlyContentFeedAvailable();
+// Returns whether local parent approvals are enabled for subframe navigation.
+bool IsLocalWebApprovalsEnabledForSubframes();
 
 }  // namespace supervised_user
 

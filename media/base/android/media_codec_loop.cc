@@ -4,7 +4,6 @@
 
 #include "media/base/android/media_codec_loop.h"
 
-#include "base/android/build_info.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -20,20 +19,6 @@ constexpr base::TimeDelta kNoWaitTimeout = base::Microseconds(0);
 constexpr base::TimeDelta kIdleTimerTimeout = base::Seconds(1);
 
 }  // namespace
-
-MediaCodecLoop::InputData::InputData() {}
-
-MediaCodecLoop::InputData::InputData(const InputData& other)
-    : memory(other.memory),
-      length(other.length),
-      key_id(other.key_id),
-      iv(other.iv),
-      subsamples(other.subsamples),
-      presentation_time(other.presentation_time),
-      is_eos(other.is_eos),
-      encryption_scheme(other.encryption_scheme) {}
-
-MediaCodecLoop::InputData::~InputData() {}
 
 MediaCodecLoop::MediaCodecLoop(
     int sdk_int,
@@ -160,7 +145,7 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
       break;
 
     case MediaCodecResult::Codes::kError:
-      DLOG(ERROR) << __func__ << ": " << MediaSerialize(result);
+      DLOG(ERROR) << __func__ << ": " << result.message();
       SetState(STATE_ERROR);
       break;
 
@@ -168,10 +153,8 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected DequeueInputBuffer result: " << MediaSerialize(result);
-      SetState(STATE_ERROR);
-      break;
+      NOTREACHED() << "Unexpected DequeueInputBuffer result: "
+                   << result.message();
   }
 
   return InputBuffer(input_buf_index, false);
@@ -180,15 +163,17 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
 void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
   DCHECK_NE(input_buffer.index, kInvalidBufferIndex);
 
-  InputData input_data;
+  bool already_filled = false;
+  scoped_refptr<DecoderBuffer> input_data;
   if (input_buffer.is_pending) {
     // A pending buffer is already filled with data, no need to copy it again.
-    input_data = pending_input_buf_data_;
+    input_data = std::move(pending_input_buf_data_);
+    already_filled = true;
   } else {
     input_data = client_->ProvideInputData();
   }
 
-  if (input_data.is_eos) {
+  if (input_data->end_of_stream()) {
     media_codec_->QueueEOS(input_buffer.index);
     SetState(STATE_DRAINING);
     client_->OnInputDataQueued(true);
@@ -197,20 +182,15 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
 
   MediaCodecResult result = OkStatus();
 
-  if (input_data.encryption_scheme != EncryptionScheme::kUnencrypted) {
-    // Note that input_data might not have a valid memory ptr if this is a
-    // re-send of a buffer that was sent before decryption keys arrived.
-
+  if (input_data->decrypt_config()) {
     result = media_codec_->QueueSecureInputBuffer(
-        input_buffer.index, input_data.memory, input_data.length,
-        input_data.key_id, input_data.iv, input_data.subsamples,
-        input_data.encryption_scheme, input_data.encryption_pattern,
-        input_data.presentation_time);
+        input_buffer.index,
+        already_filled ? base::span<const uint8_t>() : *input_data,
+        input_data->timestamp(), *input_data->decrypt_config());
 
   } else {
-    result = media_codec_->QueueInputBuffer(
-        input_buffer.index, input_data.memory, input_data.length,
-        input_data.presentation_time);
+    result = media_codec_->QueueInputBuffer(input_buffer.index, *input_data,
+                                            input_data->timestamp());
   }
 
   switch (result.code()) {
@@ -218,7 +198,7 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       DLOG(ERROR)
           << __func__
           << ": MediaCodecResult::Codes::kError from QueueInputBuffer : "
-          << MediaSerialize(result);
+          << result.message();
       client_->OnInputDataQueued(false);
       // Transition to the error state after running the completion cb, to keep
       // it in order if the client chooses to flush its queue.
@@ -229,11 +209,7 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       // Do not call the completion cb here.  It will be called when we retry
       // after getting the key.
       pending_input_buf_index_ = input_buffer.index;
-      pending_input_buf_data_ = input_data;
-      // MediaCodec has a copy of the data already.  When we call again, be sure
-      // to send in nullptr for the source.  Note that the client doesn't
-      // guarantee that the pointer will remain valid after we return anyway.
-      pending_input_buf_data_.memory = nullptr;
+      pending_input_buf_data_ = std::move(input_data);
       client_->OnWaiting(WaitingReason::kNoDecryptionKey);
       SetState(STATE_WAITING_FOR_KEY);
       // Do not call OnInputDataQueued yet.
@@ -244,11 +220,8 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown Queue(Secure)InputBuffer status "
-                                << MediaSerialize(result);
-      client_->OnInputDataQueued(false);
-      SetState(STATE_ERROR);
-      break;
+      NOTREACHED() << "Unknown Queue(Secure)InputBuffer status "
+                   << result.message();
   }
 }
 
@@ -309,15 +282,13 @@ bool MediaCodecLoop::ProcessOneOutputBuffer() {
       DLOG(ERROR) << __func__
                   << ": MediaCodecResult::Codes::kError from "
                      "DequeueOutputBuffer, result: "
-                  << MediaSerialize(result);
+                  << result.message();
       SetState(STATE_ERROR);
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected DequeueOutputBuffer result: "
-                                << MediaSerialize(result);
-      SetState(STATE_ERROR);
-      break;
+      NOTREACHED() << "Unexpected DequeueOutputBuffer result: "
+                   << result.message();
   }
 
   return did_work;
@@ -374,8 +345,7 @@ const char* MediaCodecLoop::AsString(State state) {
   }
 #undef RETURN_STRING
 
-  NOTREACHED_IN_MIGRATION() << "Unknown state " << state;
-  return nullptr;
+  NOTREACHED() << "Unknown state " << state;
 }
 
 }  // namespace media

@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_parameters_restrictions.h"
 #include "sandbox/linux/seccomp-bpf-helpers/syscall_sets.h"
@@ -35,7 +34,8 @@ using sandbox::syscall_broker::BrokerProcess;
 namespace sandbox {
 namespace policy {
 
-GpuProcessPolicy::GpuProcessPolicy() {}
+GpuProcessPolicy::GpuProcessPolicy(MremapPolicy mremap_policy)
+    : mremap_policy_(mremap_policy) {}
 
 GpuProcessPolicy::~GpuProcessPolicy() {}
 
@@ -68,6 +68,7 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
 
       return If(add_seals, Allow()).Else(BPFBasePolicy::EvaluateSyscall(sysno));
     }
+    case __NR_fdatasync:
     case __NR_ftruncate:
 #if defined(__i386__) || defined(__arm__) || \
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
@@ -88,8 +89,16 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
     // We also hit this on the linux_chromeos bot but don't yet know what
     // weird flags were involved.
     case __NR_mprotect:
+      return Allow();
+    // XNNPACK needs mremap when building weight caches.
+    case __NR_mremap:
+      if (mremap_policy_ == MremapPolicy::kAllow) {
+        return RestrictMremapFlagsForODML();
+      }
+      break;
     // TODO(jln): restrict prctl.
     case __NR_prctl:
+    case __NR_pwrite64:
     case __NR_sysinfo:
     case __NR_uname:  // https://crbug.com/1075934
       return Allow();
@@ -97,11 +106,15 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       return RestrictSchedTarget(GetPolicyPid(), sysno);
     case __NR_prlimit64:
       return RestrictPrlimit64(GetPolicyPid());
+    case __NR_memfd_create:
+      // TODO(crbug.com/442771181): Only nvidia drivers seems to use this. Maybe
+      // scope this allowance to only nvidia drivers.
+      return RestrictMemfdCreateWithExecMappings();
     default:
       break;
   }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   if (SyscallSets::IsSystemVSharedMemory(sysno))
     return Allow();
 #endif

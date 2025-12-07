@@ -52,7 +52,7 @@ void BindFilePath(sql::Statement& statement,
   statement.BindString(col, path.value());
 }
 base::FilePath ColumnFilePath(sql::Statement& statement, int col) {
-  return base::FilePath(statement.ColumnString(col));
+  return base::FilePath(statement.ColumnStringView(col));
 }
 
 #else
@@ -64,7 +64,7 @@ void BindFilePath(sql::Statement& statement,
   statement.BindString(col, path.AsUTF8Unsafe());
 }
 base::FilePath ColumnFilePath(sql::Statement& statement, int col) {
-  return base::FilePath::FromUTF8Unsafe(statement.ColumnString(col));
+  return base::FilePath::FromUTF8Unsafe(statement.ColumnStringView(col));
 }
 
 #endif
@@ -75,11 +75,10 @@ DownloadDatabase::DownloadDatabase(
     DownloadInterruptReason download_interrupt_reason_none,
     DownloadInterruptReason download_interrupt_reason_crash)
     : owning_thread_set_(false),
-      owning_thread_(0),
+      owning_thread_(base::kInvalidThreadId),
       in_progress_entry_cleanup_completed_(false),
       download_interrupt_reason_none_(download_interrupt_reason_none),
-      download_interrupt_reason_crash_(download_interrupt_reason_crash) {
-}
+      download_interrupt_reason_crash_(download_interrupt_reason_crash) {}
 
 DownloadDatabase::~DownloadDatabase() {
 }
@@ -470,18 +469,18 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
         IntToDownloadDangerType(statement_main.ColumnInt(column++));
     info->interrupt_reason =
         IntToDownloadInterruptReason(statement_main.ColumnInt(column++));
-    statement_main.ColumnBlobAsString(column++, &info->hash);
+    info->hash = statement_main.ColumnBlobAsString(column++);
     info->end_time =
         base::Time::FromInternalValue(statement_main.ColumnInt64(column++));
     info->opened = statement_main.ColumnInt(column++) != 0;
     info->last_access_time =
         base::Time::FromInternalValue(statement_main.ColumnInt64(column++));
     info->transient = statement_main.ColumnInt(column++) != 0;
-    info->referrer_url = GURL(statement_main.ColumnString(column++));
-    info->site_url = GURL(statement_main.ColumnString(column++));
+    info->referrer_url = GURL(statement_main.ColumnStringView(column++));
+    info->site_url = GURL(statement_main.ColumnStringView(column++));
     info->embedder_download_data = statement_main.ColumnString(column++);
-    info->tab_url = GURL(statement_main.ColumnString(column++));
-    info->tab_referrer_url = GURL(statement_main.ColumnString(column++));
+    info->tab_url = GURL(statement_main.ColumnStringView(column++));
+    info->tab_referrer_url = GURL(statement_main.ColumnStringView(column++));
     info->http_method = statement_main.ColumnString(column++);
     info->by_ext_id = statement_main.ColumnString(column++);
     info->by_ext_name = statement_main.ColumnString(column++);
@@ -497,7 +496,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
       dropped_reason = DROPPED_REASON_BAD_ID;
     } else if (!ids.insert(info->id).second) {
       dropped_reason = DROPPED_REASON_DUPLICATE_ID;
-      NOTREACHED_IN_MIGRATION() << info->id;
+      NOTREACHED() << info->id;
     } else if (info->state == DownloadState::INVALID) {
       dropped_reason = DROPPED_REASON_BAD_STATE;
     } else if (info->danger_type == DownloadDangerType::INVALID) {
@@ -547,7 +546,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
       continue;
 
     // Save the record.
-    url_chain->push_back(GURL(statement_chain.ColumnString(2)));
+    url_chain->push_back(GURL(statement_chain.ColumnStringView(2)));
   }
 
   QueryDownloadSlices(&info_map);
@@ -573,12 +572,10 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
 
   DCHECK_NE(kInvalidDownloadId, data.id);
   if (data.state == DownloadState::INVALID) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   if (data.danger_type == DownloadDangerType::INVALID) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   sql::Statement statement(GetDB().GetCachedStatement(

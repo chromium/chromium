@@ -7,6 +7,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/window_properties.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -70,7 +71,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioSquare) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 200, 200),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 200x200", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -95,7 +96,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioHorizontal) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 400, 200),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 400x200", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -120,7 +121,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRatioVertical) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 200, 400),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 200x400", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -145,7 +146,7 @@ TEST_F(DefaultWindowResizerTest, WindowDragWithAspectRatioVertical) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 200, 400),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 200x400", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -163,7 +164,7 @@ TEST_F(DefaultWindowResizerTest, WindowDragWithAspectRatioVertical) {
 // This is a regression test for b/322282313.
 TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRationWithoutMaxLimit) {
   // Remove the limit of the maximum size.
-  delegate_.set_maximum_size(gfx::Size(0, 0));
+  delegate_.set_maximum_size(std::nullopt);
 
   aspect_ratio_window_->SetProperty(aura::client::kAspectRatio,
                                     new gfx::SizeF(1.0, 1.0));
@@ -174,7 +175,7 @@ TEST_F(DefaultWindowResizerTest, WindowResizeWithAspectRationWithoutMaxLimit) {
 
   aspect_ratio_window_->SetBoundsInScreen(
       gfx::Rect(200, 200, 200, 200),
-      display::Screen::GetScreen()->GetDisplayNearestWindow(root_windows[0]));
+      display::Screen::Get()->GetDisplayNearestWindow(root_windows[0]));
   EXPECT_EQ("200,200 200x200", aspect_ratio_window_->bounds().ToString());
 
   std::unique_ptr<WindowResizer> resizer(CreateDefaultWindowResizer(
@@ -224,6 +225,35 @@ TEST_F(DefaultWindowResizerTest, ResizeHistogram) {
   EXPECT_TRUE(
       ui::WaitForNextFrameToBePresented(window->GetHost()->compositor()));
   histograms_.ExpectTotalCount("Ash.InteractiveWindowResize.TimeToPresent", 1);
+}
+
+TEST_F(DefaultWindowResizerTest, DefaultWindowResizeHistogram) {
+  std::unique_ptr<aura::Window> window = std::make_unique<aura::Window>(
+      &delegate_, aura::client::WINDOW_TYPE_POPUP);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
+  // Set the parent of the window to be the SystemModalContainer so the default
+  // window resizer is used.
+  Shell::GetContainer(root_windows[0], kShellWindowId_SystemModalContainer)
+      ->AddChild(window.get());
+  window->SetBounds(gfx::Rect(0, 0, 50, 50));
+  // Inject the histogram names into the window.
+  window->SetProperty(kWindowResizeHistogramName,
+                      new std::string("example.resize.time"));
+  window->SetProperty(kWindowResizeMaxLatencyHistogramName,
+                      new std::string("example.resize.max.latency"));
+  std::unique_ptr<WindowResizer> resizer(
+      CreateDefaultWindowResizer(window.get(), gfx::PointF(), HTRIGHT));
+  ASSERT_TRUE(resizer.get());
+
+  // Resize the window, which should generate a resize histogram.
+  resizer->Drag(gfx::PointF(50, 50), 0);
+  EXPECT_NE(gfx::Size(50, 50), window->bounds().size());
+  resizer->CompleteDrag();
+  EXPECT_TRUE(
+      ui::WaitForNextFrameToBePresented(window->GetHost()->compositor()));
+  histograms_.ExpectTotalCount("example.resize.time", 1);
+  histograms_.ExpectTotalCount("example.resize.max.latency", 1);
 }
 
 }  // namespace ash

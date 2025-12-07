@@ -7,13 +7,21 @@
 
 #include <string_view>
 
+#include "base/observer_list_types.h"
+
 class PrefService;
 
 // Used internally to the Prefs subsystem to pass preference change
-// notifications between PrefService, PrefNotifierImpl and
-// PrefChangeRegistrar.
-class PrefObserver {
+// notifications between PrefService, PrefNotifierImpl, PrefMemberBase
+// and PrefChangeRegistrar.
+class PrefObserver : public base::CheckedObserver {
  public:
+  // Invoked before the destruction of the PrefService. The PrefObserver
+  // must unsubscribe from the PrefService (and must no longer reference
+  // the PrefService).
+  virtual void OnServiceDestroyed(PrefService* service) = 0;
+
+  // Invoked when the value of the preference named `pref_name` changes.
   virtual void OnPreferenceChanged(PrefService* service,
                                    std::string_view pref_name) = 0;
 };

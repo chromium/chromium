@@ -9,6 +9,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -59,8 +60,7 @@ class MojoDataPipeSender {
         // Just wait until OnWritable() is called by the watcher.
         return;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
     }
     sent_bytes_ += actually_written_bytes;
     if (data_.size() == sent_bytes_)
@@ -159,9 +159,8 @@ class MockDelegate : public blink::URLLoaderThrottle::Delegate {
       case MOJO_RESULT_SHOULD_WAIT:
         return 0;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return 0;
   }
 
   void ResetProducer() { source_body_handle_.reset(); }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.suggestions.tile.SuggestionsTileVerticalDivider
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="@dimen/tile_view_divider_width"
+    android:layout_height="match_parent"
+    android:layout_alignParentTop="true"
+    android:gravity="center_horizontal">
+    <View
+        android:layout_width="@dimen/tile_view_divider_thickness"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="@dimen/tile_view_icon_background_margin_top_modern"
+        android:background="@drawable/divider_line_bg"/>
+</org.chromium.chrome.browser.suggestions.tile.SuggestionsTileVerticalDivider>

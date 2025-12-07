@@ -8,45 +8,52 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.function.Supplier;
+
 /** A factory for producing a {@link BottomSheetController}. */
+@NullMarked
 public class BottomSheetControllerFactory {
     /**
-     * @param scrim A supplier of scrim to be shown behind the sheet.
+     * @param scrimManagerSupplier Suppliers the {@ScrimManager}, used show scrims behind the sheet.
      * @param initializedCallback A callback for the sheet having been created.
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
      * @param root The view that should contain the sheet.
      * @param edgeToEdgeBottomInsetSupplier Supplier of bottom inset when e2e is on.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the app header.
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createBottomSheetController(
-            final Supplier<ScrimCoordinator> scrim,
+            final Supplier<ScrimManager> scrimManagerSupplier,
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root,
-            @NonNull Supplier<Integer> edgeToEdgeBottomInsetSupplier) {
+            Supplier<Integer> edgeToEdgeBottomInsetSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         return new BottomSheetControllerImpl(
-                scrim,
+                scrimManagerSupplier,
                 initializedCallback,
                 window,
                 keyboardDelegate,
                 root,
                 /* alwaysFullWidth= */ false,
-                edgeToEdgeBottomInsetSupplier);
+                edgeToEdgeBottomInsetSupplier,
+                desktopWindowStateManager);
     }
 
     /**
      * Create {@link BottomSheetController} of full-width bottom sheets.
-     * @param scrim A supplier of scrim to be shown behind the sheet.
+     *
+     * @param scrimManagerSupplier A supplier of scrimManagerSupplier to be shown behind the sheet.
      * @param initializedCallback A callback for the sheet having been created.
      * @param window The activity's window.
      * @param keyboardDelegate A means of hiding the keyboard.
@@ -54,19 +61,20 @@ public class BottomSheetControllerFactory {
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createFullWidthBottomSheetController(
-            final Supplier<ScrimCoordinator> scrim,
+            final Supplier<ScrimManager> scrimManagerSupplier,
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
             Supplier<ViewGroup> root) {
         return new BottomSheetControllerImpl(
-                scrim,
+                scrimManagerSupplier,
                 initializedCallback,
                 window,
                 keyboardDelegate,
                 root,
                 /* alwaysFullWidth= */ true,
-                () -> 0);
+                () -> 0,
+                /* desktopWindowStateManager= */ null);
     }
 
     // Redirect methods to provider to make them only accessible to classes that have access to the
@@ -74,6 +82,7 @@ public class BottomSheetControllerFactory {
 
     /**
      * Attach a shared {@link BottomSheetController} to a {@link WindowAndroid}.
+     *
      * @param windowAndroid The window to attach the sheet's controller to.
      * @param controller The controller to attach.
      */

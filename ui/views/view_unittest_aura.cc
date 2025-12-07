@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/view.h"
-
 #include <memory>
 
 #include "ui/aura/window.h"
@@ -12,6 +10,7 @@
 #include "ui/compositor/test/test_layers.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view.h"
 #include "ui/views/view_constants_aura.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
@@ -56,7 +55,7 @@ class ViewAuraTest : public ViewsTestBase {
   ~ViewAuraTest() override = default;
 
   const View::Views& GetViewsWithLayers(Widget* widget) {
-    return widget->GetViewsWithLayers();
+    return widget->GetViewsWithLayersInZOrder();
   }
 };
 
@@ -139,20 +138,10 @@ TEST_F(ViewAuraTest, RecreateLayersWithWindows) {
     EXPECT_NE(w1_layer, w1->GetNativeView()->layer());
 
     // The old layers should still exist and have the same hierarchy.
-    ASSERT_EQ("w1", w1_layer->name());
     ASSERT_EQ("v1 v4 w2 v7", ui::test::ChildLayerNamesAsString(*w1_layer));
     ASSERT_EQ("v5", ui::test::ChildLayerNamesAsString(*w2_layer));
     ASSERT_EQ("v6", ui::test::ChildLayerNamesAsString(*v5_layer));
     EXPECT_EQ("v8 v9", ui::test::ChildLayerNamesAsString(*v7_layer));
-
-    ASSERT_EQ(4u, w1_layer->children().size());
-    EXPECT_EQ(v1_layer, w1_layer->children()[0]);
-    EXPECT_EQ(v4_layer, w1_layer->children()[1]);
-    EXPECT_EQ(w2_layer, w1_layer->children()[2]);
-    EXPECT_EQ(v7_layer, w1_layer->children()[3]);
-
-    ASSERT_EQ(1u, w2_layer->children().size());
-    EXPECT_EQ(v5_layer, w2_layer->children()[0]);
 
     ASSERT_EQ(1u, v5_layer->children().size());
     EXPECT_EQ(v6_layer, v5_layer->children()[0]);

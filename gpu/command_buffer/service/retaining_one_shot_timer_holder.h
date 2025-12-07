@@ -13,7 +13,7 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "gpu/gpu_export.h"
+#include "gpu/command_buffer/service/gpu_command_buffer_service_export.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -24,7 +24,7 @@ namespace gpu {
 // This class holds a RetainingOneShotTimer and ensures thread safety.
 // The public methods are safe to call from any threads.
 // Before the object is destructed, DestroyTimer() must be called to clean up.
-class GPU_EXPORT RetainingOneShotTimerHolder
+class GPU_COMMAND_BUFFER_SERVICE_EXPORT RetainingOneShotTimerHolder
     : public base::RefCountedThreadSafe<RetainingOneShotTimerHolder> {
  public:
   // `max_delay` and `min_delay` together specify how ResetTimerIfNecessary()

@@ -12,12 +12,6 @@
 #include "base/values.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-namespace content {
-
-class VpnServiceProxy;
-
-}  // namespace content
-
 namespace extensions::api {
 
 // This class is the basic interface for chrome.vpnProvider extension API
@@ -78,9 +72,6 @@ class VpnServiceInterface : public KeyedService {
                                             bool connection_success,
                                             SuccessCallback,
                                             FailureCallback) = 0;
-
-  // Returns a VpnServiceProxy that is used by Pepper API.
-  virtual std::unique_ptr<content::VpnServiceProxy> GetVpnServiceProxy() = 0;
 };
 
 }  // namespace extensions::api

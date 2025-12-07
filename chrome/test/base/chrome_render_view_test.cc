@@ -21,7 +21,6 @@
 #include "components/spellcheck/renderer/spellcheck.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -31,11 +30,20 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
+#include "extensions/renderer/dispatcher.h"                        // nogncheck
+#include "extensions/renderer/extensions_renderer_api_provider.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension.h"
-#include "extensions/renderer/dispatcher.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/common/chrome_features.h"
+#include "chrome/renderer/process_state.h"  // nogncheck
 #endif
 
 using autofill::AutofillAgent;
@@ -62,6 +70,15 @@ void ChromeRenderViewTest::SetUp() {
 
   registry_ = std::make_unique<service_manager::BinderRegistry>();
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Initialize instant process state since tests bypass normal process setup.
+  // When kInstantUsesSpareRenderer is enabled, IsInstantProcess() requires the
+  // optional value to be initialized, otherwise it will CHECK-fail.
+  if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
+    process_state::SetIsInstantProcess(false);
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // TODO(crbug.com/41401202): Before this SetUp, the test agents defined at the
   // end of this method should be injected into the creation of RenderViewImpl.
   // In the current state, regular agents are created before the test agents.
@@ -82,7 +99,7 @@ void ChromeRenderViewTest::SetUp() {
           &associated_interfaces_);
   password_generation_ = unique_password_generation.get();
   autofill_agent_ = new AutofillAgent(
-      GetMainRenderFrame(), {}, std::move(unique_password_autofill_agent),
+      GetMainRenderFrame(), std::move(unique_password_autofill_agent),
       std::move(unique_password_generation), &associated_interfaces_);
 }
 
@@ -122,10 +139,9 @@ void ChromeRenderViewTest::RegisterMainFrameRemoteInterfaces() {}
 
 void ChromeRenderViewTest::InitChromeContentRendererClient(
     ChromeContentRendererClient* client) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  ChromeExtensionsRendererClient* ext_client =
-      ChromeExtensionsRendererClient::GetInstance();
-  ext_client->SetExtensionDispatcherForTest(
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  ChromeExtensionsRendererClient::Create();
+  extensions::ExtensionsRendererClient::Get()->SetDispatcherForTesting(
       std::make_unique<extensions::Dispatcher>(
           std::vector<std::unique_ptr<
               const extensions::ExtensionsRendererAPIProvider>>()));

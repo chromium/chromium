@@ -1,0 +1,19 @@
+Name: reactive-streams
+Short Name: reactive-streams
+URL: https://repo.maven.apache.org/maven2/org/reactivestreams/reactive-streams/1.0.4/reactive-streams-1.0.4.jar
+Version: 1.0.4
+Update Mechanism: Autoroll
+License: MIT
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+A Protocol for Asynchronous Non-Blocking Data Sequence
+
+See also: http://www.reactive-streams.org/
+
+
+Local Modifications:
+No modifications.

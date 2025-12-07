@@ -13,12 +13,9 @@ using base::NumberToString;
 
 namespace ui {
 
-AXRelativeBounds::AXRelativeBounds()
-    : offset_container_id(-1) {
-}
+AXRelativeBounds::AXRelativeBounds() = default;
 
-AXRelativeBounds::~AXRelativeBounds() {
-}
+AXRelativeBounds::~AXRelativeBounds() = default;
 
 AXRelativeBounds::AXRelativeBounds(const AXRelativeBounds& other) {
   offset_container_id = other.offset_container_id;
@@ -27,7 +24,9 @@ AXRelativeBounds::AXRelativeBounds(const AXRelativeBounds& other) {
     transform = std::make_unique<gfx::Transform>(*other.transform);
 }
 
-AXRelativeBounds& AXRelativeBounds::operator=(AXRelativeBounds other) {
+AXRelativeBounds::AXRelativeBounds(AXRelativeBounds&& other) noexcept = default;
+
+AXRelativeBounds& AXRelativeBounds::operator=(const AXRelativeBounds& other) {
   offset_container_id = other.offset_container_id;
   bounds = other.bounds;
   if (other.transform)
@@ -45,16 +44,13 @@ bool AXRelativeBounds::operator==(const AXRelativeBounds& other) const {
   return base::ValuesEquivalent(transform, other.transform);
 }
 
-bool AXRelativeBounds::operator!=(const AXRelativeBounds& other) const {
-  return !operator==(other);
-}
-
 std::string AXRelativeBounds::ToString() const {
   std::string result;
 
-  if (offset_container_id != -1)
+  if (offset_container_id != kInvalidAXNodeID) {
     result +=
         "offset_container_id=" + NumberToString(offset_container_id) + " ";
+  }
 
   result += "(" + NumberToString(bounds.x()) + ", " +
             NumberToString(bounds.y()) + ")-(" +

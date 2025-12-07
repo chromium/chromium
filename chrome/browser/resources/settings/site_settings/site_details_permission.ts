@@ -8,7 +8,7 @@
  * as Geolocation, for a given origin.
  */
 import 'chrome://resources/cr_elements/md_select.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '../i18n_setup.js';
@@ -23,8 +23,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {ChooserType, ContentSetting, ContentSettingsTypes, SiteSettingSource} from './constants.js';
 import {getTemplate} from './site_details_permission.html.js';
+import type {ChooserException, RawChooserException, RawSiteException} from './site_settings_browser_proxy.js';
 import {SiteSettingsMixin} from './site_settings_mixin.js';
-import type {ChooserException, RawChooserException, RawSiteException} from './site_settings_prefs_browser_proxy.js';
 
 export interface SiteDetailsPermissionElement {
   $: {
@@ -56,6 +56,12 @@ export class SiteDetailsPermissionElement extends
        * allow label.
        */
       useAutomaticLabel: {type: Boolean, value: false},
+
+      /**
+       * Controls whether the content setting should use "Block if site is
+       * unfamiliar" as the default setting label.
+       */
+      useBlockIfUnfamiliarLabelForDefault: {type: Boolean, value: false},
 
       /**
        * The site that this widget is showing details for, or null if this
@@ -100,17 +106,14 @@ export class SiteDetailsPermissionElement extends
       },
 
       /**
-       * If some permission is blocked on the system level, this will be
-       * populated with the warnings to be shown in the UI.
+       * If the permission for this category permission is blocked on the system
+       * level, this will be populated with the key that can be used to look up
+       * the warning to be shown in the UI.
        */
-      permissionWarnings_: {
-        type: Object,
-        value: {
-          [ContentSettingsTypes.GEOLOCATION]: null,
-          [ContentSettingsTypes.CAMERA]: null,
-          [ContentSettingsTypes.MIC]: null,
-        },
-        notify: true,
+      systemPermissionWarningKey_: {
+        type: String,
+        value: null,
+        observer: 'attachSystemPermissionSettingsLinkClick_',
       },
     };
   }
@@ -122,14 +125,15 @@ export class SiteDetailsPermissionElement extends
     ];
   }
 
-  useAutomaticLabel: boolean;
-  site: RawSiteException;
-  private chooserExceptions_: ChooserException[];
-  chooserType: ChooserType;
-  private permissionWarnings_: Record<ContentSettingsTypes, string|null>;
-  private defaultSetting_: ContentSetting;
-  label: string;
-  icon: string;
+  declare useAutomaticLabel: boolean;
+  declare useBlockIfUnfamiliarLabelForDefault: boolean;
+  declare site: RawSiteException;
+  declare private chooserExceptions_: ChooserException[];
+  declare chooserType: ChooserType;
+  declare private systemPermissionWarningKey_: string;
+  declare private defaultSetting_: ContentSetting;
+  declare label: string;
+  declare icon: string;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -147,9 +151,10 @@ export class SiteDetailsPermissionElement extends
           }
         });
 
-    this.addWebUiListener('osGlobalPermissionChanged', (messages: any) => {
-      this.set('permissionWarnings_', messages);
-    });
+    this.addWebUiListener(
+        'osGlobalPermissionChanged', (messages: ContentSettingsTypes[]) => {
+          this.setSystemPermissionWarningKey_(messages);
+        });
   }
 
   /**
@@ -166,10 +171,11 @@ export class SiteDetailsPermissionElement extends
         .then(exceptionList => this.processChooserExceptions_(exceptionList));
   }
 
-  private updateOsPermissionWarnings_() {
-    this.browserProxy.getOsGlobalPermissionStatus().then(messages => {
-      this.permissionWarnings_ = messages;
-    });
+  private updateOsPermissionWarning_() {
+    this.browserProxy.getSystemDeniedPermissions().then(
+        (messages: ContentSettingsTypes[]) => {
+          this.setSystemPermissionWarningKey_(messages);
+        });
   }
 
   /**
@@ -222,7 +228,7 @@ export class SiteDetailsPermissionElement extends
       return;
     }
 
-    this.updateOsPermissionWarnings_();
+    this.updateOsPermissionWarning_();
 
     if (site.source === SiteSettingSource.DEFAULT) {
       this.defaultSetting_ = site.setting;
@@ -288,14 +294,17 @@ export class SiteDetailsPermissionElement extends
    */
   private defaultSettingString_(
       defaultSetting: ContentSetting, category: ContentSettingsTypes,
-      useAutomaticLabel: boolean): string {
+      useAutomaticLabel: boolean, useBlockIfUnfamiliarLabel: boolean): string {
     if (defaultSetting === undefined || category === undefined ||
         useAutomaticLabel === undefined) {
       return '';
     }
 
-    if (defaultSetting === ContentSetting.ASK ||
-        defaultSetting === ContentSetting.IMPORTANT_CONTENT) {
+    if (useBlockIfUnfamiliarLabel) {
+      return this.i18n('siteSettingsActionBlockOnUnfamiliarSitesDefaultMenu');
+    }
+
+    if (defaultSetting === ContentSetting.ASK) {
       return this.i18n('siteSettingsActionAskDefault');
     } else if (defaultSetting === ContentSetting.ALLOW) {
       if (this.useCustomSoundLabels_(category) && useAutomaticLabel) {
@@ -341,18 +350,15 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
-   * @param permissionWarnings The warnings to be displayed for permissions
-   *     blocked at the the system level.
    * @return Whether the permission will have a source string to display.
    */
   private hasPermissionInfoString_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting,
-      permissionWarnings: Record<ContentSettingsTypes, string>): boolean {
+      setting: ContentSetting): boolean {
     // This method assumes that an empty string will be returned for categories
     // that have no permission info string.
     return String(this.permissionInfoString_(
-               source, category, setting, permissionWarnings,
+               source, category, setting,
                // Set all permission info string arguments as null. This is OK
                // because there is no need to know what the information string
                // will be, just whether there is one or not.
@@ -369,34 +375,28 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
-   * @param permissionWarnings The warnings to be displayed for permissions
-   *     blocked at the the system level.
    * @return CSS class applied when there is an additional description string.
    */
   private permissionInfoStringClass_(
       source: SiteSettingSource, category: ContentSettingsTypes,
-      setting: ContentSetting,
-      permissionWarnings: Record<ContentSettingsTypes, string>): string {
-    return this.hasPermissionInfoString_(
-               source, category, setting, permissionWarnings) ?
+      setting: ContentSetting): string {
+    return (this.hasPermissionInfoString_(source, category, setting) ||
+            this.hasSystemPermissionWarning_()) ?
         'two-line' :
         '';
   }
 
   /**
    * @param source The source of the permission.
-   * @param category The permission category.
    * @return Whether this permission can be controlled by the user.
    */
-  private isPermissionUserControlled_(
-      source: SiteSettingSource, category: ContentSettingsTypes): boolean {
+  private isPermissionUserControlled_(source: SiteSettingSource): boolean {
     return !(source === SiteSettingSource.ALLOWLIST ||
              source === SiteSettingSource.POLICY ||
              source === SiteSettingSource.EXTENSION ||
              source === SiteSettingSource.KILL_SWITCH ||
              source === SiteSettingSource.INSECURE_ORIGIN) &&
-        (null ===
-         this.getPermissionWarning_(category, this.permissionWarnings_));
+        !this.hasSystemPermissionWarning_();
   }
 
   /**
@@ -410,7 +410,11 @@ export class SiteDetailsPermissionElement extends
         category === ContentSettingsTypes.BLUETOOTH_SCANNING ||
         category === ContentSettingsTypes.FILE_SYSTEM_WRITE ||
         category === ContentSettingsTypes.HID_DEVICES ||
-        category === ContentSettingsTypes.BLUETOOTH_DEVICES);
+        category === ContentSettingsTypes.BLUETOOTH_DEVICES
+        // <if expr="is_chromeos">
+        || category === ContentSettingsTypes.SMART_CARD_READERS
+        // </if>
+    );
   }
 
   /**
@@ -430,10 +434,15 @@ export class SiteDetailsPermissionElement extends
       return true;
     }
 
-    // For Bluetooth scanning permission and File System write permission
-    // 'ask' takes the place of 'allow'.
-    if (category === ContentSettingsTypes.BLUETOOTH_SCANNING ||
-        category === ContentSettingsTypes.FILE_SYSTEM_WRITE) {
+    // For Bluetooth scanning permission, File System write permission
+    // and Smart card readers permission 'ask' takes the place of 'allow'.
+    if (
+        category === ContentSettingsTypes.BLUETOOTH_SCANNING ||
+        category === ContentSettingsTypes.FILE_SYSTEM_WRITE
+        // <if expr="is_chromeos">
+        || category === ContentSettingsTypes.SMART_CARD_READERS
+        // </if>
+    ) {
       return true;
     }
 
@@ -441,17 +450,103 @@ export class SiteDetailsPermissionElement extends
   }
 
   /**
+   * @param messages The message with the blocked permission types.
+   * @return The key to lookup the warning. Null if the warning is not to be
+   * shown.
+   */
+  private setSystemPermissionWarningKey_(messages: ContentSettingsTypes[]) {
+    this.set(
+        'systemPermissionWarningKey_', ((category: ContentSettingsTypes) => {
+          // We return null as warningKey in case the category is not one of
+          // the listed, as the warning in case of an OS level block is
+          // supported only for camera, microphone and location permissions.
+          if (!messages.includes(category)) {
+            return null;
+          }
+          switch (category) {
+            case ContentSettingsTypes.CAMERA:
+              return 'siteSettingsCameraBlockedByOs';
+            case ContentSettingsTypes.MIC:
+              return 'siteSettingsMicrophoneBlockedByOs';
+            case ContentSettingsTypes.GEOLOCATION:
+              return 'siteSettingsLocationBlockedByOs';
+            default:
+              return null;
+          }
+        })(this.category));
+  }
+
+  /** Attempts to open the system permission settings. */
+  private onSystemPermissionSettingsLinkClick_(event: MouseEvent) {
+    // Prevents navigation to href='#'.
+    event.preventDefault();
+    if (this.category !== null) {
+      this.browserProxy.openSystemPermissionSettings(this.category);
+    }
+  }
+
+  /**
    * @param category The permission type.
    * @return The text of the warning. Null if the warning is not to be shown.
    */
-  private getPermissionWarning_(
-      category: ContentSettingsTypes, _permissionWarnings: Object): string
-      |null {
-    if (category in this.permissionWarnings_) {
-      return this.permissionWarnings_[category];
+  private getSystemPermissionWarning_(): TrustedHTML {
+    if (this.systemPermissionWarningKey_ !== null) {
+      return this.i18nAdvanced(
+          this.systemPermissionWarningKey_, {tags: ['a'], attrs: ['id']});
     }
-    return null;
+    return sanitizeInnerHtml('');
   }
+
+  /** Attaches the click action to the anchor element. */
+  private attachSystemPermissionSettingsLinkClick_() {
+    const element: HTMLElement|null|undefined =
+        this.shadowRoot?.querySelector('#openSystemSettingsLink');
+    if (element !== null && element !== undefined) {
+      element.addEventListener('click', (me: MouseEvent) => {
+        this.onSystemPermissionSettingsLinkClick_(me);
+      });
+      // Set the correct aria label describing the link target.
+      const settingsPageName: string|null = (() => {
+        switch (this.category) {
+          case ContentSettingsTypes.CAMERA:
+            return 'Camera';
+          case ContentSettingsTypes.MIC:
+            return 'Microphone';
+          case ContentSettingsTypes.GEOLOCATION:
+            return 'Location';
+          default:
+            return null;
+        }
+      })();
+      if (settingsPageName) {
+        element.setAttribute(
+            'aria-label', `System Settings: ${settingsPageName}`);
+      }
+    }
+  }
+
+  /**
+   * @return The text of the warning. Null if the permission is not blocked by
+   *     the OS.
+   */
+  private hasSystemPermissionWarning_(): boolean {
+    return (this.systemPermissionWarningKey_ !== null);
+  }
+
+  /**
+   * @param category The permission type.
+   * @return The text of the warning. Null if the permission is not to be
+   *     displayed.
+   */
+  private showSystemPermissionWarning_(
+      source: SiteSettingSource, category: ContentSettingsTypes,
+      setting: ContentSetting): boolean {
+    if (this.hasPermissionInfoString_(source, category, setting)) {
+      return false;
+    }
+    return this.hasSystemPermissionWarning_();
+  }
+
 
   /**
    * Returns true if the permission is set to a non-default 'ask'. Currently,
@@ -480,8 +575,6 @@ export class SiteDetailsPermissionElement extends
    * @param source The source of the permission.
    * @param category The permission type.
    * @param setting The permission setting.
-   * @param permissionWarnings The warnings to be displayed for permissions
-   *     blocked at the the system level.
    * @param  allowlistString The string to show if the permission is
    *     allowlisted.
    * @param adsBlocklistString The string to show if the site is
@@ -493,7 +586,6 @@ export class SiteDetailsPermissionElement extends
   private permissionInfoString_(
       source: SiteSettingSource, category: ContentSettingsTypes,
       setting: ContentSetting,
-      permissionWarnings: Record<ContentSettingsTypes, string>,
       allowlistString: string|null, adsBlocklistString: string|null,
       adsBlockString: string|null, embargoString: string|null,
       insecureOriginString: string|null, killSwitchString: string|null,
@@ -507,12 +599,6 @@ export class SiteDetailsPermissionElement extends
     if (source === undefined || category === undefined ||
         setting === undefined) {
       return window.trustedTypes!.emptyHTML;
-    }
-
-    const permissionWarningForCategory: string|null =
-        this.getPermissionWarning_(category, permissionWarnings);
-    if (permissionWarningForCategory !== null) {
-      return sanitizeInnerHtml(permissionWarningForCategory!);
     }
 
     const extensionStrings: {[key: string]: string|null} = {};

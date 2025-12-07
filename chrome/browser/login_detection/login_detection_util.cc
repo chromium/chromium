@@ -14,11 +14,10 @@
 namespace login_detection {
 
 BASE_FEATURE(kLoginDetection,
-             "LoginDetection",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_ENABLED_BY_DEFAULT
 #else
-             base::FEATURE_DISABLED_BY_DEFAULT
+             base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
 
@@ -30,13 +29,12 @@ std::string GetSiteNameForURL(const GURL& url) {
   DCHECK(url.SchemeIsHTTPOrHTTPS());
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-  std::string scheme = url.scheme();
+  std::string scheme = url.GetScheme();
   // Use the default port for the scheme to ignore any non-standard ports for
   // the scheme from the final string being returned. So,
   // https://www.foo.com:1000/page.html would return just https://foo.com
-  return url::SchemeHostPort(
-             scheme, domain.empty() ? url.host() : domain,
-             url::DefaultPortForScheme(scheme.c_str(), scheme.length()))
+  return url::SchemeHostPort(scheme, domain.empty() ? url.GetHost() : domain,
+                             url::DefaultPortForScheme(scheme))
       .Serialize();
 }
 
@@ -47,6 +45,7 @@ std::set<std::string> GetOAuthLoginStartQueryParams() {
     param = "client_id";
   auto params = base::SplitString(param, ",", base::TRIM_WHITESPACE,
                                   base::SPLIT_WANT_NONEMPTY);
+
   return std::set<std::string>(params.begin(), params.end());
 }
 
@@ -54,9 +53,10 @@ std::set<std::string> GetOAuthLoginCompleteQueryParams() {
   std::string param = GetFieldTrialParamValueByFeature(
       kLoginDetection, "oauth_login_complete_request_params");
   if (param.empty())
-    param = "code";
+    param = "code, access_token, id_token";
   auto params = base::SplitString(param, ",", base::TRIM_WHITESPACE,
                                   base::SPLIT_WANT_NONEMPTY);
+
   return std::set<std::string>(params.begin(), params.end());
 }
 

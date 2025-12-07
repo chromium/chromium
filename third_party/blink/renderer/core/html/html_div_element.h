@@ -38,7 +38,7 @@ class CORE_EXPORT HTMLDivElement : public HTMLElement {
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
+      HeapVector<CSSPropertyValue, 8>&) override;
 };
 
 }  // namespace blink

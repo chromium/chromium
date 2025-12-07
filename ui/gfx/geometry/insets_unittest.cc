@@ -121,6 +121,16 @@ TEST(InsetsTest, WidthHeightAndIsEmpty) {
   EXPECT_FALSE(insets.IsEmpty());
 }
 
+TEST(InsetsTest, Transpose) {
+  Insets insets = Insets::TLBR(1, 2, 3, 4);
+  insets.Transpose();
+  EXPECT_EQ(insets, Insets::TLBR(2, 1, 4, 3));
+
+  insets = Insets();
+  insets.Transpose();
+  EXPECT_EQ(insets, Insets());
+}
+
 TEST(InsetsTest, Operators) {
   Insets insets = Insets().set_left_right(2, 4).set_top_bottom(1, 3);
   insets += Insets().set_left_right(6, 8).set_top_bottom(5, 7);

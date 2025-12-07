@@ -4,6 +4,7 @@
 
 #include "content/browser/shared_storage/shared_storage_budget_charger.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/frame_tree_node.h"

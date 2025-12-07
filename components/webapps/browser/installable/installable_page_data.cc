@@ -30,7 +30,6 @@ InstallablePageData::IconProperty& InstallablePageData::IconProperty::operator=(
 InstallablePageData::InstallablePageData()
     : manifest_(std::make_unique<ManifestProperty>()),
       web_page_metadata_(std::make_unique<WebPageMetadataProperty>()),
-      worker_(std::make_unique<ServiceWorkerProperty>()),
       primary_icon_(std::make_unique<IconProperty>()) {}
 
 InstallablePageData::~InstallablePageData() = default;
@@ -38,7 +37,6 @@ InstallablePageData::~InstallablePageData() = default;
 void InstallablePageData::Reset() {
   manifest_ = std::make_unique<ManifestProperty>();
   web_page_metadata_ = std::make_unique<WebPageMetadataProperty>();
-  worker_ = std::make_unique<ServiceWorkerProperty>();
   primary_icon_ = std::make_unique<IconProperty>();
   screenshots_.clear();
   is_screenshots_fetch_complete_ = false;
@@ -59,12 +57,6 @@ void InstallablePageData::OnPageMetadataFetched(
   CHECK(!web_page_metadata_->fetched);
   web_page_metadata_->metadata = std::move(web_page_metadata);
   web_page_metadata_->fetched = true;
-}
-
-void InstallablePageData::OnCheckWorkerResult(InstallableStatusCode result) {
-  worker_->has_worker = (result == InstallableStatusCode::NO_ERROR_DETECTED);
-  worker_->error = result;
-  worker_->fetched = true;
 }
 
 void InstallablePageData::OnPrimaryIconFetched(const GURL& icon_url,
@@ -98,11 +90,6 @@ const blink::mojom::Manifest& InstallablePageData::GetManifest() const {
 const mojom::WebPageMetadata& InstallablePageData::WebPageMetadata() const {
   DCHECK(web_page_metadata_->metadata);
   return *web_page_metadata_->metadata;
-}
-
-bool InstallablePageData::HasWorkerResult() const {
-  return worker_->fetched &&
-         worker_->error != InstallableStatusCode::NO_MATCHING_SERVICE_WORKER;
 }
 
 }  // namespace webapps

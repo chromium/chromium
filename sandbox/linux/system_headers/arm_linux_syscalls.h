@@ -1617,6 +1617,66 @@
 #define __NR_landlock_restrict_self (__NR_SYSCALL_BASE + 446)
 #endif
 
+#if !defined(__NR_process_mrelease)
+#define __NR_process_mrelease (__NR_SYSCALL_BASE + 448)
+#endif
+
+#if !defined(__NR_futex_waitv)
+#define __NR_futex_waitv (__NR_SYSCALL_BASE + 449)
+#endif
+
+#if !defined(__NR_set_mempolicy_home_node)
+#define __NR_set_mempolicy_home_node (__NR_SYSCALL_BASE + 450)
+#endif
+
+#if !defined(__NR_cachestat)
+#define __NR_cachestat (__NR_SYSCALL_BASE + 451)
+#endif
+
+#if !defined(__NR_fchmodat2)
+#define __NR_fchmodat2 (__NR_SYSCALL_BASE + 452)
+#endif
+
+#if !defined(__NR_map_shadow_stack)
+#define __NR_map_shadow_stack (__NR_SYSCALL_BASE + 453)
+#endif
+
+#if !defined(__NR_futex_wake)
+#define __NR_futex_wake (__NR_SYSCALL_BASE + 454)
+#endif
+
+#if !defined(__NR_futex_wait)
+#define __NR_futex_wait (__NR_SYSCALL_BASE + 455)
+#endif
+
+#if !defined(__NR_futex_requeue)
+#define __NR_futex_requeue (__NR_SYSCALL_BASE + 456)
+#endif
+
+#if !defined(__NR_statmount)
+#define __NR_statmount (__NR_SYSCALL_BASE + 457)
+#endif
+
+#if !defined(__NR_listmount)
+#define __NR_listmount (__NR_SYSCALL_BASE + 458)
+#endif
+
+#if !defined(__NR_lsm_get_self_attr)
+#define __NR_lsm_get_self_attr (__NR_SYSCALL_BASE + 459)
+#endif
+
+#if !defined(__NR_lsm_set_self_attr)
+#define __NR_lsm_set_self_attr (__NR_SYSCALL_BASE + 460)
+#endif
+
+#if !defined(__NR_lsm_list_modules)
+#define __NR_lsm_list_modules (__NR_SYSCALL_BASE + 461)
+#endif
+
+#if !defined(__NR_mseal)
+#define __NR_mseal (__NR_SYSCALL_BASE + 462)
+#endif
+
 // ARM private syscalls.
 #if !defined(__ARM_NR_BASE)
 #define __ARM_NR_BASE (__NR_SYSCALL_BASE + 0xF0000)

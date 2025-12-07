@@ -21,7 +21,11 @@ public abstract class CronetLogger {
         CRONET_SOURCE_PLAY_SERVICES,
         // The application is using the fallback implementation.
         CRONET_SOURCE_FALLBACK,
-        // The library is loaded through the bootclasspath.
+        // The library was built from the Android Platform repository.
+        // TODO(https://crbug.com/460049393): a more useful and less confusing definition would be
+        // "the library was loaded from the Android device bootclasspath through HttpEngine". In
+        // production the two definitions are equivalent, but that is not true in test code running
+        // against STATICALLY_LINKED in AOSP.
         CRONET_SOURCE_PLATFORM,
         // The application is using the fake implementation.
         CRONET_SOURCE_FAKE,
@@ -84,6 +88,8 @@ public abstract class CronetLogger {
         public Boolean httpFlagsSuccessful;
         public List<Long> httpFlagsNames;
         public List<Long> httpFlagsValues;
+        public String cronetImplVersion;
+        public CronetSource source = CronetSource.CRONET_SOURCE_UNSPECIFIED;
     }
 
     /** Aggregates the information about a CronetEngine configuration. */
@@ -224,6 +230,12 @@ public abstract class CronetLogger {
         private final @ConnectionCloseSource int mSource;
         private final RequestFailureReason mFailureReason;
         private final boolean mSocketReused;
+        private final String mCronetVersion;
+        private final CronetSource mCronetSource;
+        private final long mTimeToEstablishDnsMillis;
+        private final long mTimeToEstablishSSLMillis;
+        private final long mTimeToConnectMillis;
+        private final long mTimeToSendFirstByteMillis;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -247,7 +259,13 @@ public abstract class CronetLogger {
                 int quicErrorCode,
                 @ConnectionCloseSource int source,
                 RequestFailureReason failureReason,
-                boolean sockedReused) {
+                boolean sockedReused,
+                String cronetVersion,
+                CronetSource cronetSource,
+                long timeToEstablishDnsMillis,
+                long timeToEstablishSSLMillis,
+                long timeToConnectMillis,
+                long timeToSendFirstByteMillis) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -270,6 +288,12 @@ public abstract class CronetLogger {
             mSource = source;
             mFailureReason = failureReason;
             mSocketReused = sockedReused;
+            mCronetVersion = cronetVersion;
+            mCronetSource = cronetSource;
+            mTimeToEstablishDnsMillis = timeToEstablishDnsMillis;
+            mTimeToEstablishSSLMillis = timeToEstablishSSLMillis;
+            mTimeToConnectMillis = timeToConnectMillis;
+            mTimeToSendFirstByteMillis = timeToSendFirstByteMillis;
         }
 
         /**
@@ -380,6 +404,30 @@ public abstract class CronetLogger {
 
         public boolean getIsSocketReused() {
             return mSocketReused;
+        }
+
+        public String getCronetVersion() {
+            return mCronetVersion;
+        }
+
+        public CronetSource getCronetSource() {
+            return mCronetSource;
+        }
+
+        public long getTimeToEstablishDNSMillis() {
+            return mTimeToEstablishDnsMillis;
+        }
+
+        public long getTimeToEstablishSSLMillis() {
+            return mTimeToEstablishSSLMillis;
+        }
+
+        public long getTimeToConnectMillis() {
+            return mTimeToConnectMillis;
+        }
+
+        public long getTimeToSendFirstByteMillis() {
+            return mTimeToSendFirstByteMillis;
         }
     }
 

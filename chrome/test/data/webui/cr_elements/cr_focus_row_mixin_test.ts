@@ -163,7 +163,7 @@ suite('cr-focus-row-mixin-test', function() {
         await whenFocus;
         const button = getDeepActiveElement();
         assertTrue(!!button);
-        assertEquals('fake button three', button.textContent!.trim());
+        assertEquals('fake button three', button.textContent.trim());
       });
 
   test('when shift+tab pressed on first control, focus on container', () => {

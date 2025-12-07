@@ -1,0 +1,12 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// Holds the Current value for a cc::SyncedScrollOffset.
+struct SyncedScrollOffset {
+  gfx.mojom.PointF scroll_offset;
+};

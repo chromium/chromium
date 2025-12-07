@@ -35,6 +35,7 @@ android_library("java") {
     "//third_party/blink/public/mojom:web_feature_mojo_bindings_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_java",
+    "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.components.external_intents"
@@ -89,6 +90,9 @@ android_library("unit_device_javatests") {
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/google-truth:google_truth_java",
+    "//third_party/hamcrest:hamcrest_core_java",
+    "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
@@ -125,7 +129,7 @@ source_set("test_support") {
   deps = [
     ":test_support_java_jni_headers",
     "//base",
-    "//content/public/browser:browser",
+    "//content/public/browser",
   ]
 }
 

@@ -22,8 +22,8 @@ items:
   name: Allow
   value: 1
 owners:
-- janagrill@google.com
-- okalitova@chromium.org
+- rbock@google.com
+- chromeos-commercial-remote-management@google.com
 schema:
   enum:
   - 0

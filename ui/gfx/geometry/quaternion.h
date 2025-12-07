@@ -8,13 +8,13 @@
 #include <iosfwd>
 #include <string>
 
-#include "ui/gfx/geometry/geometry_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
 class Vector3dF;
 
-class GEOMETRY_EXPORT Quaternion {
+class COMPONENT_EXPORT(GEOMETRY) Quaternion {
  public:
   constexpr Quaternion() = default;
   constexpr Quaternion(double x, double y, double z, double w)
@@ -70,6 +70,11 @@ class GEOMETRY_EXPORT Quaternion {
 
   std::string ToString() const;
 
+  // Returns true if the x, y, z, w values of |lhs| and |rhs| are equal. Note
+  // that two quaternions can represent the same orientation with different
+  // values. This operator will return false in that scenario.
+  friend bool operator==(const Quaternion&, const Quaternion&) = default;
+
  private:
   double x_ = 0.0;
   double y_ = 0.0;
@@ -91,18 +96,6 @@ inline Quaternion operator*(double s, const Quaternion& q) {
 inline Quaternion operator/(const Quaternion& q, double s) {
   double inv = 1.0 / s;
   return q * inv;
-}
-
-// Returns true if the x, y, z, w values of |lhs| and |rhs| are equal. Note that
-// two quaternions can represent the same orientation with different values.
-// This operator will return false in that scenario.
-inline bool operator==(const Quaternion& lhs, const Quaternion& rhs) {
-  return lhs.x() == rhs.x() && lhs.y() == rhs.y() && lhs.z() == rhs.z() &&
-         lhs.w() == rhs.w();
-}
-
-inline bool operator!=(const Quaternion& lhs, const Quaternion& rhs) {
-  return !(lhs == rhs);
 }
 
 // This is declared here for use in gtest-based unit tests but is defined in

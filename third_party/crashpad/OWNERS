@@ -8,5 +8,5 @@
 # Crashpad, all changes should first be made in the upstream Crashpad
 # repository, and then imported here. See README.chromium.
 
-mark@chromium.org
-rsesek@chromium.org
+set noparent
+file://third_party/crashpad/crashpad/OWNERS

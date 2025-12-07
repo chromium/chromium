@@ -9,6 +9,9 @@ if (is_linux) {
   import("//build/linux/strip_binary.gni")
 }
 import("//build/util/lastchange.gni")
+if (is_win) {
+  import("//build/util/process_version.gni")
+}
 import("//testing/test.gni")
 import("//third_party/ffmpeg/ffmpeg_options.gni")
 import("//ui/webui/resources/tools/minify_js.gni")
@@ -70,7 +73,7 @@ action("embed_mobile_devices_in_cpp") {
 }
 
 minify_js("minify_bidimapper") {
-  deps = [ "//third_party/bidimapper:bidimapper" ]
+  deps = [ "//third_party/bidimapper" ]
   input_dir =
       get_label_info("//third_party/bidimapper:bidimapper", "target_gen_dir")
   in_folder = "$input_dir"
@@ -196,6 +199,8 @@ source_set("automation_client_lib") {
     "chrome/scoped_temp_dir_with_retry.h",
     "chrome/status.cc",
     "chrome/status.h",
+    "chrome/tab_tracker.cc",
+    "chrome/tab_tracker.h",
     "chrome/target_utils.cc",
     "chrome/target_utils.h",
     "chrome/ui_events.cc",
@@ -289,6 +294,10 @@ source_set("automation_client_lib") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("lib") {
@@ -356,7 +365,6 @@ source_set("lib") {
     ":automation_client_lib",
     "//base",
     "//build:branding_buildflags",
-    "//build:chromeos_buildflags",
     "//chrome/common:constants",
     "//chrome/common:version_header",
     "//chrome/test/chromedriver/constants:version_header",
@@ -365,7 +373,6 @@ source_set("lib") {
     "//components/version_info:generate_version_info",
     "//crypto",
     "//net",
-    "//net/server:http_server",
     "//net/traffic_annotation:test_support",
     "//services/device/public/cpp/generic_sensor",
     "//services/network:network_service",
@@ -403,6 +410,10 @@ source_set("lib") {
     deps += [ ":buildflags" ]
     frameworks = [ "Carbon.framework" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_linux) {
@@ -416,7 +427,7 @@ if (is_linux) {
       ":automation_client_lib",
       ":lib",
       "//mojo/core/embedder",
-      "//net/server:http_server",
+      "//net",
       "//net/traffic_annotation:test_support",
       "//services/network/public/mojom",
     ]
@@ -439,16 +450,19 @@ if (is_linux) {
     deps = [
       ":automation_client_lib",
       ":lib",
-      "//build:chromeos_buildflags",
       "//build/win:default_exe_manifest",
       "//mojo/core/embedder",
-      "//net/server:http_server",
+      "//net",
       "//net/traffic_annotation:test_support",
       "//services/network/public/mojom",
     ]
 
     if (is_mac && is_component_ffmpeg) {
       ldflags = [ "-Wl,-rpath,@executable_path/." ]
+    }
+
+    if (is_win) {
+      deps += [ ":chromedriver_server_version" ]
     }
   }
 }
@@ -460,11 +474,24 @@ if (is_mac) {
   }
 }
 
+if (is_win) {
+  process_version("chromedriver_server_version") {
+    output = "$target_gen_dir/chromedriver_server_version.rc"
+    sources = [
+      "//chrome/VERSION",
+      "chromedriver_server_exe.ver",
+      "constants/BRANDING",
+      lastchange_file,
+    ]
+    template_file = "//chrome/app/chrome_version.rc.version"
+  }
+}
+
 python_library("chromedriver_py_tests") {
   testonly = true
   deps = [
     ":chromedriver_server",
-    "//chrome:chrome",
+    "//chrome",
   ]
 
   pydeps_file = "test/run_py_tests.pydeps"
@@ -492,7 +519,7 @@ python_library("chromedriver_py_tests_headless_shell") {
   testonly = true
   deps = [
     ":chromedriver_server",
-    "//chrome:chrome",
+    "//chrome",
   ]
 
   pydeps_file = "test/run_py_tests.pydeps"
@@ -602,12 +629,10 @@ test("chromedriver_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//chrome/common",
     "//mojo/core/embedder",
     "//net",
     "//net:test_support",
-    "//net/server:http_server",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//testing/gmock",
@@ -619,18 +644,30 @@ test("chromedriver_unittests") {
     "//ui/gfx/geometry",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (is_win || is_posix) {
   test("chromedriver_integrationtests") {
     sources = [
-      "devtools_client_impl_integrationtest.cc",
-      "navigation_tracker_integrationtest.cc",
       "net/test_http_server.cc",
       "net/test_http_server.h",
+      "test/command_injecting_socket.cc",
+      "test/command_injecting_socket.h",
+      "test/commands_integrationtest.cc",
+      "test/devtools_client_impl_integrationtest.cc",
+      "test/integration_test.cc",
+      "test/integration_test.h",
+      "test/navigation_tracker_integrationtest.cc",
+      "test/sync_websocket_wrapper.cc",
+      "test/sync_websocket_wrapper.h",
+      "test/web_view_impl_integrationtest.cc",
     ]
 
-    data_deps = [ "//chrome:chrome" ]
+    data_deps = [ "//chrome" ]
 
     deps = [
       ":automation_client_lib",
@@ -640,7 +677,6 @@ if (is_win || is_posix) {
       "//base/test:test_support",
       "//chrome/common",
       "//net",
-      "//net/server:http_server",
       "//net/traffic_annotation:test_support",
       "//testing/gmock",
       "//testing/gtest",

@@ -8,6 +8,11 @@
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
+th,
+td {
+  overflow: auto;
+}
+
 .source-location {
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -17,4 +22,8 @@
 .message {
   word-wrap: break-word;
   width: 70%;
+}
+
+.main {
+  margin: 20px;
 }

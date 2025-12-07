@@ -19,9 +19,6 @@ void OpenNewTab();
 // Simulates opening `URL` from another application.
 void SimulateExternalAppURLOpeningWithURL(NSURL* URL);
 
-// Simulates opening the add account sign-in flow from the web.
-void SimulateAddAccountFromWeb();
-
 // Opens a new incognito tab, and does not wait for animations to complete.
 void OpenNewIncognitoTab();
 

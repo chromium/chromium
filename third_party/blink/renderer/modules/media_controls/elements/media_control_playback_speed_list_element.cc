@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_playback_speed_list_element.h"
+
+#include <array>
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -28,6 +25,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -55,7 +53,7 @@ struct PlaybackSpeed {
   const double playback_rate;
 };
 
-static const PlaybackSpeed kPlaybackSpeeds[] = {
+constexpr auto kPlaybackSpeeds = std::to_array<PlaybackSpeed>({
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_25X_TITLE, 0.25},
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_5X_TITLE, 0.5},
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_0_75X_TITLE, 0.75},
@@ -63,7 +61,8 @@ static const PlaybackSpeed kPlaybackSpeeds[] = {
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_1_25X_TITLE, 1.25},
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_1_5X_TITLE, 1.5},
     {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_1_75X_TITLE, 1.75},
-    {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_2X_TITLE, 2.0}};
+    {IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_2X_TITLE, 2.0},
+});
 
 const QualifiedName& PlaybackRateAttrName() {
   // Save the playback rate in an attribute.
@@ -101,7 +100,7 @@ MediaControlPlaybackSpeedListElement::MediaControlPlaybackSpeedListElement(
     : MediaControlPopupMenuElement(media_controls) {
   setAttribute(html_names::kRoleAttr, AtomicString("menu"));
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
+               AtomicString(GetLocale().QueryString(
                    IDS_MEDIA_OVERFLOW_MENU_PLAYBACK_SPEED_SUBMENU_TITLE)));
   SetShadowPseudoId(
       AtomicString("-internal-media-controls-playback-speed-list"));
@@ -129,7 +128,7 @@ void MediaControlPlaybackSpeedListElement::DefaultEventHandler(Event& event) {
     event.SetDefaultHandled();
   } else if (event.type() == event_type_names::kChange) {
     // Identify which input element was selected and update playback speed
-    Node* target = event.target()->ToNode();
+    Node* target = event.RawTarget()->ToNode();
     if (!target || !target->IsElementNode())
       return;
 
@@ -155,7 +154,7 @@ void MediaControlPlaybackSpeedListElement::DefaultEventHandler(Event& event) {
     } else if (playback_rate == 2.0) {
       RecordPlaybackSpeedUMA(MediaControlsPlaybackSpeed::k2X);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // Close the playback speed list.
@@ -200,7 +199,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedListItem(
   playback_speed_label_span->setAttribute(html_names::kAriaHiddenAttr,
                                           keywords::kTrue);
   playback_speed_item->setAttribute(html_names::kAriaLabelAttr,
-                                    WTF::AtomicString(playback_speed_label));
+                                    AtomicString(playback_speed_label));
   playback_speed_item->ParserAppendChild(playback_speed_label_span);
   playback_speed_item->ParserAppendChild(playback_speed_item_input);
 
@@ -225,7 +224,7 @@ Element* MediaControlPlaybackSpeedListElement::CreatePlaybackSpeedHeaderItem() {
 
 void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
   EventDispatchForbiddenScope::AllowUserAgentEvents allow_events;
-  RemoveChildren(kOmitSubtreeModifiedEvent);
+  RemoveChildren();
 
   ParserAppendChild(CreatePlaybackSpeedHeaderItem());
 
@@ -238,9 +237,9 @@ void MediaControlPlaybackSpeedListElement::RefreshPlaybackSpeedListMenu() {
         playback_speed.display_name, playback_speed.playback_rate);
     playback_speed_item->setAttribute(
         html_names::kAriaSetsizeAttr,
-        WTF::AtomicString::Number(std::size(kPlaybackSpeeds)));
+        AtomicString::Number(std::size(kPlaybackSpeeds)));
     playback_speed_item->setAttribute(html_names::kAriaPosinsetAttr,
-                                      WTF::AtomicString::Number(i + 1));
+                                      AtomicString::Number(i + 1));
     playback_speed_item->setAttribute(html_names::kRoleAttr,
                                       AtomicString("menuitemcheckbox"));
     ParserAppendChild(playback_speed_item);
@@ -254,10 +253,8 @@ void MediaControlPlaybackSpeedListElement::CenterCheckedItem() {
   if (!checked_item_)
     return;
   ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
-  options->setBlock("center");
-  auto* arg =
-      MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
-  checked_item_->scrollIntoView(arg);
+  options->setBlock(V8ScrollLogicalPosition::Enum::kCenter);
+  checked_item_->scrollIntoViewWithOptions(options);
   checked_item_->Focus(FocusParams(FocusTrigger::kUserGesture));
 }
 

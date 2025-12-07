@@ -4,16 +4,21 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_socket.h"
 
-#include "base/barrier_callback.h"
+#include <memory>
+#include <optional>
+
 #include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_socket_dns_query_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_open_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/inspector/protocol/network.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
+#include "third_party/blink/renderer/modules/direct_sockets/socket.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -95,6 +100,26 @@ mojom::blink::DirectTCPSocketOptionsPtr CreateTCPSocketOptions(
   return socket_options;
 }
 
+std::unique_ptr<protocol::Network::DirectTCPSocketOptions> MapProbeTCPOptions(
+    const TCPSocketOptions* options) {
+  auto probe_options_builder =
+      protocol::Network::DirectTCPSocketOptions::create();
+  if (options->hasKeepAliveDelay()) {
+    probe_options_builder.setKeepAliveDelay(options->keepAliveDelay());
+  }
+  if (options->hasSendBufferSize()) {
+    probe_options_builder.setSendBufferSize(options->sendBufferSize());
+  }
+  if (options->hasReceiveBufferSize()) {
+    probe_options_builder.setReceiveBufferSize(options->receiveBufferSize());
+  }
+  if (options->hasDnsQueryType()) {
+    probe_options_builder.setDnsQueryType(
+        Socket::MapProbeDnsQueryType(options->dnsQueryType()));
+  }
+
+  return probe_options_builder.setNoDelay(options->noDelay()).build();
+}
 }  // namespace
 
 // static
@@ -172,13 +197,13 @@ ScriptPromise<IDLUndefined> TCPSocket::close(ScriptState*,
       DOMExceptionCode::kAbortError, "Stream closed.");
 
   auto readable_cancel = readable_stream_wrapper_->Readable()->cancel(
-      script_state, ScriptValue::From(script_state, reason), exception_state);
-  DCHECK(!exception_state.HadException()) << exception_state.Message();
+      script_state, ScriptValue::From(script_state, reason),
+      ASSERT_NO_EXCEPTION);
   readable_cancel.MarkAsHandled();
 
   auto writable_abort = writable_stream_wrapper_->Writable()->abort(
-      script_state, ScriptValue::From(script_state, reason), exception_state);
-  DCHECK(!exception_state.HadException()) << exception_state.Message();
+      script_state, ScriptValue::From(script_state, reason),
+      ASSERT_NO_EXCEPTION);
   writable_abort.MarkAsHandled();
 
   return closed(script_state);
@@ -199,13 +224,18 @@ bool TCPSocket::Open(const String& remote_address,
       socket_receiver;
   mojo::PendingRemote<network::mojom::blink::SocketObserver> observer_remote;
 
-  auto callback =
-      WTF::BindOnce(&TCPSocket::OnTCPSocketOpened, WrapPersistent(this),
-                    socket_receiver.InitWithNewPipeAndPassRemote(),
-                    observer_remote.InitWithNewPipeAndPassReceiver());
+  auto callback = BindOnce(&TCPSocket::OnTCPSocketOpened, WrapPersistent(this),
+                           socket_receiver.InitWithNewPipeAndPassRemote(),
+                           observer_remote.InitWithNewPipeAndPassReceiver());
   GetServiceRemote()->OpenTCPSocket(
       std::move(open_tcp_socket_options), std::move(socket_receiver),
       std::move(observer_remote), std::move(callback));
+
+  std::unique_ptr<protocol::Network::DirectTCPSocketOptions> proble_options =
+      MapProbeTCPOptions(options);
+  probe::DirectTCPSocketCreated(GetExecutionContext(), inspector_id_,
+                                remote_address, remote_port, *proble_options);
+
   return true;
 }
 
@@ -233,7 +263,7 @@ void TCPSocket::OnTCPSocketOpened(
     opened_->Reject(exception);
     GetClosedProperty().Reject(ScriptValue(GetScriptState()->GetIsolate(),
                                            exception->ToV8(GetScriptState())));
-
+    abort_net_error_ = result;
     SetState(State::kAborted);
   }
 
@@ -254,32 +284,43 @@ void TCPSocket::FinishOpenOrAccept(
       std::move(socket_observer),
       GetExecutionContext()->GetTaskRunner(TaskType::kNetworking));
   socket_observer_.set_disconnect_handler(
-      WTF::BindOnce(&TCPSocket::OnSocketConnectionError, WrapPersistent(this)));
-
-  auto close_callback = base::BarrierCallback<ScriptValue>(
-      /*num_callbacks=*/2,
-      WTF::BindOnce(&TCPSocket::OnBothStreamsClosed, WrapWeakPersistent(this)));
+      BindOnce(&TCPSocket::OnSocketConnectionError, WrapPersistent(this)));
 
   readable_stream_wrapper_ = MakeGarbageCollected<TCPReadableStreamWrapper>(
-      GetScriptState(), close_callback, std::move(receive_stream));
+      GetScriptState(),
+      BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+      std::move(receive_stream), inspector_id_);
   writable_stream_wrapper_ = MakeGarbageCollected<TCPWritableStreamWrapper>(
-      GetScriptState(), close_callback, std::move(send_stream));
+      GetScriptState(),
+      BindOnce(&TCPSocket::OnStreamClosed, WrapWeakPersistent(this)),
+      std::move(send_stream), inspector_id_);
 
   auto* open_info = TCPSocketOpenInfo::Create();
 
   open_info->setReadable(readable_stream_wrapper_->Readable());
   open_info->setWritable(writable_stream_wrapper_->Writable());
 
-  open_info->setRemoteAddress(String{peer_addr.ToStringWithoutPort()});
+  String remote_address(peer_addr.ToStringWithoutPort());
+
+  open_info->setRemoteAddress(remote_address);
   open_info->setRemotePort(peer_addr.port());
 
+  std::optional<String> opt_local_address;
+  std::optional<uint16_t> opt_local_port;
   if (local_addr) {
-    open_info->setLocalAddress(String{local_addr->ToStringWithoutPort()});
+    opt_local_address = String{local_addr->ToStringWithoutPort()};
+    opt_local_port = local_addr->port();
+
+    open_info->setLocalAddress(*opt_local_address);
     open_info->setLocalPort(local_addr->port());
   }
 
   opened_->Resolve(open_info);
   SetState(State::kOpen);
+
+  probe::DirectTCPSocketOpened(GetExecutionContext(), inspector_id_,
+                               remote_address, peer_addr.port(),
+                               opt_local_address, opt_local_port);
 }
 
 void TCPSocket::OnSocketConnectionError() {
@@ -321,6 +362,7 @@ void TCPSocket::Trace(Visitor* visitor) const {
   visitor->Trace(opened_);
   visitor->Trace(readable_stream_wrapper_);
   visitor->Trace(writable_stream_wrapper_);
+  visitor->Trace(stream_error_);
 
   ScriptWrappable::Trace(visitor);
   Socket::Trace(visitor);
@@ -338,16 +380,46 @@ void TCPSocket::ContextDestroyed() {
   ReleaseResources();
 }
 
-void TCPSocket::OnBothStreamsClosed(std::vector<ScriptValue> args) {
-  DCHECK_EQ(GetState(), State::kOpen);
-  DCHECK_EQ(args.size(), 2U);
+void TCPSocket::SetState(State state) {
+  Socket::SetState(state);
+  switch (state) {
+    case Socket::State::kOpening:
+    case Socket::State::kOpen:
+      break;
+    case Socket::State::kClosed:
+      probe::DirectTCPSocketClosed(GetExecutionContext(), inspector_id_);
+      break;
+    case Socket::State::kAborted:
+      probe::DirectTCPSocketAborted(GetExecutionContext(), inspector_id_,
+                                    abort_net_error_);
+      break;
+  }
+}
 
-  // Finds first actual exception and rejects |closed| with it.
+void TCPSocket::OnStreamClosed(v8::Local<v8::Value> exception, int net_error) {
+  DCHECK_EQ(GetState(), State::kOpen);
+  DCHECK_LE(streams_closed_count_, 1);
+
+  if (stream_error_.IsEmpty() && !exception.IsEmpty()) {
+    stream_error_.Reset(GetScriptState()->GetIsolate(), exception);
+    abort_net_error_ = net_error;
+  }
+
+  if (++streams_closed_count_ == 2) {
+    OnBothStreamsClosed();
+  }
+}
+
+void TCPSocket::OnBothStreamsClosed() {
+  // If one of the streams was errored, rejects |closed| with the first
+  // exception.
   // If neither stream was errored, resolves |closed|.
-  if (auto it = base::ranges::find_if_not(args, &ScriptValue::IsEmpty);
-      it != args.end()) {
-    GetClosedProperty().Reject(*it);
+  if (!stream_error_.IsEmpty()) {
+    auto* isolate = GetScriptState()->GetIsolate();
+    GetClosedProperty().Reject(
+        ScriptValue(isolate, stream_error_.Get(isolate)));
     SetState(State::kAborted);
+    stream_error_.Reset();
   } else {
     GetClosedProperty().ResolveWithUndefined();
     SetState(State::kClosed);

@@ -7,6 +7,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
+#include "content/test/test_web_contents.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
@@ -81,7 +82,7 @@ TEST_F(BackForwardCacheImplTest, CrossOriginAllMasked) {
   // index.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
-  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons.size(), 1u);
   EXPECT_EQ(result->reasons[0]->name, "masked");
   EXPECT_FALSE(result->reasons[0]->source);
 
@@ -115,7 +116,7 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, FirstCrossOriginReachable) {
   // First cross-origin reachable frame (b-1) should be unmasked.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
-  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons.size(), 1u);
   EXPECT_EQ(result->reasons[0]->name, "masked");
   EXPECT_FALSE(result->reasons[0]->source);
   // b-1 is unmasked, but reasons are empty because it does not have any
@@ -135,7 +136,7 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, SecondCrossOriginReachable) {
   // Second cross-origin reachable frame (b-3) should be unmasked.
   auto result = tree_root->GetWebExposedNotRestoredReasonsInternal(index);
   // Main frame has "masked" as a reason.
-  EXPECT_EQ(static_cast<int>(result->reasons.size()), 1);
+  EXPECT_EQ(result->reasons.size(), 1u);
   EXPECT_EQ(result->reasons[0]->name, "masked");
   EXPECT_FALSE(result->reasons[0]->source);
 
@@ -157,9 +158,10 @@ TEST_F(BackForwardCacheImplTestExposeCrossOrigin, SecondCrossOriginReachable) {
 
 // Covers BackForwardCache's cache size-related values used in Stable.
 // See docs/back_forward_cache_size.md for more details.
-class BackForwardCacheActiveSizeTest : public ::testing::Test {
+class BackForwardCacheActiveSizeTest : public RenderViewHostImplTestHarness {
  protected:
   void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kBackForwardCache,
@@ -174,20 +176,22 @@ class BackForwardCacheActiveSizeTest : public ::testing::Test {
 };
 
 TEST_F(BackForwardCacheActiveSizeTest, ActiveCacheSize) {
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
   // The default cache sizes specified by kBackForwardCacheSize takes precedence
   // over kBackForwardCache.
-  EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
-  EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 0u);
-  EXPECT_FALSE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 6u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 }
 
 // Covers overwriting BackForwardCache's cache size-related values.
 // When "cache_size" or "foreground_cache_size" presents in both
 // `kBackForwardCacheSize` and `features::kBackForwardCache`, the former should
 // take precedence.
-class BackForwardCacheOverwriteSizeTest : public ::testing::Test {
+class BackForwardCacheOverwriteSizeTest : public RenderViewHostImplTestHarness {
  protected:
   void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{kBackForwardCacheSize,
@@ -204,16 +208,33 @@ class BackForwardCacheOverwriteSizeTest : public ::testing::Test {
 };
 
 TEST_F(BackForwardCacheOverwriteSizeTest, OverwrittenCacheSize) {
-  EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 8u);
-  EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 4u);
-  EXPECT_TRUE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 8u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 4u);
+  EXPECT_TRUE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
+
+  // Changing the embedder-supplied cache size will change the return value of
+  // GetCacheSize() and disables foreground cache limit.
+  bfcache_impl.SetEmbedderSuppliedCacheSize(3u);
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 3u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
+
+  contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .SetEmbedderSuppliedCacheSize(10u);
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 10u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 }
 
 // Covers BackForwardCache's default cache size-related values.
 // Note that these tests don't cover the values configured from Finch.
-class BackForwardCacheDefaultSizeTest : public ::testing::Test {
+class BackForwardCacheDefaultSizeTest : public RenderViewHostImplTestHarness {
  protected:
   void SetUp() override {
+    RenderViewHostImplTestHarness::SetUp();
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         // Ensure BackForwardCache is enabled.
@@ -228,10 +249,23 @@ class BackForwardCacheDefaultSizeTest : public ::testing::Test {
 };
 
 TEST_F(BackForwardCacheDefaultSizeTest, DefaultCacheSize) {
+  auto& bfcache_impl = contents()->GetController().GetBackForwardCache();
   // Default cache sizes are specified by kBackForwardCacheSize.
-  EXPECT_EQ(BackForwardCacheImpl::GetCacheSize(), 6u);
-  EXPECT_EQ(BackForwardCacheImpl::GetForegroundedEntriesCacheSize(), 0u);
-  EXPECT_FALSE(BackForwardCacheImpl::UsingForegroundBackgroundCacheSizeLimit());
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 6u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
+
+  // Changing the embedder-supplied cache size will change the return value of
+  // GetCacheSize().
+  bfcache_impl.SetEmbedderSuppliedCacheSize(3u);
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 3u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
+
+  bfcache_impl.SetEmbedderSuppliedCacheSize(10u);
+  EXPECT_EQ(bfcache_impl.GetCacheSize(), 10u);
+  EXPECT_EQ(bfcache_impl.GetForegroundedEntriesCacheSize(), 0u);
+  EXPECT_FALSE(bfcache_impl.UsingForegroundBackgroundCacheSizeLimit());
 }
 
 }  // namespace content

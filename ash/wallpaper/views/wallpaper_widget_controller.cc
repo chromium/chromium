@@ -4,7 +4,6 @@
 
 #include "ash/wallpaper/views/wallpaper_widget_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
@@ -140,10 +139,6 @@ void WallpaperWidgetController::OnColorProviderChanged() {
 }
 
 void WallpaperWidgetController::CreateWallpaperUnderlayLayer() {
-  if (!features::IsForestFeatureEnabled()) {
-    return;
-  }
-
   wallpaper_underlay_layer_ =
       std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
   wallpaper_underlay_layer_->SetName("WallpaperUnderlayLayer");

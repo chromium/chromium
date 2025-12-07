@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("audio") {
   sources = [
@@ -28,6 +28,28 @@ static_library("audio") {
     # of its dependencies that transitively depends on generated mojo headers,
     # in order to avoid non-deterministic builds.
     "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "volume_controller_browsertest.cc" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/audio/public/cpp/sounds",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/events:test_support",
   ]
 }
 

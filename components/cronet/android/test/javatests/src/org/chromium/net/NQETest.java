@@ -26,7 +26,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.MetricsTestUtil.TestExecutor;
 
@@ -50,19 +50,21 @@ public class NQETest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withManualEngineStartup();
 
     private String mUrl;
-
     // Thread on which network quality listeners should be notified.
     private Thread mNetworkQualityThread;
+    private NativeTestServer mNativeTestServer;
 
     @Before
     public void setUp() throws Exception {
-        NativeTestServer.startNativeTestServer(mTestRule.getTestFramework().getContext());
-        mUrl = NativeTestServer.getFileURL("/echo?status=200");
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
+        mUrl = mNativeTestServer.getFileURL("/echo?status=200");
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     private class ExecutorThreadFactory implements ThreadFactory {

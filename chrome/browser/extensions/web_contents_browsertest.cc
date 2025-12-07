@@ -32,7 +32,7 @@
 namespace extensions {
 namespace {
 
-content::WebContents* GetActiveWebContents(const Browser* browser) {
+content::WebContents* GetActiveTabWebContents(const Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
 }
 
@@ -89,8 +89,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WebContents) {
       browser(),
       GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html")));
 
-  EXPECT_EQ(true,
-            content::EvalJs(GetActiveWebContents(browser()), "testTabsAPI()"));
+  EXPECT_EQ(true, content::EvalJs(GetActiveTabWebContents(browser()),
+                                  "testTabsAPI()"));
 
   // There was a bug where we would crash if we navigated to a page in the same
   // extension because no new render view was getting created, so we would not
@@ -98,8 +98,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, WebContents) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
       GURL("chrome-extension://behllobkkfkfnphdnhnkndlbkcpglgmj/page.html")));
-  EXPECT_EQ(true,
-            content::EvalJs(GetActiveWebContents(browser()), "testTabsAPI()"));
+  EXPECT_EQ(true, content::EvalJs(GetActiveTabWebContents(browser()),
+                                  "testTabsAPI()"));
 }
 
 // Ensure that platform app frames can't be loaded in a tab even on a redirect.
@@ -116,7 +116,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, TabNavigationToPlatformApp) {
   for (const GURL& app_url : test_cases) {
     GURL redirect_to_platform_app =
         embedded_test_server()->GetURL("/server-redirect?" + app_url.spec());
-    content::WebContents* web_contents = GetActiveWebContents(browser());
+    content::WebContents* web_contents = GetActiveTabWebContents(browser());
     content::TestNavigationObserver observer(web_contents,
                                              net::ERR_BLOCKED_BY_CLIENT);
     ASSERT_TRUE(
@@ -190,7 +190,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, BackgroundPageNavigation) {
 // navigation.
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, ExtensionNavigationUIData) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  content::WebContents* web_contents = GetActiveWebContents(browser());
+  content::WebContents* web_contents = GetActiveTabWebContents(browser());
   ExtensionNavigationUIDataObserver observer(web_contents);
 
   // Load a page with an iframe.

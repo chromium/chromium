@@ -75,8 +75,9 @@ void AppListPresenterEventFilter::OnKeyEvent(ui::KeyEvent* event) {
     return;
 
   // If the home launcher is not shown in tablet mode, ignore events.
-  if (Shell::Get()->IsInTabletMode() && !controller_->IsVisible())
+  if (display::Screen::Get()->InTabletMode() && !controller_->IsVisible()) {
     return;
+  }
 
   // Don't absorb the first event for the search box while it is open.
   if (view_->search_box_view()->is_search_box_active())
@@ -88,10 +89,8 @@ void AppListPresenterEventFilter::OnKeyEvent(ui::KeyEvent* event) {
 
   // Arrow keys or Tab will engage the traversal mode.
   if ((IsUnhandledArrowKeyEvent(*event) || event->key_code() == ui::VKEY_TAB)) {
-    // Handle the first arrow key event to just show the focus rings (if not
-    // showing Assistant). Don't absorb the first event when showing Assistant.
-    if (!view_->IsShowingEmbeddedAssistantUI())
-      event->SetHandled();
+    // Handle the first arrow key event to just show the focus rings
+    event->SetHandled();
     controller_->SetKeyboardTraversalMode(true);
   }
 }
@@ -137,7 +136,7 @@ void AppListPresenterEventFilter::ProcessLocatedEvent(ui::LocatedEvent* event) {
   if (presenter_->HandleCloseOpenFolder())
     return;
 
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     // Don't dismiss the auto-hide shelf if event happened in status area. Then
     // the event can still be propagated.
     const aura::Window* status_window =

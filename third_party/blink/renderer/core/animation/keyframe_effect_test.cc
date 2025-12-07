@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_composite_operation.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -25,7 +26,6 @@
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -122,19 +122,19 @@ TEST_F(AnimationKeyframeEffectV8Test, CanCreateAnAnimation) {
   ScriptState* script_state = scope.GetScriptState();
   NonThrowableExceptionState exception_state;
 
-  HeapVector<ScriptValue> blink_keyframes = {
+  HeapVector<ScriptObject> blink_keyframes = {
       V8ObjectBuilder(script_state)
           .AddString("width", "100px")
           .AddString("offset", "0")
           .AddString("easing", "ease-in-out")
-          .GetScriptValue(),
+          .ToScriptObject(),
       V8ObjectBuilder(script_state)
           .AddString("width", "0px")
           .AddString("offset", "1")
           .AddString("easing", "cubic-bezier(1, 1, 0.3, 0.3)")
-          .GetScriptValue()};
+          .ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
@@ -182,13 +182,15 @@ TEST_F(AnimationKeyframeEffectV8Test, SetAndRetrieveEffectComposite) {
   ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
   KeyframeEffect* effect = CreateAnimationFromOption(
       script_state, element.Get(), js_keyframes, effect_options_dictionary);
-  EXPECT_EQ("add", effect->composite());
+  EXPECT_EQ(V8CompositeOperation::Enum::kAdd, effect->composite());
 
-  effect->setComposite("replace");
-  EXPECT_EQ("replace", effect->composite());
+  effect->setComposite(
+      V8CompositeOperation(V8CompositeOperation::Enum::kReplace));
+  EXPECT_EQ("replace", effect->composite().AsString());
 
-  effect->setComposite("accumulate");
-  EXPECT_EQ("accumulate", effect->composite());
+  effect->setComposite(
+      V8CompositeOperation(V8CompositeOperation::Enum::kAccumulate));
+  EXPECT_EQ("accumulate", effect->composite().AsString());
 }
 
 TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
@@ -204,20 +206,20 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
           scope.GetIsolate(), effect_options, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
-  HeapVector<ScriptValue> blink_keyframes = {
+  HeapVector<ScriptObject> blink_keyframes = {
       V8ObjectBuilder(script_state)
           .AddString("width", "100px")
           .AddString("composite", "replace")
-          .GetScriptValue(),
-      V8ObjectBuilder(script_state).AddString("width", "0px").GetScriptValue()};
+          .ToScriptObject(),
+      V8ObjectBuilder(script_state).AddString("width", "0px").ToScriptObject()};
 
-  ScriptValue js_keyframes(
+  ScriptObject js_keyframes(
       scope.GetIsolate(),
       ToV8Traits<IDLSequence<IDLObject>>::ToV8(script_state, blink_keyframes));
 
   KeyframeEffect* effect = CreateAnimationFromOption(
       script_state, element.Get(), js_keyframes, effect_options_dictionary);
-  EXPECT_EQ("add", effect->composite());
+  EXPECT_EQ(V8CompositeOperation::Enum::kAdd, effect->composite());
 
   PropertyHandle property(GetCSSPropertyWidth());
   const PropertySpecificKeyframeVector& keyframes =
@@ -280,10 +282,10 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedGetters) {
   EffectTiming* timing = animation->getTiming();
   EXPECT_EQ(2, timing->delay()->GetAsDouble());
   EXPECT_EQ(0.5, timing->endDelay()->GetAsDouble());
-  EXPECT_EQ("backwards", timing->fill());
+  EXPECT_EQ(V8FillMode::Enum::kBackwards, timing->fill());
   EXPECT_EQ(2, timing->iterationStart());
   EXPECT_EQ(10, timing->iterations());
-  EXPECT_EQ("reverse", timing->direction());
+  EXPECT_EQ(V8PlaybackDirection::Enum::kReverse, timing->direction());
   EXPECT_EQ("ease-in-out", timing->easing());
 }
 
@@ -359,7 +361,7 @@ TEST_F(KeyframeEffectTest, TimeToEffectChange) {
                             ASSERT_NO_EXCEPTION);
   EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
                    keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_TIMEDELTA(AnimationTimeDelta(),
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(99),
                    keyframe_effect->TimeToReverseEffectChange());
 
   // End of the active phase.

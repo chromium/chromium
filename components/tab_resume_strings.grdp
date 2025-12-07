@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+
+  <!-- For use in Android and Desktop UI -->
+  <message name="IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO" desc="Label for visited x ago decorator">
+    You visited
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_VISITED_RECENTLY" desc="Label for just visited decorator">
+    You just visited
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED" desc="Label for frequently visited decorator">
+    You visit often
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_CONTINUE_READING" desc="Label for continue reading decorator">
+    Continue reading
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_MOST_RECENT" desc="Label for most recent decorator">
+    Your most recent tab
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_TIME_OF_DAY" desc="Label for frequently visited at time of day decorator">
+    You visit often at this time
+  </message>
+
+  <!-- For use in iOS UI -->
+  <message name="IDS_TAB_RESUME_DECORATORS_VISITED_X_AGO_IOS" desc="Label for visited x ago decorator">
+    You Visited
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_VISITED_RECENTLY_IOS" desc="Label for just visited decorator">
+    You Just Visited
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_FREQUENTLY_VISITED_IOS" desc="Label for frequently visited decorator">
+    You Visit Often
+  </message>
+  <message name="IDS_TAB_RESUME_DECORATORS_MOST_RECENT_IOS" desc="Label for most recent decorator">
+    Your Most Recent Tab
+  </message>
+
+  <!-- For use in Android and iOS UI -->
+  <message name="IDS_TAB_RESUME_N_MINUTES_AGO_NARROW" desc="A number of minutes in the past, made narrow to save space.">
+    min ago
+  </message>
+  <message name="IDS_TAB_RESUME_N_HOURS_AGO_NARROW" desc="A number of hours in the past, made narrow to save space.">
+    hr ago
+  </message>
+
+</grit-part>

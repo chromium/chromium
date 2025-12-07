@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Changing content targetting :has-slotted(...) and :has-slotted through multiple shadow roots
+  assert_equals: expected "rgb(0, 0,  255)" but got "rgb(0, 255, 0)"
+Harness: the test ran to completion.
+

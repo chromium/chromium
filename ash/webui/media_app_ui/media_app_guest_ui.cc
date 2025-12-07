@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
+
+#include <memory>
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -20,7 +19,10 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/mantis/media_app/mantis_untrusted_service_manager.h"
+#include "chromeos/ash/components/specialized_features/feature_access_checker.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -104,9 +106,7 @@ void FontLoaded(content::WebUIDataSource::GotDataCallback got_data_callback,
                 bool did_load_file) {
   if (font_data->size() && did_load_file) {
     std::move(got_data_callback)
-        .Run(new base::RefCountedBytes(
-            reinterpret_cast<const unsigned char*>(font_data->data()),
-            font_data->size()));
+        .Run(new base::RefCountedBytes(base::as_byte_span(*font_data)));
   } else {
     std::move(got_data_callback).Run(nullptr);
   }
@@ -136,8 +136,7 @@ content::WebUIDataSource* CreateAndAddMediaAppUntrustedDataSource(
                           IDR_MEDIA_APP_APP_IMAGE_HANDLER_MODULE_JS);
 
   // Add all resources from chromeos_media_app_bundle_resources.pak.
-  source->AddResourcePaths(base::make_span(
-      kChromeosMediaAppBundleResources, kChromeosMediaAppBundleResourcesSize));
+  source->AddResourcePaths(kChromeosMediaAppBundleResources);
 
   // Note: go/bbsrc/flags.ts processes this.
   delegate->PopulateLoadTimeData(web_ui, source);
@@ -267,50 +266,65 @@ void MediaAppGuestUI::StartFontDataRequestAfterPathExists(
 }
 
 void MediaAppGuestUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(receiver));
-}
-
-void MediaAppGuestUI::BindInterface(
-    mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
+    mojo::PendingReceiver<media_app_ui::mojom::UntrustedServiceFactory>
         receiver) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr) &&
-      !base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
-    return;
+  if (untrusted_service_factory_.is_bound()) {
+    untrusted_service_factory_.reset();
   }
-
-  if (untrusted_page_handler_factory_.is_bound()) {
-    untrusted_page_handler_factory_.reset();
-  }
-  untrusted_page_handler_factory_.Bind(std::move(receiver));
+  untrusted_service_factory_.Bind(std::move(receiver));
 }
 
-void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
-    mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
-        receiver,
+void MediaAppGuestUI::CreateOcrUntrustedService(
+    mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedService> receiver,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfA11yOcr)) {
-    return;
-  }
-  delegate_->CreateAndBindOcrHandler(
+  delegate_->CreateAndBindOcrUntrustedService(
       *web_ui()->GetWebContents()->GetBrowserContext(),
       web_ui()->GetWebContents()->GetTopLevelNativeWindow(),
       std::move(receiver), std::move(page));
 }
 
-void MediaAppGuestUI::CreateMahiUntrustedPageHandler(
-    mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedPageHandler>
-        receiver,
+void MediaAppGuestUI::CreateMahiUntrustedService(
+    mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedService> receiver,
     mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
     const std::string& file_name) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
-    return;
-  }
-
-  delegate_->CreateAndBindMahiHandler(
+  delegate_->CreateAndBindMahiUntrustedService(
       std::move(receiver), std::move(page), file_name,
       web_ui()->GetWebContents()->GetTopLevelNativeWindow());
+}
+
+void MediaAppGuestUI::OnMantisAvailableDone(IsMantisAvailableCallback callback,
+                                            bool result) {
+  is_mantis_available_ = result;
+  std::move(callback).Run(result);
+}
+
+void MediaAppGuestUI::IsMantisAvailable(IsMantisAvailableCallback callback) {
+  // Mantis does not live in //chrome, no need to use delegate.
+  if (mantis_untrusted_service_manager_ == nullptr) {
+    mantis_untrusted_service_manager_ =
+        std::make_unique<MantisUntrustedServiceManager>(
+            delegate_->GetFeatureAccessChecker(
+                MantisUntrustedServiceManager::GetFeatureAccessConfig(),
+                web_ui()));
+  }
+
+  mantis_untrusted_service_manager_->IsAvailable(
+      delegate_->GetPrefService(web_ui()),
+      base::BindOnce(&MediaAppGuestUI::OnMantisAvailableDone,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void MediaAppGuestUI::CreateMantisUntrustedService(
+    mojo::PendingRemote<media_app_ui::mojom::MantisUntrustedPage> page,
+    const std::optional<base::Uuid>& dlc_uuid,
+    CreateMantisUntrustedServiceCallback callback) {
+  if (!is_mantis_available_.value_or(false)) {
+    untrusted_service_factory_.ReportBadMessage(
+        "Trying to bind interface when feature is not available.");
+    return;
+  }
+  mantis_untrusted_service_manager_->Create(std::move(page), dlc_uuid,
+                                            std::move(callback));
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {

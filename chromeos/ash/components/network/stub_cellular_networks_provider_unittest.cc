@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
@@ -136,6 +137,8 @@ class StubCellularNetworksProviderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  TestingPrefServiceSimple* device_prefs() { return &device_prefs_; }
+
   ManagedCellularPrefHandler* managed_cellular_pref_handler() {
     return &managed_cellular_pref_handler_;
   }
@@ -203,19 +206,31 @@ TEST_F(StubCellularNetworksProviderTest, AddOrRemoveStubCellularNetworks) {
 
   // Verify the stub networks becomes unmanaged once the iccid and smdp address
   // pair is removed from pref.
+  network_list = std::move(new_stub_networks);
   new_stub_networks.clear();
-  managed_cellular_pref_handler()->RemoveESimMetadata(
-      profile3_properties->iccid().value());
+
+  // Manually reach into the device prefs and mark the eSIM profile as no longer
+  // being actively managed. We modify the prefs directly so that we can test
+  // `AddOrRemoveStubCellularNetworks()` directly and not rely on
+  // `ManagedCellularPrefHandler` notifying pref changes.
+  const std::string& iccid = profile3_properties->iccid().value();
+  base::Value::Dict prefs =
+      device_prefs()->GetDict(prefs::kManagedCellularESimMetadata).Clone();
+  ASSERT_TRUE(prefs.contains(iccid));
+  base::Value::Dict* esim_metadata = prefs.FindDict(iccid);
+  esim_metadata->Set("PolicyMissing", true);
+  device_prefs()->SetDict(prefs::kManagedCellularESimMetadata,
+                          std::move(prefs));
+
   AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);
-  EXPECT_EQ(3u, new_stub_networks.size());
-  network2 = new_stub_networks[1]->AsNetworkState();
+  EXPECT_EQ(3u, network_list.size());
+  EXPECT_EQ(0u, new_stub_networks.size());
+  network2 = network_list[1]->AsNetworkState();
   EXPECT_EQ(network2->iccid(), profile3_properties->iccid().value());
   EXPECT_FALSE(network2->IsManagedByPolicy());
 
   // Verify the stub networks are removed when corresponding slot is no longer
   // present. e.g. SIM removed.
-  network_list = std::move(new_stub_networks);
-  new_stub_networks.clear();
   SetPSimSlotInfo(/*iccid=*/std::string());
   base::RunLoop().RunUntilIdle();
   AddOrRemoveStubCellularNetworks(network_list, new_stub_networks);

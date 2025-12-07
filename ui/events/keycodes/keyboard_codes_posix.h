@@ -28,11 +28,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// IWYU pragma: private, include "ui/events/keycodes/keyboard_codes.h"
+
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODES_POSIX_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODES_POSIX_H_
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace ui {
 
@@ -118,6 +119,7 @@ enum KeyboardCode : unsigned short {
   VKEY_COMMAND = VKEY_LWIN,  // Provide the Mac name for convenience.
   VKEY_RWIN = 0x5C,
   VKEY_APPS = 0x5D,
+  VKEY_RIGHT_COMMAND = VKEY_APPS,
   VKEY_SLEEP = 0x5F,
   VKEY_NUMPAD0 = 0x60,
   VKEY_NUMPAD1 = 0x61,
@@ -259,13 +261,17 @@ enum KeyboardCode : unsigned short {
 
 #if BUILDFLAG(IS_CHROMEOS)
   VKEY_FUNCTION = 0xFF,
-  VKEY_RIGHT_ALT = 0x100,
-#endif
+  VKEY_QUICK_INSERT = 0x100,
 
   // System Accessibility Binding.
   VKEY_ACCESSIBILITY = 0x101,
 
-#if BUILDFLAG(IS_CHROMEOS)
+  // System Do Not Disturb Toggle.
+  VKEY_DO_NOT_DISTURB = 0x102,
+
+  // System Camera Access Toggle.
+  VKEY_CAMERA_ACCESS_TOGGLE = 0x103,
+
   // The following values are used to be able to recognize button events within
   // ChromeOS. They have no functionality by default.
   VKEY_BUTTON_0 = 0xFF00,

@@ -123,6 +123,42 @@ uint GetNumberOfCPU()
   return sysctlbyname("hw.ncpu",&Count,&Size,NULL,0)==0 ? Count:1;
 #endif
 #else // !_UNIX
+
+#ifdef WIN32_CPU_GROUPS
+  // https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-getprocessaffinitymask
+  // "Starting with Windows 11 and Windows Server 2022, on a system with
+  //  more than 64 processors, process and thread affinities span all
+  //  processors in the system, across all processor groups, by default."
+  // Supposing there are 80 CPUs in 2 processor groups 40 CPUs each.
+  // Looks like, beginning from Windows 11 an app can use them all by default,
+  // not resorting to processor groups API. But if we use GetProcessAffinityMask
+  // to count CPUs, we would be limited to 40 CPUs only. So we call 
+  // GetActiveProcessorCount() if it is available anf if there are multiple
+  // processor groups. For a single group we prefer the affinity aware
+  // GetProcessAffinityMask(). Out thread pool code handles the case
+  // with restricted processor group affinity. So we avoid the complicated
+  // code to calculate all processor groups affinity here, such as using
+  // GetLogicalProcessorInformationEx, and resort to GetActiveProcessorCount().
+  HMODULE hKernel=GetModuleHandle(L"kernel32.dll");
+  if (hKernel!=nullptr)
+  {
+    typedef DWORD (WINAPI *GETACTIVEPROCESSORCOUNT)(WORD GroupNumber);
+    GETACTIVEPROCESSORCOUNT pGetActiveProcessorCount=(GETACTIVEPROCESSORCOUNT)GetProcAddress(hKernel,"GetActiveProcessorCount");
+    typedef WORD (WINAPI *GETACTIVEPROCESSORGROUPCOUNT)();
+    GETACTIVEPROCESSORGROUPCOUNT pGetActiveProcessorGroupCount=(GETACTIVEPROCESSORGROUPCOUNT)GetProcAddress(hKernel,"GetActiveProcessorGroupCount");
+    if (pGetActiveProcessorCount!=nullptr && pGetActiveProcessorGroupCount!=nullptr &&
+        pGetActiveProcessorGroupCount()>1)
+    {
+      // Once the thread pool called SetThreadGroupAffinity(),
+      // GetProcessAffinityMask() below will return 0. So we shall always
+      // use GetActiveProcessorCount() here if there are multiple processor
+      // groups, which makes SetThreadGroupAffinity() call possible.
+      DWORD Count=pGetActiveProcessorCount(ALL_PROCESSOR_GROUPS);
+      return Count;
+    }
+  }
+#endif
+
   DWORD_PTR ProcessMask;
   DWORD_PTR SystemMask;
 

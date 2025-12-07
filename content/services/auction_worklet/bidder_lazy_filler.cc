@@ -4,17 +4,21 @@
 
 #include "content/services/auction_worklet/bidder_lazy_filler.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "gin/converter.h"
 #include "gin/dictionary.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
+#include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-json.h"
@@ -34,10 +38,10 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
     AuctionV8Helper* v8_helper,
     v8::Local<v8::Context> context,
     base::Time auction_start_time,
-    std::vector<mojom::PreviousWinPtr>& prev_wins) {
+    std::vector<blink::mojom::PreviousWinPtr>& prev_wins) {
   std::sort(prev_wins.begin(), prev_wins.end(),
-            [](const mojom::PreviousWinPtr& prev_win1,
-               const mojom::PreviousWinPtr& prev_win2) {
+            [](const blink::mojom::PreviousWinPtr& prev_win1,
+               const blink::mojom::PreviousWinPtr& prev_win2) {
               return prev_win1->time < prev_win2->time;
             });
   v8::Isolate* isolate = v8_helper->isolate();
@@ -113,7 +117,10 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
 
 InterestGroupLazyFiller::InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
                                                  AuctionV8Logger* v8_logger)
-    : PersistedLazyFiller(v8_helper), v8_logger_(v8_logger) {}
+    : PersistedLazyFiller(v8_helper),
+      creative_scanning_enabled_(base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv1CreativeScanning)),
+      v8_logger_(v8_logger) {}
 
 void InterestGroupLazyFiller::ReInitialize(
     const GURL* bidding_logic_url,
@@ -134,8 +141,12 @@ void InterestGroupLazyFiller::ReInitialize(
 bool InterestGroupLazyFiller::FillInObject(
     v8::Local<v8::Object> object,
     base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
-    base::RepeatingCallback<bool(const std::string&)>
-        is_ad_component_excluded) {
+    base::RepeatingCallback<bool(const std::string&)> is_ad_component_excluded,
+    base::RepeatingCallback<bool(const std::string&,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>)>
+        is_reporting_id_set_excluded) {
   if (bidder_worklet_non_shared_params_->user_bidding_signals &&
       !DefineLazyAttribute(object, "userBiddingSignals",
                            &HandleUserBiddingSignals)) {
@@ -181,15 +192,31 @@ bool InterestGroupLazyFiller::FillInObject(
     return false;
   }
 
+  std::optional<size_t> selectable_reporting_ids_limit;
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kFledgeTruncateSelectableBuyerAndSellerReportingIdsToKAnonLimit) &&
+      blink::features::
+              kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                  .Get() >= 0) {
+    selectable_reporting_ids_limit = static_cast<size_t>(
+        blink::features::
+            kFledgeSelectableBuyerAndSellerReportingIdsFetchedFromKAnonLimit
+                .Get());
+  }
+
   v8::Local<v8::ObjectTemplate> lazy_filler_template;
   if (bidder_worklet_non_shared_params_->ads &&
-      !CreateAdVector(object, "ads", is_ad_excluded,
-                      *bidder_worklet_non_shared_params_->ads,
-                      lazy_filler_template)) {
+      !CreateAdVector(
+          object, "ads", is_ad_excluded, is_reporting_id_set_excluded,
+          selectable_reporting_ids_limit,
+          *bidder_worklet_non_shared_params_->ads, lazy_filler_template)) {
     return false;
   }
   if (bidder_worklet_non_shared_params_->ad_components &&
       !CreateAdVector(object, "adComponents", is_ad_component_excluded,
+                      is_reporting_id_set_excluded,
+                      selectable_reporting_ids_limit,
                       *bidder_worklet_non_shared_params_->ad_components,
                       lazy_filler_template)) {
     return false;
@@ -209,6 +236,12 @@ bool InterestGroupLazyFiller::CreateAdVector(
     v8::Local<v8::Object>& object,
     std::string_view name,
     base::RepeatingCallback<bool(const std::string&)> is_ad_excluded,
+    base::RepeatingCallback<bool(const std::string&,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>,
+                                 base::optional_ref<const std::string>)>
+        is_reporting_id_set_excluded,
+    std::optional<size_t> selectable_reporting_ids_limit,
     const std::vector<blink::InterestGroup::Ad>& ads,
     v8::Local<v8::ObjectTemplate>& lazy_filler_template) {
   v8::Isolate* isolate = v8_helper()->isolate();
@@ -233,6 +266,50 @@ bool InterestGroupLazyFiller::CreateAdVector(
         (ad.metadata &&
          !v8_helper()->InsertJsonValue(isolate->GetCurrentContext(), "metadata",
                                        *ad.metadata, ad_object))) {
+      return false;
+    }
+    if (ad.selectable_buyer_and_seller_reporting_ids) {
+      // There may be a limit configured on the number of
+      // `selectable_buyer_and_seller_reporting_ids` for which the client would
+      // have previously loaded the k-anon status, and this may, if configured
+      // to do so, only pass those `selectable_buyer_and_seller_reporting_ids`
+      // into `generateBid()` for which k-anon status had been loaded.
+      //
+      // For the k-anon restricted run, we limit
+      // `selectable_buyer_and_seller_reporting_ids` to only those that would,
+      // in combination with the renderUrl and other reporting ids, be
+      // k-anonymous for reporting, so that, if the bid returns
+      // `selected_buyer_and_seller_reporting_id_required` = true, the bid is,
+      // in fact, k-anonymous for reporting.
+      size_t num_selectable_reporting_ids_to_evaluate =
+          selectable_reporting_ids_limit
+              ? std::min(*selectable_reporting_ids_limit,
+                         ad.selectable_buyer_and_seller_reporting_ids->size())
+              : ad.selectable_buyer_and_seller_reporting_ids->size();
+      std::vector<std::string_view>
+          valid_selectable_buyer_and_seller_reporting_ids;
+      for (size_t i = 0; i < num_selectable_reporting_ids_to_evaluate; ++i) {
+        if (!is_reporting_id_set_excluded.Run(
+                ad.render_url(), ad.buyer_reporting_id,
+                ad.buyer_and_seller_reporting_id,
+                ad.selectable_buyer_and_seller_reporting_ids->at(i))) {
+          valid_selectable_buyer_and_seller_reporting_ids.push_back(
+              ad.selectable_buyer_and_seller_reporting_ids->at(i));
+        }
+      }
+      if ((ad.buyer_reporting_id &&
+           !ad_dict.Set("buyerReportingId", *ad.buyer_reporting_id)) ||
+          (ad.buyer_and_seller_reporting_id &&
+           !ad_dict.Set("buyerAndSellerReportingId",
+                        *ad.buyer_and_seller_reporting_id)) ||
+          !ad_dict.Set("selectableBuyerAndSellerReportingIds",
+                       valid_selectable_buyer_and_seller_reporting_ids)) {
+        return false;
+      }
+    }
+    if (creative_scanning_enabled_ && ad.creative_scanning_metadata &&
+        !ad_dict.Set("creativeScanningMetadata",
+                     *ad.creative_scanning_metadata)) {
       return false;
     }
     ads_vector.emplace_back(std::move(ad_object));
@@ -477,7 +554,7 @@ BiddingBrowserSignalsLazyFiller::BiddingBrowserSignalsLazyFiller(
     : PersistedLazyFiller(v8_helper) {}
 
 void BiddingBrowserSignalsLazyFiller::ReInitialize(
-    mojom::BiddingBrowserSignals* bidder_browser_signals,
+    blink::mojom::BiddingBrowserSignals* bidder_browser_signals,
     base::Time auction_start_time) {
   bidder_browser_signals_ = bidder_browser_signals;
   auction_start_time_ = auction_start_time;

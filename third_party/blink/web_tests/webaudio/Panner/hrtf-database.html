@@ -22,26 +22,19 @@
 
       audit.define(
           {label: 'loadfiles', description: 'Load HRTF database files'},
-          function(task, should) {
-
+          async (task, should) => {
             // Any valid context with the right sample rate will do.
             context = new OfflineAudioContext(1, 1, sampleRate);
 
-            let bufferLoader = new BufferLoader(
-                context,
-                [
-                  '../resources/hrtf/Composite.wav',
-                  '../resources/hrtf/Composite.flac',
-                ],
-                function(bufferList) {
-                  should(bufferList.length, 'Number of buffers loaded')
-                      .beEqualTo(2);
-                  wavBuffer = bufferList[0];
-                  flacBuffer = bufferList[1];
-                  task.done();
-                });
+            const bufferList = await loadBuffers(context, [
+              '../resources/hrtf/Composite.wav',
+              '../resources/hrtf/Composite.flac',
+            ]);
 
-            bufferLoader.load();
+            should(bufferList.length, 'Number of buffers loaded').beEqualTo(2);
+            wavBuffer = bufferList[0];
+            flacBuffer = bufferList[1];
+            task.done();
           });
 
       audit.define(

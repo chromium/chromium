@@ -14,10 +14,12 @@ class Version;
 
 namespace installer {
 
+class InitialPreferences;
 class InstallerState;
 
 // Sets up the crash reporting system for the installer.
-void ConfigureCrashReporting(const InstallerState& installer_state);
+void ConfigureCrashReporting(const InitialPreferences& initial_prefs,
+                             const InstallerState& installer_state);
 
 // Sets all crash keys that are available during process startup. These do not
 // vary during execution so this function will not need to be called more than

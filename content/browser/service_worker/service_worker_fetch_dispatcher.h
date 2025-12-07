@@ -27,6 +27,7 @@
 
 namespace content {
 
+class ServiceWorkerClient;
 class ServiceWorkerContextWrapper;
 class ServiceWorkerVersion;
 
@@ -59,8 +60,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
                                const std::string& resulting_client_id,
                                scoped_refptr<ServiceWorkerVersion> version,
                                base::OnceClosure prepare_callback,
-                               FetchCallback fetch_callback,
-                               bool is_offline_capability_check);
+                               FetchCallback fetch_callback);
 
   ServiceWorkerFetchDispatcher(const ServiceWorkerFetchDispatcher&) = delete;
   ServiceWorkerFetchDispatcher& operator=(const ServiceWorkerFetchDispatcher&) =
@@ -75,7 +75,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   bool MaybeStartNavigationPreload(
       const network::ResourceRequest& original_request,
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-      int frame_tree_node_id);
+      base::WeakPtr<ServiceWorkerClient> service_worker_client);
 
   // Dispatches a fetch event to the |version| given in ctor, and fires
   // |fetch_callback_| (also given in ctor) once a response is received from the
@@ -84,11 +84,6 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   void Run();
 
   bool FetchCallbackIsNull() { return fetch_callback_.is_null(); }
-
-  static scoped_refptr<network::SharedURLLoaderFactory>
-  CreateNetworkURLLoaderFactory(
-      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
-      int frame_tree_node_id);
 
   static void ForceDisableHighPriorityFetchResponseCallbackForTesting(
       bool force_disable);
@@ -157,9 +152,6 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   base::UnguessableToken race_network_request_token_;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       race_network_request_loader_factory_;
-
-  // Whether to dispatch an offline-capability-check fetch event.
-  const bool is_offline_capability_check_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

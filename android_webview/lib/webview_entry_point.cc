@@ -3,14 +3,13 @@
 // found in the LICENSE file.
 
 #include "android_webview/lib/webview_jni_onload.h"
-#include "base/android/base_jni_onload.h"
-#include "base/android/jni_android.h"
+#include "base/android/base_jni_init.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 
-namespace {
-
-bool NativeInit(base::android::LibraryProcessType library_process_type) {
+bool NativeInitializationHook(
+    base::android::LibraryProcessType library_process_type) {
   switch (library_process_type) {
     case base::android::PROCESS_WEBVIEW:
     case base::android::PROCESS_WEBVIEW_CHILD:
@@ -25,17 +24,6 @@ bool NativeInit(base::android::LibraryProcessType library_process_type) {
       LOG(FATAL) << "WebView cannot be started with a browser process type.";
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
-}
-
-}  // namespace
-
-// This is called by the VM when the shared library is first loaded.
-// Most of the initialization is done in LibraryLoadedOnMainThread(), not here.
-JNI_EXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-  base::android::InitVM(vm);
-  base::android::SetNativeInitializationHook(&NativeInit);
-  return JNI_VERSION_1_4;
 }

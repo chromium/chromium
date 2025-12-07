@@ -1,5 +1,5 @@
 <!--
-@WAIT-FOR:region
+@WAIT-FOR:done
 @AURALINUX-ALLOW:xml-roles*
 @WIN-ALLOW:xml-roles*
 @MAC-ALLOW:AXRoleDescription*
@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     document.getElementById('owner').role = 'doc-toc';
     document.getElementById('owner').role = 'region';
+    document.title = 'done';
   }, 50);
 });
 </script>

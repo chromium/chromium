@@ -1,5 +1,5 @@
 // META: title=test WebNN API convTranspose2d operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -45,14 +45,14 @@ const convTranspose2dTests = [
             0.5872158408164978, 0.6077792048454285, 0.017289165407419205,
             0.2614607512950897
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
             0.3292713165283203, 0.5866857171058655, 0.29701370000839233,
             0.0033378428779542446
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -69,7 +69,7 @@ const convTranspose2dTests = [
             0.18010397255420685, 0.2787136137485504, 0.15542395412921906,
             0.0051351189613342285, 0.07771513611078262, 0.0008727149106562138
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         }
       }
     }
@@ -84,7 +84,7 @@ const convTranspose2dTests = [
             0.5872158408164978, 0.6077792048454285, 0.017289165407419205,
             0.2614607512950897
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'},
           'constant': true
         },
         'convTranspose2dFilter': {
@@ -92,7 +92,7 @@ const convTranspose2dTests = [
             0.3292713165283203, 0.5866857171058655, 0.29701370000839233,
             0.0033378428779542446
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'},
           'constant': true
         }
       },
@@ -110,7 +110,7 @@ const convTranspose2dTests = [
             0.18010397255420685, 0.2787136137485504, 0.15542395412921906,
             0.0051351189613342285, 0.07771513611078262, 0.0008727149106562138
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         }
       }
     }
@@ -125,14 +125,14 @@ const convTranspose2dTests = [
             0.5872158408164978, 0.6077792048454285, 0.017289165407419205,
             0.2614607512950897
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
             0.3292713165283203, 0.5866857171058655, 0.29701370000839233,
             0.0033378428779542446
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'},
           'constant': true
         }
       },
@@ -150,7 +150,7 @@ const convTranspose2dTests = [
             0.18010397255420685, 0.2787136137485504, 0.15542395412921906,
             0.0051351189613342285, 0.07771513611078262, 0.0008727149106562138
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         }
       }
     }
@@ -166,7 +166,7 @@ const convTranspose2dTests = [
             0.36564111709594727, 0.25429198145866394, 0.20815767347812653,
             0.7023073434829712, 0.5734469890594482
           ],
-          'descriptor': {'dimensions': [1, 2, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 2, 2], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -174,7 +174,7 @@ const convTranspose2dTests = [
             0.6582807898521423, 0.9634373188018799, 0.012118860147893429,
             0.9230011701583862, 0.4781944155693054
           ],
-          'descriptor': {'dimensions': [2, 1, 2, 2], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 1, 2, 2], dataType: 'float32'},
           'constant': true
         }
       },
@@ -196,7 +196,7 @@ const convTranspose2dTests = [
             0.9113409519195557, 0.8747221827507019, 0.10648936033248901,
             0.6482304930686951, 0.865131676197052, 0.2742191553115845
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'}
         }
       }
     }
@@ -212,7 +212,7 @@ const convTranspose2dTests = [
             0.36564111709594727, 0.25429198145866394, 0.20815767347812653,
             0.7023073434829712, 0.5734469890594482
           ],
-          'descriptor': {'dimensions': [1, 2, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 2, 2], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -220,7 +220,7 @@ const convTranspose2dTests = [
             0.6582807898521423, 0.9634373188018799, 0.012118860147893429,
             0.9230011701583862, 0.4781944155693054
           ],
-          'descriptor': {'dimensions': [2, 1, 2, 2], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 1, 2, 2], dataType: 'float32'},
           'constant': true
         }
       },
@@ -248,7 +248,7 @@ const convTranspose2dTests = [
             0.00694952392950654, 0.6482304930686951,   0.3358394503593445,
             0.5292922258377075,  0.2742191553115845
           ],
-          'descriptor': {'dimensions': [1, 2, 4, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 4, 4], dataType: 'float32'}
         }
       }
     }
@@ -263,14 +263,14 @@ const convTranspose2dTests = [
             0.5872158408164978, 0.6077792048454285, 0.017289165407419205,
             0.2614607512950897
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
             0.3292713165283203, 0.5866857171058655, 0.29701370000839233,
             0.0033378428779542446
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'},
           'constant': true
         }
       },
@@ -286,7 +286,7 @@ const convTranspose2dTests = [
       'expectedOutputs': {
         'convTranspose2dOutput': {
           'data': [0.2787136137485504],
-          'descriptor': {'dimensions': [1, 1, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
         }
       }
     }
@@ -297,11 +297,11 @@ const convTranspose2dTests = [
       'inputs': {
         'convTranspose2dInput': {
           'data': [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-          'descriptor': {'dimensions': [1, 3, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-          'descriptor': {'dimensions': [2, 3, 3, 1], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 3, 3, 1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -333,7 +333,7 @@ const convTranspose2dTests = [
             1,   1,   1,   1,   2, 2, 1,   1,   2, 2, 1,   1,
             0.5, 0.5, 0.5, 0.5, 1, 1, 0.5, 0.5, 1, 1, 0.5, 0.5
           ],
-          'descriptor': {'dimensions': [1, 6, 6, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 6, 6, 2], dataType: 'float32'}
         }
       }
     }
@@ -349,7 +349,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -360,7 +360,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -418,7 +418,7 @@ const convTranspose2dTests = [
             0.04055071249604225,  0.27599334716796875,   0.3911670744419098,
             0.3143731355667114,   0.26951852440834045,   0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 2, 9, 7], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 9, 7], dataType: 'float32'}
         }
       }
     }
@@ -434,14 +434,14 @@ const convTranspose2dTests = [
             0.47982943058013916, 0.76741623878479, 0.9083173871040344,
             0.6205142140388489, 0.6580719947814941, 0.6553052067756653
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
             0.6835425496101379, 0.9641214609146118, 0.8272836804389954,
             0.5771222710609436
           ],
-          'descriptor': {'dimensions': [1, 1, 2, 2], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float32'},
           'constant': true
         }
       },
@@ -467,7 +467,7 @@ const convTranspose2dTests = [
             0.5444121956825256,  0.9002358913421631,  0.37978801131248474,
             0.3781912326812744
           ],
-          'descriptor': {'dimensions': [1, 1, 5, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float32'}
         }
       }
     }
@@ -483,7 +483,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -494,7 +494,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -671,7 +671,7 @@ const convTranspose2dTests = [
             0,
             0
           ],
-          'descriptor': {'dimensions': [1, 2, 10, 8], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 10, 8], dataType: 'float32'}
         }
       }
     }
@@ -687,7 +687,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -698,7 +698,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -875,7 +875,7 @@ const convTranspose2dTests = [
             0,
             0
           ],
-          'descriptor': {'dimensions': [1, 2, 10, 8], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 10, 8], dataType: 'float32'}
         }
       }
     }
@@ -891,7 +891,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -902,7 +902,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -936,7 +936,7 @@ const convTranspose2dTests = [
             0.027173593640327454, 0.3026771545410156,  0.5856420397758484,
             0.40328359603881836,  0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 2, 5, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 5, 5], dataType: 'float32'}
         }
       }
     }
@@ -952,7 +952,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 3, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -963,7 +963,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -997,7 +997,7 @@ const convTranspose2dTests = [
             0.5856420397758484,  1.2216601371765137,  0.40328359603881836,
             0.45846959948539734, 0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 5, 5, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 5, 5, 2], dataType: 'float32'}
         }
       }
     }
@@ -1013,7 +1013,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -1024,7 +1024,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1058,7 +1058,7 @@ const convTranspose2dTests = [
             0.027173593640327454, 0.3026771545410156,  0.5856420397758484,
             0.40328359603881836,  0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 2, 5, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 5, 5], dataType: 'float32'}
         }
       }
     }
@@ -1074,7 +1074,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -1085,7 +1085,7 @@ const convTranspose2dTests = [
             0.3285411298274994, 0.28385090827941895, 0.8742373585700989,
             0.4235861301422119, 0.7205492258071899, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [3, 3, 2, 1], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 3, 2, 1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1119,7 +1119,7 @@ const convTranspose2dTests = [
             0.027173593640327454, 0.3026771545410156,  0.5856420397758484,
             0.40328359603881836,  0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 2, 5, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 5, 5], dataType: 'float32'}
         }
       }
     }
@@ -1135,7 +1135,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -1146,7 +1146,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [2, 3, 3, 1], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 3, 3, 1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1180,7 +1180,7 @@ const convTranspose2dTests = [
             0.027173593640327454, 0.3026771545410156,  0.5856420397758484,
             0.40328359603881836,  0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 2, 5, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 2, 5, 5], dataType: 'float32'}
         }
       }
     }
@@ -1196,7 +1196,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 3, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -1207,7 +1207,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [1, 2, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1241,7 +1241,7 @@ const convTranspose2dTests = [
             0.5856420397758484,  1.2216601371765137,  0.40328359603881836,
             0.45846959948539734, 0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 5, 5, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 5, 5, 2], dataType: 'float32'}
         }
       }
     }
@@ -1257,7 +1257,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 3, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -1268,7 +1268,7 @@ const convTranspose2dTests = [
             0.3285411298274994, 0.28385090827941895, 0.8742373585700989,
             0.4235861301422119, 0.7205492258071899, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [3, 3, 2, 1], 'dataType': 'float32'},
+          'descriptor': {shape: [3, 3, 2, 1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1302,7 +1302,7 @@ const convTranspose2dTests = [
             0.5856420397758484,  1.2216601371765137,  0.40328359603881836,
             0.45846959948539734, 0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 5, 5, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 5, 5, 2], dataType: 'float32'}
         }
       }
     }
@@ -1318,7 +1318,7 @@ const convTranspose2dTests = [
             0.38622909784317017, 0.3870837390422821, 0.9461629390716553,
             0.09573192149400711, 0.9234652519226074, 0.636277973651886
           ],
-          'descriptor': {'dimensions': [1, 3, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -1329,7 +1329,7 @@ const convTranspose2dTests = [
             0.7498031854629517, 0.3930714726448059, 0.13811933994293213,
             0.28385090827941895, 0.4235861301422119, 0.1448512077331543
           ],
-          'descriptor': {'dimensions': [2, 3, 3, 1], 'dataType': 'float32'},
+          'descriptor': {shape: [2, 3, 3, 1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1363,7 +1363,7 @@ const convTranspose2dTests = [
             0.5856420397758484,  1.2216601371765137,  0.40328359603881836,
             0.45846959948539734, 0.09216563403606415
           ],
-          'descriptor': {'dimensions': [1, 5, 5, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 5, 5, 2], dataType: 'float32'}
         }
       }
     }
@@ -1378,7 +1378,7 @@ const convTranspose2dTests = [
             0.43077003955841064, 0.5981627106666565, 0.12321650236845016,
             0.1610974818468094, 0.0884026437997818, 0.29100972414016724
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -1386,12 +1386,12 @@ const convTranspose2dTests = [
             0.8730561137199402, 0.8309102058410645, 0.854960560798645,
             0.5552039742469788, 0.840092122554779, 0.85308438539505
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'},
           'constant': true
         },
         'convTranspose2dBias': {
           'data': [0.451673686504364],
-          'descriptor': {'dimensions': [1], 'dataType': 'float32'},
+          'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1417,7 +1417,7 @@ const convTranspose2dTests = [
             0.6360918879508972, 0.8249395489692688, 0.7715635895729065,
             0.6999295353889465
           ],
-          'descriptor': {'dimensions': [1, 1, 5, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float32'}
         }
       }
     }
@@ -1433,7 +1433,7 @@ const convTranspose2dTests = [
             -0.5624061226844788, -0.7322093844413757, -0.8421320915222168,
             -0.30598655343055725, -0.976659893989563, -0.014158561825752258
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
         },
         'convTranspose2dFilter': {
           'data': [
@@ -1441,12 +1441,12 @@ const convTranspose2dTests = [
             0.8730561137199402, 0.8309102058410645, 0.854960560798645,
             0.5552039742469788, 0.840092122554779, 0.85308438539505
           ],
-          'descriptor': {'dimensions': [1, 1, 3, 3], 'dataType': 'float32'},
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'},
           'constant': true
         },
         'convTranspose2dBias': {
           'data': [-0.8457866311073303],
-          'descriptor': {'dimensions': [1], 'dataType': 'float32'},
+          'descriptor': {shape: [1], dataType: 'float32'},
           'constant': true
         }
       },
@@ -1472,19 +1472,1778 @@ const convTranspose2dTests = [
             -1.645089030265808,  -1.935164213180542,  -1.6908544301986694,
             -0.8578650951385498
           ],
-          'descriptor': {'dimensions': [1, 1, 5, 5], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'convTranspose2d same output size different padding (padding=1, outputPadding=0))',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            1, 2, 3,
+            4, 5, 6,
+            7, 8, 9
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            1, 1, 1,
+            1, 1, 1,
+            1, 1, 1
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {
+            'strides': [3, 3],
+            'padding': [1, 1, 1, 1],
+            'outputPadding': [0, 0]
+          }}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            1, 1, 2, 2, 2, 3, 3,
+            1, 1, 2, 2, 2, 3, 3,
+            4, 4, 5, 5, 5, 6, 6,
+            4, 4, 5, 5, 5, 6, 6,
+            4, 4, 5, 5, 5, 6, 6,
+            7, 7, 8, 8, 8, 9, 9,
+            7, 7, 8, 8, 8, 9, 9
+          ],
+          'descriptor': {shape: [1, 1, 7, 7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'convTranspose2d same output size different padding (padding=2, outputPadding=2))',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            1, 2, 3,
+            4, 5, 6,
+            7, 8, 9
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            1, 1, 1,
+            1, 1, 1,
+            1, 1, 1
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {
+            'strides': [3, 3],
+            'padding': [2, 2, 2, 2],
+            'outputPadding': [2, 2]
+          }}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            1, 2, 2, 2, 3, 3, 3,
+            4, 5, 5, 5, 6, 6, 6,
+            4, 5, 5, 5, 6, 6, 6,
+            4, 5, 5, 5, 6, 6, 6,
+            7, 8, 8, 8, 9, 9, 9,
+            7, 8, 8, 8, 9, 9, 9,
+            7, 8, 8, 8, 9, 9, 9
+          ],
+          'descriptor': {shape: [1, 1, 7, 7], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name':
+        'convTranspose2d float16 4D both input and filter non-constant tensors default options',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.58740234375, 0.60791015625, 0.0172882080078125, 0.261474609375
+          ],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.329345703125, 0.5869140625, 0.297119140625, 0.003337860107421875
+          ],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'}, {'filter': 'convTranspose2dFilter'}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.1934814453125, 0.544921875, 0.356689453125, 0.18017578125,
+            0.27880859375, 0.155517578125, 0.005138397216796875,
+            0.0777587890625, 0.0008726119995117188
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D both input and filter constant tensors default options',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.58740234375, 0.60791015625, 0.0172882080078125, 0.261474609375
+          ],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'},
+          'constant': true
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.329345703125, 0.5869140625, 0.297119140625, 0.003337860107421875
+          ],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'}, {'filter': 'convTranspose2dFilter'}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.1934814453125, 0.544921875, 0.356689453125, 0.18017578125,
+            0.27880859375, 0.155517578125, 0.005138397216796875,
+            0.0777587890625, 0.0008726119995117188
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors default options',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.58740234375, 0.60791015625, 0.0172882080078125, 0.261474609375
+          ],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.329345703125, 0.5869140625, 0.297119140625, 0.003337860107421875
+          ],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'}, {'filter': 'convTranspose2dFilter'}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.1934814453125, 0.544921875, 0.356689453125, 0.18017578125,
+            0.27880859375, 0.155517578125, 0.005138397216796875,
+            0.0777587890625, 0.0008726119995117188
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.padding',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.58740234375, 0.60791015625, 0.0172882080078125, 0.261474609375
+          ],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.329345703125, 0.5869140625, 0.297119140625, 0.003337860107421875
+          ],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'padding': [1, 1, 1, 1]}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [0.27880859375],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 input tensors options.padding is the same upper padding',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+          'descriptor': {shape: [2, 3, 3, 1], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'}, {
+            'options': {
+              'outputSizes': [6, 6],
+              'groups': 1,
+              'strides': [2, 2],
+              'dilations': [1, 1],
+              'padding': [0, 1, 0, 1],
+              'filterLayout': 'ohwi',
+              'inputLayout': 'nhwc'
+            }
+          }
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.5, 0.5, 0.5, 0.5, 1, 1, 0.5, 0.5, 1, 1, 0.5, 0.5,
+            0.5, 0.5, 0.5, 0.5, 1, 1, 0.5, 0.5, 1, 1, 0.5, 0.5,
+            1,   1,   1,   1,   2, 2, 1,   1,   2, 2, 1,   1,
+            0.5, 0.5, 0.5, 0.5, 1, 1, 0.5, 0.5, 1, 1, 0.5, 0.5,
+            1,   1,   1,   1,   2, 2, 1,   1,   2, 2, 1,   1,
+            0.5, 0.5, 0.5, 0.5, 1, 1, 0.5, 0.5, 1, 1, 0.5, 0.5
+          ],
+          'descriptor': {shape: [1, 6, 6, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.strides',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'}, {'options': {'strides': [3, 2]}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.03515625,
+            0.6484375,
+            0.446044921875,
+            1.015625,
+            0.4091796875,
+            0.415771484375,
+            0.0469970703125,
+            0.00666046142578125,
+            0.65185546875,
+            0.08453369140625,
+            1.2529296875,
+            0.07757568359375,
+            0.64794921875,
+            0.0184173583984375,
+            0.04901123046875,
+            0.274169921875,
+            0.62158203125,
+            0.72705078125,
+            0.57080078125,
+            0.470458984375,
+            0.332763671875,
+            0.2421875,
+            0.5791015625,
+            0.2425537109375,
+            1.0615234375,
+            0.59326171875,
+            0.6025390625,
+            0.32373046875,
+            0.0458984375,
+            0.70751953125,
+            0.045989990234375,
+            1.177734375,
+            0.1124267578125,
+            0.93896484375,
+            0.126953125,
+            0.337646484375,
+            0.405517578125,
+            0.338134765625,
+            0.58984375,
+            0.8271484375,
+            0.68212890625,
+            0.08245849609375,
+            0.05999755859375,
+            0.8564453125,
+            0.5791015625,
+            1.1357421875,
+            0.39892578125,
+            0.405029296875,
+            0.08026123046875,
+            0.01137542724609375,
+            0.869140625,
+            0.1097412109375,
+            1.44921875,
+            0.07562255859375,
+            0.63134765625,
+            0.031463623046875,
+            0.0836181640625,
+            0.372314453125,
+            0.80712890625,
+            0.87451171875,
+            0.55615234375,
+            0.45849609375,
+            0.054931640625,
+            0.003459930419921875,
+            0.71533203125,
+            0.043914794921875,
+            0.86865234375,
+            0.040283203125,
+            0.210205078125,
+            0.04205322265625,
+            0.02203369140625,
+            0.54150390625,
+            0.279541015625,
+            0.587890625,
+            0.256591796875,
+            0.09014892578125,
+            0.0159149169921875,
+            0.02374267578125,
+            0.2100830078125,
+            0.30126953125,
+            0.288330078125,
+            0.276611328125,
+            0.0946044921875,
+            0.37841796875,
+            0.023834228515625,
+            0.50341796875,
+            0.0238800048828125,
+            1.0517578125,
+            0.058380126953125,
+            0.3046875,
+            0.28955078125,
+            0.15185546875,
+            0.343505859375,
+            0.152099609375,
+            0.76318359375,
+            0.3720703125,
+            0.130615234375,
+            0.10968017578125,
+            0.16357421875,
+            0.1658935546875,
+            0.1639404296875,
+            0.32470703125,
+            0.40087890625,
+            0.1370849609375,
+            0.09381103515625,
+            0.0059051513671875,
+            0.935546875,
+            0.056976318359375,
+            0.9208984375,
+            0.03924560546875,
+            0.204833984375,
+            0.07177734375,
+            0.037628173828125,
+            0.70556640625,
+            0.363037109375,
+            0.6044921875,
+            0.25,
+            0.08782958984375,
+            0.0271759033203125,
+            0.04052734375,
+            0.276123046875,
+            0.39111328125,
+            0.314453125,
+            0.26953125,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 2, 9, 7], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.dilations',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.319580078125, 0.97607421875, 0.4130859375, 0.479736328125,
+            0.767578125, 0.908203125, 0.62060546875, 0.658203125, 0.6552734375
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [0.68359375, 0.96435546875, 0.8271484375, 0.5771484375],
+          'descriptor': {shape: [1, 1, 2, 2], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'dilations': [2, 2]}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.218505859375, 0.66748046875,  0.59033203125,  0.94140625,
+            0.3984375,      0.327880859375, 0.52490234375,  1.0830078125,
+            0.740234375,    0.8759765625,   0.6884765625,   1.2568359375,
+            1.572265625,    1.1982421875,   0.8701171875,   0.396728515625,
+            0.634765625,    1.0283203125,   0.443115234375, 0.52392578125,
+            0.51318359375,  0.54443359375,  0.900390625,    0.3798828125,
+            0.378173828125
+          ],
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.outputPadding',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'strides': [3, 2], 'outputPadding': [1, 1]}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.03515625,
+            0.6484375,
+            0.446044921875,
+            1.015625,
+            0.4091796875,
+            0.415771484375,
+            0,
+            0.0469970703125,
+            0.00666046142578125,
+            0.65185546875,
+            0.08453369140625,
+            1.2529296875,
+            0.07757568359375,
+            0.64794921875,
+            0,
+            0.0184173583984375,
+            0.04901123046875,
+            0.274169921875,
+            0.62158203125,
+            0.72705078125,
+            0.57080078125,
+            0.470458984375,
+            0,
+            0.332763671875,
+            0.2421875,
+            0.5791015625,
+            0.2425537109375,
+            1.0615234375,
+            0.59326171875,
+            0.6025390625,
+            0,
+            0.32373046875,
+            0.0458984375,
+            0.70751953125,
+            0.045989990234375,
+            1.177734375,
+            0.1124267578125,
+            0.93896484375,
+            0,
+            0.126953125,
+            0.337646484375,
+            0.405517578125,
+            0.338134765625,
+            0.58984375,
+            0.8271484375,
+            0.68212890625,
+            0,
+            0.08245849609375,
+            0.05999755859375,
+            0.8564453125,
+            0.5791015625,
+            1.1357421875,
+            0.39892578125,
+            0.405029296875,
+            0,
+            0.08026123046875,
+            0.01137542724609375,
+            0.869140625,
+            0.1097412109375,
+            1.44921875,
+            0.07562255859375,
+            0.63134765625,
+            0,
+            0.031463623046875,
+            0.0836181640625,
+            0.372314453125,
+            0.80712890625,
+            0.87451171875,
+            0.55615234375,
+            0.45849609375,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.054931640625,
+            0.003459930419921875,
+            0.71533203125,
+            0.043914794921875,
+            0.86865234375,
+            0.040283203125,
+            0.210205078125,
+            0,
+            0.04205322265625,
+            0.02203369140625,
+            0.54150390625,
+            0.279541015625,
+            0.587890625,
+            0.256591796875,
+            0.09014892578125,
+            0,
+            0.0159149169921875,
+            0.02374267578125,
+            0.2100830078125,
+            0.30126953125,
+            0.288330078125,
+            0.276611328125,
+            0.0946044921875,
+            0,
+            0.37841796875,
+            0.023834228515625,
+            0.50341796875,
+            0.0238800048828125,
+            1.0517578125,
+            0.058380126953125,
+            0.3046875,
+            0,
+            0.28955078125,
+            0.15185546875,
+            0.343505859375,
+            0.152099609375,
+            0.76318359375,
+            0.3720703125,
+            0.130615234375,
+            0,
+            0.10968017578125,
+            0.16357421875,
+            0.1658935546875,
+            0.1639404296875,
+            0.32470703125,
+            0.40087890625,
+            0.1370849609375,
+            0,
+            0.09381103515625,
+            0.0059051513671875,
+            0.935546875,
+            0.056976318359375,
+            0.9208984375,
+            0.03924560546875,
+            0.204833984375,
+            0,
+            0.07177734375,
+            0.037628173828125,
+            0.70556640625,
+            0.363037109375,
+            0.6044921875,
+            0.25,
+            0.08782958984375,
+            0,
+            0.0271759033203125,
+            0.04052734375,
+            0.276123046875,
+            0.39111328125,
+            0.314453125,
+            0.26953125,
+            0.0921630859375,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          'descriptor': {shape: [1, 2, 10, 8], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.outputSizes',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'strides': [3, 2], 'outputSizes': [10, 8]}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.03515625,
+            0.6484375,
+            0.446044921875,
+            1.015625,
+            0.4091796875,
+            0.415771484375,
+            0,
+            0.0469970703125,
+            0.00666046142578125,
+            0.65185546875,
+            0.08453369140625,
+            1.2529296875,
+            0.07757568359375,
+            0.64794921875,
+            0,
+            0.0184173583984375,
+            0.04901123046875,
+            0.274169921875,
+            0.62158203125,
+            0.72705078125,
+            0.57080078125,
+            0.470458984375,
+            0,
+            0.332763671875,
+            0.2421875,
+            0.5791015625,
+            0.2425537109375,
+            1.0615234375,
+            0.59326171875,
+            0.6025390625,
+            0,
+            0.32373046875,
+            0.0458984375,
+            0.70751953125,
+            0.045989990234375,
+            1.177734375,
+            0.1124267578125,
+            0.93896484375,
+            0,
+            0.126953125,
+            0.337646484375,
+            0.405517578125,
+            0.338134765625,
+            0.58984375,
+            0.8271484375,
+            0.68212890625,
+            0,
+            0.08245849609375,
+            0.05999755859375,
+            0.8564453125,
+            0.5791015625,
+            1.1357421875,
+            0.39892578125,
+            0.405029296875,
+            0,
+            0.08026123046875,
+            0.01137542724609375,
+            0.869140625,
+            0.1097412109375,
+            1.44921875,
+            0.07562255859375,
+            0.63134765625,
+            0,
+            0.031463623046875,
+            0.0836181640625,
+            0.372314453125,
+            0.80712890625,
+            0.87451171875,
+            0.55615234375,
+            0.45849609375,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0.054931640625,
+            0.003459930419921875,
+            0.71533203125,
+            0.043914794921875,
+            0.86865234375,
+            0.040283203125,
+            0.210205078125,
+            0,
+            0.04205322265625,
+            0.02203369140625,
+            0.54150390625,
+            0.279541015625,
+            0.587890625,
+            0.256591796875,
+            0.09014892578125,
+            0,
+            0.0159149169921875,
+            0.02374267578125,
+            0.2100830078125,
+            0.30126953125,
+            0.288330078125,
+            0.276611328125,
+            0.0946044921875,
+            0,
+            0.37841796875,
+            0.023834228515625,
+            0.50341796875,
+            0.0238800048828125,
+            1.0517578125,
+            0.058380126953125,
+            0.3046875,
+            0,
+            0.28955078125,
+            0.15185546875,
+            0.343505859375,
+            0.152099609375,
+            0.76318359375,
+            0.3720703125,
+            0.130615234375,
+            0,
+            0.10968017578125,
+            0.16357421875,
+            0.1658935546875,
+            0.1639404296875,
+            0.32470703125,
+            0.40087890625,
+            0.1370849609375,
+            0,
+            0.09381103515625,
+            0.0059051513671875,
+            0.935546875,
+            0.056976318359375,
+            0.9208984375,
+            0.03924560546875,
+            0.204833984375,
+            0,
+            0.07177734375,
+            0.037628173828125,
+            0.70556640625,
+            0.363037109375,
+            0.6044921875,
+            0.25,
+            0.08782958984375,
+            0,
+            0.0271759033203125,
+            0.04052734375,
+            0.276123046875,
+            0.39111328125,
+            0.314453125,
+            0.26953125,
+            0.0921630859375,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0
+          ],
+          'descriptor': {shape: [1, 2, 10, 8], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.inputLayout=nchw',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'inputLayout': 'nchw'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.64794921875,
+            1.0439453125,
+            0.8623046875,
+            0.415771484375,
+            0.379638671875,
+            1.1787109375,
+            1.9912109375,
+            1.623046875,
+            1.25,
+            0.424560546875,
+            1.5087890625,
+            3.287109375,
+            2.56640625,
+            1.814453125,
+            0.2071533203125,
+            1.25,
+            1.666015625,
+            2.09765625,
+            1.3134765625,
+            0.031463623046875,
+            0.386962890625,
+            1.0849609375,
+            1.2216796875,
+            0.45849609375,
+            0.054931640625,
+            0.70068359375,
+            0.70166015625,
+            0.269287109375,
+            0.210205078125,
+            0.420654296875,
+            0.95849609375,
+            1.8525390625,
+            0.53759765625,
+            0.394775390625,
+            0.3994140625,
+            1.578125,
+            2.12109375,
+            1.1416015625,
+            0.43017578125,
+            0.181396484375,
+            1.00390625,
+            1.341796875,
+            0.83447265625,
+            0.2249755859375,
+            0.0271759033203125,
+            0.302734375,
+            0.58544921875,
+            0.4033203125,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 2, 5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.inputLayout=nhwc',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'inputLayout': 'nhwc'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.054931640625,
+            0.64794921875,
+            0.70068359375,
+            1.0439453125,
+            0.70166015625,
+            0.8623046875,
+            0.269287109375,
+            0.415771484375,
+            0.210205078125,
+            0.379638671875,
+            0.420654296875,
+            1.1787109375,
+            0.95849609375,
+            1.9912109375,
+            1.8525390625,
+            1.623046875,
+            0.53759765625,
+            1.25,
+            0.394775390625,
+            0.424560546875,
+            0.3994140625,
+            1.5087890625,
+            1.578125,
+            3.287109375,
+            2.12109375,
+            2.56640625,
+            1.1416015625,
+            1.814453125,
+            0.43017578125,
+            0.2071533203125,
+            0.181396484375,
+            1.25,
+            1.00390625,
+            1.666015625,
+            1.341796875,
+            2.09765625,
+            0.83447265625,
+            1.3134765625,
+            0.2249755859375,
+            0.031463623046875,
+            0.0271759033203125,
+            0.386962890625,
+            0.302734375,
+            1.0849609375,
+            0.58544921875,
+            1.2216796875,
+            0.4033203125,
+            0.45849609375,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 5, 5, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.filterLayout=iohw',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'filterLayout': 'iohw'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.64794921875,
+            1.0439453125,
+            0.8623046875,
+            0.415771484375,
+            0.379638671875,
+            1.1787109375,
+            1.9912109375,
+            1.623046875,
+            1.25,
+            0.424560546875,
+            1.5087890625,
+            3.287109375,
+            2.56640625,
+            1.814453125,
+            0.2071533203125,
+            1.25,
+            1.666015625,
+            2.09765625,
+            1.3134765625,
+            0.031463623046875,
+            0.386962890625,
+            1.0849609375,
+            1.2216796875,
+            0.45849609375,
+            0.054931640625,
+            0.70068359375,
+            0.70166015625,
+            0.269287109375,
+            0.210205078125,
+            0.420654296875,
+            0.95849609375,
+            1.8525390625,
+            0.53759765625,
+            0.394775390625,
+            0.3994140625,
+            1.578125,
+            2.12109375,
+            1.1416015625,
+            0.43017578125,
+            0.181396484375,
+            1.00390625,
+            1.341796875,
+            0.83447265625,
+            0.2249755859375,
+            0.0271759033203125,
+            0.302734375,
+            0.58544921875,
+            0.4033203125,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 2, 5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.filterLayout=hwoi',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.97998046875, 0.626953125, 0.06170654296875,
+            0.63671875, 0.322021484375, 0.83837890625, 0.75, 0.11883544921875,
+            0.39306640625, 0.9921875, 0.1380615234375, 0.32861328125,
+            0.283935546875, 0.8740234375, 0.423583984375, 0.720703125,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [3, 3, 2, 1], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'filterLayout': 'hwoi'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.64794921875,
+            1.0439453125,
+            0.8623046875,
+            0.415771484375,
+            0.379638671875,
+            1.1787109375,
+            1.9912109375,
+            1.623046875,
+            1.25,
+            0.424560546875,
+            1.5087890625,
+            3.287109375,
+            2.56640625,
+            1.814453125,
+            0.2071533203125,
+            1.25,
+            1.666015625,
+            2.09765625,
+            1.3134765625,
+            0.031463623046875,
+            0.386962890625,
+            1.0849609375,
+            1.2216796875,
+            0.45849609375,
+            0.054931640625,
+            0.70068359375,
+            0.70166015625,
+            0.269287109375,
+            0.210205078125,
+            0.420654296875,
+            0.95849609375,
+            1.8525390625,
+            0.53759765625,
+            0.394775390625,
+            0.3994140625,
+            1.578125,
+            2.12109375,
+            1.1416015625,
+            0.43017578125,
+            0.181396484375,
+            1.00390625,
+            1.341796875,
+            0.83447265625,
+            0.2249755859375,
+            0.0271759033203125,
+            0.302734375,
+            0.58544921875,
+            0.4033203125,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 2, 5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.filterLayout=ohwi',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [2, 3, 3, 1], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'filterLayout': 'ohwi'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.64794921875,
+            1.0439453125,
+            0.8623046875,
+            0.415771484375,
+            0.379638671875,
+            1.1787109375,
+            1.9912109375,
+            1.623046875,
+            1.25,
+            0.424560546875,
+            1.5087890625,
+            3.287109375,
+            2.56640625,
+            1.814453125,
+            0.2071533203125,
+            1.25,
+            1.666015625,
+            2.09765625,
+            1.3134765625,
+            0.031463623046875,
+            0.386962890625,
+            1.0849609375,
+            1.2216796875,
+            0.45849609375,
+            0.054931640625,
+            0.70068359375,
+            0.70166015625,
+            0.269287109375,
+            0.210205078125,
+            0.420654296875,
+            0.95849609375,
+            1.8525390625,
+            0.53759765625,
+            0.394775390625,
+            0.3994140625,
+            1.578125,
+            2.12109375,
+            1.1416015625,
+            0.43017578125,
+            0.181396484375,
+            1.00390625,
+            1.341796875,
+            0.83447265625,
+            0.2249755859375,
+            0.0271759033203125,
+            0.302734375,
+            0.58544921875,
+            0.4033203125,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 2, 5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [1, 2, 3, 3], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'inputLayout': 'nhwc', 'filterLayout': 'iohw'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.054931640625,
+            0.64794921875,
+            0.70068359375,
+            1.0439453125,
+            0.70166015625,
+            0.8623046875,
+            0.269287109375,
+            0.415771484375,
+            0.210205078125,
+            0.379638671875,
+            0.420654296875,
+            1.1787109375,
+            0.95849609375,
+            1.9912109375,
+            1.8525390625,
+            1.623046875,
+            0.53759765625,
+            1.25,
+            0.394775390625,
+            0.424560546875,
+            0.3994140625,
+            1.5087890625,
+            1.578125,
+            3.287109375,
+            2.12109375,
+            2.56640625,
+            1.1416015625,
+            1.814453125,
+            0.43017578125,
+            0.2071533203125,
+            0.181396484375,
+            1.25,
+            1.00390625,
+            1.666015625,
+            1.341796875,
+            2.09765625,
+            0.83447265625,
+            1.3134765625,
+            0.2249755859375,
+            0.031463623046875,
+            0.0271759033203125,
+            0.386962890625,
+            0.302734375,
+            1.0849609375,
+            0.58544921875,
+            1.2216796875,
+            0.4033203125,
+            0.45849609375,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 5, 5, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.97998046875, 0.626953125, 0.06170654296875,
+            0.63671875, 0.322021484375, 0.83837890625, 0.75, 0.11883544921875,
+            0.39306640625, 0.9921875, 0.1380615234375, 0.32861328125,
+            0.283935546875, 0.8740234375, 0.423583984375, 0.720703125,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [3, 3, 2, 1], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'inputLayout': 'nhwc', 'filterLayout': 'hwoi'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.054931640625,
+            0.64794921875,
+            0.70068359375,
+            1.0439453125,
+            0.70166015625,
+            0.8623046875,
+            0.269287109375,
+            0.415771484375,
+            0.210205078125,
+            0.379638671875,
+            0.420654296875,
+            1.1787109375,
+            0.95849609375,
+            1.9912109375,
+            1.8525390625,
+            1.623046875,
+            0.53759765625,
+            1.25,
+            0.394775390625,
+            0.424560546875,
+            0.3994140625,
+            1.5087890625,
+            1.578125,
+            3.287109375,
+            2.12109375,
+            2.56640625,
+            1.1416015625,
+            1.814453125,
+            0.43017578125,
+            0.2071533203125,
+            0.181396484375,
+            1.25,
+            1.00390625,
+            1.666015625,
+            1.341796875,
+            2.09765625,
+            0.83447265625,
+            1.3134765625,
+            0.2249755859375,
+            0.031463623046875,
+            0.0271759033203125,
+            0.386962890625,
+            0.302734375,
+            1.0849609375,
+            0.58544921875,
+            1.2216796875,
+            0.4033203125,
+            0.45849609375,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 5, 5, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.056060791015625, 0.71142578125, 0.65283203125, 0.38623046875,
+            0.386962890625, 0.9462890625, 0.095703125, 0.92333984375,
+            0.63623046875
+          ],
+          'descriptor': {shape: [1, 3, 3, 1], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.861328125, 0.626953125, 0.63671875, 0.83837890625,
+            0.11883544921875, 0.9921875, 0.32861328125, 0.8740234375,
+            0.720703125, 0.97998046875, 0.06170654296875, 0.322021484375, 0.75,
+            0.39306640625, 0.1380615234375, 0.283935546875, 0.423583984375,
+            0.1448974609375
+          ],
+          'descriptor': {shape: [2, 3, 3, 1], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'inputLayout': 'nhwc', 'filterLayout': 'ohwi'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.04827880859375,
+            0.054931640625,
+            0.64794921875,
+            0.70068359375,
+            1.0439453125,
+            0.70166015625,
+            0.8623046875,
+            0.269287109375,
+            0.415771484375,
+            0.210205078125,
+            0.379638671875,
+            0.420654296875,
+            1.1787109375,
+            0.95849609375,
+            1.9912109375,
+            1.8525390625,
+            1.623046875,
+            0.53759765625,
+            1.25,
+            0.394775390625,
+            0.424560546875,
+            0.3994140625,
+            1.5087890625,
+            1.578125,
+            3.287109375,
+            2.12109375,
+            2.56640625,
+            1.1416015625,
+            1.814453125,
+            0.43017578125,
+            0.2071533203125,
+            0.181396484375,
+            1.25,
+            1.00390625,
+            1.666015625,
+            1.341796875,
+            2.09765625,
+            0.83447265625,
+            1.3134765625,
+            0.2249755859375,
+            0.031463623046875,
+            0.0271759033203125,
+            0.386962890625,
+            0.302734375,
+            1.0849609375,
+            0.58544921875,
+            1.2216796875,
+            0.4033203125,
+            0.45849609375,
+            0.0921630859375
+          ],
+          'descriptor': {shape: [1, 5, 5, 2], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'convTranspose2d float16 4D input and filter tensors options.bias',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            0.1109619140625, 0.8681640625, 0.734375, 0.4306640625,
+            0.59814453125, 0.12322998046875, 0.1611328125, 0.08837890625,
+            0.291015625
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.6162109375, 0.26220703125, 0.794921875, 0.873046875, 0.8310546875,
+            0.85498046875, 0.55517578125, 0.84033203125, 0.85302734375
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'},
+          'constant': true
+        },
+        'convTranspose2dBias': {
+          'data': [0.45166015625],
+          'descriptor': {shape: [1], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'bias': 'convTranspose2dBias'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            0.52001953125, 1.015625,      1.2197265625,  1.333984375,
+            1.03515625,    0.81396484375, 1.783203125,   2.484375,
+            2.3125,        1.177734375,   0.98876953125, 2.00390625,
+            2.986328125,   2.5703125,     1.4150390625,  0.83154296875,
+            1.3564453125,  1.85546875,    1.3828125,     0.8056640625,
+            0.541015625,   0.63623046875, 0.82470703125, 0.771484375,
+            0.69970703125
+          ],
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'convTranspose2d float16 4D input and filter tensors, both negative input tensor and options.bias',
+    'graph': {
+      'inputs': {
+        'convTranspose2dInput': {
+          'data': [
+            -0.10888671875, -0.298095703125, -0.390869140625, -0.5625,
+            -0.732421875, -0.84228515625, -0.305908203125, -0.9765625,
+            -0.01416015625
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        },
+        'convTranspose2dFilter': {
+          'data': [
+            0.6162109375, 0.26220703125, 0.794921875, 0.873046875, 0.8310546875,
+            0.85498046875, 0.55517578125, 0.84033203125, 0.85302734375
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'},
+          'constant': true
+        },
+        'convTranspose2dBias': {
+          'data': [-0.845703125],
+          'descriptor': {shape: [1], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'convTranspose2d',
+        'arguments': [
+          {'input': 'convTranspose2dInput'},
+          {'filter': 'convTranspose2dFilter'},
+          {'options': {'bias': 'convTranspose2dBias'}}
+        ],
+        'outputs': 'convTranspose2dOutput'
+      }],
+      'expectedOutputs': {
+        'convTranspose2dOutput': {
+          'data': [
+            -0.91259765625, -1.0576171875, -1.2509765625, -1.185546875,
+            -1.15625,       -1.287109375,  -1.794921875,  -2.685546875,
+            -2.228515625,   -1.849609375,  -1.5859375,    -2.890625,
+            -3.73828125,    -3.53515625,   -1.91015625,   -1.4248046875,
+            -2.83203125,    -3.494140625,  -3.025390625,  -1.576171875,
+            -1.015625,      -1.64453125,   -1.935546875,  -1.6904296875,
+            -0.85791015625
+          ],
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  convTranspose2dTests.forEach((test) => {
-    // reuse getConv2dPrecisionTolerance method for convTranspose2d tests
-    webnn_conformance_test(
-        buildGraphAndCompute, getConv2dPrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(
+    convTranspose2dTests, buildAndExecuteGraph, getPrecisionTolerance);

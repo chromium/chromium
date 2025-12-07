@@ -5,20 +5,22 @@
 #include "base/process/process_metrics.h"
 
 #include <windows.h>  // Must be in front of other Windows header files.
+#include <winternl.h>
 
 #include <psapi.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <winternl.h>
 
 #include <algorithm>
 
-#include "base/debug/crash_logging.h"
+#include "base/byte_count.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "build/build_config.h"
 
@@ -134,8 +136,7 @@ base::expected<TimeDelta, ProcessCPUUsageError> GetImpreciseCumulativeCPUUsage(
   if (!GetProcessTimes(process.get(), &creation_time, &exit_time, &kernel_time,
                        &user_time)) {
     // This should never fail when the handle is valid.
-    NOTREACHED(NotFatalUntil::M125);
-    return base::unexpected(ProcessCPUUsageError::kSystemError);
+    NOTREACHED();
   }
 
   return base::ok(TimeDelta::FromFileTime(kernel_time) +
@@ -161,8 +162,26 @@ std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateProcessMetrics(
   return WrapUnique(new ProcessMetrics(process));
 }
 
+base::expected<ProcessMemoryInfo, ProcessUsageError>
+ProcessMetrics::GetMemoryInfo() const {
+  if (!process_.is_valid()) {
+    return base::unexpected(ProcessUsageError::kProcessNotFound);
+  }
+  PROCESS_MEMORY_COUNTERS_EX pmc;
+  if (!::GetProcessMemoryInfo(process_.get(),
+                              reinterpret_cast<PROCESS_MEMORY_COUNTERS*>(&pmc),
+                              sizeof(pmc))) {
+    return base::unexpected(ProcessUsageError::kSystemError);
+  }
+  ProcessMemoryInfo counters;
+  counters.private_bytes = pmc.PrivateUsage;
+  counters.resident_set_bytes = pmc.WorkingSetSize;
+  return counters;
+}
+
 base::expected<TimeDelta, ProcessCPUUsageError>
 ProcessMetrics::GetCumulativeCPUUsage() {
+  TRACE_EVENT("base", "GetCumulativeCPUUsage");
 #if defined(ARCH_CPU_ARM64)
   // Precise CPU usage is not available on Arm CPUs because they don't support
   // constant rate TSC.
@@ -188,8 +207,7 @@ ProcessMetrics::GetCumulativeCPUUsage() {
   ULONG64 process_cycle_time = 0;
   if (!QueryProcessCycleTime(process_.get(), &process_cycle_time)) {
     // This should never fail when the handle is valid.
-    NOTREACHED(NotFatalUntil::M125);
-    return base::unexpected(ProcessCPUUsageError::kSystemError);
+    NOTREACHED();
   }
 
   const double process_time_seconds = process_cycle_time / tsc_ticks_per_second;
@@ -198,8 +216,10 @@ ProcessMetrics::GetCumulativeCPUUsage() {
 }
 
 ProcessMetrics::ProcessMetrics(ProcessHandle process) {
-  if (!process) {
-    // Don't try to duplicate an invalid handle.
+  if (process == kNullProcessHandle) {
+    // Don't try to duplicate an invalid handle. However, INVALID_HANDLE_VALUE
+    // is also the pseudo-handle returned by ::GetCurrentProcess(), so DO try
+    // to duplicate that.
     return;
   }
   HANDLE duplicate_handle = INVALID_HANDLE_VALUE;
@@ -207,12 +227,11 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process) {
                                   ::GetCurrentProcess(), &duplicate_handle,
                                   PROCESS_QUERY_LIMITED_INFORMATION, FALSE, 0);
   if (!result) {
-    // TODO(crbug.com/326136373): Remove this crash key and just CHECK(result)
-    // after verifying that DuplicateHandle doesn't fail for unexpected reasons
-    // in production.
+    // Even with PROCESS_QUERY_LIMITED_INFORMATION, DuplicateHandle can fail
+    // with ERROR_ACCESS_DENIED. And it's always possible to run out of handles.
     const DWORD last_error = ::GetLastError();
-    SCOPED_CRASH_KEY_NUMBER("ProcessMetrics", "dup_handle_error", last_error);
-    NOTREACHED(NotFatalUntil::M126);
+    CHECK(last_error == ERROR_ACCESS_DENIED ||
+          last_error == ERROR_NO_SYSTEM_RESOURCES);
     return;
   }
 
@@ -220,35 +239,31 @@ ProcessMetrics::ProcessMetrics(ProcessHandle process) {
 }
 
 size_t GetSystemCommitCharge() {
-  // Get the System Page Size.
-  SYSTEM_INFO system_info;
-  GetSystemInfo(&system_info);
-
   PERFORMANCE_INFORMATION info;
-  if (!GetPerformanceInfo(&info, sizeof(info))) {
+  if (!::GetPerformanceInfo(&info, sizeof(info))) {
     DLOG(ERROR) << "Failed to fetch internal performance info.";
     return 0;
   }
-  return (info.CommitTotal * system_info.dwPageSize) / 1024;
+  return (info.CommitTotal * info.PageSize) / 1024;
 }
 
 // This function uses the following mapping between MEMORYSTATUSEX and
-// SystemMemoryInfoKB:
+// SystemMemoryInfo:
 //   ullTotalPhys ==> total
 //   ullAvailPhys ==> avail_phys
 //   ullTotalPageFile ==> swap_total
 //   ullAvailPageFile ==> swap_free
-bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
+bool GetSystemMemoryInfo(SystemMemoryInfo* meminfo) {
   MEMORYSTATUSEX mem_status;
   mem_status.dwLength = sizeof(mem_status);
   if (!::GlobalMemoryStatusEx(&mem_status)) {
     return false;
   }
 
-  meminfo->total = saturated_cast<int>(mem_status.ullTotalPhys / 1024);
-  meminfo->avail_phys = saturated_cast<int>(mem_status.ullAvailPhys / 1024);
-  meminfo->swap_total = saturated_cast<int>(mem_status.ullTotalPageFile / 1024);
-  meminfo->swap_free = saturated_cast<int>(mem_status.ullAvailPageFile / 1024);
+  meminfo->total = ByteCount::FromUnsigned(mem_status.ullTotalPhys);
+  meminfo->avail_phys = ByteCount::FromUnsigned(mem_status.ullAvailPhys);
+  meminfo->swap_total = ByteCount::FromUnsigned(mem_status.ullTotalPageFile);
+  meminfo->swap_free = ByteCount::FromUnsigned(mem_status.ullAvailPageFile);
 
   return true;
 }
@@ -264,31 +279,6 @@ SystemPerformanceInfo::SystemPerformanceInfo(
     const SystemPerformanceInfo& other) = default;
 SystemPerformanceInfo& SystemPerformanceInfo::operator=(
     const SystemPerformanceInfo& other) = default;
-
-Value::Dict SystemPerformanceInfo::ToDict() const {
-  Value::Dict result;
-
-  // Write out uint64_t variables as doubles.
-  // Note: this may discard some precision, but for JS there's no other option.
-  result.Set("idle_time", strict_cast<double>(idle_time));
-  result.Set("read_transfer_count", strict_cast<double>(read_transfer_count));
-  result.Set("write_transfer_count", strict_cast<double>(write_transfer_count));
-  result.Set("other_transfer_count", strict_cast<double>(other_transfer_count));
-  result.Set("read_operation_count", strict_cast<double>(read_operation_count));
-  result.Set("write_operation_count",
-             strict_cast<double>(write_operation_count));
-  result.Set("other_operation_count",
-             strict_cast<double>(other_operation_count));
-  result.Set("pagefile_pages_written",
-             strict_cast<double>(pagefile_pages_written));
-  result.Set("pagefile_pages_write_ios",
-             strict_cast<double>(pagefile_pages_write_ios));
-  result.Set("available_pages", strict_cast<double>(available_pages));
-  result.Set("pages_read", strict_cast<double>(pages_read));
-  result.Set("page_read_ios", strict_cast<double>(page_read_ios));
-
-  return result;
-}
 
 // Retrieves performance counters from the operating system.
 // Fills in the provided |info| structure. Returns true on success.
@@ -322,6 +312,12 @@ BASE_EXPORT bool GetSystemPerformanceInfo(SystemPerformanceInfo* info) {
   info->page_read_ios = counters.PageReadIos;
 
   return true;
+}
+
+ByteCount SystemMemoryInfo::GetAvailablePhysicalMemory() const {
+  // Use ullAvailPhys from MEMORYSTATUSEX, which represents physical memory
+  // available without paging.
+  return avail_phys;
 }
 
 }  // namespace base

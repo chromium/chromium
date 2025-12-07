@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.hub;
 
+import org.chromium.build.annotations.NullMarked;
+
 /**
  * Interface for observing {@link HubLayoutAnimationRunner} animation phases. Animation phases are
  * all always invoked even if the animation is forced to finish.
  */
+@NullMarked
 public interface HubLayoutAnimationListener {
     /** Called just before a {@link HubLayoutAnimationRunner} starts an animation. */
     default void beforeStart() {}

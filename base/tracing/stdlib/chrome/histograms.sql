@@ -2,44 +2,77 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-DROP VIEW IF EXISTS chrome_histograms;
-
 -- A helper view on top of the histogram events emitted by Chrome.
--- Requires "disabled-by-default-histogram_samples" Chrome category.
-CREATE PERFETTO TABLE chrome_histograms(
+-- Requires "disabled-by-default-histogram_samples" Chrome category or the
+-- "org.chromium.histogram_sample" data source.
+CREATE PERFETTO TABLE chrome_histograms (
   -- The name of the histogram.
   name STRING,
   -- The value of the histogram sample.
-  value INT,
+  value LONG,
   -- Alias of |slice.ts|.
-  ts INT,
+  ts TIMESTAMP,
   -- Thread name.
   thread_name STRING,
   -- Utid of the thread.
-  utid INT,
+  utid LONG,
   -- Tid of the thread.
-  tid INT,
+  tid LONG,
   -- Process name.
   process_name STRING,
   -- Upid of the process.
-  upid INT,
+  upid LONG,
   -- Pid of the process.
-  pid INT
+  pid LONG
 ) AS
+WITH
+  -- Select raw histogram sample slices from the slice table.
+  hist AS (
+    SELECT
+      extract_arg(slice.arg_set_id, 'chrome_histogram_sample.name') AS name,
+      extract_arg(slice.arg_set_id, 'chrome_histogram_sample.sample') AS value,
+      ts,
+      track_id
+    FROM slice
+    WHERE
+      slice.name = "HistogramSample"
+      AND category = "disabled-by-default-histogram_samples"
+  )
+-- Part 1: join histogram samples emitted via the track event category.
+-- These samples are associated with a specific thread track.
 SELECT
-  extract_arg(slice.arg_set_id, "chrome_histogram_sample.name") as name,
-  extract_arg(slice.arg_set_id, "chrome_histogram_sample.sample") as value,
-  ts,
-  thread.name as thread_name,
-  thread.utid as utid,
-  thread.tid as tid,
-  process.name as process_name,
-  process.upid as upid,
-  process.pid as pid
-FROM slice
-JOIN thread_track ON thread_track.id = slice.track_id
-JOIN thread USING (utid)
-JOIN process USING (upid)
-WHERE
-  slice.name = "HistogramSample"
-  AND category = "disabled-by-default-histogram_samples";
+  hist.name,
+  hist.value,
+  hist.ts,
+  thread.name AS thread_name,
+  thread.utid AS utid,
+  thread.tid AS tid,
+  process.name AS process_name,
+  process.upid,
+  process.pid
+FROM hist
+JOIN thread_track
+  ON thread_track.id = hist.track_id
+JOIN thread
+  USING (utid)
+JOIN process
+  USING (upid)
+UNION ALL
+-- Part 2: Join histogram samples emitted via the
+-- "org.chromium.histogram_sample" data source. These samples are associated
+-- with a process track.
+SELECT
+  hist.name,
+  hist.value,
+  hist.ts,
+  NULL AS thread_name,
+  NULL AS utid,
+  NULL AS tid,
+  process.name AS process_name,
+  process.upid,
+  process.pid
+FROM hist
+JOIN process_track
+  ON process_track.id = hist.track_id
+JOIN process
+  USING (upid);

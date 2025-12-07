@@ -1,0 +1,28 @@
+<!--
+@WIN-ALLOW:class:*
+@WIN-ALLOW:id:*
+@WIN-ALLOW:tag:*
+@UIA-WIN-ALLOW:ClassName*
+@AURALINUX-ALLOW:class:*
+@AURALINUX-ALLOW:id:*
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:htmlTag*
+@BLINK-ALLOW:className*
+@MAC-ALLOW:AXDOMClassList=*
+@MAC-DENY:AXDOMClassList=[]
+@EXECUTE-AND-WAIT-FOR:changeClass()
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1 id="headerID" class="headerClass">Image</h1>
+    <img id="imageID" class="imageClass" src="greenbox.png" alt="ImageAlt" height="100" width="200">
+  </body>
+<script>
+function changeClass() {
+  document.querySelector('h1').className = 'newClass';
+  document.title = 'changed-class';
+  return 'changed-class';
+}
+</script>
+</html>

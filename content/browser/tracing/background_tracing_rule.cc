@@ -18,9 +18,10 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/histogram_scope.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
-#include "base/values.h"
+#include "base/unguessable_token.h"
 #include "components/variations/hashing.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -28,28 +29,6 @@
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "services/tracing/public/mojom/background_tracing_agent.mojom.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_histogram_sample.pbzero.h"
-
-namespace {
-
-const char kConfigRuleKey[] = "rule";
-const char kConfigRuleTriggerNameKey[] = "trigger_name";
-const char kConfigRuleTriggerDelay[] = "trigger_delay";
-const char kConfigRuleTriggerChance[] = "trigger_chance";
-const char kConfigRuleIdKey[] = "rule_id";
-const char kConfigIsCrashKey[] = "is_crash";
-
-const char kConfigRuleHistogramNameKey[] = "histogram_name";
-const char kConfigRuleHistogramValueOldKey[] = "histogram_value";
-const char kConfigRuleHistogramValue1Key[] = "histogram_lower_value";
-const char kConfigRuleHistogramValue2Key[] = "histogram_upper_value";
-
-const char kConfigRuleTypeMonitorNamed[] =
-    "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED";
-
-const char kConfigRuleTypeMonitorHistogram[] =
-    "MONITOR_AND_DUMP_WHEN_SPECIFIC_HISTOGRAM_AND_VALUE";
-
-}  // namespace
 
 namespace content {
 
@@ -83,7 +62,8 @@ void BackgroundTracingRule::Uninstall() {
   DoUninstall();
 }
 
-bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value) {
+bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value,
+                                            uint64_t flow_id) {
   if (!installed()) {
     return false;
   }
@@ -92,6 +72,7 @@ bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value) {
     return false;
   }
   triggered_value_ = value;
+  flow_id_ = flow_id;
   if (delay_) {
     trigger_timer_.Start(FROM_HERE, *delay_,
                          base::BindOnce(base::IgnoreResult(trigger_callback_),
@@ -102,34 +83,8 @@ bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value) {
   }
 }
 
-base::TimeDelta BackgroundTracingRule::GetTraceDelay() const {
-  return trigger_delay_;
-}
-
-std::string BackgroundTracingRule::GetDefaultRuleId() const {
-  return "org.chromium.background_tracing.trigger";
-}
-
-base::Value::Dict BackgroundTracingRule::ToDict() const {
-  base::Value::Dict dict;
-
-  if (trigger_chance_ < 1.0)
-    dict.Set(kConfigRuleTriggerChance, trigger_chance_);
-
-  if (!trigger_delay_.is_zero()) {
-    dict.Set(kConfigRuleTriggerDelay,
-             static_cast<int>(trigger_delay_.InSeconds()));
-  }
-
-  if (rule_id_ != GetDefaultRuleId()) {
-    dict.Set(kConfigRuleIdKey, rule_id_);
-  }
-
-  if (is_crash_) {
-    dict.Set(kConfigIsCrashKey, is_crash_);
-  }
-
-  return dict;
+std::string BackgroundTracingRule::GetDefaultRuleName() const {
+  return "trigger";
 }
 
 perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
@@ -143,32 +98,15 @@ perfetto::protos::gen::TriggerRule BackgroundTracingRule::ToProtoForTesting()
     config.set_delay_ms(delay_->InMilliseconds());
   }
 
-  config.set_name(rule_id_);
+  config.set_name(rule_name_);
 
   return config;
 }
 
 void BackgroundTracingRule::GenerateMetadataProto(
     BackgroundTracingRule::MetadataProto* out) const {
-  uint32_t name_hash = variations::HashName(rule_id());
+  uint32_t name_hash = variations::HashName(rule_name());
   out->set_name_hash(name_hash);
-}
-
-void BackgroundTracingRule::Setup(const base::Value::Dict& dict) {
-  if (auto trigger_chance = dict.FindDouble(kConfigRuleTriggerChance)) {
-    trigger_chance_ = *trigger_chance;
-  }
-  if (auto trigger_delay = dict.FindInt(kConfigRuleTriggerDelay)) {
-    trigger_delay_ = base::Seconds(*trigger_delay);
-  }
-  if (const std::string* rule_id = dict.FindString(kConfigRuleIdKey)) {
-    rule_id_ = *rule_id;
-  } else {
-    rule_id_ = GetDefaultRuleId();
-  }
-  if (auto is_crash = dict.FindBool(kConfigIsCrashKey)) {
-    is_crash_ = *is_crash;
-  }
 }
 
 void BackgroundTracingRule::Setup(
@@ -183,9 +121,10 @@ void BackgroundTracingRule::Setup(
     activation_delay_ = base::Milliseconds(config.activation_delay_ms());
   }
   if (config.has_name()) {
-    rule_id_ = config.name();
+    rule_name_ = config.name();
   } else {
-    rule_id_ = GetDefaultRuleId();
+    rule_name_ = base::StrCat(
+        {"org.chromium.background_tracing.", GetDefaultRuleName()});
   }
 }
 
@@ -197,16 +136,6 @@ class NamedTriggerRule : public BackgroundTracingRule {
       : named_event_(named_event) {}
 
  public:
-  static std::unique_ptr<BackgroundTracingRule> Create(
-      const base::Value::Dict& dict) {
-    if (const std::string* trigger_name =
-            dict.FindString(kConfigRuleTriggerNameKey)) {
-      return base::WrapUnique<BackgroundTracingRule>(
-          new NamedTriggerRule(*trigger_name));
-    }
-    return nullptr;
-  }
-
   static std::unique_ptr<BackgroundTracingRule> Create(
       const perfetto::protos::gen::TriggerRule& config) {
     if (config.has_manual_trigger_name()) {
@@ -226,12 +155,6 @@ class NamedTriggerRule : public BackgroundTracingRule {
         named_event_, this);
   }
 
-  base::Value::Dict ToDict() const override {
-    return BackgroundTracingRule::ToDict()
-        .Set(kConfigRuleKey, kConfigRuleTypeMonitorNamed)
-        .Set(kConfigRuleTriggerNameKey, named_event_.c_str());
-  }
-
   perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
     perfetto::protos::gen::TriggerRule config =
         BackgroundTracingRule::ToProtoForTesting();
@@ -244,28 +167,10 @@ class NamedTriggerRule : public BackgroundTracingRule {
     DCHECK(out);
     BackgroundTracingRule::GenerateMetadataProto(out);
     out->set_trigger_type(MetadataProto::MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED);
-    auto* named_rule = out->set_named_rule();
-    if (named_event_ == "startup-config") {
-      named_rule->set_event_type(MetadataProto::NamedRule::STARTUP);
-    } else if (named_event_ == "navigation-config") {
-      named_rule->set_event_type(MetadataProto::NamedRule::NAVIGATION);
-    } else if (named_event_ == "session-restore-config") {
-      named_rule->set_event_type(MetadataProto::NamedRule::SESSION_RESTORE);
-    } else if (named_event_ == "reached-code-config") {
-      named_rule->set_event_type(MetadataProto::NamedRule::REACHED_CODE);
-    } else if (named_event_ ==
-               BackgroundTracingManager::kContentTriggerConfig) {
-      named_rule->set_event_type(MetadataProto::NamedRule::CONTENT_TRIGGER);
-      // TODO(chrisha): Set the |content_trigger_name_hash|.
-    } else if (named_event_ == "preemptive_test") {
-      named_rule->set_event_type(MetadataProto::NamedRule::TEST_RULE);
-    }
   }
 
  protected:
-  std::string GetDefaultRuleId() const override {
-    return base::StrCat({"org.chromium.background_tracing.", named_event_});
-  }
+  std::string GetDefaultRuleName() const override { return named_event_; }
 
  private:
   std::string named_event_;
@@ -278,46 +183,22 @@ class HistogramRule : public BackgroundTracingRule,
                 int histogram_lower_value,
                 int histogram_upper_value)
       : histogram_name_(histogram_name),
+        rule_id_(base::UnguessableToken::Create().ToString()),
         histogram_lower_value_(histogram_lower_value),
         histogram_upper_value_(histogram_upper_value) {}
 
  public:
   static std::unique_ptr<BackgroundTracingRule> Create(
-      const base::Value::Dict& dict) {
-    const std::string* histogram_name =
-        dict.FindString(kConfigRuleHistogramNameKey);
-    if (!histogram_name)
-      return nullptr;
-
-    std::optional<int> histogram_lower_value =
-        dict.FindInt(kConfigRuleHistogramValue1Key);
-    if (!histogram_lower_value) {
-      // Check for the old naming.
-      histogram_lower_value = dict.FindInt(kConfigRuleHistogramValueOldKey);
-      if (!histogram_lower_value)
-        return nullptr;
-    }
-
-    int histogram_upper_value = dict.FindInt(kConfigRuleHistogramValue2Key)
-                                    .value_or(std::numeric_limits<int>::max());
-
-    if (*histogram_lower_value > histogram_upper_value)
-      return nullptr;
-
-    std::unique_ptr<BackgroundTracingRule> rule(new HistogramRule(
-        *histogram_name, *histogram_lower_value, histogram_upper_value));
-
-    return rule;
-  }
-  static std::unique_ptr<BackgroundTracingRule> Create(
       const perfetto::protos::gen::TriggerRule& config) {
     DCHECK(config.has_histogram());
 
-    if (!config.histogram().has_histogram_name() ||
-        !config.histogram().has_min_value()) {
+    if (!config.histogram().has_histogram_name()) {
       return nullptr;
     }
-    int histogram_lower_value = config.histogram().min_value();
+    int histogram_lower_value = 0;
+    if (config.histogram().has_min_value()) {
+      histogram_lower_value = config.histogram().min_value();
+    }
     int histogram_upper_value = std::numeric_limits<int>::max();
     if (config.histogram().has_max_value()) {
       histogram_upper_value = config.histogram().max_value();
@@ -341,7 +222,7 @@ class HistogramRule : public BackgroundTracingRule,
                             base::Unretained(this), histogram_lower_value_,
                             histogram_upper_value_));
     BackgroundTracingManagerImpl::GetInstance().AddNamedTriggerObserver(
-        rule_id(), this);
+        rule_id_, this);
     BackgroundTracingManagerImpl::GetInstance().AddAgentObserver(this);
   }
 
@@ -349,15 +230,7 @@ class HistogramRule : public BackgroundTracingRule,
     histogram_sample_callback_.reset();
     BackgroundTracingManagerImpl::GetInstance().RemoveAgentObserver(this);
     BackgroundTracingManagerImpl::GetInstance().RemoveNamedTriggerObserver(
-        rule_id(), this);
-  }
-
-  base::Value::Dict ToDict() const override {
-    return BackgroundTracingRule::ToDict()
-        .Set(kConfigRuleKey, kConfigRuleTypeMonitorHistogram)
-        .Set(kConfigRuleHistogramNameKey, histogram_name_.c_str())
-        .Set(kConfigRuleHistogramValue1Key, histogram_lower_value_)
-        .Set(kConfigRuleHistogramValue2Key, histogram_upper_value_);
+        rule_id_, this);
   }
 
   perfetto::protos::gen::TriggerRule ToProtoForTesting() const override {
@@ -384,48 +257,52 @@ class HistogramRule : public BackgroundTracingRule,
 
   // BackgroundTracingManagerImpl::AgentObserver implementation
   void OnAgentAdded(tracing::mojom::BackgroundTracingAgent* agent) override {
-    agent->SetUMACallback(tracing::mojom::BackgroundTracingRule::New(rule_id()),
+    agent->SetUMACallback(tracing::mojom::BackgroundTracingRule::New(rule_id_),
                           histogram_name_, histogram_lower_value_,
                           histogram_upper_value_);
   }
 
   void OnAgentRemoved(tracing::mojom::BackgroundTracingAgent* agent) override {
     agent->ClearUMACallback(
-        tracing::mojom::BackgroundTracingRule::New(rule_id()));
+        tracing::mojom::BackgroundTracingRule::New(rule_id_));
   }
 
-  void OnHistogramChangedCallback(base::Histogram::Sample reference_lower_value,
-                                  base::Histogram::Sample reference_upper_value,
-                                  const char* histogram_name,
-                                  uint64_t name_hash,
-                                  base::Histogram::Sample actual_value) {
+  void OnHistogramChangedCallback(
+      base::Histogram::Sample32 reference_lower_value,
+      base::Histogram::Sample32 reference_upper_value,
+      std::optional<uint64_t> event_id,
+      std::string_view histogram_name,
+      uint64_t name_hash,
+      base::Histogram::Sample32 actual_value) {
     DCHECK_EQ(histogram_name, histogram_name_);
     if (reference_lower_value > actual_value ||
         reference_upper_value < actual_value) {
       return;
     }
 
+    uint64_t flow_id =
+        event_id.value_or(base::trace_event::GetNextGlobalTraceId());
+
     // Add the histogram name and its corresponding value to the trace.
-    const auto trace_details = [&](perfetto::EventContext ctx) {
+    const auto trace_details = [&](perfetto::EventContext& ctx) {
       perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
           ctx.event()->set_chrome_histogram_sample();
       new_sample->set_name_hash(base::HashMetricName(histogram_name));
       new_sample->set_sample(actual_value);
+      perfetto::Flow::Global(flow_id)(ctx);
     };
-    const auto track =
-        perfetto::Track::FromPointer(this, perfetto::ProcessTrack::Current());
-    TRACE_EVENT_INSTANT("toplevel", "HistogramSampleTrigger", track,
-                        base::TimeTicks::Now(), trace_details);
-    OnRuleTriggered(actual_value);
+    auto track = perfetto::NamedTrack("HistogramSamples");
+    TRACE_EVENT_INSTANT("tracing.background", "HistogramSampleTrigger", track,
+                        trace_details);
+    OnRuleTriggered(actual_value, flow_id);
   }
 
  protected:
-  std::string GetDefaultRuleId() const override {
-    return base::StrCat({"org.chromium.background_tracing.", histogram_name_});
-  }
+  std::string GetDefaultRuleName() const override { return histogram_name_; }
 
  private:
   std::string histogram_name_;
+  std::string rule_id_;
   int histogram_lower_value_;
   int histogram_upper_value_;
   std::optional<base::StatisticsRecorder::ScopedHistogramSampleObserver>
@@ -442,7 +319,9 @@ class TimerRule : public BackgroundTracingRule {
     return base::WrapUnique<TimerRule>(new TimerRule());
   }
 
-  void DoInstall() override { OnRuleTriggered(std::nullopt); }
+  void DoInstall() override {
+    OnRuleTriggered(std::nullopt, base::trace_event::GetNextGlobalTraceId());
+  }
   void DoUninstall() override {}
 
   void GenerateMetadataProto(
@@ -453,9 +332,7 @@ class TimerRule : public BackgroundTracingRule {
   }
 
  protected:
-  std::string GetDefaultRuleId() const override {
-    return "org.chromium.background_tracing.timer";
-  }
+  std::string GetDefaultRuleName() const override { return "timer"; }
 };
 
 class RepeatingIntervalRule : public BackgroundTracingRule {
@@ -498,8 +375,8 @@ class RepeatingIntervalRule : public BackgroundTracingRule {
   }
 
  protected:
-  std::string GetDefaultRuleId() const override {
-    return "org.chromium.background_tracing.repeating_interval";
+  std::string GetDefaultRuleName() const override {
+    return "repeating_interval";
   }
 
  private:
@@ -548,7 +425,7 @@ class RepeatingIntervalRule : public BackgroundTracingRule {
   }
 
   void OnTick() {
-    OnRuleTriggered(std::nullopt);
+    OnRuleTriggered(std::nullopt, base::trace_event::GetNextGlobalTraceId());
     ScheduleNextTick();
   }
 
@@ -560,24 +437,6 @@ class RepeatingIntervalRule : public BackgroundTracingRule {
 };
 
 }  // namespace
-
-std::unique_ptr<BackgroundTracingRule>
-BackgroundTracingRule::CreateRuleFromDict(const base::Value::Dict& dict) {
-  const std::string* type = dict.FindString(kConfigRuleKey);
-  if (!type)
-    return nullptr;
-
-  std::unique_ptr<BackgroundTracingRule> tracing_rule;
-  if (*type == kConfigRuleTypeMonitorNamed) {
-    tracing_rule = NamedTriggerRule::Create(dict);
-  } else if (*type == kConfigRuleTypeMonitorHistogram) {
-    tracing_rule = HistogramRule::Create(dict);
-  }
-  if (tracing_rule)
-    tracing_rule->Setup(dict);
-
-  return tracing_rule;
-}
 
 std::unique_ptr<BackgroundTracingRule> BackgroundTracingRule::Create(
     const perfetto::protos::gen::TriggerRule& config) {

@@ -6,6 +6,7 @@
 #define NET_PROXY_RESOLUTION_POLLING_PROXY_CONFIG_SERVICE_H_
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
@@ -13,6 +14,8 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace net {
+
+class ProxyConfigWithAnnotation;
 
 // PollingProxyConfigService is a base class for creating ProxyConfigService
 // implementations that use polling to notice when settings have change.
@@ -37,8 +40,9 @@ class NET_EXPORT_PRIVATE PollingProxyConfigService : public ProxyConfigService {
   // Function for retrieving the current proxy configuration.
   // Implementors must be threadsafe as the function will be invoked from
   // worker threads.
-  typedef void (*GetConfigFunction)(NetworkTrafficAnnotationTag,
-                                    ProxyConfigWithAnnotation*);
+  using GetConfigFunction =
+      base::RepeatingCallback<void(const NetworkTrafficAnnotationTag,
+                                   ProxyConfigWithAnnotation*)>;
 
   // Creates a polling-based ProxyConfigService which will test for new
   // settings at most every |poll_interval| time by calling |get_config_func|

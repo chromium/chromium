@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/354829279): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/gfx/geometry/transform.h"
 
+#include <array>
 #include <ostream>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -56,7 +54,8 @@ Matrix44 AxisTransform2dToMatrix44(const AxisTransform2d& axis_2d) {
 }
 
 template <typename T>
-void AxisTransform2dToColMajor(const AxisTransform2d& axis_2d, T a[16]) {
+void AxisTransform2dToColMajor(const AxisTransform2d& axis_2d,
+                               base::span<T, 16> a) {
   a[0] = axis_2d.scale().x();
   a[5] = axis_2d.scale().y();
   a[12] = axis_2d.translation().x();
@@ -105,13 +104,14 @@ Matrix44& Transform::EnsureFullMatrix() {
 }
 
 // static
-Transform Transform::ColMajor(const double a[16]) {
+Transform Transform::ColMajor(base::span<const double, 16> a) {
   return Transform(a[0], a[1], a[2], a[3], a[4], a[5], a[6], a[7], a[8], a[9],
                    a[10], a[11], a[12], a[13], a[14], a[15]);
 }
 
 // static
-Transform Transform::ColMajorF(const float a[16]) {
+
+Transform Transform::ColMajorF(base::span<const float, 16> a) {
   if (AllTrue(Float4{a[1], a[2], a[3], a[4]} == Float4{0, 0, 0, 0} &
               Float4{a[6], a[7], a[8], a[9]} == Float4{0, 0, 0, 0} &
               Float4{a[10], a[11], a[14], a[15]} == Float4{1, 0, 0, 1})) {
@@ -121,7 +121,7 @@ Transform Transform::ColMajorF(const float a[16]) {
                    a[10], a[11], a[12], a[13], a[14], a[15]);
 }
 
-void Transform::GetColMajor(double a[16]) const {
+void Transform::GetColMajor(base::span<double, 16> a) const {
   if (!full_matrix_) [[likely]] {
     AxisTransform2dToColMajor(axis_2d_, a);
   } else {
@@ -129,7 +129,7 @@ void Transform::GetColMajor(double a[16]) const {
   }
 }
 
-void Transform::GetColMajorF(float a[16]) const {
+void Transform::GetColMajorF(base::span<float, 16> a) const {
   if (!full_matrix_) [[likely]] {
     AxisTransform2dToColMajor(axis_2d_, a);
   } else {
@@ -723,8 +723,8 @@ Vector3dF Transform::MapVector(const Vector3dF& vector) const {
                    ClampFloatGeometry(p[2]));
 }
 
-void Transform::TransformVector4(float vector[4]) const {
-  DCHECK(vector);
+void Transform::TransformVector4(base::span<float, 4> vector) const {
+  DCHECK(!vector.empty());
   if (!full_matrix_) [[likely]] {
     vector[0] = vector[0] * axis_2d_.scale().x() +
                 vector[3] * axis_2d_.translation().x();
@@ -733,8 +733,8 @@ void Transform::TransformVector4(float vector[4]) const {
     for (int i = 0; i < 4; i++)
       vector[i] = ClampFloatGeometry(vector[i]);
   } else {
-    double v[4] = {vector[0], vector[1], vector[2], vector[3]};
-    matrix_.MapVector4(v);
+    std::array<double, 4> v = {vector[0], vector[1], vector[2], vector[3]};
+    matrix_.MapVector4(v.data());
     for (int i = 0; i < 4; i++)
       vector[i] = ClampFloatGeometry(v[i]);
   }
@@ -992,6 +992,17 @@ void Transform::Round2dTranslationComponents() {
   } else {
     matrix_.set_rc(0, 3, std::round(matrix_.rc(0, 3)));
     matrix_.set_rc(1, 3, std::round(matrix_.rc(1, 3)));
+  }
+}
+
+void Transform::Floor2dTranslationComponents() {
+  if (!full_matrix_) [[likely]] {
+    axis_2d_ = AxisTransform2d::FromScaleAndTranslation(
+        axis_2d_.scale(), Vector2dF(std::floor(axis_2d_.translation().x()),
+                                    std::floor(axis_2d_.translation().y())));
+  } else {
+    matrix_.set_rc(0, 3, std::floor(matrix_.rc(0, 3)));
+    matrix_.set_rc(1, 3, std::floor(matrix_.rc(1, 3)));
   }
 }
 

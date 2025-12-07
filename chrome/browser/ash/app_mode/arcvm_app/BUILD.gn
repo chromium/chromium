@@ -1,0 +1,60 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("arcvm_app") {
+  sources = [
+    "kiosk_arcvm_app_data.cc",
+    "kiosk_arcvm_app_data.h",
+    "kiosk_arcvm_app_launcher.cc",
+    "kiosk_arcvm_app_launcher.h",
+    "kiosk_arcvm_app_manager.cc",
+    "kiosk_arcvm_app_manager.h",
+    "kiosk_arcvm_app_service.cc",
+    "kiosk_arcvm_app_service.h",
+    "kiosk_arcvm_app_service_factory.cc",
+    "kiosk_arcvm_app_service_factory.h",
+  ]
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//base",
+    "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/arc/session",
+    "//chrome/browser/ash/policy/core",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/multi_user",
+    "//chromeos/ash/components/policy/device_local_account",
+    "//chromeos/ash/components/settings",
+    "//chromeos/ash/experiences/arc",
+    "//components/account_id",
+    "//components/exo",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//content/public/browser",
+    "//ui/aura",
+    "//ui/display",
+    "//ui/gfx",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "kiosk_arcvm_app_service_unittest.cc" ]
+  deps = [
+    ":arcvm_app",
+    "//base",
+    "//chrome/browser/ash/app_list/arc:test_support",
+    "//chrome/browser/ash/arc/policy",
+    "//chrome/browser/ash/ownership",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/network:test_support",
+    "//chromeos/ash/experiences/arc:arc_test_support",
+    "//testing/gtest",
+  ]
+}

@@ -8,16 +8,19 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
@@ -45,6 +48,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/vector_icons/vector_icons.h"
@@ -58,6 +62,10 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/widget/widget.h"
+
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+#include "ash/examples/test_app_window.h"
+#endif
 
 namespace ash {
 namespace debug {
@@ -186,10 +194,8 @@ void HandleTogglePowerButtonMenu() {
 }
 
 void HandleToggleKeyboardBacklight() {
-  if (ash::features::IsKeyboardBacklightToggleEnabled()) {
-    base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
-    accelerators::ToggleKeyboardBacklight();
-  }
+  base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+  accelerators::ToggleKeyboardBacklight();
 }
 
 void HandleToggleMicrophoneMute() {
@@ -212,7 +218,7 @@ void HandleToggleTouchscreen() {
 
 void HandleToggleTabletMode() {
   Shell::Get()->tablet_mode_controller()->SetEnabledForDev(
-      !display::Screen::GetScreen()->InTabletMode());
+      !display::Screen::Get()->InTabletMode());
 }
 
 void HandleToggleVideoConferenceCameraTrayIcon() {
@@ -262,24 +268,37 @@ const std::u16string multiline_toast_text =
 
 void HandleShowToast() {
   // Iterates through all toast variations, which are a combination of having
-  // multi-line text, dismiss button, and a leading icon.
-  // `has_multiline_text` changes value every 4 iterations.
-  // `has_dismiss_button` changes value every 2 iterations.
-  // `has_leading_icon` changes value every iteration.
+  // multi-line text, a leading icon, and a text or icon button.
+  // `has_multiline_text` changes value every 6 iterations.
+  // `has_leading_icon` changes value every 3 iterations.
+  // `button_type` changes value every iteration.
   static int index = 0;
-  bool has_multiline_text = (index / 4) % 2;
-  bool has_dismiss_button = (index / 2) % 2;
-  bool has_leading_icon = index % 2;
+  const bool has_multiline_text = (index / 6) % 2;
+  const bool has_leading_icon = (index / 3) % 2;
+  const auto button_type = static_cast<ToastData::ButtonType>(index % 3);
   index++;
 
-  Shell::Get()->toast_manager()->Show(ToastData(
+  ToastData toast_data(
       /*id=*/"id", ToastCatalogName::kDebugCommand,
       has_multiline_text ? multiline_toast_text : oneline_toast_text,
       ToastData::kDefaultToastDuration,
-      /*visible_on_lock_screen=*/true, has_dismiss_button,
-      /*custom_dismiss_text=*/u"Button",
-      /*dismiss_callback=*/base::RepeatingClosure(),
-      has_leading_icon ? kSystemMenuBusinessIcon : gfx::kNoneIcon));
+      /*visible_on_lock_screen=*/true);
+  if (has_leading_icon) {
+    toast_data.leading_icon = &kSystemMenuBusinessIcon;
+  }
+  toast_data.button_type = button_type;
+  switch (button_type) {
+    case ToastData::ButtonType::kNone:
+      break;
+    case ToastData::ButtonType::kTextButton:
+      toast_data.button_text = u"Dismiss";
+      break;
+    case ToastData::ButtonType::kIconButton:
+      toast_data.button_text = u"Feedback";
+      toast_data.button_icon = &kFeedbackIcon;
+      break;
+  }
+  Shell::Get()->toast_manager()->Show(std::move(toast_data));
 }
 
 // Iterates through different system nudge variations:
@@ -321,6 +340,15 @@ void HandleShowSystemNudge() {
   }
 
   Shell::Get()->anchored_nudge_manager()->Show(nudge_data);
+}
+
+void HandleStartSunfishSession() {
+  if (CanShowSunfishOrScannerUi() &&
+      !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
+    RecordScannerFeatureUserState(
+        ScannerFeatureUserState::kSunfishSessionStartedFromDebugShortcut);
+    CaptureModeController::Get()->StartSunfishSession();
+  }
 }
 
 // TODO(b/318897434): Remove this shortcut after testing is complete.
@@ -380,6 +408,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
     case AcceleratorAction::kDebugPrintWindowHierarchy:
       HandlePrintWindowHierarchy();
       break;
+    case AcceleratorAction::kDebugStartSunfishSession:
+      HandleStartSunfishSession();
+      break;
     case AcceleratorAction::kDebugShowInformedRestore:
       HandleShowInformedRestore();
       break;
@@ -430,6 +461,11 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       break;
     case AcceleratorAction::kDebugToggleVideoConferenceCameraTrayIcon:
       HandleToggleVideoConferenceCameraTrayIcon();
+      break;
+    case AcceleratorAction::kDebugShowTestWindow:
+#if !BUILDFLAG(IS_CHROMEOS_DEVICE)
+      OpenTestAppWindow(/*client_controlled=*/false);
+#endif
       break;
     default:
       break;

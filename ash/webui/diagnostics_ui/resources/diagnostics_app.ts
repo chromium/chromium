@@ -10,24 +10,25 @@ import './diagnostics_sticky_banner.js';
 import './diagnostics_shared.css.js';
 import './input_list.js';
 import './network_list.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './system_page.js';
 
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
-import {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
-import {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
-import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import type {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import type {SelectorItem} from 'chrome://resources/ash/common/navigation_selector.js';
+import type {NavigationViewPanelElement} from 'chrome://resources/ash/common/navigation_view_panel.js';
+import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './diagnostics_app.html.js';
 import {DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 import {getDiagnosticsIcon, getNavigationIcon} from './diagnostics_utils.js';
-import {KeyboardInfo} from './input.mojom-webui.js';
-import {ConnectedDevicesObserverReceiver, InputDataProviderInterface, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import type {KeyboardInfo} from './input.mojom-webui.js';
+import type {InputDataProviderInterface, TouchDeviceInfo} from './input_data_provider.mojom-webui.js';
+import {ConnectedDevicesObserverReceiver} from './input_data_provider.mojom-webui.js';
 import {getInputDataProvider} from './mojo_interface_provider.js';
 
 export interface DiagnosticsAppElement {
@@ -165,7 +166,7 @@ export class DiagnosticsAppElement extends DiagnosticsAppElementBase {
   onTouchDeviceDisconnected(): void {}
 
   // Note: When adding a new page, update the DiagnosticsPage enum located
-  // in chrome/browser/ui/webui/ash/diagnostics_dialog.h.
+  // in chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h.
   private async getNavPages(): Promise<SelectorItem[]> {
     const pages: SelectorItem[] = [
       this.$.navigationPanel.createSelectorItem(

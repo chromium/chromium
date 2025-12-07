@@ -13,7 +13,7 @@ namespace bookmarks {
 // model funnel into the method BookmarkModelChanged.
 class BaseBookmarkModelObserver : public BookmarkModelObserver {
  public:
-  BaseBookmarkModelObserver() {}
+  BaseBookmarkModelObserver() = default;
 
   BaseBookmarkModelObserver(const BaseBookmarkModelObserver&) = delete;
   BaseBookmarkModelObserver& operator=(const BaseBookmarkModelObserver&) =
@@ -41,6 +41,11 @@ class BaseBookmarkModelObserver : public BookmarkModelObserver {
   void BookmarkNodeChanged(const BookmarkNode* node) override;
   void BookmarkNodeFaviconChanged(const BookmarkNode* node) override;
   void BookmarkNodeChildrenReordered(const BookmarkNode* node) override;
+
+  // The `BookmarkPermanentNodeVisibilityChanged` callback implies that one of
+  // the other callbacks above has already been called, or is about to be
+  // called. It is therefore not overridden here, to avoid a duplicate call to
+  // `BookmarkModelChanged()`:
 
  protected:
   ~BaseBookmarkModelObserver() override {}

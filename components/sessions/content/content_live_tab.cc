@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "components/sessions/content/content_platform_specific_tab_data.h"
+#include "content/public/browser/navigation_controller.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 namespace {
@@ -31,7 +32,7 @@ ContentLiveTab* ContentLiveTab::GetForWebContents(
 ContentLiveTab::ContentLiveTab(content::WebContents* contents)
     : web_contents_(contents) {}
 
-ContentLiveTab::~ContentLiveTab() {}
+ContentLiveTab::~ContentLiveTab() = default;
 
 bool ContentLiveTab::IsInitialBlankNavigation() {
   return navigation_controller().IsInitialBlankNavigation();

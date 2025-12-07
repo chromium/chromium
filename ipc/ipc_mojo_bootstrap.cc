@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <stdint.h>
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -20,10 +21,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/hash/hash.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -42,7 +43,6 @@
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
 #include "mojo/public/cpp/bindings/connector.h"
-#include "mojo/public/cpp/bindings/features.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
@@ -55,7 +55,6 @@
 #include "mojo/public/cpp/bindings/scoped_message_error_crash_key.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 #include "mojo/public/cpp/bindings/tracing_helpers.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 
 namespace IPC {
 
@@ -63,14 +62,9 @@ class ChannelAssociatedGroupController;
 
 namespace {
 
-ABSL_CONST_INIT thread_local bool off_sequence_binding_allowed = false;
+constinit thread_local bool off_sequence_binding_allowed = false;
 
 BASE_FEATURE(kMojoChannelAssociatedSendUsesRunOrPostTask,
-             "MojoChannelAssociatedSendUsesRunOrPostTask",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMojoChannelAssociatedCrashesOnSendError,
-             "MojoChannelAssociatedCrashesOnSendError",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Used to track some internal Channel state in pursuit of message leaks.
@@ -919,24 +913,14 @@ class ChannelAssociatedGroupController
       }
       return true;
     }
-    MojoResult result = connector_->AcceptAndGetResult(message);
 
-    // TODO(crbug.com/40944462): Remove this code when the cause of skipped
-    // messages with MojoChannelAssociatedSendUsesRunOrPostTask is understood,
-    // or no later than November 2024.
-    if (result != MOJO_RESULT_OK && !connector_->encountered_error() &&
-        base::FeatureList::IsEnabled(
-            kMojoChannelAssociatedCrashesOnSendError)) {
-      // Crash when sending a message fails and `connector_` can send more
-      // messages, as that breaks the assumption that messages are received in
-      // the order they were sent. Note: `connector_` cannot send more messages
-      // when `encountered_error()` is true.
-      mojo::debug::ScopedMessageErrorCrashKey crash_key(
-          base::StringPrintf("SendMessage failed with error %d", result));
-      CHECK(false);
+    MojoResult result = connector_->AcceptAndGetResult(message);
+    if (result == MOJO_RESULT_OK) {
+      return true;
     }
 
-    return result == MOJO_RESULT_OK;
+    CHECK(connector_->encountered_error());
+    return false;
   }
 
   void SendMessageOnSequenceViaTask(mojo::Message message) {

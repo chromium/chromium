@@ -10,15 +10,6 @@
 #include <tuple>
 #include <utility>
 
-#include "ash/components/arc/app/arc_app_launch_notifier.h"
-#include "ash/components/arc/arc_features.h"
-#include "ash/components/arc/arc_prefs.h"
-#include "ash/components/arc/arc_util.h"
-#include "ash/components/arc/metrics/arc_metrics_constants.h"
-#include "ash/components/arc/metrics/arc_metrics_service.h"
-#include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/session/arc_bridge_service.h"
-#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/json/json_writer.h"
@@ -43,16 +34,25 @@
 #include "chrome/browser/ash/arc/window_predictor/window_predictor.h"
 #include "chrome/browser/ash/arc/window_predictor/window_predictor_utils.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/ash/shelf/arc_app_shelf_id.h"
 #include "chrome/browser/ui/ash/shelf/arc_shelf_spinner_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_launch_notifier.h"
+#include "chromeos/ash/experiences/arc/arc_features.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
+#include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
+#include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
+#include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
+#include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "components/app_restore/features.h"
-#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -203,8 +203,9 @@ bool Launch(Profile* profile,
 int64_t GetValidDisplayId(int64_t display_id) {
   if (display_id != display::kInvalidDisplayId)
     return display_id;
-  if (auto* screen = display::Screen::GetScreen())
+  if (auto* screen = display::Screen::Get()) {
     return screen->GetPrimaryDisplay().id();
+  }
   return display::kInvalidDisplayId;
 }
 
@@ -214,10 +215,6 @@ int64_t GetValidDisplayId(int64_t display_id) {
 std::string ConstructArcAppShortcutUrl(const std::string& app_id,
                                        const std::string& shortcut_id) {
   return "appshortcutsearch://" + app_id + "/" + shortcut_id;
-}
-
-bool IsInstantResponseOpenEnabled() {
-  return base::FeatureList::IsEnabled(arc::kInstantResponseWindowOpen);
 }
 
 bool IsArcVmAndSwappedOut(content::BrowserContext* context) {
@@ -428,17 +425,6 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     launch_intent_to_send->extras[kRequestStartTimeParamKey] =
         base::NumberToString(
             (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds());
-  } else if (IsInstantResponseOpenEnabled() &&
-             !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
-                                                                 app_id)) {
-    // For some devices, launch ghost window and app at the same time.
-    if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
-            profile, app_id, *app_info, launch_intent_to_send, event_flags,
-            GhostWindowType::kAppLaunch,
-            WindowPredictorUseCase::kInstanceResponse, window_info)) {
-      return true;
-    }
-    VLOG(2) << "Failed to launch ghost window, fallback to launch directly.";
   }
 
   arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);
@@ -507,8 +493,8 @@ bool SetTouchMode(bool enable) {
 
   base::Value::Dict extras;
   extras.Set("inTouchMode", enable);
-  std::string extras_string;
-  base::JSONWriter::Write(base::Value(std::move(extras)), &extras_string);
+  std::string extras_string =
+      base::WriteJson(base::Value(std::move(extras))).value_or("");
   intent_helper_instance->SendBroadcast(kSetInTouchModeIntent,
                                         kArcIntentHelperPackageName,
                                         kIntentHelperClassName, extras_string);
@@ -618,16 +604,17 @@ bool IsArcItem(content::BrowserContext* context, const std::string& id) {
   return arc_prefs->IsRegistered(arc_app_shelf_id.app_id());
 }
 
-void GetLocaleAndPreferredLanguages(const Profile* profile,
-                                    std::string* out_locale,
-                                    std::string* out_preferred_languages) {
+void GetLocaleAndPreferredLanguages(
+    const ApplicationLocaleStorage& application_locale_storage,
+    const Profile* profile,
+    std::string* out_locale,
+    std::string* out_preferred_languages) {
   const PrefService::Preference* locale_pref =
       profile->GetPrefs()->FindPreference(
           ::language::prefs::kApplicationLocale);
   DCHECK(locale_pref);
   const std::string& locale = locale_pref->GetValue()->GetString();
-  *out_locale =
-      locale.empty() ? g_browser_process->GetApplicationLocale() : locale;
+  *out_locale = locale.empty() ? application_locale_storage.Get() : locale;
 
   // |preferredLanguages| consists of comma separated locale strings. It may be
   // empty or contain empty items, but those are ignored on ARC.  If an item

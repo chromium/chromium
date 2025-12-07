@@ -11,13 +11,14 @@
 <translation id="2987449669841041897">這個網站無法要求你授予權限</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />取得說明<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">如要允許配對，請<ph name="BEGIN_LINK" />開啟藍牙功能<ph name="END_LINK" /></translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> 需要相關權限才能追蹤手勢。</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />查看說明<ph name="END_LINK" />。正在掃描裝置…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> 需要相關權限，才能讓這個網站使用你的麥克風。</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> 要求掃描附近的藍牙裝置。已找到下列裝置：</translation>
 <translation id="5527082711130173040">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK1" />更新權限<ph name="END_LINK1" />。此外，<ph name="BEGIN_LINK2" />這個裝置的位置資訊存取權已關閉<ph name="END_LINK2" />。</translation>
 <translation id="5817918615728894473">配對</translation>
 <translation id="5858741533101922242">Chrome 無法開啟藍牙轉接器</translation>
-<translation id="5860491529813859533">啟用</translation>
+<translation id="5860491529813859533">開啟</translation>
 <translation id="6049776452963514597"><ph name="APP_NAME" /> 需要相關權限，才能讓這個網站使用你的相機和麥克風。</translation>
 <translation id="6092062101542170135">如要繼續，請開啟 Android 設定中的 NFC 功能</translation>
 <translation id="6656545060687952787">Chrome 需要位置資訊存取權才能掃描裝置。<ph name="BEGIN_LINK" />更新權限<ph name="END_LINK" /></translation>

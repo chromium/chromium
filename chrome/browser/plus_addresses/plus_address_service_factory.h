@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/plus_addresses/plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
 
 namespace content {
 class BrowserContext;

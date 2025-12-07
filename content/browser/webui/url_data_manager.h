@@ -73,9 +73,10 @@ class CONTENT_EXPORT URLDataManager : public base::SupportsUserData::Data {
   friend struct DeleteURLDataSource;
   typedef std::vector<const URLDataSourceImpl*> URLDataSources;
 
-  // If invoked on the UI thread the DataSource is deleted immediatlye,
+  // If invoked on the UI thread the DataSource is deleted immediately,
   // otherwise it is added to |data_sources_| and a task is scheduled to handle
-  // deletion on the UI thread. See note abouve DeleteDataSource for more info.
+  // deletion on the UI thread. See note above the |DeleteURLDataSource| struct
+  // in url_data_source_impl.h for more info.
   static void DeleteDataSource(const URLDataSourceImpl* data_source);
 
   // Returns true if |data_source| is scheduled for deletion (|DeleteDataSource|

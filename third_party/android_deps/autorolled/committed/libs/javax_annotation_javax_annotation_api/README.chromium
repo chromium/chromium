@@ -1,0 +1,19 @@
+Name: ${extension.name} API
+Short Name: javax.annotation-api
+URL: https://repo.maven.apache.org/maven2/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar
+Version: 1.3.2
+Update Mechanism: Autoroll
+License: CDDL-1.1, GPL-2.0-with-classpath-exception
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: no
+Shipped: no
+
+Description:
+Common Annotations for the JavaTM Platform API
+
+See also: http://jcp.org/en/jsr/detail?id=250
+
+
+Local Modifications:
+No modifications.

@@ -14,13 +14,6 @@ found in the LICENSE file.
     android:orientation="horizontal" >
 
     <!-- These layout params are overwritten in DropdownAdapter.java -->
-    <ImageView
-        android:id="@+id/start_dropdown_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/dropdown_icon_margin"
-        tools:ignore="ContentDescription" />
-
     <LinearLayout
         android:id="@+id/dropdown_label_wrapper"
         android:layout_width="0dp"

@@ -4,6 +4,7 @@
 
 #include "ash/system/network/network_detailed_network_view_impl.h"
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -60,7 +61,7 @@ std::u16string GetLabelForConfigureNetworkEntry(NetworkType type) {
     case NetworkType::kMobile:
       return l10n_util::GetStringUTF16(IDS_ASH_QUICK_SETTINGS_ADD_ESIM);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -77,9 +78,10 @@ std::optional<std::u16string> GetTooltipForConfigureNetworkEntry(
     case NetworkType::kCellular:
       [[fallthrough]];
     case NetworkType::kMobile:
-      return l10n_util::GetStringUTF16(GetAddESimTooltipMessageId());
+      return l10n_util::GetStringUTF16(
+          GetCellularInhibitReasonMessageId(GetCellularInhibitReason()));
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -97,7 +99,7 @@ int GetViewIDForConfigureNetworkEntry(NetworkType type) {
     case NetworkType::kMobile:
       return VIEW_ID_ADD_ESIM_ENTRY;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -153,6 +155,8 @@ HoverHighlightView* NetworkDetailedNetworkViewImpl::AddConfigureNetworkEntry(
   HoverHighlightView* entry = GetNetworkList(type)->AddChildView(
       std::make_unique<HoverHighlightView>(/*listener=*/this));
   entry->SetID(GetViewIDForConfigureNetworkEntry(type));
+  entry->SetProperty(views::kElementIdentifierKey,
+                     kNetworkDetailedViewConfigureNetworkButtonElementId);
 
   auto tooltip_text = GetTooltipForConfigureNetworkEntry(type);
   if (tooltip_text.has_value()) {
@@ -165,7 +169,7 @@ HoverHighlightView* NetworkDetailedNetworkViewImpl::AddConfigureNetworkEntry(
   entry->AddViewAndLabel(std::move(image_view),
                          GetLabelForConfigureNetworkEntry(type));
   views::Label* label = entry->text_label();
-  label->SetEnabledColorId(cros_tokens::kCrosSysPrimary);
+  label->SetEnabledColor(cros_tokens::kCrosSysPrimary);
   TypographyProvider::Get()->StyleLabel(ash::TypographyToken::kCrosButton2,
                                         *label);
 
@@ -218,6 +222,9 @@ views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
         wifi_network_list_view_ =
             scroll_content()->AddChildView(std::make_unique<RoundedContainer>(
                 RoundedContainer::Behavior::kBottomRounded));
+        wifi_network_list_view_->SetProperty(
+            views::kElementIdentifierKey,
+            kNetworkDetailedViewWifiNetworkListElementId);
 
         // Add a small empty space, like a separator, between the containers.
         wifi_network_list_view_->SetProperty(views::kMarginsKey,
@@ -262,7 +269,7 @@ views::View* NetworkDetailedNetworkViewImpl::GetNetworkList(NetworkType type) {
     default:
       return scroll_content();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NetworkDetailedNetworkViewImpl::ReorderFirstListView(size_t index) {

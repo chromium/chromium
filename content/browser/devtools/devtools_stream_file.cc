@@ -5,6 +5,8 @@
 #include "content/browser/devtools/devtools_stream_file.h"
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
@@ -118,18 +120,20 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
   max_size =
       std::min(max_size, static_cast<size_t>(last_written_pos_ - position));
   buffer.resize(max_size);
-  int size_got = file_.ReadNoBestEffort(position, &*buffer.begin(), max_size);
 
-  if (size_got < 0) {
+  std::optional<size_t> size_got =
+      file_.ReadNoBestEffort(position, base::as_writable_byte_span(buffer));
+
+  if (!size_got.has_value()) {
     LOG(ERROR) << "Failed to read temporary file";
     return StatusFailure;
   }
 
   // Provided client has requested sufficient large block, make their
   // life easier by not truncating in the middle of a UTF-8 character.
-  if (size_got > 6 && !CBU8_IS_SINGLE(buffer[size_got - 1])) {
+  if (size_got.value() > 6 && !CBU8_IS_SINGLE(buffer[size_got.value() - 1])) {
     std::string truncated;
-    base::TruncateUTF8ToByteSize(buffer, size_got, &truncated);
+    base::TruncateUTF8ToByteSize(buffer, size_got.value(), &truncated);
     // If the above failed, we're dealing with binary files, so
     // don't mess with them.
     if (truncated.size()) {
@@ -137,8 +141,8 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
       size_got = buffer.size();
     }
   }
-  buffer.resize(size_got);
-  last_read_pos_ = position + size_got;
+  buffer.resize(size_got.value());
+  last_read_pos_ = position + size_got.value();
   if (binary_) {
     buffer = base::Base64Encode(buffer);
   }
@@ -147,16 +151,16 @@ DevToolsIOContext::Stream::Status DevToolsStreamFile::InnerReadOnFileSequence(
 
 void DevToolsStreamFile::AppendOnFileSequence(
     std::unique_ptr<std::string> data) {
-  if (!InitOnFileSequenceIfNeeded())
+  if (!InitOnFileSequenceIfNeeded()) {
     return;
-  int size_written = file_.WriteAtCurrentPos(&*data->begin(), data->length());
-  if (size_written != static_cast<int>(data->length())) {
+  }
+  if (!file_.WriteAtCurrentPosAndCheck(base::as_byte_span(*data))) {
     LOG(ERROR) << "Failed to write temporary file";
     had_errors_ = true;
     file_.Close();
     return;
   }
-  last_written_pos_ += size_written;
+  last_written_pos_ += data->size();
 }
 
 }  // namespace content

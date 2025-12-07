@@ -32,7 +32,7 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
 
     // Internal interface to intercept find results from AwContentsClient.
     private interface FindResultListener {
-        public void onFindResultReceived(
+        void onFindResultReceived(
                 int activeMatchOrdinal, int numberOfMatches, boolean isDoneCounting);
     }
 
@@ -56,12 +56,11 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
     }
 
     /**
-     * Invokes findAllAsync on the UI thread, blocks until find results are
-     * received, and returns the number of matches.
+     * Invokes findAllAsync on the UI thread, blocks until find results are received, and returns
+     * the number of matches.
      *
      * @param searchString A string to search for.
      * @return The number of instances of the string that were found.
-     * @throws Throwable
      */
     public int findAllAsyncOnUiThread(final String searchString) throws Throwable {
         final IntegerFuture future =
@@ -80,13 +79,12 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
     }
 
     /**
-     * Invokes findNext on the UI thread, blocks until find results are
-     * received, and returns the ordinal of the highlighted match.
+     * Invokes findNext on the UI thread, blocks until find results are received, and returns the
+     * ordinal of the highlighted match.
      *
-     * @param forwards The direction to search as a boolean, with forwards
-     *                 represented as true and backwards as false.
+     * @param forwards The direction to search as a boolean, with forwards represented as true and
+     *     backwards as false.
      * @return The ordinal of the highlighted match.
-     * @throws Throwable
      */
     public int findNextOnUiThread(final boolean forwards) throws Throwable {
         final IntegerFuture future =
@@ -114,7 +112,7 @@ public class WebViewFindApisTestRule extends AwActivityTestRule {
 
     // Similar to java.util.concurrent.Future, but without the ability to cancel.
     private abstract static class IntegerFuture implements Runnable {
-        private CountDownLatch mLatch = new CountDownLatch(1);
+        private final CountDownLatch mLatch = new CountDownLatch(1);
         private int mValue;
 
         @Override

@@ -15,6 +15,8 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -94,8 +96,8 @@ class BASE_EXPORT ModuleCache {
   // Gets the module containing |address| or nullptr if |address| is not within
   // a module. The returned module remains owned by and has the same lifetime as
   // the ModuleCache object.
-  const Module* GetModuleForAddress(uintptr_t address);
-  std::vector<const Module*> GetModules() const;
+  const Module* GetModuleForAddress(uintptr_t address) LOCKS_EXCLUDED(lock_);
+  std::vector<const Module*> GetModules() const LOCKS_EXCLUDED(lock_);
 
   // Updates the set of non-native modules maintained by the
   // ModuleCache. Non-native modules represent regions of non-native executable
@@ -116,7 +118,8 @@ class BASE_EXPORT ModuleCache {
   // the same call.
   void UpdateNonNativeModules(
       const std::vector<const Module*>& defunct_modules,
-      std::vector<std::unique_ptr<const Module>> new_modules);
+      std::vector<std::unique_ptr<const Module>> new_modules)
+      LOCKS_EXCLUDED(lock_);
 
   // Adds a custom native module to the cache. This is intended to support
   // native modules that require custom handling. In general, native modules
@@ -144,7 +147,8 @@ class BASE_EXPORT ModuleCache {
   // NOTE: Only users that create their own modules and need control over native
   // module creation should use this function. Everyone else should use
   // GetModuleForAddress().
-  const Module* GetExistingModuleForAddress(uintptr_t address) const;
+  const Module* GetExistingModuleForAddress(uintptr_t address) const
+      LOCKS_EXCLUDED(lock_);
 
  private:
   // Heterogenously compares modules by base address, and modules and
@@ -173,6 +177,9 @@ class BASE_EXPORT ModuleCache {
   std::set<std::unique_ptr<const Module>, ModuleAndAddressCompare>
       native_modules_;
 
+  // Lock to guard |non_native_modules_|.
+  mutable base::Lock lock_;
+
   // Set of non-native modules currently mapped into the address space, sorted
   // by base address. Represented as flat_set because std::set does not support
   // extracting move-only element types prior to C++17's
@@ -182,7 +189,7 @@ class BASE_EXPORT ModuleCache {
   // native_modules_ to support preferential lookup of non-native modules
   // embedded in native modules; see comment on UpdateNonNativeModules().
   base::flat_set<std::unique_ptr<const Module>, ModuleAndAddressCompare>
-      non_native_modules_;
+      non_native_modules_ GUARDED_BY(lock_);
 
   // Unsorted vector of inactive non-native modules. Inactive modules are no
   // longer mapped in the address space and don't participate in address lookup,

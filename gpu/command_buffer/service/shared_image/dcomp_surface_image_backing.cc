@@ -16,11 +16,10 @@
 #include "third_party/angle/include/EGL/eglext_angle.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/GrBackendSurface.h"
+#include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
 #include "third_party/skia/include/gpu/ganesh/SkSurfaceGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
-#include "ui/gfx/buffer_format_util.h"
+#include "third_party/skia/include/gpu/ganesh/gl/GrGLTypes.h"
 #include "ui/gfx/color_space_win.h"
 #include "ui/gl/debug_utils.h"
 #include "ui/gl/direct_composition_support.h"
@@ -119,9 +118,8 @@ class DCompSurfaceImageBacking::D3DTextureGLSurfaceEGL
 
   gfx::SwapResult SwapBuffers(PresentationCallback callback,
                               gfx::FrameData data) override {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "Attempted to call SwapBuffers on a D3DTextureGLSurfaceEGL.";
-    return gfx::SwapResult::SWAP_FAILED;
   }
 
   gfx::Size GetSize() override { return size_; }
@@ -201,15 +199,10 @@ std::unique_ptr<DCompSurfaceImageBacking> DCompSurfaceImageBacking::Create(
       SkAlphaTypeIsOpaque(alpha_type) ? DXGI_ALPHA_MODE_IGNORE
                                       : DXGI_ALPHA_MODE_PREMULTIPLIED,
       &dcomp_surface);
-  base::UmaHistogramSparse("GPU.DirectComposition.DcompDeviceCreateSurface",
-                           hr);
+
   if (FAILED(hr)) {
     DLOG(ERROR) << "CreateSurface failed: "
                 << logging::SystemErrorCodeToString(hr);
-
-    // Disable direct composition because CreateSurface might fail again next
-    // time.
-    gl::SetDirectCompositionSwapChainFailed();
     return nullptr;
   }
 
@@ -228,17 +221,16 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
     gpu::SharedImageUsageSet usage,
     std::string debug_label,
     Microsoft::WRL::ComPtr<IDCompositionSurface> dcomp_surface)
-    : ClearTrackingSharedImageBacking(
-          mailbox,
-          format,
-          size,
-          color_space,
-          surface_origin,
-          alpha_type,
-          usage,
-          std::move(debug_label),
-          gfx::BufferSizeForBufferFormat(size, ToBufferFormat(format)),
-          /*is_thread_safe=*/false),
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      format,
+                                      size,
+                                      color_space,
+                                      surface_origin,
+                                      alpha_type,
+                                      usage,
+                                      std::move(debug_label),
+                                      format.EstimatedSizeInBytes(size),
+                                      /*is_thread_safe=*/false),
       gl_surface_(scoped_refptr(
           new D3DTextureGLSurfaceEGL(gl::GLSurfaceEGL::GetGLDisplayEGL(),
                                      size))),
@@ -254,7 +246,11 @@ DCompSurfaceImageBacking::DCompSurfaceImageBacking(
   DCHECK(success);
 }
 
-DCompSurfaceImageBacking::~DCompSurfaceImageBacking() = default;
+DCompSurfaceImageBacking::~DCompSurfaceImageBacking() {
+  if (cached_wgpu_texture_) {
+    cached_wgpu_texture_.Destroy();
+  }
+}
 
 SharedImageBackingType DCompSurfaceImageBacking::GetType() const {
   return SharedImageBackingType::kDCompSurface;
@@ -293,11 +289,11 @@ DCompSurfaceImageBacking::ProduceSkiaGraphite(
   auto dawn_representation =
       std::make_unique<DCompSurfaceDawnImageRepresentation>(
           manager, this, tracker, device, wgpu::BackendType::D3D11);
-  return SkiaGraphiteDawnImageRepresentation::Create(
+  return std::make_unique<SkiaGraphiteDawnImageRepresentation>(
       std::move(dawn_representation), context_state,
       context_state->gpu_main_graphite_recorder(), manager, this, tracker);
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
@@ -387,8 +383,7 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDrawGanesh(
   GrGLFramebufferInfo framebuffer_info = {0};
   DCHECK_EQ(gl_surface_->GetBackingFramebufferObject(), 0u);
 
-  SkColorType color_type = viz::ToClosestSkColorType(
-      /*gpu_compositing=*/true, format());
+  SkColorType color_type = viz::ToClosestSkColorType(format());
   switch (color_type) {
     case kRGBA_8888_SkColorType:
       framebuffer_info.fFormat = GL_RGBA8;
@@ -409,7 +404,7 @@ sk_sp<SkSurface> DCompSurfaceImageBacking::BeginDrawGanesh(
       framebuffer_info.fFormat = GL_BGRA8_EXT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "color_type: " << color_type;
+      NOTREACHED() << "color_type: " << color_type;
   }
 
   auto render_target = GrBackendRenderTargets::MakeGL(
@@ -476,41 +471,56 @@ wgpu::Texture DCompSurfaceImageBacking::BeginDrawDawn(
   update_rect_ = update_rect;
 
   // Import the texture into dawn
-
-  DCHECK(!shared_texture_memory_);
-  shared_texture_memory_ =
-      CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_);
   if (!shared_texture_memory_) {
-    LOG(ERROR) << "Failed to create shared texture memory.";
-    return nullptr;
+    shared_texture_memory_ =
+        CreateDawnSharedTextureMemory(device, dcomp_surface_draw_texture_copy_);
+    if (!shared_texture_memory_) {
+      LOG(ERROR) << "Failed to create shared texture memory.";
+      return nullptr;
+    }
   }
 
   wgpu::SharedTextureMemoryD3DSwapchainBeginState swapchain_begin_state = {};
   swapchain_begin_state.isSwapchain = true;
 
+  wgpu::SharedTextureMemoryD3D11BeginState d3d11_begin_state = {};
+  d3d11_begin_state.requiresEndAccessFence = false;
+  swapchain_begin_state.nextInChain = &d3d11_begin_state;
+
   wgpu::SharedTextureMemoryBeginAccessDescriptor desc = {};
   desc.initialized = true;
   desc.nextInChain = &swapchain_begin_state;
 
-  wgpu::Texture texture =
-      CreateDawnSharedTexture(shared_texture_memory_, usage, internal_usage,
-                              /*view_formats=*/{});
-  if (!texture || shared_texture_memory_.BeginAccess(texture, &desc) !=
-                      wgpu::Status::Success) {
+  if (!cached_wgpu_texture_ || cached_wgpu_texture_usage_ != usage) {
+    if (cached_wgpu_texture_) {
+      cached_wgpu_texture_.Destroy();
+    }
+    // Only Graphite should use this backing, thus internal_usage should be
+    // none.
+    CHECK_EQ(internal_usage, wgpu::TextureUsage::None);
+
+    cached_wgpu_texture_ =
+        CreateDawnSharedTexture(shared_texture_memory_, usage, internal_usage,
+                                /*view_formats=*/{});
+    cached_wgpu_texture_usage_ = usage;
+  }
+
+  if (!cached_wgpu_texture_ ||
+      shared_texture_memory_.BeginAccess(cached_wgpu_texture_, &desc) !=
+          wgpu::Status::Success) {
     LOG(ERROR) << "Failed to begin access and produce WGPUTexture";
     return nullptr;
   }
-  return texture;
+  return cached_wgpu_texture_;
 }
 
 void DCompSurfaceImageBacking::EndDrawDawn(const wgpu::Device& device,
                                            wgpu::Texture texture) {
+  DCHECK_EQ(cached_wgpu_texture_.Get(), texture.Get());
   // We don't need any synchronization here because dawn and dcomp are using the
   // same d3d11 device.
   wgpu::SharedTextureMemoryEndAccessState end_state = {};
-  shared_texture_memory_.EndAccess(texture.Get(), &end_state);
-  shared_texture_memory_ = nullptr;
-  texture.Destroy();
+  shared_texture_memory_.EndAccess(texture, &end_state);
 
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device;
   dcomp_surface_draw_texture_->GetDevice(&d3d11_device);

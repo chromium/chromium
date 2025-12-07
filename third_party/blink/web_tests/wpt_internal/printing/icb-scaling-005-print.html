@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <link rel="match" href="icb-scaling-005-print-ref.html">
+<meta name=fuzzy content="maxDifference=0-5;totalPixels=0-20">
 <style>
   @page {
     size: 300px;
@@ -7,6 +8,9 @@
     background: url(../support/cat.png) no-repeat;
     background-position-x: 200px;
     background-size: 100px;
+  }
+  :root {
+    print-color-adjust: exact;
   }
   body {
     margin: 0;

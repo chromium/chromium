@@ -11,7 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -21,6 +21,7 @@
 #include "ui/events/gestures/gesture_recognizer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_host_root_view.h"
@@ -135,10 +136,17 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   params.name = "MenuHost";
   params.shadow_type = bubble_border ? Widget::InitParams::ShadowType::kNone
                                      : Widget::InitParams::ShadowType::kDrop;
-  params.opacity = (bubble_border ||
-                    MenuConfig::instance().CornerRadiusForMenu(menu_controller))
+
+  const int corner_radius =
+      MenuConfig::instance().CornerRadiusForMenu(menu_controller);
+  params.opacity = (bubble_border || corner_radius)
                        ? Widget::InitParams::WindowOpacity::kTranslucent
                        : Widget::InitParams::WindowOpacity::kOpaque;
+  // bubble_border draws rounded corners if it exists. Otherwise, let the
+  // platform draw the corners.
+  if (!bubble_border) {
+    params.rounded_corners = gfx::RoundedCornersF(corner_radius);
+  }
   params.parent = init_params.parent ? init_params.parent->GetNativeView()
                                      : gfx::NativeView();
   params.context = init_params.context ? init_params.context->GetNativeWindow()
@@ -152,8 +160,9 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   // If MenuHost has no parent widget, it needs to be marked
   // Activatable, so that calling Show in ShowMenuHost will
   // get keyboard focus.
-  if (init_params.parent == nullptr)
+  if (init_params.parent == nullptr) {
     params.activatable = Widget::InitParams::Activatable::kYes;
+  }
 
 #if BUILDFLAG(IS_WIN)
   // On Windows use the software compositor to ensure that we don't block
@@ -272,8 +281,9 @@ void MenuHost::SetMenuHostOwnedWindowAnchor(
 }
 
 void MenuHost::ReleaseMenuHostCapture() {
-  if (native_widget_private()->HasCapture())
+  if (native_widget_private()->HasCapture()) {
     native_widget_private()->ReleaseCapture();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -284,16 +294,19 @@ internal::RootView* MenuHost::CreateRootView() {
 }
 
 void MenuHost::OnMouseCaptureLost() {
-  if (destroying_ || ignore_capture_lost_)
+  if (destroying_ || ignore_capture_lost_) {
     return;
+  }
 
-  if (!ViewsDelegate::GetInstance()->ShouldCloseMenuIfMouseCaptureLost())
+  if (!ViewsDelegate::GetInstance()->ShouldCloseMenuIfMouseCaptureLost()) {
     return;
+  }
 
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  if (menu_controller && !menu_controller->drag_in_progress())
+  if (menu_controller && !menu_controller->drag_in_progress()) {
     menu_controller->Cancel(MenuController::ExitType::kAll);
+  }
   Widget::OnMouseCaptureLost();
 }
 
@@ -308,13 +321,15 @@ void MenuHost::OnNativeWidgetDestroyed() {
 }
 
 void MenuHost::OnOwnerClosing() {
-  if (destroying_)
+  if (destroying_) {
     return;
+  }
 
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  if (menu_controller && !menu_controller->drag_in_progress())
+  if (menu_controller && !menu_controller->drag_in_progress()) {
     menu_controller->Cancel(MenuController::ExitType::kAll);
+  }
 }
 
 void MenuHost::OnDragWillStart() {
@@ -327,28 +342,22 @@ void MenuHost::OnDragWillStart() {
 void MenuHost::OnDragComplete() {
   // If we are being destroyed there is no guarantee that the menu items are
   // available.
-  if (destroying_)
+  if (destroying_) {
     return;
+  }
   MenuController* menu_controller =
       submenu_->GetMenuItem()->GetMenuController();
-  if (!menu_controller)
+  if (!menu_controller) {
     return;
-
-  bool should_close = true;
-  // If the view came from outside menu code (i.e., not a MenuItemView), we
-  // should consult the MenuDelegate to determine whether or not to close on
-  // exit.
-  if (!menu_controller->did_initiate_drag()) {
-    MenuDelegate* menu_delegate = submenu_->GetMenuItem()->GetDelegate();
-    should_close = menu_delegate ? menu_delegate->ShouldCloseOnDragComplete()
-                                 : should_close;
   }
-  menu_controller->OnDragComplete(should_close);
 
-  // We may have lost capture in the drag and drop, but are remaining open.
-  // Return capture so we get MouseCaptureLost events.
-  if (!should_close)
-    native_widget_private()->SetCapture();
+  bool should_close =
+      menu_controller->exit_type() != MenuController::ExitType::kNone;
+  if (auto* const delegate = submenu_->GetMenuItem()->GetDelegate()) {
+    should_close |= delegate->ShouldCloseOnDragComplete();
+  }
+
+  menu_controller->OnDragComplete(should_close);
 }
 
 Widget* MenuHost::GetPrimaryWindowWidget() {
@@ -368,7 +377,7 @@ gfx::Insets MenuHost::GetCustomInsetsInDIP() const {
 void MenuHost::OnWidgetDestroying(Widget* widget) {
   DCHECK_EQ(GetOwner(), widget);
   owner_observation_.Reset();
-  native_view_for_gestures_ = nullptr;
+  native_view_for_gestures_ = gfx::NativeView();
 }
 
 Widget* MenuHost::GetOwner() {

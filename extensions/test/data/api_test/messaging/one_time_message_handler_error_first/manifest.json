@@ -1,0 +1,13 @@
+{
+  "name": "One Time Messaging: first listener throws error before second listener responds",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [{
+    "matches": ["<all_urls>"],
+    "js": ["content_script.js"],
+    "run_at": "document_start"
+  }]
+}

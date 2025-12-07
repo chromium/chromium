@@ -234,6 +234,25 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Aborted"/>
 </enum>
 
+<enum name="CreateCustomApnResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network not found"/>
+  <int value="2" label="Shill error"/>
+</enum>
+
+<enum name="DHCPv4ProvisionResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="IPv6OnlyPreferred"/>
+  <int value="2" label="ClientFailure"/>
+  <int value="3" label="Nak"/>
+  <int value="4" label="Timeout"/>
+</enum>
+
+<enum name="DHCPv4RenewRebind">
+  <int value="0" label="Renew"/>
+  <int value="1" label="Rebind"/>
+</enum>
+
 <enum name="DnsProxy.DnsOverHttpsMode">
   <int value="0" label="Unknown"/>
   <int value="1" label="Off"/>
@@ -524,6 +543,9 @@ chromium-metrics-reviews@google.com.
              not available."/>
   <int value="13"
       label="kUnknownError: Hotspot disabled due to an unknown error."/>
+  <int value="14"
+      label="kResourceBusy: Hotspot disabled due to concurrency resource
+             conflict."/>
 </enum>
 
 <enum name="HotspotSetConfigResult">
@@ -580,6 +602,15 @@ chromium-metrics-reviews@google.com.
   <int value="13"
       label="kInvalid: The enable hotspot operation is invalid due to an
              ongoing disable operation."/>
+  <int value="14"
+      label="kBusy: The enable hotspot operation failed due to an ongoing
+             request."/>
+  <int value="15"
+      label="kConcurrencyNotSupported: The enable hotspot operation failed
+             due to concurrency conflict."/>
+  <int value="16"
+      label="kOperationFailure: The enable hotspot operation failed
+             internally."/>
 </enum>
 
 <enum name="HotspotSupport">
@@ -595,42 +626,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="kWifiWithCellularNotConnected"/>
 </enum>
 
-<enum name="IpProtectionEligibility">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Ineligible"/>
-  <int value="2" label="Eligible"/>
-</enum>
-
-<enum name="IpProtectionGetProxyListResult">
-  <int value="0" label="Failed to acquire a list"/>
-  <int value="1" label="Got a list without any valid entries"/>
-  <int value="2" label="Got a list with at least one valid entry"/>
-</enum>
-
-<enum name="IpProtectionProxyChainId">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Chain 1"/>
-  <int value="2" label="Chain 2"/>
-  <int value="3" label="Chain 3"/>
-</enum>
-
-<enum name="IpProtectionProxyLayer">
-  <int value="0" label="Proxy A"/>
-  <int value="1" label="Proxy B"/>
-</enum>
-
-<enum name="IpProtectionTokenBatchRequestResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed - No Account"/>
-  <int value="2" label="Failed - Not Eligible"/>
-  <int value="3" label="Deprecated"/>
-  <int value="4" label="Failed - BSA Error 400"/>
-  <int value="5" label="Failed - BSA Error 401"/>
-  <int value="6" label="Failed - BSA Error 403"/>
-  <int value="7" label="Failed - BSA Error Other"/>
-  <int value="8" label="Transient OAuth Token Failure"/>
-  <int value="9" label="Persistent OAuth Token Failure"/>
-  <int value="10" label="Disabled by User"/>
+<enum name="InstallationAttemptStep">
+  <int value="0" label="kInstallationRequested"/>
+  <int value="1" label="kHermesUnavailable"/>
+  <int value="2" label="kInstallationStarted"/>
+  <int value="3" label="kInstallationSucceeded"/>
+  <int value="4" label="kInstallationNoResponse"/>
+  <int value="5" label="kInstallationFailed"/>
 </enum>
 
 <enum name="ManagedApnMigrationType">
@@ -749,6 +751,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="eSIM profile not found"/>
   <int value="6" label="Enable profile failed"/>
   <int value="7" label="Timeout waiting for connectable"/>
+  <int value="8" label="SIM locked"/>
 </enum>
 
 <enum name="NetworkCellularPSimActivationResult">
@@ -906,9 +909,26 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Disconnected without explicit user action"/>
 </enum>
 
-<enum name="NetworkDisconnectType">
-  <int value="0" label="System Disconnect"/>
-  <int value="1" label="User Disconnect"/>
+<enum name="NetworkEapConnectionEvent">
+  <int value="0" label="No Record"/>
+  <int value="1" label="Auth Completed Success"/>
+  <int value="2" label="Auth Local TLS Failure"/>
+  <int value="3" label="Auth Remote TLS Failure"/>
+  <int value="4" label="Auth Failure"/>
+  <int value="5" label="Unexpected Failure"/>
+  <int value="6" label="TLS Status Alert"/>
+  <int value="7" label="Cert Verification Success"/>
+  <int value="8" label="First Cert Verification Failure"/>
+  <int value="9" label="Cert Verification Retry Attempt"/>
+  <int value="10" label="Cert Verification Failure Before Retry"/>
+  <int value="11" label="Cert Verification Failure After Retry"/>
+  <int value="12" label="Cert Verification Load Failure"/>
+  <int value="13" label="Cert Verification Unexpected Parameter"/>
+  <int value="14" label="Cert Verification Issuer Cert Absent"/>
+  <int value="15" label="Pin Missing"/>
+  <int value="16" label="Auth Failure Pin Missing"/>
+  <int value="17" label="Auth Attempt"/>
+  <int value="18" label="Proposed Auth Method Accepted"/>
 </enum>
 
 <enum name="NetworkEligibilityStatus">
@@ -1069,6 +1089,9 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="DEPRECATED: Dialog using an incognito Profile"/>
   <int value="6" label="Incognito mode disabled by policy"/>
   <int value="7" label="Incognito mode disabled by parental controls"/>
+  <int value="8"
+      label="Show in a dialog window on top of the floating workspace dialog
+             inside the session."/>
 </enum>
 
 <enum name="NetworkPortalSigninSource">
@@ -1238,6 +1261,25 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Tether Metered"/>
 </enum>
 
+<enum name="NetworkWiFiDisconnectType">
+  <int value="0" label="System Disconnect"/>
+  <int value="1" label="User Disconnect"/>
+  <int value="2" label="Suspend"/>
+  <int value="3" label="Select Network"/>
+  <int value="4" label="Disable"/>
+  <int value="5" label="Service Unload"/>
+  <int value="6" label="Disconnect On Ethernet"/>
+  <int value="7" label="Clear Credential"/>
+  <int value="8" label="No Endpoint Left"/>
+  <int value="9" label="New WiFi Device"/>
+  <int value="10" label="IP Config Failure"/>
+  <int value="11" label="Pending Service Timeout"/>
+  <int value="12" label="4-way Handshake Timeout"/>
+  <int value="13" label="Reconnect Timeout"/>
+  <int value="14" label="Roaming to Incorrect BSSID"/>
+  <int value="15" label="Shill"/>
+</enum>
+
 <enum name="NotificationSuppressionState">
   <int value="0" label="NotSuppressed"/>
   <int value="1" label="UserSuppressed"/>
@@ -1360,6 +1402,80 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="No Connectivity"/>
   <int value="12" label="Online"/>
 </enum>
+
+<!-- LINT.IfChange(PrefetchMatchesResourceRequestField) -->
+
+<enum name="PrefetchMatchesResourceRequestField">
+  <int value="0" label="unknown"/>
+  <int value="1" label="method"/>
+  <int value="2" label="url"/>
+  <int value="3" label="site_for_cookies"/>
+  <int value="4" label="update_first_party_url_on_redirect"/>
+  <int value="5" label="request_initiator"/>
+  <int value="6" label="isolated_world_origin"/>
+  <int value="7" label="navigation_redirect_chain"/>
+  <int value="8" label="referrer"/>
+  <int value="9" label="referrer_policy"/>
+  <int value="10" label="headers"/>
+  <int value="11" label="cors_exempt_headers"/>
+  <int value="12" label="load_flags"/>
+  <int value="13" label="resource_type"/>
+  <int value="14" label="priority"/>
+  <int value="15" label="priority_incremental"/>
+  <int value="16" label="cors_preflight_policy"/>
+  <int value="17" label="originated_from_service_worker"/>
+  <int value="18" label="skip_service_worker"/>
+  <int value="19" label="mode"/>
+  <int value="20" label="required_ip_address_space"/>
+  <int value="21" label="credentials_mode"/>
+  <int value="22" label="redirect_mode"/>
+  <int value="23" label="fetch_integrity"/>
+  <int value="24" label="destination"/>
+  <int value="25" label="original_destination"/>
+  <int value="26" label="request_body"/>
+  <int value="27" label="keepalive"/>
+  <int value="28" label="browsing_topics"/>
+  <int value="29" label="ad_auction_headers"/>
+  <int value="30" label="shared_storage_writable_eligible"/>
+  <int value="31" label="has_user_gesture"/>
+  <int value="32" label="enable_load_timing"/>
+  <int value="33" label="enable_upload_progress"/>
+  <int value="34" label="do_not_prompt_for_login"/>
+  <int value="35" label="is_outermost_main_frame"/>
+  <int value="36" label="transition_type"/>
+  <int value="37" label="previews_state"/>
+  <int value="38" label="upgrade_if_insecure"/>
+  <int value="39" label="is_revalidating"/>
+  <int value="40" label="throttling_profile_id"/>
+  <int value="41" label="custom_proxy_pre_cache_headers (deprecated)"/>
+  <int value="42" label="custom_proxy_post_cache_headers (deprecated)"/>
+  <int value="43" label="fetch_window_id"/>
+  <int value="44" label="devtools_request_id"/>
+  <int value="45" label="devtools_stack_id"/>
+  <int value="46" label="is_fetch_like_api"/>
+  <int value="47" label="is_fetch_later_api"/>
+  <int value="48" label="is_favicon"/>
+  <int value="49" label="recursive_prefetch_token"/>
+  <int value="50" label="trusted_params"/>
+  <int value="51" label="trust_token_params"/>
+  <int value="52" label="web_bundle_token_params"/>
+  <int value="53" label="devtools_accepted_stream_types"/>
+  <int value="54" label="net_log_create_info"/>
+  <int value="55" label="net_log_reference_info"/>
+  <int value="56" label="target_ip_address_space (deprecated)"/>
+  <int value="57" label="storage_access_api_status"/>
+  <int value="58" label="attribution_reporting_support"/>
+  <int value="59" label="attribution_reporting_eligibility"/>
+  <int value="60" label="shared_dictionary_writer_enabled"/>
+  <int value="61" label="attribution_reporting_src_token"/>
+  <int value="62" label="is_ad_tagged"/>
+  <int value="63" label="keepalive_token"/>
+  <int value="64" label="expected_public_keys"/>
+  <int value="65" label="permissions_policy"/>
+  <int value="66" label="client_side_content_decoding_enabled"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/prefetch_matches.cc:FieldsForUma) -->
 
 <enum name="PSimSetupFlowResult">
   <int value="0" label="SUCCESS"/>
@@ -2057,6 +2173,92 @@ chromium-metrics-reviews@google.com.
   <int value="681" label="97"/>
 </enum>
 
+<!-- LINT.IfChange(RequestHeader) -->
+
+<enum name="RequestHeader">
+  <int value="0" label="Other request header"/>
+  <int value="1" label="accept"/>
+  <int value="2" label="accept-encoding"/>
+  <int value="3" label="accept-language"/>
+  <int value="4" label="authorization"/>
+  <int value="5" label="cache-control"/>
+  <int value="6" label="client-version"/>
+  <int value="7" label="content-encoding"/>
+  <int value="8" label="content-type"/>
+  <int value="9" label="device-memory"/>
+  <int value="10" label="downlink"/>
+  <int value="11" label="dpr"/>
+  <int value="12" label="ect"/>
+  <int value="13" label="google-translate-element-mode"/>
+  <int value="14" label="if-modified-since"/>
+  <int value="15" label="if-none-match"/>
+  <int value="16" label="origin"/>
+  <int value="17" label="ping-from"/>
+  <int value="18" label="ping-to"/>
+  <int value="19" label="pragma"/>
+  <int value="20" label="range"/>
+  <int value="21" label="request-id"/>
+  <int value="22" label="rtt"/>
+  <int value="23" label="sec-browsing-topics"/>
+  <int value="24" label="sec-ch-device-memory"/>
+  <int value="25" label="sec-ch-dpr"/>
+  <int value="26" label="sec-ch-prefers-color-scheme"/>
+  <int value="27" label="sec-ch-ua"/>
+  <int value="28" label="sec-ch-ua-arch"/>
+  <int value="29" label="sec-ch-ua-bitness"/>
+  <int value="30" label="sec-ch-ua-form-factors"/>
+  <int value="31" label="sec-ch-ua-full-version"/>
+  <int value="32" label="sec-ch-ua-full-version-list"/>
+  <int value="33" label="sec-ch-ua-mobile"/>
+  <int value="34" label="sec-ch-ua-model"/>
+  <int value="35" label="sec-ch-ua-platform"/>
+  <int value="36" label="sec-ch-ua-platform-version"/>
+  <int value="37" label="sec-ch-ua-wow64"/>
+  <int value="38" label="sec-ch-viewport-height"/>
+  <int value="39" label="sec-ch-viewport-width"/>
+  <int value="40" label="sec-purpose"/>
+  <int value="41" label="service-worker"/>
+  <int value="42" label="service-worker-navigation-preload"/>
+  <int value="43" label="sid"/>
+  <int value="44" label="traceparent"/>
+  <int value="45" label="upgrade-insecure-requests"/>
+  <int value="46" label="user-agent"/>
+  <int value="47" label="viewport-width"/>
+  <int value="48" label="x-chrome-connected"/>
+  <int value="49" label="x-chrome-id-consistency-request"/>
+  <int value="50" label="x-client-data"/>
+  <int value="51" label="x-developer-key"/>
+  <int value="52" label="x-goog-api-key"/>
+  <int value="53" label="x-goog-encode-response-if-executable"/>
+  <int value="54" label="x-goog-ext-174067345-bin"/>
+  <int value="55" label="x-goog-update-appid"/>
+  <int value="56" label="x-goog-update-interactivity"/>
+  <int value="57" label="x-goog-update-updater"/>
+  <int value="58" label="x-http-method-override"/>
+  <int value="59" label="x-oauth-client-id"/>
+  <int value="60" label="x-requested-with"/>
+  <int value="61" label="x-server-timeout"/>
+  <int value="62" label="x-use-alt-service"/>
+  <int value="63" label="x-webchannel-content-type"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/request_header_to_enum.h:RequestHeader) -->
+
+<enum name="SharedDictionaryDocumentRequestCacheResult">
+  <int value="0" label="Cache Miss"/>
+  <int value="1" label="Hit from LRU Cache"/>
+  <int value="2" label="Hit from Active Dictionary List"/>
+</enum>
+
+<!-- LINT.IfChange(SharedDictionaryDocumentRequestMetadataResult) -->
+
+<enum name="SharedDictionaryDocumentRequestMetadataResult">
+  <int value="0" label="Metadata was ready in memory"/>
+  <int value="1" label="Metadata was pending load from disk"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_document_request_metadata_result.h:SharedDictionaryDocumentRequestMetadataResult) -->
+
 <enum name="SharedDictionaryEncodingType">
   <int value="0" label="Not Used"/>
   <int value="1" label="Shared Brotli"/>
@@ -2176,6 +2378,17 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Error Unknown"/>
   <int value="10" label="Error Wrong State"/>
 </enum>
+
+<!-- LINT.IfChange(SlopBucketChunkAllocationFailedReason) -->
+
+<enum name="SlopBucketChunkAllocationFailedReason">
+  <int value="0" label="OK"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="MaxChunksPerRequest"/>
+  <int value="3" label="MaxChunksGlobal"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/slop_bucket.h:ChunkAllocationFailedReason) -->
 
 <enum name="SlopBucketDisabledReason">
   <int value="0" label="Enabled"/>
@@ -2653,6 +2866,16 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="FullScan didn't connect"/>
   <int value="6" label="FullScan connected"/>
   <int value="7" label="Internal error"/>
+</enum>
+
+<enum name="WiFiSecurityType">
+  <int value="0" label="Unmanaged Open"/>
+  <int value="1" label="Managed Open"/>
+  <int value="2" label="Unmanaged PSK"/>
+  <int value="3" label="Managed PSK"/>
+  <int value="4" label="Unmanaged Certificate"/>
+  <int value="5" label="Managed Certificate"/>
+  <int value="6" label="Unknown"/>
 </enum>
 
 <enum name="WiFiSessionTagState">

@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import androidx.test.filters.SmallTest;
-import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,31 +15,34 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link ChromeActivity}'s {@link ActivityTabProvider}. */
-@DoNotBatch(reason = "waitForActivityCompletelyLoaded is unhappy when batched - more work needed")
+@Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ActivityTabProviderTest {
+    private WebPageStation mPage;
+
     /** A test observer that provides access to the tab being observed. */
     private static class TestActivityTabTabObserver extends ActivityTabTabObserver {
         /** The tab currently being observed. */
@@ -72,22 +74,24 @@ public class ActivityTabProviderTest {
         }
 
         @Override
+        @SuppressWarnings("MissingSuperCall")
         public void destroy() {
             ThreadUtils.runOnUiThreadBlocking(super::destroy);
         }
     }
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.autoResetCtaActivityRule();
 
     private ChromeTabbedActivity mActivity;
     private ActivityTabProvider mProvider;
     private Tab mActivityTab;
-    private CallbackHelper mActivityTabChangedHelper = new CallbackHelper();
+    private final CallbackHelper mActivityTabChangedHelper = new CallbackHelper();
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivity = mActivityTestRule.getActivity();
@@ -109,7 +113,8 @@ public class ActivityTabProviderTest {
      * @return The {@link Tab} that the active model currently has selected.
      */
     private Tab getModelSelectedTab() {
-        return mActivity.getTabModelSelector().getCurrentTab();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getTabModelSelector().getCurrentTab());
     }
 
     /**
@@ -141,26 +146,21 @@ public class ActivityTabProviderTest {
     @Test
     @SmallTest
     @Feature({"ActivityTabObserver"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTriggerWithTabSwitcher() throws TimeoutException {
         assertEquals(
                 "The activity tab should be the model's selected tab.",
                 getModelSelectedTab(),
                 mActivityTab);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getLayoutManager().showLayout(LayoutType.TAB_SWITCHER, false));
+        RegularTabSwitcherStation tabSwitcher = mPage.openRegularTabSwitcher();
         mActivityTabChangedHelper.waitForCallback(1);
         assertEquals(
                 "Entering the tab switcher should have triggered the event once.",
                 2,
                 mActivityTabChangedHelper.getCallCount());
         assertEquals("The activity tab should be null.", null, mActivityTab);
-
-        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.TAB_SWITCHER);
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActivity.getLayoutManager().showLayout(LayoutType.BROWSING, false));
+        mPage = tabSwitcher.selectTabAtIndex(0, WebPageStation.newBuilder());
         mActivityTabChangedHelper.waitForCallback(2);
         assertEquals(
                 "Exiting the tab switcher should have triggered the event once.",
@@ -170,8 +170,6 @@ public class ActivityTabProviderTest {
                 "The activity tab should be the model's selected tab.",
                 getModelSelectedTab(),
                 mActivityTab);
-
-        LayoutTestUtils.waitForLayout(mActivity.getLayoutManager(), LayoutType.BROWSING);
     }
 
     /**
@@ -184,11 +182,7 @@ public class ActivityTabProviderTest {
     public void testTriggerWithTabSelection() throws TimeoutException {
         Tab startingTab = getModelSelectedTab();
 
-        ChromeTabUtils.fullyLoadUrlInNewTab(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
-                false);
+        mPage = mPage.openFakeLinkToWebPage(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         assertNotEquals(
                 "A new tab should be in the foreground.", startingTab, getModelSelectedTab());
@@ -218,22 +212,25 @@ public class ActivityTabProviderTest {
     @Test
     @SmallTest
     @Feature({"ActivityTabObserver"})
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTriggerOnLastTabClosed() throws TimeoutException {
         // Have a tab open in incognito model. This should not be in the way getting the event
         // triggered when closing the last tab in normal mode.
         TabModelSelector selector = mActivity.getTabModelSelector();
-        ThreadUtils.runOnUiThreadBlocking(() -> selector.selectModel(true));
-        ChromeTabUtils.fullyLoadUrlInNewTab(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
-                true);
+
+        mPage =
+                mPage.openNewIncognitoTabFast()
+                        .loadWebPageProgrammatically(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         ThreadUtils.runOnUiThreadBlocking(() -> selector.selectModel(false));
 
         int callCount = mActivityTabChangedHelper.getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    selector.closeTab(getModelSelectedTab());
+                    selector.tryCloseTab(
+                            TabClosureParams.closeTab(getModelSelectedTab())
+                                    .allowUndo(false)
+                                    .build(),
+                            /* allowDialog= */ false);
                 });
         mActivityTabChangedHelper.waitForCallback(callCount);
 
@@ -254,11 +251,7 @@ public class ActivityTabProviderTest {
     public void testCorrectTabAfterTabClosed() {
         Tab startingTab = getModelSelectedTab();
 
-        ChromeTabUtils.fullyLoadUrlInNewTab(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
-                false);
+        mPage = mPage.openFakeLinkToWebPage(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         assertNotEquals(
                 "The starting tab should not be the selected tab.",
@@ -272,7 +265,11 @@ public class ActivityTabProviderTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivity.getTabModelSelector().closeTab(startingTab);
+                    mActivity
+                            .getTabModelSelector()
+                            .tryCloseTab(
+                                    TabClosureParams.closeTab(startingTab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                 });
 
         assertEquals("The activity tab should not have changed.", activityTabBefore, mActivityTab);
@@ -292,11 +289,7 @@ public class ActivityTabProviderTest {
                 startingTab,
                 tabObserver.mObservedTab);
 
-        ChromeTabUtils.fullyLoadUrlInNewTab(
-                InstrumentationRegistry.getInstrumentation(),
-                mActivity,
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL,
-                false);
+        mPage = mPage.openFakeLinkToWebPage(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
 
         assertNotEquals("The tab should have changed.", startingTab, getModelSelectedTab());
         assertEquals(

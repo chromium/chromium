@@ -4,17 +4,18 @@
 
 package org.chromium.chrome.browser.feed;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 
 /** Implementation of xsurface's PersistentKeyValueCache. */
 @JNINamespace("feed")
+@NullMarked
 public class FeedPersistentKeyValueCache implements PersistentKeyValueCache {
     @Override
     public void lookup(byte[] key, ValueConsumer consumer) {
@@ -46,8 +47,8 @@ public class FeedPersistentKeyValueCache implements PersistentKeyValueCache {
     interface Natives {
         void lookup(byte[] key, Object consumer);
 
-        void put(byte[] key, byte[] value, Runnable onComplete);
+        void put(byte[] key, byte[] value, @Nullable Runnable onComplete);
 
-        void evict(byte[] key, Runnable onComplete);
+        void evict(byte[] key, @Nullable Runnable onComplete);
     }
 }

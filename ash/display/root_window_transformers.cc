@@ -205,6 +205,8 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
         gfx::Rect(source_display_info.GetSizeInPixelWithPanelOrientation());
     display::Display::Rotation active_root_rotation =
         source_display_info.GetActiveRotation();
+    display::Display::Rotation active_mirror_rotation =
+        mirror_display_info.GetActiveRotation();
 
     const bool should_undo_rotation = ShouldUndoRotationForMirror();
     gfx::Transform rotation_transform;
@@ -221,19 +223,25 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
     }
 
     gfx::Rect mirror_display_rect =
-        gfx::Rect(mirror_display_info.bounds_in_native().size());
+        gfx::Rect(mirror_display_info.GetSizeInPixelWithPanelOrientation());
 
-    // When logical rotation is 90 or 270 degree, transpose is needed to apply
+    // When the root rotation is 90 or 270 degree, transpose is needed to apply
     // reverse rotation to `root_bounds_` and `mirror_display_rect` to exclude
     // the rotation. This is because the rotation happens at viz output and
     // `transform_` needs to be calculated without the rotation.
     // E.g. host native size 1600x1200. Rotation 90 degree. `transform_` needs
     // to fit 1200x1600 rather than 1600x1200.
-    const bool need_transpose =
-        active_root_rotation == display::Display::ROTATE_90 ||
-        active_root_rotation == display::Display::ROTATE_270;
-    if (need_transpose) {
+    if (active_root_rotation == display::Display::ROTATE_90 ||
+        active_root_rotation == display::Display::ROTATE_270) {
       root_bounds_.Transpose();
+      mirror_display_rect.Transpose();
+    }
+
+    // In tablet mode, we want to keep the active rotation of the mirroring
+    // display.
+    if (display::Screen::Get()->InTabletMode() &&
+        (active_mirror_rotation == display::Display::ROTATE_90 ||
+         active_mirror_rotation == display::Display::ROTATE_270)) {
       mirror_display_rect.Transpose();
     }
 
@@ -247,7 +255,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       int margin = static_cast<int>((mirror_display_rect.height() -
                                      root_bounds_.height() * inverted_scale) /
                                     2);
-      insets_ = gfx::Insets::TLBR(0, margin, 0, margin);
+      insets_ = gfx::Insets::TLBR(margin, 0, margin, 0);
 
       transform_.Translate(0, margin);
       transform_.Scale(inverted_scale, inverted_scale);
@@ -259,7 +267,7 @@ class MirrorRootWindowTransformer : public RootWindowTransformer {
       int margin = static_cast<int>((mirror_display_rect.width() -
                                      root_bounds_.width() * inverted_scale) /
                                     2);
-      insets_ = gfx::Insets::TLBR(margin, 0, margin, 0);
+      insets_ = gfx::Insets::TLBR(0, margin, 0, margin);
 
       transform_.Translate(margin, 0);
       transform_.Scale(inverted_scale, inverted_scale);
@@ -316,7 +324,7 @@ class PartialBoundsRootWindowTransformer : public RootWindowTransformer {
     // Calculate the unified height scale value, and apply the same scale on the
     // row physical height to get the row logical height.
     display::Display unified_display =
-        display::Screen::GetScreen()->GetPrimaryDisplay();
+        display::Screen::Get()->GetPrimaryDisplay();
     const int unified_physical_height =
         unified_display.GetSizeInPixel().height();
     const int unified_logical_height = screen_bounds.height();

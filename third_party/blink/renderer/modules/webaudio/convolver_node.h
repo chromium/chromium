@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_CONVOLVER_NODE_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/convolver_handler.h"
@@ -38,8 +37,6 @@ namespace blink {
 class AudioBuffer;
 class ConvolverOptions;
 class ExceptionState;
-class Reverb;
-class SharedAudioBuffer;
 
 class MODULES_EXPORT ConvolverNode final : public AudioNode {
   DEFINE_WRAPPERTYPEINFO();

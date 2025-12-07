@@ -5,18 +5,20 @@
 #ifndef UI_BASE_MODELS_IMAGE_MODEL_H_
 #define UI_BASE_MODELS_IMAGE_MODEL_H_
 
+#include <variant>
+
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image.h"
-#include "ui/gfx/image/image_skia.h"
 
 namespace gfx {
+class ImageSkia;
 struct VectorIcon;
 }  // namespace gfx
 
@@ -33,45 +35,39 @@ class ColorProvider;
 // eventually resolved by the ColorProvider from the correct context. This class
 // is only used internal to ImageModel and should never be instantiated except
 // by ImageModel.
-
 class COMPONENT_EXPORT(UI_BASE) VectorIconModel {
  public:
   VectorIconModel();
+
   VectorIconModel(const VectorIconModel&);
   VectorIconModel& operator=(const VectorIconModel&);
+
   VectorIconModel(VectorIconModel&&);
   VectorIconModel& operator=(VectorIconModel&&);
+
   ~VectorIconModel();
 
   bool is_empty() const { return !vector_icon_; }
 
-  bool operator==(const VectorIconModel& other) const;
-  bool operator!=(const VectorIconModel& other) const;
+  friend bool operator==(const VectorIconModel&,
+                         const VectorIconModel&) = default;
 
   const gfx::VectorIcon* vector_icon() const { return vector_icon_; }
   int icon_size() const { return icon_size_; }
-  ColorId color_id() const { return absl::get<ColorId>(color_); }
-  SkColor color() const { return absl::get<SkColor>(color_); }
-  bool has_color() const { return absl::holds_alternative<SkColor>(color_); }
+  ui::ColorVariant color() const { return color_; }
   const gfx::VectorIcon* badge_icon() const { return badge_icon_; }
 
  private:
   friend class ImageModel;
 
   VectorIconModel(const gfx::VectorIcon& vector_icon,
-                  ColorId color_id,
-                  int icon_size,
-                  const gfx::VectorIcon* badge_icon);
-  // TODO (kylixrd): This should be eventually removed once all instances of
-  // hard-coded SkColor constants are removed in favor of using a color id.
-  VectorIconModel(const gfx::VectorIcon& vector_icon,
-                  SkColor color,
+                  ui::ColorVariant color,
                   int icon_size,
                   const gfx::VectorIcon* badge_icon);
 
   raw_ptr<const gfx::VectorIcon> vector_icon_ = nullptr;
   int icon_size_ = 0;
-  absl::variant<ColorId, SkColor> color_ = gfx::kPlaceholderColor;
+  ui::ColorVariant color_;
   raw_ptr<const gfx::VectorIcon> badge_icon_ = nullptr;
 };
 
@@ -91,11 +87,7 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
 
   // TODO(pkasting): Remove the default `color_id` or replace with kColorIcon.
   static ImageModel FromVectorIcon(const gfx::VectorIcon& vector_icon,
-                                   ColorId color_id = kColorMenuIcon,
-                                   int icon_size = 0,
-                                   const gfx::VectorIcon* badge_icon = nullptr);
-  static ImageModel FromVectorIcon(const gfx::VectorIcon& vector_icon,
-                                   SkColor color,
+                                   ui::ColorVariant color = kColorMenuIcon,
                                    int icon_size = 0,
                                    const gfx::VectorIcon* badge_icon = nullptr);
   static ImageModel FromImage(const gfx::Image& image);
@@ -120,8 +112,7 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
   ImageGenerator GetImageGenerator() const;
 
   // Checks if both models yield equal images.
-  bool operator==(const ImageModel& other) const;
-  bool operator!=(const ImageModel& other) const;
+  friend bool operator==(const ImageModel&, const ImageModel&) = default;
 
   // Rasterizes if necessary.
   gfx::ImageSkia Rasterize(const ui::ColorProvider* color_provider) const;
@@ -133,7 +124,8 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
     ImageGeneratorAndSize& operator=(const ImageGeneratorAndSize&);
     ~ImageGeneratorAndSize();
 
-    bool operator==(const ImageGeneratorAndSize& other) const;
+    friend bool operator==(const ImageGeneratorAndSize&,
+                           const ImageGeneratorAndSize&) = default;
 
     ImageGenerator generator;
     gfx::Size size;
@@ -144,7 +136,7 @@ class COMPONENT_EXPORT(UI_BASE) ImageModel {
   explicit ImageModel(const gfx::ImageSkia& image_skia);
   explicit ImageModel(ImageGeneratorAndSize image_generator);
 
-  absl::variant<VectorIconModel, gfx::Image, ImageGeneratorAndSize> icon_;
+  std::variant<VectorIconModel, gfx::Image, ImageGeneratorAndSize> icon_;
 };
 
 }  // namespace ui

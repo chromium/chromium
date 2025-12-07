@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidation_tracking.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "cc/layers/layer.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
@@ -93,7 +89,7 @@ void RasterInvalidationTracking::AsJSON(JSONObject* json, bool detailed) const {
     std::sort(sorted.begin(), sorted.end(), &CompareRasterInvalidationInfo);
     auto invalidations_json = std::make_unique<JSONArray>();
     gfx::Rect last_rect;
-    for (auto it = sorted.begin(); it != sorted.end(); ++it) {
+    for (auto it = sorted.begin(); it != sorted.end(); UNSAFE_TODO(++it)) {
       const auto& info = *it;
       if (detailed) {
         auto info_json = std::make_unique<JSONObject>();
@@ -208,9 +204,9 @@ void RasterInvalidationTracking::CheckUnderInvalidations(
     // In the common case of no under-invalidation, memcmp/memset is much faster
     // than the pixel-by-pixel comparison below.
     void* new_row_addr = new_bitmap.pixmap().writable_addr(0, bitmap_y);
-    if (memcmp(old_bitmap.pixmap().addr(0, bitmap_y), new_row_addr,
-               new_bitmap.rowBytes()) == 0) {
-      memset(new_row_addr, 0, new_bitmap.rowBytes());
+    if (UNSAFE_TODO(memcmp(old_bitmap.pixmap().addr(0, bitmap_y), new_row_addr,
+                           new_bitmap.rowBytes())) == 0) {
+      UNSAFE_TODO(memset(new_row_addr, 0, new_bitmap.rowBytes()));
       continue;
     }
 

@@ -9,7 +9,6 @@
 #include <string>
 #include <variant>
 
-#include "base/functional/callback.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 
 namespace visited_url_ranking {

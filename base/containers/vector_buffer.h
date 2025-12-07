@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #ifndef BASE_CONTAINERS_VECTOR_BUFFER_H_
 #define BASE_CONTAINERS_VECTOR_BUFFER_H_
 
@@ -15,7 +20,6 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/containers/util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/checked_math.h"
 
@@ -43,7 +47,7 @@ class VectorBuffer {
  public:
   constexpr VectorBuffer() = default;
 
-#if defined(__clang__) && !defined(__native_client__)
+#if defined(__clang__)
   // This constructor converts an uninitialized void* to a T* which triggers
   // clang Control Flow Integrity. Since this is as-designed, disable.
   __attribute__((no_sanitize("cfi-unrelated-cast", "vptr")))
@@ -77,11 +81,6 @@ class VectorBuffer {
   size_t capacity() const { return capacity_; }
 
   T& operator[](size_t i) {
-    // TODO(crbug.com/40565371): Some call sites (at least circular_deque.h) are
-    // calling this with `i == capacity_` as a way of getting `end()`. Therefore
-    // we have to allow this for now (`i <= capacity_`), until we fix those call
-    // sites to use real iterators. This comment applies here and to `const T&
-    // operator[]`, below.
     CHECK_LT(i, capacity_);
     // SAFETY: `capacity_` is the size of the array pointed to by `buffer_`,
     // which `i` is less than, so the dereference is inside the allocation.
@@ -116,6 +115,8 @@ class VectorBuffer {
     return as_span().subspan(index, size);
   }
 
+  T* get_at(size_t index) { return as_span().get_at(index); }
+
   // DestructRange ------------------------------------------------------------
 
   static void DestructRange(span<T> range) {
@@ -145,7 +146,8 @@ class VectorBuffer {
     if constexpr (is_trivially_copyable_or_relocatable<T>) {
       // We can't use span::copy_from() as it tries to call copy constructors,
       // and fails to compile on move-only trivially-relocatable types.
-      memcpy(to.data(), from.data(), to.size_bytes());
+      // TODO(https://crbug.com/432507886): find a way to remove the void* cast
+      memcpy(static_cast<void*>(to.data()), from.data(), to.size_bytes());
       // Destructors are skipped because they are trivial or should be elided in
       // trivial relocation (https://reviews.llvm.org/D114732).
     } else {

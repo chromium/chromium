@@ -15,6 +15,7 @@ SystemShadowOnTextureLayer::SystemShadowOnTextureLayer(SystemShadow::Type type)
     : type_(type),
       shadow_values_(gfx::ShadowValue::MakeChromeOSSystemUIShadowValues(
           SystemShadow::GetElevationFromType(type))) {
+  layer_.SetName("SystemShadow");
   layer_.SetFillsBoundsOpaquely(false);
   layer_.set_delegate(this);
   layer_.SetBounds(GetLayerBounds());

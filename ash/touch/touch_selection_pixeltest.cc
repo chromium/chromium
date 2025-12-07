@@ -7,11 +7,13 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/view.h"
@@ -47,6 +49,8 @@ class TouchSelectionPixelTest : public AshTestBase {
     std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
     widget->SetBounds(gfx::Rect(5, 5, 500, 500));
     widget->SetContentsView(std::make_unique<views::View>());
+    widget->GetContentsView()->SetBackground(
+        views::CreateSolidBackground(SK_ColorGREEN));
     widget->Show();
     return widget;
   }
@@ -54,8 +58,8 @@ class TouchSelectionPixelTest : public AshTestBase {
  private:
   // Disable animations so that touch selection UI appears immediately when
   // triggered.
-  ui::ScopedAnimationDurationScaleMode disable_animations_{
-      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION};
+  gfx::ScopedAnimationDurationScaleMode disable_animations_{
+      gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION};
 };
 
 TEST_F(TouchSelectionPixelTest, MagnifierOnTextfield) {
@@ -77,7 +81,7 @@ TEST_F(TouchSelectionPixelTest, MagnifierOnTextfield) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "touch_selection",
-      /*revision_number=*/2, widget.get()));
+      /*revision_number=*/4, widget.get()));
 }
 
 }  // namespace

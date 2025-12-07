@@ -1,3 +1,4 @@
+# Note, this file is only used on arm64 builders.
 # https://crbug.com/1241502
 -All/ImageTransferCacheEntryTest.Deserialize/Y_UV
 -All/ImageTransferCacheEntryTest.Deserialize/Y_U_V
@@ -10,12 +11,14 @@
 -All/ImageTransferCacheEntryTest.HardwareDecodedMipsAtCreation/Y_V_U
 -OopPixelTest.ClearingOpaqueCornerExactEdge
 -OopPixelTest.ClearingTransparentCornerPartialRaster
--OopPixelTest.ConvertNV12ToRGB
+-OopPixelTest.CopyNV12SharedImage
 -OopPixelTest.CopySharedImage
 -OopPixelTest.DrawGainmapImage
+-OopPixelTest.DrawGainmapImageCubic
 -OopPixelTest.DrawGainmapImageFiltering
 -OopPixelTest.DrawHdrImageWithMetadata
 -OopPixelTest.DrawImage
+-OopPixelTest.DrawImageAlpha
 -OopPixelTest.DrawImageScaled
 -OopPixelTest.DrawImageShaderScaled
 -OopPixelTest.DrawImageWithSetMatrix
@@ -33,6 +36,7 @@
 -OopPixelTest.DrawTextBlobPersistentShaderCache
 -OopPixelTest.DrawTextMultipleRasterCHROMIUM
 -OopPixelTest.RecordShaderExceedsMaxTextureSize
+-OopPixelTest.SkSLCommandShader
 -P/OopClearPixelTest.ClearingOpaqueBottomEdge/0
 -P/OopClearPixelTest.ClearingOpaqueBottomEdge/1
 -P/OopClearPixelTest.ClearingOpaqueCorner/0
@@ -141,7 +145,5 @@
 -P/OopTextBlobPixelTest.Config/RecordShader_NoFilter_PerspectiveCTM_NoLCD
 -P/OopTextBlobPixelTest.Config/RecordShader_NoFilter_ScaledCTM_LCD
 -P/OopTextBlobPixelTest.Config/RecordShader_NoFilter_ScaledCTM_NoLCD
--P/OopYUVToRGBPixelTest.ConvertYUVToRGB/0
--P/OopYUVToRGBPixelTest.ConvertYUVToRGB/1
--P/OopYUVToRGBPixelTest.ConvertYUVToRGB/2
--P/OopYUVToRGBPixelTest.ConvertYUVToRGB/3
+-P/OopYUVToRGBPixelTest.CopyI420SharedImage/0
+-P/OopYUVToRGBPixelTest.CopyI420SharedImage/1

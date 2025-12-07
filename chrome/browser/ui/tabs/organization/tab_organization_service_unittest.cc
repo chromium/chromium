@@ -6,12 +6,15 @@
 
 #include <memory>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_sync_service_initialized_observer.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -24,8 +27,13 @@
 #include "tab_organization_service_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_features.h"
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 namespace {
 
@@ -36,14 +44,14 @@ constexpr char kInvalidURL[] = "chrome://page";
 
 class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
  public:
-  TabOrganizationServiceTest() {}
+  TabOrganizationServiceTest() = default;
   TabOrganizationServiceTest(const TabOrganizationServiceTest&) = delete;
   TabOrganizationServiceTest& operator=(const TabOrganizationServiceTest&) =
       delete;
 
   Browser* AddBrowser() {
     Browser::CreateParams native_params(profile_.get(), true);
-    native_params.initial_show_state = ui::SHOW_STATE_DEFAULT;
+    native_params.initial_show_state = ui::mojom::WindowShowState::kDefault;
     std::unique_ptr<Browser> browser =
         CreateBrowserWithTestWindowForParams(native_params);
     Browser* browser_ptr = browser.get();
@@ -58,22 +66,28 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
     return url;
   }
 
-  content::WebContents* AddValidTabToBrowser(Browser* browser, int index) {
+  tabs::TabInterface* AddValidTabToBrowser(Browser* browser, int index) {
     std::unique_ptr<content::WebContents> web_contents =
         content::WebContentsTester::CreateTestWebContents(profile_.get(),
                                                           nullptr);
     content::WebContentsTester::For(web_contents.get())
         ->NavigateAndCommit(GURL(kValidURL));
 
-    content::WebContents* web_contents_ptr = web_contents.get();
-    content::WebContentsTester::For(web_contents_ptr)
+    content::WebContentsTester::For(web_contents.get())
         ->NavigateAndCommit(GURL(GetUniqueTestURL()));
 
     browser->tab_strip_model()->AddWebContents(
         std::move(web_contents), index,
         ui::PageTransition::PAGE_TRANSITION_TYPED, AddTabTypes::ADD_ACTIVE);
 
-    return web_contents_ptr;
+    return browser->tab_strip_model()->GetTabAtIndex(index);
+  }
+
+  void WaitForTabGroupSyncServiceInitialized() {
+    auto observer =
+        std::make_unique<tab_groups::TabGroupSyncServiceInitializedObserver>(
+            tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile()));
+    observer->Wait();
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -93,6 +107,10 @@ class TabOrganizationServiceTest : public BrowserWithTestWindowTest {
     signin::SetPrimaryAccount(identity_manager, "test@example.com",
                               signin::ConsentLevel::kSignin);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+    // Wait for the TabGroupSyncService to properly initialize before making any
+    // changes to tab groups.
+    WaitForTabGroupSyncServiceInitialized();
   }
   void TearDown() override {
     for (auto& browser : browsers_) {
@@ -209,8 +227,8 @@ TEST_F(TabOrganizationServiceTest,
   }
 
   // Add an invalid tab.
-  content::WebContents* invalid_web_contents = AddValidTabToBrowser(browser1, 0);
-  content::WebContentsTester::For(invalid_web_contents)
+  tabs::TabInterface* invalid_tab = AddValidTabToBrowser(browser1, 0);
+  content::WebContentsTester::For(invalid_tab->GetContents())
       ->NavigateAndCommit(GURL(kInvalidURL));
 
   std::unique_ptr<TabOrganizationSession> session =
@@ -283,7 +301,7 @@ TEST_F(TabOrganizationServiceTest, SecondRequestAfterStartingDoesntCrash) {
 TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
   Browser* browser1 = AddBrowser();
 
-  content::WebContents* base_tab = AddValidTabToBrowser(browser1, 0);
+  tabs::TabInterface* base_tab = AddValidTabToBrowser(browser1, 0);
   for (int i = 0; i < 4; i++) {
     AddValidTabToBrowser(browser1, 0);
   }
@@ -297,6 +315,10 @@ TEST_F(TabOrganizationServiceTest, CreateSessionForBrowserOnTab) {
 // The signin flow is not used on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(TabOrganizationServiceTest, CanStartRequest) {
+  auto enable_disclaimer_on_primary_account_change_resetter =
+      enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+          profile());
+  // Not signed in
   // Not signed in
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile());
@@ -320,13 +342,13 @@ TEST_F(TabOrganizationServiceTest, TabStripAddRemoveDestroysSession) {
 
   service()->CreateSessionForBrowser(browser1,
                                      TabOrganizationEntryPoint::kNone);
-  content::WebContents* contents = AddValidTabToBrowser(browser1, 0);
+  tabs::TabInterface* tab = AddValidTabToBrowser(browser1, 0);
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 
   service()->CreateSessionForBrowser(browser1,
                                      TabOrganizationEntryPoint::kNone);
   browser1->tab_strip_model()->CloseWebContentsAt(
-      browser1->tab_strip_model()->GetIndexOfWebContents(contents),
+      browser1->tab_strip_model()->GetIndexOfTab(tab),
       TabCloseTypes::CLOSE_NONE);
   EXPECT_EQ(service()->GetSessionForBrowser(browser1), nullptr);
 }
@@ -391,17 +413,13 @@ TEST_F(TabOrganizationServiceTest,
   // us match the observer registration order that actually triggers the crash.
   // The contents of the organizations doesn't matter.
   std::vector<std::unique_ptr<TabData>> tab_datas_1;
-  tab_datas_1.emplace_back(
-      std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
-  tab_datas_1.emplace_back(
-      std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
+  tab_datas_1.emplace_back(std::make_unique<TabData>(model->GetTabAtIndex(0)));
+  tab_datas_1.emplace_back(std::make_unique<TabData>(model->GetTabAtIndex(1)));
   TabOrganization org_1 = TabOrganization(std::move(tab_datas_1), names);
 
   std::vector<std::unique_ptr<TabData>> tab_datas_2;
-  tab_datas_2.emplace_back(
-      std::make_unique<TabData>(model, model->GetWebContentsAt(0)));
-  tab_datas_2.emplace_back(
-      std::make_unique<TabData>(model, model->GetWebContentsAt(1)));
+  tab_datas_2.emplace_back(std::make_unique<TabData>(model->GetTabAtIndex(0)));
+  tab_datas_2.emplace_back(std::make_unique<TabData>(model->GetTabAtIndex(1)));
   TabOrganization org_2 = TabOrganization(std::move(tab_datas_2), names);
 
   TestOrganizationObserver observer(&org_1, &org_2);

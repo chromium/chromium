@@ -13,10 +13,6 @@
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-inspector.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 class SourceLocation;
@@ -46,9 +42,9 @@ class PLATFORM_EXPORT ThreadDebugger : public v8_inspector::V8InspectorClient {
   virtual void AsyncTaskStarted(void* task) = 0;
   virtual void AsyncTaskFinished(void* task) = 0;
   virtual unsigned PromiseRejected(v8::Local<v8::Context>,
-                                   const WTF::String& error_message,
+                                   const String& error_message,
                                    v8::Local<v8::Value> exception,
-                                   std::unique_ptr<SourceLocation>) = 0;
+                                   SourceLocation*) = 0;
   virtual void PromiseRejectionRevoked(v8::Local<v8::Context>,
                                        unsigned promise_rejection_id) = 0;
 

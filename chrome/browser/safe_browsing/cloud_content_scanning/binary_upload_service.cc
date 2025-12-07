@@ -4,19 +4,22 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 
+#include <algorithm>
+#include <variant>
+
 #include "base/command_line.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service_factory.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/common/strings.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
+#include "components/safe_browsing/core/common/safebrowsing_switches.h"
 #include "net/base/url_util.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/enterprise/connectors/analysis/local_binary_upload_service_factory.h"
@@ -24,8 +27,6 @@
 
 namespace safe_browsing {
 namespace {
-
-constexpr char kCloudBinaryUploadServiceUrlFlag[] = "binary-upload-service-url";
 
 std::optional<GURL> GetUrlOverride() {
   // Ignore this flag on Stable and Beta to avoid abuse.
@@ -35,42 +36,20 @@ std::optional<GURL> GetUrlOverride() {
   }
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(kCloudBinaryUploadServiceUrlFlag)) {
-    GURL url = GURL(
-        command_line->GetSwitchValueASCII(kCloudBinaryUploadServiceUrlFlag));
-    if (url.is_valid())
+  if (command_line->HasSwitch(switches::kCloudBinaryUploadServiceUrlFlag)) {
+    GURL url = GURL(command_line->GetSwitchValueASCII(
+        switches::kCloudBinaryUploadServiceUrlFlag));
+    if (url.is_valid()) {
       return url;
-    else
+    } else {
       LOG(ERROR) << "--binary-upload-service-url is set to an invalid URL";
+    }
   }
 
   return std::nullopt;
 }
 
 }  // namespace
-
-std::string BinaryUploadService::ResultToString(Result result) {
-  switch (result) {
-    case Result::UNKNOWN:
-      return "UNKNOWN";
-    case Result::SUCCESS:
-      return "SUCCESS";
-    case Result::UPLOAD_FAILURE:
-      return "UPLOAD_FAILURE";
-    case Result::TIMEOUT:
-      return "TIMEOUT";
-    case Result::FILE_TOO_LARGE:
-      return "FILE_TOO_LARGE";
-    case Result::FAILED_TO_GET_TOKEN:
-      return "FAILED_TO_GET_TOKEN";
-    case Result::UNAUTHORIZED:
-      return "UNAUTHORIZED";
-    case Result::FILE_ENCRYPTED:
-      return "FILE_ENCRYPTED";
-    case Result::TOO_MANY_REQUESTS:
-      return "TOO_MANY_REQUESTS";
-  }
-}
 
 BinaryUploadService::Request::Data::Data() = default;
 
@@ -89,6 +68,7 @@ BinaryUploadService::Request::Data::operator=(
   size = other.size;
   mime_type = other.mime_type;
   page = other.page.Duplicate();
+  is_obfuscated = other.is_obfuscated;
   return *this;
 }
 
@@ -130,10 +110,6 @@ bool BinaryUploadService::Request::per_profile_request() const {
   return per_profile_request_;
 }
 
-void BinaryUploadService::Request::set_fcm_token(const std::string& token) {
-  content_analysis_request_.set_fcm_notification_token(token);
-}
-
 void BinaryUploadService::Request::set_device_token(const std::string& token) {
   content_analysis_request_.set_device_token(token);
 }
@@ -148,9 +124,10 @@ void BinaryUploadService::Request::set_digest(const std::string& digest) {
 
 void BinaryUploadService::Request::clear_dlp_scan_request() {
   auto* tags = content_analysis_request_.mutable_tags();
-  auto it = base::ranges::find(*tags, "dlp");
-  if (it != tags->end())
+  auto it = std::ranges::find(*tags, "dlp");
+  if (it != tags->end()) {
     tags->erase(it);
+  }
 }
 
 void BinaryUploadService::Request::set_analysis_connector(
@@ -158,8 +135,8 @@ void BinaryUploadService::Request::set_analysis_connector(
   content_analysis_request_.set_analysis_connector(connector);
 }
 
-void BinaryUploadService::Request::set_url(const std::string& url) {
-  content_analysis_request_.mutable_request_data()->set_url(url);
+void BinaryUploadService::Request::set_url(const GURL& url) {
+  content_analysis_request_.mutable_request_data()->set_url(url.spec());
 }
 
 void BinaryUploadService::Request::set_source(const std::string& source) {
@@ -228,6 +205,21 @@ void BinaryUploadService::Request::set_printer_type(
       ->set_printer_type(printer_type);
 }
 
+void BinaryUploadService::Request::set_clipboard_source_type(
+    enterprise_connectors::ContentMetaData::CopiedTextSource::
+        CopiedTextSourceType source_type) {
+  content_analysis_request_.mutable_request_data()
+      ->mutable_copied_text_source()
+      ->set_context(source_type);
+}
+
+void BinaryUploadService::Request::set_clipboard_source_url(
+    const std::string& url) {
+  content_analysis_request_.mutable_request_data()
+      ->mutable_copied_text_source()
+      ->set_url(url);
+}
+
 void BinaryUploadService::Request::set_password(const std::string& password) {
   content_analysis_request_.mutable_request_data()->set_decryption_key(
       password);
@@ -244,8 +236,48 @@ void BinaryUploadService::Request::set_require_metadata_verdict(
       require_metadata_verdict);
 }
 
+void BinaryUploadService::Request::set_is_content_encrypted(
+    bool is_content_encrypted) {
+  content_analysis_request_.set_is_content_encrypted(is_content_encrypted);
+}
+
+void BinaryUploadService::Request::set_is_content_too_large(
+    bool is_content_too_large) {
+  is_content_too_large_ = is_content_too_large;
+}
+
 void BinaryUploadService::Request::set_blocking(bool blocking) {
   content_analysis_request_.set_blocking(blocking);
+}
+
+void BinaryUploadService::Request::add_local_ips(
+    const std::string& ip_address) {
+  content_analysis_request_.add_local_ips(ip_address);
+}
+
+void BinaryUploadService::Request::set_referrer_chain(
+    const google::protobuf::RepeatedPtrField<safe_browsing::ReferrerChainEntry>
+        referrer_chain) {
+  *content_analysis_request_.mutable_request_data()->mutable_referrer_chain() =
+      std::move(referrer_chain);
+}
+
+void BinaryUploadService::Request::set_content_area_account_email(
+    const std::string& email) {
+  content_analysis_request_.mutable_request_data()
+      ->set_content_area_account_email(email);
+}
+
+void BinaryUploadService::Request::set_source_content_area_account_email(
+    const std::string& email) {
+  content_analysis_request_.mutable_request_data()
+      ->set_source_content_area_account_email(email);
+}
+
+void BinaryUploadService::Request::set_frame_url_chain(
+    const google::protobuf::RepeatedPtrField<std::string> frame_url_chain) {
+  *content_analysis_request_.mutable_request_data()->mutable_frame_url_chain() =
+      std::move(frame_url_chain);
 }
 
 std::string BinaryUploadService::Request::SetRandomRequestToken() {
@@ -266,11 +298,6 @@ const std::string& BinaryUploadService::Request::device_token() const {
 
 const std::string& BinaryUploadService::Request::request_token() const {
   return content_analysis_request_.request_token();
-}
-
-const std::string& BinaryUploadService::Request::fcm_notification_token()
-    const {
-  return content_analysis_request_.fcm_notification_token();
 }
 
 const std::string& BinaryUploadService::Request::filename() const {
@@ -327,6 +354,22 @@ bool BinaryUploadService::Request::blocking() const {
   return content_analysis_request_.blocking();
 }
 
+bool BinaryUploadService::Request::image_paste() const {
+  return image_paste_;
+}
+
+void BinaryUploadService::Request::set_image_paste(bool image_paste) {
+  image_paste_ = image_paste;
+}
+
+bool BinaryUploadService::Request::is_content_too_large() const {
+  return is_content_too_large_;
+}
+
+bool BinaryUploadService::Request::is_content_encrypted() const {
+  return content_analysis_request_.is_content_encrypted();
+}
+
 void BinaryUploadService::Request::StartRequest() {
   if (!request_start_callback_.is_null()) {
     std::move(request_start_callback_).Run(*this);
@@ -334,9 +377,11 @@ void BinaryUploadService::Request::StartRequest() {
 }
 
 void BinaryUploadService::Request::FinishRequest(
-    Result result,
+    enterprise_connectors::ScanRequestUploadResult result,
     enterprise_connectors::ContentAnalysisResponse response) {
-  std::move(content_analysis_callback_).Run(result, response);
+  if (content_analysis_callback_) {
+    std::move(content_analysis_callback_).Run(result, response);
+  }
 }
 
 void BinaryUploadService::Request::SerializeToString(
@@ -345,7 +390,7 @@ void BinaryUploadService::Request::SerializeToString(
 }
 
 GURL BinaryUploadService::Request::GetUrlWithParams() const {
-  DCHECK(absl::holds_alternative<enterprise_connectors::CloudAnalysisSettings>(
+  DCHECK(std::holds_alternative<enterprise_connectors::CloudAnalysisSettings>(
       cloud_or_local_settings_));
 
   GURL url = GetUrlOverride().value_or(cloud_or_local_settings_.analysis_url());
@@ -433,8 +478,7 @@ void BinaryUploadService::CancelRequests::set_user_action_id(
 BinaryUploadService* BinaryUploadService::GetForProfile(
     Profile* profile,
     const enterprise_connectors::AnalysisSettings& settings) {
-  // Local content analysis is supported only on desktop platforms.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   if (settings.cloud_or_local_settings.is_cloud_analysis()) {
     return CloudBinaryUploadServiceFactory::GetForProfile(profile);
   } else {

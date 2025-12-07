@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr_exclusion.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/paint/draw_image.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/tile_draw_info.h"
@@ -56,6 +56,13 @@ class CC_EXPORT Tile {
     return id_;
   }
 
+  TileDrawInfo::Mode draw_mode() {
+    CHECK(IsReadyToDraw());
+    return draw_info().mode();
+  }
+
+  bool IsReadyToDraw() { return draw_info().IsReadyToDraw(); }
+
   // TODO(vmpstr): Move this to the iterators.
   bool required_for_activation() const { return required_for_activation_; }
   void set_required_for_activation(bool is_required) {
@@ -96,6 +103,8 @@ class CC_EXPORT Tile {
   int layer_id() const { return layer_id_; }
 
   int source_frame_number() const { return source_frame_number_; }
+
+  bool IsReadyToDraw() const { return draw_info().IsReadyToDraw(); }
 
   size_t GPUMemoryUsageInBytes() const;
 
@@ -142,6 +151,7 @@ class CC_EXPORT Tile {
   void mark_used() { used_ = true; }
   void clear_used() { used_ = false; }
   bool used() const { return used_; }
+  bool deleted() const { return deleted_; }
 
  private:
   friend class TileManager;
@@ -188,6 +198,9 @@ class CC_EXPORT Tile {
   // Set to true if there is a raster task scheduled for this tile that will
   // rasterize a resource with checker images.
   bool raster_task_scheduled_with_checker_images_ : 1 = false;
+
+  // Set to true in destructor.
+  bool deleted_ : 1 = false;
 
   Id id_;
 

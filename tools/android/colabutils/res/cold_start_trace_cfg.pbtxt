@@ -1,0 +1,45 @@
+
+buffers {
+  size_kb: 65536
+  fill_policy: DISCARD
+}
+data_sources {
+  config {
+    name: "track_event"
+    chrome_config {
+      trace_config: "{\"record_mode\":\"record-until-full\",\"included_categories\":[\"disabled-by-default-histogram_samples\"],\"excluded_categories\":[\"*\"]}"
+      privacy_filtering_enabled: false
+      client_priority: USER_INITIATED
+    }
+    track_event_config {
+      disabled_categories: "*"
+      enabled_categories: "disabled-by-default-histogram_samples"
+      enabled_categories: "__metadata"
+      timestamp_unit_multiplier: 1000
+      filter_debug_annotations: false
+      enable_thread_time_sampling: true
+      filter_dynamic_event_names: false
+    }
+  }
+}
+data_sources {
+  config {
+    name: "org.chromium.trace_metadata"
+    chrome_config {
+      trace_config: "{\"record_mode\":\"record-until-full\",\"included_categories\":[\"disabled-by-default-histogram_samples\"],\"excluded_categories\":[\"*\"]}"
+      privacy_filtering_enabled: false
+      client_priority: USER_INITIATED
+    }
+  }
+}
+data_sources {
+  config {
+    name: "org.chromium.histogram_sample"
+    chromium_histogram_samples {
+      histograms {
+        histogram_name: "Startup.Android.Cold.TimeToFirstVisibleContent4"
+      }
+    }
+  }
+}
+duration_ms: 10000

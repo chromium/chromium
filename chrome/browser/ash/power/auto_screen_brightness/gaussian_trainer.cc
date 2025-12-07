@@ -11,8 +11,6 @@
 #include "ash/constants/ash_features.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/utils.h"
 
 namespace ash {
@@ -20,55 +18,6 @@ namespace power {
 namespace auto_screen_brightness {
 
 namespace {
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// Logs whether a new brightness exceeded the reasonable distance from the old
-// brightness. A reasonable distance is defined by the params
-// |brightness_step_size| and |model_brightness_step_size|.
-enum class BoundedBrightnessChange {
-  // User's chosen new brightness is within their [lower_bound, upper_bound].
-  kUserWithinBounds = 0,
-  // Target brightness has a reasonable distance model's predicted brightness.
-  kModelWithinBounds = 1,
-  // User's chosen new brightness is below their lower bound.
-  kUserLower = 2,
-  // User's chosen new brightness is above their upper bound.
-  kUserUpper = 3,
-  // Target brightness is below model's predicted brightness and exceeded the
-  // bound.
-  kModelLower = 4,
-  // Target brightness is above model's predicted brightness and exceeded the
-  // bound.
-  kModelUpper = 5,
-  kMaxValue = kModelUpper
-};
-
-// Returns a |BoundedBrightnessChange| to be logged to UMA.
-// |is_lower_bound_exceeded| is nullopt if the new brightness is within the
-// bounds.
-BoundedBrightnessChange GetBoundedBrightnessChange(
-    std::optional<bool> is_lower_bound_exceeded,
-    bool is_user) {
-  if (!is_lower_bound_exceeded.has_value()) {
-    if (is_user) {
-      return BoundedBrightnessChange::kUserWithinBounds;
-    }
-    return BoundedBrightnessChange::kModelWithinBounds;
-  }
-
-  if (*is_lower_bound_exceeded) {
-    if (is_user) {
-      return BoundedBrightnessChange::kUserLower;
-    }
-    return BoundedBrightnessChange::kModelLower;
-  }
-
-  if (is_user) {
-    return BoundedBrightnessChange::kUserUpper;
-  }
-  return BoundedBrightnessChange::kModelUpper;
-}
 
 constexpr double kTol = 1e-10;
 
@@ -120,20 +69,9 @@ bool IsBrightnessOutlier(double brightness,
 // |brightness_old|.
 double BoundedBrightnessAdjustment(double brightness_old,
                                    double brightness_new,
-                                   double brightness_step_size,
-                                   bool is_user) {
+                                   double brightness_step_size) {
   const double lower_bound = brightness_old / (1.0 + brightness_step_size);
   const double upper_bound = brightness_old * (1.0 + brightness_step_size);
-
-  const bool exceeded_upper = brightness_new > upper_bound;
-  const bool exceeded_lower = brightness_new < lower_bound;
-
-  const BoundedBrightnessChange change = GetBoundedBrightnessChange(
-      exceeded_lower || exceeded_upper ? std::optional<bool>(exceeded_lower)
-                                       : std::nullopt,
-      is_user);
-  UMA_HISTOGRAM_ENUMERATION(
-      "AutoScreenBrightness.ModelTraining.BrightnessChange", change);
 
   return std::clamp(brightness_new, lower_bound, upper_bound) - brightness_old;
 }
@@ -152,8 +90,7 @@ double ModelPredictionAdjustment(double brightness_old,
   DCHECK_LE(model_brightness, 100.0);
 
   const double bounded_user_adjustment = BoundedBrightnessAdjustment(
-      brightness_old, brightness_new, params.brightness_step_size,
-      true /* is_user */);
+      brightness_old, brightness_new, params.brightness_step_size);
 
   DCHECK_GE(bounded_user_adjustment, -100.0);
   DCHECK_LE(bounded_user_adjustment, 100.0);
@@ -166,8 +103,6 @@ double ModelPredictionAdjustment(double brightness_old,
   const bool is_consistent =
       (model_brightness >= target_brightness && bounded_user_adjustment >= 0) ||
       (model_brightness <= target_brightness && bounded_user_adjustment <= 0);
-  UMA_HISTOGRAM_BOOLEAN(
-      "AutoScreenBrightness.ModelTraining.ModelUserConsistent", is_consistent);
 
   // If model's prediction is consistent with user's selection, then no
   // brightness change will be necessary.
@@ -179,22 +114,12 @@ double ModelPredictionAdjustment(double brightness_old,
   // treating |model_brightness| as the old brightness and |target_brightness|
   // as the new brightness.
   return BoundedBrightnessAdjustment(model_brightness, target_brightness,
-                                     params.model_brightness_step_size,
-                                     false /* is_user */);
+                                     params.model_brightness_step_size);
 }
 
 double Gaussian(double x, double sigma) {
   double xs = x / sigma;
   return std::exp(-xs * xs);
-}
-
-void LogModelCurveError(double error, bool model_updated) {
-  DCHECK_GE(error, 0.0);
-  const std::string histogram_name =
-      std::string("AutoScreenBrightness.ModelTraining.Inaccuracy.") +
-      (model_updated ? "Update" : "NoUpdate");
-  base::UmaHistogramPercentageObsoleteDoNotUse(histogram_name,
-                                               std::round(error));
 }
 
 }  // namespace
@@ -216,7 +141,6 @@ GaussianTrainer::GaussianTrainer() {
       params_.brightness_bound_scale);
   if (params_.brightness_bound_scale <= 0.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
@@ -225,7 +149,6 @@ GaussianTrainer::GaussianTrainer() {
       params_.brightness_bound_offset);
   if (params_.brightness_bound_offset < 0.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
@@ -234,7 +157,6 @@ GaussianTrainer::GaussianTrainer() {
       params_.brightness_step_size);
   if (params_.brightness_step_size <= 0.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
@@ -243,7 +165,6 @@ GaussianTrainer::GaussianTrainer() {
       params_.model_brightness_step_size);
   if (params_.model_brightness_step_size <= 0.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
@@ -251,7 +172,6 @@ GaussianTrainer::GaussianTrainer() {
       features::kAutoScreenBrightness, "sigma", params_.sigma);
   if (params_.sigma <= 0.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
@@ -263,7 +183,6 @@ GaussianTrainer::GaussianTrainer() {
       params_.high_log_lux_threshold);
   if (params_.low_log_lux_threshold >= params_.high_log_lux_threshold) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
@@ -281,37 +200,31 @@ GaussianTrainer::GaussianTrainer() {
 
   if (params_.min_grad_low_lux < 0.0 || params_.min_grad_low_lux >= 1.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
   if (params_.min_grad_high_lux < 0.0 || params_.min_grad_high_lux >= 1.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
   if (params_.min_grad < 0.0 || params_.min_grad >= 1.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
   if (params_.min_grad < params_.min_grad_low_lux) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
   if (params_.min_grad < params_.min_grad_high_lux) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
   if (params_.max_grad < 1.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 
@@ -320,7 +233,6 @@ GaussianTrainer::GaussianTrainer() {
       params_.min_brightness);
   if (params_.min_brightness < 0.0) {
     valid_params_ = false;
-    LogParameterError(ParameterError::kModelError);
     return;
   }
 }
@@ -410,7 +322,6 @@ TrainingResult GaussianTrainer::Train(
 
   if (!need_to_update_curve_) {
     const double error = CalculateCurveError(data);
-    LogModelCurveError(error, false /* model_updated */);
     return TrainingResult(std::nullopt, error);
   }
 
@@ -425,7 +336,6 @@ TrainingResult GaussianTrainer::Train(
   current_curve_ = new_curve;
 
   const double error = CalculateCurveError(data);
-  LogModelCurveError(error, true /* model_updated */);
   return TrainingResult(current_curve_, error);
 }
 
@@ -452,12 +362,7 @@ void GaussianTrainer::AdjustCurveWithSingleDataPoint(
   // if its original/old brightness is too far off from the brightness as
   // predicted by the global curve. This assumes the global curve is reasonably
   // accurate.
-  const bool is_brightness_outlier =
-      IsBrightnessOutlier(data.brightness_old, brightness_global, params_);
-  UMA_HISTOGRAM_BOOLEAN("AutoScreenBrightness.ModelTraining.BrightnessOutlier",
-                        is_brightness_outlier);
-
-  if (is_brightness_outlier) {
+  if (IsBrightnessOutlier(data.brightness_old, brightness_global, params_)) {
     return;
   }
 

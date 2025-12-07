@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
+
 #include <stddef.h>
 
 #include <algorithm>
@@ -13,12 +15,11 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "chrome/browser/ash/attestation/soft_bind_attestation_flow_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "content/public/test/browser_task_environment.h"
-#include "crypto/rsa_private_key.h"
+#include "crypto/test_support.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -117,7 +118,7 @@ class SoftBindAttestationFlowImplTest : public ::testing::Test {
     std::string der_encoded_cert;
     std::string fake_cert_chain;
     net::x509_util::CreateSelfSignedCert(
-        crypto::RSAPrivateKey::Create(1024)->key(),
+        crypto::test::FixedRsa2048PrivateKeyForTesting().key(),
         net::x509_util::DIGEST_SHA256, "CN=test",
         /* serial_number=*/1, now + base::Days(start_time_offset_days),
         now + base::Days(end_time_offset_days),

@@ -14,8 +14,7 @@ std::vector<base::FilePath> GetTrashPaths(Profile* profile) {
   std::vector<base::FilePath> excluded_paths;
   if (file_manager::trash::IsTrashEnabledForProfile(profile)) {
     const auto trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile, /*base_path=*/base::FilePath());
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile);
     for (const auto& location : trash_locations) {
       excluded_paths.emplace_back(
           location.first.Append(location.second.relative_folder_path));

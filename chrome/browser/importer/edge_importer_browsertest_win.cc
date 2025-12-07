@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <string>
@@ -26,13 +21,13 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/edge_importer_utils_win.h"
-#include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
-#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/importer_test_registry_overrider_win.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/favicon_base/favicon_usage_data.h"
+#include "components/user_data_importer/common/imported_bookmark_entry.h"
+#include "components/user_data_importer/common/importer_data_types.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -60,8 +55,8 @@ class TestObserver : public ProfileWriter,
 
   // importer::ImporterProgressObserver:
   void ImportStarted() override {}
-  void ImportItemStarted(importer::ImportItem item) override {}
-  void ImportItemEnded(importer::ImportItem item) override {}
+  void ImportItemStarted(user_data_importer::ImportItem item) override {}
+  void ImportItemEnded(user_data_importer::ImportItem item) override {}
   void ImportEnded() override {
     std::move(quit_closure_).Run();
     EXPECT_EQ(expected_bookmark_entries_.size(), bookmark_count_);
@@ -76,8 +71,9 @@ class TestObserver : public ProfileWriter,
 
   bool TemplateURLServiceIsLoaded() const override { return true; }
 
-  void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
-                    const std::u16string& top_level_folder_name) override {
+  void AddBookmarks(
+      const std::vector<user_data_importer::ImportedBookmarkEntry>& bookmarks,
+      const std::u16string& top_level_folder_name) override {
     ASSERT_EQ(expected_bookmark_entries_.size(), bookmarks.size());
     for (size_t i = 0; i < bookmarks.size(); ++i) {
       EXPECT_NO_FATAL_FAILURE(
@@ -111,7 +107,7 @@ class TestObserver : public ProfileWriter,
   }
 
  private:
-  ~TestObserver() override {}
+  ~TestObserver() override = default;
 
   // This is the count of bookmark entries observed during the test.
   size_t bookmark_count_;
@@ -183,8 +179,8 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
       {false, 0, {}, L"SubFolder", "http://www.subfolder.com/"},
       {false, 0, {}, L"InvalidFavicon", "http://www.invalid-favicon.com/"},
   };
-  std::vector<BookmarkInfo> bookmark_entries(
-      kEdgeBookmarks, kEdgeBookmarks + std::size(kEdgeBookmarks));
+  std::vector<BookmarkInfo> bookmark_entries(std::begin(kEdgeBookmarks),
+                                             std::end(kEdgeBookmarks));
 
   const FaviconGroup kEdgeFaviconGroup[] = {
       {L"http://www.links-sublink.com/favicon.ico",
@@ -201,8 +197,8 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
       {L"http://www.subfolder.com/favicon.ico", L"http://www.subfolder.com"},
   };
 
-  std::vector<FaviconGroup> favicon_groups(
-      kEdgeFaviconGroup, kEdgeFaviconGroup + std::size(kEdgeFaviconGroup));
+  std::vector<FaviconGroup> favicon_groups(std::begin(kEdgeFaviconGroup),
+                                           std::end(kEdgeFaviconGroup));
 
   base::FilePath data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &data_path));
@@ -230,12 +226,12 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporter) {
       bookmark_entries, favicon_groups, loop.QuitWhenIdleClosure()));
   host->set_observer(observer.get());
 
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_EDGE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_EDGE;
   source_profile.source_path = temp_path.AppendASCII("edge_profile");
 
   host->StartImportSettings(source_profile, browser()->profile(),
-                            importer::FAVORITES, observer.get());
+                            user_data_importer::FAVORITES, observer.get());
   loop.Run();
 }
 
@@ -246,12 +242,12 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
 
   const BookmarkInfo kEdgeBookmarks[] = {
       {false, 0, {}, L"Google", "http://www.google.com/"}};
-  std::vector<BookmarkInfo> bookmark_entries(
-      kEdgeBookmarks, kEdgeBookmarks + std::size(kEdgeBookmarks));
+  std::vector<BookmarkInfo> bookmark_entries(std::begin(kEdgeBookmarks),
+                                             std::end(kEdgeBookmarks));
   const FaviconGroup kEdgeFaviconGroup[] = {
       {L"http://www.google.com/favicon.ico", L"http://www.google.com/"}};
-  std::vector<FaviconGroup> favicon_groups(
-      kEdgeFaviconGroup, kEdgeFaviconGroup + std::size(kEdgeFaviconGroup));
+  std::vector<FaviconGroup> favicon_groups(std::begin(kEdgeFaviconGroup),
+                                           std::end(kEdgeFaviconGroup));
 
   base::FilePath data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &data_path));
@@ -271,8 +267,8 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
       bookmark_entries, favicon_groups, loop.QuitWhenIdleClosure()));
   host->set_observer(observer.get());
 
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_EDGE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_EDGE;
   base::FilePath source_path = temp_dir_.GetPath().AppendASCII("edge_profile");
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -283,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterLegacyFallback) {
   source_profile.source_path = source_path;
 
   host->StartImportSettings(source_profile, browser()->profile(),
-                            importer::FAVORITES, observer.get());
+                            user_data_importer::FAVORITES, observer.get());
   loop.Run();
 }
 
@@ -306,11 +302,11 @@ IN_PROC_BROWSER_TEST_F(EdgeImporterBrowserTest, EdgeImporterNoDatabase) {
       bookmark_entries, favicon_groups, loop.QuitWhenIdleClosure()));
   host->set_observer(observer.get());
 
-  importer::SourceProfile source_profile;
-  source_profile.importer_type = importer::TYPE_EDGE;
+  user_data_importer::SourceProfile source_profile;
+  source_profile.importer_type = user_data_importer::TYPE_EDGE;
   source_profile.source_path = temp_dir_.GetPath();
 
   host->StartImportSettings(source_profile, browser()->profile(),
-                            importer::FAVORITES, observer.get());
+                            user_data_importer::FAVORITES, observer.get());
   loop.Run();
 }

@@ -53,24 +53,22 @@ void DevToolsFrontendImpl::BindMojoRequest(
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsFrontend> receiver) {
   if (!local_frame)
     return;
-  local_frame->ProvideSupplement(MakeGarbageCollected<DevToolsFrontendImpl>(
-      *local_frame, std::move(receiver)));
+  local_frame->SetDevToolsFrontendImpl(
+      MakeGarbageCollected<DevToolsFrontendImpl>(*local_frame,
+                                                 std::move(receiver)));
 }
 
 // static
 DevToolsFrontendImpl* DevToolsFrontendImpl::From(LocalFrame* local_frame) {
   if (!local_frame)
     return nullptr;
-  return local_frame->RequireSupplement<DevToolsFrontendImpl>();
+  return local_frame->GetDevToolsFrontendImpl();
 }
-
-// static
-const char DevToolsFrontendImpl::kSupplementName[] = "DevToolsFrontendImpl";
 
 DevToolsFrontendImpl::DevToolsFrontendImpl(
     LocalFrame& frame,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsFrontend> receiver)
-    : Supplement<LocalFrame>(frame) {
+    : local_frame_(frame) {
   receiver_.Bind(std::move(receiver),
                  frame.GetTaskRunner(TaskType::kMiscPlatformAPI));
 }
@@ -79,11 +77,11 @@ DevToolsFrontendImpl::~DevToolsFrontendImpl() = default;
 
 void DevToolsFrontendImpl::DidClearWindowObject() {
   if (host_.is_bound()) {
-    v8::Isolate* isolate = GetSupplementable()->DomWindow()->GetIsolate();
+    v8::Isolate* isolate = local_frame_->DomWindow()->GetIsolate();
     // Use higher limit for DevTools isolate so that it does not OOM when
     // profiling large heaps.
     isolate->IncreaseHeapLimitForDebugging();
-    ScriptState* script_state = ToScriptStateForMainWorld(GetSupplementable());
+    ScriptState* script_state = ToScriptStateForMainWorld(local_frame_);
     DCHECK(script_state);
     ScriptState::Scope scope(script_state);
     v8::MicrotasksScope microtasks_scope(
@@ -91,8 +89,7 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
         v8::MicrotasksScope::kDoNotRunMicrotasks);
     if (devtools_host_)
       devtools_host_->DisconnectClient();
-    devtools_host_ =
-        MakeGarbageCollected<DevToolsHost>(this, GetSupplementable());
+    devtools_host_ = MakeGarbageCollected<DevToolsHost>(this, local_frame_);
     v8::Local<v8::Value> devtools_host_obj =
         ToV8Traits<DevToolsHost>::ToV8(script_state, devtools_host_.Get());
     DCHECK(!devtools_host_obj.IsEmpty());
@@ -105,14 +102,14 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
 
   if (!api_script_.empty()) {
     ClassicScript::CreateUnspecifiedScript(api_script_)
-        ->RunScript(GetSupplementable()->DomWindow());
+        ->RunScript(local_frame_->DomWindow());
   }
 }
 
 void DevToolsFrontendImpl::SetupDevToolsFrontend(
     const String& api_script,
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsFrontendHost> host) {
-  LocalFrame* frame = GetSupplementable();
+  LocalFrame* frame = local_frame_;
   DCHECK(frame->IsMainFrame());
   if (frame->GetWidgetForLocalRoot()) {
     frame->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
@@ -123,20 +120,20 @@ void DevToolsFrontendImpl::SetupDevToolsFrontend(
   frame->GetPage()->GetSettings().SetForceDarkModeEnabled(false);
   api_script_ = api_script;
   host_.Bind(std::move(host),
-             GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI));
-  host_.set_disconnect_handler(WTF::BindOnce(
+             local_frame_->GetTaskRunner(TaskType::kMiscPlatformAPI));
+  host_.set_disconnect_handler(BindOnce(
       &DevToolsFrontendImpl::DestroyOnHostGone, WrapWeakPersistent(this)));
-  GetSupplementable()->GetPage()->SetDefaultPageScaleLimits(1.f, 1.f);
+  local_frame_->GetPage()->SetDefaultPageScaleLimits(1.f, 1.f);
 }
 
 void DevToolsFrontendImpl::OnLocalRootWidgetCreated() {
-  GetSupplementable()->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
+  local_frame_->GetWidgetForLocalRoot()->SetLayerTreeDebugState(
       cc::LayerTreeDebugState());
 }
 
 void DevToolsFrontendImpl::SetupDevToolsExtensionAPI(
     const String& extension_api) {
-  DCHECK(!GetSupplementable()->IsMainFrame());
+  DCHECK(!local_frame_->IsMainFrame());
   api_script_ = extension_api;
 }
 
@@ -148,14 +145,14 @@ void DevToolsFrontendImpl::SendMessageToEmbedder(base::Value::Dict message) {
 void DevToolsFrontendImpl::DestroyOnHostGone() {
   if (devtools_host_)
     devtools_host_->DisconnectClient();
-  GetSupplementable()->RemoveSupplement<DevToolsFrontendImpl>();
+  local_frame_->SetDevToolsFrontendImpl(nullptr);
 }
 
 void DevToolsFrontendImpl::Trace(Visitor* visitor) const {
   visitor->Trace(devtools_host_);
   visitor->Trace(host_);
   visitor->Trace(receiver_);
-  Supplement<LocalFrame>::Trace(visitor);
+  visitor->Trace(local_frame_);
 }
 
 }  // namespace blink

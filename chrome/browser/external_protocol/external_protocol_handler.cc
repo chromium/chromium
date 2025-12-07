@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -19,7 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/external_protocol/auto_launch_protocols_policy_handler.h"
 #include "chrome/browser/external_protocol/constants.h"
 #include "chrome/browser/platform_util.h"
@@ -37,7 +38,7 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_utils.h"
 #endif
@@ -50,6 +51,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
 namespace {
@@ -165,9 +170,15 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
     content::WeakDocumentPtr initiator_document,
     ExternalProtocolHandler::Delegate* delegate) {
   if (delegate) {
+    delegate->ReportExternalAppRedirectToSafeBrowsing(url, web_contents);
     delegate->LaunchUrlWithoutSecurityCheck(url, web_contents);
     return;
   }
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  g_browser_process->safe_browsing_service()->ReportExternalAppRedirect(
+      web_contents, url.GetScheme(), url.possibly_invalid_spec());
+#endif
 
   // |web_contents| is only passed in to find browser context. Do not assume
   // that the external protocol request came from the main frame.
@@ -179,12 +190,12 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
       "Launched external handler for '" + url.possibly_invalid_spec() + "'.");
 
   platform_util::OpenExternal(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       Profile::FromBrowserContext(web_contents->GetBrowserContext()),
 #endif
       url);
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // If the protocol navigation occurs in a new tab, close it.
   // Avoid calling CloseContents if the tab is not in this browser's tab strip
   // model; this can happen if the protocol was initiated by something
@@ -194,7 +205,11 @@ void LaunchUrlWithoutSecurityCheckWithDelegate(
       browser->tab_strip_model()->count() > 1 &&
       browser->tab_strip_model()->GetIndexOfWebContents(web_contents) !=
           TabStripModel::kNoTab) {
-    web_contents->Close();
+    // Defer destruction of `WebContents` to avoid synchronously destroying
+    // NavigationURLLoader(Impl) here. See https://issues.chromium.org/361600654
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&content::WebContents::Close,
+                                  web_contents->GetWeakPtr()));
   }
 #endif
 }
@@ -228,7 +243,7 @@ void OnDefaultSchemeClientWorkerFinished(
   bool chrome_is_default_handler = state == shell_integration::IS_DEFAULT;
 
   // On ChromeOS, Click to Call is integrated into the external protocol dialog.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (web_contents && ShouldOfferClickToCallForURL(
                           web_contents->GetBrowserContext(), escaped_url)) {
     // Handle tel links by opening the Click to Call dialog. This will call back
@@ -312,8 +327,8 @@ bool IsSchemeOriginPairAllowedByPolicy(const std::string& scheme,
 
   url_matcher::URLMatcher matcher;
   base::MatcherStringPattern::ID id(0);
-  url_matcher::util::AddFilters(&matcher, true /* allowed */, &id,
-                                *origin_patterns);
+  url_matcher::util::AddFiltersWithLimit(&matcher, true /* allowed */, &id,
+                                         *origin_patterns);
 
   auto matching_set = matcher.MatchURL(initiating_origin->GetURL());
   return !matching_set.empty();
@@ -519,7 +534,7 @@ void ExternalProtocolHandler::LaunchUrl(
   if (web_contents)  // Maybe NULL during testing.
     profile = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   BlockState block_state = GetBlockStateWithDelegate(
-      escaped_url.scheme(), base::OptionalToPtr(initiating_origin),
+      escaped_url.GetScheme(), base::OptionalToPtr(initiating_origin),
       g_external_protocol_handler_delegate, profile);
   if (block_state == BLOCK) {
     AddMessageToConsole(
@@ -622,8 +637,7 @@ void ExternalProtocolHandler::RecordHandleStateMetrics(bool checkbox_selected,
           checkbox_selected ? CHECKED_DONT_LAUNCH_DEPRECATED : DONT_LAUNCH;
       break;
     case UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   DCHECK_NE(CHECKED_DONT_LAUNCH_DEPRECATED, handle_state);
   UMA_HISTOGRAM_ENUMERATION(kHandleStateMetric, handle_state,

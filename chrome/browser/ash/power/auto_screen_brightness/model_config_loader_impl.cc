@@ -246,7 +246,8 @@ void ModelConfigLoaderImpl::OnModelParamsLoadedFromDisk(
     return;
   }
 
-  std::optional<base::Value> value = base::JSONReader::Read(content);
+  std::optional<base::Value> value =
+      base::JSONReader::Read(content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!value) {
     InitFromParams();
     return;

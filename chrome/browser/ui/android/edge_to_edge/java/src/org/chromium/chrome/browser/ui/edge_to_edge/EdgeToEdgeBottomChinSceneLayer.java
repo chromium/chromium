@@ -10,14 +10,13 @@ import androidx.annotation.ColorInt;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.chrome.browser.layouts.EventFilter;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
-import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.ui.resources.ResourceManager;
-
-import java.util.List;
 
 /**
  * The Java component for the CC layer showing the edge-to-edge bottom chin, a scrollable view that
@@ -25,7 +24,9 @@ import java.util.List;
  * color of a particular height extending across the width of the screen viewport.
  */
 @JNINamespace("android")
+@NullMarked
 public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements SceneOverlay {
+
     /** Handle to the native side of this class. */
     private long mNativePtr;
 
@@ -44,10 +45,20 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     /** Attributes for the divider. */
     private int mDividerColor;
 
-    private boolean mIsDividerVisible;
+    /** The tag indicating that this layer should be moved by viz. */
+    private @Nullable OffsetTag mOffsetTag;
+
+    /** Whether the bottom chin has constraint applied that changes its scrollability. */
+    private boolean mHasConstraint;
+
+    // TODO(peilinwang) This can probably be removed, as updates to the property model will already
+    // trigger a new renderer frame via the CompositorModelChangeProcessor.
+    private final Runnable mRequestRenderRunnable;
 
     /** Build a bottom chin scene layer. */
-    public EdgeToEdgeBottomChinSceneLayer() {}
+    public EdgeToEdgeBottomChinSceneLayer(Runnable requestRenderRunnable) {
+        mRequestRenderRunnable = requestRenderRunnable;
+    }
 
     /**
      * Set the view's offset from the bottom of the screen in px. An offset of 0 means the view is
@@ -64,52 +75,66 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
      */
     public void setIsVisible(boolean visible) {
         mIsVisible = visible;
+        mRequestRenderRunnable.run();
     }
 
     /**
-     * @param height The height for this {@link SceneLayer}. This new height will apply on the next
-     *     call to #getUpdatedSceneOverlayTree.
+     * @param height The height for this {@link SceneLayer}. This new height will apply as of the
+     *     next scene layer update, which is requested immediately.
      */
     public void setHeight(int height) {
         mHeight = height;
+        mRequestRenderRunnable.run();
     }
 
     /**
-     * @param color The new color for the bottom chin. This new color will apply on the next call to
-     *     #getUpdatedSceneOverlayTree.
+     * @param color The new color for the bottom chin. This new color will apply as of the next
+     *     scene layer update, which is requested immediately.
      */
     public void setColor(@ColorInt int color) {
         mColor = color;
+        mRequestRenderRunnable.run();
     }
 
     /**
-     * Set the color for the divider.
+     * Set the color for the divider. This new color will apply as of the next scene layer update,
+     * which is requested immediately.
      *
      * @see #setDividerVisible(boolean)
      */
     public void setDividerColor(@ColorInt int dividerColor) {
         mDividerColor = dividerColor;
+        mRequestRenderRunnable.run();
+    }
+
+    /** Whether there are safe area constraint for the bottom chin. */
+    public void setHasConstraint(boolean hasConstraint) {
+        mHasConstraint = hasConstraint;
+    }
+
+    /**
+     * @param offsetTag The view's OffsetTag, indicating that this layer will be moved by viz.
+     */
+    public void setOffsetTag(OffsetTag offsetTag) {
+        mOffsetTag = offsetTag;
     }
 
     @Override
     protected void initializeNative() {
         if (mNativePtr == 0) {
-            mNativePtr =
-                    EdgeToEdgeBottomChinSceneLayerJni.get()
-                            .init(EdgeToEdgeBottomChinSceneLayer.this);
+            mNativePtr = EdgeToEdgeBottomChinSceneLayerJni.get().init(this);
         }
         assert mNativePtr != 0;
     }
 
     @Override
     public void setContentTree(SceneLayer contentTree) {
-        EdgeToEdgeBottomChinSceneLayerJni.get()
-                .setContentTree(mNativePtr, EdgeToEdgeBottomChinSceneLayer.this, contentTree);
+        EdgeToEdgeBottomChinSceneLayerJni.get().setContentTree(mNativePtr, contentTree);
     }
 
     @Override
     public SceneOverlayLayer getUpdatedSceneOverlayTree(
-            RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
+            RectF viewport, RectF visibleViewport, ResourceManager resourceManager) {
         EdgeToEdgeBottomChinSceneLayerJni.get()
                 .updateEdgeToEdgeBottomChinLayer(
                         mNativePtr,
@@ -117,7 +142,9 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                         mHeight,
                         mColor,
                         mDividerColor,
-                        viewport.height() + mCurrentYOffsetPx);
+                        viewport.height() + mCurrentYOffsetPx,
+                        mHasConstraint,
+                        mOffsetTag);
 
         return this;
     }
@@ -128,45 +155,14 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     }
 
     @Override
-    public EventFilter getEventFilter() {
-        return null;
-    }
-
-    @Override
-    public boolean shouldHideAndroidBrowserControls() {
-        return false;
-    }
-
-    @Override
-    public boolean updateOverlay(long time, long dt) {
-        return false;
-    }
-
-    @Override
-    public boolean onBackPressed() {
-        return false;
-    }
-
-    @Override
-    public boolean handlesTabCreating() {
-        return false;
-    }
-
-    @Override
     public void onSizeChanged(
             float width, float height, float visibleViewportOffsetY, int orientation) {}
 
-    @Override
-    public void getVirtualViews(List<VirtualView> views) {}
-
     @NativeMethods
     interface Natives {
-        long init(EdgeToEdgeBottomChinSceneLayer caller);
+        long init(EdgeToEdgeBottomChinSceneLayer self);
 
-        void setContentTree(
-                long nativeEdgeToEdgeBottomChinSceneLayer,
-                EdgeToEdgeBottomChinSceneLayer caller,
-                SceneLayer contentTree);
+        void setContentTree(long nativeEdgeToEdgeBottomChinSceneLayer, SceneLayer contentTree);
 
         void updateEdgeToEdgeBottomChinLayer(
                 long nativeEdgeToEdgeBottomChinSceneLayer,
@@ -174,6 +170,8 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
                 int containerHeight,
                 int colorARGB,
                 int dividerColor,
-                float yOffset);
+                float yOffset,
+                boolean hasConstraint,
+                @Nullable OffsetTag offsetTag);
     }
 }

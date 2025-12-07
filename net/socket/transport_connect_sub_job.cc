@@ -146,8 +146,7 @@ LoadState TransportConnectSubJob::GetLoadState() const {
     case STATE_NONE:
       return LOAD_STATE_IDLE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return LOAD_STATE_IDLE;
+  NOTREACHED();
 }
 
 const IPEndPoint& TransportConnectSubJob::CurrentAddress() const {
@@ -181,9 +180,7 @@ int TransportConnectSubJob::DoLoop(int result) {
         rv = DoTransportConnectComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED();
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE &&
            next_state_ != STATE_DONE);
@@ -250,8 +247,7 @@ int TransportConnectSubJob::DoTransportConnectComplete(int result) {
     // Drop the socket to release the endpoint lock, if any.
     transport_socket_.reset();
 
-    parent_job_->connection_attempts_.push_back(
-        ConnectionAttempt(CurrentAddress(), result));
+    parent_job_->connection_attempts_.emplace_back(CurrentAddress(), result);
 
     // Don't try the next address if entering suspend mode.
     if (result != ERR_NETWORK_IO_SUSPENDED &&

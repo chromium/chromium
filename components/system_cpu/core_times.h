@@ -2,16 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #ifndef COMPONENTS_SYSTEM_CPU_CORE_TIMES_H_
 #define COMPONENTS_SYSTEM_CPU_CORE_TIMES_H_
 
 #include <stdint.h>
 
+#include <array>
 #include <initializer_list>
 
 #include "base/gtest_prod_util.h"
@@ -86,7 +83,7 @@ class CoreTimes {
   // Used by CoreTimesTest.
   CoreTimes(const std::initializer_list<uint64_t>& times);
 
-  uint64_t times_[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  std::array<uint64_t, 10> times_ = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 };
 
 }  // namespace system_cpu

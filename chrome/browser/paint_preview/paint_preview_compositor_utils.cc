@@ -9,12 +9,15 @@
 
 namespace paint_preview {
 
-void JNI_PaintPreviewCompositorUtils_WarmupCompositor(JNIEnv* env) {
+static void JNI_PaintPreviewCompositorUtils_WarmupCompositor(JNIEnv* env) {
   WarmCompositor::GetInstance()->WarmupCompositor();
 }
 
-jboolean JNI_PaintPreviewCompositorUtils_StopWarmCompositor(JNIEnv* env) {
+static jboolean JNI_PaintPreviewCompositorUtils_StopWarmCompositor(
+    JNIEnv* env) {
   return static_cast<jboolean>(WarmCompositor::GetInstance()->StopCompositor());
 }
 
 }  // namespace paint_preview
+
+DEFINE_JNI(PaintPreviewCompositorUtils)

@@ -266,8 +266,7 @@ std::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
     case mojom::ColorModel::kXeroxXROutputColorPrintAsGrayscale:
       return false;
     case mojom::ColorModel::kUnknownColorModel:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
   // The default case is excluded from the above switch statement to ensure that
   // all ColorModel values are determinantly handled.
@@ -348,7 +347,7 @@ bool PrintSettings::operator==(const PrintSettings& other) const {
 #if BUILDFLAG(IS_WIN)
                   printer_language_type_,
 #endif
-                  is_modifiable_, requested_custom_margins_in_points_,
+                  is_modifiable_, requested_custom_margins_in_microns_,
                   pages_per_sheet_
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
                   ,
@@ -372,7 +371,7 @@ bool PrintSettings::operator==(const PrintSettings& other) const {
                   other.printer_language_type_,
 #endif
                   other.is_modifiable_,
-                  other.requested_custom_margins_in_points_,
+                  other.requested_custom_margins_in_microns_,
                   other.pages_per_sheet_
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
                   ,
@@ -482,21 +481,30 @@ void PrintSettings::SetPrinterPrintableArea(
       margins.right = 0;
       break;
     }
+#if BUILDFLAG(IS_CHROMEOS)
+    case mojom::MarginType::kPrecomputedMarginsForBackend: {
+      // Do not setup page setup device units for custom margins for backend,
+      // which doesn't use `page_setup_device_units` either. These margins are
+      // used to send to print jobs in the print backend instead. See details in
+      // print.mojom at the definition of the `MarginType` enum.
+      return;
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
     case mojom::MarginType::kCustomMargins: {
       margins.header = 0;
       margins.footer = 0;
-      margins.top = ConvertUnit(requested_custom_margins_in_points_.top,
-                                kPointsPerInch, units_per_inch);
-      margins.bottom = ConvertUnit(requested_custom_margins_in_points_.bottom,
-                                   kPointsPerInch, units_per_inch);
-      margins.left = ConvertUnit(requested_custom_margins_in_points_.left,
-                                 kPointsPerInch, units_per_inch);
-      margins.right = ConvertUnit(requested_custom_margins_in_points_.right,
-                                  kPointsPerInch, units_per_inch);
+      margins.top = ConvertUnit(requested_custom_margins_in_microns_.top,
+                                kMicronsPerInch, units_per_inch);
+      margins.bottom = ConvertUnit(requested_custom_margins_in_microns_.bottom,
+                                   kMicronsPerInch, units_per_inch);
+      margins.left = ConvertUnit(requested_custom_margins_in_microns_.left,
+                                 kMicronsPerInch, units_per_inch);
+      margins.right = ConvertUnit(requested_custom_margins_in_microns_.right,
+                                  kMicronsPerInch, units_per_inch);
       break;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -542,10 +550,18 @@ void PrintSettings::UpdatePrinterPrintableArea(
 #endif
 
 void PrintSettings::SetCustomMargins(
-    const PageMargins& requested_margins_in_points) {
-  requested_custom_margins_in_points_ = requested_margins_in_points;
+    const PageMargins& requested_margins_in_microns) {
+  requested_custom_margins_in_microns_ = requested_margins_in_microns;
   margin_type_ = mojom::MarginType::kCustomMargins;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void PrintSettings::SetCustomMarginsForBackend(
+    const PageMargins& requested_margins_in_microns) {
+  requested_custom_margins_in_microns_ = requested_margins_in_microns;
+  margin_type_ = mojom::MarginType::kPrecomputedMarginsForBackend;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 int PrintSettings::NewCookie() {

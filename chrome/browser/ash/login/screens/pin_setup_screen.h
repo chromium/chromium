@@ -14,6 +14,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/wizard_context.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 
 namespace ash {
 
@@ -23,7 +25,28 @@ class WizardContext;
 class PinSetupScreen : public BaseScreen {
  public:
   using TView = PinSetupScreenView;
-  enum class Result { DONE, USER_SKIP, NOT_APPLICABLE, TIMED_OUT };
+  enum class Result {
+    kDoneAsSecondaryFactor = 0,
+    kUserSkip,
+    kNotApplicable,
+    kNotApplicableAsPrimaryFactor,
+    kTimedOut,
+    kUserChosePassword,
+    kDoneAsMainFactor,
+    kDoneRecoveryReset,
+  };
+
+  // Detailed reason describing why the screen is being skipped.
+  enum class SkipReason {
+    kSkippedForTests = 0,
+    kNotAllowedByPolicy,
+    kMissingExtraFactorsToken,
+    kExpiredToken,
+    kManagedGuestSessionOrEphemeralLogin,
+    kUsupportedHardware,
+    kNotSupportedAsPrimaryFactor,
+    kNotSupportedAsPrimaryFactorForManagedUsers,
+  };
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
@@ -35,6 +58,10 @@ class PinSetupScreen : public BaseScreen {
     kSkipButtonClickedInFlow = 2,
     kMaxValue = kSkipButtonClickedInFlow
   };
+
+  // Whether the current platform has support for PIN login, or just unlock.
+  // Initially undetermined until PinBackend informs us of the actual state.
+  enum class HardwareSupport { kLoginCompatible, kUnlockOnly };
 
   static std::string GetResultString(Result result);
 
@@ -50,6 +77,7 @@ class PinSetupScreen : public BaseScreen {
 
   ~PinSetupScreen() override;
 
+  // Test methods below
   void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
     exit_callback_ = exit_callback;
   }
@@ -58,32 +86,48 @@ class PinSetupScreen : public BaseScreen {
     return exit_callback_;
   }
 
+  std::optional<SkipReason> get_skip_reason_for_testing() const {
+    return skip_reason_for_testing_;
+  }
+
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
-  bool ShouldBeSkipped(const WizardContext& context) const override;
   void ShowImpl() override;
   void HideImpl() override;
   void OnUserAction(const base::Value::List& args) override;
 
  private:
-  // Inticates whether the device supports usage of PIN for login.
-  // This information is retrived in an async way and will not be available
-  // immediately.
-  std::optional<bool> has_login_support_;
+  // Checks if the screen should be skipped by returning a detailed reason.
+  std::optional<PinSetupScreen::SkipReason> GetSkipReason(
+      WizardContext& context);
+
+  // Finalizes the hardware support status.
+  void DetermineHardwareSupport();
+
+  void OnHasLoginSupport(bool login_available);
+  void OnTokenTimedOut();
+
+  // Hardware support and screen mode. The main logic bits driving how the
+  // screen is surfaced to the user. See enum definition for details.
+  std::optional<HardwareSupport> hardware_support_;
 
   base::WeakPtr<PinSetupScreenView> view_;
   ScreenExitCallback exit_callback_;
 
   base::OneShotTimer token_lifetime_timeout_;
 
-  void ClearAuthData(WizardContext& context);
-  void OnHasLoginSupport(bool login_available);
-  void OnTokenTimedOut();
-
   AuthPerformer auth_performer_;
 
   legacy::CryptohomePinEngine cryptohome_pin_engine_;
+
+  // For keeping the AuthSession while offering PIN as a main factor.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
+
+  // For ensuring that the screen is being skipped due to expected reasons. This
+  // is necessary because the screens yields a Result::NotApplicable when
+  // skipped.
+  std::optional<SkipReason> skip_reason_for_testing_;
 
   base::WeakPtrFactory<PinSetupScreen> weak_ptr_factory_{this};
 };

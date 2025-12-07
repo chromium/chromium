@@ -41,7 +41,8 @@ PasswordProtectionRequestIOS::PasswordProtectionRequestIOS(
                                 type,
                                 password_field_exists,
                                 pps,
-                                request_timeout_in_ms),
+                                request_timeout_in_ms,
+                                /*otp_phishing_verdict_callback=*/std::nullopt),
       web_state_(web_state) {
   request_canceler_ = RequestCanceler::CreateRequestCanceler(
       weak_factory_.GetWeakPtr(), web_state);

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/media_router/common/providers/cast/channel/cast_framer.h"
 
@@ -100,8 +96,7 @@ size_t MessageFramer::BytesRequested() {
       VLOG(2) << "Bytes needed for body: " << bytes_left;
       return bytes_left;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unhandled packet element type.";
-      return 0;
+      NOTREACHED() << "Unhandled packet element type.";
   }
 }
 
@@ -153,8 +148,7 @@ std::unique_ptr<CastMessage> MessageFramer::Ingest(size_t num_bytes,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unhandled packet element type.";
-      return nullptr;
+      NOTREACHED() << "Unhandled packet element type.";
   }
 
   input_buffer_->set_offset(message_bytes_received_);

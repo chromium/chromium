@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -73,25 +74,25 @@ void ScrollCanvas(SkCanvas* canvas,
   if (offset.y() > 0) {
     // Data is moving down, copy from the bottom up.
     for (int y = dest_rect.height() - 1; y >= 0; y--) {
-      memcpy(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
-             pixmap.addr32(src_rect.x(), src_rect.y() + y),
-             row_bytes);
+      UNSAFE_TODO(
+          memcpy(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
+                 pixmap.addr32(src_rect.x(), src_rect.y() + y), row_bytes));
     }
   } else if (offset.y() < 0) {
     // Data is moving up, copy from the top down.
     for (int y = 0; y < dest_rect.height(); y++) {
-      memcpy(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
-             pixmap.addr32(src_rect.x(), src_rect.y() + y),
-             row_bytes);
+      UNSAFE_TODO(
+          memcpy(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
+                 pixmap.addr32(src_rect.x(), src_rect.y() + y), row_bytes));
     }
   } else if (offset.x() != 0) {
     // Horizontal-only scroll. We can do it in either top-to-bottom or bottom-
     // to-top, but have to be careful about the order for copying each row.
     // Fortunately, memmove already handles this for us.
     for (int y = 0; y < dest_rect.height(); y++) {
-      memmove(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
-              pixmap.addr32(src_rect.x(), src_rect.y() + y),
-              row_bytes);
+      UNSAFE_TODO(
+          memmove(pixmap.writable_addr32(dest_rect.x(), dest_rect.y() + y),
+                  pixmap.addr32(src_rect.x(), src_rect.y() + y), row_bytes));
     }
   }
 }

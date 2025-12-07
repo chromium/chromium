@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser;
 
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
@@ -19,8 +23,20 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
  * Manages pref that can track the delay since the last stop of the tracked activity.
  * TODO(crbug.com/40691343): Split ChromeInactivityTracker out from ChromeTabbedActivity.
  */
+@NullMarked
 public class ChromeInactivityTracker
         implements StartStopWithNativeObserver, PauseResumeWithNativeObserver, DestroyObserver {
+    /** An observer to be notified when the app is foregrounded after a period of inactivity. */
+    public interface InactivityObserver {
+        /**
+         * Called when the app is started, with the time it spent in the background.
+         *
+         * @param timeSinceLastBackgroundedMs The time in milliseconds since the app was last
+         *     backgrounded.
+         */
+        void onForegrounded(long timeSinceLastBackgroundedMs);
+    }
+
     private static final String TAG = "InactivityTracker";
     private static final String UMA_DURATION_SINCE_LAST_BACKGROUND_TIME =
             "Startup.Android.DurationSinceLastBackgroundTime";
@@ -34,11 +50,13 @@ public class ChromeInactivityTracker
     private static final long UNKNOWN_LAST_BACKGROUNDED_TIME = -1;
 
     private final String mPrefName;
-    private ActivityLifecycleDispatcher mLifecycleDispatcher;
+    private final ObserverList<InactivityObserver> mInactivityObserverList = new ObserverList<>();
+    private @Nullable ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     /**
-     * Creates an inactivity tracker without a timeout callback. This is useful if clients only
-     * want to query the inactivity state manually.
+     * Creates an inactivity tracker without a timeout callback. This is useful if clients only want
+     * to query the inactivity state manually.
+     *
      * @param prefName the location in shared preferences that the timestamp is stored.
      */
     public ChromeInactivityTracker(String prefName) {
@@ -110,7 +128,13 @@ public class ChromeInactivityTracker
     }
 
     @Override
-    public void onStartWithNative() {}
+    public void onStartWithNative() {
+        // Notify all observers of the last backgrounded time.
+        long timeSinceLastBackgroundedMs = getTimeSinceLastBackgroundedMs();
+        for (InactivityObserver observer : mInactivityObserverList) {
+            observer.onForegrounded(timeSinceLastBackgroundedMs);
+        }
+    }
 
     @Override
     public void onResumeWithNative() {
@@ -139,6 +163,24 @@ public class ChromeInactivityTracker
         }
     }
 
+    /**
+     * Add an {@link InactivityObserver} to be notified when the app is no longer inactive.
+     *
+     * @param observer The observer to add.
+     */
+    public void addObserver(InactivityObserver observer) {
+        mInactivityObserverList.addObserver(observer);
+    }
+
+    /**
+     * Remove an {@link InactivityObserver}.
+     *
+     * @param observer The observer to remove.
+     */
+    public void removeObserver(InactivityObserver observer) {
+        mInactivityObserverList.removeObserver(observer);
+    }
+
     @Override
     public void onPauseWithNative() {}
 
@@ -147,6 +189,9 @@ public class ChromeInactivityTracker
 
     @Override
     public void onDestroy() {
-        mLifecycleDispatcher.unregister(this);
+        if (mLifecycleDispatcher != null) {
+            mLifecycleDispatcher.unregister(this);
+            mLifecycleDispatcher = null;
+        }
     }
 }

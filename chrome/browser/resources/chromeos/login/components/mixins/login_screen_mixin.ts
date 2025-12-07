@@ -8,9 +8,10 @@ import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.mi
 
 import {Oobe} from '../../cr_ui.js';
 import {OobeUiState} from '../display_manager_types.js';
-import {OobeTypes} from '../oobe_types.js';
+import type {OobeTypes} from '../oobe_types.js';
 
-import {OobeBaseMixin, OobeBaseMixinInterface} from './oobe_base_mixin.js';
+import type {OobeBaseMixinInterface} from './oobe_base_mixin.js';
+import {OobeBaseMixin} from './oobe_base_mixin.js';
 
 /**
  * @fileoverview
@@ -104,7 +105,6 @@ export const LoginScreenMixin = dedupingMixin(
          * @param api Screen API.
          */
         private registerScreenApi(name: string, api: Record<string, Function>) {
-          // TODO(b/260015147) - Improve this.
           if (globalThis.login === undefined) {
             globalThis.login = {};
           }
@@ -126,7 +126,6 @@ export interface LoginScreenMixinInterface extends OobeBaseMixinInterface {
 }
 
 declare global {
-  // TODO(b/260015147) - Improve this.
   /* eslint-disable-next-line no-var */
   var login: Record<string, Record<string, Function>>;
 }

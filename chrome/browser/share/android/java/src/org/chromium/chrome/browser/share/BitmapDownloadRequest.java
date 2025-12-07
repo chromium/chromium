@@ -8,7 +8,10 @@ import android.graphics.Bitmap;
 
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** A Java API for requesting bitmap download from Chrome's download manager service. */
+@NullMarked
 public class BitmapDownloadRequest {
     public static void downloadBitmap(String fileName, Bitmap bitmap) {
         BitmapDownloadRequestJni.get().downloadBitmap(fileName, bitmap);

@@ -1,0 +1,64 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+ #searchboxContainer {
+  display: flex;
+  font-family: Roboto, Arial, sans-serif;
+  line-height: 20px;
+  z-index: 3;  /* Searchbox should render in front of the results iframe. */
+  /* TODO(jdonnelly): Specify these in a color mixer and consider moving this
+   * import from polymer to the top level HTML file. */
+  /* Colors used in the cr-searchbox results dropdown */
+  --color-searchbox-answer-icon-background: #d3e3fdff;
+  --color-searchbox-answer-icon-foreground: #041e49ff;
+  --color-searchbox-dropdown-divider: #DADCE0;
+  --color-searchbox-results-action-chip:#a8c7faff;
+  --color-searchbox-results-action-chip-icon: #0b57d0ff;
+  --color-searchbox-results-action-chip-focus-outline: #0b57d0ff;
+  --color-searchbox-results-background-hovered: #F1F3F4;
+  --color-searchbox-results-button-hover: #202124ff;
+  --color-searchbox-results-dim-selected: #5f6368ff;
+  --color-searchbox-results-focus-indicator: #F1F3F4;
+  --color-searchbox-results-foreground: #202124;
+  --color-searchbox-results-foreground-dimmed: #5f6368ff;
+  --color-searchbox-results-icon: #5f6368ff;
+  --color-searchbox-results-icon-container-background: #F1F3F4;
+  --color-searchbox-results-icon-focused-outline: #1a73e8ff;
+  --color-searchbox-results-icon-selected: #5f6368ff;
+  --color-searchbox-results-typed-prefix: #70757A;
+  --color-searchbox-results-url: #1967d2ff;
+  --color-searchbox-results-url-selected: #1967d2ff;
+  --color-searchbox-search-icon-background: #5F6368;
+  --color-searchbox-thumbnail-overlay: #4285F466;
+  --color-searchbox-thumbnail-border: #4285F4;
+  /* Colors specific to the cr-searchbox input */
+  --color-searchbox-background-hovered: #F1F3F4;
+  --color-searchbox-background: #F1F3F4;
+  --color-searchbox-border: #dadce0ff;
+  --color-searchbox-foreground: #3C4043;
+  --color-searchbox-placeholder: #70757A;
+  --color-searchbox-shadow: #20212451;
+  /* Colors for searchbox ghost loader */
+  --color-searchbox-ghost-loader-spinner: #DBDBDB;
+  /* Variables used by cr-realbox */
+  --cr-searchbox-height: 52px;
+  --cr-searchbox-icon-left-position: 12px;
+  --cr-searchbox-icon-top-position: 1px;
+  --cr-searchbox-match-font-weight: 400;
+  --cr-searchbox-match-padding: 8px;
+  --cr-searchbox-font-size: 14px;
+  --cr-searchbox-icon-size-in-searchbox: 24px;
+  --cr-searchbox-results-search-icon-size: 20px;
+  --cr-searchbox-shadow: 0 1px 3px 0 var(--color-searchbox-shadow);
+}
+
+:host([enable-visual-selection-updates]) #searchboxContainer {
+  --cr-searchbox-icon-size-in-searchbox: 24px;
+  --cr-searchbox-icon-container-size: 28px;
+}

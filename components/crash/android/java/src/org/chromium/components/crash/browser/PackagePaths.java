@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.PackageUtils;
+import org.chromium.build.annotations.NullMarked;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** This class builds paths for the Chrome package. */
+@NullMarked
 public abstract class PackagePaths {
     // Prevent instantiation.
     private PackagePaths() {}

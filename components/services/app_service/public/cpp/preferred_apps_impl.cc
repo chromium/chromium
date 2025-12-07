@@ -4,16 +4,16 @@
 
 #include "components/services/app_service/public/cpp/preferred_apps_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <utility>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -45,10 +45,6 @@ enum class PreferredAppsUpdateAction {
   kUpgraded = 3,
   kMaxValue = kUpgraded,
 };
-
-void LogPreferredAppEntryCount(int entry_count) {
-  base::UmaHistogramCounts10000("Apps.PreferredApps.EntryCount", entry_count);
-}
 
 // Performs blocking I/O. Called on another thread.
 void WriteDataBlocking(const base::FilePath& preferred_apps_file,
@@ -106,6 +102,25 @@ void PreferredAppsImpl::SetSupportedLinksPreference(
       &PreferredAppsImpl::SetSupportedLinksPreferenceImpl,
       weak_ptr_factory_.GetWeakPtr(), app_id, std::move(all_link_filters)));
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void PreferredAppsImpl::SetProtocolLinkPreference(
+    const std::string& app_id,
+    IntentFilterPtr protocol_link_filter) {
+  RunAfterPreferredAppsReady(base::BindOnce(
+      &PreferredAppsImpl::SetProtocolLinkPreferenceImpl,
+      weak_ptr_factory_.GetWeakPtr(), app_id, std::move(protocol_link_filter)));
+}
+
+void PreferredAppsImpl::RemoveProtocolLinkFilters(
+    const std::string& app_id,
+    IntentFilters protocol_link_filters) {
+  RunAfterPreferredAppsReady(
+      base::BindOnce(&PreferredAppsImpl::RemoveProtocolLinkFiltersImpl,
+                     weak_ptr_factory_.GetWeakPtr(), app_id,
+                     std::move(protocol_link_filters)));
+}
+#endif
 
 void PreferredAppsImpl::RemoveSupportedLinksPreference(
     const std::string& app_id) {
@@ -203,10 +218,6 @@ void PreferredAppsImpl::ReadCompleted(std::string preferred_apps_string) {
     WriteToJSON(profile_dir_, preferred_apps_list_);
   }
 
-  host_->InitializePreferredAppsForAllSubscribers();
-
-  LogPreferredAppEntryCount(preferred_apps_list_.GetEntrySize());
-
   while (!pending_preferred_apps_tasks_.empty()) {
     std::move(pending_preferred_apps_tasks_.front()).Run();
     pending_preferred_apps_tasks_.pop();
@@ -229,23 +240,17 @@ void PreferredAppsImpl::RemovePreferredAppImpl(const std::string& app_id) {
   IntentFilters removed_filters = preferred_apps_list_.DeleteAppId(app_id);
   if (!removed_filters.empty()) {
     WriteToJSON(profile_dir_, preferred_apps_list_);
-
-    auto changes = std::make_unique<PreferredAppChanges>();
-    changes->removed_filters[app_id] = std::move(removed_filters);
-    host_->OnPreferredAppsChanged(std::move(changes));
   }
 }
 
 void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
     const std::string& app_id,
     IntentFilters all_link_filters) {
-  auto changes = std::make_unique<PreferredAppChanges>();
-  auto& added = changes->added_filters;
-  auto& removed = changes->removed_filters;
+  base::flat_map<std::string, IntentFilters> removed;
 
   for (auto& filter : all_link_filters) {
+    CHECK(apps_util::IsSupportedLinkForApp(app_id, filter));
     auto replaced_apps = preferred_apps_list_.AddPreferredApp(app_id, filter);
-    added[app_id].push_back(std::move(filter));
 
     // If we removed overlapping supported links when adding the new app, those
     // affected apps no longer handle all their Supported Links filters and so
@@ -255,7 +260,7 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
     for (auto& replaced_app_and_filters : replaced_apps) {
       const std::string& removed_app_id = replaced_app_and_filters.first;
       bool first_removal_for_app = !base::Contains(removed, app_id);
-      bool did_replace_supported_link = base::ranges::any_of(
+      bool did_replace_supported_link = std::ranges::any_of(
           replaced_app_and_filters.second,
           [&removed_app_id](const auto& filter) {
             return apps_util::IsSupportedLinkForApp(removed_app_id, filter);
@@ -281,8 +286,6 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
 
   WriteToJSON(profile_dir_, preferred_apps_list_);
 
-  host_->OnPreferredAppsChanged(changes->Clone());
-
   // Notify publishers: The new app has been set to open links, and all removed
   // apps no longer handle links.
   host_->OnSupportedLinksPreferenceChanged(app_id,
@@ -293,6 +296,36 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
   }
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
+void PreferredAppsImpl::SetProtocolLinkPreferenceImpl(
+    const std::string& app_id,
+    IntentFilterPtr protocol_link_filter) {
+  CHECK(!apps_util::IsSupportedLinkForApp(app_id, protocol_link_filter));
+  preferred_apps_list_.AddPreferredApp(app_id, protocol_link_filter);
+  WriteToJSON(profile_dir_, preferred_apps_list_);
+
+  // We don't dispatch any events to observers as protocol links are not equal
+  // to supported links.
+}
+
+void PreferredAppsImpl::RemoveProtocolLinkFiltersImpl(
+    const std::string& app_id,
+    IntentFilters protocol_link_filters) {
+  bool needs_write = false;
+  for (const auto& filter : protocol_link_filters) {
+    CHECK(!apps_util::IsSupportedLinkForApp(app_id, filter));
+    needs_write |=
+        !preferred_apps_list_.DeletePreferredApp(app_id, filter).empty();
+  }
+  if (needs_write) {
+    WriteToJSON(profile_dir_, preferred_apps_list_);
+  }
+
+  // We don't dispatch any events to observers as protocol links are not equal
+  // to supported links.
+}
+#endif
+
 void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
     const std::string& app_id) {
   IntentFilters removed_filters =
@@ -300,10 +333,6 @@ void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
 
   if (!removed_filters.empty()) {
     WriteToJSON(profile_dir_, preferred_apps_list_);
-
-    auto changes = std::make_unique<PreferredAppChanges>();
-    changes->removed_filters[app_id] = std::move(removed_filters);
-    host_->OnPreferredAppsChanged(std::move(changes));
   }
 
   host_->OnSupportedLinksPreferenceChanged(app_id,

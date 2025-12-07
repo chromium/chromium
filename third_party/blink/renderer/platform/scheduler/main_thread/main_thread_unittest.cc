@@ -95,7 +95,7 @@ TEST_F(MainThreadTest, TestTaskObserver) {
   }
 
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task)));
+      FROM_HERE, BindOnce(&MockTask::Run, Unretained(&task)));
   base::RunLoop().RunUntilIdle();
   thread_->RemoveTaskObserver(&observer);
 }
@@ -115,7 +115,7 @@ TEST_F(MainThreadTest, TestWorkBatchWithOneTask) {
   }
 
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task)));
+      FROM_HERE, BindOnce(&MockTask::Run, Unretained(&task)));
   base::RunLoop().RunUntilIdle();
   thread_->RemoveTaskObserver(&observer);
 }
@@ -141,9 +141,9 @@ TEST_F(MainThreadTest, TestWorkBatchWithTwoTasks) {
   }
 
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task1)));
+      FROM_HERE, BindOnce(&MockTask::Run, Unretained(&task1)));
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task2)));
+      FROM_HERE, BindOnce(&MockTask::Run, Unretained(&task2)));
   base::RunLoop().RunUntilIdle();
   thread_->RemoveTaskObserver(&observer);
 }
@@ -175,11 +175,11 @@ TEST_F(MainThreadTest, TestWorkBatchWithThreeTasks) {
   }
 
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task1)));
+      FROM_HERE, BindOnce(&MockTask::Run, Unretained(&task1)));
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task2)));
+      FROM_HERE, BindOnce(&MockTask::Run, Unretained(&task2)));
   scheduler_->DefaultTaskRunner()->PostTask(
-      FROM_HERE, WTF::BindOnce(&MockTask::Run, WTF::Unretained(&task3)));
+      FROM_HERE, BindOnce(&MockTask::Run, Unretained(&task3)));
   base::RunLoop().RunUntilIdle();
   thread_->RemoveTaskObserver(&observer);
 }
@@ -188,8 +188,9 @@ void EnterRunLoop(scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   // Note: blink::Threads do not support nested run loops, which is why we use a
   // run loop directly.
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  task_runner->PostTask(FROM_HERE, WTF::BindOnce(&base::RunLoop::Quit,
-                                                 WTF::Unretained(&run_loop)));
+  task_runner->PostTask(
+      FROM_HERE,
+      blink::BindOnce(&base::RunLoop::Quit, blink::Unretained(&run_loop)));
   run_loop.Run();
 }
 

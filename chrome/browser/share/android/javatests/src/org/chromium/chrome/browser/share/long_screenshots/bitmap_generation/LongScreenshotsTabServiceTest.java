@@ -24,23 +24,27 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.paint_preview.mojom.ClipCoordOverride;
 
 /** Tests for the Paint Preview Tab Manager. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LongScreenshotsTabServiceTest {
     @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
-            new ChromeTabbedActivityTestRule();
+    public final FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public TemporaryFolder mTemporaryFolder = new TemporaryFolder();
 
+    private WebPageStation mInitialPage;
     private Tab mTab;
     private LongScreenshotsTabService mLongScreenshotsTabService;
     private TestCaptureProcessor mProcessor;
 
-    class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
+    static class TestCaptureProcessor implements LongScreenshotsTabService.CaptureProcessor {
         @Status private int mActualStatus;
         private boolean mProcessCapturedTabCalled;
         private long mNativeCaptureResultPtr;
@@ -67,9 +71,12 @@ public class LongScreenshotsTabServiceTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityWithURL(
-                mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html"));
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mInitialPage =
+                mActivityTestRule.startOnUrl(
+                        mActivityTestRule
+                                .getTestServer()
+                                .getURL("/chrome/test/data/android/about.html"));
+        mTab = mInitialPage.loadedTabElement.value();
         mProcessor = new TestCaptureProcessor();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -88,7 +95,11 @@ public class LongScreenshotsTabServiceTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLongScreenshotsTabService.captureTab(
-                            mTab, new Rect(0, 0, 100, 100), /* inMemory= */ false);
+                            mTab,
+                            new Rect(0, 0, 100, 100),
+                            /* inMemory= */ false,
+                            ClipCoordOverride.NONE,
+                            ClipCoordOverride.NONE);
                 });
 
         CriteriaHelper.pollUiThread(
@@ -114,7 +125,11 @@ public class LongScreenshotsTabServiceTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mLongScreenshotsTabService.captureTab(
-                            mTab, new Rect(0, 0, 100, 100), /* inMemory= */ true);
+                            mTab,
+                            new Rect(0, 0, 100, 100),
+                            /* inMemory= */ true,
+                            ClipCoordOverride.NONE,
+                            ClipCoordOverride.NONE);
                 });
 
         CriteriaHelper.pollUiThread(

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.download.home.list;
 
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /** Helper methods to make performing actions on {@link OfflineItem}s easier. */
+@NullMarked
 class ItemUtils {
     private ItemUtils() {}
 

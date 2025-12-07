@@ -23,10 +23,12 @@ import android.widget.LinearLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDrawable;
@@ -35,11 +37,13 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for MenuButton. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MenuButtonTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ColorStateList mColorStateList;
 
     private Activity mActivity;
@@ -48,9 +52,7 @@ public class MenuButtonTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
-        mActivity.setTheme(R.style.Theme_MaterialComponents);
+        mActivity = Robolectric.buildActivity(TestActivity.class).setup().get();
         mMenuButton =
                 (MenuButton)
                         ((ViewGroup)

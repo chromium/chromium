@@ -7,7 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/traced_value.h"
 
 namespace base {
 
@@ -33,8 +34,9 @@ TimeTicks TestPendingTask::GetTimeToRun() const {
 }
 
 bool TestPendingTask::ShouldRunBefore(const TestPendingTask& other) const {
-  if (nestability != other.nestability)
+  if (nestability != other.nestability) {
     return (nestability == NESTABLE);
+  }
   return GetTimeToRun() < other.GetTimeToRun();
 }
 

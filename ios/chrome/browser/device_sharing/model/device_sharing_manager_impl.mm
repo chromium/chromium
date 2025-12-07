@@ -7,13 +7,12 @@
 #import "components/handoff/handoff_manager.h"
 #import "components/handoff/pref_names_ios.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-DeviceSharingManagerImpl::DeviceSharingManagerImpl(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {
-  DCHECK(!browser_state || !browser_state->IsOffTheRecord());
-  prefs_change_observer_.Init(browser_state_->GetPrefs());
+DeviceSharingManagerImpl::DeviceSharingManagerImpl(ProfileIOS* profile)
+    : profile_(profile) {
+  DCHECK(!profile || !profile->IsOffTheRecord());
+  prefs_change_observer_.Init(profile_->GetPrefs());
   prefs_change_observer_.Add(
       prefs::kIosHandoffToOtherDevices,
       base::BindRepeating(&DeviceSharingManagerImpl::UpdateHandoffManager,
@@ -31,8 +30,9 @@ void DeviceSharingManagerImpl::SetActiveBrowser(Browser* browser) {
 
 void DeviceSharingManagerImpl::UpdateActiveUrl(Browser* browser,
                                                const GURL& active_url) {
-  if (browser != active_browser_)
+  if (browser != active_browser_) {
     return;
+  }
 
   if (active_url.is_empty()) {
     ClearActiveUrl(browser);
@@ -44,27 +44,29 @@ void DeviceSharingManagerImpl::UpdateActiveUrl(Browser* browser,
 
 void DeviceSharingManagerImpl::UpdateActiveTitle(Browser* browser,
                                                  const std::u16string& title) {
-  if (browser != active_browser_)
+  if (browser != active_browser_) {
     return;
+  }
 
   [handoff_manager_ updateActiveTitle:title];
 }
 
 void DeviceSharingManagerImpl::ClearActiveUrl(Browser* browser) {
-  if (browser != active_browser_)
+  if (browser != active_browser_) {
     return;
+  }
 
   [handoff_manager_ updateActiveURL:GURL()];
   [handoff_manager_ updateActiveTitle:std::u16string()];
 }
 
 void DeviceSharingManagerImpl::UpdateHandoffManager() {
-  if (!browser_state_->GetPrefs()->GetBoolean(
-          prefs::kIosHandoffToOtherDevices)) {
+  if (!profile_->GetPrefs()->GetBoolean(prefs::kIosHandoffToOtherDevices)) {
     handoff_manager_ = nil;
     return;
   }
 
-  if (!handoff_manager_)
+  if (!handoff_manager_) {
     handoff_manager_ = [[HandoffManager alloc] init];
+  }
 }

@@ -25,6 +25,8 @@ namespace media {
 // should be called on the same sequence.
 class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   // V4L2DecodeSurfaceHandler maintains a list of InputRecords, which records
   // the status and metadata of input buffers.
   // |input_buffer| and |output_buffer| are the buffers to be used as input and
@@ -80,8 +82,8 @@ class V4L2DecodeSurface : public base::RefCounted<V4L2DecodeSurface> {
   std::string ToString() const;
 
  protected:
-  virtual ~V4L2DecodeSurface();
   friend class base::RefCounted<V4L2DecodeSurface>;
+  virtual ~V4L2DecodeSurface();
 
   SEQUENCE_CHECKER(sequence_checker_);
 

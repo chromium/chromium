@@ -22,17 +22,19 @@
 
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/resource/svg_document_resource.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/graphics/isolated_svg_document_host.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
+#include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_document_cache.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
+#include "third_party/blink/renderer/core/svg/svg_svg_element.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -72,7 +74,9 @@ class SVGResourceDocumentContent::ChromeClient final
  private:
   void ChromeDestroyed() override { content_.Clear(); }
   void InvalidateContainer() override { content_->ContentChanged(); }
-  void ScheduleAnimation(const LocalFrameView*, base::TimeDelta) override {
+  void ScheduleAnimation(const LocalFrameView*,
+                         base::TimeDelta,
+                         bool) override {
     content_->ContentChanged();
   }
 
@@ -91,8 +95,7 @@ void SVGResourceDocumentContent::NotifyStartLoad() {
   // Check previous status.
   switch (status_) {
     case ResourceStatus::kPending:
-      CHECK(false);
-      break;
+      NOTREACHED();
 
     case ResourceStatus::kNotStarted:
       // Normal load start.
@@ -123,8 +126,7 @@ void SVGResourceDocumentContent::UpdateStatus(ResourceStatus new_status) {
       break;
 
     case ResourceStatus::kNotStarted:
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
   status_ = new_status;
 }
@@ -138,12 +140,11 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
   CHECK(!document_host_);
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
-      *chrome_client, *agent_group_scheduler_);
-  document_host_->InstallDocument(
-      std::move(data),
-      WTF::BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
-                    WrapWeakPersistent(this)),
-      nullptr, IsolatedSVGDocumentHost::ProcessingMode::kStatic);
+      *chrome_client, *agent_group_scheduler_, std::move(data),
+      BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
+               WrapWeakPersistent(this)),
+      /* inherited_settings */ nullptr, /* inherited_color_maps */ nullptr,
+      IsolatedSVGDocumentHost::ProcessingMode::kStatic);
   // If IsLoaded() returns true then the document load completed synchronously,
   // so we can check if we have a usable document and notify our listeners. If
   // not, then we need to wait for the async load completion callback.
@@ -201,8 +202,8 @@ void SVGResourceDocumentContent::AddObserver(
   if (IsLoaded()) {
     task_runner_->PostTask(
         FROM_HERE,
-        WTF::BindOnce(&SVGResourceDocumentContent::NotifyObserver,
-                      WrapPersistent(this), WrapWeakPersistent(observer)));
+        BindOnce(&SVGResourceDocumentContent::NotifyObserver,
+                 WrapPersistent(this), WrapWeakPersistent(observer)));
   }
 }
 
@@ -231,7 +232,11 @@ SVGResourceTarget* SVGResourceDocumentContent::GetResourceTarget(
     return nullptr;
   }
   auto* svg_target =
-      DynamicTo<SVGElement>(document->getElementById(element_id));
+      element_id.empty() &&
+              RuntimeEnabledFeatures::
+                  AllowSvgUseToReferenceExternalDocumentRootEnabled()
+          ? DynamicTo<SVGSVGElement>(document->documentElement())
+          : DynamicTo<SVGElement>(document->getElementById(element_id));
   if (!svg_target) {
     return nullptr;
   }
@@ -278,13 +283,16 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
   params.SetRequestDestination(network::mojom::RequestDestination::kImage);
 
   Page* page = document.GetPage();
-  auto& cache = page->GetSVGResourceDocumentCache();
+  auto& cache = page->GetSVGDocumentResourceTracker();
+  const SVGDocumentResourceTracker::CacheKey key =
+      SVGDocumentResourceTracker::MakeCacheKey(params);
 
-  const SVGResourceDocumentCache::CacheKey key =
-      SVGResourceDocumentCache::MakeCacheKey(params);
-  auto* cached_content = cache.Get(key);
-  if (cached_content && CanReuseContent(*cached_content)) {
-    return cached_content;
+  if (!RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    auto* cached_content = cache.Get(key);
+    if (cached_content && CanReuseContent(*cached_content)) {
+      return cached_content;
+    }
   }
 
   SVGDocumentResource* resource = SVGDocumentResource::Fetch(
@@ -292,7 +300,15 @@ SVGResourceDocumentContent* SVGResourceDocumentContent::Fetch(
   if (!resource) {
     return nullptr;
   }
-  cache.Put(key, resource->GetContent());
+
+  if (RuntimeEnabledFeatures::
+          SvgPartitionSVGDocumentResourcesInMemoryCacheEnabled()) {
+    cache.AddResource(resource);
+    UseCounter::Count(document, WebFeature::kExternalSVGDocumentResources);
+  } else {
+    cache.Put(key, resource->GetContent());
+  }
+
   return resource->GetContent();
 }
 

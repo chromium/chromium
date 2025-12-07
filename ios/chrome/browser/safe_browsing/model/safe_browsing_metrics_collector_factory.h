@@ -5,33 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_METRICS_COLLECTOR_FACTORY_H_
 #define IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_METRICS_COLLECTOR_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-
-class ChromeBrowserState;
-class KeyedService;
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 namespace safe_browsing {
 class SafeBrowsingMetricsCollector;
 }
 
-namespace web {
-class BrowserState;
-}
-
 // Used to construct a SafeBrowsingMetricsCollector. Returns null for
-// incognito browser states
+// incognito profiles.
 class SafeBrowsingMetricsCollectorFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-  //  Returns the instance of SafeBrowsingMetricsCollector associated with
-  //  `browser_state`, creating one if none exists and `browser_state` is
-  // not in Incognito mode. Returns null if `browser_state` is in Incognito
-  // mode.
-  static safe_browsing::SafeBrowsingMetricsCollector* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
-  // Returns the singleton instance of SafeBrowsingMetricsCollectorFactory.
+  // Returns null if `profile` is in Incognito mode.
+  static safe_browsing::SafeBrowsingMetricsCollector* GetForProfile(
+      ProfileIOS* profile);
   static SafeBrowsingMetricsCollectorFactory* GetInstance();
 
  private:
@@ -40,9 +28,9 @@ class SafeBrowsingMetricsCollectorFactory
   SafeBrowsingMetricsCollectorFactory();
   ~SafeBrowsingMetricsCollectorFactory() override = default;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* browser_state) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_SAFE_BROWSING_MODEL_SAFE_BROWSING_METRICS_COLLECTOR_FACTORY_H_

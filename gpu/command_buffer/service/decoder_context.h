@@ -27,7 +27,6 @@ class GLSurface;
 
 namespace gpu {
 class TextureBase;
-struct ContextCreationAttribs;
 
 namespace gles2 {
 class ContextGroup;
@@ -36,7 +35,6 @@ class FeatureInfo;
 class GpuFenceManager;
 class Outputter;
 class Texture;
-struct DisallowedFeatures;
 }  // namespace gles2
 
 // Abstract interface implemented by {Raster,GLES2}Decoder. It is called a
@@ -51,24 +49,6 @@ class GPU_GLES2_EXPORT DecoderContext : public AsyncAPIInterface,
   //
   // Methods required by CommandBufferStub.
   //
-  // Initializes the graphics context. Can create an offscreen
-  // decoder with a frame buffer that can be referenced from the parent.
-  // Takes ownership of GLContext.
-  // Parameters:
-  //  surface: the GL surface to render to.
-  //  context: the GL context to render to.
-  //  offscreen: whether to make the context offscreen or not. When FBO 0 is
-  //      bound, offscreen contexts render to an internal buffer, onscreen ones
-  //      to the surface.
-  //  offscreen_size: the size if the GL context is offscreen.
-  // Returns:
-  //   true if successful.
-  virtual gpu::ContextResult Initialize(
-      const scoped_refptr<gl::GLSurface>& surface,
-      const scoped_refptr<gl::GLContext>& context,
-      bool offscreen,
-      const gles2::DisallowedFeatures& disallowed_features,
-      const ContextCreationAttribs& attrib_helper) = 0;
 
   // Destroys the graphics context.
   virtual void Destroy(bool have_context) = 0;

@@ -48,6 +48,9 @@ class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
   // For tracking why some scripts are not streamed. Not streaming is part of
   // normal operation (e.g., script already loaded, script too small) and
   // doesn't necessarily indicate a failure.
+  //
+  // The enum values were used in histograms and thus do not change existing
+  // enum values when modifying.
   enum class NotStreamingReason {
     kAlreadyLoaded,  // DEPRECATED
     kNotHTTP,
@@ -80,8 +83,9 @@ class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
     kErrorOccurredBackground,
     kEncodingNotSupportedBackground,
 
+    kNonModuleWithWasmMimeType,
     // Pseudo values that should never be seen in reported metrics
-    kMaxValue = kEncodingNotSupportedBackground,
+    kMaxValue = kNonModuleWithWasmMimeType,
     kInvalid = -1,
   };
 
@@ -99,7 +103,7 @@ class CORE_EXPORT ScriptStreamer : public GarbageCollected<ScriptStreamer> {
                                        ScriptStreamer::NotStreamingReason);
 
   // Returns false if we cannot stream the given encoding.
-  static bool ConvertEncoding(const char* encoding_name,
+  static bool ConvertEncoding(const AtomicString& encoding_name,
                               v8::ScriptCompiler::StreamedSource::Encoding*);
 
   // Get a successful ScriptStreamer for the given ScriptResource.
@@ -282,7 +286,7 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
 // the background before they have been parsed by the HTML parser. Use
 // InlineScriptStreamer::From() to create a ScriptStreamer from this class.
 class CORE_EXPORT BackgroundInlineScriptStreamer final
-    : public WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer> {
+    : public ThreadSafeRefCounted<BackgroundInlineScriptStreamer> {
  public:
   BackgroundInlineScriptStreamer(
       v8::Isolate* isolate,
@@ -299,7 +303,7 @@ class CORE_EXPORT BackgroundInlineScriptStreamer final
   v8::ScriptCompiler::StreamedSource* Source(v8::ScriptType expected_type);
 
  private:
-  friend class WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer>;
+  friend class ThreadSafeRefCounted<BackgroundInlineScriptStreamer>;
   ~BackgroundInlineScriptStreamer() = default;
 
   std::unique_ptr<v8::ScriptCompiler::StreamedSource> source_;

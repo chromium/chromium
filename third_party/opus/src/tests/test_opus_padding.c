@@ -29,6 +29,10 @@
  * http://lists.xiph.org/pipermail/opus/2012-November/001834.html
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

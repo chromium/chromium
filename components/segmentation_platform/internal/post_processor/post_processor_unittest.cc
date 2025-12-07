@@ -366,6 +366,25 @@ TEST(PostProcessorTest, GetRawResult) {
   EXPECT_EQ(pred_result.SerializeAsString(), result.result.SerializeAsString());
   EXPECT_EQ(PredictionStatus::kSucceeded, result.status);
   EXPECT_NEAR(0.1, *result.GetResultForLabel("Output1"), 0.001);
+  base::flat_map<std::string, float> all_results = result.GetAllResults();
+  EXPECT_EQ(all_results.size(), 3u);
+  EXPECT_NEAR(0.2, all_results["Output2"], 0.001);
+}
+
+TEST(PostProcessorTest, GetRawResultForMulticlassClassifier) {
+  proto::PredictionResult pred_result = metadata_utils::CreatePredictionResult(
+      /*model_scores=*/{1, 3, 5, 7},
+      GetTestOutputConfigForMultiClassClassifier(/*top_k-outputs=*/2,
+                                                 /*threshold=*/0.5),
+      /*timestamp=*/base::Time::Now(), /*model_version=*/1);
+  RawResult result =
+      PostProcessor().GetRawResult(pred_result, PredictionStatus::kSucceeded);
+  EXPECT_EQ(PredictionStatus::kSucceeded, result.status);
+  EXPECT_NEAR(5, *result.GetResultForLabel(kVoiceUser), 0.001);
+  base::flat_map<std::string, float> all_results = result.GetAllResults();
+  EXPECT_EQ(all_results.size(), 4u);
+  EXPECT_NEAR(1, all_results[kShareUser], 0.001);
+  EXPECT_NEAR(3, all_results[kNewTabUser], 0.001);
 }
 
 TEST(PostProcessorTest, IsClassificationModel) {

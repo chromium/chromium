@@ -7,7 +7,6 @@
 
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/native_profiling.h"
-#include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
 namespace protocol {

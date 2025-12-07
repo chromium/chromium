@@ -8,10 +8,8 @@
 #include <set>
 
 #include "base/feature_list.h"
-#include "base/functional/callback.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/threading/thread_checker.h"
 #include "base/types/pass_key.h"
 #include "services/metrics/public/cpp/metrics_export.h"
 #include "services/metrics/public/cpp/ukm_source.h"
@@ -19,33 +17,43 @@
 #include "services/metrics/public/mojom/ukm_interface.mojom-forward.h"
 #include "url/gurl.h"
 
+class AbusiveNotificationPermissionsManager;
 class ChromePermissionsClient;
-class DIPSNavigationHandle;
-class DIPSService;
 class PermissionUmaUtil;
 class PlatformNotificationServiceImpl;
+class PersistentNotificationHandler;
+class NonPersistentNotificationHandler;
 
 namespace apps {
 class WebsiteMetrics;
 }  // namespace apps
+
+namespace login_detection {
+class IdentityProviderMetrics;
+}  // namespace login_detection
 
 namespace metrics {
 class UkmRecorderInterface;
 }  // namespace metrics
 
 namespace content {
-class FedCmMetrics;
+class BtmNavigationHandle;
+class BtmServiceImpl;
+namespace webid {
+class Metrics;
+}  // namespace webid
 class PaymentAppProviderUtil;
 class RenderFrameHostImpl;
 }  // namespace content
 
 namespace extensions {
-class ExtensionMessagePort;
 class ManifestV2ExperimentManager;
+class ExtensionContextMenuModel;
+class MetricsPrivateRecordExtensionUsageUkmFunction;
 }
 
-namespace weblayer {
-class BackgroundSyncDelegateImpl;
+namespace safe_browsing {
+class NotificationContentDetectionUkmUtil;
 }
 
 namespace ukm {
@@ -118,29 +126,37 @@ class METRICS_EXPORT UkmRecorder {
   // from the identity provider. This method should only be called in the
   // FedCmMetrics class.
   static SourceId GetSourceIdForWebIdentityFromScope(
-      base::PassKey<content::FedCmMetrics>,
+      base::PassKey<content::webid::Metrics>,
+      const GURL& provider_url);
+
+  static SourceId GetSourceIdForWebIdentityFromScope(
+      base::PassKey<login_detection::IdentityProviderMetrics>,
       const GURL& provider_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL
   // from the redirect chain. This method should only be called in the
-  // DIPSNavigationHandle class.
-  static SourceId GetSourceIdForRedirectUrl(base::PassKey<DIPSNavigationHandle>,
-                                            const GURL& redirect_url);
+  // BtmNavigationHandle class.
+  static SourceId GetSourceIdForRedirectUrl(
+      base::PassKey<content::BtmNavigationHandle>,
+      const GURL& redirect_url);
 
   // Gets a new SourceId of EXTENSION_ID type and updates the source URL
-  // from the extension message port. This method should only be called by
-  // approved cases, indicated by the PassKeys.
-  static SourceId GetSourceIdForExtensionUrl(
-      base::PassKey<extensions::ExtensionMessagePort>,
-      const GURL& extension_url);
+  // from the manifest v2 experiment manager. This method should only be called
+  // by approved cases, indicated by the PassKeys.
   static SourceId GetSourceIdForExtensionUrl(
       base::PassKey<extensions::ManifestV2ExperimentManager>,
       const GURL& extension_url);
+  static SourceId GetSourceIdForExtensionUrl(
+      base::PassKey<extensions::ExtensionContextMenuModel>,
+      const GURL& extension_url);
+  static SourceId GetSourceIdForExtensionUrl(
+      base::PassKey<extensions::MetricsPrivateRecordExtensionUsageUkmFunction>,
+      const GURL& extension_url);
 
   // Gets a new SourceId of REDIRECT_ID type and updates the source URL to the
-  // given domain. This method should only be called in the DIPSService class
-  // for sites in the DIPS database. `site` must be a registrable domain.
-  static SourceId GetSourceIdForDipsSite(base::PassKey<DIPSService>,
+  // given domain. This method should only be called in the BtmServiceImpl
+  // class for sites in the DIPS database. `site` must be a registrable domain.
+  static SourceId GetSourceIdForDipsSite(base::PassKey<content::BtmServiceImpl>,
                                          const std::string& site);
 
   // Gets a new SourceId of CHROMEOS_WEBSITE_ID type. This should be only
@@ -151,16 +167,40 @@ class METRICS_EXPORT UkmRecorder {
 
   // Gets a new SourceId of NOTIFICATION_ID type. This should only be
   // used for recording Permission UKM events related to persistent and
-  // nonpersistent notifications. `origin` is the domain that uses the Push API.
+  // nonpersistent notifications. `url` is the domain that uses the Push API.
   static SourceId GetSourceIdForNotificationPermission(
       base::PassKey<ChromePermissionsClient>,
-      const GURL& origin);
+      const GURL& url);
 
   // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
   // for recording persistent and nonpersistent notification UKM events.
   static SourceId GetSourceIdForNotificationEvent(
       base::PassKey<PlatformNotificationServiceImpl>,
-      const GURL& origin);
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording persistent notification UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<PersistentNotificationHandler>,
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording nonpersistent notification UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<NonPersistentNotificationHandler>,
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording suspicious notification interaction UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<safe_browsing::NotificationContentDetectionUkmUtil>,
+      const GURL& url);
+
+  // Gets a new SourceId of NOTIFICATION_ID type. This should only be used
+  // for recording abusive notification Safety Hub interaction UKM events.
+  static SourceId GetSourceIdForNotificationEvent(
+      base::PassKey<AbusiveNotificationPermissionsManager>,
+      const GURL& url);
 
   // This method should be called when the system is about to shutdown, but
   // `UkmRecorder` is still available to record metrics.
@@ -200,7 +240,6 @@ class METRICS_EXPORT UkmRecorder {
                                            SourceIdType type);
 
  private:
-  friend weblayer::BackgroundSyncDelegateImpl;
   friend DelegatingUkmRecorder;
   friend TestRecordingHelper;
   friend UkmBackgroundRecorderService;

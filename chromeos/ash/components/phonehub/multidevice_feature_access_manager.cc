@@ -11,8 +11,7 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/feature_setup_connection_operation.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 MultideviceFeatureAccessManager::MultideviceFeatureAccessManager() = default;
 
@@ -285,5 +284,4 @@ std::ostream& operator<<(
   return stream;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

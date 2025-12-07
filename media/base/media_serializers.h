@@ -10,12 +10,14 @@
 #include <vector>
 
 #include "base/location.h"
-#include "base/strings/stringprintf.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/buffering_state.h"
 #include "media/base/cdm_config.h"
 #include "media/base/decoder.h"
 #include "media/base/media_serializers_base.h"
+#include "media/base/media_track.h"
+#include "media/base/picture_in_picture_events_info.h"
+#include "media/base/ranges.h"
 #include "media/base/renderer.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
@@ -169,6 +171,16 @@ struct MediaSerializer<base::Time> {
     std::stringstream formatted;
     formatted << value;
     return MediaSerializer<std::string>::Serialize(formatted.str());
+  }
+};
+
+// Enum (simple)
+template <>
+struct MediaSerializer<PictureInPictureEventsInfo::AutoPipReason> {
+  static inline base::Value Serialize(
+      PictureInPictureEventsInfo::AutoPipReason value) {
+    return base::Value(
+        PictureInPictureEventsInfo::AutoPipReasonToString(value));
   }
 };
 
@@ -428,7 +440,7 @@ struct MediaSerializer<SerializableBufferingState<T>> {
 
 // Class (complex)
 template <typename T>
-struct MediaSerializer<TypedStatus<T>> {
+struct MediaSerializerDebug<TypedStatus<T>> {
   static base::Value Serialize(const TypedStatus<T>& status) {
     // TODO: replace this with some kind of static "description"
     // of the default type, instead of "Ok".
@@ -464,6 +476,25 @@ struct MediaSerializer<base::Location> {
     FIELD_SERIALIZE(StatusConstants::kFileKey,
                     value.file_name() ? value.file_name() : "unknown");
     FIELD_SERIALIZE(StatusConstants::kLineKey, value.line_number());
+    return base::Value(std::move(result));
+  }
+};
+
+// Class (complex)
+template <>
+struct MediaSerializer<media::PictureInPictureEventsInfo::AutoPipInfo> {
+  static base::Value Serialize(
+      const media::PictureInPictureEventsInfo::AutoPipInfo& value) {
+    base::Value::Dict result;
+    FIELD_SERIALIZE("reason", value.auto_pip_reason);
+    FIELD_SERIALIZE("has_audio_focus", value.has_audio_focus);
+    FIELD_SERIALIZE("is_playing", value.is_playing);
+    FIELD_SERIALIZE("was_recently_audible", value.was_recently_audible);
+    FIELD_SERIALIZE("has_safe_url", value.has_safe_url);
+    FIELD_SERIALIZE("meets_media_engagement_conditions",
+                    value.meets_media_engagement_conditions);
+    FIELD_SERIALIZE("blocked_due_to_content_setting",
+                    value.blocked_due_to_content_setting);
     return base::Value(std::move(result));
   }
 };
@@ -556,6 +587,27 @@ struct MediaSerializer<gfx::ColorSpace::RangeID> {
       ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, FULL);
       ENUM_CLASS_CASE_TO_STRING(gfx::ColorSpace::RangeID, DERIVED);
     }
+  }
+};
+
+template <>
+struct MediaSerializer<MediaTrack::Id> {
+  static inline base::Value Serialize(MediaTrack::Id id) {
+    return base::Value(id.value());
+  }
+};
+
+template <typename T>
+struct MediaSerializer<Ranges<T>> {
+  static inline base::Value Serialize(Ranges<T> ranges) {
+    base::Value::List result;
+    for (size_t i = 0; i < ranges.size(); i++) {
+      base::Value::List tuple;
+      tuple.Append(MediaSerializer<T>::Serialize(ranges.start(i)));
+      tuple.Append(MediaSerializer<T>::Serialize(ranges.end(i)));
+      result.Append(std::move(tuple));
+    }
+    return base::Value(std::move(result));
   }
 };
 

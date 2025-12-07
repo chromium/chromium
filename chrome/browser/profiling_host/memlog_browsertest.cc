@@ -5,18 +5,13 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiling_host/profiling_process_host.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "components/heap_profiling/multi_process/test_driver.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
 #include "content/public/test/browser_test.h"
 #include "partition_alloc/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "chrome/test/base/android/android_browser_test.h"
-#else
-#include "chrome/test/base/in_process_browser_test.h"
-#endif
 
 // Some builds don't support memlog in which case the tests won't function.
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
@@ -47,7 +42,7 @@ class MemlogBrowserTest : public PlatformBrowserTest,
           heap_profiling::kMemlogStackMode,
           heap_profiling::kMemlogStackModeNativeWithThreadNames);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // Use a sampling rate of 10k.

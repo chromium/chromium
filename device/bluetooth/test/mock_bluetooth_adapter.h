@@ -11,7 +11,6 @@
 
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_discovery_session.h"
@@ -137,6 +136,10 @@ class MockBluetoothAdapter : public BluetoothAdapter {
                void(const UUIDList& uuids,
                     base::OnceClosure callback,
                     ErrorCallback error_callback));
+  MOCK_METHOD3(SetSimpleSecurePairingEnabled,
+               void(bool enabled,
+                    base::OnceClosure callback,
+                    ErrorCallback error_callback));
   MOCK_METHOD0(GetLowEnergyScanSessionHardwareOffloadingStatus,
                LowEnergyScanSessionHardwareOffloadingStatus());
   MOCK_METHOD2(
@@ -148,9 +151,9 @@ class MockBluetoothAdapter : public BluetoothAdapter {
   MOCK_CONST_METHOD0(IsExtendedAdvertisementsAvailable, bool());
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   MOCK_METHOD0(SetStandardChromeOSAdapterName, void());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   MOCK_METHOD4(

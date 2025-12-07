@@ -48,7 +48,7 @@ class CORE_EXPORT DocumentParser : public GarbageCollected<DocumentParser>,
  public:
   ~DocumentParser() override;
   virtual void Trace(Visitor*) const;
-  const char* NameInHeapSnapshot() const override { return "DocumentParser"; }
+  const char* GetHumanReadableName() const override { return "DocumentParser"; }
 
   virtual ScriptableDocumentParser* AsScriptableDocumentParser() {
     return nullptr;
@@ -68,7 +68,7 @@ class CORE_EXPORT DocumentParser : public GarbageCollected<DocumentParser>,
   virtual void AppendDecodedData(const String& data,
                                  const DocumentEncodingData& encoding_data) {}
   using BackgroundScanCallback =
-      WTF::CrossThreadRepeatingFunction<void(const String&)>;
+      CrossThreadRepeatingFunction<void(const String&)>;
   virtual BackgroundScanCallback TakeBackgroundScanCallback() {
     return BackgroundScanCallback();
   }

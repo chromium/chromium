@@ -12,12 +12,14 @@
 #include <utility>
 #include <vector>
 
+#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
+#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
-#include "chrome/browser/chromeos/platform_keys/platform_keys.h"
-#include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
+#include "chrome/browser/extensions/api/platform_keys/verify_trust_api_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/platform_keys_internal.h"
+#include "chromeos/ash/components/platform_keys/platform_keys.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom-shared.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom.h"
@@ -27,15 +29,6 @@
 #include "net/cert/cert_status_flags.h"
 #include "net/cert/x509_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/keystore_service_ash.h"
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
-
 using PublicKeyInfo = chromeos::platform_keys::PublicKeyInfo;
 
 namespace extensions {
@@ -44,22 +37,16 @@ namespace {
 
 namespace api_pk = api::platform_keys;
 namespace api_pki = api::platform_keys_internal;
-using crosapi::mojom::KeystoreService;
-using SigningAlgorithmName = crosapi::mojom::KeystoreSigningAlgorithmName;
 using crosapi::keystore_service_util::kWebCryptoEcdsa;
 using crosapi::keystore_service_util::kWebCryptoRsassaPkcs1v15;
+using crosapi::mojom::KeystoreAlgorithmName;
+using crosapi::mojom::KeystoreService;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-const char kUnsupportedByAsh[] = "Not implemented.";
-const char kUnsupportedProfile[] = "Not available.";
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 const char kErrorInvalidSigningAlgorithm[] = "Invalid signing algorithm.";
 const char kErrorInteractiveCallFromBackground[] =
     "Interactive calls must happen in the context of a browser tab or a "
     "window.";
-
-const char kTokenIdUser[] = "user";
-const char kTokenIdSystem[] = "system";
+const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
 
 // Skip checking for interactive calls coming from a non-interactive
 // context.
@@ -79,81 +66,26 @@ const struct NameValuePair {
 
 crosapi::mojom::KeystoreService* GetKeystoreService(
     content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
-  // implemented for secondary profiles in Lacros.
-  CHECK(Profile::FromBrowserContext(browser_context)->IsMainProfile())
-      << "Attempted to use an incorrect profile. Please file a bug at "
-         "https://bugs.chromium.org/ if this happens.";
-  return chromeos::LacrosService::Get()->GetRemote<KeystoreService>().get();
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return crosapi::KeystoreServiceFactoryAsh::GetForBrowserContext(
       browser_context);
-#endif  // #if BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-// Performs common crosapi validation. These errors are not caused by the
-// extension so they are considered recoverable. Returns an error message on
-// error, or empty string on success. |min_version| is the minimum version of
-// the ash implementation of KeystoreService necessary to support this
-// extension. |context| is the browser context in which the extension is hosted.
-std::string ValidateCrosapi(int min_version, content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (!service || !service->IsAvailable<crosapi::mojom::KeystoreService>())
-    return kUnsupportedByAsh;
-
-  int version = service->GetInterfaceVersion<KeystoreService>();
-  if (version < min_version)
-    return kUnsupportedByAsh;
-
-  // These APIs are used in security-sensitive contexts. We need to ensure that
-  // the user for ash is the same as the user for lacros. We do this by
-  // restricting the API to the default profile, which is guaranteed to be the
-  // same user.
-  if (!Profile::FromBrowserContext(context)->IsMainProfile())
-    return kUnsupportedProfile;
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  return "";
-}
-
-std::optional<SigningAlgorithmName> SigningAlgorithmNameFromString(
+std::optional<KeystoreAlgorithmName> KeystoreAlgorithmNameFromString(
     const std::string& input) {
-  if (input == kWebCryptoRsassaPkcs1v15)
-    return SigningAlgorithmName::kRsassaPkcs115;
-  if (input == kWebCryptoEcdsa)
-    return SigningAlgorithmName::kEcdsa;
+  if (input == kWebCryptoRsassaPkcs1v15) {
+    return KeystoreAlgorithmName::kRsassaPkcs115;
+  }
+  if (input == kWebCryptoEcdsa) {
+    return KeystoreAlgorithmName::kEcdsa;
+  }
   return std::nullopt;
 }
 
 }  // namespace
 
-namespace platform_keys {
-
-const char kErrorInvalidSpki[] = "The SubjectPublicKeyInfo is not valid.";
-const char kErrorInvalidToken[] = "The token is not valid.";
-const char kErrorInvalidX509Cert[] =
-    "Certificate is not a valid X.509 certificate.";
-
-std::optional<chromeos::platform_keys::TokenId> ApiIdToPlatformKeysTokenId(
-    const std::string& token_id) {
-  if (token_id == kTokenIdUser)
-    return chromeos::platform_keys::TokenId::kUser;
-
-  if (token_id == kTokenIdSystem)
-    return chromeos::platform_keys::TokenId::kSystem;
-
-  return std::nullopt;
-}
-
-}  // namespace platform_keys
-
 //------------------------------------------------------------------------------
 PlatformKeysInternalSelectClientCertificatesFunction::
-    ~PlatformKeysInternalSelectClientCertificatesFunction() {}
+    ~PlatformKeysInternalSelectClientCertificatesFunction() = default;
 
 void PlatformKeysInternalSelectClientCertificatesFunction::
     SetSkipInteractiveCheckForTest(bool skip_interactive_check) {
@@ -162,13 +94,6 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
 
 ExtensionFunction::ResponseAction
 PlatformKeysInternalSelectClientCertificatesFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
-  // implemented for secondary profiles in Lacros.
-  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
-    return RespondNow(Error(kUnsupportedProfile));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   std::optional<api_pki::SelectClientCertificates::Params> params =
       api_pki::SelectClientCertificates::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -189,7 +114,7 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
             net::X509Certificate::kPublicKeyTypeRSA);
         break;
       case api_pk::ClientCertificateType::kNone:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -198,8 +123,9 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
     client_certs = std::make_unique<net::CertificateList>();
     for (const std::vector<uint8_t>& client_cert_der :
          *params->details.client_certs) {
-      if (client_cert_der.empty())
+      if (client_cert_der.empty()) {
         return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
+      }
       // Allow UTF-8 inside PrintableStrings in client certificates. See
       // crbug.com/770323 and crbug.com/788655.
       net::X509Certificate::UnsafeCreateOptions options;
@@ -207,8 +133,9 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
       scoped_refptr<net::X509Certificate> client_cert_x509 =
           net::X509Certificate::CreateFromBytesUnsafeOptions(client_cert_der,
                                                              options);
-      if (!client_cert_x509)
+      if (!client_cert_x509) {
         return RespondNow(Error(platform_keys::kErrorInvalidX509Cert));
+      }
       client_certs->push_back(client_cert_x509);
     }
   }
@@ -289,7 +216,7 @@ void PlatformKeysInternalSelectClientCertificatesFunction::
 //------------------------------------------------------------------------------
 
 PlatformKeysInternalGetPublicKeyFunction::
-    ~PlatformKeysInternalGetPublicKeyFunction() {}
+    ~PlatformKeysInternalGetPublicKeyFunction() = default;
 
 ExtensionFunction::ResponseAction
 PlatformKeysInternalGetPublicKeyFunction::Run() {
@@ -297,14 +224,8 @@ PlatformKeysInternalGetPublicKeyFunction::Run() {
       api_pki::GetPublicKey::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  std::string error = ValidateCrosapi(KeystoreService::kGetPublicKeyMinVersion,
-                                      browser_context());
-  if (!error.empty()) {
-    return RespondNow(Error(error));
-  }
-
-  std::optional<SigningAlgorithmName> algorithm_name =
-      SigningAlgorithmNameFromString(params->algorithm_name);
+  std::optional<KeystoreAlgorithmName> algorithm_name =
+      KeystoreAlgorithmNameFromString(params->algorithm_name);
   if (!algorithm_name) {
     return RespondNow(Error(chromeos::platform_keys::KeystoreErrorToString(
         crosapi::mojom::KeystoreError::kAlgorithmNotSupported)));
@@ -328,7 +249,7 @@ void PlatformKeysInternalGetPublicKeyFunction::OnGetPublicKey(
 
   api_pki::GetPublicKey::Results::Algorithm algorithm;
   std::optional<base::Value::Dict> dict =
-      crosapi::keystore_service_util::DictionaryFromSigningAlgorithm(
+      crosapi::keystore_service_util::MakeDictionaryFromKeystoreAlgorithm(
           result->get_success_result()->algorithm_properties);
   if (!dict) {
     Respond(Error(kErrorInvalidSigningAlgorithm));
@@ -345,24 +266,17 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::
 
 ExtensionFunction::ResponseAction
 PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
-  // implemented for secondary profiles in Lacros.
-  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
-    return RespondNow(Error(kUnsupportedProfile));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   std::optional<api_pki::GetPublicKeyBySpki::Params> params =
       api_pki::GetPublicKeyBySpki::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   const auto& public_key_spki_der = params->public_key_spki_der;
-  if (public_key_spki_der.empty())
-    return RespondNow(Error(platform_keys::kErrorInvalidSpki));
+  if (public_key_spki_der.empty()) {
+    return RespondNow(Error(kErrorInvalidSpki));
+  }
 
   PublicKeyInfo key_info;
-  key_info.public_key_spki_der.assign(std::begin(public_key_spki_der),
-                                      std::end(public_key_spki_der));
+  key_info.public_key_spki_der = public_key_spki_der;
 
   if (!chromeos::platform_keys::GetPublicKeyBySpki(key_info.public_key_spki_der,
                                                    &key_info.key_type,
@@ -374,8 +288,9 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
   chromeos::platform_keys::Status check_result =
       chromeos::platform_keys::CheckKeyTypeAndAlgorithm(key_info.key_type,
                                                         params->algorithm_name);
-  if (check_result != chromeos::platform_keys::Status::kSuccess)
+  if (check_result != chromeos::platform_keys::Status::kSuccess) {
     return RespondNow(Error(StatusToString(check_result)));
+  }
 
   api_pki::GetPublicKeyBySpki::Results::Algorithm algorithm;
   std::optional<base::Value::Dict> algorithm_dictionary =
@@ -389,16 +304,9 @@ PlatformKeysInternalGetPublicKeyBySpkiFunction::Run() {
 
 //------------------------------------------------------------------------------
 
-PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() {}
+PlatformKeysInternalSignFunction::~PlatformKeysInternalSignFunction() = default;
 
 ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/191958380): Lift the restriction when *.platformKeys.* APIs are
-  // implemented for secondary profiles in Lacros.
-  if (!Profile::FromBrowserContext(browser_context())->IsMainProfile())
-    return RespondNow(Error(kUnsupportedProfile));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   std::optional<api_pki::Sign::Params> params =
       api_pki::Sign::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -480,7 +388,7 @@ void PlatformKeysInternalSignFunction::OnSigned(
 //------------------------------------------------------------------------------
 
 PlatformKeysVerifyTLSServerCertificateFunction::
-    ~PlatformKeysVerifyTLSServerCertificateFunction() {}
+    ~PlatformKeysVerifyTLSServerCertificateFunction() = default;
 
 ExtensionFunction::ResponseAction
 PlatformKeysVerifyTLSServerCertificateFunction::Run() {
@@ -490,9 +398,9 @@ PlatformKeysVerifyTLSServerCertificateFunction::Run() {
       api_pk::VerifyTLSServerCertificate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  VerifyTrustAPI::GetFactoryInstance()
+  VerifyTrustApiService::GetFactoryInstance()
       ->Get(browser_context())
-      ->Verify(std::move(params), extension_id(),
+      ->Verify(std::move(params.value()), extension_id(),
                base::BindOnce(&PlatformKeysVerifyTLSServerCertificateFunction::
                                   FinishedVerification,
                               this));

@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include <array>
+
 
 #include <algorithm>
 #include <memory>
@@ -15,7 +13,6 @@
 
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/task_environment.h"
@@ -37,8 +34,8 @@ namespace {
 
 // Not threadsafe.
 std::string GenerateFakeHashedString(size_t sym_count) {
-  static constexpr char kSyms[] =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,/=+?#";
+  constexpr static std::array<char, 69> kSyms{
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789,/=+?#"};
   static std::mt19937 engine;
   std::uniform_int_distribution<size_t> index_distribution(
       0, std::size(kSyms) - 2 /* trailing \0 */);
@@ -71,11 +68,12 @@ URLRow GeneratePopularURLRow() {
 
 using StringPieces = std::vector<std::string_view>;
 
-StringPieces AllPrefixes(const std::string& str) {
+StringPieces AllPrefixes(std::string_view str) {
   std::vector<std::string_view> res;
   res.reserve(str.size());
-  for (auto char_it = str.begin(); char_it != str.end(); ++char_it)
-    res.push_back(base::MakeStringPiece(str.begin(), char_it));
+  for (size_t i = 0; i < str.size(); ++i) {
+    res.push_back(str.substr(0, i));
+  }
   return res;
 }
 

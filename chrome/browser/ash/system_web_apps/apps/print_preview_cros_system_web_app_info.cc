@@ -31,7 +31,22 @@ PrintPreviewCrosDelegate::PrintPreviewCrosDelegate(Profile* profile)
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 PrintPreviewCrosDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForPrintPreviewCrosSystemWebApp();
+  GURL start_url = GURL(ash::kChromeUIPrintPreviewCrosURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
+  info->scope = start_url;
+  info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+
+  info->title = kPrintPreviewCrosTitle;
+
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url(),
+      {{"app_icon_192.png", 192,
+        IDR_ASH_PRINT_PREVIEW_CROS_APP_IMAGES_APP_ICON_192_PNG}},
+      *info);
+
+  return info;
 }
 
 bool PrintPreviewCrosDelegate::IsAppEnabled() const {
@@ -48,26 +63,4 @@ bool PrintPreviewCrosDelegate::ShouldShowInSearchAndShelf() const {
 
 bool PrintPreviewCrosDelegate::ShouldCaptureNavigations() const {
   return true;
-}
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForPrintPreviewCrosSystemWebApp() {
-  GURL start_url = GURL(ash::kChromeUIPrintPreviewCrosURL);
-  auto info =
-      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = start_url;
-  info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
-  // TODO(b/323585997): Localize title.
-  info->title = kPrintPreviewCrosTitle;
-
-  // TODO(b/323421684): Replace with actual app icons when available.
-  web_app::CreateIconInfoForSystemWebApp(
-      info->start_url(),
-      {{"app_icon_192.png", 192,
-        IDR_ASH_PRINT_PREVIEW_CROS_APP_IMAGES_APP_ICON_192_PNG}},
-      *info);
-
-  return info;
 }

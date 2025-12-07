@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Note: The API should stay in sync with the IDL definitions in
-// third_party/WebKit/Source/core/mojo
+// Note: This polyfill API should stay in sync with the IDL definitions in
+// third_party/blink/renderer/core/mojo/mojo.idl
 
 // eslint-disable-next-line no-var
 var Mojo = Mojo || {};

@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/modules/managed_device/navigator_managed_data.h"
 
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -13,39 +16,59 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 namespace {
 
-const char kNotHighTrustedAppExceptionMessage[] =
-    "This API is available only for managed apps.";
+constexpr char kNotHighTrustedAppExceptionMessage[] =
+    "Managed configuration is empty. This API is available only for "
+    "managed apps.";
+constexpr char kServiceConnectionExceptionMessage[] =
+    "Service connection error. This API is available only for managed apps.";
 
 #if BUILDFLAG(IS_ANDROID)
-const char kManagedConfigNotSupported[] =
+constexpr char kManagedConfigNotSupported[] =
     "Managed Configuration API is not supported on this platform.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
-}  // namespace
+constexpr char kDeviceAttributesNotAllowedByPermissionsPolicy[] =
+    "Permissions-Policy: device-attributes are disabled.";
 
-const char NavigatorManagedData::kSupplementName[] = "NavigatorManagedData";
+constexpr char kDeviceAttributesNotAllowedInChildFrames[] =
+    "This API is allowed only in top level frames.";
+
+bool IsDeviceAttributesPermissionsPolicyFeatureEnabled() {
+  return RuntimeEnabledFeatures::DeviceAttributesPermissionPolicyEnabled();
+}
+
+bool AreDeviceAttributesAllowedByPermissionsPolicy(ExecutionContext* context) {
+  if (!IsDeviceAttributesPermissionsPolicyFeatureEnabled()) {
+    return true;
+  }
+  return context->IsFeatureEnabled(
+      network::mojom::PermissionsPolicyFeature::kDeviceAttributes);
+}
+
+}  // namespace
 
 NavigatorManagedData* NavigatorManagedData::managed(Navigator& navigator) {
   if (!navigator.DomWindow())
     return nullptr;
 
-  NavigatorManagedData* device_service =
-      Supplement<Navigator>::From<NavigatorManagedData>(navigator);
+  NavigatorManagedData* device_service = navigator.GetNavigatorManagedData();
   if (!device_service) {
     device_service = MakeGarbageCollected<NavigatorManagedData>(navigator);
-    ProvideTo(navigator, device_service);
+    navigator.SetNavigatorManagedData(device_service);
   }
   return device_service;
 }
 
 NavigatorManagedData::NavigatorManagedData(Navigator& navigator)
     : ActiveScriptWrappable<NavigatorManagedData>({}),
-      Supplement<Navigator>(navigator),
+      navigator_(navigator),
       device_api_service_(navigator.DomWindow()),
       managed_configuration_service_(navigator.DomWindow()),
       configuration_observer_(this, navigator.DomWindow()) {}
@@ -55,7 +78,7 @@ const AtomicString& NavigatorManagedData::InterfaceName() const {
 }
 
 ExecutionContext* NavigatorManagedData::GetExecutionContext() const {
-  return GetSupplementable()->DomWindow();
+  return navigator_->DomWindow();
 }
 
 bool NavigatorManagedData::HasPendingActivity() const {
@@ -67,7 +90,7 @@ bool NavigatorManagedData::HasPendingActivity() const {
 void NavigatorManagedData::Trace(Visitor* visitor) const {
   EventTarget::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
-  Supplement<Navigator>::Trace(visitor);
+  visitor->Trace(navigator_);
 
   visitor->Trace(device_api_service_);
   visitor->Trace(managed_configuration_service_);
@@ -83,8 +106,8 @@ mojom::blink::DeviceAPIService* NavigatorManagedData::GetService() {
     // The access status of Device API can change dynamically. Hence, we have to
     // properly handle cases when we are losing this access.
     device_api_service_.set_disconnect_handler(
-        WTF::BindOnce(&NavigatorManagedData::OnServiceConnectionError,
-                      WrapWeakPersistent(this)));
+        BindOnce(&NavigatorManagedData::OnServiceConnectionError,
+                 WrapWeakPersistent(this)));
   }
 
   return device_api_service_.get();
@@ -100,8 +123,8 @@ NavigatorManagedData::GetManagedConfigurationService() {
     // The access status of Device API can change dynamically. Hence, we have to
     // properly handle cases when we are losing this access.
     managed_configuration_service_.set_disconnect_handler(
-        WTF::BindOnce(&NavigatorManagedData::OnServiceConnectionError,
-                      WrapWeakPersistent(this)));
+        BindOnce(&NavigatorManagedData::OnServiceConnectionError,
+                 WrapWeakPersistent(this)));
   }
 
   return managed_configuration_service_.get();
@@ -122,7 +145,7 @@ void NavigatorManagedData::OnServiceConnectionError() {
   for (ScriptPromiseResolverBase* resolver : pending_promises_) {
     resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
-                                           kNotHighTrustedAppExceptionMessage));
+                                           kServiceConnectionExceptionMessage));
   }
 }
 
@@ -140,8 +163,8 @@ NavigatorManagedData::getManagedConfiguration(ScriptState* script_state,
   }
 #if !BUILDFLAG(IS_ANDROID)
   GetManagedConfigurationService()->GetManagedConfiguration(
-      keys, WTF::BindOnce(&NavigatorManagedData::OnConfigurationReceived,
-                          WrapWeakPersistent(this), WrapPersistent(resolver)));
+      keys, BindOnce(&NavigatorManagedData::OnConfigurationReceived,
+                     WrapWeakPersistent(this), WrapPersistent(resolver)));
 #else
   resolver->Reject(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kNotSupportedError, kManagedConfigNotSupported));
@@ -151,88 +174,121 @@ NavigatorManagedData::getManagedConfiguration(ScriptState* script_state,
 }
 
 ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getDirectoryId(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
-  GetService()->GetDirectoryId(WTF::BindOnce(
+
+  GetService()->GetDirectoryId(BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getHostname(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
-  GetService()->GetHostname(WTF::BindOnce(
+
+  GetService()->GetHostname(BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getSerialNumber(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
-  GetService()->GetSerialNumber(WTF::BindOnce(
+
+  GetService()->GetSerialNumber(BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise<IDLNullable<IDLString>> NavigatorManagedData::getAnnotatedAssetId(
-    ScriptState* script_state) {
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
-  GetService()->GetAnnotatedAssetId(WTF::BindOnce(
+
+  GetService()->GetAnnotatedAssetId(BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
 }
 
 ScriptPromise<IDLNullable<IDLString>>
-NavigatorManagedData::getAnnotatedLocation(ScriptState* script_state) {
+NavigatorManagedData::getAnnotatedLocation(ScriptState* script_state,
+                                           ExceptionState& exception_state) {
+  if (!CheckDeviceAttributesAllowed(exception_state)) {
+    return EmptyPromise();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<IDLString>>>(
           script_state);
   pending_promises_.insert(resolver);
-
   auto promise = resolver->Promise();
-  if (!GetExecutionContext()) {
-    return promise;
-  }
-  GetService()->GetAnnotatedLocation(WTF::BindOnce(
+
+  GetService()->GetAnnotatedLocation(BindOnce(
       &NavigatorManagedData::OnAttributeReceived, WrapWeakPersistent(this),
       WrapPersistent(script_state), WrapPersistent(resolver)));
   return promise;
+}
+
+bool NavigatorManagedData::CheckDeviceAttributesAllowed(
+    ExceptionState& exception_state) {
+  ExecutionContext* const context = GetExecutionContext();
+  if (!context) {
+    return false;
+  }
+  LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context);
+  CHECK(window);
+  if (!window->GetFrame()->IsMainFrame() ||
+      window->GetFrame()->IsInFencedFrameTree()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
+                                      kDeviceAttributesNotAllowedInChildFrames);
+    return false;
+  }
+  if (!AreDeviceAttributesAllowedByPermissionsPolicy(context)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotAllowedError,
+        kDeviceAttributesNotAllowedByPermissionsPolicy);
+    return false;
+  }
+  return true;
 }
 
 void NavigatorManagedData::OnConfigurationReceived(
@@ -252,10 +308,9 @@ void NavigatorManagedData::OnConfigurationReceived(
 
   HeapVector<std::pair<String, ScriptValue>> result;
   for (const auto& config_pair : *configurations) {
-    v8::Local<v8::Value> v8_object;
-    if (v8::JSON::Parse(script_state->GetContext(),
-                        V8String(script_state->GetIsolate(), config_pair.value))
-            .ToLocal(&v8_object)) {
+    v8::Local<v8::Value> v8_object =
+        FromJSONString(script_state, config_pair.value);
+    if (!v8_object.IsEmpty()) {
       result.emplace_back(config_pair.key,
                           ScriptValue(script_state->GetIsolate(), v8_object));
     }

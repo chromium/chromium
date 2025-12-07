@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/spellcheck/browser/pref_names.h"
@@ -32,7 +35,6 @@ using ::chromeos::settings::mojom::kEditDictionarySubpagePath;
 using ::chromeos::settings::mojom::kInputMethodOptionsSubpagePath;
 using ::chromeos::settings::mojom::kInputSubpagePath;
 using ::chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath;
-using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -40,8 +42,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDefaultSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_INPUT,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -69,47 +71,11 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSpellCheckOnOff}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetSuggestionsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
-       mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kLanguage,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSubpage,
-       {.subpage = mojom::Subpage::kInput}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
-       mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kLanguage,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowEmojiSuggestions}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetHelpMeWriteSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_HELP_ME_WRITE_SUGGESTIONS,
-       mojom::kInputSubpagePath,
-       mojom::SearchResultIcon::kLanguage,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowOrca}},
-  });
-  return *tags;
-}
-
-const std::vector<SearchConcept>& GetSpellCheckSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetSpellCheckSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
        mojom::kEditDictionarySubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -117,11 +83,11 @@ const std::vector<SearchConcept>& GetSpellCheckSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kEditDictionary}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAutoCorrectionSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_AUTO_CORRECTION,
        mojom::kInputMethodOptionsSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -129,12 +95,7 @@ const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowPKAutoCorrection}},
   });
-  return *tags;
-}
-
-bool ShouldShowOrcaSettings(input_method::EditorMediator* editor_mediator) {
-  return !chromeos::features::IsMagicBoostEnabled() && editor_mediator &&
-         editor_mediator->IsAllowedForUse();
+  return tags;
 }
 
 void AddInputMethodOptionsLoadTimeData(
@@ -180,8 +141,6 @@ void AddInputMethodOptionsLoadTimeData(
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_NUMBER_OF_SUGGESTIONS},
       {"inputMethodOptionsJapaneseDisablePersonalizedSuggestions",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DISABLE_PERSONALIZED_SUGGESTIONS},
-      {"inputMethodOptionsJapaneseAutomaticallySendStatisticsToGoogle",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SEND_STATISTICS_TO_GOOGLE},
       {"inputMethodOptionsEnableDoubleSpacePeriod",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_DOUBLE_SPACE_PERIOD},
       {"inputMethodOptionsEnableGestureTyping",
@@ -254,16 +213,12 @@ void AddInputMethodOptionsLoadTimeData(
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SECTION_SHORTCUT_ASDFGHJKL},
       {"inputMethodOptionsJapaneseKeymapStyle",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE},
-      {"inputMethodOptionsJapaneseKeymapStyleCustom",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CUSTOM},
       {"inputMethodOptionsJapaneseKeymapStyleAtok",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_ATOK},
       {"inputMethodOptionsJapaneseKeymapStyleMsIme",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_MSIME},
       {"inputMethodOptionsJapaneseKeymapStyleKotoeri",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_KOTOERI},
-      {"inputMethodOptionsJapaneseKeymapStyleMobile",
-       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_MOBILE},
       {"inputMethodOptionsJapaneseKeymapStyleChromeOs",
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_KEYMAP_STYLE_CHROMEOS},
       {"inputMethodOptionsJapaneseManageUserDictionary",
@@ -335,36 +290,9 @@ void AddInputMethodOptionsLoadTimeData(
       base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
           is_physical_keyboard_predictive_writing_allowed);
   html_source->AddBoolean(
-      "allowDiacriticsOnPhysicalKeyboardLongpress",
-      base::FeatureList::IsEnabled(
-          features::kDiacriticsOnPhysicalKeyboardLongpress));
-  html_source->AddBoolean(
-      "allowAutocorrectToggle",
-      base::FeatureList::IsEnabled(features::kAutocorrectToggle));
-  html_source->AddBoolean(
       "autocorrectEnableByDefault",
       base::FeatureList::IsEnabled(features::kAutocorrectByDefault));
-  html_source->AddBoolean(
-      "allowFirstPartyVietnameseInput",
-      base::FeatureList::IsEnabled(features::kFirstPartyVietnameseInput));
-}
-
-void AddSuggestionsLoadTimeData(content::WebUIDataSource* html_source,
-                                bool allow_orca_settings_to_show,
-                                bool allow_emoji_suggestion_settings_to_show) {
-  static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"suggestionsTitle", IDS_SETTINGS_SUGGESTIONS_TITLE},
-      {"orcaTitle", IDS_OS_SETTINGS_SUGGESTIONS_ORCA_TITLE},
-      {"orcaDescription", IDS_OS_SETTINGS_SUGGESTIONS_ORCA_DESCRIPTION},
-      {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
-      {"emojiSuggestionDescription",
-       IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION}};
-  html_source->AddLocalizedStrings(kLocalizedStrings);
-  html_source->AddString("orcaLearnMoreUrl",
-                         chrome::kOrcaSuggestionLearnMoreURL);
-  html_source->AddBoolean("allowEmojiSuggestion",
-                          allow_emoji_suggestion_settings_to_show);
-  html_source->AddBoolean("allowOrca", allow_orca_settings_to_show);
+  html_source->AddBoolean("allowFirstPartyVietnameseInput", true);
 }
 
 }  // namespace
@@ -387,39 +315,22 @@ InputsSection::InputsSection(Profile* profile,
       base::BindRepeating(&InputsSection::UpdateSpellCheckSearchTags,
                           base::Unretained(this)));
 
-  observation_.Observe(input_method::InputMethodManager::Get());
+  auto* input_method_manager = input_method::InputMethodManager::Get();
+  observation_.Observe(input_method_manager);
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDefaultSearchConcepts());
 
-  bool should_show_emoji_suggestions_settings =
-      ShouldShowEmojiSuggestionsSettings();
-  bool should_show_orca_settings = ShouldShowOrcaSettings(editor_mediator_);
-  if (should_show_emoji_suggestions_settings || should_show_orca_settings) {
-    updater.AddSearchTags(GetSuggestionsSearchConcepts());
-  }
-
-  if (should_show_emoji_suggestions_settings) {
-    updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
-  }
-
-  if (should_show_orca_settings) {
-    updater.AddSearchTags(GetHelpMeWriteSearchConcepts());
-  }
-
   UpdateSpellCheckSearchTags();
+
+  UpdateAutocorrectTags(input_method_manager);
 }
 
 InputsSection::~InputsSection() = default;
 
 void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
-      {"inputPageTitle", kIsRevampEnabled
-                             ? IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE
-                             : IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2},
+      {"inputPageTitle", IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE},
       {"inputMethodEnabled", IDS_SETTINGS_LANGUAGES_INPUT_METHOD_ENABLED},
       {"inputMethodsManagedbyPolicy",
        IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGED_BY_POLICY},
@@ -471,8 +382,52 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"languagesDictionaryDownloadRetryDescription",
        IDS_OS_SETTINGS_LANGUAGES_DICTIONARY_DOWNLOAD_RETRY_DESCRIPTION},
       {"editDictionaryLabel", IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_LABEL},
+      {"japaneseClearPersonalizationData",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_CLEAR_PERSONALIZATION_DATA},
+      {"japaneseDeleteDictionaryLabel",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_BUTTON_LABEL},
+      {"japaneseDeleteDictionary",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY},
+      {"japaneseDeleteDictionaryDetail",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_DETAIL},
+      {"japaneseDeleteDictionaryButton",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_DICTIONARY_BUTTON},
+      {"japaneseDeleteItems",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DELETE_ITEMS},
+      {"japaneseConversationHistory",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_CONVERSATION_HISTORY},
+      {"japaneseSuggestionHistory",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_SUGGESTION_HISTORY},
       {"japaneseManageUserDictionaryLabel",
        IDS_OS_SETTINGS_LANGUAGES_JAPANESE_MANAGE_USER_DICTIONARY_LABEL},
+      {"japaneseDictionary",
+       IDS_SETTINGS_INPUT_METHOD_OPTIONS_JAPANESE_DICTIONARY},
+      {"japaneseDictionaryAddDictionary",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ADD_DICTIONARY},
+      {"japaneseDictionaryCategory",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_CATEGORY},
+      {"japaneseDictionaryComment",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_COMMENT},
+      {"japaneseDictionaryExport",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_EXPORT},
+      {"japaneseDictionaryImport",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_IMPORT},
+      {"japaneseDictionaryDefaultName",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_DEFAULT_NAME},
+      {"japaneseDictionaryName",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_NAME},
+      {"japaneseDictionaryEntryPosition",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ENTRY_POSITION},
+      {"japaneseDictionaryEntryDeleted",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_ENTRY_DELETED},
+      {"japaneseDictionaryDeleteEntry",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_DELETE_ENTRY},
+      {"japaneseDictionaryNewEntry",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_NEW_ENTRY},
+      {"japaneseDictionaryReading",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_READING},
+      {"japaneseDictionaryWord",
+       IDS_OS_SETTINGS_LANGUAGES_JAPANESE_DICTIONARY_WORD},
       {"editDictionaryDescription",
        IDS_OS_SETTINGS_LANGUAGES_EDIT_DICTIONARY_DESCRIPTION},
       {"addDictionaryWordButtonLabel",
@@ -508,22 +463,15 @@ void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(features::kOnDeviceGrammarCheck));
 
   html_source->AddBoolean(
-      "systemJapanesePhysicalTyping",
-      base::FeatureList::IsEnabled(features::kSystemJapanesePhysicalTyping));
-  html_source->AddBoolean(
       "languagePacksInSettingsEnabled",
       base::FeatureList::IsEnabled(features::kLanguagePacksInSettings));
-  html_source->AddBoolean("isShortcutCustomizationEnabled",
-                          ::features::IsShortcutCustomizationEnabled());
+  // TODO(b/290861003): Update the settings code and remove this.
+  html_source->AddBoolean("isShortcutCustomizationEnabled", true);
 
   AddInputMethodOptionsLoadTimeData(
       html_source,
       input_method::IsPhysicalKeyboardAutocorrectAllowed(*pref_service_),
       input_method::IsPhysicalKeyboardPredictiveWritingAllowed(*pref_service_));
-
-  AddSuggestionsLoadTimeData(html_source,
-                             ShouldShowOrcaSettings(editor_mediator_),
-                             ShouldShowEmojiSuggestionsSettings());
 }
 
 void InputsSection::AddHandlers(content::WebUI* web_ui) {
@@ -535,13 +483,10 @@ int InputsSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section InputsSection::GetSection() const {
-  // Note: This is a subsection that exists under the Device section when the
-  // OsSettingsRevampWayfinding feature is enabled, else under the Languages
-  // section. This is not a top-level section and does not have a respective
-  // declaration in chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kDevice
-             : mojom::Section::kLanguagesAndInput;
+  // Note: This is a subsection that exists under the Device section. This is
+  // not a top-level section and does not have a respective declaration in
+  // chromeos::settings::mojom::Section.
+  return mojom::Section::kDevice;
 }
 
 mojom::SearchResultIcon InputsSection::GetSectionIcon() const {
@@ -549,9 +494,7 @@ mojom::SearchResultIcon InputsSection::GetSectionIcon() const {
 }
 
 const char* InputsSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kDeviceSectionPath
-             : mojom::kLanguagesAndInputSectionPath;
+  return mojom::kDeviceSectionPath;
 }
 
 bool InputsSection::LogMetric(mojom::Setting setting,
@@ -562,16 +505,14 @@ bool InputsSection::LogMetric(mojom::Setting setting,
 
 void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2, mojom::Subpage::kInput,
+      IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE, mojom::Subpage::kInput,
       mojom::SearchResultIcon::kLanguage,
       mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
   static constexpr mojom::Setting kInputSubpageSettings[] = {
       mojom::Setting::kAddInputMethod,
       mojom::Setting::kRemoveInputMethod,
       mojom::Setting::kSetCurrentInputMethod,
-      mojom::Setting::kShowEmojiSuggestions,
       mojom::Setting::kShowInputOptionsInShelf,
-      mojom::Setting::kShowOrca,
       mojom::Setting::kSpellCheckOnOff,
       mojom::Setting::kAddSpellCheckLanguage,
       mojom::Setting::kRemoveSpellCheckLanguage,
@@ -624,10 +565,8 @@ void InputsSection::UpdateSpellCheckSearchTags() {
   }
 }
 
-void InputsSection::InputMethodChanged(
-    input_method::InputMethodManager* manager,
-    Profile* profile,
-    bool show_message) {
+void InputsSection::UpdateAutocorrectTags(
+    input_method::InputMethodManager* manager) {
   DCHECK(manager);
   const std::string engine_id =
       extension_ime_util::GetComponentIDByInputMethodID(
@@ -640,8 +579,11 @@ void InputsSection::InputMethodChanged(
   }
 }
 
-bool InputsSection::ShouldShowEmojiSuggestionsSettings() const {
-  return pref_service_->GetBoolean(prefs::kEmojiSuggestionEnterpriseAllowed);
+void InputsSection::InputMethodChanged(
+    input_method::InputMethodManager* manager,
+    Profile* profile,
+    bool show_message) {
+  UpdateAutocorrectTags(manager);
 }
 
 bool InputsSection::IsSpellCheckEnabled() const {

@@ -7,13 +7,13 @@
 
 #import "ios/chrome/app/spotlight/base_spotlight_manager.h"
 
+class BrowserList;
+@class CSSearchableItem;
+class ProfileIOS;
+
 namespace favicon {
 class LargeIconService;
 }
-
-class BrowserList;
-class ChromeBrowserState;
-@class CSSearchableItem;
 
 /// Manages Open Tab items in Spotlight search.
 @interface OpenTabsSpotlightManager : BaseSpotlightManager
@@ -21,11 +21,11 @@ class ChromeBrowserState;
 /// Model observed by this instance.
 @property(nonatomic, assign, readonly) BrowserList* browserList;
 
-/// Convenience initializer with browser state.
+/// Convenience initializer with profile.
 /// Returns a new instance of OpenTabsSpotlightManager and retrieves all
-/// dependencies from `browserState`.
-+ (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState;
+/// dependencies from `profile`.
++ (OpenTabsSpotlightManager*)openTabsSpotlightManagerWithProfile:
+    (ProfileIOS*)profile;
 
 - (instancetype)
     initWithLargeIconService:(favicon::LargeIconService*)largeIconService

@@ -7,8 +7,8 @@
 #include <algorithm>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state.h"
@@ -25,18 +25,9 @@ const char kKioskNetworkDropsPerSessionHistogram[] =
     "Kiosk.Session.NetworkDrops";
 const char kKioskNetworkDrops[] = "network-drops";
 
-NetworkConnectivityMetricsService::NetworkConnectivityMetricsService()
-    : NetworkConnectivityMetricsService(g_browser_process->local_state()) {}
-
-// static
-std::unique_ptr<NetworkConnectivityMetricsService>
-NetworkConnectivityMetricsService::CreateForTesting(PrefService* pref) {
-  return base::WrapUnique(new NetworkConnectivityMetricsService(pref));
-}
-
 NetworkConnectivityMetricsService::NetworkConnectivityMetricsService(
-    PrefService* prefs)
-    : prefs_(prefs) {
+    PrefService& local_state)
+    : local_state_(local_state) {
   // This check is needed only for tests without initialized network stubs.
   if (!NetworkHandler::IsInitialized()) {
     return;
@@ -72,13 +63,14 @@ void NetworkConnectivityMetricsService::NetworkConnectionStateChanged(
 }
 
 void NetworkConnectivityMetricsService::LogNetworkDrops(int network_drops) {
-  prefs::ScopedDictionaryPrefUpdate update(prefs_, prefs::kKioskMetrics);
+  prefs::ScopedDictionaryPrefUpdate update(&local_state_.get(),
+                                           prefs::kKioskMetrics);
 
   update->SetInteger(kKioskNetworkDrops, network_drops);
 }
 
 void NetworkConnectivityMetricsService::ReportPreviousSessionNetworkDrops() {
-  const auto& metrics_dict = prefs_->GetDict(prefs::kKioskMetrics);
+  const auto& metrics_dict = local_state_->GetDict(prefs::kKioskMetrics);
   const auto* network_drops_value = metrics_dict.Find(kKioskNetworkDrops);
   if (!network_drops_value) {
     LogNetworkDrops(0);

@@ -12,6 +12,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.ArrayList;
 
 /**
@@ -19,6 +22,7 @@ import java.util.ArrayList;
  * Accounts for padding set on self and margins on children, but uniform spacing between elements
  * can be set through attributes, as seen in the example below.
  */
+@NullMarked
 public class WrappingLayout extends ViewGroup {
     // Example use of this class in xml:
     //      <org.chromium.components.browser_ui.widget.WrappingLayout
@@ -38,17 +42,17 @@ public class WrappingLayout extends ViewGroup {
 
     // The indices of visible child views of this layout. Allocated as a member class to avoid
     // allocations while drawing.
-    private ArrayList<Integer> mVisibleChildren = new ArrayList<Integer>();
+    private final ArrayList<Integer> mVisibleChildren = new ArrayList<>();
 
     public WrappingLayout(Context context) {
         this(context, null);
     }
 
-    public WrappingLayout(Context context, AttributeSet attrs) {
+    public WrappingLayout(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public WrappingLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    public WrappingLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
 
         TypedArray array =

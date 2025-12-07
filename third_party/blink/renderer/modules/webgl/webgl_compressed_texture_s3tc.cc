@@ -30,7 +30,8 @@
 namespace blink {
 
 WebGLCompressedTextureS3TC::WebGLCompressedTextureS3TC(
-    WebGLRenderingContextBase* context)
+    WebGLRenderingContextBase* context,
+    ExecutionContext*)
     : WebGLExtension(context) {
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_EXT_texture_compression_s3tc");

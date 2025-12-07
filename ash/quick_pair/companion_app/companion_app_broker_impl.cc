@@ -137,7 +137,7 @@ void CompanionAppBrokerImpl::LaunchCompanionApp(scoped_refptr<Device> device) {
                                  << ": No Play store link or installed app. "
                                     "Opening companion web page.";
 
-    NewWindowDelegate::GetPrimary()->OpenUrl(
+    NewWindowDelegate::GetInstance()->OpenUrl(
         GURL(ash::features::kFastPairPwaCompanionInstallUri.Get()),
         NewWindowDelegate::OpenUrlFrom::kUserInteraction,
         NewWindowDelegate::Disposition::kNewForegroundTab);

@@ -5,22 +5,27 @@
 #include "chrome/browser/ash/login/quickstart_controller.h"
 
 #include <memory>
+#include <variant>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/consumer_update_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
@@ -134,11 +139,7 @@ QuickStartMetrics::ScreenName ScreenNameFromUiState(
     case QuickStartController::UiState::FALLBACK_URL_FLOW:
       return QuickStartMetrics::ScreenName::kQSFallbackURL;
     case QuickStartController::UiState::CONNECTING_TO_PHONE:
-      if (controller_state == QuickStartController::ControllerState::
-                                  WAITING_TO_RESUME_AFTER_UPDATE) {
-        return QuickStartMetrics::ScreenName::kQSResumingConnectionAfterUpdate;
-      }
-      [[fallthrough]];
+      return QuickStartMetrics::ScreenName::kQSConnectingToPhone;
     case QuickStartController::UiState::EXIT_SCREEN:
       [[fallthrough]];
     case QuickStartController::UiState::SHOWING_BLUETOOTH_DIALOG:
@@ -189,7 +190,7 @@ QuickStartController::QuickStartController() {
   }
 
   // Main feature flag
-  if (!features::IsOobeQuickStartEnabled()) {
+  if (!features::IsCrossDeviceFeatureSuiteAllowed()) {
     if (should_resume_quick_start_after_update_) {
       ForceEnableQuickStart();
     }
@@ -373,7 +374,6 @@ void QuickStartController::RecordFlowFinished() {
   metrics_->RecordScreenClosed(
       QuickStartMetrics::ScreenName::kQSComplete,
       QuickStartMetrics::ScreenClosedReason::kSetupComplete);
-  metrics_.reset();
 }
 
 void QuickStartController::InitTargetDeviceBootstrapController() {
@@ -400,7 +400,10 @@ void QuickStartController::InitTargetDeviceBootstrapController() {
 void QuickStartController::OnGetQuickStartFeatureSupportStatus(
     EntryPointButtonVisibilityCallback set_button_visibility_callback,
     TargetDeviceConnectionBroker::FeatureSupportStatus status) {
+  // Maybe prevent a delayed repeated call from TargetDeviceConnectionBroker by
+  // re-checking that the flow is not ongoing.
   const bool visible =
+      !IsSetupOngoing() &&
       status == TargetDeviceConnectionBroker::FeatureSupportStatus::kSupported;
 
   // Make the entry point button visible when supported, otherwise keep hidden.
@@ -415,18 +418,18 @@ void QuickStartController::OnStatusChanged(
   switch (status.step) {
     case Step::ADVERTISING_WITH_QR_CODE:
       controller_state_ = ControllerState::ADVERTISING;
-      CHECK(absl::holds_alternative<QRCode>(status.payload))
+      CHECK(std::holds_alternative<QRCode>(status.payload))
           << "Missing expected QR Code data";
-      qr_code_ = absl::get<QRCode>(status.payload);
+      qr_code_ = std::get<QRCode>(status.payload);
       UpdateUiState(UiState::SHOWING_QR);
       return;
     case Step::ADVERTISING_WITHOUT_QR_CODE:
       UpdateUiState(UiState::CONNECTING_TO_PHONE);
       return;
     case Step::PIN_VERIFICATION:
-      CHECK(absl::holds_alternative<PinString>(status.payload))
+      CHECK(std::holds_alternative<PinString>(status.payload))
           << "Missing expected PIN string";
-      pin_ = *absl::get<PinString>(status.payload);
+      pin_ = *std::get<PinString>(status.payload);
       CHECK_EQ(pin_.value().length(), 4UL);
       UpdateUiState(UiState::SHOWING_PIN);
       return;
@@ -435,27 +438,32 @@ void QuickStartController::OnStatusChanged(
       OnPhoneConnectionEstablished();
       return;
     case Step::REQUESTING_WIFI_CREDENTIALS:
+      CHECK(did_request_wifi_credentials_) << "Unrequested WiFi credentials!";
       UpdateUiState(UiState::CONNECTING_TO_WIFI);
       return;
     case Step::WIFI_CREDENTIALS_RECEIVED:
-      CHECK(absl::holds_alternative<mojom::WifiCredentials>(status.payload))
+      CHECK(did_request_wifi_credentials_) << "Unrequested WiFi credentials!";
+      CHECK(std::holds_alternative<mojom::WifiCredentials>(status.payload))
           << "Missing expected WifiCredentials";
 
       LoginDisplayHost::default_host()
           ->GetWizardContext()
           ->quick_start_wifi_credentials =
-          absl::get<mojom::WifiCredentials>(status.payload);
-      ABSL_FALLTHROUGH_INTENDED;
+          std::get<mojom::WifiCredentials>(status.payload);
+      [[fallthrough]];
     case Step::EMPTY_WIFI_CREDENTIALS_RECEIVED:
+      CHECK(did_request_wifi_credentials_) << "Unrequested WiFi credentials!";
       UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
       return;
     case Step::REQUESTING_GOOGLE_ACCOUNT_INFO:
+      CHECK(did_request_account_info_) << "Unrequested account info received!";
       return;
     case Step::GOOGLE_ACCOUNT_INFO_RECEIVED:
-      CHECK(absl::holds_alternative<EmailString>(status.payload))
+      CHECK(did_request_account_info_) << "Unrequested account info received!";
+      CHECK(std::holds_alternative<EmailString>(status.payload))
           << "Missing expected EmailString";
       // If there aren't any accounts on the phone, the flow is aborted.
-      if (absl::get<EmailString>(status.payload)->empty()) {
+      if (std::get<EmailString>(status.payload)->empty()) {
         QS_LOG(ERROR) << "No account on Android phone. No email received.";
         QuickStartMetrics::RecordGaiaTransferResult(
             /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
@@ -465,11 +473,17 @@ void QuickStartController::OnStatusChanged(
       }
 
       // Populate the 'UserInfo' that is shown on the UI and start the transfer.
-      user_info_.email = *absl::get<EmailString>(status.payload);
+      user_info_.email = *std::get<EmailString>(status.payload);
       UpdateUiState(UiState::SIGNING_IN);
+      did_request_account_transfer_ = true;
       bootstrap_controller_->AttemptGoogleAccountTransfer();
       return;
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
+      if (!did_request_account_transfer_) {
+        QS_LOG(ERROR)
+            << "Unrequested account transfer! Flow probably was aborted.";
+        return;
+      }
       // Intermediate state. Nothing to do.
       if (controller_state_ != ControllerState::CONNECTED) {
         QS_LOG(ERROR) << "Expected controller_state_ to be CONNECTED. Actual "
@@ -479,6 +493,11 @@ void QuickStartController::OnStatusChanged(
       }
       return;
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
+      if (!did_request_account_transfer_) {
+        QS_LOG(ERROR)
+            << "Unrequested account transfer! Flow probably was aborted.";
+        return;
+      }
       if (controller_state_ != ControllerState::CONNECTED) {
         QS_LOG(ERROR) << "Expected controller_state_ to be CONNECTED. Actual "
                          "controller_state_: "
@@ -490,11 +509,11 @@ void QuickStartController::OnStatusChanged(
         return;
       }
 
-      if (absl::holds_alternative<
+      if (std::holds_alternative<
               TargetDeviceBootstrapController::GaiaCredentials>(
               status.payload)) {
         const TargetDeviceBootstrapController::GaiaCredentials gaia_creds =
-            absl::get<TargetDeviceBootstrapController::GaiaCredentials>(
+            std::get<TargetDeviceBootstrapController::GaiaCredentials>(
                 status.payload);
         if (!gaia_creds.auth_code.empty()) {
           QS_LOG(INFO) << "Successfully received an OAuth authorization code.";
@@ -511,10 +530,10 @@ void QuickStartController::OnStatusChanged(
           UpdateUiState(UiState::FALLBACK_URL_FLOW);
         }
       } else {
-        CHECK(absl::holds_alternative<ErrorCode>(status.payload))
+        CHECK(std::holds_alternative<ErrorCode>(status.payload))
             << "Missing expected ErrorCode";
         QS_LOG(ERROR) << "Error receiving FIDO assertion. Error Code = "
-                      << static_cast<int>(absl::get<ErrorCode>(status.payload));
+                      << static_cast<int>(std::get<ErrorCode>(status.payload));
         QuickStartMetrics::RecordGaiaTransferResult(
             /*succeeded=*/false, /*failure_reason=*/QuickStartMetrics::
                 GaiaTransferResultFailureReason::kErrorReceivingFIDOAssertion);
@@ -528,8 +547,8 @@ void QuickStartController::OnStatusChanged(
       // device. No action required.
       return;
     case Step::ERROR:
-      if (absl::holds_alternative<ErrorCode>(status.payload)) {
-        QS_LOG(ERROR) << absl::get<ErrorCode>(status.payload);
+      if (std::holds_alternative<ErrorCode>(status.payload)) {
+        QS_LOG(ERROR) << std::get<ErrorCode>(status.payload);
       } else {
         QS_LOG(ERROR) << "Missing ErrorCode.";
       }
@@ -603,6 +622,14 @@ void QuickStartController::OnOAuthTokenReceived(
 void QuickStartController::StartObservingScreenTransitions() {
   CHECK(LoginDisplayHost::default_host()) << "Missing LoginDisplayHost";
   CHECK(LoginDisplayHost::default_host()->GetOobeUI()) << "Missing Oobe UI";
+
+  // Do not observe transitions when the OOBE overlay debugger is enabled since
+  // the debugger 'forces' the screen for each state and this breaks the logic.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kShowOobeDevOverlay)) {
+    return;
+  }
+
   observation_.Observe(LoginDisplayHost::default_host()->GetOobeUI());
 }
 
@@ -637,65 +664,91 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
     }
 
     StartAdvertising();
-  } else if (controller_state_ ==
-             ControllerState::WAITING_TO_RESUME_AFTER_UPDATE) {
-    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
-
-    // It's possible the local state still needs to be cleared if an update was
-    // initiated but cancelled. We can't check/clear the state immediately upon
-    // cancelling the update since it's possible it happens before the target
-    // device persists this pref to local state.
-    if (g_browser_process->local_state()->GetBoolean(
-            prefs::kShouldResumeQuickStartAfterReboot)) {
-      g_browser_process->local_state()->ClearPref(
-          prefs::kShouldResumeQuickStartAfterReboot);
-    }
-
-    if (IsBluetoothDisabled()) {
-      controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION;
-      UpdateUiState(UiState::SHOWING_BLUETOOTH_DIALOG);
-      return;
-    }
-
-    StartAdvertising();
   } else {
-    // If the setup has finished, transitioning to QuickStart should
-    // show the last step of the flow.
-    if (controller_state_ == ControllerState::SETUP_COMPLETE) {
-      UpdateUiState(UiState::SETUP_COMPLETE);
-      SavePhoneInstanceID();
-      bootstrap_controller_->OnSetupComplete();
-      return;
+    QS_LOG(INFO) << "Transition to QuickStart Screen with controller_state_: "
+                 << controller_state_;
+    if (ui_state_.has_value()) {
+      QS_LOG(INFO) << "ui_state_ at the transition: " << ui_state_.value();
+    } else {
+      QS_LOG(ERROR) << "No cached ui_state_ at the transition";
     }
 
-    // The flow must be resuming after reaching the GaiaInfoScreen or
-    // GaiaScreen. Note the the GaiaInfoScreen/GaiaScreen is technically never
-    // shown when it switches to QuickStart, so |previous_screen_| is one of the
-    // many screens that may have appeared up to this point.
-    // TODO(b:283965994) - Improve the resume logic.
+    switch (controller_state_) {
+      case ControllerState::NOT_ACTIVE:
+        NOTREACHED() << "Cannot transition to QuickStart: Setup in progress "
+                        "while controller_state_ is NOT_ACTIVE.";
+      case ControllerState::CONTINUING_AFTER_ENROLLMENT_CHECKS:
+        NOTREACHED()
+            << "Cannot transition to QuickStart: Setup in progress while "
+               "controller_state_ is CONTINUING_AFTER_ENROLLMENT_CHECKS.";
+      case ControllerState::INITIALIZING:
+        [[fallthrough]];
+      case ControllerState::ADVERTISING:
+        [[fallthrough]];
+      case ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION:
+        [[fallthrough]];
+      case ControllerState::WAITING_FOR_BLUETOOTH_ACTIVATION:
+        [[fallthrough]];
+      case ControllerState::FALLBACK_URL_FLOW_ON_GAIA_SCREEN:
+        RestoreCachedUIState();
+        break;
+      case ControllerState::WAITING_TO_RESUME_AFTER_UPDATE:
+        SetExitPointToDefault();
+        QuickStartMetrics::RecordEntryPoint(
+            EntryPoint::AUTO_RESUME_AFTER_UPDATE);
 
-    // OOBE flow cannot go back after enrollment checks, update exit point.
-    exit_point_ = QuickStartController::EntryPoint::GAIA_INFO_SCREEN;
+        // It's possible the local state still needs to be cleared if an update
+        // was initiated but cancelled. We can't check/clear the state
+        // immediately upon cancelling the update since it's possible it happens
+        // before the target device persists this pref to local state.
+        if (g_browser_process->local_state()->GetBoolean(
+                prefs::kShouldResumeQuickStartAfterReboot)) {
+          g_browser_process->local_state()->ClearPref(
+              prefs::kShouldResumeQuickStartAfterReboot);
+        }
 
-    if (controller_state_ != ControllerState::CONNECTED) {
-      QS_LOG(ERROR) << "Expected controller_state_ to be CONNECTED. Actual "
-                       "controller_state_: "
-                    << controller_state_;
-      AbortFlow(AbortFlowReason::ERROR);
-      return;
+        if (IsBluetoothDisabled()) {
+          controller_state_ = ControllerState::WAITING_FOR_BLUETOOTH_PERMISSION;
+          UpdateUiState(UiState::SHOWING_BLUETOOTH_DIALOG);
+          return;
+        }
+
+        StartAdvertising();
+        break;
+      case ControllerState::CONNECTED:
+        CHECK(LoginDisplayHost::default_host()
+                  ->GetWizardContext()
+                  ->quick_start_setup_ongoing)
+            << "Expected quick_start_setup_ongoing";
+
+        SetExitPointToDefault();
+
+        // Only start account transfer the first time the following is reached
+        // after OOBE completion.
+        if (!StartupUtils::IsOobeCompleted() || did_request_account_info_) {
+          // Resuming after an external interruption (e.g. Reset screen).
+          RestoreCachedUIState();
+        } else {
+          // This is the first transition to this screen after user creation.
+          StartAccountTransfer();
+        }
+        break;
+      case ControllerState::SETUP_COMPLETE:
+        // If the setup has finished, transitioning to QuickStart should
+        // show the last step of the flow.
+        UpdateUiState(UiState::SETUP_COMPLETE);
+        SavePhoneInstanceID();
+        bootstrap_controller_->OnSetupComplete();
+        QuickStartMetrics::RecordSetupComplete();
+        break;
     }
-
-    CHECK(LoginDisplayHost::default_host()
-              ->GetWizardContext()
-              ->quick_start_setup_ongoing)
-        << "Expected quick_start_setup_ongoing";
-    StartAccountTransfer();
   }
 }
 
 void QuickStartController::StartAccountTransfer() {
   UpdateUiState(UiState::CONFIRM_GOOGLE_ACCOUNT);
   QuickStartMetrics::RecordGaiaTransferStarted();
+  did_request_account_info_ = true;
   bootstrap_controller_->RequestGoogleAccountInfo();
 }
 
@@ -712,6 +765,7 @@ void QuickStartController::OnPhoneConnectionEstablished() {
       // will be shown next.
       UpdateUiState(UiState::WIFI_CREDENTIALS_RECEIVED);
     } else {
+      did_request_wifi_credentials_ = true;
       bootstrap_controller_->AttemptWifiCredentialTransfer();
     }
   } else {
@@ -779,6 +833,9 @@ void QuickStartController::ResetState() {
   auto* wizard_context = LoginDisplayHost::default_host()->GetWizardContext();
   wizard_context->quick_start_setup_ongoing = false;
   wizard_context->quick_start_wifi_credentials.reset();
+  did_request_wifi_credentials_ = false;
+  did_request_account_info_ = false;
+  did_request_account_transfer_ = false;
   // Don't cleanup |bootstrap_controller_| state here, since it may be waiting
   // for source device to gracefully drop connection.
 }
@@ -848,6 +905,23 @@ void QuickStartController::StartAdvertising() {
   QS_LOG(INFO) << "ControllerState::INITIALIZING requesting advertising.";
   controller_state_ = ControllerState::INITIALIZING;
   bootstrap_controller_->StartAdvertisingAndMaybeGetQRCode();
+}
+
+void QuickStartController::SetExitPointToDefault() {
+  exit_point_ = StartupUtils::IsOobeCompleted() ? EntryPoint::GAIA_INFO_SCREEN
+                                                : EntryPoint::WELCOME_SCREEN;
+}
+
+void QuickStartController::RestoreCachedUIState() {
+  if (ui_state_.has_value()) {
+    UpdateUiState(ui_state_.value());
+  } else {
+    LOG(ERROR)
+        << "Failed to restore cached UI state because `ui_state_` is empty";
+    base::debug::DumpWithoutCrashing();
+    SetExitPointToDefault();
+    AbortFlow(AbortFlowReason::ERROR);
+  }
 }
 
 std::ostream& operator<<(std::ostream& stream,

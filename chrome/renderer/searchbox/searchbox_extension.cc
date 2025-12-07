@@ -57,6 +57,8 @@
 #include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
 namespace {
@@ -86,8 +88,9 @@ const char kLTRHtmlTextDirection[] = "ltr";
 const char kRTLHtmlTextDirection[] = "rtl";
 
 void Dispatch(blink::WebLocalFrame* frame, const blink::WebString& script) {
-  if (!frame)
+  if (!frame) {
     return;
+  }
   frame->ExecuteScript(blink::WebScriptSource(script));
 }
 
@@ -137,8 +140,9 @@ v8::Local<v8::Object> GenerateMostVisitedItemData(
   }
 
   std::string title = base::UTF16ToUTF8(mv_item.title);
-  if (title.empty())
+  if (title.empty()) {
     title = mv_item.url.spec();
+  }
 
   gin::DataObjectBuilder builder(isolate);
   builder.Set("title", title)
@@ -146,8 +150,9 @@ v8::Local<v8::Object> GenerateMostVisitedItemData(
       .Set("url", mv_item.url.spec());
 
   // If the suggestion already has a favicon, we populate the element with it.
-  if (!mv_item.favicon.spec().empty())
+  if (!mv_item.favicon.spec().empty()) {
     builder.Set("faviconUrl", mv_item.favicon.spec());
+  }
 
   return builder.Build();
 }
@@ -156,8 +161,9 @@ std::optional<int> CoerceToInt(v8::Isolate* isolate, v8::Value* value) {
   DCHECK(value);
   v8::MaybeLocal<v8::Int32> maybe_int =
       value->ToInt32(isolate->GetCurrentContext());
-  if (maybe_int.IsEmpty())
+  if (maybe_int.IsEmpty()) {
     return std::nullopt;
+  }
   return maybe_int.ToLocalChecked()->Value();
 }
 
@@ -283,19 +289,22 @@ v8::Local<v8::Object> GenerateNtpTheme(v8::Isolate* isolate,
 
 content::RenderFrame* GetMainRenderFrameForCurrentContext() {
   blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForCurrentContext();
-  if (!frame)
+  if (!frame) {
     return nullptr;
+  }
   content::RenderFrame* main_frame =
       content::RenderFrame::FromWebFrame(frame->LocalRoot());
-  if (!main_frame || !main_frame->IsMainFrame())
+  if (!main_frame || !main_frame->IsMainFrame()) {
     return nullptr;
+  }
   return main_frame;
 }
 
 SearchBox* GetSearchBoxForCurrentContext() {
   content::RenderFrame* main_frame = GetMainRenderFrameForCurrentContext();
-  if (!main_frame)
+  if (!main_frame) {
     return nullptr;
+  }
   return SearchBox::Get(main_frame);
 }
 
@@ -369,7 +378,8 @@ static const char kDispatchThemeChangeEventScript[] =
 
 class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kSearchBoxBindings};
 
   SearchBoxBindings();
 
@@ -383,6 +393,8 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
 
+  const gin::WrapperInfo* wrapper_info() const override;
+
   // Handlers for JS properties.
   static bool IsFocused();
   static bool IsKeyCaptureEnabled();
@@ -391,8 +403,6 @@ class SearchBoxBindings : public gin::Wrappable<SearchBoxBindings> {
   static void StartCapturingKeyStrokes();
   static void StopCapturingKeyStrokes();
 };
-
-gin::WrapperInfo SearchBoxBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 SearchBoxBindings::SearchBoxBindings() = default;
 
@@ -411,41 +421,50 @@ gin::ObjectTemplateBuilder SearchBoxBindings::GetObjectTemplateBuilder(
                  &SearchBoxBindings::StopCapturingKeyStrokes);
 }
 
+const gin::WrapperInfo* SearchBoxBindings::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 // static
 bool SearchBoxBindings::IsFocused() {
   const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return false;
+  }
   return search_box->is_focused();
 }
 
 // static
 bool SearchBoxBindings::IsKeyCaptureEnabled() {
   const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return false;
+  }
   return search_box->is_key_capture_enabled();
 }
 
 // static
 void SearchBoxBindings::StartCapturingKeyStrokes() {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return;
+  }
   search_box->StartCapturingKeyStrokes();
 }
 
 // static
 void SearchBoxBindings::StopCapturingKeyStrokes() {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return;
+  }
   search_box->StopCapturingKeyStrokes();
 }
 
 class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
  public:
-  static gin::WrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kNewTabPageBindings};
 
   NewTabPageBindings();
 
@@ -458,6 +477,8 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   // gin::Wrappable.
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) final;
+
+  const gin::WrapperInfo* wrapper_info() const override;
 
   static bool HasOrigin(const GURL& origin);
 
@@ -479,8 +500,6 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   static v8::Local<v8::Value> GetMostVisitedItemData(v8::Isolate* isolate,
                                                      int rid);
 };
-
-gin::WrapperInfo NewTabPageBindings::kWrapperInfo = {gin::kEmbedderNativeGin};
 
 NewTabPageBindings::NewTabPageBindings() = default;
 
@@ -507,11 +526,16 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
                  &NewTabPageBindings::GetMostVisitedItemData);
 }
 
+const gin::WrapperInfo* NewTabPageBindings::wrapper_info() const {
+  return &kWrapperInfo;
+}
+
 // static
 bool NewTabPageBindings::HasOrigin(const GURL& origin) {
   blink::WebLocalFrame* frame = blink::WebLocalFrame::FrameForCurrentContext();
-  if (!frame)
+  if (!frame) {
     return false;
+  }
   GURL url(frame->GetDocument().Url());
   return url.DeprecatedGetOriginAsURL() == origin.DeprecatedGetOriginAsURL();
 }
@@ -519,16 +543,18 @@ bool NewTabPageBindings::HasOrigin(const GURL& origin) {
 // static
 bool NewTabPageBindings::IsInputInProgress() {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return false;
+  }
   return search_box->is_input_in_progress();
 }
 
 // static
 v8::Local<v8::Value> NewTabPageBindings::GetMostVisited(v8::Isolate* isolate) {
   const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return v8::Null(isolate);
+  }
 
   content::RenderFrame* render_frame = GetMainRenderFrameForCurrentContext();
 
@@ -558,8 +584,9 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisited(v8::Isolate* isolate) {
 // static
 bool NewTabPageBindings::GetMostVisitedAvailable(v8::Isolate* isolate) {
   const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return false;
+  }
 
   return search_box->AreMostVisitedItemsAvailable();
 }
@@ -567,11 +594,13 @@ bool NewTabPageBindings::GetMostVisitedAvailable(v8::Isolate* isolate) {
 // static
 v8::Local<v8::Value> NewTabPageBindings::GetNtpTheme(v8::Isolate* isolate) {
   const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return v8::Null(isolate);
+  }
   const NtpTheme* theme = search_box->GetNtpTheme();
-  if (!theme)
+  if (!theme) {
     return v8::Null(isolate);
+  }
   return GenerateNtpTheme(isolate, *theme);
 }
 
@@ -580,11 +609,13 @@ void NewTabPageBindings::DeleteMostVisitedItem(v8::Isolate* isolate,
                                                v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
   std::optional<int> rid = CoerceToInt(isolate, *rid_value);
-  if (!rid.has_value())
+  if (!rid.has_value()) {
     return;
+  }
   SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return;
+  }
 
   search_box->DeleteMostVisitedItem(*rid);
 }
@@ -592,8 +623,9 @@ void NewTabPageBindings::DeleteMostVisitedItem(v8::Isolate* isolate,
 // static
 void NewTabPageBindings::UndoAllMostVisitedDeletions() {
   SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return;
+  }
   search_box->UndoAllMostVisitedDeletions();
 }
 
@@ -603,11 +635,13 @@ void NewTabPageBindings::UndoMostVisitedDeletion(
     v8::Local<v8::Value> rid_value) {
   // Manually convert to integer, so that the string "\"1\"" is also accepted.
   std::optional<int> rid = CoerceToInt(isolate, *rid_value);
-  if (!rid.has_value())
+  if (!rid.has_value()) {
     return;
+  }
   SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
+  if (!search_box) {
     return;
+  }
 
   search_box->UndoMostVisitedDeletion(*rid);
 }
@@ -617,12 +651,14 @@ v8::Local<v8::Value> NewTabPageBindings::GetMostVisitedItemData(
     v8::Isolate* isolate,
     int rid) {
   const SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl)))
+  if (!search_box || !HasOrigin(GURL(chrome::kChromeSearchMostVisitedUrl))) {
     return v8::Null(isolate);
+  }
 
   InstantMostVisitedItem item;
-  if (!search_box->GetMostVisitedItemWithID(rid, &item))
+  if (!search_box->GetMostVisitedItemWithID(rid, &item)) {
     return v8::Null(isolate);
+  }
 
   return GenerateMostVisitedItemData(isolate, rid, item);
 }
@@ -634,31 +670,35 @@ void SearchBoxExtension::Install(blink::WebLocalFrame* frame) {
   v8::Isolate* isolate = frame->GetAgentGroupScheduler()->Isolate();
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Context> context = frame->MainWorldScriptContext();
-  if (context.IsEmpty())
+  if (context.IsEmpty()) {
     return;
+  }
 
   v8::Context::Scope context_scope(context);
 
-  gin::Handle<SearchBoxBindings> searchbox_controller =
-      gin::CreateHandle(isolate, new SearchBoxBindings());
-  if (searchbox_controller.IsEmpty())
+  auto* searchbox_controller = cppgc::MakeGarbageCollected<SearchBoxBindings>(
+      isolate->GetCppHeap()->GetAllocationHandle());
+  v8::Local<v8::Object> searchbox_wrapper;
+  if (!searchbox_controller->GetWrapper(isolate).ToLocal(&searchbox_wrapper)) {
     return;
+  }
 
-  gin::Handle<NewTabPageBindings> newtabpage_controller =
-      gin::CreateHandle(isolate, new NewTabPageBindings());
-  if (newtabpage_controller.IsEmpty())
+  auto* newtabpage_controller = cppgc::MakeGarbageCollected<NewTabPageBindings>(
+      isolate->GetCppHeap()->GetAllocationHandle());
+  v8::Local<v8::Object> newtabpage_wrapper;
+  if (!newtabpage_controller->GetWrapper(isolate).ToLocal(
+          &newtabpage_wrapper)) {
     return;
+  }
 
   v8::Local<v8::Object> chrome =
       content::GetOrCreateChromeObject(isolate, context);
   v8::Local<v8::Object> embedded_search = v8::Object::New(isolate);
   embedded_search
-      ->Set(context, gin::StringToV8(isolate, "searchBox"),
-            searchbox_controller.ToV8())
+      ->Set(context, gin::StringToV8(isolate, "searchBox"), searchbox_wrapper)
       .ToChecked();
   embedded_search
-      ->Set(context, gin::StringToV8(isolate, "newTabPage"),
-            newtabpage_controller.ToV8())
+      ->Set(context, gin::StringToV8(isolate, "newTabPage"), newtabpage_wrapper)
       .ToChecked();
   chrome
       ->Set(context, gin::StringToSymbol(isolate, "embeddedSearch"),

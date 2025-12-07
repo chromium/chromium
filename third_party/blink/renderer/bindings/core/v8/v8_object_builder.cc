@@ -14,7 +14,7 @@ V8ObjectBuilder::V8ObjectBuilder(ScriptState* script_state)
 
 V8ObjectBuilder& V8ObjectBuilder::Add(const StringView& name,
                                       const V8ObjectBuilder& value) {
-  AddInternal(name, value.V8Value());
+  AddInternal(name, value.V8Object());
   return *this;
 }
 
@@ -75,8 +75,8 @@ V8ObjectBuilder& V8ObjectBuilder::AddV8Value(const StringView& name,
   return *this;
 }
 
-ScriptValue V8ObjectBuilder::GetScriptValue() const {
-  return ScriptValue(script_state_->GetIsolate(), object_);
+ScriptObject V8ObjectBuilder::ToScriptObject() const {
+  return ScriptObject(script_state_->GetIsolate(), object_);
 }
 
 void V8ObjectBuilder::AddInternal(const StringView& name,

@@ -1,0 +1,19 @@
+Name: okio
+Short Name: okio-jvm
+URL: https://repo.maven.apache.org/maven2/com/squareup/okio/okio-jvm/3.16.4/okio-jvm-3.16.4.jar
+Version: 3.16.4
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+A modern I/O library for Android, Java, and Kotlin Multiplatform.
+
+See also: https://github.com/square/okio/
+
+
+Local Modifications:
+No modifications.

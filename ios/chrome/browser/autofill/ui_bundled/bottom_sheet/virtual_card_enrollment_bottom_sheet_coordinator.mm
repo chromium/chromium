@@ -13,7 +13,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/virtual_card_enrollment_bottom_sheet_view_controller.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -76,8 +76,8 @@
       self.viewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent,
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent],
   ];
 
   [self.baseViewController presentViewController:self.viewController
@@ -99,8 +99,7 @@
   [_applicationHandler
       openURLInNewTab:[OpenNewTabCommand
                           commandWithURLFromChrome:URL.gurl
-                                       inIncognito:self.browser
-                                                       ->GetBrowserState()
+                                       inIncognito:self.profile
                                                        ->IsOffTheRecord()]];
 }
 

@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "remoting/protocol/connection_tester.h"
-#include "base/memory/raw_ptr.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -46,9 +47,7 @@ void StreamConnectionTester::CheckResults() {
 
   output_buffer_->SetOffset(0);
   ASSERT_EQ(test_data_size_, output_buffer_->size());
-
-  EXPECT_EQ(base::as_bytes(output_buffer_->span()),
-            input_buffer_->span_before_offset());
+  EXPECT_EQ(output_buffer_->span(), input_buffer_->span_before_offset());
 }
 
 void StreamConnectionTester::Done() {
@@ -60,7 +59,7 @@ void StreamConnectionTester::InitBuffers() {
       base::MakeRefCounted<net::IOBufferWithSize>(test_data_size_),
       test_data_size_);
   for (int i = 0; i < test_data_size_; ++i) {
-    output_buffer_->data()[i] = static_cast<char>(i);
+    UNSAFE_TODO(output_buffer_->data()[i]) = static_cast<char>(i);
   }
 
   input_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
@@ -158,9 +157,9 @@ class MessagePipeConnectionTester::MessageSender
     }
   }
   void OnMessageReceived(std::unique_ptr<CompoundBuffer> message) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void OnMessagePipeClosed() override { NOTREACHED_IN_MIGRATION(); }
+  void OnMessagePipeClosed() override { NOTREACHED(); }
 
  private:
   raw_ptr<MessagePipe> pipe_;

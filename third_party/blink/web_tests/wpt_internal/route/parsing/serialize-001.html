@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>Serialization of @navigation</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-navigation-1/#at-navigation">
+<style class="test" id="sheet1">
+  @navigation (at: r66) { }
+</style>
+<style class="test" id="sheet2">
+  @navigation (from: r66) or (to: blah) { }
+</style>
+<style class="test" id="sheet3">
+  @navigation ((from: r66) or (to: blah)) { }
+</style>
+<style class="test" id="sheet4">
+  @navigation (Attention! This is General Enclosed speaking) { }
+</style>
+<style class="test" id="sheet5">
+  @navigation (at: urlpattern("/r66/")) { }
+</style>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+  let expectations = [ '@navigation (at: r66)',
+                       '@navigation (from: r66) or (to: blah)',
+                       '@navigation ((from: r66) or (to: blah))',
+                       '@navigation (Attention! This is General Enclosed speaking)',
+                       '@navigation (at: urlpattern("/r66/"))',
+                     ];
+  document.querySelectorAll(".test").forEach((elm) => {
+    test(()=> {
+      assert_greater_than(expectations.length, 0);
+      let expectation = expectations[0];
+      expectations.shift();
+      assert_equals(elm.sheet.cssRules.length, 1);
+      const everything = elm.sheet.cssRules[0].cssText;
+      const index = everything.indexOf("{");
+      assert_not_equals(index, -1);
+      assert_equals(everything.substring(0, index).trim(), expectation);
+    }, "Serialize @navigation in " + elm.id);
+  });
+</script>

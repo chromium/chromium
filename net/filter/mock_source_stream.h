@@ -5,9 +5,14 @@
 #ifndef NET_FILTER_MOCK_SOURCE_STREAM_H_
 #define NET_FILTER_MOCK_SOURCE_STREAM_H_
 
+#include <stdint.h>
+
 #include <string>
+#include <string_view>
 
 #include "base/containers/queue.h"
+#include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -40,11 +45,13 @@ class MockSourceStream : public SourceStream {
   std::string Description() const override;
   bool MayHaveMoreBytes() const override;
 
-  // Enqueues a result to be returned by |Read|. This method does not make a
-  // copy of |data|, so |data| must outlive this object. If |mode| is SYNC,
-  // |Read| will return the supplied data synchronously; otherwise, consumer
-  // needs to call |CompleteNextRead|
-  void AddReadResult(const char* data, int len, Error error, Mode mode);
+  // Enqueues a result to be returned by `Read`. This method does not make a
+  // copy of `data`, so `data` must outlive this object. If `mode` is SYNC,
+  // `Read` will return the supplied data synchronously; otherwise, consumer
+  // needs to call `CompleteNextRead`
+  void AddReadResult(base::span<const uint8_t> data, Error error, Mode mode);
+
+  void AddReadResult(std::string_view data, Error error, Mode mode);
 
   // Completes a pending Read() call. Crash in debug build if there is no
   // pending read.
@@ -72,10 +79,9 @@ class MockSourceStream : public SourceStream {
 
  private:
   struct QueuedResult {
-    QueuedResult(const char* data, int len, Error error, Mode mode);
+    QueuedResult(base::span<const uint8_t> data, Error error, Mode mode);
 
-    const char* data;
-    const int len;
+    const base::raw_span<const uint8_t> data;
     const Error error;
     const Mode mode;
   };
@@ -86,7 +92,7 @@ class MockSourceStream : public SourceStream {
   bool awaiting_completion_ = false;
   scoped_refptr<IOBuffer> dest_buffer_;
   CompletionOnceCallback callback_;
-  int dest_buffer_size_ = 0;
+  size_t dest_buffer_size_ = 0;
   bool expect_all_input_consumed_ = true;
 };
 

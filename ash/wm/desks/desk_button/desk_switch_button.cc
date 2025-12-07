@@ -15,6 +15,7 @@
 #include "ash/wm/desks/desks_constants.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_histogram_enums.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -22,6 +23,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/view_class_properties.h"
 
@@ -178,7 +180,7 @@ void DeskSwitchButton::DeskSwitchButtonPressed() {
 void DeskSwitchButton::SetBackgroundVisible(bool visible) {
   SetBackground(
       visible
-          ? views::CreateThemedRoundedRectBackground(
+          ? views::CreateRoundedRectBackground(
                 cros_tokens::kCrosSysHoverOnSubtle,
                 type_ == Type::kPrev
                     ? gfx::RoundedCornersF(kDeskButtonCornerRadius,

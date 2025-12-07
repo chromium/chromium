@@ -11,11 +11,15 @@ namespace blink {
 
 class CanvasContextCreationAttributesCore;
 class CanvasContextCreationAttributesModule;
+class CanvasRenderingContext2DSettings;
 
 bool ToCanvasContextCreationAttributes(
     const CanvasContextCreationAttributesModule*,
     CanvasContextCreationAttributesCore& result,
     ExceptionState& exception_state);
+
+CanvasRenderingContext2DSettings* ToCanvasRenderingContext2DSettings(
+    const CanvasContextCreationAttributesCore&);
 
 }  // namespace blink
 

@@ -17,7 +17,7 @@ const char kGetUnmaskDetailsRequestPath[] =
 
 GetUnmaskDetailsRequest::GetUnmaskDetailsRequest(
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                            PaymentsNetworkInterface::UnmaskDetails&)> callback,
+                            UnmaskDetails&)> callback,
     const std::string& app_locale,
     const bool full_sync_enabled)
     : callback_(std::move(callback)),
@@ -45,9 +45,8 @@ std::string GetUnmaskDetailsRequest::GetRequestContent() {
   chrome_user_context.Set("full_sync_enabled", full_sync_enabled_);
   request_dict.Set("chrome_user_context", std::move(chrome_user_context));
 
-  std::string request_content;
-  base::JSONWriter::Write(request_dict, &request_content);
-  VLOG(3) << "getdetailsforgetrealpan request body: " << request_content;
+  std::string request_content = base::WriteJson(request_dict).value_or("");
+  DVLOG(3) << "getdetailsforgetrealpan request body: " << request_content;
   return request_content;
 }
 
@@ -63,9 +62,10 @@ void GetUnmaskDetailsRequest::ParseResponse(const base::Value::Dict& response) {
     }
   }
 
-  const std::optional<bool> offer_fido_opt_in =
+  const std::optional<bool> server_denotes_fido_eligible_but_not_opted_in =
       response.FindBool("offer_fido_opt_in");
-  unmask_details_.offer_fido_opt_in = offer_fido_opt_in.value_or(false);
+  unmask_details_.server_denotes_fido_eligible_but_not_opted_in =
+      server_denotes_fido_eligible_but_not_opted_in.value_or(false);
 
   const base::Value::Dict* dictionary_value =
       response.FindDict("fido_request_options");

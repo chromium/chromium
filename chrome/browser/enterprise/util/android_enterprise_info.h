@@ -18,7 +18,6 @@
 
 // Only use from the UI Thread.
 
-namespace chrome {
 namespace enterprise_util {
 
 class AndroidEnterpriseInfoFriendHelper;
@@ -28,10 +27,7 @@ class AndroidEnterpriseInfo {
   using EnterpriseInfoCallback = base::OnceCallback<void(bool, bool)>;
   ~AndroidEnterpriseInfo();
 
-  static AndroidEnterpriseInfo* GetInstance() {
-    static base::NoDestructor<AndroidEnterpriseInfo> instance;
-    return instance.get();
-  }
+  static AndroidEnterpriseInfo* GetInstance();
 
   // Request the owned state from
   // org.chromium.chrome.browser.enterprise.util.EnterpriseInfo and notify
@@ -70,6 +66,5 @@ class AndroidEnterpriseInfo {
 };
 
 }  // namespace enterprise_util
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_ENTERPRISE_UTIL_ANDROID_ENTERPRISE_INFO_H_

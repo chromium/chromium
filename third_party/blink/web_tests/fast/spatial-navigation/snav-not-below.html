@@ -7,29 +7,54 @@
     border: 1px solid black;
   }
 
+  #elements {
+    height: 300px;
+  }
+
   #e1 {
     left: 10px;
-    top: 210px;
+    top: 10px;
   }
 
   #e2 {
     left: 120px;
-    top: 250px;
+    top: 50px;
   }
 
   #e3 {
     left: 250px;
-    top: 250px;
+    top: 50px;
     height: 120px;
+  }
+
+  #e4 {
+    left: 330px;
+    top: 50px;
+    height: 120px;
+  }
+
+  #e5 {
+    left: 410px;
+    top: 50px;
+    height: 150px;
   }
 </style>
 
-<p id="description">This test ensures that e2 is NOT below e1 and e3 is NOT below e2.</p>
 <div id="elements">
   <a id="e1" href="#e1">Element 1</a>
   <a id="e2" href="#e2">Element 2</a>
   <a id="e3" href="#e3">Element 3</a>
+  <a id="e4" href="#e4">Element 4</a>
+  <a id="e5" href="#e5">Element 5</a>
 </div>
+<p>
+  Test that each element is considered "not below" the previous one.
+  <br>
+  Test also that each element is considered "not above" the following
+  one, except for Element 4 which _is_ above Element 5 because it is
+  partially overlapping and the bottom of Element 5 is below the bottom
+  of Element 4.
+</p>
 
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
@@ -37,9 +62,17 @@
 <script type="application/javascript">
   var resultMap = [
     ["Down", "e1"],
+    ["Down", "e1"],
     ["Right", "e2"],
     ["Down", "e2"],
     ["Right", "e3"],
+    ["Down", "e3"],
+    ["Right", "e4"],
+    ["Down", "e4"],
+    ["Right", "e5"],
+    ["Up", "e4"],
+    ["Up", "e4"],
+    ["Left", "e3"],
     ["Up", "e3"],
     ["Left", "e2"],
     ["Up", "e2"],

@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/ipc/service/media_gpu_channel_manager.h"
 #include "media/media_buildflags.h"
@@ -32,7 +31,6 @@ GpuServiceFactory::GpuServiceFactory(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const gpu::GPUInfo& gpu_info,
     base::WeakPtr<media::MediaGpuChannelManager> media_gpu_channel_manager,
-    gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     media::AndroidOverlayMojoFactoryCB android_overlay_factory_cb) {
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
   gpu_preferences_ = gpu_preferences;
@@ -41,7 +39,6 @@ GpuServiceFactory::GpuServiceFactory(
   gpu_info_ = gpu_info;
   task_runner_ = base::SingleThreadTaskRunner::GetCurrentDefault();
   media_gpu_channel_manager_ = std::move(media_gpu_channel_manager);
-  gpu_memory_buffer_factory_ = gpu_memory_buffer_factory;
   android_overlay_factory_cb_ = std::move(android_overlay_factory_cb);
 #endif
 }
@@ -51,12 +48,33 @@ GpuServiceFactory::~GpuServiceFactory() {}
 void GpuServiceFactory::RunMediaService(
     mojo::PendingReceiver<media::mojom::MediaService> receiver) {
 #if BUILDFLAG(ENABLE_MOJO_MEDIA_IN_GPU_PROCESS)
-  // This service will host audio/video decoders, and if these decoding
-  // operations are blocked, user may hear audio glitch or see video
-  // freezing, hence "user blocking".
   scoped_refptr<base::SequencedTaskRunner> task_runner = task_runner_;
-  if (media::IsDedicatedMediaServiceThreadEnabled(
-          gpu_info_.gl_implementation_parts.angle)) {
+  const bool use_dedicated_media_service_thread = [&]() {
+#if BUILDFLAG(IS_WIN)
+    bool is_dawn_d3d_enabled = false;
+    // On Windows, check if we are using the Graphite D3D backend. There
+    // is rendering performance impact caused by lock contention on the
+    // D3D11 API lock, and Dawn mitigate this by batching API calls under
+    // the lock.
+    if (media_gpu_channel_manager_) {
+      if (auto shared_context_state =
+              media_gpu_channel_manager_->GetSharedContextState()) {
+        is_dawn_d3d_enabled = shared_context_state->IsGraphiteDawnD3D();
+      }
+    }
+    if (!is_dawn_d3d_enabled) {
+      return false;
+    }
+#endif
+
+    return media::IsDedicatedMediaServiceThreadEnabled(
+        gpu_info_.gl_implementation_parts.angle);
+  }();
+
+  if (use_dedicated_media_service_thread) {
+    // This service will host audio/video decoders, and if these decoding
+    // operations are blocked, user may hear audio glitch or see video
+    // freezing, hence "user blocking".
     if (base::FeatureList::IsEnabled(
             media::kUseSequencedTaskRunnerForMediaService)) {
       task_runner = base::ThreadPool::CreateSequencedTaskRunner(

@@ -7,13 +7,13 @@
 
 #include <memory>
 
+#include "base/containers/heap_array.h"
 #include "base/memory/raw_ptr.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_converter.h"
 #include "media/base/audio_fifo.h"
 #include "media/base/audio_parameters.h"
 #include "third_party/blink/renderer/modules/mediarecorder/audio_track_encoder.h"
-
 #include "third_party/opus/src/include/opus.h"
 
 namespace blink {
@@ -24,6 +24,7 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
                               public media::AudioConverter::InputCallback {
  public:
   AudioTrackOpusEncoder(OnEncodedAudioCB on_encoded_audio_cb,
+                        OnEncodedAudioErrorCB on_encoded_audio_error_cb,
                         uint32_t bits_per_second,
                         bool vbr_enabled = true);
   ~AudioTrackOpusEncoder() override;
@@ -44,6 +45,8 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   double ProvideInput(media::AudioBus* audio_bus,
                       uint32_t frames_delayed,
                       const media::AudioGlitchInfo& glitch_info) override;
+
+  void NotifyError(media::EncoderStatus error);
 
   // Target bitrate for Opus. If 0, Opus provide automatic bitrate is used.
   const uint32_t bits_per_second_;
@@ -69,6 +72,8 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   std::unique_ptr<float[]> buffer_;
 
   raw_ptr<OpusEncoder, DanglingUntriaged> opus_encoder_;
+
+  base::HeapArray<uint8_t> packet_buffer_;
 };
 
 }  // namespace blink

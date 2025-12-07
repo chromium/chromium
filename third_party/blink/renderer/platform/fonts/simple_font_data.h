@@ -24,11 +24,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SIMPLE_FONT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SIMPLE_FONT_DATA_H_
 
+#include <array>
 #include <memory>
 #include <mutex>
 #include <utility>
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/fonts/canvas_rotation_in_vertical.h"
 #include "third_party/blink/renderer/platform/fonts/custom_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_baseline.h"
@@ -52,6 +54,8 @@
 #endif
 
 namespace blink {
+
+class NGShapeCache;
 
 // Holds the glyph index and the corresponding SimpleFontData information for a
 // given
@@ -81,13 +85,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
       bool subpixel_ascent_descent = false,
       const FontMetricsOverride& metrics_override = FontMetricsOverride());
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(platform_data_);
-    visitor->Trace(small_caps_);
-    visitor->Trace(emphasis_mark_);
-    visitor->Trace(custom_font_data_);
-    FontData::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override;
 
   SimpleFontData(const SimpleFontData&) = delete;
   SimpleFontData(SimpleFontData&&) = delete;
@@ -96,6 +94,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   SimpleFontData& operator=(const SimpleFontData&&) = delete;
 
   const FontPlatformData& PlatformData() const { return *platform_data_; }
+  NGShapeCache& GetShapeCache() const { return *shape_cache_; }
 
   SimpleFontData* SmallCapsFontData(const FontDescription&) const;
   SimpleFontData* EmphasisMarkFontData(const FontDescription&) const;
@@ -113,6 +112,15 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   const std::optional<float>& IdeographicInlineSize() const;
   const std::optional<float>& IdeographicAdvanceWidth() const;
   const std::optional<float>& IdeographicAdvanceHeight() const;
+
+  // The inter-script spacing by the CSS `text-autospace` property.
+  // https://drafts.csswg.org/css-text-4/#inter-script-spacing
+  float TextAutoSpaceInlineSize() const;
+
+  // The approximated advance of “0” (ZERO, U+0030) character in the inline
+  // axis. This is currently used to support the `ch` unit.
+  // https://drafts.csswg.org/css-values-4/#ch
+  inline float ZeroInlineSize() const;
 
   // |sTypoAscender| and |sTypoDescender| in |OS/2| table, normalized to 1em.
   // This metrics can simulate ideographics em-box when the font doesn't have
@@ -154,6 +162,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   const SimpleFontData* FontDataForCharacter(UChar32) const override;
 
   Glyph GlyphForCharacter(UChar32) const;
+  Glyph GlyphForMathCharacter(UChar32, TextDirection) const;
 
   bool IsCustomFont() const override { return custom_font_data_; }
   bool IsLoading() const override {
@@ -189,6 +198,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
   float avg_char_width_ = -1;
 
   Member<const FontPlatformData> platform_data_;
+  Member<NGShapeCache> shape_cache_;
   const SkFont font_;
 
   Glyph space_glyph_ = 0;
@@ -215,7 +225,7 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
     bool is_horizontal;
     HanKerning::FontData data;
   };
-  mutable HanKerningCacheEntry han_kerning_cache_[2];
+  mutable std::array<HanKerningCacheEntry, 2> han_kerning_cache_;
 
   mutable FontHeight normalized_typo_ascent_descent_;
 
@@ -226,6 +236,8 @@ class PLATFORM_EXPORT SimpleFontData final : public FontData {
 #if BUILDFLAG(IS_APPLE)
   mutable std::unique_ptr<GlyphMetricsMap<gfx::RectF>> glyph_to_bounds_map_;
 #endif
+
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
 
 ALWAYS_INLINE gfx::RectF SimpleFontData::BoundsForGlyph(Glyph glyph) const {

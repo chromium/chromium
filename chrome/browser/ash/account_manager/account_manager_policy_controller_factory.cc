@@ -6,13 +6,10 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/user_manager/user.h"
 
 namespace ash {
@@ -40,9 +37,7 @@ AccountManagerPolicyControllerFactory::AccountManagerPolicyControllerFactory()
               // TODO(crbug.com/40257657): Check if this service is needed in
               // Guest mode.
               .WithGuest(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/41488885): Check if this service is needed for
-              // Ash Internals.
-              .WithAshInternals(ProfileSelection::kOriginalOnly)
+              .WithAshInternals(ProfileSelection::kNone)
               .Build()) {}
 
 AccountManagerPolicyControllerFactory::
@@ -52,16 +47,15 @@ std::unique_ptr<KeyedService>
 AccountManagerPolicyControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* const profile = Profile::FromBrowserContext(context);
-  auto* factory =
-      g_browser_process->platform_part()->GetAccountManagerFactory();
-  auto* account_manager =
-      factory->GetAccountManager(profile->GetPath().value());
+  auto* account_manager = AccountManagerFactory::Get()->GetAccountManager(
+      profile->GetPath().value());
 
   if (!account_manager)
     return nullptr;
 
   auto* account_manager_facade =
-      ::GetAccountManagerFacade(profile->GetPath().value());
+      AccountManagerFactory::Get()->GetAccountManagerFacade(
+          profile->GetPath().value());
 
   if (!account_manager_facade)
     return nullptr;

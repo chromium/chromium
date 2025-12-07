@@ -37,14 +37,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoChromeOSDiscovery
   void MaybeAddAuthenticator();
   void OnPowerButtonEnabled(bool enabled);
   void OnUvAvailable(bool available);
-  void OnLacrosSupported(bool supported);
   void OnRequestComplete();
 
   base::RepeatingCallback<std::string()> generate_request_id_callback_;
   bool require_power_button_mode_ = false;
   bool power_button_enabled_ = false;
   bool uv_available_ = false;
-  bool lacros_supported_ = false;
   uint32_t pending_requests_ = 0;
   std::optional<CtapGetAssertionRequest> get_assertion_request_;
   std::unique_ptr<ChromeOSAuthenticator> authenticator_;

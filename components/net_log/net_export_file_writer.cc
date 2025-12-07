@@ -281,14 +281,16 @@ void NetExportFileWriter::GetFilePathToCompletedLog(
 
 std::string NetExportFileWriter::CaptureModeToString(
     net::NetLogCaptureMode capture_mode) {
+  if (capture_mode == net::NetLogCaptureMode::kHeavilyRedacted) {
+    return "HEAVILY_REDACTED";
+  }
   if (capture_mode == net::NetLogCaptureMode::kDefault)
     return "STRIP_PRIVATE_DATA";
   if (capture_mode == net::NetLogCaptureMode::kIncludeSensitive)
     return "NORMAL";
   if (capture_mode == net::NetLogCaptureMode::kEverything)
     return "LOG_BYTES";
-  NOTREACHED_IN_MIGRATION();
-  return "STRIP_PRIVATE_DATA";
+  NOTREACHED();
 }
 
 net::NetLogCaptureMode NetExportFileWriter::CaptureModeFromString(
@@ -299,8 +301,7 @@ net::NetLogCaptureMode NetExportFileWriter::CaptureModeFromString(
     return net::NetLogCaptureMode::kIncludeSensitive;
   if (capture_mode_string == "LOG_BYTES")
     return net::NetLogCaptureMode::kEverything;
-  NOTREACHED_IN_MIGRATION();
-  return net::NetLogCaptureMode::kDefault;
+  NOTREACHED();
 }
 
 void NetExportFileWriter::SetDefaultLogBaseDirectoryGetterForTest(

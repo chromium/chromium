@@ -1,0 +1,34 @@
+This is a testharness.js-based test.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] XRCompositionLayer interface: attribute quality
+  assert_true: The prototype object must have a property "quality" expected true got false
+[FAIL] XRWebGLBinding interface: operation createQuadLayer(optional XRQuadLayerInit)
+  assert_equals: property has wrong .length expected 0 but got 1
+[FAIL] XRWebGLBinding interface: operation createCylinderLayer(optional XRCylinderLayerInit)
+  assert_equals: property has wrong .length expected 0 but got 1
+[FAIL] XRWebGLBinding interface: operation createEquirectLayer(optional XREquirectLayerInit)
+  assert_equals: property has wrong .length expected 0 but got 1
+[FAIL] XRWebGLBinding interface: operation createCubeLayer(optional XRCubeLayerInit)
+  assert_equals: property has wrong .length expected 0 but got 1
+[FAIL] XRWebGLBinding interface: operation foveateBoundTexture(GLenum, float)
+  assert_own_property: interface prototype object missing non-static operation expected property "foveateBoundTexture" missing
+[FAIL] XRMediaBinding interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface object length
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface object name
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: operation createQuadLayer(HTMLVideoElement, optional XRMediaQuadLayerInit)
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: operation createCylinderLayer(HTMLVideoElement, optional XRMediaCylinderLayerInit)
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+[FAIL] XRMediaBinding interface: operation createEquirectLayer(HTMLVideoElement, optional XRMediaEquirectLayerInit)
+  assert_own_property: self does not have own property "XRMediaBinding" expected property "XRMediaBinding" missing
+Harness: the test ran to completion.
+

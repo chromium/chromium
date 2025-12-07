@@ -92,8 +92,8 @@ UrlLanguageHistogram::GetTopLanguages() const {
       GetAllLanguages(pref_service_->GetDict(kUrlLanguageHistogramCounters));
 
   std::sort(top_languages.begin(), top_languages.end(),
-            [](UrlLanguageHistogram::LanguageInfo a,
-               UrlLanguageHistogram::LanguageInfo b) {
+            [](const UrlLanguageHistogram::LanguageInfo& a,
+               const UrlLanguageHistogram::LanguageInfo& b) {
               return a.frequency > b.frequency;
             });
 

@@ -39,7 +39,7 @@ SubKeyRequesterFactory::SubKeyRequesterFactory()
           ValidationRulesStorageFactory::CreateStorage(),
           l10n_util::GetLanguage(g_browser_process->GetApplicationLocale())) {}
 
-SubKeyRequesterFactory::~SubKeyRequesterFactory() {}
+SubKeyRequesterFactory::~SubKeyRequesterFactory() = default;
 
 #if BUILDFLAG(IS_ANDROID)
 static base::android::ScopedJavaLocalRef<jobject>
@@ -49,3 +49,7 @@ JNI_SubKeyRequesterFactory_GetInstance(JNIEnv* env) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace autofill
+
+#if BUILDFLAG(IS_ANDROID)
+DEFINE_JNI(SubKeyRequesterFactory)
+#endif

@@ -417,7 +417,7 @@
     fuzzy_test_valid_color(`oklab(from currentColor l a b)`, `oklab(from currentcolor l a b)`);
 
     // color-mix
-    fuzzy_test_valid_color(`oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)`);
+    fuzzy_test_valid_color(`oklab(from color-mix(in oklab, oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)`, `oklab(from color-mix(oklab(0.25 0.2 0.5), oklab(0.25 0.2 0.5)) l a b / alpha)`);
 
     // lch()
 
@@ -560,6 +560,7 @@
     fuzzy_test_valid_color(`oklch(from oklch(0.7 0.2 300) calc(l - 0.2) c h)`, `oklch(from oklch(0.7 0.2 300) calc(-0.2 + l) c h)`);
     fuzzy_test_valid_color(`oklch(from oklch(0.7 0.2 300) l calc(c / 2) h)`, `oklch(from oklch(0.7 0.2 300) l calc(0.5 * c) h)`);
     fuzzy_test_valid_color(`oklch(from oklch(0.7 0.2 300) l c calc(h * 2.5))`, `oklch(from oklch(0.7 0.2 300) l c calc(2.5 * h))`);
+    fuzzy_test_valid_color(`oklch(from red calc(1 / l) c h)`);
 
     // Testing with 'none'.
     fuzzy_test_valid_color(`oklch(from oklch(0.7 0.45 30) none none none)`);
@@ -581,7 +582,7 @@
     // color-mix
     fuzzy_test_valid_color(`oklch(from color-mix(in oklch, oklch(0.7 0.45 30), oklch(0.7 0.45 30)) l c h / alpha)`);
 
-    for (const colorSpace of [ "srgb", "srgb-linear", "a98-rgb", "rec2020", "prophoto-rgb", "display-p3" ]) {
+    for (const colorSpace of [ "srgb", "srgb-linear", "a98-rgb", "rec2020", "prophoto-rgb", "display-p3", "display-p3-linear" ]) {
         // Testing no modifications.
         fuzzy_test_valid_color(`color(from color(${colorSpace} 0.7 0.5 0.3) ${colorSpace} r g b)`);
         fuzzy_test_valid_color(`color(from color(${colorSpace} 0.7 0.5 0.3) ${colorSpace} r g b / alpha)`);
@@ -755,10 +756,6 @@
     fuzzy_test_valid_color(`lch(from var(--mycolor) l 0 h)`);
     fuzzy_test_valid_color(`var(--mygray)`);
     fuzzy_test_valid_color(`lch(from var(--mygray) l 30 h)`);
-
-    // Ensure that converting between legacy and modern sRGB color spaces work as expected.
-    fuzzy_test_valid_color(`color(from rebeccapurple srgb r g b)`, `color(srgb 0.4 0.2 0.6)`, 0.01);
-    fuzzy_test_valid_color(`rgb(from color(srgb 0.4 0.2 0.6) r g b)`, `color(srgb 0.4 0.2 0.6)`, 0.01);
 </script>
 </body>
 </html>

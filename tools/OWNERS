@@ -1,24 +1,26 @@
 # You can add new small tools to this directory at your desire, feel free
 # to owners-TBR new folders (assuming you have a regular review already,
-# of course). Include an OWNERS file with at least two people for your new
-# folder.
+# of course). Include README.md, DIR_METADATA and an OWNERS file with
+# at least two people for your new folder.
 # If you're changing existing tools, have your change reviewed by the
 # OWNERS of the existing tool.
 
 set noparent
-brucedawson@chromium.org
-dpranke@google.com
+jessemckenna@google.com
 thakis@chromium.org
 
 per-file add_header*.py=dcheng@chromium.org
 per-file add_header*.py=xhwang@chromium.org
 
-per-file autotest.py=mthiesse@chromium.org
-per-file autotest.py=agrieve@chromium.org
+per-file autotest*.py=mthiesse@chromium.org
+per-file autotest*.py=agrieve@chromium.org
+per-file autotest*.py=jthiesen@chromium.org
 per-file make_gtest_filter*.py=mthiesse@chromium.org
 per-file make_gtest_filter*.py=agrieve@chromium.org
 
 per-file bisect*.py=wnwen@chromium.org
+per-file bisect*.py=kuanhuang@chromium.org
+per-file bisect*.py=svenzheng@chromium.org
 
 per-file check_git_config.py=iannucci@chromium.org
 
@@ -40,6 +42,10 @@ per-file roll_webrtc.py=mbonadei@chromium.org
 per-file download_optimization_profile.py=gbiv@chromium.org
 
 per-file update_pgo_profiles.py=jeffyoon@google.com
+per-file update_pgo_profiles.py=wnwen@chromium.org
 
 per-file sample_clang_tidy_results.py=dsinclair@chromium.org
 per-file sample_clang_tidy_results.py=gbiv@chromium.org
+
+per-file lldb/chromium_visualizers.py=leese@chromium.org
+

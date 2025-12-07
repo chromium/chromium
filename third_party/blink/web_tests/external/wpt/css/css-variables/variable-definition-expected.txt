@@ -1,5 +1,29 @@
 This is a testharness.js-based test.
-Found 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] white space value (single space)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] white space value (double space)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] can overwrite with no value
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] can overwrite with space value
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] white space value (single space) (Computed Style)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] white space value (double space) (Computed Style)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] can overwrite with no value (Computed Style)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] can overwrite with space value (Computed Style)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] white space value (single space) (Cascading)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] white space value (double space) (Cascading)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] can overwrite with no value (Cascading)
+  assert_equals: Expected Value should match actual value expected " " but got ""
+[FAIL] can overwrite with space value (Cascading)
+  assert_equals: Expected Value should match actual value expected " " but got ""
 [FAIL] CSSOM.setProperty with space 1
   assert_equals: Expected Value should match actual value expected "" but got "green"
 [FAIL] CSSOM.setProperty with space 2

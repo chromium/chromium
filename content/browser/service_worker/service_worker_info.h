@@ -10,7 +10,6 @@
 #include <map>
 #include <vector>
 
-#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
@@ -54,7 +53,6 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
   ServiceWorkerVersion::Status status;
   std::optional<ServiceWorkerVersion::FetchHandlerType> fetch_handler_type;
   blink::mojom::NavigationPreloadState navigation_preload_state;
-  GURL script_url;
   int thread_id;
   int devtools_agent_route_id;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;

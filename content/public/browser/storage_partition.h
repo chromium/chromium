@@ -48,11 +48,11 @@ namespace mojom {
 class CookieManager;
 class NetworkContext;
 class URLLoaderNetworkServiceObserver;
+class DeviceBoundSessionManager;
 }  // namespace mojom
 }  // namespace network
 
 namespace storage {
-class DatabaseTracker;
 class QuotaManager;
 struct QuotaSettings;
 class SharedStorageManager;
@@ -72,7 +72,6 @@ class BrowsingDataFilterBuilder;
 class BrowsingTopicsSiteDataManager;
 class CdmStorageDataModel;
 class ContentIndexContext;
-class CookieDeprecationLabelManager;
 class DedicatedWorkerService;
 class DevToolsBackgroundServicesContext;
 class DOMStorageContext;
@@ -151,7 +150,6 @@ class CONTENT_EXPORT StoragePartition {
   virtual storage::QuotaManager* GetQuotaManager() = 0;
   virtual BackgroundSyncContext* GetBackgroundSyncContext() = 0;
   virtual storage::FileSystemContext* GetFileSystemContext() = 0;
-  virtual storage::DatabaseTracker* GetDatabaseTracker() = 0;
   virtual DOMStorageContext* GetDOMStorageContext() = 0;
   virtual storage::mojom::LocalStorageControl* GetLocalStorageControl() = 0;
   virtual storage::mojom::IndexedDBControl& GetIndexedDBControl() = 0;
@@ -172,11 +170,16 @@ class CONTENT_EXPORT StoragePartition {
   virtual BrowsingTopicsSiteDataManager* GetBrowsingTopicsSiteDataManager() = 0;
   virtual AttributionDataModel* GetAttributionDataModel() = 0;
   virtual PrivateAggregationDataModel* GetPrivateAggregationDataModel() = 0;
-  virtual CookieDeprecationLabelManager* GetCookieDeprecationLabelManager() = 0;
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   virtual CdmStorageDataModel* GetCdmStorageDataModel() = 0;
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  virtual void DeleteStaleSessionOnlyCookiesAfterDelay() = 0;
+  virtual network::mojom::DeviceBoundSessionManager*
+  GetDeviceBoundSessionManager() = 0;
+
+  // This clears stale session cookies/storage from the current profile. This
+  // must only be called after session restore has completed to ensure active
+  // session cookies/storage are not cleared.
+  virtual void DeleteStaleSessionData() = 0;
 
   virtual leveldb_proto::ProtoDatabaseProvider* GetProtoDatabaseProvider() = 0;
   // Must be set before the first call to GetProtoDatabaseProvider(), or a new
@@ -192,7 +195,7 @@ class CONTENT_EXPORT StoragePartition {
     REMOVE_DATA_MASK_INDEXEDDB = 1 << 3,
     REMOVE_DATA_MASK_LOCAL_STORAGE = 1 << 4,
     REMOVE_DATA_MASK_SHADER_CACHE = 1 << 5,
-    REMOVE_DATA_MASK_WEBSQL = 1 << 6,
+    REMOVE_DATA_MASK_WEBSQL_DEPRECATED = 1 << 6,
     REMOVE_DATA_MASK_SERVICE_WORKERS = 1 << 7,
     REMOVE_DATA_MASK_CACHE_STORAGE = 1 << 8,
     REMOVE_DATA_MASK_MEDIA_LICENSES = 1 << 9,
@@ -215,16 +218,24 @@ class CONTENT_EXPORT StoragePartition {
     REMOVE_DATA_MASK_ATTRIBUTION_REPORTING_INTERNAL = 1 << 16,
     REMOVE_DATA_MASK_PRIVATE_AGGREGATION_INTERNAL = 1 << 17,
     REMOVE_DATA_MASK_INTEREST_GROUPS_INTERNAL = 1 << 18,
+    // Device bound sessions. Public explainer:
+    // https://github.com/WICG/dbsc/blob/main/README.md
+    REMOVE_DATA_MASK_DEVICE_BOUND_SESSIONS = 1 << 19,
+
+    // Things in interest groups that should only be removed as part of
+    // user-initiated clearing.
+    REMOVE_DATA_MASK_INTEREST_GROUPS_USER_CLEAR = 1 << 20,
+
+    // Keepalive loads might be kept around in memory for a long time when
+    // waiting for a chance to retry. They should be removed as part of
+    // user-initiated clearing.
+    REMOVE_KEEPALIVE_LOADS_ATTEMPTING_RETRY = 1 << 21,
 
     REMOVE_DATA_MASK_ALL = 0xFFFFFFFF,
 
-    // Corresponds to storage::kStorageTypeTemporary.
+    // Corresponds to storage::kStorageTypeTemporary, which is equivalent to
+    // all quota managed storage after all other types have been deprecated.
     QUOTA_MANAGED_STORAGE_MASK_TEMPORARY = 1 << 0,
-    // Corresponds to storage::kStorageTypePersistent.
-    // Deprecated since crbug.com/1233525.
-    // QUOTA_MANAGED_STORAGE_MASK_PERSISTENT = 1 << 1,
-    // Corresponds to storage::kStorageTypeSyncable.
-    QUOTA_MANAGED_STORAGE_MASK_SYNCABLE = 1 << 2,
     QUOTA_MANAGED_STORAGE_MASK_ALL = 0xFFFFFFFF,
   };
 
@@ -358,9 +369,6 @@ class CONTENT_EXPORT StoragePartition {
 
   // Wait until all deletions tasks are finished. For test use only.
   virtual void WaitForDeletionTasksForTesting() = 0;
-
-  // Wait until code cache's shutdown is complete. For test use only.
-  virtual void WaitForCodeCacheShutdownForTesting() = 0;
 
   virtual void SetNetworkContextForTesting(
       mojo::PendingRemote<network::mojom::NetworkContext>

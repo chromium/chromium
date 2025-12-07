@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+// Describes the opaqueness for hit testing in a layered content e.g. a layer.
+// See cc/input/hit_test_opaqueness.h.
+enum HitTestOpaqueness {
+  // The whole layered content is transparent (i.e. as if it didn't exist)
+  // to hit test.
+  kTransparent,
+
+  // Some areas may be transparent, while some may be opaque.
+  kMixed,
+
+  // The whole layered content is opaque to hit test.
+  kOpaque,
+};

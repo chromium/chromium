@@ -73,7 +73,7 @@
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/native_theme.h"
 
 using blink::WebURLRequest;
 
@@ -106,8 +106,6 @@ class RenderFrameImplTest : public RenderViewTest {
   ~RenderFrameImplTest() override = default;
 
   void SetUp() override {
-    blink::WebRuntimeFeatures::EnableOverlayScrollbars(
-        ui::IsOverlayScrollbarEnabled());
     RenderViewTest::SetUp();
     EXPECT_TRUE(GetMainRenderFrame()->is_main_frame_);
 
@@ -122,7 +120,7 @@ class RenderFrameImplTest : public RenderViewTest {
     mojom::CreateFrameWidgetParamsPtr widget_params =
         mojom::CreateFrameWidgetParams::New();
     widget_params->routing_id = kSubframeWidgetRouteId;
-    widget_params->visual_properties.new_size = gfx::Size(100, 100);
+    widget_params->visual_properties.new_size_device_px = gfx::Size(100, 100);
     widget_params->visual_properties.screen_infos =
         display::ScreenInfos(display::ScreenInfo());
 
@@ -168,7 +166,8 @@ class RenderFrameImplTest : public RenderViewTest {
         GetMainRenderFrame()->GetWebFrame()->FirstChild())
         ->Unload(false, frame_replication_state->Clone(), remote_child_token,
                  std::move(remote_frame_interfaces),
-                 std::move(remote_main_frame_interfaces));
+                 std::move(remote_main_frame_interfaces),
+                 /*devtools_frame_token=*/std::nullopt);
     MockPolicyContainerHost mock_policy_container_host;
     RenderFrameImpl::CreateFrame(
         *agent_scheduling_group_, child_frame_token_, kSubframeRouteId,
@@ -178,9 +177,10 @@ class RenderFrameImplTest : public RenderViewTest {
         /*web_view=*/nullptr,
         /*previous_frame_token=*/std::nullopt,
         /*opener_frame_token=*/std::nullopt,
-        /*parent_frame_token=*/remote_child_token,
+        /*parent_frame_token=*/blink::FrameToken(remote_child_token),
         /*previous_sibling_frame_token=*/std::nullopt,
         base::UnguessableToken::Create(),
+        /*navigation_metrics_token=*/std::nullopt,
         blink::mojom::TreeScopeType::kDocument,
         std::move(frame_replication_state), std::move(widget_params),
         blink::mojom::FrameOwnerProperties::New(),
@@ -285,9 +285,9 @@ TEST_F(RenderFrameImplTest, FrameResize) {
   visual_properties.screen_infos = display::ScreenInfos(display::ScreenInfo());
   gfx::Size widget_size(400, 200);
   gfx::Size visible_size(350, 170);
-  visual_properties.new_size = widget_size;
+  visual_properties.new_size_device_px = widget_size;
   visual_properties.compositor_viewport_pixel_rect = gfx::Rect(widget_size);
-  visual_properties.visible_viewport_size = visible_size;
+  visual_properties.visible_viewport_size_device_px = visible_size;
 
   blink::WebFrameWidget* main_frame_widget =
       GetMainRenderFrame()->GetLocalRootWebFrameWidget();
@@ -501,10 +501,13 @@ TEST_F(RenderFrameImplTest, FileUrlPathAlias) {
   for (const auto& test_case : kTestCases) {
     WebURLRequest request;
     request.SetUrl(GURL(test_case.original));
-    GetMainRenderFrame()->WillSendRequest(
-        request, blink::WebLocalFrameClient::ForRedirect(false),
-        /*upstream_url=*/GURL());
-    EXPECT_EQ(test_case.transformed, request.Url().GetString().Utf8());
+    std::optional<blink::WebURL> updated =
+        GetMainRenderFrame()->WillSendRequest(
+            request.Url(), request.RequestorOrigin(), request.SiteForCookies(),
+            blink::WebLocalFrameClient::ForRedirect(false), blink::WebURL());
+    EXPECT_EQ(test_case.transformed, updated.has_value()
+                                         ? updated->GetString().Utf8()
+                                         : request.Url().GetString().Utf8());
   }
 }
 
@@ -545,7 +548,6 @@ struct SourceAnnotation {
     return document_url == rhs.document_url &&
            render_frame_event == rhs.render_frame_event;
   }
-  bool operator!=(const SourceAnnotation& rhs) const { return !(*this == rhs); }
 };
 
 std::ostream& operator<<(std::ostream& out, const SourceAnnotation& s) {
@@ -1353,7 +1355,8 @@ TEST_F(RenderFrameImplTest, ContentSettingsSameDocumentNavigation) {
       /*is_synchronously_committed=*/true,
       blink::mojom::SameDocumentNavigationType::kFragment,
       /*is_client_redirect=*/false,
-      /*screenshot_destination=*/std::nullopt);
+      /*screenshot_destination=*/std::nullopt,
+      /*same_document_metrics_token=*/base::UnguessableToken::Create());
 
   // Verify that the script was not blocked.
   EXPECT_FALSE(HasText(GetMainFrame(), "JS_DISABLED"));
@@ -1429,10 +1432,10 @@ class RenderFrameImplMojoJsTest : public RenderViewTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// Verifies enabling MojoJS bindings via allowing the
-// BINDINGS_POLICY_MOJO_WEB_UI binding.
+// Verifies enabling MojoJS bindings.
 TEST_F(RenderFrameImplMojoJsTest, AllowMojoWebUIBindings) {
-  GetMainRenderFrame()->AllowBindings(BINDINGS_POLICY_MOJO_WEB_UI);
+  GetMainRenderFrame()->AllowBindings(
+      BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}).ToEnumBitmask());
   LoadHTML(kSimpleScriptHtml);
 
   // Expect no crash and MojoJs bindings are enabled in the context.
@@ -1468,9 +1471,10 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnabledBindingsTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
-        GetMainRenderFrame()->enabled_bindings_ |= BINDINGS_POLICY_MOJO_WEB_UI;
+        GetMainRenderFrame()->enabled_bindings_.Put(
+            BindingsPolicyValue::kMojoWebUi);
 
         LoadHTML(kSimpleScriptHtml);
       },
@@ -1484,7 +1488,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, EnableMojoJsBindingsTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->enable_mojo_js_bindings_ = true;
 
@@ -1500,7 +1504,7 @@ TEST_F(RenderFrameImplMojoJsDeathTest, MojoJsInterfaceBrokerTampered) {
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         GetMainRenderFrame()->mojo_js_interface_broker_ =
             TestRenderFrame::CreateStubBrowserInterfaceBrokerRemote();
@@ -1518,8 +1522,8 @@ TEST_F(RenderFrameImplMojoJsDeathTest,
 
   // Should CHECK fail due to the bindings value differing from the protected
   // memory value.
-  BASE_EXPECT_DEATH(ContextFeatureSettingsEnableMojoJsTampered(),
-                    "Check failed: \\*mojo_js_allowed_");
+  EXPECT_CHECK_DEATH_WITH(ContextFeatureSettingsEnableMojoJsTampered(),
+                          "Check failed: \\*mojo_js_allowed_");
 }
 #endif  //  BUILDFLAG(PROTECTED_MEMORY_ENABLED)
 

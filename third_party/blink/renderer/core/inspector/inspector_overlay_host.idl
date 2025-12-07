@@ -31,5 +31,5 @@
 [
     LegacyNoInterfaceObject
 ] interface InspectorOverlayHost {
-    [RaisesException] void send(any command);
+    void send(any command);
 };

@@ -14,6 +14,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/usb_printer_id.h"
@@ -185,8 +186,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdProvider
   // Return a printable name for |code|.
   static std::string_view CallbackResultCodeName(CallbackResultCode code);
 
-  // Get all manufacturers for which we have drivers.  Keys of the map will be
-  // localized in the default browser locale or the closest available fallback.
+  // Get all manufacturers for which we have drivers.
   //
   // |cb| will be called on the invoking thread, and will be sequenced.
   //
@@ -196,8 +196,7 @@ class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdProvider
   // queue length at which this occurs is unspecified.
   virtual void ResolveManufacturers(ResolveManufacturersCallback cb) = 0;
 
-  // Get all models from a given manufacturer, localized in the
-  // default browser locale or the closest available fallback.
+  // Get all models from a given manufacturer.
   // |manufacturer| must be a value returned from a successful
   // ResolveManufacturers() call performed from this PpdProvider
   // instance.

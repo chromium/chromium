@@ -7,37 +7,44 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/public/mojom/model_broker.mojom-data-view.h"
 
 namespace optimization_guide {
 
 // Controls the on-device model adaptations per feature.
-class OnDeviceModelAdaptationController {
+class OnDeviceModelAdaptationController final : public ModelController {
  public:
   OnDeviceModelAdaptationController(
-      ModelBasedCapabilityKey feature,
-      base::WeakPtr<OnDeviceModelServiceController> controller);
-  ~OnDeviceModelAdaptationController();
+      mojom::OnDeviceFeature feature,
+      base::WeakPtr<ModelController> controller,
+      const on_device_model::AdaptationAssetPaths& asset_paths);
+  ~OnDeviceModelAdaptationController() override;
 
   OnDeviceModelAdaptationController(const OnDeviceModelAdaptationController&) =
       delete;
   OnDeviceModelAdaptationController& operator=(
       const OnDeviceModelAdaptationController&) = delete;
 
-  mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateModelRemote(
-      const on_device_model::AdaptationAssetPaths& adaptation_assets);
-
- private:
-  void OnAdaptationAssetsLoaded(
+  // Loads the adaptation model from the loaded assets.
+  void LoadAdaptationModelFromAssets(
       mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
       on_device_model::AdaptationAssets assets);
 
-  void OnLoadModelResult(on_device_model::mojom::LoadModelResult result);
+  mojo::Remote<on_device_model::mojom::OnDeviceModel>& GetOrCreateRemote()
+      override;
 
-  ModelBasedCapabilityKey feature_;
+  base::WeakPtr<OnDeviceModelAdaptationController> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
-  base::WeakPtr<OnDeviceModelServiceController> controller_;
+  // Disconnect the remote to force a reload.
+  void ResetRemote() { model_remote_.reset(); }
+
+ private:
+  base::WeakPtr<ModelController> controller_;
+
+  on_device_model::AdaptationAssetPaths asset_paths_;
 
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;
 

@@ -13,9 +13,11 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_v8_logger.h"
 #include "content/services/auction_worklet/webidl_compat.h"
+#include "gin/public/gin_embedders.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -86,33 +88,27 @@ ForDebuggingOnlyBindings::~ForDebuggingOnlyBindings() = default;
 
 void ForDebuggingOnlyBindings::AttachToContext(v8::Local<v8::Context> context) {
   v8::Isolate* isolate = v8_helper_->isolate();
-  v8::Local<v8::External> v8_this = v8::External::New(isolate, this);
+  v8::Local<v8::External> v8_this =
+      v8::External::New(isolate, this, gin::kForDebuggingOnlyBindingsTag);
   v8::Local<v8::Object> debugging = v8::Object::New(isolate);
 
-  v8::Local<v8::FunctionTemplate> loss_template = v8::FunctionTemplate::New(
-      isolate, &ForDebuggingOnlyBindings::ReportAdAuctionLoss, v8_this);
-  v8::Local<v8::FunctionTemplate> win_template = v8::FunctionTemplate::New(
-      isolate, &ForDebuggingOnlyBindings::ReportAdAuctionWin, v8_this);
-  // If runtime flag BiddingAndScoringDebugReportingAPI is not enabled,
-  // forDebuggingOnly.reportAdAuctionLoss() and
-  // forDebuggingOnly.reportAdAuctionWin() APIs will be disabled (do nothing).
-  // They are still valid APIs doing nothing instead of causing Javascript
-  // errors.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kBiddingAndScoringDebugReportingAPI)) {
-    loss_template = v8::FunctionTemplate::New(isolate);
-    win_template = v8::FunctionTemplate::New(isolate);
-  }
-  loss_template->RemovePrototype();
+  v8::Local<v8::Function> loss_function =
+      v8::Function::New(context, &ForDebuggingOnlyBindings::ReportAdAuctionLoss,
+                        v8_this)
+          .ToLocalChecked();
+  v8::Local<v8::Function> win_function =
+      v8::Function::New(context, &ForDebuggingOnlyBindings::ReportAdAuctionWin,
+                        v8_this)
+          .ToLocalChecked();
+
   debugging
       ->Set(context, v8_helper_->CreateStringFromLiteral("reportAdAuctionLoss"),
-            loss_template->GetFunction(context).ToLocalChecked())
+            loss_function)
       .Check();
 
-  win_template->RemovePrototype();
   debugging
       ->Set(context, v8_helper_->CreateStringFromLiteral("reportAdAuctionWin"),
-            win_template->GetFunction(context).ToLocalChecked())
+            win_function)
       .Check();
 
   context->Global()
@@ -141,7 +137,8 @@ std::optional<GURL> ForDebuggingOnlyBindings::TakeWinReportUrl() {
 void ForDebuggingOnlyBindings::ReportAdAuctionLoss(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   ForDebuggingOnlyBindings* bindings = static_cast<ForDebuggingOnlyBindings*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())
+          ->Value(gin::kForDebuggingOnlyBindingsTag));
   ParseAndSetDebugUrl(bindings->v8_helper_.get(), bindings->v8_logger_.get(),
                       args, "reportAdAuctionLoss", bindings->loss_report_url_);
 }
@@ -149,7 +146,8 @@ void ForDebuggingOnlyBindings::ReportAdAuctionLoss(
 void ForDebuggingOnlyBindings::ReportAdAuctionWin(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   ForDebuggingOnlyBindings* bindings = static_cast<ForDebuggingOnlyBindings*>(
-      v8::External::Cast(*args.Data())->Value());
+      v8::External::Cast(*args.Data())
+          ->Value(gin::kForDebuggingOnlyBindingsTag));
   ParseAndSetDebugUrl(bindings->v8_helper_.get(), bindings->v8_logger_.get(),
                       args, "reportAdAuctionWin", bindings->win_report_url_);
 }

@@ -19,14 +19,14 @@ namespace task_manager {
 class FencedFrameTask : public RendererTask {
  public:
   FencedFrameTask(content::RenderFrameHost* render_frame_host,
-                  RendererTask* embedder_task);
+                  base::WeakPtr<RendererTask> embedder_task);
   FencedFrameTask(const FencedFrameTask&) = delete;
   FencedFrameTask& operator=(const FencedFrameTask&) = delete;
-  ~FencedFrameTask() override = default;
+  ~FencedFrameTask() override;
 
   // task_manager::Task:
   void Activate() override;
-  const task_manager::Task* GetParentTask() const override;
+  base::WeakPtr<task_manager::Task> GetParentTask() const override;
   // task_manager::RendererTask:
   void UpdateTitle() override;
   void UpdateFavicon() override {}
@@ -44,7 +44,7 @@ class FencedFrameTask : public RendererTask {
   //    the task. At that point the RFH is still alive.
   const raw_ptr<content::SiteInstance> site_instance_;
   // Allows us to focus on the embedder's tab.
-  const raw_ptr<RendererTask, FlakyDanglingUntriaged> embedder_task_;
+  base::WeakPtr<RendererTask> embedder_task_;
 };
 
 }  // namespace task_manager

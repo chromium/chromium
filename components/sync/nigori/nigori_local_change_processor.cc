@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "components/sync/protocol/entity_metadata.pb.h"
+
 namespace syncer {
 
 NigoriMetadataBatch::NigoriMetadataBatch() = default;

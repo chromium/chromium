@@ -2,18 +2,18 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("users") {
   sources = [
     "affiliation.cc",
     "affiliation.h",
-    "chrome_user_manager_impl.cc",
-    "chrome_user_manager_impl.h",
     "chrome_user_manager_util.cc",
     "chrome_user_manager_util.h",
+    "policy_user_manager_controller.cc",
+    "policy_user_manager_controller.h",
+    "profile_user_manager_controller.cc",
+    "profile_user_manager_controller.h",
     "test_users.cc",
     "test_users.h",
     "user_manager_delegate_impl.cc",
@@ -35,7 +35,6 @@ static_library("users") {
   ]
 
   deps = [
-    "//ash/components/arc:arc_base_utils",
     "//ash/constants",
     "//ash/public/cpp",
     "//chrome/browser:browser_process",
@@ -43,14 +42,12 @@ static_library("users") {
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/users/default_user_image",
-    "//chrome/browser/ash/policy/external_data",
-    "//chrome/browser/ash/policy/external_data/handlers",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/settings",
     "//chrome/browser/extensions",
     "//chrome/browser/policy:onc",
-    "//chrome/browser/ui/webui/ash/login",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
@@ -63,7 +60,9 @@ static_library("users") {
     "//chromeos/ash/components/install_attributes",
     "//chromeos/ash/components/login/auth/public:authpublic",
     "//chromeos/ash/components/network",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/timezone",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/components/onc",
     "//chromeos/dbus/common",
     "//components/crash/core/common",
@@ -81,7 +80,6 @@ static_library("users") {
   allow_circular_includes_from = [
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/policy/core",
-    "//chrome/browser/ui/webui/ash/login",
   ]
 }
 
@@ -91,12 +89,12 @@ static_library("test_support") {
   sources = [
     "fake_chrome_user_manager.cc",
     "fake_chrome_user_manager.h",
+    "scoped_account_id_annotator.cc",
+    "scoped_account_id_annotator.h",
   ]
 
   public_deps = [
     "//base",
-    "//build:chromeos_buildflags",
-    "//chrome/test:test_support",
     "//components/prefs:test_support",
     "//components/user_manager",
     "//components/user_manager:test_support",
@@ -105,11 +103,12 @@ static_library("test_support") {
   deps = [
     ":users",
     "//ash/constants",
+    "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/login/users/default_user_image",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/settings",
     "//components/user_manager:common",
@@ -118,8 +117,6 @@ static_library("test_support") {
     "//ui/chromeos/resources",
     "//ui/gfx",
   ]
-
-  allow_circular_includes_from = [ "//chrome/test:test_support" ]
 }
 
 source_set("browser_tests") {
@@ -133,18 +130,15 @@ source_set("browser_tests") {
     "//ash/constants",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/login:test_support",
     "//chrome/browser/ash/login/test:test_support",
-    "//chrome/browser/ash/login/ui",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/ash/policy/external_data:test_support",
-    "//chrome/browser/ash/settings",
-    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/common:constants",
     "//chrome/test:test_support_ui",
@@ -152,6 +146,7 @@ source_set("browser_tests") {
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/policy/device_policy:test_support",
     "//chromeos/dbus/constants",
     "//components/ownership",
     "//components/policy/core/common",
@@ -175,6 +170,7 @@ source_set("unit_tests") {
 
   sources = [
     "multi_user_sign_in_policy_controller_unittest.cc",
+    "profile_user_manager_controller_unittest.cc",
     "user_manager_unittest.cc",
   ]
 
@@ -186,19 +182,17 @@ source_set("unit_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser:browser_process",
-    "//chrome/browser/ash",
-    "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/settings:test_support",
-    "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/policy:onc",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/common:constants",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/userdataauth",
+    "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/ash/components/settings",
     "//chromeos/ash/components/system",
     "//components/account_id",
@@ -219,4 +213,8 @@ source_set("unit_tests") {
     "avatar:unit_tests",
     "default_user_image:unit_tests",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

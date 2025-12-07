@@ -1,0 +1,17 @@
+Name: Media3 Container module
+Short Name: media3-container
+URL: https://dl.google.com/dl/android/maven2/androidx/media3/media3-container/1.2.0/media3-container-1.2.0.aar
+Version: 1.2.0
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Media3 Container module
+
+Local Modifications:
+No modifications.

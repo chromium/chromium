@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -18,10 +19,16 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
+#include "components/policy/core/common/cloud/user_cloud_policy_store.h"
+#include "components/policy/core/common/policy_logger.h"
 
 namespace policy {
 
 namespace {
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+BASE_FEATURE(kRetryWithKeyReset, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 base::Clock* clock_for_testing_ = nullptr;
 
@@ -197,6 +204,9 @@ void CloudPolicyRefreshScheduler::OnClientError(CloudPolicyClient* client) {
 }
 
 void CloudPolicyRefreshScheduler::OnStoreLoaded(CloudPolicyStore* store) {
+  // Load successfully, reset flag in case we failed again.
+  has_retried_with_key_reset_ = false;
+
   UpdateLastRefreshFromPolicy();
 
   // Re-schedule the next refresh in case the is_managed bit changed.
@@ -208,6 +218,24 @@ void CloudPolicyRefreshScheduler::OnStoreError(CloudPolicyStore* store) {
   // The best guess in that situation is to assume is_managed didn't change and
   // continue using the stale information. Thus, no specific response to a store
   // error is required. NB: Changes to is_managed fire OnStoreLoaded().
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Client is registered means we have successfully get policy key once. However,
+  // a following policy fetch request is failed because we can't verified
+  // signature. Delete the policy key so that we can get it again with next
+  // policy fetch response.
+  if (base::FeatureList::IsEnabled(kRetryWithKeyReset) &&
+      client_->is_registered() &&
+      store->status() == CloudPolicyStore::STATUS_VALIDATION_ERROR &&
+      store->validation_status() ==
+          CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE &&
+      !has_retried_with_key_reset_) {
+    has_retried_with_key_reset_ = true;
+    static_cast<DesktopCloudPolicyStore*>(store)->ResetPolicyKey();
+    client_->clear_public_key_version();
+    RefreshSoon(PolicyFetchReason::kRetry);
+  }
+#endif
 }
 
 void CloudPolicyRefreshScheduler::OnConnectionChanged(
@@ -278,7 +306,7 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
 
   // Ignore the refresh request if there's a request scheduled for soon.
   if (is_scheduled_for_soon_) {
-    DCHECK(!refresh_callback_.IsCancelled());
+    DCHECK(refresh_weak_factory_.HasWeakPtrs());
     return;
   }
 
@@ -352,6 +380,7 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
     case DM_STATUS_SERVICE_ENTERPRISE_TOS_HAS_NOT_BEEN_ACCEPTED:
     case DM_STATUS_SERVICE_ILLEGAL_ACCOUNT_FOR_PACKAGED_EDU_LICENSE:
     case DM_STATUS_SERVICE_INVALID_PACKAGED_DEVICE_FOR_KIOSK:
+    case DM_STATUS_SERVICE_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEEDED:
       // Need a re-registration, no use in retrying.
       CancelRefresh();
       return;
@@ -360,9 +389,7 @@ void CloudPolicyRefreshScheduler::ScheduleRefresh() {
       return;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid client status " << client_->last_dm_status();
-  RefreshAfter(kUnmanagedRefreshDelayMs, PolicyFetchReason::kUnspecified);
+  NOTREACHED() << "Invalid client status " << client_->last_dm_status();
 }
 
 void CloudPolicyRefreshScheduler::PerformRefresh(PolicyFetchReason reason) {
@@ -377,14 +404,14 @@ void CloudPolicyRefreshScheduler::PerformRefresh(PolicyFetchReason reason) {
     // OnPolicyFetched().
     service_->RefreshPolicy(
         base::BindOnce(&CloudPolicyRefreshScheduler::OnPolicyRefreshed,
-                       base::Unretained(this)),
+                       weak_factory_.GetWeakPtr()),
         reason);
     return;
   }
 
   // This should never happen, as the registration change should have been
   // handled via OnRegistrationStateChanged().
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms,
@@ -407,14 +434,16 @@ void CloudPolicyRefreshScheduler::RefreshAfter(int delta_ms,
   if (!delay.is_zero())
     delay += base::Milliseconds(refresh_delay_salt_ms_);
 
-  refresh_callback_.Reset(
+  refresh_weak_factory_.InvalidateWeakPtrs();
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
       base::BindOnce(&CloudPolicyRefreshScheduler::PerformRefresh,
-                     base::Unretained(this), reason));
-  task_runner_->PostDelayedTask(FROM_HERE, refresh_callback_.callback(), delay);
+                     refresh_weak_factory_.GetWeakPtr(), reason),
+      delay);
 }
 
 void CloudPolicyRefreshScheduler::CancelRefresh() {
-  refresh_callback_.Cancel();
+  refresh_weak_factory_.InvalidateWeakPtrs();
   is_scheduled_for_soon_ = false;
 }
 
@@ -427,8 +456,8 @@ void CloudPolicyRefreshScheduler::UpdateLastRefresh() {
 
 void CloudPolicyRefreshScheduler::OnPolicyRefreshed(bool success) {
   // Next policy fetch is scheduled in OnPolicyFetched() callback.
-  VLOG(1) << "Scheduled policy refresh "
-          << (success ? "successful" : "unsuccessful");
+  VLOG_POLICY(1, POLICY_FETCHING) << "Scheduled policy refresh "
+                                  << (success ? "successful" : "unsuccessful");
 }
 
 // static

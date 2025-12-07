@@ -16,7 +16,7 @@
 namespace ash {
 
 bool ShouldUseBubbleAppList() {
-  return !Shell::Get()->IsInTabletMode();
+  return !display::Screen::Get()->InTabletMode();
 }
 
 AppListBubbleView* GetAppListBubbleView() {
@@ -36,7 +36,7 @@ AppListView* GetAppListView() {
 
 SearchBoxView* GetSearchBoxView() {
   if (ShouldUseBubbleAppList())
-    return GetAppListBubbleView()->search_box_view_for_test();
+    return GetAppListBubbleView()->search_box_view();
   return GetAppListView()->app_list_main_view()->search_box_view();
 }
 

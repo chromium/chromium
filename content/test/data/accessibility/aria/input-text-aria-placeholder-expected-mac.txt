@@ -3,7 +3,7 @@ AXWebArea AXRoleDescription='HTML content'
 ++AXTextField AXPlaceholderValue='placeholder2' AXRoleDescription='text field'
 ++AXTextField AXDescription='aria-label3' AXPlaceholderValue='placeholder3' AXRoleDescription='text field'
 ++AXTextField AXDescription='aria-label4' AXPlaceholderValue='aria-placeholder4' AXRoleDescription='text field'
-++AXTextField AXDescription='aria-label5' AXPlaceholderValue='placeholder5' AXRoleDescription='text field' accessibilityCustomContent=[{label: 'description', value: 'aria-description5'}]
+++AXTextField AXCustomContent=[{label: 'description', value: 'aria-description5'}] AXDescription='aria-label5' AXPlaceholderValue='placeholder5' AXRoleDescription='text field'
 ++AXGroup AXRoleDescription='group'
 ++++AXStaticText AXRoleDescription='text' AXValue='aria-description5'
 ++AXTextField AXDescription='title6' AXPlaceholderValue='aria-placeholder6' AXRoleDescription='text field'

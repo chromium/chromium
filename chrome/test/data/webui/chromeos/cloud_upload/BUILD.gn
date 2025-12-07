@@ -7,10 +7,10 @@ import("../../build_webui_tests.gni")
 build_webui_tests("build_webui_tests") {
   files = [
     "cloud_upload_dialog_test.ts",
+    "cloud_upload_test_browser_proxy.ts",
     "connect_onedrive_test.ts",
     "file_handler_page_test.ts",
     "move_confirmation_page_test.ts",
-    "cloud_upload_test_browser_proxy.ts",
   ]
   ts_path_mappings = [
     "chrome://cloud-upload/*|" + rebase_path(

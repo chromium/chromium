@@ -25,9 +25,10 @@
 
 #include "third_party/blink/renderer/core/frame/use_counter_impl.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/scheme_registry.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
@@ -67,6 +68,9 @@ mojom::blink::UseCounterFeatureType ToFeatureType(
     case UseCounterImpl::PermissionsPolicyUsageType::kIframeAttribute:
       return mojom::blink::UseCounterFeatureType::
           kPermissionsPolicyIframeAttribute;
+    case UseCounterImpl::PermissionsPolicyUsageType::kEnabledPrivacySensitive:
+      return mojom::blink::UseCounterFeatureType::
+          kPermissionsPolicyEnabledPrivacySensitive;
   }
 }
 }  // namespace
@@ -98,8 +102,8 @@ bool UseCounterImpl::IsCounted(WebFeature web_feature) const {
     return false;
 
   // PageVisits is reserved as a scaling factor.
-  DCHECK_NE(WebFeature::kPageVisits, web_feature);
-  DCHECK_GE(WebFeature::kNumberOfFeatures, web_feature);
+  DCHECK_NE(web_feature, WebFeature::kPageVisits);
+  DCHECK_LE(web_feature, WebFeature::kMaxValue);
 
   return feature_tracker_.Test(
       {mojom::blink::UseCounterFeatureType::kWebFeature,
@@ -118,8 +122,8 @@ bool UseCounterImpl::IsWebDXFeatureCounted(WebDXFeature webdx_feature) const {
   }
 
   // PageDestruction is reserved as a scaling factor.
-  DCHECK_NE(WebDXFeature::kPageVisits, webdx_feature);
-  DCHECK_GE(WebDXFeature::kNumberOfFeatures, webdx_feature);
+  DCHECK_NE(webdx_feature, WebDXFeature::kPageVisits);
+  DCHECK_LE(webdx_feature, WebDXFeature::kMaxValue);
 
   return feature_tracker_.Test(
       {mojom::blink::UseCounterFeatureType::kWebDXFeature,
@@ -138,12 +142,18 @@ void UseCounterImpl::Trace(Visitor* visitor) const {
 
 void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   const KURL url = frame->GetDocument()->Url();
-  if (CommonSchemeRegistry::IsExtensionScheme(url.Protocol().Ascii())) {
+  const std::string protocol = url.Protocol().Ascii();
+  if (CommonSchemeRegistry::IsExtensionScheme(protocol)) {
     context_ = kExtensionContext;
   } else if (url.ProtocolIs("file")) {
     context_ = kFileContext;
-  } else if (url.ProtocolIsInHTTPFamily()) {
+  } else if (url.ProtocolIsInHTTPFamily() ||
+             CommonSchemeRegistry::IsIsolatedAppScheme(protocol)) {
+    // Isolated Apps use the same frames as regular web pages, thus IWA feature
+    // usage is recorded in the same way as feature usage for normal frames.
     context_ = kDefaultContext;
+  } else if (url.IsAboutBlankURL() || url.IsAboutSrcdocURL()) {
+    context_ = kAboutBlankOrSrcdoc;
   } else {
     // UseCounter is disabled for all other URL schemes.
     context_ = kDisabledContext;
@@ -166,6 +176,8 @@ void UseCounterImpl::DidCommitLoad(const LocalFrame* frame) {
   if (context_ == kExtensionContext || context_ == kFileContext) {
     CountFeature(WebFeature::kPageVisits);
   }
+
+  ReportTotalTakenTime(frame, /*did_commit_load=*/true);
 }
 
 bool UseCounterImpl::IsCounted(CSSPropertyID unresolved_property,
@@ -222,8 +234,8 @@ void UseCounterImpl::Count(CSSPropertyID property,
 void UseCounterImpl::Count(WebFeature web_feature,
                            const LocalFrame* source_frame) {
   // PageVisits is reserved as a scaling factor.
-  DCHECK_NE(WebFeature::kPageVisits, web_feature);
-  DCHECK_GE(WebFeature::kNumberOfFeatures, web_feature);
+  DCHECK_NE(web_feature, WebFeature::kPageVisits);
+  DCHECK_LE(web_feature, WebFeature::kMaxValue);
 
   Count({mojom::blink::UseCounterFeatureType::kWebFeature,
          static_cast<uint32_t>(web_feature)},
@@ -233,8 +245,8 @@ void UseCounterImpl::Count(WebFeature web_feature,
 void UseCounterImpl::CountWebDXFeature(WebDXFeature web_feature,
                                        const LocalFrame* source_frame) {
   // PageVisits is reserved as a scaling factor.
-  DCHECK_NE(WebDXFeature::kPageVisits, web_feature);
-  DCHECK_GE(WebDXFeature::kNumberOfFeatures, web_feature);
+  DCHECK_NE(web_feature, WebDXFeature::kPageVisits);
+  DCHECK_LE(web_feature, WebDXFeature::kMaxValue);
 
   Count({mojom::blink::UseCounterFeatureType::kWebDXFeature,
          static_cast<uint32_t>(web_feature)},
@@ -242,10 +254,10 @@ void UseCounterImpl::CountWebDXFeature(WebDXFeature web_feature,
 }
 
 void UseCounterImpl::CountPermissionsPolicyUsage(
-    mojom::blink::PermissionsPolicyFeature feature,
+    network::mojom::PermissionsPolicyFeature feature,
     PermissionsPolicyUsageType usage_type,
     const LocalFrame& source_frame) {
-  DCHECK_NE(mojom::blink::PermissionsPolicyFeature::kNotFound, feature);
+  DCHECK_NE(network::mojom::PermissionsPolicyFeature::kNotFound, feature);
 
   Count({ToFeatureType(usage_type), static_cast<uint32_t>(feature)},
         &source_frame);
@@ -267,21 +279,22 @@ void UseCounterImpl::CountFeature(WebFeature feature) const {
     case kDefaultContext:
       // Feature usage for the default context is recorded on the browser side.
       // components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case kExtensionContext:
-      UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.Extensions.Features", feature,
-                                WebFeature::kNumberOfFeatures);
+      UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.Extensions.Features",
+                                feature);
       return;
     case kFileContext:
-      UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.File.Features", feature,
-                                WebFeature::kNumberOfFeatures);
+      UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.File.Features", feature);
+      return;
+    case kAboutBlankOrSrcdoc:
+      UMA_HISTOGRAM_ENUMERATION("Blink.UseCounter.AboutBlankOrSrcdoc.Features",
+                                feature);
       return;
     case kDisabledContext:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
@@ -291,16 +304,22 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
 
   if (!frame || !frame->Client())
     return false;
+
+  base::ElapsedTimer timer;
+
   auto* client = frame->Client();
 
   if (feature.type() == mojom::blink::UseCounterFeatureType::kWebFeature)
     NotifyFeatureCounted(static_cast<WebFeature>(feature.value()));
 
-  // Report to browser about observed event only when URL is HTTP/HTTPS,
-  // as other URL schemes are filtered out in
+  // Report to browser about observed event only when URL is HTTP/HTTPS or
+  // isolated-app://, as other URL schemes are filtered out in
   // |MetricsWebContentsObserver::DoesTimingUpdateHaveError| anyway.
   if (context_ == kDefaultContext) {
     client->DidObserveNewFeatureUsage(feature);
+    if (base::TimeTicks::IsHighResolution()) {
+      total_taken_time_for_reporting_ += timer.Elapsed();
+    }
     return true;
   }
 
@@ -311,6 +330,30 @@ bool UseCounterImpl::ReportMeasurement(const UseCounterFeature& feature,
   }
 
   return false;
+}
+
+void UseCounterImpl::ReportTotalTakenTime(const LocalFrame* frame,
+                                          bool did_commit_load) {
+  if (!frame->IsOutermostMainFrame()) {
+    return;
+  }
+  const auto* document = frame->GetDocument();
+  if (document->IsInitialEmptyDocument() ||
+      !document->Url().ProtocolIsInHTTPFamily()) {
+    return;
+  }
+
+  String suffix;
+  if (did_commit_load) {
+    suffix = ".DidCommitLoad";
+  } else if (document->HasFinishedParsing()) {
+    suffix = ".FinishedParsing";
+  }
+
+  base::UmaHistogramMicrosecondsTimes(
+      base::StrCat(
+          {"Blink.UseCounter.TotalTakenTimeForReporting2", suffix.Ascii()}),
+      total_taken_time_for_reporting_);
 }
 
 // Note that HTTPArchive tooling looks specifically for this event - see
@@ -334,6 +377,8 @@ void UseCounterImpl::TraceMeasurement(const UseCounterFeature& feature) {
         kPermissionsPolicyViolationEnforce:
     case mojom::blink::UseCounterFeatureType::kPermissionsPolicyHeader:
     case mojom::blink::UseCounterFeatureType::kPermissionsPolicyIframeAttribute:
+    case mojom::blink::UseCounterFeatureType::
+        kPermissionsPolicyEnabledPrivacySensitive:
       // TODO(crbug.com/1206004): Add trace event for permissions policy metrics
       // gathering.
       return;

@@ -76,8 +76,8 @@ const char* StatusCodeToString(StatusCode code) {
       return "no such shadow root";
     case kDetachedShadowRoot:
       return "detached shadow root";
-    case kNavigationDetectedByRemoteEnd:
-      return "navigation detected by remote end";
+    case kAbortedByNavigation:
+      return "aborted by navigation";
     case kTestError:
       return "test error";
     default:
@@ -85,35 +85,43 @@ const char* StatusCodeToString(StatusCode code) {
   }
 }
 
+bool ShouldCollectStackTrace(StatusCode code) {
+  return (code != kOk && code != kTabCrashed);
+}
+
 Status::Status(StatusCode code) : code_(code), msg_(StatusCodeToString(code)) {
-  if (code != kOk)
+  if (ShouldCollectStackTrace(code)) {
     stack_trace_ = base::debug::StackTrace().ToString();
+  }
 }
 
 Status::Status(StatusCode code, const std::string& details)
     : code_(code),
       msg_(StatusCodeToString(code) + std::string(": ") + details) {
-  if (code != kOk)
-        stack_trace_ = base::debug::StackTrace().ToString();
+  if (ShouldCollectStackTrace(code)) {
+    stack_trace_ = base::debug::StackTrace().ToString();
+  }
 }
 
 Status::Status(StatusCode code, const Status& cause)
     : code_(code),
       msg_(StatusCodeToString(code) + std::string("\nfrom ") +
            cause.message()) {
-  if (code != kOk)
+  if (ShouldCollectStackTrace(code)) {
     stack_trace_ = cause.stack_trace();
+  }
 }
 
 Status::Status(StatusCode code, const std::string& details, const Status& cause)
     : code_(code),
       msg_(StatusCodeToString(code) + std::string(": ") + details + "\nfrom " +
            cause.message()) {
-  if (code != kOk)
+  if (ShouldCollectStackTrace(code)) {
     stack_trace_ = cause.stack_trace();
+  }
 }
 
-Status::~Status() {}
+Status::~Status() = default;
 
 void Status::AddDetails(const std::string& details) {
   msg_ += base::StringPrintf("\n  (%s)", details.c_str());

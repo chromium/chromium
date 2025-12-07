@@ -44,7 +44,6 @@ namespace blink {
 
 class PLATFORM_EXPORT LocaleWin : public Locale {
  public:
-  static std::unique_ptr<LocaleWin> Create(LCID, bool defaults_for_locale);
   ~LocaleWin() override;
   const Vector<String>& WeekDayShortLabels() override;
   unsigned FirstDayOfWeek() override;
@@ -62,13 +61,18 @@ class PLATFORM_EXPORT LocaleWin : public Locale {
   const Vector<String>& ShortStandAloneMonthLabels() override;
   const Vector<String>& TimeAMPMLabels() override;
 
-  static String DateFormat(const String&);
+  static String DateFormatForTesting(const String&);
+  static std::unique_ptr<LocaleWin> CreateForTesting(LCID,
+                                                     bool defaults_for_locale);
 
  private:
-  explicit LocaleWin(LCID, bool defaults_for_locale);
-  String GetLocaleInfoString(LCTYPE);
-  void GetLocaleInfo(LCTYPE, DWORD&);
-
+  friend class Locale;  // Can call Create() from Locale::Create().
+  static std::unique_ptr<LocaleWin> Create(LCID,
+                                           unsigned first_day_of_week,
+                                           bool defaults_for_locale);
+  explicit LocaleWin(LCID,
+                     unsigned first_day_of_week,
+                     bool defaults_for_locale);
   // Locale:
   void InitializeLocaleData() override;
 
@@ -84,8 +88,10 @@ class PLATFORM_EXPORT LocaleWin : public Locale {
   String date_time_format_without_seconds_;
   Vector<String> time_ampm_labels_;
   Vector<String> week_day_short_labels_;
+  // Blink's idea of first day of the week, note that this differs
+  // from Windows LOCALE_IFIRSTDAYOFWEEK.
   unsigned first_day_of_week_;
-  bool did_initialize_number_data_;
+  bool did_initialize_number_data_ = false;
   bool defaults_for_locale_;
 };
 

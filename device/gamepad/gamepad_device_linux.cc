@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/gamepad_device_linux.h"
 
 #include <fcntl.h>
@@ -16,8 +11,11 @@
 #include <linux/joystick.h>
 #include <sys/ioctl.h>
 
+#include <algorithm>
+#include <array>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/posix/eintr_wrapper.h"
@@ -47,7 +45,7 @@ const float kMaxLinuxAxisValue = 32767.0;
 const int kInvalidEffectId = -1;
 const uint16_t kRumbleMagnitudeMax = 0xffff;
 
-const size_t kSpecialKeys[] = {
+constexpr auto kSpecialKeys = std::to_array<size_t>({
     // Xbox One S pre-FW update reports Xbox button as SystemMainMenu over BT.
     KEY_MENU,
     // Power is used for the Guide button on the Nvidia Shield 2015 gamepad.
@@ -56,16 +54,18 @@ const size_t kSpecialKeys[] = {
     KEY_SEARCH,
     // Start, Back, and Guide buttons are often reported as Consumer Home or
     // Back.
-    KEY_HOMEPAGE, KEY_BACK,
+    KEY_HOMEPAGE,
+    KEY_BACK,
     // Record is used for Xbox Series X's share button over BT.
-    KEY_RECORD};
+    KEY_RECORD,
+});
 const size_t kSpecialKeysLen = std::size(kSpecialKeys);
 
 #define LONG_BITS (CHAR_BIT * sizeof(long))
 #define BITS_TO_LONGS(x) (((x) + LONG_BITS - 1) / LONG_BITS)
 
 static inline bool test_bit(int bit, const unsigned long* data) {
-  return data[bit / LONG_BITS] & (1UL << (bit % LONG_BITS));
+  return UNSAFE_TODO(data[bit / LONG_BITS]) & (1UL << (bit % LONG_BITS));
 }
 
 GamepadBusType GetEvdevBusType(const base::ScopedFD& fd) {
@@ -169,7 +169,7 @@ int StoreRumbleEffect(const base::ScopedFD& fd,
                       uint16_t strong_magnitude,
                       uint16_t weak_magnitude) {
   struct ff_effect effect;
-  memset(&effect, 0, sizeof(effect));
+  UNSAFE_TODO(memset(&effect, 0, sizeof(effect)));
   effect.type = FF_RUMBLE;
   effect.id = effect_id;
   effect.replay.length = duration;
@@ -188,7 +188,7 @@ void DestroyEffect(const base::ScopedFD& fd, int effect_id) {
 
 bool StartOrStopEffect(const base::ScopedFD& fd, int effect_id, bool do_start) {
   struct input_event start_stop;
-  memset(&start_stop, 0, sizeof(start_stop));
+  UNSAFE_TODO(memset(&start_stop, 0, sizeof(start_stop)));
   start_stop.type = EV_FF;
   start_stop.code = effect_id;
   start_stop.value = do_start ? 1 : 0;
@@ -252,7 +252,6 @@ GamepadDeviceLinux::GamepadDeviceLinux(
     const std::string& syspath_prefix,
     scoped_refptr<base::SequencedTaskRunner> dbus_runner)
     : syspath_prefix_(syspath_prefix),
-      button_indices_used_(Gamepad::kButtonsLengthCap, false),
       dbus_runner_(dbus_runner),
       polling_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
@@ -384,8 +383,8 @@ void GamepadDeviceLinux::InitializeEvdevSpecialKeys() {
         continue;
 
       // Advance to the next unused button index.
-      while (button_indices_used_[button_index] &&
-             button_index < Gamepad::kButtonsLengthCap) {
+      while (button_index < Gamepad::kButtonsLengthCap &&
+             button_indices_used_[button_index]) {
         ++button_index;
       }
       if (button_index >= Gamepad::kButtonsLengthCap)
@@ -530,7 +529,7 @@ void GamepadDeviceLinux::CloseJoydevNode() {
   gamepad_id_ = GamepadId::kUnknownGamepad;
 
   // Button indices must be recomputed once the joydev node is closed.
-  button_indices_used_.clear();
+  std::ranges::fill(button_indices_used_, false);
   special_button_map_.clear();
   evdev_special_keys_initialized_ = false;
 }

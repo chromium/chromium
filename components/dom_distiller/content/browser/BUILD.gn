@@ -57,6 +57,7 @@ static_library("browser") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "distillable_page_utils_unittest.cc",
     "dom_distiller_viewer_source_unittest.cc",
     "uma_helper_unittest.cc",
   ]

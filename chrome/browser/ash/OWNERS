@@ -1,18 +1,18 @@
 achuith@chromium.org
-afakhry@chromium.org
 hidehiko@chromium.org
 jamescook@chromium.org
 khorimoto@chromium.org
 oshima@chromium.org
-xiyuan@chromium.org
+tbarzic@google.com
 
 # This is for the common case of adding or renaming files. If you're doing
 # structural changes, use usual OWNERS rules.
 per-file BUILD.gn=*
 
-per-file *active_directory*=file://chrome/browser/ash/authpolicy/OWNERS
-per-file camera_presence_notifier*=file://ash/webui/camera_app_ui/OWNERS
-per-file set_time_dialog*=file://chrome/browser/resources/ash/settings/OWNERS
-
-# Prefer rsult over directory owners.
-per-file browser_context_keyed_service_factories.*=rsult@google.com
+# We're trying to avoid taking new dependencies on ash. But when they
+# happen, we want the chrome-side review to be easy for OWNERS there,
+# leaving the ash-side to approve or reject the new dependency.
+per-file DEPS=set noparent
+per-file DEPS=file://chrome/browser/ash/REFACTORING_OWNERS
+per-file .../DEPS=set noparent
+per-file .../DEPS=file://chrome/browser/ash/REFACTORING_OWNERS

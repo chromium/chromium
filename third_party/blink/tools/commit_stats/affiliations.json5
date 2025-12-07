@@ -18,6 +18,21 @@
  * Affilitions must be sorted from most recent to least recent.
  */
 {
+  "almaher@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
+  "benjamin.beaudry@chromium.org": {
+    affiliations: [
+      { start: "2019-04-02", domain: "microsoft.com" },
+    ]
+  },
+  "brandonm@chromium.org": {
+    affiliations: [
+      { start: "2020-06-07", domain: "microsoft.com" },
+    ]
+  },
   "cavalcantii@chromium.org": {
     affiliations: [
       { start: "2022-05-03", domain: "intel.com" },
@@ -25,9 +40,29 @@
       { start: "2014-10-08", domain: "adenilson.org" },
     ]
   },
+  "daniec@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
   "dgozman@chromium.org": {
     affiliations: [
       { start: "2019-05-01", domain: "microsoft.com" },
+    ]
+  },
+  "donna@chromium.org": {
+    affiliations: [
+      { start: "2021-11-29", domain: "microsoft.com" },
+    ]
+  },
+  "estade@chromium.org": {
+    affiliations: [
+      { start: "2025-03-10", domain: "microsoft.com" },
+    ]
+  },
+  "fabiorocha@chromium.org": {
+    affiliations: [
+      { start: "2021-03-05", domain: "microsoft.com" },
     ]
   },
   "joone@chromium.org": {
@@ -36,9 +71,29 @@
       { start: "2022-06-01", domain: "joone.net" },
     ]
   },
+  "kbabbitt@chromium.org": {
+    affiliations: [
+      { start: "2019-04-02", domain: "microsoft.com" },
+    ]
+  },
   "kzar@chromium.org": {
     affiliations: [
       { start: "2021-11-29", domain: "kzar.co.uk" },
+    ]
+  },
+  "lpardosixtos@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
+  "luhua@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
+  "lzhao@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
     ]
   },
   "marshall@chromium.org": {
@@ -46,9 +101,40 @@
       { start: "2010-03-09", domain: "gmail.com" },
     ]
   },
+  "minggang@chromium.org": {
+    affiliations: [
+      { start: "2021-10-31", domain: "microsoft.com" },
+    ]
+  },
+  "mjackson@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
   "pfeldman@chromium.org": {
     affiliations: [
       { start: "2019-05-01", domain: "microsoft.com" },
+    ]
+  },
+  "rafael.cintron@chromium.org": {
+    affiliations: [
+      { start: "2019-04-02", domain: "microsoft.com" },
+    ]
+  },
+  "rob.paveza@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
+  "samfort@chromium.org": {
+    affiliations: [
+      { start: "2020-01-14", domain: "microsoft.com" },
+    ]
+  },
+  "schenney@chromium.org": {
+    affiliations: [
+      { start: "2023-04-11", domain: "igalia.com" },
+      { start: "2011-02-14", domain: "google.com" },
     ]
   },
   "seokho@chromium.org": {
@@ -56,10 +142,26 @@
       { start: "2020-07-25", domain: "seokho.dev" },
     ]
   },
+  "slightlyoff@chromium.org": {
+    affiliations: [
+      { start: "2021-06-21", domain: "microsoft.com" },
+      { start: "2008-12-01", domain: "google.com" },
+    ]
+  },
   "sohanjg@chromium.org": {
     affiliations: [
       { start: "2016-09-10", domain: "huawei.com" },
       { start: "2014-01-10", domain: "samsung.com" },
+    ]
+  },
+  "stahon@chromium.org": {
+    affiliations: [
+      { start: "2025-04-11", domain: "microsoft.com" },
+    ]
+  },
+  "ting.shao@chromium.org": {
+    affiliations: [
+      { start: "2022-03-09", domain: "microsoft.com" },
     ]
   },
   "yoavweiss@chromium.org": {
@@ -75,9 +177,22 @@
       { start: "2012-09-01", domain: "yoav.ws"},
     ]
   },
+  "wanderview@chromium.org": {
+    affiliations: [
+      { start: "2025-03-17", domain: "meta.com" },
+      { start: "2018-07-23", domain: "google.com" },
+    ]
+  },
   "weidongliu@chromium.org": {
     affiliations: [
+      { start: "2025-10-21", domain: "citrolabs.ai" },
       { start: "2020-07-10", domain: "tencent.com" },
+    ]
+  },
+  "xiaochengh@chromium.org": {
+    affiliations: [
+      { start: "2023-12-03", domain: "huawei.com" },
+      { start: "2015-10-19", domain: "google.com" },
     ]
   },
   "zenye@chromium.org": {

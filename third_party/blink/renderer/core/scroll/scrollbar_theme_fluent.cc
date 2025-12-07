@@ -37,9 +37,7 @@ ScrollbarThemeFluent::ScrollbarThemeFluent() {
           : theme_engine->GetSize(WebThemeEngine::kPartScrollbarUpArrow)
                 .height();
 
-  is_fluent_overlay_scrollbar_enabled_ =
-      theme_engine->IsFluentOverlayScrollbarEnabled();
-  if (!is_fluent_overlay_scrollbar_enabled_) {
+  if (!OverlayScrollbarsEnabled()) {
     return;
   }
   // Hit testable invisible border around the scrollbar's track.
@@ -48,7 +46,7 @@ ScrollbarThemeFluent::ScrollbarThemeFluent() {
   WebThemeEngineHelper::GetNativeThemeEngine()->GetOverlayScrollbarStyle(
       &style_);
   if (WebTestSupport::IsRunningWebTest()) {
-    style_.fade_out_delay = base::TimeDelta();
+    style_.fade_out_delay = base::TimeDelta::Max();
     style_.fade_out_duration = base::TimeDelta();
   }
 }
@@ -115,7 +113,7 @@ gfx::Size ScrollbarThemeFluent::ButtonSize(const Scrollbar& scrollbar) const {
 }
 
 bool ScrollbarThemeFluent::UsesOverlayScrollbars() const {
-  return is_fluent_overlay_scrollbar_enabled_;
+  return OverlayScrollbarsEnabled();
 }
 
 bool ScrollbarThemeFluent::UsesFluentScrollbars() const {
@@ -183,6 +181,10 @@ ScrollbarThemeFluent::BuildScrollbarThumbExtraParams(
     scrollbar_thumb.thumb_color =
         scrollbar.ScrollbarThumbColor().value().toSkColor4f().toSkColor();
   }
+  if (scrollbar.ScrollbarTrackColor().has_value()) {
+    scrollbar_thumb.track_color =
+        scrollbar.ScrollbarTrackColor().value().toSkColor4f().toSkColor();
+  }
   scrollbar_thumb.is_thumb_minimal_mode =
       scrollbar.IsFluentOverlayScrollbarMinimalMode();
   scrollbar_thumb.is_web_test = WebTestSupport::IsRunningWebTest();
@@ -249,7 +251,7 @@ gfx::Rect ScrollbarThemeFluent::ShrinkMainThreadedMinimalModeThumbRect(
 }
 
 bool ScrollbarThemeFluent::UsesNinePatchTrackAndButtonsResource() const {
-  return RuntimeEnabledFeatures::FluentScrollbarUsesNinePatchTrackEnabled();
+  return true;
 }
 
 }  // namespace blink

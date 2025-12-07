@@ -1,0 +1,136 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/apple/swift_source_set.gni")
+
+# Build target allowed while moving files from ui_bundled to other folders.
+# Model dependencies should be moved to the model folder.
+# TODO(crbug.com/394567614): Remove this target once model files have been moved.
+source_set("ui_interface") {
+  sources = [
+    "autocomplete_suggestion.h",
+    "autocomplete_suggestion_group_impl.h",
+    "omnibox_icon.h",
+    "suggest_action.h",
+  ]
+  deps = [
+    "//components/omnibox/browser",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/web/public:web_state_observer",
+    "//ui/base:types",
+  ]
+}
+
+source_set("suggestions") {
+  sources = [
+    "autocomplete_match_formatter.h",
+    "autocomplete_match_formatter.mm",
+    "autocomplete_result_wrapper.h",
+    "autocomplete_result_wrapper.mm",
+    "autocomplete_result_wrapper_delegate.h",
+    "autocomplete_suggestion_group_impl.mm",
+    "omnibox_icon_formatter.h",
+    "omnibox_icon_formatter.mm",
+    "omnibox_pedal_annotator.h",
+    "omnibox_pedal_annotator.mm",
+    "pedal_section_extractor.h",
+    "pedal_section_extractor.mm",
+    "pedal_suggestion_wrapper.h",
+    "pedal_suggestion_wrapper.mm",
+    "simple_omnibox_icon.h",
+    "simple_omnibox_icon.mm",
+    "suggest_action.mm",
+  ]
+  deps = [
+    ":omnibox_pedal_swift",
+    ":swift_dependencies",
+    "//components/application_locale_storage",
+    "//components/bookmarks/browser",
+    "//components/omnibox/browser",
+    "//components/omnibox/common",
+    "//components/password_manager/core/browser/ui",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/aim/model:aim_availability",
+    "//ios/chrome/browser/default_browser/model",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/omnibox/public",
+    "//ios/chrome/browser/omnibox/public:constants",
+    "//ios/chrome/browser/omnibox/public:features",
+    "//ios/chrome/browser/search_engines/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/symbols:symbols_views",
+    "//ios/chrome/common:string_conversions",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util:image_util",
+    "//ios/components/webui:url_constants",
+    "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
+    "//net",
+    "//ui/base",
+    "//ui/base:types",
+    "//url",
+  ]
+
+  public_deps = [ ":ui_interface" ]
+}
+
+source_set("swift_dependencies") {
+  sources = [ "omnibox_pedal.h" ]
+  deps = []
+}
+
+swift_source_set("omnibox_pedal_swift") {
+  bridge_header = "omnibox_pedal_swift_bridge.h"
+  sources = [ "omnibox_pedal.swift" ]
+
+  deps = [
+    ":swift_dependencies",
+    ":ui_interface",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/app/theme",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/common/ui/colors:swift",
+    "//ui/base",
+  ]
+  frameworks = [
+    "Foundation.framework",
+    "SwiftUI.framework",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "autocomplete_result_wrapper_unittest.mm",
+    "omnibox_pedal_annotator_unittest.mm",
+    "pedal_section_extractor_unittest.mm",
+  ]
+  deps = [
+    ":omnibox_pedal_swift",
+    ":suggestions",
+    ":swift_dependencies",
+    ":ui_interface",
+    "//base/test:test_support",
+    "//components/omnibox/browser",
+    "//components/omnibox/browser:test_support",
+    "//components/search_engines",
+    "//components/search_engines:test_support",
+    "//ios/chrome/browser/autocomplete/model",
+    "//ios/chrome/browser/omnibox/model",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base:test_support",
+    "//ui/gfx:test_support",
+  ]
+}

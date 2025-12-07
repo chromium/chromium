@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/location.h"
+
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 
 #if defined(COMPILER_MSVC)
 #include <intrin.h>
@@ -22,30 +19,24 @@ namespace base {
 
 namespace {
 
-// Returns the length of the given null terminated c-string.
-constexpr size_t StrLen(const char* str) {
-  size_t str_len = 0;
-  for (str_len = 0; str[str_len] != '\0'; ++str_len)
-    ;
-  return str_len;
-}
+#if defined(__clang__) && defined(_MSC_VER)
+constexpr std::string_view kThisFilePath = "base\\location.cc";
+#else
+constexpr std::string_view kThisFilePath = "base/location.cc";
+#endif
 
 // Finds the length of the build folder prefix from the file path.
 // TODO(ssid): Strip prefixes from stored strings in the binary. This code only
 // skips the prefix while reading the file name strings at runtime.
 constexpr size_t StrippedFilePathPrefixLength() {
-  constexpr char path[] = __FILE__;
+  constexpr std::string_view kPath = __FILE__;
   // Only keep the file path starting from the src directory.
-#if defined(__clang__) && defined(_MSC_VER)
-  constexpr char stripped[] = "base\\location.cc";
-#else
-  constexpr char stripped[] = "base/location.cc";
-#endif
-  constexpr size_t path_len = StrLen(path);
-  constexpr size_t stripped_len = StrLen(stripped);
-  static_assert(path_len >= stripped_len,
+
+  constexpr size_t kPathLen = kPath.size();
+  constexpr size_t kStrippedLen = kThisFilePath.size();
+  static_assert(kPathLen >= kStrippedLen,
                 "Invalid file path for base/location.cc.");
-  return path_len - stripped_len;
+  return kPathLen - kStrippedLen;
 }
 
 constexpr size_t kStrippedPrefixLength = StrippedFilePathPrefixLength();
@@ -54,27 +45,14 @@ constexpr size_t kStrippedPrefixLength = StrippedFilePathPrefixLength();
 // and the suffix matches the |expected| string.
 // TODO(ssid): With C++20 we can make base::EndsWith() constexpr and use it
 //  instead.
-constexpr bool StrEndsWith(const char* name,
+constexpr bool StrEndsWith(std::string_view name,
                            size_t prefix_len,
-                           const char* expected) {
-  const size_t name_len = StrLen(name);
-  const size_t expected_len = StrLen(expected);
-  if (name_len != prefix_len + expected_len)
-    return false;
-  for (size_t i = 0; i < expected_len; ++i) {
-    if (name[i + prefix_len] != expected[i])
-      return false;
-  }
-  return true;
+                           std::string_view expected) {
+  return name.substr(prefix_len) == expected;
 }
 
-#if defined(__clang__) && defined(_MSC_VER)
-static_assert(StrEndsWith(__FILE__, kStrippedPrefixLength, "base\\location.cc"),
+static_assert(StrEndsWith(__FILE__, kStrippedPrefixLength, kThisFilePath),
               "The file name does not match the expected prefix format.");
-#else
-static_assert(StrEndsWith(__FILE__, kStrippedPrefixLength, "base/location.cc"),
-              "The file name does not match the expected prefix format.");
-#endif
 
 }  // namespace
 
@@ -94,15 +72,10 @@ Location::Location(const char* function_name,
       file_name_(file_name),
       line_number_(line_number),
       program_counter_(program_counter) {
-#if !BUILDFLAG(IS_NACL)
   // The program counter should not be null except in a default constructed
   // (empty) Location object. This value is used for identity, so if it doesn't
   // uniquely identify a location, things will break.
-  //
-  // The program counter isn't supported in NaCl so location objects won't work
-  // properly in that context.
   DCHECK(program_counter);
-#endif
 }
 
 std::string Location::ToString() const {
@@ -122,7 +95,7 @@ void Location::WriteIntoTrace(perfetto::TracedValue context) const {
 
 #if defined(COMPILER_MSVC)
 #define RETURN_ADDRESS() _ReturnAddress()
-#elif defined(COMPILER_GCC) && !BUILDFLAG(IS_NACL)
+#elif defined(COMPILER_GCC)
 #define RETURN_ADDRESS() \
   __builtin_extract_return_addr(__builtin_return_address(0))
 #else
@@ -133,8 +106,15 @@ void Location::WriteIntoTrace(perfetto::TracedValue context) const {
 NOINLINE Location Location::Current(const char* function_name,
                                     const char* file_name,
                                     int line_number) {
-  return Location(function_name, file_name + kStrippedPrefixLength, line_number,
-                  RETURN_ADDRESS());
+  return Location(function_name, UNSAFE_TODO(file_name + kStrippedPrefixLength),
+                  line_number, RETURN_ADDRESS());
+}
+
+// static
+NOINLINE Location Location::CurrentWithoutFunctionName(const char* file_name,
+                                                       int line_number) {
+  return Location(nullptr, UNSAFE_TODO(file_name + kStrippedPrefixLength),
+                  line_number, RETURN_ADDRESS());
 }
 
 //------------------------------------------------------------------------------

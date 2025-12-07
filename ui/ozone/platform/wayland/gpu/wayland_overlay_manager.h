@@ -6,7 +6,7 @@
 #define UI_OZONE_PLATFORM_WAYLAND_GPU_WAYLAND_OVERLAY_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/ozone/public/overlay_candidates_ozone.h"
 #include "ui/ozone/public/overlay_manager_ozone.h"
 

@@ -6,19 +6,15 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_MOJO_SAFE_BROWSING_IMPL_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/supports_user_data.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
-#include "ipc/ipc_message.h"
+#include "ipc/constants.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-
-namespace content {
-class ResourceContext;
-}
 
 namespace safe_browsing {
 
@@ -36,7 +32,6 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing,
 
   static void MaybeCreate(
       int render_process_id,
-      base::WeakPtr<content::ResourceContext> resource_context,
       const base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>&
           delegate_getter,
       mojo::PendingReceiver<mojom::SafeBrowsing> receiver);
@@ -70,7 +65,7 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing,
 
   mojo::ReceiverSet<mojom::SafeBrowsing> receivers_;
   scoped_refptr<UrlCheckerDelegate> delegate_;
-  int render_process_id_ = MSG_ROUTING_NONE;
+  int render_process_id_ = IPC::mojom::kRoutingIdNone;
 
   // Guaranteed to outlive this object as it owns it.
   raw_ptr<base::SupportsUserData> user_data_;

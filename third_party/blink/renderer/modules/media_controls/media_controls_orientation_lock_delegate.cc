@@ -170,7 +170,7 @@ void MediaControlsOrientationLockDelegate::MaybeListenToDeviceOrientation() {
   Platform::Current()->GetBrowserInterfaceBroker()->GetInterface(
       monitor_.BindNewPipeAndPassReceiver(
           GetDocument().GetTaskRunner(TaskType::kMediaElementEvent)));
-  monitor_->IsAutoRotateEnabledByUser(WTF::BindOnce(
+  monitor_->IsAutoRotateEnabledByUser(BindOnce(
       &MediaControlsOrientationLockDelegate::GotIsAutoRotateEnabledByUser,
       WrapPersistent(this)));
 #else
@@ -244,7 +244,7 @@ void MediaControlsOrientationLockDelegate::Invoke(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 device::mojom::blink::ScreenOrientationLockType
@@ -281,8 +281,7 @@ MediaControlsOrientationLockDelegate::ComputeOrientationLock() const {
       return device::mojom::blink::ScreenOrientationLockType::LANDSCAPE;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return device::mojom::blink::ScreenOrientationLockType::LANDSCAPE;
+  NOTREACHED();
 }
 
 MediaControlsOrientationLockDelegate::DeviceOrientationType
@@ -419,7 +418,7 @@ void MediaControlsOrientationLockDelegate::
       // fully unlock to
       // device::mojom::blink::ScreenOrientationLockType::DEFAULT once
       // fullscreen is exited.
-      WTF::BindOnce(
+      BindOnce(
           &MediaControlsOrientationLockDelegate::ChangeLockToAnyOrientation,
           WrapPersistent(this)),
       kLockToAnyDelay);

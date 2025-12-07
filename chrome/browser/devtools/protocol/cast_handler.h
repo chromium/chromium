@@ -48,7 +48,7 @@ class CastHandler : public protocol::Cast::Backend,
       std::unique_ptr<StartTabMirroringCallback> callback) override;
   protocol::Response StopCasting(const std::string& in_sink_name) override;
   protocol::Response Enable(
-      protocol::Maybe<std::string> in_presentation_url) override;
+      std::optional<std::string> in_presentation_url) override;
   protocol::Response Disable() override;
 
   // media_router::MediaSinkWithCastModesObserver:
@@ -80,7 +80,7 @@ class CastHandler : public protocol::Cast::Backend,
   media_router::MediaRoute::Id GetRouteIdForSink(
       const media_router::MediaSink::Id& sink_id) const;
 
-  void StartObservingForSinks(protocol::Maybe<std::string> presentation_url);
+  void StartObservingForSinks(std::optional<std::string> presentation_url);
 
   // Sends a notification that sinks (or their associated routes) have been
   // updated.

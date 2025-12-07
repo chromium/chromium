@@ -14,9 +14,11 @@
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_data.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_block_metrics_data.h"
 #import "ios/chrome/browser/contextual_panel/ui/panel_item_collection_view_cell.h"
+#import "ios/chrome/browser/contextual_panel/ui/trait_collection_change_delegate.h"
 #import "ios/chrome/browser/contextual_panel/utils/contextual_panel_metrics.h"
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
@@ -24,14 +26,14 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-// Height of the top header.
-const CGFloat kHeaderHeight = 58;
+// Top margin between the header logo and the top of the panel.
+const CGFloat kLogoTopMargin = 24;
+
+// Bottom margin between the header logo and the top of the collection view
+const CGFloat kLogoBottomMargin = 18;
 
 // Size of the close button.
 const CGFloat kCloseButtonIconSize = 30;
-
-// Top margin for the close button.
-const CGFloat kCloseButtonTopMargin = 10;
 
 // Margin between the close button and the trailing edge of the screen.
 const CGFloat kCloseButtonTrailingMargin = 16;
@@ -54,8 +56,17 @@ const CGFloat kLogoLabelFontSize = 18;
 // The margin between the bottom of the content and the collection view.
 const CGFloat kContentBottomMargin = 16;
 
+// The margin between groups of items within a section.
+const CGFloat kSectionBottomMargin = 16;
+
 // Threshold for how long a view is onscreen to count as visible.
 const base::TimeDelta kVisibleTimeThreshold = base::Milliseconds(10);
+
+// The time range's expected min, max values and bucket count for custom
+// histograms.
+constexpr base::TimeDelta kVisibleTimeHistogramMin = base::Milliseconds(1);
+constexpr base::TimeDelta kVisibleTimeHistogramMax = base::Minutes(10);
+constexpr int kVisibleTimeHistogramBucketCount = 100;
 
 // Identifier for the one section in this collection view.
 NSString* const kSectionIdentifier = @"section1";
@@ -63,6 +74,27 @@ NSString* const kSectionIdentifier = @"section1";
 NSString* const kViewAccessibilityIdentifier = @"PanelContentViewAXID";
 
 NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
+
+UIImage* CloseButtonImage(BOOL highlighted) {
+  NSArray<UIColor*>* palette = @[
+    [UIColor colorNamed:kGrey600Color],
+    [UIColor colorNamed:kBackgroundColor],
+  ];
+
+  if (highlighted) {
+    NSMutableArray<UIColor*>* transparentPalette =
+        [[NSMutableArray alloc] init];
+    [palette enumerateObjectsUsingBlock:^(UIColor* color, NSUInteger idx,
+                                          BOOL* stop) {
+      [transparentPalette addObject:[color colorWithAlphaComponent:0.6]];
+    }];
+    palette = [transparentPalette copy];
+  }
+
+  return SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize),
+      palette);
+}
 
 }  // namespace
 
@@ -77,6 +109,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
   // The header view at the top of the panel.
   UIVisualEffectView* _headerView;
+
+  // Background for the header when the Reduce Transparency accessibility
+  // setting is on.
+  UIView* _headerViewAccessibilityBackground;
 
   // The button to close the view.
   UIButton* _closeButton;
@@ -139,21 +175,21 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     [self.view.trailingAnchor
         constraintEqualToAnchor:_headerView.trailingAnchor],
     [self.view.topAnchor constraintEqualToAnchor:_headerView.topAnchor],
-    [_headerView.heightAnchor constraintEqualToConstant:kHeaderHeight],
   ]];
 
-  [self createCloseButton];
-  [self createDragHandleView];
+  _headerViewAccessibilityBackground = [[UIView alloc] init];
+  _headerViewAccessibilityBackground.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  _headerViewAccessibilityBackground.backgroundColor =
+      [UIColor colorNamed:kGrey100Color];
+  [_headerView.contentView addSubview:_headerViewAccessibilityBackground];
+  AddSameConstraints(_headerView, _headerViewAccessibilityBackground);
+  _headerViewAccessibilityBackground.hidden =
+      !UIAccessibilityIsReduceTransparencyEnabled();
 
-  [_headerView.contentView addSubview:_closeButton];
+  [self createDragHandleView];
   [_headerView.contentView addSubview:_dragHandleView];
   [NSLayoutConstraint activateConstraints:@[
-    [_closeButton.topAnchor
-        constraintEqualToAnchor:_headerView.contentView.topAnchor
-                       constant:kCloseButtonTopMargin],
-    [_headerView.contentView.trailingAnchor
-        constraintEqualToAnchor:_closeButton.trailingAnchor
-                       constant:kCloseButtonTrailingMargin],
     [_headerView.centerXAnchor
         constraintEqualToAnchor:_dragHandleView.centerXAnchor],
     [_dragHandleView.topAnchor
@@ -197,31 +233,33 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   [NSLayoutConstraint activateConstraints:@[
     [logo.centerXAnchor
         constraintEqualToAnchor:_headerView.contentView.centerXAnchor],
-    [logo.centerYAnchor
-        constraintEqualToAnchor:_headerView.contentView.centerYAnchor],
+    [logo.topAnchor constraintEqualToAnchor:_headerView.contentView.topAnchor
+                                   constant:kLogoTopMargin],
+    [_headerView.bottomAnchor constraintEqualToAnchor:logo.bottomAnchor
+                                             constant:kLogoBottomMargin],
   ]];
 
-  // One of UIVisualEffectView's subviews has a white-ish background color,
-  // which is not desired for this feature.
-  for (UIView* subview in _headerView.subviews) {
-    // Replace any non-nil backgrounds with clear.
-    if (subview.backgroundColor) {
-      subview.backgroundColor = UIColor.clearColor;
-    }
-  }
+  [self createCloseButton];
+  [_headerView.contentView addSubview:_closeButton];
+  [NSLayoutConstraint activateConstraints:@[
+    [_headerView.contentView.trailingAnchor
+        constraintEqualToAnchor:_closeButton.trailingAnchor
+                       constant:kCloseButtonTrailingMargin],
+    [_closeButton.centerYAnchor constraintEqualToAnchor:logo.centerYAnchor],
+  ]];
 
   [self.view layoutIfNeeded];
   [self.sheetDisplayController
       setContentHeight:[self preferredHeightForContent]];
-}
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(nil);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(notifyDelegateOfTraitChange)];
 
   [[NSNotificationCenter defaultCenter]
       addObserver:self
-         selector:@selector(handleKeyboardWillShow:)
-             name:UIKeyboardWillShowNotification
+         selector:@selector(accessibilityReduceTransparencySettingDidChange)
+             name:UIAccessibilityReduceTransparencyStatusDidChangeNotification
            object:nil];
 }
 
@@ -232,17 +270,13 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                                   _headerView);
 }
 
-- (void)viewSafeAreaInsetsDidChange {
-  [super viewSafeAreaInsetsDidChange];
-
-  [self setCollectionViewScrollIndicatorInsets];
-}
-
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
 
-  base::UmaHistogramTimes("IOS.ContextualPanel.VisibleTime",
-                          base::Time::Now() - _appearanceTime);
+  base::UmaHistogramCustomTimes(
+      "IOS.ContextualPanel.VisibleTime", base::Time::Now() - _appearanceTime,
+      kVisibleTimeHistogramMin, kVisibleTimeHistogramMax,
+      kVisibleTimeHistogramBucketCount);
 
   // First alert all visible cells that they will disappear.
   for (NSIndexPath* indexPath in _collectionView.indexPathsForVisibleItems) {
@@ -295,6 +329,39 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
     }
     base::UmaHistogramEnumeration(impressionTypeHistogramName,
                                   blockImpressionType);
+  }
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  [self addAccessibilityTransparencyWorkaround];
+
+  [self setCollectionViewContentInset];
+  [self setCollectionViewScrollIndicatorInsets];
+}
+
+- (void)accessibilityReduceTransparencySettingDidChange {
+  [self addAccessibilityTransparencyWorkaround];
+
+  _headerViewAccessibilityBackground.hidden =
+      !UIAccessibilityIsReduceTransparencyEnabled();
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+
+  [self setCollectionViewScrollIndicatorInsets];
+}
+
+// Removes the white-ish background color of one of UIVisualEffectView's
+// subviews that is not desired for this feature.
+- (void)addAccessibilityTransparencyWorkaround {
+  for (UIView* subview in _headerView.subviews) {
+    // Replace any non-nil backgrounds with clear.
+    if (subview.backgroundColor) {
+      subview.backgroundColor = UIColor.clearColor;
+    }
   }
 }
 
@@ -373,8 +440,20 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 - (void)setCollectionViewScrollIndicatorInsets {
   // The bottom inset should not include the safe area height.
   _collectionView.verticalScrollIndicatorInsets = UIEdgeInsetsMake(
-      kHeaderHeight, 0, _bottomToolbarHeight - self.view.safeAreaInsets.bottom,
-      0);
+      _headerView.bounds.size.height, 0,
+      _bottomToolbarHeight - self.view.safeAreaInsets.bottom, 0);
+}
+
+- (void)setCollectionViewContentInset {
+  _collectionView.contentInset =
+      UIEdgeInsetsMake(_headerView.bounds.size.height, 0,
+                       _bottomToolbarHeight + kContentBottomMargin, 0);
+}
+
+// Notifies `traitCollectionDelegate` of a change in UITraits via
+// `traitCollectionDidChangeForViewController`.
+- (void)notifyDelegateOfTraitChange {
+  [self.traitCollectionDelegate traitCollectionDidChangeForViewController:self];
 }
 
 #pragma mark - View Initialization
@@ -400,6 +479,9 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
   NSCollectionLayoutSection* section =
       [NSCollectionLayoutSection sectionWithGroup:group];
+
+  section.interGroupSpacing = kSectionBottomMargin;
+
   return [[UICollectionViewCompositionalLayout alloc] initWithSection:section];
 }
 
@@ -410,8 +492,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
                          collectionViewLayout:[self createLayout]];
   _collectionView.translatesAutoresizingMaskIntoConstraints = NO;
   _collectionView.backgroundColor = UIColor.clearColor;
-  _collectionView.contentInset = UIEdgeInsetsMake(
-      kHeaderHeight, 0, _bottomToolbarHeight + kContentBottomMargin, 0);
+  [self setCollectionViewContentInset];
   [self setCollectionViewScrollIndicatorInsets];
   _collectionView.contentInsetAdjustmentBehavior =
       UIScrollViewContentInsetAdjustmentNever;
@@ -439,15 +520,10 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
 // Creates and initializes `_closeButton`.
 - (void)createCloseButton {
-  UIImage* closeButtonImage = SymbolWithPalette(
-      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseButtonIconSize),
-      @[
-        [UIColor colorNamed:kGrey600Color],
-        [UIColor colorNamed:kBackgroundColor],
-      ]);
   UIButtonConfiguration* closeButtonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  closeButtonConfiguration.image = closeButtonImage;
+  // The image itself is set below in the configurationUpdateHandler, which
+  // is called before the button appears for the first time as well.
   closeButtonConfiguration.contentInsets = NSDirectionalEdgeInsetsZero;
   closeButtonConfiguration.buttonSize = UIButtonConfigurationSizeSmall;
   closeButtonConfiguration.accessibilityLabel =
@@ -461,6 +537,18 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
   _closeButton.accessibilityIdentifier = kCloseButtonAccessibilityIdentifier;
   _closeButton.pointerInteractionEnabled = YES;
+  _closeButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* updatedConfig = button.configuration;
+    switch (button.state) {
+      case UIControlStateHighlighted:
+        updatedConfig.image = CloseButtonImage(YES);
+        break;
+      case UIControlStateNormal:
+        updatedConfig.image = CloseButtonImage(NO);
+        break;
+    }
+    button.configuration = updatedConfig;
+  };
 }
 
 - (void)createDragHandleView {
@@ -498,7 +586,7 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
   _bottomToolbarHeight = height;
   if (_collectionView) {
     UIEdgeInsets insets = _collectionView.contentInset;
-    insets.bottom = height;
+    insets.bottom = height + kContentBottomMargin;
     _collectionView.contentInset = insets;
     [self setCollectionViewScrollIndicatorInsets];
     [self.sheetDisplayController
@@ -550,14 +638,6 @@ NSString* const kCloseButtonAccessibilityIdentifier = @"PanelCloseButtonAXID";
 
   UIPointerStyle* style = [UIPointerStyle styleWithEffect:effect shape:shape];
   return style;
-}
-
-#pragma mark - Keyboard notifications
-
-- (void)handleKeyboardWillShow:(NSNotification*)notification {
-  base::UmaHistogramEnumeration("IOS.ContextualPanel.DismissedReason",
-                                ContextualPanelDismissedReason::KeyboardOpened);
-  [self.contextualSheetCommandHandler closeContextualSheet];
 }
 
 @end

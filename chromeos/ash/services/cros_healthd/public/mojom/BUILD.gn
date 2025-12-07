@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 mojom("mojom") {
   sources = [
@@ -23,19 +22,6 @@ mojom("mojom") {
     "//chromeos/services/network_health/public/mojom",
     "//chromeos/services/network_health/public/mojom:types",
     "//mojo/public/mojom/base",
-  ]
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "ash.cros_healthd_probe.mojom.CpuArchitectureEnum"
-          cpp = "::em::CpuInfo::Architecture"
-        },
-      ]
-      traits_headers = [ "cros_healthd_probe_mojom_traits.h" ]
-      traits_sources = [ "cros_healthd_probe_mojom_traits.cc" ]
-      traits_public_deps = [ "//components/policy/proto" ]
-    },
   ]
 }
 

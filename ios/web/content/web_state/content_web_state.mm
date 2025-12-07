@@ -5,10 +5,14 @@
 #import "ios/web/content/web_state/content_web_state.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/callback_helpers.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/embedder_support/ios/delegate/color_chooser/color_chooser_ios.h"
 #import "components/embedder_support/ios/delegate/file_chooser/file_select_helper_ios.h"
+#import "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #import "content/public/browser/file_select_listener.h"
+#import "content/public/browser/javascript_dialog_manager.h"
 #import "content/public/browser/navigation_entry.h"
 #import "content/public/browser/visibility.h"
 #import "content/public/browser/web_contents.h"
@@ -17,18 +21,16 @@
 #import "ios/web/content/web_state/content_web_state_builder.h"
 #import "ios/web/content/web_state/crc_web_view_proxy_impl.h"
 #import "ios/web/content/web_state/crc_web_viewport_container_view.h"
-#import "ios/web/find_in_page/java_script_find_in_page_manager_impl.h"
 #import "ios/web/public/favicon/favicon_url.h"
 #import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_util.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/session/crw_navigation_item_storage.h"
-#import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
-#import "ios/web/text_fragments/text_fragments_manager_impl.h"
-#import "ios/web/web_view/content_type_util.h"
+#import "ios/web/util/content_type_util.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
 #import "services/network/public/mojom/referrer_policy.mojom-shared.h"
@@ -70,36 +72,82 @@ FaviconURL::IconType IconTypeFromContentIconType(
     case blink::mojom::FaviconIconType::kInvalid:
       return FaviconURL::IconType::kInvalid;
   }
-  NOTREACHED_IN_MIGRATION();
-  return FaviconURL::IconType::kInvalid;
-}
-
-// Creates a CRWSessionStorage instance from protobuf message.
-// TODO(crbug.com/40245950): remove when ContentWebState supports serialization
-// using protobuf message format directly.
-CRWSessionStorage* CreateSessionStorage(
-    WebStateID unique_identifier,
-    proto::WebStateMetadataStorage metadata,
-    WebState::WebStateStorageLoader storage_loader) {
-  // Load the data from disk as this is needed to create the CRWSessionStorage.
-  proto::WebStateStorage storage = std::move(storage_loader).Run();
-  *storage.mutable_metadata() = std::move(metadata);
-
-  return [[CRWSessionStorage alloc] initWithProto:storage
-                                 uniqueIdentifier:unique_identifier
-                                 stableIdentifier:[[NSUUID UUID] UUIDString]];
+  NOTREACHED();
 }
 
 }  // namespace
 
-ContentWebState::ContentWebState(const CreateParams& params)
-    : ContentWebState(params, nil, base::ReturnValueOnce<NSData*>(nil)) {}
+// Stores ContentWebstate serialized state.
+class ContentWebState::SerializedState {
+ public:
+  SerializedState(proto::WebStateMetadataStorage metadata,
+                  WebStateStorageLoader storage_loader)
+      : metadata_(std::move(metadata)),
+        storage_loader_(std::move(storage_loader)) {
+    navigation_item_count_ = metadata_.navigation_item_count();
+    if (metadata_.has_active_page()) {
+      cached_title_ = base::UTF8ToUTF16(metadata_.active_page().page_title());
+    }
+  }
 
-ContentWebState::ContentWebState(const CreateParams& params,
-                                 CRWSessionStorage* session_storage,
+  // Returns the current navigation title from serialized data.
+  const std::u16string& GetTitle() const { return cached_title_; }
+
+  // Returns the number of navigation items from serialized data.
+  int GetNavigationItemCount() const { return navigation_item_count_; }
+
+  // Loads from disk the `web::proto::WebStateStorage` and returns it.
+  web::proto::WebStateStorage LoadStorage() {
+    web::proto::WebStateStorage storage;
+    if (auto optional_storage = std::move(storage_loader_).Run()) {
+      storage = std::move(optional_storage).value();
+    } else {
+      const GURL page_visible_url = GURL(metadata_.active_page().page_url());
+      if (page_visible_url.is_valid()) {
+        storage = CreateWebStateStorage(
+            NavigationManager::WebLoadParams(page_visible_url),
+            base::UTF8ToUTF16(metadata_.active_page().page_title()),
+            /* created_with_opener= */ false,
+            /* user_agent= */ UserAgentType::AUTOMATIC,
+            web::TimeFromProto(metadata_.creation_time()));
+      }
+    }
+
+    *storage.mutable_metadata() = std::move(metadata_);
+    return storage;
+  }
+
+  // Serializes metadata to `metadata`.
+  void SerializeMetadata(web::proto::WebStateMetadataStorage& metadata) {
+    metadata = metadata_;
+  }
+
+ private:
+  std::u16string cached_title_;
+  int navigation_item_count_ = 0;
+  proto::WebStateMetadataStorage metadata_;
+  WebStateStorageLoader storage_loader_;
+};
+
+ContentWebState::ContentWebState(const CreateParams& params)
+    : ContentWebState(params, WebStateID::NewUnique(), nullptr) {}
+
+ContentWebState::ContentWebState(BrowserState* browser_state,
+                                 WebStateID unique_identifier,
+                                 proto::WebStateMetadataStorage metadata,
+                                 WebStateStorageLoader storage_loader,
                                  NativeSessionFetcher session_fetcher)
-    : unique_identifier_(session_storage ? session_storage.uniqueIdentifier
-                                         : WebStateID::NewUnique()) {
+    : ContentWebState(
+          CreateParams(browser_state),
+          unique_identifier,
+          std::make_unique<SerializedState>(std::move(metadata),
+                                            std::move(storage_loader))) {}
+
+ContentWebState::ContentWebState(
+    const CreateParams& params,
+    WebStateID unique_identifier,
+    std::unique_ptr<SerializedState> serialized_state)
+    : unique_identifier_(unique_identifier) {
   content::BrowserContext* browser_context =
       ContentBrowserContext::FromBrowserState(params.browser_state);
   scoped_refptr<content::SiteInstance> site_instance;
@@ -121,7 +169,12 @@ ContentWebState::ContentWebState(const CreateParams& params,
           params.browser_state);
   navigation_manager_ = std::make_unique<ContentNavigationManager>(
       this, params.browser_state, web_contents_->GetController());
-  web_frames_manager_ = std::make_unique<ContentWebFramesManager>(this);
+  managers_[ContentWorld::kAllContentWorlds] =
+      std::make_unique<ContentWebFramesManager>(this);
+  managers_[ContentWorld::kPageContentWorld] =
+      std::make_unique<ContentWebFramesManager>(this);
+  managers_[ContentWorld::kIsolatedWorld] =
+      std::make_unique<ContentWebFramesManager>(this);
 
   UIScrollView* web_contents_view = base::apple::ObjCCastStrict<UIScrollView>(
       web_contents_->GetNativeView().Get());
@@ -136,33 +189,13 @@ ContentWebState::ContentWebState(const CreateParams& params,
 
   [web_view_ addSubview:web_contents_view];
 
-  // These should be moved when the are removed from CRWWebController.
-  web::JavaScriptFindInPageManagerImpl::CreateForWebState(this);
-  web::TextFragmentsManagerImpl::CreateForWebState(this);
-
-  session_storage_ = session_storage;
-  if (session_storage) {
-    UUID_ = [session_storage.stableIdentifier copy];
-  } else {
-    UUID_ = [[[NSUUID UUID] UUIDString] copy];
-  }
+  serialized_state_ = std::move(serialized_state);
 
   creation_time_ = base::Time::Now();
   last_active_time_ = params.last_active_time.value_or(creation_time_);
 
   RegisterNotificationObservers();
 }
-
-ContentWebState::ContentWebState(BrowserState* browser_state,
-                                 WebStateID unique_identifier,
-                                 proto::WebStateMetadataStorage metadata,
-                                 WebStateStorageLoader storage_loader,
-                                 NativeSessionFetcher session_fetcher)
-    : ContentWebState(CreateParams(browser_state),
-                      CreateSessionStorage(unique_identifier,
-                                           std::move(metadata),
-                                           std::move(storage_loader)),
-                      base::ReturnValueOnce<NSData*>(nil)) {}
 
 ContentWebState::~ContentWebState() {
   WebContentsObserver::Observe(nullptr);
@@ -186,18 +219,20 @@ content::WebContents* ContentWebState::GetWebContents() {
 }
 
 void ContentWebState::SerializeToProto(proto::WebStateStorage& storage) const {
-  // TODO(crbug.com/40245950): implement directly instead of serialising to
-  // CRWSessionStorage and then converting to protobuf message format.
   DCHECK(IsRealized());
-  CRWSessionStorage* session_storage = BuildSessionStorage();
-  storage.set_has_opener(created_with_opener_);
-  [session_storage serializeToProto:storage];
+  SerializeContentStorage(this, navigation_manager_.get(), storage);
 }
 
 void ContentWebState::SerializeMetadataToProto(
-    proto::WebStateMetadataStorage& storage) const {
-  CRWSessionStorage* session_storage = BuildSessionStorage();
-  [session_storage serializeMetadataToProto:storage];
+    proto::WebStateMetadataStorage& metadata) const {
+  if (serialized_state_) {
+    serialized_state_->SerializeMetadata(metadata);
+    return;
+  }
+
+  proto::WebStateStorage storage;
+  SerializeToProto(storage);
+  metadata = std::move(*storage.mutable_metadata());
 }
 
 WebStateDelegate* ContentWebState::GetDelegate() {
@@ -205,13 +240,16 @@ WebStateDelegate* ContentWebState::GetDelegate() {
 }
 
 std::unique_ptr<WebState> ContentWebState::Clone() const {
-  CreateParams params(GetBrowserState());
-  params.last_active_time = base::Time::Now();
-  CRWSessionStorage* session_storage = BuildSessionStorage();
-  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
-  session_storage.uniqueIdentifier = WebStateID::NewUnique();
+  proto::WebStateStorage storage;
+  SerializeToProto(storage);
+
+  proto::WebStateMetadataStorage metadata;
+  std::swap(metadata, *storage.mutable_metadata());
   auto clone = std::make_unique<ContentWebState>(
-      params, session_storage, base::ReturnValueOnce<NSData*>(nil));
+      GetBrowserState(), WebStateID::NewUnique(), std::move(metadata),
+      base::ReturnValueOnce(std::make_optional(std::move(storage))),
+      base::ReturnValueOnce<NSData*>(nil));
+
   IgnoreOverRealizationCheck();
   clone->ForceRealized();
   return clone;
@@ -231,17 +269,19 @@ void ContentWebState::SetDelegate(WebStateDelegate* delegate) {
 }
 
 bool ContentWebState::IsRealized() const {
-  return session_storage_ == nil;
+  return serialized_state_ == nullptr;
 }
 
-WebState* ContentWebState::ForceRealized() {
-  if (session_storage_) {
+WebState* ContentWebState::ForceRealizedWithPolicy(RealizationPolicy policy) {
+  if (serialized_state_) {
+    auto serialized_state = std::exchange(serialized_state_, nullptr);
+    web::proto::WebStateStorage storage = serialized_state->LoadStorage();
     ExtractContentSessionStorage(this, web_contents_->GetController(),
-                                 GetBrowserState(), session_storage_);
-    session_storage_ = nil;
-    for (auto& observer : observers_) {
-      observer.WebStateRealized(this);
-    }
+                                 GetBrowserState(), std::move(storage));
+
+    // Notify all observers that the WebState has become realized but take
+    // care to not notify any observer that is registered while iterating.
+    NotifyWebStateRealized(observers_);
   }
   return this;
 }
@@ -323,7 +363,7 @@ NavigationManager* ContentWebState::GetNavigationManager() {
 }
 
 WebFramesManager* ContentWebState::GetPageWorldWebFramesManager() {
-  return web_frames_manager_.get();
+  return managers_[ContentWorld::kPageContentWorld].get();
 }
 
 const SessionCertificatePolicyCache*
@@ -336,21 +376,16 @@ ContentWebState::GetSessionCertificatePolicyCache() {
   return certificate_policy_cache_.get();
 }
 
-CRWSessionStorage* ContentWebState::BuildSessionStorage() const {
-  if (session_storage_) {
-    return session_storage_;
-  }
-  return BuildContentSessionStorage(this, navigation_manager_.get());
-}
-
 void ContentWebState::LoadData(NSData* data,
                                NSString* mime_type,
                                const GURL& url) {}
 
-void ContentWebState::ExecuteUserJavaScript(NSString* javaScript) {}
+void ContentWebState::ExecuteUserJavaScript(NSString* javaScript) {
+  auto* primary_main_frame = web_contents_->GetPrimaryMainFrame();
+  DCHECK(primary_main_frame);
 
-NSString* ContentWebState::GetStableIdentifier() const {
-  return UUID_;
+  primary_main_frame->ExecuteJavaScript(base::SysNSStringToUTF16(javaScript),
+                                        {});
 }
 
 WebStateID ContentWebState::GetUniqueIdentifier() const {
@@ -366,21 +401,18 @@ bool ContentWebState::ContentIsHTML() const {
 }
 
 const std::u16string& ContentWebState::GetTitle() const {
-  if (session_storage_) {
-    const NSUInteger index = session_storage_.lastCommittedItemIndex;
-    if (index > 0u && index <= session_storage_.itemStorages.count) {
-      return session_storage_.itemStorages[index].title;
-    }
+  if (serialized_state_) {
+    return serialized_state_->GetTitle();
   }
   return web_contents_->GetTitle();
 }
 
 bool ContentWebState::IsLoading() const {
-  return session_storage_ ? false : web_contents_->IsLoading();
+  return serialized_state_ ? false : web_contents_->IsLoading();
 }
 
 double ContentWebState::GetLoadingProgress() const {
-  return session_storage_ ? 0.0 : web_contents_->GetLoadProgress();
+  return serialized_state_ ? 0.0 : web_contents_->GetLoadProgress();
 }
 
 bool ContentWebState::IsVisible() const {
@@ -421,10 +453,9 @@ void ContentWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {
 }
 
 int ContentWebState::GetNavigationItemCount() const {
-  if (session_storage_) {
-    return session_storage_.itemStorages.count;
+  if (serialized_state_) {
+    return serialized_state_->GetNavigationItemCount();
   }
-
   return navigation_manager_->GetItemCount();
 }
 
@@ -443,7 +474,7 @@ std::optional<GURL> ContentWebState::GetLastCommittedURLIfTrusted() const {
 }
 
 WebFramesManager* ContentWebState::GetWebFramesManager(ContentWorld world) {
-  return web_frames_manager_.get();
+  return managers_[world].get();
 }
 
 CRWWebViewProxyType ContentWebState::GetWebViewProxy() const {
@@ -698,7 +729,7 @@ void ContentWebState::PrimaryMainFrameRenderProcessGone(
   }
 }
 
-void ContentWebState::AddNewContents(
+content::WebContents* ContentWebState::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -711,12 +742,13 @@ void ContentWebState::AddNewContents(
   delegate_->CreateNewWebState(this, target_url, GetLastCommittedURL(),
                                user_gesture);
   DCHECK(!child_web_contents_);
+  return nullptr;
 }
 
 int ContentWebState::GetTopControlsHeight() {
   return ([web_view_ maxViewportInsets].top -
           [web_view_ minViewportInsets].top) *
-         display::Screen::GetScreen()
+         display::Screen::Get()
              ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
              .device_scale_factor();
 }
@@ -728,7 +760,7 @@ int ContentWebState::GetTopControlsMinHeight() {
 int ContentWebState::GetBottomControlsHeight() {
   return ([web_view_ maxViewportInsets].bottom -
           [web_view_ minViewportInsets].bottom) *
-         display::Screen::GetScreen()
+         display::Screen::Get()
              ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
              .device_scale_factor();
 }
@@ -826,6 +858,13 @@ void ContentWebState::RunFileChooser(
     const blink::mojom::FileChooserParams& params) {
   web_contents_delegate_ios::FileSelectHelperIOS::RunFileChooser(
       render_frame_host, listener, params);
+}
+
+content::JavaScriptDialogManager* ContentWebState::GetJavaScriptDialogManager(
+    content::WebContents* source) {
+  content::JavaScriptDialogManager* dialog =
+      javascript_dialogs::TabModalDialogManager::FromWebContents(source);
+  return dialog;
 }
 
 }  // namespace web

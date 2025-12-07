@@ -138,7 +138,7 @@ class CORE_EXPORT NthIndexCache final {
 
   // Helper needed to make sure Key is compared by value and not by pointer,
   // even though the hash map key is a Member<> (which Oilpan forces us to).
-  struct KeyHashTraits : WTF::MemberHashTraits<Key> {
+  struct KeyHashTraits : MemberHashTraits<Key> {
     static unsigned GetHash(const Member<Key>& key) { return key->GetHash(); }
     static bool Equal(const Member<Key>& a, const Member<Key>& b) {
       return *a == *b;
@@ -186,7 +186,7 @@ class CORE_EXPORT NthIndexCache final {
 
   // Effectively maps (parent, optional tag name, child) → index.
   // (The child part of the key is in NthIndexData.)
-  HeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>* cache_ =
+  GCedHeapHashMap<Member<Key>, Member<NthIndexData>, KeyHashTraits>* cache_ =
       nullptr;
 
 #if DCHECK_IS_ON()

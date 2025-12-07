@@ -6,5 +6,5 @@ import("//build/config/android/rules.gni")
 
 java_prebuilt("sqlite4java_java") {
   testonly = true
-  jar_path = "lib/sqlite4java.jar"
+  jar_path = "cipd/lib/sqlite4java.jar"
 }

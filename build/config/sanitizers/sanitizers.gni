@@ -136,7 +136,12 @@ declare_args() {
   use_cfi_cast = is_cfi && is_chromeos
 
   # Compile for Undefined Behaviour Sanitizer's vptr checks.
-  is_ubsan_vptr = is_ubsan_security
+  is_ubsan_vptr = is_ubsan_security || is_ubsan
+
+  # These are set for some non-host toolchain which requires to run built binary
+  # from host toolchain with msan config but in non-host toolchain context.
+  host_toolchain_is_msan = is_msan
+  host_toolchain_msan_track_origins = msan_track_origins
 }
 
 # Whether we are doing a fuzzer build. Normally this should be checked instead
@@ -144,6 +149,10 @@ declare_args() {
 # check for "use_afl", and "use_centipede" is new.
 use_fuzzing_engine = use_libfuzzer || use_afl || use_centipede ||
                      use_external_fuzzing_engine || use_fuzzilli
+
+# Whether any UBSan subset is enabled.
+# TODO(crbug.com/40248746): Unify these under a single UBSan option.
+is_ubsan_any = is_ubsan || is_ubsan_vptr || is_ubsan_security
 
 declare_args() {
   # Builds fuzztest test executables such that they support the
@@ -159,9 +168,8 @@ declare_args() {
   enable_fuzztest_fuzz =
       !(use_libfuzzer || use_afl || use_centipede ||
         use_external_fuzzing_engine || use_fuzzilli) &&
-      (is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
-       is_ubsan_vptr || is_ubsan_security) && !is_component_build && is_linux &&
-      build_with_chromium
+      (is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan_any) &&
+      !is_component_build && is_linux && build_with_chromium
 
   # Whether FUZZ_TESTs should be registered as gtests in Chromium's mainstream
   # test suites. This will cause the to run for 1 second in normal testing
@@ -184,6 +192,11 @@ declare_args() {
 
 assert(!is_hwasan || (target_os == "android" && target_cpu == "arm64"),
        "HWASan only supported on Android ARM64 builds.")
+
+if (is_asan && target_os == "android") {
+  print(
+      "Warning: is_asan is no longer supported on Android. It might work, but you'll probably have better luck with is_hwasan=true (which requires arm64). https://crbug.com/441905843")
+}
 
 assert(
     !(enable_fuzztest_fuzz && use_libfuzzer),
@@ -210,6 +223,7 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
   is_ubsan_no_recover = false
   is_ubsan_security = false
   is_ubsan_vptr = false
+  is_ubsan_any = false
   msan_track_origins = 0
   sanitizer_coverage_flags = ""
   use_afl = false
@@ -227,9 +241,8 @@ if (!is_a_target_toolchain || toolchain_for_rust_host_build_tools) {
 # Whether we are linking against a sanitizer runtime library. Among other
 # things, this changes the default symbol level and other settings in order to
 # prepare to create stack traces "live" using the sanitizer runtime.
-using_sanitizer =
-    is_asan || is_hwasan || is_lsan || is_tsan || is_msan || is_ubsan ||
-    is_ubsan_vptr || is_ubsan_security || use_sanitizer_coverage || use_cfi_diag
+using_sanitizer = is_asan || is_hwasan || is_lsan || is_tsan || is_msan ||
+                  is_ubsan_any || use_sanitizer_coverage || use_cfi_diag
 
 # Use dynamic libraries instrumented by one of the sanitizers instead of the
 # standard system libraries. We have instrumented system libraries for msan,
@@ -407,3 +420,36 @@ fuzzing_engine_remove_configs = [
 # are added back for the same reason.
 fuzzing_engine_add_configs =
     [ "//build/config/sanitizers:default_sanitizer_flags_but_coverage" ]
+
+# Expose clang_rt dynamic lib name to the dependents that need it as an input
+# when running an exeutable.
+if ((is_apple || is_win) && (is_asan || is_ubsan_any)) {
+  if (is_mac || (is_ios && target_environment == "catalyst")) {
+    if (is_asan) {
+      clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
+    } else {
+      assert(is_ubsan_any)
+      clang_rt_dso_path = "darwin/libclang_rt.ubsan_osx_dynamic.dylib"
+    }
+  } else if (is_ios) {
+    if (is_asan) {
+      if (target_environment == "simulator") {
+        clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
+      } else {
+        clang_rt_dso_path = "darwin/libclang_rt.asan_ios_dynamic.dylib"
+      }
+    } else {
+      assert(is_ubsan_any)
+      clang_rt_dso_path = "darwin/libclang_rt.ubsan_iossim_dynamic.dylib"
+    }
+  } else if (is_win && current_cpu == "x64") {
+    if (is_asan) {
+      clang_rt_dso_path = "windows/clang_rt.asan_dynamic-x86_64.dll"
+    } else {
+      assert(is_ubsan_any)
+      clang_rt_dso_path = "windows/clang_rt.ubsan_dynamic-x86_64.dll"
+    }
+  }
+
+  clang_rt_dso = get_path_info(clang_rt_dso_path, "file")
+}

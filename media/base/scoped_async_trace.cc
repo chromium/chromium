@@ -6,6 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -46,8 +47,8 @@ TypedScopedAsyncTrace<category>::CreateIfEnabled(const char* name) {
 
 template <TraceCategory category>
 TypedScopedAsyncTrace<category>::~TypedScopedAsyncTrace() {
-  TRACE_EVENT_NESTABLE_ASYNC_END0(Category<category>::Name(), name_,
-                                  TRACE_ID_LOCAL(id_));
+  TRACE_EVENT_END(Category<category>::Name(),
+                  perfetto::Track::FromPointer(id_));
 }
 
 template <TraceCategory category>
@@ -64,8 +65,8 @@ template <TraceCategory category>
 TypedScopedAsyncTrace<category>::TypedScopedAsyncTrace(const char* name,
                                                        const void* id)
     : name_(name), id_(id) {
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(Category<category>::Name(), name_,
-                                    TRACE_ID_LOCAL(id_));
+  TRACE_EVENT_BEGIN(Category<category>::Name(), perfetto::StaticString(name_),
+                    perfetto::Track::FromPointer(id_));
 }
 
 template class MEDIA_EXPORT TypedScopedAsyncTrace<TraceCategory::kMedia>;

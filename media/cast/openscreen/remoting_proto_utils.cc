@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cast/openscreen/remoting_proto_utils.h"
 
 #include <algorithm>
@@ -69,10 +64,9 @@ scoped_refptr<media::DecoderBuffer> ConvertProtoToDecoderBuffer(
   }
 
   if (buffer_message.has_side_data()) {
-    const uint8_t* side_ptr =
-        reinterpret_cast<const uint8_t*>(buffer_message.side_data().data());
-    buffer->WritableSideData().alpha_data.assign(
-        side_ptr, side_ptr + buffer_message.side_data().size());
+    buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(
+            base::as_byte_span(buffer_message.side_data()));
   }
 
   return buffer;
@@ -93,12 +87,15 @@ void ConvertDecoderBufferToProto(
   buffer_message->set_duration_usec(decoder_buffer.duration().InMicroseconds());
   buffer_message->set_is_key_frame(decoder_buffer.is_key_frame());
 
-  buffer_message->set_front_discard_usec(
-      decoder_buffer.discard_padding().first.InMicroseconds());
-  buffer_message->set_back_discard_usec(
-      decoder_buffer.discard_padding().second.InMicroseconds());
+  auto discard_padding = decoder_buffer.discard_padding();
+  if (discard_padding.has_value()) {
+    buffer_message->set_front_discard_usec(
+        discard_padding->first.InMicroseconds());
+    buffer_message->set_back_discard_usec(
+        discard_padding->second.InMicroseconds());
+  }
 
-  if (decoder_buffer.has_side_data() &&
+  if (decoder_buffer.side_data() &&
       !decoder_buffer.side_data()->alpha_data.empty()) {
     buffer_message->set_side_data(
         decoder_buffer.side_data()->alpha_data.data(),
@@ -135,25 +132,25 @@ scoped_refptr<media::DecoderBuffer> ByteArrayToDecoderBuffer(
   return nullptr;
 }
 
-std::vector<uint8_t> DecoderBufferToByteArray(
+base::HeapArray<uint8_t> DecoderBufferToByteArray(
     const media::DecoderBuffer& decoder_buffer) {
   openscreen::cast::DecoderBuffer decoder_buffer_message;
   ConvertDecoderBufferToProto(decoder_buffer, &decoder_buffer_message);
 
-  size_t decoder_buffer_size =
+  const size_t decoder_buffer_size =
       decoder_buffer.end_of_stream() ? 0 : decoder_buffer.size();
-  size_t size = kPayloadVersionFieldSize + kProtoBufferHeaderSize +
-                decoder_buffer_message.ByteSize() + kDataBufferHeaderSize +
-                decoder_buffer_size;
-  auto message_cached_size =
+  const size_t size = kPayloadVersionFieldSize + kProtoBufferHeaderSize +
+                      decoder_buffer_message.ByteSizeLong() +
+                      kDataBufferHeaderSize + decoder_buffer_size;
+  const auto message_cached_size =
       // GetCachedSize() is only valid after ByteSize() is called above.
       base::checked_cast<uint16_t>(decoder_buffer_message.GetCachedSize());
-  std::vector<uint8_t> buffer(size);
-  auto writer = base::SpanWriter(base::span(buffer));
+  auto buffer = base::HeapArray<uint8_t>::WithSize(size);
+  auto writer = base::SpanWriter(buffer.as_span());
   if (writer.WriteU8BigEndian(0) &&
       writer.WriteU16BigEndian(message_cached_size) &&
       [&] {
-        std::optional<base::span<uint8_t>> span =
+        const std::optional<base::span<uint8_t>> span =
             writer.Skip(message_cached_size);
         return span.has_value() && decoder_buffer_message.SerializeToArray(
                                        span->data(), span->size());
@@ -166,9 +163,7 @@ std::vector<uint8_t> DecoderBufferToByteArray(
     return buffer;
   }
 
-  // Reset buffer since serialization of the data failed.
-  buffer.clear();
-  return buffer;
+  return {};
 }
 
 void ConvertAudioDecoderConfigToProto(
@@ -191,25 +186,9 @@ void ConvertAudioDecoderConfigToProto(
       audio_config.seek_preroll().InMicroseconds());
   audio_message->set_codec_delay(audio_config.codec_delay());
 
-  // We choose to not expose the "aac_extra_data" field to the remoting
-  // protobuf, because it is due to an internal Chrome bug. Instead, use the
-  // "extra_data" field as receivers should expect.
-  //
-  // TODO(crbug.com/40198159): Remove all references to "aac_extra_data" when it
-  // is removed as part of a media/ cleanup.
-#if DCHECK_IS_ON()
-  if (!audio_config.extra_data().empty() &&
-      !audio_config.aac_extra_data().empty() &&
-      audio_config.extra_data() != audio_config.aac_extra_data()) {
-    LOG(WARNING) << "mismatch between extra data and AAC extra data.";
-  }
-#endif
-  const bool isAac = audio_config.codec() == media::AudioCodec::kAAC;
-  const std::vector<uint8_t>& extra_data =
-      isAac ? audio_config.aac_extra_data() : audio_config.extra_data();
-
-  if (!extra_data.empty()) {
-    audio_message->set_extra_data(extra_data.data(), extra_data.size());
+  if (!audio_config.extra_data().empty()) {
+    audio_message->set_extra_data(audio_config.extra_data().data(),
+                                  audio_config.extra_data().size());
   }
 }
 
@@ -218,28 +197,16 @@ bool ConvertProtoToAudioDecoderConfig(
     media::AudioDecoderConfig* audio_config) {
   DCHECK(audio_config);
 
-  // Either "extra_data" or "aac_extra_data" should be populated but not both.
-  const bool isAac =
-      audio_message.codec() == openscreen::cast::AudioDecoderConfig::kCodecAAC;
-  const auto extra_data = base::make_span(audio_message.extra_data().begin(),
-                                          audio_message.extra_data().end());
+  const auto extra_data = base::span(audio_message.extra_data());
   audio_config->Initialize(
       ToMediaAudioCodec(audio_message.codec()).value(),
       ToMediaSampleFormat(audio_message.sample_format()).value(),
       ToMediaChannelLayout(audio_message.channel_layout()).value(),
       audio_message.samples_per_second(),
-      isAac ? std::vector<uint8_t>{}
-            : std::vector<uint8_t>(extra_data.begin(), extra_data.end()),
+      std::vector<uint8_t>(extra_data.begin(), extra_data.end()),
       media::EncryptionScheme::kUnencrypted,
       base::Microseconds(audio_message.seek_preroll_usec()),
       audio_message.codec_delay());
-
-  // TODO(crbug.com/40198159): Remove all references to "aac_extra_data" when it
-  // is removed as part of a media/ cleanup.
-  if (isAac) {
-    audio_config->set_aac_extra_data(
-        std::vector<uint8_t>(extra_data.begin(), extra_data.end()));
-  }
 
   return audio_config->IsValidConfig();
 }

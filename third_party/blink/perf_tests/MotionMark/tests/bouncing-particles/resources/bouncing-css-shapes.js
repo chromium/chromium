@@ -44,7 +44,7 @@ BouncingCssShape = Utilities.createSubclass(BouncingParticle,
 
         if (stage.blend)
             this.element.style.mixBlendMode = Stage.randomStyleMixBlendMode();
-
+        
         // Some browsers have not un-prefixed the css filter yet.
         if (stage.filter)
             Utilities.setElementPrefixedProperty(this.element, "filter", Stage.randomStyleFilter());

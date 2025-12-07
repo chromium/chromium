@@ -12,7 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/viz_utils.h"
 #include "components/viz/service/debugger/viz_debugger.h"
@@ -29,44 +28,6 @@
 #include "ui/ozone/public/ozone_platform.h"
 
 namespace {
-DBG_FLAG_FBOOL("delegated.fd.usage", usage_every_frame)
-
-void RecordFDUsageUMA() {
-  static uint64_t sReportUsageFrameCounter = 0;
-  sReportUsageFrameCounter++;
-  constexpr uint32_t kReportEveryNFrames = 60 * 60 * 5;
-  if (((sReportUsageFrameCounter % kReportEveryNFrames) != 0) &&
-      !usage_every_frame()) {
-    return;
-  }
-
-  base::TimeDelta delta_time_taken;
-  int fd_max;
-  int active_fd_count;
-  int rlim_cur;
-
-  if (!viz::GatherFDStats(&delta_time_taken, &fd_max, &active_fd_count,
-                          &rlim_cur))
-    return;
-
-  static constexpr base::TimeDelta kHistogramMinTime = base::Microseconds(5);
-  static constexpr base::TimeDelta kHistogramMaxTime = base::Milliseconds(10);
-  static constexpr int kHistogramTimeBuckets = 50;
-  int percentage_usage_int = (active_fd_count * 100) / fd_max;
-  UMA_HISTOGRAM_PERCENTAGE("Viz.FileDescriptorTracking.PercentageUsed",
-                           percentage_usage_int);
-  UMA_HISTOGRAM_COUNTS_100000("Viz.FileDescriptorTracking.NumActive",
-                              active_fd_count);
-  UMA_HISTOGRAM_COUNTS_100000("Viz.FileDescriptorTracking.NumSoftMax",
-                              rlim_cur);
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Viz.FileDescriptorTracking.TimeToCompute", delta_time_taken,
-      kHistogramMinTime, kHistogramMaxTime, kHistogramTimeBuckets);
-
-  DBG_LOG("delegated.fd.usage", "FD usage: %d / %d - time us: %f",
-          active_fd_count, fd_max, delta_time_taken.InMicrosecondsF());
-}
-
 // Block delegation if there has been a copy request in the last 3 frames.
 constexpr int kCopyRequestBlockFrames = 3;
 
@@ -77,10 +38,10 @@ namespace viz {
 OverlayProcessorDelegated::OverlayProcessorDelegated(
     std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
     std::vector<OverlayStrategy> available_strategies,
-    gpu::SharedImageInterface* shared_image_interface)
+    std::unique_ptr<PixmapProvider> pixmap_provider)
     : OverlayProcessorOzone(std::move(overlay_candidates),
                             available_strategies,
-                            shared_image_interface) {
+                            std::move(pixmap_provider)) {
   // TODO(msisov, petermcneeley): remove this once Wayland uses only delegated
   // context. May be null in tests.
   if (ui::OzonePlatform::GetInstance()->GetOverlayManager()) {
@@ -88,15 +49,6 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
         ->GetOverlayManager()
         ->SetContextDelegated();
   }
-
-  const auto& runtime_props =
-      ui::OzonePlatform::GetInstance()->GetPlatformRuntimeProperties();
-  supports_clip_rect_ = runtime_props.supports_clip_rect;
-  supports_out_of_window_clip_rect_ =
-      runtime_props.supports_out_of_window_clip_rect;
-  needs_background_image_ = runtime_props.needs_background_image;
-  supports_affine_transform_ = runtime_props.supports_affine_transform;
-  has_transformation_fix_ = runtime_props.has_transformation_fix;
 }
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
@@ -118,7 +70,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     const DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
-    OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
+    std::optional<OverlayCandidate>& primary_plane,
     OverlayCandidateList* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   DCHECK(candidates->empty());
@@ -156,11 +108,11 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
 
   OverlayCandidateFactory::OverlayContext context;
   context.is_delegated_context = true;
-  context.supports_clip_rect = supports_clip_rect_;
-  context.supports_out_of_window_clip_rect = supports_out_of_window_clip_rect_;
-  context.supports_arbitrary_transform = supports_affine_transform_;
+  context.supports_clip_rect = false;
+  context.supports_out_of_window_clip_rect = false;
+  context.supports_arbitrary_transform = false;
   context.supports_mask_filter = true;
-  context.transform_and_clip_rpdq = has_transformation_fix_;
+  context.transform_and_clip_rpdq = false;
   context.supports_flip_rotate_transform = SupportsFlipRotateTransform();
 
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
@@ -200,7 +152,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
   }
 
   // Check for support.
-  this->CheckOverlaySupport(nullptr, candidates);
+  this->CheckOverlaySupport(std::nullopt, candidates);
 
   for (auto&& each : *candidates) {
     if (!each.overlay_handled) {
@@ -223,7 +175,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
 }
 
 gfx::RectF OverlayProcessorDelegated::GetPrimaryPlaneDisplayRect(
-    const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane) {
+    const std::optional<OverlayCandidate>& primary_plane) {
   return primary_plane ? primary_plane->display_rect : gfx::RectF();
 }
 
@@ -235,22 +187,19 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
-    OutputSurfaceOverlayPlane* output_surface_plane,
+    std::optional<OverlayCandidate>& primary_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
   DCHECK(candidates->empty());
   bool success = false;
-#if !BUILDFLAG(IS_APPLE)
-  RecordFDUsageUMA();
-#endif
 
   DebugLogBeforeDelegation(*damage_rect, surface_damage_rect_list);
 
   success = AttemptWithStrategies(
       output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
       resource_provider, render_passes, &surface_damage_rect_list,
-      output_surface_plane, candidates, content_bounds);
+      primary_plane, candidates, content_bounds);
 
   DCHECK(candidates->empty() || success);
 
@@ -267,22 +216,18 @@ void OverlayProcessorDelegated::ProcessForOverlays(
     previous_frame_overlay_rect_ = gfx::Rect();
     // This is only relevant when delegating.
     unassigned_damage_ = gfx::RectF();
+
+    CHECK(primary_plane);
+    render_passes->back()->has_transparent_background |=
+        !primary_plane->is_opaque;
+
+    // TODO(crbug.com/40775556) : Damage propagation will allow us to remove the
+    // primary plan entirely in the case of full delegation.
+    InsertPrimaryPlane(std::move(primary_plane).value(), *candidates);
+    primary_plane.reset();
   }
 
   DebugLogAfterDelegation(delegated_status_, *candidates, *damage_rect);
-}
-
-void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
-    std::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
-  if (!output_surface_plane->has_value())
-    return;
-
-  // TODO(crbug.com/40775556) : Damage propagation will allow us to
-  // remove the primary plan entirely in the case of full delegation.
-  // In that case we will do "output_surface_plane->reset()" like the existing
-  // fullscreen overlay code.
-  if (delegated_status_ == DelegationStatus::kFullDelegation)
-    output_surface_plane->reset();
 }
 
 gfx::RectF OverlayProcessorDelegated::GetUnassignedDamage() const {

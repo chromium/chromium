@@ -8,20 +8,19 @@
 #include <utility>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/services/on_device_translation/on_device_translation_service.h"
 #include "chrome/services/speech/buildflags/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/services/csv_password/csv_password_parser_impl.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/services/language_detection/language_detection_service_impl.h"
-#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
+#include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/services/unzip/unzipper_impl.h"
+#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_impl.h"
 #include "content/public/utility/utility_thread.h"
@@ -30,6 +29,7 @@
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/passage_embeddings/passage_embeddings_service.h"
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -42,7 +42,7 @@
 #include "components/device_signals/core/common/mojom/system_signals.mojom.h"  // nogncheck
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"  // nogncheck
 #include "components/services/quarantine/quarantine_impl.h"  // nogncheck
-#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "services/proxy_resolver_win/windows_system_proxy_resolver_impl.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -58,8 +58,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/utility/importer/profile_import_impl.h"
+#include "components/legion/oak_session_service/oak_session_service.h"  // nogncheck
 #include "components/mirroring/service/mirroring_service.h"
-#include "services/passage_embeddings/passage_embeddings_service.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"  // nogncheck
@@ -71,7 +71,9 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if (BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && \
+     !BUILDFLAG(IS_ANDROID)) ||                      \
+    BUILDFLAG(IS_CHROMEOS)
 #include "chrome/services/file_util/file_util_service.h"  // nogncheck
 #endif
 
@@ -106,41 +108,36 @@
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 static_assert(BUILDFLAG(ENABLE_PDF), "ChromeOS Ash must enable PDF");
 static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
-#include "chrome/services/ipp_parser/ipp_parser.h"  // nogncheck
-#include "chrome/services/ipp_parser/public/mojom/ipp_parser.mojom.h"  // nogncheck
 #include "chrome/services/pdf/pdf_service.h"
 #include "chrome/services/pdf/public/mojom/pdf_service.mojom.h"
 #include "chrome/services/sharing/sharing_impl.h"
-#include "chromeos/ash/components/assistant/buildflags.h"  // nogncheck
 #include "chromeos/ash/components/local_search_service/local_search_service.h"
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
+#include "chromeos/ash/services/boca/babelorca/cpp/tachyon_parsing_service.h"
+#include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "chromeos/ash/services/ime/ime_service.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
 #include "chromeos/ash/services/orca/orca_library.h"
 #include "chromeos/ash/services/quick_pair/quick_pair_service.h"
 #include "chromeos/ash/services/recording/recording_service.h"
-#include "chromeos/constants/chromeos_features.h"  // nogncheck
-#include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
-#include "chromeos/services/tts/tts_service.h"
-
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/ash/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"  // nogncheck
-#include "chromeos/ash/services/libassistant/libassistant_service.h"  // nogncheck
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/mahi/content_extraction_service.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/components/quick_answers/public/cpp/service/spell_check_service.h"
 #include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
+#include "chromeos/constants/chromeos_features.h"  // nogncheck
+#include "chromeos/services/tts/public/mojom/tts_service.mojom.h"
+#include "chromeos/services/tts/tts_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#include "components/services/on_device_translation/on_device_translation_service.h"
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 namespace {
 
@@ -150,13 +147,6 @@ auto RunFilePatcher(mojo::PendingReceiver<patch::mojom::FilePatcher> receiver) {
 
 auto RunUnzipper(mojo::PendingReceiver<unzip::mojom::Unzipper> receiver) {
   return std::make_unique<unzip::UnzipperImpl>(std::move(receiver));
-}
-
-auto RunLanguageDetectionService(
-    mojo::PendingReceiver<language_detection::mojom::LanguageDetectionService>
-        receiver) {
-  return std::make_unique<language_detection::LanguageDetectionServiceImpl>(
-      std::move(receiver));
 }
 
 auto RunWebAppOriginAssociationParser(
@@ -170,6 +160,14 @@ auto RunCSVPasswordParser(
     mojo::PendingReceiver<password_manager::mojom::CSVPasswordParser>
         receiver) {
   return std::make_unique<password_manager::CSVPasswordParserImpl>(
+      std::move(receiver));
+}
+
+auto ContentBookmarkParser(
+    mojo::PendingReceiver<user_data_importer::mojom::BookmarkHtmlParser>
+        receiver) {
+  return std::make_unique<
+      user_data_importer::ContentBookmarkParserInUtilityProcess>(
       std::move(receiver));
 }
 
@@ -194,7 +192,7 @@ auto RunWindowsIconReader(
 }
 
 auto RunWindowsSystemProxyResolver(
-    mojo::PendingReceiver<proxy_resolver_win::mojom::WindowsSystemProxyResolver>
+    mojo::PendingReceiver<proxy_resolver::mojom::SystemProxyResolver>
         receiver) {
   return std::make_unique<proxy_resolver_win::WindowsSystemProxyResolverImpl>(
       std::move(receiver));
@@ -228,6 +226,11 @@ auto RunSystemSignalsService(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
+auto RunOakSessionService(
+    mojo::PendingReceiver<legion::mojom::OakSession> receiver) {
+  return std::make_unique<legion::OakSessionService>(std::move(receiver));
+}
+
 auto RunProxyResolver(
     mojo::PendingReceiver<proxy_resolver::mojom::ProxyResolverFactory>
         receiver) {
@@ -246,14 +249,14 @@ auto RunMirroringService(
       std::move(receiver), content::UtilityThread::Get()->GetIOTaskRunner());
 }
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 auto RunPassageEmbeddingsService(
     mojo::PendingReceiver<passage_embeddings::mojom::PassageEmbeddingsService>
         receiver) {
   return std::make_unique<passage_embeddings::PassageEmbeddingsService>(
       std::move(receiver));
 }
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
 auto RunSpeechRecognitionService(
@@ -270,14 +273,9 @@ auto RunScreenAIServiceFactory(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-auto RunCupsIppParser(
-    mojo::PendingReceiver<ipp_parser::mojom::IppParser> receiver) {
-  return std::make_unique<ipp_parser::IppParser>(std::move(receiver));
-}
-#endif
-
-#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if (BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && \
+     !BUILDFLAG(IS_ANDROID)) ||                      \
+    BUILDFLAG(IS_CHROMEOS)
 auto RunFileUtil(
     mojo::PendingReceiver<chrome::mojom::FileUtilService> receiver) {
   return std::make_unique<FileUtilService>(std::move(receiver));
@@ -298,7 +296,7 @@ auto RunMediaParserFactory(
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS) || BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 auto RunPdfService(mojo::PendingReceiver<pdf::mojom::PdfService> receiver) {
   return std::make_unique<pdf::PdfService>(std::move(receiver));
 }
@@ -346,7 +344,7 @@ auto RunPrintCompositor(
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 auto RunImeService(
     mojo::PendingReceiver<ash::ime::mojom::ImeService> receiver) {
   return std::make_unique<ash::ime::ImeService>(
@@ -400,24 +398,6 @@ auto RunQuickPairService(
       std::move(receiver));
 }
 
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-auto RunAssistantAudioDecoder(
-    mojo::PendingReceiver<ash::assistant::mojom::AssistantAudioDecoderFactory>
-        receiver) {
-  return std::make_unique<ash::assistant::AssistantAudioDecoderFactory>(
-      std::move(receiver));
-}
-
-auto RunLibassistantService(
-    mojo::PendingReceiver<ash::libassistant::mojom::LibassistantService>
-        receiver) {
-  return std::make_unique<ash::libassistant::LibassistantService>(
-      std::move(receiver));
-}
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
 auto RunQuickAnswersSpellCheckService(
     mojo::PendingReceiver<quick_answers::mojom::SpellCheckService> receiver) {
   return std::make_unique<quick_answers::SpellCheckService>(
@@ -431,12 +411,23 @@ auto RunMahiContentExtractionServiceFactory(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 auto RunOnDeviceTranslationService(
     mojo::PendingReceiver<
         on_device_translation::mojom::OnDeviceTranslationService> receiver) {
   return std::make_unique<on_device_translation::OnDeviceTranslationService>(
       std::move(receiver));
 }
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
+#if BUILDFLAG(IS_CHROMEOS)
+auto RunBabelOrcaTachyonParsingService(
+    mojo::PendingReceiver<ash::babelorca::mojom::TachyonParsingService>
+        receiver) {
+  return std::make_unique<ash::babelorca::TachyonParsingService>(
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -452,14 +443,15 @@ void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
 void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunFilePatcher);
   services.Add(RunUnzipper);
-  services.Add(RunLanguageDetectionService);
   services.Add(RunWebAppOriginAssociationParser);
   services.Add(RunCSVPasswordParser);
+  services.Add(ContentBookmarkParser);
+  services.Add(RunPassageEmbeddingsService);
 
 #if !BUILDFLAG(IS_ANDROID)
+  services.Add(RunOakSessionService);
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
-  services.Add(RunPassageEmbeddingsService);
   services.Add(RunScreenAIServiceFactory);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -478,15 +470,13 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunSystemSignalsService);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  services.Add(RunCupsIppParser);
-#endif
-
 #if BUILDFLAG(IS_MAC)
   services.Add(RunMacNotificationService);
 #endif  // BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(FULL_SAFE_BROWSING) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if (BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION) && \
+     !BUILDFLAG(IS_ANDROID)) ||                      \
+    BUILDFLAG(IS_CHROMEOS)
   services.Add(RunFileUtil);
 #endif
 
@@ -499,7 +489,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunMediaParserFactory);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   services.Add(RunPdfService);
 #endif
 
@@ -521,7 +511,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunPaintPreviewCompositor);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   services.Add(RunImeService);
   if (chromeos::features::IsOrcaEnabled()) {
     services.Add(RunOrcaService);
@@ -532,18 +522,14 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunTtsService);
   services.Add(RunLocalSearchService);
   services.Add(RunQuickPairService);
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-  services.Add(RunAssistantAudioDecoder);
-  services.Add(RunLibassistantService);
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS)
+  services.Add(RunBabelOrcaTachyonParsingService);
   services.Add(RunQuickAnswersSpellCheckService);
   services.Add(RunMahiContentExtractionServiceFactory);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   services.Add(RunOnDeviceTranslationService);
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 }
 
 void RegisterIOThreadServices(mojo::ServiceFactory& services) {

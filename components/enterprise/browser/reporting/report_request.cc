@@ -4,6 +4,8 @@
 
 #include "components/enterprise/browser/reporting/report_request.h"
 
+#include <variant>
+
 #include "components/enterprise/browser/reporting/report_type.h"
 
 namespace enterprise_reporting {
@@ -14,7 +16,7 @@ ReportRequest::ReportRequest(ReportType type) {
   switch (type) {
     case ReportType::kFull:
     case ReportType::kBrowserVersion:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       proto_.emplace<em::ChromeOsUserReportRequest>();
 #else
       proto_.emplace<em::ChromeDesktopReportRequest>();
@@ -37,23 +39,23 @@ ReportRequest::~ReportRequest() = default;
 
 const ReportRequest::DeviceReportRequestProto&
 ReportRequest::GetDeviceReportRequest() const {
-  return absl::get<ReportRequest::DeviceReportRequestProto>(proto_);
+  return std::get<ReportRequest::DeviceReportRequestProto>(proto_);
 }
 ReportRequest::DeviceReportRequestProto&
 ReportRequest::GetDeviceReportRequest() {
-  return absl::get<ReportRequest::DeviceReportRequestProto>(proto_);
+  return std::get<ReportRequest::DeviceReportRequestProto>(proto_);
 }
 
 const em::ChromeProfileReportRequest&
 ReportRequest::GetChromeProfileReportRequest() const {
-  return absl::get<em::ChromeProfileReportRequest>(proto_);
+  return std::get<em::ChromeProfileReportRequest>(proto_);
 }
 em::ChromeProfileReportRequest& ReportRequest::GetChromeProfileReportRequest() {
-  return absl::get<em::ChromeProfileReportRequest>(proto_);
+  return std::get<em::ChromeProfileReportRequest>(proto_);
 }
 
 std::unique_ptr<ReportRequest> ReportRequest::Clone() const {
-  return absl::visit(
+  return std::visit(
       [](const auto& proto) { return std::make_unique<ReportRequest>(proto); },
       proto_);
 }

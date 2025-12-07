@@ -77,7 +77,7 @@ struct PaintLayerFragment {
   ClipRect foreground_rect;
 
   // The fragment index of fragment_data / physical_fragment.
-  wtf_size_t fragment_idx = WTF::kNotFound;
+  wtf_size_t fragment_idx = kNotFound;
 
   // The corresponding FragmentData of this structure.
   Member<const FragmentData> fragment_data = nullptr;

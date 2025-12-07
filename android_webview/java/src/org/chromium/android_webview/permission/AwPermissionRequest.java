@@ -8,6 +8,7 @@ import android.net.Uri;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.CleanupReference;
@@ -46,7 +47,7 @@ public class AwPermissionRequest {
 
     @CalledByNative
     private static AwPermissionRequest create(
-            long nativeAwPermissionRequest, String url, long resources) {
+            long nativeAwPermissionRequest, @JniType("std::string") String url, long resources) {
         if (nativeAwPermissionRequest == 0) return null;
         Uri origin = Uri.parse(url);
         return new AwPermissionRequest(nativeAwPermissionRequest, origin, resources);
@@ -71,8 +72,7 @@ public class AwPermissionRequest {
     public void grant() {
         validate();
         if (mNativeAwPermissionRequest != 0) {
-            AwPermissionRequestJni.get()
-                    .onAccept(mNativeAwPermissionRequest, AwPermissionRequest.this, true);
+            AwPermissionRequestJni.get().onAccept(mNativeAwPermissionRequest, true);
             destroyNative();
         }
         mProcessed = true;
@@ -81,8 +81,7 @@ public class AwPermissionRequest {
     public void deny() {
         validate();
         if (mNativeAwPermissionRequest != 0) {
-            AwPermissionRequestJni.get()
-                    .onAccept(mNativeAwPermissionRequest, AwPermissionRequest.this, false);
+            AwPermissionRequestJni.get().onAccept(mNativeAwPermissionRequest, false);
             destroyNative();
         }
         mProcessed = true;
@@ -108,7 +107,7 @@ public class AwPermissionRequest {
 
     @NativeMethods
     interface Natives {
-        void onAccept(long nativeAwPermissionRequest, AwPermissionRequest caller, boolean allowed);
+        void onAccept(long nativeAwPermissionRequest, boolean allowed);
 
         void destroy(long nativeAwPermissionRequest);
     }

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>WebXR Feature Status</title>
+  <style>
+    body { font-family: sans-serif; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+    .status-cell { width: 150px; text-align: center; }
+    .status-cell button {  }
+    .status-pending { background-color: #eee; }
+    .status-success { background-color: #d4edda; color: #155724; }
+    .status-failure { background-color: #f8d7da; color: #721c24; }
+    .status-text { margin-left: 8px; }
+  </style>
+</head>
+<body>
+  <h1>WebXR Feature Status</h1>
+  <p>
+    Click a button in a column header to request a session for that mode with all
+    features listed as optional. Click an individual cell's button to request a
+    session for that mode with only that specific feature as required. This
+    option is available in case there is a conflict between two features that
+    causes only one to be granted, while the overall request is intended as a
+    simple convenience.
+  </p>
+  <p>
+    Note that support here does not mean that the feature is fully implemented
+    or conforms to the specification. It only means that your browser will grant
+    a session with that feature enabled, meaning that it thinks it has a
+    conformant implementation of the relevant specification.
+  </p>
+  <table id="feature-table"></table>
+
+  <script>
+    // Modes are used as columns.
+    const MODES = ['immersive-vr', 'immersive-ar', 'inline'];
+    // Features are used as rows.
+    const FEATURES = [
+      'viewer',
+      'local',
+      'local-floor',
+      'bounded-floor',
+      'unbounded',
+      'hit-test',
+      'anchors',
+      'hand-tracking',
+      'secondary-views',
+      'light-estimation',
+      'plane-detection',
+      'depth-sensing',
+      'layers',
+      'dom-overlay',
+      'camera-access',
+    ];
+    // When actually building the table we'll append a special column to
+    // indicate that we got a session at all, even if that session doesn't
+    // support any of the optional features.
+    const ALL_FEATURES_WITH_NONE = ['no-features', ...FEATURES];
+
+    // Certain features need additional configuration beyond just the feature
+    // string being part of the requested list. Note that this dictionary is not
+    // const so that in the future we could do things such as e.g. specify
+    // particular depth-sensing combos to test.
+    let FEATURE_CONFIGS = {
+      'dom-overlay': {
+        domOverlay: { root: document.body }
+      },
+      'depth-sensing': {
+        // Leaving these two required sequences empty is supposed to allow the
+        // runtime to pick the best fit. That's fine since we don't care what
+        // type we can get by default, just if the feature can be granted.
+        depthSensing: { usagePreference: [], dataFormatPreference: [] }
+      }
+    };
+
+    const table = document.getElementById('feature-table');
+
+    function setCellStatus(mode, feature, status, text) {
+      const cell = document.getElementById(`cell-${mode}-${feature}`);
+      if (cell) {
+        cell.className = `status-cell status-${status}`;
+        const statusSpan = cell.querySelector('.status-text');
+        if (statusSpan) {
+            statusSpan.textContent = text;
+        }
+      }
+    }
+
+    async function testFeature(mode, feature) {
+      const featureList = feature === 'no-features' ? [] : [feature];
+      setCellStatus(mode, feature, 'pending', 'Testing...');
+
+      if (!navigator.xr) {
+        setCellStatus(mode, feature, 'failure', 'No navigator.xr');
+        return;
+      }
+
+      try {
+        let sessionOptions = { requiredFeatures: featureList };
+        if (FEATURE_CONFIGS[feature]) {
+          Object.assign(sessionOptions, FEATURE_CONFIGS[feature]);
+        }
+        const session = await navigator.xr.requestSession(mode, sessionOptions);
+        setCellStatus(mode, feature, 'success', 'Success');
+        session.end();
+      } catch (err) {
+        console.error(`Failed to get session for ${mode} with feature ${feature}`, err);
+        setCellStatus(mode, feature, 'failure', 'Failure');
+      }
+    }
+
+    async function testAllFeatures(mode) {
+      ALL_FEATURES_WITH_NONE.forEach(feature => {
+        setCellStatus(mode, feature, 'pending', 'Testing...');
+      });
+
+      if (!navigator.xr) {
+        ALL_FEATURES_WITH_NONE.forEach(feature => {
+          setCellStatus(mode, feature, 'failure', 'No navigator.xr');
+        });
+        return;
+      }
+
+      try {
+        let sessionOptions = { optionalFeatures: FEATURES };
+        for (const feature of FEATURES) {
+            if (FEATURE_CONFIGS[feature]) {
+                Object.assign(sessionOptions, FEATURE_CONFIGS[feature]);
+            }
+        }
+
+        const session = await navigator.xr.requestSession(mode, sessionOptions);
+        const enabledFeatures = session.enabledFeatures || [];
+
+        // Handle the "no-features" case. Success if we got a session.
+        setCellStatus(mode, 'no-features', 'success', 'Success');
+
+        FEATURES.forEach(feature => {
+          if (enabledFeatures.includes(feature)) {
+            setCellStatus(mode, feature, 'success', 'Success');
+          } else {
+            setCellStatus(mode, feature, 'failure', 'Not Enabled');
+          }
+        });
+        session.end();
+      } catch (err) {
+        console.error(`Failed to get session for ${mode} with all features`, err);
+        ALL_FEATURES_WITH_NONE.forEach(feature => {
+          setCellStatus(mode, feature, 'failure', 'Session Failed');
+        });
+      }
+    }
+
+    function generateTable() {
+      // Header Row
+      const thead = table.createTHead();
+      const headerRow = thead.insertRow();
+      const featureHeader = document.createElement('th');
+      featureHeader.textContent = 'Feature';
+      headerRow.appendChild(featureHeader);
+
+      MODES.forEach(mode => {
+        const modeHeader = document.createElement('th');
+        const button = document.createElement('button');
+        button.textContent = `Request All (${mode})`;
+        button.onclick = () => testAllFeatures(mode);
+        modeHeader.appendChild(button);
+        headerRow.appendChild(modeHeader);
+      });
+
+      // Feature Rows
+      const tbody = table.createTBody();
+      ALL_FEATURES_WITH_NONE.forEach(feature => {
+        const row = tbody.insertRow();
+        const featureCell = row.insertCell();
+        featureCell.textContent = feature;
+
+        MODES.forEach(mode => {
+          const cell = row.insertCell();
+          cell.className = 'status-cell';
+          cell.id = `cell-${mode}-${feature}`;
+
+          const button = document.createElement('button');
+          button.textContent = `Test`;
+          button.onclick = () => testFeature(mode, feature);
+          cell.appendChild(button);
+
+          const statusSpan = document.createElement('span');
+          statusSpan.className = 'status-text';
+          cell.appendChild(statusSpan);
+        });
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', generateTable);
+  </script>
+</body>
+</html>

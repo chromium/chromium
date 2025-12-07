@@ -6,12 +6,13 @@
 #define UI_VIEWS_ANIMATION_INK_DROP_HOST_H_
 
 #include <memory>
+#include <variant>
 
 #include "base/memory/raw_ptr.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
@@ -112,13 +113,12 @@ class VIEWS_EXPORT InkDropHost {
   SkColor GetBaseColor() const;
 
   // Sets the base color of the ink drop. If `SetBaseColor` is called, the
-  // effect of previous calls to `SetBaseColorId` and `SetBaseColorCallback` is
+  // effect of previous calls to  `SetBaseColorCallback` is
   // overwritten and vice versa.
-  // TODO(crbug.com/40230665): Replace SetBaseColor with SetBaseColorId.
-  void SetBaseColor(SkColor color);
-  void SetBaseColorId(ui::ColorId color_id);
+  void SetBaseColor(ui::ColorVariant color);
+
   // Callback version of `GetBaseColor`. If possible, prefer using
-  // `SetBaseColor` or `SetBaseColorId`.
+  // `SetBaseColor`.
   void SetBaseColorCallback(base::RepeatingCallback<SkColor()> callback);
 
   // Toggle to enable/disable an InkDrop on this View.  Descendants can override
@@ -193,6 +193,7 @@ class VIEWS_EXPORT InkDropHost {
 
   View* host_view() { return host_view_; }
   const View* host_view() const { return host_view_; }
+  bool in_attention_state_for_testing() const { return in_attention_state_; }
 
  private:
   friend class test::InkDropHostTestApi;
@@ -262,7 +263,7 @@ class VIEWS_EXPORT InkDropHost {
   float ink_drop_visible_opacity_ = 0.175f;
 
   // The color of the ripple and hover.
-  absl::variant<SkColor, ui::ColorId, base::RepeatingCallback<SkColor()>>
+  std::variant<ui::ColorVariant, base::RepeatingCallback<SkColor()>>
       ink_drop_base_color_ = gfx::kPlaceholderColor;
 
   // TODO(pbos): Audit call sites to make sure highlight opacity is either
@@ -289,7 +290,7 @@ class VIEWS_EXPORT InkDropHost {
   // Attention is a state we apply on Buttons' ink drop when we want to draw
   // users' attention to this button and prompt users' interaction.
   // It consists of two visual effects: a default light blue color and a pulsing
-  // effect. Current use case is IPH. Go to chrome://internals/user-education
+  // effect. Current use case is IPH. Go to chrome://user-education-internals
   // and press e.g. IPH_TabSearch to see the effects.
   bool in_attention_state_ = false;
 };

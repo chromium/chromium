@@ -22,3 +22,12 @@ executable("pinpoint_ci") {
     "//base",
   ]
 }
+
+executable("compare_blink_perf") {
+  sources = [ "compare_blink_perf.cc" ]
+
+  deps = [
+    ":ratio_bootstrap_estimator",
+    "//base",
+  ]
+}

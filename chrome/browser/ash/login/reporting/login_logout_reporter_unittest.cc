@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
@@ -11,13 +12,12 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
+#include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
-#include "components/policy/core/common/device_local_account_type.h"
 #include "components/reporting/client/mock_report_queue.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -25,6 +25,8 @@
 
 using testing::_;
 using testing::Eq;
+using testing::Gt;
+using testing::IsEmpty;
 using testing::StrEq;
 
 namespace ash {
@@ -83,7 +85,7 @@ class LoginLogoutTestHelper {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "kiosk", policy::DeviceLocalAccountType::kKioskApp));
-    auto* const user = fake_user_manager_->AddKioskAppUser(account_id);
+    auto* const user = fake_user_manager_->AddKioskChromeAppUser(account_id);
     return CreateProfile(user);
   }
 
@@ -91,7 +93,7 @@ class LoginLogoutTestHelper {
     AccountId account_id =
         AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
             "webkiosk", policy::DeviceLocalAccountType::kWebKioskApp));
-    auto* const user = fake_user_manager_->AddWebKioskAppUser(account_id);
+    auto* const user = fake_user_manager_->AddKioskWebAppUser(account_id);
     return CreateProfile(user);
   }
 
@@ -104,13 +106,12 @@ class LoginLogoutTestHelper {
         return CreateGuestProfile();
       case user_manager::UserType::kPublicAccount:
         return CreatePublicAccountProfile();
-      case user_manager::UserType::kKioskApp:
+      case user_manager::UserType::kKioskChromeApp:
         return CreateKioskAppProfile();
-      case user_manager::UserType::kWebKioskApp:
+      case user_manager::UserType::kKioskWebApp:
         return CreateWebKioskAppProfile();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 
@@ -166,16 +167,13 @@ struct LoginLogoutReporterTestCase {
 class LoginLogoutReporterTest
     : public ::testing::TestWithParam<LoginLogoutReporterTestCase> {
  protected:
-  LoginLogoutReporterTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  LoginLogoutReporterTest() = default;
 
   void SetUp() override { test_helper_.Init(); }
 
   void TearDown() override { test_helper_.Shutdown(); }
 
   LoginLogoutTestHelper test_helper_;
-
-  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
@@ -238,6 +236,11 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogin) {
   EXPECT_THAT(record.session_type(), Eq(test_case.expected_session_type));
   ASSERT_TRUE(record.has_login_event());
   EXPECT_FALSE(record.login_event().has_failure());
+  if (test_case.expected_session_type ==
+      LoginLogoutSessionType::REGULAR_USER_SESSION) {
+    EXPECT_TRUE(record.has_unaffiliated_user());
+    EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
+  }
 }
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogout) {
@@ -296,6 +299,11 @@ TEST_P(LoginLogoutReporterTest, ReportUnaffiliatedLogout) {
   EXPECT_FALSE(record.has_affiliated_user());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(), Eq(test_case.expected_session_type));
+  if (test_case.expected_session_type ==
+      LoginLogoutSessionType::REGULAR_USER_SESSION) {
+    EXPECT_TRUE(record.has_unaffiliated_user());
+    EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
+  }
 }
 
 TEST_P(LoginLogoutReporterTest, ReportLoginLogoutDisabled) {
@@ -327,23 +335,20 @@ INSTANTIATE_TEST_SUITE_P(All,
                                LoginLogoutSessionType::GUEST_SESSION},
                               {user_manager::UserType::kPublicAccount,
                                LoginLogoutSessionType::PUBLIC_ACCOUNT_SESSION},
-                              {user_manager::UserType::kKioskApp,
+                              {user_manager::UserType::kKioskChromeApp,
                                LoginLogoutSessionType::KIOSK_SESSION},
-                              {user_manager::UserType::kWebKioskApp,
+                              {user_manager::UserType::kKioskWebApp,
                                LoginLogoutSessionType::KIOSK_SESSION}}));
 
 class LoginFailureReporterTest : public ::testing::TestWithParam<AuthFailure> {
  protected:
-  LoginFailureReporterTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  LoginFailureReporterTest() = default;
 
   void SetUp() override { test_helper_.Init(); }
 
   void TearDown() override { test_helper_.Shutdown(); }
 
   LoginLogoutTestHelper test_helper_;
-
-  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(LoginFailureReporterTest, ReportAffiliatedLoginFailure_OwnerRequired) {
@@ -431,6 +436,8 @@ TEST_F(LoginFailureReporterTest, ReportUnaffiliatedLoginFailure_TpmError) {
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
+  EXPECT_TRUE(record.has_unaffiliated_user());
+  EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
               Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));
@@ -763,6 +770,8 @@ TEST_P(LoginFailureReporterTest,
   EXPECT_FALSE(record.is_guest_session());
   EXPECT_FALSE(record.has_logout_event());
   EXPECT_FALSE(record.has_affiliated_user());
+  EXPECT_TRUE(record.has_unaffiliated_user());
+  EXPECT_TRUE(record.unaffiliated_user().has_user_id_num());
   ASSERT_TRUE(record.has_session_type());
   EXPECT_THAT(record.session_type(),
               Eq(LoginLogoutSessionType::REGULAR_USER_SESSION));

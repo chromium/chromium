@@ -8,8 +8,24 @@
 
 namespace safe_browsing {
 
-MockIncidentReceiver::MockIncidentReceiver() {}
+MockIncidentReceiver::MockIncidentReceiver() = default;
 
-MockIncidentReceiver::~MockIncidentReceiver() {}
+MockIncidentReceiver::~MockIncidentReceiver() = default;
+
+void MockIncidentReceiver::AddIncidentForProfile(
+    Profile* profile,
+    std::unique_ptr<Incident> incident) {
+  DoAddIncidentForProfile(profile, &incident);
+}
+
+void MockIncidentReceiver::AddIncidentForProcess(
+    std::unique_ptr<Incident> incident) {
+  DoAddIncidentForProcess(&incident);
+}
+
+void MockIncidentReceiver::ClearIncidentForProcess(
+    std::unique_ptr<Incident> incident) {
+  DoClearIncidentForProcess(&incident);
+}
 
 }  // namespace safe_browsing

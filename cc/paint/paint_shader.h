@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/types/optional_util.h"
 #include "cc/paint/image_analysis_state.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_flags.h"
@@ -19,6 +18,7 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "third_party/skia/include/effects/SkRuntimeEffect.h"
 #include "ui/gfx/geometry/size_f.h"
 
 class SkShader;
@@ -41,6 +41,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     kSweepGradient,
     kImage,
     kPaintRecord,
+    kSkSLCommand,
     kShaderCount
   };
 
@@ -123,6 +124,36 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
       const SkMatrix* local_matrix,
       ScalingBehavior scaling_behavior = ScalingBehavior::kRasterAtScale);
 
+  // Returns null if the `sksl` command is invalid.
+  //
+  // NOTE:
+  // - This is only intended for trusted shader (e.g., shaders that are part of
+  //   the Chromium binary). GPU service has security constraints to prevent the
+  //   PaintShader being deserialized if it is not serialized from the browser
+  //   thread.
+  // - Not using flat_map because SkString does not have built-in comparator.
+  template <typename ValueType>
+  struct Uniform {
+    SkString name;
+    ValueType value;
+
+    bool operator==(const Uniform& other) const {
+      return name == other.name && value == other.value;
+    }
+  };
+  using FloatUniform = Uniform<SkScalar>;
+  using Float2Uniform = Uniform<SkV2>;
+  using Float4Uniform = Uniform<SkV4>;
+  using IntUniform = Uniform<int>;
+  constexpr static size_t kMaxNumUniformsPerType = 16u;
+  static sk_sp<PaintShader> MakeSkSLCommand(
+      std::string_view sksl,
+      std::vector<FloatUniform> float_uniforms,
+      std::vector<Float2Uniform> float2_uniforms,
+      std::vector<Float4Uniform> float4_uniforms,
+      std::vector<IntUniform> int_uniforms,
+      sk_sp<PaintShader> cached_paint_shader);
+
   static size_t GetSerializedSize(const PaintShader* shader);
 
   PaintShader(const PaintShader&) = delete;
@@ -154,9 +185,8 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
     return image_;
   }
 
-  const PaintRecord* paint_record() const {
-    return base::OptionalToPtr(record_);
-  }
+  const PaintRecord* paint_record() const;
+
   bool GetRasterizationTileRect(const SkMatrix& ctm, SkRect* tile_rect) const {
     return GetClampedRasterizationTileRect(ctm, /*max_texture_size=*/0,
                                            tile_rect);
@@ -175,11 +205,14 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   bool IsValid() const;
 
   bool EqualsForTesting(const PaintShader& other) const;
+  bool MatchingCachedRuntimeEffectForTesting(const PaintShader& other) const;
 
   RecordShaderId paint_record_shader_id() const {
     DCHECK(id_ == kInvalidRecordShaderId || shader_type_ == Type::kPaintRecord);
     return id_;
   }
+
+  uint32_t sk_runtime_effect_id() const { return sk_runtime_effect_id_; }
 
  private:
   friend class PaintFlags;
@@ -190,6 +223,7 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   friend class ScopedRasterFlags;
   friend class ShaderPaintFilter;
   FRIEND_TEST_ALL_PREFIXES(PaintShaderTest, DecodePaintRecord);
+  FRIEND_TEST_ALL_PREFIXES(PaintShaderTest, InfinityStopShouldBeValid);
   FRIEND_TEST_ALL_PREFIXES(PaintOpBufferTest, PaintRecordShaderSerialization);
   FRIEND_TEST_ALL_PREFIXES(PaintOpBufferTest, RecordShadersCached);
 
@@ -288,6 +322,25 @@ class CC_PAINT_EXPORT PaintShader : public SkRefCnt {
   sk_sp<SkImage> sk_cached_image_;
 
   ImageAnalysisState image_analysis_state_ = ImageAnalysisState::kNoAnalysis;
+
+  // The command to be (de)serialized for `Type::kSkSLCommand`. Remains empty
+  // for other shader types.
+  SkString sksl_command_;
+
+  // Uniforms for `sksl_command_`. The keys of the map are the variable name of
+  // the uniform.
+  std::vector<FloatUniform> scalar_uniforms_;
+  std::vector<Float2Uniform> float2_uniforms_;
+  std::vector<Float4Uniform> float4_uniforms_;
+  std::vector<IntUniform> int_uniforms_;
+
+  // Unique ID for `Type::kSkSLCommand`. Remains 0u for other types.
+  uint32_t sk_runtime_effect_id_ = 0u;
+
+  // Does not participate in de/serialization. In software rasterization it is
+  // set when the PaintShader object is created; in hardware rasterization, it
+  // is set when the PaintShader is deserialized.
+  sk_sp<SkRuntimeEffect> cached_sk_runtime_effect_ = nullptr;
 };
 
 }  // namespace cc

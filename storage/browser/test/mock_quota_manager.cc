@@ -4,6 +4,7 @@
 
 #include "storage/browser/test/mock_quota_manager.h"
 
+#include <algorithm>
 #include <limits>
 #include <memory>
 #include <tuple>
@@ -14,7 +15,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_waitable_event.h"
@@ -22,7 +22,6 @@
 #include "storage/browser/quota/quota_client_type.h"
 
 using ::blink::StorageKey;
-using ::blink::mojom::StorageType;
 
 namespace storage {
 
@@ -48,7 +47,6 @@ MockQuotaManager::MockQuotaManager(
     : QuotaManager(is_incognito,
                    profile_path,
                    std::move(io_thread),
-                   /*quota_change_callback=*/base::DoNothing(),
                    std::move(special_storage_policy),
                    GetQuotaSettingsFunc()),
       profile_path_(profile_path) {
@@ -67,15 +65,12 @@ void MockQuotaManager::UpdateOrCreateBucket(
   }
 
   const auto create = [&](auto) -> QuotaErrorOr<BucketInfo> {
-    BucketInfo bucket =
-        CreateBucket(params, blink::mojom::StorageType::kTemporary);
+    BucketInfo bucket = CreateBucket(params);
     buckets_.emplace_back(bucket, storage::AllQuotaClientTypes(),
                           base::Time::Now());
     return bucket;
   };
-  std::move(callback).Run(
-      FindAndUpdateBucket(params, blink::mojom::StorageType::kTemporary)
-          .or_else(create));
+  std::move(callback).Run(FindAndUpdateBucket(params).or_else(create));
 }
 
 QuotaErrorOr<BucketInfo> MockQuotaManager::GetOrCreateBucketSync(
@@ -99,31 +94,12 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::GetOrCreateBucketSync(
 void MockQuotaManager::CreateBucketForTesting(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
-    blink::mojom::StorageType storage_type,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
   const BucketInitParams params = BucketInitParams(storage_key, bucket_name);
-  BucketInfo bucket = CreateBucket(params, storage_type);
+  BucketInfo bucket = CreateBucket(params);
   buckets_.emplace_back(
       BucketData(bucket, storage::AllQuotaClientTypes(), base::Time::Now()));
   std::move(callback).Run(std::move(bucket));
-}
-
-void MockQuotaManager::GetOrCreateBucketDeprecated(
-    const BucketInitParams& params,
-    blink::mojom::StorageType type,
-    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
-  if (db_disabled_) {
-    std::move(callback).Run(base::unexpected(QuotaError::kDatabaseError));
-    return;
-  }
-
-  const auto create = [&](auto) -> QuotaErrorOr<BucketInfo> {
-    BucketInfo bucket = CreateBucket(params, type);
-    buckets_.emplace_back(bucket, storage::AllQuotaClientTypes(),
-                          base::Time::Now());
-    return bucket;
-  };
-  std::move(callback).Run(FindAndUpdateBucket(params, type).or_else(create));
 }
 
 void MockQuotaManager::GetBucketById(
@@ -137,15 +113,13 @@ void MockQuotaManager::GetBucketById(
 void MockQuotaManager::GetBucketByNameUnsafe(
     const blink::StorageKey& storage_key,
     const std::string& bucket_name,
-    blink::mojom::StorageType type,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
-  QuotaErrorOr<BucketInfo> bucket = FindBucket(storage_key, bucket_name, type);
+  QuotaErrorOr<BucketInfo> bucket = FindBucket(storage_key, bucket_name);
   std::move(callback).Run(std::move(bucket));
 }
 
 void MockQuotaManager::GetBucketsForStorageKey(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     base::OnceCallback<void(QuotaErrorOr<std::set<BucketInfo>>)> callback,
     bool delete_expired) {
   // This parameter is not supported.
@@ -161,9 +135,8 @@ void MockQuotaManager::GetBucketsForStorageKey(
 }
 
 void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
-                                        StorageType type,
                                         UsageAndQuotaCallback callback) {
-  int64_t quota = quota_map_[std::make_pair(storage_key, type)].quota;
+  int64_t quota = quota_map_[storage_key].quota;
   int64_t usage = 0;
 
   if (usage_map_.empty()) {
@@ -179,8 +152,7 @@ void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
   for (const auto& entry : usage_map_) {
     std::ignore = FindBucket(entry.first).transform([&](BucketInfo result) {
       storage::BucketLocator bucket_locator = result.ToBucketLocator();
-      if (bucket_locator.storage_key == storage_key &&
-          bucket_locator.type == type) {
+      if (bucket_locator.storage_key == storage_key) {
         usage += usage_map_[bucket_locator].usage;
       }
     });
@@ -190,43 +162,37 @@ void MockQuotaManager::GetUsageAndQuota(const StorageKey& storage_key,
 
 int64_t MockQuotaManager::GetQuotaForStorageKey(
     const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
     const QuotaSettings& settings) const {
-  auto quota = quota_map_.find(std::make_pair(storage_key, type));
+  auto quota = quota_map_.find(storage_key);
   if (quota != quota_map_.end()) {
     return quota->second.quota;
   }
-
-  return QuotaManager::GetQuotaForStorageKey(storage_key, type, settings);
+  return QuotaManager::GetQuotaForStorageKey(storage_key, settings);
 }
 
 void MockQuotaManager::SetQuota(const StorageKey& storage_key,
-                                StorageType type,
                                 int64_t quota) {
-  quota_map_[std::make_pair(storage_key, type)].quota = quota;
+  quota_map_[storage_key].quota = quota;
 }
 
 bool MockQuotaManager::AddBucket(const BucketInfo& bucket,
                                  QuotaClientTypes quota_client_types,
                                  base::Time modified) {
   DCHECK(
-      base::ranges::none_of(buckets_, [bucket](const BucketData& bucket_data) {
+      std::ranges::none_of(buckets_, [bucket](const BucketData& bucket_data) {
         return bucket.id == bucket_data.bucket.id ||
                (bucket.name == bucket_data.bucket.name &&
-                bucket.storage_key == bucket_data.bucket.storage_key &&
-                bucket.type == bucket_data.bucket.type);
+                bucket.storage_key == bucket_data.bucket.storage_key);
       }));
   buckets_.emplace_back(
       BucketData(bucket, std::move(quota_client_types), modified));
   return true;
 }
 
-BucketInfo MockQuotaManager::CreateBucket(const BucketInitParams& params,
-                                          StorageType type) {
+BucketInfo MockQuotaManager::CreateBucket(const BucketInitParams& params) {
   return BucketInfo(
-      bucket_id_generator_.GenerateNextId(), params.storage_key, type,
-      params.name, params.expiration, params.quota,
-      params.persistent.value_or(false),
+      bucket_id_generator_.GenerateNextId(), params.storage_key, params.name,
+      params.expiration, params.quota, params.persistent.value_or(false),
       params.durability.value_or(blink::mojom::BucketDurability::kRelaxed));
 }
 
@@ -242,23 +208,21 @@ bool MockQuotaManager::BucketHasData(const BucketInfo& bucket,
 }
 
 int MockQuotaManager::BucketDataCount(QuotaClientType quota_client) {
-  return base::ranges::count_if(
+  return std::ranges::count_if(
       buckets_, [quota_client](const BucketData& bucket) {
         return bucket.quota_client_types.contains(quota_client);
       });
 }
 
-void MockQuotaManager::GetBucketsModifiedBetween(StorageType type,
-                                                 base::Time begin,
+void MockQuotaManager::GetBucketsModifiedBetween(base::Time begin,
                                                  base::Time end,
                                                  GetBucketsCallback callback) {
   auto buckets_to_return = std::make_unique<std::set<BucketLocator>>();
   for (const auto& info : buckets_) {
-    if (info.bucket.type == type && info.modified >= begin &&
-        info.modified < end) {
-      buckets_to_return->insert(BucketLocator(
-          info.bucket.id, info.bucket.storage_key, info.bucket.type,
-          info.bucket.name == kDefaultBucketName));
+    if (info.modified >= begin && info.modified < end) {
+      buckets_to_return->insert(
+          BucketLocator(info.bucket.id, info.bucket.storage_key,
+                        info.bucket.name == kDefaultBucketName));
     }
   }
 
@@ -293,8 +257,7 @@ void MockQuotaManager::DeleteBucketData(const BucketLocator& bucket,
 void MockQuotaManager::FindAndDeleteBucketData(const StorageKey& storage_key,
                                                const std::string& bucket_name,
                                                StatusCallback callback) {
-  QuotaErrorOr<BucketInfo> result = FindBucket(
-      storage_key, bucket_name, blink::mojom::StorageType::kTemporary);
+  QuotaErrorOr<BucketInfo> result = FindBucket(storage_key, bucket_name);
   if (!result.has_value()) {
     std::move(callback).Run((result.error() == QuotaError::kNotFound)
                                 ? blink::mojom::QuotaStatusCode::kOk
@@ -310,7 +273,7 @@ void MockQuotaManager::UpdateBucketPersistence(
     BucketId bucket,
     bool persistent,
     base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       buckets_, bucket,
       [](const BucketData& bucket_data) { return bucket_data.bucket.id; });
   if (it != buckets_.end()) {
@@ -332,7 +295,7 @@ MockQuotaManager::~MockQuotaManager() = default;
 
 QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucketById(
     const BucketId& bucket_id) {
-  auto it = base::ranges::find(
+  auto it = std::ranges::find(
       buckets_, bucket_id,
       [](const BucketData& bucket_data) { return bucket_data.bucket.id; });
   if (it != buckets_.end()) {
@@ -343,14 +306,12 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucketById(
 
 QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
     const blink::StorageKey& storage_key,
-    const std::string& bucket_name,
-    blink::mojom::StorageType type) {
-  auto it = base::ranges::find_if(buckets_, [storage_key, bucket_name, type](
-                                                const BucketData& bucket_data) {
-    return bucket_data.bucket.storage_key == storage_key &&
-           bucket_data.bucket.name == bucket_name &&
-           bucket_data.bucket.type == type;
-  });
+    const std::string& bucket_name) {
+  auto it = std::ranges::find_if(
+      buckets_, [storage_key, bucket_name](const BucketData& bucket_data) {
+        return bucket_data.bucket.storage_key == storage_key &&
+               bucket_data.bucket.name == bucket_name;
+      });
   if (it != buckets_.end()) {
     return it->bucket;
   }
@@ -360,7 +321,7 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
 QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
     const BucketLocator& locator) {
   auto it =
-      base::ranges::find_if(buckets_, [locator](const BucketData& bucket_data) {
+      std::ranges::find_if(buckets_, [locator](const BucketData& bucket_data) {
         return bucket_data.bucket.ToBucketLocator().IsEquivalentTo(locator);
       });
   if (it != buckets_.end()) {
@@ -370,13 +331,11 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
 }
 
 QuotaErrorOr<BucketInfo> MockQuotaManager::FindAndUpdateBucket(
-    const BucketInitParams& params,
-    blink::mojom::StorageType type) {
-  auto it = base::ranges::find_if(
-      buckets_, [params, type](const BucketData& bucket_data) {
+    const BucketInitParams& params) {
+  auto it =
+      std::ranges::find_if(buckets_, [params](const BucketData& bucket_data) {
         return bucket_data.bucket.storage_key == params.storage_key &&
-               bucket_data.bucket.name == params.name &&
-               bucket_data.bucket.type == type;
+               bucket_data.bucket.name == params.name;
       });
   if (it != buckets_.end()) {
     if (params.persistent) {

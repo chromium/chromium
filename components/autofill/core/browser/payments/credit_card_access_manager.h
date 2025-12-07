@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_ACCESS_MANAGER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_CREDIT_CARD_ACCESS_MANAGER_H_
 
+#include <concepts>
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -15,11 +17,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/metrics/form_events/credit_card_form_event_logger.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
@@ -28,7 +33,6 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "components/autofill/core/browser/payments/wait_for_signal_or_timeout.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 
 #if !BUILDFLAG(IS_IOS)
 #include "components/autofill/core/browser/payments/credit_card_fido_authenticator.h"
@@ -64,19 +68,6 @@ enum class UnmaskAuthFlowType {
   kMaxValue = kThreeDomainSecureConsentAlreadyGiven,
 };
 
-// TODO(crbug.com/40197696): Remove this. This was added and never used.
-// The result of the attempt to fetch full information for a credit card.
-enum class CreditCardFetchResult {
-  kNone = 0,
-  // The attempt succeeded retrieving the full information of a credit card.
-  kSuccess = 1,
-  // The attempt failed due to a transient error.
-  kTransientError = 2,
-  // The attempt failed due to a permanent error.
-  kPermanentError = 3,
-  kMaxValue = kPermanentError,
-};
-
 // TODO(crbug.com/40927041): Remove CVC from CachedServerCardInfo.
 struct CachedServerCardInfo {
  public:
@@ -99,19 +90,45 @@ class CreditCardAccessManager
       public CreditCardOtpAuthenticator::Requester,
       public CreditCardRiskBasedAuthenticator::Requester {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Signals that `ccam` is about to be destroyed.
+    virtual void OnCreditCardAccessManagerDestroyed(
+        CreditCardAccessManager& ccam) {}
+
+    // Signals that `ccam` has begun fetching the full information for `card`.
+    virtual void OnCreditCardFetchStarted(CreditCardAccessManager& ccam,
+                                          const CreditCard& card) {}
+
+    // Signals that fetching the credit card information for `card` succeeded.
+    // Called after the requester of the fetch was notified.
+    virtual void OnCreditCardFetchSucceeded(CreditCardAccessManager& ccam,
+                                            const CreditCard& card) {}
+
+    // Signals that fetching the credit card information for `card` failed.
+    //
+    // Important: Note that this event is not yet called in every call path -
+    // do not rely on it.
+    // TODO(crbug.com/460035068): Ensure that all call paths call CCAM::Reset().
+    virtual void OnCreditCardFetchFailed(CreditCardAccessManager& ccam,
+                                         const CreditCard* card) {}
+  };
+
   using OnCreditCardFetchedCallback =
-      base::OnceCallback<void(CreditCardFetchResult, const CreditCard*)>;
+      base::OnceCallback<void(const CreditCard&)>;
   using OtpAuthenticationResponse =
       CreditCardOtpAuthenticator::OtpAuthenticationResponse;
 
-  CreditCardAccessManager(AutofillManager* manager,
-                          autofill_metrics::CreditCardFormEventLogger*
-                              credit_card_form_event_logger);
+  explicit CreditCardAccessManager(BrowserAutofillManager* manager);
 
   CreditCardAccessManager(const CreditCardAccessManager&) = delete;
   CreditCardAccessManager& operator=(const CreditCardAccessManager&) = delete;
 
   ~CreditCardAccessManager() override;
+
+  void AddObserver(Observer* observer);
+
+  void RemoveObserver(Observer* observer);
 
   // Logs information about current credit card data.
   void UpdateCreditCardFormEventLogger();
@@ -122,7 +139,8 @@ class CreditCardAccessManager
   // Makes a call to Google Payments to retrieve authentication details.
   virtual void PrepareToFetchCreditCard();
 
-  // `on_credit_card_fetched` is run once `card` is fetched.
+  // `on_credit_card_fetched` is run once `card` is fetched, if fetching is
+  // successful.
   virtual void FetchCreditCard(
       const CreditCard* card,
       OnCreditCardFetchedCallback on_credit_card_fetched);
@@ -174,26 +192,28 @@ class CreditCardAccessManager
   void OnRiskBasedAuthenticationResponseReceived(
       const CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse&
           response) override;
-  void OnVirtualCardRiskBasedAuthenticationResponseReceived(
-      payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-          response_details) override;
 
  private:
   friend class CreditCardAccessManagerTestApi;
 
   AutofillClient& autofill_client() { return manager_->client(); }
 
+  const AutofillClient& autofill_client() const { return manager_->client(); }
+
+  autofill_metrics::CreditCardFormEventLogger& form_event_logger() {
+    return manager_->GetCreditCardFormEventLogger();
+  }
+
   payments::PaymentsAutofillClient& payments_autofill_client() {
     return *autofill_client().GetPaymentsAutofillClient();
   }
 
-  PersonalDataManager& personal_data_manager() {
-    return *autofill_client().GetPersonalDataManager();
+  const payments::PaymentsAutofillClient& payments_autofill_client() const {
+    return *autofill_client().GetPaymentsAutofillClient();
   }
 
   PaymentsDataManager& payments_data_manager() {
-    return personal_data_manager().payments_data_manager();
+    return autofill_client().GetPersonalDataManager().payments_data_manager();
   }
 
   base::WeakPtr<CreditCardAccessManager> GetWeakPtr() {
@@ -220,7 +240,7 @@ class CreditCardAccessManager
   // not opted-in for FIDO auth, or if user does not select a card.
   void OnDidGetUnmaskDetails(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details);
+      payments::UnmaskDetails& unmask_details);
 
   // Determines what type of authentication is required. `fido_auth_enabled`
   // suggests whether the server has offered FIDO auth as an option.
@@ -385,6 +405,20 @@ class CreditCardAccessManager
   void OnVcn3dsAuthenticationComplete(
       payments::PaymentsWindowManager::Vcn3dsAuthenticationResponse response);
 
+  // Invoked when the card is successfully fetched.
+  void OnCreditCardFetched(const CreditCard& card,
+                           bool card_was_fetched_from_cache);
+
+  // Notifies the `observers_` that a `functor` event has taken place.
+  template <typename Functor, typename... Args>
+    requires(
+        std::invocable<Functor, Observer&, CreditCardAccessManager&, Args...>)
+  void NotifyObservers(const Functor& functor, const Args&... args) {
+    for (Observer& observer : observers_) {
+      std::invoke(functor, observer, *this, args...);
+    }
+  }
+
   // The current form of authentication in progress.
   UnmaskAuthFlowType unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
 
@@ -393,10 +427,7 @@ class CreditCardAccessManager
   bool is_authentication_in_progress_ = false;
 
   // The owning AutofillManager.
-  const raw_ref<AutofillManager> manager_;
-
-  // For logging metrics.
-  const raw_ptr<autofill_metrics::CreditCardFormEventLogger> form_event_logger_;
+  const raw_ref<BrowserAutofillManager> manager_;
 
   // Timestamp used for preflight call metrics.
   std::optional<base::TimeTicks> preflight_call_timestamp_;
@@ -418,14 +449,7 @@ class CreditCardAccessManager
   // Struct to store necessary information to start an authentication. It is
   // populated before an authentication is offered. It includes suggested
   // authentication methods and other information to facilitate card unmasking.
-  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details_;
-
-  // Structs to store information passed to and fetched from the server for
-  // virtual card unmasking.
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails
-      virtual_card_unmask_request_details_;
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails
-      virtual_card_unmask_response_details_;
+  payments::UnmaskDetails unmask_details_;
 
   // Struct to store response returned by CreditCardRiskBasedAuthenticator.
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
@@ -472,6 +496,9 @@ class CreditCardAccessManager
   // Cached data of cards which have been unmasked. This is cleared upon page
   // navigation. Map key is the card's server_id.
   std::unordered_map<std::string, CachedServerCardInfo> unmasked_card_cache_;
+
+  // Observers for this `CreditCardAccessManager`.
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<CreditCardAccessManager> weak_ptr_factory_{this};
 };

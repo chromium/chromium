@@ -4,9 +4,12 @@
 
 package org.chromium.mojo.bindings;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.Closeable;
 
 /** A class which implements this interface can receive {@link Message} objects. */
+@NullMarked
 public interface MessageReceiver extends Closeable {
 
     /**
@@ -19,5 +22,5 @@ public interface MessageReceiver extends Closeable {
      * @see java.io.Closeable#close()
      */
     @Override
-    public void close();
+    void close();
 }

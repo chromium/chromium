@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/ozone/platform_selection.h"
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "ui/ozone/platform_list.h"
 #include "ui/ozone/public/ozone_switches.h"
@@ -41,20 +37,17 @@ int GetOzonePlatformId() {
 
   // Search for a matching platform in the list.
   for (int platform_id = 0; platform_id < kPlatformCount; ++platform_id) {
-    if (platform_name == kPlatformNames[platform_id]) {
+    if (platform_name == UNSAFE_TODO(kPlatformNames[platform_id])) {
       g_selected_platform = platform_id;
       return g_selected_platform;
     }
   }
 
-  LOG(FATAL) << "Invalid ozone platform: " << platform_name
-             << (platform_name == "auto"
-                     ? ", use --ozone-platform-hint=auto instead?"
-                     : ".");
+  LOG(FATAL) << "Invalid ozone platform: " << platform_name;
 }
 
 const char* GetOzonePlatformName() {
-  return kPlatformNames[GetOzonePlatformId()];
+  return UNSAFE_TODO(kPlatformNames[GetOzonePlatformId()]);
 }
 
 }  // namespace ui

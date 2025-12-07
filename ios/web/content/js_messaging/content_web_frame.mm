@@ -32,7 +32,7 @@ std::u16string CreateFunctionCallWithParameters(
     const base::Value::List& parameters) {
   std::vector<std::string> parameter_strings(parameters.size());
   for (size_t i = 0; i < parameters.size(); ++i) {
-    base::JSONWriter::Write(parameters[i], &parameter_strings[i]);
+    parameter_strings[i] = base::WriteJson(parameters[i]).value_or("");
   }
   std::string joined_paramters = base::JoinString(parameter_strings, ",");
   return base::UTF8ToUTF16(base::StringPrintf("__gCrWeb.%s(%s)", name.c_str(),
@@ -67,10 +67,12 @@ bool ContentWebFrame::IsMainFrame() const {
   return render_frame_host_->IsInPrimaryMainFrame();
 }
 
-GURL ContentWebFrame::GetSecurityOrigin() const {
-  // TODO(crbug.com/40260077):  Once GetSecurityOrigin is changed to return an
-  // Origin instead of a URL, this should use GetLastCommittedOrigin().
-  return render_frame_host_->GetLastCommittedURL().DeprecatedGetOriginAsURL();
+url::Origin ContentWebFrame::GetSecurityOrigin() const {
+  return render_frame_host_->GetLastCommittedOrigin();
+}
+
+GURL ContentWebFrame::GetUrl() const {
+  return render_frame_host_->GetLastCommittedURL();
 }
 
 BrowserState* ContentWebFrame::GetBrowserState() {

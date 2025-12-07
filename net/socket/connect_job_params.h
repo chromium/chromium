@@ -5,9 +5,10 @@
 #ifndef NET_SOCKET_CONNECT_JOB_PARAMS_H_
 #define NET_SOCKET_CONNECT_JOB_PARAMS_H_
 
+#include <variant>
+
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace net {
 
@@ -32,21 +33,21 @@ class NET_EXPORT_PRIVATE ConnectJobParams {
   ConnectJobParams& operator=(ConnectJobParams&&);
 
   bool is_http_proxy() const {
-    return absl::holds_alternative<scoped_refptr<HttpProxySocketParams>>(
+    return std::holds_alternative<scoped_refptr<HttpProxySocketParams>>(
         params_);
   }
 
   bool is_socks() const {
-    return absl::holds_alternative<scoped_refptr<SOCKSSocketParams>>(params_);
+    return std::holds_alternative<scoped_refptr<SOCKSSocketParams>>(params_);
   }
 
   bool is_transport() const {
-    return absl::holds_alternative<scoped_refptr<TransportSocketParams>>(
+    return std::holds_alternative<scoped_refptr<TransportSocketParams>>(
         params_);
   }
 
   bool is_ssl() const {
-    return absl::holds_alternative<scoped_refptr<SSLSocketParams>>(params_);
+    return std::holds_alternative<scoped_refptr<SSLSocketParams>>(params_);
   }
 
   // Get lvalue references to the contained params.
@@ -78,10 +79,10 @@ class NET_EXPORT_PRIVATE ConnectJobParams {
   }
 
  private:
-  absl::variant<scoped_refptr<HttpProxySocketParams>,
-                scoped_refptr<SOCKSSocketParams>,
-                scoped_refptr<TransportSocketParams>,
-                scoped_refptr<SSLSocketParams>>
+  std::variant<scoped_refptr<HttpProxySocketParams>,
+               scoped_refptr<SOCKSSocketParams>,
+               scoped_refptr<TransportSocketParams>,
+               scoped_refptr<SSLSocketParams>>
       params_;
 };
 

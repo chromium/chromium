@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -25,17 +27,33 @@
 
 CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
     Profile* profile,
+    const net::NetworkTrafficAnnotationTag& network_traffic_annotation)
+    : CacheAliasSearchPrefetchURLLoader(profile,
+                                        network_traffic_annotation,
+                                        /*prefetch_url=*/GURL(),
+                                        Mode::kDryRun) {
+  TRACE_EVENT(
+      "loading",
+      "CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader");
+}
+
+CacheAliasSearchPrefetchURLLoader::CacheAliasSearchPrefetchURLLoader(
+    Profile* profile,
     const net::NetworkTrafficAnnotationTag& network_traffic_annotation,
-    const GURL& prefetch_url)
-    : url_loader_factory_(profile->GetDefaultStoragePartition()
+    const GURL& prefetch_url,
+    Mode mode)
+    : mode_(mode),
+      url_loader_factory_(profile->GetDefaultStoragePartition()
                               ->GetURLLoaderFactoryForBrowserProcess()),
       search_prefetch_service_(
           SearchPrefetchServiceFactory::GetForProfile(profile)->GetWeakPtr()),
       network_traffic_annotation_(network_traffic_annotation),
       prefetch_url_(prefetch_url) {}
 
-CacheAliasSearchPrefetchURLLoader::~CacheAliasSearchPrefetchURLLoader() =
-    default;
+CacheAliasSearchPrefetchURLLoader::~CacheAliasSearchPrefetchURLLoader() {
+  base::UmaHistogramEnumeration(
+      "Omnibox.SearchPrefetch.CacheAliasFallbackReason", fallback_reason_);
+}
 
 // static
 SearchPrefetchURLLoader::RequestHandler
@@ -70,14 +88,20 @@ void CacheAliasSearchPrefetchURLLoader::SetUpForwardingClient(
       weak_factory_.GetWeakPtr()));
   forwarding_client_.Bind(std::move(forwarding_client));
 
-  StartPrefetchRequest();
+  StartLoadCachedPrefetchResponse();
 }
 
-void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
+void CacheAliasSearchPrefetchURLLoader::StartLoadCachedPrefetchResponse() {
   network::ResourceRequest prefetch_request = *resource_request_;
 
   prefetch_request.load_flags |= net::LOAD_ONLY_FROM_CACHE;
-  prefetch_request.url = prefetch_url_;
+  switch (mode_) {
+    case Mode::kNormal:
+      prefetch_request.url = prefetch_url_;
+      break;
+    case Mode::kDryRun:
+      break;
+  }
 
   // Create a network service URL loader with passed in params.
   url_loader_factory_->CreateLoaderAndStart(
@@ -91,13 +115,25 @@ void CacheAliasSearchPrefetchURLLoader::StartPrefetchRequest() {
       base::Unretained(this)));
 }
 
-void CacheAliasSearchPrefetchURLLoader::RestartDirect() {
+void CacheAliasSearchPrefetchURLLoader::RestartDirect(
+    FallbackReason fallback_reason) {
+  CHECK(can_fallback_);
+  can_fallback_ = false;
+  TRACE_EVENT("loading", "CacheAliasSearchPrefetchURLLoader::RestartDirect");
   network_url_loader_.reset();
   url_loader_receiver_.reset();
-  can_fallback_ = false;
 
-  if (search_prefetch_service_)
+  CHECK_EQ(fallback_reason_, FallbackReason::kNoFallback);
+  CHECK_NE(fallback_reason, FallbackReason::kNoFallback);
+  fallback_reason_ = fallback_reason;
+
+  if (search_prefetch_service_) {
     search_prefetch_service_->ClearCacheEntry(resource_request_->url);
+  }
+
+  base::UmaHistogramTimes(
+      "Omnibox.SearchPrefetch.CacheAliasElapsedTimeToFallback",
+      timer_from_ctor_.Elapsed());
 
   // Create a network service URL loader with passed in params.
   url_loader_factory_->CreateLoaderAndStart(
@@ -112,9 +148,6 @@ void CacheAliasSearchPrefetchURLLoader::RestartDirect() {
   url_loader_receiver_.set_disconnect_handler(base::BindOnce(
       &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
       base::Unretained(this)));
-  if (paused_) {
-    network_url_loader_->PauseReadingBodyFromNet();
-  }
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnReceiveEarlyHints(
@@ -130,22 +163,23 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveResponse(
   DCHECK(forwarding_client_);
   if (can_fallback_) {
     if (!head->headers) {
-      RestartDirect();
+      RestartDirect(FallbackReason::kNoResponseHeaders);
       return;
     }
 
     // Any 200 response can be served.
     if (head->headers->response_code() < net::HTTP_OK ||
         head->headers->response_code() >= net::HTTP_MULTIPLE_CHOICES) {
-      RestartDirect();
+      RestartDirect(FallbackReason::kNon2xxResponse);
       return;
     }
     url_loader_receiver_.set_disconnect_handler(base::BindOnce(
         &CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback,
         weak_factory_.GetWeakPtr()));
 
-    if (search_prefetch_service_)
+    if (search_prefetch_service_) {
       search_prefetch_service_->UpdateServeTime(resource_request_->url);
+    }
   }
 
   // Cached metadata is not supported for navigation loader.
@@ -161,7 +195,7 @@ void CacheAliasSearchPrefetchURLLoader::OnReceiveRedirect(
     network::mojom::URLResponseHeadPtr head) {
   DCHECK(forwarding_client_);
   if (can_fallback_) {
-    RestartDirect();
+    RestartDirect(FallbackReason::kRedirectResponse);
     return;
   }
 
@@ -173,7 +207,7 @@ void CacheAliasSearchPrefetchURLLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // We only handle GETs.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
@@ -187,7 +221,10 @@ void CacheAliasSearchPrefetchURLLoader::OnTransferSizeUpdated(
 void CacheAliasSearchPrefetchURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
   if (status.error_code != net::OK && can_fallback_) {
-    RestartDirect();
+    base::UmaHistogramSparse(
+      "Omnibox.SearchPrefetch.CacheAliasOnCompleteNetError",
+      -status.error_code);
+    RestartDirect(FallbackReason::kErrorOnComplete);
     return;
   }
   DCHECK(forwarding_client_);
@@ -203,36 +240,24 @@ void CacheAliasSearchPrefetchURLLoader::FollowRedirect(
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
     const std::optional<GURL>& new_url) {
   // This should never be called for a non-network service URLLoader.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CacheAliasSearchPrefetchURLLoader::SetPriority(
     net::RequestPriority priority,
     int32_t intra_priority_value) {
   // Pass through.
-  if (network_url_loader_)
+  if (network_url_loader_) {
     network_url_loader_->SetPriority(priority, intra_priority_value);
+  }
 
   resource_request_->priority = priority;
 }
 
-void CacheAliasSearchPrefetchURLLoader::PauseReadingBodyFromNet() {
-  // Pass through.
-  if (network_url_loader_)
-    network_url_loader_->PauseReadingBodyFromNet();
-  paused_ = true;
-}
-
-void CacheAliasSearchPrefetchURLLoader::ResumeReadingBodyFromNet() {
-  // Pass through.
-  if (network_url_loader_)
-    network_url_loader_->ResumeReadingBodyFromNet();
-  paused_ = false;
-}
-
 void CacheAliasSearchPrefetchURLLoader::MojoDisconnectForPrefetch() {
-  if (can_fallback_)
-    RestartDirect();
+  if (can_fallback_) {
+    RestartDirect(FallbackReason::kMojoDisconnect);
+  }
 }
 
 void CacheAliasSearchPrefetchURLLoader::MojoDisconnectWithNoFallback() {

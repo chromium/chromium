@@ -9,6 +9,7 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 დღის წინ}other{# დღის წინ}}</translation>
 <translation id="1181037720776840403">ამოშლა</translation>
 <translation id="1243314992276662751">ატვირთვა</translation>
+<translation id="1253734725326687145">შეხების სამიზნე ზედა მარჯვენა ნაწილშია გადატანილი. შეეხეთ აქ.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ვერ გაზიარდა</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">ცადეთ ტექსტის გაზიარება უფრო მცირე ფრაგმენტებად.</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">ეს ახალი ფუნქციაა</translation>
 <translation id="2006524834898217237">დარწმუნდით, რომ ეს მოწყობილობა დაკავშირებულია ინტერნეტთან.</translation>
 <translation id="208586643495776849">გთხოვთ, ცადოთ ხელახლა</translation>
+<translation id="2111134541987263231">ჩართეთ <ph name="BEGIN_BOLD" />ინკოგნიტოში დაშვება<ph name="END_BOLD" /></translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1 დღ}other{# დღ}}</translation>
 <translation id="2148716181193084225">დღეს</translation>
 <translation id="2168039046890040389">ერთი გვერდით ზემოთ</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">შეეხეთ შეხების სამიზნეებს თქვენს ეკრანზე.</translation>
 <translation id="2295140143284145483">გამოკითხვა</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> ტბაიტი/წმ</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{გაფართოება ID-ით <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ვერ მოიძებნა. დაუკავშირდით თქვენს ადმინისტრატორს.}other{გაფართოებები ID-ებით <ph name="BEGIN_LIST" /><ph name="END_LIST" /> ვერ მოიძებნა. დაუკავშირდით თქვენს ადმინისტრატორს.}}</translation>
 <translation id="2353636109065292463">თქვენი ინტერნეტ-კავშირის შემოწმება</translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2388990488038464401">გსურთ ამ ნომერზე დარეკვა თქვენი ტელეფონიდან?</translation>
 <translation id="2435457462613246316">პაროლის ჩვენება</translation>
 <translation id="24452542372838207">შეტყობინების გაშლა</translation>
 <translation id="2445449901874883781">მაღალი სიმკვრივის გამოყენება</translation>
+<translation id="2448407890032181691">შეხების სამიზნე ქვედა მარჯვენა ნაწილშია გადატანილი. შეეხეთ აქ.</translation>
 <translation id="2482878487686419369">შეტყობინებები</translation>
 <translation id="2497284189126895209">ყველა ფაილი</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">ყველაფრის წაშლა</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{1 დღეში}other{# დღეში}}</translation>
 <translation id="2922712708897119705">სვეტი <ph name="COLUMN_NAME" /> დალაგებულია კლებადი მიმდევრობით.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{გაფართოება ვერ მოიძებნა}other{გაფართოებები ვერ მოიძებნა}}</translation>
 <translation id="3036649622769666520">გახსენით ფაილები</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> მბაიტი</translation>
 <translation id="3087734570205094154">ქვედა საზღვარი</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">ზარის განხორციელება შემდეგიდან:</translation>
 <translation id="3306688585798492231">ჩაშენებული ეკრანი</translation>
 <translation id="335581015389089642">მეტყველება</translation>
+<translation id="3372635229069101468">დააწკაპუნეთ <ph name="BEGIN_BOLD" />დეტალებზე<ph name="END_BOLD" /></translation>
 <translation id="3389286852084373014">ტექსტი მეტისმეტად დიდია</translation>
 <translation id="3406306243914553062">HTML კონტენტი</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{დარჩენილია 1 დღე}other{დარჩენილია # დღე}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561">სვეტი <ph name="COLUMN_NAME" /> დალაგებულია ზრდადი მიმდევრობით.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 წაუკითხავი შეტყობინება}other{# წაუკითხავი შეტყობინება}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{ინკოგნიტო რეჟიმში ჩართეთ შემდეგი გაფართოება:}other{ინკოგნიტო რეჟიმში ჩართეთ შემდეგი გაფართოებები:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 თვის წინ}other{# თვის წინ}}</translation>
+<translation id="4277033906326892359">სვეტი <ph name="COLUMN_NAME" /> დალაგებულია ზრდადი მიმდევრობით</translation>
 <translation id="4289300219472526559">დაიწყეთ ლაპარაკი</translation>
 <translation id="4289540628985791613">მიმოხილვა</translation>
 <translation id="4491109536499578614">გამოსახულება</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">ნომერი</translation>
 <translation id="4746179598275229723">გაფართოების ჩამაგრება მოიხსნა</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{დარჩენილია 1 თვე}other{დარჩენილია # თვე}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{ინკოგნიტო რეჟიმის გამოსაყენებლად თქვენი ორგანიზაცია ითხოვს გაფართოებას}other{ინკოგნიტო რეჟიმის გამოსაყენებლად თქვენი ორგანიზაცია ითხოვს გარკვეულ გაფართოებებს}}</translation>
+<translation id="482932175346970750">აკრიფეთ <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> თქვენს ბრაუზერში</translation>
 <translation id="4888938634149558681">დარეკვა</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 წამი}other{# წამი}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;ჩასმა</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> პბაიტი</translation>
 <translation id="5278860589123563674">გაგზავნა ვერ მოხერხდა</translation>
+<translation id="5283101102242354279">ინკოგნიტო რეჟიმში ჩართეთ გაფართოება:</translation>
 <translation id="528468243742722775">დასასრული</translation>
 <translation id="5329858601952122676">&amp;წაშლა</translation>
 <translation id="5361107212971249203">ტექსტი</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">გვერდის ჩატვირთვა ვერ მოხერხდა, რადგან დეველოპერული UI-მოდული (dev_ui) დაინსტალირებული არ არის</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> სისტემა</translation>
 <translation id="5583640892426849032">უკუშლა</translation>
+<translation id="5606865426897221650">ჩანართი</translation>
 <translation id="5613020302032141669">მარცხენა ისარი</translation>
 <translation id="5633029987065897167">ცარიელი</translation>
+<translation id="5651438382973553530">შეხების სამიზნე ქვედა მარცხენა ნაწილშია გადატანილი. შეეხეთ აქ.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 წთ}other{# წთ}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{აქტიური იყო დღეს}=1{აქტიური იყო 1 დღის წინ}other{აქტიური იყო # დღის წინ}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 დღე და }other{# დღე და }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">სურათი.</translation>
+<translation id="5860491529813859533">ჩართვა</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{1 წ.-ში}other{# წ.-ში}}</translation>
 <translation id="588258955323874662">სრული ეკრანი</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{დარჩენილია 1 წამი}other{დარჩენილია # წამი}}</translation>
@@ -151,6 +165,7 @@
 <translation id="6264365405983206840">ყ&amp;ველას არჩევა</translation>
 <translation id="6346952829206698721">გაცვლის ბუფერიდან ჩასმა</translation>
 <translation id="6364916375976753737">გადაადგილება მარცხნივ</translation>
+<translation id="63712816010840859">თუ ამჟამინდელი ეკრანი არ არის სენსორული, დააჭირეთ Esc-ს.</translation>
 <translation id="6394627529324717982">მძიმე</translation>
 <translation id="6397363302884558537">ლაპარაკის შეწყვეტა</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 წამის წინ}other{# წამის წინ}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">კალიბრაციიდან გამოსასვლელად, დააჭირეთ კლავიშს „Esc“.</translation>
 <translation id="6620110761915583480">ფაილის შენახვა</translation>
 <translation id="6699343763173986273">შემდეგი მედია ჩანაწერი</translation>
+<translation id="6738856801552481343">თუ აღნიშნული ეკრანი არ არის სენსორული, დააჭირეთ Esc-ს.</translation>
+<translation id="6807086321996342431">სვეტი <ph name="COLUMN_NAME" /></translation>
 <translation id="6808150112686056157">მედიის შეწყვეტა</translation>
 <translation id="6845383723252244143">აირჩიეთ საქაღალდე</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{დარჩენილია 1 საათი}other{დარჩენილია # საათი}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">აპლიკაციის ჩვენების პარამეტრები ამოქმედდება მისი მომდევნო გადატვირთვის შემდეგ.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{დარჩენილია 1 წთ}other{დარჩენილია # წთ}}</translation>
+<translation id="7252604552361840748">ზემოთ იპოვეთ გაფართოება</translation>
 <translation id="7363164521834647158">პასუხის გაგზავნა</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 წუთის წინ}other{# წუთის წინ}}</translation>
 <translation id="7389409599945284130">— <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1-ზე მეტი წაუკითხავი შეტყობინება}other{#-ზე მეტი წაუკითხავი შეტყობინება}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 წუთში}other{# წუთში}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568">ნომერი <ph name="ORIGIN" />-დან</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 საათის წინ}other{# საათის წინ}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{დარჩენილია 1 წმ}other{დარჩენილია # წმ}}</translation>
 <translation id="8134065097954893699">ამ გვერდის ხელახლა ჩატვირთვა</translation>
+<translation id="813785873406874127">სვეტის <ph name="COLUMN_NAME" /> დალაგება გაუქმდა</translation>
 <translation id="815598010540052116">გადაადგილება ქვემოთ</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">ერთი გვერდით ქვემოთ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">ჩანართი</translation>
 <translation id="8259556432390118667">ფერის თექვსმეტობითი მნიშვნელობა</translation>
 <translation id="8328145009876646418">მარცხენა კიდე</translation>
 <translation id="8331626408530291785">გადაადგილება ზევით</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">შეტყობინების გაგზავნა</translation>
 <translation id="8394908167088220973">მედიის დაკვრა/პაუზა</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1 წ.}other{# წ.}}</translation>
+<translation id="8582972250170726813">სვეტი <ph name="COLUMN_NAME" /> დალაგებულია კლებადი მიმდევრობით</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" /> ფაილი (.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> კბ/წ</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 წმ}other{# წმ}}</translation>
 <translation id="9059834730836941392">შეტყობინების ჩაკეცვა</translation>
 <translation id="9170848237812810038">მოქმედების დაბრ&amp;უნება</translation>
+<translation id="9195990613383871904">ხვალ</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">საწყისი გვერდი</translation>
 <translation id="944069440740578670">წაუკითხავი შეტყობინებები</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 წამის წინ}other{# წამის წინ}}</translation>

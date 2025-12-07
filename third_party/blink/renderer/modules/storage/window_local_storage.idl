@@ -1,0 +1,11 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://html.spec.whatwg.org/C/#the-localstorage-attribute
+[
+    ImplementedAs=DOMWindowStorage
+] interface mixin WindowLocalStorage {
+  [LogActivity=GetterOnly, RaisesException=Getter] readonly attribute Storage localStorage;
+};
+Window includes WindowLocalStorage;

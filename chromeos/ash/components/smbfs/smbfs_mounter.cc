@@ -10,6 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "chromeos/components/mojo_bootstrap/pending_connection_manager.h"
+#include "mojo/core/configuration.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
@@ -186,6 +187,10 @@ void SmbFsMounter::OnMountDone(
 
 void SmbFsMounter::OnIpcChannel(base::ScopedFD mojo_fd) {
   DCHECK(mojo_fd.is_valid());
+  if (!mojo::core::GetConfiguration().is_broker_process) {
+    bootstrap_invitation_.set_extra_flags(
+        MOJO_SEND_INVITATION_FLAG_SHARE_BROKER);
+  }
   mojo::OutgoingInvitation::Send(
       std::move(bootstrap_invitation_), base::kNullProcessHandle,
       mojo::PlatformChannelEndpoint(mojo::PlatformHandle(std::move(mojo_fd))));

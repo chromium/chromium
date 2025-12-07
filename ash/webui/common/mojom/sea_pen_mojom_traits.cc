@@ -35,9 +35,10 @@ EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::ToMojom(
     case manta::MantaStatusCode::kRestrictedCountry:
     case manta::MantaStatusCode::kNoIdentityManager:
       return MojomMantaStatusCode::kGenericError;
+    case manta::MantaStatusCode::kImageHasPerson:
+      return MojomMantaStatusCode::kImageHasPerson;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return MojomMantaStatusCode::kGenericError;
+      NOTREACHED();
   }
 }
 
@@ -71,8 +72,10 @@ bool EnumTraits<MojomMantaStatusCode, manta::MantaStatusCode>::FromMojom(
     case MojomMantaStatusCode::kNoIdentityManager:
       *output = manta::MantaStatusCode::kGenericError;
       return true;
+    case MojomMantaStatusCode::kImageHasPerson:
+      *output = manta::MantaStatusCode::kImageHasPerson;
+      return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 }  // namespace mojo

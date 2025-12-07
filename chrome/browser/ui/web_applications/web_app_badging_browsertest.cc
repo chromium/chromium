@@ -198,8 +198,9 @@ class WebAppBadgingBrowserTest : public WebAppBrowserTestBase {
 
     ASSERT_TRUE(content::ExecJs(on, script));
 
-    if (badge_change_map_.size() >= expected_badge_change_count_)
+    if (badge_change_map_.size() >= expected_badge_change_count_) {
       return;
+    }
 
     awaiter_->Run();
   }

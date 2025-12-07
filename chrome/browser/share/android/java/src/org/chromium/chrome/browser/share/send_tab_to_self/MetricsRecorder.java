@@ -8,9 +8,11 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.NullMarked;
 
 /** Class that captures all the metrics needed for Send Tab To Self on Android. */
 @JNINamespace("send_tab_to_self")
+@NullMarked
 class MetricsRecorder {
     public static void recordCrossDeviceTabJourney() {
         RecordUserAction.record("MobileCrossDeviceTabJourney");

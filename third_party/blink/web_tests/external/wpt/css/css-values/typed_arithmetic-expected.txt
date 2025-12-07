@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] calc(10% / 1px) should be used-value-equivalent to 1
+  assert_equals: calc(10% / 1px) and 1 serialize to the same thing in used values. expected "10px" but got "100px"
+[FAIL] calc(10% * 10% / 1px * 10deg / 1deg / 10px) should be used-value-equivalent to 1
+  assert_equals: calc(10% * 10% / 1px * 10deg / 1deg / 10px) and 1 serialize to the same thing in used values. expected "10px" but got "1000px"
+[FAIL] calc(10% * 10% / 1px * 1deg / 1deg) should be used-value-equivalent to 1px
+  assert_equals: calc(10% * 10% / 1px * 1deg / 1deg) and 1px serialize to the same thing in used values. expected "1px" but got "100px"
+Harness: the test ran to completion.
+

@@ -128,15 +128,13 @@ std::unique_ptr<StoredPaymentApp> ToStoredPaymentApp(const std::string& input) {
       ToSupportedDelegations(app_proto.supported_delegations());
 
   if (!app_proto.icon().empty()) {
-    std::string icon_raw_data;
-    base::Base64Decode(app_proto.icon(), &icon_raw_data);
+    std::optional<std::vector<uint8_t>> icon_raw_data =
+        base::Base64Decode(app_proto.icon());
     app->icon = std::make_unique<SkBitmap>();
     // Note that the icon has been decoded to PNG raw data regardless of the
     // original icon format that was downloaded.
-    bool success = gfx::PNGCodec::Decode(
-        reinterpret_cast<const unsigned char*>(icon_raw_data.data()),
-        icon_raw_data.size(), app->icon.get());
-    DCHECK(success);
+    *app->icon = gfx::PNGCodec::Decode(icon_raw_data.value());
+    CHECK(!app->icon->isNull());
   }
 
   return app;

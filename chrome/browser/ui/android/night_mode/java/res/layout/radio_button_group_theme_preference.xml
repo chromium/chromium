@@ -21,7 +21,6 @@ found in the LICENSE file.
           android:id="@+id/system_default"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          app:primaryText="@string/themes_system_default_title"
           app:descriptionText="@string/themes_system_default_summary" />
 
       <!-- override default padding top and bottom -->
@@ -31,8 +30,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:minHeight="@dimen/min_touch_target_size"
           android:paddingTop="8dp"
-          android:paddingBottom="8dp"
-          app:primaryText="@string/light_mode" />
+          android:paddingBottom="8dp" />
 
       <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
           android:id="@+id/dark"
@@ -40,8 +38,7 @@ found in the LICENSE file.
           android:layout_height="wrap_content"
           android:minHeight="@dimen/min_touch_target_size"
           android:paddingTop="8dp"
-          android:paddingBottom="8dp"
-          app:primaryText="@string/dark_mode" />
+          android:paddingBottom="8dp" />
 
     </org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout>
 

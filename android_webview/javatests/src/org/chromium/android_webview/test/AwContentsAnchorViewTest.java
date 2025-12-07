@@ -41,7 +41,7 @@ public class AwContentsAnchorViewTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mContainerView = new FrameLayout(mActivityTestRule.getActivity());
-                    mViewDelegate = new AwViewAndroidDelegate(mContainerView, null, null);
+                    mViewDelegate = new AwViewAndroidDelegate(mContainerView, null, null, null);
                 });
     }
 

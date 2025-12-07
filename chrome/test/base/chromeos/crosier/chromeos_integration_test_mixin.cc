@@ -5,21 +5,41 @@
 #include "chrome/test/base/chromeos/crosier/chromeos_integration_test_mixin.h"
 
 #include "base/command_line.h"
-#include "build/chromeos_buildflags.h"
+#include "base/files/file_util.h"
+#include "base/path_service.h"
+#include "base/strings/string_split.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/common/chrome_switches.h"
+#include "mojo/core/embedder/features.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gl/gl_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+namespace {
+
+constexpr char kUseFlagsPathName[] = "/etc/ui_use_flags.txt";
+constexpr char kMojoIpczUseFlag[] = "ipcz";
+
+}  // namespace
 
 ChromeOSIntegrationTestMixin::ChromeOSIntegrationTestMixin(
     InProcessBrowserTestMixinHost* host)
-    : InProcessBrowserTestMixin(host) {}
+    : InProcessBrowserTestMixin(host) {
+  base::FilePath use_flags_path(kUseFlagsPathName);
+  if (base::PathExists(use_flags_path)) {
+    std::string data;
+    base::ReadFileToString(use_flags_path, &data);
+
+    std::vector<std::string> flags = base::SplitString(
+        data, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    if (std::find(flags.begin(), flags.end(), kMojoIpczUseFlag) !=
+        flags.end()) {
+      // Enable MojoIpcz flag in the presence of ipcz USE flag to prevent
+      // crbug.com/439917450.
+      feature_list_.InitAndEnableFeature(mojo::core::kMojoIpcz);
+    }
+  }
+}
 
 ChromeOSIntegrationTestMixin::~ChromeOSIntegrationTestMixin() = default;
 
@@ -31,28 +51,9 @@ void ChromeOSIntegrationTestMixin::SetUpCommandLine(
   // and generating screenshots during test failures.
   command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
   command_line->AppendSwitch(switches::kUseGpuInTests);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For Ash testing, which Lacros version to use is different for Browser
-  // and OS side. The strategy need to comply with the production version skew
-  // guidelines.
-  // On browser side, all Ash builders need to compile Lacros using an
-  // alternate toolchain. Compiled Lacros is under //out/Default/lacros_clang.
-  // So there is no version skew between Ash and Lacros.
-  // On OS side, Ash tests should use the RootFS version packed in the
-  // OS image.
-  base::FilePath path = command_line->GetProgram();
-  path = path.DirName().Append("lacros_clang").Append("chrome");
-  if (base::PathExists(path)) {
-    command_line->AppendSwitchPath(ash::switches::kLacrosChromePath, path);
-    LOG(INFO) << "Testing with locally compiled Lacros.";
-  } else {
-    LOG(INFO) << "Testing with RootFS Lacros.";
-  }
-#endif
 }
 
 bool ChromeOSIntegrationTestMixin::SetUpUserDataDirectory() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Always have --user-data-dir present in commandline arguments.
   // Without the argument, there are some permission issues. Here the logic
   // is: a temporary dir is created in base framework and set in PathService.
@@ -63,6 +64,5 @@ bool ChromeOSIntegrationTestMixin::SetUpUserDataDirectory() {
   if (!cmdline->HasSwitch(switches::kUserDataDir)) {
     cmdline->AppendSwitchPath(switches::kUserDataDir, user_data_dir);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return InProcessBrowserTestMixin::SetUpUserDataDirectory();
 }

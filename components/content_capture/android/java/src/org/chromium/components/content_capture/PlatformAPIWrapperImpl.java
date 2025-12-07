@@ -4,6 +4,8 @@
 
 package org.chromium.components.content_capture;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.LocusId;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,12 +16,16 @@ import android.view.contentcapture.ContentCaptureSession;
 
 import androidx.annotation.RequiresApi;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 /** The implementation of PlatformAPIWrapper. */
 @RequiresApi(Build.VERSION_CODES.Q)
+@NullMarked
 public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
     @Override
     public ContentCaptureSession createContentCaptureSession(
-            ContentCaptureSession parent, String url, String favicon) {
+            ContentCaptureSession parent, String url, @Nullable String favicon) {
         Bundle bundle = new Bundle();
         if (favicon != null) bundle.putCharSequence("favicon", favicon);
         return parent.createContentCaptureSession(
@@ -66,12 +72,19 @@ public class PlatformAPIWrapperImpl extends PlatformAPIWrapper {
     }
 
     @Override
-    public void notifyFaviconUpdated(ContentCaptureSession session, String favicon) {
+    public void notifyFaviconUpdated(ContentCaptureSession session, @Nullable String favicon) {
         Bundle bundle = new Bundle();
         if (favicon != null) bundle.putCharSequence("favicon", favicon);
+        LocusId locusId = assumeNonNull(session.getContentCaptureContext()).getLocusId();
+        assert locusId != null;
         session.setContentCaptureContext(
-                new ContentCaptureContext.Builder(session.getContentCaptureContext().getLocusId())
-                        .setExtras(bundle)
-                        .build());
+                new ContentCaptureContext.Builder(locusId).setExtras(bundle).build());
+    }
+
+    @Override
+    public void flush(ContentCaptureSession session) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
+            session.flush();
+        }
     }
 }

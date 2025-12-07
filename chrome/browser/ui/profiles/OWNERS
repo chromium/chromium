@@ -1,1 +1,4 @@
 file://chrome/browser/profiles/OWNERS
+
+# For UI changes related to the sign-in flow.
+file://components/signin/DESKTOP_OWNERS

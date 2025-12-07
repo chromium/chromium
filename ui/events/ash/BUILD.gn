@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("ash") {
   output_name = "ui_events_ash"
@@ -32,8 +31,6 @@ source_set("ash") {
     "keyboard_layout_util.h",
     "keyboard_modifier_event_rewriter.cc",
     "keyboard_modifier_event_rewriter.h",
-    "modifier_split_dogfood_controller.cc",
-    "modifier_split_dogfood_controller.h",
     "pref_names.h",
     "top_row_action_keys.cc",
     "top_row_action_keys.h",
@@ -41,7 +38,6 @@ source_set("ash") {
   deps = [
     "//ash/constants",
     "//base",
-    "//components/user_manager",
     "//device/udev_linux",
     "//google_apis",
     "//ui/base",
@@ -76,7 +72,6 @@ source_set("unit_tests") {
     "//ash/constants",
     "//base",
     "//base/test:test_support",
-    "//components/user_manager:test_support",
     "//device/udev_linux:test_support",
     "//testing/gtest",
     "//ui/base",

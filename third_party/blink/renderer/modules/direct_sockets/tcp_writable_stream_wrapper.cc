@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_writable_stream_wrapper.h"
 
+#include <optional>
+
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/system/handle_signals_state.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -17,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/events/event_target_impl.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -39,23 +38,23 @@ namespace blink {
 TCPWritableStreamWrapper::TCPWritableStreamWrapper(
     ScriptState* script_state,
     CloseOnceCallback on_close,
-    mojo::ScopedDataPipeProducerHandle handle)
+    mojo::ScopedDataPipeProducerHandle handle,
+    uint64_t inspector_id)
     : WritableStreamWrapper(script_state),
       on_close_(std::move(on_close)),
       data_pipe_(std::move(handle)),
       write_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
-      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
-  write_watcher_.Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPWritableStreamWrapper::OnHandleReady,
-                         WrapWeakPersistent(this)));
+      close_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC),
+      inspector_id_(inspector_id) {
+  write_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_WRITABLE,
+                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                       BindRepeating(&TCPWritableStreamWrapper::OnHandleReady,
+                                     WrapWeakPersistent(this)));
 
-  close_watcher_.Watch(
-      data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
-      MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
-      WTF::BindRepeating(&TCPWritableStreamWrapper::OnHandleReset,
-                         WrapWeakPersistent(this)));
+  close_watcher_.Watch(data_pipe_.get(), MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+                       MOJO_TRIGGER_CONDITION_SIGNALS_SATISFIED,
+                       BindRepeating(&TCPWritableStreamWrapper::OnHandleReset,
+                                     WrapWeakPersistent(this)));
 
   ScriptState::Scope scope(script_state);
 
@@ -91,7 +90,7 @@ void TCPWritableStreamWrapper::OnHandleReady(MojoResult result,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -113,6 +112,7 @@ ScriptPromise<IDLUndefined> TCPWritableStreamWrapper::Write(
     ScriptValue chunk,
     ExceptionState& exception_state) {
   // There can only be one call to write() in progress at a time.
+
   DCHECK(!write_promise_resolver_);
   DCHECK(!buffer_source_);
   DCHECK_EQ(0u, offset_);
@@ -153,9 +153,8 @@ void TCPWritableStreamWrapper::WriteDataAsynchronously() {
     FinalizeWrite();
     return;
   }
-  auto data = base::make_span(array_piece.Bytes(), array_piece.ByteLength())
-                  .subspan(offset_);
-  size_t written = WriteDataSynchronously(data);
+  size_t written =
+      WriteDataSynchronously(array_piece.ByteSpan().subspan(offset_));
 
   DCHECK_LE(offset_ + written, array_piece.ByteLength());
   if (offset_ + written == array_piece.ByteLength()) {
@@ -185,12 +184,18 @@ size_t TCPWritableStreamWrapper::WriteDataSynchronously(
       return 0;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
 void TCPWritableStreamWrapper::FinalizeWrite() {
+  if (buffer_source_) {
+    // report to CDP
+    DOMArrayPiece array_piece(buffer_source_);
+    base::span<const uint8_t> data = array_piece.ByteSpan();
+    probe::DirectTCPSocketChunkSent(*GetScriptState(), inspector_id_, data);
+  }
+
   buffer_source_ = nullptr;
   offset_ = 0;
   write_promise_resolver_->Resolve();
@@ -218,7 +223,8 @@ void TCPWritableStreamWrapper::CloseStream() {
   }
 
   ResetPipe();
-  std::move(on_close_).Run(/*exception=*/ScriptValue());
+  std::move(on_close_).Run(/*exception=*/v8::Local<v8::Value>(),
+                           /*net_error=*/net::OK);
 }
 
 void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
@@ -226,6 +232,9 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
     return;
   }
   SetState(State::kAborted);
+
+  // Error codes are negative.
+  base::UmaHistogramSparse("DirectSockets.TCPWritableStreamError", -error_code);
 
   auto message =
       String{"Stream aborted by the remote: " + net::ErrorToString(error_code)};
@@ -237,10 +246,8 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
   // ScriptValue.
   ScriptState::Scope scope{script_state};
 
-  auto exception = ScriptValue(script_state->GetIsolate(),
-                               V8ThrowDOMException::CreateOrDie(
-                                   script_state->GetIsolate(),
-                                   DOMExceptionCode::kNetworkError, message));
+  auto exception = V8ThrowDOMException::CreateOrDie(
+      script_state->GetIsolate(), DOMExceptionCode::kNetworkError, message);
 
   // Can be already reset due to HandlePipeClosed() called previously.
   if (data_pipe_) {
@@ -251,10 +258,11 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
     write_promise_resolver_->Reject(exception);
     write_promise_resolver_ = nullptr;
   } else {
-    Controller()->error(script_state, exception);
+    Controller()->error(script_state,
+                        ScriptValue(script_state->GetIsolate(), exception));
   }
 
-  std::move(on_close_).Run(exception);
+  std::move(on_close_).Run(exception, error_code);
 }
 
 void TCPWritableStreamWrapper::ResetPipe() {

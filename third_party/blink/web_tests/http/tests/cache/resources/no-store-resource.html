@@ -2,8 +2,11 @@
 <script src="random.cgi"></script>
 <script>
 // Random.cgi will include a global "randomNumber".
-// Always send this back to our opener.
-opener.postMessage(randomNumber, '*');
+// Always send this back to our opener in the `pageshow` event handler so that
+// we can post it at the page load time, and also on restoring from the bfcache.
+window.addEventListener('pageshow', function(event) {
+    opener.postMessage(randomNumber, '*');
+}, false);
 
 // Our opener will tell us to perform various loads.
 window.addEventListener('message', function(event) {

@@ -1,0 +1,131 @@
+[document web] name='Material Web Checkboxes'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] checked checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] indeterminate checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[check box] checkable checkable:true
+++++++[section]
+++++++[section]
+++++[section]
+++++++[check box] checked checkable checkable:true
+++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] required checkable checkable:true
+++++++++[section]
+++++++++[section]
+=== Start Continuation ===
+[document web] name='Material Web Checkboxes'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] checked checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] checked checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] indeterminate checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[check box] checkable checkable:true
+++++++[section]
+++++++[section]
+++++[section]
+++++++[check box] checked checkable checkable:true
+++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] required checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[static] name='Checkbox 1 Checked'
+=== Start Continuation ===
+[document web] name='Material Web Checkboxes'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] checked checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] indeterminate checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[check box] checkable checkable:true
+++++++[section]
+++++++[section]
+++++[section]
+++++++[check box] checked checkable checkable:true
+++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] required checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[static] name='Checkbox 1 Checked'
+++++[section]
+++++++[static] name='Checkbox 1 Unchecked'
+=== Start Continuation ===
+[document web] name='Material Web Checkboxes'
+++[section] name='Ready'
+++++[section]
+++++++[section]
+++++++++[check box] indeterminate checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] checked checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] indeterminate checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[check box] checkable checkable:true
+++++++[section]
+++++++[section]
+++++[section]
+++++++[check box] checked checkable checkable:true
+++++++[section]
+++++[section]
+++++++[section]
+++++++++[check box] required checkable checkable:true
+++++++++[section]
+++++++++[section]
+++++[section]
+++++++[static] name='Checkbox 1 Checked'
+++++[section]
+++++++[static] name='Checkbox 1 Unchecked'
+++++[section]
+++++++[static] name='Checkbox 1 Indeterminate'

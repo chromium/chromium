@@ -7,16 +7,18 @@ package org.chromium.chrome.browser.locale;
 import android.app.Activity;
 import android.content.Context;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.library_loader.LibraryLoader;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -24,11 +26,11 @@ import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogCoord
 import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelper;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoState;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
+import org.chromium.chrome.browser.search_engines.SearchEngineType;
 import org.chromium.chrome.browser.search_engines.SogouPromoDialog;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator;
 import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -38,12 +40,15 @@ import org.chromium.ui.base.PageTransition;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Base class for defining methods where different behavior is required by downstream targets.
- * The correct version of LocaleManagerDelegateImpl} will be determined at compile tim
- * via build rules.
+ *
+ * <p>The correct version of {@link LocaleManagerDelegate} will be determined at runtime by
+ * ServiceLoader.
  */
+@NullMarked
 public class LocaleManagerDelegate {
     private static final String SPECIAL_LOCALE_ID = "US";
 
@@ -56,19 +61,34 @@ public class LocaleManagerDelegate {
     // LocaleManager is a singleton and it should not have strong reference to UI objects.
     // SnackbarManager is owned by ChromeActivity and is not null as long as the activity is alive.
     private WeakReference<SnackbarManager> mSnackbarManager = new WeakReference<>(null);
-    private LocaleTemplateUrlLoader mLocaleTemplateUrlLoader;
+
+    /**
+     * Stores the prepopulate ID of a search engine for which we need to show a snackbar notifying
+     * the user that the default search engine changed. This is set only if the {@link
+     * #mSnackbarManager} is not available when we attempt to show the snackbar. See {@link
+     * #showSnackbarForDeviceSearchEngineUpdate()}.
+     */
+    private @SearchEngineType int mIsSnackbarQueuedForDeviceSearchEngineType =
+            SearchEngineType.SEARCH_ENGINE_UNKNOWN;
+
+    private @Nullable LocaleTemplateUrlLoader mLocaleTemplateUrlLoader;
     private DefaultSearchEngineDialogHelper.Delegate mSearchEngineHelperDelegate;
 
-    private SnackbarController mSnackbarController =
+    private final SnackbarController mSnackbarController =
             new SnackbarController() {
                 @Override
-                public void onDismissNoAction(Object actionData) {}
+                public void onDismissNoAction(@Nullable Object actionData) {}
 
                 @Override
-                public void onAction(Object actionData) {
+                public void onAction(@Nullable Object actionData) {
                     Context context = ContextUtils.getApplicationContext();
-                    SettingsLauncherFactory.createSettingsLauncher()
-                            .launchSettingsActivity(context, SearchEngineSettings.class);
+                    SettingsNavigationFactory.createSettingsNavigation()
+                            .startSettings(context, SearchEngineSettings.class);
+                    if (Objects.equals(
+                            actionData, Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION)) {
+                        RecordHistogram.recordBooleanHistogram(
+                                "Search.SearchEngineChangedSnackbar.SettingsTapped", true);
+                    }
                 }
             };
 
@@ -85,9 +105,11 @@ public class LocaleManagerDelegate {
 
     /**
      * Sets the delegate for {@link DefaultSearchEngineDialogHelper}.
+     *
      * @param delegate Delegate used to select/notify the default search engine.
      */
-    public void setDefaulSearchEngineDelegate(DefaultSearchEngineDialogHelper.Delegate delegate) {
+    @Initializer
+    public void setDefaultSearchEngineDelegate(DefaultSearchEngineDialogHelper.Delegate delegate) {
         mSearchEngineHelperDelegate = delegate;
     }
 
@@ -133,7 +155,8 @@ public class LocaleManagerDelegate {
     void overrideDefaultSearchEngine() {
         if (!isSearchEngineAutoSwitchEnabled() || !isSpecialLocaleEnabled()) return;
         getLocaleTemplateUrlLoader().overrideDefaultSearchProvider();
-        showSnackbar(ContextUtils.getApplicationContext().getString(R.string.using_sogou));
+        showSnackbarForSpecialLocale(
+                ContextUtils.getApplicationContext().getString(R.string.using_sogou));
     }
 
     /**
@@ -143,7 +166,8 @@ public class LocaleManagerDelegate {
     private void revertDefaultSearchEngineOverride() {
         if (!isSearchEngineAutoSwitchEnabled() || isSpecialLocaleEnabled()) return;
         getLocaleTemplateUrlLoader().setGoogleAsDefaultSearch();
-        showSnackbar(ContextUtils.getApplicationContext().getString(R.string.using_google));
+        showSnackbarForSpecialLocale(
+                ContextUtils.getApplicationContext().getString(R.string.using_google));
     }
 
     protected void maybeAutoSwitchSearchEngine() {
@@ -192,14 +216,13 @@ public class LocaleManagerDelegate {
                     } else {
                         @SearchEnginePromoType int promoType = getSearchEnginePromoShowType();
                         if (promoType == SearchEnginePromoType.SHOW_EXISTING
-                                || promoType == SearchEnginePromoType.SHOW_NEW
-                                || promoType == SearchEnginePromoType.SHOW_WAFFLE) {
+                                || promoType == SearchEnginePromoType.SHOW_NEW) {
                             onUserLeavePromoDialogWithNoConfirmedChoice(promoType);
                         }
                     }
                     if (onSearchEngineFinalized != null) onSearchEngineFinalized.onResult(result);
                 };
-        if (templateUrlService.isDefaultSearchManaged() || ApiCompatibilityUtils.isDemoUser()) {
+        if (templateUrlService.isDefaultSearchManaged() || DeviceInfo.isRetailDemoMode()) {
             finalizeInternalCallback.onResult(true);
             return;
         }
@@ -228,16 +251,6 @@ public class LocaleManagerDelegate {
                                                 activity,
                                                 mSearchEngineHelperDelegate,
                                                 shouldShow,
-                                                finalizeInternalCallback)
-                                        .show();
-                break;
-            case SearchEnginePromoType.SHOW_WAFFLE:
-                assert ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_ENGINE_CHOICE);
-                dialogPresenter =
-                        () ->
-                                new ChoiceDialogCoordinator(
-                                                activity,
-                                                mSearchEngineHelperDelegate,
                                                 finalizeInternalCallback)
                                         .show();
                 break;
@@ -281,12 +294,64 @@ public class LocaleManagerDelegate {
                 .writeBoolean(ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH, isEnabled);
     }
 
-    /** @see LocaleManager#setSnackbarManager */
+    /**
+     * This method will immediately show a snackbar notifying the user that the default search
+     * engine has changed if it's pending.
+     *
+     * @see LocaleManager#setSnackbarManager
+     */
     public void setSnackbarManager(SnackbarManager manager) {
         mSnackbarManager = new WeakReference<SnackbarManager>(manager);
+        if (mIsSnackbarQueuedForDeviceSearchEngineType != SearchEngineType.SEARCH_ENGINE_UNKNOWN) {
+            showSnackbarForDeviceSearchEngineUpdate();
+        }
     }
 
-    private void showSnackbar(CharSequence title) {
+    /**
+     * Shows a snackbar that the default search engine has changed. If {@link SnackbarManager} is
+     * not set, will queue the snackbar to be shown when it's set.
+     */
+    public void showSnackbarForDeviceSearchEngineUpdate() {
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile());
+        TemplateUrl searchEngineUrl = templateUrlService.getDefaultSearchEngineTemplateUrl();
+        if (searchEngineUrl == null) return;
+
+        SnackbarManager manager = mSnackbarManager.get();
+        if (manager == null) {
+            mIsSnackbarQueuedForDeviceSearchEngineType =
+                    templateUrlService.getSearchEngineTypeFromTemplateUrl(
+                            searchEngineUrl.getKeyword());
+            return;
+        }
+
+        if (mIsSnackbarQueuedForDeviceSearchEngineType != SearchEngineType.SEARCH_ENGINE_UNKNOWN) {
+            int queuedSearchEngineType = mIsSnackbarQueuedForDeviceSearchEngineType;
+            mIsSnackbarQueuedForDeviceSearchEngineType = SearchEngineType.SEARCH_ENGINE_UNKNOWN;
+            if (queuedSearchEngineType
+                    != templateUrlService.getSearchEngineTypeFromTemplateUrl(
+                            searchEngineUrl.getKeyword())) {
+                return;
+            }
+        }
+
+        Context context = ContextUtils.getApplicationContext();
+        Snackbar snackbar =
+                Snackbar.make(
+                                context.getString(
+                                        R.string.search_engine_choice_notification_snackbar,
+                                        searchEngineUrl.getShortName()),
+                                mSnackbarController,
+                                Snackbar.TYPE_NOTIFICATION,
+                                Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION)
+                        .setAction(
+                                context.getString(R.string.settings),
+                                Snackbar.UMA_SEARCH_ENGINE_CHANGED_NOTIFICATION)
+                        .setDuration(SNACKBAR_DURATION_MS);
+        manager.showSnackbar(snackbar);
+    }
+
+    private void showSnackbarForSpecialLocale(CharSequence title) {
         SnackbarManager manager = mSnackbarManager.get();
         if (manager == null) return;
 

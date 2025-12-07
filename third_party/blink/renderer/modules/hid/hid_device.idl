@@ -10,6 +10,7 @@
 [
     ActiveScriptWrappable,
     Exposed(ServiceWorker WebHIDOnServiceWorkers,
+            DedicatedWorker WebHID,
             Window WebHID),
     SecureContext
 ] interface HIDDevice : EventTarget {
@@ -53,7 +54,7 @@
         CallWith=ScriptState,
         MeasureAs=HidDeviceSendReport
     ] Promise<undefined> sendReport(
-        [EnforceRange] octet reportId, BufferSource data);
+        [EnforceRange] octet reportId, [PassAsSpan] BufferSource data);
 
     // Send a feature report to the device. Set |reportId| to the first byte of
     // the report and |data| to the remaining bytes. Set |reportId| to zero if
@@ -63,7 +64,7 @@
         CallWith=ScriptState,
         MeasureAs=HidDeviceSendFeatureReport
     ] Promise<undefined> sendFeatureReport(
-        [EnforceRange] octet reportId, BufferSource data);
+        [EnforceRange] octet reportId, [PassAsSpan] BufferSource data);
 
     // Request a feature report from the device. Set |reportId| to the ID of the
     // feature report to request, or zero if the device does not use report IDs.

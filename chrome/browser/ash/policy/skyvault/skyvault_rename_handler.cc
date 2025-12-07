@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/policy/skyvault/drive_upload_observer.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
@@ -101,6 +102,7 @@ void SkyvaultRenameHandler::Start(ProgressCallback progress_callback,
     case CloudProvider::kGoogleDrive:
       ash::cloud_upload::DriveUploadObserver::Observe(
           profile_, download_item_->GetTargetFilePath(),
+          policy::local_user_files::UploadTrigger::kDownload,
           download_item_->GetTotalBytes(),
           base::BindRepeating(&SkyvaultRenameHandler::OnProgressUpdate,
                               weak_factory_.GetWeakPtr()),
@@ -111,7 +113,7 @@ void SkyvaultRenameHandler::Start(ProgressCallback progress_callback,
     case CloudProvider::kOneDrive:
       ash::cloud_upload::OdfsSkyvaultUploader::Upload(
           profile_, download_item_->GetTargetFilePath(),
-          ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload,
+          policy::local_user_files::UploadTrigger::kDownload,
           base::BindRepeating(&SkyvaultRenameHandler::OnProgressUpdate,
                               weak_factory_.GetWeakPtr()),
           base::BindOnce(&SkyvaultRenameHandler::OnOneDriveUploadDone,

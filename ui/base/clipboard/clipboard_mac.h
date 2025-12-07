@@ -11,9 +11,11 @@
 #include <string_view>
 
 #include "base/apple/foundation_util.h"
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_change_notifier.h"
 
 @class NSPasteboard;
 
@@ -23,10 +25,16 @@ namespace ui {
 // available at https://developer.apple.com/documentation/appkit/nspasteboard
 // and
 // https://developer.apple.com/library/archive/documentation/General/Conceptual/Devpedia-CocoaApp/Pasteboard.html.
-class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
+class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac
+    : public Clipboard,
+      public ClipboardChangeNotifier {
  public:
   ClipboardMac(const ClipboardMac&) = delete;
   ClipboardMac& operator=(const ClipboardMac&) = delete;
+
+  // ClipboardChangeNotifier overrides:
+  void StartNotifying() override;
+  void StopNotifying() override;
 
  private:
   friend class Clipboard;
@@ -89,6 +97,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   void WritePortableAndPlatformRepresentations(
       ClipboardBuffer buffer,
       const ObjectMap& objects,
+      const std::vector<RawData>& raw_objects,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
       std::unique_ptr<DataTransferEndpoint> data_src,
       uint32_t privacy_types) override;
@@ -103,9 +112,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
-  void WriteClipboardHistory() override;
-  void WriteUploadCloudClipboard() override;
-  void WriteConfidentialDataForPassword() override;
 
   void WriteBitmapInternal(const SkBitmap& bitmap, NSPasteboard* pasteboard);
   void ReadPngInternal(ClipboardBuffer buffer,
@@ -118,16 +124,21 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac : public Clipboard {
   void WritePortableAndPlatformRepresentationsInternal(
       ClipboardBuffer buffer,
       const ObjectMap& objects,
+      const std::vector<RawData>& raw_objects,
       std::vector<Clipboard::PlatformRepresentation> platform_representations,
       std::unique_ptr<DataTransferEndpoint> data_src,
       NSPasteboard* pasteboard,
       uint32_t privacy_types);
+  void ClipboardChanged();
 
   // Mapping of OS-provided sequence number to a unique token.
   mutable struct {
     NSInteger sequence_number;
     ClipboardSequenceNumberToken token;
   } clipboard_sequence_;
+
+  base::CallbackListSubscription clipboard_change_subscription_;
+  NSInteger last_known_sequence_number_ = 0;
 };
 
 }  // namespace ui

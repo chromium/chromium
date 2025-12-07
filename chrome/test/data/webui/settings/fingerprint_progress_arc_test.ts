@@ -12,7 +12,6 @@ import {MockController} from 'chrome://webui-test/mock_controller.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 class FakeMediaQueryList extends EventTarget implements MediaQueryList {
-  private listener_: ((e: MediaQueryListEvent) => any)|null = null;
   private matches_: boolean = false;
   private media_: string;
 
@@ -21,20 +20,12 @@ class FakeMediaQueryList extends EventTarget implements MediaQueryList {
     this.media_ = media;
   }
 
-  addListener(listener: (e: MediaQueryListEvent) => any) {
-    this.listener_ = listener;
-  }
-
-  removeListener(listener: (e: MediaQueryListEvent) => any) {
-    assertEquals(listener, this.listener_);
-    this.listener_ = null;
-  }
+  addListener() {}
+  removeListener() {}
 
   onchange() {
-    if (this.listener_) {
-      this.listener_(new MediaQueryListEvent(
-          'change', {media: this.media_, matches: this.matches_}));
-    }
+    this.dispatchEvent(new MediaQueryListEvent(
+        'change', {media: this.media_, matches: this.matches_}));
   }
 
   get media(): string {

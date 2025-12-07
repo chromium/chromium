@@ -24,14 +24,17 @@
 // Whether the text field is enabled for editing.
 @property(nonatomic, assign) BOOL editingEnabled;
 
-// Whether the text typed in `textView` is valid.
+// Whether the text typed in `textView` is valid. YES by default.
 @property(nonatomic, assign) BOOL validText;
+
+// Whether interaction with the text field is enabled. YES by default.
+@property(nonatomic, assign) BOOL textFieldInteractionEnabled;
 
 @end
 
-// Implements a TableViewCell that displays a label in the first line and a
-// multi-line text below it.
-@interface TableViewMultiLineTextEditCell : TableViewCell
+// Implements a LegacyTableViewCell that displays a label in the first line and
+// a multi-line text below it.
+@interface TableViewMultiLineTextEditCell : LegacyTableViewCell
 
 // Label at the leading edge of the cell.
 @property(nonatomic, readonly, strong) UILabel* textLabel;

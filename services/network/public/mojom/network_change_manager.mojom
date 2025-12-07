@@ -59,6 +59,15 @@ enum ConnectionSubtype {
   SUBTYPE_LAST = SUBTYPE_WIFI_AD
 };
 
+// This needs to match the definition of
+// net::NetworkChangeNotifier::IPAddressChangeType.
+enum IPAddressChangeType {
+  IP_ADDRESS_CHANGE_NONE = 0,
+  IP_ADDRESS_CHANGE_NORMAL,
+  IP_ADDRESS_CHANGE_IPV6_TEMPADDR,
+  IP_ADDRESS_CHANGE_LAST = IP_ADDRESS_CHANGE_IPV6_TEMPADDR
+};
+
 // A client interface that subscribes to network change events from
 // NetworkChangeManager.
 interface NetworkChangeManagerClient {
@@ -100,7 +109,7 @@ interface NetworkChangeManager {
   [EnableIf=network_change_notifier_in_browser]
   OnNetworkChanged(
       bool dns_changed,
-      bool ip_address_changed,
+      IPAddressChangeType ip_address_change_type,
       bool connection_type_changed,
       ConnectionType new_connection_type,
       bool connection_subtype_changed,

@@ -8,11 +8,13 @@
 
 #include <stdint.h>
 
+#include <algorithm>
+#include <functional>
+
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chromeos/ash/components/network/geolocation_handler.h"
+#include "chromeos/ash/components/network/geolocation_handler_impl.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "services/device/geolocation/wifi_data_provider_handle.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
@@ -60,8 +62,8 @@ std::optional<WifiData> GetWifiData() {
   }
 
   // Sort AP sightings by age, most recent first.
-  base::ranges::sort(access_points, base::ranges::greater(),
-                     &ash::WifiAccessPoint::timestamp);
+  std::ranges::sort(access_points, std::ranges::greater(),
+                    &ash::WifiAccessPoint::timestamp);
 
   // Truncate to kApUseLimit.
   if (access_points.size() > kApUseLimit) {

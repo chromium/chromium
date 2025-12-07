@@ -8,51 +8,81 @@ import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/accept_ch_frame_observer.mojom";
 import "services/network/public/mojom/attribution.mojom";
-import "services/network/public/mojom/url_loader_network_service_observer.mojom";
+import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
 import "services/network/public/mojom/client_security_state.mojom";
-import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/cookie_access_observer.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
-import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
+import "services/network/public/mojom/cors.mojom";
 import "services/network/public/mojom/data_pipe_getter.mojom";
+import "services/network/public/mojom/device_bound_sessions.mojom";
 import "services/network/public/mojom/devtools_observer.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/fetch_retry_options.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/http_request_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/isolation_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/permissions_policy/permissions_policy.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/shared_dictionary_access_observer.mojom";
 import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/storage_access_api.mojom";
-import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/trust_token_access_observer.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "services/network/public/mojom/web_bundle_handle.mojom";
-import "services/network/public/mojom/accept_ch_frame_observer.mojom";
+import "services/network/public/mojom/web_client_hints_types.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
-// This enums corresponds to net::SourceStream::SourceType.
-enum SourceType {
-  kBrotli,
-  kDeflate,
-  kGzip,
-  kZstd,
-  kNone,
-  kUnknown,
+// Caches enabled client hints to allow handling `ACCEPT_CH` frames in the
+// network service, avoiding an IPC to the browser process.
+// This should be used only in TrustedUrlRequestParams so that only
+// trustworthy clients can pass it.
+struct EnabledClientHints {
+  // The origin for which the client hints are enabled.
+  url.mojom.Origin origin;
+
+  // Whether this is for an outermost main frame.
+  bool is_outermost_main_frame;
+
+  // The set of client hints that are enabled for the origin and currently
+  // allowed to be attached to the request (e.g., by Feature Policy).
+  array<WebClientHintsType> hints;
+
+  // The set of client hints that are persisted for the origin but are
+  // currently not allowed to be attached to the request (e.g., blocked by
+  // Feature Policy). This is used in the network service to avoid an
+  // unnecessary IPC to the browser process when an ACCEPT_CH frame contains
+  // such hints.
+  array<WebClientHintsType> not_allowed_hints;
 };
 
 // See documentation at `URLRequest.trusted_params`.
+//
+// For values that have a corresponding value in URLLoaderFactoryParams
+// (e.g., `isolation_info`, `client_security_state`, and `disable_secure_dns`),
+// the values in the TrustedParams are preferred, if set, unless stated
+// otherwise. `isolation_info` cannot be null, so it always takes precedence
+// when TrustedUrlRequestParams are provided.
+//
+// TODO(https://crbug.com/409959475): Make `isolation_info` and
+// `disable_secure_dns` optional, and take precedence over the corresponding
+// URLLoaderFactoryParams value when set, so they behave consistently.
 struct TrustedUrlRequestParams {
   // If non-empty, this value will be used to set the SiteForCookies and
   // NetworkIsolationKey used by the network request.
   IsolationInfo isolation_info;
 
-  // Whether secure DNS should be disabled for the request.
+  // Whether secure DNS should be disabled for the request. The effective value
+  // for the request is the logical or of this field and the corresponding
+  // values in URLLoaderFactoryParams.
   bool disable_secure_dns;
 
   // Whether a navigation is triggered with a user gesture.
@@ -81,6 +111,10 @@ struct TrustedUrlRequestParams {
   // client which should not be able to see them.
   bool include_request_cookies_with_response = false;
 
+  // Enabled Client Hints to be evaluated quickly within the network layer
+  // when it receives the AcceptCHFrame.
+  EnabledClientHints? enabled_client_hints;
+
   // Observer which should be notified when this URLRequest reads or writes
   // a cookie. If this is set to non-null, the observer passed to
   // URLLoaderFactory will be ignored.
@@ -97,6 +131,13 @@ struct TrustedUrlRequestParams {
   pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer;
 
   pending_remote<DevToolsObserver>? devtools_observer;
+
+  // Observer which should be notified when this URLRequest leads to an
+  // access of a device bound session. This include registration or
+  // deferral. If this is set to non-null, the observer passed in
+  // URLLoaderFactoryParams will be ignored.
+  pending_remote<DeviceBoundSessionAccessObserver>?
+      device_bound_session_observer;
 
   // Specifies the security state of the client, for cases when the
   // URLLoaderFactory is shared among multiple clients.
@@ -313,6 +354,12 @@ struct URLRequest {
   // Exposed as Request.integrity in Service Workers
   string fetch_integrity;
 
+  // The set of public keys asserted in `fetch_integrity`, which will be used
+  // to populate an `Accept-Signatures` header.
+  //
+  // https://www.rfc-editor.org/rfc/rfc9421.html#name-the-accept-signature-field
+  array<array<uint8>> expected_public_keys;
+
   // https://fetch.spec.whatwg.org/#concept-request-destination
   RequestDestination destination;
 
@@ -386,9 +433,9 @@ struct URLRequest {
   // be different to the current requestor which is |render_frame_id|. For
   // example, if a navigation for window "abc" is intercepted by a service
   // worker, which re-issues the request via fetch, the re-issued request has
-  // |render_frame_id| of MSG_ROUTING_NONE (the service worker) and |window_id|
-  // of "abc". This is used for, e.g., client certificate selection. It's
-  // important that this id be unguessable so renderers cannot impersonate
+  // |render_frame_id| of IPC::mojom::kRoutingIdNone (the service worker) and
+  // |window_id| of "abc". This is used for, e.g., client certificate selection.
+  // It's important that this id be unguessable so renderers cannot impersonate
   // other renderers.
   //
   // This may be empty when the original requestor is the current requestor or
@@ -496,14 +543,6 @@ struct URLRequest {
   // of the request in NetLog.
   NetLogSource? net_log_reference_info;
 
-  // The IP address space to which the target endpoint of this request should
-  // belong, or `kUnknown` if there is no such requirement.
-  // If the target endpoint of the network socket does not belong to this
-  // address space, the request is failed with a CORS error.
-  // Clients outside the network service must not set this field to a value
-  // other than `kUnknown`.
-  IPAddressSpace target_ip_address_space;
-
   // The target address space to which a given fetch operation is expected to
   // connect. See more:
   // https://wicg.github.io/private-network-access/#permission-prompt.
@@ -521,18 +560,24 @@ struct URLRequest {
   // ok.
   StorageAccessApiStatus storage_access_api_status;
 
- // Indicates whether web or OS-level Attribution Reporting is supported.
+  // Indicates whether web or OS-level Attribution Reporting is supported.
   AttributionSupport attribution_reporting_support;
 
   // Indicates the value of the request's `Attribution-Reporting-Eligible`
   // header; how this header is interpreted depends on the context in which
   // the request is made.
   AttributionReportingEligibility attribution_reporting_eligibility =
-    AttributionReportingEligibility.kUnset;
+      AttributionReportingEligibility.kUnset;
 
   // When applicable, indicates the token of an Attribution Reporting API
   // eligible navigation request to which the current request is associated.
   mojo_base.mojom.UnguessableToken? attribution_reporting_src_token;
+
+  // When applicable, i.e. `keepalive` is true, indicates a fetch keepalive
+  // request.
+  // Used in UKM logging to identify the lifetime of a fetch keepalive request.
+  // TODO(crbug.com/382527001): Consider merge this field with `keepalive`.
+  mojo_base.mojom.UnguessableToken? keepalive_token;
 
   // Indicates whether this request has been determined to be used for
   // advertising purposes.
@@ -544,10 +589,29 @@ struct URLRequest {
   // CompressionDictionaryTransport feature.
   bool shared_dictionary_writer_enabled = false;
 
-  // Indicates where the original ResourceRequest is created.
-  // TODO(crbug.com/40066149): Remove this once the issue is fixed.
-  [EnableIf=is_android]
-  string created_location;
+  // If true, disables content decoding (e.g., gzip, brotli) within the network
+  // service for this request. The client becomes responsible for decoding the
+  // response body and setting `decoded_body_length` of
+  // `URLLoaderCompletionStatus`.
+  bool client_side_content_decoding_enabled = false;
+
+  // The socket tag to associate this request with. This is typically set by the
+  // embedder.
+  SocketTag socket_tag;
+
+  // Whether this request is allowed to register new device bound
+  // sessions or process challenges for existing device bound sessions
+  // (e.g. due to an Origin Trial).
+  bool allows_device_bound_session_registration;
+
+  // Permissions Policy of the request.
+  // If it's nullopt then the request's initiator didn't set the permissions
+  // policy. Example: https://crrev.com/c/6295903
+  network.mojom.PermissionsPolicy? permissions_policy;
+
+  // The policies to be used when retrying a fetch. Will only be set on fetch
+  // requests who specified its RetryOptions.
+  network.mojom.FetchRetryOptions? fetch_retry_options;
 };
 
 // URLRequestBody represents body (i.e. upload data) of a HTTP request.
@@ -604,4 +668,13 @@ union DataElement {
   DataElementFile file;
   DataElementDataPipe data_pipe;
   DataElementChunkedDataPipe chunked_data_pipe;
+};
+
+// Typemapped to net::SocketTag.
+struct SocketTag {
+  [EnableIf=is_android]
+  uint32 uid;
+
+  [EnableIf=is_android]
+  int32 tag;
 };

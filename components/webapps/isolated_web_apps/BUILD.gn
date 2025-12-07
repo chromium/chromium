@@ -1,0 +1,55 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos || is_win || is_mac || is_linux,
+       "components/webapps/isolated_web_apps are no-op on Android or iOS.")
+
+# TODO(crbug.com/431980377): Should this be a group()?
+source_set("isolated_web_apps") {
+  sources = []
+
+  public_deps = [
+    ":scheme",
+    "//base",
+    "//components/webapps/isolated_web_apps/bundle_operations",
+    "//components/webapps/isolated_web_apps/download",
+    "//components/webapps/isolated_web_apps/error",
+    "//components/webapps/isolated_web_apps/identity",
+    "//components/webapps/isolated_web_apps/public",
+    "//components/webapps/isolated_web_apps/reading",
+    "//components/webapps/isolated_web_apps/service",
+    "//components/webapps/isolated_web_apps/types",
+    "//components/webapps/isolated_web_apps/url_loading",
+  ]
+}
+
+source_set("scheme") {
+  sources = [ "scheme.h" ]
+}
+
+source_set("iwa_client") {
+  sources = [
+    "client.cc",
+    "client.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/web_package",
+    "//components/webapps/isolated_web_apps/public",
+    "//components/webapps/isolated_web_apps/types",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+}
+
+group("unit_tests") {
+  testonly = true
+  deps = [
+    "//components/webapps/isolated_web_apps/download:unit_tests",
+    "//components/webapps/isolated_web_apps/error:unit_tests",
+    "//components/webapps/isolated_web_apps/reading:unit_tests",
+    "//components/webapps/isolated_web_apps/types:unit_tests",
+  ]
+}

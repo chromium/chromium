@@ -2,15 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "net/nqe/network_quality_estimator_params.h"
 
 #include <stdint.h>
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
@@ -19,11 +18,6 @@ namespace net {
 
 const char kForceEffectiveConnectionType[] = "force_effective_connection_type";
 const char kEffectiveConnectionTypeSlow2GOnCellular[] = "Slow-2G-On-Cellular";
-const base::TimeDelta
-    kHttpRttEffectiveConnectionTypeThresholds[EFFECTIVE_CONNECTION_TYPE_LAST] =
-        {base::Milliseconds(0),    base::Milliseconds(0),
-         base::Milliseconds(2010), base::Milliseconds(1420),
-         base::Milliseconds(272),  base::Milliseconds(0)};
 
 namespace {
 
@@ -144,7 +138,7 @@ const char* GetNameForConnectionTypeInternal(
 // other information.
 void ObtainDefaultObservations(
     const std::map<std::string, std::string>& params,
-    nqe::internal::NetworkQuality default_observations[]) {
+    base::span<nqe::internal::NetworkQuality> default_observations) {
   for (size_t i = 0; i < NetworkChangeNotifier::CONNECTION_LAST; ++i) {
     DCHECK_EQ(nqe::internal::InvalidRTT(), default_observations[i].http_rtt());
     DCHECK_EQ(nqe::internal::InvalidRTT(),
@@ -239,23 +233,24 @@ void ObtainDefaultObservations(
 // Typical HTTP RTT value corresponding to a given WebEffectiveConnectionType
 // value. Taken from
 // https://cs.chromium.org/chromium/src/net/nqe/network_quality_estimator_params.cc.
-const base::TimeDelta kTypicalHttpRttEffectiveConnectionType
-    [net::EFFECTIVE_CONNECTION_TYPE_LAST] = {
+const std::array<base::TimeDelta, net::EFFECTIVE_CONNECTION_TYPE_LAST>
+    kTypicalHttpRttEffectiveConnectionType = {
         base::Milliseconds(0),    base::Milliseconds(0),
         base::Milliseconds(3600), base::Milliseconds(1800),
-        base::Milliseconds(450),  base::Milliseconds(175)};
+        base::Milliseconds(450),  base::Milliseconds(175),
+};
 
 // Typical downlink throughput (in Mbps) value corresponding to a given
 // WebEffectiveConnectionType value. Taken from
 // https://cs.chromium.org/chromium/src/net/nqe/network_quality_estimator_params.cc.
-const int32_t kTypicalDownlinkKbpsEffectiveConnectionType
-    [net::EFFECTIVE_CONNECTION_TYPE_LAST] = {0, 0, 40, 75, 400, 1600};
+const std::array<int32_t, net::EFFECTIVE_CONNECTION_TYPE_LAST>
+    kTypicalDownlinkKbpsEffectiveConnectionType = {0, 0, 40, 75, 400, 1600};
 
 // Sets |typical_network_quality| to typical network quality for different
 // effective connection types.
 void ObtainTypicalNetworkQualities(
     const std::map<std::string, std::string>& params,
-    nqe::internal::NetworkQuality typical_network_quality[]) {
+    base::span<nqe::internal::NetworkQuality> typical_network_quality) {
   for (size_t i = 0; i < EFFECTIVE_CONNECTION_TYPE_LAST; ++i) {
     DCHECK_EQ(nqe::internal::InvalidRTT(),
               typical_network_quality[i].http_rtt());
@@ -313,10 +308,11 @@ void ObtainTypicalNetworkQualities(
 // |connection_thresholds|.
 void ObtainConnectionThresholds(
     const std::map<std::string, std::string>& params,
-    nqe::internal::NetworkQuality connection_thresholds[]) {
+    base::span<nqe::internal::NetworkQuality> connection_thresholds) {
   // First set the default thresholds.
-  nqe::internal::NetworkQuality default_effective_connection_type_thresholds
-      [EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST];
+  std::array<nqe::internal::NetworkQuality,
+             EffectiveConnectionType::EFFECTIVE_CONNECTION_TYPE_LAST>
+      default_effective_connection_type_thresholds;
 
   DCHECK_LT(base::TimeDelta(), kHttpRttEffectiveConnectionTypeThresholds
                                    [EFFECTIVE_CONNECTION_TYPE_SLOW_2G]);

@@ -18,8 +18,7 @@ static_library("common") {
   deps = [
     ":mojo_interfaces",
     "//base",
-    "//build:chromeos_buildflags",
-    "//components/cloud_devices/common:common",
+    "//components/cloud_devices/common",
     "//printing",
     "//printing/backend",
     "//printing/common",
@@ -52,6 +51,14 @@ source_set("unit_tests") {
     "//printing/backend",
     "//printing/backend:test_support",
     "//testing/gtest",
-    "//ui/gfx/geometry:geometry",
+    "//ui/gfx/geometry",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//printing" ]
+  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

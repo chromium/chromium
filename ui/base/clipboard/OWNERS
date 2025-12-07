@@ -1,13 +1,6 @@
-# Primary
-christinesm@chromium.org
+daniec@microsoft.com
 
-# Secondary
-ayui@chromium.org
-asully@chromium.org
-dcheng@chromium.org
-estade@chromium.org
-
-per-file clipboard_*android*=gangwu@chromium.org
+per-file clipboard_*android*=ender@chromium.org
 per-file clipboard_*mac*=avi@chromium.org
 per-file clipboard_*ozone*=msisov@igalia.com
 per-file clipboard_*ozone*=adunaev@igalia.com

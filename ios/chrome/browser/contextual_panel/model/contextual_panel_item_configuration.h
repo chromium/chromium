@@ -8,7 +8,9 @@
 #include <string>
 
 #include "base/feature_list.h"
+#import "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 
 enum class ContextualPanelItemType;
 
@@ -22,7 +24,7 @@ struct ContextualPanelItemConfiguration {
   static const int low_relevance;
 
   explicit ContextualPanelItemConfiguration(ContextualPanelItemType item_type);
-  ~ContextualPanelItemConfiguration();
+  virtual ~ContextualPanelItemConfiguration();
   ContextualPanelItemConfiguration(
       const ContextualPanelItemConfiguration& other) = delete;
   ContextualPanelItemConfiguration& operator=(
@@ -32,6 +34,11 @@ struct ContextualPanelItemConfiguration {
   // entrypoint loud moment states.
   bool CanShowLargeEntrypoint();
   bool CanShowEntrypointIPH();
+
+
+  // Notify the configuration that it transitioned to a small entrypoint so it
+  // can react accordingly depending on the type of configuration.
+  virtual void DidTransitionToSmallEntrypoint();
 
   // The different supported image types.
   enum class EntrypointImageType {
@@ -48,13 +55,28 @@ struct ContextualPanelItemConfiguration {
   // contextual panel. If none is provided, no large entrypoint can be shown.
   std::string entrypoint_message;
 
+  // If this is the primary item in the contextual panel, then the message
+  // always will be shown using a larger entrypoint.
+  bool entrypoint_message_large_entrypoint_always_shown = false;
+
+
   // Required. The string the entrypoint's badge button should have for
-  // accessibility.
+  // accessibility label.
   std::string accessibility_label;
+
+  // Optional. The string the entrypoint's badge button should have for
+  // accessibility hint.
+  std::string accessibility_hint;
 
   // Required. The name of the image the UI can show the user if this item is
   // the primary item in the contextual panel.
   std::string entrypoint_image_name;
+
+  // Optional. If this is set, then this will be called when tapping the
+  // contextual panel entrypoint while this item is the primary item, instead of
+  // opening the contextual panel. If the contextual panel is already opened,
+  // then it will be closed before the action is performed.
+  base::RepeatingClosure entrypoint_custom_action;
 
   // Required. The type of entrypoint image. This is used by the UI to decide
   // how to interpret `entrypoint_image_name`.
@@ -68,18 +90,24 @@ struct ContextualPanelItemConfiguration {
   // ** Entrypoint IPH (rich IPH type) related config keys. **
 
   // Optional. The FET feature controlling the impressions for the item's
-  // entrypoint rich IPH. The entrypoint will try to show the IPH, but if the
-  // FET config decides it shouldn't be shown, the large entrypoint will be
-  // shown. If nothing is set here, the IPH will never be shown.
+  // entrypoint rich IPH (in-product help). The entrypoint will try to show the
+  // IPH, but if the FET config decides it shouldn't be shown, the large
+  // entrypoint will be shown. If nothing is set here, the IPH will never be
+  // shown.
   raw_ptr<const base::Feature> iph_feature;
 
   // Optional (required if `iph_feature` is non-nil). The FET event name the
   // entrypoint should use when firing an event because the entrypoint was used
-  // with the current infoblock model (the `used` key of the FET config). This
-  // is the only event the entrypoint will fire for the infoblock, but any
+  // with the current infoblock model (the `used` key of the FET config). Any
   // number of events can be used in conjunction with the FET config to control
-  // the rich IPH impressions.
+  // the IPH impressions.
   std::string iph_entrypoint_used_event_name;
+
+  // Optional (required if `iph_feature` is non-nil). The FET event name the
+  // entrypoint should use when firing an event because the in-product help was
+  // explicitly dismissed by the user. Any number of events can be used in
+  // conjunction with the FET config to control the IPH impressions.
+  std::string iph_entrypoint_explicitly_dismissed;
 
   // Optional (required if `iph_feature` is non-nil). The title of the rich IPH
   // bubble.
@@ -88,10 +116,6 @@ struct ContextualPanelItemConfiguration {
   // Optional (required if `iph_feature` is non-nil). The main body text of the
   // rich IPH bubble.
   std::string iph_text;
-
-  // Optional (required if `iph_feature` is non-nil). The name of the image used
-  // in the rich IPH bubble.
-  std::string iph_image_name;
 
   // ** End of entrypoint IPH (rich IPH type) related config keys. **
 

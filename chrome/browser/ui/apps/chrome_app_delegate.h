@@ -32,10 +32,6 @@ class ChromeAppDelegate : public extensions::AppDelegate {
 
   static void DisableExternalOpenForTesting();
 
-  void set_for_lock_screen_app(bool for_lock_screen_app) {
-    for_lock_screen_app_ = for_lock_screen_app;
-  }
-
  private:
   static void RelinquishKeepAliveAfterTimeout(
       const base::WeakPtr<ChromeAppDelegate>& chrome_app_delegate);
@@ -79,7 +75,6 @@ class ChromeAppDelegate : public extensions::AppDelegate {
   void SetTerminatingCallback(base::OnceClosure callback) override;
   void OnHide() override;
   void OnShow() override;
-  bool TakeFocus(content::WebContents* web_contents, bool reverse) override;
   content::PictureInPictureResult EnterPictureInPicture(
       content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
@@ -88,7 +83,6 @@ class ChromeAppDelegate : public extensions::AppDelegate {
 
   bool has_been_shown_;
   bool is_hidden_;
-  bool for_lock_screen_app_;
   const raw_ptr<Profile> profile_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;

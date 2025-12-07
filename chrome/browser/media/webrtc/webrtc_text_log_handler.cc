@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+
 #include "chrome/browser/media/webrtc/webrtc_text_log_handler.h"
 
 #include <map>
@@ -25,7 +26,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/media/audio_service_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/media/webrtc_logging.mojom.h"
@@ -55,7 +55,7 @@
 #include "base/mac/mac_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/system/statistics_provider.h"
 #endif
 
@@ -364,6 +364,25 @@ void WebRtcTextLogHandler::LogToCircularBuffer(const std::string& message) {
   }
 }
 
+base::RepeatingCallback<void(const std::string&)>
+WebRtcTextLogHandler::GetLogMessageCallback() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (logging_state_ != STARTED) {
+    return {};
+  }
+
+  if (channel_is_closing_) {
+    return {};
+  }
+
+  return base::BindRepeating(
+      &ForwardMessageViaTaskRunner,
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindRepeating(&WebRtcTextLogHandler::LogMessage,
+                          weak_factory_.GetWeakPtr()));
+}
+
 void WebRtcTextLogHandler::LogMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (logging_state_ == STARTED && !channel_is_closing_) {
@@ -420,7 +439,7 @@ void WebRtcTextLogHandler::FireGenericDoneCallback(
       case LoggingState::STOPPED:
         return "stopped";
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   };
 
   std::string error_message_with_state =
@@ -493,14 +512,14 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
       "Cpu: " + NumberToString(cpu.family()) + "." +
       NumberToString(cpu.model()) + "." + NumberToString(cpu.stepping()) +
       ", x" + NumberToString(base::SysInfo::NumberOfProcessors()) + ", " +
-      NumberToString(base::SysInfo::AmountOfPhysicalMemoryMB()) + "MB");
+      NumberToString(base::SysInfo::AmountOfPhysicalMemory().InMiB()) + "MB");
   LogToCircularBuffer("Cpu brand: " + cpu.cpu_brand());
 
   // Computer model
   std::string computer_model = "Not available";
 #if BUILDFLAG(IS_MAC)
   computer_model = base::SysInfo::HardwareModelName();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   if (const std::optional<std::string_view> computer_model_statistic =
           ash::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
               ash::system::kHardwareClassKey)) {
@@ -540,26 +559,10 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
        enabled_or_disabled_bool_string(IsAudioServiceSandboxEnabled())}));
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (media::IsChromeWideEchoCancellationEnabled()) {
-    LogToCircularBuffer(base::StrCat(
-        {"ChromeWideEchoCancellation : Enabled", ", minimize_resampling = ",
-         media::kChromeWideEchoCancellationMinimizeResampling.Get() ? "true"
-                                                                    : "false",
-         ", allow_all_sample_rates = ",
-         media::kChromeWideEchoCancellationAllowAllSampleRates.Get()
-             ? "true"
-             : "false"}));
-  } else {
-    LogToCircularBuffer("ChromeWideEchoCancellation : Disabled");
-  }
-
-  if (base::FeatureList::IsEnabled(media::kDecreaseProcessingAudioFifoSize)) {
-    LogToCircularBuffer(base::StrCat(
-        {"DecreaseProcessingAudioFifoSize : Enabled", ", fifo_size = ",
-         base::NumberToString(media::GetProcessingAudioFifoSize())}));
-  } else {
-    LogToCircularBuffer("DecreaseProcessingAudioFifoSize : Disabled");
-  }
+  LogToCircularBuffer(
+      base::StrCat({"ChromeWideEchoCancellation : ",
+                    enabled_or_disabled_bool_string(
+                        media::IsChromeWideEchoCancellationEnabled())}));
 #endif
 
   // Audio manager

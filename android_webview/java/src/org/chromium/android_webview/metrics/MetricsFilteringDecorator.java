@@ -7,15 +7,16 @@ package org.chromium.android_webview.metrics;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Log;
-import org.chromium.components.metrics.AndroidMetricsLogConsumer;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.HistogramEventProtos.HistogramEventProto;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.MetricsFilteringStatus;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /** Applies metrics filtering before forwarding to the base log uploader. */
+@NullMarked
 public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
     private static final String TAG = "MetricsFiltering";
     private final AndroidMetricsLogConsumer mLogUploader;
@@ -23,7 +24,7 @@ public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
 
     public MetricsFilteringDecorator(AndroidMetricsLogConsumer uploader) {
         mLogUploader = uploader;
-        mHistogramsAllowlist = new HistogramsAllowlist();
+        mHistogramsAllowlist = HistogramsAllowlist.load();
     }
 
     @Override
@@ -42,10 +43,12 @@ public class MetricsFilteringDecorator implements AndroidMetricsLogConsumer {
         try {
             ChromeUserMetricsExtension proto = ChromeUserMetricsExtension.parseFrom(data);
             if (shouldApplyMetricsFiltering(proto)) {
-                List<HistogramEventProto> filteredHistograms =
-                        proto.getHistogramEventList().stream()
-                                .filter(mHistogramsAllowlist::contains)
-                                .collect(Collectors.toList());
+                List<HistogramEventProto> filteredHistograms = new ArrayList<>();
+                for (HistogramEventProto event : proto.getHistogramEventList()) {
+                    if (mHistogramsAllowlist.contains(event)) {
+                        filteredHistograms.add(event);
+                    }
+                }
                 ChromeUserMetricsExtension.Builder builder = proto.toBuilder();
                 builder.clearUserActionEvent()
                         .clearHistogramEvent()

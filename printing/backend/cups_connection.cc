@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "printing/backend/cups_helper.h"

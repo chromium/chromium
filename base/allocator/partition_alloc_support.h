@@ -2,21 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOC_SUPPORT_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOC_SUPPORT_H_
 
 #include <map>
 #include <string>
 
+#include "base/allocator/scheduler_loop_quarantine_config.h"
 #include "base/base_export.h"
-#include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
-#include "partition_alloc/thread_cache.h"
+
+#if PA_CONFIG(THREAD_CACHE_SUPPORTED) && \
+    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "partition_alloc/partition_alloc_constants.h"
+#endif
 
 namespace base::allocator {
 
@@ -37,12 +47,28 @@ BASE_EXPORT std::map<std::string, std::string> ProposeSyntheticFinchTrials();
 BASE_EXPORT void InstallDanglingRawPtrChecks();
 BASE_EXPORT void InstallUnretainedDanglingRawPtrChecks();
 
+// Once called, makes `free()` do nothing. This is done to reduce
+// shutdown hangs on CrOS.
+// Does nothing if Dangling Pointer Detector (`docs/dangling_ptr.md`)
+// is not active.
+// Does nothing if allocator shim support is not built.
+BASE_EXPORT void MakeFreeNoOp();
+
+// Apply specialized configuration to the quarantine branch for the current
+// thread.
+BASE_EXPORT void ReconfigureSchedulerLoopQuarantineBranch(
+    SchedulerLoopQuarantineBranchType branch_type);
+
 // Allows to re-configure PartitionAlloc at run-time.
 class BASE_EXPORT PartitionAllocSupport {
  public:
   struct BrpConfiguration {
     bool enable_brp = false;
-    bool process_affected_by_brp_flag = false;
+
+    // TODO(https://crbug.com/371135823): Remove after the investigation.
+    size_t extra_extras_size = 0;
+    bool suppress_double_free_detected_crash = false;
+    bool suppress_corruption_detected_crash = false;
   };
 
   // Reconfigure* functions re-configure PartitionAlloc. It is impossible to
@@ -73,7 +99,8 @@ class BASE_EXPORT PartitionAllocSupport {
   void ReconfigureAfterZygoteFork(const std::string& process_type);
   void ReconfigureAfterFeatureListInit(
       const std::string& process_type,
-      bool configure_dangling_pointer_detector = true);
+      bool configure_dangling_pointer_detector = true,
+      bool is_in_death_test_child = false);
   void ReconfigureAfterTaskRunnerInit(const std::string& process_type);
 
   // |has_main_frame| tells us if the renderer contains a main frame.
@@ -98,6 +125,11 @@ class BASE_EXPORT PartitionAllocSupport {
   // For calling from within third_party/blink/.
   static bool ShouldEnableMemoryTaggingInRendererProcess();
 
+  // Returns true if PA advanced checks should be enabled if available for the
+  // given process type. May be called multiple times per process.
+  static bool ShouldEnablePartitionAllocWithAdvancedChecks(
+      const std::string& process_type);
+
  private:
   PartitionAllocSupport();
 
@@ -115,8 +147,6 @@ class BASE_EXPORT PartitionAllocSupport {
       ::partition_alloc::kThreadCacheDefaultSizeThreshold;
 #endif
 };
-
-BASE_EXPORT BASE_DECLARE_FEATURE(kDisableMemoryReclaimerInBackground);
 
 // Visible in header for testing.
 class BASE_EXPORT MemoryReclaimerSupport {
@@ -143,6 +173,18 @@ class BASE_EXPORT MemoryReclaimerSupport {
   bool in_foreground_ = true;
   bool has_pending_task_ = false;
 };
+
+// Utility function to detect Double-Free or Out-of-Bounds writes.
+// This function can be called to memory assumed to be valid.
+// If not, this may crash (not guaranteed).
+// This is useful if you want to investigate crashes at `free()`,
+// to know which point at execution it goes wrong.
+BASE_EXPORT void CheckHeapIntegrity(const void* ptr);
+
+// The function here is called right before crashing with
+// `DoubleFreeOrCorruptionDetected()`. We provide an address for the slot start
+// to the function, and it may use that for debugging purpose.
+BASE_EXPORT void SetDoubleFreeOrCorruptionDetectedFn(void (*fn)(uintptr_t));
 
 }  // namespace base::allocator
 

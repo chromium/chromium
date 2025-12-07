@@ -12,13 +12,13 @@
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/callback_list.h"
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/ui/clipboard_history/clipboard_history_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -61,7 +61,7 @@ std::optional<ui::ImageModel> DetermineDisplayImage(
   std::optional<ui::ImageModel> maybe_image;
   switch (item.display_format()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       break;
@@ -95,14 +95,10 @@ std::u16string DetermineDisplayTextForFileSystemData(
   std::u16string sources;
   std::vector<std::u16string_view> source_list;
   clipboard_history_util::GetSplitFileSystemData(data, &source_list, &sources);
-  if (sources.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::u16string();
-  }
+  CHECK(!sources.empty());
 
   size_t file_count = source_list.size();
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled() &&
-      file_count > 1u) {
+  if (file_count > 1u) {
     return l10n_util::GetPluralStringFUTF16(
         IDS_ASH_CLIPBOARD_HISTORY_FILE_COUNT, file_count);
   }
@@ -149,32 +145,21 @@ std::u16string DetermineDisplayText(const ClipboardHistoryItem& item) {
 
 std::optional<gfx::ElideBehavior> DetermineDisplayTextElideBehavior(
     const ClipboardHistoryItem& item) {
-  return chromeos::features::IsClipboardHistoryRefreshEnabled() &&
-                 chromeos::clipboard_history::IsUrl(item.display_text())
+  return chromeos::clipboard_history::IsUrl(item.display_text())
              ? std::make_optional(gfx::ELIDE_MIDDLE)
              : std::nullopt;
 }
 
 std::optional<size_t> DetermineDisplayTextMaxLines(
     const ClipboardHistoryItem& item) {
-  return chromeos::features::IsClipboardHistoryRefreshEnabled() &&
-                 chromeos::clipboard_history::IsUrl(item.display_text())
+  return chromeos::clipboard_history::IsUrl(item.display_text())
              ? std::make_optional(1u)
              : std::nullopt;
 }
 
 std::optional<ui::ImageModel> DetermineIcon(const ClipboardHistoryItem& item) {
-  if (chromeos::features::IsClipboardHistoryRefreshEnabled()) {
-    return chromeos::clipboard_history::GetIconForDescriptor(
-        clipboard_history_util::ItemToDescriptor(item));
-  }
-
-  if (item.display_format() !=
-      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
-    return std::nullopt;
-  }
-
-  return clipboard_history_util::GetIconForFileClipboardItem(item);
+  return chromeos::clipboard_history::GetIconForDescriptor(
+      clipboard_history_util::ItemToDescriptor(item));
 }
 
 }  // namespace
@@ -203,8 +188,7 @@ ClipboardHistoryItem::ClipboardHistoryItem(const ClipboardHistoryItem& other)
       display_text_elide_behavior_(other.display_text_elide_behavior_),
       display_text_max_lines_(other.display_text_max_lines_),
       file_count_(other.file_count_),
-      icon_(other.icon_),
-      secondary_display_text_(other.secondary_display_text_) {}
+      icon_(other.icon_) {}
 
 ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
     : id_(std::move(other.id_)),
@@ -218,8 +202,7 @@ ClipboardHistoryItem::ClipboardHistoryItem(ClipboardHistoryItem&& other)
           std::move(other.display_text_elide_behavior_)),
       display_text_max_lines_(std::move(other.display_text_max_lines_)),
       file_count_(std::move(other.file_count_)),
-      icon_(std::move(other.icon_)),
-      secondary_display_text_(std::move(other.secondary_display_text_)) {}
+      icon_(std::move(other.icon_)) {}
 
 ClipboardHistoryItem::~ClipboardHistoryItem() = default;
 

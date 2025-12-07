@@ -19,7 +19,7 @@ class Browser;
        browserAdded:(Browser*)browser;
 - (void)browserList:(const BrowserList*)browserList
      browserRemoved:(Browser*)browser;
-- (void)browserListWillShutdown:(const BrowserList*)browserList;
+- (void)browserListWillShutdown:(BrowserList*)browserList;
 
 @end
 

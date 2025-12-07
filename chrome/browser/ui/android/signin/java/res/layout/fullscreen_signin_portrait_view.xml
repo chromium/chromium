@@ -38,13 +38,30 @@ found in the LICENSE file.
                 android:layout_weight="3"
                 android:visibility="invisible" />
 
-            <ImageView
-                android:id="@+id/fre_logo"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/fre_tos_image_height"
+                android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp"
-                android:importantForAccessibility="no"
-                android:src="@drawable/fre_product_logo" />
+                android:importantForAccessibility="no">
+                <ImageView
+                    android:id="@+id/fre_icon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/fullscreen_signin_logo_default_height"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    android:src="@drawable/fre_product_logo"
+                    android:importantForAccessibility="no" />
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/signin_animation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/fullscreen_signin_logo_default_height"
+                    android:layout_gravity="center"
+                    android:scaleType="fitCenter"
+                    android:adjustViewBounds="true"
+                    app:lottie_rawRes="@raw/signin_spin" />
+            </FrameLayout>
 
             <TextView
                 android:id="@+id/title"
@@ -62,7 +79,7 @@ found in the LICENSE file.
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:paddingHorizontal="60dp"
+                android:paddingHorizontal="24dp"
                 android:paddingTop="8dp"
                 android:text="@string/signin_fre_subtitle"
                 android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
@@ -73,7 +90,8 @@ found in the LICENSE file.
                 android:id="@+id/fre_browser_managed_by"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="16dp"
+                android:visibility="gone">
 
                 <include
                     layout="@layout/fre_tos_privacy_disclaimer"
@@ -123,7 +141,6 @@ found in the LICENSE file.
             android:layout_marginBottom="8dp"
             android:gravity="center_horizontal"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-            android:text="@string/signin_fre_footer"
             app:leading="@dimen/text_size_small_leading"
             android:visibility="gone"/>
     </FrameLayout>

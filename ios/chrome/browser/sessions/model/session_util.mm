@@ -14,7 +14,7 @@
 #import "components/sessions/ios/ios_serialized_navigation_builder.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -28,13 +28,13 @@ constexpr std::string_view kInactiveBrowserIdentifierSuffix = "-Inactive";
 }  // namespace
 
 std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
-    ChromeBrowserState* browser_state,
+    ProfileIOS* profile,
     int last_committed_item_index,
     const std::vector<sessions::SerializedNavigationEntry>& navigations) {
   DCHECK_GE(last_committed_item_index, 0);
   DCHECK_LT(static_cast<size_t>(last_committed_item_index), navigations.size());
 
-  web::WebState::CreateParams params(browser_state);
+  web::WebState::CreateParams params(profile);
   auto web_state = web::WebState::Create(params);
   web_state->GetNavigationManager()->Restore(
       last_committed_item_index,
@@ -44,11 +44,10 @@ std::unique_ptr<web::WebState> CreateWebStateWithNavigationEntries(
 
 std::string GetSessionIdentifier(Browser* browser) {
   SceneState* scene_state = browser->GetSceneState();
-  NSString* scene_session = scene_state.sceneSessionID;
-  DCHECK(scene_session.length);
+  const std::string& scene_session = scene_state.sceneSessionID;
+  DCHECK(!scene_session.empty());
 
-  return GetSessionIdentifier(base::SysNSStringToUTF8(scene_session),
-                              browser->IsInactive());
+  return GetSessionIdentifier(scene_session, browser->IsInactive());
 }
 
 std::string GetSessionIdentifier(const std::string& scene_session_identifier,

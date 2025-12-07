@@ -4,11 +4,12 @@
 
 #include "chrome/browser/ash/login/screens/gaia_info_screen.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -25,6 +26,8 @@ constexpr char kBackButton[] = "backButton";
 constexpr char kManualButton[] = "manualButton";
 constexpr char kQuickStartButton[] = "quickstartButton";
 constexpr char kNextButton[] = "nextButton";
+constexpr char kQuickStartEntryPointVisibleHistogram[] =
+    "QuickStart.EntryPointVisible";
 constexpr test::UIPath kBackButtonPath = {GaiaInfoScreenView::kScreenId.name,
                                           kBackButton};
 constexpr test::UIPath kManualButtonPath = {GaiaInfoScreenView::kScreenId.name,
@@ -40,10 +43,6 @@ constexpr test::UIPath kQuickStartCancelButtonPath = {
 
 class GaiaInfoScreenTest : public OobeBaseTest {
  public:
-  GaiaInfoScreenTest() {
-    feature_list_.InitAndEnableFeature(features::kOobeGaiaInfoScreen);
-  }
-
   ~GaiaInfoScreenTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -69,7 +68,6 @@ class GaiaInfoScreenTest : public OobeBaseTest {
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   base::test::TestFuture<GaiaInfoScreen::Result> screen_result_waiter_;
   GaiaInfoScreen::ScreenExitCallback original_callback_;
 };
@@ -91,7 +89,6 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTest, BackFlow) {
 class GaiaInfoScreenTestQuickStartEnabled : public GaiaInfoScreenTest {
  public:
   GaiaInfoScreenTestQuickStartEnabled() {
-    feature_list_.InitAndEnableFeature(features::kOobeQuickStart);
     connection_broker_factory_.set_initial_feature_support_status(
         quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
             kUndetermined);
@@ -112,9 +109,7 @@ class GaiaInfoScreenTestQuickStartEnabled : public GaiaInfoScreenTest {
 
   quick_start::FakeTargetDeviceConnectionBroker::Factory
       connection_broker_factory_;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled, ForwardFlowManual) {
@@ -125,6 +120,9 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled, ForwardFlowManual) {
       quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
           kSupported);
 
+  histogram_tester_.ExpectBucketCount(
+      kQuickStartEntryPointVisibleHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::GAIA_INFO_SCREEN, 1);
   test::OobeJS().ExpectDisabledPath(kNextButtonPath);
 
   test::OobeJS().TapOnPath(kManualButtonPath);
@@ -135,6 +133,9 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled, ForwardFlowManual) {
 
 IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled,
                        ForwardFlowUserEntersQuickStart) {
+  // Showing GAIA Info screen after exiting quick start screen requires OOBE to
+  // be completed.
+  StartupUtils::MarkOobeCompleted();
   ShowGaiaInfoScreen();
   OobeScreenWaiter(GaiaInfoScreenView::kScreenId).Wait();
 
@@ -142,6 +143,9 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled,
       quick_start::TargetDeviceConnectionBroker::FeatureSupportStatus::
           kSupported);
 
+  histogram_tester_.ExpectBucketCount(
+      kQuickStartEntryPointVisibleHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::GAIA_INFO_SCREEN, 1);
   test::OobeJS().ExpectDisabledPath(kNextButtonPath);
 
   test::OobeJS().TapOnPath(kQuickStartButtonPath);
@@ -168,6 +172,9 @@ IN_PROC_BROWSER_TEST_F(GaiaInfoScreenTestQuickStartEnabled,
           kSupported);
   ShowGaiaInfoScreen();
 
+  histogram_tester_.ExpectBucketCount(
+      kQuickStartEntryPointVisibleHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::GAIA_INFO_SCREEN, 0);
   EXPECT_EQ(WaitForScreenExitResult(),
             GaiaInfoScreen::Result::kQuickStartOngoing);
   OobeScreenWaiter(QuickStartView::kScreenId).Wait();

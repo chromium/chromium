@@ -22,17 +22,30 @@ source_set("socket") {
     "tls_socket.h",
     "udp_socket.cc",
     "udp_socket.h",
+    "write_quota_checker.cc",
+    "write_quota_checker.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
+    "//base",
     "//build:chromeos_buildflags",
     "//content/public/browser",
     "//content/public/common",
+    "//extensions/browser:browser_sources",
     "//extensions/common",
     "//extensions/common/api",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/system",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//services/network/public/mojom:mojom_host_resolver",
   ]
+
+  deps = [ "//url" ]
 
   if (is_chromeos) {
     sources += [
@@ -40,11 +53,8 @@ source_set("socket") {
       "app_firewall_hole_manager.h",
     ]
 
-    deps += [
-      "//chromeos/components/firewall_hole",
-      "//components/keyed_service/content",
-    ]
-  }
+    public_deps += [ "//chromeos/components/firewall_hole" ]
 
-  public_deps = [ "//extensions/browser:browser_sources" ]
+    deps += [ "//components/keyed_service/content" ]
+  }
 }

@@ -8,42 +8,46 @@
 
 #import "base/apple/backup_util.h"
 #import "base/apple/foundation_util.h"
+#import "base/barrier_closure.h"
+#import "base/functional/callback_helpers.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/path_service.h"
 #import "base/run_loop.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
+#import "components/signin/public/base/signin_pref_names.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/base/pref_names.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/signin_utils.h"
 #import "ios/chrome/browser/policy/model/policy_watcher_browser_agent_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/thread/web_task_traits.h"
 
-NSString* kSyncDisabledAlertShownKey = @"SyncDisabledAlertShown";
-
-BROWSER_USER_DATA_KEY_IMPL(PolicyWatcherBrowserAgent)
-
 PolicyWatcherBrowserAgent::PolicyWatcherBrowserAgent(Browser* browser)
-    : browser_(browser) {
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+    : BrowserUserData(browser) {
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
   prefs_change_observer_.Init(GetApplicationContext()->GetLocalState());
-  browser_prefs_change_observer_.Init(browser->GetBrowserState()->GetPrefs());
+  profile_prefs_change_observer_.Init(browser->GetProfile()->GetPrefs());
 }
 
 PolicyWatcherBrowserAgent::~PolicyWatcherBrowserAgent() = default;
 
 void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   // Do nothing if the sign out is still in progress.
-  if (sign_out_in_progress_)
+  if (sign_out_in_progress_) {
     return;
+  }
 
   [handler_ showForceSignedOutPrompt];
 }
@@ -53,8 +57,12 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   DCHECK(handler);
   handler_ = handler;
 
-  auth_service_ = AuthenticationServiceFactory::GetForBrowserState(
-      browser_->GetBrowserState());
+  identity_manager_ =
+      IdentityManagerFactory::GetForProfile(browser_->GetProfile());
+  CHECK(identity_manager_);
+
+  auth_service_ =
+      AuthenticationServiceFactory::GetForProfile(browser_->GetProfile());
   DCHECK(auth_service_);
   auth_service_observation_.Observe(auth_service_.get());
 
@@ -73,7 +81,7 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
 
   // TODO(crbug.com/40265119): Instead of directly accessing internal sync
   // prefs, go through proper APIs (SyncService/SyncUserSettings).
-  browser_prefs_change_observer_.Add(
+  profile_prefs_change_observer_.Add(
       syncer::prefs::internal::kSyncManaged,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
@@ -85,7 +93,7 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
       base::BindOnce(&PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
                      weak_factory_.GetWeakPtr()));
 
-  browser_prefs_change_observer_.Add(
+  profile_prefs_change_observer_.Add(
       prefs::kAllowChromeDataInBackups,
       base::BindRepeating(
           &PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion,
@@ -103,38 +111,29 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   DCHECK(auth_service_);
   if ((auth_service_->GetServiceStatus() ==
        AuthenticationService::ServiceStatus::SigninDisabledByPolicy)) {
-    if (auth_service_->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    for (auto& observer : observers_) {
+      observer.OnSignInDisallowed(this);
+    }
+    if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
       sign_out_in_progress_ = true;
       base::UmaHistogramBoolean("Enterprise.BrowserSigninIOS.SignedOutByPolicy",
                                 true);
-
-      base::WeakPtr<PolicyWatcherBrowserAgent> weak_ptr =
-          weak_factory_.GetWeakPtr();
-      // Sign the user out, but keep synced data (bookmarks, passwords, etc)
-      // locally to be consistent with the policy's behavior on other platforms.
-      auth_service_->SignOut(signin_metrics::ProfileSignout::kPrefChanged,
-                             /*force_clear_browsing_data=*/false, ^{
-                               if (weak_ptr) {
-                                 weak_ptr->OnSignOutComplete();
-                               }
-                             });
-    }
-
-    for (auto& observer : observers_) {
-      observer.OnSignInDisallowed(this);
+      signin::ProfileSignoutRequest(
+          signin_metrics::ProfileSignout::kPrefChanged)
+          .SetShouldRecordMetrics(false)
+          .Run(browser_);
     }
   }
 }
 
 void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
-  NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
+  auto* profile_prefs = browser_->GetProfile()->GetPrefs();
   BOOL syncDisabledAlertShown =
-      [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
+      profile_prefs->GetBoolean(policy::policy_prefs::kSyncDisabledAlertShown);
   // TODO(crbug.com/40265119): Instead of directly accessing internal sync
   // prefs, go through proper APIs (SyncService/SyncUserSettings).
   BOOL isSyncDisabledByAdministrator =
-      browser_->GetBrowserState()->GetPrefs()->GetBoolean(
-          syncer::prefs::internal::kSyncManaged);
+      profile_prefs->GetBoolean(syncer::prefs::internal::kSyncManaged);
 
   if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
     SceneState* scene_state = browser_->GetSceneState();
@@ -143,16 +142,18 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
     if (scene_is_active) {
       [handler_ showSyncDisabledPrompt];
       // Will never trigger again unless policy changes.
-      [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+      profile_prefs->SetBoolean(policy::policy_prefs::kSyncDisabledAlertShown,
+                                true);
     }
   } else if (syncDisabledAlertShown && !isSyncDisabledByAdministrator) {
     // Will trigger again, if policy is turned back on.
-    [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
+    profile_prefs->SetBoolean(policy::policy_prefs::kSyncDisabledAlertShown,
+                              false);
   }
 }
 
 void PolicyWatcherBrowserAgent::UpdateAppContainerBackupExclusion() {
-  bool backup_allowed = browser_->GetBrowserState()->GetPrefs()->GetBoolean(
+  bool backup_allowed = browser_->GetProfile()->GetPrefs()->GetBoolean(
       prefs::kAllowChromeDataInBackups);
   // TODO(crbug.com/40826035): If multiple profiles are supported on iOS, update
   // this logic to work with multiple profiles having possibly-possibly
@@ -191,7 +192,7 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
     // in in progress, the UI will prevent the prompt from showing.
     [handler_ showForceSignedOutPrompt];
   } else {
-    scene_state.appState.shouldShowForceSignOutPrompt = YES;
+    scene_state.profileState.shouldShowForceSignOutPrompt = YES;
   }
 }
 

@@ -8,6 +8,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
@@ -77,7 +78,7 @@ void ShowResizeShadow(aura::Window* window, int component) {
   // 1) the window is not toplevel.
   // 2) the device is in tablet mode.
   // 3) the window is not resizable.
-  if (display::Screen::GetScreen()->InTabletMode() ||
+  if (display::Screen::Get()->InTabletMode() ||
       window != window->GetToplevelWindow() ||
       ((window->GetProperty(aura::client::kResizeBehaviorKey) &
         aura::client::kResizeBehaviorCanResize) == 0)) {
@@ -173,8 +174,12 @@ ToplevelWindowEventHandler::ScopedWindowResizer::ScopedWindowResizer(
   target->AddObserver(this);
   WindowState::Get(target)->AddObserver(this);
 
-  if (IsResize())
+  if (IsMove()) {
+    target->NotifyMoveLoopStarted();
+  }
+  if (IsResize()) {
     target->NotifyResizeLoopStarted();
+  }
 
   if (grab_capture && !target->HasCapture()) {
     grabbed_capture_ = true;
@@ -188,8 +193,14 @@ ToplevelWindowEventHandler::ScopedWindowResizer::~ScopedWindowResizer() {
   WindowState::Get(target)->RemoveObserver(this);
   if (grabbed_capture_)
     target->ReleaseCapture();
-  if (!window_destroying_ && IsResize())
-    target->NotifyResizeLoopEnded();
+  if (!window_destroying_) {
+    if (IsMove()) {
+      target->NotifyMoveLoopEnded();
+    }
+    if (IsResize()) {
+      target->NotifyResizeLoopEnded();
+    }
+  }
 }
 
 bool ToplevelWindowEventHandler::ScopedWindowResizer::IsMove() const {
@@ -221,9 +232,6 @@ void ToplevelWindowEventHandler::ScopedWindowResizer::OnWindowDestroying(
 ToplevelWindowEventHandler::ToplevelWindowEventHandler()
     : first_finger_hittest_(HTNOWHERE) {
   Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
-  if (features::IsPipDoubleTapToResizeEnabled()) {
-    pip_double_tap_ = std::make_unique<PipDoubleTapHandler>();
-  }
 }
 
 ToplevelWindowEventHandler::~ToplevelWindowEventHandler() {
@@ -242,7 +250,7 @@ void ToplevelWindowEventHandler::OnDisplayMetricsChanged(
     return;
 
   display::Display current_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           window_resizer_->resizer()->GetTarget());
   if (display.id() != current_display.id())
     return;
@@ -488,7 +496,7 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       return;
     }
     case ui::EventType::kGestureTap:
-      if (pip_double_tap_ && pip_double_tap_->ProcessDoubleTapEvent(*event)) {
+      if (Shell::Get()->pip_controller()->HandleDoubleTap(*event)) {
         event->StopPropagation();
         return;
       }
@@ -843,7 +851,7 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
 
   aura::Window* toplevel = widget->GetNativeWindow();
 
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return nullptr;
   }
   WindowState* window_state = WindowState::Get(toplevel);
@@ -853,9 +861,8 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return nullptr;
   }
 
-  auto app_type = toplevel->GetProperty(chromeos::kAppTypeKey);
-  if (app_type == chromeos::AppType::BROWSER ||
-      app_type == chromeos::AppType::LACROS) {
+  if (toplevel->GetProperty(chromeos::kAppTypeKey) ==
+      chromeos::AppType::BROWSER) {
     return nullptr;
   }
 
@@ -865,7 +872,7 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
   const gfx::Point location_in_screen =
       event->target()->GetScreenLocation(*event);
   const gfx::Rect work_area_bounds =
-      display::Screen::GetScreen()
+      display::Screen::Get()
           ->GetDisplayNearestWindow(static_cast<aura::Window*>(event->target()))
           .work_area();
 
@@ -923,6 +930,12 @@ bool ToplevelWindowEventHandler::PrepareForDrag(
       window);
 
   requires_reinitialization_ = false;
+
+  if (auto* snap_group_divider =
+          SnapGroupController::Get()->GetSnapGroupDividerForWindow(window)) {
+    snap_group_divider->OnWindowDragStarted(window);
+  }
+
   return true;
 }
 
@@ -931,6 +944,12 @@ bool ToplevelWindowEventHandler::CompleteDrag(DragResult result) {
 
   if (!window_resizer_) {
     return false;
+  }
+
+  if (auto* snap_group_divider =
+          SnapGroupController::Get()->GetSnapGroupDividerForWindow(
+              window_resizer_->resizer()->GetTarget())) {
+    snap_group_divider->OnWindowDragEnded();
   }
 
   std::unique_ptr<ScopedWindowResizer> resizer(std::move(window_resizer_));
@@ -977,11 +996,11 @@ void ToplevelWindowEventHandler::HandleMousePressed(aura::Window* target,
   if (event->phase() != ui::EP_PRETARGET || !target->delegate())
     return;
 
-  // If window is a pip window, let PiPDoubleTapHandler handle the event.
-  if (pip_double_tap_ && pip_double_tap_->ProcessDoubleTapEvent(*event)) {
+  if (Shell::Get()->pip_controller()->HandleDoubleTap(*event)) {
     event->SetHandled();
     return;
   }
+
   // We also update the current window component here because for the
   // mouse-drag-release-press case, where the mouse is released and
   // pressed without mouse move event.
@@ -1020,16 +1039,6 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
   // moves from the move/size operation from being sent to the target.
   if (event->phase() != ui::EP_PRETARGET)
     return;
-
-  // Break the Snap Group when dragging a window out of it. Check
-  // `window_resizer_` to avoid breaking the group if it is tab dragging.
-  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
-    if (SnapGroup* snap_group =
-            snap_group_controller->GetSnapGroupForGivenWindow(target);
-        snap_group && window_resizer_) {
-      snap_group->OnLocatedEvent(event);
-    }
-  }
 
   // `window_resizer_` may have been reset, early return in this case.
   if (!window_resizer_) {

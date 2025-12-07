@@ -28,7 +28,7 @@
 
 namespace {
 
-DWORD WINAPI Thread1(LPVOID context) {
+[[noreturn]] DWORD WINAPI Thread1(LPVOID context) {
   HANDLE event = context;
 
   // Increase the thread priority as a hacky way to signal to
@@ -40,17 +40,15 @@ DWORD WINAPI Thread1(LPVOID context) {
 
   Sleep(INFINITE);
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
-DWORD WINAPI Thread2(LPVOID dummy) {
+[[noreturn]] DWORD WINAPI Thread2(LPVOID dummy) {
   Sleep(INFINITE);
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
-DWORD WINAPI Thread3(LPVOID context) {
+[[noreturn]] DWORD WINAPI Thread3(LPVOID context) {
   // This is a convenient way to pass the event handle to loader_lock_dll.dll.
   HANDLE event = context;
   PCHECK(SetEnvironmentVariable(
@@ -58,15 +56,12 @@ DWORD WINAPI Thread3(LPVOID context) {
       base::UTF8ToWide(base::StringPrintf("%p", event)).c_str()));
 
   HMODULE dll = LoadLibrary(L"loader_lock_dll.dll");
-  if (!dll)
-    PLOG(FATAL) << "LoadLibrary";
+  PCHECK(dll) << "LoadLibrary";
 
   // This call is not expected to return.
-  if (!FreeLibrary(dll))
-    PLOG(FATAL) << "FreeLibrary";
+  PCHECK(FreeLibrary(dll));
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace

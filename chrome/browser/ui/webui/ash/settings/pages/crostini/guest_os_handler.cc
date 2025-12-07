@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -34,6 +35,7 @@ base::Value::List GetSharableUsbDevices(CrosUsbDetector* detector) {
     }
     device_info.Set("vendorId", base::StringPrintf("%04x", device.vendor_id));
     device_info.Set("productId", base::StringPrintf("%04x", device.product_id));
+    device_info.Set("serialNumber", device.serial_number);
     device_info.Set("promptBeforeSharing", device.prompt_before_sharing);
     usb_devices_list.Append(std::move(device_info));
   }
@@ -81,7 +83,7 @@ void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(2U, args.size());
-  std::string callback_id = args[0].GetString();
+  const std::string& callback_id = args[0].GetString();
 
   base::Value::List texts;
   for (const auto& path : args[1].GetList()) {
@@ -94,11 +96,11 @@ void GuestOsHandler::HandleGetGuestOsSharedPathsDisplayText(
 void GuestOsHandler::HandleRemoveGuestOsSharedPath(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
-  std::string callback_id = args[0].GetString();
-  std::string vm_name = args[1].GetString();
-  std::string path = args[2].GetString();
+  const std::string& callback_id = args[0].GetString();
+  const std::string& vm_name = args[1].GetString();
+  const std::string& path = args[2].GetString();
 
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->UnsharePath(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->UnsharePath(
       vm_name, base::FilePath(path),
       /*unpersist=*/true,
       base::BindOnce(&GuestOsHandler::OnGuestOsSharedPathRemoved,

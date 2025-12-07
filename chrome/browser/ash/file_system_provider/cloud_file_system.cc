@@ -58,7 +58,7 @@ std::ostream& operator<<(std::ostream& out, OpenFileMode mode) {
     case OpenFileMode::OPEN_FILE_MODE_WRITE:
       return out << "OPEN_FILE_MODE_WRITE";
   }
-  NOTREACHED_NORETURN() << "Unknown OpenFileMode: " << mode;
+  NOTREACHED() << "Unknown OpenFileMode: " << mode;
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -70,7 +70,7 @@ std::ostream& operator<<(std::ostream& out,
     case ChangeType::DELETED:
       return out << "DELETED";
   }
-  NOTREACHED_NORETURN() << "Unknown ChangeType: " << type;
+  NOTREACHED() << "Unknown ChangeType: " << type;
 }
 
 std::ostream& operator<<(std::ostream& out, CloudFileInfo* cloud_file_info) {

@@ -44,7 +44,6 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
     public static final String ECHO_METHOD_PATH = "/echomethod";
     public static final String ECHO_STREAM_PATH = "/echostream";
     public static final String ECHO_TRAILERS_PATH = "/echotrailers";
-    public static final String SERVE_SIMPLE_BROTLI_RESPONSE = "/simplebrotli";
     public static final String REPORTING_COLLECTOR_PATH = "/reporting-collector";
     public static final String SUCCESS_WITH_NEL_HEADERS_PATH = "/success-with-nel";
     public static final String COMBINED_HEADERS_PATH = "/combinedheaders";
@@ -56,11 +55,11 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
     private static final ByteBuf RESPONSE_BYTES =
             unreleasableBuffer(copiedBuffer("HTTP/2 Test Server", CharsetUtil.UTF_8));
 
-    private HashMap<Integer, RequestResponder> mResponderMap = new HashMap<>();
+    private final HashMap<Integer, RequestResponder> mResponderMap = new HashMap<>();
 
-    private ReportingCollector mReportingCollector;
-    private String mServerUrl;
-    private CountDownLatch mHangingUrlLatch;
+    private final ReportingCollector mReportingCollector;
+    private final String mServerUrl;
+    private final CountDownLatch mHangingUrlLatch;
 
     /** Builder for HTTP/2 test handler. */
     public static final class Builder
@@ -297,32 +296,9 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
         }
     }
 
-    // A RequestResponder that serves a simple Brotli-encoded response.
-    private class ServeSimpleBrotliResponder extends RequestResponder {
-        @Override
-        void onHeadersRead(
-                ChannelHandlerContext ctx,
-                int streamId,
-                boolean endOfStream,
-                Http2Headers headers) {
-            Http2Headers responseHeaders = new DefaultHttp2Headers().status(OK.codeAsText());
-            byte[] quickfoxCompressed = {
-                0x0b, 0x15, -0x80, 0x54, 0x68, 0x65, 0x20, 0x71, 0x75, 0x69, 0x63, 0x6b, 0x20, 0x62,
-                0x72, 0x6f, 0x77, 0x6e, 0x20, 0x66, 0x6f, 0x78, 0x20, 0x6a, 0x75, 0x6d, 0x70, 0x73,
-                0x20, 0x6f, 0x76, 0x65, 0x72, 0x20, 0x74, 0x68, 0x65, 0x20, 0x6c, 0x61, 0x7a, 0x79,
-                0x20, 0x64, 0x6f, 0x67, 0x03
-            };
-            ByteBuf content = copiedBuffer(quickfoxCompressed);
-            responseHeaders.add("content-encoding", "br");
-            encoder().writeHeaders(ctx, streamId, responseHeaders, 0, false, ctx.newPromise());
-            encoder().writeData(ctx, streamId, content, 0, true, ctx.newPromise());
-            ctx.flush();
-        }
-    }
-
     // A RequestResponder that implements a Reporting collector.
     private class ReportingCollectorResponder extends RequestResponder {
-        private ByteArrayOutputStream mPartialPayload = new ByteArrayOutputStream();
+        private final ByteArrayOutputStream mPartialPayload = new ByteArrayOutputStream();
 
         @Override
         void onHeadersRead(
@@ -475,8 +451,6 @@ public final class Http2TestHandler extends Http2ConnectionHandler implements Ht
             responder = new EchoHeaderResponder();
         } else if (path.startsWith(ECHO_METHOD_PATH)) {
             responder = new EchoMethodResponder();
-        } else if (path.startsWith(SERVE_SIMPLE_BROTLI_RESPONSE)) {
-            responder = new ServeSimpleBrotliResponder();
         } else if (path.startsWith(REPORTING_COLLECTOR_PATH)) {
             responder = new ReportingCollectorResponder();
         } else if (path.startsWith(SUCCESS_WITH_NEL_HEADERS_PATH)) {

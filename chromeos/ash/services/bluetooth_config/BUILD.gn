@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("bluetooth_config") {
   sources = [
@@ -49,7 +47,6 @@ static_library("bluetooth_config") {
     "discovery_session_manager_impl.h",
     "discovery_session_status_notifier.cc",
     "discovery_session_status_notifier.h",
-    "fast_pair_delegate.cc",
     "fast_pair_delegate.h",
     "initializer.h",
     "initializer_impl.cc",
@@ -69,7 +66,7 @@ static_library("bluetooth_config") {
     "//chromeos/dbus/power",
     "//components/device_event_log",
     "//components/pref_registry",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/session_manager/core",
     "//components/user_manager",
     "//device/bluetooth",
@@ -77,6 +74,10 @@ static_library("bluetooth_config") {
     "//mojo/public/cpp/bindings",
     "//third_party/re2",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 component("in_process_bluetooth_config") {
@@ -180,7 +181,9 @@ source_set("unit_tests") {
     "//chromeos/ash/services/bluetooth_config/public/cpp:unit_tests",
     "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/dbus/power",
+    "//components/prefs:test_support",
     "//components/session_manager/core",
+    "//components/session_manager/core:test_support",
     "//components/sync_preferences:test_support",
     "//components/user_manager:test_support",
     "//device/bluetooth:mocks",
@@ -188,4 +191,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

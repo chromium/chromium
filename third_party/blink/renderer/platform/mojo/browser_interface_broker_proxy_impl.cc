@@ -16,19 +16,16 @@ namespace blink {
 namespace {
 
 // Helper for looking up `std::string_view`-represented mojo interface names in
-// a `WTF::HashMap<String, ...>`.  Mojo interface names are ASCII-only, so
+// a `HashMap<String, ...>`.  Mojo interface names are ASCII-only, so
 // `StringHasher::DefaultConverter` and `StringView(const LChar* chars, unsigned
 // length)` work fine here.
 struct InterfaceNameHashTranslator {
   static unsigned GetHash(std::string_view s) {
-    const LChar* data = reinterpret_cast<const LChar*>(s.data());
-    unsigned size = base::checked_cast<unsigned>(s.size());
-    return StringHasher::HashMemory(data, size);
+    return StringHasher::HashMemory(base::as_byte_span(s));
   }
 
   static bool Equal(const String& a, std::string_view b) {
-    unsigned b_size = base::checked_cast<unsigned>(b.size());
-    StringView wtf_b(b.data(), b_size);
+    StringView wtf_b(base::as_byte_span(b));
     return EqualStringView(a, wtf_b);
   }
 };
@@ -43,7 +40,7 @@ class EmptyBrowserInterfaceBrokerProxy
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     // `Reset` should only be called on a real `BrowserInterfaceBrokerProxy`.
     // It should never be called on `EmptyBrowserInterfaceBrokerProxy`.
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   void GetInterface(mojo::GenericPendingReceiver receiver) const override {

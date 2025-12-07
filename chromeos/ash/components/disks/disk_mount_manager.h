@@ -12,13 +12,13 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 
-namespace ash {
-namespace disks {
+namespace ash::disks {
 
 // Possible filesystem types that can be passed to FormatMountedDevice.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -74,7 +74,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
       return GetKey(a) < GetKey(b);
     }
 
-    static std::string_view GetKey(const std::string_view a) { return a; }
+    static std::string_view GetKey(std::string_view a) { return a; }
 
     static std::string_view GetKey(const std::unique_ptr<Disk>& disk) {
       DCHECK(disk);
@@ -90,12 +90,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   struct SortByMountPath {
     using is_transparent = void;
 
-    template <typename A, typename B>
-    bool operator()(const A& a, const B& b) const {
+    bool operator()(const auto& a, const auto& b) const {
       return GetKey(a) < GetKey(b);
     }
 
-    static std::string_view GetKey(const std::string_view a) { return a; }
+    static std::string_view GetKey(std::string_view a) { return a; }
 
     static std::string_view GetKey(const MountPoint& mp) {
       return mp.mount_path;
@@ -154,6 +153,16 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
     ~Observer() override;
   };
 
+  // Delegate class for ARC-side operations.
+  class ArcDelegate {
+   public:
+    typedef base::OnceCallback<void(bool success)> Callback;
+
+    // Drop ARC caches for the given removable drive.
+    virtual void DropArcCaches(const base::FilePath& mount_path,
+                               Callback callback) = 0;
+  };
+
   virtual ~DiskMountManager() = default;
 
   // Adds an observer.
@@ -167,7 +176,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
 
   // Returns Disk object corresponding to |source_path| or NULL on failure.
   virtual const Disk* FindDiskBySourcePath(
-      const std::string& source_path) const = 0;
+      std::string_view source_path) const = 0;
 
   // Gets the list of mount points.
   virtual const MountPoints& mount_points() const = 0;
@@ -203,9 +212,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   virtual void UnmountPath(const std::string& mount_path,
                            UnmountPathCallback callback) = 0;
 
-  // Remounts mounted removable devices to change the read-only mount option.
-  // Devices that can be mounted only in its read-only mode will be ignored.
-  virtual void RemountAllRemovableDrives(MountAccessMode mode) = 0;
+  // Remounts mounted removable device to change the read-only mount option.
+  // Device that can be mounted only in its read-only mode will be ignored.
+  virtual void RemountRemovableDrive(const Disk& disk,
+                                     MountAccessMode access_mode) = 0;
 
   // Formats device mounted at |mount_path| with the given filesystem and label.
   // Also unmounts the device before formatting.
@@ -244,6 +254,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   virtual bool AddDiskForTest(std::unique_ptr<Disk> disk);
   virtual bool AddMountPointForTest(const MountPoint& mount_point);
 
+  // Sets the ARC delegate.
+  void SetArcDelegate(ArcDelegate* delegate) { arc_delegate_ = delegate; }
+
   // Creates the global DiskMountManager instance.
   static void Initialize();
 
@@ -259,9 +272,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
   // Returns a pointer to the global DiskMountManager instance.
   // Initialize() should already have been called.
   static DiskMountManager* GetInstance();
+
+ protected:
+  raw_ptr<ArcDelegate> arc_delegate_ = nullptr;
 };
 
-}  // namespace disks
-}  // namespace ash
+}  // namespace ash::disks
 
 #endif  // CHROMEOS_ASH_COMPONENTS_DISKS_DISK_MOUNT_MANAGER_H_

@@ -1,0 +1,29 @@
+include_rules = [
+  # ChromeOS should not depend on //chrome. See //docs/chromeos/code.md for
+  # details.
+  "-chrome",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor ash codes in //chrome to break these dependencies; see b/332804822.
+  # Whenever possible, avoid adding new //chrome dependencies to this list.
+  "+chrome/browser/ash/app_list/app_list_client_impl.h",
+  "+chrome/browser/ash/app_list/search",
+  "+chrome/browser/ash/app_list/test",
+  "+chrome/browser/ash/system_web_apps",
+  "+chrome/browser/extensions/extension_browsertest.h",
+  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/ui/ash/system_web_apps",
+  "+chrome/browser/ui/browser.h",
+  "+chrome/browser/ui/browser_window.h",
+  "+chrome/browser/web_applications/test",
+  "+chrome/test/base",
+]
+
+specific_include_rules = {
+  # This DEPS violation is a temporary workaround to continue supporting Chrome
+  # Apps tests while the Chrome Apps deprecation is finalised.
+  # TODO(crbug.com/379262505) - Remove this.
+  "app_list_with_recent_apps_browsertest\\.cc": [
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+  ],
+}

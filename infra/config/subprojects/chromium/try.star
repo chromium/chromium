@@ -2,16 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("//lib/branches.star", "branches")
-load("//lib/builders.star", "cpu")
-load("//lib/consoles.star", "consoles")
-load("//lib/try.star", "try_")
-load("//project.star", "ACTIVE_MILESTONES", "settings")
+load("@chromium-luci//branches.star", "branches")
+load("@chromium-luci//builders.star", "builders", "cpu")
+load("@chromium-luci//consoles.star", "consoles")
+load("@chromium-luci//try.star", "try_")
 load("./fallback-cq.star", "fallback_cq")
+load("//project.star", "ACTIVE_MILESTONES", "settings")
 
 try_.defaults.set(
     bucket = "try",
     cpu = cpu.X86_64,
+    free_space = builders.free_space.standard,
     build_numbers = True,
     cq_group = "cq",
     # Max. pending time for builds. CQ considers builds pending >2h as timed
@@ -40,10 +41,10 @@ luci.bucket(
             users = [
                 "dawn-automated-expectations@chops-service-accounts.iam.gserviceaccount.com",
                 "findit-for-me@appspot.gserviceaccount.com",
-                "tricium-prod@appspot.gserviceaccount.com",
             ],
             projects = [p for p in [
                 branches.value(branch_selector = branches.selector.MAIN, value = "angle"),
+                branches.value(branch_selector = branches.selector.MAIN, value = "boringssl"),
                 branches.value(branch_selector = branches.selector.DESKTOP_BRANCHES, value = "dawn"),
                 branches.value(branch_selector = branches.selector.MAIN, value = "infra"),
                 branches.value(branch_selector = branches.selector.MAIN, value = "skia"),
@@ -59,7 +60,11 @@ luci.bucket(
     name = "try.shadow",
     shadows = "try",
     constraints = luci.bucket_constraints(
-        pools = ["luci.chromium.try", "luci.chromium.try.orchestrator"],
+        pools = [
+            "luci.chromium.gpu.try",
+            "luci.chromium.try",
+            "luci.chromium.try.orchestrator",
+        ],
         service_accounts = [
             "chromium-cipd-try-builder@chops-service-accounts.iam.gserviceaccount.com",
             "chromium-orchestrator@chops-service-accounts.iam.gserviceaccount.com",
@@ -120,10 +125,14 @@ luci.cq_group(
     acls = [
         acl.entry(
             acl.CQ_COMMITTER,
-            groups = "project-chromium-committers",
+            groups = "project-chromium-submit-access",
         ),
         acl.entry(
             acl.CQ_DRY_RUNNER,
+            groups = "project-chromium-tryjob-access",
+        ),
+        acl.entry(
+            acl.CQ_NEW_PATCHSET_RUN_TRIGGERER,
             groups = "project-chromium-tryjob-access",
         ),
     ],
@@ -182,10 +191,14 @@ branches.cq_group(
     acls = [
         acl.entry(
             acl.CQ_COMMITTER,
-            groups = "project-chromium-committers",
+            groups = "project-chromium-submit-access",
         ),
         acl.entry(
             acl.CQ_DRY_RUNNER,
+            groups = "project-chromium-tryjob-access",
+        ),
+        acl.entry(
+            acl.CQ_NEW_PATCHSET_RUN_TRIGGERER,
             groups = "project-chromium-tryjob-access",
         ),
     ],
@@ -212,12 +225,15 @@ exec("./try/tryserver.chromium.angle.star")
 exec("./try/tryserver.chromium.chromiumos.star")
 exec("./try/tryserver.chromium.cft.star")
 exec("./try/tryserver.chromium.dawn.star")
+exec("./try/tryserver.chromium.enterprise_companion.star")
 exec("./try/tryserver.chromium.fuchsia.star")
 exec("./try/tryserver.chromium.fuzz.star")
 exec("./try/tryserver.chromium.infra.star")
 exec("./try/tryserver.chromium.linux.star")
 exec("./try/tryserver.chromium.mac.star")
+exec("./try/tryserver.chromium.prompt_eval.star")
 exec("./try/tryserver.chromium.rust.star")
 exec("./try/tryserver.chromium.tricium.star")
 exec("./try/tryserver.chromium.updater.star")
 exec("./try/tryserver.chromium.win.star")
+exec("./try/tryserver.crossbench.star")

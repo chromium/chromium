@@ -18,32 +18,10 @@
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
+namespace {
 const int kSanitizeWindowWidth = 680;
-const int kSanitizeWindowHeight = 672;
-
-std::unique_ptr<web_app::WebAppInstallInfo>
-CreateWebAppInfoForSanitizeSystemWebApp() {
-  GURL start_url = GURL(ash::kChromeUISanitizeAppURL);
-  auto info =
-      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
-  info->scope = GURL(ash::kChromeUISanitizeAppURL);
-  web_app::CreateIconInfoForSystemWebApp(
-      info->start_url(),
-      {{"app_icon_192.png", 192, IDR_ASH_SANITIZE_APP_APP_ICON_192_PNG}},
-      *info);
-
-  info->title = l10n_util::GetStringUTF16(IDS_SANITIZE);
-  info->theme_color =
-      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
-  info->dark_mode_theme_color =
-      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
-  info->background_color = info->theme_color;
-  info->dark_mode_background_color = info->dark_mode_theme_color;
-  info->display_mode = blink::mojom::DisplayMode::kStandalone;
-  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-
-  return info;
-}
+const int kSanitizeWindowHeight = 680;
+}  // namespace
 
 SanitizeSystemAppDelegate::SanitizeSystemAppDelegate(Profile* profile)
     : ash::SystemWebAppDelegate(ash::SystemWebAppType::OS_SANITIZE,
@@ -53,10 +31,31 @@ SanitizeSystemAppDelegate::SanitizeSystemAppDelegate(Profile* profile)
 
 std::unique_ptr<web_app::WebAppInstallInfo>
 SanitizeSystemAppDelegate::GetWebAppInfo() const {
-  return CreateWebAppInfoForSanitizeSystemWebApp();
+  GURL start_url = GURL(ash::kChromeUISanitizeAppURL);
+  auto info =
+      web_app::CreateSystemWebAppInstallInfoWithStartUrlAsIdentity(start_url);
+  info->scope = GURL(ash::kChromeUISanitizeAppURL);
+  web_app::CreateIconInfoForSystemWebApp(
+      info->start_url(),
+      {{"app_icon_192.png", 192, IDR_ASH_SANITIZE_APP_APP_ICON_192_PNG}},
+      *info);
+  info->title = l10n_util::GetStringUTF16(IDS_SANITIZE);
+  info->theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color =
+      web_app::GetDefaultBackgroundColor(/*use_dark_mode=*/true);
+  info->background_color = info->theme_color;
+  info->dark_mode_background_color = info->dark_mode_theme_color;
+  info->display_mode = blink::mojom::DisplayMode::kStandalone;
+  info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
+  return info;
 }
 
 bool SanitizeSystemAppDelegate::ShouldAllowResize() const {
+  return false;
+}
+
+bool SanitizeSystemAppDelegate::ShouldAllowMaximize() const {
   return false;
 }
 
@@ -64,13 +63,22 @@ bool SanitizeSystemAppDelegate::ShouldShowInLauncher() const {
   return false;
 }
 
-gfx::Rect SanitizeSystemAppDelegate::GetDefaultBounds(Browser* browser) const {
+bool SanitizeSystemAppDelegate::ShouldShowInSearchAndShelf() const {
+  return false;
+}
+
+gfx::Rect SanitizeSystemAppDelegate::GetDefaultBounds(
+    ash::BrowserDelegate*) const {
   gfx::Rect bounds =
-      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+      display::Screen::Get()->GetDisplayForNewWindows().work_area();
   bounds.ClampToCenteredSize({kSanitizeWindowWidth, kSanitizeWindowHeight});
   return bounds;
 }
 
 bool SanitizeSystemAppDelegate::ShouldCaptureNavigations() const {
+  return true;
+}
+
+bool SanitizeSystemAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return true;
 }

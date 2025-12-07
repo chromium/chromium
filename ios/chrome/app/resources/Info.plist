@@ -4,8 +4,6 @@
 <dict>
 	<key>UIFileSharingEnabled</key>
 	<true/>
-	<key>UIApplicationShortcutWidget</key>
-	<string>${CONTENT_WIDGET_EXTENSION_BUNDLE_ID}</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -138,10 +136,6 @@
 	<array>
 		<string>arm64</string>
 	</array>
-	<key>UIStatusBarStyle</key>
-	<string>UIStatusBarStyleLightContent</string>
-	<key>UIStatusBarHidden</key>
-	<true/>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -234,5 +228,7 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UISupportsFullScreenInAssistiveAccess</key>
+	<true/>
 </dict>
 </plist>

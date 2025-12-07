@@ -102,7 +102,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ChunkedDataPipeUploadDataStream
   // received.
   std::optional<uint64_t> size_;
 
-  uint64_t bytes_read_ = 0;
+  size_t bytes_read_ = 0;
 
   // Set to a net::Error other than net::OK if the DataPipeGetter returns an
   // error.

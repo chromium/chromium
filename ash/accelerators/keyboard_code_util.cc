@@ -5,14 +5,14 @@
 #include "ash/accelerators/keyboard_code_util.h"
 
 #include "ash/public/cpp/accelerators_util.h"
-#include "ash/public/cpp/assistant/assistant_state.h"
-#include "ash/public/cpp/assistant/assistant_state_base.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/logging.h"
+#include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace ash {
 
@@ -69,12 +69,6 @@ std::optional<std::u16string> GetSpecialStringForKeyboardCode(
   return l10n_util::GetStringUTF16(msg_id);
 }
 
-bool IsAssistantAvailable() {
-  AssistantStateBase* state = AssistantState::Get();
-  return state->allowed_state() == assistant::AssistantAllowedState::ALLOWED &&
-         state->settings_enabled().value_or(false);
-}
-
 }  // namespace
 
 std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
@@ -89,20 +83,36 @@ std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
 
 const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
   switch (key_code) {
+    case ui::VKEY_APPS:
+      return &ash::kKsContextMenuIcon;
     case ui::VKEY_BROWSER_BACK:
       return &ash::kKsvBrowserBackIcon;
     case ui::VKEY_BROWSER_FORWARD:
       return &ash::kKsvBrowserForwardIcon;
     case ui::VKEY_BROWSER_REFRESH:
       return &ash::kKsvReloadIcon;
+    case ui::VKEY_BROWSER_HOME:
+      return &ash::kKsvBrowserHomeIcon;
     case ui::VKEY_ZOOM:
       return &ash::kKsvFullscreenIcon;
     case ui::VKEY_MEDIA_LAUNCH_APP1:
-      return &ash::kKsvOverviewIcon;
+      return Shell::Get()->keyboard_capability()->UseRefreshedIcons()
+                 ? &ash::kOverviewRefreshIcon
+                 : &ash::kKsvOverviewIcon;
+    case ui::VKEY_MEDIA_LAUNCH_MAIL:
+      return &ash::kKsMediaLaunchMailIcon;
     case ui::VKEY_BRIGHTNESS_DOWN:
       return &ash::kKsvBrightnessDownIcon;
     case ui::VKEY_BRIGHTNESS_UP:
-      return &ash::kKsvBrightnessUpIcon;
+      return Shell::Get()->keyboard_capability()->UseRefreshedIcons()
+                 ? &ash::kBrightnessUpRefreshIcon
+                 : &ash::kKsvBrightnessUpIcon;
+    case ui::VKEY_KBD_BACKLIGHT_TOGGLE:
+      return &ash::kKsKeyboardBrightnessToggleIcon;
+    case ui::VKEY_KBD_BRIGHTNESS_DOWN:
+      return &ash::kKsKeyboardBrightnessDownIcon;
+    case ui::VKEY_KBD_BRIGHTNESS_UP:
+      return &ash::kKsKeyboardBrightnessUpIcon;
     case ui::VKEY_VOLUME_MUTE:
       return &ash::kKsvMuteIcon;
     case ui::VKEY_VOLUME_DOWN:
@@ -117,23 +127,35 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
       return &ash::kKsvArrowLeftIcon;
     case ui::VKEY_RIGHT:
       return &ash::kKsvArrowRightIcon;
+    case ui::VKEY_ACCESSIBILITY:
+      return &ash::kKsAccessibilityIcon;
     case ui::VKEY_PRIVACY_SCREEN_TOGGLE:
       return &ash::kKsvPrivacyScreenToggleIcon;
     case ui::VKEY_SNAPSHOT:
       return &ash::kKsvSnapshotIcon;
+    case ui::VKEY_QUICK_INSERT:
+      return &ash::kQuickInsertIcon;
+    case ui::VKEY_DO_NOT_DISTURB:
+      return &ash::kKsDoNotDisturbIcon;
+    case ui::VKEY_CAMERA_ACCESS_TOGGLE:
+      return &ash::kKsCameraAccessToggleIcon;
     default:
       return nullptr;
   }
 }
 
 const gfx::VectorIcon* GetSearchOrLauncherVectorIcon() {
-  if (Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard()) {
-    return IsAssistantAvailable()
-               ? &kCaptureModeDemoToolsLauncherAssistantOnIcon
-               : &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+  switch (Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay()) {
+    case ui::mojom::MetaKey::kSearch:
+      return &kCaptureModeDemoToolsSearchIcon;
+    case ui::mojom::MetaKey::kLauncher:
+      return &kCaptureModeDemoToolsLauncherAssistantOffIcon;
+    case ui::mojom::MetaKey::kLauncherRefresh:
+      return &kCampbellHeroIcon;
+    case ui::mojom::MetaKey::kExternalMeta:
+    case ui::mojom::MetaKey::kCommand:
+      NOTREACHED();
   }
-
-  return &kCaptureModeDemoToolsSearchIcon;
 }
 
 }  // namespace ash

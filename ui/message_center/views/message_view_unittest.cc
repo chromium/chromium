@@ -84,7 +84,7 @@ class MessageViewTest : public views::ViewsTestBase {
 };
 
 // Updating control buttons visibility is a ChromeOS only feature.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Make sure UpdateControlButtonsVisibility is called when their is a mouse
 // enter or exit on a MessageView.
 TEST_F(MessageViewTest, UpdateControlButtonsVisibilityCalled) {
@@ -101,7 +101,7 @@ TEST_F(MessageViewTest, UpdateControlButtonsVisibilityCalled) {
   event_generator.MoveMouseTo(
       message_view()->GetBoundsInScreen().origin() - gfx::Vector2d(10, 10), 10);
 }
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(MessageViewTest, AccessibleAttributes) {
   ui::AXNodeData data;

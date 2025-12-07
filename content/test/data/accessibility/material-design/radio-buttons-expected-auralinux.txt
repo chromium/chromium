@@ -1,0 +1,32 @@
+[document web] name='Material Web Radio Buttons'
+++[section] name='Ready'
+++++[radio button] checkable checkable:true
+++++[radio button] checked checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checked checkable checkable:true
+++++[radio button] checkable checkable:true
+=== Start Continuation ===
+[document web] name='Material Web Radio Buttons'
+++[section] name='Ready'
+++++[radio button] checked checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checked checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[section]
+++++++[static] name='Selected: Option 1'
+=== Start Continuation ===
+[document web] name='Material Web Radio Buttons'
+++[section] name='Ready'
+++++[radio button] checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checked checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[radio button] checked checkable checkable:true
+++++[radio button] checkable checkable:true
+++++[section]
+++++++[static] name='Selected: Option 1'
+++++[section]
+++++++[static] name='Selected: Option 3'

@@ -1,5 +1,0 @@
-# TODO(crbug.com/40232146)
--org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
-
-# TODO(crbug.com/40277597)
--org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasicTest.testRenderSearchHistoryLinkSignedOutKnownNonGoogleDSE

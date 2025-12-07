@@ -4,6 +4,7 @@
 
 #include "chromecast/media/cma/backend/mixer/filter_group.h"
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
@@ -13,6 +14,7 @@
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
 #include "chromecast/public/volume_control.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -163,7 +165,7 @@ class FilterGroupTest : public testing::Test,
   float Input(int channel, int frame) {
     DCHECK_LE(channel, source_.data().channels());
     DCHECK_LE(frame, source_.data().frames());
-    return source_.data().channel(channel)[frame];
+    return source_.data().channel_span(channel)[frame];
   }
 
   void AssertPassthrough() {
@@ -171,7 +173,8 @@ class FilterGroupTest : public testing::Test,
     float* interleaved_data = filter_group_->GetOutputBuffer();
     for (int f = 0; f < kInputFrames; ++f) {
       for (int ch = 0; ch < kNumInputChannels; ++ch) {
-        ASSERT_EQ(Input(ch, f), interleaved_data[f * kNumInputChannels + ch])
+        UNSAFE_TODO(ASSERT_EQ(Input(ch, f),
+                              interleaved_data[f * kNumInputChannels + ch]))
             << f;
       }
     }

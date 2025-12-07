@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/queue_with_sizes.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -19,71 +19,69 @@
 
 namespace blink {
 
+class ReadableStreamDefaultController::CallPullIfNeededResolveFunction final
+    : public ThenCallable<IDLUndefined, CallPullIfNeededResolveFunction> {
+ public:
+  explicit CallPullIfNeededResolveFunction(
+      ReadableStreamDefaultController* controller)
+      : controller_(controller) {}
+
+  void React(ScriptState* script_state) {
+    // https://streams.spec.whatwg.org/#readable-stream-default-controller-call-pull-if-needed
+    // 7. Upon fulfillment of pullPromise,
+    //   a. Set controller.[[pulling]] to false.
+    controller_->is_pulling_ = false;
+
+    //   b. If controller.[[pullAgain]] is true,
+    if (controller_->will_pull_again_) {
+      //  i. Set controller.[[pullAgain]] to false.
+      controller_->will_pull_again_ = false;
+
+      //  ii. Perform ! ReadableStreamDefaultControllerCallPullIfNeeded(
+      //      controller).
+      CallPullIfNeeded(script_state, controller_);
+    }
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(controller_);
+    ThenCallable<IDLUndefined, CallPullIfNeededResolveFunction>::Trace(visitor);
+  }
+
+ private:
+  const Member<ReadableStreamDefaultController> controller_;
+};
+
+class ReadableStreamDefaultController::CallPullIfNeededRejectFunction final
+    : public ThenCallable<IDLAny, CallPullIfNeededRejectFunction> {
+ public:
+  explicit CallPullIfNeededRejectFunction(
+      ReadableStreamDefaultController* controller)
+      : controller_(controller) {}
+
+  void React(ScriptState* script_state, ScriptValue e) {
+    // 8. Upon rejection of pullPromise with reason e,
+    //   a. Perform ! ReadableStreamDefaultControllerError(controller, e).
+    Error(script_state, controller_, e.V8Value());
+  }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(controller_);
+    ThenCallable<IDLAny, CallPullIfNeededRejectFunction>::Trace(visitor);
+  }
+
+ private:
+  const Member<ReadableStreamDefaultController> controller_;
+};
+
 // This constructor is used internally; it is not reachable from JavaScript.
 ReadableStreamDefaultController::ReadableStreamDefaultController(
     ScriptState* script_state)
-    : queue_(MakeGarbageCollected<QueueWithSizes>()) {
-  class CallPullIfNeededResolveFunction final : public PromiseHandler {
-   public:
-    explicit CallPullIfNeededResolveFunction(
-        ReadableStreamDefaultController* controller)
-        : controller_(controller) {}
-
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
-      // https://streams.spec.whatwg.org/#readable-stream-default-controller-call-pull-if-needed
-      // 7. Upon fulfillment of pullPromise,
-      //   a. Set controller.[[pulling]] to false.
-      controller_->is_pulling_ = false;
-
-      //   b. If controller.[[pullAgain]] is true,
-      if (controller_->will_pull_again_) {
-        //  i. Set controller.[[pullAgain]] to false.
-        controller_->will_pull_again_ = false;
-
-        //  ii. Perform ! ReadableStreamDefaultControllerCallPullIfNeeded(
-        //      controller).
-        CallPullIfNeeded(script_state, controller_);
-      }
-    }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
-    }
-
-   private:
-    const Member<ReadableStreamDefaultController> controller_;
-  };
-
-  class CallPullIfNeededRejectFunction final : public PromiseHandler {
-   public:
-    explicit CallPullIfNeededRejectFunction(
-        ReadableStreamDefaultController* controller)
-        : controller_(controller) {}
-
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> e) override {
-      // 8. Upon rejection of pullPromise with reason e,
-      //   a. Perform ! ReadableStreamDefaultControllerError(controller, e).
-      Error(script_state, controller_, e);
-    }
-
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
-    }
-
-   private:
-    const Member<ReadableStreamDefaultController> controller_;
-  };
-
-  resolve_function_ = MakeGarbageCollected<ScriptFunction>(
-      script_state,
-      MakeGarbageCollected<CallPullIfNeededResolveFunction>(this));
-  reject_function_ = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<CallPullIfNeededRejectFunction>(this));
-}
+    : queue_(MakeGarbageCollected<QueueWithSizes>()),
+      resolve_function_(
+          MakeGarbageCollected<CallPullIfNeededResolveFunction>(this)),
+      reject_function_(
+          MakeGarbageCollected<CallPullIfNeededRejectFunction>(this)) {}
 
 void ReadableStreamDefaultController::close(ScriptState* script_state,
                                             ExceptionState& exception_state) {
@@ -109,8 +107,7 @@ void ReadableStreamDefaultController::close(ScriptState* script_state,
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
     exception_state.ThrowTypeError(errorDescription);
@@ -207,15 +204,15 @@ void ReadableStreamDefaultController::Enqueue(
     //   a. Let result be the result of performing controller.
     //      [[strategySizeAlgorithm]], passing in chunk, and interpreting the
     //      result as an ECMAScript completion value.
+    TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
     std::optional<double> chunk_size =
-        controller->strategy_size_algorithm_->Run(script_state, chunk,
-                                                  exception_state);
+        controller->strategy_size_algorithm_->Run(script_state, chunk);
 
     //   b. If result is an abrupt completion,
-    if (exception_state.HadException()) {
+    if (rethrow_scope.HasCaught()) {
       //    i. Perform ! ReadableStreamDefaultControllerError(controller,
       //       result.[[Value]]).
-      Error(script_state, controller, exception_state.GetException());
+      Error(script_state, controller, rethrow_scope.GetException());
       //    ii. Return result.
       return;
     }
@@ -225,13 +222,14 @@ void ReadableStreamDefaultController::Enqueue(
     //  d. Let enqueueResult be EnqueueValueWithSize(controller, chunk,
     //     chunkSize).
     controller->queue_->EnqueueValueWithSize(
-        script_state->GetIsolate(), chunk, chunk_size.value(), exception_state);
+        script_state->GetIsolate(), chunk, chunk_size.value(),
+        PassThroughException(script_state->GetIsolate()));
 
     //   e. If enqueueResult is an abrupt completion,
-    if (exception_state.HadException()) {
+    if (rethrow_scope.HasCaught()) {
       //    i. Perform ! ReadableStreamDefaultControllerError(controller,
       //       enqueueResult.[[Value]]).
-      Error(script_state, controller, exception_state.GetException());
+      Error(script_state, controller, rethrow_scope.GetException());
       //    ii. Return enqueueResult.
       return;
     }
@@ -336,7 +334,7 @@ void ReadableStreamDefaultController::Trace(Visitor* visitor) const {
 // Readable stream default controller internal methods
 //
 
-v8::Local<v8::Promise> ReadableStreamDefaultController::CancelSteps(
+ScriptPromise<IDLUndefined> ReadableStreamDefaultController::CancelSteps(
     ScriptState* script_state,
     v8::Local<v8::Value> reason) {
   // https://streams.spec.whatwg.org/#rs-default-controller-private-cancel
@@ -345,7 +343,8 @@ v8::Local<v8::Promise> ReadableStreamDefaultController::CancelSteps(
 
   // 2. Let result be the result of performing this.[[cancelAlgorithm]], passing
   //    reason.
-  auto result = cancel_algorithm_->Run(script_state, 1, &reason);
+  auto result =
+      cancel_algorithm_->Run(script_state, base::span_from_ref(reason));
 
   // 3. Perform ! ReadableStreamDefaultControllerClearAlgorithms(this).
   ClearAlgorithms(this);
@@ -432,12 +431,10 @@ void ReadableStreamDefaultController::CallPullIfNeeded(
 
   // 6. Let pullPromise be the result of performing
   //    controller.[[pullAlgorithm]].
-  auto pull_promise =
-      controller->pull_algorithm_->Run(script_state, 0, nullptr);
+  auto pull_promise = controller->pull_algorithm_->Run(script_state, {});
 
-  StreamThenPromise(script_state->GetContext(), pull_promise,
-                    controller->resolve_function_,
-                    controller->reject_function_);
+  pull_promise.Then(script_state, controller->resolve_function_.Get(),
+                    controller->reject_function_.Get());
 }
 
 bool ReadableStreamDefaultController::ShouldCallPull(
@@ -532,26 +529,20 @@ void ReadableStreamDefaultController::SetUp(
   // 10. Let startPromise be a promise resolved with startResult.
   // The conversion of startResult to a promise happens inside start_algorithm
   // in this implementation.
-  v8::Local<v8::Promise> start_promise;
-  if (!start_algorithm->Run(script_state, exception_state)
-           .ToLocal(&start_promise)) {
-    if (!exception_state.HadException()) {
-      // Is this block really needed? Can we make this a DCHECK?
-      exception_state.ThrowException(
-          static_cast<int>(DOMExceptionCode::kInvalidStateError),
-          "start algorithm failed with no exception thrown");
-    }
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
+  auto start_promise = start_algorithm->Run(script_state);
+  if (start_promise.IsEmpty()) {
+    CHECK(rethrow_scope.HasCaught());
     return;
   }
-  DCHECK(!exception_state.HadException());
 
-  class ResolveFunction final : public PromiseHandler {
+  class ResolveFunction final
+      : public ThenCallable<IDLUndefined, ResolveFunction> {
    public:
     explicit ResolveFunction(ReadableStreamDefaultController* controller)
         : controller_(controller) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
+    void React(ScriptState* script_state) {
       //  11. Upon fulfillment of startPromise,
       //    a. Set controller.[[started]] to true.
       controller_->is_started_ = true;
@@ -569,41 +560,36 @@ void ReadableStreamDefaultController::SetUp(
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLUndefined, ResolveFunction>::Trace(visitor);
     }
 
    private:
     const Member<ReadableStreamDefaultController> controller_;
   };
 
-  class RejectFunction final : public PromiseHandler {
+  class RejectFunction final : public ThenCallable<IDLAny, RejectFunction> {
    public:
     explicit RejectFunction(ReadableStreamDefaultController* controller)
         : controller_(controller) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       //  12. Upon rejection of startPromise with reason r,
       //    a. Perform ! ReadableStreamDefaultControllerError(controller, r).
-      Error(script_state, controller_, r);
+      Error(script_state, controller_, r.V8Value());
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(controller_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectFunction>::Trace(visitor);
     }
 
    private:
     const Member<ReadableStreamDefaultController> controller_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), start_promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
-
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(controller)));
+  start_promise.Then(script_state,
+                     MakeGarbageCollected<ResolveFunction>(controller),
+                     MakeGarbageCollected<RejectFunction>(controller));
 }
 
 void ReadableStreamDefaultController::SetUpFromUnderlyingSource(

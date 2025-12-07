@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "components/domain_reliability/util.h"
 
 #include <stddef.h>
+
+#include <array>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -23,10 +21,11 @@ namespace domain_reliability {
 
 namespace {
 
-const struct NetErrorMapping {
+struct NetErrorMapping {
   int net_error;
   const char* beacon_status;
-} net_error_map[] = {
+};
+const auto net_error_map = std::to_array<NetErrorMapping>({
     {net::OK, "ok"},
     {net::ERR_ABORTED, "aborted"},
     {net::ERR_TIMED_OUT, "tcp.connection.timed_out"},
@@ -72,7 +71,8 @@ const struct NetErrorMapping {
      "http.response.headers.multiple_content_disposition"},
     {net::ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH,
      "http.response.headers.multiple_content_length"},
-    {net::ERR_SSL_UNRECOGNIZED_NAME_ALERT, "ssl.unrecognized_name_alert"}};
+    {net::ERR_SSL_UNRECOGNIZED_NAME_ALERT, "ssl.unrecognized_name_alert"},
+});
 
 bool CanReportFullBeaconURLToCollector(const GURL& beacon_url,
                                        const GURL& collector_url) {
@@ -88,10 +88,11 @@ bool GetDomainReliabilityBeaconStatus(
     int http_response_code,
     std::string* beacon_status_out) {
   if (net_error == net::OK) {
-    if (http_response_code >= 400 && http_response_code < 600)
+    if (http_response_code >= 400 && http_response_code < 600) {
       *beacon_status_out = "http.error";
-    else
+    } else {
       *beacon_status_out = "ok";
+    }
     return true;
   }
 
@@ -120,8 +121,7 @@ std::string GetDomainReliabilityProtocol(
     case net::HttpConnectionInfoCoarse::kOTHER:
       return "";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 DomainReliabilityUploader::UploadResult GetUploadResultFromResponseDetails(
@@ -155,7 +155,7 @@ GURL SanitizeURLForReport(
   if (CanReportFullBeaconURLToCollector(beacon_url, collector_url))
     return beacon_url.GetAsReferrer();
 
-  std::string path = beacon_url.path();
+  std::string path = beacon_url.GetPath();
   const std::string empty_path;
   const std::string* longest_path_prefix = &empty_path;
   for (const auto& path_prefix : path_prefixes) {
@@ -178,8 +178,8 @@ namespace {
 
 class ActualTimer : public MockableTime::Timer {
  public:
-  ActualTimer() {}
-  ~ActualTimer() override {}
+  ActualTimer() = default;
+  ~ActualTimer() override = default;
 
   // MockableTime::Timer implementation:
   void Start(const base::Location& posted_from,
@@ -198,14 +198,14 @@ class ActualTimer : public MockableTime::Timer {
 
 }  // namespace
 
-MockableTime::Timer::~Timer() {}
-MockableTime::Timer::Timer() {}
+MockableTime::Timer::~Timer() = default;
+MockableTime::Timer::Timer() = default;
 
-MockableTime::~MockableTime() {}
-MockableTime::MockableTime() {}
+MockableTime::~MockableTime() = default;
+MockableTime::MockableTime() = default;
 
-ActualTime::ActualTime() {}
-ActualTime::~ActualTime() {}
+ActualTime::ActualTime() = default;
+ActualTime::~ActualTime() = default;
 
 base::Time ActualTime::Now() const {
   return base::Time::Now();

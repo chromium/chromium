@@ -10,6 +10,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import '../settings_shared.css.js';
+import '../guest_os/guest_os_confirmation_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -17,12 +18,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './bruschetta_subpage.html.js';
-import {CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
+import {type CrostiniBrowserProxy, CrostiniBrowserProxyImpl} from './crostini_browser_proxy.js';
 
 const BruschettaSubpageElementBase =
     DeepLinkingMixin(RouteOriginMixin(PrefsMixin(PolymerElement)));
@@ -42,16 +43,6 @@ export class BruschettaSubpageElement extends BruschettaSubpageElementBase {
         type: Boolean,
         value: false,
       },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kBruschettaMicAccess,
-        ]),
-      },
     };
   }
 
@@ -60,6 +51,11 @@ export class BruschettaSubpageElement extends BruschettaSubpageElementBase {
       'onInstalledChanged_(prefs.bruschetta.installed.value)',
     ];
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kBruschettaMicAccess,
+  ]);
 
   private browserProxy_: CrostiniBrowserProxy;
   private showBruschettaMicPermissionDialog_: boolean;

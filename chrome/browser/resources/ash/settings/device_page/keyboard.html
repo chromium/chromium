@@ -102,16 +102,13 @@
 </settings-toggle-button>
 <h2>$i18n{keyboardHoldingKeys}</h2>
 <div class="subsection">
-  <template is=dom-if if="[[shouldShowDiacriticSetting_]]">
-    <settings-toggle-button
-        class="hr continuation"
-        pref="{{prefs.settings.language.physical_keyboard_enable_diacritics_on_longpress}}"
-        label="$i18n{keyboardAccentMarks}"
-        sub-label="$i18n{keyboardAccentMarksSubLabel}"
-        deep-link-focus-id$="[[Setting.kShowDiacritic]]"
-        >
-    </settings-toggle-button>
-  </template>
+  <settings-toggle-button
+      class="hr continuation"
+      pref="{{prefs.settings.language.physical_keyboard_enable_diacritics_on_longpress}}"
+      label="$i18n{keyboardAccentMarks}"
+      sub-label="$i18n{keyboardAccentMarksSubLabel}"
+      deep-link-focus-id$="[[Setting.kShowDiacritic]]">
+  </settings-toggle-button>
   <settings-toggle-button
       class="hr continuation"
       pref="{{prefs.settings.language.xkb_auto_repeat_enabled_r2}}"
@@ -161,5 +158,10 @@
 <cr-link-row id="inputRow"
     class="hr" on-click="onShowInputSettingsClick_"
     label="$i18n{keyboardShowInputSettings}"
+    role-description="$i18n{subpageArrowRoleDescription}">
+</cr-link-row>
+<cr-link-row id="a11yKeyboardRow"
+    class="hr" on-click="onShowA11yKeyboardSettingsClick_"
+    label="$i18n{keyboardShowA11yKeyboardSettings}"
     role-description="$i18n{subpageArrowRoleDescription}">
 </cr-link-row>

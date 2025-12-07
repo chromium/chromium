@@ -6,39 +6,207 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SESSION_MANAGER_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
-#include "ash/webui/boca_ui/boca_app_client.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "base/timer/timer.h"
+#include "chromeos/ash/components/boca/boca_session_manager.h"
+#include "chromeos/ash/components/boca/boca_window_observer.h"
+#include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
+#include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "chromeos/ash/components/boca/on_task/on_task_extensions_manager.h"
+#include "chromeos/ash/components/boca/on_task/on_task_notifications_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
+#include "url/gurl.h"
 
-namespace ash {
+namespace ash::boca {
+
+class OnTaskSessionManagerTest;
 
 // Session manager implementation that is primarily used for configuring and
 // managing OnTask components and services throughout a Boca session.
-class OnTaskSessionManager : public BocaAppClient::Observer {
+class OnTaskSessionManager : public boca::BocaSessionManager::Observer,
+                             public boca::BocaWindowObserver {
  public:
   explicit OnTaskSessionManager(
-      std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager);
+      std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager,
+      std::unique_ptr<OnTaskExtensionsManager> extensions_manager,
+      BocaSessionManager* boca_session_manager);
   OnTaskSessionManager(const OnTaskSessionManager&) = delete;
   OnTaskSessionManager& operator=(const OnTaskSessionManager&) = delete;
   ~OnTaskSessionManager() override;
 
-  // BocaAppClient::Observer:
-  void OnSessionStarted(const std::string& session_id) override;
+  inline static constexpr int kStatusCheckerIntervalInSeconds = 60;
+
+  // BocaSessionManager::Observer:
+  void OnSessionStarted(const std::string& session_id,
+                        const ::boca::UserIdentity& producer) override;
   void OnSessionEnded(const std::string& session_id) override;
+  void OnBundleUpdated(const ::boca::Bundle& bundle) override;
+  void OnAppReloaded() override;
+
+  ActiveTabTracker* active_tab_tracker() { return active_tab_tracker_.get(); }
+
+  // BocaWindowObserver:
+  void OnTabAdded(const SessionID active_tab_id,
+                  const SessionID tab_id,
+                  const GURL url) override;
+  void OnTabRemoved(const SessionID tab_id) override;
+
+  boca::OnTaskSystemWebAppManager* GetOnTaskSystemWebAppManager() {
+    return system_web_app_manager_.get();
+  }
+
+  boca::OnTaskNotificationsManager* GetOnTaskNotificationsManager() {
+    return notifications_manager_.get();
+  }
+
+  void SetActiveTabTrackerForTesting(
+      std::unique_ptr<ActiveTabTracker> active_tab_tracker);
+
+  void SetNotificationManagerForTesting(
+      std::unique_ptr<ash::boca::OnTaskNotificationsManager>
+          notification_manager);
+
+  BocaSessionManager* boca_session_manager() {
+    return boca_session_manager_.get();
+  }
 
  private:
-  // Callback triggered when the Boca SWA is launched. Normally at the onset
-  // of a Boca session.
-  void OnBocaSWALaunched(bool success);
+  friend class OnTaskSessionManagerTest;
+
+  // Helper class that is used to launch the Boca system web app as well as
+  // manage all interactions with the Boca system web app while it is being
+  // spawned.
+  class SystemWebAppLaunchHelper {
+   public:
+    SystemWebAppLaunchHelper(
+        OnTaskSystemWebAppManager* system_web_app_manager,
+        const std::vector<boca::BocaWindowObserver*> observers);
+    SystemWebAppLaunchHelper(const SystemWebAppLaunchHelper&) = delete;
+    SystemWebAppLaunchHelper& operator=(const SystemWebAppLaunchHelper&) =
+        delete;
+    ~SystemWebAppLaunchHelper();
+
+    void LaunchBocaSWA();
+    void AddTab(
+        GURL url,
+        ::boca::LockedNavigationOptions::NavigationType restriction_level,
+        base::OnceCallback<void(SessionID)> callback);
+    void RemoveTab(const std::set<SessionID>& tab_ids_to_remove,
+                   base::OnceClosure callback);
+    void SetPinStateForActiveSWAWindow(bool pinned,
+                                       base::RepeatingClosure callback);
+
+    void SetObserversForTesting(
+        std::vector<boca::BocaWindowObserver*> observers) {
+      observers_ = std::move(observers);
+    }
+
+   private:
+    // Callback triggered when the Boca SWA is launched. Normally at the onset
+    // of a Boca session.
+    void OnBocaSWALaunched(bool success);
+
+    // Owned by the parent class `OnTaskSessionManager` that owns an instance of
+    // the class `SystemWebAppLaunchHelper`, so there won't be UAF errors.
+    raw_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
+    std::vector<boca::BocaWindowObserver*> observers_;
+
+    SEQUENCE_CHECKER(sequence_checker_);
+
+    bool launch_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+    // Task queue that tracks pending tab management operations. Only needed
+    // when the app launch is in progress.
+    std::vector<base::OnceClosure> pending_tab_management_tasks_
+        GUARDED_BY_CONTEXT(sequence_checker_);
+
+    // Tracks the pending pin or unpin operation. Only needed when the app
+    // launch is in progress.
+    base::OnceClosure pending_pin_or_unpin_task_
+        GUARDED_BY_CONTEXT(sequence_checker_) = base::NullCallback();
+
+    base::WeakPtrFactory<SystemWebAppLaunchHelper> weak_ptr_factory_{this};
+  };
+  // Lock or unlock current window if the state is not correct.
+  void MaybeHandleBundleUpdate();
+  // Internal helper used to lock or unlock the current app window. This
+  // involves disabling relevant extensions and pinning the window if
+  // `lock_window` is true, or re-enabling extensions and unpinning the window
+  // otherwise.
+  void LockOrUnlockWindow(bool lock_window);
+
+  // Internal helper used to pause or unpause the boca app.
+  void PauseOrUnpauseApp();
+
+  // Show enter locked mode notification and lock the Boca SWA window.
+  void EnterLockedMode();
+
+  // Callback triggered when a tab from the bundle is added.
+  void OnBundleTabAdded(
+      GURL url,
+      ::boca::LockedNavigationOptions::NavigationType restriction_level,
+      SessionID tab_id);
+
+  // Callback triggered when a tab from the bundle is removed.
+  void OnBundleTabRemoved(GURL url);
+
+  // Callback triggered when the Boca SWA window pin state is set.
+  void OnSetPinStateOnBocaSWAWindow();
+
+  // Set the `active_tab_url_` to be the url associated with `tab_id`.
+  void TrackActiveTabURLFromTab(SessionID tab_id);
+
+  std::unique_ptr<ActiveTabTracker> active_tab_tracker_;
 
   const std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  std::optional<std::string> active_session_id_
+      GUARDED_BY_CONTEXT(sequence_checker_) = std::nullopt;
+  GURL active_tab_url_ GUARDED_BY_CONTEXT(sequence_checker_);
+  bool should_lock_window_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool lock_in_progress_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool enter_pause_mode_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // The set of urls sent by the provider.
+  base::flat_set<GURL> provider_url_set_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Maps the url that providers send to the tab ids spawned from the url. This
+  // map allows to remove all the related tabs to the url.
+  base::flat_map<GURL, std::set<SessionID>> provider_url_tab_ids_map_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Maps the url that providers send to the restriction levels it is currently
+  // set to. This map allows for tracking restriction level updates.
+  base::flat_map<GURL, ::boca::LockedNavigationOptions::NavigationType>
+      provider_url_restriction_level_map_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  const std::unique_ptr<OnTaskExtensionsManager> extensions_manager_;
+
+  const std::unique_ptr<SystemWebAppLaunchHelper> system_web_app_launch_helper_;
+
+  std::unique_ptr<OnTaskNotificationsManager> notifications_manager_;
+
+  base::TimeDelta notification_countdown_duration_;
+
+  base::RepeatingTimer status_checker_;
+
+  raw_ptr<BocaSessionManager> boca_session_manager_;
   base::WeakPtrFactory<OnTaskSessionManager> weak_ptr_factory_{this};
 };
 
-}  // namespace ash
+}  // namespace ash::boca
 
 #endif  // CHROMEOS_ASH_COMPONENTS_BOCA_ON_TASK_ON_TASK_SESSION_MANAGER_H_

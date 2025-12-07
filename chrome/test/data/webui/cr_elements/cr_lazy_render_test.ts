@@ -53,9 +53,9 @@ suite('cr-lazy-render', function() {
     bind.name = 'Wings';
 
     const inner = lazy.get();
-    assertNotEquals(-1, inner.textContent!.indexOf('Wings'));
+    assertNotEquals(-1, inner.textContent.indexOf('Wings'));
     bind.name = 'DC';
-    assertNotEquals(-1, inner.textContent!.indexOf('DC'));
+    assertNotEquals(-1, inner.textContent.indexOf('DC'));
   });
 
   test('two-way binding works', async function() {

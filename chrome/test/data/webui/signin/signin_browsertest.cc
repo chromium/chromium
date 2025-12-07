@@ -33,17 +33,6 @@ IN_PROC_BROWSER_TEST_F(SigninTest, SyncConfirmationWindow) {
           "mocha.run()");
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(SigninTest, SigninReauth) {
-  set_test_loader_host(chrome::kChromeUISigninReauthHost);
-  RunTest(base::StringPrintf(
-              "signin/signin_reauth_test.js&access_point=%d",
-              static_cast<int>(
-                  signin_metrics::ReauthAccessPoint::kPasswordSaveBubble)),
-          "mocha.run()");
-}
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 IN_PROC_BROWSER_TEST_F(SigninTest, DiceWebSigninIntercept) {
   set_test_loader_host(chrome::kChromeUIDiceWebSigninInterceptHost);
@@ -61,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(SigninTest, ProfileCustomizationTest) {
   RunTest("signin/profile_customization_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(SigninTest, SigninLegacyManagedUserProfileNotice) {
+IN_PROC_BROWSER_TEST_F(SigninTest, SigninManagedUserProfileNotice) {
   set_test_loader_host(chrome::kChromeUIManagedUserProfileNoticeHost);
-  RunTest("signin/legacy_managed_user_profile_notice_test.js", "mocha.run()");
+  RunTest("signin/managed_user_profile_notice_test.js", "mocha.run()");
 }

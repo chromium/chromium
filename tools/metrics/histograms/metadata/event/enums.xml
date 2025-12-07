@@ -243,6 +243,25 @@ chromium-metrics-reviews@google.com.
              is system apps and dialogs"/>
 </enum>
 
+<!-- LINT.IfChange(DragAndDropToolType) -->
+
+<enum name="DragAndDropToolType">
+  <summary>The type of tool that can trigger a drag and drop.</summary>
+  <int value="0" label="Unknown">
+    The tool is unknown. (Usually for drags that started outside the browser)
+  </int>
+  <int value="1" label="Mouse">The tool is a mouse or trackpad.</int>
+  <int value="2" label="Finger">The tool is a finger (touch).</int>
+  <int value="3" label="StylusViaGesture">
+    The tool is a stylus and the drag was initiated via press gesture.
+  </int>
+  <int value="4" label="StylusViaButton">
+    The tool is a stylus and the drag was initiated via button press.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/input/mouse_event_manager.h:DragAndDropToolType) -->
+
 <enum name="EventResultType">
   <int value="0" label="Passive"/>
   <int value="1" label="Uncancelable"/>
@@ -264,6 +283,58 @@ chromium-metrics-reviews@google.com.
     The tool is an eraser or a stylus being used in an inverted posture.
   </int>
 </enum>
+
+<!-- LINT.IfChange(ScrollJankFrameStageCalculationResult) -->
+
+<enum name="ScrollJankFrameStageCalculationResult">
+  <summary>
+    The result or issues encountered by the
+    `cc::ScrollJankV4FrameStage::CalculateStages()` method when processing
+    scroll events in a single frame.
+  </summary>
+  <int value="0" label="Scroll updates only">
+    The frame only contained one or more scroll updates.
+  </int>
+  <int value="1" label="Scroll end only">
+    The frame only contained one scroll end (and nothing else).
+  </int>
+  <int value="2" label="Scroll updates then end">
+    The frame contained one or more scroll updates followed by one scroll end.
+  </int>
+  <int value="3" label="Scroll end then start then updates">
+    The frame contained one scroll end, one scroll start and then zero or more
+    scroll updates (in this order).
+  </int>
+  <int value="4" label="Multiple scroll ends">
+    The frame contained multiple scroll ends.
+  </int>
+  <int value="5" label="Multiple scroll starts">
+    The frame contained multiple scroll starts.
+  </int>
+  <int value="6" label="Scroll start after update">
+    The frame contained a scroll update followed by a scroll start.
+  </int>
+  <int value="7" label="Scroll end between updates">
+    The frame contained a scroll end between two scroll updates.
+  </int>
+  <int value="8" label="Scroll end then updates without start">
+    The frame contained a scroll end and then one or more scroll updates without
+    a scroll start in between.
+  </int>
+  <int value="9" label="Multiple issues">
+    The frame suffered from more than one of the issues above.
+  </int>
+  <int value="10" label="Scroll start then updates">
+    The frame contained one scroll start followed by one or more scroll updates.
+  </int>
+  <int value="11" label="Scroll start then updates then end">
+    The frame contained one scroll start, one or more scroll updates and then
+    one scroll end (in this order). It's strange to have a scroll that starts
+    and ends within the same frame, but it's technically not an issue.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//cc/metrics/scroll_jank_v4_frame_stage.h:FrameStageCalculationResult) -->
 
 <enum name="UIEventType">
   <int value="0" label="Unknown"/>

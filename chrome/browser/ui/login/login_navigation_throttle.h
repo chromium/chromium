@@ -8,7 +8,7 @@
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
-class NavigationHandle;
+class NavigationThrottleRegistry;
 }  // namespace content
 
 // LoginNavigationThrottle intercepts navigations that serve auth challenges and
@@ -20,7 +20,8 @@ class NavigationHandle;
 // state to handle login prompt cancellations.
 class LoginNavigationThrottle : public content::NavigationThrottle {
  public:
-  explicit LoginNavigationThrottle(content::NavigationHandle* handle);
+  explicit LoginNavigationThrottle(
+      content::NavigationThrottleRegistry& registry);
   ~LoginNavigationThrottle() override;
 
   // content::NavigationThrottle:

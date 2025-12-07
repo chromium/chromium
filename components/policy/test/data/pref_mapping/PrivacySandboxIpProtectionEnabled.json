@@ -4,18 +4,28 @@
       "win",
       "linux",
       "mac",
-      "chromeos_ash",
-      "chromeos_lacros",
       "fuchsia",
-      "android"
+      "android",
+      "chromeos"
     ],
     "simple_policy_pref_mapping_test": {
 	    "pref_name": "tracking_protection.ip_protection_enabled",
-	    "default_value": false,
+	    "default_value": true,
 	    "values_to_test": [
 	      true,
 	      false
 	    ]
-    }
+    },
+    "policy_pref_mapping_tests": [
+      {
+        "note": "The default pref value won't be affected by the enterprise policy",
+        "policies": {},
+        "prefs": {
+          "tracking_protection.ip_protection_enabled": {
+            "default_value": true
+          }
+        }
+      }
+    ]
   }
 ]

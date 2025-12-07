@@ -32,7 +32,8 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/foundation_util.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/keychain_data_helper_mac.h"
-#include "crypto/apple_keychain.h"
+#include "crypto/apple/scoped_keychain_user_interaction_allowed.h"
+#include "crypto/apple/security_framework_lock.h"
 #endif
 
 namespace extensions {
@@ -143,8 +144,7 @@ bool IsAuthFailedError(OSStatus status) {
   return status == errSecAuthFailed;
 }
 
-OSStatus AddRandomPasswordToKeychain(const crypto::AppleKeychain& keychain,
-                                     std::string* secret) {
+OSStatus AddRandomPasswordToKeychain(std::string* secret) {
   // Generate a password with 128 bits of randomness.
   const int kBytes = 128 / 8;
   std::string password = base::Base64Encode(base::RandBytesAsVector(kBytes));
@@ -157,25 +157,32 @@ OSStatus AddRandomPasswordToKeychain(const crypto::AppleKeychain& keychain,
   return status;
 }
 
+// Much of the Keychain API was marked deprecated as of the macOS 13 SDK.
+// Removal of its use is tracked in https://crbug.com/1348251 but deprecation
+// warnings are disabled in the meanwhile.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+
 int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
   password->clear();
 
   OSStatus status;
-  crypto::ScopedKeychainUserInteractionAllowed user_interaction_allowed(
+  crypto::apple::ScopedKeychainUserInteractionAllowed user_interaction_allowed(
       FALSE, &status);
   if (status != noErr)
     return status;
 
-  crypto::AppleKeychain keychain;
+  base::AutoLock lock(crypto::apple::GetSecurityFrameworkLock());
   UInt32 password_length = 0;
   void* password_data = nullptr;
   base::apple::ScopedCFTypeRef<SecKeychainItemRef> item_ref;
-  status = keychain.FindGenericPassword(
-      strlen(kServiceName), kServiceName, strlen(kAccountName), kAccountName,
-      &password_length, &password_data, item_ref.InitializeInto());
+  status = SecKeychainFindGenericPassword(
+      nullptr, strlen(kServiceName), kServiceName, strlen(kAccountName),
+      kAccountName, &password_length, &password_data,
+      item_ref.InitializeInto());
   if (status == noErr) {
     *password = std::string(static_cast<char*>(password_data), password_length);
-    keychain.ItemFreeContent(password_data);
+    SecKeychainItemFreeContent(nullptr, password_data);
     return status;
   }
 
@@ -189,9 +196,9 @@ int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
     // - Then recreate the item.
     // If any of those steps fail don't try to proceed any further.
     item_ref.reset();
-    OSStatus exists_status = keychain.FindGenericPassword(
-        strlen(kServiceName), kServiceName, strlen(kAccountName), kAccountName,
-        nullptr, nullptr, item_ref.InitializeInto());
+    OSStatus exists_status = SecKeychainFindGenericPassword(
+        nullptr, strlen(kServiceName), kServiceName, strlen(kAccountName),
+        kAccountName, nullptr, nullptr, item_ref.InitializeInto());
     if (exists_status != noErr) {
       return exists_status;
     }
@@ -211,7 +218,7 @@ int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
     }
 
     if (force_recreate) {
-      status = keychain.ItemDelete(item_ref.get());
+      status = SecKeychainItemDelete(item_ref.get());
       if (status != noErr) {
         return status;
       }
@@ -220,7 +227,7 @@ int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
 
   if (was_item_not_found || force_recreate) {
     // Add the random password to the default keychain.
-    status = AddRandomPasswordToKeychain(keychain, password);
+    status = AddRandomPasswordToKeychain(password);
 
     // If add failed, check whether the default keychain is locked. If so,
     // return the custom status code.
@@ -238,6 +245,8 @@ int32_t ReadEncryptedSecret(std::string* password, bool force_recreate) {
   }
   return status;
 }
+
+#pragma clang diagnostic pop
 
 #endif  // BUILDFLAG(IS_MAC)
 

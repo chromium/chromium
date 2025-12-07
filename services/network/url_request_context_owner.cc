@@ -17,18 +17,12 @@ URLRequestContextOwner::URLRequestContextOwner(
     : pref_service(std::move(pref_service_in)),
       url_request_context(std::move(url_request_context_in)) {}
 
-URLRequestContextOwner::~URLRequestContextOwner() {
-}
+URLRequestContextOwner::~URLRequestContextOwner() = default;
 
-URLRequestContextOwner::URLRequestContextOwner(URLRequestContextOwner&& other)
-    : pref_service(std::move(other.pref_service)),
-      url_request_context(std::move(other.url_request_context)) {}
+URLRequestContextOwner::URLRequestContextOwner(URLRequestContextOwner&&) =
+    default;
 
 URLRequestContextOwner& URLRequestContextOwner::operator=(
-    URLRequestContextOwner&& other) {
-  pref_service = std::move(other.pref_service);
-  url_request_context = std::move(other.url_request_context);
-  return *this;
-}
+    URLRequestContextOwner&&) = default;
 
 }  // namespace network

@@ -7,6 +7,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   deps = [
+    "//base:bundle_utils_java",
     "//chrome/android/modules/stack_unwinder/public:java",
     "//third_party/jni_zero:jni_zero_java",
   ]

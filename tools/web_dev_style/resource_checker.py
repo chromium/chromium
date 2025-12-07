@@ -17,11 +17,11 @@ class ResourceChecker(object):
 
   def DeprecatedMojoBindingsCheck(self, line_number, line):
     return regex_check.RegexCheck(self.input_api.re, line_number, line,
-        '(mojo_bindings\.js)', 'Please use mojo_bindings_lite.js in new code')
+        r'(mojo_bindings\.js)', 'Please use mojo_bindings_lite.js in new code')
 
   def DisallowIncludeCheck(self, msg, line_number, line):
     return regex_check.RegexCheck(self.input_api.re, line_number, line,
-        '^\s*(?:\/[\*\/])?\s*(<include)\s*src=', msg)
+        r'^\s*(?:\/[\*\/])?\s*(<include)\s*src=', msg)
 
   # This is intentionally not included in RunChecks(). It's an optional check
   # that can be used from a PRESUBMIT.py in a directory that does not wish to

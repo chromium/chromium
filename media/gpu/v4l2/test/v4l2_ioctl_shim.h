@@ -5,6 +5,11 @@
 #ifndef MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 #define MEDIA_GPU_V4L2_TEST_V4L2_IOCTL_SHIM_H_
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 #include <linux/videodev2.h>
 #include <string.h>
 
@@ -24,6 +29,8 @@ namespace v4l2_test {
 // |buffer_id_|. |buffer_id_| is an index used for VIDIOC_REQBUFS ioctl call.
 class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   MmappedBuffer(const base::PlatformFile decode_fd,
                 const struct v4l2_buffer& v4l2_buffer);
 
@@ -71,8 +78,8 @@ class MmappedBuffer : public base::RefCounted<MmappedBuffer> {
 
  private:
   friend class base::RefCounted<MmappedBuffer>;
-
   ~MmappedBuffer();
+
   MmappedBuffer(const MmappedBuffer&) = delete;
   MmappedBuffer& operator=(const MmappedBuffer&) = delete;
 

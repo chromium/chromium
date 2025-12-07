@@ -9,6 +9,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -54,12 +55,11 @@ class FakeSharedURLLoaderFactory : public network::SharedURLLoaderFactory {
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   std::vector<network::ResourceRequest> resource_requests_;

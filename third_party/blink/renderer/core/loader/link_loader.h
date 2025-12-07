@@ -56,7 +56,7 @@ class CORE_EXPORT LinkLoader final : public GarbageCollected<LinkLoader> {
   bool LoadLink(const LinkLoadParameters&, Document&);
   void LoadStylesheet(const LinkLoadParameters&,
                       const AtomicString&,
-                      const WTF::TextEncoding&,
+                      const TextEncoding&,
                       FetchParameters::DeferOption,
                       Document&,
                       ResourceClient*,

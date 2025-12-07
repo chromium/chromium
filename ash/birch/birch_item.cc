@@ -14,15 +14,14 @@
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
-#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "ash/style/ash_color_provider.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -34,10 +33,13 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace ash {
 namespace {
+
+using ImageDownloadedCallback = base::OnceCallback<void(const ui::ImageModel&)>;
 
 constexpr net::NetworkTrafficAnnotationTag kIconDownloaderTrafficTag =
     net::DefineNetworkTrafficAnnotation("glanceables_icon_downloader", R"(
@@ -74,34 +76,28 @@ constexpr net::NetworkTrafficAnnotationTag kIconDownloaderTrafficTag =
 
 // Handles when an `image` is downloaded, by converting it to a ui::ImageModel
 // and running `callback`.
-void OnImageDownloaded(
-    const GURL& url,
-    const ui::ImageModel& backup_icon,
-    SecondaryIconType secondary_icon_type,
-    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)> callback,
-    const gfx::ImageSkia& image) {
+void OnImageDownloaded(const GURL& url,
+                       const ui::ImageModel& backup_icon,
+                       ImageDownloadedCallback callback,
+                       const gfx::ImageSkia& image) {
   if (image.isNull()) {
-    std::move(callback).Run(backup_icon, secondary_icon_type);
+    std::move(callback).Run(backup_icon);
     return;
   }
   // Add the image to the cache.
   Shell::Get()->birch_model()->icon_cache()->Put(url.spec(), image);
-  std::move(callback).Run(ui::ImageModel::FromImageSkia(image),
-                          secondary_icon_type);
+  std::move(callback).Run(ui::ImageModel::FromImageSkia(image));
 }
 
 // Downloads an image from `url` and invokes `callback` with the image. If the
 // `url` is invalid, invokes `callback` with an error image.
-void DownloadImageFromUrl(
-    const GURL& url,
-    const ui::ImageModel& backup_icon,
-    SecondaryIconType secondary_icon_type,
-    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
-        callback) {
+void DownloadImageFromUrl(const GURL& url,
+                          const ui::ImageModel& backup_icon,
+                          ImageDownloadedCallback callback) {
   if (!url.is_valid()) {
     // For tab item types, we retrieve the backup chrome icon, or supply an
     // empty icon.
-    std::move(callback).Run(backup_icon, secondary_icon_type);
+    std::move(callback).Run(backup_icon);
     return;
   }
 
@@ -110,8 +106,7 @@ void DownloadImageFromUrl(
       Shell::Get()->birch_model()->icon_cache()->Get(url.spec());
   if (!icon.isNull()) {
     // Use the cached icon.
-    std::move(callback).Run(ui::ImageModel::FromImageSkia(icon),
-                            secondary_icon_type);
+    std::move(callback).Run(ui::ImageModel::FromImageSkia(icon));
     return;
   }
 
@@ -122,44 +117,36 @@ void DownloadImageFromUrl(
 
   ImageDownloader::Get()->Download(
       url, kIconDownloaderTrafficTag, active_user_session->user_info.account_id,
-      base::BindOnce(&OnImageDownloaded, url, backup_icon, secondary_icon_type,
+      base::BindOnce(&OnImageDownloaded, url, backup_icon,
                      std::move(callback)));
 }
 
 // Callback for the favicon load request in `GetFaviconImage()`. If the load
 // failed, requests the icon off the network.
-void OnGotFaviconImage(
-    const GURL& url,
-    const ui::ImageModel& backup_icon,
-    SecondaryIconType secondary_icon_type,
-    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
-        load_icon_callback,
-    const ui::ImageModel& image) {
+void OnGotFaviconImage(const GURL& url,
+                       const ui::ImageModel& backup_icon,
+                       ImageDownloadedCallback load_icon_callback,
+                       const ui::ImageModel& image) {
   // Favicon lookup in the FaviconService failed. Fall back to downloading the
   // asset off the network.
   if (image.IsEmpty()) {
-    DownloadImageFromUrl(url, backup_icon, secondary_icon_type,
-                         std::move(load_icon_callback));
+    DownloadImageFromUrl(url, backup_icon, std::move(load_icon_callback));
     return;
   }
-  std::move(load_icon_callback).Run(image, secondary_icon_type);
+  std::move(load_icon_callback).Run(image);
 }
 
 // Loads a favicon image based on the `page_url` or `icon_url` with the
 // FaviconService. Invokes the callback either with a valid image (success) or
 // an empty image (failure).
-void GetFaviconImage(
-    const GURL& url,
-    const bool is_page_url,
-    const ui::ImageModel& backup_icon,
-    SecondaryIconType secondary_icon_type,
-    base::OnceCallback<void(const ui::ImageModel&, SecondaryIconType)>
-        load_icon_callback) {
+void GetFaviconImage(const GURL& url,
+                     const bool is_page_url,
+                     const ui::ImageModel& backup_icon,
+                     ImageDownloadedCallback load_icon_callback) {
   BirchClient* client = Shell::Get()->birch_model()->birch_client();
-  client->GetFaviconImage(
-      url, is_page_url,
-      base::BindOnce(&OnGotFaviconImage, url, backup_icon, secondary_icon_type,
-                     std::move(load_icon_callback)));
+  client->GetFaviconImage(url, is_page_url,
+                          base::BindOnce(&OnGotFaviconImage, url, backup_icon,
+                                         std::move(load_icon_callback)));
 }
 
 // Returns the pref service to use for Birch item prefs.
@@ -187,9 +174,15 @@ std::string SecondaryIconTypeToString(SecondaryIconType type) {
       return "kLostMediaVideo";
     case SecondaryIconType::kLostMediaVideoConference:
       return "kLostMediaVideoConference";
+    case SecondaryIconType::kSelfShareIcon:
+      return "kSelfShareIcon";
     case SecondaryIconType::kNoIcon:
       return "kNoIcon";
   }
+}
+
+const ui::ImageModel GetChromeBackupIcon() {
+  return ui::ImageModel::FromVectorIcon(kBirchChromeBackupIcon);
 }
 
 }  // namespace
@@ -308,7 +301,7 @@ void BirchCalendarItem::PerformAction() {
     return;
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       calendar_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -321,14 +314,14 @@ void BirchCalendarItem::PerformAddonAction() {
   // TODO(jamescook): Decide if we want differerent metrics for secondary
   // actions.
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       conference_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void BirchCalendarItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(ui::ImageModel::FromVectorIcon(kCalendarEventIcon),
-                          SecondaryIconType::kNoIcon);
+  std::move(callback).Run(PrimaryIconType::kIcon, SecondaryIconType::kNoIcon,
+                          ui::ImageModel::FromVectorIcon(kCalendarEventIcon));
 }
 
 BirchAddonType BirchCalendarItem::GetAddonType() const {
@@ -440,16 +433,18 @@ void BirchAttachmentItem::PerformAction() {
     LOG(ERROR) << "No valid URL for attachment item";
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       file_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void BirchAttachmentItem::LoadIcon(LoadIconCallback callback) const {
-  DownloadImageFromUrl(icon_url_,
-                       ui::ImageModel::FromImageSkia(chromeos::GetIconFromType(
-                           chromeos::IconType::kGeneric, true)),
-                       SecondaryIconType::kNoIcon, std::move(callback));
+  const auto backup_icon = ui::ImageModel::FromImageSkia(
+      chromeos::GetIconFromType(chromeos::IconType::kGeneric, true));
+  DownloadImageFromUrl(
+      icon_url_, backup_icon,
+      base::BindOnce(std::move(callback), PrimaryIconType::kIcon,
+                     SecondaryIconType::kNoIcon));
 }
 
 // static
@@ -506,14 +501,16 @@ std::string BirchFileItem::ToString() const {
 
 void BirchFileItem::PerformAction() {
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenFile(file_path_);
+  NewWindowDelegate::GetInstance()->OpenFile(file_path_);
 }
 
 void BirchFileItem::LoadIcon(LoadIconCallback callback) const {
+  const auto backup_icon =
+      ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(file_path_, true));
   DownloadImageFromUrl(
-      GURL(icon_url_),
-      ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(file_path_, true)),
-      SecondaryIconType::kNoIcon, std::move(callback));
+      GURL(icon_url_), backup_icon,
+      base::BindOnce(std::move(callback), PrimaryIconType::kIcon,
+                     SecondaryIconType::kNoIcon));
 }
 
 // static
@@ -532,13 +529,11 @@ std::u16string BirchFileItem::GetTitle(
 
 BirchWeatherItem::BirchWeatherItem(const std::u16string& weather_description,
                                    float temp_f,
-                                   const GURL& icon_url,
-                                   const ui::ImageModel& backup_icon)
+                                   const GURL& icon_url)
     : BirchItem(weather_description,
                 l10n_util::GetStringUTF16(IDS_ASH_BIRCH_WEATHER_SUBTITLE)),
       temp_f_(temp_f),
-      icon_url_(icon_url),
-      backup_icon_(backup_icon) {
+      icon_url_(icon_url) {
   set_addon_label(base::NumberToString16(GetTemperature(temp_f)));
 }
 
@@ -569,14 +564,16 @@ void BirchWeatherItem::PerformAction() {
   RecordActionMetrics();
   // TODO(jamescook): Localize the query string.
   GURL url("https://google.com/search?q=weather");
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void BirchWeatherItem::LoadIcon(LoadIconCallback callback) const {
-  DownloadImageFromUrl(icon_url_, backup_icon_, SecondaryIconType::kNoIcon,
-                       std::move(callback));
+  DownloadImageFromUrl(
+      icon_url_, GetChromeBackupIcon(),
+      base::BindOnce(std::move(callback), PrimaryIconType::kWeatherImage,
+                     SecondaryIconType::kNoIcon));
 }
 
 std::u16string BirchWeatherItem::GetAccessibleName() const {
@@ -625,15 +622,13 @@ BirchTabItem::BirchTabItem(const std::u16string& title,
                            const base::Time& timestamp,
                            const GURL& favicon_url,
                            const std::string& session_name,
-                           const DeviceFormFactor& form_factor,
-                           const ui::ImageModel& backup_icon)
+                           const DeviceFormFactor& form_factor)
     : BirchItem(title, GetSubtitle(session_name, timestamp)),
       url_(url),
       timestamp_(timestamp),
       favicon_url_(favicon_url),
       session_name_(session_name),
-      form_factor_(form_factor),
-      backup_icon_(backup_icon) {
+      form_factor_(form_factor) {
   switch (form_factor) {
     case BirchTabItem::DeviceFormFactor::kDesktop:
       secondary_icon_type_ = SecondaryIconType::kTabFromDesktop;
@@ -681,14 +676,15 @@ void BirchTabItem::PerformAction() {
     return;
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void BirchTabItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImage(favicon_url_, /*is_page_url=*/false, backup_icon_,
-                  secondary_icon_type_, std::move(callback));
+  GetFaviconImage(favicon_url_, /*is_page_url=*/false, GetChromeBackupIcon(),
+                  base::BindOnce(std::move(callback), PrimaryIconType::kIcon,
+                                 secondary_icon_type_));
 }
 
 // static
@@ -718,10 +714,9 @@ std::u16string BirchTabItem::GetSubtitle(const std::string& session_name,
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchLastActiveItem::BirchLastActiveItem(const std::u16string& title,
-                                         const GURL& url,
-                                         base::Time last_visit,
-                                         ui::ImageModel icon)
-    : BirchItem(title, GetSubtitle(last_visit)), url_(url), icon_(icon) {}
+                                         const GURL& page_url,
+                                         base::Time last_visit)
+    : BirchItem(title, GetSubtitle(last_visit)), page_url_(page_url) {}
 
 BirchLastActiveItem::BirchLastActiveItem(BirchLastActiveItem&&) = default;
 
@@ -742,23 +737,26 @@ BirchItemType BirchLastActiveItem::GetType() const {
 std::string BirchLastActiveItem::ToString() const {
   std::stringstream ss;
   ss << "Last active item: {ranking: " << ranking()
-     << ", Title: " << base::UTF16ToUTF8(title()) << ", URL: " << url_ << "}";
+     << ", Title: " << base::UTF16ToUTF8(title()) << ", URL: " << page_url_
+     << "}";
   return ss.str();
 }
 
 void BirchLastActiveItem::PerformAction() {
-  if (!url_.is_valid()) {
+  if (!page_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for last active item";
     return;
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      page_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void BirchLastActiveItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
+  GetFaviconImage(page_url_, /*is_page_url=*/true, GetChromeBackupIcon(),
+                  base::BindOnce(std::move(callback), PrimaryIconType::kIcon,
+                                 SecondaryIconType::kNoIcon));
 }
 
 // static
@@ -790,9 +788,8 @@ std::u16string BirchLastActiveItem::GetSubtitle(base::Time last_visit) {
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchMostVisitedItem::BirchMostVisitedItem(const std::u16string& title,
-                                           const GURL& url,
-                                           ui::ImageModel icon)
-    : BirchItem(title, GetSubtitle()), url_(url), icon_(icon) {}
+                                           const GURL& page_url)
+    : BirchItem(title, GetSubtitle()), page_url_(page_url) {}
 
 BirchMostVisitedItem::BirchMostVisitedItem(BirchMostVisitedItem&&) = default;
 
@@ -814,23 +811,26 @@ BirchItemType BirchMostVisitedItem::GetType() const {
 std::string BirchMostVisitedItem::ToString() const {
   std::stringstream ss;
   ss << "Most Visited item: {ranking: " << ranking()
-     << ", Title: " << base::UTF16ToUTF8(title()) << ", URL: " << url_ << "}";
+     << ", Title: " << base::UTF16ToUTF8(title()) << ", Page URL: " << page_url_
+     << "}";
   return ss.str();
 }
 
 void BirchMostVisitedItem::PerformAction() {
-  if (!url_.is_valid()) {
+  if (!page_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for most visited item";
     return;
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenUrl(
-      url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+  NewWindowDelegate::GetInstance()->OpenUrl(
+      page_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void BirchMostVisitedItem::LoadIcon(LoadIconCallback callback) const {
-  std::move(callback).Run(icon_, SecondaryIconType::kNoIcon);
+  GetFaviconImage(page_url_, /*is_page_url=*/true, GetChromeBackupIcon(),
+                  base::BindOnce(std::move(callback), PrimaryIconType::kIcon,
+                                 SecondaryIconType::kNoIcon));
 }
 
 // static
@@ -846,14 +846,12 @@ BirchSelfShareItem::BirchSelfShareItem(
     const GURL& url,
     const base::Time& shared_time,
     const std::u16string& device_name,
-    const ui::ImageModel& backup_icon,
     const SecondaryIconType& secondary_icon_type,
     base::RepeatingClosure callback)
     : BirchItem(title, GetSubtitle(device_name, shared_time)),
       guid_(guid),
       url_(url),
       shared_time_(shared_time),
-      backup_icon_(backup_icon),
       secondary_icon_type_(secondary_icon_type),
       activation_callback_(std::move(callback)) {}
 
@@ -894,14 +892,15 @@ void BirchSelfShareItem::PerformAction() {
     activation_callback_.Run();
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kSwitchToTab);
 }
 
 void BirchSelfShareItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImage(url_, /*is_page_url=*/true, backup_icon_,
-                  secondary_icon_type_, std::move(callback));
+  GetFaviconImage(url_, /*is_page_url=*/true, GetChromeBackupIcon(),
+                  base::BindOnce(std::move(callback), PrimaryIconType::kIcon,
+                                 secondary_icon_type_));
 }
 
 // static
@@ -933,7 +932,7 @@ std::u16string BirchSelfShareItem::GetSubtitle(
 BirchLostMediaItem::BirchLostMediaItem(
     const GURL& source_url,
     const std::u16string& media_title,
-    const ui::ImageModel& backup_icon,
+    const std::optional<ui::ImageModel>& backup_icon,
     const SecondaryIconType& secondary_icon_type,
     base::RepeatingClosure activation_callback)
     : BirchItem(media_title, GetSubtitle(secondary_icon_type)),
@@ -978,8 +977,10 @@ void BirchLostMediaItem::PerformAction() {
 }
 
 void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
-  GetFaviconImage(source_url_, /*is_page_url=*/true, backup_icon_,
-                  secondary_icon_type_, std::move(callback));
+  GetFaviconImage(source_url_, /*is_page_url=*/true,
+                  backup_icon_.value_or(GetChromeBackupIcon()),
+                  base::BindOnce(std::move(callback), PrimaryIconType::kIcon,
+                                 secondary_icon_type_));
 }
 
 // static
@@ -988,40 +989,6 @@ std::u16string BirchLostMediaItem::GetSubtitle(SecondaryIconType type) {
       type == SecondaryIconType::kLostMediaVideoConference
           ? IDS_ASH_BIRCH_LOST_MEDIA_VIDEO_CONFERENCE_TAB_SUBTITLE
           : IDS_ASH_BIRCH_LOST_MEDIA_MEDIA_TAB_SUBTITLE);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
-BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
-                               const std::u16string& coral_text)
-    : BirchItem(coral_title, coral_text) {}
-
-BirchCoralItem::BirchCoralItem(BirchCoralItem&&) = default;
-
-BirchCoralItem::BirchCoralItem(const BirchCoralItem&) = default;
-
-BirchCoralItem& BirchCoralItem::operator=(const BirchCoralItem&) = default;
-
-bool BirchCoralItem::operator==(const BirchCoralItem& rhs) const = default;
-
-BirchCoralItem::~BirchCoralItem() = default;
-
-BirchItemType BirchCoralItem::GetType() const {
-  return BirchItemType::kCoral;
-}
-
-std::string BirchCoralItem::ToString() const {
-  std::stringstream ss;
-  ss << "coral_item: <METADATA>";
-  return ss.str();
-}
-
-void BirchCoralItem::PerformAction() {
-  // TODO(yulunwu) add actions
-}
-
-void BirchCoralItem::LoadIcon(LoadIconCallback callback) const {
-  // TODO(yulunwu) load icons
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1056,16 +1023,16 @@ void BirchReleaseNotesItem::PerformAction() {
     return;
   }
   RecordActionMetrics();
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
 
 void BirchReleaseNotesItem::LoadIcon(LoadIconCallback callback) const {
   std::move(callback).Run(
+      PrimaryIconType::kIllustration, SecondaryIconType::kNoIcon,
       ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-          IDR_BIRCH_RELEASE_NOTES_ICON),
-      SecondaryIconType::kNoIcon);
+          IDR_BIRCH_RELEASE_NOTES_ICON));
 }
 
 }  // namespace ash

@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/fuchsia/scoped_service_binding.h"
-
 #include <lib/async/default.h>
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/fuchsia/process_context.h"
+#include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
 #include "base/fuchsia/test_interface_natural_impl.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -75,9 +73,9 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectDebugService) {
       fidl::CreateEndpoints<fuchsia_io::Directory>();
   ASSERT_TRUE(debug_directory_endpoints.is_ok())
       << debug_directory_endpoints.status_string();
-  debug_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                       fuchsia::io::OpenFlags::RIGHT_WRITABLE,
-                   debug_directory_endpoints->server.TakeChannel());
+  debug_dir->Serve(fuchsia_io::wire::kPermReadable,
+                   fidl::ServerEnd<fuchsia_io::Directory>(
+                       debug_directory_endpoints->server.TakeChannel()));
 
   // Attempt to connect via the "debug" directory.
   auto debug_stub =
@@ -88,11 +86,7 @@ TEST_F(ScopedNaturalServiceBindingTest, ConnectDebugService) {
   // service directory.
   auto release_stub =
       CreateTestInterfaceClient(test_context_.published_services_natural());
-  // TODO(https://fxbug.dev/293955890): Only check for ZX_ERR_NOT_FOUND once
-  // https://fuchsia-review.git.corp.google.com/c/fuchsia/+/1058032 lands.
-  EXPECT_THAT(VerifyTestInterface(release_stub),
-              testing::AnyOf(testing::Eq(ZX_ERR_PEER_CLOSED),
-                             testing::Eq(ZX_ERR_NOT_FOUND)));
+  EXPECT_EQ(VerifyTestInterface(release_stub), ZX_ERR_NOT_FOUND);
 }
 
 // Test the last client callback is called every time the number of active
@@ -102,7 +96,7 @@ TEST_F(ScopedNaturalServiceBindingTest, MultipleLastClientCallback) {
       ComponentContextForProcess()->outgoing().get(), &test_service_);
   int disconnect_count = 0;
   binding.SetOnLastClientCallback(
-      BindLambdaForTesting([&disconnect_count]() { ++disconnect_count; }));
+      BindLambdaForTesting([&disconnect_count] { ++disconnect_count; }));
 
   // Connect a client, verify it is functional.
   {
@@ -136,7 +130,7 @@ TEST_F(ScopedNaturalServiceBindingTest, LastClientCallbackOnlyForLastClient) {
       ComponentContextForProcess()->outgoing().get(), &test_service_);
   int disconnect_count = 0;
   binding.SetOnLastClientCallback(
-      BindLambdaForTesting([&disconnect_count]() { ++disconnect_count; }));
+      BindLambdaForTesting([&disconnect_count] { ++disconnect_count; }));
 
   {
     // Connect a long lived client, verify it is functional.

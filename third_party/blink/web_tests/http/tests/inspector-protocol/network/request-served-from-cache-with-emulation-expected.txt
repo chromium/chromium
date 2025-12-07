@@ -1,0 +1,15 @@
+Tests that Network.requestServedFromCache are reported with device emulation
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+{
+    method : Network.requestServedFromCache
+    params : {
+        requestId : <string>
+    }
+    sessionId : <string>
+}
+

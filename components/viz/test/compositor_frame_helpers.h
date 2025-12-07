@@ -47,20 +47,103 @@ struct RenderPassQuadParams {
 
 struct TextureQuadParams {
   bool needs_blending = false;
-  bool premultiplied_alpha = false;
   SkColor4f background_color = SkColors::kGreen;
-  bool flipped = false;
   bool nearest_neighbor = false;
   bool secure_output_only = false;
   gfx::ProtectedVideoType protected_video_type =
       gfx::ProtectedVideoType::kClear;
 };
 
+namespace internal {
+
+// Methods to add DrawQuads are found here. The methods are structured so that
+// the most important attributes on the quad are function parameters. Less
+// important attributes are stored in an optional struct parameter. The
+// optional params struct is POD so that designated initializers can be used
+// to construct a new object with specified parameters overridden.
+template <class Self>
+class AddQuads {
+ public:
+  Self& AddSharedElementQuad(const gfx::Rect& rect,
+                             const ViewTransitionElementResourceId& id);
+  Self& AddSolidColorQuad(const gfx::Rect& rect,
+                          SkColor4f color,
+                          SolidColorQuadParms params = {});
+  Self& AddSolidColorQuad(const gfx::Rect& rect,
+                          const gfx::Rect& visible_rect,
+                          SkColor4f color,
+                          SolidColorQuadParms params = {});
+
+  Self& AddSurfaceQuad(const gfx::Rect& rect,
+                       const SurfaceRange& surface_range,
+                       const SurfaceQuadParams& params = {});
+  Self& AddSurfaceQuad(const gfx::Rect& rect,
+                       const gfx::Rect& visible_rect,
+                       const SurfaceRange& surface_range,
+                       const SurfaceQuadParams& params = {});
+
+  Self& AddRenderPassQuad(const gfx::Rect& rect,
+                          CompositorRenderPassId id,
+                          const RenderPassQuadParams& params = {});
+  Self& AddRenderPassQuad(const gfx::Rect& rect,
+                          const gfx::Rect& visible_rect,
+                          CompositorRenderPassId id,
+                          const RenderPassQuadParams& params = {});
+
+  Self& AddTextureQuad(const gfx::Rect& rect,
+                       ResourceId resource_id,
+                       const TextureQuadParams& params = {});
+  Self& AddTextureQuad(const gfx::Rect& rect,
+                       const gfx::Rect& visible_rect,
+                       ResourceId resource_id,
+                       const TextureQuadParams& params = {});
+
+  // Checks basic validity, like the render pass hasn't already been built and
+  // there is at least one quad.
+  bool IsValid() const;
+
+ protected:
+  AddQuads();
+  virtual ~AddQuads();
+
+  // Appends and returns a new SharedQuadState for quad.
+  SharedQuadState* AppendDefaultSharedQuadState(const gfx::Rect rect,
+                                                const gfx::Rect visible_rect);
+
+  // Helper to allow subclasses return themselves for method chaining.
+  Self& ThisRef();
+
+  std::unique_ptr<CompositorRenderPass> pass_;
+};
+
+}  // namespace internal
+
+// Helper to build a list of quads. See: RenderPassBuilder::AddLayerQuads.
+class QuadListBuilder : public internal::AddQuads<QuadListBuilder> {
+ public:
+  // All the quads added to this must have their rect and visible rect contained
+  // by `rect` and `visible_rect`, respectively.
+  //
+  // If `visible_rect` is not specified, then `rect` is implied.
+  explicit QuadListBuilder(const gfx::Rect& rect,
+                           const std::optional<gfx::Rect>& visible_rect = {});
+  ~QuadListBuilder() override;
+
+  QuadListBuilder(const QuadListBuilder& other) = delete;
+  QuadListBuilder& operator=(const QuadListBuilder& other) = delete;
+
+ private:
+  friend class RenderPassBuilder;
+
+  const gfx::Rect rect_;
+  const gfx::Rect visible_rect_;
+};
+
 // Helper to build a CompositorRenderPass and add quads to it. By default the
 // CompositorRenderPass will have full damage. Functionality is broken down into
 // methods to modify render pass attributes, methods to add new quads and
 // methods to modify SharedQuadState for the last quad added.
-class RenderPassBuilder {
+class RenderPassBuilder : public internal::AddQuads<RenderPassBuilder> {
  public:
   RenderPassBuilder(CompositorRenderPassId id, const gfx::Size& output_size);
   RenderPassBuilder(CompositorRenderPassId id, const gfx::Rect& output_rect);
@@ -72,11 +155,7 @@ class RenderPassBuilder {
 
   RenderPassBuilder(const RenderPassBuilder& other) = delete;
   RenderPassBuilder& operator=(const RenderPassBuilder& other) = delete;
-  ~RenderPassBuilder();
-
-  // Checks basic validity, like the render pass hasn't already been built and
-  // there is at least one quad.
-  bool IsValid() const;
+  ~RenderPassBuilder() override;
 
   // Returns the CompositorRenderPass and leaves |this| in an invalid state.
   std::unique_ptr<CompositorRenderPass> Build();
@@ -99,45 +178,13 @@ class RenderPassBuilder {
   RenderPassBuilder& AddStubCopyOutputRequest(
       base::WeakPtr<CopyOutputRequest>* request_out = nullptr);
 
-  // Methods to add DrawQuads start here. The methods are structured so that the
-  // most important attributes on the quad are function parameters. Less
-  // important attributes are stored in an optional struct parameter. The
-  // optional params struct is POD so that designated initializers can be used
-  // to construct a new object with specified parameters overridden.
-  RenderPassBuilder& AddSharedElementQuad(
-      const gfx::Rect& rect,
-      const ViewTransitionElementResourceId& id);
-  RenderPassBuilder& AddSolidColorQuad(const gfx::Rect& rect,
-                                       SkColor4f color,
-                                       SolidColorQuadParms params = {});
-  RenderPassBuilder& AddSolidColorQuad(const gfx::Rect& rect,
-                                       const gfx::Rect& visible_rect,
-                                       SkColor4f color,
-                                       SolidColorQuadParms params = {});
-
-  RenderPassBuilder& AddSurfaceQuad(const gfx::Rect& rect,
-                                    const SurfaceRange& surface_range,
-                                    const SurfaceQuadParams& params = {});
-  RenderPassBuilder& AddSurfaceQuad(const gfx::Rect& rect,
-                                    const gfx::Rect& visible_rect,
-                                    const SurfaceRange& surface_range,
-                                    const SurfaceQuadParams& params = {});
-
-  RenderPassBuilder& AddRenderPassQuad(const gfx::Rect& rect,
-                                       CompositorRenderPassId id,
-                                       const RenderPassQuadParams& params = {});
-  RenderPassBuilder& AddRenderPassQuad(const gfx::Rect& rect,
-                                       const gfx::Rect& visible_rect,
-                                       CompositorRenderPassId id,
-                                       const RenderPassQuadParams& params = {});
-
-  RenderPassBuilder& AddTextureQuad(const gfx::Rect& rect,
-                                    ResourceId resource_id,
-                                    const TextureQuadParams& params = {});
-  RenderPassBuilder& AddTextureQuad(const gfx::Rect& rect,
-                                    const gfx::Rect& visible_rect,
-                                    ResourceId resource_id,
-                                    const TextureQuadParams& params = {});
+  // Add multiple quads sharing a single SharedQuadState, mimicking quads added
+  // to the same layer.
+  //
+  // This works by appending the quads added to the builder to self, overriding
+  // all SharedQuadState pointers with a single SharedQuadState based on
+  // builder's rect and visible_rect.
+  RenderPassBuilder& AddLayerQuads(const QuadListBuilder& builder);
 
   // Methods to modify the last DrawQuad's SharedQuadState start here. Note that
   // at least one quad must have been added to the render pass before calling
@@ -175,13 +222,12 @@ class RenderPassBuilder {
   // Sets SharedQuadState::offset_tag for the last quad.
   RenderPassBuilder& SetQuadOffsetTag(const OffsetTag& tag);
 
- private:
-  // Appends and returns a new SharedQuadState for quad.
-  SharedQuadState* AppendDefaultSharedQuadState(const gfx::Rect rect,
-                                                const gfx::Rect visible_rect);
-  SharedQuadState* GetLastQuadSharedQuadState();
+  // Sets SharedQuadState::mask_filter_info for the last quad.
+  RenderPassBuilder& SetQuadMaskFilterInfo(
+      const gfx::MaskFilterInfo& mask_filter_info);
 
-  std::unique_ptr<CompositorRenderPass> pass_;
+ private:
+  SharedQuadState* GetLastQuadSharedQuadState();
 };
 
 // A builder class for constructing CompositorFrames in tests. The initial
@@ -250,6 +296,8 @@ class CompositorFrameBuilder {
       const gfx::DelegatedInkMetadata& metadata);
   CompositorFrameBuilder& AddOffsetTagDefinition(
       const OffsetTagDefinition& definition);
+
+  CompositorFrameBuilder& SetValidTreesInVizTimestamps(base::TimeTicks now);
 
  private:
   CompositorFrame MakeInitCompositorFrame() const;

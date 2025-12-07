@@ -10,7 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
@@ -142,8 +142,13 @@ class POLICY_EXPORT ComponentCloudPolicyService
 
   // CloudPolicyClient::Observer implementation:
   void OnPolicyFetched(CloudPolicyClient* client) override;
-  void OnRegistrationStateChanged(CloudPolicyClient* client) override;
-  void OnClientError(CloudPolicyClient* client) override;
+  // CloudPolicyClient::Observer::OnRegistrationStateChanged is ignored since
+  // the registration state is tracked by looking at the CloudPolicyStore
+  // instead.
+
+  void SetIsInitializedForTesting(bool is_initialized) {
+    policy_installed_ = is_initialized;
+  }
 
  private:
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

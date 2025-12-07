@@ -1,0 +1,251 @@
+../resources/noscript01.dat:
+1
+2
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+
+Test 1 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><!doctype html><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<!doctype html><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- foo -->
+|   <body>
+
+Test 2 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><html class="foo"><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<html class="foo"><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   class="foo"
+|   <head>
+|     <noscript>
+|       <!-- foo -->
+|   <body>
+
+Test 5 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- foo -->
+|   <body>
+
+Test 6 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><basefont><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<basefont><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <basefont>
+|       <!-- foo -->
+|   <body>
+
+Test 7 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><bgsound><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<bgsound><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <bgsound>
+|       <!-- foo -->
+|   <body>
+
+Test 8 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><link><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<link><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <link>
+|       <!-- foo -->
+|   <body>
+
+Test 9 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><meta><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<meta><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <meta>
+|       <!-- foo -->
+|   <body>
+
+Test 10 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><noframes>XXX</noscript></noframes></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<noframes>XXX"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <noframes>
+|         "XXX</noscript>"
+|   <body>
+
+Test 11 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><style>XXX</style></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<style>XXX</style>"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <style>
+|         "XXX"
+|   <body>
+
+Test 12 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript></br><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "</br><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|   <body>
+|     <br>
+|     <!-- foo -->
+
+Test 13 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><head class="foo"><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<head class="foo"><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- foo -->
+|   <body>
+
+Test 14 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><noscript class="foo"><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<noscript class="foo"><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- foo -->
+|   <body>
+
+Test 15 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript></p><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "</p><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|       <!-- foo -->
+|   <body>
+
+Test 16 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript><p><!--foo--></noscript>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "<p><!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|   <body>
+|     <p>
+|       <!-- foo -->
+
+Test 17 of 18 in ../resources/noscript01.dat failed. Input:
+<head><noscript>XXX<!--foo--></noscript></head>
+Got:
+| <html>
+|   <head>
+|     <noscript>
+|       "XXX<!--foo-->"
+|   <body>
+Expected:
+| <html>
+|   <head>
+|     <noscript>
+|   <body>
+|     "XXX"
+|     <!-- foo -->

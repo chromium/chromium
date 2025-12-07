@@ -21,6 +21,8 @@
 #include "base/fuchsia/process_context.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/process/process_handle.h"
 #include "base/test/bind.h"
@@ -42,7 +44,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/gfx/gpu_fence.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
 namespace media {
@@ -53,6 +54,8 @@ class TestRasterContextProvider
     : public base::RefCountedThreadSafe<TestRasterContextProvider>,
       public viz::RasterContextProvider {
  public:
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
   TestRasterContextProvider()
       : shared_image_interface_(
             base::MakeRefCounted<gpu::TestSharedImageInterface>()) {}
@@ -88,10 +91,6 @@ class TestRasterContextProvider
   gpu::ContextSupport* ContextSupport() override {
     return &gpu_context_support_;
   }
-  class GrDirectContext* GrContext() override {
-    ADD_FAILURE();
-    return nullptr;
-  }
   gpu::SharedImageInterface* SharedImageInterface() override {
     return shared_image_interface_.get();
   }
@@ -108,11 +107,6 @@ class TestRasterContextProvider
   gpu::raster::RasterInterface* RasterInterface() override {
     ADD_FAILURE();
     return nullptr;
-  }
-  unsigned int GetGrGLTextureFormat(
-      viz::SharedImageFormat format) const override {
-    ADD_FAILURE();
-    return 0;
   }
 
  private:
@@ -187,11 +181,11 @@ class FakeClientNativePixmap : public gfx::ClientNativePixmap {
   ~FakeClientNativePixmap() override = default;
 
   // gfx::ClientNativePixmap implementation.
-  bool Map() override { NOTREACHED_NORETURN(); }
-  void Unmap() override { NOTREACHED_IN_MIGRATION(); }
-  size_t GetNumberOfPlanes() const override { NOTREACHED_NORETURN(); }
-  void* GetMemoryAddress(size_t plane) const override { NOTREACHED_NORETURN(); }
-  int GetStride(size_t plane) const override { NOTREACHED_NORETURN(); }
+  bool Map() override { NOTREACHED(); }
+  void Unmap() override { NOTREACHED(); }
+  size_t GetNumberOfPlanes() const override { NOTREACHED(); }
+  void* GetMemoryAddress(size_t plane) const override { NOTREACHED(); }
+  int GetStride(size_t plane) const override { NOTREACHED(); }
   gfx::NativePixmapHandle CloneHandleForIPC() const override {
     return gfx::CloneHandleForIPC(handle_);
   }
@@ -208,7 +202,7 @@ class FakeClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
   std::unique_ptr<gfx::ClientNativePixmap> ImportFromHandle(
       gfx::NativePixmapHandle handle,
       const gfx::Size& size,
-      gfx::BufferFormat format,
+      viz::SharedImageFormat format,
       gfx::BufferUsage usage) override {
     return std::make_unique<FakeClientNativePixmap>(std::move(handle));
   }
@@ -271,7 +265,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
 
   void OnVideoFrame(scoped_refptr<VideoFrame> frame) {
     num_output_frames_++;
-    CHECK(frame->HasTextures());
+    CHECK(frame->HasSharedImage());
     output_frames_.push_back(std::move(frame));
     while (output_frames_.size() > frames_to_keep_) {
       output_frames_.pop_front();
@@ -332,7 +326,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
   size_t num_output_frames_ = 0;
 
   DecoderStatus last_decode_status_;
-  base::RunLoop* run_loop_ = nullptr;
+  raw_ptr<base::RunLoop> run_loop_ = nullptr;
 
   // Number of frames that OnVideoFrame() should keep in |output_frames_|.
   size_t frames_to_keep_ = 2;

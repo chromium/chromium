@@ -43,9 +43,8 @@ class SelectPopup {
 
   // Notifies that items were selected in the currently showing select popup.
   void SelectMenuItems(JNIEnv* env,
-                       const base::android::JavaParamRef<jobject>& obj,
                        jlong selectPopupSourceFrame,
-                       const base::android::JavaParamRef<jintArray>& indices);
+                       const base::android::JavaRef<jintArray>& indices);
 
  private:
   raw_ptr<WebContentsImpl> web_contents_;

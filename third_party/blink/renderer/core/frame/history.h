@@ -44,6 +44,8 @@ class KURL;
 class ExceptionState;
 class HistoryItem;
 class ScriptState;
+class ScriptValue;
+class V8ScrollRestoration;
 
 // This class corresponds to the History interface.
 class CORE_EXPORT History final : public ScriptWrappable,
@@ -72,10 +74,12 @@ class CORE_EXPORT History final : public ScriptWrappable,
                     const String& url,
                     ExceptionState& exception_state);
 
-  void setScrollRestoration(const String& value, ExceptionState&);
-  String scrollRestoration(ExceptionState&);
+  void setScrollRestoration(const V8ScrollRestoration& value, ExceptionState&);
+  V8ScrollRestoration scrollRestoration(ExceptionState&);
 
   bool IsSameAsCurrentState(SerializedScriptValue*) const;
+
+  ScriptValue StateHelper(ScriptState*, ExceptionState&);
 
   void Trace(Visitor*) const override;
 

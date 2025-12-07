@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/process_internals/process_internals_ui.h"
 
 #include <memory>
@@ -19,6 +14,7 @@
 #include "content/grit/process_resources.h"
 #include "content/grit/process_resources_map.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -33,15 +29,14 @@ ProcessInternalsUI::ProcessInternalsUI(WebUI* web_ui)
     : WebUIController(web_ui) {
   // This WebUI does not require any process bindings, so disable it early in
   // initialization time.
-  web_ui->SetBindings(BINDINGS_POLICY_NONE);
+  web_ui->SetBindings(BindingsPolicySet());
 
   // Create a WebUIDataSource to serve the HTML/JS files to the WebUI.
   WebUIDataSource* source = WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       kChromeUIProcessInternalsHost);
 
-  source->AddResourcePaths(
-      base::make_span(kProcessResources, kProcessResourcesSize));
+  source->AddResourcePaths(kProcessResources);
   source->SetDefaultResource(IDR_PROCESS_PROCESS_INTERNALS_HTML);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,

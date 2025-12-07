@@ -4,10 +4,13 @@
 
 #include "third_party/blink/renderer/modules/compression/compression_stream.h"
 
+#include "base/debug/crash_logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/modules/compression/compression_format.h"
 #include "third_party/blink/renderer/modules/compression/deflate_transformer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "v8/include/v8-sandbox.h"
 
 namespace blink {
 
@@ -34,6 +37,11 @@ void CompressionStream::Trace(Visitor* visitor) const {
 CompressionStream::CompressionStream(ScriptState* script_state,
                                      const AtomicString& format,
                                      ExceptionState& exception_state) {
+  CHECK(exception_state.GetIsolate());
+
+  static auto* const compression_stream_deflate_format = AllocateCrashKeyString(
+      "compression_stream_deflate_format", base::debug::CrashKeySize::Size32);
+  SetCrashKeyString(compression_stream_deflate_format, format.Utf8());
   CompressionFormat deflate_format =
       LookupCompressionFormat(format, exception_state);
   if (exception_state.HadException())
@@ -50,6 +58,10 @@ CompressionStream::CompressionStream(ScriptState* script_state,
                               MakeGarbageCollected<DeflateTransformer>(
                                   script_state, deflate_format, deflate_level),
                               exception_state);
+  if (exception_state.HadException()) {
+    return;
+  }
+  CHECK(transform_);
 }
 
 }  // namespace blink

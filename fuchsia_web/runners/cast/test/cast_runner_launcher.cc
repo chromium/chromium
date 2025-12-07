@@ -35,6 +35,7 @@
 #include "media/fuchsia/audio/fake_audio_device_enumerator_local_component.h"
 
 using ::component_testing::ChildRef;
+using ::component_testing::Dictionary;
 using ::component_testing::Directory;
 using ::component_testing::DirectoryContents;
 using ::component_testing::FrameworkRef;
@@ -70,10 +71,9 @@ class TestProxyLocalComponent : public component_testing::LocalComponentImpl {
             kDynamicComponentCapabilitiesName);
     fidl::InterfaceHandle<fuchsia::io::Directory> services;
     zx_status_t status =
-        capability_dir->Serve(fuchsia::io::OpenFlags::RIGHT_READABLE |
-                                  fuchsia::io::OpenFlags::RIGHT_WRITABLE |
-                                  fuchsia::io::OpenFlags::DIRECTORY,
-                              services.NewRequest().TakeChannel());
+        capability_dir->Serve(fuchsia_io::wire::kPermReadable,
+                              fidl::ServerEnd<fuchsia_io::Directory>(
+                                  services.NewRequest().TakeChannel()));
     ZX_CHECK(status == ZX_OK, status) << "Serve()";
 
     // Bind that Directory capability under the same path of this virtual
@@ -81,7 +81,7 @@ class TestProxyLocalComponent : public component_testing::LocalComponentImpl {
     // it will be routed back to the calling process' outgoing directory.
     status = outgoing()->root_dir()->AddEntry(
         kDynamicComponentCapabilitiesName,
-        std::make_unique<vfs::RemoteDir>(std::move(services)));
+        std::make_unique<vfs::RemoteDir>(services.TakeChannel()));
     ZX_CHECK(status == ZX_OK, status) << "AddEntry";
   }
 };
@@ -135,8 +135,9 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
               Protocol{"fuchsia.hwinfo.Product"},
               Protocol{fuchsia::intl::PropertyProvider::Name_},
               Protocol{fuchsia::kernel::VmexResource::Name_},
-              Protocol{"fuchsia.logger.LogSink"},
+              Dictionary{"diagnostics"},
               Protocol{fuchsia::media::ProfileProvider::Name_},
+              Protocol{"fuchsia.scheduler.RoleManager"},
               Protocol{fuchsia::memorypressure::Provider::Name_},
               Protocol{"fuchsia.process.Launcher"},
               Protocol{"fuchsia.sysmem.Allocator"},
@@ -268,7 +269,7 @@ CastRunnerLauncher::CastRunnerLauncher(CastRunnerFeatures runner_features) {
         fuchsia::component::decl::Capability::WithDirectory(std::move(
             fuchsia::component::decl::Directory()
                 .set_name(kDynamicComponentCapabilitiesName)
-                .set_rights(fuchsia::io::RW_STAR_DIR)
+                .set_rights(fuchsia::io::R_STAR_DIR)
                 .set_source_path(kDynamicComponentCapabilitiesPath))));
 
     test_proxy_decl.mutable_exposes()->emplace_back(

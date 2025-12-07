@@ -132,7 +132,7 @@ Builds on | Variant | Chrome | Library | WebView
 **How we use them:**
  * We disable unwind information (search for [`exclude_unwind_tables`](https://cs.chromium.org/search/?q=exclude_unwind_tables+file:%5C.gn&type=cs)).
  * For all architectures except arm64, we disable frame pointers in order to reduce binary size (search for [`enable_frame_pointers`](https://cs.chromium.org/search/?q=enable_frame_pointers+file:%5C.gn&type=cs)).
- * Crashes are unwound offline using `minidump_stackwalk`, which can create a stack trace given a snapshot of stack memory and the unstripped library (see [//docs/testing/using_breakpad_with_content_shell.md](testing/using_breakpad_with_content_shell.md))
+ * Crashes are unwound offline using `minidump_stackwalk`, which can create a stack trace given a snapshot of stack memory and the unstripped library (see [//docs/testing/using_crashpad_with_content_shell.md](testing/using_crashpad_with_content_shell.md))
  * To facilitate heap profiling, we ship unwind information to arm32 canary & dev channels as a separate file: `assets/unwind_cfi_32`
 
 ## JNI Native Methods Resolution
@@ -157,7 +157,7 @@ Builds on | Variant | Chrome | Library | WebView
 **What is it?**
  * RELRO refers to the ELF segment `GNU_RELRO`. It contains data that the linker marks as read-only after it applies relocations.
    * To inspect the size of the segment: `readelf --segments libchrome.so`
-   * For `lib(mono)chrome.so` the region occupies about 2.4MiB on arm32 and 4.7 MiB on arm64
+   * For `lib(mono)chrome.so` the region occupies about 3.1MiB on arm32 and 2.6MiB on arm64
  * If two processes map this segment to the same virtual address space, then pages of memory within the segment which contain only relative relocations (99% of them) will be byte-for-byte identical.
  * "RELRO sharing" is when this segment is moved into shared memory and shared by multiple processes.
  * Processes `fork()`ed from the app zygote (where the library is loaded) share RELRO (via `fork()`'s copy-on-write semantics), but this region is not shared with other process types (privileged, utility, GPU)

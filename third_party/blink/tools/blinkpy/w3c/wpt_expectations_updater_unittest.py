@@ -5,7 +5,6 @@
 import json
 import textwrap
 import unittest
-from unittest import mock
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.common.net.git_cl import BuildStatus
@@ -15,7 +14,6 @@ from blinkpy.common.net.web_test_results import WebTestResults
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.log_testing import LoggingTestCase
 
-from blinkpy.w3c.gerrit_mock import MockGerritAPI
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_manifest import (
     WPTManifest, BASE_MANIFEST_NAME, MANIFEST_NAME)
@@ -27,7 +25,6 @@ from blinkpy.web_tests.port.factory_mock import MockPortFactory
 from blinkpy.web_tests.port.test import MOCK_WEB_TESTS
 
 
-@mock.patch('blinkpy.tool.commands.build_resolver.GerritAPI', MockGerritAPI)
 class WPTExpectationsUpdaterTest(LoggingTestCase):
     def mock_host(self):
         """Returns a mock host with fake values set up for testing."""
@@ -142,6 +139,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
     def mock_updater(self, host) -> WPTExpectationsUpdater:
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         updater.git_cl = MockGitCL(
             host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
@@ -197,6 +195,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         # Set up fake try job results.
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
@@ -248,6 +247,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
             },
         })
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         expectations_path = updater.finder.path_from_web_tests(
             'TestExpectations')
         host.filesystem.write_text_file(
@@ -305,6 +305,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
                 """))
         # Set up fake try job results.
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
@@ -363,6 +364,7 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
 
         # Set up fake try job results.
         updater = WPTExpectationsUpdater(host)
+        updater.options.builders = host.builders.filter_builders(is_try=True)
         updater.git_cl = MockGitCL(
             updater.host, {
                 Build('MOCK Try Mac10.10', 333, 'Build-1'):
@@ -451,17 +453,19 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         _, filtered_results = updater.filter_results_for_update(results)
         self.assertEqual(0, len(filtered_results))
 
-    def test_filter_results_for_update_not_retried_test(self):
+    def test_not_filter_results_for_update_not_retried_test(self):
+        # Wptrunner will not retry when some subtests unexpectedly pass.
+        # Such tests should still be rebaselined.
         host = self.mock_host()
         results = WebTestResults.from_rdb_responses(
-            {'external/wpt/reftest.html': [{
+            {'external/wpt/test/zzzz.html': [{
                 'status': 'FAIL',
             }]},
             step_name='blink_wpt_tests',
             build=Build('MOCK Try Mac10.10'))
         updater = WPTExpectationsUpdater(host)
-        _, filtered_results = updater.filter_results_for_update(results)
-        self.assertEqual(0, len(filtered_results))
+        tests_to_rebaseline, _ = updater.filter_results_for_update(results)
+        self.assertEqual(1, len(tests_to_rebaseline))
 
     def test_remove_configurations(self):
         host = self.mock_host()
@@ -1069,17 +1073,17 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host = self.mock_host()
         updater = WPTExpectationsUpdater(host)
         raw_results = WebTestResults.from_rdb_responses({
-            'external/wpt/x/y.html': [{
+            'external/wpt/test/path.html': [{
                 'status': 'PASS',
             }] * 3,
-            'external/wpt/x/z.html': [{
+            'external/wpt/test/zzzz.html': [{
                 'status': 'FAIL',
             }] * 3,
         })
         tests_to_rebaseline, results = updater.filter_results_for_update(
             raw_results)
         self.assertEqual(len(results), 0)
-        self.assertEqual(tests_to_rebaseline, {'external/wpt/x/z.html'})
+        self.assertEqual(tests_to_rebaseline, {'external/wpt/test/zzzz.html'})
 
     def test_get_test_to_rebaseline_does_not_return_ref_tests(self):
         host = self.mock_host()
@@ -1107,20 +1111,22 @@ class WPTExpectationsUpdaterTest(LoggingTestCase):
         host = self.mock_host()
         updater = WPTExpectationsUpdater(host)
         raw_results = WebTestResults.from_rdb_responses({
-            'external/wpt/x/y.html': [{
+            'external/wpt/test/path.html': [{
                 'status': 'FAIL',
             }] * 3,
-            'external/wpt/x/z.html': [{
+            'external/wpt/reftest.html': [{
                 'status': 'ABORT',
             }] * 3,
         })
 
-        tests_to_rebaseline, (
-            result, ) = updater.filter_results_for_update(raw_results)
-        self.assertEqual(tests_to_rebaseline, {'external/wpt/x/y.html'})
+        tests_to_rebaseline, results = updater.filter_results_for_update(
+            raw_results)
+        self.assertEqual(tests_to_rebaseline, {'external/wpt/test/path.html'})
         # The record for the builder with a timeout is kept, but not with a text mismatch,
         # since that should be covered by downloading a new baseline.
-        self.assertEqual(result.test_name(), 'external/wpt/x/z.html')
+        self.assertEqual(len(results), 1)
+        (result, ) = results
+        self.assertEqual(result.test_name(), 'external/wpt/reftest.html')
         # The original container isn't modified.
         self.assertEqual(len(raw_results), 2)
 

@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/ipc/in_process_gpu_thread_holder.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
 
@@ -41,15 +40,9 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
     if (!RasterInProcessContext::SupportedInTest())
       return nullptr;
 
-    ContextCreationAttribs attributes;
-    attributes.bind_generates_resource = false;
-    attributes.enable_oop_rasterization = true;
-    attributes.enable_gles2_interface = false;
-    attributes.enable_raster_interface = true;
-
     auto context = std::make_unique<RasterInProcessContext>();
     auto result = context->Initialize(
-        gpu_thread_holder_.GetTaskExecutor(), attributes, SharedMemoryLimits(),
+        gpu_thread_holder_.GetTaskExecutor(), /*enable_gpu_rasterization=*/true,
         /*gr_shader_cache=*/nullptr, /*use_shader_cache_shm_count=*/nullptr);
     DCHECK_EQ(result, ContextResult::kSuccess);
     return context;
@@ -79,28 +72,23 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
     GTEST_SKIP();
   }
 
-  // Check for GPU and driver support
-  if (!context_->GetCapabilities().gpu_rasterization) {
-    GTEST_SKIP();
-  }
-
   // Create shared image and allocate storage.
   auto* sii = context_->GetSharedImageInterface();
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   SharedImageUsageSet flags = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
-                              gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
+                              gpu::SHARED_IMAGE_USAGE_RASTER_WRITE;
   scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
       {kSharedImageFormat, kBufferSize, color_space, flags, "TestLabel"},
       kNullSurfaceHandle);
-  ri_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
+  auto ri_access = shared_image->BeginRasterAccess(
+      ri_, shared_image->creation_sync_token(), /*readonly=*/false);
 
   // Call BeginRasterCHROMIUM.
   ri_->BeginRasterCHROMIUM(
       /*sk_color_4f=*/{0, 0, 0, 0}, /*needs_clear=*/true,
       /*msaa_sample_count=*/0, gpu::raster::kNoMSAA,
       /*can_use_lcd_text=*/false, /*visible=*/true, color_space,
-      /*hdr_headroom=*/1.f, shared_image->mailbox().name);
+      /*hdr_headroom=*/0.f, shared_image->mailbox().name);
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ri_->GetError());
 
   // Should flag an error this command is not allowed between a Begin and
@@ -112,6 +100,8 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   // Confirm that we skip over without error.
   ri_->EndRasterCHROMIUM();
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ri_->GetError());
+
+  gpu::RasterScopedAccess::EndAccess(std::move(ri_access));
 }
 
 }  // namespace gpu

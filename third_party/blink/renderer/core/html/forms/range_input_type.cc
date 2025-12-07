@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/scoped_event_queue.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -57,6 +56,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/flex/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -103,7 +103,7 @@ void RangeInputType::DidRecalcStyle(const StyleRecalcChange) {
   if (const ComputedStyle* style = GetElement().GetComputedStyle()) {
     if (RuntimeEnabledFeatures::
             NonStandardAppearanceValueSliderVerticalEnabled() &&
-        style->EffectiveAppearance() == kSliderVerticalPart) {
+        style->EffectiveAppearance() == AppearanceValue::kSliderVertical) {
       UseCounter::Count(GetElement().GetDocument(),
                         WebFeature::kInputTypeRangeVerticalAppearance);
     } else {
@@ -133,8 +133,7 @@ double RangeInputType::ValueAsDouble() const {
 void RangeInputType::SetValueAsDouble(double new_value,
                                       TextFieldEventBehavior event_behavior,
                                       ExceptionState& exception_state) const {
-  SetValueAsDecimal(Decimal::FromDouble(new_value), event_behavior,
-                    exception_state);
+  SetValueAsDecimal(Decimal::FromDouble(new_value), event_behavior);
 }
 
 bool RangeInputType::TypeMismatchFor(const String& value) const {
@@ -179,7 +178,7 @@ void RangeInputType::HandleMouseDownEvent(MouseEvent& event) {
   if (GetElement().IsDisabledFormControl())
     return;
 
-  Node* target_node = event.target()->ToNode();
+  Node* target_node = event.RawTarget()->ToNode();
   if (event.button() !=
           static_cast<int16_t>(WebPointerProperties::Button::kLeft) ||
       !target_node)
@@ -217,49 +216,24 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
 
   bool is_up = false;
   bool is_down = false;
-  if (RuntimeEnabledFeatures::VerticalInputRangeKeyOperationFixEnabled()) {
-    WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
-                                              TextDirection::kLtr};
-    if (const auto* style = GetElement().GetComputedStyle()) {
-      writing_direction = style->GetWritingDirection();
-      // `appearance: slider-vertical` is equivalent to `writing-mode:
-      // vertical-rl; direction: rtl`.
-      if (RuntimeEnabledFeatures::
-              NonStandardAppearanceValueSliderVerticalEnabled() &&
-          writing_direction.IsHorizontal() &&
-          style->EffectiveAppearance() == kSliderVerticalPart) {
-        writing_direction = {WritingMode::kVerticalRl, TextDirection::kRtl};
-      }
-    }
-    const PhysicalToLogical<const AtomicString*> key_mapper(
-        writing_direction, &keywords::kArrowUp, &keywords::kArrowRight,
-        &keywords::kArrowDown, &keywords::kArrowLeft);
-    is_up = key == *key_mapper.InlineEnd() || key == *key_mapper.LineOver();
-    is_down =
-        key == *key_mapper.InlineStart() || key == *key_mapper.LineUnder();
-  } else {
-    TextDirection dir = TextDirection::kLtr;
-    if (GetElement().GetLayoutObject()) {
-      dir = ComputedTextDirection();
-    }
-    if (key == keywords::kArrowUp) {
-      is_up = true;
-    } else if (key == keywords::kArrowDown) {
-      is_down = true;
-    } else if (key == keywords::kArrowLeft) {
-      if (dir == TextDirection::kRtl) {
-        is_up = true;
-      } else {
-        is_down = true;
-      }
-    } else if (key == keywords::kArrowRight) {
-      if (dir == TextDirection::kRtl) {
-        is_down = true;
-      } else {
-        is_up = true;
-      }
+  WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
+                                            TextDirection::kLtr};
+  if (const auto* style = GetElement().GetComputedStyle()) {
+    writing_direction = style->GetWritingDirection();
+    // `appearance: slider-vertical` is equivalent to `writing-mode:
+    // vertical-rl; direction: rtl`.
+    if (RuntimeEnabledFeatures::
+            NonStandardAppearanceValueSliderVerticalEnabled() &&
+        writing_direction.IsHorizontal() &&
+        style->EffectiveAppearance() == AppearanceValue::kSliderVertical) {
+      writing_direction = {WritingMode::kVerticalRl, TextDirection::kRtl};
     }
   }
+  const PhysicalToLogical<const AtomicString*> key_mapper(
+      writing_direction, &keywords::kArrowUp, &keywords::kArrowRight,
+      &keywords::kArrowDown, &keywords::kArrowLeft);
+  is_up = key == *key_mapper.InlineEnd() || key == *key_mapper.LineOver();
+  is_down = key == *key_mapper.InlineStart() || key == *key_mapper.LineUnder();
 
   Decimal new_value;
   if (is_up) {
@@ -284,7 +258,7 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
     EventQueueScope scope;
     TextFieldEventBehavior event_behavior =
         TextFieldEventBehavior::kDispatchInputAndChangeEvent;
-    SetValueAsDecimal(new_value, event_behavior, IGNORE_EXCEPTION_FOR_TESTING);
+    SetValueAsDecimal(new_value, event_behavior);
 
     if (AXObjectCache* cache =
             GetElement().GetDocument().ExistingAXObjectCache())
@@ -358,8 +332,8 @@ void RangeInputType::DidSetValue(const String&, bool value_changed) {
     GetElement().UpdateView();
 }
 
-ControlPart RangeInputType::AutoAppearance() const {
-  return kSliderHorizontalPart;
+AppearanceValue RangeInputType::AutoAppearance() const {
+  return AppearanceValue::kSliderHorizontal;
 }
 
 void RangeInputType::UpdateView() {
@@ -380,6 +354,11 @@ void RangeInputType::WarnIfValueIsInvalid(const String& value) const {
     return;
   AddWarningToConsole(
       "The specified value %s cannot be parsed, or is out of range.", value);
+}
+
+String RangeInputType::ValueNotEqualText(const Decimal& value) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_NOT_EQUAL,
+                                 LocalizeValue(Serialize(value)));
 }
 
 String RangeInputType::RangeOverflowText(const Decimal& maximum) const {

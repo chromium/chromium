@@ -26,15 +26,21 @@ public class ViewPrinter {
 
     /** Options to customize rendering and printing. */
     public static class Options {
-        private static final Options DEFAULT = new Options();
+        public static final Options DEFAULT = new Options();
 
         private String mLogTag = "ViewPrinter";
+        private boolean mPrintChildren = true;
         private boolean mPrintNonVisibleViews;
         private boolean mPrintResourcePackage;
         public boolean mPrintViewBounds;
 
         public Options setLogTag(String logTag) {
             mLogTag = logTag;
+            return this;
+        }
+
+        public Options setPrintChildren(boolean printChildren) {
+            mPrintChildren = printChildren;
             return this;
         }
 
@@ -177,6 +183,10 @@ public class ViewPrinter {
             stringBuilder.append("]");
         }
 
+        if (!options.mPrintChildren) {
+            return new TreeOutput(stringBuilder.toString());
+        }
+
         stringBuilder.append('\n');
 
         TreeOutput output = new TreeOutput(stringBuilder.toString());
@@ -255,7 +265,7 @@ public class ViewPrinter {
      * </pre>
      */
     public static class TreeOutput {
-        private String mLabel;
+        private final String mLabel;
         private @Nullable List<TreeOutput> mChildren;
 
         public TreeOutput(String label) {

@@ -8,9 +8,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/win/access_control_list.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
@@ -33,7 +35,7 @@ class BASE_EXPORT AccessToken {
   class BASE_EXPORT Group {
    public:
     // Get the group SID.
-    const Sid& GetSid() const { return sid_; }
+    const Sid& GetSid() const LIFETIME_BOUND { return sid_; }
     // Get the group attribute flags.
     DWORD GetAttributes() const { return attributes_; }
     // Returns true if the group is an integrity level.
@@ -315,6 +317,26 @@ class BASE_EXPORT AccessToken {
   // Returns true if the operation was successful.
   // The token must be opened with TOKEN_ADJUST_PRIVILEGES access.
   bool RemoveAllPrivileges();
+
+  // Add a security attribute by name to the token.
+  // |name| the name of the attribute to add.
+  // |inherit| whether the attribute can be inherited by child processes.
+  // |value| the value of the attribute as a string.
+  // The token must be opened with TOKEN_ADJUST_DEFAULT access. The caller must
+  // have SeTcbPrivilege enabled to successfully add the attribute.
+  bool AddSecurityAttribute(std::wstring_view name,
+                            bool inherit,
+                            std::wstring_view value);
+
+  // Returns whether or not the token has the specified security attribute. The
+  // value of the security attribute is ignored. Returns std::nullopt if the
+  // token's security attributes could not be queried.
+  std::optional<bool> HasSecurityAttribute(std::wstring_view name) const;
+
+  // Returns a string value from a security attribute. Returns std::nullopt if
+  // the attribute doesn't exist or does not contain a string value.
+  std::optional<std::wstring> GetSecurityAttributeString(
+      std::wstring_view name) const;
 
   // Indicates if the AccessToken object is valid.
   bool is_valid() const;

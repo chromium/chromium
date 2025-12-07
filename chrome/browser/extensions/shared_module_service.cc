@@ -10,12 +10,17 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/version.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/pending_extension_manager.h"
-#include "extensions/browser/extension_system.h"
+#include "chrome/browser/extensions/shared_module_service_factory.h"
+#include "chrome/browser/extensions/updater/extension_updater.h"
+#include "extensions/browser/delayed_install_manager.h"
+#include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/pending_extension_manager.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -31,13 +36,22 @@ bool IsSharedModule(const Extension* extension,
 
 }  // namespace
 
+// static
+SharedModuleService* SharedModuleService::Get(
+    content::BrowserContext* context) {
+  return SharedModuleServiceFactory::GetForBrowserContext(context);
+}
+
 SharedModuleService::SharedModuleService(content::BrowserContext* context)
     : browser_context_(context) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
 }
 
-SharedModuleService::~SharedModuleService() {
+SharedModuleService::~SharedModuleService() = default;
+
+void SharedModuleService::Shutdown() {
+  extension_registry_observation_.Reset();
 }
 
 SharedModuleService::ImportStatus SharedModuleService::CheckImports(
@@ -90,11 +104,8 @@ SharedModuleService::ImportStatus SharedModuleService::SatisfyImports(
   ImportStatus status =
       CheckImports(extension, &missing_modules, &outdated_modules);
 
-  ExtensionService* service =
-      ExtensionSystem::Get(browser_context_)->extension_service();
-
   PendingExtensionManager* pending_extension_manager =
-      service->pending_extension_manager();
+      PendingExtensionManager::Get(browser_context_);
   DCHECK(pending_extension_manager);
 
   if (status == IMPORT_STATUS_UNSATISFIED) {
@@ -105,7 +116,10 @@ SharedModuleService::ImportStatus SharedModuleService::SatisfyImports(
           iter->extension_id, extension_urls::GetWebstoreUpdateUrl(),
           IsSharedModule);
     }
-    service->CheckForUpdatesSoon();
+    auto* extension_updater = ExtensionUpdater::Get(browser_context_);
+    if (extension_updater->enabled()) {
+      extension_updater->CheckSoon();
+    }
   }
   return status;
 }
@@ -116,13 +130,12 @@ std::unique_ptr<ExtensionSet> SharedModuleService::GetDependentExtensions(
 
   if (SharedModuleInfo::IsSharedModule(extension)) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-    ExtensionService* service =
-        ExtensionSystem::Get(browser_context_)->extension_service();
 
     ExtensionSet set_to_check;
     set_to_check.InsertAll(registry->enabled_extensions());
     set_to_check.InsertAll(registry->disabled_extensions());
-    set_to_check.InsertAll(*service->delayed_installs());
+    set_to_check.InsertAll(
+        DelayedInstallManager::Get(browser_context_)->delayed_installs());
 
     for (ExtensionSet::const_iterator iter = set_to_check.begin();
          iter != set_to_check.end();
@@ -148,19 +161,18 @@ InstallGate::Action SharedModuleService::ShouldDelay(const Extension* extension,
       return ABORT;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return INSTALL;
+  NOTREACHED();
 }
 
 void SharedModuleService::PruneSharedModules() {
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
-  ExtensionService* service =
-      ExtensionSystem::Get(browser_context_)->extension_service();
+  ExtensionRegistrar* registrar = ExtensionRegistrar::Get(browser_context_);
 
   ExtensionSet set_to_check;
   set_to_check.InsertAll(registry->enabled_extensions());
   set_to_check.InsertAll(registry->disabled_extensions());
-  set_to_check.InsertAll(*service->delayed_installs());
+  set_to_check.InsertAll(
+      DelayedInstallManager::Get(browser_context_)->delayed_installs());
 
   std::vector<std::string> shared_modules;
   std::set<std::string> used_shared_modules;
@@ -184,7 +196,7 @@ void SharedModuleService::PruneSharedModules() {
        shared_modules_iter++) {
     if (used_shared_modules.count(*shared_modules_iter))
       continue;
-    service->UninstallExtension(
+    registrar->UninstallExtension(
         *shared_modules_iter,
         extensions::UNINSTALL_REASON_ORPHANED_SHARED_MODULE,
         nullptr);  // Ignore error.

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/nearby/bluetooth_adapter_manager.h"
 
 #include "base/containers/contains.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "device/bluetooth/adapter.h"
@@ -17,6 +18,8 @@ namespace {
 // be updated. This enum should be kept in sync with the
 // NearbyBluetoothAdapterAdvertisingSupport enum in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyBluetoothAdapterAdvertisingSupport)
 enum class NearbyBluetoothAdapterAdvertisingSupport {
   kExtendedAdvertisingAndScatternetDualRole = 0,
   kExtendedAdvertisingOnly = 1,
@@ -24,6 +27,7 @@ enum class NearbyBluetoothAdapterAdvertisingSupport {
   kLegacyAdvertisingOnly = 3,
   kMaxValue = kLegacyAdvertisingOnly,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyBluetoothAdapterAdvertisingSupport)
 
 void LogBluetoothAdapterAdvertisingSupport(
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) {

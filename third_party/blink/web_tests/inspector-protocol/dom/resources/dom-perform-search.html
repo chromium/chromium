@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <div class="find-me" id="in-main-frame"></div>
+    <iframe src="dom-perform-search-iframe.html"></iframe>
+    <div class="host">
+      <template shadowrootmode="open">
+        <div class="find-me" id="in-shadow-dom-in-main-frame"></div>
+      </template>
+    </div>
+  </body>
+</html>

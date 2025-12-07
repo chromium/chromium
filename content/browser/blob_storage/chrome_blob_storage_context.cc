@@ -332,6 +332,4 @@ storage::BlobStorageContext* GetBlobStorageContext(
   return blob_storage_context->context();
 }
 
-const char kBlobStorageContextKeyName[] = "content_blob_storage_context";
-
 }  // namespace content

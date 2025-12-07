@@ -4,36 +4,69 @@
 
 #include "remoting/base/cloud_service_client.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
+#include "base/memory/ptr_util.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringize_macros.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_request_headers.h"
 #include "remoting/base/protobuf_http_request.h"
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/base/version.h"
-#include "remoting/proto/remoting/v1/cloud_messages.pb.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/empty.pb.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/network_traversal_service.pb.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_host.pb.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_service.pb.h"
+#include "remoting/proto/google/internal/remoting/cloud/v1alpha/session_authz_service.pb.h"
+#include "remoting/proto/google/remoting/cloud/v1/provisioning_service.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace remoting {
+namespace {
+constexpr net::NetworkTrafficAnnotationTag kGenerateHostTokenTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("remoting_cloud_generate_host_token",
+                                        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Generates a host token which is used to authorize a Chrome Remote "
+            "Desktop connection between a user and a 'Cloud host' running on "
+            "GCE (this machine)."
+          trigger:
+            "User connects to a remote access host instance running on GCE "
+            "which has been configured as a 'Cloud' host."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "An access token for the device robot account associated with this "
+            "machine."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-09-23"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the Chrome Remote Desktop host is not registered as a Cloud "
+            "host running on GCE."
+          policy_exception_justification:
+            "Not implemented."
+        })");
 
-CloudServiceClient::CloudServiceClient(
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
-                   /*token_getter=*/nullptr,
-                   url_loader_factory) {}
-
-CloudServiceClient::~CloudServiceClient() = default;
-
-void CloudServiceClient::ProvisionGceInstance(
-    const std::string& owner_email,
-    const std::string& display_name,
-    const std::string& public_key,
-    const std::optional<std::string>& existing_directory_id,
-    ProvisionGceInstanceCallback callback) {
-  constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
-      net::DefineNetworkTrafficAnnotation(
-          "remoting_cloud_provision_gce_instance",
-          R"(
+constexpr net::NetworkTrafficAnnotationTag
+    kProvisionGceInstanceTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation(
+            "remoting_cloud_provision_gce_instance",
+            R"(
         semantics {
           sender: "Chrome Remote Desktop"
           description:
@@ -65,22 +98,356 @@ void CloudServiceClient::ProvisionGceInstance(
           policy_exception_justification:
             "Not implemented."
         })");
-  constexpr char path[] = "/v1/cloud:provisionGceInstance";
 
-  auto provision_gce_instance_request =
-      std::make_unique<apis::v1::ProvisionGceInstanceRequest>();
-  provision_gce_instance_request->set_owner_email(owner_email);
-  provision_gce_instance_request->set_display_name(display_name);
-  provision_gce_instance_request->set_public_key(public_key);
-  provision_gce_instance_request->set_version(STRINGIZE(VERSION));
+constexpr net::NetworkTrafficAnnotationTag kReauthorizeHostTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("remoting_cloud_reauthorize_host",
+                                        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Reauthorizes the Chrome Remote Desktop connection between a user "
+            "and a 'Cloud host' running on GCE (this machine)."
+          trigger:
+            "User connects to a remote access host instance running on GCE "
+            "which has been configured as a 'Cloud' host."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "An access token for the device robot account associated with this "
+            "machine and an opaque session token generated by the backend "
+            "service."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-09-23"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the Chrome Remote Desktop host is not registered as a Cloud "
+            "host running on GCE."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+constexpr net::NetworkTrafficAnnotationTag kSendHeartbeatTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("remoting_cloud_send_heartbeat",
+                                        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Updates the last seen time in the Chrome Remote Desktop Directory "
+            "service for a given remote access host instance."
+          trigger:
+            "Configuring a CRD remote access host on a GCE Instance."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "An internal UUID to identify the remote access host instance."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-09-18"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the CRD host is not configured and run as a Cloud host."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+constexpr net::NetworkTrafficAnnotationTag
+    kUpdateRemoteAccessHostTrafficAnnotation =
+        net::DefineNetworkTrafficAnnotation(
+            "remoting_cloud_update_remote_access_host",
+            R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Updates the Chrome Remote Desktop Directory service with "
+            "environment details and signaling information for a given remote "
+            "access host instance."
+          trigger:
+            "Configuring a CRD remote access host on a GCE Instance."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "Includes an internal UUID to identify the remote access host "
+            "instance, the name and version of the operating system, the "
+            "version of the CRD package installed, and a set of signaling ids "
+            "which the CRD client can use to send the host messages."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-09-18"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the CRD host is not configured and run as a Cloud host."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+constexpr net::NetworkTrafficAnnotationTag
+    kVerifySessionTokenTrafficAnnotation = net::DefineNetworkTrafficAnnotation(
+        "remoting_cloud_verify_session_token",
+        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Verifies a session token returned by the client device and "
+            "decodes the shared secret from the session token, to be used to "
+            "authorize a Chrome Remote Desktop connection between a user and a "
+            "Cloud host running on GCE (this device)."
+          trigger:
+            "User connects to a remote access host instance running on GCE "
+            "which has been configured as a 'Cloud' host."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "An access token for the device robot account associated with this "
+            "machine and an opaque session token generated by the backend "
+            "service."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-09-23"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the Chrome Remote Desktop host is not registered as a Cloud "
+            "host running on GCE."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+constexpr net::NetworkTrafficAnnotationTag kGenerateIceConfigTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("remoting_cloud_generate_ice_config",
+                                        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Request used by Chrome Remote Desktop to fetch an ICE "
+            "(Interactive Connectivity Establishment) configuration which "
+            "contains a list of STUN (Session Traversal Utilities for NAT) & "
+            "TURN (Traversal Using Relay NAT) servers and TURN credentials. "
+            "Please see https://tools.ietf.org/html/rfc5245 for more details."
+          trigger:
+            "When a user connects to a remote access host instance running on "
+            "GCE which has been configured as a 'Cloud' host."
+          user_data {
+            type: OTHER
+          }
+          data:
+            "An access token for the device robot account associated with this "
+            "machine."
+          destination: GOOGLE_OWNED_SERVICE
+          internal {
+            contacts { owners: "//remoting/OWNERS" }
+          }
+          last_reviewed: "2024-10-08"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the Chrome Remote Desktop host is not registered as a Cloud "
+            "host running on GCE."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+// Remoting Cloud API using statements.
+using ProvisionGceInstanceRequest =
+    google::remoting::cloud::v1::ProvisionGceInstanceRequest;
+
+// Remoting Cloud Private API using statements.
+using Empty = google::internal::remoting::cloud::v1alpha::Empty;
+using GenerateHostTokenRequest =
+    google::internal::remoting::cloud::v1alpha::GenerateHostTokenRequest;
+using GenerateIceConfigRequest =
+    google::internal::remoting::cloud::v1alpha::GenerateIceConfigRequest;
+using ReauthorizeHostRequest =
+    google::internal::remoting::cloud::v1alpha::ReauthorizeHostRequest;
+using RemoteAccessHost =
+    google::internal::remoting::cloud::v1alpha::RemoteAccessHost;
+using SendHeartbeatRequest =
+    google::internal::remoting::cloud::v1alpha::SendHeartbeatRequest;
+using VerifySessionTokenRequest =
+    google::internal::remoting::cloud::v1alpha::VerifySessionTokenRequest;
+
+constexpr char kFtlResourceSeparator[] = "/chromoting_ftl_";
+
+}  // namespace
+
+namespace remoting {
+
+CloudServiceClient::CloudServiceClient(
+    const std::string& api_key,
+    OAuthTokenGetter* oauth_token_getter,
+    const std::string& base_service_url,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : api_key_(api_key),
+      http_client_(base_service_url, oauth_token_getter, url_loader_factory) {}
+
+CloudServiceClient::~CloudServiceClient() = default;
+
+void CloudServiceClient::ProvisionGceInstance(
+    const std::string& owner_email,
+    const std::string& display_name,
+    const std::string& public_key,
+    const std::optional<std::string>& existing_directory_id,
+    const std::optional<std::string>& instance_identity_token,
+    ProvisionGceInstanceCallback callback) {
+  constexpr char path[] = "/v1/provisioning:provisionGceInstance";
+
+  auto request = std::make_unique<ProvisionGceInstanceRequest>();
+  request->set_owner_email(owner_email);
+  request->set_display_name(display_name);
+  request->set_public_key(public_key);
+  request->set_version(STRINGIZE(VERSION));
   if (existing_directory_id.has_value() && !existing_directory_id->empty()) {
-    provision_gce_instance_request->set_existing_directory_id(
-        *existing_directory_id);
+    request->set_existing_directory_id(*existing_directory_id);
+  }
+  if (instance_identity_token.has_value() &&
+      !instance_identity_token->empty()) {
+    request->set_instance_identity_token(*instance_identity_token);
   }
 
-  ExecuteRequest(traffic_annotation, path,
-                 std::move(provision_gce_instance_request),
+  ExecuteRequest(kProvisionGceInstanceTrafficAnnotation, path, api_key_,
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
                  std::move(callback));
+}
+
+void CloudServiceClient::SendHeartbeat(const std::string& directory_id,
+                                       std::string_view instance_identity_token,
+                                       SendHeartbeatCallback callback) {
+  constexpr char path[] = "/v1alpha/access:sendHeartbeat";
+
+  auto request = std::make_unique<SendHeartbeatRequest>();
+  request->set_directory_id(directory_id);
+  request->set_instance_identity_token(instance_identity_token);
+
+  ExecuteRequest(kSendHeartbeatTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
+                 std::move(callback));
+}
+
+void CloudServiceClient::UpdateRemoteAccessHost(
+    const std::string& directory_id,
+    std::optional<std::string> host_version,
+    std::optional<std::string> signaling_id,
+    std::optional<std::string> offline_reason,
+    std::optional<std::string> os_name,
+    std::optional<std::string> os_version,
+    std::string_view instance_identity_token,
+    UpdateRemoteAccessHostCallback callback) {
+  constexpr char path[] = "/v1alpha/access:updateRemoteAccessHost";
+
+  auto host = std::make_unique<RemoteAccessHost>();
+
+  host->set_directory_id(directory_id);
+  if (host_version.has_value()) {
+    host->set_version(*host_version);
+  }
+  if (signaling_id.has_value()) {
+    auto parts = base::SplitStringUsingSubstr(
+        *signaling_id, kFtlResourceSeparator, base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_ALL);
+    if (parts.size() == 2) {
+      host->mutable_tachyon_account_info()->set_account_id(std::move(parts[0]));
+      host->mutable_tachyon_account_info()->set_registration_id(
+          std::move(parts[1]));
+    } else {
+      LOG(WARNING) << "Invalid signaling_id provided: " << *signaling_id;
+    }
+  }
+  if (offline_reason.has_value()) {
+    host->set_offline_reason(*offline_reason);
+  }
+  if (os_name.has_value() && os_version.has_value()) {
+    host->mutable_operating_system_info()->set_name(*os_name);
+    host->mutable_operating_system_info()->set_version(*os_version);
+  }
+  host->set_instance_identity_token(instance_identity_token);
+
+  ExecuteRequest(kUpdateRemoteAccessHostTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPatchMethod, std::move(host),
+                 std::move(callback));
+}
+
+void CloudServiceClient::GenerateHostToken(
+    std::string_view instance_identity_token,
+    GenerateHostTokenCallback callback) {
+  constexpr char path[] = "/v1alpha/sessionAuthz:generateHostToken";
+
+  auto request = std::make_unique<GenerateHostTokenRequest>();
+  request->set_instance_identity_token(instance_identity_token);
+
+  ExecuteRequest(kGenerateHostTokenTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
+                 std::move(callback));
+}
+
+void CloudServiceClient::GenerateIceConfig(
+    std::string_view instance_identity_token,
+    GenerateIceConfigCallback callback) {
+  constexpr char path[] = "/v1alpha/networkTraversal:generateIceConfig";
+
+  auto request = std::make_unique<GenerateIceConfigRequest>();
+  request->set_instance_identity_token(instance_identity_token);
+
+  ExecuteRequest(kGenerateIceConfigTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
+                 std::move(callback));
+}
+
+void CloudServiceClient::VerifySessionToken(
+    const std::string& session_token,
+    std::string_view instance_identity_token,
+    VerifySessionTokenCallback callback) {
+  constexpr char path[] = "/v1alpha/sessionAuthz:verifySessionToken";
+
+  auto request = std::make_unique<VerifySessionTokenRequest>();
+  request->set_session_token(session_token);
+  request->set_instance_identity_token(instance_identity_token);
+
+  ExecuteRequest(kVerifySessionTokenTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
+                 std::move(callback));
+}
+
+void CloudServiceClient::ReauthorizeHost(
+    const std::string& session_reauth_token,
+    const std::string& session_id,
+    std::string_view instance_identity_token,
+    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy,
+    ReauthorizeHostCallback callback) {
+  constexpr char path[] = "/v1alpha/sessionAuthz:reauthorizeHost";
+
+  auto request = std::make_unique<ReauthorizeHostRequest>();
+  request->set_session_reauth_token(session_reauth_token);
+  request->set_session_id(session_id);
+  request->set_instance_identity_token(instance_identity_token);
+
+  ExecuteRequest(kReauthorizeHostTrafficAnnotation, path, /*api_key=*/"",
+                 net::HttpRequestHeaders::kPostMethod, std::move(request),
+                 std::move(callback), std::move(retry_policy));
 }
 
 void CloudServiceClient::CancelPendingRequests() {
@@ -91,18 +458,60 @@ template <typename CallbackType>
 void CloudServiceClient::ExecuteRequest(
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     const std::string& path,
+    const std::string& api_key,
+    const std::string& method,
     std::unique_ptr<google::protobuf::MessageLite> request_message,
-    CallbackType callback) {
+    CallbackType callback,
+    scoped_refptr<const ProtobufHttpRequestConfig::RetryPolicy> retry_policy) {
   auto request_config =
       std::make_unique<ProtobufHttpRequestConfig>(traffic_annotation);
   request_config->path = path;
-  request_config->api_key = google_apis::GetRemotingAPIKey();
-  request_config->authenticated = false;
+  if (api_key.empty()) {
+    request_config->authenticated = true;
+  } else {
+    request_config->api_key = api_key;
+    request_config->authenticated = false;
+  }
+  request_config->method = method;
+  request_config->retry_policy = std::move(retry_policy);
   request_config->request_message = std::move(request_message);
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(std::move(callback));
   http_client_.ExecuteRequest(std::move(request));
+}
+
+// static
+std::unique_ptr<CloudServiceClient>
+CloudServiceClient::CreateForChromotingRobotAccount(
+    OAuthTokenGetter* oauth_token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      /*api_key=*/std::string(), oauth_token_getter,
+      ServiceUrls::GetInstance()->remoting_cloud_private_endpoint(),
+      url_loader_factory));
+}
+
+// static
+std::unique_ptr<CloudServiceClient> CloudServiceClient::CreateForGcpProject(
+    const std::string& api_key,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      api_key,
+      /*oauth_token_getter=*/nullptr,
+      ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+      url_loader_factory));
+}
+
+// static
+std::unique_ptr<CloudServiceClient>
+CloudServiceClient::CreateForGceDefaultServiceAccount(
+    OAuthTokenGetter* oauth_token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  return base::WrapUnique(new CloudServiceClient(
+      /*api_key=*/std::string(), oauth_token_getter,
+      ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+      url_loader_factory));
 }
 
 }  // namespace remoting

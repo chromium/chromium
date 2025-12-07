@@ -10,6 +10,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -21,7 +22,7 @@ namespace {
 const gfx::VectorIcon& GetCircleVectorIcon() {
   static constexpr gfx::PathElement path[] = {gfx::CommandType::CIRCLE, 24, 18,
                                               5};
-  static const gfx::VectorIconRep rep[] = {{path, 4}};
+  static const gfx::VectorIconRep rep[] = {{path}};
   static constexpr gfx::VectorIcon circle_icon = {rep, 1, "circle"};
 
   return circle_icon;
@@ -31,7 +32,7 @@ const gfx::VectorIcon& GetRectVectorIcon() {
   static constexpr gfx::PathElement path[] = {
       gfx::CommandType::LINE_TO, 0,  10, gfx::CommandType::LINE_TO, 10, 10,
       gfx::CommandType::LINE_TO, 10, 0,  gfx::CommandType::CLOSE};
-  static const gfx::VectorIconRep rep[] = {{path, 10}};
+  static const gfx::VectorIconRep rep[] = {{path}};
   static constexpr gfx::VectorIcon rect_icon = {rep, 1, "rect"};
 
   return rect_icon;

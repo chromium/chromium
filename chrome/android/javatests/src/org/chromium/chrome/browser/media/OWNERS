@@ -1,0 +1,4 @@
+file://components/browser_ui/media/OWNERS
+
+per-file PictureInPictureActivityTest.java=file://chrome/browser/picture_in_picture/OWNERS
+per-file PictureInPictureActivityBrowserTest.java=file://chrome/browser/picture_in_picture/OWNERS

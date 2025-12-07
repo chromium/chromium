@@ -45,17 +45,17 @@
     border: var(--cr-hairline);
   }
 
-  iron-icon {
+  cr-icon {
     --icon-size: 16px;
     height: var(--icon-size);
     width: var(--icon-size);
   }
 
-  sp-list-item-badge iron-icon {
+  sp-list-item-badge cr-icon {
     --icon-size: 12px;
   }
 
-  iron-icon[invisible] {
+  cr-icon[invisible] {
     visibility: hidden;
   }
 
@@ -76,7 +76,7 @@
     gap: 12px;
   }
 
-  .dialog-body > iron-icon {
+  .dialog-body > cr-icon {
     --icon-size: 20px;
   }
 
@@ -252,11 +252,13 @@
         back-button-title="$i18n{tooltipBack}"
         back-button-aria-label="[[getBackButtonLabel_(activeFolderPath_.*)]]"
         on-back-button-click="onBackClicked_"
-        hide-back-button="[[!activeFolderPath_.length]]"
+        hide-back-button="[[shouldHideBackButton_(activeFolderPath_.*)]]"
         disable-back-button="[[disableBackButton_(
             activeFolderPath_.*, editing_)]]">
-      <h1 slot="heading">[[getActiveFolderLabel_(activeFolderPath_.*)]]</h1>
-
+      <h1 slot="heading">
+        [[getActiveFolderLabel_(
+             bookmarksTreeViewEnabled_, compact_, activeFolderPath_.*)]]
+      </h1>
       <div aria-hidden="true" slot="metadata">
         [[getSortLabel_(activeSortIndex_)]]
       </div>
@@ -291,7 +293,7 @@
           aria-label="$i18n{createNewFolderA11yLabel}"
           on-click="onAddNewFolderClicked_">
         <div class="new-folder-icon-container">
-          <iron-icon icon="cr:add"></iron-icon>
+          <cr-icon icon="cr:add"></cr-icon>
         </div>
         $i18n{tooltipNewFolder}
       </button>
@@ -323,7 +325,7 @@
           aria-label="$i18n{createNewFolderA11yLabel}"
           on-click="onAddNewFolderClicked_">
         <div class="new-folder-icon-container">
-          <iron-icon icon="cr:add"></iron-icon>
+          <cr-icon icon="cr:add"></cr-icon>
         </div>
         $i18n{tooltipNewFolder}
       </button>
@@ -336,27 +338,35 @@
             </h1>
           </sp-heading>
           <iron-list id="shownBookmarksIronList[[index]]"
-              items="[[bookmarks]]" scroll-target="bookmarks">
+              items="[[bookmarks]]" scroll-target="bookmarks" role="tree">
             <template>
               <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-                  compact="[[compact_]]" trailing-icon="cr:more-vert"
+                  compact="[[compact_]]"
                   search-query="[[searchQuery_]]"
+                  updated-element-ids="[[updatedElementIds_]]"
                   trailing-icon-tooltip="$i18n{tooltipMore}"
                   has-checkbox="[[editing_]]"
+                  active-sort-index="[[activeSortIndex_]]"
+                  selected-bookmarks=
+                      "[[getSelectedBookmarksList_(selectedBookmarks_.*)]]"
                   renaming-id="[[renamingId_]]"
                   on-row-clicked="onRowClicked_"
                   on-context-menu="onShowContextMenuClicked_"
                   on-trailing-icon-clicked="onShowContextMenuClicked_"
                   on-checkbox-change="onRowSelectedChange_"
                   on-input-change="onRename_"
-                  on-power-bookmark-toggle="notifyBookmarksListResize_"
+                  on-list-item-size-changed="notifyBookmarksListResize_"
+                  on-power-bookmark-toggle="onRowToggled_"
                   tabindex$="[[tabIndex]]"
                   image-urls="[[imageUrls_]]"
                   shopping-collection-folder-id=
                       "[[shoppingCollectionFolderId_]]"
                   context-menu-bookmark="[[contextMenuBookmark_]]"
                   draggable="[[canDrag_]]"
-                  bookmarks-service="[[bookmarksService_]]">
+                  can-drag="[[canDrag_]]"
+                  has-active-drag="[[hasActiveDrag_]]"
+                  active-folder-path="[[activeFolderPath_]]"
+                  has-folders="[[hasFolders_]]">
               </power-bookmark-row>
             </template>
           </iron-list>
@@ -376,12 +386,13 @@
   <sp-footer id="footer"
       hidden="[[!sectionVisibility_.footer]]"
       pinned>
-    <cr-button class="floating-button"
+    <cr-button id="addCurrentTabButton"
+        class="floating-button"
         hidden="[[hideAddTabButton_(editing_)]]"
         on-click="onAddTabClicked_"
         disabled="[[!canAddCurrentUrl_(
-                    activeFolderPath_.*, currentUrl_, hasLoadedData_)]]">
-      <iron-icon slot="prefix-icon" icon="bookmarks:add-tab"></iron-icon>
+                    activeFolderPath_.*, currentUrl_, displayLists_)]]">
+      <cr-icon slot="prefix-icon" icon="bookmarks:add-tab"></cr-icon>
       $i18n{addCurrentTab}
     </cr-button>
 
@@ -413,9 +424,9 @@
 <cr-action-menu id="sortMenu">
   <template is="dom-repeat" items="[[sortTypes_]]">
     <button class="dropdown-item" on-click="onSortTypeClicked_">
-      <iron-icon icon="cr:check"
+      <cr-icon icon="cr:check"
           invisible$="[[!sortMenuItemIsSelected_(item, activeSortIndex_)]]">
-      </iron-icon>
+      </cr-icon>
       [[getSortMenuItemLowerLabel_(item)]]
     </button>
   </template>
@@ -427,7 +438,7 @@
 
 <cr-dialog id="disabledFeatureDialog">
   <div slot="body" class="dialog-body">
-    <iron-icon icon="cr:domain"></iron-icon>
+    <cr-icon icon="cr:domain"></cr-icon>
     <div>$i18n{disabledFeature}</div>
   </div>
   <div class="button-row" slot="button-container">

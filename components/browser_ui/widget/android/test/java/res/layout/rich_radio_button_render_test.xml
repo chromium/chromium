@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/test_rich_radio_button_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <org.chromium.components.browser_ui.widget.RichRadioButton
+        android:id="@+id/rich_rb_horizontal_full_unchecked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" />
+
+    <org.chromium.components.browser_ui.widget.RichRadioButton
+        android:id="@+id/rich_rb_horizontal_title_checked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" />
+
+    <org.chromium.components.browser_ui.widget.RichRadioButton
+        android:id="@+id/rich_rb_horizontal_minimal_unchecked"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp" />
+
+    <org.chromium.components.browser_ui.widget.RichRadioButton
+        android:id="@+id/rich_rb_vertical_full_unchecked"
+        android:layout_width="160dp"
+        android:layout_height="300dp"
+        android:layout_marginBottom="8dp"
+        android:layout_gravity="center_horizontal"/>
+
+</LinearLayout>

@@ -251,7 +251,7 @@ class PluginVmInstaller : public KeyedService,
   void CancelImport();
   // Callback for the concierge CancelDiskImageOperation call.
   void OnImportDiskImageCancelled(
-      std::optional<vm_tools::concierge::CancelDiskImageResponse> response);
+      std::optional<vm_tools::concierge::SuccessFailureResponse> response);
   // Called once cancel is completed, firing the OnCancelFinished() observer
   // event.
   void CancelFinished();

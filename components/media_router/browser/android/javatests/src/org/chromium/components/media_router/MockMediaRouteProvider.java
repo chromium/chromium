@@ -25,9 +25,8 @@ public class MockMediaRouteProvider implements MediaRouteProvider {
 
     private MediaRouteManager mManager;
 
-    private final Map<String, MediaRoute> mRoutes = new HashMap<String, MediaRoute>();
-    private final Map<String, MediaRoute> mPresentationIdToRoute =
-            new HashMap<String, MediaRoute>();
+    private final Map<String, MediaRoute> mRoutes = new HashMap<>();
+    private final Map<String, MediaRoute> mPresentationIdToRoute = new HashMap<>();
 
     private int mSinksObservedDelayMillis;
     private int mCreateRouteDelayMillis;
@@ -82,7 +81,7 @@ public class MockMediaRouteProvider implements MediaRouteProvider {
 
     @Override
     public void startObservingMediaSinks(final String sourceId) {
-        final ArrayList<MediaSink> sinks = new ArrayList<MediaSink>();
+        final ArrayList<MediaSink> sinks = new ArrayList<>();
         sinks.add(new MediaSink(SINK_ID1, SINK_NAME1, null));
         sinks.add(new MediaSink(SINK_ID2, SINK_NAME2, null));
         PostTask.postDelayedTask(
@@ -162,7 +161,7 @@ public class MockMediaRouteProvider implements MediaRouteProvider {
             return;
         }
         mRoutes.remove(routeId);
-        Map<String, MediaRoute> newPresentationIdToRoute = new HashMap<String, MediaRoute>();
+        Map<String, MediaRoute> newPresentationIdToRoute = new HashMap<>();
         for (Map.Entry<String, MediaRoute> entry : mPresentationIdToRoute.entrySet()) {
             if (!entry.getValue().id.equals(routeId)) {
                 newPresentationIdToRoute.put(entry.getKey(), entry.getValue());

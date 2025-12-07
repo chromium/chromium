@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/exo/surface.h"
@@ -92,8 +93,6 @@ class DataSource {
                               const std::vector<uint8_t>&)>;
   using ReadWebCustomDataCallback =
       base::OnceCallback<void(const std::string&, const std::vector<uint8_t>&)>;
-  void ReadDataTransferEndpoint(ReadTextDataCallback dte_reader,
-                                base::RepeatingClosure failure_callback);
   void GetDataForPreferredMimeTypes(
       ReadTextDataCallback text_reader,
       ReadDataCallback rtf_reader,
@@ -139,8 +138,6 @@ class DataSource {
                           const std::string& mime_type,
                           const std::vector<uint8_t>& data);
 
-  // This can be a dangling pointer with AutoclickBrowserTest.ClickAndDrag
-  // when run in browser_tests_require_lacros.
   const raw_ptr<DataSourceDelegate, DanglingUntriaged> delegate_;
   base::ObserverList<DataSourceObserver> observers_;
 

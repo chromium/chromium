@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.vr;
 import static org.chromium.chrome.browser.vr.WebXrArTestFramework.PAGE_LOAD_TIMEOUT_S;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
 
-import android.os.Build;
-
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -22,7 +20,6 @@ import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.vr.rules.ArPlaybackFile;
 import org.chromium.chrome.browser.vr.rules.XrActivityRestriction;
@@ -36,16 +33,14 @@ import java.util.concurrent.Callable;
 /** End-to-end tests for testing WebXR for AR's camera access behavior. */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-// TODO(crbug.com/40709670) Change this to Build.VERSION_CODES.N once N support is added.
-@MinAndroidSdkLevel(Build.VERSION_CODES.O)
 public class WebXrArCameraAccessTest {
     @ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             ArTestRuleUtils.generateDefaultTestRuleParameters();
 
     @Rule public RuleChain mRuleChain;
 
-    private ChromeActivityTestRule mTestRule;
+    private final ChromeActivityTestRule mTestRule;
     private WebXrArTestFramework mWebXrArTestFramework;
 
     public WebXrArCameraAccessTest(Callable<ChromeActivityTestRule> callable) throws Exception {

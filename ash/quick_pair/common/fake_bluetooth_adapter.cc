@@ -12,6 +12,8 @@ const std::vector<uint8_t>& kTestWriteResponse{0x01, 0x03, 0x02, 0x01, 0x02};
 
 namespace ash::quick_pair {
 
+FakeBluetoothAdapter::FakeBluetoothAdapter() = default;
+
 void FakeBluetoothAdapter::SetBluetoothIsPowered(bool powered) {
   is_bluetooth_powered_ = powered;
   device::BluetoothAdapter::NotifyAdapterPoweredChanged(powered);
@@ -52,6 +54,11 @@ void FakeBluetoothAdapter::NotifyConfirmPasskey(
     uint32_t passkey,
     device::BluetoothDevice* device) {
   pairing_delegate_->ConfirmPasskey(device, passkey);
+}
+
+void FakeBluetoothAdapter::NotifyDisplayPasskey(device::BluetoothDevice* device,
+                                                uint32_t passkey) {
+  pairing_delegate_->DisplayPasskey(device, passkey);
 }
 
 void FakeBluetoothAdapter::NotifyDevicePairedChanged(

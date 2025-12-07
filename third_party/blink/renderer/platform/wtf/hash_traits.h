@@ -31,12 +31,14 @@
 #include <utility>
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-namespace WTF {
+namespace blink {
 
 // A hash traits type is required for a type when the type is used as the key
 // or value of a HashTable-based classes. See documentation in
@@ -72,8 +74,6 @@ namespace WTF {
 //
 template <typename T>
 struct HashTraits;
-
-class String;
 
 namespace internal {
 
@@ -174,9 +174,9 @@ struct GenericHashTraitsBase {
   // The allocation pool for nodes is one big chunk that ASAN has no insight
   // into, so it can cloak errors. Make it as small as possible to force nodes
   // to be allocated individually where ASAN can see them.
-  static constexpr unsigned kMinimumTableSize = 1;
+  static constexpr wtf_size_t kMinimumTableSize = 1;
 #else
-  static constexpr unsigned kMinimumTableSize = 8;
+  static constexpr wtf_size_t kMinimumTableSize = 8;
 #endif
 
   // The NeedsToForbidGCOnMove flag is used to make the hash table move
@@ -195,16 +195,21 @@ struct GenericHashTraitsBase {
   // type for which HashTraits<T>::kCanTraceConcurrently is true can be traced
   // on a concurrent thread.
   static constexpr bool kCanTraceConcurrently = false;
+  // Used by Oilpan compaction. Only types that return true here will be
+  // compacted.
+  static constexpr bool kSupportsCompaction = false;
 };
 
 template <typename T, auto empty_value, auto deleted_value>
 struct IntOrEnumHashTraits : internal::GenericHashTraitsBase<T> {
   static_assert(std::is_integral_v<T> || std::is_enum_v<T>);
-  static unsigned GetHash(T key) { return WTF::HashInt(key); }
+  static unsigned GetHash(T key) { return blink::HashInt(key); }
   static constexpr bool kEmptyValueIsZero =
       static_cast<int64_t>(empty_value) == 0;
   static constexpr T EmptyValue() { return static_cast<T>(empty_value); }
   static constexpr T DeletedValue() { return static_cast<T>(deleted_value); }
+
+  static constexpr bool kSupportsCompaction = true;
 };
 
 }  // namespace internal
@@ -248,6 +253,8 @@ struct GenericHashTraits<T> : internal::GenericHashTraitsBase<T> {
   static constexpr T DeletedValue() {
     return -std::numeric_limits<T>::infinity();
   }
+
+  static constexpr bool kSupportsCompaction = true;
 };
 
 // Default integral traits disallow both 0 and max as keys -- use these traits
@@ -363,7 +370,7 @@ struct GenericHashTraits<std::unique_ptr<T>>
   static void ConstructDeletedValue(std::unique_ptr<T>& slot) {
     // Dirty trick: implant an invalid pointer to unique_ptr. Destructor isn't
     // called for deleted buckets, so this is okay.
-    new (NotNullTag::kNotNull, &slot)
+    new (base::NotNullTag::kNotNull, &slot)
         std::unique_ptr<T>(reinterpret_cast<T*>(1u));
   }
   static bool IsDeletedValue(const std::unique_ptr<T>& value) {
@@ -402,7 +409,7 @@ struct SimpleClassHashTraits : GenericHashTraits<T> {
     static constexpr bool value = false;
   };
   static void ConstructDeletedValue(T& slot) {
-    new (NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
+    new (base::NotNullTag::kNotNull, &slot) T(kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const T& value) {
     return value.IsHashTableDeletedValue();
@@ -415,41 +422,37 @@ struct HashTraits<String>;
 
 namespace internal {
 
-template <typename Traits, typename Enabled = void>
+template <typename Traits>
 struct HashTraitsEmptyValueChecker {
   static bool IsEmptyValue(const typename Traits::TraitType& value) {
     return value == Traits::EmptyValue();
   }
 };
 template <typename Traits>
-struct HashTraitsEmptyValueChecker<
-    Traits,
-    std::enable_if_t<
-        std::is_same_v<decltype(Traits::IsEmptyValue(
-                           std::declval<typename Traits::TraitType>())),
-                       bool>>> {
+  requires requires(const typename Traits::TraitType& t) {
+    { Traits::IsEmptyValue(t) } -> std::same_as<bool>;
+  }
+struct HashTraitsEmptyValueChecker<Traits> {
   static bool IsEmptyValue(const typename Traits::TraitType& value) {
     return Traits::IsEmptyValue(value);
   }
 };
 
-template <typename Traits, typename Enabled = void>
+template <typename Traits>
 struct HashTraitsDeletedValueHelper {
   static bool IsDeletedValue(const typename Traits::TraitType& value) {
     return value == Traits::DeletedValue();
   }
   static void ConstructDeletedValue(typename Traits::TraitType& slot) {
-    new (NotNullTag::kNotNull, &slot)
+    new (base::NotNullTag::kNotNull, &slot)
         typename Traits::TraitType(Traits::DeletedValue());
   }
 };
 template <typename Traits>
-struct HashTraitsDeletedValueHelper<
-    Traits,
-    std::enable_if_t<
-        std::is_same_v<decltype(Traits::IsDeletedValue(
-                           std::declval<typename Traits::TraitType>())),
-                       bool>>> {
+  requires requires(const typename Traits::TraitType& t) {
+    { Traits::IsDeletedValue(t) } -> std::same_as<bool>;
+  }
+struct HashTraitsDeletedValueHelper<Traits> {
   static bool IsDeletedValue(const typename Traits::TraitType& value) {
     return Traits::IsDeletedValue(value);
   }
@@ -517,7 +520,8 @@ struct OneFieldHashTraits : GenericHashTraits<T> {
     return IsHashTraitsDeletedValue<FieldTraits>(value.*field);
   }
 
-  static constexpr unsigned kMinimumTableSize = FieldTraits::kMinimumTableSize;
+  static constexpr wtf_size_t kMinimumTableSize =
+      FieldTraits::kMinimumTableSize;
 
   template <typename U = void>
   struct NeedsToForbidGCOnMove {
@@ -595,18 +599,6 @@ unsigned GetHash(const T& key) {
   return HashTraits<T>::GetHash(key);
 }
 
-}  // namespace WTF
-
-using WTF::AlreadyHashedTraits;
-using WTF::AlreadyHashedWithZeroKeyTraits;
-using WTF::EnumHashTraits;
-using WTF::GenericHashTraits;
-using WTF::HashTraits;
-using WTF::IntHashTraits;
-using WTF::IntWithZeroKeyHashTraits;
-using WTF::OneFieldHashTraits;
-using WTF::PairHashTraits;
-using WTF::SimpleClassHashTraits;
-using WTF::TwoFieldsHashTraits;
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_TRAITS_H_

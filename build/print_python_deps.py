@@ -24,16 +24,18 @@ def ComputePythonDependencies():
   """Gets the paths of imported non-system python modules.
 
   A path is assumed to be a "system" import if it is outside of chromium's
-  src/. The paths will be relative to the current directory.
+  src/.
+
+  Returns:
+    List of absolute paths.
   """
   module_paths = (m.__file__ for m in sys.modules.values()
-                  if m and hasattr(m, '__file__') and m.__file__)
+                  if m and hasattr(m, '__file__') and m.__file__
+                  and m.__name__ != '__main__')
 
   src_paths = set()
   for path in module_paths:
-    if path == __file__:
-      continue
-    path = os.path.abspath(path)
+    path = os.path.abspath(path)  # paths can be relative before python 3.9.
     if not path.startswith(_SRC_ROOT):
       continue
 
@@ -160,7 +162,7 @@ def main():
     # Output extra diagnostics when loading the script fails.
     sys.stderr.write('Error running print_python_deps.py.\n')
     sys.stderr.write('is_vpython={}\n'.format(is_vpython))
-    sys.stderr.write('did_relanuch={}\n'.format(options.did_relaunch))
+    sys.stderr.write('did_relaunch={}\n'.format(options.did_relaunch))
     sys.stderr.write('python={}\n'.format(sys.executable))
     raise
 

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/gpu/test/video_encoder/video_encoder.h"
 
@@ -177,6 +173,10 @@ void VideoEncoder::ForceKeyFrame() {
   encoder_client_->ForceKeyFrame();
 }
 
+bool VideoEncoder::IsFlushSupported() {
+  return encoder_client_->IsFlushSupported();
+}
+
 VideoEncoder::EncoderState VideoEncoder::GetState() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -263,6 +263,10 @@ bool VideoEncoder::WaitForBitstreamProcessors() {
 
 VideoEncoderStats VideoEncoder::GetStats() const {
   return !encoder_client_ ? VideoEncoderStats() : encoder_client_->GetStats();
+}
+
+bool VideoEncoder::IsHardwareAccelerated() {
+  return !encoder_client_ ? false : encoder_client_->IsHardwareAccelerated();
 }
 
 void VideoEncoder::ResetStats() {

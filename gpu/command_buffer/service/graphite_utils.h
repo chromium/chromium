@@ -14,25 +14,25 @@ struct SkImageInfo;
 class SkSurface;
 
 namespace skgpu::graphite {
-class Context;
 class Recorder;
 }  // namespace skgpu::graphite
 
 namespace gpu {
+class GraphiteSharedContext;
 
 GPU_GLES2_EXPORT
-void GraphiteFlush(skgpu::graphite::Context* context,
+void GraphiteFlush(GraphiteSharedContext* context,
                    skgpu::graphite::Recorder* recorder);
 
 GPU_GLES2_EXPORT
-void GraphiteFlushAndSubmit(skgpu::graphite::Context* context,
+void GraphiteFlushAndSubmit(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder);
 
 // Synchronously read pixels from a graphite image.
 // Note this is for single plane image.
 // TODO(crbug.com/40924444): Add a function to read multiplanar image.
 GPU_GLES2_EXPORT
-bool GraphiteReadPixelsSync(skgpu::graphite::Context* context,
+bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder,
                             SkImage* image,
                             const SkImageInfo& dst_info,
@@ -42,7 +42,7 @@ bool GraphiteReadPixelsSync(skgpu::graphite::Context* context,
                             int src_y);
 
 GPU_GLES2_EXPORT
-bool GraphiteReadPixelsSync(skgpu::graphite::Context* context,
+bool GraphiteReadPixelsSync(GraphiteSharedContext* context,
                             skgpu::graphite::Recorder* recorder,
                             SkSurface* surface,
                             const SkImageInfo& dst_info,

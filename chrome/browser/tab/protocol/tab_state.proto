@@ -1,0 +1,42 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+option optimize_for = LITE_RUNTIME;
+
+package tabs_pb;
+option java_package = "org.chromium.chrome.browser.tabs.proto";
+
+import "chrome/browser/tab/protocol/token.proto";
+
+// Next ID: 16
+message TabState {
+  optional int32 tab_id = 15;
+
+  optional int32 parent_id = 1;
+
+  optional int32 root_id = 2;
+
+  optional int64 timestamp_millis = 3;
+
+  optional bytes web_contents_state_bytes = 4;
+
+  optional int32 web_contents_state_version = 14;
+
+  optional string opener_app_id = 5;
+
+  optional int32 theme_color = 6;
+
+  optional int32 launch_type_at_creation = 7;
+
+  optional int32 user_agent = 8;
+
+  optional int64 last_navigation_committed_timestamp_millis = 9;
+
+  optional Token tab_group_id = 10;
+
+  optional bool tab_has_sensitive_content = 12;
+
+  optional bool is_pinned = 13;
+}

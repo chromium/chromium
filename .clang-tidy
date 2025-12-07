@@ -1,6 +1,4 @@
 ---
-  # TODO(crbug.com/1282228): reenable google-readability-casting once it no
-  # longer has as many false-positives.
   Checks:          '-*,
                     bugprone-argument-comment,
                     bugprone-assert-side-effect,
@@ -8,8 +6,12 @@
                     bugprone-dangling-handle,
                     bugprone-forward-declaration-namespace,
                     bugprone-inaccurate-erase,
+                    bugprone-redundant-branch-condition,
                     bugprone-string-constructor,
                     bugprone-string-integer-assignment,
+                    bugprone-suspicious-memset-usage,
+                    bugprone-suspicious-realloc-usage,
+                    bugprone-terminating-continue,
                     bugprone-undefined-memory-manipulation,
                     bugprone-unique-ptr-array-mismatch,
                     bugprone-unused-raii,
@@ -19,6 +21,7 @@
                     google-default-arguments,
                     google-explicit-constructor,
                     google-objc-avoid-nsobject-new,
+                    google-readability-casting,
                     google-upgrade-googletest-case,
                     misc-misleading-identifier,
                     misc-homoglyph,
@@ -40,6 +43,25 @@
                     modernize-use-override,
                     modernize-use-transparent-functors,
                     readability-redundant-member-init'
+  # DISABLED CHECKS:
+  # An analysis was done of the following checks and they were deemed to either
+  # have too high of a false positive rate, or were redundant/useless (e.g.
+  # never fired once in the entirety of chromium). We list them here so that
+  # future editors of this file are aware these checks have already been
+  # considered and accordingly rejected.
+  #                 bugprone-undelegated-constructor
+  #                 bugprone-macro-repeated-side-effects
+  #                 bugprone-misplaced-operator-in-strlen-in-alloc
+  #                 bugprone-misplaced-pointer-arithmetic-in-alloc
+  #                 bugprone-multiple-statement-macro
+  #                 bugprone-no-escape
+  #                 bugprone-posix-return
+  #                 bugprone-shared-ptr-array-mismatch
+  #                 bugprone-spuriously-wake-up-functions
+  #                 bugprone-standalone-empty
+  #                 bugprone-stringview-nullptr
+  #                 bugprone-suspicious-enum-usage
+  #                 bugprone-unhandled-exception-at-new
   CheckOptions:
     - key:          bugprone-assert-side-effect.AssertMacros
       value:        assert,DCHECK
@@ -71,4 +93,9 @@
     # https://clang.llvm.org/extra/clang-tidy/checks/misc/include-cleaner.html
     - key: misc-include-cleaner.IgnoreHeaders
       value:        (gmock/gmock|gtest/gtest|third_party|build/linux/debian).*
+
+  ExtraArgs:
+    # b/382774818: disable unknown pragma warnings until we can figure out why
+    # unknown pragmas are being warned about.
+    - -Wno-unknown-pragmas
 ...

@@ -1,2 +1,5 @@
-gangwu@chromium.org
 twellington@chromium.org
+
+per-file BottomAttachedUiObserver.java=clhager@google.com
+per-file TabbedNavigationBarColorController.java=clhager@google.com
+per-file TabbedAdaptiveToolbarBehavior.java=jinsukkim@chromium.org

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/AppMenuItem"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:contentDescription="@string/submenu_header_back">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/menu_item_icon"
+        android:src="@drawable/ic_arrow_back_24dp"
+        android:layout_width="?attr/listItemIconSize"
+        android:layout_height="?attr/listItemIconSize"
+        android:gravity="center_vertical"
+        android:tint="@color/default_icon_color_secondary_tint_list"
+        android:tintMode="src_in"
+        android:duplicateParentState="true"
+        android:importantForAccessibility="no" />
+
+    <TextView
+        android:id="@+id/menu_item_text"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:paddingStart="@dimen/menu_item_text_padding_start"
+        android:minHeight="?attr/listItemHeight"
+        android:duplicateParentState="true"
+        style="@style/TextAppearance.DensityAdaptive.ListMenuItem.Bold" />
+
+</LinearLayout>

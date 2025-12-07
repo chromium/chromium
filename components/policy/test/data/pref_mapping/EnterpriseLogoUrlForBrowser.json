@@ -1,0 +1,45 @@
+[
+    {
+      "os": [
+        "win",
+        "linux",
+        "mac"
+      ],
+      "policy_pref_mapping_tests": [
+        {
+          "policies": {
+            "EnterpriseLogoUrlForBrowser": "http://www.example.com"
+          },
+          "policies_settings": {
+            "EnterpriseLogoUrlForBrowser": {
+              "scope": "machine",
+              "source": "cloud"
+            }
+          },
+          "prefs": {
+            "enterprise_logo.url.for_browser": {
+              "location": "local_state",
+              "value": "http://www.example.com"
+            }
+          }
+        },
+        {
+          "policies": {
+            "EnterpriseLogoUrlForBrowser": "invalid_url"
+          },
+          "policies_settings": {
+            "EnterpriseLogoUrlForBrowser": {
+              "scope": "machine",
+              "source": "cloud"
+            }
+          },
+          "prefs": {
+            "enterprise_logo.url.for_browser": {
+              "location": "local_state",
+              "default_value": ""
+            }
+          }
+        }
+      ]
+    }
+  ]

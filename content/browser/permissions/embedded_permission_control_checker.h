@@ -30,6 +30,14 @@ namespace content {
 class CONTENT_EXPORT EmbeddedPermissionControlChecker
     : public content::PageUserData<EmbeddedPermissionControlChecker> {
  public:
+  // Represents the source of embedded permission control.
+  enum class Source {
+    // The request is from a <permission> element.
+    kPermissionElement,
+    // The request is from a <geolocation> element.
+    kGeolocationElement,
+  };
+
   using RegisterPageEmbeddedPermissionCallback = base::OnceCallback<void(
       bool,
       const mojo::Remote<blink::mojom::EmbeddedPermissionControlClient>&)>;
@@ -47,6 +55,7 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
   // allowed to proceed. If this check returns false, the corresponding
   // permission element will not be rendered.
   void CheckPageEmbeddedPermission(
+      Source source,
       std::set<blink::mojom::PermissionName> permissions,
       mojo::PendingRemote<blink::mojom::EmbeddedPermissionControlClient>
           pending_client,
@@ -61,6 +70,7 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
   class Client {
    public:
     Client(EmbeddedPermissionControlChecker* checker,
+           Source source,
            std::set<blink::mojom::PermissionName> permissions,
            mojo::PendingRemote<blink::mojom::EmbeddedPermissionControlClient>
                client,
@@ -75,6 +85,8 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
       return permissions_;
     }
 
+    Source source() const { return source_; }
+
     // Notify the remote client of whether or not the embedded permission
     // registration is allowed. Ignore if we are notifying multiple times.
     void OnEmbeddedPermissionControlRegistered(bool allow);
@@ -83,6 +95,7 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
     // This client is owned by `EmbeddedPermissionControlChecker`, it is safe to
     // use raw_ptr here.
     const raw_ptr<EmbeddedPermissionControlChecker> checker_;
+    Source source_;
     std::set<blink::mojom::PermissionName> permissions_;
     mojo::Remote<blink::mojom::EmbeddedPermissionControlClient> client_;
     RegisterPageEmbeddedPermissionCallback callback_;
@@ -95,7 +108,18 @@ class CONTENT_EXPORT EmbeddedPermissionControlChecker
 
   // Records PEPCs per type are associated with this page. At most
   // |kMaxPEPCPerPage| of each type is allowed.
-  using ClientKey = std::set<blink::mojom::PermissionName>;
+  struct ClientKey {
+    ClientKey(Source source,
+              std::set<blink::mojom::PermissionName> permissions);
+    ClientKey(const ClientKey& other);
+    ClientKey(ClientKey&& other);
+    ~ClientKey();
+
+    bool operator<(const ClientKey& other) const;
+
+    Source source;
+    std::set<blink::mojom::PermissionName> permissions;
+  };
   std::map<ClientKey, base::circular_deque<std::unique_ptr<Client>>>
       client_map_;
 };

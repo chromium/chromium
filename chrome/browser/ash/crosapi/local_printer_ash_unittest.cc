@@ -33,7 +33,6 @@
 #include "chrome/browser/ash/printing/oauth2/status_code.h"
 #include "chrome/browser/printing/local_printer_utils_chromeos.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chrome/test/base/testing_profile.h"
@@ -328,7 +327,7 @@ class LocalPrinterAshTestBase : public testing::Test {
       service_manager_client_id_ =
           PrintBackendServiceManager::GetInstance().RegisterQueryClient();
 #else
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_OOP_PRINTING)
     } else {
       // Use of task runners will call `PrintBackend::CreateInstance()`, which
@@ -352,13 +351,11 @@ class LocalPrinterAshTestBase : public testing::Test {
   void AddPrinter(const std::string& id,
                   const std::string& display_name,
                   const std::string& description,
-                  bool is_default,
                   bool requires_elevated_permissions) {
     auto caps = std::make_unique<PrinterSemanticCapsAndDefaults>();
     caps->papers = kPapers;
     auto basic_info = std::make_unique<PrinterBasicInfo>(
-        id, display_name, description, /*printer_status=*/0, is_default,
-        PrinterBasicInfoOptions{});
+        id, display_name, description, PrinterBasicInfoOptions{});
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     if (SupportFallback()) {
@@ -379,6 +376,7 @@ class LocalPrinterAshTestBase : public testing::Test {
       sandboxed_print_backend()->AddValidPrinter(id, std::move(caps),
                                                  std::move(basic_info));
     }
+    sandboxed_print_backend()->SetDefaultPrinterName(id);
   }
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -450,11 +448,6 @@ class LocalPrinterAshTest : public LocalPrinterAshTestBase {
 
   bool UseService() override { return false; }
   bool SupportFallback() override { return false; }
-
-  std::vector<base::test::FeatureRefAndParams> FeaturesToEnable() override {
-    return {base::test::FeatureRefAndParams(::features::kLocalPrinterObserving,
-                                            {})};
-  }
 };
 
 // Testing class to cover `LocalPrinterAsh` handling using either a
@@ -583,10 +576,8 @@ TEST_F(LocalPrinterAshTest, GetCapabilityForNonInstalledPrinters) {
 
   // Add printer capabilities to `test_backend_`.
   AddPrinter(autoconf_printer_id, "discovered", "description1",
-             /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
   AddPrinter(non_autoconf_printer_id, "discovered", "description2",
-             /*is_default=*/true,
              /*requires_elevated_permissions=*/false);
 
   // Try to fetch capabilities for both printers but only the autoconf printer
@@ -615,7 +606,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityValidPrinter) {
   printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/false);
 
   crosapi::mojom::CapabilitiesResponsePtr fetched_caps;
@@ -647,7 +638,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityPrinterNotInstalled) {
   printers_manager().AddPrinter(discovered_printer, PrinterClass::kDiscovered);
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "discovered", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "discovered", "description1",
              /*requires_elevated_permissions=*/false);
 
   crosapi::mojom::CapabilitiesResponsePtr fetched_caps;
@@ -714,7 +705,7 @@ TEST_F(LocalPrinterAshServiceTest, GetCapabilityTerminatedService) {
   printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/false);
 
   // Set up for service to terminate on next use.
@@ -745,7 +736,7 @@ TEST_P(LocalPrinterAshProcessScopeTest, GetCapabilityAccessDenied) {
   printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/true);
 
   crosapi::mojom::CapabilitiesResponsePtr fetched_caps;
@@ -769,7 +760,7 @@ TEST_F(LocalPrinterAshServiceTest, GetCapabilityElevatedPermissionsSucceeds) {
   printers_manager().MarkInstalled(saved_printer.id());
 
   // Add printer capabilities to `test_backend_`.
-  AddPrinter("printer1", "saved", "description1", /*is_default=*/true,
+  AddPrinter("printer1", "saved", "description1",
              /*requires_elevated_permissions=*/true);
 
   // Note that printer does not initially show as requiring elevated privileges.
@@ -1104,13 +1095,21 @@ TEST(LocalPrinterAsh, ConfigToMojom) {
 }
 
 TEST(LocalPrinterAsh, PrinterToMojom) {
-  Printer printer("id");
-  printer.set_display_name("name");
-  printer.set_description("description");
+  // Status
   chromeos::CupsPrinterStatus status("id");
   status.AddStatusReason(crosapi::mojom::StatusReason::Reason::kOutOfInk,
                          crosapi::mojom::StatusReason::Severity::kWarning);
+  // Managed print options
+  chromeos::Printer::ManagedPrintOptions print_options;
+  chromeos::Printer::PrintOption<bool> color_option;
+  color_option.default_value = true;
+  color_option.allowed_values = std::vector<bool>{false, true};
+
+  Printer printer("id");
+  printer.set_display_name("name");
+  printer.set_description("description");
   printer.set_printer_status(status);
+  printer.set_print_job_options(print_options);
   crosapi::mojom::LocalDestinationInfoPtr mojom =
       printing::PrinterToMojom(printer);
   ASSERT_TRUE(mojom);
@@ -1118,8 +1117,9 @@ TEST(LocalPrinterAsh, PrinterToMojom) {
   EXPECT_EQ("name", mojom->name);
   EXPECT_EQ("description", mojom->description);
   EXPECT_FALSE(mojom->configured_via_policy);
-
   EXPECT_EQ(printing::StatusToMojom(status), mojom->printer_status);
+  EXPECT_EQ(printing::ManagedPrintOptionsToMojom(print_options),
+            mojom->managed_print_options);
 }
 
 TEST(LocalPrinterAsh, PrinterToMojom_ConfiguredViaPolicy) {

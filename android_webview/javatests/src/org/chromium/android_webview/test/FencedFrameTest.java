@@ -92,9 +92,7 @@ public class FencedFrameTest extends AwParameterizedTest {
         return mWebServer.setResponse(mainPath, mainResponseStr, null);
     }
 
-    /**
-     * Test that a java object is mirrored in a fenced frame.
-     **/
+    /** Test that a java object is mirrored in a fenced frame. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
@@ -140,7 +138,7 @@ public class FencedFrameTest extends AwParameterizedTest {
 
         class TestObserver {
             private String mValue = "UNSET";
-            private CallbackHelper mCallbackHelper = new CallbackHelper();
+            private final CallbackHelper mCallbackHelper = new CallbackHelper();
 
             @JavascriptInterface
             public String getValue() {
@@ -218,9 +216,7 @@ public class FencedFrameTest extends AwParameterizedTest {
                 });
     }
 
-    /**
-     * Test that a fenced frame is rastered correctly.
-     **/
+    /** Test that a fenced frame is rastered correctly. */
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})

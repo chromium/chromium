@@ -1,0 +1,7 @@
+[document web]
+++[push button] name='Actions' controller-for=[menu] label-for=[menu]
+++[menu] name='Actions' controlled-by=[push button] labelled-by=[push button]
+++++[menu item] name='New'
+++++[menu item] name='Open'
+++++[menu item] name='Save'
+++++[menu item] name='Quit'

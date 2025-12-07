@@ -10,6 +10,7 @@
   #id1 {
     font-size: 10px;
     height: 30px;
+    border: 0px;
     /* Used to determine the "fit-content" width value which is used
        to set the width to 3 * fit-content.
     */
@@ -18,12 +19,13 @@
   #id2 {
     font-size: 10px;
     height: 10px;
+    border: 0px;
     width: fit-content;
   }
 </style>
 
-<div><permission id="id1" type="geolocation"></div>
-<div><permission id="id2" type="camera"></div>
+<div><permission id="id1" type="geolocation"></permission></div>
+<div><permission id="id2" type="camera"></permission></div>
 <script>
   el = document.getElementById("id1");
   let w = getComputedStyle(el).width;

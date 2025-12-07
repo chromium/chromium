@@ -13,6 +13,5 @@ include_rules = [
   "+chrome/browser/ash/login/quick_unlock",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles",
 ]

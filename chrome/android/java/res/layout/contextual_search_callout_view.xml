@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/contextual_search_callout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="end|center_vertical"
+    android:visibility="invisible">
+    <ImageView
+        android:id="@+id/contextual_search_callout_image"
+        android:layout_width="@dimen/contextual_search_callout_icon_size"
+        android:layout_height="@dimen/contextual_search_callout_icon_size"
+        android:layout_marginStart="@dimen/contextual_search_callout_icon_margin"
+        android:layout_marginEnd="@dimen/contextual_search_callout_icon_margin"
+        android:scaleType="center"
+        android:src="@drawable/ic_logo_googleg_24dp"
+        android:importantForAccessibility="no"/>
+</LinearLayout>

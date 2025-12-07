@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListItemView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingVertical="@dimen/ntp_customization_theme_list_item_padding_vertical"
+    android:gravity="center_vertical"
+    android:focusable="true"
+    android:orientation="horizontal">
+
+  <com.google.android.material.imageview.ShapeableImageView
+      android:id="@+id/leading_icon"
+      android:layout_width="@dimen/ntp_customization_theme_collections_list_item_leading_icon_size"
+      android:layout_height="@dimen/ntp_customization_theme_collections_list_item_leading_icon_size"
+      android:scaleType="centerCrop"
+      android:importantForAccessibility="no"
+      android:src="@drawable/chrome_colors_icon_for_theme_bottom_sheet"
+      app:shapeAppearanceOverlay="@style/RoundedImageCornerOverlay" />
+
+  <TextView
+      android:id="@+id/title"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginHorizontal="@dimen/ntp_customization_edit_icon_margin"
+      android:layout_marginVertical="@dimen/ntp_customization_theme_list_item_title_margin_vertical"
+      android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+      android:text="@string/ntp_customization_theme_bottom_sheet_default_option"/>
+
+  <ImageView
+      android:id="@+id/trailing_icon"
+      android:layout_width="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
+      android:layout_height="@dimen/ntp_customization_bottom_sheet_list_item_icon_size"
+      android:importantForAccessibility="no"
+      app:tint="@color/default_icon_color_tint_list"
+      android:src="@drawable/ic_check_googblue_24dp"
+      android:visibility="invisible"/>
+
+</org.chromium.chrome.browser.ntp_customization.theme.NtpThemeListItemView>

@@ -12,7 +12,7 @@ namespace blink {
 namespace {
 
 bool PathContainsDisallowedCharacter(const GURL& url) {
-  std::string path = url.path();
+  std::string path = url.GetPath();
   DCHECK(base::IsStringUTF8(path));
 
   // We should avoid these escaped characters in the path component because
@@ -46,8 +46,7 @@ bool ServiceWorkerScopeOrScriptUrlContainsDisallowedCharacter(
 
 bool ServiceWorkerScopeMatches(const GURL& scope, const GURL& url) {
   DCHECK(!scope.has_ref());
-  return base::StartsWith(url.spec(), scope.spec(),
-                          base::CompareCase::SENSITIVE);
+  return url.spec().starts_with(scope.spec());
 }
 
 ServiceWorkerLongestScopeMatcher::ServiceWorkerLongestScopeMatcher(

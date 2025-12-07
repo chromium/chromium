@@ -13,6 +13,10 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/user_metrics.h"
 
+#if defined(TOOLKIT_VIEWS)
+#include "ui/views/widget/any_widget_observer.h"
+#endif  // TOOLKIT_VIEWS
+
 namespace base {
 class TimeTicks;
 }  // namespace base
@@ -23,14 +27,14 @@ class BreadcrumbPersistentStorageManager;
 
 // Listens for and logs application-wide breadcrumb events to the
 // BreadcrumbManager.
-class ApplicationBreadcrumbsLogger {
+class ApplicationBreadcrumbsLogger : public base::MemoryPressureListener {
  public:
   // Breadcrumbs will be stored in a file in |storage_dir|.
   explicit ApplicationBreadcrumbsLogger(
       const base::FilePath& storage_dir,
       base::RepeatingCallback<bool()> is_metrics_enabled_callback);
   ApplicationBreadcrumbsLogger(const ApplicationBreadcrumbsLogger&) = delete;
-  ~ApplicationBreadcrumbsLogger();
+  ~ApplicationBreadcrumbsLogger() override;
 
   // Returns a pointer to the BreadcrumbPersistentStorageManager owned by this
   // instance. May be null.
@@ -45,7 +49,12 @@ class ApplicationBreadcrumbsLogger {
   // Callback which processes and logs memory pressure warnings to the
   // BreadcrumbManager.
   void OnMemoryPressure(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level) override;
+
+#if defined(TOOLKIT_VIEWS)
+  // Callback invoked when a widget is closed.
+  void OnWidgetClosed(views::Widget* widget);
+#endif  // TOOLKIT_VIEWS
 
   // Returns true if |action| (UMA User Action) is user triggered.
   static bool IsUserTriggeredAction(const std::string& action);
@@ -53,7 +62,12 @@ class ApplicationBreadcrumbsLogger {
   // The callback invoked whenever a user action is registered.
   base::ActionCallback user_action_callback_;
   // A memory pressure listener which observes memory pressure events.
-  std::unique_ptr<base::MemoryPressureListener> memory_pressure_listener_;
+  base::MemoryPressureListenerRegistration
+      memory_pressure_listener_registration_;
+#if defined(TOOLKIT_VIEWS)
+  // Widget listener which observes widget events.
+  views::AnyWidgetObserver any_widget_observer_;
+#endif  // TOOLKIT_VIEWS
 
   // A strong pointer to the persistent breadcrumb manager listening for events
   // from the BreadcrumbManager to store to disk.

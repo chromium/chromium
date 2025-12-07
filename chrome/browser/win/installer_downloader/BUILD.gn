@@ -1,0 +1,149 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+assert(is_win, "The installer downloader is for windows only")
+assert(is_chrome_branded, "The installer downloader is for chrome branded only")
+
+source_set("prefs") {
+  public = [ "installer_downloader_pref_names.h" ]
+}
+
+source_set("controller") {
+  friend = [ ":unit_tests" ]
+
+  public = [
+    "installer_downloader_controller.h",
+    "installer_downloader_feature.h",
+  ]
+
+  sources = [
+    "installer_downloader_controller.cc",
+    "installer_downloader_feature.cc",
+    "installer_downloader_model_impl.cc",
+    "installer_downloader_model_impl.h",
+    "system_info_provider_impl.cc",
+    "system_info_provider_impl.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    ":infobar",
+    ":prefs",
+    "//base/version_info",
+    "//chrome//browser:global_features",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/browser/profiles/keep_alive",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/win:cloud_synced_folder_checker",
+    "//chrome/common:channel_info",
+    "//components/application_locale_storage",
+    "//components/download/public/common:public",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/prefs",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+}
+
+source_set("infobar") {
+  friend = [
+    ":infobar_impl",
+    ":controller",
+  ]
+
+  public = [ "installer_downloader_infobar_delegate.h" ]
+
+  sources = [
+    "installer_downloader_active_browser_window_tracker.h",
+    "installer_downloader_infobar_window_active_tab_tracker.h",
+  ]
+
+  public_deps = [ "//base" ]
+
+  deps = [
+    "//chrome/browser/ui:browser_list",
+    "//components/infobars/core",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+}
+
+source_set("infobar_impl") {
+  sources = [
+    "installer_downloader_active_browser_window_tracker.cc",
+    "installer_downloader_infobar_delegate.cc",
+    "installer_downloader_infobar_window_active_tab_tracker.cc",
+  ]
+
+  deps = [
+    ":controller",
+    ":infobar",
+    "//chrome/app:branded_strings_grit",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/views/infobars",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/omnibox/browser:vector_icons",
+    "//components/vector_icons",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "installer_downloader_controller_unittest.cc",
+    "installer_downloader_infobar_delegate_unittest.cc",
+    "installer_downloader_model_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":controller",
+    ":infobar",
+    ":prefs",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ui/views/infobars",
+    "//chrome/browser/win:cloud_synced_folder_checker",
+    "//chrome/test:test_support",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/vector_icons",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "installer_downloader_interactive_uitest.cc" ]
+
+  deps = [
+    ":controller",
+    ":prefs",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui/views/infobars",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}

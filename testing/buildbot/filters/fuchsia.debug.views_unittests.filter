@@ -1,4 +1,6 @@
 # https://crbug.com/1241502
+-AllMenuLocations/MenuRunnerFalseTriggerTest.DetectsRightClickAndDragFalseTrigger/0
+-AllMenuLocations/MenuRunnerFalseTriggerTest.DetectsRightClickAndDragFalseTrigger/1
 -All/TableViewTest.TableHeaderColumnAccessibleViewsFocusable/0
 -All/TableViewTest.TableHeaderColumnAccessibleViewsFocusable/1
 -All/TableViewTest.TableHeaderColumnAccessibleViewsFocusable/2

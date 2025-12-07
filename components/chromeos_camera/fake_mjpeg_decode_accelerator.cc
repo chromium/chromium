@@ -6,10 +6,12 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/notimplemented.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/video_frame.h"
@@ -97,7 +99,7 @@ void FakeMjpegDecodeAccelerator::DecodeOnDecoderThread(
   // Instead, just fill the output buffer with zeros.
   size_t allocation_size = media::VideoFrame::AllocationSize(
       media::PIXEL_FORMAT_I420, video_frame->coded_size());
-  memset(video_frame->writable_data(0), 0, allocation_size);
+  UNSAFE_TODO(memset(video_frame->writable_data(0), 0, allocation_size));
 
   client_task_runner_->PostTask(
       FROM_HERE,

@@ -8,7 +8,7 @@
 promise_test(async () => {
     if (window.eventSender) {
         searchInput.value = "some text";
-        const cancelY = searchInput.offsetTop + searchInput.offsetHeight - 6;
+        const cancelY = searchInput.offsetTop + searchInput.offsetHeight - 9;
         const cancelX = searchInput.offsetLeft + searchInput.offsetWidth / 2;
         await new Promise((resolve, reject) => {
             chrome.gpuBenchmarking.pointerActionSequence([{

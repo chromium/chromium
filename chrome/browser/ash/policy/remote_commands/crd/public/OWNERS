@@ -1,0 +1,2 @@
+# For remoting::ErrorCode changes.
+per-file crd_session_result_codes.*=file://remoting/OWNERS

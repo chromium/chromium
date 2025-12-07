@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Fitxak leheneratzeko sinkronizatutako gailuak ukituz alda daitezke. Nabigatu ukipen bidez oraingo gailuan hautatutako fitxak berrikusteko edo leheneratzeko. Teklatua ezkutatuta dago.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Ireki <ph name="TABS_COUNT_ONE" /> fitxa}other{Ireki <ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="4509609396389120020">Berreskuratu beste gailu batzuetako fitxak</translation>
+<translation id="4619615317237390068">Beste gailu batzuetako fitxak</translation>
 <translation id="4811934403802581334">Hautatutako fitxa guztiak leheneratuko dira orain hautatuta dagoen gailutik.</translation>
 <translation id="5336031759968328813">Berrikusi fitxa guztiak</translation>
 <translation id="5494920125229734069">Hautatu guztiak</translation>

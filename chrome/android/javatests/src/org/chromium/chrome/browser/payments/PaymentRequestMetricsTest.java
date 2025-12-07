@@ -62,7 +62,6 @@ public class PaymentRequestMetricsTest {
                         "",
                         "https://example.test",
                         true,
-                        true,
                         "Jon Doe",
                         "4111111111111111",
                         "1111",
@@ -87,7 +86,7 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         // Initiate a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
 
         // Click the pay button.
@@ -123,7 +122,7 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
 
         // Cancel the Payment Request.
@@ -133,7 +132,7 @@ public class PaymentRequestMetricsTest {
                         () -> {
                             // Click "Edit" to expand the UI.
                             mPaymentRequestTestRule
-                                    .getPaymentRequestUI()
+                                    .getPaymentRequestUi()
                                     .getDialogForTest()
                                     .findViewById(R.id.button_secondary)
                                     .performClick();
@@ -141,7 +140,7 @@ public class PaymentRequestMetricsTest {
                                             () ->
                                                     // Click "Cancel" to dismiss the UI.
                                                     mPaymentRequestTestRule
-                                                            .getPaymentRequestUI()
+                                                            .getPaymentRequestUi()
                                                             .getDialogForTest()
                                                             .findViewById(R.id.button_secondary)
                                                             .performClick())
@@ -179,7 +178,7 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
 
         // Press the [X] button.
@@ -215,7 +214,7 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
 
         // Press the back button.
@@ -223,7 +222,7 @@ public class PaymentRequestMetricsTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mPaymentRequestTestRule
-                                .getPaymentRequestUI()
+                                .getPaymentRequestUi()
                                 .getDialogForTest()
                                 .onBackPressed());
         mPaymentRequestTestRule.getDismissed().waitForCallback(callCount);
@@ -257,7 +256,7 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
 
         ChromeTabUtils.closeCurrentTab(
@@ -291,7 +290,7 @@ public class PaymentRequestMetricsTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://kylepay.test/webpay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyWithUrlMethods", mPaymentRequestTestRule.getReadyToPay());
 
         // Simulate an abort by the merchant.
@@ -350,7 +349,7 @@ public class PaymentRequestMetricsTest {
         // Complete a Payment Request with Android Pay.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://android.com/pay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "androidPayBuy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
@@ -381,7 +380,7 @@ public class PaymentRequestMetricsTest {
         // Complete a Payment Request with Android Pay.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://android.com/pay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "androidPaySkipUiBuy", mPaymentRequestTestRule.getResultReady());
 
         // Make sure the events were logged correctly.
@@ -412,7 +411,7 @@ public class PaymentRequestMetricsTest {
         // Complete a Payment Request with Android Pay.
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://android.com/pay", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "androidPaySkipUiBuy", mPaymentRequestTestRule.getReadyToPay());
 
         // Close the payment Request.
@@ -448,7 +447,7 @@ public class PaymentRequestMetricsTest {
                             + "Efforts are needed to fix the test or the implementation code.")
     public void testShownLoggedOnlyOnce() throws TimeoutException {
         // Initiate a payment request.
-        mPaymentRequestTestRule.triggerUIAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("ccBuy", mPaymentRequestTestRule.getReadyToPay());
 
         // Add a shipping address, which triggers a second "Show".
         mPaymentRequestTestRule.clickInShippingAddressAndWait(

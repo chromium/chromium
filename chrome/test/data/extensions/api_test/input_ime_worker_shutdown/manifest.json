@@ -1,0 +1,16 @@
+{
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC9fDu8apG3Dz72XTT3Ym1SfGt06tdowTlYQ+3lGlCbVpfnMOmewgRgYxzUtUPso9aQERZcmI2+7UtbWjtk6/usl9Hr7a1JBQwfaUoUygEe56ajUeZhe/ErkH5CXT84U0pokfPr5vMvc7RVPduU+UBiF0DnGb/hSpzz/1UhJ5H9AwIDAQAB",
+  "name": "input.ime wakes worker after shutdown",
+  "version": "0.1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [ "input", "inputMethodPrivate" ],
+  "input_components": [{
+    "name": "Test IME",
+    "id": "test",
+    "language": "en",  // The primary language this IME is used for
+    "layouts": ["us::eng"]
+  }]
+}

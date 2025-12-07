@@ -33,7 +33,7 @@ constexpr TimeDelta kWaitForActionTimeout = Seconds(10);
 // Constant for timeout while waiting for clear browsing data. It seems this
 // can take a very long time on the bots when running simulators in parallel.
 // TODO(crbug.com/41475878): Investigate why this is sometimes very slow.
-constexpr TimeDelta kWaitForClearBrowsingDataTimeout = Seconds(45);
+constexpr TimeDelta kWaitForClearBrowsingDataTimeout = Seconds(60);
 
 // Constant for timeout while waiting for cookies operations to complete.
 constexpr TimeDelta kWaitForCookiesTimeout = Seconds(4);

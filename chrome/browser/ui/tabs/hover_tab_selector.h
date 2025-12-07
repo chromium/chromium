@@ -43,4 +43,3 @@ class HoverTabSelector {
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_HOVER_TAB_SELECTOR_H_
-

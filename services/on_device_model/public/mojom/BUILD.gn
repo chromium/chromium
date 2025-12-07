@@ -12,15 +12,33 @@ mojom("mojom") {
   public_deps = [
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//skia/public/mojom",
   ]
   webui_module_path = "/"
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+  generate_legacy_js_bindings = true
+  generate_java = true
 
   cpp_typemaps = [
     {
       types = [
         {
+          mojom = "on_device_model.mojom.Capabilities"
+          cpp = "::on_device_model::Capabilities"
+        },
+        {
           mojom = "on_device_model.mojom.ModelAssets"
           cpp = "::on_device_model::ModelAssets"
+          default_constructible = false
+          move_only = true
+        },
+        {
+          mojom = "on_device_model.mojom.ModelFile"
+          cpp = "::on_device_model::ModelFile"
+          default_constructible = false
           move_only = true
         },
         {
@@ -28,13 +46,37 @@ mojom("mojom") {
           cpp = "::on_device_model::AdaptationAssets"
           move_only = true
         },
+        {
+          mojom = "on_device_model.mojom.Token"
+          cpp = "::ml::Token"
+        },
+        {
+          mojom = "on_device_model.mojom.InputPiece"
+          cpp = "::ml::InputPiece"
+        },
+        {
+          mojom = "on_device_model.mojom.ModelBackendType"
+          cpp = "::ml::ModelBackendType"
+        },
+        {
+          mojom = "on_device_model.mojom.ModelPerformanceHint"
+          cpp = "::ml::ModelPerformanceHint"
+        },
       ]
       traits_headers = [
+        "//services/on_device_model/public/cpp/chrome_ml_types_mojom_traits.h",
         "//services/on_device_model/public/cpp/adaptation_assets_mojom_traits.h",
+        "//services/on_device_model/public/cpp/capabilities_mojom_traits.h",
         "//services/on_device_model/public/cpp/model_assets_mojom_traits.h",
+        "//services/on_device_model/public/cpp/model_file_mojom_traits.h",
       ]
-      traits_public_deps =
-          [ "//services/on_device_model/public/cpp:model_assets" ]
+      traits_sources = [
+        "//services/on_device_model/public/cpp/chrome_ml_types_mojom_traits.cc",
+      ]
+      traits_public_deps = [
+        "//services/on_device_model/ml:api",
+        "//services/on_device_model/public/cpp:types",
+      ]
     },
   ]
 }

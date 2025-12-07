@@ -140,6 +140,7 @@ http/tests/security/isolatedWorld/resources/iframe.html -crlf
 http/tests/security/isolatedWorld/resources/userGestureEvents-second-window.html -crlf
 http/tests/security/isolatedWorld/userGestureEvents.html -crlf
 http/tests/security/resources/empty-svg.php -crlf
+inspector-protocol/page/capture-snapshot-expected.txt binary
 media/controls/*.mht -crlf
 media/track/captions-webvtt/captions-multiline-lf.vtt -crlf
 mhtml/*.mht -crlf

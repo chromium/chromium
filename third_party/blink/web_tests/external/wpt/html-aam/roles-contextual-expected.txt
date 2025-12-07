@@ -1,0 +1,33 @@
+This is a testharness.js-based test.
+[FAIL] el-aside-in-section-aria-labelledby-empty
+  assert_false: Computed Role: "complementary" does not match any of the acceptable role strings in ["generic", "", "none"]: <aside data-testname="el-aside-in-section-aria-labelledby-empty" class="ex-generic" aria-labelledby="empty">x</aside> expected false got true
+[FAIL] el-aside-in-section-aria-labelledby-whitespace
+  assert_false: Computed Role: "complementary" does not match any of the acceptable role strings in ["generic", "", "none"]: <aside data-testname="el-aside-in-section-aria-labelledby-whitespace" class="ex-generic" aria-labelledby="space">x</aside> expected false got true
+[FAIL] el-aside-in-section-title-empty
+  assert_false: Computed Role: "complementary" does not match any of the acceptable role strings in ["generic", "", "none"]: <aside data-testname="el-aside-in-section-title-empty" class="ex-generic" title="">x</aside> expected false got true
+[FAIL] el-aside-in-section-title-whitespace
+  assert_false: Computed Role: "complementary" does not match any of the acceptable role strings in ["generic", "", "none"]: <aside data-testname="el-aside-in-section-title-whitespace" class="ex-generic" title=" ">x</aside> expected false got true
+[FAIL] el-img-empty-alt-aria-label-empty
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-aria-label-empty" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" aria-label=""> expected false got true
+[FAIL] el-img-empty-alt-aria-label-whitespace
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-aria-label-whitespace" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" aria-label=" "> expected false got true
+[FAIL] el-img-empty-alt-aria-labelledby-non-existing
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-aria-labelledby-non-existing" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" aria-labelledby="non-existing"> expected false got true
+[FAIL] el-img-empty-alt-aria-labelledby-empty
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-aria-labelledby-empty" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" aria-labelledby="empty"> expected false got true
+[FAIL] el-img-empty-alt-aria-labelledby-whitespace
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-aria-labelledby-whitespace" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" aria-labelledby="space"> expected false got true
+[FAIL] el-img-empty-alt-title
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-title" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" title="x"> expected false got true
+[FAIL] el-img-empty-alt-title-whitespace
+  assert_false: Computed Role: "image" does not match any of the acceptable role strings in ["generic", "", "none"]: <img data-testname="el-img-empty-alt-title-whitespace" class="ex-generic" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" alt="" title=" "> expected false got true
+[FAIL] el-section-aria-labelledby-empty
+  assert_false: Computed Role: "region" does not match any of the acceptable role strings in ["generic", "", "none"]: <section data-testname="el-section-aria-labelledby-empty" class="ex-generic" aria-labelledby="empty">x</section> expected false got true
+[FAIL] el-section-aria-labelledby-whitespace
+  assert_false: Computed Role: "region" does not match any of the acceptable role strings in ["generic", "", "none"]: <section data-testname="el-section-aria-labelledby-whitespace" class="ex-generic" aria-labelledby="space">x</section> expected false got true
+[FAIL] el-section-title-empty
+  assert_false: Computed Role: "region" does not match any of the acceptable role strings in ["generic", "", "none"]: <section data-testname="el-section-title-empty" class="ex-generic" title="">x</section> expected false got true
+[FAIL] el-section-title-whitespace
+  assert_false: Computed Role: "region" does not match any of the acceptable role strings in ["generic", "", "none"]: <section data-testname="el-section-title-whitespace" class="ex-generic" title=" ">x</section> expected false got true
+Harness: the test ran to completion.
+

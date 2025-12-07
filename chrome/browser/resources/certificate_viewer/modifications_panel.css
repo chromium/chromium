@@ -1,0 +1,73 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/md_select_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #include=cr-icons-lit cr-shared-style-lit cr-hidden-style-lit md-select-lit
+ * #css_wrapper_metadata_end */
+
+.constraint {
+  padding-bottom: 7px;
+}
+
+.modifications-row-label {
+  width: 150px;
+}
+
+.horizontal-row {
+  /* Match color in certificate_viewer.css */
+  color: #616161;
+  display: flex;
+  flex-direction: row;
+  align-content: flex-start;
+  align-items: baseline;
+  padding-top: 10px;
+  padding-inline-start: 20px;
+  padding-bottom: 10px;
+}
+
+.error {
+  margin: 4px 10px;
+  color: var(--cr-fallback-color-error)
+}
+
+.input-with-error {
+  display: flex;
+  flex-direction: column;
+}
+
+h3 {
+  font-size: 100%;
+  margin-bottom: 15px;
+  margin-top: 32px;
+  font-weight: normal;
+}
+
+.vertical-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+
+/* Cert viewer doesn't support dark mode (cr-tab-box doesn't). Hardcode cr-input
+ * and md-select styles to light mode. */
+cr-input {
+  --cr-input-background-color: rgb(225, 227, 225);
+  --cr-input-error-color: rgb(179, 38, 30);
+  --cr-input-focus-color: rgb(11, 87, 208);
+  --cr-input-color: rgb(31,31,31);
+  --cr-input-placeholder-color: rgb(130,130,130);
+}
+#trustStateSelect {
+  --md-select-option-bg-color: white;
+}

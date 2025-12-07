@@ -23,19 +23,19 @@ public class MockTab extends TabImpl {
     private boolean mIsInitialized;
     private boolean mIsDestroyed;
     private boolean mIsBeingRestored;
+    private boolean mIsNativePage;
 
     private Boolean mCanGoBack;
     private Boolean mCanGoForward;
 
     private boolean mIsCustomTab;
 
-    private Long mTimestampMillis;
     private Integer mParentId;
 
     /** Create a new Tab for testing and initializes Tab UserData objects. */
     public static MockTab createAndInitialize(int id, Profile profile) {
         MockTab tab = new MockTab(id, profile);
-        tab.initialize(null, null, null, null, null, null, false, null, false);
+        tab.initialize(null, null, null, null, null, null, false, null, false, false);
         return tab;
     }
 
@@ -43,16 +43,16 @@ public class MockTab extends TabImpl {
     public static MockTab createAndInitialize(
             int id, Profile profile, @TabLaunchType int tabLaunchType) {
         MockTab tab = new MockTab(id, profile, tabLaunchType);
-        tab.initialize(null, null, null, null, null, null, false, null, false);
+        tab.initialize(null, null, null, null, null, null, false, null, false, false);
         return tab;
     }
 
     public MockTab(int id, Profile profile) {
-        this(id, profile, null);
+        this(id, profile, TabLaunchType.UNSET);
     }
 
-    public MockTab(int id, Profile profile, @TabLaunchType Integer type) {
-        super(id, profile, type);
+    public MockTab(int id, Profile profile, @TabLaunchType int tabLaunchType) {
+        super(id, profile, tabLaunchType, /* isArchived= */ false);
     }
 
     @Override
@@ -65,7 +65,8 @@ public class MockTab extends TabImpl {
             @Nullable TabDelegateFactory delegateFactory,
             boolean initiallyHidden,
             TabState tabState,
-            boolean initializeRenderer) {
+            boolean initializeRenderer,
+            boolean isPinned) {
         if (loadUrlParams != null) {
             mGurlOverride = new GURL(loadUrlParams.getUrl());
         }
@@ -117,12 +118,41 @@ public class MockTab extends TabImpl {
         return mIsDestroyed;
     }
 
+    @Override
+    public void show(@TabSelectionType int type, @TabLoadIfNeededCaller int caller) {
+        // Intentionally do nothing.
+    }
+
     public void setIsInitialized(boolean isInitialized) {
         mIsInitialized = isInitialized;
     }
 
     public void setIsCustomTab(boolean isCustomTab) {
         mIsCustomTab = isCustomTab;
+    }
+
+    public void setIsNativePage(boolean isNativePage) {
+        mIsNativePage = isNativePage;
+    }
+
+    @Override
+    public boolean isNativePage() {
+        return mIsNativePage;
+    }
+
+    @Override
+    public void onLoadStarted(boolean toDifferentDocument) {
+        super.onLoadStarted(toDifferentDocument);
+    }
+
+    @Override
+    public void onLoadStopped() {
+        super.onLoadStopped();
+    }
+
+    @Override
+    public void handleTabCrash() {
+        super.handleTabCrash();
     }
 
     @Override
@@ -148,18 +178,6 @@ public class MockTab extends TabImpl {
     }
 
     @Override
-    public long getTimestampMillis() {
-        if (mTimestampMillis == null) {
-            return super.getTimestampMillis();
-        }
-        return mTimestampMillis;
-    }
-
-    public void setTimestampMillis(long timestampMillis) {
-        mTimestampMillis = timestampMillis;
-    }
-
-    @Override
     public int getParentId() {
         if (mParentId == null) {
             return super.getParentId();
@@ -167,6 +185,7 @@ public class MockTab extends TabImpl {
         return mParentId;
     }
 
+    @Override
     public void setParentId(int parentId) {
         mParentId = parentId;
     }

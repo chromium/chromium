@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+Note: This is a jinja2 template, processed at build time into the final resources.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Light themes -->
+    <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge and
+         Theme.BrowserUI.AlertDialog.NoActionBar. -->
+    <style name="Theme.BrowserUI.Light" parent="Theme.Material3Expressive.Light.NoActionBar">
+        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
+
+        {% macro color_palette_light_attributes() %}
+        <!-- Color palettes -->
+        <item name="colorPrimary">@color/baseline_primary_40</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_80</item>
+        <item name="colorOnPrimary">@color/baseline_primary_100</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_90</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_30</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_30</item>
+        <item name="colorAccent">@macro/default_control_color_active</item>
+        <item name="android:colorBackground">@color/baseline_neutral_100</item>
+        <item name="colorOnBackground">@color/baseline_neutral_10</item>
+        <item name="colorSurface">@color/gm3_baseline_surface_light</item>
+        <item name="colorOnSurface">@color/baseline_neutral_10</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_90</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_light</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_light</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_light</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_light</item>
+        <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_light</item>
+        <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_light</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_95</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_50</item>
+        <item name="colorOutlineVariant">@color/baseline_neutral_variant_80</item>
+        <item name="colorError">@color/baseline_error_40</item>
+        {% endmacro %}
+        {{ color_palette_light_attributes() }}
+
+        {% macro other_color_attributes() %}
+        <!-- Text colors-->
+        <item name="android:textColorPrimary">@color/default_text_color_list</item>
+        <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
+        <item name="android:textColorHighlight">@color/text_highlight_color</item>
+        <item name="android:textColorHint">@color/default_text_color_hint_list</item>
+
+        <!-- Widget colors: checkboxes, switches, buttons, etc. -->
+        <item name="colorControlNormal">@macro/default_control_color_normal</item>
+        <item name="colorControlActivated">@macro/default_control_color_active</item>
+        <item name="colorControlHighlight">@color/control_highlight_color</item>
+
+        <!-- Elevation overlays -->
+        <item name="elevationOverlayEnabled">true</item>
+        <item name="elevationOverlayColor">@color/gm3_baseline_surface_tint</item>
+        <item name="elevationOverlayAccentColor">@android:color/transparent</item>
+
+        <item name="android:listChoiceBackgroundIndicator">@drawable/list_item_ripple</item>
+
+        <!-- Dynamic colors that are applied to the buttons and links. -->
+        <item name="globalFilledButtonBgColor">@color/filled_button_bg_dynamic_list</item>
+        <item name="globalFilledButtonTextColor">@color/default_text_color_on_accent1_list</item>
+        <item name="globalFilledTonalButtonBgColor">?attr/colorPrimaryContainer</item>
+        <item name="globalFilledTonalButtonTextColor">@color/default_text_color_on_accent1_container_list</item>
+        <item name="globalTextButtonTextColor">@color/default_text_color_accent1_tint_list</item>
+        <item name="globalTextButtonRippleColor">@color/text_button_ripple_color_list</item>
+        <item name="globalOutlinedButtonBorderColor">@macro/divider_line_bg_color</item>
+        <item name="globalLinkTextColor">?attr/colorPrimary</item>
+        <item name="globalClickableSpanColor">?attr/colorPrimary</item>
+        {% endmacro %}
+        {{ other_color_attributes() }}
+
+        {% macro misc_attributes() %}
+        <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
+         using the theme for SettingsActivity (e.g. PageInfoView) -->
+        <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
+
+        <item name="android:elegantTextHeight">false</item>
+        <item name="defaultFontFamily">sans-serif</item>
+        <item name="defaultMediumFontFamily">sans-serif-medium</item>
+
+        <item name="actionBarSize">@dimen/default_action_bar_height</item>
+
+        <!-- Control styles -->
+        <item name="checkboxStyle">@style/Widget.BrowserUI.CheckBox</item>
+        <item name="radioButtonStyle">@style/Widget.BrowserUI.RadioButton</item>
+        <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
+
+        <!-- Spinner styles -->
+        <item name="spinnerStyle">@style/SpinnerStyle</item>
+        <item name="android:progressBarStyle">@style/ProgressBarStyle</item>
+
+        <!-- Popup styles -->
+        <!-- Set android popup menu attributes for context menu styles because the context menus are
+             OS-dependent. -->
+        <item name="android:popupMenuStyle">@style/PopupMenuStyle</item>
+        <item name="android:contextPopupMenuStyle">@style/PopupMenuStyle</item>
+
+        <!-- Text styles -->
+        <item name="android:textAppearanceLargePopupMenu">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
+        <item name="textAppearanceLabelLarge">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
+        <item name="android:textAppearanceSmallPopupMenu">
+            @style/TextAppearance.TextLarge.Primary
+        </item>
+        <item name="android:textAppearanceListItem">@style/TextAppearance.TextLarge.Primary</item>
+        <item name="android:textAppearanceListItemSmall">@style/TextAppearance.TextSmall.Primary</item>
+        <item name="android:textAppearanceListItemSecondary">@style/TextAppearance.TextMedium.Secondary</item>
+        <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
+
+        <item name="android:spinnerItemStyle">@style/Widget.BrowserUI.SpinnerItem</item>
+        <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
+        <!-- This is for keeping the current TextInputLayout style.
+             TODO(crbug.com/40764906): Remove or update once the design for the app is updated. -->
+        <item name="textInputStyle">@style/Widget.BrowserUI.TextInputLayout</item>
+
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
+
+        <item name="android:forceDarkAllowed">false</item>
+
+        <!-- TODO(crbug.com/419879223): Clean these up once the styles are finalized. -->
+        <!-- Baseline app menu styles. -->
+        <item name="overflowMenuButtonStyle">@style/OverflowMenuButton</item>
+        <item name="overflowMenuActionBarBgDrawable">@drawable/menu_action_bar_bg</item>
+        <item name="appMenuIconRowPadding">0dp</item>
+
+        <!-- Tab switcher button styles. -->
+        <item name="newTabButtonStyle">@style/NewTabButtonStyle</item>
+        {% endmacro %}
+        {{ misc_attributes() }}
+
+        {% macro adaptive_density_attributes() %}
+        <!-- LINT.IfChange(AdaptiveDensityDefaults) -->
+        <!-- General dimensions. -->
+        <item name="minInteractTargetSize">@dimen/min_touch_target_size</item>
+        <!-- We've created a new attr instead of android:listPreferredItemHeightSmall to keep the
+             changes limited to the UI components we choose. -->
+
+        <!-- List item dimensions. -->
+        <item name="listItemHeight">?attr/minInteractTargetSize</item>
+        <item name="listItemHeightLarge">@dimen/list_menu_item_min_height_large</item>
+        <item name="listItemIconSize">@dimen/list_menu_item_icon_size</item>
+        <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding</item>
+        <item name="listItemControlPadding">@dimen/list_menu_item_control_padding</item>
+        <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin</item>
+        <item name="listDividerHeight">@dimen/list_divider_layout_height</item>
+
+        <!-- Popup attributes. -->
+        <item name="popupBg">@drawable/popup_bg_24dp</item>
+        <item name="popupBgCornerRadius">@dimen/popup_bg_corner_radius_24dp</item>
+        <item name="zeroRadius">0dp</item>
+
+        <!-- Text dimensions. -->
+        <item name="textLargeSize">@dimen/text_size_large</item>
+        <item name="textLargeLeading">@dimen/text_size_large_leading</item>
+        <!-- LINT.ThenChange(//ui/android/java/res/values/themes.xml:AdaptiveDensityDefaults) -->
+
+        <!-- Button attributes -->
+        <item name="iconRowButtonSizeOverlay">@style/SizeOverlay.BrowserUI.IconRowButton</item>
+        <item name="colorButtonSizeOverlay">@style/SizeOverlay.BrowserUI.ColorButton</item>
+
+        <!-- Toolbar button dimensions. -->
+        <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
+        <item name="toolbarButtonHeight">@dimen/toolbar_button_height</item>
+        <item name="toolbarButtonMarginHorizontal">@dimen/toolbar_button_margin_horizontal</item>
+        <item name="toolbarButtonMarginVertical">@dimen/toolbar_button_margin_vertical</item>
+
+        <!-- Location bar action button dimensions(e.g. bookmark, downloads). -->
+        <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width</item>
+        <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height</item>
+        <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal</item>
+        <!-- We need to set the location bar action button’s constraints differently for desktop
+        and mobile because mobile introduced Fusebox, which positions the button below
+        location_bar_attachments (anchored to the bottom of the location bar). On desktop,
+        however, the button must remain vertically centered inside location bar, so its Top and
+        Bottom constraints are applied separately via
+        ThemeOverlay.BrowserUI.DesktopDensity.TabStrip. Resetting to null here to allow the
+        buttons to fallback to the expected bottom-anchored position on mobile.-->
+        <item name="locationBarActionButtonConstraintTopToTopOf">@null</item>
+        <item name="locationBarActionButtonConstraintBottomToBottomOf">@null</item>
+
+        <!-- Close button dimensions. -->
+        <item name="closeButtonWidth">@dimen/close_button_width</item>
+        <item name="closeButtonHeight">@dimen/close_button_height</item>
+        {% endmacro %}
+        {{ adaptive_density_attributes() }}
+
+        {% macro full_window_attributes() %}
+        <!-- Window Properties -->
+        <item name="android:windowBackground">@macro/default_bg_color</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/splash_screen_bg</item>
+
+        <!-- Status bar color -->
+        <item name="android:statusBarColor">@macro/default_bg_color</item>
+        <item name="android:windowLightStatusBar">@bool/window_light_status_bar</item>
+        {% endmacro %}
+        {{ full_window_attributes() }}
+    </style>
+    <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI.Light" />
+
+    <!-- Colors should be mirrored by Theme.BrowserUI -->
+    <style name="Theme.BrowserUI.Light.DialogWhenLarge" parent="Theme.Material3Expressive.Light.DialogWhenLarge">
+        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
+
+        {{ color_palette_light_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
+    </style>
+    <style name="Theme.BrowserUI.DayNight.DialogWhenLarge" parent="Theme.BrowserUI.Light.DialogWhenLarge"/>
+
+    <!-- Unlike |ThemeOverlay.BrowserUI.AlertDialog|, this is a complete theme that can be used as
+         an activity theme on its own. In addition to mirroring |Theme.BrowserUI|, this should
+         include all the attributes that |ThemeOverlay.BrowserUI.AlertDialog| has.
+         -->
+    <style name="Theme.BrowserUI.Light.AlertDialog.NoActionBar" parent="Theme.Material3Expressive.Light.Dialog.Alert">
+        <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
+
+        {{ color_palette_light_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
+
+        {% macro alert_dialog_attributes() %}
+        <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
+        <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
+
+        <!-- Depending on if the support library or framework is inflating the
+             dialog, a different layout is used, that names this style slightly
+             differently. WebView will use the framework version for the
+             foreseeable future, so both of these need to be specified. See
+             https://crbug.com/1234129. -->
+        <item name="android:buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+        <item name="buttonBarButtonStyle">@style/AlertDialogButtonStyle</item>
+
+        <!-- NoActionBar -->
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        {% endmacro %}
+        {{ alert_dialog_attributes() }}
+    </style>
+    <style name="Theme.BrowserUI.DayNight.AlertDialog.NoActionBar" parent="Theme.BrowserUI.Light.AlertDialog.NoActionBar"/>
+
+    <!-- Dark themes -->
+    <style name="Theme.BrowserUI.Dark" parent="Theme.Material3Expressive.Dark.NoActionBar">
+        {% macro color_palette_dark_attributes() %}
+        <!-- Color palettes -->
+        <item name="colorPrimary">@color/baseline_primary_80</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
+        <item name="colorOnPrimary">@color/baseline_primary_20</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_30</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="android:colorBackground">@color/baseline_neutral_10</item>
+        <item name="colorOnBackground">@color/baseline_neutral_90</item>
+        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
+        <item name="colorOnSurface">@color/baseline_neutral_90</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
+        <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
+        <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_dark</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
+        <item name="colorOutlineVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorError">@color/baseline_error_80</item>
+        {% endmacro %}
+        {{ color_palette_dark_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
+        {{ full_window_attributes() }}
+    </style>
+
+    <style name="Theme.BrowserUI.Dark.DialogWhenLarge" parent="Theme.Material3Expressive.Dark.DialogWhenLarge">
+        {{ color_palette_dark_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
+    </style>
+
+    <style name="Theme.BrowserUI.Dark.AlertDialog.NoActionBar" parent="Theme.Material3Expressive.Dark.Dialog.Alert">
+        {{ color_palette_dark_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
+        {{ adaptive_density_attributes() }}
+        {{ alert_dialog_attributes() }}
+    </style>
+
+    <!-- Misc. themes -->
+    <!-- This theme is used instead of android:style/Theme.NoDisplay so that it has the required
+        attributes in case the context ends up being used to inflate views. -->
+    <style name="Theme.BrowserUI.NoDisplay" parent="Theme.BrowserUI.DayNight">
+        <item name="android:windowBackground">@null</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:windowDisablePreview">true</item>
+        <item name="android:windowNoDisplay">true</item>
+    </style>
+
+    <!-- These themes are used instead of android:style/Theme.Translucent* so that they have the
+        required attributes in case the context ends up being used to inflate views. -->
+    <style name="Theme.BrowserUI.Translucent" parent="Theme.BrowserUI.DayNight">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowAnimationStyle">@android:style/Animation</item>
+    </style>
+    <style name="Theme.BrowserUI.Translucent.NoTitleBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">false</item>
+    </style>
+
+    <!-- Theme overlays -->
+    <style name="ThemeOverlay.BrowserUI.ElegantTextHeight" parent="">
+        <item name="android:elegantTextHeight">true</item>
+    </style>
+
+    <!-- TODO(https://crbug.com/346850440): Simplify once flag guarding is removed. -->
+    <!-- Overridden downstream to reference Google Sans Text and Google Sans Text Medium. -->
+    <style name="ThemeOverlay.BrowserUI.DefaultFontFamilyThemeOverlay" parent="">
+        <item name="defaultFontFamily">sans-serif</item>
+        <item name="defaultMediumFontFamily">sans-serif-medium</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.OptOutEdgeToEdge" parent="">
+        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">false</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.DesktopDensity" parent="">
+        <!-- General dimensions. -->
+        <item name="minInteractTargetSize">@dimen/min_click_target_size</item>
+
+        <!-- Text dimensions. -->
+        <item name="textLargeSize">@dimen/text_size_large_desktop</item>
+        <item name="textLargeLeading">@dimen/text_size_large_leading_desktop</item>
+
+        <!-- Popup attributes. -->
+        <item name="popupBg">@drawable/popup_bg_16dp</item>
+        <item name="popupBgCornerRadius">@dimen/popup_bg_corner_radius_16dp</item>
+
+        <!-- List item dimensions. -->
+        <item name="listItemHeightLarge">@dimen/list_menu_item_min_height_large_desktop</item>
+        <item name="listItemIconSize">@dimen/list_menu_item_icon_size_desktop</item>
+        <item name="listItemIconPadding">@dimen/list_menu_item_icon_padding_desktop</item>
+        <item name="listItemControlPadding">@dimen/list_menu_item_control_padding_desktop</item>
+        <item name="listItemIconTextSpacing">@dimen/list_menu_item_start_icon_end_margin_desktop</item>
+        <item name="listDividerHeight">@dimen/list_divider_layout_height_desktop</item>
+
+        <!-- Button attributes -->
+        <item name="iconRowButtonSizeOverlay">@style/SizeOverlay.BrowserUI.IconRowButton.DesktopDensity</item>
+        <item name="colorButtonSizeOverlay">@style/SizeOverlay.BrowserUI.ColorButton.DesktopDensity</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.DesktopDensity.TabStrip" parent="">
+        <!-- Toolbar button dimensions. -->
+        <item name="toolbarButtonWidth">@dimen/toolbar_button_width_desktop</item>
+        <item name="toolbarButtonHeight">@dimen/toolbar_button_height_desktop</item>
+        <item name="toolbarButtonMarginHorizontal">@dimen/toolbar_button_margin_horizontal_desktop</item>
+        <item name="toolbarButtonMarginVertical">@dimen/toolbar_button_margin_vertical_desktop</item>
+
+        <!-- Location bar action button dimensions(e.g. bookmark, downloads). -->
+        <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width_desktop</item>
+        <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height_desktop</item>
+        <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal_desktop</item>
+        <item name="locationBarActionButtonConstraintTopToTopOf">@id/location_bar</item>
+        <item name="locationBarActionButtonConstraintBottomToBottomOf">@id/location_bar</item>
+
+        <!-- Close button dimensions. -->
+        <item name="closeButtonWidth">@dimen/close_button_width_desktop</item>
+        <item name="closeButtonHeight">@dimen/close_button_height_desktop</item>
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.TabbedMode.Incognito" parent="">
+        {{ color_palette_dark_attributes() }}
+        <!-- TODO(crbug.com/438804527): Update Incognito theme overlay with missing attributes. -->
+    </style>
+
+    <!-- Test only theme, forcing light colors. -->
+    <style name="ThemeOverlay.BrowserUI.ForcedLightForTesting" parent="">
+        {{ color_palette_light_attributes() }}
+        <!-- TODO(crbug.com/438804527): Update Incognito theme overlay with missing attributes. -->
+    </style>
+
+    <style name="ThemeOverlay.BrowserUI.ExpressiveUpdate" parent="">
+        <item name="overflowMenuButtonStyle">@style/OverflowMenuButton.Expressive</item>
+        <item name="overflowMenuActionBarBgDrawable">@empty</item>
+        <item name="appMenuIconRowPadding">8dp</item>
+    </style>
+</resources>

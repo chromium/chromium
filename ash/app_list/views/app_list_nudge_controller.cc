@@ -51,8 +51,7 @@ std::string GetPrefPath(AppListNudgeController::NudgeType type) {
     case AppListNudgeController::NudgeType::kReorderNudge:
       return prefs::kAppListReorderNudge;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -72,12 +71,6 @@ void AppListNudgeController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kAppListReorderNudge);
   registry->RegisterDictionaryPref(prefs::kLauncherFilesPrivacyNotice);
-}
-
-// static
-void AppListNudgeController::ResetPrefsForNewUserSession(PrefService* prefs) {
-  prefs->ClearPref(prefs::kAppListReorderNudge);
-  prefs->ClearPref(prefs::kLauncherFilesPrivacyNotice);
 }
 
 // static

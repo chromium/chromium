@@ -5,6 +5,7 @@
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_matchers.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -19,8 +20,6 @@
 #import "ui/base/l10n/l10n_util.h"
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
-using chrome_test_util::ManualFallbackKeyboardIconMatcher;
-using chrome_test_util::ManualFallbackPasswordIconMatcher;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::WebViewMatcher;
 
@@ -80,18 +79,9 @@ void CheckBrandingHasVisiblity(BOOL visibility) {
 // Opens the manual fallback menu by pressing the right keyboard accessory
 // button.
 void OpenManualFallback() {
-  id<GREYMatcher> button_to_tap;
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    button_to_tap = grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                                   IDS_IOS_AUTOFILL_PASSWORD_AUTOFILL_DATA)),
-                               grey_ancestor(grey_accessibilityID(
-                                   kFormInputAccessoryViewAccessibilityID)),
-                               nil);
-  } else {
-    button_to_tap = ManualFallbackPasswordIconMatcher();
-  }
-
-  [[EarlGrey selectElementWithMatcher:button_to_tap] performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::PasswordManualFillViewButton()]
+      performAction:grey_tap()];
 }
 
 }  // namespace
@@ -131,14 +121,14 @@ void OpenManualFallback() {
   [ChromeEarlGrey waitForWebStateContainingText:"hello!"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   DisableManualFillButtonsInProfileStore();
   // Clear feature related local state prefs.
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAutofillBrandingIconDisplayCount];
   [ChromeEarlGrey resetDataForLocalStatePref:
                       prefs::kAutofillBrandingIconAnimationRemainingCount];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the autofill branding icon only shows twice.
@@ -148,12 +138,6 @@ void OpenManualFallback() {
   BringUpKeyboard();
   CheckBrandingHasVisiblity(YES);
   OpenManualFallback();
-
-  if (!base::ios::IsRunningOnIOS16OrLater() && [ChromeEarlGrey isIPadIdiom]) {
-    [ChromeEarlGreyUI
-        dismissByTappingOnTheWindowOfPopover:
-            chrome_test_util::ManualFallbackPasswordTableViewMatcher()];
-  }
 
   DismissKeyboard();
   // Second time: branding is still visible after user interacts with a keyboard

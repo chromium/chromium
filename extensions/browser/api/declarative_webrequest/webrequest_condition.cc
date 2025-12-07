@@ -100,18 +100,19 @@ bool WebRequestCondition::IsFulfilled(
     return false;
 
   // All condition attributes must be fulfilled for a fulfilled condition.
-  for (auto i = condition_attributes_.cbegin();
-       i != condition_attributes_.cend(); ++i) {
-    if (!(*i)->IsFulfilled(*(request_data.data)))
+  for (const auto& condition_attribute : condition_attributes_) {
+    if (!condition_attribute->IsFulfilled(*(request_data.data))) {
       return false;
+    }
   }
   return true;
 }
 
 void WebRequestCondition::GetURLMatcherConditionSets(
     URLMatcherConditionSet::Vector* condition_sets) const {
-  if (url_matcher_conditions_.get())
+  if (url_matcher_conditions_.get()) {
     condition_sets->push_back(url_matcher_conditions_);
+  }
 }
 
 // static
@@ -165,11 +166,13 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
               condition_attribute_name,
               &condition_attribute_value,
               error);
-      if (attribute.get())
+      if (attribute.get()) {
         attributes.push_back(attribute);
+      }
     }
-    if (!error->empty())
+    if (!error->empty()) {
       return nullptr;
+    }
   }
 
   auto result = std::make_unique<WebRequestCondition>(url_matcher_condition_set,

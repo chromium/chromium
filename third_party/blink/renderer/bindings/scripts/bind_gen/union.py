@@ -153,11 +153,17 @@ class _UnionMemberSubunion(_UnionMember):
         assert isinstance(union, web_idl.Union)
         assert isinstance(subunion, web_idl.Union)
 
-        _UnionMember.__init__(self, base_name=blink_class_name(subunion))
+        class_name = blink_class_name(subunion)
+        _UnionMember.__init__(self, base_name=class_name)
         self._type_info = blink_type_info(subunion.idl_types[0])
+        # Filter out aliases that match our class name (this may happen due to
+        # union name mapping)
         self._typedef_aliases = tuple(
-            map(lambda typedef: _UnionMemberAlias(impl=self, typedef=typedef),
-                subunion.aliasing_typedefs))
+            map(
+                lambda typedef: _UnionMemberAlias(impl=self, typedef=typedef),
+                filter(
+                    lambda idl_type: blink_class_name(idl_type) != class_name,
+                    subunion.aliasing_typedefs)))
         self._blink_class_name = blink_class_name(subunion)
 
     @property
@@ -203,8 +209,6 @@ def make_check_assignment_value(cg_context, union_member, assignment_value):
     assert isinstance(union_member, _UnionMember)
     assert isinstance(assignment_value, str)
 
-    if union_member.idl_type and union_member.idl_type.is_object:
-        return TextNode("DCHECK({}.IsObject());".format(assignment_value))
     if union_member.type_info.is_gc_type:
         return TextNode("DCHECK({});".format(assignment_value))
 
@@ -309,6 +313,13 @@ def make_factory_methods(cg_context):
                                   attribute=None,
                                   body=scope_node))
 
+    # 1. If the union type includes undefined and V is undefined, then return
+    # the unique undefined value.
+    member = find_by_type(lambda t: t.is_undefined)
+    if member:
+        dispatch_if("${v8_value}->IsUndefined()",
+                    S("blink_value", "ToV8UndefinedGenerator ${blink_value};"))
+
     # 2. If the union type includes a nullable type and V is null or undefined,
     #   ...
     member = find_by_member(lambda m: m.is_null)
@@ -368,27 +379,27 @@ def make_factory_methods(cg_context):
     if member:
         dispatch_if("${v8_value}->IsArrayBufferView()")
 
-    # 7. If Type(V) is Object and V has a [[DataView]] internal slot, then:
-    # 7.1. If types includes DataView, ...
+    # 8. If Type(V) is Object and V has a [[DataView]] internal slot, then:
+    # 8.1. If types includes DataView, ...
     member = find_by_type(lambda t: t.is_data_view)
     if member:
         dispatch_if("${v8_value}->IsDataView()")
 
-    # 8. If Type(V) is Object and V has a [[TypedArrayName]] internal slot,
+    # 9. If Type(V) is Object and V has a [[TypedArrayName]] internal slot,
     #   then:
-    # 8.1. If types includes a typed array type whose name is the value of V's
+    # 9.1. If types includes a typed array type whose name is the value of V's
     #   [[TypedArrayName]] internal slot, ...
     typed_array_types = ("Int8Array", "Int16Array", "Int32Array",
                          "BigInt64Array", "Uint8Array", "Uint16Array",
                          "Uint32Array", "BigUint64Array", "Uint8ClampedArray",
-                         "Float32Array", "Float64Array")
+                         "Float16Array", "Float32Array", "Float64Array")
     for typed_array_type in typed_array_types:
         member = find_by_type(lambda t: t.keyword_typename == typed_array_type)
         if member:
             dispatch_if(_format("${v8_value}->Is{}()", typed_array_type))
 
-    # 9. If IsCallable(V) is true, then:
-    # 9.1. If types includes a callback function type, ...
+    # 10. If IsCallable(V) is true, then:
+    # 10.1. If types includes a callback function type, ...
     member = find_by_type(lambda t: t.is_callback_function)
     if member:
         dispatch_if(
@@ -399,9 +410,9 @@ def make_factory_methods(cg_context):
                 "{}::Create(${v8_value}.As<v8::Function>());",
                 blink_class_name(member.idl_type.type_definition_object)))))
 
-    # 10. If Type(V) is Object, then:
-    # 10.1. If types includes a sequence type, ...
-    # 10.2. If types includes a frozen array type, ...
+    # 11. If Type(V) is Object, then:
+    # 11.1. If types includes a sequence type, ...
+    # 11.2. If types includes a frozen array type, ...
     member = find_by_type(lambda t: t.is_sequence or t.is_frozen_array)
     if member:
         # TODO(crbug.com/715122): Excessive optimization
@@ -416,7 +427,7 @@ def make_factory_methods(cg_context):
         scope_node.extend([
             T("ScriptIterator script_iterator = ScriptIterator::FromIterable("
               "${isolate}, ${v8_value}.As<v8::Object>(), "
-              "${exception_state});"),
+              "${exception_state}, ScriptIterator::Kind::kSync);"),
             CxxUnlikelyIfNode(cond="${exception_state}.HadException()",
                               attribute="[[unlikely]]",
                               body=T("return nullptr;")),
@@ -446,15 +457,15 @@ def make_factory_methods(cg_context):
               definition_constructor=blink_value_from_iterator(member)),
             target_node=scope_node)
 
-    # 10. If Type(V) is Object, then:
-    # 10.3. If types includes a dictionary type, ...
-    # 10.4. If types includes a record type, ...
+    # 11. If Type(V) is Object, then:
+    # 11.3. If types includes a dictionary type, ...
+    # 11.4. If types includes a record type, ...
     member = find_by_type(lambda t: t.is_dictionary or t.is_record)
     if member:
         dispatch_if("${v8_value}->IsObject()")
 
-    # 10. If Type(V) is Object, then:
-    # 10.5. If types includes a callback interface type, ...
+    # 11. If Type(V) is Object, then:
+    # 11.5. If types includes a callback interface type, ...
     member = find_by_type(lambda t: t.is_callback_interface)
     if member:
         dispatch_if(
@@ -465,8 +476,8 @@ def make_factory_methods(cg_context):
                 "{}::Create(${v8_value}.As<v8::Object>();",
                 blink_class_name(member.idl_type.type_definition_object)))))
 
-    # 10. If Type(V) is Object, then:
-    # 10.6. If types includes object, ...
+    # 11. If Type(V) is Object, then:
+    # 11.6. If types includes object, ...
     member = find_by_type(lambda t: t.is_object)
     if member:
         dispatch_if(
@@ -474,10 +485,10 @@ def make_factory_methods(cg_context):
             # Shortcut to reduce the binary size
             S("blink_value",
               (_format("auto&& ${blink_value} = "
-                       "ScriptValue(${isolate}, ${v8_value});"))))
+                       "ScriptObject(${isolate}, ${v8_value});"))))
 
-    # 11. If Type(V) is Boolean, then:
-    # 11.1. If types includes boolean, ...
+    # 12. If Type(V) is Boolean, then:
+    # 12.1. If types includes boolean, ...
     member = find_by_type(lambda t: t.is_boolean)
     if member:
         dispatch_if(
@@ -486,13 +497,19 @@ def make_factory_methods(cg_context):
             S("blink_value", ("auto&& ${blink_value} = "
                               "${v8_value}.As<v8::Boolean>()->Value();")))
 
-    # 12. If Type(V) is Number, then:
-    # 12.1. If types includes a numeric type, ...
+    # 13. If Type(V) is Number, then:
+    # 13.1. If types includes a numeric type, ...
     member = find_by_type(lambda t: t.is_numeric)
     if member:
         dispatch_if("${v8_value}->IsNumber()")
 
-    # 14. If types includes a string type, ...
+    # 14. If Type(V) is BigInt, then:
+    # 14.1. If types includes bigint, ...
+    member = find_by_type(lambda t: t.is_bigint)
+    if member:
+        dispatch_if("${v8_value}->IsBigInt()")
+
+    # 15. If types includes a string type, ...
     # 16. If types includes a numeric type, ...
     # 17. If types includes boolean, ...
     member = (find_by_type(lambda t: t.is_enumeration or t.is_string)
@@ -501,7 +518,7 @@ def make_factory_methods(cg_context):
     if member:
         dispatch_if(True)
     else:
-        # 19. Throw a TypeError.
+        # 20. Throw a TypeError.
         body.append(
             T("ThrowTypeErrorNotOfType"
               "(${exception_state}, UnionNameInIDL());"))
@@ -719,11 +736,9 @@ def make_accessor_functions(cg_context):
                                   class_name=cg_context.class_name)
         func_def.set_base_template_vars(cg_context.template_bindings())
         node = CxxSwitchNode(cond="content_type_")
-        node.append(
-            case=None,
-            body=[T("NOTREACHED_IN_MIGRATION();"),
-                  T("return nullptr;")],
-            should_add_break=False)
+        node.append(case=None,
+                    body=[T("NOTREACHED();")],
+                    should_add_break=False)
         for member in subunion_members:
             node.append(case=member.content_type(),
                         body=F("return MakeGarbageCollected<{}>({}());",
@@ -812,8 +827,7 @@ def make_tov8_function(cg_context):
     func_decl = CxxFuncDeclNode(name="ToV8",
                                 arg_decls=["ScriptState* script_state"],
                                 return_type="v8::Local<v8::Value>",
-                                const=True,
-                                override=True)
+                                const=True)
 
     func_def = CxxFuncDefNode(name="ToV8",
                               arg_decls=["ScriptState* script_state"],
@@ -840,8 +854,7 @@ def make_tov8_function(cg_context):
     body.extend([
         branches,
         EmptyNode(),
-        TextNode("NOTREACHED_IN_MIGRATION();"),
-        TextNode("return v8::Local<v8::Value>();"),
+        TextNode("NOTREACHED();"),
     ])
 
     return func_decl, func_def
@@ -867,9 +880,9 @@ def make_trace_function(cg_context):
     for member in cg_context.union_members:
         if member.is_null:
             continue
-        body.append(
-            TextNode("TraceIfNeeded<{}>::Trace(visitor, {});".format(
-                member.type_info.member_t, member.var_name)))
+        if not member.type_info.is_traceable:
+            continue
+        body.append(TextNode("visitor->Trace({});".format(member.var_name)))
     body.append(TextNode("${base_class_name}::Trace(visitor);"))
 
     return func_decl, func_def
@@ -1030,9 +1043,7 @@ def generate_union(union_identifier):
     ])
 
     # Assemble the parts.
-    header_node.accumulator.add_class_decls([
-        "ExceptionState",
-    ])
+    header_node.accumulator.add_class_decls(["ExceptionState", "ScriptState"])
     header_node.accumulator.add_include_headers([
         component_export_header(api_component, for_testing),
         "base/check_op.h",
@@ -1085,10 +1096,11 @@ def generate_union(union_identifier):
     source_blink_ns.body.append(accessor_defs)
     source_blink_ns.body.append(EmptyNode())
 
-    class_def.public_section.append(tov8_func_decls)
-    class_def.public_section.append(EmptyNode())
-    source_blink_ns.body.append(tov8_func_defs)
-    source_blink_ns.body.append(EmptyNode())
+    if union.usage & web_idl.idl_type.UnionType.Usage.OUTPUT:
+        class_def.public_section.append(tov8_func_decls)
+        class_def.public_section.append(EmptyNode())
+        source_blink_ns.body.append(tov8_func_defs)
+        source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(trace_func_decls)
     class_def.public_section.append(EmptyNode())

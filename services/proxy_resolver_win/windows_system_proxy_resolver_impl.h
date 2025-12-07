@@ -20,7 +20,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/proxy_resolution/win/winhttp_status.h"
-#include "services/proxy_resolver_win/public/mojom/proxy_resolver_win.mojom.h"
+#include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
 
 class GURL;
 
@@ -39,10 +39,11 @@ class WinHttpAPIWrapper;
 // each of these requests, which will reply via callback once they have
 // received a response from WinHttp.
 class COMPONENT_EXPORT(PROXY_RESOLVER_WIN) WindowsSystemProxyResolverImpl
-    : public mojom::WindowsSystemProxyResolver {
+    : public proxy_resolver::mojom::SystemProxyResolver {
  public:
   explicit WindowsSystemProxyResolverImpl(
-      mojo::PendingReceiver<mojom::WindowsSystemProxyResolver> receiver);
+      mojo::PendingReceiver<proxy_resolver::mojom::SystemProxyResolver>
+          receiver);
 
   WindowsSystemProxyResolverImpl(const WindowsSystemProxyResolverImpl&) =
       delete;
@@ -54,13 +55,19 @@ class COMPONENT_EXPORT(PROXY_RESOLVER_WIN) WindowsSystemProxyResolverImpl
   void SetCreateWinHttpAPIWrapperForTesting(
       std::unique_ptr<WinHttpAPIWrapper> winhttp_api_wrapper_for_testing);
 
-  // mojom::WindowsSystemProxyResolver implementation
+  // proxy_resolver::mojom::SystemProxyResolver implementation
   void GetProxyForUrl(const GURL& url,
                       GetProxyForUrlCallback callback) override;
 
  private:
   friend class WindowsSystemProxyResolverImplTest;
   class Request;
+
+  // Initializes a WinHTTP session with appropriate configuration for proxy
+  // resolution. Sets up the session handle, configures timeouts, and
+  // registers the status callback. Returns the status of the initialization.
+  net::WinHttpStatus InitializeWinHttpSession(
+      WinHttpAPIWrapper* uninitialized_winhttp_api_wrapper);
 
   // Sets up the WinHttp session that will be used throughout the lifetime of
   // this object.
@@ -93,7 +100,7 @@ class COMPONENT_EXPORT(PROXY_RESOLVER_WIN) WindowsSystemProxyResolverImpl
   // will attempt to respond to the callback and then get deleted.
   std::set<std::unique_ptr<Request>, base::UniquePtrComparator> requests_;
 
-  mojo::Receiver<mojom::WindowsSystemProxyResolver> receiver_;
+  mojo::Receiver<proxy_resolver::mojom::SystemProxyResolver> receiver_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

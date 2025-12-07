@@ -1,0 +1,62 @@
+rootWebArea htmlTag='#document' name='Material Web Suggestion Chips'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++group htmlTag='md-suggestion-chip'
+++++++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='Suggestion chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Suggestion chip'
+++++++++++++++++++++++++inlineTextBox name='Suggestion chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-suggestion-chip'
+++++++++++++++genericContainer className='container has-icon' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='With icon'
+++++++++++++++++++none ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='With icon'
+++++++++++++++++++++++++inlineTextBox name='With icon'
+++++++++++++++++++genericContainer ignored
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Suggestion Chips'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++toolbar horizontal htmlTag='md-chip-set'
+++++++++++genericContainer ignored
+++++++++++++group htmlTag='md-suggestion-chip'
+++++++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='Suggestion chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='Suggestion chip'
+++++++++++++++++++++++++inlineTextBox name='Suggestion chip'
+++++++++++++++++++genericContainer ignored
+++++++++++++genericContainer htmlTag='md-suggestion-chip'
+++++++++++++++genericContainer className='container has-icon' htmlTag='div'
+++++++++++++++++genericContainer ignored
+++++++++++++++++genericContainer ignored invisible
+++++++++++++++++button className='primary action' htmlTag='button' name='With icon'
+++++++++++++++++++none ignored invisible
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++staticText name='With icon'
+++++++++++++++++++++++++inlineTextBox name='With icon'
+++++++++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Suggestion Chip Clicked'
+++++++++++++inlineTextBox name='Suggestion Chip Clicked'

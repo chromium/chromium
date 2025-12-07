@@ -4,24 +4,54 @@
 
 #include "chrome/browser/ui/tab_ui_helper.h"
 
+#include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/resources/grit/ui_resources.h"
 
-TabUIHelper::TabUIHelper(content::WebContents* contents)
-    : WebContentsObserver(contents),
-      content::WebContentsUserData<TabUIHelper>(*contents) {}
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck
+#endif
+
+namespace {
+
+// Whether the throbber should be shown for a restored tab after it becomes
+// visible, instead of when it's active in the tab strip (this signal is known
+// to be broken crbug.com/413080225#comment8).
+BASE_FEATURE(kSessionRestoreShowThrobberOnVisible,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+}  // namespace
+
+TabUIHelper::TabUIHelper(tabs::TabInterface& tab_interface)
+    : ContentsObservingTabFeature(tab_interface) {}
 
 TabUIHelper::~TabUIHelper() = default;
 
 std::u16string TabUIHelper::GetTitle() const {
+  const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
+      tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
+  if (wc_listener) {
+    if (const std::optional<tab_groups::DeferredTabState>& deferred_tab_state =
+            wc_listener->deferred_tab_state()) {
+      return deferred_tab_state.value().title();
+    }
+  }
+
   const std::u16string& contents_title = web_contents()->GetTitle();
-  if (!contents_title.empty())
+  if (!contents_title.empty()) {
     return contents_title;
+  }
 
 #if BUILDFLAG(IS_MAC)
   return l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
@@ -31,6 +61,15 @@ std::u16string TabUIHelper::GetTitle() const {
 }
 
 ui::ImageModel TabUIHelper::GetFavicon() const {
+  const tab_groups::SavedTabGroupWebContentsListener* wc_listener =
+      tab().GetTabFeatures()->saved_tab_group_web_contents_listener();
+  if (wc_listener) {
+    if (const std::optional<tab_groups::DeferredTabState>& deferred_tab_state =
+            wc_listener->deferred_tab_state()) {
+      return deferred_tab_state.value().favicon();
+    }
+  }
+
   return ui::ImageModel::FromImage(
       favicon::TabFaviconFromWebContents(web_contents()));
 }
@@ -39,10 +78,26 @@ bool TabUIHelper::ShouldHideThrobber() const {
   // We want to hide a background tab's throbber during page load if it is
   // created by session restore. A restored tab's favicon is already fetched
   // by |SessionRestoreDelegate|.
-  if (created_by_session_restore_ && !was_active_at_least_once_)
+  if (created_by_session_restore_ && !was_active_at_least_once_) {
     return true;
+  }
 
   return false;
+}
+
+void TabUIHelper::SetWasActiveAtLeastOnce() {
+  if (!base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible)) {
+    was_active_at_least_once_ = true;
+  }
+}
+
+base::CallbackListSubscription TabUIHelper::AddTitleUpdatedCallback(
+    TitleUpdatedCallbackList::CallbackType callback) {
+  return title_change_callbacks_.Add(std::move(callback));
+}
+
+void TabUIHelper::TitleWasSet(content::NavigationEntry* entry) {
+  title_change_callbacks_.Notify(GetTitle());
 }
 
 void TabUIHelper::DidStopLoading() {
@@ -52,4 +107,19 @@ void TabUIHelper::DidStopLoading() {
   created_by_session_restore_ = false;
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(TabUIHelper);
+void TabUIHelper::OnVisibilityChanged(content::Visibility visiblity) {
+  if (base::FeatureList::IsEnabled(kSessionRestoreShowThrobberOnVisible) &&
+      visiblity == content::Visibility::VISIBLE) {
+    was_active_at_least_once_ = true;
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+void TabUIHelper::PrimaryPageChanged(content::Page& page) {
+  if (tab().IsSplit()) {
+    split_tabs::LogSplitViewUpdatedUKM(
+        tab().GetBrowserWindowInterface()->GetTabStripModel(),
+        tab().GetSplit().value());
+  }
+}
+#endif

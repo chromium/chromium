@@ -406,6 +406,9 @@ testSuite({
 
     numStatEvents = 0;
     lastStatEvent = null;
+
+    /** @suppress {visibility} suppression added to enable type checking */
+    browserChannel.asyncTest_ = false;
   },
 
   tearDown() {
@@ -1313,6 +1316,27 @@ testSuite({
 
     // From now on, the "Close Immediately" flag should not be set.
     completeBackChannel();
+    assertEquals(
+        '0',
+        browserChannel.backChannelRequest_.requestUri_.queryData_.get('CI'));
+  },
+
+  /** @suppress {visibility} suppression added to enable type checking */
+  testSetIsBuffered() {
+    connect();
+    browserChannel.setIsBuffered(true);
+    completeBackChannel();
+    browserChannel.setIsBuffered(false);
+
+    // Back channel will still be buffered, because #setIsBuffered was called
+    // after the back channel was already open.
+    assertEquals(
+        '1',
+        browserChannel.backChannelRequest_.requestUri_.queryData_.get('CI'));
+
+    // Subsequent back channels that are opened will be streaming.
+    completeBackChannel();
+    assertFalse(browserChannel.isBuffered());
     assertEquals(
         '0',
         browserChannel.backChannelRequest_.requestUri_.queryData_.get('CI'));

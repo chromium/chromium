@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/test/test_support_impl.h"
 
 #include <stddef.h>
@@ -17,6 +12,8 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -26,9 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/perf_log.h"
 
-namespace mojo {
-namespace core {
-namespace test {
+namespace mojo::core::test {
 namespace {
 
 base::FilePath ResolveSourceRootRelativePath(const char* relative_path) {
@@ -79,11 +74,20 @@ char** TestSupportImpl::EnumerateSourceRootRelativeDirectory(
 
   // |names.size() + 1| for null terminator.
   char** rv = static_cast<char**>(calloc(names.size() + 1, sizeof(char*)));
-  for (size_t i = 0; i < names.size(); ++i)
-    rv[i] = base::strdup(names[i].c_str());
+  CHECK(rv);
+
+  // SAFETY: `rv` was just allocated to be of size `names.size() + 1`.
+  // The span is created with a size of `names.size()`, which is smaller, to
+  // avoid writing to the last (nullptr) element in the loop.
+  base::span<char*> rv_span = UNSAFE_BUFFERS(base::span(rv, names.size()));
+
+  for (size_t i = 0; i < names.size(); ++i) {
+    rv_span[i] = base::strdup(names[i].c_str());
+  }
+
+  // The last element is already `nullptr` because of `calloc`.
+
   return rv;
 }
 
-}  // namespace test
-}  // namespace core
-}  // namespace mojo
+} // namespace mojo::core::test

@@ -5,12 +5,14 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/gtest_util.h"
 #include "base/values.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
+#include "mojo/public/cpp/test_support/validation_errors_test_util.h"
 #include "mojo/public/mojom/base/values.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -5,6 +5,7 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_BORDER_H_
 #define UI_VIEWS_CONTROLS_BUTTON_LABEL_BUTTON_BORDER_H_
 
+#include <array>
 #include <memory>
 
 #include "ui/gfx/geometry/insets.h"

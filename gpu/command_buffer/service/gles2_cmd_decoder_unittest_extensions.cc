@@ -32,7 +32,6 @@ class GLES2DecoderTestWithBlendEquationAdvanced : public GLES2DecoderTest {
     init.has_depth = true;
     init.request_alpha = true;
     init.request_depth = true;
-    init.bind_generates_resource = true;
     init.extensions = "GL_KHR_blend_equation_advanced";
     InitDecoder(init);
   }
@@ -53,7 +52,6 @@ class GLES3DecoderTestWithEXTWindowRectangles : public GLES3DecoderTest {
     init.has_depth = true;
     init.request_alpha = true;
     init.request_depth = true;
-    init.bind_generates_resource = true;
     init.extensions = "GL_EXT_window_rectangles";
     InitDecoder(init);
   }

@@ -15,19 +15,24 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
+#include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/common/content_export.h"
+#include "content/services/auction_worklet/public/cpp/private_aggregation_reporting.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/aggregation_service/aggregatable_report.mojom.h"
 #include "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom.h"
 #include "url/origin.h"
@@ -45,7 +50,10 @@ std::optional<double> GetBaseValue(
     double winning_bid,
     double highest_scoring_other_bid,
     const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const PrivateAggregationParticipantData& participant_data,
     const PrivateAggregationTimings& timings) {
+  base::UmaHistogramEnumeration("Ads.InterestGroup.Auction.PABaseValueUsed",
+                                base_value);
   // The mojom API declaration should ensure base_value is one of these cases.
   switch (base_value) {
     case auction_worklet::mojom::BaseValue::kWinningBid:
@@ -65,8 +73,34 @@ std::optional<double> GetBaseValue(
         return static_cast<int>(reject_reason.value());
       }
       return std::nullopt;
+    case auction_worklet::mojom::BaseValue::kParticipatingInterestGroupCount:
+      return participant_data.participating_interest_group_count;
+    case auction_worklet::mojom::BaseValue::kAverageCodeFetchTime:
+      return participant_data.average_code_fetch_time.InMillisecondsF();
+    case auction_worklet::mojom::BaseValue::kPercentScriptsTimeout:
+      return participant_data.percent_scripts_timeout;
+    case auction_worklet::mojom::BaseValue::
+        kPercentInterestGroupsCumulativeTimeout:
+      return participant_data.percent_igs_cumulative_timeout;
+    case auction_worklet::mojom::BaseValue::kCumulativeBuyerTime:
+      return participant_data.cumulative_buyer_time.InMillisecondsF();
+    case auction_worklet::mojom::BaseValue::kRegularInterestGroupsUsed:
+      return participant_data.regular_igs;
+    case auction_worklet::mojom::BaseValue::
+        kPercentRegularInterestGroupQuotaUsed:
+      return participant_data.percent_regular_igs_quota_used;
+    case auction_worklet::mojom::BaseValue::kNegativeInterestGroupsUsed:
+      return participant_data.negative_igs;
+    case auction_worklet::mojom::BaseValue::
+        kPercentNegativeInterestGroupQuotaUsed:
+      return participant_data.percent_negative_igs_quota_used;
+    case auction_worklet::mojom::BaseValue::kInterestGroupStorageUsed:
+      return participant_data.igs_storage_used;
+    case auction_worklet::mojom::BaseValue::
+        kPercentInterestGroupStorageQuotaUsed:
+      return participant_data.percent_igs_storage_quota_used;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Returns contribution's bucket calculated from `base`, and `bucket_obj`'s
@@ -177,6 +211,7 @@ CalculateContributionBucketAndValue(
     double winning_bid,
     double highest_scoring_other_bid,
     const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const PrivateAggregationParticipantData& participant_data,
     const PrivateAggregationTimings& timings) {
   absl::uint128 bucket;
   int value;
@@ -187,9 +222,9 @@ CalculateContributionBucketAndValue(
     auction_worklet::mojom::SignalBucketPtr& bucket_obj =
         contribution->bucket->get_signal_bucket();
     std::optional<absl::uint128> bucket_opt = CalculateBucket(
-        bucket_obj,
-        GetBaseValue(bucket_obj->base_value, winning_bid,
-                     highest_scoring_other_bid, reject_reason, timings));
+        bucket_obj, GetBaseValue(bucket_obj->base_value, winning_bid,
+                                 highest_scoring_other_bid, reject_reason,
+                                 participant_data, timings));
     if (!bucket_opt.has_value()) {
       return nullptr;
     }
@@ -211,26 +246,45 @@ CalculateContributionBucketAndValue(
     const auction_worklet::mojom::SignalValuePtr& value_obj =
         contribution->value->get_signal_value();
     std::optional<int> value_opt = CalculateValue(
-        value_obj,
-        GetBaseValue(value_obj->base_value, winning_bid,
-                     highest_scoring_other_bid, reject_reason, timings));
+        value_obj, GetBaseValue(value_obj->base_value, winning_bid,
+                                highest_scoring_other_bid, reject_reason,
+                                participant_data, timings));
     if (!value_opt.has_value()) {
       return nullptr;
     }
     value = value_opt.value();
   }
 
-  std::optional<uint64_t> filtering_id;
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiFilteringIds)) {
-    filtering_id = contribution->filtering_id;
+  return blink::mojom::AggregatableReportHistogramContribution::New(
+      bucket, value, contribution->filtering_id);
+}
+
+bool DoesRequestUseErrorEvent(
+    const auction_worklet::mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
   }
 
-  return blink::mojom::AggregatableReportHistogramContribution::New(
-      bucket, value, filtering_id);
+  const auction_worklet::mojom::AggregatableReportForEventContributionPtr&
+      for_event_contrib = request.contribution->get_for_event_contribution();
+
+  return for_event_contrib->event_type->is_reserved_error();
 }
 
 }  // namespace
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData() =
+    default;
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData(
+    const PrivateAggregationParticipantData& other) = default;
+PrivateAggregationParticipantData& PrivateAggregationParticipantData::operator=(
+    const PrivateAggregationParticipantData& other) = default;
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData(
+    PrivateAggregationParticipantData&& other) = default;
+PrivateAggregationParticipantData& PrivateAggregationParticipantData::operator=(
+    PrivateAggregationParticipantData&& other) = default;
 
 PrivateAggregationKey::PrivateAggregationKey(
     url::Origin reporting_origin,
@@ -276,7 +330,7 @@ PrivateAggregationPhaseKey& PrivateAggregationPhaseKey::operator=(
 PrivateAggregationPhaseKey::~PrivateAggregationPhaseKey() = default;
 
 PrivateAggregationRequestWithEventType::PrivateAggregationRequestWithEventType(
-    auction_worklet::mojom::PrivateAggregationRequestPtr request,
+    auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr request,
     std::optional<std::string> event_type)
     : request(std::move(request)), event_type(event_type) {}
 
@@ -297,6 +351,7 @@ FillInPrivateAggregationRequest(
     double winning_bid,
     double highest_scoring_other_bid,
     const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
+    const PrivateAggregationParticipantData& participant_data,
     const PrivateAggregationTimings& timings,
     bool is_winner) {
   CHECK(request);
@@ -304,8 +359,16 @@ FillInPrivateAggregationRequest(
     // TODO(crbug.com/40254406): Report a bad mojom message when contribution's
     // value is negative. The worklet code should prevent that, but the worklet
     // process may be compromised.
+    auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr
+        finalized_request =
+            auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+                /*contribution=*/std::move(
+                    request->contribution->get_histogram_contribution()),
+                std::move(request->debug_mode_details),
+                /*error_event=*/std::nullopt);
+
     PrivateAggregationRequestWithEventType request_with_event_type(
-        std::move(request), /*event_type=*/std::nullopt);
+        std::move(finalized_request), /*event_type=*/std::nullopt);
     return request_with_event_type;
   }
 
@@ -318,19 +381,24 @@ FillInPrivateAggregationRequest(
   const auction_worklet::mojom::EventTypePtr& event_type =
       contribution->get_for_event_contribution()->event_type;
   std::optional<std::string> non_reserved_event_type = std::nullopt;
-  std::optional<auction_worklet::mojom::ReservedEventType> reserved_event_type =
-      std::nullopt;
+  std::optional<auction_worklet::mojom::ReservedNonErrorEventType>
+      reserved_non_error_event_type = std::nullopt;
+  std::optional<auction_worklet::mojom::ReservedErrorEventType>
+      reserved_error_event_type = std::nullopt;
+
   if (event_type->is_non_reserved()) {
     non_reserved_event_type = event_type->get_non_reserved();
+  } else if (event_type->is_reserved_non_error()) {
+    reserved_non_error_event_type = event_type->get_reserved_non_error();
   } else {
-    reserved_event_type = event_type->get_reserved();
+    reserved_error_event_type = event_type->get_reserved_error();
   }
 
   if (is_winner) {
     // Don't run loss events for a winner.
-    if (reserved_event_type.has_value() &&
-        *reserved_event_type ==
-            auction_worklet::mojom::ReservedEventType::kReservedLoss) {
+    if (reserved_non_error_event_type.has_value() &&
+        *reserved_non_error_event_type ==
+            auction_worklet::mojom::ReservedNonErrorEventType::kReservedLoss) {
       return std::nullopt;
     }
   } else {
@@ -341,9 +409,9 @@ FillInPrivateAggregationRequest(
     }
 
     // Don't run win events for a loser.
-    if (reserved_event_type.has_value() &&
-        *reserved_event_type ==
-            auction_worklet::mojom::ReservedEventType::kReservedWin) {
+    if (reserved_non_error_event_type.has_value() &&
+        *reserved_non_error_event_type ==
+            auction_worklet::mojom::ReservedNonErrorEventType::kReservedWin) {
       return std::nullopt;
     }
   }
@@ -351,22 +419,51 @@ FillInPrivateAggregationRequest(
   blink::mojom::AggregatableReportHistogramContributionPtr
       calculated_contribution = CalculateContributionBucketAndValue(
           std::move(contribution->get_for_event_contribution()), winning_bid,
-          highest_scoring_other_bid, reject_reason, timings);
+          highest_scoring_other_bid, reject_reason, participant_data, timings);
   if (!calculated_contribution) {
     return std::nullopt;
   }
 
   PrivateAggregationRequestWithEventType request_with_event_type(
-      auction_worklet::mojom::PrivateAggregationRequest::New(
-          auction_worklet::mojom::AggregatableReportContribution::
-              NewHistogramContribution(std::move(calculated_contribution)),
-          request->aggregation_mode, std::move(request->debug_mode_details)),
+      auction_worklet::mojom::FinalizedPrivateAggregationRequest::New(
+          std::move(calculated_contribution),
+          std::move(request->debug_mode_details),
+          ConvertErrorEventToPAggType(reserved_error_event_type)),
       non_reserved_event_type);
   return request_with_event_type;
 }
 
+bool ShouldKeepRequestOnlyIfReservedOnceRep(
+    const auction_worklet::mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
+  };
+
+  const auction_worklet::mojom::EventTypePtr& event_type =
+      request.contribution->get_for_event_contribution()->event_type;
+
+  // Note: all error events get this treatment.
+  return event_type->is_reserved_error() ||
+         (event_type->is_reserved_non_error() &&
+          event_type->get_reserved_non_error() ==
+              auction_worklet::mojom::ReservedNonErrorEventType::kReservedOnce);
+}
+
+bool IsPrivateAggregationRequestReservedOnce(
+    const auction_worklet::mojom::PrivateAggregationRequest& request) {
+  if (request.contribution->is_histogram_contribution()) {
+    return false;
+  }
+  return request.contribution->get_for_event_contribution()
+             ->event_type->is_reserved_non_error() &&
+         request.contribution->get_for_event_contribution()
+                 ->event_type->get_reserved_non_error() ==
+             auction_worklet::mojom::ReservedNonErrorEventType::kReservedOnce;
+}
+
 void SplitContributionsIntoBatchesThenSendToHost(
-    std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr> requests,
+    std::vector<auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>
+        requests,
     PrivateAggregationManager& pa_manager,
     const url::Origin& reporting_origin,
     std::optional<url::Origin> aggregation_coordinator_origin,
@@ -374,35 +471,29 @@ void SplitContributionsIntoBatchesThenSendToHost(
   CHECK_EQ(reporting_origin.scheme(), url::kHttpsScheme);
 
   // Split the vector of requests into those with matching debug mode details.
-  std::map<
-      blink::mojom::DebugModeDetailsPtr,
-      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>>
-      contributions_map;
+  std::map<blink::mojom::DebugModeDetailsPtr,
+           std::vector<
+               auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr>>
+      requests_map;
 
   bool is_debug_mode_allowed = pa_manager.IsDebugModeAllowed(
       /*top_frame_origin=*/main_frame_origin, reporting_origin);
 
-  for (auction_worklet::mojom::PrivateAggregationRequestPtr& request :
+  for (auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr& request :
        requests) {
-    // All for-event contributions have already been converted to histogram
-    // contributions by filling in post auction signals using
-    // `FillInPrivateAggregationRequest()` before reaching here.
-    CHECK(request->contribution->is_histogram_contribution());
     CHECK(request->debug_mode_details);
 
-    // TODO(alexmt): Split by this too when it can be non-default.
-    CHECK_EQ(request->aggregation_mode,
-             blink::mojom::AggregationServiceMode::kDefault);
+    blink::mojom::DebugModeDetailsPtr debug_mode_details =
+        std::move(request->debug_mode_details);
 
     // If debug mode will be ignored by the Private Aggregation layer, we
     // override the value here to allow the contributions to be batched
     // together.
     if (!is_debug_mode_allowed) {
-      request->debug_mode_details = blink::mojom::DebugModeDetails::New();
+      debug_mode_details = blink::mojom::DebugModeDetails::New();
     }
 
-    contributions_map[std::move(request->debug_mode_details)].push_back(
-        std::move(request->contribution->get_histogram_contribution()));
+    requests_map[std::move(debug_mode_details)].push_back(std::move(request));
   }
 
   if (aggregation_coordinator_origin &&
@@ -412,16 +503,17 @@ void SplitContributionsIntoBatchesThenSendToHost(
     return;
   }
 
-  for (auto& [debug_mode_details, contributions] : contributions_map) {
+  for (auto& [debug_mode_details, requests_vec] : requests_map) {
     mojo::Remote<blink::mojom::PrivateAggregationHost> remote_host;
 
     bool bound = pa_manager.BindNewReceiver(
         /*worklet_origin=*/reporting_origin,
         /*top_frame_origin=*/main_frame_origin,
-        PrivateAggregationBudgetKey::Api::kProtectedAudience,
+        PrivateAggregationCallerApi::kProtectedAudience,
         /*context_id=*/std::nullopt,
         /*timeout=*/std::nullopt, aggregation_coordinator_origin,
         PrivateAggregationHost::kDefaultFilteringIdMaxBytes,
+        /*max_contributions=*/std::nullopt,
         remote_host.BindNewPipeAndPassReceiver());
 
     // The worklet origin should be potentially trustworthy (and no context ID
@@ -432,7 +524,19 @@ void SplitContributionsIntoBatchesThenSendToHost(
     if (debug_mode_details->is_enabled) {
       remote_host->EnableDebugMode(std::move(debug_mode_details->debug_key));
     }
-    remote_host->ContributeToHistogram(std::move(contributions));
+
+    for (auction_worklet::mojom::FinalizedPrivateAggregationRequestPtr&
+             request : requests_vec) {
+      std::vector<blink::mojom::AggregatableReportHistogramContributionPtr>
+          contribution_vec;
+      contribution_vec.push_back(std::move(request->contribution));
+      if (request->error_event.has_value()) {
+        remote_host->ContributeToHistogramOnEvent(request->error_event.value(),
+                                                  std::move(contribution_vec));
+      } else {
+        remote_host->ContributeToHistogram(std::move(contribution_vec));
+      }
+    }
     remote_host.reset();
   }
 }
@@ -452,12 +556,66 @@ bool HasValidFilteringId(
 }
 
 bool IsValidFilteringId(std::optional<uint64_t> filtering_id) {
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kPrivateAggregationApiFilteringIds)) {
-    return filtering_id == std::nullopt;
+  return filtering_id.value_or(0) <= 255;
+}
+
+std::optional<std::string> ValidatePrivateAggregationRequests(
+    const std::vector<auction_worklet::mojom::PrivateAggregationRequestPtr>&
+        pa_requests) {
+  bool additional_extensions_allowed = base::FeatureList::IsEnabled(
+      blink::features::
+          kPrivateAggregationApiProtectedAudienceAdditionalExtensions);
+  bool error_events_allowed = base::FeatureList::IsEnabled(
+      blink::features::kPrivateAggregationApiErrorReporting);
+
+  for (const auto& request : pa_requests) {
+    // The mojom API declaration should ensure none of these are null.
+    CHECK(!request.is_null());
+
+    if (!HasValidFilteringId(request)) {
+      return "Private Aggregation filtering ID invalid";
+    }
+
+    if (!auction_worklet::
+            IsValidPrivateAggregationRequestForAdditionalExtensions(
+                *request, additional_extensions_allowed) ||
+        (!error_events_allowed && DoesRequestUseErrorEvent(*request))) {
+      return "Private Aggregation request using disabled features";
+    }
+  }
+  return std::nullopt;
+}
+
+std::optional<blink::mojom::PrivateAggregationErrorEvent>
+ConvertErrorEventToPAggType(
+    std::optional<auction_worklet::mojom::ReservedErrorEventType>
+        reserved_error_event) {
+  if (!reserved_error_event.has_value()) {
+    return std::nullopt;
   }
 
-  return filtering_id.value_or(0) <= 255;
+  using ReservedErrorEventType = auction_worklet::mojom::ReservedErrorEventType;
+  using PAggErrorEvent = blink::mojom::PrivateAggregationErrorEvent;
+  constexpr auto kErrorEventMap =
+      base::MakeFixedFlatMap<ReservedErrorEventType, PAggErrorEvent>({
+          {ReservedErrorEventType::kReportSuccess,
+           PAggErrorEvent::kReportSuccess},
+          {ReservedErrorEventType::kTooManyContributions,
+           PAggErrorEvent::kTooManyContributions},
+          {ReservedErrorEventType::kEmptyReportDropped,
+           PAggErrorEvent::kEmptyReportDropped},
+          {ReservedErrorEventType::kPendingReportLimitReached,
+           PAggErrorEvent::kPendingReportLimitReached},
+          {ReservedErrorEventType::kInsufficientBudget,
+           PAggErrorEvent::kInsufficientBudget},
+
+          // Contributions conditional on this should have been dropped by the
+          // script runner if it was not triggered.
+          {ReservedErrorEventType::kUncaughtError,
+           PAggErrorEvent::kAlreadyTriggeredExternalError},
+      });
+
+  return kErrorEventMap.at(*reserved_error_event);
 }
 
 }  // namespace content

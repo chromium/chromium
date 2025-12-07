@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ntp;
 
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
@@ -13,15 +14,18 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
-import android.widget.ScrollView;
+
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 
 /**
- * Simple wrapper on top of a ScrollView that will acquire focus when tapped.  Ensures the
- * New Tab page receives focus when clicked. This is only used in the Incognito NTP.
+ * Simple wrapper on top of a ScrollView that will acquire focus when tapped. Ensures the New Tab
+ * page receives focus when clicked. This is only used in the Incognito NTP.
  */
-public class NewTabPageScrollView extends ScrollView {
+@NullMarked
+public class NewTabPageScrollView extends FadingEdgeScrollView {
 
-    private GestureDetector mGestureDetector;
+    private final GestureDetector mGestureDetector;
 
     /** Constructor needed to inflate from XML. */
     public NewTabPageScrollView(Context context, AttributeSet attrs) {

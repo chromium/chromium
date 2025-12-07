@@ -1,8 +1,0 @@
-{
-  "program": {
-    "x86-32": {"url": "partly_invalid.nexe"},
-    "x86-64": {"url": "partly_invalid.nexe"},
-    "arm": {"url": "partly_invalid.nexe"},
-    "mips32": {"url": "partly_invalid.nexe"}
-  }
-}

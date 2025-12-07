@@ -1,0 +1,123 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+   --scrollbar-width: 4px;
+   --batch-upload-dialog-padding: 20px;
+ }
+
+#batchUploadDialog {
+  --batch-upload-full-max-height: 628px;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(var(--batch-upload-full-max-height)
+    - 2 * var(--batch-upload-dialog-padding));
+  padding-bottom: var(--batch-upload-dialog-padding);
+  padding-top: var(--batch-upload-dialog-padding);
+}
+
+#header {
+  padding-inline-end: var(--batch-upload-dialog-padding);
+  padding-inline-start: var(--batch-upload-dialog-padding);
+}
+
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-bottom: 16px;
+  margin-top: 0px;
+}
+
+#subtitle {
+  color: var(--cr-secondary-text-color);
+  font-size: 0.8125rem;
+  line-height: 20px;
+  margin-bottom: 16px;
+}
+
+#account-info-row {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 24px;
+}
+
+#account-icon {
+  --account-icon-size: 16px;
+  border-radius: 50%;
+  height: var(--account-icon-size);
+  width: var(--account-icon-size);
+}
+
+#email {
+  color: var(--cr-secondary-text-color);
+  font-size: 0.8125rem;
+  margin-inline-start: 8px;
+}
+
+#dataContainer {
+  max-height: 100%;
+  overflow: auto;
+}
+
+#dataSections {
+  display: flex;
+  flex-direction: column;
+  padding-inline-start: var(--batch-upload-dialog-padding);
+  padding-inline-end: var(--batch-upload-dialog-padding);
+  row-gap: 8px;
+}
+
+/* Added dynamically when scrollbar is visible */
+.data-sections-with-scrollbar {
+  padding-inline-end: calc(var(--batch-upload-dialog-padding)
+    - var(--scrollbar-width)) !important;
+}
+
+/* Added dynamically when scrollbar is visible */
+.border-line {
+  border-bottom: 2px solid var(--color-batch-upload-data-background);
+  border-top: 2px solid var(--color-batch-upload-data-background);
+}
+
+/** TODO(crbug.com/378442954): Consider using action-container class from
+ * signin/signin_shared.css instead. */
+#action-row {
+  column-gap: 8px;
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+  padding-inline-start: var(--batch-upload-dialog-padding);
+  padding-inline-end: var(--batch-upload-dialog-padding);
+}
+
+<if expr="is_macosx or is_linux or is_chromeos">
+#action-row {
+  flex-flow: row-reverse;
+  justify-content: flex-start;
+}
+</if>
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+}
+
+/* Track */
+.custom-scrollbar::-webkit-scrollbar-track {
+  border-radius: var(--scrollbar-width);
+}
+
+/* Handle */
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--color-button-foreground);
+  border-radius: var(--scrollbar-width);
+}

@@ -1,0 +1,104 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Slider Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='Test Slider' value='0' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Slider Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='Test Slider' value='25' valueForRange=25.00 minValueForRange=0.00 maxValueForRange=100.00 <<<<<< CHANGED
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Slider Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='Test Slider' value='25' valueForRange=25.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Slider Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='Test Slider' value='75' valueForRange=75.00 minValueForRange=0.00 maxValueForRange=100.00 <<<<<< CHANGED
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Slider Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='Test Slider' value='75' valueForRange=75.00 minValueForRange=0.00 maxValueForRange=100.00
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Slider Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-slider'
+++++++++++genericContainer className='container   ' htmlTag='div'
+++++++++++++slider horizontal className=' end ' htmlTag='input' name='Test Slider' value='50' valueForRange=50.00 minValueForRange=0.00 maxValueForRange=100.00 <<<<<< CHANGED
+++++++++++++genericContainer className='track' htmlTag='div'
+++++++++++++genericContainer className='handleContainerPadded' htmlTag='div'
+++++++++++++++genericContainer className='handleContainerBlock' htmlTag='div'
+++++++++++++++++genericContainer className='handleContainer   ' htmlTag='div'
+++++++++++++++++++genericContainer className='handle  end onTop ' htmlTag='div'
+++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++genericContainer className='handleNub' htmlTag='div'
+++++++++++++++++++++++genericContainer ignored invisible
+=== End accessibility tree ===

@@ -33,10 +33,15 @@ template("ios_chrome_xcuitest_app_host") {
 
     bundle_identifier = shared_bundle_id_for_test_apps
 
+    link_framework_first = "EarlyMallocZoneRegistration"
+
     if (!defined(deps)) {
       deps = []
     }
-    deps += [ "//ios/chrome/app:main" ]
+    deps += [
+      "//ios/chrome/app:app_trampoline",
+      "//ios/chrome/app:main",
+    ]
     if (defined(use_default_test_hooks) && use_default_test_hooks) {
       deps += [ "//ios/chrome/test/xcuitest:hooks" ]
     }
@@ -47,6 +52,7 @@ template("ios_chrome_xcuitest_app_host") {
     bundle_deps += [
       "//ios/chrome/app/resources",
       ios_application_icons_target,
+      ios_application_icons_target_legacy,
     ]
     bundle_deps += ios_providers_resources_targets
 
@@ -59,7 +65,6 @@ template("ios_chrome_xcuitest_app_host") {
       "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
       "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
       "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-      "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$bundle_identifier.ContentTodayExtension",
       "EG_MAIN_APPLICATION_DELEGATE=MainApplicationDelegate",
       "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
       "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",

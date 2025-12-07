@@ -5,22 +5,17 @@
 #ifndef IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_
 #define IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class JavaScriptConsoleFeature;
 
-namespace web {
-class BrowserState;
-}  // namespace web
-
 // Singleton that owns all JavaScriptConsoleFeatures and associates them with
-// a BrowserState.
-class JavaScriptConsoleFeatureFactory : public BrowserStateKeyedServiceFactory {
+// a profile.
+class JavaScriptConsoleFeatureFactory : public ProfileKeyedServiceFactoryIOS {
  public:
   static JavaScriptConsoleFeatureFactory* GetInstance();
-  static JavaScriptConsoleFeature* GetForBrowserState(
-      web::BrowserState* browser_state);
+  static JavaScriptConsoleFeature* GetForProfile(ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<JavaScriptConsoleFeatureFactory>;
@@ -28,16 +23,9 @@ class JavaScriptConsoleFeatureFactory : public BrowserStateKeyedServiceFactory {
   JavaScriptConsoleFeatureFactory();
   ~JavaScriptConsoleFeatureFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* browser_state) const override;
-
-  JavaScriptConsoleFeatureFactory(const JavaScriptConsoleFeatureFactory&) =
-      delete;
-  JavaScriptConsoleFeatureFactory& operator=(
-      const JavaScriptConsoleFeatureFactory&) = delete;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_JAVA_SCRIPT_CONSOLE_JAVA_SCRIPT_CONSOLE_FEATURE_FACTORY_H_

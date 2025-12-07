@@ -91,29 +91,52 @@ class SessionService : public SessionServiceBase {
   // Deletes the last session.
   void DeleteLastSession();
 
+  // Sets a tab's split ID, if any. Note that a split can't be across
+  // multiple windows.
+  void SetSplitTab(SessionID window_id,
+                   SessionID tab_id,
+                   std::optional<split_tabs::SplitTabId> split);
+
+  // Updates the metadata associated with a split tab. `window_id` should be
+  // the window where the split currently resides. Note that a split can't be
+  // across multiple windows.
+  void SetSplitTabData(SessionID window_id,
+                       const split_tabs::SplitTabId split,
+                       const split_tabs::SplitTabVisualData* visual_data);
+
   // Sets a tab's group ID, if any. Note that a group can't be split between
   // multiple windows.
   void SetTabGroup(SessionID window_id,
                    SessionID tab_id,
                    std::optional<tab_groups::TabGroupId> group);
 
-  // Updates the metadata associated with a tab group. |window_id| should be
+  // Updates the metadata associated with a tab group. `window_id` should be
   // the window where the group currently resides. Note that a group can't be
   // split between multiple windows.
-  void SetTabGroupMetadata(
-      SessionID window_id,
-      const tab_groups::TabGroupId& group_id,
-      const tab_groups::TabGroupVisualData* visual_data,
-      const std::optional<std::string> saved_guid = std::nullopt);
+  void SetTabGroupMetadata(SessionID window_id,
+                           const tab_groups::TabGroupId& group_id,
+                           const tab_groups::TabGroupVisualData* visual_data);
+  // This overloaded version of SetTabGroupMetadata should be used if the
+  // callers knows beforehand if a group is saved or not.
+  void SetTabGroupMetadata(SessionID window_id,
+                           const tab_groups::TabGroupId& group_id,
+                           const tab_groups::TabGroupVisualData* visual_data,
+                           std::optional<std::string> saved_guid);
+
+  // Adds the local to saved guid mapping to an in memory cache which is used on
+  // browser startup before TabGroupSyncService has initialized to verify if a
+  // local group is saved before writing metadata to disk.
+  void AddSavedTabGroupsMapping(const tab_groups::TabGroupId& group_id,
+                                const std::string& saved_guid);
 
   void AddTabExtraData(SessionID window_id,
                        SessionID tab_id,
                        const char* key,
-                       const std::string data);
+                       const std::string& data);
 
   void AddWindowExtraData(SessionID window_id,
                           const char* key,
-                          const std::string data);
+                          const std::string& data);
 
   void TabClosed(SessionID window_id, SessionID tab_id) override;
 
@@ -184,6 +207,7 @@ class SessionService : public SessionServiceBase {
                            content::WebContents* tab,
                            int index_in_window,
                            std::optional<tab_groups::TabGroupId> group,
+                           std::optional<split_tabs::SplitTabId> split,
                            bool is_pinned,
                            IdToRange* tab_to_available_range) override;
 
@@ -271,6 +295,12 @@ class SessionService : public SessionServiceBase {
 
   // Set to true once a valid command has been scheduled.
   bool did_schedule_command_ = false;
+
+  // This mapping is used when we need to know if a TabGroup is saved or not on
+  // browser startup before the TabGroupSyncService has finished initializing.
+  // When SetTabGroupMetadata is invoked we will call erase(group_id) on this
+  // mapping since we no longer need it after the first write to disk.
+  std::map<tab_groups::TabGroupId, std::string> local_to_sync_id_mapping_;
 
   base::WeakPtrFactory<SessionService> weak_factory_{this};
 };

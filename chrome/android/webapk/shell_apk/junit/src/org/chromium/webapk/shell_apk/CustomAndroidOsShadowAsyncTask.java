@@ -13,10 +13,6 @@ import java.util.concurrent.Executor;
 /**
  * Forces async tasks to execute with the default executor. This works around the problem of
  * Robolectric not working out of the box with custom executors.
- *
- * @param <Params>
- * @param <Progress>
- * @param <Result>
  */
 @SuppressWarnings("NoAndroidAsyncTaskCheck")
 @Implements(android.os.AsyncTask.class)

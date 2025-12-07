@@ -4,16 +4,17 @@
 
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
 
-#include "ash/components/arc/arc_prefs.h"
+#include <string_view>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "base/hash/sha1.h"
 #include "base/i18n/timezone.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -32,25 +32,36 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
+#include "chrome/browser/metrics/cros_pre_consent_metrics_manager.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
-#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
+#include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "crypto/obsolete/sha1.h"
 
 namespace ash {
+
+namespace login {
+std::string GetHashedTosContent(std::string_view tos_content) {
+  return std::string(
+      base::as_string_view(crypto::obsolete::Sha1::Hash(tos_content)));
+}
+}  // namespace login
 
 namespace {
 
@@ -86,12 +97,17 @@ std::string GetTosHost(ToS terms_type) {
         ash_switch);
   }
 
-  const char* url_path = kTermsTypeToUrlAndSwitch.at(terms_type).first;
-  if (terms_type == ToS::GOOGLE_EULA || terms_type == ToS::CROS_EULA) {
-    return base::StringPrintfNonConstexpr(
-        url_path, g_browser_process->GetApplicationLocale().c_str());
+  if (terms_type == ToS::GOOGLE_EULA) {
+    return base::StringPrintf(
+        chrome::kGoogleEulaOnlineURLPath,
+        g_browser_process->GetApplicationLocale().c_str());
   }
-  return url_path;
+  if (terms_type == ToS::CROS_EULA) {
+    return base::StringPrintf(
+        chrome::kCrosEulaOnlineURLPath,
+        g_browser_process->GetApplicationLocale().c_str());
+  }
+  return kTermsTypeToUrlAndSwitch.at(terms_type).first;
 }
 
 ConsolidatedConsentScreen::RecoveryOptInResult GetRecoveryOptInResult(
@@ -191,7 +207,7 @@ bool ConsolidatedConsentScreen::MaybeSkip(WizardContext& context) {
   // Skip the screen if the user is affiliated.
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CHECK(profile);
-  if (chrome::enterprise_util::IsProfileAffiliated(profile)) {
+  if (enterprise_util::IsProfileAffiliated(profile)) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -228,8 +244,7 @@ void ConsolidatedConsentScreen::ShowImpl() {
   data.Set("isChildAccount", is_child_account_);
   // If the user is affiliated with the device management domain, ToS should be
   // hidden.
-  data.Set("isTosHidden",
-           chrome::enterprise_util::IsProfileAffiliated(profile));
+  data.Set("isTosHidden", enterprise_util::IsProfileAffiliated(profile));
 
   // ToS URLs.
   data.Set("googleEulaUrl", GetTosHost(ToS::GOOGLE_EULA));
@@ -402,8 +417,9 @@ void ConsolidatedConsentScreen::RecordConsents(
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   // The account may or may not have consented to browser sync.
   DCHECK(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-  const CoreAccountId account_id =
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  const GaiaId gaia_id =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
 
   ArcPlayTermsOfServiceConsent play_consent;
   play_consent.set_status(UserConsentTypes::GIVEN);
@@ -416,9 +432,9 @@ void ConsolidatedConsentScreen::RecordConsents(
     play_consent.set_play_terms_of_service_text_length(
         params.tos_content.length());
     play_consent.set_play_terms_of_service_hash(
-        base::SHA1HashString(params.tos_content));
+        login::GetHashedTosContent(params.tos_content));
   }
-  consent_auditor->RecordArcPlayConsent(account_id, play_consent);
+  consent_auditor->RecordArcPlayConsent(gaia_id, play_consent);
 
   if (params.record_backup_consent) {
     ArcBackupAndRestoreConsent backup_and_restore_consent;
@@ -434,7 +450,7 @@ void ConsolidatedConsentScreen::RecordConsents(
                                               : UserConsentTypes::NOT_GIVEN);
 
     consent_auditor->RecordArcBackupAndRestoreConsent(
-        account_id, backup_and_restore_consent);
+        gaia_id, backup_and_restore_consent);
   }
 
   if (params.record_location_consent) {
@@ -461,12 +477,17 @@ void ConsolidatedConsentScreen::RecordConsents(
                                             ? UserConsentTypes::GIVEN
                                             : UserConsentTypes::NOT_GIVEN);
     consent_auditor->RecordArcGoogleLocationServiceConsent(
-        account_id, location_service_consent);
+        gaia_id, location_service_consent);
   }
 }
 
 void ConsolidatedConsentScreen::ReportUsageOptIn(bool is_enabled) {
   DCHECK(is_owner_.has_value());
+  // Attempt to disable pre-consent metrics if present.
+  if (metrics::CrOSPreConsentMetricsManager::Get()) {
+    metrics::CrOSPreConsentMetricsManager::Get()->Disable();
+  }
+
   if (is_owner_.value()) {
     StatsReportingController::Get()->SetEnabled(
         ProfileManager::GetActiveUserProfile(), is_enabled);
@@ -516,8 +537,7 @@ void ConsolidatedConsentScreen::OnAccept(bool enable_stats_usage,
   Profile* profile = ProfileManager::GetActiveUserProfile();
   CHECK(profile);
   consents.record_arc_tos_consent =
-      !chrome::enterprise_util::IsProfileAffiliated(profile) &&
-      !tos_content.empty();
+      !enterprise_util::IsProfileAffiliated(profile) && !tos_content.empty();
   consents.record_backup_consent = !backup_restore_managed_;
   consents.backup_accepted = enable_backup_restore;
   consents.record_location_consent = !location_services_managed_;
@@ -537,7 +557,6 @@ void ConsolidatedConsentScreen::ExitScreenWithAcceptedResult() {
     RecordRecoveryOptinResult(context()->recovery_setup);
   }
   StartupUtils::MarkEulaAccepted();
-  network_portal_detector::GetInstance()->Enable();
 
   const DemoSetupController* const demo_setup_controller =
       WizardController::default_controller()->demo_setup_controller();

@@ -5,14 +5,14 @@
 #include <string>
 #include <string_view>
 
-#include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "chrome/test/supervised_user/browser_user.h"
 #include "chrome/test/supervised_user/family_live_test.h"
-#include "chrome/test/supervised_user/family_member.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,10 +24,14 @@ namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 
+// TODO(b/301587955): Fix placement of supervised_user/e2e test files and their
+// dependencies.
 class IncognitoModeInSupervisedContextUiTest
-    : public InteractiveBrowserTestT<FamilyLiveTest> {
+    : public InteractiveFamilyLiveTest {
  public:
-  IncognitoModeInSupervisedContextUiTest() = default;
+  // Declares Prod rpc mode, but doesn't send any rpc anyway.
+  IncognitoModeInSupervisedContextUiTest()
+      : InteractiveFamilyLiveTest(FamilyLiveTest::RpcMode::kProd) {}
 
  protected:
   auto CheckCountOfIncognitoBrowsers(size_t expected_count) {
@@ -39,17 +43,18 @@ class IncognitoModeInSupervisedContextUiTest
   }
 };
 
+// TODO(https://crbug.com/367205684): SelectMenuItem unsupported
 IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
                        IncognitoModeIsNotAvailableToSupervisedUser) {
   ASSERT_TRUE(
-      IncognitoModePrefs::IsIncognitoAllowed(child().browser()->profile()));
+      IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
   TurnOnSyncFor(child());
 
   ASSERT_FALSE(
-      IncognitoModePrefs::IsIncognitoAllowed(child().browser()->profile()));
+      IncognitoModePrefs::IsIncognitoAllowed(child().browser().profile()));
 
   RunTestSequenceInContext(
-      child().browser()->window()->GetElementContext(),
+      BrowserElements::From(&child().browser())->GetContext(),
       InstrumentTab(kWebContentsElementId),
       CheckCountOfIncognitoBrowsers(/*expected_count=*/0),
       PressButton(kToolbarAppMenuButtonElementId),
@@ -59,14 +64,15 @@ IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
       CheckCountOfIncognitoBrowsers(/*expected_count=*/0));
 }
 
+// TODO(https://crbug.com/367205684): SelectMenuItem unsupported
 IN_PROC_BROWSER_TEST_F(IncognitoModeInSupervisedContextUiTest,
                        IncognitoModeIsAvailableToHeadOfHousehold) {
   TurnOnSyncFor(head_of_household());
   ASSERT_TRUE(IncognitoModePrefs::IsIncognitoAllowed(
-      head_of_household().browser()->profile()));
+      head_of_household().browser().profile()));
 
   RunTestSequenceInContext(
-      head_of_household().browser()->window()->GetElementContext(),
+      BrowserElements::From(&head_of_household().browser())->GetContext(),
       CheckCountOfIncognitoBrowsers(/*expected_count=*/0),
       PressButton(kToolbarAppMenuButtonElementId),
       CheckViewProperty(AppMenuModel::kIncognitoMenuItem,

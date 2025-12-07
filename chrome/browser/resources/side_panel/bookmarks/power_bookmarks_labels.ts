@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 import './icons.html.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
-import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/cr_icon/cr_icon.js';
 
-import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shared.mojom-webui.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -26,19 +26,27 @@ export class PowerBookmarksLabelsElement extends PolymerElement {
 
   static get properties() {
     return {
-      disabled: Boolean,
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
       labels: {
         type: Array,
         computed: 'computeLabels(trackedProductInfos.*)',
         notify: true,
       },
-      trackedProductInfos: Object,
+      trackedProductInfos: {
+        type: Object,
+        value: () => {
+          return {};
+        },
+      },
     };
   }
 
-  disabled: boolean = false;
-  labels: Label[] = [];
-  trackedProductInfos: {[key: string]: BookmarkProductInfo} = {};
+  declare disabled: boolean;
+  declare labels: Label[];
+  declare trackedProductInfos: {[key: string]: BookmarkProductInfo};
 
   private computeLabels() {
     const labels: Label[] = [];

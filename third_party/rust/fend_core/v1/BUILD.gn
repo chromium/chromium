@@ -13,58 +13,85 @@ cargo_crate("lib") {
   epoch = "1"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/ast.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/date.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/date/day.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/date/day_of_week.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/date/month.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/date/parser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/date/year.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/error.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/eval.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/format.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/ident.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/inline_substitutions.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/interrupt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/json.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/lexer.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/base.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/bigrat.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/biguint.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/complex.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/continued_fraction.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/dist.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/exact.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/formatting_style.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/real.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/unit.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/unit/base_unit.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/unit/named_unit.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/num/unit/unit_exponent.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/parser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/result.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/scope.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/serialize.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/units.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/units/builtin.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/value.rs",
-    "//third_party/rust/chromium_crates_io/vendor/fend-core-1.5.0/src/value/built_in_function.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/ast.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/date.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/date/day.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/date/day_of_week.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/date/month.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/date/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/date/year.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/error.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/eval.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/format.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/ident.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/inline_substitutions.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/interrupt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/json.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/lexer.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/base.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/bigrat.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/biguint.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/complex.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/continued_fraction.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/dist.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/exact.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/formatting_style.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/real.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/unit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/unit/base_unit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/unit/named_unit.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/num/unit/unit_exponent.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/result.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/scope.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/serialize.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/units.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/units/builtin.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/value.rs",
+    "//third_party/rust/chromium_crates_io/vendor/fend-core-v1/src/value/built_in_function.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
-  edition = "2021"
-  cargo_pkg_version = "1.5.0"
+  edition = "2024"
   cargo_pkg_name = "fend-core"
   cargo_pkg_description = "Arbitrary-precision unit-aware calculator"
-  library_configs -= [ "//build/config/compiler:chromium_code" ]
-  library_configs += [ "//build/config/compiler:no_chromium_code" ]
-  executable_configs -= [ "//build/config/compiler:chromium_code" ]
-  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
-  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
-  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  cargo_pkg_repository = "https://github.com/printfn/fend"
+  cargo_pkg_version = "1.5.7"
+
+  allow_unsafe = false
+
+  #####################################################################
+  # Tweaking which GN `config`s apply to this target.
+
+  # Config changes that apply to all `//third_party/rust` crates.
+  _configs_to_remove = [
+    # We don't need code coverage data for any `chromium_crates_io` crates.
+    "//build/config/coverage:default_coverage",
+
+    # This is third-party code, so remove `chromium_code` config.  We are not
+    # at the same time adding `//build/config/compiler:no_chromium_code`,
+    # because 1) we don't want to pull how warnings are handled by that config
+    # and 2) that config doesn't have any non-warnings-related stuff.
+    "//build/config/compiler:chromium_code",
+  ]
+  _configs_to_add = []
+
+  # Changing (if needed) which configs apply to this specific crate (based on
+  # `extra_kv.configs_to_remove` and `extra_kv.configs_to_add` from
+  # `gnrt_config.toml`).
+  _configs_to_remove += []
+  _configs_to_add += []
+
+  # Applying config changes.
+  library_configs -= _configs_to_remove
+  library_configs += _configs_to_add
+  executable_configs -= _configs_to_remove
+  executable_configs += _configs_to_add
+  proc_macro_configs -= _configs_to_remove
+  proc_macro_configs += _configs_to_add
 }

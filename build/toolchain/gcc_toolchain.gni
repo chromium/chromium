@@ -5,6 +5,7 @@
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/coverage/coverage.gni")
+import("//build/config/cronet/config.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/sysroot.gni")
@@ -13,13 +14,6 @@ import("//build/toolchain/cc_wrapper.gni")
 import("//build/toolchain/rbe.gni")
 import("//build/toolchain/toolchain.gni")
 
-if (is_nacl) {
-  # To keep NaCl variables out of builds that don't include NaCl, all
-  # variables defined in nacl/config.gni referenced here should be protected by
-  # is_nacl conditions.
-  import("//build/config/nacl/config.gni")
-}
-
 declare_args() {
   # Enables allowlist generation for IDR_ grit defines seen by the compiler.
   # Currently works only on some platforms and enabled by default for official
@@ -27,14 +21,10 @@ declare_args() {
   enable_resource_allowlist_generation =
       is_official_build &&
       # Don't enable for Android-on-Chrome OS.
-      (target_os == "android" || target_os == "win")
-
-  # Use -MD instead of -MMD for compiler commands. This is useful for tracking
-  # the comprehensive set of dependencies.  It's also required when building
-  # without the sysroot so that updates to system header files trigger a
-  # rebuild (when using the sysroot, the CR_SYSROOT_KEY define takes care of
-  # this already).
-  system_headers_in_deps = !use_sysroot
+      (target_os == "android" || target_os == "win") &&
+      # TODO(https://crbug.com/445896263): Consider whether Cronet should enable
+      # this.
+      !is_cronet_build
 }
 
 # When the arg is set via args.gn, it applies to all toolchains. In order to not
@@ -98,10 +88,6 @@ if (enable_resource_allowlist_generation) {
 #      for an executable, rather than using no extension; targets will
 #      still be able to override the extension using the output_extension
 #      variable.
-#  - rebuild_define
-#      The contents of this string, if specified, will be passed as a #define
-#      to the toolchain. It can be used to force recompiles whenever a
-#      toolchain is updated.
 #  - shlib_extension
 #      If this string is specified it will be used for the file extension
 #      for a shared library, rather than default value specified in
@@ -120,14 +106,6 @@ template("single_gcc_toolchain") {
     assert(defined(invoker.cc), "gcc_toolchain() must specify a \"cc\" value")
     assert(defined(invoker.cxx), "gcc_toolchain() must specify a \"cxx\" value")
     assert(defined(invoker.ld), "gcc_toolchain() must specify a \"ld\" value")
-
-    # This define changes when the toolchain changes, forcing a rebuild.
-    # Nothing should ever use this define.
-    if (defined(invoker.rebuild_define)) {
-      rebuild_string = "-D" + invoker.rebuild_define + " "
-    } else {
-      rebuild_string = ""
-    }
 
     # GN's syntax can't handle more than one scope dereference at once, like
     # "invoker.toolchain_args.foo", so make a temporary to hold the toolchain
@@ -173,11 +151,6 @@ template("single_gcc_toolchain") {
     } else {
       toolchain_uses_reclient = use_reclient
     }
-    if (defined(toolchain_args.use_reclient_links)) {
-      toolchain_uses_reclient_links = toolchain_args.use_reclient_links
-    } else {
-      toolchain_uses_reclient_links = use_reclient_links
-    }
 
     if (defined(toolchain_args.cc_wrapper)) {
       toolchain_cc_wrapper = toolchain_args.cc_wrapper
@@ -213,17 +186,6 @@ template("single_gcc_toolchain") {
       not_needed(invoker, [ "needs_rewrapper_path_arg" ])
     }
 
-    if (toolchain_uses_reclient_links) {
-      if (defined(toolchain_args.reclient_link_cfg_file)) {
-        toolchain_reclient_link_cfg_file = toolchain_args.reclient_link_cfg_file
-      } else {
-        toolchain_reclient_link_cfg_file = reclient_link_cfg_file
-      }
-      link_prefix = "${reclient_bin_dir}/rewrapper -cfg=${toolchain_reclient_link_cfg_file} -exec_root=${rbe_exec_root} "
-    } else {
-      link_prefix = ""
-    }
-
     # A specific toolchain may wish to avoid coverage instrumentation, so we
     # allow the global "use_clang_coverage" arg to be overridden.
     if (defined(toolchain_args.use_clang_coverage)) {
@@ -231,6 +193,8 @@ template("single_gcc_toolchain") {
     } else {
       toolchain_use_clang_coverage = use_clang_coverage
     }
+
+    coverage_wrapper = ""
 
     # For a coverage build, we use the wrapper script globally so that it can
     # remove coverage cflags from files that should not have them.
@@ -263,8 +227,7 @@ template("single_gcc_toolchain") {
             rebase_path(toolchain_coverage_instrumentation_input_file,
                         root_build_dir)
       }
-      compiler_prefix =
-          "\"$python_path\" ${_coverage_wrapper} " + compiler_prefix
+      coverage_wrapper = "\"$python_path\" ${_coverage_wrapper} "
     }
 
     cc = compiler_prefix + invoker.cc
@@ -275,7 +238,7 @@ template("single_gcc_toolchain") {
     # assembler runs.
     asm = invoker.cc
     ar = invoker.ar
-    ld = link_prefix + invoker.ld
+    ld = invoker.ld
     if (defined(invoker.readelf)) {
       readelf = invoker.readelf
     } else {
@@ -360,7 +323,7 @@ template("single_gcc_toolchain") {
     tool("cc") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cc $md -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${extra_cppflags}${extra_cflags} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cc $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_c}}${extra_cppflags}${extra_cflags} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CC {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -369,16 +332,27 @@ template("single_gcc_toolchain") {
     tool("cxx") {
       depfile = "{{output}}.d"
       precompiled_header_type = "gcc"
-      command = "$cxx $md -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} -c {{source}} -o {{output}}"
+      command = "$coverage_wrapper$cxx $md -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} {{module_deps_no_self}} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "CXX {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
     }
 
+    tool("cxx_module") {
+      depfile = "{{output}}.d"
+
+      # Module file doesn't need coverage instrumentation because module files
+      # represent interfaces rather than implementations.
+      command = "$cxx -MD -MF $depfile {{defines}} {{include_dirs}} {{cflags}} {{cflags_cc}}${extra_cppflags}${extra_cxxflags} {{module_deps_no_self}} -fmodule-name={{label_name}} -x c++ -Xclang -emit-module -c {{source}} -o {{output}}"
+      depsformat = "gcc"
+      description = "CXX_MODULE {{output}}"
+      outputs = [ "$object_subdir/{{source_name_part}}.pcm" ]
+    }
+
     tool("asm") {
       # For GCC we can just use the C compiler to compile assembly.
       depfile = "{{output}}.d"
-      command = "$asm $md -MF $depfile ${rebuild_string}{{defines}} {{include_dirs}} {{asmflags}}${extra_asmflags} -c {{source}} -o {{output}}"
+      command = "$asm $md -MF $depfile {{defines}} {{include_dirs}} {{asmflags}}${extra_asmflags} -c {{source}} -o {{output}}"
       depsformat = "gcc"
       description = "ASM {{output}}"
       outputs = [ "$object_subdir/{{source_name_part}}.o" ]
@@ -388,11 +362,11 @@ template("single_gcc_toolchain") {
       if (current_os == "aix") {
         # AIX does not support either -D (deterministic output) or response
         # files.
-        command = "$ar -X64 {{arflags}} -r -c -s {{output}} {{inputs}}"
+        command = "$ar -X64 {{arflags}} -r -c {{output}} {{inputs}}"
       } else {
         rspfile = "{{output}}.rsp"
         rspfile_content = "{{inputs}}"
-        command = "\"$ar\" {{arflags}} -r -c -s -D {{output}} @\"$rspfile\""
+        command = "\"$ar\" {{arflags}} -r -c -D {{output}} @\"$rspfile\""
       }
 
       # Remove the output file first so that ar doesn't try to modify the
@@ -406,7 +380,7 @@ template("single_gcc_toolchain") {
       }
 
       # Almost all targets build with //build/config/compiler:thin_archive which
-      # adds -T to arflags.
+      # adds -T -S to arflags.
       description = "AR {{output}}"
       outputs = [ "{{output_dir}}/{{target_output_name}}{{output_extension}}" ]
 
@@ -691,7 +665,7 @@ template("single_gcc_toolchain") {
       rustc_bin = "$rust_sysroot_relative/bin/rustc"
       rustc = "$rust_compiler_prefix${rustc_bin}"
       rustc_wrapper =
-          rebase_path("//build/rust/rustc_wrapper.py", root_build_dir)
+          rebase_path("//build/rust/gni_impl/rustc_wrapper.py", root_build_dir)
 
       # RSP manipulation due to https://bugs.chromium.org/p/gn/issues/detail?id=249
       tool("rust_staticlib") {

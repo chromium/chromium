@@ -1,0 +1,60 @@
+<!doctype html>
+<title>Blink Scheduler Prioritize Rendering After Input - Click</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="resources/utils.js"></script>
+
+<h1>Test Page</h1>
+<button id=button>Click me!</button>
+
+<script>
+'use strict';
+
+window.onload = () => {
+  promise_test(async t => {
+    const eventCountDuringRafAfterInput = await new Promise(async resolve => {
+      const MAX_EVENTS = 20;
+      let eventCount = 0;
+
+      const inputFrameCallback = () => {
+        resolve(eventCount);
+        // Prevent any more input events from running.
+        eventCount = MAX_EVENTS;
+      };
+
+      const button = document.getElementById('button');
+
+      const inputHandler = (e) => {
+        if (eventCount >= MAX_EVENTS) {
+          return;
+        }
+        ++eventCount;
+        requestAnimationFrame(inputFrameCallback);
+        if (e.type == 'pointerup') {
+          test_driver.click(button);
+        }
+        // Spin long enough to increase the probability the next click is scheduled
+        // before the next task.
+        spin(50);
+      };
+
+      button.addEventListener('pointerdown', inputHandler);
+      button.addEventListener('pointerup', inputHandler);
+
+      await requestAnimationFramePromise();
+      await scheduler.yield();
+
+      test_driver.click(button);
+    });
+
+    // This should typically be 2: the pointerdown event and the pointerup, the
+    // latter of which likely runs at the start of the subsequent BeginMainFrame.
+    // Without the prioritize rendering after input policy, this will likely be
+    // 20, depending on timing.
+    assert_less_than_equal(eventCountDuringRafAfterInput, 5);
+  }, 'Test that pointer input does not starve rendering');
+};
+
+</script>

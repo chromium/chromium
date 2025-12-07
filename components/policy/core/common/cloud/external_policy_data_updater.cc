@@ -122,7 +122,7 @@ class ExternalPolicyDataUpdater::FetchJob final {
            const ExternalPolicyDataUpdater::FetchSuccessCallback& callback);
   FetchJob(const FetchJob&) = delete;
   FetchJob& operator=(const FetchJob&) = delete;
-  virtual ~FetchJob();
+  ~FetchJob();
 
   const std::string& key() const;
   const ExternalPolicyDataUpdater::Request& request() const;

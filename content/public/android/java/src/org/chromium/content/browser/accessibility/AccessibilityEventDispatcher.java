@@ -6,6 +6,9 @@ package org.chromium.content.browser.accessibility;
 
 import android.os.SystemClock;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -15,6 +18,7 @@ import java.util.Set;
  * throttle and queue AccessibilityEvents that are sent in quick succession. This ensures we do
  * not overload the system and create lag by sending superfluous events.
  */
+@NullMarked
 public class AccessibilityEventDispatcher {
     // Maps an AccessibilityEvent type to a throttle delay in milliseconds. This is populated once
     // in the constructor.
@@ -23,7 +27,7 @@ public class AccessibilityEventDispatcher {
     // Set of AccessibilityEvent types to throttle wholesale, rather than on a per |virtualViewId|
     // basis. Delays are still set independently in the |mEventThrottleDelays| map. This is
     // populated once in the constructor.
-    private Set<Integer> mViewIndependentEventsToThrottle;
+    private final Set<Integer> mViewIndependentEventsToThrottle;
 
     // Set of AccessibilityEvent types that are relevant to enabled accessibility services and
     // will be enqueued to be dispatched.
@@ -31,15 +35,15 @@ public class AccessibilityEventDispatcher {
 
     // For events being throttled (see: |mEventsToThrottle|), this array will map the eventType
     // to the last time (long in milliseconds) such an event has been sent.
-    private Map<Long, Long> mEventLastFiredTimes = new HashMap<Long, Long>();
+    private final Map<Long, Long> mEventLastFiredTimes = new HashMap<Long, Long>();
 
     // For events being throttled (see: |mEventsToThrottle|), this array will map the eventType
     // to a single Runnable that will send an event after some delay.
-    private Map<Long, Runnable> mPendingEvents = new HashMap<Long, Runnable>();
+    private final Map<Long, Runnable> mPendingEvents = new HashMap<Long, Runnable>();
 
     // Implementation of the callback interface to {@link WebContentsAccessibilityImpl} so that we
     // can maintain a connection through JNI to the native code.
-    private Client mClient;
+    private final Client mClient;
 
     /**
      * Callback interface to link {@link WebContentsAccessibilityImpl} with an instance of the
@@ -60,7 +64,7 @@ public class AccessibilityEventDispatcher {
          *
          * @param toRemove              The Runnable to remove.
          */
-        void removeRunnable(Runnable toRemove);
+        void removeRunnable(@Nullable Runnable toRemove);
 
         /**
          * Build an AccessibilityEvent for the given id and type. Requires a connection through the
@@ -166,6 +170,10 @@ public class AccessibilityEventDispatcher {
      */
     public void updateRelevantEventTypes(Set<Integer> relevantEventTypes) {
         this.mRelevantEventTypes = relevantEventTypes;
+    }
+
+    public void setEventThrottleDelays(Map<Integer, Integer> eventThrottleDelays) {
+        this.mEventThrottleDelays = eventThrottleDelays;
     }
 
     /**

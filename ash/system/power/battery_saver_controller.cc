@@ -216,6 +216,10 @@ void BatterySaverController::ClearBatterySaverModeToast() {
   toast_manager->Cancel(kBatterySaverToastId);
 }
 
+void BatterySaverController::StopObservingPowerStatusForTest() {
+  power_status_observation_.Reset();
+}
+
 void BatterySaverController::ShowBatterySaverModeToastHelper(
     const ToastCatalogName catalog_name,
     const std::u16string& toast_text) {

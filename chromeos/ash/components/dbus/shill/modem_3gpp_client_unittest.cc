@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/shill/modem_3gpp_client.h"
 
 #include <memory>
@@ -14,9 +9,12 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -58,7 +56,7 @@ class Modem3gppClientTest : public testing::Test {
     // Create a mock bus.
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    mock_bus_ = new dbus::MockBus(options);
+    mock_bus_ = new dbus::MockBus(std::move(options));
 
     // Create a mock proxy.
     mock_proxy_ = new dbus::MockObjectProxy(mock_bus_.get(), kServiceName,
@@ -67,8 +65,8 @@ class Modem3gppClientTest : public testing::Test {
     // Set an expectation so mock_proxy's ConnectToSignal() will use
     // OnConnectToSignal() to run the callback.
     EXPECT_CALL(*mock_proxy_.get(),
-                DoConnectToSignal(modemmanager::kModemManager13gppInterface,
-                                  modemmanager::kModem3gppSetCarrierLock, _, _))
+                ConnectToSignal(modemmanager::kModemManager13gppInterface,
+                                modemmanager::kModem3gppSetCarrierLock, _, _))
         .WillRepeatedly(Invoke(this, &Modem3gppClientTest::OnConnectToSignal));
 
     // Set an expectation so mock_bus's GetObjectProxy() for the given
@@ -94,24 +92,19 @@ class Modem3gppClientTest : public testing::Test {
   // Handles SetCarrierLock method call.
   void OnSetCarrierLock(dbus::MethodCall* method_call,
                         int timeout_ms,
-                        dbus::ObjectProxy::ResponseOrErrorCallback* callback) {
-    const uint8_t* configuration;
-    size_t conf_len;
-
+                        dbus::ObjectProxy::ResponseOrErrorCallback callback) {
     EXPECT_EQ(modemmanager::kModemManager13gppInterface,
               method_call->GetInterface());
     EXPECT_EQ(modemmanager::kModem3gppSetCarrierLock, method_call->GetMember());
 
     dbus::MessageReader reader(method_call);
-    EXPECT_TRUE(reader.PopArrayOfBytes(&configuration, &conf_len));
-    EXPECT_EQ(conf_len, expected_configuration_.size());
-    for (size_t i = 0; i < conf_len; i++) {
-      EXPECT_EQ(expected_configuration_.c_str()[i], (char)configuration[i]);
-    }
+    base::span<const uint8_t> configuration;
+    EXPECT_TRUE(reader.PopArrayOfBytes(&configuration));
+    EXPECT_EQ(base::as_string_view(configuration), expected_configuration_);
     EXPECT_FALSE(reader.HasMoreData());
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), response_.get(),
+        FROM_HERE, base::BindOnce(std::move(callback), response_.get(),
                                   error_response_.get()));
   }
 
@@ -137,11 +130,11 @@ class Modem3gppClientTest : public testing::Test {
       const std::string& interface_name,
       const std::string& signal_name,
       const dbus::ObjectProxy::SignalCallback& signal_callback,
-      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+      dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
     received_callback_ = signal_callback;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(*on_connected_callback), interface_name,
+        base::BindOnce(std::move(on_connected_callback), interface_name,
                        signal_name, /*success=*/true));
   }
 };
@@ -149,7 +142,7 @@ class Modem3gppClientTest : public testing::Test {
 TEST_F(Modem3gppClientTest, SetCarrierLockSuccess) {
   // Set expectations.
   expected_configuration_ = kCarrierLockConfig;
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethodWithErrorResponse(_, _, _))
       .WillOnce(Invoke(this, &Modem3gppClientTest::OnSetCarrierLock));
 
   // Create response.
@@ -179,7 +172,7 @@ TEST_F(Modem3gppClientTest, SetCarrierLockFailure) {
 
   // Set expectations.
   expected_configuration_ = kCarrierLockConfig;
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(this, &Modem3gppClientTest::OnSetCarrierLock));
 
   // Create response.
@@ -202,7 +195,7 @@ TEST_F(Modem3gppClientTest, SetCarrierLockFailure) {
 TEST_F(Modem3gppClientTest, CallSetCarrierLockTwice) {
   // Set expectations.
   expected_configuration_ = kCarrierLockConfig;
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethodWithErrorResponse(_, _, _))
       .WillOnce(Invoke(this, &Modem3gppClientTest::OnSetCarrierLock))
       .WillOnce(Invoke(this, &Modem3gppClientTest::OnSetCarrierLock));
 

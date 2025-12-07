@@ -13,12 +13,12 @@
 #include <string>
 #include <vector>
 
-#include "ash/components/arc/net/always_on_vpn_manager.h"
+#include "ash/public/cpp/token_handle_store.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -28,7 +28,6 @@
 #include "chrome/browser/ash/child_accounts/child_policy_observer.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/login/signin/oauth2_login_manager.h"
-#include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/net/xdr_manager.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/system_web_apps/apps/help_app/help_app_notification_controller.h"
@@ -36,6 +35,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/login/auth/authenticator.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/experiences/arc/net/always_on_vpn_manager.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -58,10 +58,11 @@ namespace ash {
 class AuthStatusConsumer;
 class OnboardingUserActivityCounter;
 class AuthenticatorBuilder;
-class TokenHandleFetcher;
+class LegacyTokenHandleFetcher;
 class EolNotification;
 class InputEventsBlocker;
 class U2FNotification;
+class TokenHandleService;
 
 namespace test {
 class UserSessionManagerTestApi;
@@ -203,10 +204,6 @@ class UserSessionManager
   // Returns true iff browser has been restarted after crash and
   // UserSessionManager finished restoring user sessions.
   bool UserSessionsRestored() const;
-
-  // Returns true iff browser has been restarted after crash and
-  // user sessions restoration is in progress.
-  bool UserSessionsRestoreInProgress() const;
 
   // Called when user profile is loaded. Send the notification before creating
   // the browser so additional objects that need the profile (e.g. the launcher)
@@ -371,7 +368,8 @@ class UserSessionManager
   void StopChildStatusObserving(Profile* profile);
 
   void CreateUserSession(const UserContext& user_context,
-                         bool has_auth_cookies);
+                         bool has_auth_cookies,
+                         bool has_active_session);
   void PreStartSession(StartSessionType start_session_type);
 
   // Store any useful UserContext data early on when profile has not been
@@ -393,6 +391,9 @@ class UserSessionManager
 
   void StartCrosSession();
   void PrepareProfile(const base::FilePath& profile_path);
+
+  // Check if the ARCVM DLC image was installed on the device.
+  void CheckArcVmDlcImageExist();
 
   // Callback for Profile::CREATE_STATUS_CREATED profile state.
   // Initializes basic preferences for newly created profile. Any other
@@ -478,7 +479,7 @@ class UserSessionManager
   // Returns `true` if token handles should be used on this device.
   bool TokenHandlesEnabled();
 
-  void CreateTokenUtilIfMissing();
+  void CreateTokenHandleStoreIfMissing();
 
   // Update token handle if the existing token handle is missing/invalid.
   void UpdateTokenHandleIfRequired(Profile* const profile,
@@ -517,6 +518,16 @@ class UserSessionManager
   HelpAppNotificationController* GetHelpAppNotificationController(
       Profile* profile);
 
+  void MaybeFetchTokenHandleForExistingUser(
+      TokenHandleService* token_handle_service);
+
+  void MaybeFetchTokenHandleForExistingUserIfInvalidOrEmpty(
+      const user_manager::User* user,
+      TokenHandleService* token_handle_service);
+
+  void FetchTokenHandleLegacy(Profile* profile, const user_manager::User* user);
+  void FetchTokenHandle(Profile* profile, const user_manager::User* user);
+
   base::WeakPtr<UserSessionManagerDelegate> delegate_;
 
   // Used to listen to network changes.
@@ -539,9 +550,6 @@ class UserSessionManager
   // True if user sessions has been restored after crash.
   // On a normal boot then login into user sessions this will be false.
   bool user_sessions_restored_;
-
-  // True if user sessions restoration after crash is in progress.
-  bool user_sessions_restore_in_progress_;
 
   // User sessions that have to be restored after browser crash.
   // [user_id] > [user_id_hash]
@@ -585,8 +593,8 @@ class UserSessionManager
   // Whether should fetch token handles, tests may override this value.
   bool should_obtain_handles_;
 
-  std::unique_ptr<TokenHandleUtil> token_handle_util_;
-  std::unique_ptr<TokenHandleFetcher> token_handle_fetcher_;
+  raw_ptr<TokenHandleStore> token_handle_store_;
+  std::unique_ptr<LegacyTokenHandleFetcher> token_handle_fetcher_;
   std::map<Profile*, std::unique_ptr<DeviceAccountGaiaTokenObserver>>
       token_observers_;
 
@@ -625,6 +633,10 @@ class UserSessionManager
 
   // Callback that allows tests to inject a test EolNotification implementation.
   EolNotificationHandlerFactoryCallback eol_notification_handler_test_factory_;
+
+  // Whether `metrics::BeginFirstWebContentsProfiling()` has been called. Should
+  // only be called once per program lifetime.
+  bool has_recorded_first_web_contents_metrics_ = false;
 
   base::WeakPtrFactory<UserSessionManager> weak_factory_{this};
 };

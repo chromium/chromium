@@ -12,7 +12,6 @@
 enum class SidePanelOpenTrigger {
   kToolbarButton = 0,
   kMinValue = kToolbarButton,
-  kLensContextMenu = 1,
   kSideSearchPageAction = 2,
   kNotesInPageContextMenu = 3,
   kComboboxSelected = 4,
@@ -31,7 +30,12 @@ enum class SidePanelOpenTrigger {
   kOverflowMenu = 17,
   kExtension = 18,
   kNewTabPage = 19,
-  kMaxValue = kNewTabPage,
+  kReadingListToast = 20,
+  kNewTabFooter = 21,
+  kNewTabPageCustomizationPromo = 22,
+  kNewTabPageAutomaticCustomizeChrome = 23,
+  kReadAnythingOmniboxChip = 24,
+  kMaxValue = kReadAnythingOmniboxChip,
 };
 
 enum class SidePanelContentState {
@@ -54,6 +58,9 @@ enum class SidePanelEntryHideReason {
   // Side panel entry was hidden because another entry was loaded into the
   // side panel.
   kReplaced = 1,
+  // Side panel entry was hidden because it is tab-scoped and the user switched
+  // tabs.
+  kBackgrounded = 2,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_ENUMS_H_

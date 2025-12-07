@@ -4,119 +4,110 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import android.content.Context;
 
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.hub.DisplayButtonData;
-import org.chromium.chrome.browser.hub.FadeHubLayoutAnimationFactory;
+import org.chromium.base.supplier.SettableNonNullObservableSupplier;
+import org.chromium.base.supplier.SettableObservableSupplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.hub.DelegateButtonData;
 import org.chromium.chrome.browser.hub.FullButtonData;
-import org.chromium.chrome.browser.hub.HubColorScheme;
-import org.chromium.chrome.browser.hub.HubContainerView;
-import org.chromium.chrome.browser.hub.HubLayoutAnimationListener;
-import org.chromium.chrome.browser.hub.HubLayoutAnimatorProvider;
-import org.chromium.chrome.browser.hub.HubLayoutConstants;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.Pane;
-import org.chromium.chrome.browser.hub.PaneHubController;
+import org.chromium.chrome.browser.hub.PaneBase;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.DoubleConsumer;
+import java.util.function.Supplier;
 
 /** A {@link Pane} representing the tab group UI. Contains opened and closed tab groups. */
-public class TabGroupsPane implements Pane {
-    private final Context mContext;
-    private final LazyOneshotSupplier<TabModelFilter> mTabModelFilterSupplier;
-    private final DoubleConsumer mOnToolbarAlphaChange;
+@NullMarked
+public class TabGroupsPane extends PaneBase {
+    private final LazyOneshotSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
-    private final FrameLayout mRootView;
-    private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
-            new ObservableSupplierImpl<>();
-    private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
-            new ObservableSupplierImpl<>();
+    private final SettableObservableSupplier<FullButtonData> mActionButtonSupplier =
+            ObservableSuppliers.createMonotonic();
+    private final SettableNonNullObservableSupplier<Boolean> mHairlineVisibilitySupplier =
+            ObservableSuppliers.createNonNull(false);
+    private final DataSharingTabManager mDataSharingTabManager;
 
-    private TabGroupListCoordinator mTabGroupListCoordinator;
+    private @Nullable TabGroupListCoordinator mTabGroupListCoordinator;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     /**
      * @param context Used to inflate UI.
-     * @param tabModelFilterSupplier Used to pull tab data from.
+     * @param tabGroupModelFilterSupplier Used to pull tab data from.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param profileProviderSupplier Used to fetch the current profile.
      * @param paneManagerSupplier Used to switch and communicate with other panes.
      * @param tabGroupUiActionHandlerSupplier Used to open hidden tab groups.
      * @param modalDialogManagerSupplier Used to create confirmation dialogs.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param dataSharingTabManager The {@link} DataSharingTabManager to start collaboration flows.
      */
     TabGroupsPane(
-            @NonNull Context context,
-            @NonNull LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier,
-            @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull Supplier<PaneManager> paneManagerSupplier,
-            @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
-        mContext = context;
-        mTabModelFilterSupplier = tabModelFilterSupplier;
-        mOnToolbarAlphaChange = onToolbarAlphaChange;
+            Context context,
+            LazyOneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
+            DoubleConsumer onToolbarAlphaChange,
+            OneshotSupplier<ProfileProvider> profileProviderSupplier,
+            Supplier<PaneManager> paneManagerSupplier,
+            Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            DataSharingTabManager dataSharingTabManager) {
+        super(PaneId.TAB_GROUPS, context, onToolbarAlphaChange);
+        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mProfileProviderSupplier = profileProviderSupplier;
         mPaneManagerSupplier = paneManagerSupplier;
         mTabGroupUiActionHandlerSupplier = tabGroupUiActionHandlerSupplier;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
-        mReferenceButtonSupplier.set(
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
+        mDataSharingTabManager = dataSharingTabManager;
+        if (ChromeFeatureList.sTabGroupEntryPointsAndroid.isEnabled()) {
+            TabGroupCreationUiDelegate flow =
+                    new TabGroupCreationUiDelegate(
+                            context,
+                            modalDialogManagerSupplier,
+                            paneManagerSupplier,
+                            mTabGroupModelFilterSupplier::get,
+                            TabGroupCreationDialogManager::new);
+            mActionButtonSupplier.set(
+                    new DelegateButtonData(
+                            new ResourceButtonData(
+                                    R.string.button_new_tab_group,
+                                    R.string.button_new_tab_group,
+                                    R.drawable.new_tab_icon),
+                            flow::newTabGroupFlow));
+        }
+        mReferenceButtonDataSupplier.set(
                 new ResourceButtonData(
                         R.string.accessibility_tab_groups,
                         R.string.accessibility_tab_groups,
                         R.drawable.ic_features_24dp));
-
-        mRootView = new FrameLayout(mContext);
     }
 
-    @Override
-    public @PaneId int getPaneId() {
-        return PaneId.TAB_GROUPS;
-    }
-
-    @NonNull
-    @Override
-    public ViewGroup getRootView() {
-        return mRootView;
-    }
-
-    @Nullable
-    @Override
-    public MenuOrKeyboardActionHandler getMenuOrKeyboardActionHandler() {
-        return null;
-    }
-
-    @Override
-    public boolean getMenuButtonVisible() {
-        return false;
-    }
-
-    @Override
-    public @HubColorScheme int getColorScheme() {
-        return HubColorScheme.DEFAULT;
-    }
-
+    @SuppressWarnings("NullAway")
     @Override
     public void destroy() {
         if (mTabGroupListCoordinator != null) {
@@ -127,63 +118,32 @@ public class TabGroupsPane implements Pane {
     }
 
     @Override
-    public void setPaneHubController(@Nullable PaneHubController paneHubController) {}
-
-    @Override
     public void notifyLoadHint(@LoadHint int loadHint) {
         if (loadHint == LoadHint.HOT && mTabGroupListCoordinator == null) {
             mTabGroupListCoordinator =
                     new TabGroupListCoordinator(
                             mContext,
-                            (TabGroupModelFilter) mTabModelFilterSupplier.get(),
-                            mProfileProviderSupplier.get(),
+                            assumeNonNull(mTabGroupModelFilterSupplier.get()),
+                            assertNonNull(mProfileProviderSupplier.get()),
                             mPaneManagerSupplier.get(),
                             mTabGroupUiActionHandlerSupplier.get(),
-                            mModalDialogManagerSupplier.get());
+                            mModalDialogManagerSupplier.get(),
+                            mHairlineVisibilitySupplier::set,
+                            mEdgeToEdgeSupplier,
+                            mDataSharingTabManager);
             mRootView.addView(mTabGroupListCoordinator.getView());
         } else if (loadHint == LoadHint.COLD && mTabGroupListCoordinator != null) {
             destroy();
         }
     }
 
-    @NonNull
     @Override
     public ObservableSupplier<FullButtonData> getActionButtonDataSupplier() {
-        return mEmptyActionButtonSupplier;
+        return mActionButtonSupplier;
     }
 
-    @NonNull
     @Override
-    public ObservableSupplier<DisplayButtonData> getReferenceButtonDataSupplier() {
-        return mReferenceButtonSupplier;
-    }
-
-    @NonNull
-    @Override
-    public ObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
-        // TODO(crbug.com/353993190): Implement this.
-        return new ObservableSupplierImpl<Boolean>();
-    }
-
-    @Nullable
-    @Override
-    public HubLayoutAnimationListener getHubLayoutAnimationListener() {
-        return null;
-    }
-
-    @NonNull
-    @Override
-    public HubLayoutAnimatorProvider createShowHubLayoutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView) {
-        return FadeHubLayoutAnimationFactory.createFadeInAnimatorProvider(
-                hubContainerView, HubLayoutConstants.FADE_DURATION_MS, mOnToolbarAlphaChange);
-    }
-
-    @NonNull
-    @Override
-    public HubLayoutAnimatorProvider createHideHubLayoutAnimatorProvider(
-            @NonNull HubContainerView hubContainerView) {
-        return FadeHubLayoutAnimationFactory.createFadeOutAnimatorProvider(
-                hubContainerView, HubLayoutConstants.FADE_DURATION_MS, mOnToolbarAlphaChange);
+    public NonNullObservableSupplier<Boolean> getHairlineVisibilitySupplier() {
+        return mHairlineVisibilitySupplier;
     }
 }

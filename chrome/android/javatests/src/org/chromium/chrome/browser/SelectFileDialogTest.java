@@ -7,10 +7,8 @@ package org.chromium.chrome.browser;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 
-import androidx.annotation.RequiresApi;
 import androidx.core.content.ContextCompat;
 import androidx.test.filters.MediumTest;
 
@@ -21,6 +19,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -32,13 +33,15 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.TestContentProvider;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.SelectFileDialog;
+import org.chromium.ui.insets.InsetObserver;
 
 import java.io.File;
 
@@ -47,7 +50,12 @@ import java.io.File;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class SelectFileDialogTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
+
+    @Mock InsetObserver mInsetObserver;
 
     private static final String DATA_URL =
             UrlUtils.encodeHtmlDataUri(
@@ -65,11 +73,13 @@ public class SelectFileDialogTest {
         public Intent lastIntent;
         public IntentCallback lastCallback;
 
-        public ActivityWindowAndroidForTest(Activity activity) {
+        public ActivityWindowAndroidForTest(Activity activity, InsetObserver insetObserver) {
             super(
                     activity,
                     /* listenToActivityState= */ true,
-                    IntentRequestTracker.createFromActivity(activity));
+                    IntentRequestTracker.createFromActivity(activity),
+                    insetObserver,
+                    /* trackOcclusion= */ true);
         }
 
         @Override
@@ -100,12 +110,13 @@ public class SelectFileDialogTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityWithURL(DATA_URL);
+        mActivityTestRule.startOnUrl(DATA_URL);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActivityWindowAndroidForTest =
-                            new ActivityWindowAndroidForTest(mActivityTestRule.getActivity());
+                            new ActivityWindowAndroidForTest(
+                                    mActivityTestRule.getActivity(), mInsetObserver);
                     SelectFileDialog.setWindowAndroidForTests(mActivityWindowAndroidForTest);
 
                     mWebContents = mActivityTestRule.getActivity().getCurrentWebContents();
@@ -123,7 +134,6 @@ public class SelectFileDialogTest {
 
     /** Tests that clicks on <input type="file" /> trigger intent calls to ActivityWindowAndroid. */
     @Test
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @MediumTest
     @Feature({"TextInput", "Main"})
     @DisabledTest(message = "https://crbug.com/724163")
@@ -184,9 +194,7 @@ public class SelectFileDialogTest {
                                     Intent.EXTRA_INTENT);
             Assert.assertNotNull(contentIntent);
             Assert.assertFalse(contentIntent.hasCategory(Intent.CATEGORY_OPENABLE));
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                Assert.assertTrue(contentIntent.hasExtra(Intent.EXTRA_ALLOW_MULTIPLE));
-            }
+            Assert.assertTrue(contentIntent.hasExtra(Intent.EXTRA_ALLOW_MULTIPLE));
             resetActivityWindowAndroidForTest();
         }
 
@@ -208,7 +216,6 @@ public class SelectFileDialogTest {
     /** Tests that content URI resolving to local app dir is checked correctly. */
     @Test
     @MediumTest
-    @RequiresApi(Build.VERSION_CODES.O)
     public void testIsContentUriUnderAppDir() throws Throwable {
         File dataDir = ContextCompat.getDataDir(ContextUtils.getApplicationContext());
         File childDir = new File(dataDir, "android");
@@ -218,8 +225,7 @@ public class SelectFileDialogTest {
         TestContentProvider.resetResourceRequestCounts(ContextUtils.getApplicationContext());
         TestContentProvider.setDataFilePath(
                 ContextUtils.getApplicationContext(), dataDir.getPath());
-        Assert.assertEquals(
-                Build.VERSION.SDK_INT >= Build.VERSION_CODES.O,
+        Assert.assertTrue(
                 SelectFileDialog.isContentUriUnderAppDir(
                         Uri.parse(TestContentProvider.createContentUrl(temp.getName())),
                         ContextUtils.getApplicationContext()));

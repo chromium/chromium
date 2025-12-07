@@ -20,11 +20,11 @@
 
 namespace {
 
-using updater::tagging::AppArgs;
-using updater::tagging::ErrorCode;
-using updater::tagging::NeedsAdmin;
-using updater::tagging::RuntimeModeArgs;
-using updater::tagging::TagArgs;
+using ::updater::tagging::AppArgs;
+using ::updater::tagging::ErrorCode;
+using ::updater::tagging::NeedsAdmin;
+using ::updater::tagging::RuntimeModeArgs;
+using ::updater::tagging::TagArgs;
 
 // Builder pattern helper to construct the TagArgs struct.
 class TagArgsBuilder {
@@ -505,7 +505,7 @@ TEST(TagParserTest, TagEndsInAmpersand) {
 }
 
 TEST(TagParserTest, WhitespaceOnly) {
-  for (const auto* whitespace : {"", " ", "\t", "\r", "\n", "\r\n"}) {
+  for (const auto& whitespace : {"", " ", "\t", "\r", "\n", "\r\n"}) {
     VerifyTagParseSuccess(whitespace, std::nullopt, TagArgsBuilder().Build());
   }
 }
@@ -658,7 +658,7 @@ TEST(TagParserTest, BackwardSlash3) {
 }
 
 TEST(TagParserTest, AppArgsMustHaveValue) {
-  for (const auto* tag :
+  for (const auto& tag :
        {"appguid", "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&ap",
         "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&experiments",
         "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&appname",
@@ -1476,9 +1476,8 @@ INSTANTIATE_TEST_SUITE_P(
     }));
 
 TEST_P(MsiTagTestMsiReadTagTest, TestCases) {
-  const auto tag_args =
-      tagging::BinaryReadTag(test::GetTestFilePath("tagged_msi")
-                                 .AppendASCII(GetParam().msi_file_name));
+  const auto tag_args = tagging::BinaryReadTag(
+      test::GetTestFilePath("tagged_msi").AppendUTF8(GetParam().msi_file_name));
   EXPECT_EQ(tag_args.has_value(), GetParam().expected_tag_args.has_value());
   if (GetParam().expected_tag_args) {
     test::ExpectTagArgsEqual(*tag_args, *GetParam().expected_tag_args);
@@ -1532,9 +1531,9 @@ TEST_P(MsiTagTestMsiWriteTagTest, TestCases) {
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath out_file;
   ASSERT_TRUE(CreateTemporaryFileInDir(temp_dir.GetPath(), &out_file));
-  const base::FilePath in_out_file = out_file.AddExtensionASCII(".msi");
+  const base::FilePath in_out_file = out_file.AddExtensionUTF8(".msi");
   const base::FilePath msi_file_path =
-      test::GetTestFilePath("tagged_msi").AppendASCII(GetParam().msi_file_name);
+      test::GetTestFilePath("tagged_msi").AppendUTF8(GetParam().msi_file_name);
   ASSERT_TRUE(base::CopyFile(msi_file_path, in_out_file));
 
   for (const auto& [msi_file, out_msi_file] :

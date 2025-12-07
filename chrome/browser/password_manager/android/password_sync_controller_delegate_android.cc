@@ -4,14 +4,15 @@
 
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_store/android_backend_error.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 
 namespace password_manager {
 
@@ -86,21 +87,45 @@ void PasswordSyncControllerDelegateAndroid::UpdateCredentialManagerSyncStatus(
   CHECK(sync_service);
   IsPwdSyncEnabled is_enabled = IsPwdSyncEnabled(
       password_manager::sync_util::HasChosenToSyncPasswords(sync_service));
+
+  // Unfortunately, the Android password backend doesn't provide a signal of
+  // when trusted vault related errors are resolved. SyncService, however, uses
+  // the same infrastructure to fetch trusted vault keys on Android as the
+  // Android password backend. Thus, we take the signal received from sync to
+  // notify clients to re-try fetching passwords in case the trusted vault error
+  // state changed (via the `on_pwd_sync_state_changed_` callback).
+  HasTrustedVaultError has_trusted_vault_error = HasTrustedVaultError(
+      sync_service->GetUserSettings()->IsTrustedVaultKeyRequired());
+
   if (credential_manager_sync_setting_.has_value() &&
       credential_manager_sync_setting_ == is_enabled) {
-    return;
+    // Sync setting didn't change, check for changed trusted vault error.
+    if (!base::FeatureList::IsEnabled(
+            password_manager::features::
+                kReloadPasswordsOnTrustedVaultEncryptionChange)) {
+      return;
+    }
+    if (!sync_service_has_trusted_vault_error_.has_value() ||
+        sync_service_has_trusted_vault_error_ == has_trusted_vault_error) {
+      // No change, nothing to notify.
+      return;
+    }
   }
+
+  sync_service_has_trusted_vault_error_ = has_trusted_vault_error;
 
   if (on_pwd_sync_state_changed_) {
     on_pwd_sync_state_changed_.Run();
   }
 
-  credential_manager_sync_setting_ = is_enabled;
-  if (is_enabled) {
-    bridge_->NotifyCredentialManagerWhenSyncing(
-        sync_service->GetAccountInfo().email);
-  } else {
-    bridge_->NotifyCredentialManagerWhenNotSyncing();
+  if (credential_manager_sync_setting_ != is_enabled) {
+    credential_manager_sync_setting_ = is_enabled;
+    if (is_enabled) {
+      bridge_->NotifyCredentialManagerWhenSyncing(
+          sync_service->GetAccountInfo().email);
+    } else {
+      bridge_->NotifyCredentialManagerWhenNotSyncing();
+    }
   }
 }
 

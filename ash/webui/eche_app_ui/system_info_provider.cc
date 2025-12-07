@@ -84,13 +84,11 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.Set(kJsonDeviceNameKey, system_info_->GetDeviceName());
   json_dictionary.Set(kJsonBoardNameKey, system_info_->GetBoardName());
   json_dictionary.Set(kJsonTabletModeKey,
-                      display::Screen::GetScreen()->InTabletMode());
-  json_dictionary.Set(kJsonGaiaIdKey, system_info_->GetGaiaId());
+                      display::Screen::Get()->InTabletMode());
+  json_dictionary.Set(kJsonGaiaIdKey, system_info_->GetGaiaId().ToString());
   json_dictionary.Set(kJsonDeviceTypeKey, system_info_->GetDeviceType());
-  if (features::IsEcheMetricsRevampEnabled()) {
-    json_dictionary.Set(kJsonOsVersionKey, system_info_->GetOsVersion());
-    json_dictionary.Set(kJsonChannelKey, system_info_->GetChannel());
-  }
+  json_dictionary.Set(kJsonOsVersionKey, system_info_->GetOsVersion());
+  json_dictionary.Set(kJsonChannelKey, system_info_->GetChannel());
   auto found_type = CONNECTION_STATE_TYPE.find(wifi_connection_state_);
   std::string connecton_state_string =
       found_type == CONNECTION_STATE_TYPE.end() ? "" : found_type->second;
@@ -109,13 +107,9 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.Set(
       kJsonCheckAndroidNetworkInfoKey,
       base::FeatureList::IsEnabled(features::kEcheSWACheckAndroidNetworkInfo));
-  json_dictionary.Set(
-      kJsonProcessAndroidAccessibilityTreeKey,
-      base::FeatureList::IsEnabled(features::kEcheSWAProcessAndroidAccessibilityTree));
+  json_dictionary.Set(kJsonProcessAndroidAccessibilityTreeKey, true);
 
-  std::string json_message;
-  base::JSONWriter::Write(json_dictionary, &json_message);
-  std::move(callback).Run(json_message);
+  std::move(callback).Run(base::WriteJson(json_dictionary).value_or(""));
 }
 
 void SystemInfoProvider::SetSystemInfoObserver(

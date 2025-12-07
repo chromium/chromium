@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_UDP_SOCKET_H_
 #define SERVICES_NETWORK_UDP_SOCKET_H_
 
-#include <deque>
 #include <memory>
 #include <vector>
 
@@ -25,7 +24,6 @@
 
 namespace net {
 class IOBuffer;
-class IOBufferWithSize;
 class NetLog;
 }  // namespace net
 
@@ -120,7 +118,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
 
     std::unique_ptr<net::IPEndPoint> addr;
     net::MutableNetworkTrafficAnnotationTag traffic_annotation;
-    scoped_refptr<net::IOBufferWithSize> data;
+    scoped_refptr<net::IOBuffer> data;
     SendToCallback callback;
   };
 
@@ -138,7 +136,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
       SendToCallback callback);
   void DoSendToOrWriteBuffer(
       const net::IPEndPoint* dest_addr,
-      scoped_refptr<net::IOBufferWithSize> buffer,
+      scoped_refptr<net::IOBuffer> buffer,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       SendToCallback callback);
 
@@ -162,7 +160,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
   scoped_refptr<net::IOBuffer> recvfrom_buffer_;
 
   // Non-null when there is a pending Send/SendTo operation on socket.
-  scoped_refptr<net::IOBufferWithSize> send_buffer_;
+  scoped_refptr<net::IOBuffer> send_buffer_;
   SendToCallback send_callback_;
 
   // The address of the sender of a received packet. This address might not be

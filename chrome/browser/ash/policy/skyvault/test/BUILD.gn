@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "skyvault_test_base.cc",
+    "skyvault_test_base.h",
+    "skyvault_test_utils.cc",
+    "skyvault_test_utils.h",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/ash/file_manager:test_support",
+    "//chrome/browser/ash/policy/skyvault",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//storage/browser",
+    "//testing/gtest",
+  ]
+}

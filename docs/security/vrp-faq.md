@@ -10,6 +10,24 @@ or https://bughunters.google.com/report/vrp -> Chrome VRP.
 
 Please check here for any news and updates about the Chrome VRP.
 
+* 30 December 2024: Announcing the top 20 Chrome VRP reporters of 2024:
+  https://crbug.com/386306231 -- congratulations to all who made the list and
+  thank you to all Chrome VRP reporters for your contributions this year and
+  helping make Chrome Browser and Chromium more secure for all users!
+
+* 13 November 2024: Updates to the [V8 Sandbox
+  Bypass](#v8-sandbox-bypass-rewards) scope and reward amounts.[Past
+  submissions of V8 sandbox bypasses](https://issues.chromium.org/hotlists/4802478)
+  have been opened for disclosure; please ensure your bypass has not already
+  been reported and use these reports as a resource to learn about the V8
+  sandbox and known bypass techniques.
+
+* 28 August 2024: Major updates to Chrome VRP rewards structure and amounts to
+  incentize deeper research; please see our [blog
+  post](https://bughunters.google.com/blog/5302044291629056/chrome-vrp-reward-updates-to-incentivize-deeper-research)
+  announcing these changes or review our Chrome VRP [policies and rewards
+  page](https://g.co/chrome/vrp) for full details.
+
 * 20 June 2024: All Google VRPs, including **Chrome VRP, have a new payments
   processing option through Bugcrowd**. To use the Bugcrowd option to receive
   your Chrome VRP reward payments, you must:
@@ -21,6 +39,9 @@ Please check here for any news and updates about the Chrome VRP.
       select `Bugcrowd` under `Payment Options` and enter the email address for
       your Bugcrowd account.
     * Hit `Save` on your profile and you're ready to roll!
+
+* 4 April 2024: We have launched the [V8 Sandbox Bypass
+  Rewards](#v8-sandbox-bypass-rewards).
 
 * 4 February 2024: The Chromium issue tracker migration is now complete. Please
   submit all issues using the [new issue tracker](https://issues.chromium.org)
@@ -348,6 +369,24 @@ Is there a time limit for submitting an exploit?
 * Also, many of our researchers receive gifts of swag and are invited to events.
 * You'll additionally have the peace of mind to know your bug findings were
   never used by shady people for nefarious purposes.
+
+#### I provided a new POC or new information-- will you increase the VRP reward?
+
+* Not generally, unless there are expectional circumstances. Criteria for Chrome
+  VRP reward decisions is inclusive of information included in the initial
+  report to the time the bug is fully resolved. Information that is provided
+  after the bug is resolved and assessed by the VRP does not benefit the
+  effective and efficient investigation and fix of the bug and should not be
+  expected to impact VRP reward assessment or reassessment.
+* We want to incentivize the earliest reporting of security issues, however,
+  security bug reports should only be submitted once they are fully inclusive
+  of all necessary aspects of a security bug report to allow for validation
+  triage, and resolution. If you can demonstrate an issue is not mitigated or
+  can be reliably reproduced and triggered remotely, that should be
+  demonstrated as part of the initial report or within the period of
+  investigation and fix.
+* We do, however, welcome reports of a functional exploit after the report is
+  submitted and even resolved for a potential higher VRP reward.
 
 #### When will I receive my reward?
 

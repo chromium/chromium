@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+assert(is_chromeos)
+
+source_set("enterprise_platform_keys") {
+  sources = [
+    "enterprise_platform_keys_api.cc",
+    "enterprise_platform_keys_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//build:chromeos_buildflags",
+    "//chromeos/crosapi/mojom",
+    "//extensions/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/chromeos/platform_keys",
+    "//chrome/browser/extensions",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
+    "//chromeos/ash/components/platform_keys",
+  ]
+}
+
+source_set("enterprise_platform_keys_registry_util") {
+  sources = [
+    "enterprise_platform_keys_registry_util.cc",
+    "enterprise_platform_keys_registry_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/common:constants",
+    "//components/pref_registry",
+  ]
+}

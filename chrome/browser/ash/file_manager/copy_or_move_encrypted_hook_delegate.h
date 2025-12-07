@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_FILE_MANAGER_COPY_OR_MOVE_ENCRYPTED_HOOK_DELEGATE_H_
 
 #include "base/functional/callback.h"
-#include "chromeos/ash/components/drivefs/mojom/drivefs.mojom-forward.h"
 #include "components/drive/file_errors.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"

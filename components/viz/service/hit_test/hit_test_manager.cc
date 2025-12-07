@@ -48,7 +48,7 @@ void HitTestManager::OnSurfaceActivated(const SurfaceId& surface_id) {
 
   Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
   DCHECK(surface);
-  uint64_t frame_index = surface->GetActiveFrameIndex();
+  uint32_t frame_index = surface->GetActiveFrameIndex();
 
   auto& frame_index_map = search->second;
   for (auto it = frame_index_map.begin(); it != frame_index_map.end();) {
@@ -61,13 +61,13 @@ void HitTestManager::OnSurfaceActivated(const SurfaceId& surface_id) {
 
 void HitTestManager::SubmitHitTestRegionList(
     const SurfaceId& surface_id,
-    const uint64_t frame_index,
+    const uint32_t frame_index,
     std::optional<HitTestRegionList> hit_test_region_list) {
   if (!hit_test_region_list) {
     auto& frame_index_map = hit_test_region_lists_[surface_id];
     if (!frame_index_map.empty()) {
       // We will reuse the last submitted hit-test data.
-      uint64_t last_frame_index = frame_index_map.rbegin()->first;
+      uint32_t last_frame_index = frame_index_map.rbegin()->first;
 
       HitTestRegionList last_hit_test_region_list =
           std::move(frame_index_map[last_frame_index]);
@@ -91,7 +91,7 @@ void HitTestManager::SubmitHitTestRegionList(
 const HitTestRegionList* HitTestManager::GetActiveHitTestRegionList(
     LatestLocalSurfaceIdLookupDelegate* delegate,
     const FrameSinkId& frame_sink_id,
-    uint64_t* store_active_frame_index) const {
+    uint32_t* store_active_frame_index) const {
   if (!delegate)
     return nullptr;
 
@@ -107,7 +107,7 @@ const HitTestRegionList* HitTestManager::GetActiveHitTestRegionList(
 
   Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
   DCHECK(surface);
-  uint64_t frame_index = surface->GetActiveFrameIndex();
+  uint32_t frame_index = surface->GetActiveFrameIndex();
   if (store_active_frame_index)
     *store_active_frame_index = frame_index;
 

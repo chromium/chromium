@@ -18,17 +18,6 @@ struct FontAdjustment;
 
 namespace l10n_util {
 
-// Returns the locale-dependent extended window styles.
-// This function is used for adding locale-dependent extended window styles
-// (e.g. WS_EX_LAYOUTRTL, WS_EX_RTLREADING, etc.) when creating a window.
-// Callers should OR this value into their extended style value when creating
-// a window.
-COMPONENT_EXPORT(UI_BASE) int GetExtendedStyles();
-
-// TODO(xji):
-// This is a temporary name, it will eventually replace GetExtendedStyles
-COMPONENT_EXPORT(UI_BASE) DWORD GetExtendedTooltipStyles();
-
 // Give an HWND, this function sets the WS_EX_LAYOUTRTL extended style for the
 // underlying window. When this style is set, the UI for the window is going to
 // be mirrored. This is generally done for the UI of right-to-left languages

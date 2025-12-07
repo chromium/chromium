@@ -19,7 +19,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -35,8 +34,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/command_line.h"
 #include "ui/views/test/view_skia_gold_pixel_diff.h"
 #endif
@@ -65,9 +63,10 @@ class NewTabPageTest : public InProcessBrowserTest,
   // content::DevToolsAgentHostClient:
   void DispatchProtocolMessage(content::DevToolsAgentHost* agent_host,
                                base::span<const uint8_t> message) override {
-    std::optional<base::Value> maybe_parsed_message =
-        base::JSONReader::Read(std::string_view(
-            reinterpret_cast<const char*>(message.data()), message.size()));
+    std::optional<base::Value> maybe_parsed_message = base::JSONReader::Read(
+        std::string_view(reinterpret_cast<const char*>(message.data()),
+                         message.size()),
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(maybe_parsed_message.has_value());
     base::Value::Dict parsed_message =
         std::move(maybe_parsed_message.value()).TakeDict();
@@ -126,13 +125,12 @@ class NewTabPageTest : public InProcessBrowserTest,
     // Enable network events. We use completion of network loads as a signal
     // of steady state.
     agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(
-                  std::string("{\"id\": 1, \"method\": \"Network.enable\"}"))));
+        this,
+        base::as_byte_span("{\"id\": 1, \"method\": \"Network.enable\"}"));
     // Enable DOM events. We determine completion of lazy load by reading a DOM
     // attribute.
     agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(
-                  std::string("{\"id\": 2, \"method\": \"DOM.enable\"}"))));
+        this, base::as_byte_span("{\"id\": 2, \"method\": \"DOM.enable\"}"));
 
     NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
                           ui::PageTransition::PAGE_TRANSITION_FIRST);
@@ -142,8 +140,8 @@ class NewTabPageTest : public InProcessBrowserTest,
     // Request the DOM. We will only receive DOM events for DOMs we have
     // requested.
     agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(std::string(
-                  "{\"id\": 3, \"method\": \"DOM.getDocument\"}"))));
+        this,
+        base::as_byte_span("{\"id\": 3, \"method\": \"DOM.getDocument\"}"));
     // Read initial value of lazy-loaded in case lazy load is already complete
     // at this point in time.
     lazy_loaded_ =
@@ -189,8 +187,7 @@ class NewTabPageTest : public InProcessBrowserTest,
   // verification is skipped.
   bool VerifyUi(const std::string& screenshot_prefix,
                 const std::string& screenshot_name) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kVerifyPixels)) {
       views::ViewSkiaGoldPixelDiff pixel_diff(screenshot_prefix);
@@ -219,7 +216,7 @@ class NewTabPageTest : public InProcessBrowserTest,
 // TODO(crbug.com/40874245): NewTabPageTest.LandingPagePixelTest is failing on
 // Win11 Tests x64.
 // TODO(crbug.com/40893756): It's also found flaky on Linux Tests, Linux Tests
-// (Wayland), linux-lacros-tester-rel, Mac12 Tests.
+// (Wayland), Mac12 Tests.
 IN_PROC_BROWSER_TEST_F(NewTabPageTest, DISABLED_LandingPagePixelTest) {
   WaitForLazyLoad();
   // By default WaitForNetworkLoad waits for all resources that have started

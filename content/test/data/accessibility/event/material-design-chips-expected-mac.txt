@@ -1,0 +1,71 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Filter Chips Events'
+++AXGroup AXDescription='Ready'
+++++AXToolbar
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 1' AXValue=0
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 2' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 1' AXValue=1
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Filter Chips Events'
+++AXGroup AXDescription='Ready'
+++++AXToolbar
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 1' AXValue=1 <<<<<< CHANGED
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 2' AXValue=0
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Filter Chips Events'
+++AXGroup AXDescription='Ready'
+++++AXToolbar
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 1' AXValue=1
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 2' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 2' AXValue=1
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Filter Chips Events'
+++AXGroup AXDescription='Ready'
+++++AXToolbar
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 1' AXValue=1
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 2' AXValue=1 <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Filter Chips Events'
+++AXGroup AXDescription='Ready'
+++++AXToolbar
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 1' AXValue=1
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 2' AXValue=1
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 1' AXValue=0
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Filter Chips Events'
+++AXGroup AXDescription='Ready'
+++++AXToolbar
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 1' AXValue=0 <<<<<< CHANGED
+++++++AXGroup
+++++++++AXGroup
+++++++++++AXCheckBox AXSubrole=AXToggleButton AXTitle='Chip 2' AXValue=1
+=== End accessibility tree ===

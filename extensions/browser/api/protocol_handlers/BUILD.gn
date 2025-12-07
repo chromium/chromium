@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("protocol_handlers") {
+  sources = [
+    "protocol_handlers_manager.cc",
+    "protocol_handlers_manager.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/common",
+  ]
+
+  deps = [
+    "//components/custom_handlers",
+    "//extensions/browser:browser_sources",
+  ]
+}

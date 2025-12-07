@@ -25,8 +25,13 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
   TextDirection BaseDirection() const {
     return static_cast<TextDirection>(base_direction_);
   }
+  void DisableBidi();
 
   bool HasFloats() const { return has_floats_; }
+  bool HasOutOfFlowPositioned() const { return has_out_of_flow_positioned_; }
+  bool HasFloatingOrOutOfFlowPositioned() const {
+    return HasFloats() || HasOutOfFlowPositioned();
+  }
   bool HasInitialLetterBox() const { return has_initial_letter_box_; }
   bool HasRuby() const { return has_ruby_; }
 
@@ -42,6 +47,8 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
   bool IsScoreLineBreakDisabled() const {
     return is_score_line_break_disabled_;
   }
+
+  bool HasFirstLineItems() const { return first_line_items_; }
 
   const InlineItemsData& ItemsData(bool is_first_line) const {
     return !is_first_line || !first_line_items_ ? (const InlineItemsData&)*this
@@ -77,6 +84,7 @@ struct CORE_EXPORT InlineNodeData final : InlineItemsData {
   unsigned base_direction_ : 1;  // TextDirection
 
   unsigned has_floats_ : 1;
+  unsigned has_out_of_flow_positioned_ : 1;
 
   // True if this node contains initial letter box. This value is used for
   // clearing. To control whether subsequent blocks overlap with initial

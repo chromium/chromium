@@ -46,7 +46,7 @@ ASH_EXPORT bool ShouldEnableFeatures();
 // focused. This is determined by looking at the currently `focused_widget` and
 // whether or not the tab navigation is moving in `reverse`.
 ASH_EXPORT views::Widget* GetNextWidgetToFocus(
-    const std::vector<views::Widget*> widget_list,
+    const std::vector<views::Widget*>& widget_list,
     const views::Widget* focused_widget,
     bool reverse);
 

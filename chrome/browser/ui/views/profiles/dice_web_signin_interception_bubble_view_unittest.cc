@@ -9,6 +9,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,9 +31,7 @@ std::string SigninInterceptTypeToString(SigninInterceptionType type) {
     case SigninInterceptionType::kChromeSignin:
       return "ChromeSignin";
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Interception type not supported in the tests.";
-      return std::string();
+      NOTREACHED() << "Interception type not supported in the tests.";
   }
 }
 
@@ -50,9 +49,7 @@ std::string SigninInterceptResultToString(SigninInterceptionResult result) {
     case SigninInterceptionResult::kNotDisplayed:
       return "NotDisplayed";
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Interception result not supported in the tests.";
-      return std::string();
+      NOTREACHED() << "Interception result not supported in the tests.";
   }
 }
 
@@ -68,9 +65,13 @@ class DiceWebSigninInterceptionBubbleViewTestBase : public testing::Test {
     signin::IdentityTestEnvironment* identity_test_env =
         identity_test_env_adaptor_->identity_test_env();
 
-    enterprise_account_ =
+    AccountInfo account_info =
         identity_test_env->MakeAccountAvailable("bob@example.com");
-    enterprise_account_.hosted_domain = "example.com";
+    enterprise_account_ = AccountInfo::Builder(account_info)
+                              .SetHostedDomain("example.com")
+                              .Build();
+    AccountCapabilitiesTestMutator(&enterprise_account_.capabilities)
+        .set_is_subject_to_enterprise_features(true);
     identity_test_env->UpdateAccountInfoForAccount(enterprise_account_);
     personal_account_ =
         identity_test_env->MakeAccountAvailable("alice@gmail.com");

@@ -9,8 +9,7 @@ shared_library("GL_starboard") {
     "egl_starboard.h",
     "gles2_starboard.h",
   ]
-  configs += [ "//third_party/khronos:khronos_headers" ]
-  deps = []
+  deps = [ "//third_party/angle:includes" ]
 
   # TODO(b/333131992): remove this, using the real impls instead of dummies.
   if (remove_starboard_headers) {
@@ -23,7 +22,10 @@ shared_library("GL_starboard") {
       "egl_starboard.cc",
       "gles2_starboard.cc",
     ]
-    configs += [ "//chromecast/starboard/third_party/starboard/sabi" ]
+    configs += [
+      "//chromecast/starboard/third_party/starboard/sabi",
+      "//third_party/khronos:khronos_headers",
+    ]
     deps += [
       "//chromecast/starboard/chromecast/starboard_cast_dummy:cast_starboard_api",
       "//chromecast/starboard/third_party/starboard/public",
@@ -38,6 +40,7 @@ source_set("graphics") {
   ]
   deps = [
     ":GL_starboard",
+    "//base",
     "//chromecast/public",
     "//chromecast/starboard:starboard_buildflags",
     "//chromecast/starboard/chromecast/starboard_adapter",

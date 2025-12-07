@@ -1,11 +1,13 @@
 Name: ChromiumUpdater
-URL: https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/README.md
-Version: Varies
-License: BSD
+URL: Internal
+Version: N/A
+Revision: DEPS
+Update Mechanism: Manual
+License: BSD-3-Clause
 License File: LICENSE
 Security Critical: Yes
 Shipped: yes
-CPEPrefix: cpe:2.3:a:google:updater:
+CPEPrefix: cpe:2.3:a:google:updater:*:*:*:*:*:*:*:*
 
 Description:
 The ChromiumUpdater package contains the ChromiumUpdater app bundle, which is
@@ -22,3 +24,5 @@ updater are pulled from CIPD into the source checkout.
 To update the versions of the updater in this directory, wait for the version
 you want to become available in CIPD, then update /DEPS to point to it. If the
 files change, you may also have to update ./BUILD.gn.
+
+For more info see https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/README.md

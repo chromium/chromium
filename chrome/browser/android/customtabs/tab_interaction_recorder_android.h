@@ -10,11 +10,10 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-#include "url/gurl.h"
 
 namespace customtabs {
 
@@ -34,19 +33,20 @@ class AutofillObserverImpl : public autofill::AutofillManager::Observer {
   ~AutofillObserverImpl() override;
 
   // AutofillManager::Observer:
-  void OnFormSubmitted(autofill::AutofillManager&,
-                       const autofill::FormData&) override;
-  void OnAfterSelectControlDidChange(autofill::AutofillManager&,
-                                     autofill::FormGlobalId,
-                                     autofill::FieldGlobalId) override;
-  void OnAfterTextFieldDidChange(autofill::AutofillManager&,
-                                 autofill::FormGlobalId,
-                                 autofill::FieldGlobalId,
-                                 const std::u16string&) override;
+  void OnBeforeFormSubmitted(autofill::AutofillManager&,
+                             const autofill::FormData&) override;
+  void OnAfterSelectControlSelectionChanged(autofill::AutofillManager&,
+                                            autofill::FormGlobalId,
+                                            autofill::FieldGlobalId) override;
+  void OnAfterTextFieldValueChanged(autofill::AutofillManager&,
+                                    autofill::FormGlobalId,
+                                    autofill::FieldGlobalId,
+                                    const std::u16string&) override;
   void OnAfterTextFieldDidScroll(autofill::AutofillManager&,
                                  autofill::FormGlobalId,
                                  autofill::FieldGlobalId) override;
   void OnAfterFormsSeen(autofill::AutofillManager&,
+                        base::span<const autofill::FormGlobalId>,
                         base::span<const autofill::FormGlobalId>) override;
 
  private:

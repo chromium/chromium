@@ -52,8 +52,6 @@ using DownloadToFileCompleteCallback =
 
 class UpdaterNetworkTest : public ::testing::Test {
  public:
-  ~UpdaterNetworkTest() override = default;
-
   void StartedCallback(int response_code, int64_t content_length) {
     EXPECT_EQ(response_code, 200);
   }
@@ -64,15 +62,17 @@ class UpdaterNetworkTest : public ::testing::Test {
   }
 
   void PostRequestCompleteCallback(const std::string& expected_body,
-                                   std::unique_ptr<std::string> response_body,
+                                   std::optional<std::string> response_body,
                                    int net_error,
                                    const std::string& header_etag,
                                    const std::string& header_x_cup_server_proof,
+                                   const std::string& header_set_cookie,
                                    int64_t xheader_retry_after_sec) {
-    EXPECT_STREQ(response_body->c_str(), expected_body.c_str());
+    EXPECT_EQ(*response_body, expected_body);
     EXPECT_EQ(net_error, 0);
-    EXPECT_STREQ(header_etag.c_str(), "Wfhw789h");
-    EXPECT_STREQ(header_x_cup_server_proof.c_str(), "server-proof");
+    EXPECT_EQ(header_etag, "Wfhw789h");
+    EXPECT_EQ(header_x_cup_server_proof, "server-proof");
+    EXPECT_EQ(header_set_cookie, "cookie");
     EXPECT_EQ(xheader_retry_after_sec, 67);
     PostRequestCompleted();
   }
@@ -97,11 +97,13 @@ class UpdaterNetworkTest : public ::testing::Test {
       http_response->AddCustomHeader("x-retry-after", "67");
       http_response->AddCustomHeader("etag", "Wfhw789h");
       http_response->AddCustomHeader("x-cup-server-proof", "server-proof");
+      http_response->AddCustomHeader(
+          update_client::NetworkFetcher::kHeaderSetCookie, "cookie");
     } else if (request.method == net::test_server::HttpMethod::METHOD_GET) {
       http_response->set_content("hello");
       http_response->set_content_type("application/octet-stream");
     } else {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
     }
 
     http_response->set_code(net::HTTP_OK);
@@ -124,7 +126,8 @@ class UpdaterNetworkTest : public ::testing::Test {
     server_handle_ = test_server_.StartAndReturnHandle();
     ASSERT_TRUE(server_handle_);
     network_fetcher_factory_ = base::MakeRefCounted<NetworkFetcherFactory>(
-        PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()));
+        PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()),
+        /*event_logger=*/nullptr);
     fetcher_ = network_fetcher_factory_->Create();
   }
 
@@ -136,8 +139,6 @@ class UpdaterNetworkTest : public ::testing::Test {
 // embedded test server running on localhost.
 class UpdaterDownloadTest : public ::testing::Test {
  protected:
-  ~UpdaterDownloadTest() override = default;
-
   base::FilePath dest_;
   GURL gurl_;
 
@@ -146,7 +147,7 @@ class UpdaterDownloadTest : public ::testing::Test {
     server_.ServeFilesFromSourceDirectory("chrome/updater/test/data");
     server_handle_ = server_.StartAndReturnHandle();
     ASSERT_TRUE(scoped_dir_.CreateUniqueTempDir());
-    dest_ = scoped_dir_.GetPath().AppendASCII("updater-signed.exe");
+    dest_ = scoped_dir_.GetPath().AppendUTF8("updater-signed.exe");
     gurl_ = GURL(base::StrCat({server_.base_url().spec(), "signed.exe"}));
   }
 
@@ -204,7 +205,8 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
 
   base::RunLoop run_loop;
   auto factory = base::MakeRefCounted<NetworkFetcherFactory>(
-      PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()));
+      PolicyServiceProxyConfiguration::Get(test::CreateTestPolicyService()),
+      /*event_logger=*/nullptr);
   ASSERT_NE(factory, nullptr);
   {
     base::ScopedDisallowBlocking no_blocking_allowed_on_sequence;
@@ -231,7 +233,7 @@ TEST_F(UpdaterDownloadTest, NetworkFetcher) {
 TEST_F(UpdaterDownloadTest, URLMonFetcher) {
   EXPECT_FALSE(base::PathExists(dest_));
   EXPECT_HRESULT_SUCCEEDED(
-      ::URLDownloadToFile(nullptr, base::ASCIIToWide(gurl_.spec()).c_str(),
+      ::URLDownloadToFile(nullptr, base::UTF8ToWide(gurl_.spec()).c_str(),
                           dest_.value().c_str(), 0, nullptr));
   EXPECT_TRUE(base::PathExists(dest_));
 }

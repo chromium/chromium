@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/webui/webui_allowlist_provider.h"
+
 #include <map>
 #include <memory>
 
@@ -19,11 +21,11 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/webui/webui_allowlist.h"
-#include "ui/webui/webui_allowlist_provider.h"
 #include "url/origin.h"
 
 using ::testing::_;
@@ -275,31 +277,34 @@ TEST_F(WebUIAllowlistProviderTest,
   // cookies.
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(top_level_url),
-      url::Origin::Create(top_level_url), net::CookieSettingOverrides()));
+      url::Origin::Create(top_level_url), net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 
   // Allowlisted origin on its own can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), net::CookieSettingOverrides()));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 
   // Allowlisted origin embedded in Web top-level origin can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       GURL("https://example2.com"),
       net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), net::CookieSettingOverrides()));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 
   // Allowlisted origin making subresource request (e.g. image) can't use
   // cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies(), std::nullopt,
-      net::CookieSettingOverrides()));
+      net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
 
   // Allowlisted origin embedded in the wrong WebUI origin can't use cookies.
   const GURL url_no_permission_webui = GURL("chrome-untrusted://no-perm");
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(url_no_permission_webui),
       url::Origin::Create(url_no_permission_webui),
-      net::CookieSettingOverrides()));
+      net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
 
   // Other permissions aren't affected.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -327,31 +332,34 @@ TEST_F(WebUIAllowlistProviderTest,
 
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(top_level_url),
-      url::Origin::Create(top_level_url), net::CookieSettingOverrides()));
+      url::Origin::Create(top_level_url), net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
   // Allowlisted origin on its own can use cookies, because only third-party
   // cookies are blocked.
   EXPECT_TRUE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), net::CookieSettingOverrides()));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 
   // Allowlisted origin embedded in Web top-level origin can't use cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       GURL("https://example2.com"),
       net::SiteForCookies::FromUrl(third_party_url),
-      url::Origin::Create(third_party_url), net::CookieSettingOverrides()));
+      url::Origin::Create(third_party_url), net::CookieSettingOverrides(),
+      /*cookie_partition_key=*/std::nullopt));
 
   // Allowlisted origin embedded in the wrong WebUI origin can't use cookies.
   const GURL url_no_permission_webui = GURL("chrome-untrusted://no-perm");
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies::FromUrl(url_no_permission_webui),
       url::Origin::Create(url_no_permission_webui),
-      net::CookieSettingOverrides()));
+      net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
 
   // Allowlisted origin making subresource request (e.g. image) can't use
   // cookies.
   EXPECT_FALSE(cookies_settings->IsFullCookieAccessAllowed(
       third_party_url, net::SiteForCookies(), std::nullopt,
-      net::CookieSettingOverrides()));
+      net::CookieSettingOverrides(), /*cookie_partition_key=*/std::nullopt));
 
   // Other permissions aren't affected.
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
@@ -423,14 +431,15 @@ TEST_F(WebUIAllowlistProviderTest, CookieSettings) {
   // Check that settings are applied before creating an allowlist entry.
   EXPECT_FALSE(cookie_settings->IsFullCookieAccessAllowed(
       url, net::SiteForCookies::FromUrl(top_level_url),
-      url::Origin::Create(top_level_url), {}));
+      url::Origin::Create(top_level_url), {},
+      /*cookie_partition_key=*/std::nullopt));
   EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(url));
   EXPECT_TRUE(cookie_settings->ShouldDeleteCookieOnExit(
-      cookie_settings->GetCookieSettings(), url.host(),
+      cookie_settings->GetCookieSettings(), url.GetHost(),
       net::CookieSourceScheme::kSecure));
   EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(top_level_url));
   EXPECT_TRUE(cookie_settings->ShouldDeleteCookieOnExit(
-      cookie_settings->GetCookieSettings(), top_level_url.host(),
+      cookie_settings->GetCookieSettings(), top_level_url.GetHost(),
       net::CookieSourceScheme::kSecure));
 
   // Registering a third-party cookie exception should only affect 3p cookies
@@ -444,13 +453,14 @@ TEST_F(WebUIAllowlistProviderTest, CookieSettings) {
 
   EXPECT_TRUE(cookie_settings->IsFullCookieAccessAllowed(
       url, net::SiteForCookies::FromUrl(top_level_url),
-      url::Origin::Create(top_level_url), {}));
+      url::Origin::Create(top_level_url), {},
+      /*cookie_partition_key=*/std::nullopt));
   EXPECT_TRUE(cookie_settings->IsCookieSessionOnly(url));
   EXPECT_TRUE(cookie_settings->ShouldDeleteCookieOnExit(
-      cookie_settings->GetCookieSettings(), url.host(),
+      cookie_settings->GetCookieSettings(), url.GetHost(),
       net::CookieSourceScheme::kSecure));
   EXPECT_FALSE(cookie_settings->IsCookieSessionOnly(top_level_url));
   EXPECT_FALSE(cookie_settings->ShouldDeleteCookieOnExit(
-      cookie_settings->GetCookieSettings(), top_level_url.host(),
+      cookie_settings->GetCookieSettings(), top_level_url.GetHost(),
       net::CookieSourceScheme::kSecure));
 }

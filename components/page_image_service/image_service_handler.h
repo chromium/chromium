@@ -7,7 +7,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace page_image_service {

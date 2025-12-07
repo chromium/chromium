@@ -11,8 +11,7 @@ import '../controls/controlled_radio_button.js';
 import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../controls/settings_radio_group.js';
 import '../controls/settings_toggle_button.js';
-import '../settings_page/settings_animated_pages.js';
-import '../settings_page/settings_subpage.js';
+import '../settings_page/settings_section.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import './home_url_input.js';
@@ -26,14 +25,15 @@ import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {BaseMixin} from '../base_mixin.js';
 import type {DropdownMenuOptionList, SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {pageVisibility} from '../page_visibility.js';
 import type {AppearancePageVisibility} from '../page_visibility.js';
 import {RelaunchMixin, RestartType} from '../relaunch_mixin.js';
 import {routes} from '../route.js';
 import {Router} from '../router.js';
+import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 import type {AppearanceBrowserProxy} from './appearance_browser_proxy.js';
 import {AppearanceBrowserProxyImpl} from './appearance_browser_proxy.js';
@@ -66,8 +66,6 @@ export interface SettingsAppearancePageElement {
     colorSchemeModeRow: HTMLElement,
     colorSchemeModeSelect: HTMLSelectElement,
     defaultFontSize: SettingsDropdownMenuElement,
-    showSavedTabGroups: SettingsToggleButtonElement,
-    autoPinNewTabGroups: SettingsToggleButtonElement,
     zoomLevel: HTMLSelectElement,
     tabSearchPositionDropdown: SettingsDropdownMenuElement,
   };
@@ -85,7 +83,7 @@ export enum SystemTheme {
 }
 
 const SettingsAppearancePageElementBase =
-    RelaunchMixin(I18nMixin(PrefsMixin(BaseMixin(PolymerElement))));
+    SettingsViewMixin(RelaunchMixin(I18nMixin(PrefsMixin(PolymerElement))));
 
 export class SettingsAppearancePageElement extends
     SettingsAppearancePageElementBase {
@@ -102,11 +100,9 @@ export class SettingsAppearancePageElement extends
       /**
        * Dictionary defining page visibility.
        */
-      pageVisibility: Object,
-
-      prefs: {
+      pageVisibility_: {
         type: Object,
-        notify: true,
+        value: () => pageVisibility?.appearance,
       },
 
       defaultZoom_: Number,
@@ -169,17 +165,6 @@ export class SettingsAppearancePageElement extends
         value: SystemTheme.DEFAULT,
       },
 
-      focusConfig_: {
-        type: Object,
-        value() {
-          const map = new Map();
-          if (routes.FONTS) {
-            map.set(routes.FONTS.path, '#customize-fonts-subpage-trigger');
-          }
-          return map;
-        },
-      },
-
       isForcedTheme_: {
         type: Boolean,
         computed: 'computeIsForcedTheme_(' +
@@ -205,27 +190,6 @@ export class SettingsAppearancePageElement extends
         },
       },
 
-      showSavedTabGroupsInBookmarksBar_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
-        },
-      },
-
-      showAutoPinNewTabGroups_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('tabGroupsSaveUIUpdateEnabled');
-        },
-      },
-
-      toolbarPinningEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('toolbarPinningEnabled');
-        },
-      },
-
       showManagedThemeDialog_: Boolean,
 
       sidePanelOptions_: {
@@ -245,6 +209,23 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      tabStripOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 'true',
+              name: loadTimeData.getString('uiFeatureAlignSide'),
+            },
+            {
+              value: 'false',
+              name: loadTimeData.getString('uiFeatureAlignTop'),
+            },
+          ];
+        },
+      },
+
       showTabSearchPositionSettings_: {
         type: Boolean,
         value() {
@@ -252,9 +233,23 @@ export class SettingsAppearancePageElement extends
         },
       },
 
+      showVerticalTabsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showVerticalTabsEnabled');
+        },
+      },
+
       showTabSearchPositionRestartButton_: {
         type: Boolean,
         value: false,
+      },
+
+      showSplitViewDragAndDropSetting_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('showSplitViewDragAndDropSetting');
+        },
       },
 
       showResetPinnedActionsButton_: {
@@ -297,34 +292,33 @@ export class SettingsAppearancePageElement extends
     ];
   }
 
-  pageVisibility: AppearancePageVisibility;
-  private defaultZoom_: number;
-  private isWallpaperPolicyControlled_: boolean;
-  private fontSizeOptions_: DropdownMenuOptionList;
-  private colorSchemeModeOptions_:
+  declare private pageVisibility_?: AppearancePageVisibility;
+  declare private defaultZoom_: number;
+  declare private isWallpaperPolicyControlled_: boolean;
+  declare private fontSizeOptions_: DropdownMenuOptionList;
+  declare private colorSchemeModeOptions_:
       Array<{value: ColorSchemeMode, name: string}>;
-  private selectedColorSchemeMode_: ColorSchemeMode|undefined;
-  private pageZoomLevels_: number[];
-  private themeSublabel_: string;
-  private themeUrl_: string;
-  private systemTheme_: SystemTheme;
-  private focusConfig_: Map<string, string>;
-  private isForcedTheme_: boolean;
-  private showHoverCardImagesOption_: boolean;
-  private showSavedTabGroupsInBookmarksBar_: boolean;
-  private showAutoPinNewTabGroups_: boolean;
-  private showResetPinnedActionsButton_: boolean;
-  private toolbarPinningEnabled_: boolean;
+  declare private selectedColorSchemeMode_: ColorSchemeMode|undefined;
+  declare private pageZoomLevels_: number[];
+  declare private themeSublabel_: string;
+  declare private themeUrl_: string;
+  declare private systemTheme_: SystemTheme;
+  declare private isForcedTheme_: boolean;
+  declare private showHoverCardImagesOption_: boolean;
+  declare private showResetPinnedActionsButton_: boolean;
+  declare private showSplitViewDragAndDropSetting_: boolean;
 
   // <if expr="is_linux">
-  private showCustomChromeFrame_: boolean;
+  declare private showCustomChromeFrame_: boolean;
   // </if>
 
-  private showTabSearchPositionSettings_: boolean;
-  private showTabSearchPositionRestartButton_: boolean;
-  private showManagedThemeDialog_: boolean;
-  private sidePanelOptions_: DropdownMenuOptionList;
-  private tabSearchOptions_: DropdownMenuOptionList;
+  declare private showTabSearchPositionSettings_: boolean;
+  declare private showVerticalTabsEnabled_: boolean;
+  declare private showTabSearchPositionRestartButton_: boolean;
+  declare private showManagedThemeDialog_: boolean;
+  declare private sidePanelOptions_: DropdownMenuOptionList;
+  declare private tabStripOptions_: DropdownMenuOptionList;
+  declare private tabSearchOptions_: DropdownMenuOptionList;
   private appearanceBrowserProxy_: AppearanceBrowserProxy =
       AppearanceBrowserProxyImpl.getInstance();
   private colorSchemeModeHandler_: CustomizeColorSchemeModeHandlerInterface =
@@ -407,11 +401,7 @@ export class SettingsAppearancePageElement extends
   }
 
   private onThemeClick_() {
-    if (this.toolbarPinningEnabled_) {
-      this.appearanceBrowserProxy_.openCustomizeChrome();
-    } else {
-      window.open(this.themeUrl_ || loadTimeData.getString('themesGalleryUrl'));
-    }
+    this.appearanceBrowserProxy_.openCustomizeChrome();
   }
 
   private onCustomizeToolbarClick_() {
@@ -508,8 +498,8 @@ export class SettingsAppearancePageElement extends
       return;
     }
 
-    let i18nId;
     // <if expr="is_linux">
+    let i18nId: string;
     switch (this.systemTheme_) {
       case SystemTheme.GTK:
         i18nId = 'gtkTheme';
@@ -521,15 +511,11 @@ export class SettingsAppearancePageElement extends
         i18nId = 'classicTheme';
         break;
     }
+    this.themeSublabel_ = this.i18n(i18nId);
     // </if>
     // <if expr="not is_linux">
-    if (this.toolbarPinningEnabled_) {
       this.themeSublabel_ = '';
-      return;
-    }
-    i18nId = 'chooseFromWebStore';
     // </if>
-    this.themeSublabel_ = this.i18n(i18nId);
   }
 
   /** @return Whether applied theme is set by policy. */
@@ -539,7 +525,7 @@ export class SettingsAppearancePageElement extends
 
   private async toolbarPinningStateChanged_(): Promise<void> {
     this.showResetPinnedActionsButton_ =
-        !await this.appearanceBrowserProxy_.pinnedToolbarActionsAreDefault();
+        !(await this.appearanceBrowserProxy_.pinnedToolbarActionsAreDefault());
   }
 
   private isSelectedColorSchemeMode_(colorSchemeMode: ColorSchemeMode):
@@ -583,6 +569,24 @@ export class SettingsAppearancePageElement extends
   private updateShowTabSearchRestartButton_(newValue: boolean): void {
     this.showTabSearchPositionRestartButton_ = newValue !==
         loadTimeData.getBoolean('tabSearchIsRightAlignedAtStartup');
+  }
+
+  // SettingsViewMixin
+  override getFocusConfig() {
+    const map = new Map();
+    if (routes.FONTS) {
+      map.set(routes.FONTS.path, '#customize-fonts-subpage-trigger');
+    }
+    return map;
+  }
+
+  // SettingsViewMixin implementation.
+  override getAssociatedControlFor(childViewId: string): HTMLElement {
+    assert(childViewId === 'fonts');
+    const control = this.shadowRoot!.querySelector<HTMLElement>(
+        '#customize-fonts-subpage-trigger');
+    assert(control);
+    return control;
   }
 }
 

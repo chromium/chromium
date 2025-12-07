@@ -28,7 +28,7 @@ struct CORE_EXPORT StructTraits<blink::mojom::CloneableMessageDataView,
     return mojo_base::BigBuffer(input.message->GetWireData());
   }
 
-  static Vector<scoped_refptr<blink::BlobDataHandle>> blobs(
+  static blink::Vector<scoped_refptr<blink::BlobDataHandle>> blobs(
       blink::BlinkCloneableMessage& input);
 
   static const scoped_refptr<const blink::SecurityOrigin>& sender_origin(
@@ -65,7 +65,7 @@ struct CORE_EXPORT StructTraits<blink::mojom::CloneableMessageDataView,
     return input.locked_to_sender_agent_cluster;
   }
 
-  static Vector<
+  static blink::Vector<
       mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>
   file_system_access_tokens(blink::BlinkCloneableMessage& input) {
     return std::move(input.message->FileSystemAccessTokens());

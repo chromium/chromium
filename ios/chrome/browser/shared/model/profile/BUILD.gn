@@ -1,0 +1,129 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}
+
+source_set("profile") {
+  sources = [
+    "mutable_profile_attributes_storage_ios.cc",
+    "mutable_profile_attributes_storage_ios.h",
+    "profile_attributes_ios.cc",
+    "profile_attributes_ios.h",
+    "profile_attributes_storage_ios.cc",
+    "profile_attributes_storage_ios.h",
+    "profile_attributes_storage_observer_ios.h",
+    "profile_ios.h",
+    "profile_ios.mm",
+    "profile_manager_ios.h",
+    "profile_manager_observer_ios.h",
+    "scoped_profile_keep_alive_ios.cc",
+    "scoped_profile_keep_alive_ios.h",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/prefs",
+    "//components/sync_preferences",
+    "//components/variations/net",
+    "//google_apis",
+    "//ios/chrome/browser/net/model:net_types",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/components/webui:url_constants",
+    "//ios/web/public",
+    "//ios/web/public/webui",
+    "//ios/web/webui",
+    "//net",
+  ]
+}
+
+source_set("profile_keyed_service_factory") {
+  sources = [
+    "profile_dependency_manager_ios.cc",
+    "profile_dependency_manager_ios.h",
+    "profile_keyed_service_factory_ios.cc",
+    "profile_keyed_service_factory_ios.h",
+    "profile_keyed_service_traits.h",
+    "profile_keyed_service_utils.cc",
+    "profile_keyed_service_utils.h",
+    "refcounted_profile_keyed_service_factory_ios.cc",
+    "refcounted_profile_keyed_service_factory_ios.h",
+  ]
+
+  deps = [
+    ":profile",
+    "//components/keyed_service/core",
+    "//ios/web/public",
+  ]
+}
+
+source_set("incognito_session_tracker") {
+  sources = [
+    "incognito_session_tracker.h",
+    "incognito_session_tracker.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+  ]
+}
+
+source_set("utils") {
+  sources = [
+    "profile_ios_util.h",
+    "profile_ios_util.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "incognito_session_tracker_unittest.mm",
+    "mutable_profile_attributes_storage_ios_unittest.mm",
+    "profile_attributes_ios_unittest.cc",
+    "profile_ios_unittest.cc",
+    "profile_keyed_service_factory_ios_unittest.cc",
+    "profile_keyed_service_utils_unittest.cc",
+    "refcounted_profile_keyed_service_factory_ios_unittest.cc",
+  ]
+  deps = [
+    ":incognito_session_tracker",
+    ":profile",
+    ":profile_keyed_service_factory",
+    "//base",
+    "//base/test:test_support",
+    "//components/keyed_service/core",
+    "//components/variations/net",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

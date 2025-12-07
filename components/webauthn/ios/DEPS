@@ -1,0 +1,8 @@
+include_rules = [
+  "+ios/web/public",
+  "+net/test/embedded_test_server",
+  "+components/autofill/ios/browser",
+  "+components/password_manager/core/browser",
+  "+components/password_manager/ios",
+  "+third_party/ocmock",
+]

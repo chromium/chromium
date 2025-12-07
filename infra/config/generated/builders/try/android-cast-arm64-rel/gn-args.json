@@ -1,0 +1,23 @@
+{
+  "args_file": "//chromecast/build/args/config/android.gni",
+  "gn_args": {
+    "android_static_analysis": "on",
+    "cast_is_debug": false,
+    "dcheck_always_on": false,
+    "debuggable_apks": false,
+    "enable_cast_receiver": true,
+    "enable_jni_multiplexing": false,
+    "ffmpeg_branding": "Chrome",
+    "is_clang": true,
+    "is_component_build": false,
+    "is_debug": false,
+    "is_java_debug": false,
+    "proprietary_codecs": true,
+    "symbol_level": 1,
+    "target_cpu": "arm64",
+    "target_os": "android",
+    "use_reclient": false,
+    "use_remoteexec": true,
+    "use_siso": true
+  }
+}

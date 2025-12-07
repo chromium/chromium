@@ -43,19 +43,37 @@ class LayoutThemeMobile : public LayoutThemeDefault {
     return LayoutThemeMobile::kDefaultTapHighlightColor;
   }
 
+  Color PlatformActiveSelectionForegroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
+
   Color PlatformActiveSelectionBackgroundColor(
-      mojom::blink::ColorScheme color_scheme) const override {
-    return LayoutThemeMobile::kDefaultActiveSelectionBackgroundColor;
-  }
+      mojom::blink::ColorScheme color_scheme) const override;
+
+  Color PlatformInactiveSelectionForegroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
+
+  Color PlatformInactiveSelectionBackgroundColor(
+      mojom::blink::ColorScheme color_scheme) const override;
+
+  void SetSelectionColors(Color active_background_color,
+                          Color active_foreground_color,
+                          Color inactive_background_color,
+                          Color inactive_foreground_color) override;
 
  protected:
   ~LayoutThemeMobile() override;
 
  private:
+  static Color active_selection_background_color_;
+  static Color active_selection_foreground_color_;
+  static Color inactive_selection_background_color_;
+  static Color inactive_selection_foreground_color_;
   static constexpr Color kDefaultTapHighlightColor =
       Color::FromRGBA32(0x6633b5e5);
   static constexpr Color kDefaultActiveSelectionBackgroundColor =
       Color::FromRGBA32(0x6633b5e5);
+  static constexpr Color kDefaultActiveSelectionForegroundColor =
+      Color::FromRGBA32(0xFF000000);
 };
 
 }  // namespace blink

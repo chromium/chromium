@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
 
 #include <string>
@@ -20,7 +15,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_page_handler.h"
-#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/browser/ui/webui_browser/webui_browser.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_reading_list_resources.h"
@@ -38,7 +33,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
-#include "ui/webui/color_change_listener/color_change_handler.h"
+#include "ui/webui/webui_util.h"
 
 ReadingListUI::ReadingListUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui),
@@ -50,10 +45,12 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       profile, chrome::kChromeUIReadLaterHost);
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
+      {"collapseButtonAriaLabel", IDS_READ_LATER_COLLAPSE_BUTTON_ARIA_LABEL},
       {"emptyStateAddFromDialogSubheader",
        IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER},
       {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER},
+      {"expandButtonAriaLabel", IDS_READ_LATER_EXPAND_BUTTON_ARIA_LABEL},
       {"markCurrentTabAsRead", IDS_READ_LATER_MARK_CURRENT_TAB_READ},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
@@ -63,9 +60,11 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
       {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
       {"cancelA11yLabel", IDS_CANCEL},
   };
-  for (const auto& str : kLocalizedStrings)
+  for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
+  }
 
+  source->AddBoolean("isWebUIBrowser", webui_browser::IsWebUIBrowserEnabled());
   source->AddBoolean("useRipples", views::PlatformStyle::kUseRipples);
 
   ReadingListModel* const reading_list_model =
@@ -77,13 +76,9 @@ ReadingListUI::ReadingListUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-  webui::SetupWebUIDataSource(
-      source,
-      base::make_span(kSidePanelReadingListResources,
-                      kSidePanelReadingListResourcesSize),
-      IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  webui::SetupWebUIDataSource(source, kSidePanelReadingListResources,
+                              IDR_SIDE_PANEL_READING_LIST_READING_LIST_HTML);
+  source->AddResourcePaths(kSidePanelSharedResources);
 }
 
 ReadingListUI::~ReadingListUI() = default;
@@ -105,17 +100,11 @@ void ReadingListUI::CreatePageHandler(
 }
 
 void ReadingListUI::BindInterface(
-    mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
-        pending_receiver) {
-  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-      web_ui()->GetWebContents(), std::move(pending_receiver));
-}
-
-void ReadingListUI::BindInterface(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandlerFactory>
         pending_receiver) {
-  if (help_bubble_handler_factory_receiver_.is_bound())
+  if (help_bubble_handler_factory_receiver_.is_bound()) {
     help_bubble_handler_factory_receiver_.reset();
+  }
   help_bubble_handler_factory_receiver_.Bind(std::move(pending_receiver));
 }
 
@@ -131,6 +120,7 @@ void ReadingListUI::CreateHelpBubbleHandler(
 }
 
 void ReadingListUI::SetActiveTabURL(const GURL& url) {
-  if (page_handler_)
+  if (page_handler_) {
     page_handler_->SetActiveTabURL(url);
+  }
 }

@@ -9,10 +9,6 @@ namespace switches {
 // Specify ozone platform implementation to use.
 const char kOzonePlatform[] = "ozone-platform";
 
-// Suggests the ozone platform to use (desktop Linux only).  Can be set on
-// chrome://flags.  See https://crbug.com/1246928.
-const char kOzonePlatformHint[] = "ozone-platform-hint";
-
 // Specify location for image dumps.
 const char kOzoneDumpFile[] = "ozone-dump-file";
 
@@ -36,5 +32,9 @@ const char kDisableExplicitDmaFences[] = "disable-explicit-dma-fences";
 
 // Specifies ozone screen size.
 const char kOzoneOverrideScreenSize[] = "ozone-override-screen-size";
+
+// Allows explicitly picking a DRM render node to create gbm_device for
+// rendering.
+const char kRenderNodeOverride[] = "render-node-override";
 
 }  // namespace switches

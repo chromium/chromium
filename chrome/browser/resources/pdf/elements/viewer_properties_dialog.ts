@@ -2,16 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {DocumentMetadata} from '../constants.js';
 
-import {getTemplate} from './viewer_properties_dialog.html.js';
+import {getCss} from './viewer_properties_dialog.css.js';
+import {getHtml} from './viewer_properties_dialog.html.js';
 
 export interface ViewerPropertiesDialogElement {
   $: {
@@ -20,37 +21,61 @@ export interface ViewerPropertiesDialogElement {
   };
 }
 
-export class ViewerPropertiesDialogElement extends PolymerElement {
+export class ViewerPropertiesDialogElement extends CrLitElement {
   static get is() {
     return 'viewer-properties-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      documentMetadata: Object,
-      fileName: String,
-      pageCount: Number,
+      documentMetadata: {type: Object},
+      fileName: {type: String},
+      pageCount: {type: Number},
+      strings: {type: Object},
     };
   }
 
-  documentMetadata: DocumentMetadata;
-  fileName: string;
-  pageCount: number;
+  accessor documentMetadata: DocumentMetadata = {
+    author: '',
+    canSerializeDocument: false,
+    creationDate: '',
+    creator: '',
+    fileSize: '',
+    keywords: '',
+    linearized: false,
+    modDate: '',
+    pageSize: '',
+    producer: '',
+    subject: '',
+    title: '',
+    version: '',
+  };
+  accessor fileName: string = '';
+  accessor pageCount: number = 0;
+  accessor strings: {[key: string]: string}|undefined;
 
-  private getFastWebViewValue_(
-      yesLabel: string, noLabel: string, linearized: boolean): string {
-    return linearized ? yesLabel : noLabel;
+  protected getFastWebViewValue_(): string {
+    if (!this.strings) {
+      return '';
+    }
+    return loadTimeData.getString(
+        this.documentMetadata.linearized ? 'propertiesFastWebViewYes' :
+                                           'propertiesFastWebViewNo');
   }
 
-  private getOrPlaceholder_(value: string): string {
+  protected getOrPlaceholder_(value: string): string {
     return value || '-';
   }
 
-  private onClickClose_() {
+  protected onClickClose_() {
     this.$.dialog.close();
   }
 }

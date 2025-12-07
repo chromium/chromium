@@ -38,19 +38,25 @@ static_library("common") {
     "form_field_data.h",
     "form_field_data_predictions.cc",
     "form_field_data_predictions.h",
+    "form_interactions_flow.cc",
     "form_interactions_flow.h",
     "html_field_types.cc",
     "html_field_types.h",
     "is_required.h",
+    "label_source_util.cc",
+    "label_source_util.h",
     "language_code.h",
     "logging/log_buffer.cc",
     "logging/log_buffer.h",
     "logging/log_macros.h",
+    "logging/stream_operator_util.h",
+    "metrics_enums.h",
     "password_form_fill_data.cc",
     "password_form_fill_data.h",
     "password_form_generation_data.h",
     "password_generation_util.cc",
     "password_generation_util.h",
+    "plus_address_survey_type.h",
     "save_password_progress_logger.cc",
     "save_password_progress_logger.h",
     "signatures.cc",
@@ -71,12 +77,10 @@ static_library("common") {
   ]
 
   deps = [
-    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/variations",
-    "//crypto",
-    "//google_apis:google_apis",
+    "//google_apis",
     "//ui/base",
     "//ui/gfx/geometry",
     "//url",
@@ -115,16 +119,15 @@ component("features") {
   output_name = "autofill_core_common_features"
   defines = [ "IS_AUTOFILL_IMPL" ]
   sources = [
+    "autofill_debug_features.cc",
+    "autofill_debug_features.h",
     "autofill_features.cc",
     "autofill_features.h",
     "autofill_payments_features.cc",
     "autofill_payments_features.h",
   ]
 
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -165,6 +168,7 @@ source_set("unit_tests") {
     "logging/log_buffer_unittest.cc",
     "save_password_progress_logger_unittest.cc",
     "signatures_unittest.cc",
+    "unique_ids_unittest.cc",
   ]
 
   deps = [
@@ -178,8 +182,9 @@ source_set("unit_tests") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//crypto:crypto",
-    "//google_apis:google_apis",
+    "//components/sync_preferences:test_support",
+    "//crypto",
+    "//google_apis",
     "//testing/gmock",
     "//testing/gtest",
     "//url",

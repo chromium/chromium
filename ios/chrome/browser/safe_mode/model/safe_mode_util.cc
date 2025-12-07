@@ -9,15 +9,18 @@
 
 namespace safe_mode_util {
 
-std::vector<std::string> GetLoadedImages(const char* path_filter) {
+std::vector<std::string> GetLoadedImages(std::string_view path_filter) {
   std::vector<std::string> images;
   uint32_t image_count = _dyld_image_count();
   for (uint32_t i = 0; i < image_count; ++i) {
-    const char* path = _dyld_get_image_name(i);
-    if (path_filter && strncmp(path, path_filter, strlen(path_filter)) != 0) {
+    // SAFETY: _dyld_get_image_name(i) returns a null-terminated string.
+    const std::string_view path(_dyld_get_image_name(i));
+    if (!path.starts_with(path_filter)) {
+      // As all strings start by the empty string, this means that
+      // path_filter is non-empty and path does not start with it.
       continue;
     }
-    images.push_back(path);
+    images.push_back(std::string(path));
   }
   return images;
 }

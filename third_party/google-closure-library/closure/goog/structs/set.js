@@ -77,7 +77,7 @@ goog.structs.Set.getKey_ = function(val) {
   if (type == 'object' && val || type == 'function') {
     return 'o' + goog.structs.Set.getUid_(/** @type {Object} */ (val));
   } else {
-    return type.substr(0, 1) + val;
+    return type.slice(0, 1) + val;
   }
 };
 

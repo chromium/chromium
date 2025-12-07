@@ -69,10 +69,9 @@ constexpr ShellWindowId kAppParentContainers[19] = {
 // TODO(crbug.com/40163553): Checking app type is temporary solution until we
 // can get windows which are allowed to window restore from the
 // FullRestoreService.
-constexpr chromeos::AppType kSupportedAppTypes[5] = {
+constexpr chromeos::AppType kSupportedAppTypes[] = {
     chromeos::AppType::BROWSER, chromeos::AppType::CHROME_APP,
-    chromeos::AppType::ARC_APP, chromeos::AppType::SYSTEM_APP,
-    chromeos::AppType::LACROS};
+    chromeos::AppType::ARC_APP, chromeos::AppType::SYSTEM_APP};
 
 // Delay for certain app types before activation is allowed. This is because
 // some apps' client request activation after creation, which can break user
@@ -98,7 +97,7 @@ void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
     return;
 
   const auto& closest_display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   const gfx::Rect display_area = closest_display.work_area();
   if (display_area.Contains(current_bounds))
     return;
@@ -200,7 +199,7 @@ bool WindowRestoreController::CanActivateRestoredWindow(
 
 // static
 bool WindowRestoreController::CanActivateAppList(const aura::Window* window) {
-  if (!display::Screen::GetScreen()->InTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     return true;
   }
 
@@ -432,7 +431,7 @@ void WindowRestoreController::OnWindowVisibilityChanged(aura::Window* window,
   // Early return if we're not in tablet mode, or the app list is null.
   aura::Window* app_list_window =
       Shell::Get()->app_list_controller()->GetWindow();
-  if (!Shell::Get()->IsInTabletMode() || !app_list_window) {
+  if (!display::Screen::Get()->InTabletMode() || !app_list_window) {
     return;
   }
 
@@ -586,9 +585,9 @@ void WindowRestoreController::RestoreStateTypeAndClearLaunchedKey(
   // these windows activatable once they are launched. Use a post task since it
   // is quite common for some widgets to explicitly call Show() after
   // initialized.
-  // TODO(sammiequon): Instead of disabling activation when creating the widget
-  // and enabling it here, use `ShowInactive()` instead of `Show()` when the
-  // widget is created.
+  // TODO: Instead of disabling activation when creating the widget and enabling
+  // it here, use `ShowInactive()` instead of `Show()` when the widget is
+  // created.
   restore_property_clear_callbacks_.emplace(
       window, base::BindOnce(&WindowRestoreController::ClearLaunchedKey,
                              weak_ptr_factory_.GetWeakPtr(), window));

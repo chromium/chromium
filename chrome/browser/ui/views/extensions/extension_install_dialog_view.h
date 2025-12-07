@@ -17,12 +17,17 @@
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/layout/table_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
+class PictureInPictureInputProtector;
 class Profile;
+class ExtensionJustificationView;
 
 // Modal dialog that shows when the user attempts to install an extension. Also
 // shown if the extension is already installed but needs additional permissions.
@@ -57,18 +62,23 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // views::BubbleDialogDelegateView:
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
   void AddedToWidget() override;
-  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  bool IsDialogButtonEnabled(ui::mojom::DialogButton button) const override;
   std::u16string GetAccessibleWindowTitle() const override;
+  bool ShouldIgnoreButtonPressedEventHandling(
+      View* button,
+      const ui::Event& event) const override;
+  bool ShouldAllowKeyEventsDuringInputProtection() const override;
 
   ExtensionInstallPromptShowParams* GetShowParamsForTesting();
   void ClickLinkForTesting();
   bool IsJustificationFieldVisibleForTesting();
   void SetJustificationTextForTesting(const std::u16string& new_text);
+  bool ShouldIgnoreButtonPressedEventHandlingForTesting(
+      View* button,
+      const ui::Event& event) const;
+  bool ShouldAllowKeyEventsDuringInputProtectionForTesting() const;
 
  private:
-  // Forward-declaration.
-  class ExtensionJustificationView;
-
   void CloseDialog();
 
   // extensions::ExtensionRegistryObserver:
@@ -85,6 +95,21 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // info.
   void CreateContents();
 
+  // Returns the title container, which contains the title and (maybe) webstore
+  // data.
+  [[nodiscard]] std::unique_ptr<views::TableLayoutView> CreateTitleContainer();
+
+  // Returns the webstore data builder, which contains information about the
+  // extension on the webstore.
+  [[nodiscard]] views::Builder<views::BoxLayoutView>
+  CreateWebstoreDataBuilder();
+
+  // Returns the extension info container, which contains extension permissions
+  // and/or justification views.
+  [[nodiscard]] std::unique_ptr<views::ScrollView> CreateExtensionInfoContainer(
+      bool has_permissions,
+      bool requires_justification);
+
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
@@ -96,7 +121,6 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   std::unique_ptr<ExtensionInstallPromptShowParams> show_params_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
   std::unique_ptr<ExtensionInstallPrompt::Prompt> prompt_;
-  std::u16string title_;
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
@@ -129,6 +153,12 @@ class ExtensionInstallDialogView : public views::BubbleDialogDelegateView,
   // The justification text field view where users enter their justification for
   // requesting an extension.
   raw_ptr<ExtensionJustificationView> justification_view_ = nullptr;
+
+  // The PictureInPictureInputProtector tracks dialog occlusions by
+  // Picture-in-Picture windows, to ensure input protection and ignore spurious
+  // interactions.
+  std::unique_ptr<PictureInPictureInputProtector>
+      picture_in_picture_input_protector_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_DIALOG_VIEW_H_

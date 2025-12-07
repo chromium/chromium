@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("input_device_settings") {
   sources = [
@@ -30,4 +30,25 @@ static_library("input_device_settings") {
     "//components/version_info",
     "//services/network/public/cpp",
   ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  sources = [ "peripherals_app_delegate_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":input_device_settings",
+    "//base",
+    "//chrome/browser/apps/almanac_api_client",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }

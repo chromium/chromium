@@ -13,6 +13,12 @@ set -e
 SRC_DIR="$(cd "$(dirname "$0")/../.." && pwd -P)"
 ME2ME_HOST_NAME="com.google.chrome.remote_desktop"
 IT2ME_HOST_NAME="com.google.chrome.remote_assistance"
+REMOTE_WEBAUTHN_NAME="com.google.chrome.remote_webauthn"
+
+# LINT.IfChange(extension_ids)
+COMPANION_EXTENSION_IDS="inomeogfingihgjfjlpeplalcfajhgai,pbnaomcgbfiofkfobmlhmdobjchjkphi"
+SECURITY_KEY_EXTENSION_IDS="djjmngfglakhkhmgcfdmjalogilepkhd,kbapnajlciffffomeaphfpckfdcfopef"
+# LINT.ThenChange(/remoting/host/BUILD.gn:extension_ids)
 
 install_manifest() {
   local manifest_template="$1"
@@ -31,6 +37,9 @@ install_manifest() {
     --define "${host_path_var_name}=${host_path}" \
     --define IT2ME_HOST_DESCRIPTION=dev \
     --define ME2ME_HOST_DESCRIPTION=dev \
+    --define REMOTE_WEBAUTHN_DESCRIPTION=dev \
+    --define_list COMPANION_EXTENSION_IDS="$COMPANION_EXTENSION_IDS" \
+    --define_list SECURITY_KEY_EXTENSION_IDS="$SECURITY_KEY_EXTENSION_IDS" \
     --template "${manifest_template}" \
     --output "${target_manifest}" \
     en
@@ -42,6 +51,7 @@ register_hosts() {
 
   local nm_host="remoting_native_messaging_host"
   local ra_host="remote_assistance_host"
+  local remote_webauthn="remote_webauthn"
   if [[ $(uname -s) == "Darwin" ]]; then
     nm_host="native_messaging_host.app/Contents/MacOS/native_messaging_host"
     ra_host="remote_assistance_host.app/Contents/MacOS/remote_assistance_host"
@@ -56,6 +66,11 @@ register_hosts() {
      "${SRC_DIR}/remoting/host/it2me/${IT2ME_HOST_NAME}.json.jinja2" \
      "${build_dir}/${ra_host}" \
      IT2ME_HOST_PATH "${chrome_data_dir}"
+
+  install_manifest \
+     "${SRC_DIR}/remoting/host/setup/${REMOTE_WEBAUTHN_NAME}.json.jinja2" \
+     "${build_dir}/${remote_webauthn}" \
+     REMOTE_WEBAUTHN_PATH "${chrome_data_dir}"
 }
 
 register_hosts_for_all_channels() {
@@ -86,6 +101,7 @@ unregister_hosts() {
 
   rm -f "${chrome_data_dir}/${ME2ME_HOST_NAME}.json"
   rm -f "${chrome_data_dir}/${IT2ME_HOST_NAME}.json"
+  rm -f "${chrome_data_dir}/${REMOTE_WEBAUTHN_NAME}.json"
 }
 
 unregister_hosts_for_all_channels() {

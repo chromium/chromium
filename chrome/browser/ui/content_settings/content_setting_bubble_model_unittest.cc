@@ -15,8 +15,10 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
+#include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -27,7 +29,6 @@
 #include "chrome/browser/ui/blocked_content/blocked_window_params.h"
 #include "chrome/browser/ui/blocked_content/chrome_popup_navigation_delegate.h"
 #include "chrome/browser/ui/content_settings/fake_owner.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -37,6 +38,7 @@
 #include "components/blocked_content/popup_blocker.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -45,6 +47,7 @@
 #include "components/custom_handlers/test_protocol_handler_registry_delegate.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar_delegate.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
 #include "components/strings/grit/components_strings.h"
@@ -84,8 +87,7 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
 
     PageSpecificContentSettings::CreateForWebContents(
         web_contents(),
-        std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
-            web_contents()));
+        std::make_unique<PageSpecificContentSettingsDelegate>(web_contents()));
     infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 
     permissions::PermissionRecoverySuccessRateTracker::CreateForWebContents(
@@ -100,8 +102,8 @@ class ContentSettingBubbleModelTest : public ChromeRenderViewHostTestHarness {
 };
 
 TEST_F(ContentSettingBubbleModelTest, ImageRadios) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
           web_contents()->GetPrimaryMainFrame());
@@ -119,56 +121,100 @@ TEST_F(ContentSettingBubbleModelTest, ImageRadios) {
   EXPECT_FALSE(bubble_content.manage_text.empty());
 }
 
-TEST_F(ContentSettingBubbleModelTest, Cookies) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
-  PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(
-          web_contents()->GetPrimaryMainFrame());
-  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
-
-  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          nullptr, web_contents(), ContentSettingsType::COOKIES));
-  const ContentSettingBubbleModel::BubbleContent& bubble_content =
-      content_setting_bubble_model->bubble_content();
-  std::u16string title = bubble_content.title;
-  EXPECT_FALSE(title.empty());
-  ASSERT_EQ(2U, bubble_content.radio_group.radio_items.size());
+void VerifyBubbleContent(
+    ContentSetting site_setting,
+    const ContentSettingBubbleModel::BubbleContent& bubble_content) {
+  EXPECT_FALSE(bubble_content.title.empty());
+  ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2u);
+  if (site_setting == CONTENT_SETTING_BLOCK) {
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[0],
+        l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_UNBLOCK));
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[1],
+        l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_NO_ACTION));
+    EXPECT_EQ(bubble_content.title,
+              l10n_util::GetStringUTF16(IDS_BLOCKED_ON_DEVICE_SITE_DATA_TITLE));
+  } else {
+    EXPECT_EQ(
+        bubble_content.radio_group.radio_items[0],
+        l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION));
+    EXPECT_EQ(bubble_content.radio_group.radio_items[1],
+              l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK));
+    EXPECT_EQ(
+        bubble_content.title,
+        l10n_util::GetStringUTF16(IDS_ACCESSED_ON_DEVICE_SITE_DATA_TITLE));
+  }
   EXPECT_TRUE(bubble_content.custom_link.empty());
   EXPECT_FALSE(bubble_content.custom_link_enabled);
   EXPECT_FALSE(bubble_content.manage_text.empty());
-
-  WebContentsTester::For(web_contents())
-      ->NavigateAndCommit(GURL("https://www.example.com"));
-  content_settings = PageSpecificContentSettings::GetForFrame(
-      web_contents()->GetPrimaryMainFrame());
-  content_settings->OnContentAllowed(ContentSettingsType::COOKIES);
-  content_setting_bubble_model =
-      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
-          nullptr, web_contents(), ContentSettingsType::COOKIES);
-  const ContentSettingBubbleModel::BubbleContent& bubble_content_2 =
-      content_setting_bubble_model->bubble_content();
-
-  EXPECT_FALSE(bubble_content_2.title.empty());
-  EXPECT_NE(title, bubble_content_2.title);
-  ASSERT_EQ(2U, bubble_content_2.radio_group.radio_items.size());
-  EXPECT_EQ(
-      bubble_content_2.radio_group.radio_items[0],
-      l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_NO_ACTION));
-  EXPECT_EQ(bubble_content_2.radio_group.radio_items[1],
-            l10n_util::GetStringUTF16(IDS_ALLOWED_ON_DEVICE_SITE_DATA_BLOCK));
-  EXPECT_TRUE(bubble_content_2.custom_link.empty());
-  EXPECT_FALSE(bubble_content_2.custom_link_enabled);
-  EXPECT_FALSE(bubble_content_2.manage_text.empty());
 }
+
+TEST_F(ContentSettingBubbleModelTest,
+       CookiesContentSettingReflectedWhenCookiesBlocked) {
+  const std::string url = "https://www.example.com";
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile());
+  cookie_settings->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
+  WebContentsTester::For(web_contents())->NavigateAndCommit(GURL(url));
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      CONTENT_SETTING_BLOCK,
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(), ContentSettingsType::COOKIES)
+          ->bubble_content());
+}
+
+class CookiesContentSettingBubbleModelTest
+    : public ContentSettingBubbleModelTest,
+      public testing::WithParamInterface<
+          std::tuple<ContentSetting, ContentSetting>> {};
+
+TEST_P(CookiesContentSettingBubbleModelTest,
+       BubbleShowsSiteSettingWhenDifferentFromDefaultSetting) {
+  const std::string url = "https://www.example.com";
+  ContentSetting site_setting = std::get<1>(GetParam());
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(profile());
+  cookie_settings->SetDefaultCookieSetting(std::get<0>(GetParam()));
+  cookie_settings->SetCookieSetting(GURL(url), site_setting);
+  WebContentsTester::For(web_contents())->NavigateAndCommit(GURL(url));
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+
+  // Even if cookies are blocked on the 1P site, it's still possible for
+  // OnContentAllowed() to be called due to 3PC being allowed by the default
+  // content setting. This should NOT change how we render the 1PC bubble.
+  content_settings->OnContentAllowed(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      site_setting, ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+                        nullptr, web_contents(), ContentSettingsType::COOKIES)
+                        ->bubble_content());
+
+  // Even if cookies are allowed on the 1P site, it's still possible for
+  // OnContentBlocked() to be called due to 3PC being blocked by the default
+  // content setting. This should NOT change how we render the 1PC bubble.
+  content_settings->OnContentBlocked(ContentSettingsType::COOKIES);
+  VerifyBubbleContent(
+      site_setting, ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+                        nullptr, web_contents(), ContentSettingsType::COOKIES)
+                        ->bubble_content());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    CookiesContentSettingBubbleModelTests,
+    CookiesContentSettingBubbleModelTest,
+    testing::Values(
+        std::make_tuple(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
+        std::make_tuple(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW)));
 
 TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -206,11 +252,11 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMicAndCamera) {
 
 TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
   GURL url = web_contents()->GetLastCommittedURL();
 
   HostContentSettingsMap* host_content_settings_map =
@@ -267,11 +313,11 @@ TEST_F(ContentSettingBubbleModelTest, BlockedMediastreamMicAndCamera) {
 // the bubble is re-opened.
 TEST_F(ContentSettingBubbleModelTest, MediastreamContentBubble) {
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
   GURL url = web_contents()->GetLastCommittedURL();
 
   HostContentSettingsMap* host_content_settings_map =
@@ -353,8 +399,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamMic) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -422,8 +468,8 @@ TEST_F(ContentSettingBubbleModelTest, MediastreamCamera) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -492,8 +538,8 @@ TEST_F(ContentSettingBubbleModelTest, AccumulateMediastreamMicAndCamera) {
   WebContentsTester::For(web_contents())
       ->NavigateAndCommit(GURL("https://www.example.com"));
   // Required to break dependency on BrowserMainLoop.
-  MediaCaptureDevicesDispatcher::GetInstance()->
-      DisableDeviceEnumerationForTesting();
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -929,7 +975,7 @@ TEST_F(ContentSettingBubbleModelIsolatedWebAppTest, IsolatedWebAppUrl) {
 TEST_F(ContentSettingBubbleModelTest, RegisterProtocolHandler) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
-  chrome::PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
+  PageSpecificContentSettingsDelegate::FromWebContents(web_contents())
       ->set_pending_protocol_handler(ProtocolHandler::CreateProtocolHandler(
           "mailto", GURL("https://www.toplevel.example/")));
 
@@ -956,8 +1002,7 @@ TEST_F(ContentSettingBubbleModelTest, RPHAllow) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   auto* content_settings =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents());
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents());
   ProtocolHandler test_handler = ProtocolHandler::CreateProtocolHandler(
       "mailto", GURL("https://www.toplevel.example/"));
   content_settings->set_pending_protocol_handler(test_handler);
@@ -1024,8 +1069,7 @@ TEST_F(ContentSettingBubbleModelTest, RPHDefaultDone) {
   const GURL page_url("https://toplevel.example/");
   NavigateAndCommit(page_url);
   auto* content_settings =
-      chrome::PageSpecificContentSettingsDelegate::FromWebContents(
-          web_contents());
+      PageSpecificContentSettingsDelegate::FromWebContents(web_contents());
   ProtocolHandler test_handler = ProtocolHandler::CreateProtocolHandler(
       "mailto", GURL("https://www.toplevel.example/"));
   content_settings->set_pending_protocol_handler(test_handler);
@@ -1346,8 +1390,8 @@ TEST_F(ContentSettingBubbleModelTest, PopupBubbleModelListItems) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, ValidUrl) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("https://www.example.com"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -1364,8 +1408,8 @@ TEST_F(ContentSettingBubbleModelTest, ValidUrl) {
 }
 
 TEST_F(ContentSettingBubbleModelTest, InvalidUrl) {
-  WebContentsTester::For(web_contents())->
-      NavigateAndCommit(GURL("about:blank"));
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("about:blank"));
 
   PageSpecificContentSettings* content_settings =
       PageSpecificContentSettings::GetForFrame(
@@ -1421,4 +1465,426 @@ TEST_F(ContentSettingBubbleModelTest, StorageAccess) {
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(site.GetURL(), web_contents()->GetURL(),
                                    ContentSettingsType::STORAGE_ACCESS));
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(ContentSettingBubbleModelTest, SmartCard) {
+  const GURL page_url("https://toplevel.example/");
+  NavigateAndCommit(page_url);
+  auto* content_settings = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  content_settings->OnDeviceUsed(ContentSettingsType::SMART_CARD_GUARD);
+
+  ContentSettingSimpleBubbleModel content_setting_bubble_model(
+      nullptr, web_contents(), ContentSettingsType::SMART_CARD_GUARD);
+
+  const ContentSettingBubbleModel::BubbleContent& bubble_content =
+      content_setting_bubble_model.bubble_content();
+  EXPECT_EQ(bubble_content.title,
+            l10n_util::GetStringUTF16(IDS_ACCESSED_SMART_CARD_READER_TITLE));
+  EXPECT_TRUE(bubble_content.radio_group.radio_items.empty());
+  EXPECT_TRUE(bubble_content.list_items.empty());
+  EXPECT_TRUE(bubble_content.site_list.empty());
+  EXPECT_TRUE(bubble_content.custom_link.empty());
+  EXPECT_FALSE(bubble_content.custom_link_enabled);
+  EXPECT_EQ(bubble_content.manage_text, l10n_util::GetStringUTF16(IDS_MANAGE));
+  EXPECT_EQ(bubble_content.message,
+            l10n_util::GetStringUTF16(IDS_ACCESSED_SMART_CARD_READER_BODY));
+}
+#endif
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ContentSettingBubbleModelTest, ProtectedMediaIdentifier_Allowed) {
+  // Arrange
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  settings_map->SetDefaultContentSetting(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_ALLOW);
+
+  // Act
+  content_settings->OnContentAllowed(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
+
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(),
+          ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
+  const auto& bubble_content = content_setting_bubble_model->bubble_content();
+
+  // Assert
+  EXPECT_EQ(bubble_content.title,
+            l10n_util::GetStringUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_TITLE));
+  EXPECT_EQ(bubble_content.message,
+            l10n_util::GetStringUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
+  ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2U);
+  EXPECT_EQ(bubble_content.radio_group.radio_items[0],
+            l10n_util::GetStringUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_NO_ACTION));
+  EXPECT_EQ(bubble_content.radio_group.radio_items[1],
+            l10n_util::GetStringFUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_BLOCK,
+                url_formatter::FormatUrlForSecurityDisplay(
+                    web_contents()->GetLastCommittedURL())));
+  EXPECT_EQ(bubble_content.radio_group.default_item, 0);
+}
+
+TEST_F(ContentSettingBubbleModelTest, ProtectedMediaIdentifier_Blocked) {
+  // Arrange
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  settings_map->SetDefaultContentSetting(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_ALLOW);
+
+  // Act
+  content_settings->OnContentBlocked(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
+
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(),
+          ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
+  const auto& bubble_content = content_setting_bubble_model->bubble_content();
+
+  // Assert
+  EXPECT_EQ(bubble_content.title,
+            l10n_util::GetStringUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_TITLE));
+  EXPECT_EQ(bubble_content.message,
+            l10n_util::GetStringUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
+  ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2U);
+  EXPECT_EQ(bubble_content.radio_group.radio_items[0],
+            l10n_util::GetStringFUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_UNBLOCK,
+                url_formatter::FormatUrlForSecurityDisplay(
+                    web_contents()->GetLastCommittedURL())));
+  EXPECT_EQ(bubble_content.radio_group.radio_items[1],
+            l10n_util::GetStringUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_NO_ACTION));
+  EXPECT_EQ(bubble_content.radio_group.default_item, 0);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+// Test suite for verifying that permissions granted through Omnibox
+// bubbles are correctly marked as eligible for Safety Hub auto-revocation
+// when the kSafetyHubUnusedPermissionRevocationForAllSurfaces flag is enabled.
+//
+// Only permissions of certain `ContentSettingType` are eligible. They are
+// marked as such upon grant by initializing the `last_visited` timestamp from
+// a default null value to the (coarsened) current time. Once initialized, the
+// timestamp is updated on each navigation to the origin for which the
+// permission was granted. Then permissions with a `last_visited` timestamp
+// older than a certain threshold are eventually auto-revoked by Safety Hub.
+class ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest
+    : public ContentSettingBubbleModelTest {
+ public:
+  ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        permissions::features::
+            kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
+       MediastreamMicAndCamera_LastVisited) {
+  // Required to break dependency on BrowserMainLoop.
+  MediaCaptureDevicesDispatcher::GetInstance()
+      ->DisableDeviceEnumerationForTesting();
+
+  // Navigate to the example origin.
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  GURL url = web_contents()->GetLastCommittedURL();
+
+  // Block both MIC and CAMERA for the site.
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  hcsm->SetContentSettingDefaultScope(
+      url, GURL(), ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_BLOCK);
+  hcsm->SetContentSettingDefaultScope(url, GURL(),
+                                      ContentSettingsType::MEDIASTREAM_CAMERA,
+                                      CONTENT_SETTING_BLOCK);
+
+  // Simulate the site's attempt to access the blocked MIC and CAMERA.
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  PageSpecificContentSettings::MicrophoneCameraState microphone_camera_state{
+      PageSpecificContentSettings::kMicrophoneAccessed,
+      PageSpecificContentSettings::kCameraAccessed,
+      PageSpecificContentSettings::kMicrophoneBlocked,
+      PageSpecificContentSettings::kCameraBlocked,
+  };
+  content_settings->OnMediaStreamPermissionSet(url, microphone_camera_state);
+
+  {
+    // Simulate the user choosing the "Allow" radio button and clicking "Done".
+    std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+        new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 1);
+    owner->SetSelectedRadioOptionAndCommit(0);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              hcsm->GetContentSetting(url, url,
+                                      ContentSettingsType::MEDIASTREAM_MIC));
+    EXPECT_EQ(CONTENT_SETTING_ALLOW,
+              hcsm->GetContentSetting(url, url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA));
+
+    // Verify that `last_visited` was recorded and lies within the past 7 days.
+    //
+    // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to
+    // privacy. It rounds given timestamp down to the nearest multiple of 7 in
+    // the past. [1]
+    // components/content_settings/core/browser/content_settings_utils.cc
+    base::Time now = base::Time::Now();
+    content_settings::SettingInfo info_mic;
+    hcsm->GetWebsiteSetting(url, url, ContentSettingsType::MEDIASTREAM_MIC,
+                            &info_mic);
+    EXPECT_GE(info_mic.metadata.last_visited(), now - base::Days(7));
+    EXPECT_LE(info_mic.metadata.last_visited(), now);
+    content_settings::SettingInfo info_camera;
+    hcsm->GetWebsiteSetting(url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
+                            &info_camera);
+    EXPECT_GE(info_camera.metadata.last_visited(), now - base::Days(7));
+    EXPECT_LE(info_camera.metadata.last_visited(), now);
+  }
+  {
+    // Simulate the user choosing the "Block" radio button and clicking "Done".
+    std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+        new ContentSettingMediaStreamBubbleModel(nullptr, web_contents()));
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 0);
+    owner->SetSelectedRadioOptionAndCommit(1);
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              hcsm->GetContentSetting(url, url,
+                                      ContentSettingsType::MEDIASTREAM_MIC));
+    EXPECT_EQ(CONTENT_SETTING_BLOCK,
+              hcsm->GetContentSetting(url, url,
+                                      ContentSettingsType::MEDIASTREAM_CAMERA));
+
+    // Verify that `last_visited` is not recorded unless the value is ALLOW.
+    content_settings::SettingInfo info_mic;
+    hcsm->GetWebsiteSetting(url, url, ContentSettingsType::MEDIASTREAM_MIC,
+                            &info_mic);
+    EXPECT_EQ(base::Time(), info_mic.metadata.last_visited());
+    content_settings::SettingInfo info_camera;
+    hcsm->GetWebsiteSetting(url, url, ContentSettingsType::MEDIASTREAM_CAMERA,
+                            &info_camera);
+    EXPECT_EQ(base::Time(), info_camera.metadata.last_visited());
+  }
+}
+
+TEST_F(ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
+       AutomaticDownloads_LastVisited) {
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  // Navigate to the example origin.
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  GURL url = web_contents()->GetLastCommittedURL();
+
+  // Put the download bubble to a Blocked state by simulating multiple downloads
+  // that lead to a temporary block.
+  DownloadRequestLimiter* limiter =
+      g_browser_process->download_request_limiter();
+  DownloadRequestLimiter::TabDownloadState* tab_download_state =
+      limiter->GetDownloadState(web_contents(), /* create */ true);
+  tab_download_state->set_download_seen();
+  tab_download_state->SetDownloadStatusAndNotify(
+      url::Origin::Create(url), DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED);
+  EXPECT_EQ(limiter->GetDownloadUiStatus(web_contents()),
+            DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED);
+
+  {
+    // Simulate the user choosing the "Allow" radio button and clicking "Done".
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingDownloadsBubbleModel>(nullptr,
+                                                             web_contents());
+    auto owner =
+        FakeOwner::Create(*content_setting_bubble_model, /*default_index=*/1);
+    owner->SetSelectedRadioOptionAndCommit(0);
+    EXPECT_EQ(hcsm->GetContentSetting(url, url,
+                                      ContentSettingsType::AUTOMATIC_DOWNLOADS),
+              CONTENT_SETTING_ALLOW);
+
+    // Verify that `last_visited` was recorded and lies within the past 7 days.
+    //
+    // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to
+    // privacy. It rounds given timestamp down to the nearest multiple of 7 in
+    // the past. [1]
+    // components/content_settings/core/browser/content_settings_utils.cc
+    base::Time now = base::Time::Now();
+    content_settings::SettingInfo info;
+    hcsm->GetWebsiteSetting(url, url, ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                            &info);
+    EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+    EXPECT_LE(info.metadata.last_visited(), now);
+  }
+  {
+    // Simulate the user choosing the "Block" radio button and clicking "Done".
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingDownloadsBubbleModel>(nullptr,
+                                                             web_contents());
+    auto owner =
+        FakeOwner::Create(*content_setting_bubble_model, /*default_index=*/0);
+    owner->SetSelectedRadioOptionAndCommit(1);
+
+    // Verify that `last_visited` is not recorded unless the value is ALLOW.
+    content_settings::SettingInfo info;
+    hcsm->GetWebsiteSetting(url, url, ContentSettingsType::AUTOMATIC_DOWNLOADS,
+                            &info);
+    EXPECT_EQ(base::Time(), info.metadata.last_visited());
+  }
+}
+
+TEST_F(ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
+       Geolocation_LastVisited) {
+  // Required for a system permission check in ChromeOS.
+  system_permission_settings::MockPlatformHandle mock_platform_handle;
+  system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+  ON_CALL(mock_platform_handle, IsAllowed(ContentSettingsType::GEOLOCATION))
+      .WillByDefault(testing::Return(true));
+
+  // Navigate to the example origin.
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  GURL url = web_contents()->GetLastCommittedURL();
+
+  // Block geolocation for the site.
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  hcsm->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
+  PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame())
+      ->OnContentBlocked(ContentSettingsType::GEOLOCATION);
+
+  {
+    // Simulate the user choosing the "Allow" radio button and clicking "Done".
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
+                                                               web_contents());
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 0);
+    owner->SetSelectedRadioOptionAndCommit(0);
+
+    // Verify that `last_visited` was recorded and lies within the past 7 days.
+    //
+    // The `last_visited` is coarsed by `GetCoarseVisitedTime` [1] due to
+    // privacy. It rounds given timestamp down to the nearest multiple of 7 in
+    // the past. [1]
+    // components/content_settings/core/browser/content_settings_utils.cc
+    base::Time now = base::Time::Now();
+    content_settings::SettingInfo info;
+    hcsm->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
+    EXPECT_GE(info.metadata.last_visited(), now - base::Days(7));
+    EXPECT_LE(info.metadata.last_visited(), now);
+  }
+  {
+    // Simulate the user choosing the "Block" radio button and clicking "Done".
+    auto content_setting_bubble_model =
+        std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
+                                                               web_contents());
+    std::unique_ptr<FakeOwner> owner =
+        FakeOwner::Create(*content_setting_bubble_model, 0);
+    owner->SetSelectedRadioOptionAndCommit(1);
+
+    // Verify that `last_visited` is not recorded unless the value is ALLOW.
+    content_settings::SettingInfo info;
+    hcsm->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
+    EXPECT_EQ(base::Time(), info.metadata.last_visited());
+  }
+}
+
+TEST_F(ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
+       LastVisitedNotTracked_WrongType) {
+  // Navigate to the example origin.
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  GURL url = web_contents()->GetLastCommittedURL();
+
+  // Block JavaScript for the site.
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  hcsm->SetContentSettingDefaultScope(url, url, ContentSettingsType::JAVASCRIPT,
+                                      CONTENT_SETTING_BLOCK);
+  PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame())
+      ->OnContentBlocked(ContentSettingsType::JAVASCRIPT);
+  EXPECT_EQ(hcsm->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT),
+            CONTENT_SETTING_BLOCK);
+
+  // Assert bubble is in the Blocked state (index 1) and simulate the user
+  // choosing Allow radio button (index 0) and clicking Done.
+  auto bubble_model = std::make_unique<ContentSettingSingleRadioGroup>(
+      nullptr, web_contents(), ContentSettingsType::JAVASCRIPT);
+  EXPECT_EQ(bubble_model->bubble_content().radio_group.default_item, 1);
+  auto owner = FakeOwner::Create(*bubble_model, /*default_index=*/1);
+  owner->SetSelectedRadioOptionAndCommit(0);
+  EXPECT_EQ(hcsm->GetContentSetting(url, url, ContentSettingsType::JAVASCRIPT),
+            CONTENT_SETTING_ALLOW);
+
+  // Verify that `last_visited` is not recorded for ineligible types
+  // (e.g. JAVASCRIPT).
+  content_settings::SettingInfo info;
+  hcsm->GetWebsiteSetting(url, url, ContentSettingsType::JAVASCRIPT, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
+}
+
+TEST_F(ContentSettingBubbleModelUnusedPermissionRevocationForAllSurfacesTest,
+       LastVisitedNotTracked_FeatureOff) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      permissions::features::
+          kSafetyHubUnusedPermissionRevocationForAllSurfaces);
+
+  // Required for a system permission check in ChromeOS.
+  system_permission_settings::MockPlatformHandle mock_platform_handle;
+  system_permission_settings::SetInstanceForTesting(&mock_platform_handle);
+  ON_CALL(mock_platform_handle, IsAllowed(ContentSettingsType::GEOLOCATION))
+      .WillByDefault(testing::Return(true));
+
+  // Navigate to the example origin.
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  GURL url = web_contents()->GetLastCommittedURL();
+
+  // Block geolocation for the site.
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  hcsm->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION, CONTENT_SETTING_BLOCK);
+  PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame())
+      ->OnContentBlocked(ContentSettingsType::GEOLOCATION);
+
+  // Simulate the user choosing the "Allow" radio button and clicking "Done".
+  auto content_setting_bubble_model =
+      std::make_unique<ContentSettingGeolocationBubbleModel>(nullptr,
+                                                             web_contents());
+  std::unique_ptr<FakeOwner> owner =
+      FakeOwner::Create(*content_setting_bubble_model, 0);
+  owner->SetSelectedRadioOptionAndCommit(0);
+
+  // Verify that `last_visited` is not recorded when the feature is off.
+  content_settings::SettingInfo info;
+  hcsm->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
+  EXPECT_EQ(base::Time(), info.metadata.last_visited());
 }

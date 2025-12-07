@@ -33,6 +33,9 @@ namespace metrics::structured {
 // OnReadComplete() has finished will result in a crash.
 //
 // The |on_write| callback is run each time a write has completed.
+//
+// This class is NOT thread-safe and access to the proto should be on the same
+// sequence |this| is constructed.
 template <class T>
   requires(std::derived_from<T, google::protobuf::MessageLite>)
 class PersistentProto : public internal::PersistentProtoInternal {

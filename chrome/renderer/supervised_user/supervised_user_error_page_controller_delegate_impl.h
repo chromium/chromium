@@ -40,6 +40,9 @@ class SupervisedUserErrorPageControllerDelegateImpl
   void GoBack() override;
   void RequestUrlAccessRemote(UrlAccessRequestInitiated callback) override;
   void RequestUrlAccessLocal(UrlAccessRequestInitiated callback) override;
+#if BUILDFLAG(IS_ANDROID)
+  void LearnMore(base::OnceClosure open_help_page) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // content::RenderFrameObserver:
   void OnDestruct() override;

@@ -9,6 +9,10 @@
 #include <string>
 #include <vector>
 
+namespace webrtc {
+struct SdpVideoFormat;
+}
+
 namespace remoting::protocol {
 
 // SdpMessage is used to process session descriptions messages in SDP format
@@ -42,16 +46,31 @@ class SdpMessage {
   bool AddCodecParameter(const std::string& codec,
                          const std::string& parameters_to_add);
 
-  // Prefers |codec| in current session description. Returns false if |codec| is
-  // not found.
-  bool PreferVideoCodec(const std::string& codec);
+  // Reorders the list of video formats by placing the payload associated with
+  // |format| at the front. By doing this, the sender-side of the connection
+  // will try to use that codec first. The SDP message will not be modified if
+  // |format| is not a supported codec.
+  void SetPreferredVideoFormat(const webrtc::SdpVideoFormat& format);
 
  private:
+  struct Payload {
+    size_t index;
+    std::string type;
+  };
+  using Payloads = std::vector<Payload>;
+
   // Finds the lines of the form "a=rtpmap:<payload_type> <codec>/.." with the
   // specified |codec| and returns a list of the matching payload types with
   // their line numbers.
-  std::vector<std::pair<int, std::string>> FindCodec(
-      const std::string& codec) const;
+  Payloads FindCodecPayloads(const std::string& codec) const;
+
+  // Overload for |FindCodec| which also filters based on fmtp parameter, such
+  // as profile-id for video codecs.
+  Payloads FindCodecPayloads(const std::string& codec,
+                             const std::string& fmtp_param) const;
+
+  std::string GetFmtpFragmentForSdpVideoFormat(
+      const webrtc::SdpVideoFormat& format) const;
 
   std::vector<std::string> sdp_lines_;
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/offline_pages/background_loader_offliner.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
@@ -83,12 +79,12 @@ BackgroundLoaderOffliner::BackgroundLoaderOffliner(
     load_termination_listener_->set_offliner(this);
 
   for (int i = 0; i < ResourceDataType::RESOURCE_DATA_TYPE_COUNT; ++i) {
-    stats_[i].requested = 0;
-    stats_[i].completed = 0;
+    UNSAFE_TODO(stats_[i]).requested = 0;
+    UNSAFE_TODO(stats_[i]).completed = 0;
   }
 }
 
-BackgroundLoaderOffliner::~BackgroundLoaderOffliner() {}
+BackgroundLoaderOffliner::~BackgroundLoaderOffliner() = default;
 
 // static
 BackgroundLoaderOffliner* BackgroundLoaderOffliner::FromWebContents(
@@ -250,10 +246,11 @@ void BackgroundLoaderOffliner::DocumentOnLoadCompletedInPrimaryMainFrame() {
 
 void BackgroundLoaderOffliner::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
-  if (pending_request_) {
+  if (pending_request_ && completion_callback_) {
     SavePageRequest request(*pending_request_.get());
     switch (status) {
       case base::TERMINATION_STATUS_OOM:
+      case base::TERMINATION_STATUS_EVICTED_FOR_MEMORY:
       case base::TERMINATION_STATUS_PROCESS_CRASHED:
       case base::TERMINATION_STATUS_STILL_RUNNING:
         std::move(completion_callback_)
@@ -311,7 +308,7 @@ void BackgroundLoaderOffliner::ObserveResourceLoading(
     bool started) {
   // Add the signal to extra data, and use for tracking.
 
-  RequestStats& found_stats = stats_[type];
+  RequestStats& found_stats = UNSAFE_TODO(stats_[type]);
   if (started)
     ++found_stats.requested;
   else
@@ -352,8 +349,7 @@ void BackgroundLoaderOffliner::StartSnapshot() {
         break;
       default:
         // We should've already checked for Success before entering here.
-        NOTREACHED_IN_MIGRATION();
-        status = Offliner::RequestStatus::LOADING_FAILED;
+        NOTREACHED();
     }
 
     std::move(completion_callback_).Run(request, status);
@@ -458,8 +454,8 @@ void BackgroundLoaderOffliner::ResetState() {
   loader_.reset();
 
   for (int i = 0; i < ResourceDataType::RESOURCE_DATA_TYPE_COUNT; ++i) {
-    stats_[i].requested = 0;
-    stats_[i].completed = 0;
+    UNSAFE_TODO(stats_[i]).requested = 0;
+    UNSAFE_TODO(stats_[i]).completed = 0;
   }
 }
 
@@ -474,7 +470,7 @@ void BackgroundLoaderOffliner::ResetLoader() {
       Profile::FromBrowserContext(browser_context_));
   content_settings::PageSpecificContentSettings::CreateForWebContents(
       loader_->web_contents(),
-      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+      std::make_unique<PageSpecificContentSettingsDelegate>(
           loader_->web_contents()));
 }
 

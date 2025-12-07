@@ -22,7 +22,6 @@
 #include "build/build_config.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/common/resources/return_callback.h"
-#include "components/viz/common/resources/shared_bitmap.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/display/external_use_client.h"
@@ -74,9 +73,10 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   base::WeakPtr<DisplayResourceProvider> GetWeakPtr();
 
 #if BUILDFLAG(IS_ANDROID)
-  // Indicates if this resource is backed by an Android SurfaceTexture, and thus
-  // can't really be promoted to an overlay.
-  bool IsBackedBySurfaceTexture(ResourceId id) const;
+  // Indicates if this resource is backed by an Android SurfaceView, and thus
+  // can be promoted to an overlay via legacy (SurfaceView/Dialog) overlay
+  // system.
+  bool IsBackedBySurfaceView(ResourceId id) const;
 #endif
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
@@ -92,14 +92,20 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
   // scanout.
   SharedImageFormat GetSharedImageFormat(ResourceId id) const;
   // Returns the color space of the resource.
-  const gfx::ColorSpace& GetColorSpace(ResourceId id) const;
+  gfx::ColorSpace GetColorSpace(ResourceId id) const;
   // Returns true if the resource needs a detiling pass before scanout.
   bool GetNeedsDetiling(ResourceId id) const;
 
   const gfx::HDRMetadata& GetHDRMetadata(ResourceId id) const;
 
+  GrSurfaceOrigin GetOrigin(ResourceId id) const;
+  SkAlphaType GetAlphaType(ResourceId id) const;
+
   // Indicates if this resource may be used for a hardware overlay plane.
   bool IsOverlayCandidate(ResourceId id) const;
+  // Indicates if this resource uses low latency rendering.
+  bool IsLowLatencyRendering(ResourceId id) const;
+
   SurfaceId GetSurfaceId(ResourceId id) const;
   int GetChildId(ResourceId id) const;
 
@@ -143,8 +149,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // This is propagated to ReturnedResource when the resource is freed.
     void SetReleaseFence(gfx::GpuFenceHandle release_fence);
 
-    // Returns true iff this resource has a read lock fence set.
-    bool HasReadLockFence() const;
+    // Returns the synchronization type for the underlying resource.
+    TransferableResource::SynchronizationType SynchronizationType() const;
 
    protected:
     ChildResource* resource() { return resource_; }
@@ -248,7 +254,7 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     ChildResource(ChildResource&& other);
     ~ChildResource();
 
-    bool is_gpu_resource_type() const { return !transferable.is_software; }
+    bool is_gpu_resource_type() const { return !transferable.GetIsSoftware(); }
     const gpu::SyncToken& sync_token() const { return sync_token_; }
 
     bool InUse() const {
@@ -284,14 +290,8 @@ class VIZ_SERVICE_EXPORT DisplayResourceProvider
     // When the resource should be deleted until it is actually reaped.
     bool marked_for_deletion = false;
 
-    // A pointer to the shared memory structure for software-backed resources,
-    // when it is mapped into memory in this process.
-    std::unique_ptr<SharedBitmap> shared_bitmap;
-    // A GUID for reporting the |shared_bitmap| to memory tracing. The GUID is
-    // known by other components in the system as well to give the same id for
-    // this shared memory bitmap everywhere. This is empty until the resource is
-    // mapped for use in the display compositor.
-    base::UnguessableToken shared_bitmap_tracing_guid;
+    // Indicate whether the shared_image has been locked at lease once.
+    bool shared_image_representation_created_and_set = false;
 
     // A fence used for returning resources after the display compositor has
     // completed accessing the resources it received from a client. This can

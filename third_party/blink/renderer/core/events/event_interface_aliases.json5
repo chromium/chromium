@@ -20,11 +20,6 @@
       ImplementedAs: "MouseEvent",
     },
     {
-      name: "MutationEvents",
-      ImplementedAs: "MutationEvent",
-      RuntimeEnabled: "MutationEvents",
-    },
-    {
       name: "SVGEvents",
       ImplementedAs: "Event",
     },

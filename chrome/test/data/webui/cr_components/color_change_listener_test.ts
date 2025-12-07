@@ -4,7 +4,7 @@
 
 // clang-format off
 import {COLORS_CSS_SELECTOR, ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-// <if expr="chromeos_ash">
+// <if expr="is_chromeos">
 import {COLOR_PROVIDER_CHANGED} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 // </if>
 
@@ -33,9 +33,9 @@ suite('ColorChangeListenerTest', () => {
     // ensure were getting the most recently added element.
     const node = nodes[nodes.length - 1];
     assertTrue(!!node);
-    const href = node!.getAttribute('href');
+    const href = node.getAttribute('href');
     assertTrue(!!href);
-    const params = new URLSearchParams(new URL(href!, location.href).search);
+    const params = new URLSearchParams(new URL(href, location.href).search);
     return params.has(param) ? params.get(param) : null;
   }
 
@@ -111,7 +111,7 @@ suite('ColorChangeListenerTest', () => {
     assertEquals(1, document.querySelectorAll(COLORS_CSS_SELECTOR).length);
   });
 
-  // <if expr="chromeos_ash">
+  // <if expr="is_chromeos">
   test('AddAndRemoveColorProviderChangedListener', async () => {
     let listenerCalledTimes = 0;
     const listener = () => listenerCalledTimes++;

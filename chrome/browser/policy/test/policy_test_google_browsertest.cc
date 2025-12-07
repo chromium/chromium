@@ -11,12 +11,12 @@
 #include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/policy/safe_search_policy_test.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/google/core/common/google_switches.h"
-#include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
 #include "components/safe_search_api/safe_search_util.h"
@@ -91,20 +91,13 @@ class PolicyTestGoogle : public SafeSearchPolicyTest,
           urls_requested_[request.relative_url] = headers;
         }));
 
+    https_server_.SetCertHostnames(
+        {"google.com", "www.google.com", "youtube.com"});
     ASSERT_TRUE(https_server_.Start());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     SafeSearchPolicyTest::SetUpCommandLine(command_line);
-
-    // Note for the google and youtube tests below, the throttles expect that
-    // the URLs are to google.com or youtube.com. Networking code also
-    // automatically upgrades http requests to these domains to https (see the
-    // preload list in https://www.chromium.org/hsts). So as a result we need
-    // to make the requests to an https server. Since the HTTPS server only
-    // serves a valid cert for localhost, so this is needed to load pages from
-    // "www.google.com" without an interstitial.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
 
     // The production code only allows known ports (80 for http and 443 for
     // https), but the test server runs on a random port.
@@ -113,6 +106,15 @@ class PolicyTestGoogle : public SafeSearchPolicyTest,
 
   bool is_incognito() const { return GetParam(); }
 
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  // Note for the google and youtube tests below, the throttles expect that
+  // the URLs are to google.com or youtube.com. Networking code also
+  // automatically upgrades http requests to these domains to https (see the
+  // preload list in https://www.chromium.org/hsts). So as a result we need
+  // to make the requests to an https server.
   net::EmbeddedTestServer https_server_;
   base::Lock lock_;
   std::map<std::string, net::HttpRequestHeaders> urls_requested_;
@@ -147,7 +149,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), youtube_url));
 
       CheckYouTubeRestricted(youtube_restrict_mode,
-                             urls_requested()[youtube_url.path()]);
+                             urls_requested()[youtube_url.GetPath()]);
     }
 
     {
@@ -156,7 +158,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
                        youtube_script);
 
       CheckYouTubeRestricted(youtube_restrict_mode,
-                             urls_requested()[youtube_script.path()]);
+                             urls_requested()[youtube_script.GetPath()]);
     }
 
     if (youtube_restrict_mode != safe_search_api::YOUTUBE_RESTRICT_OFF) {
@@ -170,7 +172,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, ForceYouTubeRestrict) {
                        youtube_script);
 
       CheckYouTubeRestricted(safe_search_api::YOUTUBE_RESTRICT_OFF,
-                             urls_requested()[youtube_script.path()]);
+                             urls_requested()[youtube_script.GetPath()]);
     }
   }
 }
@@ -192,7 +194,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, AllowedDomainsForApps) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), google_url));
 
       CheckAllowedDomainsHeader(allowed_domain,
-                                urls_requested()[google_url.path()]);
+                                urls_requested()[google_url.GetPath()]);
     }
 
     {
@@ -204,7 +206,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, AllowedDomainsForApps) {
                        google_script);
 
       CheckAllowedDomainsHeader(allowed_domain,
-                                urls_requested()[google_script.path()]);
+                                urls_requested()[google_script.GetPath()]);
     }
 
     {
@@ -213,7 +215,7 @@ IN_PROC_BROWSER_TEST_P(PolicyTestGoogle, AllowedDomainsForApps) {
       ASSERT_TRUE(ui_test_utils::NavigateToURL(GetBrowser(), non_google_url));
 
       CheckAllowedDomainsHeader(std::string(),
-                                urls_requested()[non_google_url.path()]);
+                                urls_requested()[non_google_url.GetPath()]);
     }
   }
 }

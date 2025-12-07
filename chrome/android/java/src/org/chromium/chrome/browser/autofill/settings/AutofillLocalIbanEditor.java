@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import android.os.Build;
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import android.os.Bundle;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,8 +17,8 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.LayoutRes;
-import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
@@ -24,48 +26,79 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.Iban;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * This class creates a view for adding, editing, and deleting a local IBAN. A local IBAN gets saved
  * to the user's device only.
  */
+@NullMarked
 public class AutofillLocalIbanEditor extends AutofillEditorBase implements ProfileDependentSetting {
-    private static Callback<Fragment> sObserverForTest;
+    @VisibleForTesting
+    static final String SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM =
+            "Autofill.SettingsPage.LocalIbanActions";
+
+    private static @Nullable Callback<Fragment> sObserverForTest;
 
     protected Button mDoneButton;
     protected EditText mNickname;
     private TextInputLayout mNicknameLabel;
     protected EditText mValue;
     private Iban mIban;
-    private Profile mProfile;
-    private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
+    private @Nullable Profile mProfile;
+    private @Nullable Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    // Needs to stay in sync with AutofillPaymentMethodAction in enums.xml.
+    @IntDef({
+        IbanAction.IBAN_ADDED_WITH_NICKNAME,
+        IbanAction.IBAN_ADDED_WITHOUT_NICKNAME,
+        IbanAction.IBAN_DELETED,
+        IbanAction.IBAN_EDITOR_CLOSED_WITH_CHANGES,
+        IbanAction.IBAN_EDITOR_CLOSED_WITHOUT_CHANGES,
+        IbanAction.HISTOGRAM_BUCKET_COUNT
+    })
+    // TODO(b/371041630): Extend IBAN histograms to track nickname usage across all IBAN actions.
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface IbanAction {
+        int IBAN_ADDED_WITH_NICKNAME = 0;
+        int IBAN_ADDED_WITHOUT_NICKNAME = 1;
+        int IBAN_DELETED = 2;
+        int IBAN_EDITOR_CLOSED_WITH_CHANGES = 3;
+        int IBAN_EDITOR_CLOSED_WITHOUT_CHANGES = 4;
+        int HISTOGRAM_BUCKET_COUNT = 5;
+    }
 
     @UsedByReflection("AutofillPaymentMethodsFragment.java")
     public AutofillLocalIbanEditor() {}
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
         View v = super.onCreateView(inflater, container, savedInstanceState);
-
-        // Do not use autofill for the fields.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            getActivity()
-                    .getWindow()
-                    .getDecorView()
-                    .setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO_EXCLUDE_DESCENDANTS);
-        }
 
         PersonalDataManager personalDataManager =
                 PersonalDataManagerFactory.getForProfile(getProfile());
@@ -123,13 +156,39 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         String guid = personalDataManager.addOrUpdateLocalIban(iban);
         // Return true if the GUID is non-empty (successful operation), and false if the GUID is
         // empty (unsuccessful).
-        return !guid.isEmpty();
+        if (guid.isEmpty()) return false;
+
+        if (mIsNewEntry) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                    iban.getNickname().isEmpty()
+                            ? IbanAction.IBAN_ADDED_WITHOUT_NICKNAME
+                            : IbanAction.IBAN_ADDED_WITH_NICKNAME,
+                    IbanAction.HISTOGRAM_BUCKET_COUNT);
+        } else {
+            boolean ibanChanged =
+                    !mIban.getNickname().equals(iban.getNickname())
+                            || !Objects.equals(mIban.getValue(), iban.getValue());
+
+            RecordHistogram.recordEnumeratedHistogram(
+                    SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                    ibanChanged
+                            ? IbanAction.IBAN_EDITOR_CLOSED_WITH_CHANGES
+                            : IbanAction.IBAN_EDITOR_CLOSED_WITHOUT_CHANGES,
+                    IbanAction.HISTOGRAM_BUCKET_COUNT);
+        }
+
+        return true;
     }
 
     @Override
     protected void deleteEntry() {
         if (mGUID != null) {
             PersonalDataManagerFactory.getForProfile(getProfile()).deleteIban(mGUID);
+            RecordHistogram.recordEnumeratedHistogram(
+                    SETTINGS_PAGE_LOCAL_IBAN_ACTIONS_HISTOGRAM,
+                    IbanAction.IBAN_DELETED,
+                    IbanAction.HISTOGRAM_BUCKET_COUNT);
         }
     }
 
@@ -146,7 +205,14 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
             showDeletePaymentMethodConfirmationDialog();
             return true;
         }
-        // TODO(b/332954304): Add help button to IBAN editor.
+        if (item.getItemId() == R.id.help_menu_id) {
+            HelpAndFeedbackLauncherFactory.getForProfile(getProfile())
+                    .show(
+                            getActivity(),
+                            getActivity().getString(R.string.help_context_autofill),
+                            null);
+            return true;
+        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -160,7 +226,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
 
     /** Return the {@link Profile} associated with the IBAN being edited. */
     public Profile getProfile() {
-        return mProfile;
+        return assertNonNull(mProfile);
     }
 
     @VisibleForTesting
@@ -176,7 +242,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
         if (!mIban.getNickname().isEmpty()) {
             mNickname.setText(mIban.getNickname());
         }
-        if (!mIban.getValue().isEmpty()) {
+        if (!TextUtils.isEmpty(mIban.getValue())) {
             mValue.setText(mIban.getValue());
         }
     }
@@ -193,7 +259,7 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
      * AutofillDeletePaymentMethodConfirmationDialog}.
      */
     public void setModalDialogManagerSupplier(
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier) {
+            Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
     }
 
@@ -210,10 +276,15 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
                         dismissalCause -> {
                             if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
                                 deleteEntry();
-                                getActivity().finish();
+                                finishPage();
                             }
                         },
                         /* titleResId= */ R.string.autofill_iban_delete_confirmation_title);
         dialog.show();
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

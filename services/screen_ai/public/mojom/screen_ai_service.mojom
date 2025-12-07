@@ -21,12 +21,31 @@ enum Direction {
 
 // Clients of the OCR service.
 enum OcrClientType {
+  // To be used only for testing.
   kTest,
+  // Used in PDF Viewer to convert images to interactble text.
   kPdfViewer,
+  // Used in ChromeOS Local Search to make stored images text searchable.
   kLocalSearch,
+  // Ued by ChromeOS Camera app to create interactable PDFs.
   kCameraApp,
-  kPdfSearchify,
+  // Used by ChromeOS Media app to make PDFs accessible.
   kMediaApp,
+  // Used by the ChromeOS screenshot tool to detect text in a user selected
+  // region.
+  kScreenshotTextDetection,
+};
+
+// Clients of the Main Content Extraction service.
+enum MceClientType {
+  // To be used only for testing.
+  kTest,
+  // Used in the reading mode.
+  kReadingMode,
+  // Used for main node annotation.
+  kMainNode,
+  // Used for Mahi feature on ChromeOS.
+  kMahi,
 };
 
 // A wrapper struct mirroring parts of the chrome_screen_ai.proto.
@@ -50,8 +69,8 @@ struct LineBox {
   // ID of the text block that this line belongs to.
   int32 block_id;
 
-  // Index within the block that this line belongs to.
-  int32 order_within_block;
+  // ID of the paragraph that this line belongs to.
+  int32 paragraph_id;
 
   // Line bounding box relative to the original image.
   gfx.mojom.Rect bounding_box;
@@ -59,14 +78,6 @@ struct LineBox {
   // Rotation angle (in degrees, clockwise) of the line bounding box about its
   // top-left corner.
   float bounding_box_angle;
-
-  // Line bounding box relative to the original image with bottom edge
-  // representing estimated baseline of text.
-  gfx.mojom.Rect baseline_box;
-
-  // Rotation angle (in degrees, clockwise) of the line baseline box about its
-  // top-left corner.
-  float baseline_box_angle;
 
   // Confidence as computed by the OCR engine. The value is in range [0, 1].
   float confidence;
@@ -77,16 +88,10 @@ struct WordBox {
   // A single word in UTF8 format.
   string word;
 
-  // True if the word passes the internal beamsearch dictionary check.
-  bool dictionary_word;
-
   // Language guess for the word. The format  is the ISO 639-1 two-letter
   // language code if that is defined (e.g. "en"), or else the ISO 639-2
   // three-letter code if that is defined, or else a Google-specific code.
   string language;
-
-  // This word is separated from next word by space.
-  bool has_space_after;
 
   // Word bounding box relative to the original image.
   gfx.mojom.Rect bounding_box;
@@ -98,20 +103,35 @@ struct WordBox {
   // The direction of the script contained in the word.
   Direction direction;
 
+  // Bounding box of the whitespace after the word relative to the original
+  // image. The rect would be empty if there is no whitespace after the word.
+  gfx.mojom.Rect whitespace_bounding_box;
+
+  // Rotation angle of the whitespace bounding box (in degrees, clockwise) about
+  // its top-left corner.
+  float whitespace_bounding_box_angle;
+
   // Confidence as computed by the OCR engine. The value is in range [0, 1].
   float confidence;
 };
 
 // Main interface a client uses for visual annotation functions of the Screen AI
 // service.
+//
+// NOTE: Security approval for this interface is based on the fact that only
+// simple inputs (bitmaps) are sent to the service. If this needs changing in
+// future, we may need to switch to one service instance per site to keep site
+// content isolation.
 [RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
 interface ScreenAIAnnotator {
-  // Receives an image, such as a screenshot or a page from a PDF file, as well
-  // as the ID of the accessibility tree that contains the image
-  // (`parent_tree_id`). It then asks the Screen AI library to perform OCR on
-  // the image. It returns an AXTreeUpdate with nodes built from OCR results.
+  // Receives an image, such as a screenshot or a page from a PDF file and asks
+  // the Screen AI library to perform OCR on the image. It returns an
+  // AXTreeUpdate with nodes built from OCR results.
   // The returned AXTreeUpdate is not a properly serialized update and is only
   // a container for the root id of a subtree and nodes built from OCR results.
+  // This function is currently only used on ChromeOS Media App and other
+  //  clients use `PerformOcrAndReturnAnnotation` instead.
+  [EnableIf=is_chromeos]
   PerformOcrAndReturnAXTreeUpdate(skia.mojom.BitmapN32 image) =>
     (ax.mojom.AXTreeUpdate update);
 
@@ -122,6 +142,20 @@ interface ScreenAIAnnotator {
 
   // Sets OCR client type for metrics.
   SetClientType(OcrClientType client_type);
+
+  // Returns the maximum dimension for which images are processed without
+  // downsampling. This value is not expected to change after initialization of
+  // the service and is expected to be non-zero.
+  GetMaxImageDimension() => (uint32 max_dimension);
+
+  // Turns the light model on or off for current client. Switching between light
+  // and normal mode has some light overhead to reinitialize the pipeline.
+  SetOCRLightMode(bool enabled);
+
+  // Tells if OCR service has another client or not. This function can be used
+  // by batch jobs to consider postponing their tasks to when OCR has no other
+  // client.
+  IsOCRBusy() => (bool busy);
 };
 
 // Main interface a client uses for Main Content Extraction function of Screen
@@ -130,15 +164,24 @@ interface ScreenAIAnnotator {
 // All interfaces of one browser profile use one ScreenAIService.
 interface Screen2xMainContentExtractor {
   // Receives the accessibility tree as a snapshot, schedules processing, and
-  // returns the main content of the given tree. ukm_source_id is a
-  // ukm::SourceId which is used to tie the UKM event to the main frame URL for
-  // metrics collection.
-  ExtractMainContent(ax.mojom.AXTreeUpdate snapshot, int64 ukm_source_id) =>
+  // returns the main content of the given tree.
+  ExtractMainContent(ax.mojom.AXTreeUpdate snapshot) =>
     (array<int32> content_node_ids);
 
   // Receives the accessibility tree as a snapshot, schedules processing, and
   // returns the main node id of the given tree.
+  // DEPRECATED, use IdentifyMainNode method below.
+  // TODO(crbug.com/401052200): Clean up existing calls and delete method.
   ExtractMainNode(ax.mojom.AXTreeUpdate snapshot) => (int32 main_node_id);
+
+  // Receives an AXTreeUpdate and identifies the main node. The AXTreeUpdate
+  // should represent an entire AXTree; not a diff or partial tree, in order
+  // to identify an accurate main node for the entire page.
+  IdentifyMainNode(ax.mojom.AXTreeUpdate ax_tree) =>
+    (ax.mojom.AXTreeID tree_id, int32 node_id);
+
+  // Sets Mce client type for metrics.
+  SetClientType(MceClientType client_type);
 };
 
 // Provides an interface to the OCR functionality of the Screen AI service.

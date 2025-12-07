@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 static_library("trusted_vault") {
   sources = [
     "trusted_vault_client.h",
+    "trusted_vault_server_constants.cc",
+    "trusted_vault_server_constants.h",
     "trusted_vault_service.cc",
     "trusted_vault_service.h",
   ]
@@ -26,21 +26,28 @@ static_library("trusted_vault") {
       "features.h",
       "frontend_trusted_vault_connection.cc",
       "frontend_trusted_vault_connection.h",
+      "local_recovery_factor.h",
+      "physical_device_recovery_factor.cc",
+      "physical_device_recovery_factor.h",
       "proto_string_bytes_conversion.cc",
       "proto_string_bytes_conversion.h",
       "proto_time_conversion.cc",
       "proto_time_conversion.h",
+      "recovery_key_store_certificate.cc",
+      "recovery_key_store_certificate.h",
       "recovery_key_store_connection.h",
       "recovery_key_store_connection_impl.cc",
       "recovery_key_store_connection_impl.h",
-      "recovery_key_store_controller.cc",
-      "recovery_key_store_controller.h",
       "securebox.cc",
       "securebox.h",
       "standalone_trusted_vault_backend.cc",
       "standalone_trusted_vault_backend.h",
       "standalone_trusted_vault_client.cc",
       "standalone_trusted_vault_client.h",
+      "standalone_trusted_vault_server_constants.cc",
+      "standalone_trusted_vault_server_constants.h",
+      "standalone_trusted_vault_storage.cc",
+      "standalone_trusted_vault_storage.h",
       "trusted_vault_access_token_fetcher.h",
       "trusted_vault_access_token_fetcher_frontend.cc",
       "trusted_vault_access_token_fetcher_frontend.h",
@@ -58,35 +65,30 @@ static_library("trusted_vault") {
       "trusted_vault_histograms.h",
       "trusted_vault_request.cc",
       "trusted_vault_request.h",
-      "trusted_vault_server_constants.cc",
-      "trusted_vault_server_constants.h",
+      "trusted_vault_throttling_connection.h",
+      "trusted_vault_throttling_connection_impl.cc",
+      "trusted_vault_throttling_connection_impl.h",
     ]
 
     deps = [
       "//components/account_id",
-      "//components/os_crypt/sync",
       "//components/signin/public/identity_manager",
       "//components/trusted_vault/proto",
       "//crypto",
       "//google_apis",
       "//net",
-      "//services/network/public/cpp:cpp",
+      "//services/network/public/cpp",
       "//third_party/boringssl",
+      "//third_party/libxml:xml_reader",
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_mac) {
     sources += [
-      "recovery_key_provider_ash.cc",
-      "recovery_key_provider_ash.h",
-    ]
-
-    deps += [
-      "//chromeos/ash/components/cryptohome",
-      "//chromeos/ash/components/dbus/cryptohome",
-      "//chromeos/ash/components/dbus/userdataauth",
-      "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
-      "//components/account_id",
+      "icloud_keychain_recovery_factor.cc",
+      "icloud_keychain_recovery_factor.h",
+      "icloud_recovery_key_mac.h",
+      "icloud_recovery_key_mac.mm",
     ]
   }
 }
@@ -96,17 +98,22 @@ if (!is_android) {
     testonly = true
     sources = [
       "download_keys_response_handler_unittest.cc",
+      "physical_device_recovery_factor_unittest.cc",
       "proto_string_bytes_conversion_unittest.cc",
       "proto_time_conversion_unittest.cc",
+      "recovery_key_store_certificate_unittest.cc",
       "recovery_key_store_connection_unittest.cc",
       "securebox_unittest.cc",
       "standalone_trusted_vault_backend_unittest.cc",
+      "standalone_trusted_vault_server_constants_unittest.cc",
+      "standalone_trusted_vault_storage_unittest.cc",
       "trusted_vault_access_token_fetcher_frontend_unittest.cc",
       "trusted_vault_connection_impl_unittest.cc",
       "trusted_vault_crypto_unittest.cc",
       "trusted_vault_degraded_recoverability_handler_unittest.cc",
       "trusted_vault_request_unittest.cc",
       "trusted_vault_server_constants_unittest.cc",
+      "trusted_vault_throttling_connection_impl_unittest.cc",
     ]
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -114,8 +121,6 @@ if (!is_android) {
     deps = [
       ":test_support",
       ":trusted_vault",
-      "//components/os_crypt/sync",
-      "//components/os_crypt/sync:test_support",
       "//components/signin/public/identity_manager:test_support",
       "//components/trusted_vault/proto",
       "//google_apis",
@@ -124,15 +129,18 @@ if (!is_android) {
       "//testing/gtest",
     ]
 
-    if (is_chromeos_ash) {
-      sources += [ "recovery_key_store_controller_ash_unittest.cc" ]
-
-      deps += [
-        "//chromeos/ash/components/dbus/userdataauth",
-        "//chromeos/ash/components/dbus/userdataauth:test_support",
-        "//chromeos/ash/components/dbus/userdataauth:userdataauth_proto",
+    if (is_mac) {
+      sources += [
+        "icloud_keychain_recovery_factor_unittest.mm",
+        "icloud_recovery_key_mac_unittest.mm",
       ]
+
+      deps += [ "//crypto:test_support" ]
     }
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -146,6 +154,8 @@ static_library("test_support") {
     "test/fake_trusted_vault_client.h",
     "test/mock_recovery_key_store_connection.cc",
     "test/mock_recovery_key_store_connection.h",
+    "test/recovery_key_store_certificate_test_util.cc",
+    "test/recovery_key_store_certificate_test_util.h",
   ]
 
   deps = [
@@ -161,10 +171,12 @@ static_library("test_support") {
 
   if (!is_android) {
     sources += [
+      "test/fake_file_access.cc",
+      "test/fake_file_access.h",
       "test/fake_security_domains_server.cc",
       "test/fake_security_domains_server.h",
-      "test/mock_trusted_vault_connection.cc",
-      "test/mock_trusted_vault_connection.h",
+      "test/mock_trusted_vault_throttling_connection.cc",
+      "test/mock_trusted_vault_throttling_connection.h",
     ]
 
     public_deps += [
@@ -172,21 +184,5 @@ static_library("test_support") {
       "//net:test_support",
       "//url",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "test/fake_crosapi_trusted_vault_backend.cc",
-      "test/fake_crosapi_trusted_vault_backend.h",
-      "test/fake_crosapi_trusted_vault_backend_service.cc",
-      "test/fake_crosapi_trusted_vault_backend_service.h",
-    ]
-
-    public_deps += [
-      "//chromeos/crosapi/mojom",
-      "//mojo/public/cpp/bindings",
-    ]
-
-    deps += [ "//components/account_manager_core" ]
   }
 }

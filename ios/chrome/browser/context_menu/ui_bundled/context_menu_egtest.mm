@@ -10,11 +10,18 @@
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "components/data_sharing/public/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/url_formatter/url_formatter.h"
+#import "ios/chrome/browser/context_menu/ui_bundled/constants.h"
+#import "ios/chrome/browser/enterprise/data_controls/test/data_controls_app_interface.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/test/fullscreen_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
+#import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
-#import "ios/chrome/browser/ui/fullscreen/test/fullscreen_app_interface.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -24,6 +31,8 @@
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/scoped_block_popups_pref.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/components/enterprise/data_controls/clipboard_enums.h"
+#import "ios/components/enterprise/data_controls/features.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
@@ -40,7 +49,6 @@
 using chrome_test_util::ContextMenuCopyButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
-using chrome_test_util::OmniboxText;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::SystemSelectionCalloutCopyButton;
 using chrome_test_util::WebViewMatcher;
@@ -80,6 +88,7 @@ const char kInitialPageHtml[] =
     "initial-scale=1.0, maximum-scale=1.0, user-scalable=no' /></head><body><a "
     "style='margin-left:150px' href='/destination' id='link'>"
     "link</a></body></html>";
+
 // The DOM element ID of the link to the destination page.
 const char kInitialPageDestinationLinkId[] = "link";
 // The text of the link to the destination page.
@@ -89,6 +98,23 @@ const char kInitialPageDestinationLinkText[] = "link";
 const char kInitialPageDestinationLongLinkID[] = "LongLink";
 // The text of the long link to the destination page.
 const char kInitialPageDestinationLongLinkText[] = "LongLink";
+
+// Returns an ElementSelector for the chromium image on the logo page.
+ElementSelector* LogoPageChromiumImageIdSelector() {
+  return [ElementSelector selectorWithElementID:kLogoPageChromiumImageId];
+}
+
+// Returns an ElementSelector for the link to the destination page on the
+// initial page.
+ElementSelector* InitialPageDestinationLinkIdSelector() {
+  return [ElementSelector selectorWithElementID:kInitialPageDestinationLinkId];
+}
+
+// Returns an ElementSelector for the long link to the destination page.
+ElementSelector* InitialPageDestinationLongLinkIDSelector() {
+  return
+      [ElementSelector selectorWithElementID:kInitialPageDestinationLongLinkID];
+}
 
 // URL to a page with a link with a javascript: scheme.
 const char kJavaScriptPageUrl[] = "/scenarionContextMenuJavaScript";
@@ -162,7 +188,7 @@ NSString* const kLongLinkHref =
 
 NSString* const kLongImgTitle =
     @"Chromium logo with a long title, well in excess of one hundred "
-     "characters, so formulated as to thest the very limits of the context "
+     "characters, so formulated as to test the very limits of the context "
      "menu layout system, and to ensure that all users can enjoy the full "
      "majesty of image titles, however sesquipedalian they may be!";
 
@@ -177,6 +203,16 @@ NSString* const kLongLinkTestPageTemplateHtml =
      "/></head><body><p style='margin-bottom:50px'>Short title test.</p>"
      "<p><a style='margin-left:150px' href='%@' id='%s'>LongLink</a></p>"
      "</body></html>";
+
+// Returns an ElementSelector for long pressing the first link in the page.
+ElementSelector* ElementSelectorToLongPressLink() {
+  return [ElementSelector selectorWithCSSSelector:"a"];
+}
+
+// Returns an ElementSelector for long pressing the first image in the page.
+ElementSelector* ElementSelectorToLongPressImage() {
+  return [ElementSelector selectorWithCSSSelector:"img"];
+}
 
 // Matcher for the open image button in the context menu.
 id<GREYMatcher> OpenImageButton() {
@@ -202,11 +238,30 @@ id<GREYMatcher> OpenLinkInGroupButton() {
       IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP);
 }
 
+// Matcher for the open link in group button in the context menu.
+id<GREYMatcher> CopyImageButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_CONTENT_CONTEXT_COPYIMAGE);
+}
+
+// Matcher for the copy link button in the context menu.
+id<GREYMatcher> CopyLinkButton() {
+  return ContextMenuItemWithAccessibilityLabelId(
+      IDS_IOS_COPY_LINK_ACTION_TITLE);
+}
+
 // Matcher for the open link in an existing tab group (a group containing one
 // tab) button in the context menu.
 id<GREYMatcher> OpenLinkInOneTabGroupButton() {
   return ContextMenuItemWithAccessibilityLabel(
       l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1));
+}
+
+// Matcher for the share button in the context menu.
+id<GREYMatcher> ShareButton() {
+  return grey_allOf(
+      grey_ancestor(grey_kindOfClassName(@"_UIContextMenuCell")),
+      ContextMenuItemWithAccessibilityLabelId(IDS_IOS_SHARE_BUTTON_LABEL), nil);
 }
 
 // Provides responses for initial page and destination URLs.
@@ -255,14 +310,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Long presses on `element_id` to trigger context menu.
-void LongPressElement(const char* element_id) {
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:chrome_test_util::LongPressElementForContextMenu(
-                        [ElementSelector selectorWithElementID:element_id],
-                        true /* menu should appear */)];
-}
-
 // Taps on the web view to dismiss the context menu without using anything on
 // it.
 void ClearContextMenu() {
@@ -272,19 +319,14 @@ void ClearContextMenu() {
 
 // Taps on `context_menu_item_button` context menu item.
 void TapOnContextMenuButton(id<GREYMatcher> context_menu_item_button) {
-  [[EarlGrey selectElementWithMatcher:context_menu_item_button]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:context_menu_item_button];
   [[EarlGrey selectElementWithMatcher:context_menu_item_button]
       performAction:grey_tap()];
 }
 
-void RelaunchAppWithInactiveTabs2WeeksEnabled() {
+void RelaunchApp() {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdTwoWeeksParam);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
@@ -302,11 +344,27 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kTabGroupsInGrid);
-  config.features_enabled.push_back(kTabGroupsIPad);
-  config.features_enabled.push_back(kModernTabStrip);
-  config.features_enabled.push_back(kShareInWebContextMenuIOS);
+  config.features_enabled.push_back(
+      data_sharing::features::kDataSharingFeature);
+  config.features_enabled.push_back(kEnableReaderMode);
+  config.features_enabled.push_back(kEnableReaderModeInUS);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
+
+  if ([self isRunningTest:@selector(testCopyImageBlockedByPolicy)] ||
+      [self isRunningTest:@selector(testCopyImageWarnByPolicyProceed)] ||
+      [self isRunningTest:@selector(testCopyImageWarnByPolicyCancel)] ||
+      [self isRunningTest:@selector(testCopyLinkBlockedByPolicy)] ||
+      [self isRunningTest:@selector(testCopyLinkWarnByPolicyProceed)] ||
+      [self isRunningTest:@selector(testCopyLinkWarnByPolicyCancel)] ||
+      [self isRunningTest:@selector(testShareLinkHiddenByPolicy)] ||
+      [self isRunningTest:@selector(testShareImageHiddenByPolicy)]) {
+    config.features_enabled.push_back(
+        data_controls::kEnableClipboardDataControlsIOS);
+  }
+  if ([self isRunningTest:@selector(testShowFullURLInWebContextMenu)]) {
+    config.features_disabled.push_back(kIOSWebContextMenuNewTitle);
+  }
+
   return config;
 }
 
@@ -320,17 +378,305 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 }
 
 - (void)setUpHistogramTester {
-  GREYAssertNil([MetricsAppInterface setupHistogramTester],
-                @"Failed to set up histogram tester.");
+  chrome_test_util::GREYAssertErrorNil(
+      [MetricsAppInterface setupHistogramTester]);
   _setUpHistogramTesterCalled = true;
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   if (_setUpHistogramTesterCalled) {
-    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
-                  @"Failed to release histogram tester.");
+    chrome_test_util::GREYAssertErrorNil(
+        [MetricsAppInterface releaseHistogramTester]);
   }
-  [super tearDown];
+  [super tearDownHelper];
+}
+
+// Tests that selecting "Copy Image" from the context menu properly copies the
+// image in the pasteboard.
+- (void)testCopyImageIntoPasteboard {
+  [self setUpHistogramTester];
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+  GREYCondition* copyCondition =
+      [GREYCondition conditionWithName:@"Image copied condition"
+                                 block:^BOOL {
+                                   return [ChromeEarlGrey pasteboardHasImages];
+                                 }];
+
+  // Wait for the image to be copied.
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       data_controls::ClipboardSource::kCustomAction)
+      forHistogram:@"IOS.WebState.Clipboard.Copy.Source"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error =
+      [MetricsAppInterface expectCount:1
+                             forBucket:1  // true
+                          forHistogram:@"IOS.WebState.Clipboard.Copy.Outcome"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
+  [ChromeEarlGrey clearPasteboard];
+}
+
+// Tests that copying an image is blocked when the DataControlsRule policy is
+// set to do so.
+- (void)testCopyImageBlockedByPolicy {
+  [self setUpHistogramTester];
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Check that the snackbar is shown.
+  id<GREYMatcher> snackbarMessage = grey_text(
+      l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMessage];
+
+  // Check that the image was not copied.
+  GREYAssertFalse([ChromeEarlGrey pasteboardHasImages],
+                  @"Image should not have been copied");
+
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       data_controls::ClipboardSource::kCustomAction)
+      forHistogram:@"IOS.WebState.Clipboard.Copy.Source"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error =
+      [MetricsAppInterface expectCount:1
+                             forBucket:0  // false
+                          forHistogram:@"IOS.WebState.Clipboard.Copy.Outcome"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying an image is allowed after the user proceeds through the
+// warning triggered by DataControlRules policy.
+- (void)testCopyImageWarnByPolicyProceed {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Tap the "Copy anyways" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check that the image was copied.
+  GREYCondition* copyCondition =
+      [GREYCondition conditionWithName:@"Image copied condition"
+                                 block:^BOOL {
+                                   return [ChromeEarlGrey pasteboardHasImages];
+                                 }];
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying image failed");
+  [ChromeEarlGrey clearPasteboard];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying an image is cancelled when the user cancels on the warning
+// triggered by DataControlRules policy.
+- (void)testCopyImageWarnByPolicyCancel {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  TapOnContextMenuButton(CopyImageButton());
+
+  // Tap the "cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON)]
+      performAction:grey_tap()];
+  // Check that the image was not copied.
+  GREYAssertFalse([ChromeEarlGrey pasteboardHasImages],
+                  @"Image should not have been copied");
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that selecting "Copy Link" from the context menu properly copies the
+// link in the pasteboard.
+- (void)testCopyLink {
+  [self setUpHistogramTester];
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  TapOnContextMenuButton(CopyLinkButton());
+
+  // Check that the link was copied.
+  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
+  GREYCondition* copyCondition = [GREYCondition
+      conditionWithName:@"Link copied condition"
+                  block:^BOOL {
+                    return [ChromeEarlGrey pasteboardURL] == destinationURL;
+                  }];
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying link failed");
+
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       data_controls::ClipboardSource::kCustomAction)
+      forHistogram:@"IOS.WebState.Clipboard.Copy.Source"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error =
+      [MetricsAppInterface expectCount:1
+                             forBucket:1  // true
+                          forHistogram:@"IOS.WebState.Clipboard.Copy.Outcome"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
+  [ChromeEarlGrey clearPasteboard];
+}
+
+// Tests that copying a link is blocked when the DataControlsRule policy is
+// set to do so.
+- (void)testCopyLinkBlockedByPolicy {
+  [self setUpHistogramTester];
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  TapOnContextMenuButton(CopyLinkButton());
+
+  // Check that the snackbar is shown.
+  id<GREYMatcher> snackbarMessage = grey_text(
+      l10n_util::GetNSString(IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:snackbarMessage];
+
+  // Check that the link was not copied.
+  GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
+                 @"Link should not have been copied");
+
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:static_cast<int>(
+                       data_controls::ClipboardSource::kCustomAction)
+      forHistogram:@"IOS.WebState.Clipboard.Copy.Source"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error =
+      [MetricsAppInterface expectCount:1
+                             forBucket:0  // false
+                          forHistogram:@"IOS.WebState.Clipboard.Copy.Outcome"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying a link is allowed after the user proceeds through the
+// warning triggered by DataControlRules policy.
+- (void)testCopyLinkWarnByPolicyProceed {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  TapOnContextMenuButton(CopyLinkButton());
+
+  // Tap the "Copy anyways" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CONTINUE_BUTTON)]
+      performAction:grey_tap()];
+
+  // Check that the link was copied.
+  const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
+  GREYCondition* copyCondition = [GREYCondition
+      conditionWithName:@"Link copied condition"
+                  block:^BOOL {
+                    return [ChromeEarlGrey pasteboardURL] == destinationURL;
+                  }];
+  GREYAssertTrue([copyCondition waitWithTimeout:5], @"Copying link failed");
+  [ChromeEarlGrey clearPasteboard];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that copying a link is cancelled when the user cancels on the warning
+// triggered by DataControlRules policy.
+- (void)testCopyLinkWarnByPolicyCancel {
+  [DataControlsAppInterface setWarnCopyRule];
+
+  [ChromeEarlGrey clearPasteboard];
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  TapOnContextMenuButton(CopyLinkButton());
+
+  // Tap the "cancel" button on the warning dialog.
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::AlertItemWithAccessibilityLabelId(
+                     IDS_DATA_CONTROLS_COPY_WARN_CANCEL_BUTTON)]
+      performAction:grey_tap()];
+  // Check that the link was not copied.
+  GREYAssertTrue([ChromeEarlGrey pasteboardURL].is_empty(),
+                 @"Link should not have been copied");
+  [DataControlsAppInterface clearDataControlRules];
 }
 
 // Tests that selecting "Open Image" from the context menu properly opens the
@@ -340,14 +686,15 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   TapOnContextMenuButton(OpenImageButton());
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify url.
   const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:imageURL];
 }
 
 // Tests that selecting "Open Image in New Tab" from the context menu properly
@@ -357,7 +704,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   TapOnContextMenuButton(OpenImageInNewTabButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -366,8 +715,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
   // Verify url.
   const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:imageURL];
 }
 
 // Tests "Open in New Tab" on context menu.
@@ -382,7 +730,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   TapOnContextMenuButton(OpenLinkInNewTabButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -391,8 +741,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
   // Verify url.
   const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 // Tests that the context menu is displayed for an image url.
@@ -423,8 +772,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify url.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:imageURL];
 }
 
 // Tests context menu title truncation cases.
@@ -434,12 +782,16 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
       assertWithMatcher:grey_notNil()];
   ClearContextMenu();
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   // Links get prefixed with the hostname, so check for partial text match
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ContainsPartialText(
                                           kShortLinkHref)]
@@ -451,12 +803,15 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   [[EarlGrey selectElementWithMatcher:grey_text(kLongImgTitle)]
       assertWithMatcher:grey_notNil()];
   ClearContextMenu();
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // But expect that some of the link is visible in the title.
   NSString* startOfTitle = [kLongLinkHref substringToIndex:30];
@@ -471,7 +826,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey loadURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
 
-  LongPressElement(kLogoPageChromiumImageId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
   TapOnContextMenuButton(OpenImageButton());
   [ChromeEarlGrey waitForPageToFinishLoading];
 
@@ -491,11 +848,10 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kDestinationPageTextId);
-  // TODO(crbug.com/40191349): Xcode 13 gesture recognizers seem to get stuck
-  // when the user longs presses on plain text.  For this test, disable EG
-  // synchronization.
-  ScopedSynchronizationDisabler disabler;
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:
+          [ElementSelector selectorWithElementID:kDestinationPageTextId]];
+
   // Verify that context menu is not shown.
   [[EarlGrey selectElementWithMatcher:ContextMenuCopyButton()]
       assertWithMatcher:grey_nil()];
@@ -505,11 +861,6 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       selectElementWithMatcher:grey_allOf(SystemSelectionCalloutCopyButton(),
                                           grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_notNil()];
-
-  // TODO(crbug.com/40191349): Tap to dismiss the system selection callout
-  // buttons so tearDown doesn't hang when `disabler` goes out of scope.
-  [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
-      performAction:grey_tap()];
 }
 
 // Tests cancelling the context menu.
@@ -522,7 +873,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
   // Display the context menu twice.
   for (NSInteger i = 0; i < 2; i++) {
-    LongPressElement(kInitialPageDestinationLinkId);
+    [ChromeEarlGreyUI
+        longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
     // Make sure the context menu appeared.
     [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
@@ -551,7 +903,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   }
 
   // Display the context menu one last time.
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Make sure the context menu appeared.
   [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
@@ -566,7 +919,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey
@@ -589,21 +943,17 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
                                           IDS_IOS_COPY_LINK_ACTION_TITLE)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_ancestor(grey_kindOfClassName(
-                                       @"_UIContextMenuCell")),
-                                   ContextMenuItemWithAccessibilityLabelId(
-                                       IDS_IOS_SHARE_BUTTON_LABEL),
-                                   nil)]
+  [[EarlGrey selectElementWithMatcher:ShareButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Checks that "open in new window" shows up on a long press of a url link
 // and that it actually opens in a new window.
-- (void)testOpenLinkInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+// TODO(crbug.com/441761691): Re-enable the test.
+- (void)DISABLED_testOpenLinkInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   // Loads url in first window.
   const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
@@ -614,7 +964,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   // Display the context menu.
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Open link in new window.
   [[EarlGrey
@@ -630,9 +981,18 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 // Checks that "open in new window" shows up on a long press of a url link
 // and that it actually opens in a new window, and that when the link is in an
 // incognito webstate, the newly opened webstate is also incognito.
-- (void)testOpenIncognitoLinkInNewWindow {
-  if (![ChromeEarlGrey areMultipleWindowsSupported])
+// TODO(crbug.com/441761691): Test is flaky on iPad simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testOpenIncognitoLinkInNewWindow \
+  FLAKY_testOpenIncognitoLinkInNewWindow
+#else
+#define MAYBE_testOpenIncognitoLinkInNewWindow \
+  testOpenIncognitoLinkInNewWindow
+#endif
+- (void)MAYBE_testOpenIncognitoLinkInNewWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
 
   [ChromeEarlGrey openNewIncognitoTab];
 
@@ -645,7 +1005,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
   // Display the context menu.
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Open link in new window.
   [[EarlGrey
@@ -668,7 +1029,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   const GURL initialURL = self.testServer->GetURL(kJavaScriptPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
@@ -686,7 +1048,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   const GURL initialURL = self.testServer->GetURL(kMagnetPageUrl);
   [ChromeEarlGrey loadURL:initialURL];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   // Check the different buttons.
   [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabelId(
@@ -705,7 +1068,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   TapOnContextMenuButton(OpenLinkInNewTabButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -718,7 +1083,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   GREYAssertTrue([ChromeEarlGrey inactiveTabCount] == 0,
                  @"Inactive tab count should be 0");
 
-  RelaunchAppWithInactiveTabs2WeeksEnabled();
+  RelaunchApp();
 
   // Open the Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
@@ -743,7 +1108,9 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   TapOnContextMenuButton(OpenLinkInNewGroupButton());
 
   [ChromeEarlGrey waitForMainTabCount:2];
@@ -757,15 +1124,16 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
 
   // Verify url.
   const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   // Open link in an existing tab group.
   [ChromeEarlGrey loadURL:initialURL];
   [ChromeEarlGrey
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
   TapOnContextMenuButton(OpenLinkInGroupButton());
   TapOnContextMenuButton(OpenLinkInOneTabGroupButton());
 
@@ -777,8 +1145,7 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
 
   // Verify url.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 // Tests "Share URL" action in the web context menu when long
@@ -793,7 +1160,8 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLinkId);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
 
   [ChromeEarlGrey verifyShareActionWithURL:pageURL pageTitle:pageTitle];
 
@@ -808,6 +1176,45 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
   }
 }
 
+// Tests that the "Share" button is not shown when the DataControlsRule policy
+// is set to do so.
+- (void)testShareLinkHiddenByPolicy {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  const GURL initialURL = self.testServer->GetURL(kInitialPageUrl);
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey
+      waitForWebStateContainingText:kInitialPageDestinationLinkText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLinkIdSelector()];
+
+  // Check that the "Share" button is not visible.
+  [[EarlGrey selectElementWithMatcher:ShareButton()]
+      assertWithMatcher:grey_nil()];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that the "Share" button is not shown for an image when the
+// DataControlsRule policy is set to do so.
+- (void)testShareImageHiddenByPolicy {
+  [DataControlsAppInterface setBlockCopyRule];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kLogoPagePath)];
+  [ChromeEarlGrey waitForWebStateContainingText:kLogoPageText];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  // Check that the "Share" button is not visible.
+  [[EarlGrey selectElementWithMatcher:ShareButton()]
+      assertWithMatcher:grey_nil()];
+  [DataControlsAppInterface clearDataControlRules];
+}
+
+// Tests that one (and only one, meaning the menu title is not present) button
+// partially containing the url is present and tapping on it shows an alert
+// showing the full URL.
 - (void)testShowFullURLInWebContextMenu {
   const GURL pageURL = self.testServer->GetURL(kLongLinkPageURL);
   const GURL longURL =
@@ -818,19 +1225,171 @@ void RelaunchAppWithInactiveTabs2WeeksEnabled() {
       waitForWebStateContainingText:kInitialPageDestinationLongLinkText];
   [ChromeEarlGrey waitForWebStateZoomScale:1.0];
 
-  LongPressElement(kInitialPageDestinationLongLinkID);
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:InitialPageDestinationLongLinkIDSelector()];
+
+  std::u16string formattedURL = url_formatter::FormatUrl(longURL);
+  NSString* stringURL = base::SysUTF16ToNSString(formattedURL);
 
   [ChromeEarlGrey waitForForegroundWindowCount:1];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          ShowFullURLFromWebContextMenuButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ContextMenuButtonContainingText([stringURL
+                     substringToIndex:20])] performAction:grey_tap()];
+
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_ancestor(grey_accessibilityID(
                                               @"AlertAccessibilityIdentifier")),
-                                          grey_text(base::SysUTF8ToNSString(
-                                              longURL.spec())),
+                                          chrome_test_util::ContainsPartialText(
+                                              stringURL),
                                           nil)]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests "Share Image" action in the web context menu when long
+// pressing an image in a web page, and tests that triggering the
+// action does present the Share menu as expected.
+- (void)testShareImageInWebContextMenu {
+  [self setUpHistogramTester];
+
+  const GURL shortTitleURL = self.testServer->GetURL(kShortTruncationPageUrl);
+
+  [ChromeEarlGrey loadURL:shortTitleURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  [ChromeEarlGrey waitForWebStateZoomScale:1.0];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:LogoPageChromiumImageIdSelector()];
+
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+  [[EarlGrey selectElementWithMatcher:grey_text(kShortImgTitle)]
+      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kContextMenuImagePreviewAccessibilityIdentifier)];
+
+  // On iOS 26, the name of the image (chromium_logo.png in this case) is used
+  // as a page title instead of "Image".
+  NSString* pageTitle =
+      base::ios::IsRunningOnIOS26OrLater() ? @"chromium_logo" : @"Image";
+  [ChromeEarlGrey verifyShareActionWithURL:shortTitleURL pageTitle:pageTitle];
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:13  // Number refering to
+                       // SharingScenario::ShareInWebContextMenu
+      forHistogram:@"Mobile.Share.EntryPoints"];
+  if (error) {
+    GREYFail([error description]);
+  }
+
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:1  // success
+      forHistogram:@"IOS.ContextMenu.ImagePreviewDisplayed"];
+  if (error) {
+    GREYFail([error description]);
+  }
+}
+
+// Tests that opening the context menu for a link in Reading mode
+// displays all options.
+- (void)testOpenContextMenuFromReadingMode {
+  [self setUpHistogramTester];
+
+  const GURL initialURL = self.testServer->GetURL("/article.html");
+  [ChromeEarlGrey loadURL:initialURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+
+  // Wait for Reader Mode UI to appear on-screen.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:ElementSelectorToLongPressLink()];
+
+  // Open the context menu and tap on an action.
+  [ChromeEarlGreyUI longPressElementOnWebView:ElementSelectorToLongPressLink()];
+  TapOnContextMenuButton(OpenLinkInNewTabButton());
+
+  // Make sure the context menu disappeared.
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:OpenLinkInNewTabButton()]
+        assertWithMatcher:grey_nil()
+                    error:&error];
+    return error == nil;
+  };
+
+  GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
+                 base::test::ios::kWaitForUIElementTimeout, condition),
+             @"Waiting for the context menu to disappear");
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:36  // Number refering to MenuScenarioHistogram enum.
+      forHistogram:@"Mobile.ContextMenu.EntryPoints"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:0  // Number refering to MenuActionType enum.
+      forHistogram:@"Mobile.ContextMenu.ReaderModeLink.Actions"];
+  if (error) {
+    GREYFail([error description]);
+  }
+}
+
+// Tests that the context menu is displayed for an image url in Reading mode.
+- (void)testContextMenuDisplayedOnImageForReadingMode {
+  [self setUpHistogramTester];
+
+  const GURL pageURL = self.testServer->GetURL("/article.html");
+  [ChromeEarlGrey loadURL:pageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+
+  // Wait for Reader Mode UI to appear on-screen.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
+  [ChromeEarlGrey
+      waitForWebStateContainingElement:ElementSelectorToLongPressImage()];
+
+  [ChromeEarlGreyUI
+      longPressElementOnWebView:ElementSelectorToLongPressImage()];
+  TapOnContextMenuButton(OpenImageButton());
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Verify url.
+  const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
+  [ChromeEarlGrey waitForWebStateVisibleURL:imageURL];
+
+  // Ensure that UMA was logged correctly.
+  NSError* error = [MetricsAppInterface
+       expectCount:1
+         forBucket:34  // Number refering to MenuScenarioHistogram enum.
+      forHistogram:@"Mobile.ContextMenu.EntryPoints"];
+  if (error) {
+    GREYFail([error description]);
+  }
+  error = [MetricsAppInterface
+       expectCount:1
+         forBucket:20  // Number refering to MenuActionType enum.
+      forHistogram:@"Mobile.ContextMenu.ReaderModeImage.Actions"];
+  if (error) {
+    GREYFail([error description]);
+  }
 }
 
 @end

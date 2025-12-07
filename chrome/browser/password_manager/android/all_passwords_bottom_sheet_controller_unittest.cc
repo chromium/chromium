@@ -4,7 +4,7 @@
 
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_controller.h"
 
-#include "base/android/build_info.h"
+#include "base/android/device_info.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -24,10 +24,10 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/password_manager_features.h"
-#include "components/plus_addresses/fake_plus_address_service.h"
-#include "components/plus_addresses/features.h"
-#include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
+#include "components/plus_addresses/core/browser/fake_plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_service.h"
+#include "components/plus_addresses/core/browser/plus_address_test_utils.h"
+#include "components/plus_addresses/core/common/features.h"
 #include "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -49,7 +49,6 @@ using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::UiCredential;
 using plus_addresses::FakePlusAddressService;
-using plus_addresses::FakePlusAddressSettingService;
 
 using CallbackFunctionMock = testing::MockFunction<void()>;
 
@@ -147,8 +146,7 @@ class AllPasswordsBottomSheetControllerTest
                                 PlusAddressServiceTestFactory,
                             base::Unretained(this)));
     profile_store_ = CreateAndUseTestPasswordStore(profile());
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
     createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
   }
 
@@ -164,14 +162,12 @@ class AllPasswordsBottomSheetControllerTest
             driver_.AsWeakPtr(), profile_store_.get(), account_store_.get(),
             dissmissal_callback_.Get(), focused_field_type,
             mock_pwd_manager_client_.get(),
-            mock_pwd_reuse_detection_manager_client_.get(),
-            show_migration_warning_callback_.Get());
+            mock_pwd_reuse_detection_manager_client_.get());
   }
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    return std::make_unique<FakePlusAddressService>(
-        identity_test_env_.identity_manager(), &setting_service_);
+    return std::make_unique<FakePlusAddressService>();
   }
 
   void TearDown() override {
@@ -206,15 +202,7 @@ class AllPasswordsBottomSheetControllerTest
     return *mock_pwd_reuse_detection_manager_client_.get();
   }
 
-  base::MockCallback<
-      AllPasswordsBottomSheetController::ShowMigrationWarningCallback>&
-  show_migration_warning_callback() {
-    return show_migration_warning_callback_;
-  }
-
  protected:
-  signin::IdentityTestEnvironment identity_test_env_;
-
   MockPasswordManagerDriver driver_;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
@@ -227,10 +215,6 @@ class AllPasswordsBottomSheetControllerTest
   std::unique_ptr<MockPasswordReuseDetectionManagerClient>
       mock_pwd_reuse_detection_manager_client_ =
           std::make_unique<MockPasswordReuseDetectionManagerClient>();
-  base::MockCallback<
-      AllPasswordsBottomSheetController::ShowMigrationWarningCallback>
-      show_migration_warning_callback_;
-  FakePlusAddressSettingService setting_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -302,7 +286,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
 
 TEST_F(AllPasswordsBottomSheetControllerTest, FillsPasswordIfAuthNotAvailable) {
   // Auth is required to fill passwords in Android automotive.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     GTEST_SKIP();
   }
 
@@ -376,7 +360,7 @@ TEST_F(AllPasswordsBottomSheetControllerTest, OnDismiss) {
 
 TEST_F(AllPasswordsBottomSheetControllerTest,
        OnCredentialSelectedTriggersPhishGuard) {
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
+  if (base::android::device_info::is_automotive()) {
     auto authenticator = std::make_unique<MockDeviceAuthenticator>();
     ON_CALL(*authenticator, AuthenticateWithMessage)
         .WillByDefault(
@@ -420,93 +404,27 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
       kUsername1, kPassword, RequestsToFillPassword(true));
 }
 
-TEST_F(AllPasswordsBottomSheetControllerTest,
-       ShowMigrationWarningOnUsernameFillIfEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
-  EXPECT_CALL(show_migration_warning_callback(), Run);
-  all_passwords_controller()->OnCredentialSelected(
-      kUsername1, kPassword, RequestsToFillPassword(false));
-}
-
-TEST_F(AllPasswordsBottomSheetControllerTest,
-       ShowMigrationWarningOnPasswordFillIfEnabled) {
-  // TODO(crbug.com/40932864): Migration warning isn't reached if authenticator
-  // is present.
-  if (base::android::BuildInfo::GetInstance()->is_automotive()) {
-    GTEST_SKIP();
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
-  EXPECT_CALL(show_migration_warning_callback(),
-              Run(_, _,
-                  password_manager::metrics_util::
-                      PasswordMigrationWarningTriggers::kAllPasswords));
-  all_passwords_controller()->OnCredentialSelected(
-      kUsername1, kPassword, RequestsToFillPassword(true));
-}
-
-TEST_F(AllPasswordsBottomSheetControllerTest,
-       DoesntTriggersMigrationWarningIfDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      password_manager::features::
-          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
-  createAllPasswordsController(FocusedFieldType::kFillableUsernameField);
-  EXPECT_CALL(show_migration_warning_callback(), Run).Times(0);
-  all_passwords_controller()->OnCredentialSelected(
-      kUsername1, kPassword, RequestsToFillPassword(false));
-}
-
-TEST_F(AllPasswordsBottomSheetControllerTest,
-       IsPlusAddress_ManualFallbackDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {password_manager::features::kBiometricTouchToFill,
-       plus_addresses::features::kPlusAddressesEnabled},
-      {plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled});
-
-  // Not a plus address according to the `FakePlusAddressService`.
-  EXPECT_FALSE(all_passwords_controller()->IsPlusAddress("exampe@gmail.com"));
-  // `kPlusAddressAndroidManualFallbackEnabled` is disabled, `IsPlusAddress()`
-  // should return `false` even for existing plus addresses.
-  EXPECT_FALSE(all_passwords_controller()->IsPlusAddress(
-      plus_addresses::FakePlusAddressService::kFakePlusAddress));
-}
-
 TEST_F(AllPasswordsBottomSheetControllerTest, IsPlusAddress) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {password_manager::features::kBiometricTouchToFill,
-       plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
+       plus_addresses::features::kPlusAddressesEnabled},
       {});
 
   // Not a plus address according to the `FakePlusAddressService`.
   EXPECT_FALSE(all_passwords_controller()->IsPlusAddress("exampe@gmail.com"));
-  // `kPlusAddressAndroidManualFallbackEnabled` is disabled, `IsPlusAddress()`
-  // should return `false` even for existing plus addresses.
   EXPECT_TRUE(all_passwords_controller()->IsPlusAddress(
-      plus_addresses::FakePlusAddressService::kFakePlusAddress));
+      plus_addresses::test::kFakePlusAddress));
 }
 
 class AllPasswordsBottomSheetControllerAccountStoreTest
     : public AllPasswordsBottomSheetControllerTest {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    profile()->GetPrefs()->SetInteger(
-        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores, 2);
     profile_store_ = CreateAndUseTestPasswordStore(profile());
-    profile_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    profile_store_->Init(/*affiliated_match_helper=*/nullptr);
     account_store_ = CreateAndUseTestAccountPasswordStore(profile());
-    account_store_->Init(/*prefs=*/nullptr,
-                         /*affiliated_match_helper=*/nullptr);
+    account_store_->Init(/*affiliated_match_helper=*/nullptr);
     createAllPasswordsController(FocusedFieldType::kFillablePasswordField);
   }
 };

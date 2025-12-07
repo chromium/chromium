@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash, "Print Preview CrOS is ash-chrome only")
+assert(is_chromeos, "Print Preview CrOS is ChromeOS only")
 
 static_library("print_preview_cros") {
   sources = [
@@ -14,20 +12,20 @@ static_library("print_preview_cros") {
 
   deps = [
     ":url_constants",
-    "//ash/constants:constants",
+    "//ash/constants",
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/print_preview_cros/backend",
     "//ash/webui/print_preview_cros/mojom",
-    "//ash/webui/print_preview_cros/resources:resources",
+    "//ash/webui/print_preview_cros/resources",
     "//ash/webui/web_applications",
     "//chromeos/strings/",
     "//content/public/browser",
-    "//printing/mojom:mojom",
+    "//printing/mojom",
     "//ui/base",
-    "//ui/resources",
-    "//ui/web_dialogs:web_dialogs",
+    "//ui/web_dialogs",
     "//ui/webui",
+    "//ui/webui/resources",
   ]
 }
 

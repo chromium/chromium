@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    Time mapAsync READ without any submits
+  </title>
+  <script src="../resources/runner.js"></script>
+  <script src="./resources/webgpu-perf-utils.js"></script>
+</head>
+
+<body>
+  <script>
+    (async () => {
+      const adapter = await getAdapter();
+      const device = await adapter.requestDevice();
+      const mappableBuffer = device.createBuffer({
+        size: 4,
+        usage: GPUBufferUsage.MAP_READ | GPUBufferUsage.COPY_DST,
+      });
+
+      // Wait to make sure the device is fully ready
+      await device.queue.onSubmittedWorkDone();
+
+      PerfTestRunner.startMeasureValuesAsync({
+        unit: 'ms',
+        warmUpCount: 1,
+        iterationCount: 15,
+        ...loopTestForTime(250, async () => {
+          await mappableBuffer.mapAsync(GPUMapMode.READ);
+          mappableBuffer.getMappedRange();
+          mappableBuffer.unmap();
+        }),
+      });
+    })();
+  </script>
+</body>
+
+</html>

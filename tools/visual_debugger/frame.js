@@ -126,7 +126,7 @@ class DrawFrame {
     return this.drawCalls_.length + this.logs_.length;
   }
 
-  updateCanvasSize(canvas, context, scale, orientationDeg) {
+  updateCanvasSize(canvas, context, scale, orientationDeg, fcTransX, fcTransY) {
     // Swap canvas width/height for 90 or 270 deg rotations
     if (orientationDeg === 90 || orientationDeg === 270) {
       canvas.width = this.size_.height * scale;
@@ -147,8 +147,8 @@ class DrawFrame {
     context.save();
     context.fillStyle = "white";
     context.fillRect(
-      padding,
-      padding,
+      fcTransX+padding, // Translate to account for freecam.
+      fcTransY+padding, // Translate to account for freecam.
       canvas.width - padding * 2,
       canvas.height - padding * 2
     );
@@ -174,7 +174,7 @@ class DrawFrame {
     return filter;
   }
 
-  draw(canvas, context, scale, orientationDeg) {
+  draw(canvas, context, scale, orientationDeg, fcTransX, fcTransY) {
     // Look at global state of all threads and copy those states
     // to the current frame's threadID-to-state mapping.
     for (const threadId of Object.keys(this.threadMapping_)) {
@@ -188,6 +188,10 @@ class DrawFrame {
       mappedThread.overrideFilters =
               Thread.getThread(mappedThread.threadName).overrideFilters_;
     }
+
+    // Translate accordingly for freecam zoom based on mouse pos.
+    // Translation values initlaized to 0 when not in freecam mode.
+    context.translate(fcTransX, fcTransY);
 
     // Generate a transform from frame space to canvas space.
     context.translate(canvas.width / 2, canvas.height / 2);
@@ -384,8 +388,8 @@ class Viewer {
     this.currentFrameIndex_ = -1;
     this.viewScale = 1.0;
     this.viewOrientation = 0;
-    this.translationX = 0;
-    this.translationY = 0;
+    this.freeCamTranslationX = 0;
+    this.freeCamTranslationY = 0;
   }
 
   updateCurrentFrame() {
@@ -399,11 +403,15 @@ class Viewer {
     frame.updateCanvasSize(this.canvas_,
                            this.drawContext_,
                            this.viewScale,
-                           this.viewOrientation);
+                           this.viewOrientation,
+                           this.freeCamTranslationX,
+                           this.freeCamTranslationY);
     frame.draw(this.canvas_,
                this.drawContext_,
                this.viewScale,
-               this.viewOrientation);
+               this.viewOrientation,
+               this.freeCamTranslationX,
+               this.freeCamTranslationY);
   }
 
   updateLogs_() {
@@ -435,19 +443,25 @@ class Viewer {
     }
   }
 
+  resetTranslation() {
+    this.freeCamTranslationX = 0;
+    this.freeCamTranslationY = 0;
+  }
+
   zoomToMouse(currentMouseX, currentMouseY, delta) {
-    var factor = 1.1;
-    if (delta > 0) {
-      factor = 0.9;
-    }
-    // this.translationX = currentMouseX;
-    // this.translationY = currentMouseY;
-    // this.updateCurrentFrame();
-    this.viewScale *= factor;
+    const factor = delta < 0 ? 1.05 : 0.95;
+
+    const newScale = this.viewScale * factor;
+
+    // Adjust translation to keep the zoom centered around the mouse.
+    const worldMouseX = (currentMouseX - this.freeCamTranslationX) / this.viewScale;
+    const worldMouseY = (currentMouseY - this.freeCamTranslationY) / this.viewScale;
+
+    this.freeCamTranslationX -= worldMouseX * (newScale - this.viewScale);
+    this.freeCamTranslationY -= worldMouseY * (newScale - this.viewScale);
+
+    this.viewScale = newScale;
     this.updateCurrentFrame();
-    // this.translationX = -currentMouseX;
-    // this.translationY = -currentMouseY;
-    // this.updateCurrentFrame();
   }
 };
 

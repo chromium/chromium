@@ -176,8 +176,6 @@ public class WebApkUpdateIntegrationTest {
                 });
     }
 
-    private void waitForHistogram() {}
-
     private WebApkProto.WebApk parseRequestProto(String path) throws Exception {
         FileInputStream requestFile = new FileInputStream(path);
         return WebApkProto.WebApk.parseFrom(requestFile);
@@ -211,45 +209,45 @@ public class WebApkUpdateIntegrationTest {
 
         WebApkProto.WebApk proto = parseRequestProto(updateRequestPath);
 
-        assertEquals(proto.getPackageName(), WEBAPK_PACKAGE_NAME);
-        assertEquals(proto.getVersion(), "1");
+        assertEquals(WEBAPK_PACKAGE_NAME, proto.getPackageName());
+        assertEquals("1", proto.getVersion());
         assertEquals(proto.getManifestUrl(), mTestServer.getURL(WEBAPK_MANIFEST_URL));
         assertEquals(proto.getAppKey(), mTestServer.getURL(WEBAPK_MANIFEST_URL));
-        assertEquals(proto.getManifest().getName(), WEBAPK_NAME);
-        assertEquals(proto.getManifest().getShortName(), WEBAPK_SHORT_NAME);
+        assertEquals(WEBAPK_NAME, proto.getManifest().getName());
+        assertEquals(WEBAPK_SHORT_NAME, proto.getManifest().getShortName());
         assertEquals(proto.getManifest().getStartUrl(), mTestServer.getURL(WEBAPK_START_URL));
         assertEquals(proto.getManifest().getScopes(0), mTestServer.getURL(WEBAPK_SCOPE_URL));
         assertEquals(proto.getManifest().getId(), mTestServer.getURL(WEBAPK_START_URL));
-        assertEquals(proto.getManifest().getOrientation(), "landscape");
-        assertEquals(proto.getManifest().getDisplayMode(), "standalone");
+        assertEquals("landscape", proto.getManifest().getOrientation());
+        assertEquals("standalone", proto.getManifest().getDisplayMode());
 
-        assertEquals(proto.getManifest().getIconsCount(), 3);
+        assertEquals(3, proto.getManifest().getIconsCount());
         // 1st: primary icon from old shell icon, has image data but no hash.
         WebApkProto.Image icon1 = proto.getManifest().getIconsList().get(0);
         assertFalse(icon1.hasSrc());
         assertFalse(icon1.hasHash());
         assertTrue(icon1.hasImageData());
         assertFalse(icon1.getImageData().isEmpty());
-        assertEquals(icon1.getPurposesCount(), 1);
-        assertEquals(icon1.getPurposesList().get(0), WebApkProto.Image.Purpose.ANY);
-        assertEquals(icon1.getUsagesCount(), 1);
-        assertEquals(icon1.getUsagesList().get(0), WebApkProto.Image.Usage.PRIMARY_ICON);
+        assertEquals(1, icon1.getPurposesCount());
+        assertEquals(WebApkProto.Image.Purpose.ANY, icon1.getPurposesList().get(0));
+        assertEquals(1, icon1.getUsagesCount());
+        assertEquals(WebApkProto.Image.Usage.PRIMARY_ICON, icon1.getUsagesList().get(0));
 
         // 2nd: splash icon url matches the hash map. has image data and hash.
         WebApkProto.Image icon2 = proto.getManifest().getIconsList().get(1);
         assertEquals(icon2.getSrc(), mTestServer.getURL(ICON_URL));
-        assertEquals(icon2.getHash(), ICON_MURMUR2_HASH);
+        assertEquals(ICON_MURMUR2_HASH, icon2.getHash());
         assertTrue(icon2.hasImageData());
         assertFalse(icon2.getImageData().isEmpty());
-        assertEquals(icon2.getPurposesCount(), 1);
-        assertEquals(icon2.getPurposesList().get(0), WebApkProto.Image.Purpose.ANY);
-        assertEquals(icon2.getUsagesCount(), 1);
-        assertEquals(icon2.getUsagesList().get(0), WebApkProto.Image.Usage.SPLASH_ICON);
+        assertEquals(1, icon2.getPurposesCount());
+        assertEquals(WebApkProto.Image.Purpose.ANY, icon2.getPurposesList().get(0));
+        assertEquals(1, icon2.getUsagesCount());
+        assertEquals(WebApkProto.Image.Usage.SPLASH_ICON, icon2.getUsagesList().get(0));
 
         // 3nd icon from the url2hash map, has url and hash but no data.
         WebApkProto.Image icon3 = proto.getManifest().getIconsList().get(2);
         assertEquals(icon3.getSrc(), mTestServer.getURL(ICON_URL2));
-        assertEquals(icon3.getHash(), ICON_MURMUR2_HASH2);
+        assertEquals(ICON_MURMUR2_HASH2, icon3.getHash());
         assertFalse(icon3.hasImageData());
     }
 }

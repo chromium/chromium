@@ -4,8 +4,9 @@
 
 #include "gpu/ipc/common/gpu_disk_cache_type_mojom_traits.h"
 
+#include <variant>
+
 #include "base/notreached.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
 
@@ -22,9 +23,7 @@ EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::ToMojom(
       return gpu::mojom::GpuDiskCacheType::kDawnGraphite;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid gpu::GpuDiskCacheType: " << gpu_disk_cache_type;
-  return gpu::mojom::GpuDiskCacheType::kGlShaders;
+  NOTREACHED() << "Invalid gpu::GpuDiskCacheType: " << gpu_disk_cache_type;
 }
 
 // static
@@ -44,16 +43,14 @@ bool EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::FromMojom(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid gpu::mojom::GpuDiskCacheType: " << input;
-  return false;
+  NOTREACHED() << "Invalid gpu::mojom::GpuDiskCacheType: " << input;
 }
 
 // static
 bool UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView,
                  gpu::GpuDiskCacheHandle>::IsNull(const gpu::GpuDiskCacheHandle&
                                                       handle) {
-  return absl::holds_alternative<absl::monostate>(handle);
+  return std::holds_alternative<std::monostate>(handle);
 }
 
 void UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView,
@@ -96,12 +93,13 @@ gpu::mojom::GpuDiskCacheHandleDataView::Tag UnionTraits<
     gpu::mojom::GpuDiskCacheHandleDataView,
     gpu::GpuDiskCacheHandle>::GetTag(const gpu::GpuDiskCacheHandle& handle) {
   using Tag = gpu::mojom::GpuDiskCacheHandleDataView::Tag;
-  if (absl::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle))
+  if (std::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle)) {
     return Tag::kGlShaderHandle;
-  if (absl::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle)) {
+  }
+  if (std::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle)) {
     return Tag::kDawnWebgpuHandle;
   }
-  DCHECK(absl::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle));
+  DCHECK(std::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle));
   return Tag::kDawnGraphiteHandle;
 }
 
@@ -109,21 +107,21 @@ gpu::mojom::GpuDiskCacheHandleDataView::Tag UnionTraits<
 gpu::GpuDiskCacheGlShaderHandle
 UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView, gpu::GpuDiskCacheHandle>::
     gl_shader_handle(const gpu::GpuDiskCacheHandle& handle) {
-  return absl::get<gpu::GpuDiskCacheGlShaderHandle>(handle);
+  return std::get<gpu::GpuDiskCacheGlShaderHandle>(handle);
 }
 
 // static
 gpu::GpuDiskCacheDawnWebGPUHandle
 UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView, gpu::GpuDiskCacheHandle>::
     dawn_webgpu_handle(const gpu::GpuDiskCacheHandle& handle) {
-  return absl::get<gpu::GpuDiskCacheDawnWebGPUHandle>(handle);
+  return std::get<gpu::GpuDiskCacheDawnWebGPUHandle>(handle);
 }
 
 // static
 gpu::GpuDiskCacheDawnGraphiteHandle
 UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView, gpu::GpuDiskCacheHandle>::
     dawn_graphite_handle(const gpu::GpuDiskCacheHandle& handle) {
-  return absl::get<gpu::GpuDiskCacheDawnGraphiteHandle>(handle);
+  return std::get<gpu::GpuDiskCacheDawnGraphiteHandle>(handle);
 }
 
 }  // namespace mojo

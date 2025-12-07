@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
+#include "content/public/browser/child_process_id.h"
 #include "content/public/browser/render_process_host_creation_observer.h"
 #include "content/public/browser/render_process_host_observer.h"
 
@@ -18,9 +19,9 @@ namespace task_manager {
 
 class ChildProcessTask;
 
-// This provides tasks that represent RenderProcessHost processes. It does so by
-// listening to the notification service for the creation and destruction of the
-// RenderProcessHost.
+// This provides tasks that represent RenderProcessHost processes. It tracks the
+// RPHs through the RenderProcessHostCreationObserver and
+// RenderProcessHostObserver observer interfaces.
 class RenderProcessHostTaskProvider
     : public TaskProvider,
       public content::RenderProcessHostCreationObserver,
@@ -36,7 +37,7 @@ class RenderProcessHostTaskProvider
   Task* GetTaskOfUrlRequest(int child_id, int route_id) override;
 
   // content::RenderProcessHostCreationObserver:
-  void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
+  void OnRenderProcessLaunched(content::RenderProcessHost* host) override;
 
   // content::RenderProcessHostObserver:
   void RenderProcessExited(
@@ -49,18 +50,19 @@ class RenderProcessHostTaskProvider
   void StartUpdating() override;
   void StopUpdating() override;
 
-  // Creates a RenderProcessHostTask from the given |data| and notifies the
+  // Creates a RenderProcessHostTask from the given `host` and notifies the
   // observer of its addition.
-  void CreateTask(const int render_process_host_id);
+  void CreateTask(content::RenderProcessHost* host);
 
-  // Deletes a RenderProcessHostTask whose |render_process_host_id| is provided
+  // Deletes a RenderProcessHostTask whose `render_process_host_id` is provided
   // after notifying the observer of its deletion.
-  void DeleteTask(const int render_process_host_id);
+  void DeleteTask(const content::ChildProcessId render_process_host_id);
 
   // True if the provider is between StartUpdating() and StopUpdating().
   bool is_updating_ = false;
 
-  std::map<int, std::unique_ptr<ChildProcessTask>> tasks_by_rph_id_;
+  std::map<content::ChildProcessId, std::unique_ptr<ChildProcessTask>>
+      tasks_by_rph_id_;
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>

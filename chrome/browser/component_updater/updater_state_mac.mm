@@ -10,7 +10,6 @@
 #include "base/apple/foundation_util.h"
 #include "base/enterprise_util.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/version.h"
 
@@ -103,6 +102,11 @@ bool UpdaterState::StateReaderKeystone::IsAutoupdateCheckEnabled() const {
 
 int UpdaterState::StateReaderKeystone::GetUpdatePolicy() const {
   return UpdaterState::GetUpdatePolicy();
+}
+
+update_client::CategorizedError
+UpdaterState::StateReaderKeystone::GetLastUpdateCheckError() const {
+  return {};
 }
 
 bool UpdaterState::IsAutoupdateCheckEnabled() {

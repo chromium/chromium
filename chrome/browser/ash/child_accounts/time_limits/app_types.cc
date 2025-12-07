@@ -9,8 +9,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 
-namespace ash {
-namespace app_time {
+namespace ash::app_time {
 
 namespace {
 
@@ -24,17 +23,11 @@ std::string AppTypeToString(apps::AppType app_type) {
       return "Web";
     case apps::AppType::kChromeApp:
     case apps::AppType::kExtension:
-    case apps::AppType::kStandaloneBrowserChromeApp:
-    case apps::AppType::kStandaloneBrowserExtension:
       return "Extension";
-    case apps::AppType::kBuiltIn:
-      return "Built in";
     case apps::AppType::kCrostini:
       return "Crostini";
     case apps::AppType::kPluginVm:
       return "Plugin VM";
-    case apps::AppType::kStandaloneBrowser:
-      return "LaCrOS";
     case apps::AppType::kRemote:
       return "Remote";
     case apps::AppType::kBorealis:
@@ -44,7 +37,7 @@ std::string AppTypeToString(apps::AppType app_type) {
     case apps::AppType::kSystemWeb:
       return "SystemWeb";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // static
@@ -82,14 +75,6 @@ AppId::AppId(AppId&&) = default;
 AppId& AppId::operator=(AppId&&) = default;
 
 AppId::~AppId() = default;
-
-bool AppId::operator==(const AppId& rhs) const {
-  return app_type_ == rhs.app_type() && app_id_ == rhs.app_id();
-}
-
-bool AppId::operator!=(const AppId& rhs) const {
-  return !(*this == rhs);
-}
 
 bool AppId::operator<(const AppId& rhs) const {
   return app_id_ < rhs.app_id();
@@ -131,8 +116,9 @@ AppLimit::~AppLimit() = default;
 std::optional<AppActivity::ActiveTime> AppActivity::ActiveTime::Merge(
     const ActiveTime& t1,
     const ActiveTime& t2) {
-  if (!CanMerge(t1, t2))
+  if (!CanMerge(t1, t2)) {
     return std::nullopt;
+  }
 
   base::Time active_from = std::min(t1.active_from(), t2.active_from());
   base::Time active_to = std::max(t1.active_to(), t2.active_to());
@@ -202,8 +188,9 @@ AppActivity::~AppActivity() = default;
 void AppActivity::SetAppState(AppState app_state) {
   app_state_ = app_state;
   CaptureOngoingActivity(base::Time::Now());
-  if (!is_active_)
+  if (!is_active_) {
     last_updated_time_ticks_ = base::TimeTicks::Now();
+  }
 }
 
 void AppActivity::SetAppActive(base::Time timestamp) {
@@ -215,8 +202,9 @@ void AppActivity::SetAppActive(base::Time timestamp) {
 }
 
 void AppActivity::SetAppInactive(base::Time timestamp) {
-  if (!is_active_)
+  if (!is_active_) {
     return;
+  }
   CaptureOngoingActivity(timestamp);
   is_active_ = false;
 }
@@ -227,16 +215,18 @@ void AppActivity::ResetRunningActiveTime(base::Time timestamp) {
 }
 
 base::TimeDelta AppActivity::RunningActiveTime() const {
-  if (!is_active_)
+  if (!is_active_) {
     return running_active_time_;
+  }
 
   return running_active_time_ +
          (base::TimeTicks::Now() - last_updated_time_ticks_);
 }
 
 void AppActivity::CaptureOngoingActivity(base::Time timestamp) {
-  if (!is_active_)
+  if (!is_active_) {
     return;
+  }
 
   // Log the active time before the until the reset.
   base::TimeTicks now = base::TimeTicks::Now();
@@ -250,8 +240,9 @@ void AppActivity::CaptureOngoingActivity(base::Time timestamp) {
   // Timestamps can be equal if SetAppInactive() is called directly after
   // SetAppState(). Happens in tests.
   DCHECK_GE(timestamp, start_time);
-  if (timestamp > start_time)
+  if (timestamp > start_time) {
     active_times_.push_back(ActiveTime(start_time, timestamp));
+  }
 
   last_updated_time_ticks_ = now;
 }
@@ -260,5 +251,4 @@ std::vector<AppActivity::ActiveTime> AppActivity::TakeActiveTimes() {
   return std::move(active_times_);
 }
 
-}  // namespace app_time
-}  // namespace ash
+}  // namespace ash::app_time

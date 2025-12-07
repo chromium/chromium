@@ -4,16 +4,19 @@
 
 #include "components/browsing_data/content/browsing_data_model.h"
 
+#include <array>
 #include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/check.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -27,6 +30,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -37,12 +41,13 @@
 #include "components/browsing_data/content/shared_worker_info.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
-#include "components/network_session_configurator/common/network_switches.h"
+#include "components/performance_manager/public/features.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "components/unexportable_keys/features.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/dom_storage_context.h"
 #include "content/public/browser/network_service_instance.h"
@@ -57,6 +62,7 @@
 #include "media/base/media_switches.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
+#include "net/device_bound_sessions/test_support.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -96,6 +102,34 @@ static constexpr char kSetLoginHeader[] = "Set-Login";
 static constexpr char kLoggedInHeaderValue[] = "logged-in";
 static constexpr char kLoggedOutHeaderValue[] = "logged-out";
 constexpr char kToken[] = "[not a real token]";
+
+class TestDeviceBoundSessionAccessObserver
+    : public content::WebContentsObserver {
+ public:
+  TestDeviceBoundSessionAccessObserver(content::WebContents* web_contents,
+                                       base::OnceClosure on_access_closure)
+      : WebContentsObserver(web_contents),
+        on_access_closure_(std::move(on_access_closure)) {}
+
+  // WebContentsObserver
+  void OnDeviceBoundSessionAccessed(
+      content::RenderFrameHost* render_frame_host,
+      const net::device_bound_sessions::SessionAccess& access) override {
+    if (on_access_closure_) {
+      std::move(on_access_closure_).Run();
+    }
+  }
+  void OnDeviceBoundSessionAccessed(
+      content::NavigationHandle* navigation_handle,
+      const net::device_bound_sessions::SessionAccess& access) override {
+    if (on_access_closure_) {
+      std::move(on_access_closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure on_access_closure_;
+};
 
 void ProvideRequestHandlerKeyCommitmentsToNetworkService(
     std::string_view host,
@@ -410,12 +444,8 @@ void AddLocalStorageUsage(content::RenderFrameHost* render_frame_host,
 }
 
 void WaitForModelUpdate(BrowsingDataModel* model, size_t expected_size) {
-  while (model->size() != expected_size) {
-    base::RunLoop run_loop;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
-    run_loop.Run();
-  }
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return model->size() == expected_size; }));
 }
 
 void RemoveBrowsingDataForDataOwner(BrowsingDataModel* model,
@@ -433,7 +463,7 @@ void EnsurePageAccessedStorage(content::WebContents* web_contents) {
         EXPECT_TRUE(
             content::EvalJs(frame,
                             "(async () => { return await accessStorage();})()")
-                .value.GetBool());
+                .ExtractBool());
       });
 }
 }  // namespace
@@ -449,44 +479,43 @@ class BrowsingDataModelBrowserTest
       public ::testing::WithParamInterface<bool> {
  public:
   BrowsingDataModelBrowserTest() {
-    auto& field_trial_param =
-        network::features::kTrustTokenOperationsRequiringOriginTrial;
     std::vector<FeatureRefAndParams> enabled_features = {
-        {network::features::kPrivateStateTokens,
-         {{field_trial_param.name,
-           field_trial_param.GetName(
-               network::features::TrustTokenOriginTrialSpec::
-                   kOriginTrialNotRequired)}}},
         {features::kPrivacySandboxAdsAPIsOverride, {}},
         {features::kIsolatedWebApps, {}},
         {features::kIsolatedWebAppDevMode, {}},
-        {blink::features::kSharedStorageAPI, {}},
-        {blink::features::kInterestGroupStorage, {}},
+        {network::features::kSharedStorageAPI, {}},
+        {network::features::kInterestGroupStorage, {}},
         {blink::features::kPrivateAggregationApi, {}},
         {blink::features::kAdInterestGroupAPI, {}},
         {blink::features::kFledge, {}},
         {blink::features::kFencedFrames, {}},
-        {blink::features::kBrowsingTopics, {}},
+        {network::features::kBrowsingTopics, {}},
         {net::features::kThirdPartyStoragePartitioning, {}},
-        {network::features::kCompressionDictionaryTransportBackend, {}},
         {network::features::kCompressionDictionaryTransport, {}},
-        // Need to enable CompressionDictionaryTransportOverHttp1 because
-        // EmbeddedTestServer uses HTTP/1.1 by default.
-        {net::features::kCompressionDictionaryTransportOverHttp1, {}},
     };
 
     std::vector<FeatureRef> disabled_features = {
         // Need to disable kCompressionDictionaryTransportRequireKnownRootCert
         // because EmbeddedTestServer's certificate is not rooted at a standard
         // CA root.
-        net::features::kCompressionDictionaryTransportRequireKnownRootCert};
+        net::features::kCompressionDictionaryTransportRequireKnownRootCert,
+
+        // Model update success is sensitive to how quickly some best effort
+        // tasks are run so the test is not compatible with delaying
+        // them through EnableBestEffortTaskInhibitingPolicy.
+        performance_manager::features::kEnableBestEffortTaskInhibitingPolicy};
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
-    enabled_features.push_back({features::kCdmStorageDatabase, {}});
-    // Refer to b/325351177 for more information on why this feature is
-    // disabled.
-    disabled_features.push_back(features::kCdmStorageDatabaseMigration);
+#endif
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+    enabled_features.push_back({net::features::kDeviceBoundSessions,
+                                {{"RequireOriginTrialTokens", "false"}}});
+    enabled_features.push_back(
+        {unexportable_keys::
+             kEnableBoundSessionCredentialsSoftwareKeysForManualTesting,
+         {}});
 #endif
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
@@ -505,7 +534,7 @@ class BrowsingDataModelBrowserTest
     host_resolver()->AddRule("*", "127.0.0.1");
     https_server_ = std::make_unique<net::EmbeddedTestServer>(
         net::test_server::EmbeddedTestServer::TYPE_HTTPS);
-    https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_->SetCertHostnames({kTestHost, kTestHost2, kTestHost3});
     https_server_->AddDefaultHandlers(
         base::FilePath(FILE_PATH_LITERAL("content/test/data")));
     network::test::RegisterTrustTokenTestHandlers(https_test_server(),
@@ -513,7 +542,16 @@ class BrowsingDataModelBrowserTest
     idp_server_ = std::make_unique<IdpTestServer>();
     https_server_->RegisterRequestHandler(base::BindRepeating(
         &IdpTestServer::HandleRequest, base::Unretained(idp_server_.get())));
-    ASSERT_TRUE(https_server_->Start());
+
+    ASSERT_TRUE(https_server_->InitializeAndListen());
+
+    // Must come after `InitializeAndListen` so we know the `base_url()`.
+    // We are testing DBSC against kTestHost, so register a handler for it.
+    https_server_->RegisterRequestHandler(
+        net::device_bound_sessions::GetTestRequestHandler(
+            https_server_->GetURL(kTestHost, "/")));
+
+    https_server_->StartAcceptingConnections();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -523,7 +561,6 @@ class BrowsingDataModelBrowserTest
     RegisterClearKeyCdm(command_line);
 #endif
     // These switches are needed to run FedCM and auto-select the first account.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
     command_line->AppendSwitchASCII(switches::kUseFakeUIForFedCM, kAccountId);
   }
 
@@ -576,8 +613,7 @@ class BrowsingDataModelBrowserTest
   privacy_sandbox::PrivacySandboxAttestationsMixin
       privacy_sandbox_attestations_mixin_{&mixin_host_};
 
-  // Stop test from installing OS hooks.
-  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+  web_app::OsIntegrationTestOverrideBlockingRegistration faked_os_integration_;
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<IdpTestServer> idp_server_;
 };
@@ -950,17 +986,19 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ASSERT_EQ(browsing_data_model->size(), 0u);
 
   Profile* profile = browser()->profile();
-  auto dev_server = web_app::CreateAndStartDevServer(
-      FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
 
-  auto iwa_url_info1 = web_app::InstallDevModeProxyIsolatedWebApp(
-      profile, dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app1 =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo iwa_url_info1,
+                       app1->Install(profile));
   auto* iwa_frame1 =
       web_app::OpenIsolatedWebApp(profile, iwa_url_info1.app_id());
   AddLocalStorageUsage(iwa_frame1, 100);
 
-  auto iwa_url_info2 = web_app::InstallDevModeProxyIsolatedWebApp(
-      profile, dev_server->GetOrigin());
+  std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app2 =
+      web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder()).BuildBundle();
+  ASSERT_OK_AND_ASSIGN(web_app::IsolatedWebAppUrlInfo iwa_url_info2,
+                       app2->Install(profile));
   auto* iwa_frame2 =
       web_app::OpenIsolatedWebApp(profile, iwa_url_info2.app_id());
   AddLocalStorageUsage(iwa_frame2, 500);
@@ -1310,7 +1348,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   auto* dom_storage_context = storage_partition->GetDOMStorageContext();
 
   // Fetch local storage size from backend.
-  base::test::TestFuture<uint64_t> test_entry_storage_size[3];
+  std::array<base::test::TestFuture<uint64_t>, 3> test_entry_storage_size;
   dom_storage_context->GetLocalStorageUsage(base::BindLambdaForTesting(
       [&](const std::vector<content::StorageUsageInfo>& storage_usage_info) {
         ASSERT_EQ(3U, storage_usage_info.size());
@@ -1807,3 +1845,54 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
   ValidateBrowsingDataEntries(browsing_data_model.get(), {});
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+IN_PROC_BROWSER_TEST_F(BrowsingDataModelBrowserTest,
+                       DeviceBoundSessionsStoredCorrectly) {
+  // Check that no device bound sessions exist at the beginning of the test.
+  std::unique_ptr<BrowsingDataModel> browsing_data_model =
+      BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+  ASSERT_EQ(browsing_data_model->size(), 0u);
+
+  // Register a session
+  base::RunLoop run_loop;
+  TestDeviceBoundSessionAccessObserver observer(web_contents(),
+                                                run_loop.QuitClosure());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server()->GetURL(kTestHost, "/dbsc_required")));
+  run_loop.Run();
+
+  // Validate the device bound session and the cookie it protects are added
+  url::Origin testOrigin = https_test_server()->GetOrigin(kTestHost);
+  std::unique_ptr<net::CanonicalCookie> cookie_data_key =
+      net::CanonicalCookie::CreateForTesting(testOrigin.GetURL(),
+                                             "auth_cookie=abcdef0123; Path=/",
+                                             base::Time::Now());
+  net::device_bound_sessions::SessionKey session_data_key(
+      net::SchemefulSite(https_test_server()->GetURL(kTestHost, "/")),
+      net::device_bound_sessions::SessionKey::Id("session_id"));
+
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(
+      browsing_data_model.get(),
+      {{kTestHost,
+        session_data_key,
+        {{BrowsingDataModel::StorageType::kDeviceBoundSession},
+         /*storage_size=*/100,
+         /*cookie_count=*/0}},
+
+       {kTestHost,
+        *(cookie_data_key.get()),
+        {{BrowsingDataModel::StorageType::kCookie},
+         /*storage_size=*/0,
+         /*cookie_count=*/1}}});
+
+  // Remove device bound session
+  RemoveBrowsingDataForDataOwner(browsing_data_model.get(), kTestHost);
+
+  // Rebuild Browsing Data Model and verify entries are empty.
+  browsing_data_model = BuildBrowsingDataModel();
+  ValidateBrowsingDataEntries(browsing_data_model.get(), {});
+}
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)

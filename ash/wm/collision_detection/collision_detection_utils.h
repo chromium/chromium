@@ -37,15 +37,15 @@ class ASH_EXPORT CollisionDetectionUtils {
   // priority will not affect collision with each other. kDefault is used for
   // "everything else", and should not be an input to GetRestingPosition or
   // AvoidObstacles.
-  // TODO(crbug.com/955512): Ensure calculations take place from high to low
-  // priority to reduce number of collision computations.
   enum class RelativePriority {
     kPictureInPicture = 0,
     kSwitchAccessMenu = 1,
     kAutomaticClicksMenu = 2,
     kAutomaticClicksScrollMenu = 3,
     kDictationBubble = 4,
-    kDefault = 5,
+    kFaceGazeBubble = 5,
+    kMouseKeysBubble = 6,
+    kDefault = 7,
   };
 
   CollisionDetectionUtils() = delete;

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/process_context_data.h"
 #include "url/origin.h"
 
@@ -26,7 +27,7 @@ class BrowserProcessContextData : public ProcessContextData {
   ~BrowserProcessContextData() override = default;
 
   std::unique_ptr<ProcessContextData> CloneProcessContextData() const override;
-  bool HasIsolatedContextCapability() const override;
+  bool HasControlledFrameCapability() const override;
 
  private:
   const raw_ptr<content::RenderProcessHost> process_;

@@ -7,13 +7,14 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/base_paths.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/scoped_environment_variable_override.h"
@@ -38,15 +39,17 @@ bool CreateTruncatedModule(const base::FilePath& location) {
 
   const size_t kSizeOfTruncatedDll = 256;
   char buffer[kSizeOfTruncatedDll];
-  if (file_exe.Read(0, buffer, kSizeOfTruncatedDll) != kSizeOfTruncatedDll)
+  if (UNSAFE_TODO(file_exe.Read(0, buffer, kSizeOfTruncatedDll)) !=
+      kSizeOfTruncatedDll) {
     return false;
+  }
 
   base::File target_file(location,
                          base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!target_file.IsValid())
     return false;
 
-  return target_file.Write(0, buffer, kSizeOfTruncatedDll) ==
+  return UNSAFE_TODO(target_file.Write(0, buffer, kSizeOfTruncatedDll)) ==
          kSizeOfTruncatedDll;
 }
 
@@ -64,11 +67,11 @@ TEST(ModuleInfoUtilTest, GetCertificateInfoUnsigned) {
 
 TEST(ModuleInfoUtilTest, GetCertificateInfoSigned) {
   std::unique_ptr<base::Environment> env = base::Environment::Create();
-  std::string sysroot;
-  ASSERT_TRUE(env->GetVar("SYSTEMROOT", &sysroot));
+  std::optional<std::string> sysroot = env->GetVar("SYSTEMROOT");
+  ASSERT_TRUE(sysroot.has_value());
 
-  base::FilePath path =
-      base::FilePath::FromUTF8Unsafe(sysroot).Append(L"system32\\kernel32.dll");
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(sysroot.value())
+                            .Append(L"system32\\kernel32.dll");
 
   CertificateInfo cert_info;
   GetCertificateInfo(path, &cert_info);

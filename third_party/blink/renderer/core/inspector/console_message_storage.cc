@@ -45,7 +45,7 @@ const char* MessageSourceToString(mojom::ConsoleMessageSource source) {
     case mojom::ConsoleMessageSource::kRecommendation:
       return "Recommendation";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 std::unique_ptr<TracedValue> MessageTracedValue(ConsoleMessage* message) {

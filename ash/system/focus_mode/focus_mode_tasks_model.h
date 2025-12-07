@@ -101,6 +101,10 @@ class ASH_EXPORT FocusModeTasksModel final {
   // if appropriate.
   void ClearSelectedTask();
 
+  // Clears all the cached tasks data immediately. Will also notify observers of
+  // this change.
+  void Reset();
+
   // Set the current task list as `tasks`. This will trigger an
   // `OnTasksUpdated()` event. If this causes a change to the selected task, may
   // cause an `OnSelectedTaskChanged()` event.
@@ -114,12 +118,15 @@ class ASH_EXPORT FocusModeTasksModel final {
   const std::vector<FocusModeTask>& tasks() const;
   const FocusModeTask* selected_task() const;
 
+  const FocusModeTask* PendingTaskForTesting() const;
   const TaskId& PrefTaskIdForTesting() const;
 
  private:
   void OnTaskAdded(const std::optional<FocusModeTask>& fetched_task);
 
   void OnPrefTaskFetched(const std::optional<FocusModeTask>& fetched_task);
+
+  void OnSelectedTaskFetched(const std::optional<FocusModeTask>& fetched_task);
 
   // Inserts `task` at the front of `tasks_` then resets `selected_task_` and
   // `pending_task_` pointers to the matching tasks in `tasks_`.

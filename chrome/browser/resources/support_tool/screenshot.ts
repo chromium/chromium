@@ -6,6 +6,7 @@ import './icons.html.js';
 import './support_tool_shared.css.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,7 +20,7 @@ const ScreenshotElementBase = SupportToolPageMixin(PolymerElement);
 
 export class ScreenshotElement extends ScreenshotElementBase {
   static get is() {
-    return 'screenshot-element';
+    return 'support-tool-screenshot';
   }
 
   static get template() {
@@ -59,10 +60,10 @@ export class ScreenshotElement extends ScreenshotElementBase {
     };
   }
 
-  private hasScreenshotPreview_: boolean;
-  private screenshotBase64_: string;
-  private originalScreenshotBase64_: string;
-  private showEditor_: boolean;
+  declare private hasScreenshotPreview_: boolean;
+  declare private screenshotBase64_: string;
+  declare private originalScreenshotBase64_: string;
+  declare private showEditor_: boolean;
   // The coordinate of the top left corner of the canvas.
   private canvasX_: number = 0;
   private canvasY_: number = 0;
@@ -77,13 +78,13 @@ export class ScreenshotElement extends ScreenshotElementBase {
   private cornerX_: number = 0;
   private cornerY_: number = 0;
   private mouseDown_: boolean = false;
-  private showDeleteButton_: boolean;
+  declare private showDeleteButton_: boolean;
   // The coordinates that define the rectangle to be deleted. The four numbers
   // are in accordance with `rects_`.
   private selectedRect_: [number, number, number, number];
   // The coordinates which the delete button should be located at.
-  private buttonX_: number;
-  private buttonY_: number;
+  declare private buttonX_: number;
+  declare private buttonY_: number;
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
 
   setScreenshotData(dataBase64: string) {
@@ -131,8 +132,7 @@ export class ScreenshotElement extends ScreenshotElementBase {
     this.context_.fill();
 
     const dialog = this.$$<CrDialogElement>('#editor')!;
-    const body =
-        dialog.shadowRoot!.querySelector<HTMLDivElement>('#container')!;
+    const body = dialog.shadowRoot.querySelector<HTMLElement>('#container')!;
     // Make sure that the canvas coordinates are always up-to-date.
     window.addEventListener('scroll', this.onCoordsChanged_.bind(this));
     window.addEventListener('resize', this.onCoordsChanged_.bind(this));
@@ -233,7 +233,7 @@ export class ScreenshotElement extends ScreenshotElementBase {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'screenshot-element': ScreenshotElement;
+    'support-tool-screenshot': ScreenshotElement;
   }
 }
 

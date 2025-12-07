@@ -45,10 +45,10 @@ export class SettingsSimpleConfirmationDialogElement extends PolymerElement {
     };
   }
 
-  titleText: string;
-  bodyText: string;
-  confirmText: string;
-  noPrimaryButton: boolean;
+  declare titleText: string;
+  declare bodyText: string;
+  declare confirmText: string;
+  declare noPrimaryButton: boolean;
 
   /** @return Whether the user confirmed the dialog. */
   wasConfirmed(): boolean {

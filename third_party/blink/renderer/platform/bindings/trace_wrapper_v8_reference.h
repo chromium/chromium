@@ -20,19 +20,23 @@ namespace blink {
 template <typename T>
 using TraceWrapperV8Reference = v8::TracedReference<T>;
 
-}  // namespace blink
-
-namespace WTF {
+template <typename T>
+struct HashTraits<TraceWrapperV8Reference<T>>
+    : GenericHashTraits<TraceWrapperV8Reference<T>> {
+  STATIC_ONLY(HashTraits);
+  static constexpr bool kCanTraceConcurrently = true;
+  static constexpr bool kSupportsCompaction = true;
+};
 
 template <typename T>
-struct IsTraceable<blink::TraceWrapperV8Reference<T>> {
+struct IsTraceable<TraceWrapperV8Reference<T>> {
   STATIC_ONLY(IsTraceable);
   static const bool value = true;
 };
 
 template <typename T>
-struct VectorTraits<blink::TraceWrapperV8Reference<T>>
-    : VectorTraitsBase<blink::TraceWrapperV8Reference<T>> {
+struct VectorTraits<TraceWrapperV8Reference<T>>
+    : VectorTraitsBase<TraceWrapperV8Reference<T>> {
   STATIC_ONLY(VectorTraits);
 
   static constexpr bool kNeedsDestruction =
@@ -59,13 +63,6 @@ struct VectorTraits<blink::TraceWrapperV8Reference<T>>
                 "TraceWrapperV8Reference should be trivially destructible.");
 };
 
-template <typename T>
-struct HashTraits<blink::TraceWrapperV8Reference<T>>
-    : GenericHashTraits<blink::TraceWrapperV8Reference<T>> {
-  STATIC_ONLY(HashTraits);
-  static constexpr bool kCanTraceConcurrently = true;
-};
-
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TRACE_WRAPPER_V8_REFERENCE_H_

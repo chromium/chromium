@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import androidx.annotation.NonNull;
-
 import org.chromium.base.UserData;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * UserData object that holds the OfflinePage visibility status for the associated tab. This can be
  * used to check the offline status of a tab without calling into native.
  */
+@NullMarked
 public class OfflinePageTabData implements UserData {
     private static final Class<OfflinePageTabData> USER_DATA_KEY = OfflinePageTabData.class;
     private static final double SAMPLE_PROBABILITY = 0.01;
@@ -53,7 +54,7 @@ public class OfflinePageTabData implements UserData {
      * exist. This can never return {@code null}, but is not safe to call if the tab has been
      * destroyed.
      */
-    static OfflinePageTabData from(@NonNull Tab tab) {
+    static OfflinePageTabData from(Tab tab) {
         assert tab.isInitialized();
         OfflinePageTabData offlinePageTabData = get(tab);
         if (offlinePageTabData == null) {
@@ -63,7 +64,7 @@ public class OfflinePageTabData implements UserData {
         return offlinePageTabData;
     }
 
-    private static OfflinePageTabData get(Tab tab) {
+    private static @Nullable OfflinePageTabData get(Tab tab) {
         return tab.getUserDataHost().getUserData(USER_DATA_KEY);
     }
 

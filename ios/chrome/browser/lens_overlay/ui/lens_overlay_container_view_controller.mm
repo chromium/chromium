@@ -4,25 +4,67 @@
 
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_container_view_controller.h"
 
+#import "base/i18n/rtl.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_pan_tracker.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_view_controller.h"
+#import "ios/chrome/browser/lens_overlay/ui/lens_overlay_panel.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
-// The close button top padding.
-const CGFloat closeButtonTopPadding = 10.0;
-// The close button trailing padding.
-const CGFloat closeButtonTrailingPadding = 16.0;
+// The width of the side panel.
+const CGFloat kSidePanelWidth = 375.0;
+
+// The ammount padding from the side panel to the selection UI.
+const CGFloat kSidePanelSelectionPadding = 24.0;
+
+// The duration of the side panel appear and dissapear animations.
+const CGFloat kSidePannelAnimationDuration = 0.4;
+
+// The corner radius of the selection UI when presented in the side panel
+// presentation.
+const CGFloat kSelectionUICornerRadius = 13.0;
 
 }  // namespace
+
+@interface LensOverlayContainerViewController () <LensOverlayPanTrackerDelegate>
+
+// Whether the side panel is open.
+@property(nonatomic, getter=isSidePanelOpen) BOOL sidePanelOpen;
+
+// Tracks the pan inside the bottom sheet.
+@property(nonatomic, readonly) LensOverlayPanTracker* panTracker;
+
+// The current height of the bottom sheet, in points.
+@property(nonatomic) CGFloat bottomSheetHeight;
+
+@property(nonatomic, strong) NSLayoutConstraint* bottomSheetHeightConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* bottomSheetBottomConstraint;
+
+@end
 
 @implementation LensOverlayContainerViewController {
   // The overlay commands handler.
   id<LensOverlayCommands> _overlayCommandsHandler;
   // The overlay close button.
   UIButton* _closeButton;
+  // View that blocks user interaction with selection UI when the consent view
+  // controller is displayed. Note that selection UI isn't started, so it won't
+  // accept many interactions, but we do this to be extra safe.
+  UIView* _selectionInteractionBlockingView;
+  // The side panel container for the results page.
+  LensOverlayPanel* _sidePanel;
+  // The bottom sheet container for the results page.
+  LensOverlayBottomSheetViewController* _bottomSheet;
+  // Layout guide separating the selection UI and results in the side panel.
+  UILayoutGuide* _splitViewLayoutGuide;
+  // The constraint controlling the display of the side panel.
+  NSLayoutConstraint* _splitViewConstraint;
 }
 
 - (instancetype)initWithLensOverlayCommandsHandler:
@@ -31,6 +73,7 @@ const CGFloat closeButtonTrailingPadding = 16.0;
 
   if (self) {
     _overlayCommandsHandler = handler;
+    _bottomSheet = [[LensOverlayBottomSheetViewController alloc] init];
   }
   return self;
 }
@@ -38,81 +81,253 @@ const CGFloat closeButtonTrailingPadding = 16.0;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  self.view.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+  self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+
   self.view.accessibilityIdentifier = kLenscontainerViewAccessibilityIdentifier;
-
-  self.closeButton.translatesAutoresizingMaskIntoConstraints = NO;
-
-  [self.view addSubview:self.closeButton];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [self.closeButton.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:closeButtonTopPadding],
-    [self.closeButton.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-closeButtonTrailingPadding]
-  ]];
+  self.view.clipsToBounds = YES;
 
   if (!self.selectionViewController) {
     return;
   }
 
-  [self addChildViewController:self.selectionViewController];
-  [self.view addSubview:self.selectionViewController.view];
-
-  self.selectionViewController.view.translatesAutoresizingMaskIntoConstraints =
-      NO;
+  _splitViewLayoutGuide = [[UILayoutGuide alloc] init];
+  [self.view addLayoutGuide:_splitViewLayoutGuide];
+  _splitViewConstraint = [self.view.trailingAnchor
+      constraintEqualToAnchor:_splitViewLayoutGuide.leadingAnchor];
   [NSLayoutConstraint activateConstraints:@[
-    [self.selectionViewController.view.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:80.0f],
-    [self.selectionViewController.view.bottomAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor
-                       constant:-80.0f],
-    [self.selectionViewController.view.leftAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leftAnchor],
-    [self.selectionViewController.view.rightAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.rightAnchor],
+    _splitViewConstraint,
+    [_splitViewLayoutGuide.trailingAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.leadingAnchor],
+    [_splitViewLayoutGuide.topAnchor
+        constraintEqualToAnchor:self.view.topAnchor],
+    [_splitViewLayoutGuide.bottomAnchor
+        constraintEqualToAnchor:self.view.bottomAnchor],
   ]];
 
+  [self addChildViewController:self.selectionViewController];
+  [self.view addSubview:self.selectionViewController.view];
   [self.selectionViewController didMoveToParentViewController:self];
+  self.selectionViewController.view.translatesAutoresizingMaskIntoConstraints =
+      NO;
+  AddSameConstraintsToSides(
+      self.selectionViewController.view, self.view,
+      (LayoutSides::kLeading | LayoutSides::kTop | LayoutSides::kBottom));
+  [NSLayoutConstraint activateConstraints:@[
+    [self.selectionViewController.view.trailingAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.leadingAnchor],
+  ]];
+
+  [self registerForTraitChanges:@[ UITraitHorizontalSizeClass.class ]
+                     withAction:@selector(sizeClassDidChange)];
 }
 
-- (UIButton*)closeButton {
-  if (_closeButton) {
-    return _closeButton;
+- (void)viewDidAppear:(BOOL)animated {
+  [super viewDidAppear:animated];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  self.selectionViewController);
+  [self.delegate lensOverlayContainerDidAppear:self animated:animated];
+}
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+  return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)selectionInteractionDisabled {
+  return _selectionInteractionBlockingView != nil;
+}
+
+- (BOOL)isSidePanelPresented {
+  return _sidePanel != nil;
+}
+
+- (BOOL)isSidePanelOpen {
+  return _splitViewConstraint.constant != 0;
+}
+
+- (void)setSidePanelOpen:(BOOL)sidePanelOpen {
+  if (sidePanelOpen) {
+    _splitViewConstraint.constant = kSidePanelWidth;
+  } else {
+    _splitViewConstraint.constant = 0;
+  }
+}
+
+- (void)setSelectionInteractionDisabled:(BOOL)selectionInteractionDisabled {
+  if (!selectionInteractionDisabled) {
+    [_selectionInteractionBlockingView removeFromSuperview];
+    _selectionInteractionBlockingView = nil;
+    return;
   }
 
-  _closeButton = [[UIButton alloc] init];
+  if (_selectionInteractionBlockingView) {
+    return;
+  }
 
-  UIButtonConfiguration* configuration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  UIImageSymbolConfiguration* symbolConfiguration = [UIImageSymbolConfiguration
-      configurationWithPointSize:20
-                          weight:UIImageSymbolWeightSemibold
-                           scale:UIImageSymbolScaleLarge];
-
-  configuration.image = SymbolWithPalette(
-      DefaultSymbolWithConfiguration(kXMarkCircleFillSymbol,
-                                     symbolConfiguration),
-      @[ UIColor.whiteColor, [UIColor colorWithWhite:0 alpha:0.2] ]);
-  _closeButton.configuration = configuration;
-
-  [_closeButton addTarget:self
-                   action:@selector(closeButtonPressed)
-         forControlEvents:UIControlEventTouchUpInside];
-
-  _closeButton.accessibilityIdentifier =
-      kLenscontainerViewCloseButtonAccessibilityIdentifier;
-
-  return _closeButton;
+  UIView* blocker = [[UIView alloc] init];
+  blocker.backgroundColor = UIColor.clearColor;
+  blocker.userInteractionEnabled = YES;
+  [self.view addSubview:blocker];
+  blocker.translatesAutoresizingMaskIntoConstraints = NO;
+  AddSameConstraints(self.view, blocker);
+  _selectionInteractionBlockingView = blocker;
 }
 
-#pragma mark - Accessibility
+- (void)fadeSelectionUIWithDuration:(NSTimeInterval)duration
+                         completion:(void (^)())completion {
+  [UIView animateWithDuration:duration
+      animations:^{
+        self.view.backgroundColor = [UIColor clearColor];
+        self.selectionViewController.view.alpha = 0;
+      }
+      completion:^(BOOL success) {
+        if (completion) {
+          completion();
+        }
+      }];
+}
+
+- (void)presentViewControllerInBottomSheet:(UIViewController*)viewController
+                                  animated:(BOOL)animated
+                                completion:(ProceduralBlock)completion {
+  _bottomSheet.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addChildViewController:_bottomSheet];
+  [self.view addSubview:_bottomSheet.view];
+  [_bottomSheet didMoveToParentViewController:self];
+
+  AddSameConstraints(_bottomSheet.view, self.view);
+  [_bottomSheet setContent:viewController];
+  [self.view layoutIfNeeded];
+  [_bottomSheet presentAnimated:animated completion:completion];
+}
+
+- (void)presentViewControllerInSidePanel:(UIViewController*)viewController
+                                animated:(BOOL)animated
+                              completion:(ProceduralBlock)completion {
+  _sidePanel = [[LensOverlayPanel alloc] initWithContent:viewController
+                                            insetContent:YES];
+  _sidePanel.view.translatesAutoresizingMaskIntoConstraints = NO;
+  [self addChildViewController:_sidePanel];
+  [self.view addSubview:_sidePanel.view];
+  [_sidePanel didMoveToParentViewController:self];
+
+  AddSameConstraintsToSides(_sidePanel.view, _splitViewLayoutGuide,
+                            (LayoutSides::kTop | LayoutSides::kBottom));
+  [NSLayoutConstraint activateConstraints:@[
+    [_sidePanel.view.leadingAnchor
+        constraintEqualToAnchor:_splitViewLayoutGuide.trailingAnchor],
+    [_sidePanel.view.widthAnchor constraintEqualToConstant:kSidePanelWidth],
+  ]];
+
+  self.selectionViewController.view.clipsToBounds = YES;
+  self.selectionViewController.view.layer.maskedCorners =
+      [self selectionUICornerMask];
+
+  if (!animated) {
+    self.sidePanelOpen = YES;
+    self.selectionViewController.view.layer.cornerRadius =
+        kSelectionUICornerRadius;
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  [self.view layoutIfNeeded];
+  [UIView animateWithDuration:kSidePannelAnimationDuration
+      delay:0
+      options:UIViewAnimationCurveEaseInOut
+      animations:^{
+        self.selectionViewController.view.layer.cornerRadius =
+            kSelectionUICornerRadius;
+        self.sidePanelOpen = YES;
+        [self.selectionViewController
+            zoomImageToCenter:UIEdgeInsetsMake(0, kSidePanelSelectionPadding, 0,
+                                               kSidePanelSelectionPadding)];
+        [self.view layoutIfNeeded];
+      }
+      completion:^(BOOL) {
+        if (completion) {
+          completion();
+        }
+      }];
+}
+
+- (void)dismissSidePanelAnimated:(BOOL)animated
+                      completion:(ProceduralBlock)completion {
+  if (!self.isSidePanelPresented) {
+    completion();
+    return;
+  }
+
+  if (!animated) {
+    self.sidePanelOpen = NO;
+    self.selectionViewController.view.layer.cornerRadius = 0;
+    self.selectionViewController.view.layer.backgroundColor =
+        [UIColor clearColor].CGColor;
+    [self sidePanelDidDismissAnimated:animated];
+    if (completion) {
+      completion();
+    }
+    return;
+  }
+
+  [UIView animateWithDuration:kSidePannelAnimationDuration
+      delay:0
+      options:UIViewAnimationCurveEaseInOut
+      animations:^{
+        self.sidePanelOpen = NO;
+        self.selectionViewController.view.layer.cornerRadius = 0;
+        self.selectionViewController.view.layer.backgroundColor =
+            [UIColor clearColor].CGColor;
+        [self.view layoutIfNeeded];
+      }
+      completion:^(BOOL) {
+        [self sidePanelDidDismissAnimated:animated];
+        if (completion) {
+          completion();
+        }
+      }];
+}
+
+- (void)dismissBottomSheetAnimated:(BOOL)animated
+                        completion:(ProceduralBlock)completion {
+  __weak __typeof(self) weakSelf = self;
+  [_bottomSheet dismissAnimated:animated
+                     completion:^{
+                       [weakSelf bottomSheetDidDismissAnimated:animated];
+                       if (completion) {
+                         completion();
+                       }
+                     }];
+}
+
+// Called after the side panel gets dismissed.
+- (void)sidePanelDidDismissAnimated:(BOOL)animated {
+  [self.selectionViewController setOcclusionInsets:UIEdgeInsetsZero
+                                        reposition:YES
+                                          animated:animated];
+  [_sidePanel removeFromParentViewController];
+  [_sidePanel.view removeFromSuperview];
+  _sidePanel = nil;
+}
+
+// Called after the side panel gets dismissed.
+- (void)bottomSheetDidDismissAnimated:(BOOL)animated {
+  [self.selectionViewController setOcclusionInsets:UIEdgeInsetsZero
+                                        reposition:YES
+                                          animated:animated];
+  [_bottomSheet removeFromParentViewController];
+  [_bottomSheet.view removeFromSuperview];
+}
+
+- (void)sizeClassDidChange {
+  [self.delegate lensOverlayContainerDidChangeSizeClass:self];
+}
+
+#pragma mark - UIAccessibilityAction
 
 - (BOOL)accessibilityPerformEscape {
-  [self closeButtonPressed];
+  [self closeOverlayRequested];
   return YES;
 }
 
@@ -134,12 +349,23 @@ const CGFloat closeButtonTrailingPadding = 16.0;
 
 #pragma mark - Actions
 
-- (void)closeButtonPressed {
-  [_overlayCommandsHandler destroyLensUI:YES];
+- (void)closeOverlayRequested {
+  [_overlayCommandsHandler destroyLensUI:YES
+                                  reason:lens::LensOverlayDismissalSource::
+                                             kAccessibilityEscapeGesture];
 }
 
 - (void)escapeButtonPressed {
-  [self closeButtonPressed];
+  [self closeOverlayRequested];
+}
+
+#pragma mark - Private
+- (CACornerMask)selectionUICornerMask {
+  if (base::i18n::IsRTL()) {
+    return kCALayerMinXMinYCorner | kCALayerMinXMaxYCorner;
+  } else {
+    return kCALayerMaxXMinYCorner | kCALayerMaxXMaxYCorner;
+  }
 }
 
 @end

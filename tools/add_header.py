@@ -343,34 +343,29 @@ def SerializeIncludes(includes):
   source = []
 
   # LINT.IfChange(winheader)
+  # Headers that are sorted above others to prevent inclusion order issues.
+  # NOTE: The order of these headers is the sort key and will be the order in
+  # the output file. It should be set to match whatever clang-format will do.
   special_headers = [
-      # Must be included before ws2tcpip.h.
-      # Doesn't need to be included before <windows.h> with
-      # WIN32_LEAN_AND_MEAN but why chance it?
-      '<winsock2.h>',
-      # Must be before lots of things, e.g. shellapi.h, winbase.h,
-      # versionhelpers.h, memoryapi.h, hidclass.h, ncrypt.h., ...
-      '<windows.h>',
-      # Must be before iphlpapi.h.
-      '<ws2tcpip.h>',
-      # Must be before propkey.h.
-      '<shobjidl.h>',
-      # Must be before atlapp.h.
-      '<atlbase.h>',
-      # Must be before intshcut.h.
-      '<ole2.h>',
-      # Must be before intshcut.h.
-      '<unknwn.h>',
-      # Must be before uiautomation.h.
+      # Listed first because it must be before initguid.h in the block below.
       '<objbase.h>',
-      # Must be before tpcshrd.h.
-      '<tchar.h>',
-      # Must be before functiondiscoverykeys_devpkey.h.
-      '<mmdeviceapi.h>',
-      # Must be before emi.h.
-      '<initguid.h>',
-      # Must be before commdlg.h.
-      '<ocidl.h>',
+
+      # Alphabetized block that don't matter relative to each other, but need to
+      # be included before any instance of the listed other header. These other
+      # listed headers are non-exhaustive examples.
+      '<atlbase.h>',      # atlapp.h
+      '<initguid.h>',     # emi.h
+      '<mmdeviceapi.h>',  # functiondiscoverykeys_devpkey.h
+      '<ocidl.h>',        # commdlg.h
+      '<ole2.h>',         # intshcut.h
+      '<shobjidl.h>',     # propkey.h
+      '<tchar.h>',        # tpcshrd.h
+      '<unknwn.h>',       # intshcut.h
+      '<windows.h>',      # hidclass.h, memoryapi.h, ncrypt.h, shellapi.h,
+                          # versionhelpers.h, winbase.h, etc.
+      '<winsock2.h>',     # ws2tcpip.h
+      '<winternl.h>',     # ntsecapi.h; also needs `#define _NTDEF_`
+      '<ws2tcpip.h>',     # iphlpapi.h
   ]
 
   # LINT.ThenChange(/.clang-format:winheader)

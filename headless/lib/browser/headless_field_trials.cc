@@ -106,9 +106,12 @@ void SetUpFieldTrials(PrefService* local_state,
           local_state, /*initial_seed=*/nullptr,
           /*signature_verification_enabled=*/true,
           std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
-              local_state)),
-      variations::UIStringOverrider(),
-      /*limited_entropy_synthetic_trial=*/nullptr);
+              local_state, variations_service_client.GetVariationsSeedFileDir(),
+              variations_service_client.GetChannelForVariations(),
+              /*entropy_providers=*/nullptr),
+          variations_service_client.GetChannelForVariations(),
+          variations_service_client.GetVariationsSeedFileDir()),
+      variations::UIStringOverrider());
 
   variations::SafeSeedManager safe_seed_manager(local_state);
 
@@ -123,14 +126,15 @@ void SetUpFieldTrials(PrefService* local_state,
   std::vector<std::string> variation_ids;
   auto feature_list = std::make_unique<base::FeatureList>();
   variations::PlatformFieldTrials platform_field_trials;
-  variations::SyntheticTrialRegistry synthetic_trial_registry;
   field_trial_creator.SetUpFieldTrials(
       variation_ids,
       command_line.GetSwitchValueASCII(
           variations::switches::kForceVariationIds),
       feature_overrides, std::move(feature_list), metrics_state_manager.get(),
-      &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false);
+      &platform_field_trials, &safe_seed_manager,
+      /*add_entropy_source_to_variations_ids=*/false,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false));
 }
 
 }  // namespace headless

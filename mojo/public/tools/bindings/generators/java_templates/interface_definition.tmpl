@@ -20,10 +20,15 @@
 {%- macro declare_callback(method) -%}
 interface {{method|interface_response_name}} {
   public void call(
-{%- for param in method.response_parameters %}
+{%- if method.result_response != None %}
+      Result<{{method.result_response.success_kind|java_type(true)}},
+             {{method.result_response.failure_kind|java_type(true)}}> result
+{%- else -%}
+{%-   for param in method.response_parameters %}
       {{param.kind|java_type(false)}} {{param|name}}
-{%- if not loop.last %}, {% endif %}
-{%- endfor -%}
+{%-     if not loop.last %}, {% endif %}
+{%-   endfor -%}
+{%- endif -%}
       );
 }
 {%- endmacro -%}
@@ -35,6 +40,11 @@ interface {{method|interface_response_name}} {
 {%-   if not loop.last %}, {% endif %}
 {%-     endfor -%}
 {%-   endif -%}
+{%- endmacro -%}
+
+
+{%- macro result_converter_name(method, callback) -%}
+{{method|interface_response_name}}_Converter
 {%- endmacro -%}
 
 {%- macro flags_for_method(method, is_request) -%}
@@ -226,6 +236,32 @@ class {{interface|name}}_Internal {
     }
 {% for method in interface.methods %}
 
+{%-   if method.result_response != None -%}
+{%-    set result_param = method.response_parameters[0] %}
+{%-    set success_kind = method.result_response.success_kind -%}
+{%-    set failure_kind = method.result_response.failure_kind %}
+{%-    set generic_typing = '<' + success_kind|java_type(true) + ', ' + failure_kind|java_type(true) + '>' %}
+{%-    set mojo_type = result_param.kind|java_type(false) %}
+
+    static class {{result_converter_name(method)}} {
+        static {{mojo_type}} convert(Result{{generic_typing}} result) {
+            var mojoObj = new {{mojo_type}}();
+            if (result.isSuccess()) {
+                mojoObj.setSuccess(result.get());
+            } else {
+                mojoObj.setFailure(result.getError());
+            }
+            return mojoObj;
+        }
+
+        static Result{{generic_typing}} convert({{mojo_type}} mojoObj) {
+            return mojoObj.which() == {{mojo_type}}.Tag.Success ?
+                Result.of(mojoObj.getSuccess()) :
+                Result.ofError(mojoObj.getFailure());
+        }
+    }
+{%-   endif %}
+
     {{ struct_def(method.param_struct, True)|indent(4) }}
 {%   if method.response_parameters != None %}
 {%   set response_struct = method.response_param_struct %}
@@ -253,7 +289,13 @@ class {{interface|name}}_Internal {
 {%   if method.response_parameters|length %}
                 {{response_struct|name}} response = {{response_struct|name}}.deserialize(messageWithHeader.getPayload());
 {%   endif %}
+{%-  if method.result_response != None %}
+{%-    set result_param = method.response_parameters[0] %}
+                var mojoObj = response.{{result_param|name}};
+                mCallback.call({{result_converter_name(method)}}.convert(mojoObj));
+{%-  else %}
                 mCallback.call({{run_callback('response', method.response_parameters)}});
+{%-  endif %}
                 return true;
             } catch (org.chromium.mojo.bindings.DeserializationException e) {
                 return false;
@@ -277,11 +319,24 @@ class {{interface|name}}_Internal {
         }
 
         @Override
+{%-  if method.result_response -%}
+{%-   set success_kind = method.result_response.success_kind %}
+{%-   set failure_kind = method.result_response.failure_kind %}
+        public void call(Result<{{success_kind|java_type(true)}}, {{failure_kind|java_type(true)}}> result) {
+{%-  else %}
         public void call({{declare_params(method.response_parameters)}}) {
+{%-  endif %}
             {{response_struct|name}} _response = new {{response_struct|name}}();
+
+
+{%-  if method.result_response -%}
+{%-    set result_param = method.response_parameters[0] %}
+            _response.{{result_param|name}} = {{result_converter_name(method)}}.convert(result);
+{%-  else %}
 {%   for param in method.response_parameters %}
             _response.{{param|name}} = {{param|name}};
 {%   endfor %}
+{%-  endif %}
             org.chromium.mojo.bindings.ServiceMessage _message =
                     _response.serializeWithHeader(
                             mCore,

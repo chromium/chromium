@@ -8,7 +8,7 @@
 
 extern "C" {
 // This JNI registration method is found and called by module framework code.
-JNI_BOUNDARY_EXPORT bool JNI_OnLoad_test_dummy(JNIEnv* env) {
+JNI_ZERO_BOUNDARY_EXPORT bool JNI_OnLoad_test_dummy(JNIEnv* env) {
   if (!test_dummy::RegisterNatives(env)) {
     return false;
   }

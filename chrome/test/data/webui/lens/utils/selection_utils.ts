@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Point} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
-import type {SelectionOverlayElement} from 'chrome-untrusted://lens/selection_overlay.js';
-import {flushTasks} from 'chrome-untrusted://webui-test/polymer_test_util.js';
+import type {Point, RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
+import type {SelectionOverlayElement} from 'chrome-untrusted://lens-overlay/selection_overlay.js';
+import {flushTasks, waitAfterNextRender} from 'chrome-untrusted://webui-test/polymer_test_util.js';
 
 function createPointerEvent(
     eventType: string, point: Point, button = 0): PointerEvent {
@@ -20,7 +20,8 @@ function createPointerEvent(
 
 export function getImageBoundingRect(
     selectionOverlayElement: SelectionOverlayElement) {
-  return selectionOverlayElement.$.backgroundImage.getBoundingClientRect();
+  return selectionOverlayElement.$.backgroundImageCanvas
+      .getBoundingClientRect();
 }
 
 export function simulateClick(
@@ -34,15 +35,12 @@ export function simulateClick(
   return flushTasks();
 }
 
-export function simulateDrag(
+export async function simulateDrag(
     selectionOverlayElement: SelectionOverlayElement, fromPoint: Point,
     toPoint: Point) {
-  const pointerDownEvent = createPointerEvent('pointerdown', fromPoint);
-  const pointerMoveEvent = createPointerEvent('pointermove', toPoint);
-  const pointerUpEvent = createPointerEvent('pointerup', toPoint);
+  await simulateStartDrag(selectionOverlayElement, fromPoint, toPoint);
 
-  selectionOverlayElement.dispatchEvent(pointerDownEvent);
-  selectionOverlayElement.dispatchEvent(pointerMoveEvent);
+  const pointerUpEvent = createPointerEvent('pointerup', toPoint);
   selectionOverlayElement.dispatchEvent(pointerUpEvent);
   return flushTasks();
 }
@@ -55,5 +53,19 @@ export function simulateStartDrag(
 
   selectionOverlayElement.dispatchEvent(pointerDownEvent);
   selectionOverlayElement.dispatchEvent(pointerMoveEvent);
-  return flushTasks();
+
+  // Since pointer move responds once per frame, we need to render a frame
+  // instead of just relying on flushTasks.
+  return waitAfterNextRender(selectionOverlayElement);
+}
+
+// Normalizes the given values to the size of the `element` provided..
+export function normalizeBoxInElement(box: RectF, element: Element): RectF {
+  const boundingRect = element.getBoundingClientRect();
+  return {
+    x: box.x / boundingRect.width,
+    y: box.y / boundingRect.height,
+    width: box.width / boundingRect.width,
+    height: box.height / boundingRect.height,
+  };
 }

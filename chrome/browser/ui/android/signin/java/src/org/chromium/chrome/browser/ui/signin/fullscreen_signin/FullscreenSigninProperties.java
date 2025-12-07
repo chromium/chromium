@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.ui.signin.fullscreen_signin;
 
+import android.animation.Animator.AnimatorListener;
+import android.graphics.drawable.Drawable;
 import android.view.View.OnClickListener;
 
-import androidx.annotation.StringRes;
+import androidx.annotation.DrawableRes;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -16,6 +19,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+@NullMarked
 class FullscreenSigninProperties {
     static final ReadableObjectPropertyKey<OnClickListener> ON_SELECTED_ACCOUNT_CLICKED =
             new ReadableObjectPropertyKey<>("on_selected_account_clicked");
@@ -51,11 +55,35 @@ class FullscreenSigninProperties {
     static final WritableBooleanPropertyKey IS_SIGNIN_SUPPORTED =
             new WritableBooleanPropertyKey("is_signin_supported");
 
-    static final WritableIntPropertyKey TITLE_STRING_ID =
-            new WritableIntPropertyKey("title_string_id");
+    static final WritableIntPropertyKey LOGO_DRAWABLE_ID =
+            new WritableIntPropertyKey("logo_drawable_id");
 
-    static final WritableIntPropertyKey SUBTITLE_STRING_ID =
-            new WritableIntPropertyKey("subtitle_string_id");
+    /** Profile picture after the user signs into FRE. Setting this also starts an animation. */
+    static final WritableObjectPropertyKey<Drawable> PROFILE_PICTURE =
+            new WritableObjectPropertyKey<>("profile_picture");
+
+    /**
+     * Whether the animation should be shown. We expect this to be true iff LOGO_DRAWABLE_ID == 0.
+     */
+    static final WritableBooleanPropertyKey SHOW_ANIMATION =
+            new WritableBooleanPropertyKey("show_animation");
+
+    /** Whether the animation should start playing. */
+    static final WritableBooleanPropertyKey START_ANIMATION =
+            new WritableBooleanPropertyKey("start_animation");
+
+    /** A {@link AnimatorListener} to be attached to the sign-in animation. */
+    static final WritableObjectPropertyKey<AnimatorListener> ANIMATOR_LISTENER =
+            new WritableObjectPropertyKey<>("animator_listener");
+
+    static final WritableObjectPropertyKey<String> TITLE_STRING =
+            new WritableObjectPropertyKey<>("title_string");
+
+    static final WritableObjectPropertyKey<String> SUBTITLE_STRING =
+            new WritableObjectPropertyKey<>("subtitle_string");
+
+    static final WritableObjectPropertyKey<String> DISMISS_BUTTON_STRING =
+            new WritableObjectPropertyKey<>("dismiss_button_string");
 
     static final WritableObjectPropertyKey<CharSequence> FOOTER_STRING =
             new WritableObjectPropertyKey<>("footer_string");
@@ -72,8 +100,14 @@ class FullscreenSigninProperties {
                 SHOW_INITIAL_LOAD_PROGRESS_SPINNER,
                 SHOW_ENTERPRISE_MANAGEMENT_NOTICE,
                 IS_SIGNIN_SUPPORTED,
-                TITLE_STRING_ID,
-                SUBTITLE_STRING_ID,
+                LOGO_DRAWABLE_ID,
+                PROFILE_PICTURE,
+                SHOW_ANIMATION,
+                START_ANIMATION,
+                ANIMATOR_LISTENER,
+                TITLE_STRING,
+                SUBTITLE_STRING,
+                DISMISS_BUTTON_STRING,
                 FOOTER_STRING,
             };
 
@@ -83,19 +117,24 @@ class FullscreenSigninProperties {
             Runnable onContinueAsClicked,
             Runnable onDismissClicked,
             boolean isSigninSupported,
-            @StringRes int titleStringId,
-            @StringRes int subtitleStringId) {
+            @DrawableRes int logoDrawableId,
+            String titleString,
+            String subtitleString,
+            String dismissString,
+            boolean showInitialLoadProgressSpinner) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(ON_SELECTED_ACCOUNT_CLICKED, v -> onSelectedAccountClicked.run())
                 .with(SELECTED_ACCOUNT_DATA, null)
                 .with(IS_SELECTED_ACCOUNT_SUPERVISED, false)
                 .with(ON_CONTINUE_AS_CLICKED, v -> onContinueAsClicked.run())
                 .with(ON_DISMISS_CLICKED, v -> onDismissClicked.run())
-                .with(SHOW_INITIAL_LOAD_PROGRESS_SPINNER, true)
+                .with(SHOW_INITIAL_LOAD_PROGRESS_SPINNER, showInitialLoadProgressSpinner)
                 .with(SHOW_ENTERPRISE_MANAGEMENT_NOTICE, false)
                 .with(IS_SIGNIN_SUPPORTED, isSigninSupported)
-                .with(TITLE_STRING_ID, titleStringId)
-                .with(SUBTITLE_STRING_ID, subtitleStringId)
+                .with(LOGO_DRAWABLE_ID, logoDrawableId)
+                .with(TITLE_STRING, titleString)
+                .with(SUBTITLE_STRING, subtitleString)
+                .with(DISMISS_BUTTON_STRING, dismissString)
                 .with(FOOTER_STRING, null)
                 .build();
     }

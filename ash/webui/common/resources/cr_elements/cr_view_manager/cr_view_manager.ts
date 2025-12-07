@@ -8,7 +8,7 @@
 import {assert} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CrLazyRenderElement} from '../cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderElement} from '../cr_lazy_render/cr_lazy_render.js';
 
 import {getTemplate} from './cr_view_manager.html.js';
 

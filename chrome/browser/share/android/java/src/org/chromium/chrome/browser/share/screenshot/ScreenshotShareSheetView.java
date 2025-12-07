@@ -13,11 +13,13 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetViewProperties.NoArgOperation;
 import org.chromium.ui.widget.ChromeImageView;
 
 /** Manages the Android View representing the Screenshot share panel. */
+@NullMarked
 class ScreenshotShareSheetView extends FrameLayout {
     /** Constructor for use from XML. */
     public ScreenshotShareSheetView(Context context, AttributeSet attrs) {
@@ -41,7 +43,7 @@ class ScreenshotShareSheetView extends FrameLayout {
      *
      * @param operation The type of operation as defined by BottomBarProperties.NoArgOperation
      * @param viewId The id to listen for a tap on
-     * @param setNoArgOperationCallback The callback to perform on tap
+     * @param noArgOperationCallback The callback to perform on tap
      */
     private void setNoArgOperationListener(
             Integer operation, int viewId, Callback<Integer> noArgOperationCallback) {

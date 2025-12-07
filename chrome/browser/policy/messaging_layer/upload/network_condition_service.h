@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/browser_process.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 
 namespace reporting {

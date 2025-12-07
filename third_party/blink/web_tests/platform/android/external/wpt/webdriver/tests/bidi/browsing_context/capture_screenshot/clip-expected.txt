@@ -1,0 +1,17 @@
+This is a wdspec test.
+[FAIL] test_clip_element
+  assert (576, 63) == (578, 65)
+[FAIL] test_clip_box
+  assert (1734, 195) == (578, 65)
+[FAIL] test_clip_box_scroll_to
+  assert (450, 171) == (150, 150)
+[FAIL] test_clip_box_partially_visible
+  assert (3240, 450) == (2940, 150)
+[FAIL] test_clip_box_outside_of_window_viewport[document]
+  assert (450, 174) == (150, 150)
+[FAIL] test_clip_with_different_dpr[0.5]
+  assert (50, 50) == (150, 150)
+[FAIL] test_clip_with_different_dpr[2]
+  assert (200, 200) == (600, 600)
+Harness: the test ran to completion.
+

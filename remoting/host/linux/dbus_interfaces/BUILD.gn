@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("gen_dbus_interface") {
+  sources = [ "gen_dbus_interface.cc" ]
+  deps = [ "//base" ]
+  configs += [ "//build/linux:gio_config" ]
+}
+
+source_set("interface_headers") {
+  sources = [
+    "org_chromium_TestInterface.h",
+    "org_freedesktop_DBus_Properties.h",
+    "org_freedesktop_portal_RemoteDesktop.h",
+    "org_freedesktop_portal_Request.h",
+    "org_freedesktop_portal_ScreenCast.h",
+    "org_freedesktop_portal_Session.h",
+    "org_freedesktop_systemd1_Manager.h",
+    "org_freedesktop_systemd1_Service.h",
+    "org_freedesktop_systemd1_Unit.h",
+    "org_gnome_Mutter_DisplayConfig.h",
+    "org_gnome_Mutter_RemoteDesktop.h",
+    "org_gnome_Mutter_ScreenCast.h",
+    "org_gnome_ScreenSaver.h",
+  ]
+  deps = [ "//remoting/host/linux:gvariant" ]
+}

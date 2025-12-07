@@ -20,13 +20,14 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace views {
@@ -71,12 +72,11 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;
   void UpdateTrayItemColor(bool is_active) override;
-  std::u16string GetAccessibleNameForTray() override;
   void HandleLocaleChange() override;
   void HideBubbleWithView(const TrayBubbleView* bubble_view) override;
   void AnchorUpdated() override;
   void Initialize() override;
-  void CloseBubble() override;
+  void CloseBubbleInternal() override;
   void ShowBubble() override;
   std::unique_ptr<ui::SimpleMenuModel> CreateContextMenuModel() override;
   TrayBubbleView* GetBubbleView() override;
@@ -132,6 +132,10 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, EcheIconActivatesCallback);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, TrayPressedMetrics);
+  FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, AccessibleNames);
+
+  static constexpr base::TimeDelta kMultiDeviceSetupNotificationTimeLimit =
+      base::Minutes(5);
 
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
@@ -169,8 +173,6 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   // Checks if nudge should be shown based on user login time.
   bool IsInsideUnlockWindow();
-
-  bool IsInPhoneHubNudgeExperimentGroup();
 
   bool is_icon_clicked_when_setup_notification_visible_ = false;
 

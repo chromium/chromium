@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p>foo<p style=text-decoration:line-through>[]bar" queryCommandState("stylewithcss") after
   assert_equals: Wrong result returned expected false but got true
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p>foo<p style=text-decoration:line-through>[]bar" queryCommandValue("defaultparagraphseparator") before
@@ -31,14 +31,10 @@ Found 20 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] [["stylewithcss","false"],["defaultparagraphseparator","p"],["delete",""]] "<p style=color:blue>foo<div style=color:brown><p style=color:green>[]bar" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p style=\\"color:rgb(0, 0, 255)\\">foo<font color=\\"#008000\\">bar</font></p>" but got "<p style=\\"color:rgb(0, 0, 255)\\">foo<span style=\\"color:rgb(0, 128, 0)\\">bar</span></p>"
 [FAIL] [["delete",""]] "<p>foo</p><p>{bar</p>}<p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><br></p><p>baz</p>" but got "<p>foo</p><p>baz<br></p>"
+  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p><br></p><p>baz</p>" but got "<p>foo</p><p>baz</p>"
 [FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<p>foo</p>{<p>bar}</p><p>baz</p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><br><p>baz</p>" but got "<p>foo</p><p><br></p><p>baz</p>"
 [FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<p>foo</p>{<p>bar}</p><p>baz</p>" compare innerHTML
   assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><br><p>baz</p>" but got "<p>foo</p><p><br></p><p>baz</p>"
-[FAIL] [["defaultparagraphseparator","div"],["delete",""]] "<p>foo</p>{<p>bar</p>}<p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>baz</p>" but got "<p>foo</p><p>baz<br></p>"
-[FAIL] [["defaultparagraphseparator","p"],["delete",""]] "<p>foo</p>{<p>bar</p>}<p>baz</p>" compare innerHTML
-  assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><p>baz</p>" but got "<p>foo</p><p>baz<br></p>"
 Harness: the test ran to completion.
 

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/notimplemented.h"
 #include "remoting/codec/video_encoder.h"
 #include "remoting/protocol/audio_source.h"
 #include "remoting/protocol/audio_stream.h"
@@ -58,6 +59,11 @@ void FakeConnectionToClient::SetEventHandler(EventHandler* event_handler) {
   event_handler_ = event_handler;
 }
 
+void FakeConnectionToClient::ApplyNetworkSettings(
+    const NetworkSettings& settings) {
+  network_settings_ = settings;
+}
+
 std::unique_ptr<VideoStream> FakeConnectionToClient::StartVideoStream(
     webrtc::ScreenId screen_id,
     std::unique_ptr<DesktopCapturer> desktop_capturer) {
@@ -88,7 +94,9 @@ ClientStub* FakeConnectionToClient::client_stub() {
   return client_stub_;
 }
 
-void FakeConnectionToClient::Disconnect(ErrorCode disconnect_error) {
+void FakeConnectionToClient::Disconnect(ErrorCode disconnect_error,
+                                        std::string_view error_details,
+                                        const SourceLocation& error_location) {
   CHECK(is_connected_);
 
   is_connected_ = false;

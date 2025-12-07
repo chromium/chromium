@@ -29,7 +29,6 @@ class BorealisSurveyHandler
   void OnWindowManagerDeleted(BorealisWindowManager* window_manager) override;
 
  private:
-  friend class AshTestBase;
   friend class BorealisSurveyHandlerTest;
   FRIEND_TEST_ALL_PREFIXES(BorealisSurveyHandlerTest,
                            GetGameIdReturnsCorrectId);

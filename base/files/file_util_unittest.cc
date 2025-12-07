@@ -12,14 +12,15 @@
 #include <fstream>
 #include <initializer_list>
 #include <memory>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
-#include "base/features.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -36,7 +37,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_logging_settings.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
 #include "base/test/test_timeouts.h"
@@ -51,6 +52,7 @@
 #include "testing/multiprocess_func_list.h"
 #include "testing/platform_test.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <tchar.h>
@@ -65,7 +67,7 @@
 #include "base/test/file_path_reparse_point_win.h"
 #include "base/test/gtest_util.h"
 #include "base/win/scoped_handle.h"
-#include "base/win/win_util.h"
+#include "base/win/windows_handle_util.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
@@ -85,7 +87,7 @@
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
+#include "base/test/android/content_uri_test_utils.h"
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
@@ -380,18 +382,23 @@ TEST_F(FileUtilTest, FileAndDirectorySize) {
   // should return 53 bytes.
   FilePath file_01 = temp_dir_.GetPath().Append(FPL("The file 01.txt"));
   CreateTextFile(file_01, L"12345678901234567890");
-  int64_t size_f1 = 0;
-  ASSERT_TRUE(GetFileSize(file_01, &size_f1));
-  EXPECT_EQ(20ll, size_f1);
+
+  std::optional<int64_t> size_f1 = GetFileSize(file_01);
+  ASSERT_THAT(size_f1, testing::Optional(20));
+  std::optional<int64_t> size_f1_out = GetFileSize(file_01);
+  ASSERT_TRUE(size_f1_out.has_value());
+  EXPECT_EQ(size_f1.value(), size_f1_out.value());
 
   FilePath subdir_path = temp_dir_.GetPath().Append(FPL("Level2"));
   CreateDirectory(subdir_path);
 
   FilePath file_02 = subdir_path.Append(FPL("The file 02.txt"));
   CreateTextFile(file_02, L"123456789012345678901234567890");
-  int64_t size_f2 = 0;
-  ASSERT_TRUE(GetFileSize(file_02, &size_f2));
-  EXPECT_EQ(30ll, size_f2);
+  std::optional<int64_t> size_f2 = GetFileSize(file_02);
+  ASSERT_THAT(size_f2, testing::Optional(30));
+  std::optional<int64_t> size_f2_out = GetFileSize(file_02);
+  ASSERT_TRUE(size_f2_out.has_value());
+  EXPECT_EQ(size_f2.value(), size_f2_out.value());
 
   FilePath subsubdir_path = subdir_path.Append(FPL("Level3"));
   CreateDirectory(subsubdir_path);
@@ -400,7 +407,7 @@ TEST_F(FileUtilTest, FileAndDirectorySize) {
   CreateTextFile(file_03, L"123");
 
   int64_t computed_size = ComputeDirectorySize(temp_dir_.GetPath());
-  EXPECT_EQ(size_f1 + size_f2 + 3, computed_size);
+  EXPECT_EQ(size_f1.value() + size_f2.value() + 3, computed_size);
 }
 
 TEST_F(FileUtilTest, NormalizeFilePathBasic) {
@@ -419,10 +426,14 @@ TEST_F(FileUtilTest, NormalizeFilePathBasic) {
   CreateTextFile(file_a_path, bogus_content);
   ASSERT_TRUE(PathExists(file_a_path));
   ASSERT_TRUE(NormalizeFilePath(file_a_path, &normalized_file_a_path));
+  ASSERT_FALSE(normalized_file_a_path.empty());
+  ASSERT_TRUE(PathExists(normalized_file_a_path));
 
   CreateTextFile(file_b_path, bogus_content);
   ASSERT_TRUE(PathExists(file_b_path));
   ASSERT_TRUE(NormalizeFilePath(file_b_path, &normalized_file_b_path));
+  ASSERT_FALSE(normalized_file_b_path.empty());
+  ASSERT_TRUE(PathExists(normalized_file_b_path));
 
   // Because this test created |dir_path|, we know it is not a link
   // or junction.  So, the real path of the directory holding file a
@@ -451,10 +462,14 @@ TEST_F(FileUtilTest, NormalizeFileEmptyFile) {
   CreateTextFile(file_a_path, empty_content);
   ASSERT_TRUE(PathExists(file_a_path));
   EXPECT_TRUE(NormalizeFilePath(file_a_path, &normalized_file_a_path));
+  EXPECT_FALSE(normalized_file_a_path.empty());
+  EXPECT_TRUE(PathExists(normalized_file_a_path));
 
   CreateTextFile(file_b_path, empty_content);
   ASSERT_TRUE(PathExists(file_b_path));
   EXPECT_TRUE(NormalizeFilePath(file_b_path, &normalized_file_b_path));
+  EXPECT_FALSE(normalized_file_b_path.empty());
+  EXPECT_TRUE(PathExists(normalized_file_b_path));
 
   // Because this test created |dir_path|, we know it is not a link
   // or junction.  So, the real path of the directory holding file a
@@ -604,6 +619,80 @@ TEST_F(FileUtilTest, NormalizeFilePathWithLongPath) {
   FilePath normalized_path;
   ASSERT_FALSE(NormalizeFilePath(long_path, &normalized_path));
 }
+
+TEST_F(FileUtilTest, NormalizeFilePathWithNetworkPath) {
+  FilePath temp_path = temp_dir_.GetPath();
+
+  // Create a test file to be read.
+  const std::string kTestData("The quick brown fox jumps over the lazy dog.");
+  const FilePath::StringType kTestFileName = FPL("NetworkPathTest");
+  FilePath file_path = temp_path.Append(kTestFileName);
+
+  ASSERT_TRUE(WriteFile(file_path, kTestData));
+
+  // Make sure that a network path is supported by converting a path such as
+  // C:\temp to \\localhost\c$\temp.
+  base::FilePath::CharType drive_letter =
+      base::ToLowerASCII(temp_path.value().at(0));
+  EXPECT_GE(drive_letter, 'a');
+  EXPECT_LE(drive_letter, 'z');
+  EXPECT_EQ(temp_path.value().at(1), ':');
+  EXPECT_EQ(temp_path.value().at(2), '\\');
+  base::FilePath temp_path_network(
+      base::FilePath::StringType(FPL("\\\\localhost\\")) + drive_letter +
+      FPL("$\\") + temp_path.value().substr(3));
+
+  // Long paths aren't supported.
+  EXPECT_LT(temp_path_network.value().length(), MAX_PATH);
+
+  // The normalization should succeed.
+  FilePath normalized_path;
+  ASSERT_TRUE(NormalizeFilePath(temp_path_network, &normalized_path));
+  EXPECT_FALSE(normalized_path.empty());
+  EXPECT_TRUE(PathExists(normalized_path));
+
+  // The normalized path should point to the same file as the original
+  // path.
+  std::string read_data;
+  ASSERT_TRUE(
+      ReadFileToString(normalized_path.Append(kTestFileName), &read_data));
+  EXPECT_EQ(kTestData, read_data);
+}
+
+TEST_F(FileUtilTest, RemoveWindowsExtendedPathPrefix) {
+  EXPECT_EQ(
+      FilePath(FPL(R"(C:\path\to\file)")),
+      RemoveWindowsExtendedPathPrefixForTesting(LR"(\\?\C:\path\to\file)"));
+  EXPECT_EQ(FilePath(FPL(R"(\\server\share\path)")),
+            RemoveWindowsExtendedPathPrefixForTesting(
+                LR"(\\?\UNC\server\share\path)"));
+  EXPECT_TRUE(
+      RemoveWindowsExtendedPathPrefixForTesting(LR"(\\.\pipe\test_pipe)")
+          .empty());
+}
+
+class FileUtilFuzzTest {
+ public:
+  FileUtilFuzzTest() {
+    // A warning is logged for unsupported paths, avoid outputting these logs
+    // during fuzzing.
+    logging::SetMinLogLevel(logging::LOGGING_ERROR);
+  }
+
+  void RemoveWindowsExtendedPathPrefixNoCrash(const std::wstring& input) {
+    RemoveWindowsExtendedPathPrefixForTesting(input);
+  }
+
+ private:
+  logging::ScopedLoggingSettings scoped_logging_settings_;
+};
+
+FUZZ_TEST_F(FileUtilFuzzTest, RemoveWindowsExtendedPathPrefixNoCrash)
+    .WithSeeds({
+        LR"(\\?\C:\path\to\file)",
+        LR"(\\?\UNC\server\share\path)",
+        LR"(\\.\pipe\test_pipe)",
+    });
 
 TEST_F(FileUtilTest, DevicePathToDriveLetter) {
   // Get a drive letter.
@@ -797,9 +886,6 @@ TEST_F(FileUtilTest, CreateWinHardlinkTest) {
 }
 
 TEST_F(FileUtilTest, PreventExecuteMappingNewFile) {
-  base::test::ScopedFeatureList enforcement_feature;
-  enforcement_feature.InitAndEnableFeature(
-      features::kEnforceNoExecutableFileHandles);
   FilePath file = temp_dir_.GetPath().Append(FPL("afile.txt"));
 
   ASSERT_FALSE(PathExists(file));
@@ -819,9 +905,6 @@ TEST_F(FileUtilTest, PreventExecuteMappingNewFile) {
 }
 
 TEST_F(FileUtilTest, PreventExecuteMappingExisting) {
-  base::test::ScopedFeatureList enforcement_feature;
-  enforcement_feature.InitAndEnableFeature(
-      features::kEnforceNoExecutableFileHandles);
   FilePath file = temp_dir_.GetPath().Append(FPL("afile.txt"));
   CreateTextFile(file, bogus_content);
   ASSERT_TRUE(PathExists(file));
@@ -841,9 +924,6 @@ TEST_F(FileUtilTest, PreventExecuteMappingExisting) {
 }
 
 TEST_F(FileUtilTest, PreventExecuteMappingOpenFile) {
-  base::test::ScopedFeatureList enforcement_feature;
-  enforcement_feature.InitAndEnableFeature(
-      features::kEnforceNoExecutableFileHandles);
   FilePath file = temp_dir_.GetPath().Append(FPL("afile.txt"));
   CreateTextFile(file, bogus_content);
   ASSERT_TRUE(PathExists(file));
@@ -869,9 +949,6 @@ TEST_F(FileUtilTest, PreventExecuteMappingOpenFile) {
 }
 
 TEST(FileUtilDeathTest, DisallowNoExecuteOnUnsafeFile) {
-  base::test::ScopedFeatureList enforcement_feature;
-  enforcement_feature.InitAndEnableFeature(
-      features::kEnforceNoExecutableFileHandles);
   base::FilePath local_app_data;
   // This test places a file in %LOCALAPPDATA% to verify that the checks in
   // IsPathSafeToSetAclOn work correctly.
@@ -928,31 +1005,9 @@ TEST_F(FileUtilTest, NoExecuteOnSafeFile) {
   ASSERT_EQ(0, rv);
 }
 
-class FileUtilExecuteEnforcementTest
-    : public FileUtilTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  FileUtilExecuteEnforcementTest() {
-    if (IsEnforcementEnabled()) {
-      enforcement_feature_.InitAndEnableFeature(
-          features::kEnforceNoExecutableFileHandles);
-    } else {
-      enforcement_feature_.InitAndDisableFeature(
-          features::kEnforceNoExecutableFileHandles);
-    }
-  }
-
- protected:
-  bool IsEnforcementEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList enforcement_feature_;
-};
-
-// This test verifies that if a file has been passed to `PreventExecuteMapping`
-// and enforcement is enabled, then it cannot be mapped as executable into
-// memory.
-TEST_P(FileUtilExecuteEnforcementTest, Functional) {
+// This test verifies that if a file has been passed to `PreventExecuteMapping`,
+// then it cannot be mapped as executable into memory.
+TEST_F(FileUtilTest, ExecuteEnforcement) {
   FilePath dir_exe;
   EXPECT_TRUE(PathService::Get(DIR_EXE, &dir_exe));
   // This DLL is built as part of base_unittests so is guaranteed to be present.
@@ -966,17 +1021,10 @@ TEST_P(FileUtilExecuteEnforcementTest, Functional) {
   ASSERT_TRUE(PreventExecuteMapping(dll_copy_path));
   ScopedNativeLibrary module(dll_copy_path);
 
-  // If enforcement is enabled, then `PreventExecuteMapping` will have prevented
-  // the load, and the module will be invalid.
-  EXPECT_EQ(IsEnforcementEnabled(), !module.is_valid());
+  // `PreventExecuteMapping` will have prevented the load, and the module will
+  // be invalid.
+  EXPECT_FALSE(module.is_valid());
 }
-
-INSTANTIATE_TEST_SUITE_P(EnforcementEnabled,
-                         FileUtilExecuteEnforcementTest,
-                         ::testing::Values(true));
-INSTANTIATE_TEST_SUITE_P(EnforcementDisabled,
-                         FileUtilExecuteEnforcementTest,
-                         ::testing::Values(false));
 
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -1756,6 +1804,140 @@ TEST_F(FileUtilTest, DeleteDeep) {
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(IS_ANDROID)
+TEST_F(FileUtilTest, ContentUriPathExists) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+  FilePath file = dir.Append("file.txt");
+  WriteFile(file, "file-content");
+  FilePath no_such_file = dir.Append("no-such-file.txt");
+
+  FilePath content_uri_document_dir =
+      *test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(dir);
+  FilePath content_uri_document_file =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(file);
+  FilePath content_uri_document_no_such_file =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(
+          no_such_file);
+
+  FilePath virtual_path_dir =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath virtual_path_file = virtual_path_dir.Append("file.txt");
+  FilePath virtual_path_no_such_file =
+      virtual_path_dir.Append("no-such-file.txt");
+
+  EXPECT_TRUE(PathExists(content_uri_document_dir));
+  EXPECT_TRUE(PathExists(content_uri_document_file));
+  EXPECT_FALSE(PathExists(content_uri_document_no_such_file));
+  EXPECT_TRUE(PathExists(virtual_path_dir));
+  EXPECT_TRUE(PathExists(virtual_path_file));
+  EXPECT_FALSE(PathExists(virtual_path_no_such_file));
+}
+
+TEST_F(FileUtilTest, ContentUriGetInfo) {
+  FilePath file = temp_dir_.GetPath().Append("file.txt");
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  WriteFile(file, "file-content");
+  CreateDirectory(dir);
+
+  FilePath content_uri_file =
+      *test::android::GetContentUriFromCacheDirFilePath(file);
+  FilePath content_uri_dir =
+      *test::android::GetContentUriFromCacheDirFilePath(dir);
+  FilePath content_uri_file_in_memory =
+      *test::android::GetInMemoryContentUriFromCacheDirFilePath(file);
+  FilePath content_uri_dir_in_memory =
+      *test::android::GetInMemoryContentUriFromCacheDirFilePath(dir);
+  FilePath content_uri_document =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(file);
+  FilePath content_uri_document_tree =
+      *test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(dir);
+
+  // GetInfo() should work the same for files and content-URIs.
+  File::Info info;
+  File::Info content_uri_info;
+  File::Info content_uri_in_memory_info;
+  File::Info content_uri_document_info;
+  EXPECT_TRUE(GetFileInfo(file, &info));
+  EXPECT_TRUE(GetFileInfo(content_uri_file, &content_uri_info));
+  EXPECT_TRUE(GetFileInfo(content_uri_document, &content_uri_document_info));
+  EXPECT_TRUE(
+      GetFileInfo(content_uri_file_in_memory, &content_uri_in_memory_info));
+  EXPECT_EQ(12u, info.size);
+  EXPECT_EQ(12u, content_uri_info.size);
+  EXPECT_EQ(12u, content_uri_in_memory_info.size);
+  EXPECT_EQ(12u, content_uri_document_info.size);
+  EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
+  // Java InMemory provider sets last-modified to unix epoch.
+  EXPECT_EQ(content_uri_in_memory_info.last_modified, Time::FromTimeT(0));
+  // Java DocumentProvider only does resolution to seconds.
+  EXPECT_EQ(info.last_modified.ToTimeT(),
+            content_uri_document_info.last_modified.ToTimeT());
+  EXPECT_FALSE(info.is_directory);
+  EXPECT_FALSE(content_uri_info.is_directory);
+  EXPECT_FALSE(content_uri_in_memory_info.is_directory);
+  EXPECT_FALSE(content_uri_document_info.is_directory);
+
+  // GetInfo() should work the same for dirs and content-URIs.
+  EXPECT_TRUE(GetFileInfo(dir, &info));
+  EXPECT_TRUE(GetFileInfo(content_uri_dir, &content_uri_info));
+  // GetInfo() is not supported for dirs by the in-memory content-provider.
+  EXPECT_FALSE(
+      GetFileInfo(content_uri_dir_in_memory, &content_uri_in_memory_info));
+  File::Info content_uri_tree_info;
+  EXPECT_TRUE(GetFileInfo(content_uri_document_tree, &content_uri_tree_info));
+  EXPECT_EQ(info.last_modified, content_uri_info.last_modified);
+  // Java uses FileEnumerator::FileInfo which only does resolution to seconds.
+  EXPECT_EQ(info.last_modified.ToTimeT(),
+            content_uri_tree_info.last_modified.ToTimeT());
+  EXPECT_TRUE(info.is_directory);
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(info.size, 0u);
+#endif
+  EXPECT_TRUE(content_uri_info.is_directory);
+  EXPECT_TRUE(content_uri_tree_info.is_directory);
+
+  // GetPosixFilePermissions() should fail for content URIs.
+  int mode = 0;
+  EXPECT_TRUE(GetPosixFilePermissions(file, &mode));
+  EXPECT_TRUE(GetPosixFilePermissions(dir, &mode));
+  EXPECT_FALSE(GetPosixFilePermissions(content_uri_file, &mode));
+  EXPECT_FALSE(GetPosixFilePermissions(content_uri_dir, &mode));
+}
+
+TEST_F(FileUtilTest, OpenFileContentUri) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+  FilePath file = dir.Append("file.txt");
+  WriteFile(file, "abc");
+  FilePath no_such_file = dir.Append("no-such-file.txt");
+
+  FilePath content_uri_document_file =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(file);
+  FilePath content_uri_document_no_such_file =
+      *test::android::GetInMemoryContentDocumentUriFromCacheDirFilePath(
+          no_such_file);
+
+  FilePath virtual_path_dir =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath virtual_path_file = virtual_path_dir.Append("file.txt");
+  FilePath virtual_path_no_such_file =
+      virtual_path_dir.Append("no-such-file.txt");
+
+  ScopedFILE cu_f(OpenFile(content_uri_document_file, "r"));
+  std::string cu_s;
+  EXPECT_TRUE(ReadStreamToStringWithMaxSize(cu_f.get(), 4, &cu_s));
+  EXPECT_EQ(cu_s, "abc");
+
+  EXPECT_FALSE(OpenFile(content_uri_document_no_such_file, "r"));
+
+  ScopedFILE vp_f(OpenFile(virtual_path_file, "r"));
+  std::string vp_s;
+  EXPECT_TRUE(ReadStreamToStringWithMaxSize(vp_f.get(), 4, &vp_s));
+  EXPECT_EQ(vp_s, "abc");
+
+  EXPECT_FALSE(OpenFile(virtual_path_no_such_file, "r"));
+}
+
 TEST_F(FileUtilTest, DeleteContentUri) {
   // Get the path to the test file.
   FilePath data_dir;
@@ -1780,6 +1962,64 @@ TEST_F(FileUtilTest, DeleteContentUri) {
   EXPECT_FALSE(PathExists(image_copy));
   EXPECT_FALSE(PathExists(uri_path));
 }
+
+TEST_F(FileUtilTest, WriteFileContentUri) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+
+  FilePath dir_vp =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath file_vp = dir_vp.Append("file.txt");
+  ASSERT_TRUE(file_vp.IsVirtualDocumentPath());
+
+  ASSERT_FALSE(PathExists(file_vp));
+  EXPECT_TRUE(WriteFile(file_vp, "x"));
+  ASSERT_TRUE(PathExists(file_vp));
+
+  FilePath file_content_uri = *ResolveToContentUri(file_vp);
+
+  EXPECT_TRUE(WriteFile(file_content_uri, "foo"));
+
+  File::Info info;
+  ASSERT_TRUE(GetFileInfo(file_content_uri, &info));
+  ASSERT_EQ(info.size, 3u);
+}
+
+TEST_F(FileUtilTest, ResolveToContentUri) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+  FilePath file = dir.Append("file.txt");
+  WriteFile(file, "file-content");
+
+  FilePath dir_vp =
+      *test::android::GetVirtualDocumentPathFromCacheDirDirectory(dir);
+  FilePath file_vp = dir_vp.Append("file.txt");
+  ASSERT_TRUE(file_vp.IsVirtualDocumentPath());
+
+  FilePath file_content_uri = *ResolveToContentUri(file_vp);
+  ASSERT_TRUE(file_content_uri.IsContentUri());
+  File::Info info;
+  ASSERT_TRUE(GetFileInfo(file_content_uri, &info));
+  ASSERT_EQ(info.size, 12u);
+}
+
+TEST_F(FileUtilTest, ResolveToVirtualDocumentPath) {
+  FilePath dir = temp_dir_.GetPath().Append("dir");
+  CreateDirectory(dir);
+  FilePath file = dir.Append("file.txt");
+  WriteFile(file, "file-content");
+
+  FilePath dir_content_uri =
+      *test::android::GetInMemoryContentTreeUriFromCacheDirDirectory(dir);
+  FilePath dir_vp = *ResolveToVirtualDocumentPath(dir_content_uri);
+  ASSERT_TRUE(dir_vp.IsVirtualDocumentPath());
+
+  FilePath file_vp = dir_vp.Append("file.txt");
+  File::Info info;
+  ASSERT_TRUE(GetFileInfo(file_vp, &info));
+  ASSERT_TRUE(!info.is_directory);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -3026,7 +3266,7 @@ TEST_F(FileUtilTest, FileToFILE) {
 
   stream = FileToFILE(std::move(file), "w");
   EXPECT_TRUE(stream);
-  EXPECT_FALSE(file.IsValid());
+  EXPECT_FALSE(file.IsValid());  // NOLINT(bugprone-use-after-move)
   EXPECT_TRUE(CloseFile(stream));
 }
 
@@ -3043,28 +3283,28 @@ TEST_F(FileUtilTest, FILEToFile) {
   EXPECT_EQ(file.GetLength(), 5L);
 }
 
-#if BUILDFLAG(IS_WIN)
-TEST_F(FileUtilTest, GetSecureSystemTemp) {
-  FilePath secure_system_temp;
-  ASSERT_EQ(GetSecureSystemTemp(&secure_system_temp), !!::IsUserAnAdmin());
-  if (!::IsUserAnAdmin()) {
-    GTEST_SKIP() << "This test must be run by an admin user";
-  }
-
-  FilePath dir_windows;
-  ASSERT_TRUE(PathService::Get(DIR_WINDOWS, &dir_windows));
-  FilePath dir_program_files;
-  ASSERT_TRUE(PathService::Get(DIR_PROGRAM_FILES, &dir_program_files));
-
-  ASSERT_TRUE((dir_windows.AppendASCII("SystemTemp") == secure_system_temp) ||
-              (dir_program_files == secure_system_temp));
-}
-#endif  // BUILDFLAG(IS_WIN)
-
 TEST_F(FileUtilTest, CreateNewTempDirectoryTest) {
   FilePath temp_dir;
-  ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
+  ASSERT_TRUE(CreateNewTempDirectory(FPL(""), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
+  EXPECT_TRUE(DeleteFile(temp_dir));
+}
+
+TEST_F(FileUtilTest, CreateNewTempDirectoryPrefixTest) {
+  FilePath temp_dir;
+  ASSERT_TRUE(
+      CreateNewTempDirectory(FILE_PATH_LITERAL("test_dir_prefix"), &temp_dir));
+  EXPECT_TRUE(PathExists(temp_dir));
+
+  const FilePath::StringType matcher =
+#if BUILDFLAG(IS_WIN)
+      FILE_PATH_LITERAL("test_dir_prefix*");
+#else   // BUILDFLAG(IS_WIN)
+      FILE_PATH_LITERAL("*.test_dir_prefix.*");
+#endif  // BUILDFLAG(IS_WIN)
+
+  EXPECT_THAT(temp_dir.value(),
+              ::testing::HasSubstr(FILE_PATH_LITERAL("test_dir_prefix")));
   EXPECT_TRUE(DeleteFile(temp_dir));
 }
 
@@ -3074,11 +3314,12 @@ TEST_F(FileUtilTest, TempDirectoryParentTest) {
     GTEST_SKIP() << "This test must be run by an admin user";
   }
   FilePath temp_dir;
-  ASSERT_TRUE(CreateNewTempDirectory(FilePath::StringType(), &temp_dir));
+  ASSERT_TRUE(CreateNewTempDirectory(FPL(""), &temp_dir));
   EXPECT_TRUE(PathExists(temp_dir));
 
   FilePath expected_parent_dir;
-  if (!GetSecureSystemTemp(&expected_parent_dir)) {
+  if (!::IsUserAnAdmin() ||
+      !PathService::Get(DIR_SYSTEM_TEMP, &expected_parent_dir)) {
     EXPECT_TRUE(PathService::Get(DIR_TEMP, &expected_parent_dir));
   }
   EXPECT_TRUE(expected_parent_dir.IsParent(temp_dir));
@@ -3095,6 +3336,21 @@ TEST_F(FileUtilTest, CreateNewTemporaryDirInDirTest) {
   EXPECT_TRUE(temp_dir_.GetPath().IsParent(new_dir));
   EXPECT_TRUE(DeleteFile(new_dir));
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(FileUtilTest, GetSecureTempDirectory) {
+  FilePath temp_dir;
+  ASSERT_TRUE(GetSecureTempDirectory(&temp_dir));
+
+  FilePath expected_temp_dir;
+  if (internal::IsUserDefaultAdmin()) {
+    EXPECT_TRUE(PathService::Get(DIR_SYSTEM_TEMP, &expected_temp_dir));
+  } else {
+    EXPECT_TRUE(GetTempDir(&expected_temp_dir));
+  }
+  EXPECT_EQ(temp_dir, expected_temp_dir);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 TEST_F(FileUtilTest, GetShmemTempDirTest) {
@@ -3120,7 +3376,7 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_ZeroOffset) {
   EXPECT_EQ(file.GetLength(), kExtendedFileLength);
 
   char data_read[32] = {};
-  int bytes_read = file.Read(0, data_read, kExtendedFileLength);
+  int bytes_read = UNSAFE_TODO(file.Read(0, data_read, kExtendedFileLength));
   EXPECT_EQ(bytes_read, kExtendedFileLength);
   auto [front, back] = base::span(data_read).split_at(test_data.size());
   EXPECT_EQ(front, test_data);
@@ -3146,7 +3402,7 @@ TEST_F(FileUtilTest, AllocateFileRegionTest_NonZeroOffset) {
   EXPECT_EQ(file.GetLength(), kExtendedFileLength);
 
   char data_read[32] = {};
-  int bytes_read = file.Read(0, data_read, kExtendedFileLength);
+  int bytes_read = UNSAFE_TODO(file.Read(0, data_read, kExtendedFileLength));
   EXPECT_EQ(bytes_read, kExtendedFileLength);
   auto [front, back] = base::span(data_read).split_at(test_data.size());
   EXPECT_EQ(front, test_data);
@@ -3576,8 +3832,7 @@ TEST_F(FileUtilTest, ReadFileToStringWithUnknownFileSize) {
 }
 #endif  // !BUILDFLAG(IS_WIN)
 
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA) && \
-    !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 #define ChildMain WriteToPipeChildMain
 #define ChildMainString "WriteToPipeChildMain"
 
@@ -3724,8 +3979,7 @@ TEST_F(FileUtilTest, ReadFileToStringWithNamedPipe) {
 
   ASSERT_EQ(0, unlink(pipe_path.value().c_str()));
 }
-#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_FUCHSIA)
-        // && !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN)
 #define ChildMain WriteToPipeChildMain
@@ -4408,18 +4662,17 @@ TEST_F(VerifyPathControlledByUserTest, WriteBitChecks) {
 
 #endif  // BUILDFLAG(IS_MAC)
 
-// Flaky test: crbug/1054637
 #if BUILDFLAG(IS_ANDROID)
-TEST_F(FileUtilTest, DISABLED_ValidContentUriTest) {
+TEST_F(FileUtilTest, ValidContentUriTest) {
   // Get the test image path.
   FilePath data_dir;
   ASSERT_TRUE(PathService::Get(DIR_TEST_DATA, &data_dir));
   data_dir = data_dir.AppendASCII("file_util");
   ASSERT_TRUE(PathExists(data_dir));
   FilePath image_file = data_dir.Append(FILE_PATH_LITERAL("red.png"));
-  int64_t image_size;
-  GetFileSize(image_file, &image_size);
-  ASSERT_GT(image_size, 0);
+  std::optional<int64_t> image_size = GetFileSize(image_file);
+  ASSERT_TRUE(image_size.has_value());
+  ASSERT_GT(image_size.value(), 0);
 
   // Insert the image into MediaStore. MediaStore will do some conversions, and
   // return the content URI.
@@ -4428,34 +4681,65 @@ TEST_F(FileUtilTest, DISABLED_ValidContentUriTest) {
   EXPECT_TRUE(PathExists(path));
   // The file size may not equal to the input image as MediaStore may convert
   // the image.
-  int64_t content_uri_size;
-  GetFileSize(path, &content_uri_size);
-  EXPECT_EQ(image_size, content_uri_size);
+  std::optional<int64_t> content_uri_size = GetFileSize(path);
+  ASSERT_TRUE(content_uri_size.has_value());
+  EXPECT_EQ(image_size.value(), content_uri_size.value());
 
   // We should be able to read the file.
-  File file = OpenContentUri(path, File::FLAG_OPEN | File::FLAG_READ);
+  File file(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_TRUE(file.IsValid());
-  auto buffer = std::make_unique<char[]>(image_size);
-  EXPECT_TRUE(file.ReadAtCurrentPos(buffer.get(), image_size));
+  auto buffer = std::make_unique<char[]>(image_size.value());
+  // SAFETY: required for test.
+  EXPECT_TRUE(
+      UNSAFE_BUFFERS(file.ReadAtCurrentPos(buffer.get(), image_size.value())));
+}
 
-  // We should be able to open the file as writable.
-  file = OpenContentUri(path, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
+TEST_F(FileUtilTest, WriteContentUri) {
+  // `path` and `content_uri` are the same file.
+  FilePath path = temp_dir_.GetPath().Append("file.txt");
+  ASSERT_TRUE(WriteFile(path, "file-content"));
+  FilePath content_uri =
+      *test::android::GetContentUriFromCacheDirFilePath(path);
+
+  // We should be able to open the file as writable which truncates the file.
+  File file = File(content_uri, File::FLAG_CREATE_ALWAYS | File::FLAG_WRITE);
   EXPECT_TRUE(file.IsValid());
+  std::optional<int64_t> size = GetFileSize(path);
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(size.value(), 0);
+
+  EXPECT_EQ(*file.WriteAtCurrentPos(byte_span_from_cstring("123")), 3u);
+  EXPECT_TRUE(file.Flush());
+  size = GetFileSize(path);
+  ASSERT_TRUE(size.has_value());
+  EXPECT_EQ(size.value(), 3);
 }
 
 TEST_F(FileUtilTest, NonExistentContentUriTest) {
   FilePath path("content://foo.bar");
   EXPECT_TRUE(path.IsContentUri());
   EXPECT_FALSE(PathExists(path));
-  // Size should be smaller than 0.
-  int64_t size;
-  EXPECT_FALSE(GetFileSize(path, &size));
+  EXPECT_FALSE(GetFileSize(path).has_value());
 
   // We should not be able to read the file.
-  File file = OpenContentUri(path, File::FLAG_OPEN | File::FLAG_READ);
+  File file(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_FALSE(file.IsValid());
 }
-#endif
+
+// Validate crbug.com/398066589 where CreateDirectory() fails when a user does
+// not have stat() access to all subpaths.
+TEST_F(FileUtilTest, CreateDirectoryOnlyCheckMissingSubpaths) {
+  // Apps have access to the android external-storage-dir (e.g.
+  // /storage/emulated/0), but for security will usually not have access such as
+  // stat() to its parent. In tests, DIR_ANDROID_APP_DATA is subdir
+  // chromium_tests_root. The directory should always exist before this test
+  // runs, but even if not it should create ok even though stat() would fail on
+  // some of the subpaths.
+  FilePath dir = PathService::CheckedGet(DIR_ANDROID_APP_DATA);
+  EXPECT_TRUE(CreateDirectory(dir));
+}
+
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
     defined(ARCH_CPU_32_BITS)
@@ -4609,7 +4893,7 @@ TEST(FileUtilMultiThreadedTest, MultiThreadedTempFiles) {
     thread->WaitUntilThreadStarted();
   }
 
-  const RepeatingClosure open_write_close_read = BindRepeating([]() {
+  const RepeatingClosure open_write_close_read = BindRepeating([] {
     FilePath output_filename;
     ScopedFILE output_file(CreateAndOpenTemporaryStream(&output_filename));
     EXPECT_TRUE(output_file);
@@ -4826,8 +5110,7 @@ TEST_F(FileUtilTest, CopyFileContentsWithSendfileSocket) {
 TEST_F(FileUtilTest, CopyFileContentsWithSendfileSeqFile) {
   // This test verifies the special case where we have a regular file with zero
   // length that might actually have contents (such as a seq_file).
-  for (auto* const file : {"/proc/meminfo", "/proc/self/cmdline",
-                           "/proc/self/environ", "/proc/self/auxv"}) {
+  for (auto* const file : {"/proc/meminfo", "/proc/self/cmdline"}) {
     FilePath proc_file_from(file);
     File from(proc_file_from, File::FLAG_OPEN | File::FLAG_READ);
     ASSERT_TRUE(from.IsValid()) << "could not open " << file;
@@ -4853,6 +5136,36 @@ TEST_F(FileUtilTest, CopyFileContentsWithSendfileSeqFile) {
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
+
+// Validates that a new file can be created with the same name as a recently
+// deleted one. This behavior became the default on Windows at some point during
+// Windows 10's lifetime. See FILE_DISPOSITION_POSIX_SEMANTICS:
+// https://learn.microsoft.com/en-us/windows-hardware/drivers/ddi/ntddk/ns-ntddk-_file_disposition_information_ex#remarks
+// Note that as of Windows 11 25H this behavior still only seems to apply to
+// deleting a file using the path and not setting the file dispositions
+// directly.
+TEST_F(FileUtilTest, CreatingFileWithSameNameAfterDelete) {
+  static constexpr FilePath::CharType kFileBaseName[] =
+      FILE_PATH_LITERAL("file");
+  const FilePath file_path = temp_dir_.GetPath().Append(kFileBaseName);
+  const auto byte_span = byte_span_from_cstring("CONTENT");
+  const auto file_flags =
+      File::FLAG_OPEN_ALWAYS | File::FLAG_WRITE | File::FLAG_WIN_SHARE_DELETE;
+
+  File first_file(file_path, file_flags);
+  ASSERT_TRUE(first_file.IsValid());
+  ASSERT_THAT(first_file.Write(0, byte_span),
+              testing::Optional(byte_span.size()));
+
+  ASSERT_TRUE(DeleteFile(file_path));
+
+  File second_file(file_path, file_flags);
+  ASSERT_TRUE(second_file.IsValid());
+
+  // `second_file` is a completely new file. It doesn't have the same content as
+  // `first_file`.
+  ASSERT_EQ(second_file.GetLength(), 0);
+}
 
 }  // namespace
 

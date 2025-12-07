@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Ez a webhely nem kérhet engedélyt Öntől</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Kérjen segítséget<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740">A párosítás engedélyezéséhez <ph name="BEGIN_LINK" />kapcsolja be a Bluetooth funkciót<ph name="END_LINK" /></translation>
+<translation id="3878792656892132392">A <ph name="APP_NAME" /> engedélyt igényel az Ön kézmozgásának a követéséhez.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Kérjen segítséget<ph name="END_LINK" />, miközben eszközöket keresünk…</translation>
 <translation id="4925793601605263825">A <ph name="APP_NAME" /> engedélyt igényel ahhoz, hogy hozzáférjen a mikrofonhoz ennél a webhelynél.</translation>
 <translation id="5230560987958996918">A(z) <ph name="SITE" /> szeretné megkeresni a közeli Bluetooth-eszközöket. A következő eszközöket találta:</translation>

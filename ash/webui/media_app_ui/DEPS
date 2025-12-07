@@ -1,5 +1,7 @@
 include_rules = [
   # Do not add chrome here (use a delegate instead).
+  "+chromeos/ash/components/mantis/media_app",
+  "+chromeos/ash/components/specialized_features",
   "+chromeos/grit/chromeos_media_app_bundle_resources.h",
   "+chromeos/grit/chromeos_media_app_bundle_resources_map.h",
   "+components/content_settings/core/common",

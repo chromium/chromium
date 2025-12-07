@@ -17,10 +17,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -75,7 +75,6 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
   ~AsyncSharedStorageDatabaseImplTest() override = default;
 
   void SetUp() override {
-    InitSharedStorageFeature();
     async_database_ = Create();
   }
 
@@ -91,13 +90,16 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
       EXPECT_TRUE(temp_dir_.Delete());
   }
 
-  virtual void InitSharedStorageFeature() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageInitTries", "1"},
-         {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
-         {"SharedStorageBudgetInterval",
-          TimeDeltaToString(base::Hours(kBudgetIntervalHours))}});
+  virtual std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions() {
+    return std::make_unique<SharedStorageDatabaseOptions>(
+        /*max_page_size=*/4096,
+        /*max_cache_size=*/1024,
+        /*max_bytes_per_origin=*/5242880,
+        /*max_init_tries=*/1,
+        /*max_iterator_batch_size=*/100,
+        /*bit_budget=*/kBitBudget,
+        /*budget_interval=*/base::Hours(kBudgetIntervalHours),
+        /*staleness_threshold=*/base::Days(30));
   }
 
   virtual DBType GetType() { return DBType::kInMemory; }
@@ -105,7 +107,7 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
   // Return the relative file path in the "storage/" subdirectory of test data
   // for the SQL file from which to initialize an async shared storage database
   // instance.
-  virtual std::string GetRelativeFilePath() { return nullptr; }
+  virtual std::string GetRelativeFilePath() { return ""; }
 
   std::unique_ptr<AsyncSharedStorageDatabase> Create() {
     if (GetType() != DBType::kInMemory)
@@ -113,9 +115,9 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
     else
       EXPECT_TRUE(file_name_.empty());
 
-    return AsyncSharedStorageDatabaseImpl::Create(
-        file_name_, task_runner_, special_storage_policy_,
-        SharedStorageOptions::Create()->GetDatabaseOptions());
+    return AsyncSharedStorageDatabaseImpl::Create(file_name_, task_runner_,
+                                                  special_storage_policy_,
+                                                  GetDatabaseOptions());
   }
 
   void PrepareFileBacked() {
@@ -663,7 +665,6 @@ class AsyncSharedStorageDatabaseImplTest : public testing::Test {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   scoped_refptr<storage::MockSpecialStoragePolicy> special_storage_policy_;
@@ -839,16 +840,16 @@ class AsyncSharedStorageDatabaseImplParamTest
                                      : DBType::kFileBackedFromNew;
   }
 
-  void InitSharedStorageFeature() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageBytesPerOrigin",
-          base::NumberToString(kMaxBytesPerOrigin)},
-         {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
-         {"SharedStorageBudgetInterval",
-          TimeDeltaToString(base::Hours(kBudgetIntervalHours))},
-         {"SharedStorageStalenessThreshold",
-          TimeDeltaToString(base::Days(kStalenessThresholdDays))}});
+  std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions() override {
+    return std::make_unique<SharedStorageDatabaseOptions>(
+        /*max_page_size=*/4096,
+        /*max_cache_size=*/1024,
+        /*max_bytes_per_origin=*/kMaxBytesPerOrigin,
+        /*max_init_tries=*/1,
+        /*max_iterator_batch_size=*/100,
+        /*bit_budget=*/kBitBudget,
+        /*budget_interval=*/base::Hours(kBudgetIntervalHours),
+        /*staleness_threshold=*/base::Days(kStalenessThresholdDays));
   }
 };
 
@@ -2055,11 +2056,16 @@ class AsyncSharedStorageDatabaseImplPurgeMatchingOriginsParamTest
                                      : DBType::kFileBackedFromNew;
   }
 
-  void InitSharedStorageFeature() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageBytesPerOrigin",
-          base::NumberToString(kMaxBytesPerOrigin)}});
+  std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions() override {
+    return std::make_unique<SharedStorageDatabaseOptions>(
+        /*max_page_size=*/4096,
+        /*max_cache_size=*/1024,
+        /*max_bytes_per_origin=*/kMaxBytesPerOrigin,
+        /*max_init_tries=*/1,
+        /*max_iterator_batch_size=*/100,
+        /*bit_budget=*/kBitBudget,
+        /*budget_interval=*/base::Hours(kBudgetIntervalHours),
+        /*staleness_threshold=*/base::Days(30));
   }
 };
 

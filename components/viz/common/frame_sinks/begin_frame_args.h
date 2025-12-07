@@ -279,11 +279,7 @@ struct VIZ_COMMON_EXPORT BeginFrameAck {
   // damaged a surface) as part of responding to the BeginFrame.
   bool has_damage = false;
 
-  // Specifies the interval at which the client's content is updated. This can
-  // be used to configure the display to the optimal vsync interval available.
-  // If unspecified, or set to BeginFrameArgs::MinInterval, it is assumed that
-  // the client can animate at the maximum frame rate supported by the Display.
-  std::optional<base::TimeDelta> preferred_frame_interval;
+  void AsValueInto(base::trace_event::TracedValue* dict) const;
 };
 
 }  // namespace viz

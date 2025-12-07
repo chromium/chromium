@@ -9,8 +9,9 @@
 
 namespace blink {
 
-class SubgridMinMaxSizesCache
-    : public GarbageCollected<SubgridMinMaxSizesCache> {
+class SubgridMinMaxSizesCache {
+  DISALLOW_NEW();
+
  public:
   SubgridMinMaxSizesCache() = delete;
   SubgridMinMaxSizesCache(const SubgridMinMaxSizesCache&) = delete;
@@ -28,8 +29,6 @@ class SubgridMinMaxSizesCache
     return layout_data.OnlySubgriddedCollection() ==
            opposite_axis_subgridded_tracks_;
   }
-
-  void Trace(Visitor*) const {}
 
  private:
   // The intrinsic sizes of a subgrid's standalone axis might change when the

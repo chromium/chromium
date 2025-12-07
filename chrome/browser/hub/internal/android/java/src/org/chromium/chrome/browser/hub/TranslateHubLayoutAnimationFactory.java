@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.hub;
 
-import androidx.annotation.NonNull;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Factory for creating {@link HubLayoutAnimatorProvider}s for translate animations. These
  * animations are primiarly used for large form factor devices.
  */
+@NullMarked
 public class TranslateHubLayoutAnimationFactory {
 
     /**
      * Creates a {@link HubLayoutAnimatorProvider} for translating up to show.
      *
+     * @param colorMixer The color mixer for the Hub.
      * @param hubContainerView The {@link HubContainerView} to animate.
      * @param scrimController A controller to manage showing a scrim.
      * @param durationMs The duration in milliseconds of the animation.
@@ -22,17 +24,19 @@ public class TranslateHubLayoutAnimationFactory {
      * @return a {@link HubLayoutAnimatorProvider} that provides the animation.
      */
     public static HubLayoutAnimatorProvider createTranslateUpAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull ScrimController scrimController,
+            HubColorMixer colorMixer,
+            HubContainerView hubContainerView,
+            ScrimController scrimController,
             long durationMs,
             float yOffset) {
         return TranslateHubLayoutAnimationFactoryImpl.createTranslateUpAnimatorProvider(
-                hubContainerView, scrimController, durationMs, yOffset);
+                colorMixer, hubContainerView, scrimController, durationMs, yOffset);
     }
 
     /**
      * Creates a {@link HubLayoutAnimatorProvider} for translating down to hide.
      *
+     * @param colorMixer The color mixer for the Hub.
      * @param hubContainerView The {@link HubContainerView} to animate.
      * @param scrimController A controller to manage hiding a scrim.
      * @param durationMs The duration in milliseconds of the animation.
@@ -40,11 +44,12 @@ public class TranslateHubLayoutAnimationFactory {
      * @return a {@link HubLayoutAnimatorProvider} that provides the animation.
      */
     public static HubLayoutAnimatorProvider createTranslateDownAnimatorProvider(
-            @NonNull HubContainerView hubContainerView,
-            @NonNull ScrimController scrimController,
+            HubColorMixer colorMixer,
+            HubContainerView hubContainerView,
+            ScrimController scrimController,
             long durationMs,
             float yOffset) {
         return TranslateHubLayoutAnimationFactoryImpl.createTranslateDownAnimatorProvider(
-                hubContainerView, scrimController, durationMs, yOffset);
+                colorMixer, hubContainerView, scrimController, durationMs, yOffset);
     }
 }

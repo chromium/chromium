@@ -7,6 +7,8 @@ package org.chromium.components.minidump_uploader;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -14,10 +16,11 @@ import java.util.Map;
 
 /** Rewrites minidumps into MIME messages for uploading. */
 @JNINamespace("minidump_uploader")
+@NullMarked
 public class CrashReportMimeWriter {
     private static final String MINIDUMP_KEY = "upload_file_minidump";
 
-    /*
+    /**
      * Rewrites minidumps as MIME multipart messages, extracting embedded Crashpad annotations to
      * include as form data, and including the original minidump as a file attachment.
      *
@@ -29,7 +32,7 @@ public class CrashReportMimeWriter {
                 .rewriteMinidumpsAsMIMEs(srcDir.getAbsolutePath(), destDir.getAbsolutePath());
     }
 
-    /*
+    /**
      * Rewrites ANR reports as MIME multipart messages, including the serialized AnrData as a file
      * attachment.
      *
@@ -41,7 +44,7 @@ public class CrashReportMimeWriter {
                 .rewriteAnrsAsMIMEs(anrs.toArray(new String[0]), destDir.getAbsolutePath());
     }
 
-    /*
+    /**
      * Rewrites minidumps as MIME multipart messages with the embedded Crashpad annotations included
      * as form data and the original minidump as a file attachment. The extracted Crashpad
      * annotations for eached minidump file are returned as key-value pairs.

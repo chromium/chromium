@@ -22,8 +22,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
-#include "headless/public/headless_shell.h"
-#include "headless/public/switches.h"
 #include "partition_alloc/buildflags.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -54,39 +52,6 @@
 #define DLLEXPORT __declspec(dllexport)
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
-    BUILDFLAG(IS_WIN)
-#define ENABLE_OLD_HEADLESS
-#endif
-
-#ifdef ENABLE_OLD_HEADLESS
-namespace {
-void ShowOldHeadlessWarningMaybe(const base::CommandLine* command_line) {
-  // Show warning only if in browser process.
-  if (!command_line->GetSwitchValueASCII(::switches::kProcessType).empty()) {
-    return;
-  }
-
-  constexpr char kChromeDisableOldHeadlessWarning[] =
-      "CHROME_DISABLE_OLD_HEADLESS_WARNING";
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (env->HasVar(kChromeDisableOldHeadlessWarning)) {
-    return;
-  }
-
-  std::cerr
-      << "Old Headless mode will be removed from the Chrome binary soon. "
-         "Please use the new Headless mode "
-         "(https://developer.chrome.com/docs/chromium/new-headless) or the "
-         "chrome-headless-shell which is a standalone implementation of "
-         "the old Headless mode "
-         "(https://developer.chrome.com/blog/chrome-headless-shell)."
-      << std::endl
-      << std::endl;
-}
-}  // namespace
-#endif  // ENABLE_OLD_HEADLESS
-
 #if BUILDFLAG(IS_WIN)
 // We use extern C for the prototype DLLEXPORT to avoid C++ name mangling.
 extern "C" {
@@ -100,8 +65,9 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
 extern "C" {
 // This function must be marked with NO_STACK_PROTECTOR or it may crash on
 // return, see the --change-stack-guard-on-fork command line flag.
-__attribute__((visibility("default"))) int NO_STACK_PROTECTOR
-ChromeMain(int argc, const char** argv);
+NO_STACK_PROTECTOR __attribute__((visibility("default"))) int ChromeMain(
+    int argc,
+    const char** argv);
 }
 #else
 #error Unknown platform.
@@ -160,8 +126,7 @@ int ChromeMain(int argc, const char** argv) {
   // dynamic linking.
   base::debug::SetDumpWithoutCrashingFunction(&DumpProcessWithoutCrash);
 
-  // Verify that chrome_elf and this module (chrome.dll and chrome_child.dll)
-  // have the same version.
+  // Verify that chrome_elf and this module (chrome.dll) have the same version.
   if (install_static::InstallDetails::Get().VersionMismatch())
     base::debug::DumpWithoutCrashing();
 #else
@@ -204,32 +169,29 @@ int ChromeMain(int argc, const char** argv) {
   if (headless::IsHeadlessMode()) {
     if (command_line->GetArgs().size() > 1) {
       LOG(ERROR) << "Multiple targets are not supported in headless mode.";
-      return chrome::RESULT_CODE_UNSUPPORTED_PARAM;
+      return CHROME_RESULT_CODE_UNSUPPORTED_PARAM;
     }
-    headless_mode_handle = headless::InitHeadlessMode();
-  } else {
-#ifdef ENABLE_OLD_HEADLESS
-    if (headless::IsOldHeadlessMode()) {
-      ShowOldHeadlessWarningMaybe(command_line);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      command_line->AppendSwitch(::headless::switches::kEnableCrashReporter);
-#endif
-      return headless::HeadlessShellMain(std::move(params));
+
+    auto init_headless_mode = headless::InitHeadlessMode();
+    if (!init_headless_mode.has_value()) {
+      LOG(ERROR) << init_headless_mode.error();
+      return EXIT_FAILURE;
     }
-#endif  // ENABLE_OLD_HEADLESS
+
+    headless_mode_handle = std::move(init_headless_mode.value());
   }
 
 #if BUILDFLAG(IS_MAC)
-  // Gracefully exit if the system tried to launch the macOS notification helper
-  // app when a user clicked on a notification.
-  if (IsAlertsHelperLaunchedViaNotificationAction()) {
+  // Gracefully exit if a helper app was launched in an unexpected situation.
+  if (IsHelperAppLaunchedBySystemOrThirdPartyApplication()) {
     return 0;
   }
 #endif
 
   int rv = content::ContentMain(std::move(params));
 
-  if (chrome::IsNormalResultCode(static_cast<chrome::ResultCode>(rv)))
+  if (IsNormalResultCode(static_cast<ResultCode>(rv))) {
     return content::RESULT_CODE_NORMAL_EXIT;
+  }
   return rv;
 }

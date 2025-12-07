@@ -4,7 +4,8 @@
 
 #include "components/web_package/signed_web_bundles/ed25519_signature.h"
 
-#include "base/ranges/algorithm.h"
+#include <algorithm>
+
 #include "base/strings/stringprintf.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 
@@ -17,28 +18,21 @@ static_assert(Ed25519Signature::kLength == ED25519_SIGNATURE_LEN);
 // static
 base::expected<Ed25519Signature, std::string> Ed25519Signature::Create(
     base::span<const uint8_t> bytes) {
-  if (bytes.size() != kLength) {
+  auto sized_bytes = bytes.to_fixed_extent<kLength>();
+  if (!sized_bytes) {
     return base::unexpected(base::StringPrintf(
         "The signature has the wrong length. Expected %zu, but got %zu bytes.",
         kLength, bytes.size()));
   }
 
-  return Create(base::make_span<kLength>(bytes));
-}
-
-bool Ed25519Signature::operator==(const Ed25519Signature& other) const {
-  return *bytes_ == *other.bytes_;
-}
-
-bool Ed25519Signature::operator!=(const Ed25519Signature& other) const {
-  return !operator==(other);
+  return Create(*sized_bytes);
 }
 
 // static
 Ed25519Signature Ed25519Signature::Create(
     base::span<const uint8_t, kLength> bytes) {
   std::array<uint8_t, kLength> array;
-  base::ranges::copy(bytes, array.begin());
+  std::ranges::copy(bytes, array.begin());
   return Ed25519Signature(array);
 }
 

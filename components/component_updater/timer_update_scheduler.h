@@ -22,8 +22,8 @@ class TimerUpdateScheduler : public UpdateScheduler {
   ~TimerUpdateScheduler() override;
 
   // UpdateScheduler:
-  void Schedule(const base::TimeDelta& initial_delay,
-                const base::TimeDelta& delay,
+  void Schedule(base::TimeDelta initial_delay,
+                base::TimeDelta delay,
                 const UserTask& user_task,
                 const OnStopTaskCallback& on_stop) override;
   void Stop() override;

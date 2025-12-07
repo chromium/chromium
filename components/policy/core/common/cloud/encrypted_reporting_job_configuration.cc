@@ -39,8 +39,8 @@ EncryptedReportingJobConfiguration::EncryptedReportingJobConfiguration(
     scoped_refptr<network::SharedURLLoaderFactory> factory,
     const std::string& server_url,
     base::Value::Dict merging_payload,
-    const std::string dm_token,
-    const std::string client_id,
+    const std::string& dm_token,
+    const std::string& client_id,
     UploadResponseCallback response_cb,
     UploadCompleteCallback complete_cb)
     : ReportingJobConfigurationBase(TYPE_UPLOAD_ENCRYPTED_REPORT,

@@ -11,19 +11,19 @@ namespace blink {
 namespace cssvalue {
 
 CSSFontVariationValue::CSSFontVariationValue(const AtomicString& tag,
-                                             float value)
+                                             const CSSPrimitiveValue* value)
     : CSSValue(kFontVariationClass), tag_(tag), value_(value) {}
 
 String CSSFontVariationValue::CustomCSSText() const {
   StringBuilder builder;
   SerializeString(tag_, builder);
   builder.Append(' ');
-  builder.AppendNumber(value_);
+  builder.Append(value_->CssText());
   return builder.ReleaseString();
 }
 
 bool CSSFontVariationValue::Equals(const CSSFontVariationValue& other) const {
-  return tag_ == other.tag_ && value_ == other.value_;
+  return tag_ == other.tag_ && *value_ == *other.value_;
 }
 
 }  // namespace cssvalue

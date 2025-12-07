@@ -15,10 +15,6 @@ namespace app_list_features {
 // Please keep these features sorted.
 // TODO(newcomer|weidongg): Sort these features.
 
-// Enables the feature to include a single reinstallation candidate in
-// zero-state.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableAppReinstallZeroState);
-
 // Enables hashed recording of a app list launches.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kEnableAppListLaunchRecording);
 
@@ -36,9 +32,6 @@ ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDynamicSearchUpdateAnimation);
 // Enables Play Store search in the launcher.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kLauncherPlayStoreSearch);
 
-// Enables app list drag and drop refactor to use views drag and drop APIs.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kDragAndDropRefactor);
-
 // Enables the Launcher Apps Collection UI in ChromeOS - a modular view with
 // different categories filled with predefined apps.
 ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kAppsCollections);
@@ -53,12 +46,6 @@ const base::FeatureParam<bool> kAppsCollectionsEnabledCounterfactually{
 const base::FeatureParam<bool> kAppsCollectionsEnabledWithModifiedOrder{
     &kAppsCollections, "is-modified-order", false};
 
-// Forces the user elegibility of the AppsCollections feature. When this is
-// enabled, the regular checks for the account are ignored and AppsCollection
-// show by default.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kForceShowAppsCollections);
-
-ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
 ASH_PUBLIC_EXPORT bool IsForceShowContinueSectionEnabled();
@@ -67,11 +54,9 @@ ASH_PUBLIC_EXPORT bool IsLauncherSearchNormalizationEnabled();
 ASH_PUBLIC_EXPORT bool IsDynamicSearchUpdateAnimationEnabled();
 ASH_PUBLIC_EXPORT base::TimeDelta DynamicSearchUpdateAnimationDuration();
 ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
-ASH_PUBLIC_EXPORT bool IsDragAndDropRefactorEnabled();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabled();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabledCounterfactually();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabledWithModifiedOrder();
-ASH_PUBLIC_EXPORT bool IsForceShowAppsCollectionsEnabled();
 
 }  // namespace app_list_features
 

@@ -5,7 +5,9 @@
 #ifndef UI_GFX_MOJOM_DISPLAY_COLOR_SPACES_MOJOM_TRAITS_H_
 #define UI_GFX_MOJOM_DISPLAY_COLOR_SPACES_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
+#include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
@@ -29,7 +31,7 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
                  gfx::DisplayColorSpaces> {
   static base::span<const gfx::ColorSpace> color_spaces(
       const gfx::DisplayColorSpaces& input);
-  static base::span<const gfx::BufferFormat> buffer_formats(
+  static base::span<const viz::SharedImageFormat> formats(
       const gfx::DisplayColorSpaces& input);
   static SkColorSpacePrimaries primaries(const gfx::DisplayColorSpaces& input) {
     return input.GetPrimaries();

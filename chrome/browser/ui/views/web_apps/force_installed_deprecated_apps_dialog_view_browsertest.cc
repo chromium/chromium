@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/feature_list.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/web_apps/force_installed_preinstalled_deprecated_app_dialog_view.h"
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
@@ -84,7 +86,7 @@ class ForceInstalledDeprecatedAppsDialogViewBrowserTest
   base::test::ScopedFeatureList feature_list_;
   extensions::TestManagementPolicyProvider policy_provider_{
       extensions::TestManagementPolicyProvider::MUST_REMAIN_INSTALLED};
-  content::TestWebUI test_web_ui_{};
+  content::TestWebUI test_web_ui_;
 };
 
 IN_PROC_BROWSER_TEST_F(ForceInstalledDeprecatedAppsDialogViewBrowserTest,

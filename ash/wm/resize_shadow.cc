@@ -90,15 +90,9 @@ const gfx::Insets CalculateOutsets(int hit, int thickness) {
 const gfx::ImageSkia& MakeShadowImageOnce(
     const ash::ResizeShadow::InitParams& params,
     const ui::ColorProvider* color_provider) {
-  // Resolve the color with color type. If given a color ID, use color provider
-  // to get the color value.
-  SkColor color;
-  if (absl::holds_alternative<SkColor>(params.color)) {
-    color = absl::get<SkColor>(params.color);
-  } else {
-    CHECK(!!color_provider);
-    color = color_provider->GetColor(absl::get<ui::ColorId>(params.color));
-  }
+  // Resolve the color with color type. Note that color_provider will be NULL
+  // when `params.color` is semantic.
+  const SkColor color = params.color.ResolveToSkColor(color_provider);
 
   // Generate the shadow features key.
   const ShadowFeaturesKey features_key{ShadowImageSize(params),
@@ -132,6 +126,14 @@ const gfx::ImageSkia& MakeShadowImageOnce(
 
 namespace ash {
 
+ResizeShadow::InitParams::InitParams() = default;
+
+ResizeShadow::InitParams::InitParams(const InitParams& other) = default;
+ResizeShadow::InitParams& ResizeShadow::InitParams::operator=(
+    const InitParams& other) = default;
+
+ResizeShadow::InitParams::~InitParams() = default;
+
 ResizeShadow::ResizeShadow(aura::Window* window,
                            const InitParams& params,
                            ResizeShadowType type)
@@ -143,9 +145,10 @@ ResizeShadow::ResizeShadow(aura::Window* window,
   layer_->SetFillsBoundsOpaquely(false);
   layer_->SetOpacity(0.f);
   layer_->SetVisible(false);
+
   // If use static color, create the shadow image. Otherwise, observe the color
   // provider source to update the shadow color.
-  if (absl::holds_alternative<SkColor>(params.color)) {
+  if (params_.color.IsPhysical()) {
     UpdateShadowLayer();
   } else {
     Observe(RootWindowController::ForWindow(window)->color_provider_source());
@@ -169,14 +172,13 @@ ResizeShadow::~ResizeShadow() = default;
 void ResizeShadow::OnColorProviderChanged() {
   // This function will also be called when the color provider source is
   // destroyed. We should guarantee the color provider exists.
-  if (absl::holds_alternative<ui::ColorId>(params_.color) &&
-      GetColorProviderSource()) {
+  if (params_.color.IsSemantic() && GetColorProviderSource()) {
     UpdateShadowLayer();
   }
 }
 
 void ResizeShadow::OnWindowParentToRootWindow() {
-  if (absl::holds_alternative<ui::ColorId>(params_.color)) {
+  if (params_.color.IsSemantic()) {
     Observe(RootWindowController::ForWindow(window_)->color_provider_source());
   }
 }

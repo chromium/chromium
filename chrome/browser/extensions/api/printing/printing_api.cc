@@ -131,4 +131,19 @@ void PrintingGetPrinterInfoFunction::OnPrinterInfoRetrieved(
   Respond(WithArguments(response.ToValue()));
 }
 
+PrintingGetJobStatusFunction::~PrintingGetJobStatusFunction() = default;
+
+ExtensionFunction::ResponseAction PrintingGetJobStatusFunction::Run() {
+  std::optional<api::printing::GetJobStatus::Params> params(
+      api::printing::GetJobStatus::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  base::expected<api::printing::JobStatus, std::string> result =
+      PrintingAPIHandler::Get(browser_context())
+          ->GetJobStatus(extension_id(), params->job_id);
+  if (result.has_value()) {
+    return RespondNow(WithArguments(ToString(result.value())));
+  }
+  return RespondNow(Error(result.error()));
+}
+
 }  // namespace extensions

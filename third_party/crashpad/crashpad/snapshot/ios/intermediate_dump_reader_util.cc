@@ -14,6 +14,7 @@
 
 #include "snapshot/ios/intermediate_dump_reader_util.h"
 
+#include "base/logging.h"
 #include "util/ios/ios_intermediate_dump_data.h"
 #include "util/ios/ios_intermediate_dump_map.h"
 #include "util/misc/metrics.h"

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -18,9 +19,18 @@ const base::FilePath::CharType WebDatabase::kInMemoryPath[] =
 
 namespace {
 
-BASE_FEATURE(kSqlWALModeOnWebDatabase,
-             "SqlWALModeOnWebDatabase",
+// Limits the duration of transaction to the scope of their modifications. Avoid
+// keeping pending transactions and pending modifications outside of their
+// scope.
+//
+// TODO(6175955): When this is launched, replace
+// `WebDatabase::AcquireTransaction()` with the typical pattern:
+//     sql::Transaction transaction(db());
+//     if (!transaction.Begin()) {...}
+BASE_FEATURE(kSqlScopedTransactionWebDatabase,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kSqlWALModeOnWebDatabase, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // These values are logged as histogram buckets and most not be changed nor
 // reused.
@@ -42,10 +52,9 @@ void LogInitResult(WebDatabaseInitResult result) {
   base::UmaHistogramEnumeration("WebDatabase.InitResult", result);
 }
 
-// Version 131 drops the 'payment_instrument_type' column of
-// 'generic_payment_instruments', and thus is no longer compatible with version
-// 130.
-const int kCompatibleVersionNumber = 131;
+// Version 147 migrates entities metadata fields into a new table. It is thus is
+// no longer compatible with version 139.
+constexpr int kCompatibleVersionNumber = 147;
 
 // Change the version number and possibly the compatibility version of
 // |meta_table_|.
@@ -73,31 +82,59 @@ sql::InitStatus FailedMigrationTo(int version_num) {
 }  // namespace
 
 WebDatabase::WebDatabase()
-    : db_({.wal_mode = base::FeatureList::IsEnabled(kSqlWALModeOnWebDatabase),
-           // We don't store that much data in the tables so use a small page
-           // size. This provides a large benefit for empty tables (which is
-           // very likely with the tables we create).
-           .page_size = 2048,
-           // We shouldn't have much data and what access we currently have is
-           // quite infrequent. So we go with a small cache size.
-           .cache_size = 32}) {}
+    : db_(sql::DatabaseOptions()
+              .set_wal_mode(
+                  base::FeatureList::IsEnabled(kSqlWALModeOnWebDatabase))
+              // We don't store that much data in the tables so use a small page
+              // size. This provides a large benefit for empty tables (which is
+              // very likely with the tables we create).
+              .set_page_size(2048)
+              // We shouldn't have much data and what access we currently have
+              // is quite infrequent. So we go with a small cache size.
+              .set_cache_size(32),
+          /*tag=*/"Web"),
+      use_scoped_transaction_(
+          base::FeatureList::IsEnabled(kSqlScopedTransactionWebDatabase)) {}
 
-WebDatabase::~WebDatabase() = default;
+WebDatabase::~WebDatabase() {
+  for (auto& [key, table] : tables_) {
+    table->Shutdown();
+  }
+}
 
 void WebDatabase::AddTable(WebDatabaseTable* table) {
   tables_[table->GetTypeKey()] = table;
 }
 
 WebDatabaseTable* WebDatabase::GetTable(WebDatabaseTable::TypeKey key) {
-  return tables_[key];
+  WebDatabaseTable* table = tables_[key];
+  CHECK(table);
+  return table;
 }
 
 void WebDatabase::BeginTransaction() {
-  db_.BeginTransactionDeprecated();
+  if (!use_scoped_transaction_) {
+    db_.BeginTransactionDeprecated();
+  }
 }
 
 void WebDatabase::CommitTransaction() {
-  db_.CommitTransactionDeprecated();
+  if (!use_scoped_transaction_) {
+    db_.CommitTransactionDeprecated();
+  }
+}
+
+std::unique_ptr<sql::Transaction> WebDatabase::AcquireTransaction() {
+  if (use_scoped_transaction_) {
+    // Only one active transaction at the time is allowed.
+    DCHECK(!db_.HasActiveTransactions());
+    auto transaction = std::make_unique<sql::Transaction>(&db_);
+    if (transaction->Begin()) {
+      return transaction;
+    }
+  }
+
+  return nullptr;
 }
 
 std::string WebDatabase::GetDiagnosticInfo(int extended_error,
@@ -109,14 +146,20 @@ sql::Database* WebDatabase::GetSQLConnection() {
   return &db_;
 }
 
-sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
-  db_.set_histogram_tag("Web");
+sql::InitStatus WebDatabase::Init(const base::FilePath& db_name,
+                                  const os_crypt_async::Encryptor* encryptor) {
+  // Only unit tests whose tables don't use any crypto for their tables pass in
+  // a null encryptor.
+  if (!encryptor) {
+    CHECK_IS_TEST();
+  }
 
   if ((db_name.value() == kInMemoryPath) ? !db_.OpenInMemory()
                                          : !db_.Open(db_name)) {
     LogInitResult(WebDatabaseInitResult::kCouldNotOpen);
     return sql::INIT_FAILURE;
   }
+  DCHECK(db_.is_open());
 
   // Dummy transaction to check whether the database is writeable and bail
   // early if that's not the case.
@@ -157,7 +200,7 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
 
   // Initialize the tables.
   for (const auto& table : tables_) {
-    table.second->Init(&db_, &meta_table_);
+    table.second->Init(&db_, &meta_table_, encryptor);
   }
 
   // If the file on disk is an older database version, bring it up to date.
@@ -185,7 +228,9 @@ sql::InitStatus WebDatabase::Init(const base::FilePath& db_name) {
     LogInitResult(WebDatabaseInitResult::kFailedToCommitInitTransaction);
     return sql::INIT_FAILURE;
   }
+
   LogInitResult(WebDatabaseInitResult::kSuccess);
+  DCHECK(db_.is_open());
   return sql::INIT_OK;
 }
 

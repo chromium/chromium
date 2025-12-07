@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_SUBFRAME_HISTORY_NAVIGATION_THROTTLE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_SUBFRAME_HISTORY_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
@@ -19,7 +17,7 @@ namespace content {
 class SubframeHistoryNavigationThrottle final : public NavigationThrottle {
  public:
   explicit SubframeHistoryNavigationThrottle(
-      NavigationHandle* navigation_handle);
+      NavigationThrottleRegistry& registry);
   SubframeHistoryNavigationThrottle(const SubframeHistoryNavigationThrottle&) =
       delete;
   SubframeHistoryNavigationThrottle& operator=(
@@ -34,10 +32,19 @@ class SubframeHistoryNavigationThrottle final : public NavigationThrottle {
 
   void Cancel();
 
-  static std::unique_ptr<NavigationThrottle> MaybeCreateThrottleFor(
-      NavigationHandle* navigation_handle);
+  static void MaybeCreateAndAdd(NavigationThrottleRegistry& registry);
 
  private:
+  enum class State {
+    // The initial state.
+    kRunning,
+    // This throttle returned DEFER and hasn't call Resume yet.
+    kDeferred,
+    // This throttle received Resume signal, and should not DEFER anymore.
+    kRunningAfterResumeSignal,
+  };
+  State state_= State::kRunning;
+
   base::WeakPtrFactory<SubframeHistoryNavigationThrottle> weak_factory_{this};
 };
 

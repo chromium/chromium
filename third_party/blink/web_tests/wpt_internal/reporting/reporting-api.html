@@ -40,7 +40,10 @@ class MockReportingServiceProxy {
   }
 
   queueCspViolationReport() {}
+  queueIntegrityViolationReport() {}
+  queueCSPHashReport(url, endpoint, subresourceUrl, integrityHash, type) {}
   queuePermissionsPolicyViolationReport() {}
+  queuePotentialPermissionsPolicyViolationReport() {}
   queueDocumentPolicyViolationReport() {}
 }
 

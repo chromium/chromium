@@ -86,7 +86,8 @@ public class MockNavigationController implements NavigationController {
     }
 
     @Override
-    public void setUseDesktopUserAgent(boolean override, boolean reloadOnChange, int caller) {}
+    public void setUseDesktopUserAgent(
+            boolean override, boolean reloadOnChange, boolean skipOnInitialNavigation) {}
 
     @Override
     public NavigationEntry getEntryAtIndex(int index) {
@@ -117,6 +118,11 @@ public class MockNavigationController implements NavigationController {
     }
 
     @Override
+    public boolean canViewSource() {
+        return false;
+    }
+
+    @Override
     public boolean removeEntryAtIndex(int index) {
         return false;
     }
@@ -131,4 +137,7 @@ public class MockNavigationController implements NavigationController {
 
     @Override
     public void setEntryExtraData(int index, String key, String value) {}
+
+    @Override
+    public void copyStateFrom(NavigationController sourceNavigationController) {}
 }

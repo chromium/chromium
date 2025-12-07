@@ -94,7 +94,7 @@ component("public") {
   deps = [
     "//components/download/database",
     "//components/download/internal/common:internal",
-    "//components/services/quarantine:quarantine",
+    "//components/services/quarantine",
     "//crypto",
     "//mojo/public/c/system",
     "//net",
@@ -119,12 +119,11 @@ component("public") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_win || is_mac) {
     sources += [
-      "download_item_utils.cc",
-      "download_item_utils.h",
+      "desktop/desktop_auto_resumption_handler.cc",
+      "desktop/desktop_auto_resumption_handler.h",
     ]
-    deps += [ "//chromeos/crosapi/mojom" ]
   }
 }
 
@@ -140,6 +139,7 @@ if (is_android) {
 
   java_cpp_enum("jni_enums") {
     sources = [
+      "download_danger_type.h",
       "download_item.h",
       "resume_mode.h",
     ]
@@ -175,14 +175,10 @@ source_set("test_support") {
     "//base",
     "//components/download/database",
     "//net",
-    "//services/service_manager/public/cpp:cpp",
+    "//services/service_manager/public/cpp",
     "//testing/gmock",
     "//url",
   ]
-
-  if (is_android) {
-    deps = [ "//components/download/internal/common:internal_java" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -192,6 +188,10 @@ source_set("unit_tests") {
 
   if (is_android) {
     sources += [ "android/auto_resumption_handler_unittest.cc" ]
+  }
+
+  if (is_win || is_mac) {
+    sources += [ "desktop/desktop_auto_resumption_handler_unittest.cc" ]
   }
 
   deps = [

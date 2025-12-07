@@ -1,0 +1,212 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("authentication_flow") {
+  sources = [
+    "authentication_flow.h",
+    "authentication_flow.mm",
+  ]
+  deps = [
+    ":internal",
+    ":request_helper",
+    "//base",
+    "//components/bookmarks/common",
+    "//components/policy/core/browser",
+    "//components/prefs",
+    "//components/signin/core/browser",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager:tribool",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//google_apis",
+    "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/flags",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
+    "//ui/base",
+  ]
+  public_deps = [ "//ios/chrome/browser/signin/model:constants" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("internal") {
+  sources = [
+    "authentication_flow_in_profile.h",
+    "authentication_flow_in_profile.mm",
+    "authentication_flow_in_profile_performer.h",
+    "authentication_flow_in_profile_performer.mm",
+    "authentication_flow_in_profile_performer_delegate.h",
+    "authentication_flow_performer.h",
+    "authentication_flow_performer.mm",
+    "authentication_flow_performer_base+protected.h",
+    "authentication_flow_performer_base.h",
+    "authentication_flow_performer_base.mm",
+    "authentication_flow_performer_base_delegate.h",
+    "authentication_flow_performer_delegate.h",
+  ]
+  deps = [
+    ":request_helper",
+    "//base",
+    "//components/bookmarks/common",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/signin/core/browser",
+    "//components/signin/public/base",
+    "//components/signin/public/base:signin_switches",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:tribool",
+    "//components/strings",
+    "//components/sync/base",
+    "//components/sync/service",
+    "//google_apis",
+    "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/app/application_delegate:app_state",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/history_sync/coordinator",
+    "//ios/chrome/browser/authentication/history_sync/model:capabilities_fetcher",
+    "//ios/chrome/browser/authentication/history_sync/model:history_sync_utils",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:authentication_constants",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/enterprise/managed_profile_creation",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/bubble/model",
+    "//ios/chrome/browser/flags",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/ui_bundled:management_util",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/identity_snackbar:utils",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:capabilities_types",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ios/public/provider/chrome/browser/signin:signin_error_api",
+    "//ios/web/public",
+    "//services/network/public/cpp",
+    "//ui/base",
+  ]
+  public_deps = [ "//ios/chrome/browser/signin/model:constants" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("request_helper") {
+  sources = [ "authentication_flow_delegate.h" ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/signin/model:constants",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "authentication_flow_in_profile_performer_unittest.mm",
+    "authentication_flow_in_profile_unittest.mm",
+    "authentication_flow_unittest.mm",
+  ]
+  deps = [
+    ":authentication_flow",
+    ":internal",
+    ":request_helper",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/policy/core/common:common_constants",
+    "//components/policy/core/common:test_support",
+    "//components/pref_registry",
+    "//components/sync:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/test/ios",
+    "//ios/chrome/app:change_profile_commands",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
+    "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
+    "//ios/chrome/browser/policy/model:constants",
+    "//ios/chrome/browser/policy/model:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:browser_prefs",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/test:test_support",
+    "//ios/testing:protocol_fake",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "test_authentication_flow_delegate.h",
+    "test_authentication_flow_delegate.mm",
+  ]
+  deps = [
+    ":authentication_flow",
+    ":request_helper",
+    "//base",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
+    "//ios/chrome/browser/signin/model:constants",
+  ]
+}

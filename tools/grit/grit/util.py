@@ -16,6 +16,7 @@ import tempfile
 
 from xml.sax import saxutils
 
+from grit import constants
 from grit import lazy_re
 
 _root_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -557,7 +558,8 @@ class Substituter:
       messages: a list of node.Message objects.
       lang: The translation language to use in substitutions.
     '''
-    subs = [(str(msg.attrs['name']), msg.Translate(lang)) for msg in messages]
+    subs = [(str(msg.attrs['name']),
+             msg.Translate(lang, constants.DEFAULT_GENDER)) for msg in messages]
     self.AddSubstitutions(dict(subs))
     self.dirty_ = True
 

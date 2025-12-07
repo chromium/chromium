@@ -11,6 +11,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -109,14 +110,41 @@ TEST_F(AsyncLogTest, WriteMultipleLines) {
   EXPECT_EQ(lines, GetLogLines(log.GetContents()));
 }
 
-// TODO(crbug.com/40918364): reenable this.
-TEST_F(AsyncLogTest, DISABLED_NoUseAfterFreeCrash) {
+// This case is to test against a UAF security issue,
+// https://crbug.com/286210532. If it has to be disabled, for example for
+// flakiness reasons, please be sure to leave a comment in
+// https://crbug.com/286210532 to alert the test owners.
+//
+// More on the UAF, before CL https://crrev.com/c/4583920, AsyncLog::Append()
+// would post a task that binds the WeakPtr to an AsyncLog object and its
+// AsyncLog::AppendImpl() member function to call. In certain situations, as is
+// documented in https://crbug.com/286210532, the task would have started
+// running, while the AsyncLog object is destroyed mid-execution. This would
+// lead to UAF as operations to access member variables of AsyncLog used to be
+// performed inside AsyncLog::AppendImpl(), before CL
+// https://crrev.com/c/4583920 was landed.
+//
+// CL https://crrev.com/c/4583920 fixed this issue by changing AppendImpl() and
+// CreateFile() to free functions in an anonymous namespace, which prevented
+// access to member variables from an async task.
+//
+// This test was once disabled by chromium gardeners due to flakiness caused by
+// a minor flaw. It used to be that all 10 AsyncLog objects inside the for loop
+// was trying to write to the same file path asynchronously all at once. A
+// DCHECK() failure would quickly emerge inside AsyncLog::CreateFile(), as
+// AsyncLog was designed in a way that a unique file path was supposed to be
+// handled by a unique AsyncLog object. Multiple AsyncLog objects handling the
+// same file path was not expected. A follow-up CL fixed this flakiness,
+// https://crrev.com/c/6550156.
+TEST_F(AsyncLogTest, NoUseAfterFreeCrash) {
   const std::string new_line = "Line\n";
 
   // Simulate race conditions between the destruction of AsyncLog and the
   // execution of AppendImpl.
   for (size_t i = 0; i < 10; ++i) {
-    auto log = std::make_unique<AsyncLog>(log_path_);
+    auto unique_file_path = temp_dir_.GetPath().AppendASCII(
+        std::string(kLogFileName) + "_" + base::NumberToString(i));
+    auto log = std::make_unique<AsyncLog>(unique_file_path);
     log->Append(new_line);
   }
 

@@ -15,12 +15,14 @@ namespace content {
 class Prerenderer {
  public:
   using PrerenderCancellationCallback =
-      base::RepeatingCallback<void(const GURL&)>;
+      base::RepeatingCallback<void(const GURL&,
+                                   blink::mojom::SpeculationAction action)>;
 
   virtual ~Prerenderer() = default;
 
   virtual void ProcessCandidatesForPrerender(
-      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) = 0;
+      const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates,
+      bool enable_cross_origin_prerender_iframes = false) = 0;
 
   // Called when LCP is predicted.
   // This is used to defer starting prerenders until LCP timing and is only

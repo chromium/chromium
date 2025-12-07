@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_suggest/file_suggest_keyed_service.h"
@@ -30,7 +31,9 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "components/drive/file_errors.h"
 #include "components/sync_preferences/pref_service_syncable.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -190,8 +193,8 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
                                     BuildTestDriveIntegrationService,
                                 base::Unretained(this))}});
 
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(), "12345");
+    AccountId account_id = AccountId::FromUserEmailGaiaId(
+        profile_->GetProfileUserName(), GaiaId("12345"));
     fake_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
         account_id, /*is_affiliated=*/false, user_manager::UserType::kRegular,
         profile_.get());
@@ -222,6 +225,7 @@ class DriveRecentFileSuggestionProviderTest : public ::testing::Test {
     fake_drivefs_helper_ = std::make_unique<drive::FakeDriveFsHelper>(
         Profile::FromBrowserContext(context), mount_point_path);
     auto service = std::make_unique<drive::DriveIntegrationService>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
         Profile::FromBrowserContext(context), mount_point_name,
         base::FilePath(),
         fake_drivefs_helper_->CreateFakeDriveFsListenerFactory());

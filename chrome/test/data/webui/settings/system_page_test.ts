@@ -10,6 +10,7 @@ import {SystemPageBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {LifetimeBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestLifetimeBrowserProxy} from './test_lifetime_browser_proxy.js';
 
@@ -78,13 +79,16 @@ suite('settings system page', function() {
         type: chrome.settingsPrivate.PrefType.DICTIONARY,
         value: {mode: 'system'},
       },
+      proxy_override_rules: {
+        key: 'proxy_override_rules',
+        type: chrome.settingsPrivate.PrefType.LIST,
+        value: [],
+      },
       // <if expr="_google_chrome and is_win">
-      feature_notifications: {
-        enabled: {
-          key: 'feature_notifications_enabled',
-          type: chrome.settingsPrivate.PrefType.BOOLEAN,
-          value: true,
-        },
+      feature_notifications_enabled: {
+        key: 'feature_notifications_enabled',
+        type: chrome.settingsPrivate.PrefType.BOOLEAN,
+        value: true,
       },
       // </if>
     });
@@ -115,7 +119,7 @@ suite('settings system page', function() {
     const restart = control.querySelector('cr-button');
     assertTrue(!!restart);  // The "RESTART" button should be showing now.
 
-    restart!.click();
+    restart.click();
     return lifetimeBrowserProxy.whenCalled('restart');
   });
 
@@ -129,7 +133,7 @@ suite('settings system page', function() {
     const showProxyButton = control.querySelector('cr-icon-button')!;
     assertTrue(control.hasAttribute('actionable'));
     assertEquals(null, control.querySelector('cr-policy-pref-indicator'));
-    assertFalse(showProxyButton.hidden);
+    assertTrue(isVisible(showProxyButton));
 
     systemPage.set('prefs.proxy', {
       key: 'proxy',
@@ -145,7 +149,7 @@ suite('settings system page', function() {
     // settings.
     assertFalse(control.hasAttribute('actionable'));
     assertEquals(null, control.querySelector('cr-policy-pref-indicator'));
-    assertTrue(showProxyButton.hidden);
+    assertFalse(isVisible(showProxyButton));
 
     systemPage.set('prefs.proxy', {
       key: 'proxy',
@@ -160,7 +164,49 @@ suite('settings system page', function() {
     // settings.
     assertFalse(control.hasAttribute('actionable'));
     assertNotEquals(null, control.querySelector('cr-policy-pref-indicator'));
-    assertTrue(showProxyButton.hidden);
+    assertFalse(isVisible(showProxyButton));
+  });
+
+  test('proxy row multiple sources', function() {
+    const control = systemPage.$.proxyMultipleSources;
+    const deviceSettings =
+        control.querySelector<HTMLElement>('#proxyDeviceSettings')!;
+    assertTrue(deviceSettings.hasAttribute('actionable'));
+    assertFalse(isVisible(control));
+
+    const multipleSourcesLabel = systemPage.$.proxy.querySelector<HTMLElement>(
+        '#proxyMultipleSourcesLabel')!;
+    assertFalse(isVisible(multipleSourcesLabel));
+
+    systemPage.set('prefs.proxy_override_rules', {
+      key: 'proxy_override_rules',
+      type: chrome.settingsPrivate.PrefType.LIST,
+      value: [{
+        'DestinationMatchers': ['https://app1.com', 'https://app2.com'],
+        'ProxyList': ['HTTPS proxy.app:443'],
+      }],
+      controlledBy: chrome.settingsPrivate.ControlledBy.USER_POLICY,
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    flush();
+
+    assertTrue(deviceSettings.hasAttribute('actionable'));
+    assertTrue(isVisible(control));
+    assertTrue(isVisible(multipleSourcesLabel));
+
+    systemPage.set('prefs.proxy', {
+      key: 'proxy',
+      type: chrome.settingsPrivate.PrefType.DICTIONARY,
+      value: {mode: 'system'},
+      controlledBy: chrome.settingsPrivate.ControlledBy.EXTENSION,
+      extensionId: 'blah',
+      enforcement: chrome.settingsPrivate.Enforcement.ENFORCED,
+    });
+    flush();
+
+    assertFalse(deviceSettings.hasAttribute('actionable'));
+    assertTrue(isVisible(control));
+    assertTrue(isVisible(multipleSourcesLabel));
   });
 
   // <if expr="_google_chrome and is_win">
@@ -175,6 +221,8 @@ suite('settings system page', function() {
     const toggle = systemPage.shadowRoot!.querySelector<HTMLElement>(
         '#featureNotificationsEnabled');
     assertTrue(!!toggle);
+    assertNotEquals(
+        undefined, systemPage.get('prefs.feature_notifications_enabled'));
     assertTrue(getPrefValue());
 
     toggle.click();

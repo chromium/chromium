@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/features.h"
 #include "base/json/json_reader.h"
 #include "base/value_iterators.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
@@ -32,9 +33,22 @@ namespace {
 constexpr char kTestApp[] = "https://test.test/";
 
 class ManagementUIPWATest : public web_app::WebAppBrowserTestBase {
+ public:
+  ManagementUIPWATest() {
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDesktopPWAsRunOnOsLogin,
+         // This has the side effect of delaying the first refresh after
+         // starting the test, since it's posted with a BEST_EFFORT task.
+         // Because it's user-visible, chrome://management should show installed
+         // apps immediately despite this delay.
+         // TODO(crbug.com/449979128): Remove this once we're sure there are no
+         // BEST_EFFORT tasks in the setup path.
+         base::features::kScopedBestEffortExecutionFenceForTaskQueue},
+        {});
+  }
+
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kDesktopPWAsRunOnOsLogin};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManagementUIPWATest, RunOnOsLoginApplicationsReported) {
@@ -63,7 +77,8 @@ IN_PROC_BROWSER_TEST_F(ManagementUIPWATest, RunOnOsLoginApplicationsReported) {
   std::string actual_json =
       content::EvalJs(contents, javascript).ExtractString();
 
-  std::optional<base::Value> actual_value = base::JSONReader::Read(actual_json);
+  std::optional<base::Value> actual_value =
+      base::JSONReader::Read(actual_json, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ASSERT_TRUE(actual_value.has_value());
 

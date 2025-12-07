@@ -7,11 +7,12 @@
  * setting elements with deep links.
  */
 
-import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {getSettingIdParameter} from './setting_id_param_util.js';
-import {Constructor} from './types.js';
-import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Constructor} from './types.js';
 
 const DEEP_LINK_FOCUS_ID = 'deep-link-focus-id';
 
@@ -44,15 +45,6 @@ export const DeepLinkingMixin = dedupingMixin(
               type: Object,
               value: Setting,
             },
-
-            /**
-             * Set of setting IDs that could be deep linked to. Initialized as
-             * an empty set, should be overridden with applicable setting IDs.
-             */
-            supportedSettingIds: {
-              type: Object,
-              value: () => new Set<Setting>(),
-            },
           };
         }
 
@@ -60,7 +52,12 @@ export const DeepLinkingMixin = dedupingMixin(
         // the exact value of the Setting enum.
         // eslint-disable-next-line @typescript-eslint/naming-convention
         Setting: Setting;
-        supportedSettingIds: Set<Setting>;
+
+        /**
+         * Set of setting IDs that could be deep linked to. Initialized as an
+         * empty set, should be overridden with applicable setting IDs.
+         */
+        supportedSettingIds = new Set<Setting>();
 
         /**
          * Retrieves the settingId saved in the url's query parameter. Returns

@@ -4,6 +4,8 @@
 
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 
+#include <variant>
+
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
@@ -30,12 +32,12 @@ constexpr base::TimeDelta kPackageSetResetFrequency = base::Days(1);
 
 LaunchAppHelper::NotificationInfo::NotificationInfo(
     Category category,
-    absl::variant<NotificationType, mojom::WebNotificationType> type)
+    std::variant<NotificationType, mojom::WebNotificationType> type)
     : category_(category), type_(type) {
-  DCHECK(nullptr != absl::get_if<NotificationType>(&type)
+  DCHECK(nullptr != std::get_if<NotificationType>(&type)
              ? category == Category::kNative
              : category == Category::kWebUI);
-  DCHECK(nullptr != absl::get_if<mojom::WebNotificationType>(&type)
+  DCHECK(nullptr != std::get_if<mojom::WebNotificationType>(&type)
              ? category == Category::kWebUI
              : category == Category::kNative);
 }

@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/test/profile_prepared_waiter.h"
 
 #include "base/check_op.h"
+#include "base/notimplemented.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 

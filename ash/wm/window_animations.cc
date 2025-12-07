@@ -52,6 +52,8 @@
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/interpolated_transform.h"
 #include "ui/wm/core/coordinate_conversion.h"
+#include "ui/wm/core/shadow_types.h"
+#include "ui/wm/core/window_animations.h"
 #include "ui/wm/core/window_util.h"
 
 namespace ash {
@@ -152,7 +154,7 @@ class CrossFadeObserver : public aura::WindowObserver,
     window_->AddObserver(this);
 
     smoothness_tracker_ =
-        layer_->GetCompositor()->RequestNewThroughputTracker();
+        layer_->GetCompositor()->RequestNewCompositorMetricsTracker();
     smoothness_tracker_->Start(
         metrics_util::ForSmoothnessV3(base::BindRepeating(
             [](const std::optional<std::string>& histogram_name,
@@ -528,7 +530,7 @@ void AnimateShowWindow_Minimize(aura::Window* window) {
   ui::AnimationThroughputReporter reporter(
       settings.GetAnimator(),
       metrics_util::ForSmoothnessV3(
-          base::BindRepeating(static_cast<void (*)(const char*, int)>(
+          base::BindRepeating(static_cast<void (*)(std::string_view, int)>(
                                   &base::UmaHistogramPercentage),
                               "Ash.Window.AnimationSmoothness.Unminimize")));
   base::TimeDelta duration =
@@ -549,7 +551,7 @@ void AnimateHideWindow_Minimize(aura::Window* window) {
   ui::AnimationThroughputReporter reporter(
       hiding_settings.layer_animation_settings()->GetAnimator(),
       metrics_util::ForSmoothnessV3(
-          base::BindRepeating(static_cast<void (*)(const char*, int)>(
+          base::BindRepeating(static_cast<void (*)(std::string_view, int)>(
                                   &base::UmaHistogramPercentage),
                               "Ash.Window.AnimationSmoothness.Minimize")));
 
@@ -624,7 +626,7 @@ void AnimateHideWindow_SlideOut(aura::Window* window) {
 
   gfx::Rect bounds = window->GetBoundsInScreen();
   display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window);
+      display::Screen::Get()->GetDisplayNearestWindow(window);
   gfx::Rect dismissed_bounds =
       PipPositioner::GetDismissedPosition(display, bounds);
   ::wm::ConvertRectFromScreen(window->parent(), &dismissed_bounds);
@@ -666,8 +668,7 @@ bool AnimateShowWindow(aura::Window* window) {
       AnimateShowWindow_StepEnd(window);
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -691,8 +692,7 @@ bool AnimateHideWindow(aura::Window* window) {
       AnimateHideWindow_StepEnd(window);
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -800,7 +800,7 @@ gfx::Rect GetMinimizeAnimationTargetBoundsInScreen(aura::Window* window) {
   // to the location of the application launcher (which is fixed as first item
   // of the shelf).
   gfx::Rect work_area =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(window).work_area();
+      display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
   int ltr_adjusted_x = base::i18n::IsRTL() ? work_area.right() : work_area.x();
   switch (shelf->alignment()) {
     case ShelfAlignment::kBottom:
@@ -811,8 +811,11 @@ gfx::Rect GetMinimizeAnimationTargetBoundsInScreen(aura::Window* window) {
     case ShelfAlignment::kRight:
       return gfx::Rect(work_area.right(), work_area.y(), 0, 0);
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Rect();
+  NOTREACHED();
+}
+
+void BounceWindow(aura::Window* window) {
+  wm::AnimateWindow(window, wm::WINDOW_ANIMATION_TYPE_BOUNCE);
 }
 
 }  // namespace ash

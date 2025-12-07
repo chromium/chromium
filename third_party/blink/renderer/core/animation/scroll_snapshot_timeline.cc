@@ -36,6 +36,11 @@ ScrollSnapshotTimeline::GetResolvedViewOffsets() const {
   return timeline_state_snapshotted_.view_offsets;
 }
 
+std::optional<ScrollOffsets> ScrollSnapshotTimeline::GetResolvedScrollLimits()
+    const {
+  return timeline_state_snapshotted_.scroll_limits;
+}
+
 // TODO(crbug.com/1336260): Since phase can only be kActive or kInactive and
 // currentTime  can only be null if phase is inactive or before the first
 // snapshot we can probably drop phase.
@@ -116,16 +121,17 @@ AnimationTimeDelta ScrollSnapshotTimeline::CalculateIntrinsicIterationDuration(
 
 TimelineRange ScrollSnapshotTimeline::GetTimelineRange() const {
   std::optional<ScrollOffsets> scroll_offsets = GetResolvedScrollOffsets();
+  std::optional<ScrollOffsets> scroll_limits = GetResolvedScrollLimits();
 
-  if (!scroll_offsets.has_value()) {
+  if (!scroll_offsets.has_value() || !scroll_limits.has_value()) {
     return TimelineRange();
   }
 
   std::optional<ViewOffsets> view_offsets = GetResolvedViewOffsets();
 
-  return TimelineRange(scroll_offsets.value(), view_offsets.has_value()
-                                                   ? view_offsets.value()
-                                                   : ViewOffsets());
+  return TimelineRange(
+      scroll_limits.value(), scroll_offsets.value(),
+      view_offsets.has_value() ? view_offsets.value() : ViewOffsets());
 }
 
 void ScrollSnapshotTimeline::ServiceAnimations(TimingUpdateReason reason) {
@@ -153,45 +159,13 @@ bool ScrollSnapshotTimeline::ShouldScheduleNextService() {
 
 void ScrollSnapshotTimeline::ScheduleNextService() {
   // See DocumentAnimations::UpdateAnimations() for why we shouldn't reach here.
-  NOTREACHED_IN_MIGRATION();
-}
-
-void ScrollSnapshotTimeline::UpdateSnapshot() {
-  auto state = ComputeTimelineState();
-  bool layout_changed = !state.HasConsistentLayout(timeline_state_snapshotted_);
-  timeline_state_snapshotted_ = state;
-
-  if (layout_changed) {
-    // Force recalculation of an auto-aligned start time, and invalidate
-    // normalized timing.
-    for (Animation* animation : GetAnimations()) {
-      // Avoid setting a deferred start time during the update snapshot phase.
-      // Instead wait for the validation phase post layout.
-      if (!animation->CurrentTimeInternal()) {
-        continue;
-      }
-      animation->OnValidateSnapshot(layout_changed);
-    }
-  }
-  ResolveTimelineOffsets();
+  NOTREACHED();
 }
 
 LayoutBox* ScrollSnapshotTimeline::ComputeScrollContainer(
     Node* resolved_source) {
-  if (!resolved_source) {
-    return nullptr;
-  }
-
-  LayoutBox* layout_box = resolved_source->GetLayoutBox();
-  if (!layout_box) {
-    return nullptr;
-  }
-
-  if (auto* field_set = DynamicTo<LayoutFieldset>(layout_box)) {
-    layout_box = field_set->FindAnonymousFieldsetContentBox();
-  }
-
-  return layout_box->IsScrollContainer() ? layout_box : nullptr;
+  auto* container_node = DynamicTo<ContainerNode>(resolved_source);
+  return container_node ? container_node->GetLayoutBoxForScrolling() : nullptr;
 }
 
 void ScrollSnapshotTimeline::Trace(Visitor* visitor) const {
@@ -206,24 +180,37 @@ void ScrollSnapshotTimeline::InvalidateEffectTargetStyle() const {
   }
 }
 
-bool ScrollSnapshotTimeline::ValidateSnapshot() {
+bool ScrollSnapshotTimeline::UpdateSnapshot() {
+  return UpdateSnapshotInternal(/*service_animations=*/false);
+}
+
+void ScrollSnapshotTimeline::UpdateSnapshotForServiceAnimations() {
+  UpdateSnapshotInternal(/*service_animations=*/true);
+}
+
+bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
   TimelineState new_state = ComputeTimelineState();
-  bool is_valid = timeline_state_snapshotted_ == new_state;
-  bool state_changed =
+  bool snapshot_changed = timeline_state_snapshotted_ != new_state;
+  bool layout_changed =
       !timeline_state_snapshotted_.HasConsistentLayout(new_state);
   // Note that `timeline_state_snapshotted_` must be updated before
   // ResolveTimelineOffsets is called.
   timeline_state_snapshotted_ = new_state;
-  if (state_changed) {
-    ResolveTimelineOffsets();
-  }
+  ResolveTimelineOffsets();
 
   for (Animation* animation : GetAnimations()) {
+    // Avoid setting a deferred start time during the update snapshot phase.
+    // Instead wait for the validation phase post layout.
+    // Skipping OnValidateSnapshot here is necessary for not firing too many
+    // animation events. See: https://crbug.com/40925697
+    if (service_animations && !animation->CurrentTimeInternal()) {
+      continue;
+    }
     // Compute deferred start times and update animation timing if required.
-    is_valid &= animation->OnValidateSnapshot(state_changed);
+    snapshot_changed |= !animation->OnValidateSnapshot(layout_changed);
   }
 
-  return is_valid;
+  return snapshot_changed;
 }
 
 cc::AnimationTimeline* ScrollSnapshotTimeline::EnsureCompositorTimeline() {
@@ -244,6 +231,18 @@ void ScrollSnapshotTimeline::UpdateCompositorTimeline() {
       ->UpdateScrollerIdAndScrollOffsets(
           scroll_timeline_util::GetCompositorScrollElementId(ResolvedSource()),
           GetResolvedScrollOffsets());
+}
+
+void ScrollSnapshotTimeline::CalculateScrollLimits(
+    PaintLayerScrollableArea* scrollable_area,
+    ScrollOrientation physical_orientation,
+    TimelineState* state) const {
+  ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
+                                   scrollable_area->MinimumScrollOffset();
+  double end_offset = physical_orientation == kHorizontalScroll
+                          ? scroll_dimensions.x()
+                          : scroll_dimensions.y();
+  state->scroll_limits = std::make_optional<ScrollOffsets>(0, end_offset);
 }
 
 }  // namespace blink

@@ -12,7 +12,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
-#include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/product_group.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 
@@ -51,6 +50,8 @@ class ProductSpecificationsPageActionController
   void OnIconClicked();
   bool IsInRecommendedSet();
   std::u16string GetProductSpecificationsLabel(bool is_added);
+  std::u16string GetComparisonSetName();
+  GURL GetComparisonTableURL();
 
  private:
   void HandleProductInfoResponse(const GURL& url,
@@ -68,6 +69,9 @@ class ProductSpecificationsPageActionController
 
   // The product group that current page can be added to if available.
   std::optional<ProductGroup> product_group_for_page_;
+
+  // The UUID of the comparison table the page was most recently added to.
+  std::optional<base::Uuid> most_recent_comparison_table_uuid_for_page_;
 
   // A bool to indicate whether the product has been added to the recommended
   // product specifications set. Please note that this will be false for pages

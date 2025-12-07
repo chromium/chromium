@@ -30,6 +30,10 @@ std::string GetStateSuffix(StateSuffix suffix) {
       return "_SingleProfile";
     case StateSuffix::kUponDeletion:
       return "_UponDeletion";
+    case StateSuffix::kManagementDisclaimerAccepted:
+      return "_ManagementDisclaimerAccepted";
+    case StateSuffix::kManagementDisclaimerNotAccepted:
+      return "_ManagementDisclaimerNotAccepted";
   }
 }
 

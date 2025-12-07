@@ -39,7 +39,7 @@ base::UnsafeSharedMemoryRegion ChromeBaseSharedMemory::CloneRegion() {
   return region_.Duplicate();
 }
 
-void* ChromeBaseSharedMemory::start() const {
+const void* ChromeBaseSharedMemory::start() const {
   return mapping_.memory();
 }
 

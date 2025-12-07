@@ -13,23 +13,25 @@ import './settings_fast_pair_toggle.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {BluetoothUiSurface, recordBluetoothUiSurfaceMetrics} from 'chrome://resources/ash/common/bluetooth/bluetooth_metrics_utils.js';
-import {getBluetoothConfig} from 'chrome://resources/ash/common/bluetooth/cros_bluetooth_config.js';
 import {getHidPreservingController} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.js';
 import {HidWarningDialogSource} from 'chrome://resources/ash/common/bluetooth/hid_preserving_bluetooth_state_controller.mojom-webui.js';
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothSystemProperties, PairedBluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {BluetoothSystemState, DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './os_bluetooth_devices_subpage.html.js';
-import {OsBluetoothDevicesSubpageBrowserProxy, OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
+import type {OsBluetoothDevicesSubpageBrowserProxy} from './os_bluetooth_devices_subpage_browser_proxy.js';
+import {OsBluetoothDevicesSubpageBrowserProxyImpl} from './os_bluetooth_devices_subpage_browser_proxy.js';
 
 const SettingsBluetoothDevicesSubpageElementBase = DeepLinkingMixin(PrefsMixin(
     RouteObserverMixin(WebUiListenerMixin(I18nMixin(PolymerElement)))));
@@ -49,15 +51,6 @@ export class SettingsBluetoothDevicesSubpageElement extends
       systemProperties: {
         type: Object,
         observer: 'onSystemPropertiesChanged_',
-      },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () =>
-            new Set<Setting>([Setting.kBluetoothOnOff, Setting.kFastPairOnOff]),
       },
 
       /**
@@ -95,47 +88,14 @@ export class SettingsBluetoothDevicesSubpageElement extends
         value: [],
       },
 
-      isBluetoothDisconnectWarningEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('bluetoothDisconnectWarningFlag');
-        },
-        readOnly: true,
-      },
-
-      isFastPairSoftwareScanningSupportEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean(
-              'isFastPairSoftwareScanningSupportEnabled');
-        },
-      },
-
-      // Consistent with enum `SoftwareScanningStatus` in
-      // scanning_enabled_provider.h.
-      menuOptions_: {
-        type: Array,
-        readOnly: true,
-        value() {
-          return [
-            {name: 'Never', value: 0},
-            {name: 'Only when charging', value: 2},
-          ];
-        },
-      },
-
-      isBatterySaverActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isHardwareOffloadingSupported_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kBluetoothOnOff,
+    Setting.kFastPairOnOff,
+  ]);
 
   systemProperties: BluetoothSystemProperties;
   private browserProxy_: OsBluetoothDevicesSubpageBrowserProxy;
@@ -143,13 +103,8 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private isBluetoothToggleOn_: boolean;
   private isFastPairSupportedByDevice_: boolean;
   private lastSelectedDeviceId_: string|null;
-  private readonly menuOptions_: string[];
   private savedDevicesSublabel_: string;
   private unconnectedDevices_: PairedBluetoothDeviceProperties[];
-  private isBluetoothDisconnectWarningEnabled_: boolean;
-  private readonly isFastPairSoftwareScanningSupportEnabled_: boolean;
-  private isBatterySaverActive_: boolean;
-  private isHardwareOffloadingSupported_: boolean;
 
   constructor() {
     super();
@@ -172,24 +127,6 @@ export class SettingsBluetoothDevicesSubpageElement extends
             this.isFastPairSupportedByDevice_ = isSupported;
           });
       this.browserProxy_.requestFastPairDeviceSupport();
-    }
-
-    if (loadTimeData.getBoolean('isFastPairSoftwareScanningSupportEnabled')) {
-      // Listen for changes in Battery Saver status.
-      this.addWebUiListener(
-          'fast-pair-software-scanning-battery-saver-status',
-          (isBatterySaverActive: boolean) => {
-            this.isBatterySaverActive_ = isBatterySaverActive;
-          });
-      this.browserProxy_.requestBatterySaverStatus();
-
-      // Listen for changes in Hardware Offloading Support status.
-      this.addWebUiListener(
-          'fast-pair-software-scanning-hardware-offloading-status',
-          (isHardwareOffloadingSupported: boolean) => {
-            this.isHardwareOffloadingSupported_ = isHardwareOffloadingSupported;
-          });
-      this.browserProxy_.requestHardwareOffloadingSupportStatus();
     }
   }
 
@@ -329,15 +266,11 @@ export class SettingsBluetoothDevicesSubpageElement extends
     }
 
     const enabled = event.detail;
-    if (this.isBluetoothDisconnectWarningEnabled_) {
       // Reset Bluetooth toggle state to previous state. Toggle should only be
       // updated when System properties changes.
       this.isBluetoothToggleOn_ = !enabled;
       getHidPreservingController().tryToSetBluetoothEnabledState(
           enabled, HidWarningDialogSource.kOsSettings);
-    } else {
-      getBluetoothConfig().setBluetoothEnabledState(enabled);
-    }
   }
 
   /**

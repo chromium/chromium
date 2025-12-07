@@ -60,7 +60,7 @@ class SensorTestUtils final {
 
   // Synchronously waits for |event_type| to be delivered to |event_target|.
   static void WaitForEvent(EventTarget* event_target,
-                           const WTF::AtomicString& event_type);
+                           const AtomicString& event_type);
 };
 
 }  // namespace blink

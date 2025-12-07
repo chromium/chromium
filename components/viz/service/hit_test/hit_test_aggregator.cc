@@ -52,6 +52,11 @@ void HitTestAggregator::Aggregate(const SurfaceId& display_surface_id) {
   SendHitTestData();
 }
 
+const std::vector<AggregatedHitTestRegion>& HitTestAggregator::GetHitTestData()
+    const {
+  return hit_test_data_;
+}
+
 void HitTestAggregator::SendHitTestData() {
   hit_test_data_.resize(hit_test_data_size_);
   delegate_->OnAggregatedHitTestRegionListUpdated(root_frame_sink_id_,
@@ -60,14 +65,14 @@ void HitTestAggregator::SendHitTestData() {
 
 std::optional<int64_t> HitTestAggregator::GetTraceIdIfUpdated(
     const SurfaceId& surface_id,
-    uint64_t active_frame_index) {
+    uint32_t active_frame_index) {
   bool enabled;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(
       TRACE_DISABLED_BY_DEFAULT("viz.hit_testing_flow"), &enabled);
   if (!enabled)
     return std::nullopt;
 
-  uint64_t& frame_index = last_active_frame_index_[surface_id.frame_sink_id()];
+  uint32_t& frame_index = last_active_frame_index_[surface_id.frame_sink_id()];
   if (frame_index == active_frame_index)
     return std::nullopt;
   frame_index = active_frame_index;
@@ -75,7 +80,7 @@ std::optional<int64_t> HitTestAggregator::GetTraceIdIfUpdated(
 }
 
 void HitTestAggregator::AppendRoot(const SurfaceId& surface_id) {
-  uint64_t active_frame_index;
+  uint32_t active_frame_index;
   const HitTestRegionList* hit_test_region_list =
       hit_test_manager_->GetActiveHitTestRegionList(
           local_surface_id_lookup_delegate_, surface_id.frame_sink_id(),
@@ -134,7 +139,7 @@ size_t HitTestAggregator::AppendRegion(size_t region_index,
 
     referenced_child_regions_.insert(region.frame_sink_id);
 
-    uint64_t active_frame_index;
+    uint32_t active_frame_index;
     const HitTestRegionList* hit_test_region_list =
         hit_test_manager_->GetActiveHitTestRegionList(
             local_surface_id_lookup_delegate_, region.frame_sink_id,

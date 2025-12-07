@@ -21,7 +21,8 @@ void WorkletModuleScriptFetcher::Fetch(
     ModuleType expected_module_type,
     ResourceFetcher* fetch_client_settings_object_fetcher,
     ModuleGraphLevel level,
-    ModuleScriptFetcher::Client* client) {
+    ModuleScriptFetcher::Client* client,
+    ModuleImportPhase import_phase) {
   DCHECK_EQ(fetch_params.GetScriptType(), mojom::blink::ScriptType::kModule);
   if (global_scope_->GetModuleResponsesMap()->GetEntry(
           fetch_params.Url(), expected_module_type, client,
@@ -47,12 +48,11 @@ void WorkletModuleScriptFetcher::Fetch(
       kNoCompileHintsProducer = nullptr;
   constexpr v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
       kNoCompileHintsConsumer = nullptr;
-  constexpr bool kNoV8CompileHintsMagicCommentRuntimeEnabledFeature = false;
   ScriptResource::Fetch(fetch_params, fetch_client_settings_object_fetcher,
                         this, global_scope_->GetIsolate(),
                         ScriptResource::kNoStreaming, kNoCompileHintsProducer,
                         kNoCompileHintsConsumer,
-                        kNoV8CompileHintsMagicCommentRuntimeEnabledFeature);
+                        v8_compile_hints::MagicCommentMode::kNone);
 }
 
 void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
@@ -61,8 +61,10 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
   std::optional<ModuleScriptCreationParams> params;
   auto* script_resource = To<ScriptResource>(resource);
   HeapVector<Member<ConsoleMessage>> error_messages;
-  if (WasModuleLoadSuccessful(script_resource, expected_module_type_,
-                              &error_messages)) {
+  std::optional<ResolvedModuleType> resolved_module_type =
+      WasModuleLoadSuccessful(script_resource, expected_module_type_,
+                              &error_messages);
+  if (resolved_module_type) {
     const KURL& url = script_resource->GetResponse().ResponseUrl();
 
     network::mojom::ReferrerPolicy response_referrer_policy =
@@ -79,10 +81,13 @@ void WorkletModuleScriptFetcher::NotifyFinished(Resource* resource) {
 
     // Create an external module script where base_url == source_url.
     // https://html.spec.whatwg.org/multipage/webappapis.html#concept-script-base-url
-    params.emplace(/*source_url=*/url, /*base_url=*/url,
-                   ScriptSourceLocationType::kExternalFile,
-                   expected_module_type_, script_resource->SourceText(),
-                   script_resource->CacheHandler(), response_referrer_policy);
+    params.emplace(
+        /*source_url=*/url, /*base_url=*/url,
+        ScriptSourceLocationType::kExternalFile, resolved_module_type.value(),
+        script_resource->GetSourceTextOrWasmSource(
+            resolved_module_type.value()),
+        script_resource->CacheHandler(), response_referrer_policy,
+        script_resource->GetResponse().HttpHeaderField(http_names::kSourceMap));
   }
 
   // This will eventually notify |client| passed to

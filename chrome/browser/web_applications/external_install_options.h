@@ -11,7 +11,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -19,7 +19,7 @@
 #include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #endif
 
@@ -147,12 +147,10 @@ struct ExternalInstallOptions {
   // is used.
   bool require_manifest = false;
 
-  // The web app should be installed as a shortcut, where only limited
+  // The web app should be installed as a DIY, where only limited
   // values from the manifest are used (like theme color) and all extra
   // capabilities are not used (like file handlers).
-  // Note: This is different behavior than using the "Create Shortcut..."
-  // option in the GUI.
-  bool install_as_shortcut = false;
+  bool install_as_diy = false;
 
   // Whether the app should be reinstalled even if it is already installed.
   bool force_reinstall = false;
@@ -212,7 +210,7 @@ struct ExternalInstallOptions {
   // as the app's installation metadata.
   WebAppInstallInfoFactory app_info_factory;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The type of SystemWebApp, if this app is a System Web App.
   std::optional<ash::SystemWebAppType> system_app_type = std::nullopt;
 #endif
@@ -246,7 +244,33 @@ struct ExternalInstallOptions {
   // downgrade an existing install.
   bool install_without_os_integration = false;
 
+  // Similar to `uninstall_and_replace`, however if this is set the app will not
+  // be installed if the app to be replaced was installed from any other
+  // sources, or if the app being installed is asking for a kBrowser display
+  // mode while the old app was (manually) changed to a standalone display mode.
+  // (and in those cases the old app will remain installed instead).
+  // If the user explicitly uninstalled the old (default installed) app, this
+  // replacement app will also not get installed.
+  const std::optional<webapps::AppId>&
+  only_uninstall_and_replace_when_compatible() const {
+    return only_uninstall_and_replace_when_compatible_;
+  }
+
+  class SetOnlyUninstallAndReplaceWhenCompatiblePassKey {
+    friend ExternalInstallOptions GetConfigForGoogleChat(
+        bool is_standalone,
+        bool only_for_new_users);
+    friend class PreinstalledWebAppMigrationTest;
+    SetOnlyUninstallAndReplaceWhenCompatiblePassKey() = default;
+  };
+  void SetOnlyUninstallAndReplaceWhenCompatible(
+      const webapps::AppId& overriding_app_id,
+      SetOnlyUninstallAndReplaceWhenCompatiblePassKey);
+
   // Note: All new fields must be added to AsDebugValue() and the == operator.
+ private:
+  std::optional<webapps::AppId> only_uninstall_and_replace_when_compatible_ =
+      std::nullopt;
 };
 
 WebAppInstallParams ConvertExternalInstallOptionsToParams(

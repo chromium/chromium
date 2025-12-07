@@ -7,8 +7,11 @@
 
 #include <string>
 
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "extensions/browser/extension_function.h"
+#include "ui/gfx/range/range.h"
 
+class Browser;
 namespace tab_groups {
 class TabGroupId;
 }
@@ -80,6 +83,16 @@ class TabGroupsMoveFunction : public ExtensionFunction {
                  const std::optional<int>& window_id,
                  tab_groups::TabGroupId* group,
                  std::string* error);
+
+  // Moves a tab group between browser windows.
+  bool MoveTabGroupBetweenBrowsers(
+      Browser* source_browser,
+      Browser* target_browser,
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData& visual_data,
+      const gfx::Range& tabs,
+      int new_index,
+      std::string* error);
 };
 
 }  // namespace extensions

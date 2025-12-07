@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "third_party/blink/public/common/widget/device_emulation_params.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-blink.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/lcd_text_preference.h"
@@ -37,7 +38,6 @@ class CORE_EXPORT DevToolsEmulator final
   void SetDeviceScaleAdjustment(float);
   void SetLCDTextPreference(LCDTextPreference);
   void SetViewportStyle(mojom::blink::ViewportStyle);
-  void SetPluginsEnabled(bool);
   void SetScriptEnabled(bool);
   void SetHideScrollbars(bool);
   void SetCookieEnabled(bool);
@@ -57,7 +57,9 @@ class CORE_EXPORT DevToolsEmulator final
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
   // transform to be used as a result.
-  gfx::Transform EnableDeviceEmulation(const DeviceEmulationParams&);
+  gfx::Transform EnableDeviceEmulation(
+      const DeviceEmulationParams&,
+      const mojom::blink::DeviceEmulationCacheBehavior&);
   // Disables emulation.
   void DisableDeviceEmulation();
 
@@ -68,6 +70,10 @@ class CORE_EXPORT DevToolsEmulator final
   void SetDocumentCookieDisabled(bool);
   void SetAutoDarkModeOverride(bool);
   void ResetAutoDarkModeOverride();
+
+  void SetAccessibilityFontScaleFactor(double scale);
+  void SetEmulatedAccessibilityFontScaleFactor(double scale);
+  void ResetEmulatedAccessibilityFontScaleFactor();
 
   bool HasViewportOverride() const { return !!viewport_override_; }
 
@@ -131,7 +137,6 @@ class CORE_EXPORT DevToolsEmulator final
   float embedder_device_scale_adjustment_;
   LCDTextPreference embedder_lcd_text_preference_;
   mojom::blink::ViewportStyle embedder_viewport_style_;
-  bool embedder_plugins_enabled_;
   int embedder_available_pointer_types_;
   mojom::blink::PointerType embedder_primary_pointer_type_;
   int embedder_available_hover_types_;
@@ -160,6 +165,9 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool embedder_force_dark_mode_enabled_;
   bool auto_dark_overriden_;
+
+  double embedder_accessibility_font_scale_;
+  bool accessibility_font_scale_emulation_enabled_;
 };
 
 }  // namespace blink

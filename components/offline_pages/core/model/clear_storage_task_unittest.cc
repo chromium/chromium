@@ -10,7 +10,6 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -116,7 +115,7 @@ ClearStorageTaskTest::ClearStorageTaskTest()
       total_cleared_times_(0),
       last_clear_storage_result_(ClearStorageResult::SUCCESS) {}
 
-ClearStorageTaskTest::~ClearStorageTaskTest() {}
+ClearStorageTaskTest::~ClearStorageTaskTest() = default;
 
 void ClearStorageTaskTest::SetUp() {
   ModelTaskTestBase::SetUp();

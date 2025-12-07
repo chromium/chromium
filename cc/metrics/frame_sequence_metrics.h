@@ -14,10 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_info.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace viz {
 struct BeginFrameArgs;
@@ -43,6 +43,8 @@ enum class FrameSequenceTrackerType {
   kJSAnimation = 11,
   kSETMainThreadAnimation = 12,
   kSETCompositorAnimation = 13,
+  kCompositorRasterAnimation = 14,
+  kCompositorNativeAnimation = 15,
   kMaxType
 };
 
@@ -69,8 +71,12 @@ inline bool HasMainThreadAnimation(const ActiveTrackers& trackers) {
 }
 
 inline bool HasCompositorThreadAnimation(const ActiveTrackers& trackers) {
-  return trackers.test(
-      static_cast<size_t>(FrameSequenceTrackerType::kCompositorAnimation));
+  return trackers.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kCompositorAnimation)) ||
+         trackers.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kCompositorRasterAnimation)) ||
+         trackers.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kCompositorNativeAnimation));
 }
 
 class CC_EXPORT FrameSequenceMetrics {
@@ -83,12 +89,15 @@ class CC_EXPORT FrameSequenceMetrics {
 
   void SetScrollingThread(FrameInfo::SmoothEffectDrivingThread thread);
 
+  struct Jank {
+    // The start time of a jank.
+    base::TimeTicks start_time;
+    // The duration of a jank.
+    base::TimeDelta duration;
+  };
+
   struct CC_EXPORT CustomReportData {
     CustomReportData();
-    CustomReportData(uint32_t frames_expected,
-                     uint32_t frames_dropped,
-                     uint32_t jank_count,
-                     std::vector<base::TimeDelta> jank_durations);
 
     CustomReportData(const CustomReportData&);
     CustomReportData& operator=(const CustomReportData&);
@@ -98,8 +107,7 @@ class CC_EXPORT FrameSequenceMetrics {
     uint32_t frames_expected_v3 = 0;
     uint32_t frames_dropped_v3 = 0;
     uint32_t jank_count_v3 = 0;
-    // A vector of TimeDelta that captures the duration of each jank recorded.
-    std::vector<base::TimeDelta> jank_durations;
+    std::vector<Jank> janks;
   };
   using CustomReporter = base::OnceCallback<void(const CustomReportData& data)>;
   // Sets reporter callback for kCustom typed sequence.
@@ -113,7 +121,8 @@ class CC_EXPORT FrameSequenceMetrics {
   bool HasEnoughDataForReporting() const;
   bool HasDataLeftForReporting() const;
   // Report related metrics: throughput, checkboarding...
-  void ReportMetrics();
+  // Returns PercentDroppedFrames4.AllSequences metric.
+  int ReportMetrics();
 
   void AddSortedFrame(const viz::BeginFrameArgs& args,
                       const FrameInfo& frame_info);
@@ -160,12 +169,12 @@ class CC_EXPORT FrameSequenceMetrics {
     FrameInfo last_presented_frame;
     base::TimeDelta last_frame_delta;
     base::TimeDelta no_update_duration;
-    // The durations of the janks recorded. Only used for kCustom typed
-    // sequence.
-    std::vector<base::TimeDelta> jank_durations;
+    // Note: janks are only recorded for kCustom types sequences
+    std::vector<Jank> janks;
   } v3_;
 
   struct V4 {
+    uint32_t frames_dropped = 0;
     uint32_t frames_checkerboarded = 0;
     uint32_t frames_checkerboarded_need_raster = 0;
     uint32_t frames_checkerboarded_need_record = 0;
@@ -180,12 +189,13 @@ class CC_EXPORT FrameSequenceMetrics {
     base::TimeTicks last_timestamp = base::TimeTicks::Now();
     int frame_count = 0;
     bool enabled = false;
-    uint64_t trace_id = 0u;
+    std::optional<perfetto::Track> trace_track;
 
     void Advance(base::TimeTicks start_timestamp,
                  base::TimeTicks new_timestamp,
                  uint32_t expected,
-                 uint32_t dropped,
+                 uint32_t dropped_v3,
+                 uint32_t dropped_v4,
                  uint64_t sequence_number,
                  const char* histogram_name);
     void Terminate(const V3& v3,

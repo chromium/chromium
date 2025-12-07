@@ -4,56 +4,54 @@
 
 #include "components/invalidation/profile_invalidation_provider.h"
 
+#include <stdint.h>
+
+#include <memory>
 #include <utility>
 
-#include "components/invalidation/impl/invalidation_prefs.h"
-#include "components/invalidation/invalidation_factory.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/invalidation/invalidation_listener.h"
-#include "components/invalidation/public/invalidation_service.h"
+#include "components/invalidation/legacy_topics_cleaner.h"
+#include "components/invalidation/public/identity_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace invalidation {
 
+ProfileInvalidationProvider::ProfileInvalidationProvider() = default;
+
 ProfileInvalidationProvider::ProfileInvalidationProvider(
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<IdentityProvider> identity_provider,
-    InvalidationServiceOrListenerFactory
-        invalidation_service_or_listener_factory)
-    : identity_provider_(std::move(identity_provider)),
-      invalidation_service_or_listener_factory_(
-          std::move(invalidation_service_or_listener_factory)) {}
+    PrefService* pref_service,
+    InvalidationListenerFactory invalidation_listener_factory)
+    : invalidation_listener_factory_(std::move(invalidation_listener_factory)) {
+  legacy_topics_cleaner_ = std::make_unique<invalidation::LegacyTopicsCleaner>(
+      url_loader_factory, std::move(identity_provider), pref_service);
+}
 
 ProfileInvalidationProvider::~ProfileInvalidationProvider() = default;
 
-IdentityProvider* ProfileInvalidationProvider::GetIdentityProvider() {
-  return identity_provider_.get();
-}
-
-std::variant<InvalidationService*, InvalidationListener*>
-ProfileInvalidationProvider::GetInvalidationServiceOrListener(
-    const std::string& sender_id,
-    const std::string& project_id) {
-  DCHECK(invalidation_service_or_listener_factory_);
-
-  if (!sender_id_to_invalidation_service_or_listener_.contains(
-          {sender_id, project_id})) {
-    sender_id_to_invalidation_service_or_listener_[{sender_id, project_id}] =
-        invalidation_service_or_listener_factory_.Run(
-            sender_id, project_id, "ProfileInvalidationProvider");
+InvalidationListener* ProfileInvalidationProvider::GetInvalidationListener(
+    int64_t project_number) {
+  if (!invalidation_listener_factory_) {
+    return nullptr;
   }
-  return invalidation::UniquePointerVariantToPointer(
-      sender_id_to_invalidation_service_or_listener_[{sender_id, project_id}]);
+
+  auto& listener = project_number_to_invalidation_listener_[project_number];
+
+  if (!listener) {
+    listener = invalidation_listener_factory_.Run(
+        project_number, "ProfileInvalidationProvider");
+  }
+
+  return listener.get();
 }
 
 void ProfileInvalidationProvider::Shutdown() {
-  sender_id_to_invalidation_service_or_listener_.clear();
-  invalidation_service_or_listener_factory_.Reset();
-}
-
-// static
-void ProfileInvalidationProvider::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(prefs::kInvalidationClientIDCache);
+  project_number_to_invalidation_listener_.clear();
+  invalidation_listener_factory_.Reset();
 }
 
 }  // namespace invalidation

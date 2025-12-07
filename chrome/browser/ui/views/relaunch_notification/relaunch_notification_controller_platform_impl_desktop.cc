@@ -11,6 +11,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_recommended_bubble_view.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_required_dialog_view.h"
 #include "ui/views/widget/widget.h"
@@ -18,13 +20,17 @@
 namespace {
 
 // Returns the last active tabbed browser.
-Browser* FindLastActiveTabbedBrowser() {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->is_type_normal()) {
-      return browser;
-    }
-  }
-  return nullptr;
+BrowserWindowInterface* FindLastActiveTabbedBrowser() {
+  BrowserWindowInterface* last_active_browser = nullptr;
+  ForEachCurrentAndNewBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* current_browser) {
+        if (current_browser->GetType() == BrowserWindowInterface::TYPE_NORMAL) {
+          last_active_browser = current_browser;
+          return false;  // stop iterating
+        }
+        return true;  // continue iterating
+      });
+  return last_active_browser;
 }
 
 }  // namespace
@@ -35,8 +41,9 @@ RelaunchNotificationControllerPlatformImpl::
 RelaunchNotificationControllerPlatformImpl::
     ~RelaunchNotificationControllerPlatformImpl() {
   DCHECK(!widget_);
-  if (on_visible_)
+  if (on_visible_) {
     BrowserList::RemoveObserver(this);
+  }
   CHECK(!WidgetObserver::IsInObserverList());
   CHECK(!BrowserListObserver::IsInObserverList());
 }
@@ -45,13 +52,15 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
     base::Time detection_time,
     bool /*past_deadline*/) {
   // Nothing to do if the bubble is visible.
-  if (widget_)
+  if (widget_) {
     return;
+  }
 
   // Show the bubble in the most recently active browser.
-  Browser* browser = FindLastActiveTabbedBrowser();
-  if (!browser)
+  BrowserWindowInterface* browser = FindLastActiveTabbedBrowser();
+  if (!browser) {
     return;
+  }
 
   widget_ = RelaunchRecommendedBubbleView::ShowBubble(
       browser, detection_time, base::BindRepeating(&chrome::AttemptRelaunch));
@@ -62,24 +71,29 @@ void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRecommended(
 
 void RelaunchNotificationControllerPlatformImpl::NotifyRelaunchRequired(
     base::Time deadline,
+    bool is_notification_style_ap_required,
     base::OnceCallback<base::Time()> on_visible) {
   // Nothing to do if the dialog is visible.
-  if (widget_)
+  if (widget_) {
     return;
+  }
 
   // Show the dialog in the active tabbed browser window.
   Browser* browser = chrome::FindBrowserWithActiveWindow();
   if (browser && browser->is_type_normal()) {
     DCHECK(!on_visible_);
-    ShowRequiredNotification(browser, deadline);
+    ShowRequiredNotification(browser, deadline,
+                             is_notification_style_ap_required);
     return;
   }
 
   // If the instance is not already waiting for one to become active from a
   // previous call, start observing now.
-  if (!on_visible_)
+  if (!on_visible_) {
     BrowserList::AddObserver(this);
+  }
 
+  is_notification_style_ap_required_ = is_notification_style_ap_required;
   // Hold on to the callback until an active tabbed browser is found.
   on_visible_ = std::move(on_visible);
 
@@ -113,8 +127,9 @@ void RelaunchNotificationControllerPlatformImpl::SetDeadline(
 
   // Hold on to the new deadline if the instance is waiting for a Browser to
   // become active.
-  if (on_visible_)
+  if (on_visible_) {
     last_relaunch_deadline_ = deadline;
+  }
 }
 
 bool RelaunchNotificationControllerPlatformImpl::IsRequiredNotificationShown()
@@ -132,8 +147,9 @@ void RelaunchNotificationControllerPlatformImpl::OnWidgetDestroying(
 void RelaunchNotificationControllerPlatformImpl::OnBrowserSetLastActive(
     Browser* browser) {
   // Ignore non-tabbed browsers.
-  if (!browser->is_type_normal())
+  if (!browser->is_type_normal()) {
     return;
+  }
 
   BrowserList::RemoveObserver(this);
 
@@ -143,15 +159,18 @@ void RelaunchNotificationControllerPlatformImpl::OnBrowserSetLastActive(
 
   on_visible_.Reset();
   last_relaunch_deadline_ = base::Time();
-
-  ShowRequiredNotification(browser, new_deadline);
+  bool ap_style = is_notification_style_ap_required_;
+  is_notification_style_ap_required_ = false;
+  ShowRequiredNotification(browser, new_deadline, ap_style);
 }
 
 void RelaunchNotificationControllerPlatformImpl::ShowRequiredNotification(
     Browser* browser,
-    base::Time deadline) {
+    base::Time deadline,
+    bool is_notification_style_ap_required) {
   widget_ = RelaunchRequiredDialogView::Show(
-      browser, deadline, base::BindRepeating(&chrome::AttemptRelaunch));
+      browser, deadline, is_notification_style_ap_required,
+      base::BindRepeating(&chrome::AttemptRelaunch));
   has_shown_ = true;
 
   // Monitor the widget so that |widget_| can be cleared on close/destruction.

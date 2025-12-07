@@ -38,7 +38,6 @@ import androidx.fragment.app.FragmentTransaction;
 
 import org.chromium.android_webview.common.BugTrackerConstants;
 import org.chromium.android_webview.devui.util.SafeIntentUtils;
-import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ResettersForTesting;
@@ -413,10 +412,12 @@ public class MainActivity extends FragmentActivity {
                     new Intent(Intent.ACTION_VIEW, uri),
                     SafeIntentUtils.NO_BROWSER_FOUND_ERROR);
             return true;
-        } else if (item.getItemId() == R.id.options_menu_components) {
-            logMenuSelection(MenuChoice.COMPONENTS_UI);
-            switchFragment(FRAGMENT_ID_COMPONENTS, false);
-            return true;
+            // Component updater is disabled and the menu option is hidden for now;
+            // see crbug.com/438310407
+            // } else if (item.getItemId() == R.id.options_menu_components) {
+            //     logMenuSelection(MenuChoice.COMPONENTS_UI);
+            //     switchFragment(FRAGMENT_ID_COMPONENTS, false);
+            //     return true;
         } else if (item.getItemId() == R.id.options_menu_safe_mode) {
             logMenuSelection(MenuChoice.SAFEMODE_UI);
             switchFragment(FRAGMENT_ID_SAFEMODE, false);
@@ -552,7 +553,7 @@ public class MainActivity extends FragmentActivity {
     /**
      * Override whether or not the Activity is running on a T+ build of Android.
      *
-     * <p>This method has been introduced to avoid mocking out {@link BuildInfo#isAtLeastT()}.
+     * <p>This method has been introduced to avoid mocking out Build.VERSION.SDK_INT.
      *
      * @param isAtLeastT Whether the running Android version is at least T.
      */

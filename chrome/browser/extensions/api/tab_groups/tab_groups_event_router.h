@@ -37,7 +37,7 @@ class TabGroupsEventRouter : public TabStripModelObserver,
   void OnTabGroupChanged(const TabGroupChange& change) override;
 
   // BrowserTabStripTrackerDelegate:
-  bool ShouldTrackBrowser(Browser* browser) override;
+  bool ShouldTrackBrowser(BrowserWindowInterface* browser) override;
 
  private:
   // Methods called from OnTabGroupChanged.

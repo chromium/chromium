@@ -107,6 +107,4 @@ TEST_F(TelemetryExtensionEventObservationCrosapiTest,
                     crosapi::TelemetryAudioJackEventInfo::State::kAdd)));
 }
 
-// TODO(b/284428237): Add unittest for blocked events.
-
 }  // namespace chromeos

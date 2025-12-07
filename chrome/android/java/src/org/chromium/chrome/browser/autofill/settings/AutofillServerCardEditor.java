@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
+import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,22 +20,26 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.MonotonicNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillImageFetcherFactory;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.AutofillProfile;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.settings.SettingsFragment;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -41,15 +48,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Server credit card settings. */
+@NullMarked
 public class AutofillServerCardEditor extends AutofillCreditCardEditor {
-    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_URL =
-            "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
-    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL =
-            "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
     private static final String SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT =
             "Autofill.VirtualCard.SettingsPageEnrollment";
 
-    private TextView mVirtualCardEnrollmentButton;
+    private @MonotonicNonNull TextView mVirtualCardEnrollmentButton;
     private boolean mVirtualCardEnrollmentButtonShowsUnenroll;
     private AutofillPaymentMethodsDelegate mDelegate;
     private boolean mAwaitingUpdateVirtualCardEnrollmentResponse;
@@ -140,7 +144,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                         } else {
                             // If update was not successful, enable the button so users can try
                             // again.
-                            mVirtualCardEnrollmentButton.setEnabled(true);
+                            assumeNonNull(mVirtualCardEnrollmentButton).setEnabled(true);
                         }
                     }
                 };
@@ -148,24 +152,33 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
     @Override
     public View onCreateView(
-            LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        final View v = super.onCreateView(inflater, container, savedInstanceState);
+            LayoutInflater inflater,
+            @Nullable ViewGroup container,
+            @Nullable Bundle savedInstanceState) {
+        LayoutInflater localInflater = inflater;
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            // TODO(crbug.com/439911511): Set the style directly in the layout instead.
+            Context themedContext =
+                    new ContextThemeWrapper(
+                            getActivity(), R.style.ThemeOverlay_Chromium_Settings_InputFields);
+            localInflater = inflater.cloneInContext(themedContext);
+        }
+        final View v = super.onCreateView(localInflater, container, savedInstanceState);
         if (mCard == null) {
-            getActivity().finish();
+            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
             return v;
         }
 
         // Set card icon. It can be either a custom card art or the network icon.
         ImageView cardIconContainer = v.findViewById(R.id.settings_page_card_icon);
         cardIconContainer.setImageDrawable(
-                getCardIcon(
+                AutofillUiUtils.getCardIcon(
                         getContext(),
-                        PersonalDataManagerFactory.getForProfile(getProfile()),
+                        AutofillImageFetcherFactory.getForProfile(getProfile()),
                         mCard.getCardArtUrl(),
                         mCard.getIssuerIconDrawableId(),
-                        AutofillUiUtils.CardIconSize.LARGE,
-                        ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_ART_IMAGE)));
+                        ImageSize.LARGE,
+                        /* showCustomIcon= */ true));
 
         ((TextView) v.findViewById(R.id.settings_page_card_name))
                 .setText(mCard.getCardNameForAutofillDisplay());
@@ -181,7 +194,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                                             ? CardType.VIRTUAL_CARD
                                             : CardType.SERVER_CARD,
                                     ButtonType.EDIT_CARD);
-                            mServerCardEditLinkOpenerCallback.onResult(getEditCardLink());
+                            mServerCardEditLinkOpenerCallback.onResult(
+                                    AutofillUiUtils.getManagePaymentMethodUrlForInstrumentId(
+                                            mCard.getInstrumentId()));
                         });
 
         final LinearLayout virtualCardContainerLayout = v.findViewById(R.id.virtual_card_ui);
@@ -247,7 +262,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                     RecordHistogram.recordEnumeratedHistogram(
                             SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT + ".LinkClicked",
                             virtualCardEnrollmentLinkType,
-                            VirtualCardEnrollmentLinkType.MAX_VALUE + 1);
+                            VirtualCardEnrollmentLinkType.MAX_VALUE);
                     CustomTabActivity.showInfoPage(getActivity(), url);
                 };
         Callback<Integer> resultHandler =
@@ -263,14 +278,14 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                         logSettingsPageEnrollmentDialogUserSelection(false);
                         // Since the user canceled the enrollment dialog, enable the button
                         // again to allow for enrollment.
-                        mVirtualCardEnrollmentButton.setEnabled(true);
+                        assumeNonNull(mVirtualCardEnrollmentButton).setEnabled(true);
                     }
                 };
         AutofillVirtualCardEnrollmentDialog dialog =
                 new AutofillVirtualCardEnrollmentDialog(
                         getActivity(),
                         modalDialogManager,
-                        PersonalDataManagerFactory.getForProfile(getProfile()),
+                        AutofillImageFetcherFactory.getForProfile(getProfile()),
                         virtualCardEnrollmentFields,
                         getActivity()
                                 .getString(
@@ -296,7 +311,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                                 // progress.
                                 mAwaitingUpdateVirtualCardEnrollmentResponse = true;
                             } else {
-                                mVirtualCardEnrollmentButton.setEnabled(true);
+                                assumeNonNull(mVirtualCardEnrollmentButton).setEnabled(true);
                             }
                         });
         dialog.show();
@@ -311,26 +326,12 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     /** Updates the Virtual Card Enrollment button label. */
     private void setVirtualCardEnrollmentButtonLabel(boolean isEnrolled) {
         mVirtualCardEnrollmentButtonShowsUnenroll = isEnrolled;
+        assumeNonNull(mVirtualCardEnrollmentButton);
         mVirtualCardEnrollmentButton.setEnabled(true);
         mVirtualCardEnrollmentButton.setText(
                 mVirtualCardEnrollmentButtonShowsUnenroll
                         ? R.string.autofill_card_editor_virtual_card_turn_off_button_label
                         : R.string.autofill_card_editor_virtual_card_turn_on_button_label);
-    }
-
-    // Returns the URL for managing the card in GPay Web.
-    private String getEditCardLink() {
-        // Check if sandbox is enabled.
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT)) {
-            return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL)
-                    .append("&id=")
-                    .append(mCard.getInstrumentId())
-                    .toString();
-        }
-        return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_URL)
-                .append("&id=")
-                .append(mCard.getInstrumentId())
-                .toString();
     }
 
     @Override
@@ -344,20 +345,40 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
     }
 
     @Override
+    protected void onBillingAddressSelected(AutofillProfile profile) {
+        if (mInitialBillingProfile != null
+                && !TextUtils.equals(profile.getGUID(), mInitialBillingProfile.getGUID())) {
+            Button button = assumeNonNull(getView()).findViewById(R.id.button_primary);
+            button.setEnabled(true);
+        }
+    }
+
+    @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (parent == mBillingAddress && position != mInitialBillingAddressPos) {
-            ((Button) getView().findViewById(R.id.button_primary)).setEnabled(true);
+        assert mBillingAddressSpinner != null;
+        if (parent == mBillingAddressSpinner && position != mInitialBillingAddressPos) {
+            Button button = assumeNonNull(getView()).findViewById(R.id.button_primary);
+            button.setEnabled(true);
         }
     }
 
     @Override
     protected boolean saveEntry() {
-        if (mBillingAddress.getSelectedItem() != null
-                && mBillingAddress.getSelectedItem() instanceof AutofillProfile) {
-            mCard.setBillingAddressId(
-                    ((AutofillProfile) mBillingAddress.getSelectedItem()).getGUID());
-            PersonalDataManagerFactory.getForProfile(getProfile())
-                    .updateServerCardBillingAddress(mCard);
+        if (ChromeFeatureList.sAndroidSettingsContainment.isEnabled()) {
+            if (mSelectedBillingProfile != null) {
+                mCard.setBillingAddressId(mSelectedBillingProfile.getGUID());
+                PersonalDataManagerFactory.getForProfile(getProfile())
+                        .updateServerCardBillingAddress(mCard);
+            }
+        } else {
+            assert mBillingAddressSpinner != null;
+            if (mBillingAddressSpinner.getSelectedItem() != null
+                    && mBillingAddressSpinner.getSelectedItem() instanceof AutofillProfile) {
+                mCard.setBillingAddressId(
+                        ((AutofillProfile) mBillingAddressSpinner.getSelectedItem()).getGUID());
+                PersonalDataManagerFactory.getForProfile(getProfile())
+                        .updateServerCardBillingAddress(mCard);
+            }
         }
         return true;
     }
@@ -369,5 +390,10 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
 
     public void setServerCardEditLinkOpenerCallbackForTesting(Callback<String> callback) {
         mServerCardEditLinkOpenerCallback = callback;
+    }
+
+    @Override
+    public @SettingsFragment.AnimationType int getAnimationType() {
+        return SettingsFragment.AnimationType.PROPERTY;
     }
 }

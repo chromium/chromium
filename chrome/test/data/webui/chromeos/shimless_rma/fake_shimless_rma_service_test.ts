@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
-import {CalibrationObserverRemote, CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, ErrorObserverRemote, FinalizationError, FinalizationObserverRemote, FinalizationStatus, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, OsUpdateOperation, PowerCableStateObserverRemote, ProvisioningError, ProvisioningObserverRemote, ProvisioningStatus, RmadErrorCode, ShutdownMethod, State, UpdateErrorCode, UpdateRoFirmwareObserverRemote, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import type {CalibrationObserverRemote, ErrorObserverRemote, FinalizationObserverRemote, HardwareVerificationStatusObserverRemote, HardwareWriteProtectionStateObserverRemote, OsUpdateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, UpdateRoFirmwareObserverRemote} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
+import {CalibrationOverallStatus, CalibrationSetupInstruction, CalibrationStatus, ComponentRepairStatus, ComponentType, FinalizationError, FinalizationStatus, OsUpdateOperation, ProvisioningError, ProvisioningStatus, RmadErrorCode, ShutdownMethod, State, UpdateErrorCode, UpdateRoFirmwareStatus, WriteProtectDisableCompleteAction} from 'chrome://shimless-rma/shimless_rma.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
 
 suite('fakeShimlessRmaServiceTestSuite', function() {
@@ -52,6 +53,30 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assertTrue(result.stateResult.canExit);
     assertFalse(result.stateResult.canGoBack);
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
+  });
+
+  // Verify the state property can be set.
+  test('setGetStatePropertiesResult', async () => {
+    assert(service);
+
+    const expectedPropertyResult = {
+      property: {
+        updateDeviceInfoStateProperty: {
+          serialNumberModifiable: true,
+          regionModifiable: true,
+          skuModifiable: true,
+          customLabelModifiable: false,
+          dramPartNumberModifiable: false,
+          featureLevelModifiable: false,
+          customizedSerialNumberNaming: 'TEST SN NAME',
+          hideGoogleSku: false,
+        },
+      },
+    };
+
+    service.setGetStatePropertiesResult(expectedPropertyResult);
+    const result = await service.getStateProperties();
+    assertEquals(expectedPropertyResult, result.statePropertyResult);
   });
 
   // Verify `getCurrentState()` returns the set error.
@@ -300,9 +325,9 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assertEquals(RmadErrorCode.kRequestInvalid, result.stateResult.error);
   });
 
-  // Verify `chooseManuallyDisableWriteProtect()` can be called from the correct
+  // Verify `setManuallyDisableWriteProtect()` can be called from the correct
   // state.
-  test('ChooseManuallyDisableWriteProtectOk', async () => {
+  test('SetManuallyDisableWriteProtectOk', async () => {
     const states = [
       {
         state: State.kChooseWriteProtectDisableMethod,
@@ -320,14 +345,14 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.chooseManuallyDisableWriteProtect();
+    const result = await service.setManuallyDisableWriteProtect();
     assertEquals(State.kUpdateOs, result.stateResult.state);
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
   });
 
-  // Verify `chooseManuallyDisableWriteProtect()` can't be called from the wrong
+  // Verify `setManuallyDisableWriteProtect()` can't be called from the wrong
   // state.
-  test('ChooseManuallyDisableWriteProtectWrongStateFails', async () => {
+  test('SetManuallyDisableWriteProtectWrongStateFails', async () => {
     const states = [
       {
         state: State.kWelcomeScreen,
@@ -345,14 +370,14 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.chooseManuallyDisableWriteProtect();
+    const result = await service.setManuallyDisableWriteProtect();
     assertEquals(State.kWelcomeScreen, result.stateResult.state);
     assertEquals(RmadErrorCode.kRequestInvalid, result.stateResult.error);
   });
 
-  // Verify `chooseRsuDisableWriteProtect()` can be called from the correct
+  // Verify `setRsuDisableWriteProtect()` can be called from the correct
   // state.
-  test('ChooseRsuDisableWriteProtectOk', async () => {
+  test('SetRsuDisableWriteProtectOk', async () => {
     const states = [
       {
         state: State.kChooseWriteProtectDisableMethod,
@@ -370,14 +395,14 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.chooseRsuDisableWriteProtect();
+    const result = await service.setRsuDisableWriteProtect();
     assertEquals(State.kUpdateOs, result.stateResult.state);
     assertEquals(RmadErrorCode.kOk, result.stateResult.error);
   });
 
-  // Verify `chooseRsuDisableWriteProtect()` can't be called from the wrong
+  // Verify `setRsuDisableWriteProtect()` can't be called from the wrong
   // state.
-  test('ChooseRsuDisableWriteProtectWrongStateFails', async () => {
+  test('SetRsuDisableWriteProtectWrongStateFails', async () => {
     const states = [
       {
         state: State.kWelcomeScreen,
@@ -395,7 +420,7 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
     assert(service);
     service.setStates(states);
 
-    const result = await service.chooseRsuDisableWriteProtect();
+    const result = await service.setRsuDisableWriteProtect();
     assertEquals(State.kWelcomeScreen, result.stateResult.state);
     assertEquals(RmadErrorCode.kRequestInvalid, result.stateResult.error);
   });
@@ -1038,16 +1063,15 @@ suite('fakeShimlessRmaServiceTestSuite', function() {
   // Verify the hardware verification status observer is triggered.
   test('ObserveHardwareVerificationStatus', async () => {
     const observer = {
-      onHardwareVerificationResult(isCompliant, errorMessage): void {
-        assertTrue(isCompliant);
-        assertEquals('ok', errorMessage);
+      onHardwareVerificationResult(result): void {
+        assertDeepEquals({passResult: {}}, result);
       },
     } as HardwareVerificationStatusObserverRemote;
 
     assert(service);
     service.observeHardwareVerificationStatus(observer);
     await service.triggerHardwareVerificationStatusObserver(
-        true, 'ok', /*delayMs=*/ 0);
+        {passResult: {}}, /*delayMs=*/ 0);
   });
 
   // Verify the finalization observer is triggered.

@@ -7,19 +7,25 @@
 // third_party/webrtc/rtc_base/logging.h since it defines some of the same
 // macros as Chromium does and we'll run into conflicts.
 
+#include <atomic>
+#include <cstddef>
+#include <cstring>
+#include <ios>
+#include <sstream>
+#include <string>
+
+#include "base/check.h"
+#include "base/logging/log_severity.h"
 #if defined(WEBRTC_MAC) && !defined(WEBRTC_IOS)
 #include <CoreServices/CoreServices.h>
 #endif  // OS_MACOSX
 
-#include <algorithm>
-#include <atomic>
 #include <iomanip>
 
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
-#include "third_party/webrtc/rtc_base/string_utils.h"
 
 // This needs to be included after base/logging.h.
 #include "third_party/webrtc_overrides/rtc_base/diagnostic_logging.h"
@@ -28,6 +34,12 @@
 #if defined(WEBRTC_MAC)
 #include "base/apple/osstatus_logging.h"
 #endif
+#if defined(WEBRTC_WIN)
+#include <windows.h>
+
+#include <malloc.h>
+#include <wchar.h>
+#endif  // WEBRTC_WIN
 
 // Disable logging when fuzzing, for performance reasons.
 // WEBRTC_UNSAFE_FUZZER_MODE is defined by WebRTC's BUILD.gn when
@@ -47,7 +59,7 @@
   LAZY_STREAM(logging::LogMessage(file_name, line_number, sev).stream(), \
               WEBRTC_ENABLE_LOGGING)
 
-namespace rtc {
+namespace webrtc {
 
 void (*g_logging_delegate_function)(const std::string&) = NULL;
 void (*g_extra_logging_init_function)(
@@ -73,8 +85,7 @@ inline int WebRtcSevToChromeSev(LoggingSeverity sev) {
     case LS_SENSITIVE:
       return ::logging::LOGGING_VERBOSE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ::logging::LOGGING_FATAL;
+      NOTREACHED();
   }
 }
 
@@ -90,8 +101,7 @@ inline int WebRtcVerbosityLevel(LoggingSeverity sev) {
     case LS_SENSITIVE:
       return 2;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -100,8 +110,9 @@ static void LogExtra(std::ostringstream* print_stream,
                      LogErrorContext err_ctx,
                      int err,
                      const char* module) {
-  if (err_ctx == ERRCTX_NONE)
+  if (err_ctx == ERRCTX_NONE) {
     return;
+  }
 
   (*print_stream) << ": ";
   (*print_stream) << "[0x" << std::setfill('0') << std::hex << std::setw(8)
@@ -115,8 +126,9 @@ static void LogExtra(std::ostringstream* print_stream,
       char msgbuf[256];
       DWORD flags = FORMAT_MESSAGE_FROM_SYSTEM;
       HMODULE hmod = GetModuleHandleA(module);
-      if (hmod)
+      if (hmod) {
         flags |= FORMAT_MESSAGE_FROM_HMODULE;
+      }
       if (DWORD len = FormatMessageA(
               flags, hmod, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
               msgbuf, sizeof(msgbuf) / sizeof(msgbuf[0]), NULL)) {
@@ -174,7 +186,7 @@ DiagnosticLogMessage::~DiagnosticLogMessage() {
     const std::string& str = print_stream_.str();
     if (log_to_chrome_) {
       LOG_LAZY_STREAM_DIRECT(file_name_, line_,
-                             rtc::WebRtcSevToChromeSev(severity_))
+                             WebRtcSevToChromeSev(severity_))
           << str;
     }
 
@@ -204,13 +216,20 @@ void InitDiagnosticLoggingDelegateFunction(
   // This function may be called with the same argument several times if the
   // page is reloaded or there are several PeerConnections on one page with
   // logging enabled. This is OK, we simply don't have to do anything.
-  if (delegate == g_logging_delegate_function)
+  if (delegate == g_logging_delegate_function) {
     return;
+  }
   CHECK(!g_logging_delegate_function);
   g_logging_delegate_function = delegate;
 
-  if (g_extra_logging_init_function)
+  if (g_extra_logging_init_function) {
     g_extra_logging_init_function(delegate);
+  }
+}
+
+void ResetDiagnosticLoggingDelegateFunction() {
+  CHECK(g_logging_delegate_function);
+  g_logging_delegate_function = NULL;
 }
 
 void SetExtraLoggingInit(
@@ -220,11 +239,11 @@ void SetExtraLoggingInit(
   g_extra_logging_init_function = function;
 }
 
-bool CheckVlogIsOnHelper(rtc::LoggingSeverity severity,
+bool CheckVlogIsOnHelper(LoggingSeverity severity,
                          const char* file,
                          size_t N) {
-  return rtc::WebRtcVerbosityLevel(severity) <=
+  return WebRtcVerbosityLevel(severity) <=
          ::logging::GetVlogLevelHelper(file, N);
 }
 
-}  // namespace rtc
+}  // namespace webrtc

@@ -7,14 +7,14 @@
 #include <string_view>
 #include <vector>
 
+#include "base/types/expected.h"
 #include "third_party/abseil-cpp/absl/base/macros.h"
 
 namespace liburlpattern {
 
 ConstructorStringParser::ConstructorStringParser(
-    std::string_view constructor_string,
-    const StringParserOptions& options)
-    : input_(constructor_string), options_(options) {}
+    std::string_view constructor_string)
+    : input_(constructor_string) {}
 
 absl::Status ConstructorStringParser::Parse(
     ProtocolCheckCallback protocol_matches_special_scheme) {
@@ -22,31 +22,21 @@ absl::Status ConstructorStringParser::Parse(
   ABSL_ASSERT(token_index_ == 0u);
 
   auto tokenize_result = Tokenize(input_, TokenizePolicy::kLenient);
-  if (!tokenize_result.ok()) {
+  if (!tokenize_result.has_value()) {
     // This should not happen with kLenient mode, but we handle it anyway.
-    return tokenize_result.status();
+    return tokenize_result.error();
   }
 
   token_list_ = std::move(tokenize_result.value());
-
-  // This enables the behavior proposed in WICG/urlpattern#179.
-  const bool more_wildcards = options_.more_wildcards;
 
   // When constructing a pattern using structured input like
   // `new URLPattern({ pathname: 'foo' })` any missing components will be
   // defaulted to wildcards.
   //
-  // If |more_wildcards| is false, then the string format will make every
-  // component empty or a longer value, rather than a wildcard. This isn't done
-  // immediately, so that the base URL can be included to provide some component
-  // values for relative URLs. Therefore these values are initialized to their
-  // default values only when the parser exits the kInit state, and it is known
-  // if the pattern is relative or absolute.
-  //
-  // If |more_wildcards| is true, components which ordinarily appear "later"
-  // than those specified are instead treated as wildcards, which avoids the
-  // need to explicitly wildcard each of them. As a result, these values are not
-  // initialized to be empty until a "later" component is seen.
+  // Components which ordinarily appear "later" than those specified are instead
+  // treated as wildcards, which avoids the need to explicitly wildcard each of
+  // them. As a result, these values are not initialized to be empty until a
+  // "later" component is seen.
 
   // Iterate through the list of tokens and update our state machine as we go.
   for (; token_index_ < token_list_.size(); token_index_ += token_increment_) {
@@ -73,15 +63,8 @@ absl::Status ConstructorStringParser::Parse(
           ChangeState(StringParseState::kHash, Skip(1));
         } else if (IsSearchPrefix()) {
           ChangeState(StringParseState::kSearch, Skip(1));
-          if (!more_wildcards) {
-            result_.hash = "";
-          }
         } else {
           ChangeState(StringParseState::kPathname, Skip(0));
-          if (!more_wildcards) {
-            result_.search = "";
-            result_.hash = "";
-          }
         }
         continue;
       }
@@ -118,19 +101,6 @@ absl::Status ConstructorStringParser::Parse(
     switch (state_) {
       case StringParseState::kInit:
         if (IsProtocolSuffix()) {
-          if (!more_wildcards) {
-            // We are in absolute mode and we know values will not be inherited
-            // from a base URL.  Therefore initialize the rest of the components
-            // to the empty string.
-            result_.username = "";
-            result_.password = "";
-            result_.hostname = "";
-            result_.port = "";
-            result_.pathname = "";
-            result_.search = "";
-            result_.hash = "";
-          }
-
           // Update the state to expect the start of an absolute URL.
           RewindAndSetState(StringParseState::kProtocol);
         }
@@ -139,20 +109,12 @@ absl::Status ConstructorStringParser::Parse(
       case StringParseState::kProtocol:
         // If we find the end of the protocol component...
         if (IsProtocolSuffix()) {
-          absl::StatusOr<bool> protocol_check_result =
+          base::expected protocol_check_result =
               protocol_matches_special_scheme(MakeComponentString());
-          if (!protocol_check_result.ok()) {
-            return protocol_check_result.status();
+          if (!protocol_check_result.has_value()) {
+            return protocol_check_result.error();
           }
           should_treat_as_standard_url_ = protocol_check_result.value();
-
-          // Standard URLs default to `/` for the pathname.
-          //
-          // If |more_wildcards| is true, we wait until actually seeing the
-          // pathname or a later component to apply this default.
-          if (should_treat_as_standard_url_ && !more_wildcards) {
-            result_.pathname = "/";
-          }
 
           // By default we treat this as a "cannot-be-a-base-URL" or what chrome
           // calls a "path" URL.  In this case we go straight to the pathname
@@ -294,7 +256,7 @@ absl::Status ConstructorStringParser::Parse(
   // default port, if you didn't specify. This is ensures that
   // https://example.com/* does not match https://example.com:8443/, which is
   // another origin entirely.
-  if (more_wildcards && result_.hostname && !result_.port) {
+  if (result_.hostname && !result_.port) {
     result_.port = "";
   }
   return absl::OkStatus();
@@ -311,45 +273,37 @@ void ConstructorStringParser::ChangeState(StringParseState new_state,
       break;
     case StringParseState::kProtocol:
       result_.protocol = MakeComponentString();
-      present_components_.protocol = true;
       break;
     case StringParseState::kAuthority:
       // No component to set when transitioning from this state.
       break;
     case StringParseState::kUsername:
       result_.username = MakeComponentString();
-      present_components_.username = true;
       break;
     case StringParseState::kPassword:
       result_.password = MakeComponentString();
-      present_components_.password = true;
       break;
     case StringParseState::kHostname:
       result_.hostname = MakeComponentString();
-      present_components_.hostname = true;
       break;
     case StringParseState::kPort:
       result_.port = MakeComponentString();
-      present_components_.port = true;
       break;
     case StringParseState::kPathname:
       result_.pathname = MakeComponentString();
-      present_components_.pathname = true;
       break;
     case StringParseState::kSearch:
       result_.search = MakeComponentString();
-      present_components_.search = true;
       break;
     case StringParseState::kHash:
       result_.hash = MakeComponentString();
-      present_components_.hash = true;
       break;
     case StringParseState::kDone:
       ABSL_ASSERT(false);
       break;
   }
 
-  if (options_.more_wildcards && state_ != StringParseState::kInit &&
+  if (state_ != StringParseState::kInit &&
       new_state != StringParseState::kDone) {
     // If a component was skipped but a later component is present, it gets its
     // default value, explicitly.

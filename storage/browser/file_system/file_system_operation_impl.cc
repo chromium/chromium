@@ -24,7 +24,6 @@
 #include "storage/browser/file_system/file_system_backend.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_file_util.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/remove_operation_delegate.h"
 #include "storage/browser/file_system/sandbox_file_system_backend_delegate.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -425,7 +424,6 @@ void FileSystemOperationImpl::GetBucketSpaceRemainingAndRunTask(
 
   BucketLocator bucket =
       url.bucket().value_or(BucketLocator::ForDefaultBucket(url.storage_key()));
-  bucket.type = FileSystemTypeToQuotaStorageType(url.type());
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetBucketSpaceRemaining(

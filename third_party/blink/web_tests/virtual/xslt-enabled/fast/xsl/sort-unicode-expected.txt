@@ -1,0 +1,19 @@
+CONSOLE WARNING: XSLTProcessor and XSLT Processing Instructions have been deprecated by all browsers. These features will be removed from this browser soon. See https://chromestatus.com/feature/4709671889534976.
+lower-first
+Title	Artist
+abbies title	a
+Angies Title	A
+brents Title	b
+Brads Title	B
+ye	е
+yo	ё
+zh	ж
+upper-first
+Title	Artist
+Angies Title	A
+abbies title	a
+Brads Title	B
+brents Title	b
+ye	е
+yo	ё
+zh	ж

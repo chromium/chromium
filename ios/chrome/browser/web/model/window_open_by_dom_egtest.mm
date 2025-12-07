@@ -7,7 +7,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/content_settings/core/common/content_settings.h"
-#import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
+#import "ios/chrome/browser/infobars/ui_bundled/banners/infobar_banner_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -59,7 +59,8 @@ id<GREYMatcher> PopupBlocker() {
 
 // Tests that opening a link with target=_blank which then immediately closes
 // itself works.
-- (void)testLinkWithBlankTargetWithImmediateClose {
+// TODO(crbug.com/361752763): This test started to be flaky on 2024-08-07.
+- (void)FLAKY_testLinkWithBlankTargetWithImmediateClose {
   [ChromeEarlGrey tapWebStateElementWithID:
                       @"webScenarioWindowOpenBlankTargetWithImmediateClose"];
   [ChromeEarlGrey waitForMainTabCount:1];
@@ -190,8 +191,7 @@ id<GREYMatcher> PopupBlocker() {
   // TODO(crbug.com/40932726): Confirm the expected behavir of [ChromeEarlGrey
   // webStateLastCommittedURL] here. After https://crrev.com/c/4823237, this
   // returns empty URL ("").
-  DCHECK_EQ("",
-            [ChromeEarlGrey webStateLastCommittedURL]);
+  DCHECK_EQ("", [ChromeEarlGrey webStateLastCommittedURL]);
   // And confirm the location bar only shows "".
   [[EarlGrey selectElementWithMatcher:OmniboxText("")]
       assertWithMatcher:grey_notNil()];

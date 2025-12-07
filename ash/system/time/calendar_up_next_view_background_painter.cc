@@ -5,6 +5,9 @@
 #include "ash/system/time/calendar_up_next_view_background_painter.h"
 
 #include "cc/paint/paint_flags.h"
+#include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view.h"
@@ -20,22 +23,26 @@ constexpr float kTopOffset = 12.f;
 
 }  // namespace
 
-CalendarUpNextViewBackground::CalendarUpNextViewBackground(ui::ColorId color_id)
-    : color_id_(color_id) {}
+CalendarUpNextViewBackground::CalendarUpNextViewBackground(
+    ui::ColorId color_id) {
+  SetColor(color_id);
+}
 
 CalendarUpNextViewBackground::~CalendarUpNextViewBackground() = default;
 
 SkPath CalendarUpNextViewBackground::GetPath(const gfx::Size& size) {
   // First draw a rounded rectangle.
-  SkPath path;
+  SkPathBuilder path;
   gfx::RectF rect_f((gfx::SizeF(size)));
   rect_f.set_y(kTopOffset);
   SkRect rect = SkRect{rect_f.x(), rect_f.y(), rect_f.width(), rect_f.height()};
-  path.addRoundRect(
-      rect, (SkScalar[]){kBackgroundCornerRadius, kBackgroundCornerRadius,
-                         kBackgroundCornerRadius, kBackgroundCornerRadius, 0.f,
-                         0.f, 0.f, 0.f});
-  path.close();
+  path.addRRect(SkRRect::MakeRectRadii(
+      rect, (SkVector[]){
+                {kBackgroundCornerRadius, kBackgroundCornerRadius},
+                {kBackgroundCornerRadius, kBackgroundCornerRadius},
+                {0, 0},
+                {0, 0},
+            }));
 
   // Cache center-x for positioning curves when size changes.
   const float cx = rect_f.CenterPoint().x();
@@ -68,9 +75,8 @@ SkPath CalendarUpNextViewBackground::GetPath(const gfx::Size& size) {
   // Draw circle in the center.
   constexpr float kRadius = 16.f;
   path.addCircle(cx, /*y=*/kRadius, kRadius);
-  path.close();
 
-  return path;
+  return path.detach();
 }
 
 void CalendarUpNextViewBackground::Paint(gfx::Canvas* canvas,
@@ -80,7 +86,7 @@ void CalendarUpNextViewBackground::Paint(gfx::Canvas* canvas,
   flags.setBlendMode(SkBlendMode::kSrcOver);
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-  flags.setColor(view->GetColorProvider()->GetColor(color_id_));
+  flags.setColor(color().ResolveToSkColor(view->GetColorProvider()));
 
   // Get the path to draw on the canvas.
   SkPath path = GetPath(view->GetLocalBounds().size());
@@ -90,7 +96,6 @@ void CalendarUpNextViewBackground::Paint(gfx::Canvas* canvas,
 }
 
 void CalendarUpNextViewBackground::OnViewThemeChanged(views::View* view) {
-  SetNativeControlColor(view->GetColorProvider()->GetColor(color_id_));
   view->SchedulePaint();
 }
 

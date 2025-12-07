@@ -24,15 +24,13 @@
 #include "url/gurl.h"
 
 using content::NavigationSimulator;
-using page_load_metrics::mojom::UserInteractionLatencies;
 using page_load_metrics::mojom::UserInteractionLatency;
-using page_load_metrics::mojom::UserInteractionType;
 
 class AMPPageLoadMetricsObserverTest
     : public page_load_metrics::PageLoadMetricsObserverTestHarness,
       public testing::WithParamInterface<bool> {
  public:
-  AMPPageLoadMetricsObserverTest() {}
+  AMPPageLoadMetricsObserverTest() = default;
 
   AMPPageLoadMetricsObserverTest(const AMPPageLoadMetricsObserverTest&) =
       delete;
@@ -80,12 +78,12 @@ class AMPPageLoadMetricsObserverTest
       return;
     tester()->histogram_tester().ExpectUniqueSample(
         histogram,
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             event.value().InMilliseconds()),
         1);
     tester()->histogram_tester().ExpectUniqueSample(
         view_type_histogram,
-        static_cast<base::HistogramBase::Sample>(
+        static_cast<base::HistogramBase::Sample32>(
             event.value().InMilliseconds()),
         1);
   }
@@ -520,21 +518,14 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
   page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 3;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
-  auto& max_event_durations =
-      input_timing.max_event_durations->get_user_interaction_latencies();
+  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
   base::TimeTicks current_time = base::TimeTicks::Now();
-  max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(50), UserInteractionType::kKeyboard, 0,
-      current_time + base::Milliseconds(1000)));
-  max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(100), UserInteractionType::kTapOrClick, 1,
-      current_time + base::Milliseconds(2000)));
-  max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(150), UserInteractionType::kDrag, 2,
-      current_time + base::Milliseconds(3000)));
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(50), 0, current_time + base::Milliseconds(1000)));
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(100), 1, current_time + base::Milliseconds(2000)));
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(150), 2, current_time + base::Milliseconds(3000)));
 
   tester()->SimulateInputTimingUpdate(input_timing, subframe);
 
@@ -589,21 +580,14 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   tester()->SimulateMetadataUpdate(metadata, subframe);
 
   page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 3;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewUserInteractionLatencies({});
   base::TimeTicks current_time = base::TimeTicks::Now();
-  auto& max_event_durations =
-      input_timing.max_event_durations->get_user_interaction_latencies();
-  max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(50), UserInteractionType::kKeyboard, 0,
-      current_time + base::Milliseconds(1000)));
-  max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(100), UserInteractionType::kTapOrClick, 1,
-      current_time + base::Milliseconds(2000)));
-  max_event_durations.emplace_back(UserInteractionLatency::New(
-      base::Milliseconds(150), UserInteractionType::kDrag, 2,
-      current_time + base::Milliseconds(3000)));
+  auto& user_interaction_latencies = input_timing.user_interaction_latencies;
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(50), 0, current_time + base::Milliseconds(1000)));
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(100), 1, current_time + base::Milliseconds(2000)));
+  user_interaction_latencies.emplace_back(UserInteractionLatency::New(
+      base::Milliseconds(150), 2, current_time + base::Milliseconds(3000)));
 
   tester()->SimulateInputTimingUpdate(input_timing, subframe);
 
@@ -923,10 +907,6 @@ TEST_P(AMPPageLoadMetricsObserverTest,
   tester()->histogram_tester().ExpectTotalCount(
       "PageLoad.Clients.AMP.Experimental.PageTiming.InputToNavigation.Subframe",
       0);
-  tester()->histogram_tester().ExpectTotalCount(
-      "PageLoad.Clients.AMP.Experimental.PageTiming."
-      "MainFrameToSubFrameNavigationDelta.Subframe",
-      1);
 
   // We expect a source with a negative NavigationDelta metric, since the main
   // frame navigation occurred before the AMP subframe navigation.

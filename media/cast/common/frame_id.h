@@ -5,7 +5,7 @@
 #ifndef MEDIA_CAST_COMMON_FRAME_ID_H_
 #define MEDIA_CAST_COMMON_FRAME_ID_H_
 
-#include "third_party/openscreen/src/cast/streaming/frame_id.h"
+#include "third_party/openscreen/src/cast/streaming/public/frame_id.h"
 
 namespace media::cast {
 

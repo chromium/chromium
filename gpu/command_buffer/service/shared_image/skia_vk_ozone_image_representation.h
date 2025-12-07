@@ -6,6 +6,17 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SKIA_VK_OZONE_IMAGE_REPRESENTATION_H_
 
 #include <vulkan/vulkan.h>
+// vulkan.h includes <X11/Xlib.h> when VK_USE_PLATFORM_XLIB_KHR is defined
+// after https://github.com/KhronosGroup/Vulkan-Headers/pull/534.
+// This defines some macros which break build, so undefine them here.
+#undef Always
+#undef Bool
+#undef False
+#undef None
+#undef Status
+#undef Success
+#undef True
+
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"

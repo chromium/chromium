@@ -6,36 +6,6 @@ load("./tsc.star", "tsc")
 
 # TODO: crbug.com/1298825 - fix missing *.d.ts in tsconfig.
 __input_deps = {
-    "tools/typescript/definitions/settings_private.d.ts": [
-        "tools/typescript/definitions/chrome_event.d.ts",
-    ],
-    "tools/typescript/definitions/tabs.d.ts": [
-        "tools/typescript/definitions/chrome_event.d.ts",
-    ],
-    "chrome/browser/resources/inline_login/inline_login_app.ts": [
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_app.d.ts",
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_util.d.ts",
-        "chrome/browser/resources/gaia_auth_host/authenticator.d.ts",
-        "chrome/browser/resources/gaia_auth_host/saml_password_attributes.d.ts",
-    ],
-    "chrome/test/data/webui/inline_login/arc_account_picker_page_test.ts": [
-        "chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
-    ],
-    "third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts": [
-        "third_party/polymer/v3_0/components-chromium/iron-dropdown/iron-dropdown.d.ts",
-        "third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-overlay-behavior.d.ts",
-        "third_party/polymer/v3_0/components-chromium/iron-overlay-behavior/iron-scroll-manager.d.ts",
-        "third_party/polymer/v3_0/components-chromium/neon-animation/neon-animatable-behavior.d.ts",
-        "third_party/polymer/v3_0/components-chromium/neon-animation/neon-animation-runner-behavior.d.ts",
-        "third_party/polymer/v3_0/components-chromium/paper-behaviors/paper-ripple-behavior.d.ts",
-        "third_party/polymer/v3_0/components-chromium/polymer/lib/utils/hide-template-controls.d.ts",
-        "third_party/polymer/v3_0/components-chromium/polymer/lib/utils/scope-subtree.d.ts",
-    ],
-    "./gen/chrome/test/data/webui/inline_login/preprocessed/arc_account_picker_page_test.ts": [
-        "chrome/browser/resources/chromeos/arc_account_picker/arc_account_picker_browser_proxy.d.ts",
-        "chrome/test/data/webui/chromeos/arc_account_picker/test_util.d.ts",
-    ],
     "third_party/material_web_components/tsconfig_base.json": [
         "third_party/material_web_components/components-chromium/node_modules:node_modules",
     ],
@@ -46,11 +16,20 @@ def __filegroups(ctx):
     return {
         "third_party/node/node_modules:node_modules": {
             "type": "glob",
-            "includes": ["*.js", "*.cjs", "*.mjs", "*.json", "*.js.flow", "*.ts", "rollup", "terser", "tsc"],
+            "includes": [
+                "*.js",
+                "*.json",
+                "*.ts",
+                "tsc",
+            ],
         },
         "third_party/material_web_components/components-chromium/node_modules:node_modules": {
             "type": "glob",
-            "includes": ["*.js", "*.json", "*.ts"],
+            "includes": [
+                # This is necessary for
+                # gen/third_party/cros-components/tsconfig_cros_components__ts_library.json
+                "package.json",
+            ],
         },
     }
 
@@ -58,6 +37,7 @@ def _ts_library(ctx, cmd):
     in_files = []
     deps = []
     definitions = []
+    path_mappings = []
     flag = ""
     tsconfig_base = None
     for i, arg in enumerate(cmd.args):
@@ -73,6 +53,7 @@ def _ts_library(ctx, cmd):
             deps.append(arg)
             continue
         if flag == "--path_mappings":
+            path_mappings.append(arg)
             continue
         if arg == "--root_dir":
             root_dir = cmd.args[i + 1]
@@ -95,6 +76,11 @@ def _ts_library(ctx, cmd):
     tsconfig["references"] = [{"path": dep} for dep in deps]
     tsconfig_path = path.join(gen_dir, "tsconfig.json")
     deps = tsc.scandeps(ctx, tsconfig_path, tsconfig)
+    for m in path_mappings:
+        _, _, pathname = m.partition("|")
+        if pathname.endswith("/*"):
+            continue
+        deps.append(path.join(gen_dir, pathname))
     ctx.actions.fix(inputs = cmd.inputs + deps)
 
 def _ts_definitions(ctx, cmd):

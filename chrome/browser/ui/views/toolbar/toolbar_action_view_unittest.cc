@@ -12,15 +12,20 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
-#include "chrome/browser/ui/toolbar/test_toolbar_action_view_controller.h"
-#include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/toolbar/test_toolbar_action_view_model.h"
+#include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/menu_button.h"
 
 namespace {
@@ -44,6 +49,14 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
     return overflow_reference_view_.get();
   }
   gfx::Size GetToolbarActionSize() override { return gfx::Size(32, 32); }
+  MOCK_METHOD(void,
+              MovePinnedActionBy,
+              (const std::string& action_id, int move_by),
+              (override));
+  void UpdateHoverCard(ToolbarActionView* action_view,
+                       ToolbarActionHoverCardUpdateType update_type) override {}
+  void OnContextMenuShown(const std::string& action_id) override {}
+  void OnContextMenuClosed(const std::string& action_id) override {}
   void WriteDragDataForView(views::View* sender,
                             const gfx::Point& press_pt,
                             ui::OSExchangeData* data) override {}
@@ -53,7 +66,9 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
   }
   bool CanStartDragForView(views::View* sender,
                            const gfx::Point& press_pt,
-                           const gfx::Point& p) override { return false; }
+                           const gfx::Point& p) override {
+    return false;
+  }
 
   void set_web_contents(content::WebContents* web_contents) {
     web_contents_ = web_contents;
@@ -67,20 +82,17 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
 
 class OpenMenuListener : public views::ContextMenuController {
  public:
-  explicit OpenMenuListener(views::View* view)
-      : view_(view),
-        opened_menu_(false) {
+  explicit OpenMenuListener(views::View* view) : view_(view) {
     view_->set_context_menu_controller(this);
   }
   OpenMenuListener(const OpenMenuListener&) = delete;
   OpenMenuListener& operator=(const OpenMenuListener&) = delete;
-  ~OpenMenuListener() override {
-    view_->set_context_menu_controller(nullptr);
-  }
+  ~OpenMenuListener() override { view_->set_context_menu_controller(nullptr); }
 
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override {
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
     opened_menu_ = true;
   }
 
@@ -89,7 +101,7 @@ class OpenMenuListener : public views::ContextMenuController {
  private:
   raw_ptr<views::View> view_;
 
-  bool opened_menu_;
+  bool opened_menu_ = false;
 };
 
 }  // namespace
@@ -104,9 +116,9 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
 
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
-    controller_ =
-        std::make_unique<TestToolbarActionViewController>("fake controller");
-    action_view_delegate_ = std::make_unique<TestToolbarActionViewDelegate>();
+    view_model_ = std::make_unique<TestToolbarActionViewModel>("fake model");
+    action_view_delegate_ =
+        std::make_unique<testing::NiceMock<TestToolbarActionViewDelegate>>();
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
   }
@@ -116,17 +128,28 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::TearDown();
   }
 
+  void Reset() {
+    widget_.reset();
+    action_view_delegate_.reset();
+    view_model_.reset();
+  }
+
   views::Widget* widget() { return widget_.get(); }
 
-  TestToolbarActionViewController* controller() { return controller_.get(); }
+  TestToolbarActionViewModel* view_model() { return view_model_.get(); }
 
   TestToolbarActionViewDelegate* action_view_delegate() {
     return action_view_delegate_.get();
   }
+  testing::NiceMock<TestToolbarActionViewDelegate>&
+  mock_action_view_delegate() {
+    return *action_view_delegate_;
+  }
 
  private:
-  std::unique_ptr<TestToolbarActionViewController> controller_;
-  std::unique_ptr<TestToolbarActionViewDelegate> action_view_delegate_;
+  std::unique_ptr<TestToolbarActionViewModel> view_model_;
+  std::unique_ptr<testing::NiceMock<TestToolbarActionViewDelegate>>
+      action_view_delegate_;
 
   // The widget managed by this test.
   std::unique_ptr<views::Widget> widget_;
@@ -135,46 +158,45 @@ class ToolbarActionViewUnitTest : public ChromeViewsTestBase {
 // A MenuButton subclass that provides access to some MenuButton internals.
 class TestToolbarActionView : public ToolbarActionView {
  public:
-  TestToolbarActionView(ToolbarActionViewController* view_controller,
-                        Delegate* delegate)
-      : ToolbarActionView(view_controller, delegate) {}
+  TestToolbarActionView(ToolbarActionViewModel* model, Delegate* delegate)
+      : ToolbarActionView(model, delegate) {}
   TestToolbarActionView(const TestToolbarActionView&) = delete;
   TestToolbarActionView& operator=(const TestToolbarActionView&) = delete;
-  ~TestToolbarActionView() override {}
+  ~TestToolbarActionView() override = default;
 };
 
 // Verifies there is no crash when a ToolbarActionView with an InkDrop is
 // destroyed while holding a |pressed_lock_|.
 TEST_F(ToolbarActionViewUnitTest,
        NoCrashWhenDestroyingToolbarActionViewThatHasAPressedLock) {
-  TestToolbarActionViewController* view_controller = controller();
+  TestToolbarActionViewModel* model = view_model();
 
   // Create a new toolbar action view.
-  auto view = std::make_unique<ToolbarActionView>(view_controller,
-                                                  action_view_delegate());
+  auto view =
+      std::make_unique<ToolbarActionView>(model, action_view_delegate());
   view->SetBoundsRect(gfx::Rect(0, 0, 200, 20));
   widget()->SetContentsView(std::move(view));
   widget()->Show();
 
-  view_controller->ShowPopup(true);
+  model->ShowPopup(true);
 }
 
 // Verifies the InkDropAnimation used by the ToolbarActionView doesn't fail a
 // DCHECK for an unsupported transition from ACTIVATED to ACTION_PENDING.
 TEST_F(ToolbarActionViewUnitTest,
        NoCrashWhenPressingMouseOnToolbarActionViewThatHasAPressedLock) {
-  TestToolbarActionViewController* view_controller = controller();
+  TestToolbarActionViewModel* model = view_model();
 
   // Create a new toolbar action view.
-  auto view = std::make_unique<ToolbarActionView>(view_controller,
-                                                  action_view_delegate());
+  auto view =
+      std::make_unique<ToolbarActionView>(model, action_view_delegate());
   view->SetBoundsRect(gfx::Rect(0, 0, 200, 20));
   widget()->SetContentsView(std::move(view));
   widget()->Show();
 
   ui::test::EventGenerator generator(GetContext(), widget()->GetNativeWindow());
 
-  view_controller->ShowPopup(true);
+  model->ShowPopup(true);
   generator.PressLeftButton();
 }
 
@@ -193,14 +215,14 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   // ViewsTestBase initializes the aura environment, so the factory shouldn't.
   content::TestWebContentsFactory web_contents_factory;
 
-  TestToolbarActionViewController* view_controller = controller();
+  TestToolbarActionViewModel* model = view_model();
   TestToolbarActionViewDelegate* view_delegate = action_view_delegate();
 
   // Configure the test controller and delegate.
   std::u16string name = u"name";
-  view_controller->SetAccessibleName(name);
+  model->SetAccessibleName(name);
   std::u16string tooltip = u"tooltip";
-  view_controller->SetTooltip(tooltip);
+  model->SetTooltip(tooltip);
   content::WebContents* web_contents =
       web_contents_factory.CreateWebContents(&profile);
   CreateSessionServiceTabHelper(web_contents);
@@ -211,8 +233,7 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   generator.MoveMouseTo(gfx::Point(300, 300));
 
   // Create a new toolbar action view.
-  auto owning_view =
-      std::make_unique<ToolbarActionView>(view_controller, view_delegate);
+  auto owning_view = std::make_unique<ToolbarActionView>(model, view_delegate);
   owning_view->SetBoundsRect(gfx::Rect(0, 0, 200, 20));
   ToolbarActionView* view = owning_view.get();
   widget()->SetContentsView(std::move(owning_view));
@@ -220,47 +241,46 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
 
   // Check that the tooltip and accessible state of the view match the
   // controller's.
-  EXPECT_EQ(tooltip, view->GetTooltipText(gfx::Point()));
+  EXPECT_EQ(tooltip, view->GetRenderedTooltipText(gfx::Point()));
   ui::AXNodeData ax_node_data;
-  view->GetAccessibleNodeData(&ax_node_data);
+  view->GetViewAccessibility().GetAccessibleNodeData(&ax_node_data);
   EXPECT_EQ(name, ax_node_data.GetString16Attribute(
                       ax::mojom::StringAttribute::kName));
 
   // The button should start in normal state, with no actions executed.
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
-  EXPECT_EQ(0, view_controller->execute_action_count());
+  EXPECT_EQ(0, model->execute_action_count());
 
   // Click the button. This should execute it.
   generator.MoveMouseTo(gfx::Point(10, 10));
   generator.ClickLeftButton();
-  EXPECT_EQ(1, view_controller->execute_action_count());
+  EXPECT_EQ(1, model->execute_action_count());
 
   // Move the mouse off the button, and show a popup through a non-user action.
   // Since this was not a user action, the button should not be pressed.
   generator.MoveMouseTo(gfx::Point(300, 300));
-  view_controller->ShowPopup(false);
+  model->ShowPopup(false);
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
-  view_controller->HidePopup();
+  model->HidePopup();
 
   // Show the popup through a user action - the button should be pressed.
-  view_controller->ShowPopup(true);
+  model->ShowPopup(true);
   EXPECT_EQ(views::Button::STATE_PRESSED, view->GetState());
-  view_controller->HidePopup();
+  model->HidePopup();
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
 
   // Ensure that clicking on an otherwise-disabled action opens the
   // context menu.
-  view_controller->SetEnabled(false);
+  model->SetEnabled(false);
   // Even though the controller is disabled, the button remains enabled
   // because it will open the context menu.
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
-  int old_execute_action_count = view_controller->execute_action_count();
+  int old_execute_action_count = model->execute_action_count();
   {
     OpenMenuListener menu_listener(view);
     view->Activate(nullptr);
     EXPECT_TRUE(menu_listener.opened_menu());
-    EXPECT_EQ(old_execute_action_count,
-              view_controller->execute_action_count());
+    EXPECT_EQ(old_execute_action_count, model->execute_action_count());
   }
 
   // Create an overflow button.
@@ -270,10 +290,79 @@ TEST_F(ToolbarActionViewUnitTest, MAYBE_BasicToolbarActionViewTest) {
   // If the view isn't visible, the overflow button should be pressed for
   // popups.
   view->SetVisible(false);
-  view_controller->ShowPopup(true);
+  model->ShowPopup(true);
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
   EXPECT_EQ(views::Button::STATE_PRESSED, overflow_button->GetState());
-  view_controller->HidePopup();
+  model->HidePopup();
   EXPECT_EQ(views::Button::STATE_NORMAL, view->GetState());
   EXPECT_EQ(views::Button::STATE_NORMAL, overflow_button->GetState());
+}
+
+// Verifies that pressing [Ctrl|Cmd] + Left / Right triggers a call to move the
+// toolbar action.
+TEST_F(ToolbarActionViewUnitTest, TestKeyboardReordering) {
+  TestToolbarActionViewModel* model = view_model();
+
+  auto owned_view =
+      std::make_unique<ToolbarActionView>(model, action_view_delegate());
+  auto* view = owned_view.get();
+  view->SetBoundsRect(gfx::Rect(0, 0, 200, 20));
+  widget()->SetContentsView(std::move(owned_view));
+  widget()->Show();
+
+  auto send_key_press = [view](ui::KeyboardCode code, int flags) {
+    view->OnKeyPressed(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
+                                    ui::EventTimeForNow()));
+    view->OnKeyReleased(ui::KeyEvent(ui::EventType::kKeyPressed, code, flags,
+                                     ui::EventTimeForNow()));
+  };
+
+  // Start by pressing just left / right. No modifier is present, so this should
+  // do nothing.
+  EXPECT_CALL(mock_action_view_delegate(), MovePinnedActionBy).Times(0);
+  send_key_press(ui::VKEY_RIGHT, ui::EF_NONE);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  EXPECT_CALL(mock_action_view_delegate(), MovePinnedActionBy).Times(0);
+  send_key_press(ui::VKEY_LEFT, ui::EF_NONE);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  // Next, do the same with the wrong modifier key. Again, this should do
+  // nothing.
+  constexpr int kWrongModifierFlag =
+#if BUILDFLAG(IS_MAC)
+      ui::EF_CONTROL_DOWN;
+#else
+      ui::EF_COMMAND_DOWN;
+#endif
+
+  EXPECT_CALL(mock_action_view_delegate(), MovePinnedActionBy).Times(0);
+  send_key_press(ui::VKEY_RIGHT, kWrongModifierFlag);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  EXPECT_CALL(mock_action_view_delegate(), MovePinnedActionBy).Times(0);
+  send_key_press(ui::VKEY_LEFT, kWrongModifierFlag);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  // Finally, use the correct modifier flag, and verify the delegate is told
+  // to move the action by the correct index.
+  constexpr int kCorrectModifierFlag =
+#if BUILDFLAG(IS_MAC)
+      ui::EF_COMMAND_DOWN;
+#else
+      ui::EF_CONTROL_DOWN;
+#endif
+  EXPECT_CALL(mock_action_view_delegate(),
+              MovePinnedActionBy(model->GetId(), 1))
+      .Times(1);
+  send_key_press(ui::VKEY_RIGHT, kCorrectModifierFlag);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  EXPECT_CALL(mock_action_view_delegate(),
+              MovePinnedActionBy(model->GetId(), -1))
+      .Times(1);
+  send_key_press(ui::VKEY_LEFT, kCorrectModifierFlag);
+  testing::Mock::VerifyAndClearExpectations(&mock_action_view_delegate());
+
+  Reset();
 }

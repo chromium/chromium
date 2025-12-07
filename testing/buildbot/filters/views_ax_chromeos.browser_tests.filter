@@ -1,0 +1,14 @@
+NotificationCenterSpokenFeedbackTest.*
+SpokenFeedbackTest.*
+OobeSpokenFeedbackTest.*
+SigninToUserProfileSwitchTest.*
+DeskTemplatesSpokenFeedbackTest.*
+ShortcutsAppSpokenFeedbackTest.*
+SpokenFeedbackWithCandidateWindowTest.*
+SpokenFeedbackWithMagnifierTest.*
+SpokenFeedbackAppListTest.*
+NotificationSpokenFeedbackAppListTest.*
+SpokenFeedbackAppListSearchTest.*
+SelectToSpeakTest.*
+SelectToSpeakTestWithVoiceSwitching.*
+AutomationManagerAuraBrowserTest.*

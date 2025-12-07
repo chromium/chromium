@@ -2,22 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/test/chromedriver/chrome/stub_web_view.h"
+
 #include "base/files/file_path.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/status.h"
-#include "chrome/test/chromedriver/chrome/stub_web_view.h"
 #include "chrome/test/chromedriver/chrome/ui_events.h"
+#include "chrome/test/chromedriver/chrome/web_view.h"
 
 StubWebView::StubWebView(const std::string& id) : id_(id) {}
 
-StubWebView::~StubWebView() {}
+StubWebView::~StubWebView() = default;
 
 bool StubWebView::IsServiceWorker() const {
   return false;
 }
 
+void StubWebView::SetupChildView(std::unique_ptr<StubWebView> child) {
+  child_ = std::move(child);
+}
+
 std::string StubWebView::GetId() {
   return id_;
+}
+
+std::string StubWebView::GetSessionId() {
+  return session_id_;
 }
 
 bool StubWebView::WasCrashed() {
@@ -54,7 +64,7 @@ Status StubWebView::Resume(const Timeout* timeout) {
 }
 
 Status StubWebView::StartBidiServer(std::string bidi_mapper_script,
-                                    const base::Value::Dict& mapper_options) {
+                                    bool enable_unsafe_extension_debugging) {
   return Status{kOk};
 }
 
@@ -187,7 +197,16 @@ Status StubWebView::WaitForPendingNavigations(const std::string& frame_id,
 }
 
 Status StubWebView::IsPendingNavigation(const Timeout* timeout,
-                                        bool* is_pending) const {
+                                        bool* is_pending) {
+  return Status(kOk);
+}
+
+Status StubWebView::WaitForPendingActivePage(const Timeout& timeout) {
+  return Status(kOk);
+}
+
+Status StubWebView::IsNotPendingActivePage(const Timeout* timeout,
+                                           bool* is_not_pending) const {
   return Status(kOk);
 }
 
@@ -290,12 +309,30 @@ Status StubWebView::CallFunctionWithTimeout(
     const std::string& function,
     const base::Value::List& args,
     const base::TimeDelta& timeout,
+    const CallFunctionOptions& options,
     std::unique_ptr<base::Value>* result) {
   return Status{kOk};
 }
 
 bool StubWebView::IsDialogOpen() const {
   return false;
+}
+
+bool StubWebView::IsTab() const {
+  return false;
+}
+
+PageTracker* StubWebView::GetPageTracker() const {
+  return nullptr;
+}
+
+std::string StubWebView::GetTabId() {
+  return "";
+}
+
+Status StubWebView::GetActivePage(WebView** web_view) {
+  *web_view = child_ ? child_.get() : nullptr;
+  return Status(kOk);
 }
 
 Status StubWebView::GetDialogMessage(std::string& message) const {
@@ -309,4 +346,8 @@ Status StubWebView::GetTypeOfDialog(std::string& type) const {
 Status StubWebView::HandleDialog(bool accept,
                                  const std::optional<std::string>& text) {
   return Status(kOk);
+}
+
+WebView* StubWebView::FindContainerForFrame(const std::string& frame_id) {
+  return nullptr;
 }

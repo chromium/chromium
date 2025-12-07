@@ -70,7 +70,7 @@ proto_library("absolute_root_proto") {
     "root/absolute_child.proto",
     "root/absolute_root.proto",
   ]
-  link_deps = [
+  deps = [
     ":absolute_dep_proto",
     ":relative_dep_proto",
   ]
@@ -86,7 +86,7 @@ proto_library("relative_root_proto") {
     "root/relative_child.proto",
     "root/relative_root.proto",
   ]
-  link_deps = [
+  deps = [
     ":absolute_dep_proto",
     ":relative_dep_proto",
   ]

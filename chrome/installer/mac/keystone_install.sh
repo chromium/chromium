@@ -19,13 +19,15 @@
 #   When set to a non-empty value, the product at this path will be updated.
 #   ksadmin will not be consulted to locate the installed product, nor will it
 #   be called to update any tickets.
+# GOOGLE_CHROME_UPDATER_TEST_ENROLLMENT_PATH
+#   When set to a non-empty value, the installer will search for an enrollment
+#   ticket at this path. Otherwise, the default path will be used.
 #
 # Exit codes:
 #  0  Happiness
 #  1  Unknown failure
 #  2  Basic sanity check source failure (e.g. no app on disk image)
 #  3  Basic sanity check destination failure (e.g. ticket points to nothing)
-#  4  Update driven by user ticket when a system ticket is also present
 #  5  Could not prepare existing installed version to receive update
 #  6  Patch sanity check failure
 #  7  rsync failed (could not copy new versioned directory to Versions)
@@ -33,9 +35,12 @@
 #  9  Could not get the version, update URL, or channel after update
 # 10  Updated application does not have the version number from the update
 # 11  ksadmin failure
-# 12  dirpatcher failed for versioned directory
-# 13  dirpatcher failed for outer .app bundle
+# 12  Deprecated: dirpatcher failed for versioned directory
+# 13  Deprecated: dirpatcher failed for outer .app bundle
 # 14  The update is incompatible with the system (presently unused)
+#
+# The following exit codes were formerly used and shouldn't be reassigned:
+#  4  Update driven by user ticket when a system ticket is also present
 #
 # The following exit codes can be used to convey special meaning to Keystone.
 # KeystoneRegistration will present these codes to Chrome as "success."
@@ -74,6 +79,7 @@ readonly KS_CHANNEL_KEY="KSChannelID"
 # system /bin/sh with a newer bash, probably all before SIP became a thing.)
 : ${GOOGLE_CHROME_UPDATER_DEBUG:=}
 : ${GOOGLE_CHROME_UPDATER_TEST_PATH:=}
+: ${GOOGLE_CHROME_UPDATER_TEST_ENROLLMENT_PATH:=}
 
 err() {
   local error="${1}"
@@ -300,8 +306,9 @@ is_version_ge() {
   local right="${2}"
 
   local -a left_array right_array
-  IFS=. left_array=(${left})
-  IFS=. right_array=(${right})
+  local IFS=.
+  left_array=(${left})
+  right_array=(${right})
 
   local left_count=${#left_array[@]}
   local right_count=${#right_array[@]}
@@ -365,7 +372,7 @@ ksadmin_version() {
       # This isn't very special, it's just what happens to be current as this is
       # written. It's new enough that all of the feature checks
       # (ksadmin_supports_*) pass.
-      g_ksadmin_version="1.2.13.41"
+      g_ksadmin_version="137.0.7106.0"
     else
       g_ksadmin_version="$(ksadmin --ksadmin-version || true)"
     fi
@@ -432,6 +439,11 @@ ksadmin_supports_versionpath_versionkey() {
   # return value.
 }
 
+# Returns 0 (true) if ksadmin supports --print_xattr_tag_brand.
+ksadmin_supports_print_xattr_tag_brand() {
+  is_ksadmin_version_ge 137.0.7106.0
+}
+
 # Runs "defaults read" to obtain the value of a key in a property list. As
 # with "defaults read", an absolute path to a plist is supplied, without the
 # ".plist" extension.
@@ -465,95 +477,6 @@ infoplist_read() {
   __CFPREFERENCES_AVOID_DAEMON=1 defaults read "${@}"
 }
 
-# When a patch update fails because the old installed copy doesn't match the
-# expected state, mark_failed_patch_update updates the Keystone ticket by
-# adding "-full" to the tag. The server will see this on a subsequent update
-# attempt and will provide a full update (as opposed to a patch) to the
-# client.
-#
-# Even if mark_failed_patch_update fails to modify the tag, the user will
-# eventually be updated. Patch updates are only provided for successive
-# releases on a particular channel, to update version o to version o+1. If a
-# patch update fails in this case, eventually version o+2 will be released,
-# and no patch update will exist to update o to o+2, so the server will
-# provide a full update package.
-mark_failed_patch_update() {
-  local product_id="${1}"
-  local old_ks_plist="${2}"
-  local old_version_app="${3}"
-  local system_ticket="${4}"
-
-  # This step isn't critical.
-  local set_e=
-  if [[ "${-}" =~ e ]]; then
-    set_e="y"
-    set +e
-  fi
-
-  note "marking failed patch update"
-
-  local channel
-  channel="$(infoplist_read "${old_ks_plist}" "${KS_CHANNEL_KEY}" 2> /dev/null)"
-
-  local tag="${channel}"
-  local tag_key="${KS_CHANNEL_KEY}"
-
-  tag="${tag}-full"
-  tag_key="${tag_key}-full"
-
-  note "tag = ${tag}"
-  note "tag_key = ${tag_key}"
-
-  # ${old_ks_plist}, used for --tag-path, is the Info.plist for the old
-  # version of Chrome. It may not contain the keys for the "-full" tag suffix.
-  # If it doesn't, just bail out without marking the patch update as failed.
-  local read_tag="$(infoplist_read "${old_ks_plist}" "${tag_key}" 2> /dev/null)"
-  note "read_tag = ${read_tag}"
-  if [[ -z "${read_tag}" ]]; then
-    note "couldn't mark failed patch update"
-    if [[ -n "${set_e}" ]]; then
-      set -e
-    fi
-    return 0
-  fi
-
-  local old_ks_plist_path="${old_ks_plist}.plist"
-
-  # Using ksadmin without --register only updates specified values in the
-  # ticket, without changing other existing values.
-  local ksadmin_args=(
-    --productid "${product_id}"
-  )
-
-  if ksadmin_supports_tag; then
-    ksadmin_args+=(
-      --tag "${tag}"
-    )
-  fi
-
-  if ksadmin_supports_tagpath_tagkey; then
-    ksadmin_args+=(
-      --tag-path "${old_ks_plist_path}"
-      --tag-key "${tag_key}"
-    )
-  fi
-
-  note "ksadmin_args = ${ksadmin_args[*]}"
-
-  if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]]; then
-    note "test mode: not calling Keystone to mark failed patch update"
-  elif ! ksadmin "${ksadmin_args[@]}"; then
-    err "ksadmin failed to mark failed patch update"
-  else
-    note "marked failed patch update"
-  fi
-
-  # Go back to how things were.
-  if [[ -n "${set_e}" ]]; then
-    set -e
-  fi
-}
-
 usage() {
   echo "usage: ${ME} update_dmg_mount_point" >& 2
 }
@@ -570,7 +493,6 @@ main() {
                            "Google Chrome Dev.app" "Google Chrome Canary.app" )
   readonly FRAMEWORK_NAME="Google Chrome Framework"
   readonly FRAMEWORK_DIR="${FRAMEWORK_NAME}.framework"
-  readonly PATCH_DIR=".patch"
   readonly CONTENTS_DIR="Contents"
   readonly APP_PLIST="${CONTENTS_DIR}/Info"
   readonly VERSIONS_DIR_NEW=\
@@ -604,10 +526,13 @@ main() {
   if [[ ${EUID} -eq 0 ]]; then
     readonly RSYNC_FLAGS="--ignore-times --links --perms --recursive --times"
   else
-    # When non-root, omit dir times, since rsync can't update them if the
-    # directories are owned by a different user.
+    # When non-root, omit link and dir times, since rsync can't update them if
+    # the directories are owned by a different user. Also avoid --perms, since
+    # in some cases users can't change the permissions of files owned by other
+    # users.
     readonly RSYNC_FLAGS=\
-"--ignore-times --links --perms --recursive --times --omit-dir-times"
+"--ignore-times --links --no-perms --executability --chmod=u=rwX,go=rX\
+ --recursive"
   fi
 
   # It's difficult to get GOOGLE_CHROME_UPDATER_DEBUG set in the environment
@@ -633,169 +558,71 @@ main() {
     exit 2
   fi
 
-  local patch_dir="${update_dmg_mount_point}/${PATCH_DIR}"
-  if [[ "${patch_dir:0:1}" != "/" ]]; then
-    note "patch_dir = ${patch_dir}"
-    err "patch_dir must be an absolute path"
-    exit 2
-  fi
-
-  # Figure out if this is an ordinary installation disk image being used as a
-  # full update, or a patch.  A patch will have a .patch directory at the root
-  # of the disk image containing information about the update, tools to apply
-  # it, and the update contents.
-  local is_patch=
-  local dirpatcher=
-  if [[ -d "${patch_dir}" ]]; then
-    # patch_dir exists and is a directory - this is a patch update.
-    is_patch="y"
-    dirpatcher="${patch_dir}/dirpatcher.sh"
-    if ! [[ -x "${dirpatcher}" ]]; then
-      err "couldn't locate dirpatcher"
-      exit 6
-    fi
-  elif [[ -e "${patch_dir}" ]]; then
-    # patch_dir exists, but is not a directory - what's that mean?
-    note "patch_dir = ${patch_dir}"
-    err "patch_dir must be a directory"
-    exit 2
-  else
-    # patch_dir does not exist - this is a full "installer."
-    patch_dir=
-  fi
-  note "patch_dir = ${patch_dir}"
-  note "is_patch = ${is_patch}"
-  note "dirpatcher = ${dirpatcher}"
-
   # The update to install.
 
-  # update_app is the path to the new version of the .app.  It will only be
-  # set at this point for a non-patch update.  It is not yet set for a patch
-  # update because no such directory exists yet; it will be set later when
-  # dirpatcher creates it.
+  # update_app is the path to the new version of the .app.
   local update_app=
 
-  # update_version_app_old, patch_app_dir, and patch_versioned_dir will only
-  # be set for patch updates.
-  local update_version_app_old=
-  local patch_app_dir=
-  local patch_versioned_dir=
-
   local update_version_app update_version_ks product_id update_layout_new
-  if [[ -z "${is_patch}" ]]; then
-    local found_app
-    for app_dir_name in "${APP_DIR_NAMES[@]}"; do
-      note "looking for ${app_dir_name}"
-      update_app="${update_dmg_mount_point}/${app_dir_name}"
+  local found_app
+  for app_dir_name in "${APP_DIR_NAMES[@]}"; do
+    note "looking for ${app_dir_name}"
+    update_app="${update_dmg_mount_point}/${app_dir_name}"
 
-      if [[ -d "${update_app}" ]]; then
-        note "found ${app_dir_name}"
-        found_app="y"
-        break
-      fi
-    done
-
-    if [[ -z "${found_app}" ]]; then
-      err "couldn't locate any app on the update dmg"
-      exit 2
+    if [[ -d "${update_app}" ]]; then
+      note "found ${app_dir_name}"
+      found_app="y"
+      break
     fi
-    note "update_app = ${update_app}"
+  done
 
-    # Make sure that it's an absolute path.
-    if [[ "${update_app:0:1}" != "/" ]]; then
-      err "update_app must be an absolute path"
-      exit 2
-    fi
-
-    # Get some information about the update.
-    note "reading update values"
-
-    local update_app_plist="${update_app}/${APP_PLIST}"
-    note "update_app_plist = ${update_app_plist}"
-    if ! update_version_app="$(infoplist_read "${update_app_plist}" \
-                                              "${APP_VERSION_KEY}")" ||
-       [[ -z "${update_version_app}" ]]; then
-      err "couldn't determine update_version_app"
-      exit 2
-    fi
-    note "update_version_app = ${update_version_app}"
-
-    local update_ks_plist="${update_app_plist}"
-    note "update_ks_plist = ${update_ks_plist}"
-    if ! update_version_ks="$(infoplist_read "${update_ks_plist}" \
-                                             "${KS_VERSION_KEY}")" ||
-       [[ -z "${update_version_ks}" ]]; then
-      err "couldn't determine update_version_ks"
-      exit 2
-    fi
-    note "update_version_ks = ${update_version_ks}"
-
-    if ! product_id="$(infoplist_read "${update_ks_plist}" \
-                                      "${KS_PRODUCT_KEY}")" ||
-       [[ -z "${product_id}" ]]; then
-      err "couldn't determine product_id"
-      exit 2
-    fi
-    note "product_id = ${product_id}"
-
-    if [[ -d "${update_app}/${VERSIONS_DIR_NEW}" ]]; then
-      update_layout_new="y"
-    fi
-    note "update_layout_new = ${update_layout_new}"
-  else  # [[ -n "${is_patch}" ]]
-    # Get some information about the update.
-    note "reading update values"
-
-    if ! update_version_app_old=$(<"${patch_dir}/old_app_version") ||
-       [[ -z "${update_version_app_old}" ]]; then
-      err "couldn't determine update_version_app_old"
-      exit 2
-    fi
-    note "update_version_app_old = ${update_version_app_old}"
-
-    if ! update_version_app=$(<"${patch_dir}/new_app_version") ||
-       [[ -z "${update_version_app}" ]]; then
-      err "couldn't determine update_version_app"
-      exit 2
-    fi
-    note "update_version_app = ${update_version_app}"
-
-    if ! update_version_ks=$(<"${patch_dir}/new_ks_version") ||
-       [[ -z "${update_version_ks}" ]]; then
-      err "couldn't determine update_version_ks"
-      exit 2
-    fi
-    note "update_version_ks = ${update_version_ks}"
-
-    if ! product_id=$(<"${patch_dir}/ks_product") ||
-       [[ -z "${product_id}" ]]; then
-      err "couldn't determine product_id"
-      exit 2
-    fi
-    note "product_id = ${product_id}"
-
-    patch_app_dir="${patch_dir}/application.dirpatch"
-    if ! [[ -d "${patch_app_dir}" ]]; then
-      err "couldn't locate patch_app_dir"
-      exit 6
-    fi
-    note "patch_app_dir = ${patch_app_dir}"
-
-    patch_versioned_dir="${patch_dir}/\
-framework_${update_version_app_old}_${update_version_app}.dirpatch"
-    if [[ -d "${patch_versioned_dir}" ]]; then
-      update_layout_new="y"
-    else
-      patch_versioned_dir=\
-"${patch_dir}/version_${update_version_app_old}_${update_version_app}.dirpatch"
-      if ! [[ -d "${patch_versioned_dir}" ]]; then
-        err "couldn't locate patch_versioned_dir"
-        exit 6
-      fi
-    fi
-    note "patch_versioned_dir = ${patch_versioned_dir}"
-    note "update_layout_new = ${update_layout_new}"
+  if [[ -z "${found_app}" ]]; then
+    err "couldn't locate any app on the update dmg"
+    exit 2
   fi
+  note "update_app = ${update_app}"
+
+  # Make sure that it's an absolute path.
+  if [[ "${update_app:0:1}" != "/" ]]; then
+    err "update_app must be an absolute path"
+    exit 2
+  fi
+
+  # Get some information about the update.
+  note "reading update values"
+
+  local update_app_plist="${update_app}/${APP_PLIST}"
+  note "update_app_plist = ${update_app_plist}"
+  if ! update_version_app="$(infoplist_read "${update_app_plist}" \
+                                            "${APP_VERSION_KEY}")" ||
+     [[ -z "${update_version_app}" ]]; then
+    err "couldn't determine update_version_app"
+    exit 2
+  fi
+  note "update_version_app = ${update_version_app}"
+
+  local update_ks_plist="${update_app_plist}"
+  note "update_ks_plist = ${update_ks_plist}"
+  if ! update_version_ks="$(infoplist_read "${update_ks_plist}" \
+                                           "${KS_VERSION_KEY}")" ||
+     [[ -z "${update_version_ks}" ]]; then
+    err "couldn't determine update_version_ks"
+    exit 2
+  fi
+  note "update_version_ks = ${update_version_ks}"
+
+  if ! product_id="$(infoplist_read "${update_ks_plist}" \
+                                    "${KS_PRODUCT_KEY}")" ||
+     [[ -z "${product_id}" ]]; then
+    err "couldn't determine product_id"
+    exit 2
+  fi
+  note "product_id = ${product_id}"
+
+  if [[ -d "${update_app}/${VERSIONS_DIR_NEW}" ]]; then
+    update_layout_new="y"
+  fi
+  note "update_layout_new = ${update_layout_new}"
 
   # ksadmin is required. Keystone should have set a ${PATH} that includes it.
   # Check that here, so that more useful feedback can be offered in the
@@ -854,31 +681,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   fi
   note "system_ticket = ${system_ticket}"
 
-  # If this script is being driven by a user ticket, but a system ticket is also
-  # present and system Keystone is installed, there's a potential for the two
-  # tickets to collide.  Both ticket types might be present if another user on
-  # the system promoted the ticket to system: the other user could not have
-  # removed this user's user ticket.  Handle that case here by deleting the user
-  # ticket and exiting early with a discrete exit code.
-  #
-  # Current versions of ksadmin will exit 1 (false) when asked to print tickets
-  # and given a specific product ID to print.  Older versions of ksadmin would
-  # exit 0 (true), but those same versions did not support -S (meaning to check
-  # the system ticket store) and would exit 1 (false) with this invocation due
-  # to not understanding the question.  Therefore, the usage here will only
-  # delete the existing user ticket when running as non-root with access to a
-  # sufficiently recent ksadmin.  Older ksadmins are tolerated: the update will
-  # likely fail for another reason and the user ticket will hang around until
-  # something is eventually able to remove it.
-  if [[ -z "${GOOGLE_CHROME_UPDATER_TEST_PATH}" ]] &&
-     [[ -z "${system_ticket}" ]] &&
-     [[ -d "/${UNROOTED_KS_BUNDLE_DIR}" ]] &&
-     ksadmin -S --print-tickets --productid "${product_id}" >& /dev/null; then
-    ksadmin --delete --productid "${product_id}" || true
-    err "can't update on a user ticket when a system ticket is also present"
-    exit 4
-  fi
-
   # Figure out what the existing installed application is using for its
   # versioned directory.  This will be used later, to avoid removing the
   # existing installed version's versioned directory in case anything is still
@@ -892,23 +694,6 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   local old_version_app
   old_version_app="$(infoplist_read "${installed_app_plist}" \
                                     "${APP_VERSION_KEY}" || true)"
-  note "old_version_app = ${old_version_app}"
-
-  # old_version_app is not required, because it won't be present in skeleton
-  # bootstrap installations, which just have an empty .app directory.  Only
-  # require it when doing a patch update, and use it to validate that the
-  # patch applies to the old installed version.  By definition, skeleton
-  # bootstraps can't be installed with patch updates.  They require the full
-  # application on the disk image.
-  if [[ -n "${is_patch}" ]]; then
-    if [[ -z "${old_version_app}" ]]; then
-      err "old_version_app required for patch"
-      exit 6
-    elif [[ "${old_version_app}" != "${update_version_app_old}" ]]; then
-      err "this patch does not apply to the installed version"
-      exit 6
-    fi
-  fi
 
   local installed_versions_dir_new="${installed_app}/${VERSIONS_DIR_NEW}"
   note "installed_versions_dir_new = ${installed_versions_dir_new}"
@@ -940,22 +725,30 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   local old_ks_plist="${installed_app_plist}"
   note "old_ks_plist = ${old_ks_plist}"
   local old_brand
-  old_brand="$(infoplist_read "${old_ks_plist}" \
-                              "${KS_BRAND_KEY}" 2> /dev/null ||
-               true)"
-  note "old_brand (from app) = ${old_brand}"
+  if ksadmin_supports_print_xattr_tag_brand; then
+    old_brand="$(ksadmin --print-xattr-tag-brand "${KS_TICKET_XC_PATH}" \
+                         2> /dev/null ||
+                 true)"
+    if [[ -n "${old_brand}" ]] ; then
+      note "old_brand (from extended attribute tag) = ${old_brand}"
+    fi
+  fi
+  if [[ -z "${old_brand}" ]] ; then
+    old_brand="$(infoplist_read "${old_ks_plist}" \
+                                "${KS_BRAND_KEY}" 2> /dev/null ||
+                true)"
+    note "old_brand (from app Info.plist) = ${old_brand}"
+  fi
 
   local update_versioned_dir=
-  if [[ -z "${is_patch}" ]]; then
-    if [[ -n "${update_layout_new}" ]]; then
-      update_versioned_dir=\
+  if [[ -n "${update_layout_new}" ]]; then
+    update_versioned_dir=\
 "${update_app}/${VERSIONS_DIR_NEW}/${update_version_app}"
-    else
-      update_versioned_dir=\
+  else
+    update_versioned_dir=\
 "${update_app}/${VERSIONS_DIR_OLD}/${update_version_app}"
-    fi
-    note "update_versioned_dir = ${update_versioned_dir}"
   fi
+  note "update_versioned_dir = ${update_versioned_dir}"
 
   ensure_writable_symlinks_recursive "${installed_app}"
 
@@ -989,61 +782,12 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   # won't get rid of it.  It's never correct to have a non-directory in place
   # of the versioned directory, so toss out whatever's there.  Don't treat
   # this as a critical step: if removal fails, operation can still proceed to
-  # to the dirpatcher or rsync, which will likely fail.
+  # to the rsync, which will likely fail.
   if [[ -e "${new_versioned_dir}" ]] &&
      ([[ -L "${new_versioned_dir}" ]] ||
       ! [[ -d "${new_versioned_dir}" ]]); then
     note "removing non-directory in place of versioned directory"
     rm -f "${new_versioned_dir}" 2> /dev/null || true
-  fi
-
-  if [[ -n "${is_patch}" ]]; then
-    # dirpatcher won't patch into a directory that already exists.  Doing so
-    # would be a bad idea, anyway.  If ${new_versioned_dir} already exists,
-    # it may be something left over from a previous failed or incomplete
-    # update attempt, or it may be the live versioned directory if this is a
-    # same-version update intended only to change channels.  Since there's no
-    # way to tell, this case is handled by having dirpatcher produce the new
-    # versioned directory in a temporary location and then having rsync copy
-    # it into place as an ${update_versioned_dir}, the same as in a non-patch
-    # update.  If ${new_versioned_dir} doesn't exist, dirpatcher can place the
-    # new versioned directory at that location directly.
-    local versioned_dir_target
-    if ! [[ -e "${new_versioned_dir}" ]]; then
-      versioned_dir_target="${new_versioned_dir}"
-      note "versioned_dir_target = ${versioned_dir_target}"
-    else
-      ensure_temp_dir
-      versioned_dir_target="${g_temp_dir}/${update_version_app}"
-      note "versioned_dir_target = ${versioned_dir_target}"
-      update_versioned_dir="${versioned_dir_target}"
-      note "update_versioned_dir = ${update_versioned_dir}"
-    fi
-
-    note "dirpatching versioned directory"
-    if ! "${dirpatcher}" "${old_versioned_dir}" \
-                         "${patch_versioned_dir}" \
-                         "${versioned_dir_target}"; then
-      err "dirpatcher of versioned directory failed, status ${PIPESTATUS[0]}"
-      mark_failed_patch_update "${product_id}" \
-                               "${old_ks_plist}" \
-                               "${old_version_app}" \
-                               "${system_ticket}"
-
-      if [[ -n "${update_layout_new}" ]] &&
-         [[ "${versioned_dir_target}" = "${new_versioned_dir}" ]]; then
-        # If the dirpatcher of a new-layout versioned directory failed while
-        # writing directly to the target location, remove it. The incomplete
-        # version would break code signature validation under the new layout.
-        # If it was being staged in a temporary directory, there's nothing to
-        # clean up beyond cleaning up the temporary directory, which will happen
-        # normally at exit.
-        note "cleaning up new_versioned_dir"
-        rm -rf "${new_versioned_dir}"
-      fi
-
-      exit 12
-    fi
   fi
 
   # Copy the versioned directory.  The new versioned directory should have a
@@ -1058,62 +802,19 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   # between channels; when this happens, the contents of the versioned
   # directories are identical and rsync will not render the versioned
   # directory unusable even for an instant.
-  #
-  # ${update_versioned_dir} may be empty during a patch update (${is_patch})
-  # if the dirpatcher above was able to write it into place directly.  In
-  # that event, dirpatcher guarantees that ${new_versioned_dir} is already in
-  # place.
-  if [[ -n "${update_versioned_dir}" ]]; then
-    note "rsyncing versioned directory"
-    if ! rsync ${RSYNC_FLAGS} --delete-before "${update_versioned_dir}/" \
-                                              "${new_versioned_dir}"; then
-      err "rsync of versioned directory failed, status ${PIPESTATUS[0]}"
+  note "rsyncing versioned directory"
+  if ! rsync ${RSYNC_FLAGS} --delete-before "${update_versioned_dir}/" \
+                                            "${new_versioned_dir}"; then
+    err "rsync of versioned directory failed, status ${PIPESTATUS[0]}"
 
-      if [[ -n "${update_layout_new}" ]]; then
-        # If the rsync of a new-layout versioned directory failed, remove it.
-        # The incomplete version would break code signature validation.
-        note "cleaning up new_versioned_dir"
-        rm -rf "${new_versioned_dir}"
-      fi
-
-      exit 7
-    fi
-  fi
-
-  if [[ -n "${is_patch}" ]]; then
-    # If the versioned directory was prepared in a temporary directory and
-    # then rsynced into place, remove the temporary copy now that it's no
-    # longer needed.
-    if [[ -n "${update_versioned_dir}" ]]; then
-      rm -rf "${update_versioned_dir}" 2> /dev/null || true
-      update_versioned_dir=
-      note "update_versioned_dir = ${update_versioned_dir}"
+    if [[ -n "${update_layout_new}" ]]; then
+      # If the rsync of a new-layout versioned directory failed, remove it.
+      # The incomplete version would break code signature validation.
+      note "cleaning up new_versioned_dir"
+      rm -rf "${new_versioned_dir}"
     fi
 
-    # Prepare ${update_app}.  This always needs to be done in a temporary
-    # location because dirpatcher won't write to a directory that already
-    # exists, and ${installed_app} needs to be used as input to dirpatcher
-    # in any event.  The new application will be rsynced into place once
-    # dirpatcher creates it.
-
-    ensure_temp_dir
-    # The name of the app for ${update_app} does not matter, as the user's
-    # choice of name for their installed app will not be changed. Choose the
-    # first of the ${APP_DIR_NAMES} as an arbitrary choice.
-    update_app="${g_temp_dir}/${APP_DIR_NAMES[0]}"
-    note "update_app = ${update_app}"
-
-    note "dirpatching app directory"
-    if ! "${dirpatcher}" "${installed_app}" \
-                         "${patch_app_dir}" \
-                         "${update_app}"; then
-      err "dirpatcher of app directory failed, status ${PIPESTATUS[0]}"
-      mark_failed_patch_update "${product_id}" \
-                               "${old_ks_plist}" \
-                               "${old_version_app}" \
-                               "${system_ticket}"
-      exit 13
-    fi
+    exit 7
   fi
 
   # See if the timestamp of what's currently on disk is newer than the
@@ -1150,27 +851,12 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
 
   note "rsyncs complete"
 
-  if [[ -n "${is_patch}" ]]; then
-    # update_app has been rsynced into place and is no longer needed.
-    rm -rf "${update_app}" 2> /dev/null || true
-    update_app=
-    note "update_app = ${update_app}"
-  fi
-
   if [[ -n "${g_temp_dir}" ]]; then
     # The temporary directory, if any, is no longer needed.
     rm -rf "${g_temp_dir}" 2> /dev/null || true
     g_temp_dir=
     note "g_temp_dir = ${g_temp_dir}"
   fi
-
-  # Previous versions may have left a .want_full_installer file to hint to
-  # Chrome that it should append "-full" to its tag in order to avoid a
-  # differential update. These files are no longer needed (tag updates in this
-  # script are sufficient), but the file should be cleaned up to fix
-  # codesigning failures if it exists. This is not considered a critical step,
-  # because this file normally does not exist at all.
-  rm -f "${installed_app}/.want_full_installer" || true
 
   # If necessary, touch the outermost .app so that it appears to the outside
   # world that something was done to the bundle.  This will cause
@@ -1258,23 +944,32 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   # running for a system or user ticket.
   note "handling brand code"
 
+  local cbcm_path
+  if [[ -n "${GOOGLE_CHROME_UPDATER_TEST_ENROLLMENT_PATH}" ]]; then
+    cbcm_path="${GOOGLE_CHROME_UPDATER_TEST_ENROLLMENT_PATH}"
+  else
+    if [[ -n "${system_ticket}" ]]; then
+      cbcm_path="/Library/Application Support/Google/CloudManagement"
+    else
+      cbcm_path=~/"Library/Application Support/Google/Chrome/Cloud Enrollment"
+    fi
+  fi
+
   local set_brand_file_access=
   local brand_plist
-  local cbcm_path
   if [[ -n "${system_ticket}" ]]; then
     # System ticket.
     set_brand_file_access="y"
     brand_plist="/${UNROOTED_BRAND_PLIST}"
-    cbcm_path="/Library/Application Support/Google/CloudManagement"
   else
     # User ticket.
     brand_plist=~/"${UNROOTED_BRAND_PLIST}"
-    cbcm_path=~"/Library/Application Support/Google/Chrome/Cloud Enrollment"
   fi
   local brand_plist_path="${brand_plist}.plist"
   note "set_brand_file_access = ${set_brand_file_access}"
   note "brand_plist = ${brand_plist}"
   note "brand_plist_path = ${brand_plist_path}"
+  note "cbcm_path = ${cbcm_path}"
 
   # If there is no brand plist in the old browser installation, read the brand
   # from the keystone file.
@@ -1284,17 +979,19 @@ framework_${update_version_app_old}_${update_version_app}.dirpatch"
   fi
 
   # Rewrite the brand code according to CBCM enrollment.
-  local new_brand
-  if [[ "${old_brand}" == "GCEA" && -e "${cbcm_path}" ]]; then
-    new_brand="GCCA"
-  elif [[ "${old_brand}" == "GCCA" && ! -e "${cbcm_path}" ]]; then
-    new_brand="GCEA"
-  elif [[ "${old_brand}" == "GCEM" && -e "${cbcm_path}" ]]; then
-    new_brand="GCCM"
-  elif [[ "${old_brand}" == "GCCM" && ! -e "${cbcm_path}" ]]; then
-    new_brand="GCEM"
+  local new_brand="${old_brand}"
+  if [[ -e "$cbcm_path" ]]; then
+    if [[ "${old_brand}" == GCE? ]]; then
+      new_brand="GCC${old_brand:3}"
+    elif [[ "${old_brand}" == FPA? ]]; then
+      new_brand="FPJ${old_brand:3}"
+    fi
   else
-    new_brand="${old_brand}"
+    if [[ "${old_brand}" == GCC? ]]; then
+      new_brand="GCE${old_brand:3}"
+    elif [[ "${old_brand}" == FPJ? ]]; then
+      new_brand="FPA${old_brand:3}"
+    fi
   fi
   note "new_brand = ${new_brand}"
 

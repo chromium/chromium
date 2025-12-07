@@ -1,10 +1,24 @@
 specific_include_rules = {
   # This DEPS violation snuck in while there was a bug in the checkdeps tool.
   # https://crbug.com/1084826
-  "chrome_management_api_delegate\.cc": [
+  "chrome_management_api_delegate_nonandroid\.cc": [
     "+chrome/browser/apps/app_service/app_launch_params.h",
     "+chrome/browser/apps/app_service/app_service_proxy.h",
     "+chrome/browser/apps/app_service/app_service_proxy_factory.h",
     "+chrome/browser/apps/app_service/browser_app_launcher.h",
+  ],
+
+  # This DEPS violation is a temporary workaround to continue supporting Chrome
+  # Apps tests while the Chrome Apps deprecation is finalised.
+  # TODO(crbug.com/379262505) - Remove this.
+  "management_apitest\\.cc": [
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
+  ],
+
+  # This DEPS violation is a temporary workaround to continue supporting Chrome
+  # Apps tests while the Chrome Apps deprecation is finalised.
+  # TODO(crbug.com/379262505) - Remove this.
+  "management_api_browsertest\\.cc": [
+    "+chrome/browser/apps/app_service/chrome_app_deprecation/chrome_app_deprecation.h"
   ],
 }

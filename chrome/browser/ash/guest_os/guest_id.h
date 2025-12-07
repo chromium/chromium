@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include <string>
+#include <string_view>
 
 #include "base/containers/flat_map.h"
 #include "base/values.h"
@@ -26,6 +27,7 @@ struct GuestId {
 
   base::flat_map<std::string, std::string> ToMap() const;
   base::Value::Dict ToDictValue() const;
+  std::string Serialize() const;
 
   VmType vm_type;
   std::string vm_name;
@@ -34,11 +36,10 @@ struct GuestId {
 
 bool operator<(const GuestId& lhs, const GuestId& rhs) noexcept;
 bool operator==(const GuestId& lhs, const GuestId& rhs) noexcept;
-inline bool operator!=(const GuestId& lhs, const GuestId& rhs) noexcept {
-  return !(lhs == rhs);
-}
 
 std::ostream& operator<<(std::ostream& ostream, const GuestId& container_id);
+
+std::optional<GuestId> Deserialize(std::string_view guest_id_string);
 
 // Returns a list of all containers in prefs.
 std::vector<GuestId> GetContainers(Profile* profile, VmType vm_type);

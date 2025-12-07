@@ -11,7 +11,7 @@
 #include "base/base_export.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/synchronization/lock.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/memory_dump_provider.h"
 
 namespace base {
 
@@ -19,7 +19,7 @@ namespace trace_event {
 class MemoryAllocatorDump;
 class MemoryAllocatorDumpGuid;
 class ProcessMemoryDump;
-}
+}  // namespace trace_event
 
 // SharedMemoryTracker tracks shared memory usage.
 class BASE_EXPORT SharedMemoryTracker : public trace_event::MemoryDumpProvider {

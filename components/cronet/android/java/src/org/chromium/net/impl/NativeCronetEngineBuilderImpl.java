@@ -7,6 +7,7 @@ package org.chromium.net.impl;
 import android.content.Context;
 import android.os.SystemClock;
 
+import org.chromium.build.BuildConfig;
 import org.chromium.net.ExperimentalCronetEngine;
 import org.chromium.net.ICronetEngineBuilder;
 import org.chromium.net.impl.CronetLogger.CronetSource;
@@ -16,9 +17,17 @@ import java.util.concurrent.atomic.AtomicLong;
 /** Implementation of {@link ICronetEngineBuilder} that builds native Cronet engine. */
 // WARNING: the fully qualified name of this class is hardcoded in the Google Play Services Cronet
 // provider code, which is part of the Google Play Services SDK. This means THIS CLASS CANNOT BE
-// RENAMED, MOVED NOR DELETED without breaking the Google Play Services provider.
+// RENAMED, MOVED NOR DELETED without breaking the Google Play Services provider. It is also
+// hardcoded in CronetManifest#isAppOptedInForTelemetry().
 public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
     private static final AtomicLong sLogCronetInitializationRef = new AtomicLong(0);
+
+    // The source info is computed once and then shared between all instances of this class. This is
+    // safe because once native Cronet is loaded from a given source, it cannot be loaded again from
+    // any other source (unless it's from a different ClassLoader, but that's fine because that
+    // would be a different class that will run through this code again with its own copy of
+    // `mSource`).
+    private static final CronetSource sCronetSource = computeCronetSource();
 
     /**
      * Builder for Native Cronet Engine. Default config enables SPDY, disables QUIC and HTTP cache.
@@ -26,12 +35,12 @@ public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
      * @param context Android {@link Context} for engine to use.
      */
     public NativeCronetEngineBuilderImpl(Context context) {
-        super(context, computeCronetSource());
+        super(context, sCronetSource);
     }
 
     private static CronetSource computeCronetSource() {
         ClassLoader implClassLoader = CronetEngineBuilderImpl.class.getClassLoader();
-        if (implClassLoader.toString().startsWith("java.lang.BootClassLoader")) {
+        if (BuildConfig.CRONET_FOR_AOSP_BUILD) {
             return CronetSource.CRONET_SOURCE_PLATFORM;
         }
 
@@ -41,6 +50,10 @@ public class NativeCronetEngineBuilderImpl extends CronetEngineBuilderImpl {
         }
 
         return CronetSource.CRONET_SOURCE_STATICALLY_LINKED;
+    }
+
+    static CronetSource getCronetSource() {
+        return sCronetSource;
     }
 
     @Override

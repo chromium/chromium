@@ -38,7 +38,7 @@ TEST(RTCIceCandidatePlatformTest, LocalSrflxCandidateRelayProtocolUnset) {
   RTCIceCandidatePlatform* candidate =
       MakeGarbageCollected<RTCIceCandidatePlatform>(
           kSrflxCandidateStr, kMid, kSdpMLineIndex, kUsernameFragment, kUrl);
-  EXPECT_EQ(candidate->RelayProtocol(), std::nullopt);
+  EXPECT_EQ(candidate->RelayProtocol(), String());
 }
 
 TEST(RTCIceCandidatePlatformTest, LocalRelayCandidateRelayProtocolSet) {
@@ -58,8 +58,8 @@ TEST(RTCIceCandidatePlatformTest, LocalRelayCandidateRelayProtocolSet) {
 TEST(RTCIceCandidatePlatformTest, RemoteRelayCandidateRelayProtocolUnset) {
   RTCIceCandidatePlatform* candidate =
       MakeGarbageCollected<RTCIceCandidatePlatform>(
-          kUdpRelayCandidateStr, kMid, 1, kUsernameFragment, std::nullopt);
-  EXPECT_EQ(candidate->RelayProtocol(), std::nullopt);
+          kUdpRelayCandidateStr, kMid, 1, kUsernameFragment, String());
+  EXPECT_EQ(candidate->RelayProtocol(), String());
 }
 
 }  // namespace blink

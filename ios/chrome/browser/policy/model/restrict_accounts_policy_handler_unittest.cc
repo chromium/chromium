@@ -136,7 +136,8 @@ TEST_F(RestrictAccountsPolicyHandlerTest, CheckPolicySettings) {
 
   // Empty patterns.
   policy.Set(key::kRestrictAccountsToPatterns, POLICY_LEVEL_MANDATORY,
-             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::JSONReader::Read(""),
+             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+             base::JSONReader::Read("", base::JSON_PARSE_CHROMIUM_EXTENSIONS),
              nullptr);
 
   EXPECT_TRUE(handler.CheckPolicySettings(policy, &errors));

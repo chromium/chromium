@@ -1,0 +1,73 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("coordinator") {
+  sources = [
+    "add_account_signin_coordinator.h",
+    "add_account_signin_coordinator.mm",
+    "add_account_signin_manager.h",
+    "add_account_signin_manager.mm",
+    "add_account_signin_mediator.h",
+    "add_account_signin_mediator.mm",
+    "add_account_signin_mediator_delegate.h",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/add_account_signin/public",
+    "//ios/chrome/browser/authentication/history_sync/coordinator",
+    "//ios/chrome/browser/authentication/history_sync/model:history_sync_utils",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/signin/model:system_identity_manager",
+    "//ios/chrome/browser/sync/model",
+    "//ui/base",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "add_account_signin_coordinator_unittest.mm",
+    "add_account_signin_manager_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/common:uikit",
+    "//ios/web/public/test",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

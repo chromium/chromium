@@ -4,14 +4,17 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import android.content.Context;
+import android.graphics.Color;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,6 +23,7 @@ import java.lang.annotation.RetentionPolicy;
  * An interface defining content that can be displayed inside of the bottom sheet for Chrome
  * Home.
  */
+@NullMarked
 public interface BottomSheetContent {
     /** The different possible height modes for a given state. */
     @IntDef({HeightMode.DEFAULT, HeightMode.WRAP_CONTENT, HeightMode.DISABLED})
@@ -53,12 +57,6 @@ public interface BottomSheetContent {
         int LOW = 1;
     }
 
-    /** Interface to listen when the size of a BottomSheetContent changes. */
-    interface ContentSizeListener {
-        /** Called when the size of the view has changed. */
-        void onSizeChanged(int width, int height, int oldWidth, int oldHeight);
-    }
-
     /**
      * Gets the {@link View} that holds the content to be displayed in the Chrome Home bottom sheet.
      *
@@ -67,25 +65,16 @@ public interface BottomSheetContent {
     View getContentView();
 
     /**
-     * Gets the background color for the bottom sheet content, defaulting to the semantic default
-     * background color if no background color is specified by the content. This should return null
-     * if the sheet content is showing tab content / a page preview.
-     */
-    @ColorInt
-    default Integer getBackgroundColor() {
-        return SemanticColorUtils.getDefaultBgColor(getContentView().getContext());
-    }
-
-    /**
      * Get the {@link View} that contains the toolbar specific to the content being displayed. If
      * null is returned, the omnibox is used.
      *
      * @return The toolbar view.
      */
-    @Nullable
-    View getToolbarView();
+    @Nullable View getToolbarView();
 
-    /** @return The vertical scroll offset of the content view. */
+    /**
+     * @return The vertical scroll offset of the content view.
+     */
     int getVerticalScrollOffset();
 
     /**
@@ -97,18 +86,23 @@ public interface BottomSheetContent {
      */
     void destroy();
 
-    /** @return The priority of this content. */
+    /**
+     * @return The priority of this content.
+     */
     @ContentPriority
     int getPriority();
 
-    /** @return Whether swiping the sheet down hard enough will cause the sheet to be dismissed. */
+    /**
+     * @return Whether swiping the sheet down hard enough will cause the sheet to be dismissed.
+     */
     boolean swipeToDismissEnabled();
 
-    /** @return Whether the sheet will always skip the half state once it was fully extended. */
+    /**
+     * @return Whether the sheet will always skip the half state once it was fully extended.
+     */
     default boolean skipHalfStateOnScrollingDown() {
         return true;
     }
-    ;
 
     /**
      * @return Whether this content owns its lifecycle. If false, the content will be dismissed
@@ -137,13 +131,38 @@ public interface BottomSheetContent {
     }
 
     /**
-     * @return The height of the peeking state for the content in px or one of the values in
-     *         {@link HeightMode}. If {@link HeightMode#DEFAULT}, the system expects
-     *         {@link #getToolbarView} to be non-null, where it will then use its height as the
-     *         peeking height. This method cannot return {@link HeightMode#WRAP_CONTENT}.
+     * Returns whether this sheet content has a solid background color. Return false when the sheet
+     * is showing complex content like tab content / a page preview.
+     */
+    default boolean hasSolidBackgroundColor() {
+        return true;
+    }
+
+    /**
+     * Whether the sheet uses a custom background color. If color is not overridden (default to
+     * {@link Color.TRANSPARENT}), the BottomSheetController will set a default background color for
+     * the sheet.
+     *
+     * <p>Note: This color only used if {@link #hasSolidBackgroundColor()} returns true.
+     *
+     * @return The custom background color of the sheet.
+     */
+    default @ColorInt int getSheetBackgroundColorOverride() {
+        return Color.TRANSPARENT;
+    }
+
+    /**
+     * The height of bottom sheet in PEEK mode. The sheet content that wants to show content as PEEK
+     * can override this method and provide a non-negative height. This interface by default
+     * supplies {@link HeightMode#DISABLED}.
+     *
+     * @return The height of the peeking state for the content in px or one of the values in {@link
+     *     HeightMode}. If {@link HeightMode#DEFAULT}, the system expects {@link #getToolbarView} to
+     *     be non-null, where it will then use its height as the peeking height. This method cannot
+     *     return {@link HeightMode#WRAP_CONTENT}.
      */
     default int getPeekHeight() {
-        return HeightMode.DEFAULT;
+        return HeightMode.DISABLED;
     }
 
     /**
@@ -206,28 +225,31 @@ public interface BottomSheetContent {
     default void onBackPressed() {}
 
     /**
-     * @return The resource id of the content description for the bottom sheet. This is
-     *         generally the name of the feature/content that is showing. 'Swipe down to close.'
-     *         will be automatically appended after the content description.
+     * Returns the content description for the bottom sheet. This is generally the name of the
+     * feature/content that is showing. It can be a dynamic string. 'Swipe down to close.' will be
+     * automatically appended after the content description.
      */
-    int getSheetContentDescriptionStringId();
+    @Nullable String getSheetContentDescription(Context context);
 
     /**
-     * @return The resource id of the string announced when the sheet is opened at half height.
-     *         This is typically the name of your feature followed by 'opened at half height'.
+     * @return The resource id of the string announced when the sheet is opened at half height. This
+     *     is typically the name of your feature followed by 'opened at half height'.
      */
+    @StringRes
     int getSheetHalfHeightAccessibilityStringId();
 
     /**
-     * @return The resource id of the string announced when the sheet is opened at full height.
-     *         This is typically the name of your feature followed by 'opened at full height'.
+     * @return The resource id of the string announced when the sheet is opened at full height. This
+     *     is typically the name of your feature followed by 'opened at full height'.
      */
+    @StringRes
     int getSheetFullHeightAccessibilityStringId();
 
     /**
-     * @return The resource id of the string announced when the sheet is closed. This is
-     *         typically the name of your feature followed by 'closed'.
+     * @return The resource id of the string announced when the sheet is closed. This is typically
+     *     the name of your feature followed by 'closed'.
      */
+    @StringRes
     int getSheetClosedAccessibilityStringId();
 
     /**

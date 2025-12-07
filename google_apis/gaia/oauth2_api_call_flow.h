@@ -6,7 +6,9 @@
 #define GOOGLE_APIS_GAIA_OAUTH2_API_CALL_FLOW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
@@ -54,7 +56,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2ApiCallFlow {
 
   // Returns the request type (e.g. GET, POST) for the |body| that will be sent
   // with the request.
-  virtual std::string GetRequestTypeForBody(const std::string& body);
+  virtual std::string GetRequestTypeForBody(std::string_view body);
 
   // Called when the API call ends without network error to check whether the
   // request succeeded, to decide which of the following 2 process functions to
@@ -68,14 +70,14 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2ApiCallFlow {
   // true. |body| may be null.
   virtual void ProcessApiCallSuccess(
       const network::mojom::URLResponseHead* head,
-      std::unique_ptr<std::string> body) = 0;
+      std::optional<std::string> body) = 0;
 
   // Called when there is a network error or IsExpectedSuccessCode() returns
   // false. |head| or |body| might be null.
   virtual void ProcessApiCallFailure(
       int net_error,
       const network::mojom::URLResponseHead* head,
-      std::unique_ptr<std::string> body) = 0;
+      std::optional<std::string> body) = 0;
 
   virtual net::PartialNetworkTrafficAnnotationTag
   GetNetworkTrafficAnnotationTag() = 0;
@@ -89,7 +91,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2ApiCallFlow {
   };
 
   // Called when loading has finished.
-  void OnURLLoadComplete(std::unique_ptr<std::string> body);
+  void OnURLLoadComplete(std::optional<std::string> body);
 
   // Creates an instance of SimpleURLLoader that does not send or save cookies.
   // Template method CreateApiCallUrl is used to get the URL.
@@ -100,7 +102,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2ApiCallFlow {
 
   // Helper methods to implement the state machine for the flow.
   void BeginApiCall();
-  void EndApiCall(std::unique_ptr<std::string> body);
+  void EndApiCall(std::optional<std::string> body);
 
   State state_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;

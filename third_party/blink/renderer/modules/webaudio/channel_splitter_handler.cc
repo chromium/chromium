@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -20,10 +21,10 @@ constexpr unsigned kNumberOfOutputChannels = 1;
 ChannelSplitterHandler::ChannelSplitterHandler(AudioNode& node,
                                                float sample_rate,
                                                unsigned number_of_outputs)
-    : AudioHandler(kNodeTypeChannelSplitter, node, sample_rate) {
+    : AudioHandler(NodeType::kNodeTypeChannelSplitter, node, sample_rate) {
   // These properties are fixed and cannot be changed by the user.
   channel_count_ = number_of_outputs;
-  SetInternalChannelCountMode(kExplicit);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kExplicit);
   SetInternalChannelInterpretation(AudioBus::kDiscrete);
   AddInput();
 
@@ -76,19 +77,19 @@ void ChannelSplitterHandler::SetChannelCount(unsigned channel_count,
   if (channel_count != NumberOfOutputs()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "ChannelSplitter: channelCount cannot be changed from " +
-            String::Number(NumberOfOutputs()));
+        StrCat({"ChannelSplitter: channelCount cannot be changed from ",
+                String::Number(NumberOfOutputs())}));
   }
 }
 
 void ChannelSplitterHandler::SetChannelCountMode(
-    const String& mode,
+    V8ChannelCountMode::Enum mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // channcelCountMode must be 'explicit'.
-  if (mode != "explicit") {
+  if (mode != V8ChannelCountMode::Enum::kExplicit) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "ChannelSplitter: channelCountMode cannot be changed from 'explicit'");
@@ -96,13 +97,13 @@ void ChannelSplitterHandler::SetChannelCountMode(
 }
 
 void ChannelSplitterHandler::SetChannelInterpretation(
-    const String& mode,
+    V8ChannelInterpretation::Enum mode,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
   // channelInterpretation must be "discrete"
-  if (mode != "discrete") {
+  if (mode != V8ChannelInterpretation::Enum::kDiscrete) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "ChannelSplitter: channelInterpretation "
                                       "cannot be changed from 'discrete'");

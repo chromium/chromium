@@ -46,6 +46,8 @@ interface CacheStorageControl {
       pending_remote<network.mojom.CrossOriginEmbedderPolicyReporter>?
           coep_reporter,
       network.mojom.DocumentIsolationPolicy document_isolation_policy,
+      pending_remote<network.mojom.DocumentIsolationPolicyReporter>?
+          dip_reporter,
       BucketLocator bucket_locator,
       CacheStorageOwner owner,
       pending_receiver<blink.mojom.CacheStorage> receiver);

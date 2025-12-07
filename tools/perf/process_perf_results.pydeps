@@ -4,8 +4,11 @@
 ../../build/android/pylib/constants/__init__.py
 ../../build/android/pylib/constants/host_paths.py
 ../../build/android/pylib/utils/__init__.py
-../../build/android/pylib/utils/decorators.py
 ../../build/android/pylib/utils/logdog_helper.py
+../../build/util/lib/__init__.py
+../../build/util/lib/common/__init__.py
+../../build/util/lib/common/decorators.py
+../../build/util/lib/common/google_storage_helper.py
 ../../components/variations/service/generate_ui_string_overrider.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/__init__.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event.py
@@ -17,8 +20,6 @@
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_proto_classes.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_event_impl/perfetto_trace_writer.py
 ../../third_party/catapult/common/py_trace_event/py_trace_event/trace_time.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/encoder.py
-../../third_party/catapult/common/py_trace_event/third_party/protobuf/wire_format.py
 ../../third_party/catapult/common/py_utils/py_utils/__init__.py
 ../../third_party/catapult/common/py_utils/py_utils/atexit_with_log.py
 ../../third_party/catapult/common/py_utils/py_utils/binary_manager.py
@@ -51,6 +52,9 @@
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/resource_loader.py
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/strip_js_comments.py
 ../../third_party/catapult/common/py_vulcanize/py_vulcanize/style_sheet.py
+../../third_party/catapult/dashboard/dashboard/__init__.py
+../../third_party/catapult/dashboard/dashboard/common/__init__.py
+../../third_party/catapult/dashboard/dashboard/common/histogram_helpers.py
 ../../third_party/catapult/dependency_manager/dependency_manager/__init__.py
 ../../third_party/catapult/dependency_manager/dependency_manager/archive_info.py
 ../../third_party/catapult/dependency_manager/dependency_manager/base_config.py
@@ -77,11 +81,10 @@
 ../../third_party/catapult/devil/devil/android/device_signal.py
 ../../third_party/catapult/devil/devil/android/device_temp_file.py
 ../../third_party/catapult/devil/devil/android/device_utils.py
+../../third_party/catapult/devil/devil/android/devil_util.py
 ../../third_party/catapult/devil/devil/android/flag_changer.py
 ../../third_party/catapult/devil/devil/android/forwarder.py
-../../third_party/catapult/devil/devil/android/install_commands.py
 ../../third_party/catapult/devil/devil/android/logcat_monitor.py
-../../third_party/catapult/devil/devil/android/md5sum.py
 ../../third_party/catapult/devil/devil/android/ndk/__init__.py
 ../../third_party/catapult/devil/devil/android/ndk/abis.py
 ../../third_party/catapult/devil/devil/android/perf/__init__.py
@@ -114,7 +117,6 @@
 ../../third_party/catapult/devil/devil/utils/__init__.py
 ../../third_party/catapult/devil/devil/utils/cmd_helper.py
 ../../third_party/catapult/devil/devil/utils/geometry.py
-../../third_party/catapult/devil/devil/utils/host_utils.py
 ../../third_party/catapult/devil/devil/utils/lazy/__init__.py
 ../../third_party/catapult/devil/devil/utils/lazy/weak_constant.py
 ../../third_party/catapult/devil/devil/utils/logging_common.py
@@ -125,7 +127,6 @@
 ../../third_party/catapult/devil/devil/utils/run_tests_helper.py
 ../../third_party/catapult/devil/devil/utils/timeout_retry.py
 ../../third_party/catapult/devil/devil/utils/watchdog_timer.py
-../../third_party/catapult/devil/devil/utils/zip_utils.py
 ../../third_party/catapult/systrace/systrace/__init__.py
 ../../third_party/catapult/systrace/systrace/trace_result.py
 ../../third_party/catapult/systrace/systrace/tracing_agents/__init__.py
@@ -213,6 +214,7 @@
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_backend.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_backend_list.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_console.py
+../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_fetch.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_log.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_memory.py
 ../../third_party/catapult/telemetry/telemetry/internal/backends/chrome_inspector/inspector_page.py
@@ -247,7 +249,6 @@
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/__init__.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/android_forwarder.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/do_nothing_forwarder.py
-../../third_party/catapult/telemetry/telemetry/internal/forwarders/forwarder_utils.py
 ../../third_party/catapult/telemetry/telemetry/internal/forwarders/fuchsia_forwarder.py
 ../../third_party/catapult/telemetry/telemetry/internal/image_processing/__init__.py
 ../../third_party/catapult/telemetry/telemetry/internal/image_processing/image_util_numpy_impl.py
@@ -404,6 +405,7 @@
 ../../third_party/catapult/third_party/typ/typ/pool.py
 ../../third_party/catapult/third_party/typ/typ/printer.py
 ../../third_party/catapult/third_party/typ/typ/python_2_3_compat.py
+../../third_party/catapult/third_party/typ/typ/reduced_glob.py
 ../../third_party/catapult/third_party/typ/typ/result_sink.py
 ../../third_party/catapult/third_party/typ/typ/runner.py
 ../../third_party/catapult/third_party/typ/typ/stats.py
@@ -456,6 +458,7 @@
 ../../third_party/logdog/logdog/streamname.py
 ../../third_party/logdog/logdog/varint.py
 ../json_comment_eater/json_comment_eater.py
+../json_to_struct/aggregation.py
 ../json_to_struct/class_generator.py
 ../json_to_struct/element_generator.py
 ../json_to_struct/java_element_generator.py
@@ -606,6 +609,8 @@ core/tbmv3/trace_processor.py
 core/testing.py
 core/upload_results_to_perf_dashboard.py
 cross_device_test_config.py
+json_constants.py
+json_util.py
 measurements/__init__.py
 measurements/dual_metric_measurement.py
 measurements/multipage_skpicture_printer.py
@@ -620,6 +625,8 @@ page_sets/companion/browser_element_identifiers.py
 page_sets/companion/companion_stories.py
 page_sets/companion/histograms.py
 page_sets/cros_ui_cases.py
+page_sets/crossbench_embedder.py
+page_sets/crossbench_loading.py
 page_sets/data/companion_test_sites.py
 page_sets/desktop_power.py
 page_sets/desktop_ui/__init__.py
@@ -632,7 +639,6 @@ page_sets/desktop_ui/js_utils.py
 page_sets/desktop_ui/multitab_story.py
 page_sets/desktop_ui/new_tab_page_story.py
 page_sets/desktop_ui/omnibox_story.py
-page_sets/desktop_ui/side_search_story.py
 page_sets/desktop_ui/story_tags.py
 page_sets/desktop_ui/tab_search_story.py
 page_sets/desktop_ui/ui_devtools_utils.py
@@ -652,7 +658,6 @@ page_sets/intl_ja_zh.py
 page_sets/intl_ko_th_vi.py
 page_sets/jetstream2_pages.py
 page_sets/key_mobile_sites_smooth.py
-page_sets/loading_mobile.py
 page_sets/login_helpers/__init__.py
 page_sets/login_helpers/autocad_login.py
 page_sets/login_helpers/chrome_login.py

@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/syslog_logging.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -53,7 +52,6 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
       app_id_,
       [&readiness](apps::AppUpdate update) { readiness = update.Readiness(); });
 
-  base::UmaHistogramEnumeration(kLaunchAppReadinessUMA, readiness);
   switch (readiness) {
     case apps::Readiness::kUnknown:
     case apps::Readiness::kTerminated:
@@ -79,8 +77,6 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 void KioskAppServiceLauncher::EnsureAppTypeInitialized(
     apps::AppType app_type,
     base::OnceClosure app_type_initialized_callback) {
@@ -103,7 +99,6 @@ void KioskAppServiceLauncher::CheckAndMaybeLaunchApp(
 
   CheckAndMaybeLaunchApp(app_id, std::move(app_launched_callback));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void KioskAppServiceLauncher::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.AppId() != app_id_ ||
@@ -129,8 +124,6 @@ void KioskAppServiceLauncher::OnAppRegistryCacheWillBeDestroyed(
   app_registry_observation_.Reset();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
 void KioskAppServiceLauncher::OnInstanceUpdate(
     const apps::InstanceUpdate& update) {
   if (update.AppId() != app_id_ ||
@@ -153,7 +146,6 @@ void KioskAppServiceLauncher::OnInstanceRegistryWillBeDestroyed(
     apps::InstanceRegistry* cache) {
   instance_registry_observation_.Reset();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void KioskAppServiceLauncher::LaunchAppInternal() {
   SYSLOG(INFO) << "Kiosk app is ready to launch with App Service";

@@ -26,6 +26,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
 #include "media/filters/decrypting_demuxer_stream.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 
@@ -106,7 +107,11 @@ DecoderStream<StreamType>::DecoderStream(
       stream_(nullptr),
       cdm_context_(nullptr),
       decoder_produced_a_frame_(false),
-      decoder_selector_(task_runner_, std::move(create_decoders_cb), media_log),
+      decoder_selector_(
+          task_runner_,
+          std::move(create_decoders_cb),
+          media_log,
+          base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)),
       decoding_eos_(false),
       preparing_output_(false),
       pending_decode_requests_(0),
@@ -184,7 +189,9 @@ void DecoderStream<StreamType>::Read(ReadCB read_cb) {
   // No read during resetting or stopping process.
   DCHECK(!reset_cb_);
 
-  TRACE_EVENT_ASYNC_BEGIN0("media", GetReadTraceString<StreamType>(), this);
+  TRACE_EVENT_BEGIN("media",
+                    perfetto::StaticString(GetReadTraceString<StreamType>()),
+                    perfetto::Track::FromPointer(this));
   if (state_ == State::kStateError) {
     read_cb_ = base::BindPostTaskToCurrentDefault(std::move(read_cb));
     // OnDecodeDone, OnBufferReady, and CompleteDecoderReinitialization all set
@@ -285,6 +292,17 @@ int DecoderStream<StreamType>::GetMaxDecodeRequests() const {
   return state_ != State::kStateReinitializingDecoder
              ? decoder_->GetMaxDecodeRequests()
              : 0;
+}
+
+// A false return value indicates that the decoder is not a platform decoder, or
+// it is still unknown (e.g. during initialization).
+template <DemuxerStream::Type StreamType>
+bool DecoderStream<StreamType>::IsPlatformDecoder() const {
+  // The decoder is owned by |decoder_selector_| during reinitialization, so
+  // during that time we return false to indicate decoder type unknown.
+  return state_ != State::kStateReinitializingDecoder
+             ? decoder_->IsPlatformDecoder()
+             : false;
 }
 
 template <>
@@ -464,8 +482,8 @@ void DecoderStream<StreamType>::OnDecoderSelected(
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::SatisfyRead(ReadResult result) {
   DCHECK(read_cb_);
-  TRACE_EVENT_ASYNC_END1("media", GetReadTraceString<StreamType>(), this,
-                         "status", GetStatusString(result.code()));
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+                  GetStatusString(result.code()));
   std::move(read_cb_).Run(std::move(result));
 }
 
@@ -529,10 +547,16 @@ void DecoderStream<StreamType>::DecodeInternal(
   traits_->OnDecode(*buffer);
 
   const bool is_eos = buffer->end_of_stream();
-  if (is_eos)
+  if (is_eos) {
     decoding_eos_ = true;
-  else if (buffer->duration() != kNoTimestamp)
-    duration_tracker_.AddSample(buffer->duration());
+  } else {
+    if (buffer->duration() != kNoTimestamp) {
+      duration_tracker_.AddSample(buffer->duration());
+    } else if (last_buffer_timestamp_ != kNoTimestamp) {
+      duration_tracker_.AddSample(buffer->timestamp() - last_buffer_timestamp_);
+    }
+    last_buffer_timestamp_ = buffer->timestamp();
+  }
 
   ++pending_decode_requests_;
 
@@ -542,13 +566,6 @@ void DecoderStream<StreamType>::DecodeInternal(
       base::BindOnce(&DecoderStream<StreamType>::OnDecodeDone,
                      fallback_weak_factory_.GetWeakPtr(), buffer_size,
                      decoding_eos_, std::move(trace_event)));
-}
-
-template <DemuxerStream::Type StreamType>
-void DecoderStream<StreamType>::FlushDecoder() {
-  // Send the EOS directly to the decoder, bypassing a potential add to
-  // |pending_buffers_|.
-  DecodeInternal(DecoderBuffer::CreateEOSBuffer());
 }
 
 template <DemuxerStream::Type StreamType>
@@ -571,7 +588,9 @@ void DecoderStream<StreamType>::OnDecodeDone(
   if (end_of_stream) {
     DCHECK(!pending_decode_requests_);
     decoding_eos_ = false;
-    if (status.is_ok()) {
+    if (status.is_ok() ||
+        status.code() ==
+            DecoderStatus::Codes::kElidedEndOfStreamForConfigChange) {
       // Even if no frames were decoded, completing a flush counts as
       // successfully selecting a decoder. This allows back-to-back config
       // changes to select from all decoders.
@@ -618,6 +637,16 @@ void DecoderStream<StreamType>::OnDecodeDone(
 
       if (state_ == State::kStateFlushingDecoder && !pending_decode_requests_) {
         ReinitializeDecoder();
+      }
+      return;
+
+    case DecoderStatus::Codes::kElidedEndOfStreamForConfigChange:
+      DCHECK(end_of_stream);
+      DCHECK(!pending_decode_requests_);
+      DCHECK_EQ(state_, State::kStateFlushingDecoder);
+      state_ = State::kStateNormal;
+      if (CanDecodeMore()) {
+        ReadFromDemuxerStream();
       }
       return;
 
@@ -730,11 +759,14 @@ void DecoderStream<StreamType>::ReadFromDemuxerStream() {
   if (pending_demuxer_read_)
     return;
 
-  TRACE_EVENT_ASYNC_BEGIN0("media", GetDemuxerReadTraceString<StreamType>(),
-                           this);
+  TRACE_EVENT_BEGIN(
+      "media", perfetto::StaticString(GetDemuxerReadTraceString<StreamType>()),
+      perfetto::Track::FromPointer(this));
   pending_demuxer_read_ = true;
   uint32_t buffer_read_count = 1;
-  if (base::FeatureList::IsEnabled(kVideoDecodeBatching)) {
+  // Do not batch with software video decoder.
+  if (IsPlatformDecoder() &&
+      base::FeatureList::IsEnabled(kVideoDecodeBatching)) {
     buffer_read_count = GetMaxDecodeRequests() - pending_decode_requests_;
   }
   {
@@ -757,8 +789,8 @@ void DecoderStream<StreamType>::OnBuffersReady(
     return;
   }
 
-  TRACE_EVENT_ASYNC_END1("media", GetDemuxerReadTraceString<StreamType>(), this,
-                         "status", DemuxerStream::GetStatusName(status));
+  TRACE_EVENT_END("media", perfetto::Track::FromPointer(this), "status",
+                  DemuxerStream::GetStatusName(status));
 
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(pending_demuxer_read_);
@@ -780,7 +812,7 @@ void DecoderStream<StreamType>::OnBuffersReady(
         // Save valid buffers to be consumed by the new decoder.
         // |pending_buffers_| is copied to |fallback_buffers_| in
         // OnDecoderSelected().
-        for (auto buffer : buffers) {
+        for (const auto& buffer : buffers) {
           pending_buffers_.push_back(std::move(buffer));
         }
         buffers.clear();
@@ -876,7 +908,8 @@ void DecoderStream<StreamType>::OnBuffersReady(
       }
       // Reinitialization will continue after Reset() is done.
     } else {
-      FlushDecoder();
+      // Flush the decoder with an EOS buffer including the upcoming config.
+      DecodeInternal(DecoderBuffer::CreateEOSBuffer(config));
     }
     return;
   }
@@ -907,7 +940,7 @@ void DecoderStream<StreamType>::OnBuffersReady(
     ReportEncryptionType(buffers[0]);
   }
 
-  for (auto buffer : buffers) {
+  for (const auto& buffer : buffers) {
     Decode(std::move(buffer));
   }
   buffers.clear();
@@ -926,7 +959,16 @@ void DecoderStream<StreamType>::ReinitializeDecoder() {
   DCHECK_EQ(pending_decode_requests_, 0);
 
   state_ = State::kStateReinitializingDecoder;
+
+  // Clear any remaining decoders in the selector; BeginDecoderSelection() will
+  // create a whole new decoder list.
+  decoder_selector_.FinalizeDecoderSelection();
+
+  // Note: Some VideoDecoder implementations (e.g., MediaCodecVideoDecoder) are
+  // relying on the fact that the existing VideoDecoder instance is given first
+  // dibs to handle any configuration changes. Take care when changing this.
   decoder_selector_.PrependDecoder(std::move(decoder_));
+
   BeginDecoderSelection();
 }
 
@@ -1006,6 +1048,7 @@ void DecoderStream<StreamType>::OnDecoderReset() {
   fallback_buffers_.clear();
   pending_buffers_.clear();
   fallback_buffers_being_decoded_ = 0;
+  last_buffer_timestamp_ = kNoTimestamp;
 
   if (state_ != State::kStateFlushingDecoder) {
     state_ = State::kStateNormal;
@@ -1048,9 +1091,10 @@ void DecoderStream<StreamType>::MaybePrepareAnotherOutput() {
 
   // Retain a copy to avoid dangling reference in OnPreparedOutputReady().
   const scoped_refptr<Output> output = unprepared_outputs_.front();
-  TRACE_EVENT_ASYNC_BEGIN1("media", GetPrepareTraceString<StreamType>(), this,
-                           "timestamp_us",
-                           output->timestamp().InMicroseconds());
+  TRACE_EVENT_BEGIN("media",
+                    perfetto::StaticString(GetPrepareTraceString<StreamType>()),
+                    perfetto::Track::FromPointer(this), "timestamp_us",
+                    output->timestamp().InMicroseconds());
   preparing_output_ = true;
   prepare_cb_.Run(
       output, base::BindOnce(&DecoderStream<StreamType>::OnPreparedOutputReady,
@@ -1094,8 +1138,8 @@ void DecoderStream<StreamType>::OnPreparedOutputReady(
 template <DemuxerStream::Type StreamType>
 void DecoderStream<StreamType>::CompletePrepare(const Output* output) {
   DCHECK(preparing_output_);
-  TRACE_EVENT_ASYNC_END1(
-      "media", GetPrepareTraceString<StreamType>(), this, "timestamp_us",
+  TRACE_EVENT_END(
+      "media", perfetto::Track::FromPointer(this), "timestamp_us",
       (output ? output->timestamp() : kNoTimestamp).InMicroseconds());
   preparing_output_ = false;
 }

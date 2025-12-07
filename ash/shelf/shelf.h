@@ -68,8 +68,7 @@ T SelectValueByShelfAlignment(ShelfAlignment alignment,
     case ShelfAlignment::kRight:
       return right;
   }
-  NOTREACHED_IN_MIGRATION();
-  return bottom;
+  NOTREACHED();
 }
 
 bool IsHorizontalAlignment(ShelfAlignment alignment);

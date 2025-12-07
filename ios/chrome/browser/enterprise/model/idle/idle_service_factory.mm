@@ -5,15 +5,14 @@
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
 
 #import "components/enterprise/idle/idle_pref_names.h"
-#import "components/keyed_service/ios/browser_state_dependency_manager.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace enterprise_idle {
 
-IdleService* IdleServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<IdleService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+// static
+IdleService* IdleServiceFactory::GetForProfile(ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<IdleService>(profile,
+                                                            /*create=*/true);
 }
 
 IdleServiceFactory* IdleServiceFactory::GetInstance() {
@@ -22,19 +21,16 @@ IdleServiceFactory* IdleServiceFactory::GetInstance() {
 }
 
 IdleServiceFactory::IdleServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "IdleService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("IdleService") {}
 
 IdleServiceFactory::~IdleServiceFactory() = default;
 
 std::unique_ptr<KeyedService> IdleServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  return std::make_unique<IdleService>(
-      ChromeBrowserState::FromBrowserState(context));
+    ProfileIOS* profile) const {
+  return std::make_unique<IdleService>(profile);
 }
 
-void IdleServiceFactory::RegisterBrowserStatePrefs(
+void IdleServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimeDeltaPref(enterprise_idle::prefs::kIdleTimeout,
                                   base::TimeDelta());

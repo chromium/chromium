@@ -1,0 +1,14 @@
+[INTERFACES]
+interface BarcodeDetector
+    static method getSupportedFormats
+    attribute @@toStringTag
+    method constructor
+    method detect
+interface Notification : EventTarget
+[NAMESPACES]
+[GLOBAL OBJECT]
+PASS Verify the interface of ServiceWorkerGlobalScope
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

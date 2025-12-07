@@ -30,9 +30,8 @@ void RemoveItemFromList(const DeviceIdPair& item,
     return;
   }
 
-  PA_LOG(ERROR) << "RemoveItemFromList(): Tried to remove an item from |list|, "
-                << "but that item was not present. Item: " << item;
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED() << "RemoveItemFromList(): Tried to remove an item from |list|, "
+               << "but that item was not present. Item: " << item;
 }
 
 // Remove the first item from |list| and returns it. If |list| is empty,
@@ -57,10 +56,9 @@ void SharedResourceScheduler::ScheduleRequest(
     const DeviceIdPair& request,
     ConnectionPriority connection_priority) {
   if (base::Contains(request_to_priority_map_, request)) {
-    PA_LOG(ERROR) << "SharedResourceScheduler::ScheduleRequest(): Tried to "
-                  << "schedule a request which was already scheduled. Request: "
-                  << request << ", Priority: " << connection_priority;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "SharedResourceScheduler::ScheduleRequest(): Tried to "
+                 << "schedule a request which was already scheduled. Request: "
+                 << request << ", Priority: " << connection_priority;
   }
 
   priority_to_queued_requests_map_[connection_priority].push_back(request);
@@ -71,11 +69,10 @@ void SharedResourceScheduler::UpdateRequestPriority(
     const DeviceIdPair& request,
     ConnectionPriority connection_priority) {
   if (!base::Contains(request_to_priority_map_, request)) {
-    PA_LOG(ERROR) << "SharedResourceScheduler::UpdateRequestPriority(): Tried "
-                  << "to update priority for a request which was not "
-                  << "scheduled. Request: " << request
-                  << ", Priority: " << connection_priority;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "SharedResourceScheduler::UpdateRequestPriority(): Tried "
+                 << "to update priority for a request which was not "
+                 << "scheduled. Request: " << request
+                 << ", Priority: " << connection_priority;
   }
 
   if (request_to_priority_map_[request] == connection_priority) {
@@ -100,10 +97,9 @@ void SharedResourceScheduler::UpdateRequestPriority(
 void SharedResourceScheduler::RemoveScheduledRequest(
     const DeviceIdPair& request) {
   if (!base::Contains(request_to_priority_map_, request)) {
-    PA_LOG(ERROR) << "SharedResourceScheduler::RemoveScheduledRequest(): Tried "
-                  << "to remove a scheduled request, but that request was not "
-                  << "actually scheduled. Request: " << request;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "SharedResourceScheduler::RemoveScheduledRequest(): Tried "
+                 << "to remove a scheduled request, but that request was not "
+                 << "actually scheduled. Request: " << request;
   }
 
   auto& list_for_priority =
@@ -121,21 +117,19 @@ void SharedResourceScheduler::RemoveScheduledRequest(
   }
 
   if (!was_removed_from_list) {
-    PA_LOG(ERROR) << "SharedResourceScheduler::RemoveScheduledRequest(): Tried "
-                  << "to remove a scheduled request, but that request was not "
-                  << "present in priority_to_queued_requests_map_. "
-                  << "Request: " << request;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "SharedResourceScheduler::RemoveScheduledRequest(): Tried "
+                 << "to remove a scheduled request, but that request was not "
+                 << "present in priority_to_queued_requests_map_. "
+                 << "Request: " << request;
   }
 
   // Remove from |request_to_priority_map_|.
   size_t num_removed = request_to_priority_map_.erase(request);
   if (num_removed != 1u) {
-    PA_LOG(ERROR) << "SharedResourceScheduler::RemoveScheduledRequest(): Tried "
-                  << "to remove a scheduled request, but that request was not "
-                  << "present in request_to_priority_map_. "
-                  << "Request: " << request;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "SharedResourceScheduler::RemoveScheduledRequest(): Tried "
+                 << "to remove a scheduled request, but that request was not "
+                 << "present in request_to_priority_map_. "
+                 << "Request: " << request;
   }
 }
 
@@ -149,11 +143,10 @@ SharedResourceScheduler::GetNextScheduledRequest() {
 
     size_t num_removed = request_to_priority_map_.erase(*potential_request);
     if (num_removed != 1u) {
-      PA_LOG(ERROR) << "SharedResourceScheduler::GetNextScheduledRequest(): "
-                    << "Tried to remove request from "
-                    << "request_to_priority_map_, but no request was present."
-                    << "Request: " << *potential_request;
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED() << "SharedResourceScheduler::GetNextScheduledRequest(): "
+                   << "Tried to remove request from "
+                   << "request_to_priority_map_, but no request was present."
+                   << "Request: " << *potential_request;
     }
 
     return std::make_pair(*potential_request, priority);

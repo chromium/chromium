@@ -1,0 +1,117 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/webmachinelearning/prompt-api
+
+dictionary LanguageModelCloneOptions {
+  AbortSignal signal;
+};
+
+dictionary LanguageModelPromptOptions {
+  object responseConstraint;
+  boolean omitResponseConstraintInput = false;
+  AbortSignal signal;
+};
+
+dictionary LanguageModelAppendOptions {
+  AbortSignal signal;
+};
+
+[
+  Exposed(Window AIPromptAPI, Worker AIPromptAPIForWorkers),
+  RuntimeEnabled=AIPromptAPI,
+  SecureContext
+]
+interface LanguageModel : EventTarget {
+  [
+    MeasureAs=LanguageModel_Create,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<LanguageModel> create(
+    optional LanguageModelCreateOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_Availability,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability(
+    optional LanguageModelCreateCoreOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_Params,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<LanguageModelParams?> params();
+  [
+    MeasureAs=LanguageModel_Prompt,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  // When this object was created with LanguageModelToolDeclaration and
+  // expectedOutputs includes {type:"tool-call"}, this now yields a
+  // LanguageModelMessageContent sequence.
+  Promise<LanguageModelPromptResult> prompt(
+    LanguageModelPrompt input,
+    optional LanguageModelPromptOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_PromptStreaming,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  // When this object was created with LanguageModelToolDeclaration and
+  // expectedOutputs includes {type:"tool-call"}, this now yields a
+  // LanguageModelMessageContent dictionary sequence in chunks.
+  ReadableStream promptStreaming(
+    LanguageModelPrompt input,
+    optional LanguageModelPromptOptions options = {}
+  );
+  [
+    MeasureAs=LanguageModel_Append,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<undefined> append(
+    LanguageModelPrompt input,
+    optional LanguageModelAppendOptions options = {}
+  );
+
+  [
+    MeasureAs=LanguageModel_MeasureInputUsage,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<double> measureInputUsage(
+    LanguageModelPrompt input,
+    optional LanguageModelPromptOptions options = {}
+  );
+
+  [MeasureAs=LanguageModel_InputUsage]
+  readonly attribute double inputUsage;
+  [MeasureAs=LanguageModel_InputQuota]
+  readonly attribute unrestricted double inputQuota;
+
+  [MeasureAs=LanguageModel_TopK]
+  readonly attribute unsigned long topK;
+  [MeasureAs=LanguageModel_Temperature]
+  readonly attribute float temperature;
+
+  attribute EventHandler onquotaoverflow;
+
+  [
+    MeasureAs=LanguageModel_Clone,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<LanguageModel> clone(optional LanguageModelCloneOptions options = {});
+  [
+    MeasureAs=LanguageModel_Destroy,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  undefined destroy();
+};

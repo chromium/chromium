@@ -77,7 +77,6 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 void RegisterSodaLanguageComponent(
     ComponentUpdateService* cus,
     const std::string& language,
-    PrefService* global_prefs,
     OnSodaLanguagePackComponentReadyCallback on_ready_callback);
 
 }  // namespace component_updater

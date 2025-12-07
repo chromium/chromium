@@ -26,7 +26,7 @@ BrowserSigninPolicyHandler::BrowserSigninPolicyHandler(Schema chrome_schema)
                             static_cast<int>(BrowserSigninMode::kForced),
                             false /* clamp */) {}
 
-BrowserSigninPolicyHandler::~BrowserSigninPolicyHandler() {}
+BrowserSigninPolicyHandler::~BrowserSigninPolicyHandler() = default;
 
 void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {

@@ -4,12 +4,14 @@
 
 package org.chromium.components.webxr;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Interface used to create instances of ArCompositorDelegates, needed by
- * ArOverlayDelegate to work correctly for WebXR's DOM Overlay.
+ * Interface used to create instances of ArCompositorDelegates, needed by ArOverlayDelegate to work
+ * correctly for WebXR's DOM Overlay.
  */
+@NullMarked
 public interface ArCompositorDelegateProvider {
     ArCompositorDelegate create(WebContents webContents);
 }

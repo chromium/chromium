@@ -9,8 +9,12 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/time/time.h"
 #include "cc/metrics/compositor_frame_reporting_controller.h"
+#include "cc/metrics/frame_info.h"
+#include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
+#include "cc/metrics/ukm_dropped_frames_data.h"
 
 namespace cc {
 
@@ -27,11 +31,8 @@ bool IsScrollType(FrameSequenceTrackerType type) {
 }  // namespace
 
 FrameSequenceTrackerCollection::FrameSequenceTrackerCollection(
-    bool is_single_threaded,
-    CompositorFrameReportingController* compositor_frame_reporting_controller)
-    : is_single_threaded_(is_single_threaded),
-      compositor_frame_reporting_controller_(
-          compositor_frame_reporting_controller) {}
+    bool is_single_threaded)
+    : is_single_threaded_(is_single_threaded) {}
 
 FrameSequenceTrackerCollection::~FrameSequenceTrackerCollection() {
   CleanUp();
@@ -41,6 +42,99 @@ FrameSequenceTrackerCollection::~FrameSequenceTrackerCollection() {
   accumulated_metrics_.clear();
 }
 
+void FrameSequenceTrackerCollection::SetScrollingThread(
+    FrameInfo::SmoothEffectDrivingThread thread) {
+  auto current_scrolling_thread = scrolling_thread_;
+  base::TimeTicks set_time = base::TimeTicks::Now();
+
+  // Assign the thread.
+  scrolling_thread_ = thread;
+
+  // keep the history for the last 3 seconds.
+  if (!scroll_thread_history_.empty()) {
+    auto expired_scrolling_thread =
+        scroll_thread_history_.lower_bound(set_time - base::Seconds(3));
+    scroll_thread_history_.erase(scroll_thread_history_.begin(),
+                                 expired_scrolling_thread);
+  }
+
+  // Only traces the history if there is a change in scrolling_thread
+  if (current_scrolling_thread != scrolling_thread_) {
+    scroll_thread_history_.insert(
+        std::make_pair(set_time, current_scrolling_thread));
+  }
+}
+
+FrameInfo::SmoothThread FrameSequenceTrackerCollection::GetSmoothThread()
+    const {
+  if (main_thread_driving_smoothness_) {
+    return compositor_thread_driving_smoothness_
+               ? FrameInfo::SmoothThread::kSmoothBoth
+               : FrameInfo::SmoothThread::kSmoothMain;
+  }
+  if (raster_thread_driving_smoothness_) {
+    return FrameInfo::SmoothThread::kSmoothRaster;
+  }
+  return compositor_thread_driving_smoothness_
+             ? FrameInfo::SmoothThread::kSmoothCompositor
+             : FrameInfo::SmoothThread::kSmoothNone;
+}
+
+void FrameSequenceTrackerCollection::UpdateSmoothThreadHistory(
+    FrameInfo::SmoothEffectDrivingThread thread_type,
+    int modifier) {
+  auto current_smooth_thread = GetSmoothThread();
+  base::TimeTicks set_time = base::TimeTicks::Now();
+
+  // Update smooth effect thread tracking count based on the type of
+  // tracker being created or destroyed.
+  if (thread_type == FrameInfo::SmoothEffectDrivingThread::kCompositor) {
+    compositor_thread_driving_smoothness_ += modifier;
+  } else if (thread_type == FrameInfo::SmoothEffectDrivingThread::kRaster) {
+    raster_thread_driving_smoothness_ += modifier;
+  } else {
+    DCHECK_EQ(thread_type, FrameInfo::SmoothEffectDrivingThread::kMain);
+    main_thread_driving_smoothness_ += modifier;
+  }
+
+  // Only called if there is a change in smooth_thread_
+  if (current_smooth_thread != GetSmoothThread()) {
+    // Keep the history for the last 3 seconds.
+    if (!smooth_thread_history_.empty()) {
+      auto expired_smooth_thread =
+          smooth_thread_history_.lower_bound(set_time - base::Seconds(3));
+      smooth_thread_history_.erase(smooth_thread_history_.begin(),
+                                   expired_smooth_thread);
+    }
+    smooth_thread_history_.insert(
+        std::make_pair(set_time, current_smooth_thread));
+  }
+}
+
+FrameInfo::SmoothThread FrameSequenceTrackerCollection::GetSmoothThreadAtTime(
+    base::TimeTicks timestamp) const {
+  auto last_smooth_thread = smooth_thread_history_.lower_bound(timestamp);
+  if (last_smooth_thread == smooth_thread_history_.end()) {
+    return GetSmoothThread();
+  }
+  return last_smooth_thread->second;
+}
+
+FrameInfo::SmoothEffectDrivingThread
+FrameSequenceTrackerCollection::GetScrollThreadAtTime(
+    base::TimeTicks timestamp) const {
+  auto last_scroll_thread = scroll_thread_history_.lower_bound(timestamp);
+  if (last_scroll_thread == scroll_thread_history_.end()) {
+    return scrolling_thread_;
+  }
+  return last_scroll_thread->second;
+}
+
+FrameInfo::SmoothEffectDrivingThread
+FrameSequenceTrackerCollection::GetScrollingThread() const {
+  return scrolling_thread_;
+}
+
 FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
     FrameSequenceTrackerType type,
     FrameInfo::SmoothEffectDrivingThread scrolling_thread) {
@@ -48,43 +142,41 @@ FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
   if (is_single_threaded_)
     return nullptr;
   auto key = std::make_pair(type, scrolling_thread);
-  if (frame_trackers_.contains(key))
-    return frame_trackers_[key].get();
+  auto [frame_tracker_it, inserted] = frame_trackers_.try_emplace(key, nullptr);
+  if (!inserted) {
+    // If the tracker already exists, we should return it.
+    return frame_tracker_it->second.get();
+  }
 
-  auto tracker = base::WrapUnique(new FrameSequenceTracker(type));
-  frame_trackers_[key] = std::move(tracker);
+  auto& tracker = frame_tracker_it->second;
+  tracker = base::WrapUnique(new FrameSequenceTracker(type));
 
-  if (compositor_frame_reporting_controller_)
-    compositor_frame_reporting_controller_->AddActiveTracker(type);
+  active_trackers_.set(static_cast<size_t>(type));
 
-  auto* metrics = frame_trackers_[key]->metrics();
-  if (accumulated_metrics_.contains(key)) {
-    metrics->AdoptTrace(accumulated_metrics_[key].get());
+  auto* metrics = tracker->metrics();
+  if (auto it = accumulated_metrics_.find(key);
+      it != accumulated_metrics_.end()) {
+    metrics->AdoptTrace(it->second.get());
   }
   if (IsScrollType(type)) {
     DCHECK_NE(scrolling_thread, ThreadType::kUnknown);
     metrics->SetScrollingThread(scrolling_thread);
-    compositor_frame_reporting_controller_->SetScrollingThread(
-        scrolling_thread);
+    SetScrollingThread(scrolling_thread);
   }
 
   if (metrics->GetEffectiveThread() == ThreadType::kCompositor) {
-    if (compositor_frame_reporting_controller_ &&
-        compositor_thread_driving_smoothness_ == 0) {
-      compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
-          ThreadType::kCompositor, true);
-    }
-    ++compositor_thread_driving_smoothness_;
+    UpdateSmoothThreadHistory(ThreadType::kCompositor, /*modifier=*/1);
+  } else if (metrics->GetEffectiveThread() == ThreadType::kRaster) {
+    UpdateSmoothThreadHistory(ThreadType::kRaster, /*modifier=*/1);
   } else {
     DCHECK_EQ(metrics->GetEffectiveThread(), ThreadType::kMain);
-    if (compositor_frame_reporting_controller_ &&
-        main_thread_driving_smoothness_ == 0) {
-      compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
-          ThreadType::kMain, true);
-    }
-    ++main_thread_driving_smoothness_;
+    UpdateSmoothThreadHistory(ThreadType::kMain, /*modifier=*/1);
   }
-  return frame_trackers_[key].get();
+  return tracker.get();
+}
+
+ActiveTrackers FrameSequenceTrackerCollection::GetActiveTrackers() const {
+  return active_trackers_;
 }
 
 FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequence(
@@ -117,41 +209,35 @@ void FrameSequenceTrackerCollection::StopSequence(
 
   auto key = std::make_pair(type, ThreadType::kUnknown);
   if (IsScrollType(type)) {
-    compositor_frame_reporting_controller_->SetScrollingThread(
-        ThreadType::kUnknown);
+    SetScrollingThread(ThreadType::kUnknown);
     key = std::make_pair(type, ThreadType::kCompositor);
     if (!frame_trackers_.contains(key))
       key = std::make_pair(type, ThreadType::kMain);
+    if (!frame_trackers_.contains(key)) {
+      key = std::make_pair(type, ThreadType::kRaster);
+    }
   }
 
-  if (!frame_trackers_.contains(key))
+  auto tracker_it = frame_trackers_.find(key);
+  if (tracker_it == frame_trackers_.end()) {
     return;
-
-  auto tracker = std::move(frame_trackers_[key]);
-  if (compositor_frame_reporting_controller_) {
-    compositor_frame_reporting_controller_->RemoveActiveTracker(
-        tracker->type());
   }
+
+  auto tracker = std::move(tracker_it->second);
+  active_trackers_.reset(static_cast<size_t>(tracker->type()));
 
   if (tracker->metrics()->GetEffectiveThread() == ThreadType::kCompositor) {
     DCHECK_GT(compositor_thread_driving_smoothness_, 0u);
-    --compositor_thread_driving_smoothness_;
-    if (compositor_frame_reporting_controller_ &&
-        compositor_thread_driving_smoothness_ == 0) {
-      compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
-          ThreadType::kCompositor, false);
-    }
+    UpdateSmoothThreadHistory(ThreadType::kCompositor, /*modifier=*/-1);
+  } else if (tracker->metrics()->GetEffectiveThread() == ThreadType::kRaster) {
+    DCHECK_GT(raster_thread_driving_smoothness_, 0u);
+    UpdateSmoothThreadHistory(ThreadType::kRaster, /*modifier=*/-1);
   } else {
     DCHECK_GT(main_thread_driving_smoothness_, 0u);
-    --main_thread_driving_smoothness_;
-    if (compositor_frame_reporting_controller_ &&
-        main_thread_driving_smoothness_ == 0) {
-      compositor_frame_reporting_controller_->SetThreadAffectsSmoothness(
-          ThreadType::kMain, false);
-    }
+    UpdateSmoothThreadHistory(ThreadType::kMain, /*modifier=*/-1);
   }
 
-  frame_trackers_.erase(key);
+  frame_trackers_.erase(tracker_it);
   tracker->ScheduleTerminate();
   removal_trackers_.push_back(std::move(tracker));
   DestroyTrackers();
@@ -239,15 +325,26 @@ void FrameSequenceTrackerCollection::DestroyTrackers() {
       auto metrics = tracker->TakeMetrics();
 
       auto key = std::make_pair(metrics->type(), metrics->GetEffectiveThread());
-      if (accumulated_metrics_.contains(key)) {
-        metrics->Merge(std::move(accumulated_metrics_[key]));
-        accumulated_metrics_.erase(key);
+      auto accumulated_metrics_it = accumulated_metrics_.find(key);
+      if (accumulated_metrics_it != accumulated_metrics_.end()) {
+        metrics->Merge(std::move(accumulated_metrics_it->second));
+        accumulated_metrics_.erase(accumulated_metrics_it);
       }
 
-      if (metrics->HasEnoughDataForReporting())
-        metrics->ReportMetrics();
-      if (metrics->HasDataLeftForReporting())
-        accumulated_metrics_[key] = std::move(metrics);
+      if (metrics->HasEnoughDataForReporting()) {
+        // This value is guaranteed to be positive by the
+        // previous HasEnoughDataForReporting check.
+        int percent_dropped_frames4 = metrics->ReportMetrics();
+        CHECK_GE(percent_dropped_frames4, 0);
+        if (ukm_dropped_frames_data_) {
+          UkmDroppedFramesData dropped_frames_data;
+          dropped_frames_data.percent_dropped_frames = percent_dropped_frames4;
+          ukm_dropped_frames_data_->Write(dropped_frames_data);
+        }
+      }
+      if (metrics->HasDataLeftForReporting()) {
+        accumulated_metrics_.emplace(key, std::move(metrics));
+      }
     }
   }
 
@@ -334,6 +431,11 @@ void FrameSequenceTrackerCollection::AddSortedFrame(
   }
 
   DestroyTrackers();
+}
+
+void FrameSequenceTrackerCollection::SetUkmDroppedFramesDestination(
+    UkmDroppedFramesDataShared* dropped_frames_data) {
+  ukm_dropped_frames_data_ = dropped_frames_data;
 }
 
 }  // namespace cc

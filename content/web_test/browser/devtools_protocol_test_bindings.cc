@@ -16,17 +16,19 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/isolated_world_ids.h"
 #include "content/web_test/browser/web_test_control_host.h"
 #include "content/web_test/common/web_test_switches.h"
-#include "ipc/ipc_channel.h"
+#include "ipc/constants.mojom.h"
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
 #include "content/public/browser/devtools_frontend_host.h"
 #endif
 
@@ -37,7 +39,7 @@ namespace {
 // the constant
 // kMaxMessageChunkSize in chrome/browser/devtools/devtools_ui_bindings.cc.
 constexpr size_t kWebTestMaxMessageChunkSize =
-    IPC::Channel::kMaximumMessageSize / 4;
+    IPC::mojom::kChannelMaximumMessageSize / 4;
 }  // namespace
 
 DevToolsProtocolTestBindings::DevToolsProtocolTestBindings(
@@ -78,14 +80,15 @@ GURL DevToolsProtocolTestBindings::MapTestURLIfNeeded(const GURL& test_url,
   return GURL(spec);
 }
 
-void DevToolsProtocolTestBindings::ParseLog(const std::string_view log) {
+void DevToolsProtocolTestBindings::ParseLog(std::string_view log) {
   if (log.empty()) {
     return;
   }
   std::vector<std::string> lines = base::SplitStringUsingSubstr(
       log, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   for (const std::string& line : lines) {
-    std::optional<base::Value::Dict> item = base::JSONReader::ReadDict(line);
+    std::optional<base::Value::Dict> item =
+        base::JSONReader::ReadDict(line, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(!item->empty());
     log_.push_back(std::move(item.value()));
   }
@@ -94,7 +97,7 @@ void DevToolsProtocolTestBindings::ParseLog(const std::string_view log) {
 
 void DevToolsProtocolTestBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
   if (frame->GetParent())
     return;
@@ -113,9 +116,9 @@ void DevToolsProtocolTestBindings::WebContentsDestroyed() {
 }
 
 void DevToolsProtocolTestBindings::HandleMessagesFromLog(
-    const std::string_view protocol_message_string) {
-  std::optional<base::Value::Dict> parsed =
-      base::JSONReader::ReadDict(protocol_message_string);
+    std::string_view protocol_message_string) {
+  std::optional<base::Value::Dict> parsed = base::JSONReader::ReadDict(
+      protocol_message_string, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!parsed) {
     return;
   }
@@ -141,7 +144,8 @@ void DevToolsProtocolTestBindings::HandleMessagesFromLog(
     base::EscapeJSONString(str_message.value(), true, &param);
     std::string javascript = "DevToolsAPI.dispatchMessage(" + param + ");";
     web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        base::UTF8ToUTF16(javascript), base::NullCallback());
+        base::UTF8ToUTF16(javascript), base::NullCallback(),
+        ISOLATED_WORLD_ID_GLOBAL);
   }
 }
 
@@ -166,9 +170,13 @@ void DevToolsProtocolTestBindings::HandleMessageFromTest(
       WebTestControlHost::Get()->PrintMessageToStderr(
           "Protocol message: " + *protocol_message + "\n");
       agent_host_->DispatchProtocolMessage(
-          this, base::as_bytes(base::make_span(*protocol_message)));
+          this, base::as_byte_span(*protocol_message));
     }
     return;
+  }
+
+  if (*method == "setAllowUnsafeOperations" && params && params->size() == 1) {
+    allow_unsafe_operations_ = (*params)[0].GetIfBool().value_or(false);
   }
 }
 
@@ -176,7 +184,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     DevToolsAgentHost* agent_host,
     base::span<const uint8_t> message) {
   if (log_enabled_) {
-    NOTREACHED_NORETURN() << "Unexpected messages dispatched by the browser";
+    NOTREACHED() << "Unexpected messages dispatched by the browser";
   }
   std::string_view str_message(reinterpret_cast<const char*>(message.data()),
                                 message.size());
@@ -189,7 +197,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
     std::string code = "DevToolsAPI.dispatchMessage(" + param + ");";
     std::u16string javascript = base::UTF8ToUTF16(code);
     web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        javascript, base::NullCallback());
+        javascript, base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
     return;
   }
 
@@ -203,7 +211,7 @@ void DevToolsProtocolTestBindings::DispatchProtocolMessage(
                        base::NumberToString(pos ? 0 : total_size) + ");";
     std::u16string javascript = base::UTF8ToUTF16(code);
     web_contents()->GetPrimaryMainFrame()->ExecuteJavaScriptForTests(
-        javascript, base::NullCallback());
+        javascript, base::NullCallback(), ISOLATED_WORLD_ID_GLOBAL);
   }
 }
 
@@ -213,7 +221,7 @@ void DevToolsProtocolTestBindings::AgentHostClosed(
 }
 
 bool DevToolsProtocolTestBindings::AllowUnsafeOperations() {
-  return true;
+  return allow_unsafe_operations_;
 }
 
 }  // namespace content

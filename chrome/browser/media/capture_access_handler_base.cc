@@ -4,28 +4,31 @@
 
 #include "chrome/browser/media/capture_access_handler_base.h"
 
+#include <algorithm>
 #include <string>
 #include <utility>
 
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
+#include "ui/gfx/native_ui_types.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/extension.h"
-#include "ui/gfx/native_widget_types.h"
+#endif
 
 #if defined(USE_AURA)
 #include "ui/aura/window.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/hash/sha1.h"
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/string_number_conversions.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#include "crypto/hash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::BrowserThread;
 
@@ -131,7 +134,7 @@ std::list<CaptureAccessHandlerBase::Session>::iterator
 CaptureAccessHandlerBase::FindSession(int render_process_id,
                                       int render_frame_id,
                                       int page_request_id) {
-  return base::ranges::find_if(
+  return std::ranges::find_if(
       sessions_, [render_process_id, render_frame_id,
                   page_request_id](const Session& session) {
         return session.request_process_id == render_process_id &&
@@ -300,7 +303,7 @@ bool CaptureAccessHandlerBase::MatchesSession(const Session& session,
       return target_web_contents == web_contents->GetOutermostWebContents();
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void CaptureAccessHandlerBase::UpdateVideoScreenCaptureStatus(
@@ -319,24 +322,32 @@ void CaptureAccessHandlerBase::UpdateVideoScreenCaptureStatus(
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 bool CaptureAccessHandlerBase::IsExtensionAllowedForScreenCapture(
     const extensions::Extension* extension) {
   if (!extension)
     return false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::string hash = base::SHA1HashString(extension->id());
-  std::string hex_hash = base::HexEncode(hash);
+#if BUILDFLAG(IS_CHROMEOS)
+  std::string hex_hash = base::HexEncode(crypto::hash::Sha256(extension->id()));
 
   // crbug.com/446688
-  return hex_hash == "4F25792AF1AA7483936DE29C07806F203C7170A0" ||
-         hex_hash == "BD8781D757D830FC2E85470A1B6E8A718B7EE0D9" ||
-         hex_hash == "4AC2B6C63C6480D150DFDA13E4A5956EB1D0DDBB" ||
-         hex_hash == "81986D4F846CEDDDB962643FA501D1780DD441BB";
+  return hex_hash ==
+             "EA4DC6890B3B3EBE6248E7580099D9F44D8E5932D60F09E4335E157149EF552"
+             "1" ||
+         hex_hash ==
+             "8F1F245CCEDCD968DDC092FF36AA79E30644FCAB491A7DD4F2C6F5482344A93"
+             "F" ||
+         hex_hash ==
+             "B84DF148EE6A745982FFB1E868520F44077D9E80BAF191272CAF8F1C06D68EB"
+             "C" ||
+         hex_hash ==
+             "DC019F2EF6680AF54DDDB6B4BC6FAA735F8D21A7DEB79D77FCC8180BD76C6BA8";
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 bool CaptureAccessHandlerBase::IsBuiltInFeedbackUI(const GURL& origin) {
   return origin.spec() == chrome::kChromeUIFeedbackURL;

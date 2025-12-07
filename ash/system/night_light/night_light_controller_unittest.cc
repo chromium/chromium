@@ -15,6 +15,7 @@
 #include "ash/public/cpp/session/session_types.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
+#include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/geolocation/geolocation_controller.h"
@@ -37,7 +38,8 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
-#include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
+#include "chromeos/ash/components/geolocation/location_fetcher.h"
+#include "chromeos/ash/components/geolocation/system_location_provider.h"
 #include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -222,24 +224,18 @@ class NightLightTest : public NoSessionAshTestBase,
     geolocation_controller()->SetClockForTesting(&clock_);
     GetController()->SetClockForTesting(this);
 
-    CreateTestUserSessions();
-
     // Simulate user 1 login.
     SimulateNewUserFirstLogin(kUser1Email);
 
     // Start with ambient color pref disabled.
     SetAmbientColorPrefEnabled(false);
 
-    // `GeolocationController` uses `SimpleGeolocationProvider` singleton
+    // `GeolocationController` uses `SystemLocationProvider` singleton
     // instance, which is initialized by `AshTestHelper`.
-    SimpleGeolocationProvider::GetInstance()
+    SystemLocationProvider::GetInstance()
+        ->GetLocationProviderForTesting()
+        ->GetLocationFetcherForTesting()
         ->SetSharedUrlLoaderFactoryForTesting(geolocation_url_loader_factory_);
-  }
-
-  void CreateTestUserSessions() {
-    GetSessionControllerClient()->Reset();
-    GetSessionControllerClient()->AddUserSession(kUser1Email);
-    GetSessionControllerClient()->AddUserSession(kUser2Email);
   }
 
   void SwitchActiveUser(const std::string& email) {
@@ -481,7 +477,7 @@ TEST_F(NightLightTest, TestUserSwitchAndSettingsPersistence) {
   TestCompositorsTemperature(user1_temperature);
 
   // Switch to user 2, and expect NightLight to be disabled.
-  SwitchActiveUser(kUser2Email);
+  SimulateUserLogin({kUser2Email});
   EXPECT_FALSE(controller->IsNightLightEnabled());
   // Changing user_2's color temperature shouldn't affect user_1's settings.
   const float user2_temperature = 0.2f;
@@ -1036,8 +1032,8 @@ TEST_F(NightLightTest, TestAmbientLightRemappingTemperature) {
             controller->ambient_temperature());
 
   // Simulate powerd sending multiple times an ambient temperature of 8000.
-  // The remapped ambient temperature should grow and eventually reach ~7400.
-  float ambient_temperature = SimulateAmbientColorFromPowerd(8000, 7400.0f);
+  // The remapped ambient temperature should grow and eventually reach ~7450.
+  float ambient_temperature = SimulateAmbientColorFromPowerd(8000, 7450.0f);
 
   // If powerd sends the same temperature, the remapped temperature should not
   // change.
@@ -1087,7 +1083,7 @@ TEST_F(NightLightTest, MultiUserManualStatusToggleWithSchedules) {
   controller->SetCustomEndTime(MakeTimeOfDay(8, kPM));
   controller->SetScheduleType(ScheduleType::kCustom);
   controller->SetColorTemperature(kUser1Temperature);
-  SwitchActiveUser(kUser2Email);
+  SimulateUserLogin({kUser2Email});
   controller->SetScheduleType(ScheduleType::kSunsetToSunrise);
   controller->SetColorTemperature(kUser2Temperature);
   SwitchActiveUser(kUser1Email);
@@ -1341,7 +1337,7 @@ TEST_F(NightLightCrtcTest, TestAllDisplaysSupportCrtcMatrix) {
   // Test the cursor compositing behavior when Night Light is on (and doesn't
   // require the software cursor) while other accessibility settings that affect
   // the cursor are toggled.
-  for (const auto* const pref : {prefs::kAccessibilityLargeCursorEnabled,
+  for (const auto* const pref : {prefs::kDockedMagnifierEnabled,
                                  prefs::kAccessibilityHighContrastEnabled}) {
     user1_pref_service()->SetBoolean(pref, true);
     EXPECT_TRUE(IsCursorCompositingEnabled());
@@ -1404,13 +1400,24 @@ TEST_F(NightLightCrtcTest, TestMixedCrtcMatrixSupport) {
   controller->SetColorTemperature(temperature);
   EXPECT_EQ(temperature, controller->GetColorTemperature());
 
+  ui::test::EventGenerator* generator = GetEventGenerator();
+
   // The first display supports CRTC matrix, so its compositor has identity
   // matrix.
   TestDisplayCompositorTemperature(kId1, 0.0f);
+  const display::Display& display_1 = display_manager()->GetDisplayForId(kId1);
+  generator->MoveMouseTo(display_1.bounds().CenterPoint());
+  // Cursor moves to display that supports CRTC matrix, thus it should be
+  // using hardware compositing.
+  EXPECT_FALSE(IsCursorCompositingEnabled());
+
   // However, the second display doesn't support CRTC matrix, Night Light is
   // using the compositor matrix on this display.
   TestDisplayCompositorTemperature(kId2, temperature);
-  // With mixed CRTC support, software cursor must be on.
+  const display::Display& display_2 = display_manager()->GetDisplayForId(kId2);
+  generator->MoveMouseTo(display_2.bounds().CenterPoint());
+  // Cursor moves to a display that doesn't support CRTC matrix, thus it should
+  // be using software compositing.
   EXPECT_TRUE(IsCursorCompositingEnabled());
 }
 
@@ -1830,8 +1837,10 @@ TEST_F(AmbientEQTest, TestAmbientRgbScalingUpdatesOnUserChangedToEnabled) {
   EXPECT_EQ(kDefaultScalingFactors, controller_->ambient_rgb_scaling_factors());
 
   // Enable the pref for user 2 then switch to user2 and the factors update.
-  user2_pref_service()->SetBoolean(prefs::kAmbientColorEnabled, true);
-  SwitchActiveUser(kUser2Email);
+  auto user2_pref_service =
+      TestPrefServiceProvider::CreateUserPrefServiceSimple();
+  user2_pref_service->SetBoolean(prefs::kAmbientColorEnabled, true);
+  SimulateUserLogin({kUser2Email}, std::nullopt, std::move(user2_pref_service));
   const auto coolest_scaling_factors =
       controller_->ambient_rgb_scaling_factors();
   EXPECT_NE(kDefaultScalingFactors, coolest_scaling_factors);
@@ -1849,8 +1858,10 @@ TEST_F(AmbientEQTest, TestAmbientRgbScalingUpdatesOnUserChangedBothDisabled) {
 
   // Disable the pref for user 2 then switch to user2 and the factors still
   // shouldn't update.
-  user2_pref_service()->SetBoolean(prefs::kAmbientColorEnabled, false);
-  SwitchActiveUser(kUser2Email);
+  auto user2_pref_service =
+      TestPrefServiceProvider::CreateUserPrefServiceSimple();
+  user2_pref_service->SetBoolean(prefs::kAmbientColorEnabled, false);
+  SimulateUserLogin({kUser2Email}, std::nullopt, std::move(user2_pref_service));
   EXPECT_EQ(kDefaultScalingFactors, controller_->ambient_rgb_scaling_factors());
 }
 

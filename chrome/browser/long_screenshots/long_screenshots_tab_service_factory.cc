@@ -64,7 +64,7 @@ SimpleFactoryKey* LongScreenshotsTabServiceFactory::GetKeyToUse(
   return key;
 }
 
-base::android::ScopedJavaLocalRef<jobject>
+static base::android::ScopedJavaLocalRef<jobject>
 JNI_LongScreenshotsTabServiceFactory_GetServiceInstanceForCurrentProfile(
     JNIEnv* env) {
   ProfileKey* profile_key =
@@ -76,3 +76,5 @@ JNI_LongScreenshotsTabServiceFactory_GetServiceInstanceForCurrentProfile(
 }
 
 }  // namespace long_screenshots
+
+DEFINE_JNI(LongScreenshotsTabServiceFactory)

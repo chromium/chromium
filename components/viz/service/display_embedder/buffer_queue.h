@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -71,10 +72,11 @@ class VIZ_SERVICE_EXPORT BufferQueue {
 
   // Called by the user of this object to indicate that a previous request to
   // swap buffers has completed. This allows us to correctly keep track of the
-  // state of the buffers: the buffer currently marked as being displayed will
-  // now marked as available, and the next buffer marked as in-flight will now
-  // be marked as displayed.
-  void SwapBuffersComplete();
+  // state of the buffers. If `did_present` was true, the buffer currently
+  // marked as being displayed will now marked as available, and the next buffer
+  // marked as in-flight will now be marked as displayed. Otherwise, next
+  // in-flight will be marked as available and displayed will be unchanged.
+  void SwapBuffersComplete(bool did_present);
 
   // Called when SwapBuffers is skipped this frame. Damages allocated buffers,
   // but does not advance |in_flight_buffers_| or |current_buffer_|. We don't
@@ -87,6 +89,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // a no-op. Returns true if there was a change of state, false otherwise.
   bool Reshape(const gfx::Size& size,
                const gfx::ColorSpace& color_space,
+               RenderPassAlphaType alpha_type,
                SharedImageFormat format);
 
   // Sets the number of frame buffers to use when
@@ -170,6 +173,8 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   gfx::Size size_;
   // The color space of all allocated buffers.
   gfx::ColorSpace color_space_;
+  // The alpha type of all allocated buffers.
+  RenderPassAlphaType alpha_type_ = RenderPassAlphaType::kPremul;
   // The format of all allocated buffers. The |format_| is optional to prevent
   // use of uninitialized values.
   std::optional<SharedImageFormat> format_;

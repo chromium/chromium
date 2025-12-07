@@ -9,7 +9,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -43,15 +42,12 @@ void AXRootObjWrapper::GetChildren(
 
 void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->id = unique_id_.Get();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  out_node_data->role = ax::mojom::Role::kClient;
-#else
   out_node_data->role = ax::mojom::Role::kDesktop;
-#endif
 
-  display::Screen* screen = display::Screen::GetScreen();
-  if (!screen)
+  display::Screen* screen = display::Screen::Get();
+  if (!screen) {
     return;
+  }
 
   const display::Display& display = screen->GetPrimaryDisplay();
 
@@ -62,10 +58,11 @@ void AXRootObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   // portrait. We use this rather than |rotation| because some devices default
   // to landscape, some in portrait. Encode landscape as horizontal state,
   // portrait as vertical state.
-  if (display.bounds().width() > display.bounds().height())
+  if (display.bounds().width() > display.bounds().height()) {
     out_node_data->AddState(ax::mojom::State::kHorizontal);
-  else
+  } else {
     out_node_data->AddState(ax::mojom::State::kVertical);
+  }
 }
 
 ui::AXNodeID AXRootObjWrapper::GetUniqueId() const {

@@ -16,7 +16,7 @@ namespace {
 // Stores the completion UUIDs when the completion is invoked. The UUIDs can be
 // checked with +[ChromeTestCaseAppInterface isCompletionInvokedWithUUID:].
 NSMutableSet* invokedCompletionUUID = nil;
-}
+}  // namespace
 
 @implementation ChromeTestCaseAppInterface
 
@@ -39,23 +39,24 @@ NSMutableSet* invokedCompletionUUID = nil;
     (NSUUID*)completionUUID {
   chrome_test_util::RemoveAllInfoBars();
   chrome_test_util::ClearPresentedState(^() {
-    if (completionUUID)
+    if (completionUUID) {
       [self completionInvokedWithUUID:completionUUID];
+    }
   });
 }
 
 + (void)blockSigninIPH {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   tracker->NotifyUsedEvent(
       feature_engagement::kIPHiOSReplaceSyncPromosWithSignInPromos);
 }
 
 + (BOOL)isCompletionInvokedWithUUID:(NSUUID*)completionUUID {
-  if (![invokedCompletionUUID containsObject:completionUUID])
+  if (![invokedCompletionUUID containsObject:completionUUID]) {
     return NO;
+  }
   [invokedCompletionUUID removeObject:completionUUID];
   return YES;
 }
@@ -63,8 +64,9 @@ NSMutableSet* invokedCompletionUUID = nil;
 #pragma mark - Private
 
 + (void)completionInvokedWithUUID:(NSUUID*)completionUUID {
-  if (!invokedCompletionUUID)
+  if (!invokedCompletionUUID) {
     invokedCompletionUUID = [NSMutableSet set];
+  }
   DCHECK(![invokedCompletionUUID containsObject:completionUUID]);
   [invokedCompletionUUID addObject:completionUUID];
 }

@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include "base/functional/bind.h"
@@ -15,12 +13,15 @@
 #include "base/test/test_timeouts.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/cocoa/menu_controller.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-shared.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
+#include "ui/gfx/native_ui_types.h"
+#include "ui/menus/cocoa/menu_controller.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
+#import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace views::test {
@@ -56,8 +57,9 @@ class TestModel : public ui::SimpleMenuModel {
     void ExecuteCommand(int command_id, int event_flags) override {}
 
     void OnMenuWillShow(SimpleMenuModel* source) override {
-      if (!model_->menu_open_callback_.is_null())
+      if (!model_->menu_open_callback_.is_null()) {
         std::move(model_->menu_open_callback_).Run();
+      }
     }
 
     bool GetAcceleratorForCommandId(
@@ -119,10 +121,11 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
     base::RepeatingClosure on_close = base::BindRepeating(
         &MenuRunnerCocoaTest::MenuCloseCallback, base::Unretained(this));
-    if (GetParam() == MenuType::NATIVE)
+    if (GetParam() == MenuType::NATIVE) {
       runner_ = new internal::MenuRunnerImplCocoa(menu_.get(), on_close);
-    else
+    } else {
       runner_ = new internal::MenuRunnerImplAdapter(menu_.get(), on_close);
+    }
     EXPECT_FALSE(runner_->IsRunning());
   }
 
@@ -170,9 +173,9 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
                          base::Unretained(this), std::move(wrapped_callback)));
     }
 
-    runner_->RunMenuAt(parent_, nullptr, gfx::Rect(),
-                       MenuAnchorPosition::kTopLeft, MenuRunner::CONTEXT_MENU,
-                       nullptr);
+    runner_->RunMenuAt(
+        parent_, nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
+        ui::mojom::MenuSourceType::kNone, MenuRunner::CONTEXT_MENU);
     MaybeRunAsync();
   }
 
@@ -198,8 +201,9 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   }
 
   NSMenu* GetNativeNSMenu() {
-    if (GetParam() == MenuType::VIEWS)
+    if (GetParam() == MenuType::VIEWS) {
       return nil;
+    }
 
     internal::MenuRunnerImplCocoa* cocoa_runner =
         static_cast<internal::MenuRunnerImplCocoa*>(runner_);
@@ -255,8 +259,9 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   // Run a nested run loop so that async and sync menus can be tested the
   // same way.
   void MaybeRunAsync() {
-    if (!IsAsync())
+    if (!IsAsync()) {
       return;
+    }
 
     base::RunLoop run_loop;
     quit_closure_ = run_loop.QuitClosure();

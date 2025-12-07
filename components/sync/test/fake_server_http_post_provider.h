@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/sync/engine/net/http_post_provider.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
+#include "net/http/http_request_headers.h"
 
 namespace fake_server {
 
@@ -31,7 +32,7 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProvider {
       delete;
 
   // HttpPostProvider implementation.
-  void SetExtraRequestHeaders(const char* headers) override;
+  void SetExtraRequestHeaders(const net::HttpRequestHeaders& headers) override;
   void SetURL(const GURL& url) override;
   void SetPostPayload(const char* content_type,
                       int content_length,
@@ -61,8 +62,8 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProvider {
 
   static std::atomic_bool network_enabled_;
 
-  // |fake_server_| should only be dereferenced on the same thread as
-  // |fake_server_task_runner_| runs on.
+  // `fake_server_` should only be dereferenced on the same thread as
+  // `fake_server_task_runner_` runs on.
   const base::WeakPtr<FakeServer> fake_server_;
   const scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner_;
 
@@ -75,7 +76,7 @@ class FakeServerHttpPostProvider : public syncer::HttpPostProvider {
   GURL request_url_;
   std::string request_content_;
   std::string request_content_type_;
-  std::string extra_request_headers_;
+  net::HttpRequestHeaders extra_request_headers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -98,8 +99,8 @@ class FakeServerHttpPostProviderFactory
   scoped_refptr<syncer::HttpPostProvider> Create() override;
 
  private:
-  // |fake_server_| should only be dereferenced on the same thread as
-  // |fake_server_task_runner_| runs on.
+  // `fake_server_` should only be dereferenced on the same thread as
+  // `fake_server_task_runner_` runs on.
   base::WeakPtr<FakeServer> fake_server_;
   scoped_refptr<base::SequencedTaskRunner> fake_server_task_runner_;
 };

@@ -70,10 +70,11 @@ TlsProber::TlsProber(network::NetworkContextGetter network_context_getter,
 
   host_resolver_ = network::SimpleHostResolver::Create(network_context);
 
+  // Resolver host parameter source must be unset or set to ANY in order for DNS
+  // queries with BuiltInDnsClientEnabled policy disabled to work (b/353448388).
   network::mojom::ResolveHostParametersPtr parameters =
       network::mojom::ResolveHostParameters::New();
   parameters->dns_query_type = net::DnsQueryType::A;
-  parameters->source = net::HostResolverSource::DNS;
   parameters->cache_usage =
       network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
 
@@ -94,17 +95,17 @@ TlsProber::~TlsProber() = default;
 void TlsProber::OnHostResolutionComplete(
     int result,
     const net::ResolveErrorInfo&,
-    const std::optional<net::AddressList>& resolved_addresses,
-    const std::optional<net::HostResolverEndpointResults>&) {
+    const net::AddressList& resolved_addresses,
+    const net::HostResolverEndpointResults&) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   host_resolver_.reset();
   if (result != net::OK) {
-    CHECK(!resolved_addresses);
+    CHECK(resolved_addresses.empty());
     OnDone(result, ProbeExitEnum::kDnsFailure);
     return;
   }
-  CHECK(resolved_addresses);
+  CHECK(!resolved_addresses.empty());
 
   network::mojom::NetworkContext::CreateTCPConnectedSocketCallback
       completion_callback = base::BindOnce(&TlsProber::OnConnectComplete,
@@ -120,7 +121,7 @@ void TlsProber::OnHostResolutionComplete(
   CHECK(network_context);
 
   network_context->CreateTCPConnectedSocket(
-      /*local_addr=*/std::nullopt, resolved_addresses.value(),
+      /*local_addr=*/std::nullopt, resolved_addresses,
       /*tcp_connected_socket_options=*/nullptr,
       net::MutableNetworkTrafficAnnotationTag(GetTrafficAnnotationTag()),
       std::move(pending_receiver), /*observer=*/mojo::NullRemote(),

@@ -1,0 +1,7 @@
+\bnamesti\b	nam
+\bnorth\b	n
+\bsouth\b	s
+\btrida\b	tr
+\bulice\b	ul
+\beast\b	e
+\bwest\b	w

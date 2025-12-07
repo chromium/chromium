@@ -1,0 +1,16 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/integrity_algorithm.mojom";
+
+// Holds metadata used to verify the integrity of a given resource by
+// Subresource Integrity and CSP.
+//
+// https://w3c.github.io/webappsec-subresource-integrity/#integrity-metadata
+struct IntegrityMetadata {
+  IntegrityAlgorithm algorithm;
+  array<uint8> value;
+};

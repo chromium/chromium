@@ -50,9 +50,13 @@ void DrawWaiterForTest::OnCompositingStarted(Compositor* compositor,
     wait_run_loop_->Quit();
 }
 
-void DrawWaiterForTest::OnCompositingAckDeprecated(Compositor* compositor) {
-  if (wait_event_ == WAIT_FOR_COMPOSITING_ENDED)
+void DrawWaiterForTest::OnDidPresentCompositorFrame(
+    ui::Compositor* compositor,
+    uint32_t frame_token,
+    const gfx::PresentationFeedback& feedback) {
+  if (wait_event_ == WAIT_FOR_COMPOSITING_ENDED) {
     wait_run_loop_->Quit();
+  }
 }
 
 }  // namespace ui

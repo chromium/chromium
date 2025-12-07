@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+Found 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] #6 Test that WebAssembly compilation succeeds (memory64.wast:8)
+  assert_equals: expected false but got true
+[FAIL] #7 Test that WebAssembly compilation succeeds (memory64.wast:9)
+  assert_equals: expected false but got true
+[FAIL] #36 Test that WebAssembly compilation succeeds (memory64.wast:8)
+  assert_true: WebAssembly.compile failed unexpectedly with CompileError: WebAssembly.compile(): initial memory size (281474976710656 pages) is larger than implementation limit (262144 pages) @+16 at {loc} expected true got false
+[FAIL] #37 Test that WebAssembly compilation succeeds (memory64.wast:9)
+  assert_true: WebAssembly.compile failed unexpectedly with CompileError: WebAssembly.compile(): maximum memory size (281474976710656 pages) is larger than implementation limit (262144 pages) @+17 at {loc} expected true got false
+[FAIL] #38 Test that WebAssembly instantiation succeeds
+  assert_true: unexpected instantiation error, observed TypeError: Cannot read properties of undefined (reading 'source') \n    at instance (http://web-platform.test:8001/wasm/core/js/harness/async_index.js:201:15)\n    at memory64_wast_js (http://web-platform.test:8001/wasm/core/js/memory64/memory64.wast.js:34:10)\n    at http://web-platform.test:8001/wasm/core/js/memory64/memory64.wast.js:237:3 expected true got false
+Harness: the test ran to completion.
+

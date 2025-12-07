@@ -1,0 +1,43 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This scope allows mapping configuration from target_os and target_cpu
+# to the architecture as understood by the different tools (compiler,
+# dsymutil, ...).
+#
+# The mapping is defined as a scope to allow using it in the definition
+# of toolchains (as all toolchains are evaluated in the context of the
+# default_toolchain, and the variables such as current_os or current_cpu
+# are not set to the default value of target_os or target_cpu).
+
+archs_mapping = {
+  ios = {
+    arm64 = {
+      clang_arch = "arm64"
+      dsym_arch = "aarch64"
+    }
+
+    arm64e = {
+      clang_arch = "arm64e"
+      dsym_arch = "arm64e"
+    }
+
+    x64 = {
+      clang_arch = "x86_64"
+      dsym_arch = "x86_64"
+    }
+  }
+
+  mac = {
+    arm64 = {
+      clang_arch = "arm64"
+      dsym_arch = "aarch64"
+    }
+
+    x64 = {
+      clang_arch = "x86_64"
+      dsym_arch = "x86_64"
+    }
+  }
+}

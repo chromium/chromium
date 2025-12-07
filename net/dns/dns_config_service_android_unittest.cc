@@ -9,7 +9,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
@@ -34,8 +34,8 @@ const IPEndPoint kNameserver2(IPAddress(1, 2, 3, 8), 53);
 // targeting the logic used in M and beyond.
 #define SKIP_ANDROID_VERSIONS_BEFORE_M()                              \
   {                                                                   \
-    if (base::android::BuildInfo::GetInstance()->sdk_int() <          \
-        base::android::SDK_VERSION_MARSHMALLOW) {                     \
+    if (base::android::android_info::sdk_int() <                      \
+        base::android::android_info::SDK_VERSION_MARSHMALLOW) {       \
       GTEST_SKIP() << "Test not necessary or compatible with pre-M."; \
     }                                                                 \
   }

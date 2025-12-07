@@ -116,6 +116,11 @@ class CONTENT_EXPORT BluetoothDeviceChooserController final {
     raw_ref<BluetoothDeviceChooserController> controller_;
   };
 
+  // Checks adapter permissions and powered states and starts getting devices
+  // if the adapter status allows us to do so. It can be called multiple times
+  // to re-check the adapter status when it has changed.
+  void CheckAdapterAndStartGettingDevices();
+
   // Populates the chooser with the GATT connected devices.
   void PopulateConnectedDevices();
 

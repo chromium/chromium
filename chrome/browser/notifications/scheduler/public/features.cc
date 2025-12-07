@@ -7,9 +7,7 @@
 namespace notifications {
 namespace features {
 
-BASE_FEATURE(kNotificationScheduleService,
-             "NotificationScheduleService",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNotificationScheduleService, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 

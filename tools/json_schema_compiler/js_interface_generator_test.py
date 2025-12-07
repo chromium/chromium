@@ -110,10 +110,12 @@ FakeApi.prototype = {
  * @type {!ChromeEvent}
  * @see https://developer.chrome.com/extensions/fakeApi#event-onTrapDetected
  */
-FakeApi.prototype.onTrapDetected;""" % (datetime.now().year,
-                                        sys.argv[0].replace('\\', '/')))
+FakeApi.prototype.onTrapDetected;""" %
+                   (datetime.now().year, sys.argv[0].replace('\\', '/')))
+
 
 class JsExternGeneratorTest(unittest.TestCase):
+
   def _GetNamespace(self, fake_content, filename):
     """Returns a namespace object for the given content"""
     api_def = idl_schema.Process(fake_content, filename)
@@ -121,7 +123,7 @@ class JsExternGeneratorTest(unittest.TestCase):
     return m.AddNamespace(api_def[0], filename)
 
   def setUp(self):
-    self.maxDiff = None # Lets us see the full diff when inequal.
+    self.maxDiff = None  # Lets us see the full diff when inequal.
 
   def testBasic(self):
     namespace = self._GetNamespace(fake_idl, 'fake_api.idl')

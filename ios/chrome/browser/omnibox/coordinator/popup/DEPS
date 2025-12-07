@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/favicon/ui_bundled",
+  "+ios/chrome/browser/menu/ui_bundled",
+  "+ios/chrome/browser/sharing/ui_bundled",
+  "+ios/chrome/browser/toolbar/ui_bundled/buttons",
+  "+third_party/omnibox_proto",
+]

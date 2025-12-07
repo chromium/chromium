@@ -2,22 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// A helper function for using JsTemplate. See jstemplate_builder.h for more
-// info.
-
 #include "ui/base/webui/jstemplate_builder.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
 
 #include "base/check.h"
-#include "base/json/json_file_value_serializer.h"
-#include "base/json/json_string_value_serializer.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/template_expressions.h"
-#include "ui/resources/grit/webui_resources.h"
+#include "ui/webui/resources/grit/webui_resources.h"
 
 namespace webui {
 
@@ -40,7 +37,6 @@ void AppendJsonHtml(const base::Value::Dict& json, std::string* output) {
 
 // Appends the source for load_time_data.js in a script tag.
 void AppendLoadTimeData(std::string* output) {
-  // fetch and cache the pointer of the jstemplate resource source text.
   std::string load_time_data_src =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_WEBUI_JS_LOAD_TIME_DATA_DEPRECATED_JS);
@@ -76,19 +72,18 @@ void AppendJsonJS(const base::Value::Dict& json,
     output->append("import {loadTimeData} from ");
     output->append("'//resources/js/load_time_data.js';\n");
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Imported for the side effect of setting the |window.loadTimeData| global,
     // which is relied on by ChromeOS Ash Tast Tests and some browser tests.
     // See https://www.crbug.com/1395148.
     output->append("import '//resources/ash/common/load_time_data.m.js';\n");
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  std::string jstext;
-  JSONStringValueSerializer serializer(&jstext);
-  serializer.Serialize(json);
+  std::optional<std::string> jstext = base::WriteJson(json);
+  CHECK(jstext);
   output->append("loadTimeData.data = ");
-  output->append(jstext);
+  output->append(*jstext);
   output->append(";");
 }
 

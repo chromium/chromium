@@ -2,27 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 
 #include <string_view>
 
-#include "base/test/scoped_feature_list.h"
+#include "base/containers/span.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
 #include "services/network/public/mojom/parsed_headers.mojom-blink.h"
+#include "services/network/public/mojom/sri_message_signature.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -40,21 +39,21 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
-  header = ParseCacheControlDirectives(AtomicString("no-cache no-store"),
+  header = ParseCacheControlDirectives(AtomicString("no-cache, no-store"),
                                        AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_TRUE(header.contains_no_cache);
-  EXPECT_FALSE(header.contains_no_store);
+  EXPECT_TRUE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
-  header = ParseCacheControlDirectives(AtomicString("no-store must-revalidate"),
-                                       AtomicString());
+  header = ParseCacheControlDirectives(
+      AtomicString("no-store, must-revalidate"), AtomicString());
   EXPECT_TRUE(header.parsed);
   EXPECT_FALSE(header.contains_no_cache);
   EXPECT_TRUE(header.contains_no_store);
-  EXPECT_FALSE(header.contains_must_revalidate);
+  EXPECT_TRUE(header.contains_must_revalidate);
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
@@ -75,10 +74,10 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
 
-  header = ParseCacheControlDirectives(AtomicString("max-age=0 no-cache"),
+  header = ParseCacheControlDirectives(AtomicString("max-age=0, no-cache"),
                                        AtomicString());
   EXPECT_TRUE(header.parsed);
-  EXPECT_FALSE(header.contains_no_cache);
+  EXPECT_TRUE(header.contains_no_cache);
   EXPECT_FALSE(header.contains_no_store);
   EXPECT_FALSE(header.contains_must_revalidate);
   EXPECT_EQ(base::TimeDelta(), header.max_age.value());
@@ -138,6 +137,139 @@ TEST(HTTPParsersTest, ParseCacheControl) {
   EXPECT_FALSE(header.contains_must_revalidate);
   EXPECT_EQ(std::nullopt, header.max_age);
   EXPECT_EQ(2.0, header.stale_while_revalidate.value().InSecondsF());
+
+  // Test that space-separated directives are NOT parsed as separate directives
+  // (per RFC 7234, directives must be comma-separated).
+  // Instead, the space terminates the first directive name, and everything
+  // after is discarded as trailing garbage.
+  header = ParseCacheControlDirectives(AtomicString("no-cache no-store"),
+                                       AtomicString());
+  EXPECT_TRUE(header.parsed);
+  EXPECT_TRUE(header.contains_no_cache);  // "no-cache" is extracted, "
+                                          // no-store" is trailing garbage
+  EXPECT_FALSE(
+      header.contains_no_store);  // "no-store" is NOT a separate directive
+  EXPECT_FALSE(header.contains_must_revalidate);
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
+
+  header = ParseCacheControlDirectives(AtomicString("no-store must-revalidate"),
+                                       AtomicString());
+  EXPECT_TRUE(header.parsed);
+  EXPECT_FALSE(header.contains_no_cache);
+  EXPECT_TRUE(
+      header.contains_no_store);  // "no-store" is extracted, " must-revalidate"
+                                  // is trailing garbage
+  EXPECT_FALSE(header.contains_must_revalidate);  // "must-revalidate" is NOT a
+                                                  // separate directive
+  EXPECT_EQ(std::nullopt, header.max_age);
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
+
+  header = ParseCacheControlDirectives(AtomicString("max-age=0 no-cache"),
+                                       AtomicString());
+  EXPECT_TRUE(header.parsed);
+  EXPECT_FALSE(
+      header.contains_no_cache);  // Space-separated "no-cache" is part of
+                                  // max-age value, not a separate directive
+  EXPECT_FALSE(header.contains_no_store);
+  EXPECT_FALSE(header.contains_must_revalidate);
+  // TrimToNextSeparator extracts "0" from "0 no-cache", which successfully
+  // parses as max-age=0
+  EXPECT_EQ(base::TimeDelta(), header.max_age.value());
+  EXPECT_EQ(std::nullopt, header.stale_while_revalidate);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingBothFlagsOff) {
+  // Test header with RFC 2616 separator (semicolon) that should parse
+  // differently between legacy (RFC 2616) and new (RFC 7234) parsing.
+  const AtomicString test_header("max-age=3600;no-cache");
+
+  ScopedCacheControlRFC7234ParsingForTest parsing_feature(false);
+  ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(false);
+
+  CacheControlHeader header =
+      ParseCacheControlDirectives(test_header, AtomicString());
+  // Legacy parsing: semicolon affects parsing
+  EXPECT_TRUE(header.parsed);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingMetricsOnParsingOff) {
+  const AtomicString test_header("max-age=3600;no-cache");
+
+  ScopedCacheControlRFC7234ParsingForTest parsing_feature(false);
+  ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(true);
+
+  CacheControlHeader header =
+      ParseCacheControlDirectives(test_header, AtomicString());
+  // Should use legacy parsing (same as both flags off)
+  EXPECT_TRUE(header.parsed);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingParsingOnMetricsOff) {
+  const AtomicString test_header("max-age=3600;no-cache");
+
+  ScopedCacheControlRFC7234ParsingForTest parsing_feature(true);
+  ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(false);
+
+  CacheControlHeader header =
+      ParseCacheControlDirectives(test_header, AtomicString());
+  // New parsing: semicolon is not a valid separator
+  EXPECT_TRUE(header.parsed);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingBothFlagsOn) {
+  const AtomicString test_header("max-age=3600;no-cache");
+
+  ScopedCacheControlRFC7234ParsingForTest parsing_feature(true);
+  ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(true);
+
+  CacheControlHeader header =
+      ParseCacheControlDirectives(test_header, AtomicString());
+  // Should use new RFC 7234 parsing
+  EXPECT_TRUE(header.parsed);
+}
+
+TEST(HTTPParsersTest, CacheControlRFC7234ParsingMetricsEmitted) {
+  // Test that UMA histogram is emitted when metrics flag is enabled
+
+  // Test with header that DIFFERS between old and new parsing
+  {
+    base::HistogramTester histogram;
+    ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(true);
+
+    // Parse header with parentheses - RFC 2616 separator but not RFC 7234
+    // In legacy: parentheses will trim the directive name
+    // In new: parentheses are not separators, so directive name differs
+    ParseCacheControlDirectives(AtomicString("no-cache(test)"), AtomicString());
+
+    // Verify UMA was emitted with value true (1) indicating difference
+    histogram.ExpectBucketCount("Blink.CacheControl.ParsingDifference", 1, 1);
+  }
+
+  // Test with header that DOESN'T differ between old and new
+  {
+    base::HistogramTester histogram;
+    ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(true);
+
+    // Parse header without RFC 2616-specific separators
+    ParseCacheControlDirectives(AtomicString("no-cache, no-store"),
+                                AtomicString());
+
+    // Verify UMA was emitted with value false (0) indicating no difference
+    histogram.ExpectBucketCount("Blink.CacheControl.ParsingDifference", 0, 1);
+  }
+
+  // Test that NO metrics are emitted when flag is OFF
+  {
+    base::HistogramTester histogram;
+    ScopedCacheControlRFC7234ParsingMetricsForTest metrics_feature(false);
+
+    // Parse header that would differ (but metrics disabled)
+    ParseCacheControlDirectives(AtomicString("no-cache(test)"), AtomicString());
+
+    // Verify NO UMA was emitted
+    histogram.ExpectTotalCount("Blink.CacheControl.ParsingDifference", 0);
+  }
 }
 
 TEST(HTTPParsersTest, CommaDelimitedHeaderSet) {
@@ -173,7 +305,7 @@ TEST(HTTPParsersTest, HTTPToken) {
   EXPECT_FALSE(blink::IsValidHTTPToken("t a"));
   EXPECT_FALSE(blink::IsValidHTTPToken("()"));
   EXPECT_FALSE(blink::IsValidHTTPToken("(foobar)"));
-  EXPECT_FALSE(blink::IsValidHTTPToken(String("\0", 1u)));
+  EXPECT_FALSE(blink::IsValidHTTPToken(String(base::span_from_cstring("\0"))));
   EXPECT_FALSE(blink::IsValidHTTPToken(String(kHiraganaA)));
 }
 
@@ -223,6 +355,16 @@ TEST(HTTPParsersTest, ExtractMIMETypeFromMediaType) {
   // If no normalization is required, the same AtomicString should be returned.
   const AtomicString& passthrough = ExtractMIMETypeFromMediaType(text_html);
   EXPECT_EQ(text_html.Impl(), passthrough.Impl());
+}
+
+TEST(HTTPParsersTest, MinimizedMIMEType) {
+  EXPECT_EQ("text/javascript",
+            MinimizedMIMEType(AtomicString("application/javascript")));
+  EXPECT_EQ("application/json", MinimizedMIMEType(AtomicString("text/json")));
+  EXPECT_EQ("image/svg+xml", MinimizedMIMEType(AtomicString("image/svg+xml")));
+  EXPECT_EQ("application/xml",
+            MinimizedMIMEType(AtomicString("application/rss+xml")));
+  EXPECT_EQ("image/png", MinimizedMIMEType(AtomicString("image/png")));
 }
 
 TEST(HTTPParsersTest, ExtractMIMETypeFromMediaTypeInvalidInput) {
@@ -315,11 +457,12 @@ TEST(HTTPParsersTest, ParseHTTPRefresh) {
 }
 
 TEST(HTTPParsersTest, ParseMultipartHeadersResult) {
-  struct {
-    const char* data;
+  struct MultipartHeaderTestData {
+    const std::string_view data;
     const bool result;
     const size_t end;
-  } tests[] = {
+  };
+  const auto tests = std::to_array<MultipartHeaderTestData>({
       {"This is junk", false, 0},
       {"Foo: bar\nBaz:\n\nAfter:\n", true, 15},
       {"Foo: bar\nBaz:\n", false, 0},
@@ -328,15 +471,14 @@ TEST(HTTPParsersTest, ParseMultipartHeadersResult) {
       {"Foo: bar\nBaz:\r\n\r\nAfter:\n\n", true, 17},
       {"Foo: bar\r\nBaz:\n", false, 0},
       {"\r\n", true, 2},
-  };
-  for (size_t i = 0; i < std::size(tests); ++i) {
+  });
+  for (const auto& test : tests) {
     ResourceResponse response;
     wtf_size_t end = 0;
-    bool result = ParseMultipartHeadersFromBody(
-        tests[i].data, static_cast<wtf_size_t>(strlen(tests[i].data)),
-        &response, &end);
-    EXPECT_EQ(tests[i].result, result);
-    EXPECT_EQ(tests[i].end, end);
+    bool result = ParseMultipartHeadersFromBody(base::as_byte_span(test.data),
+                                                &response, &end);
+    EXPECT_EQ(test.result, result);
+    EXPECT_EQ(test.end, end);
   }
 }
 
@@ -356,7 +498,7 @@ TEST(HTTPParsersTest, ParseMultipartHeaders) {
       "\n";
   wtf_size_t end = 0;
   bool result = ParseMultipartHeadersFromBody(
-      kData, static_cast<wtf_size_t>(strlen(kData)), &response, &end);
+      base::byte_span_from_cstring(kData), &response, &end);
 
   EXPECT_TRUE(result);
   EXPECT_EQ(strlen(kData), end);
@@ -373,7 +515,7 @@ TEST(HTTPParsersTest, ParseMultipartHeadersContentCharset) {
   const char kData[] = "content-type: text/html; charset=utf-8\n\n";
   wtf_size_t end = 0;
   bool result = ParseMultipartHeadersFromBody(
-      kData, static_cast<wtf_size_t>(strlen(kData)), &response, &end);
+      base::byte_span_from_cstring(kData), &response, &end);
 
   EXPECT_TRUE(result);
   EXPECT_EQ(strlen(kData), end);
@@ -736,7 +878,6 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesDirectiveName) {
       "frame-ancestors 'none', "
       "sandbox allow-script, "
       "form-action 'none', "
-      "navigate-to 'none', "
       "frame-src 'none', "
       "child-src 'none', "
       "script-src 'none', "
@@ -745,25 +886,23 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesDirectiveName) {
       network::mojom::blink::ContentSecurityPolicyType::kEnforce,
       network::mojom::blink::ContentSecurityPolicySource::kHTTP,
       KURL("http://example.com"));
-  EXPECT_EQ(9u, policies.size());
+  EXPECT_EQ(8u, policies.size());
   // frame-ancestors
   EXPECT_EQ(1u, policies[0]->directives.size());
   // sandbox. TODO(https://crbug.com/1041376) Implement this.
   EXPECT_EQ(0u, policies[1]->directives.size());
   // form-action.
   EXPECT_EQ(1u, policies[2]->directives.size());
-  // navigate-to.
-  EXPECT_EQ(1u, policies[3]->directives.size());
   // frame-src.
-  EXPECT_EQ(1u, policies[4]->directives.size());
+  EXPECT_EQ(1u, policies[3]->directives.size());
   // child-src.
-  EXPECT_EQ(1u, policies[5]->directives.size());
+  EXPECT_EQ(1u, policies[4]->directives.size());
   // script-src.
-  EXPECT_EQ(1u, policies[6]->directives.size());
+  EXPECT_EQ(1u, policies[5]->directives.size());
   // default-src.
-  EXPECT_EQ(1u, policies[7]->directives.size());
+  EXPECT_EQ(1u, policies[6]->directives.size());
   // upgrade-insecure-policies.
-  EXPECT_EQ(true, policies[8]->upgrade_insecure_requests);
+  EXPECT_EQ(true, policies[7]->upgrade_insecure_requests);
 }
 
 TEST(HTTPParsersTest, ParseContentSecurityPoliciesReportTo) {
@@ -808,7 +947,6 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
     EXPECT_EQ(0u, source_list->sources.size());
     EXPECT_FALSE(source_list->allow_self);
     EXPECT_FALSE(source_list->allow_star);
-    EXPECT_FALSE(source_list->allow_response_redirects);
   }
 
   // *
@@ -817,7 +955,6 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
     EXPECT_EQ(0u, source_list->sources.size());
     EXPECT_FALSE(source_list->allow_self);
     EXPECT_TRUE(source_list->allow_star);
-    EXPECT_FALSE(source_list->allow_response_redirects);
   }
 
   // 'self'
@@ -826,7 +963,6 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
     EXPECT_EQ(0u, source_list->sources.size());
     EXPECT_TRUE(source_list->allow_self);
     EXPECT_FALSE(source_list->allow_star);
-    EXPECT_FALSE(source_list->allow_response_redirects);
   }
 
   // http://a.com:22/path
@@ -834,7 +970,6 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
     auto source_list = policies[3]->directives.Take(frame_ancestors);
     EXPECT_FALSE(source_list->allow_self);
     EXPECT_FALSE(source_list->allow_star);
-    EXPECT_FALSE(source_list->allow_response_redirects);
     EXPECT_EQ(1u, source_list->sources.size());
     auto& source = source_list->sources[0];
     EXPECT_EQ("http", source->scheme);
@@ -849,7 +984,6 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
     auto source_list = policies[4]->directives.Take(frame_ancestors);
     EXPECT_FALSE(source_list->allow_self);
     EXPECT_FALSE(source_list->allow_star);
-    EXPECT_FALSE(source_list->allow_response_redirects);
     EXPECT_EQ(1u, source_list->sources.size());
     auto& source = source_list->sources[0];
     EXPECT_EQ("", source->scheme);
@@ -864,7 +998,6 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
     auto source_list = policies[5]->directives.Take(frame_ancestors);
     EXPECT_FALSE(source_list->allow_self);
     EXPECT_FALSE(source_list->allow_star);
-    EXPECT_FALSE(source_list->allow_response_redirects);
     EXPECT_EQ(1u, source_list->sources.size());
     auto& source = source_list->sources[0];
     EXPECT_EQ("", source->scheme);
@@ -876,13 +1009,65 @@ TEST(HTTPParsersTest, ParseContentSecurityPoliciesSourceBasic) {
   }
 }
 
+//
+// As with CSP above, SRI Message Signatures are tested and fuzzed in
+// //services/network/public/cpp. Here we're only testing the basics of
+// conversion to Blink.
+//
+TEST(ParseSRIMessageSignaturesTest, NoSignatures) {
+  const char* cases[] = {
+      // No headers.
+      "HTTP/1.1 200 OK\r\n",
+      // No `Signature-Input` header.
+      ("HTTP/1.1 200 OK\r\nSignature: "
+       "signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAax"
+       "xNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:"),
+      // No `Signature` header.
+      ("HTTP/1.1 200 OK\r\nSignature-Input: "
+       "signature=(\"unencoded-digest\";sf);"
+       "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
+       "tag=\"sri\"")};
+  for (const char* test : cases) {
+    SCOPED_TRACE(test);
+    auto result = ParseSRIMessageSignaturesFromHeaders(test);
+    EXPECT_TRUE(result->signatures.empty());
+  }
+}
+
+TEST(ParseSRIMessageSignaturesTest, ValidSignature) {
+  const char* raw_header =
+      "HTTP/1.1 200 OK\r\n"
+      "Signature: signature=:amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52"
+      "UxXJprz89+2aOwEAz3w6KjjZuGkdrOUwxhBQ==:\r\n"
+      "Signature-Input: signature=(\"unencoded-digest\";sf);"
+      "keyid=\"JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs=\";"
+      "tag=\"sri\"\r\n\r\n";
+  Vector<uint8_t> key_bytes;
+  ASSERT_TRUE(Base64Decode(
+      StringView("JrQLj5P/89iXES9+vFgrIy29clF9CC/oPPsw3c5D0bs="), key_bytes));
+
+  auto parsed = ParseSRIMessageSignaturesFromHeaders(raw_header);
+  EXPECT_EQ(1u, parsed->signatures.size());
+  EXPECT_EQ("signature", parsed->signatures[0]->label);
+  EXPECT_FALSE(parsed->signatures[0]->created.has_value());
+  EXPECT_FALSE(parsed->signatures[0]->expires.has_value());
+  EXPECT_EQ(key_bytes, parsed->signatures[0]->keyid);
+  EXPECT_TRUE(parsed->signatures[0]->nonce.IsNull());
+  EXPECT_EQ("sri", parsed->signatures[0]->tag);
+
+  EXPECT_EQ(
+      "amDAmvl9bsfIcfA/bIJsBuBvInjJAaxxNIlLOzNI3FkrnG2k52UxXJprz89+2aOwEAz3w6Kj"
+      "jZuGkdrOUwxhBQ==",
+      Base64Encode(parsed->signatures[0]->signature));
+}
+
 TEST(NoVarySearchPrefetchEnabledTest, ParsingNVSReturnsDefaultURLVariance) {
   const std::string_view headers =
       "HTTP/1.1 200 OK\r\n"
       "Set-Cookie: a\r\n"
       "Set-Cookie: b\r\n\r\n";
   const auto parsed_headers =
-      ParseHeaders(WTF::String::FromUTF8(headers), KURL("https://a.com"));
+      ParseHeaders(String::FromUTF8(headers), KURL("https://a.com"));
 
   ASSERT_TRUE(parsed_headers);
   ASSERT_TRUE(parsed_headers->no_vary_search_with_parse_error);

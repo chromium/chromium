@@ -4,45 +4,32 @@
 
 #include "components/heap_profiling/in_process/heap_profiler_parameters.h"
 
-#include <string>
-#include <string_view>
-
-#include "base/check.h"
-#include "base/command_line.h"
+#include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_value_converter.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/profiler/process_type.h"
+#include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "build/build_config.h"
-#include "components/variations/variations_switches.h"
+#include "components/sampling_profiler/process_type.h"
 
 namespace heap_profiling {
-
-BASE_FEATURE(kHeapProfilerCentralControl,
-             "HeapProfilerCentralControl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
 // Platform-specific parameter defaults.
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-// Average 1M bytes per sample.
-constexpr int kDefaultSamplingRateBytes = 1'000'000;
-
 // Default on iOS is equal to mean value of process uptime. Android is
 // more similar to iOS than to Desktop.
 constexpr base::TimeDelta kDefaultCollectionInterval = base::Minutes(30);
 #else
-// Average 10M bytes per sample.
-constexpr int kDefaultSamplingRateBytes = 10'000'000;
-
 // Default on desktop is once per day.
 constexpr base::TimeDelta kDefaultCollectionInterval = base::Days(1);
 #endif
+
+// Average 10M bytes per sample.
+constexpr int kDefaultSamplingRateBytes = 10'000'000;
 
 // The chance that this client will report heap samples through a metrics
 // provider if it's on the stable channel.
@@ -59,191 +46,169 @@ constexpr double kDefaultStableProbability = 0.01;
 // provider if it's on a non-stable channel.
 constexpr double kDefaultNonStableProbability = 0.5;
 
-constexpr HeapProfilerParameters kDefaultHeapProfilerParameters{
-    .is_supported = false,
-    // If a process overrides `is_supported`, use the following defaults.
-    .stable_probability = kDefaultStableProbability,
-    .nonstable_probability = kDefaultNonStableProbability,
-    .sampling_rate_bytes = kDefaultSamplingRateBytes,
-    .collection_interval = kDefaultCollectionInterval,
+// The probability of including a child process in each snapshot that's taken,
+// as a percentage from 0 to 100. Defaults to 100, but can be set lower to
+// sub-sample process types that are very common (mainly renderers) to keep data
+// volume low. Samples from child processes are weighted in inverse proportion
+// to the snapshot probability to normalize the aggregated results. Set to 0 to
+// disable sampling a process completely.
+
+constexpr base::FeatureParam<int> kGpuSnapshotProbability{
+    &kHeapProfilerReporting, "gpu-prob-pct", 100};
+
+constexpr base::FeatureParam<int> kNetworkSnapshotProbability{
+    &kHeapProfilerReporting, "network-prob-pct", 100};
+
+// Sample 10% of renderer processes by default, because last time this was
+// evaluated (2024-08) the 50th %ile of renderer process count
+// (Memory.RenderProcessHost.Count2.All) ranged from 8 on Windows to 18 on Mac.
+// 10% is an easy default between 1/18 and 1/8.
+constexpr base::FeatureParam<int> kRendererSnapshotProbability{
+    &kHeapProfilerReporting, "renderer-prob-pct",
+#if BUILDFLAG(IS_CHROMEOS)
+    // base::debug::TraceStackFramePointers is crashing in ChromeOS rendererer
+    // processes. Disable heap profiling there for now.
+    // TODO(crbug.com/402542102): Find the root cause and re-enable.
+    0
+#else
+    10
+#endif
 };
 
-// Feature parameters.
+// Sample 50% of utility processes by default, because last time this was
+// evaluated (2024-08) the profiler collected 1.8x as many snapshots on Mac and
+// 2.4x as many snapshots on Windows for each browser process snapshot.
+constexpr base::FeatureParam<int> kUtilitySnapshotProbability{
+    &kHeapProfilerReporting, "utility-prob-pct", 50};
 
-// JSON-encoded parameter map that will set the default parameters for the
-// heap profiler unless overridden by the process-specific parameters below.
-constexpr base::FeatureParam<std::string> kDefaultParameters{
-    &kHeapProfilerReporting, "default-params", ""};
+// The sampling rates of each process type, in bytes.
 
-// JSON-encoded parameter map that will override the default parameters for the
-// browser process.
-constexpr base::FeatureParam<std::string> kBrowserProcessParameters{
-    &kHeapProfilerReporting, "browser-process-params", ""};
+constexpr base::FeatureParam<int> kBrowserSamplingRateBytes{
+    &kHeapProfilerReporting, "browser-sampling-rate-bytes",
+    kDefaultSamplingRateBytes};
 
-// JSON-encoded parameter map that will override the default parameters for
-// renderer processes.
-constexpr base::FeatureParam<std::string> kRendererProcessParameters{
-    &kHeapProfilerReporting, "renderer-process-params", ""};
+// Use half the threshold used in the browser process, because last time it was
+// validated the GPU process allocated a bit over half as much memory at the
+// median.
+constexpr base::FeatureParam<int> kGpuSamplingRateBytes{
+    &kHeapProfilerReporting, "gpu-sampling-rate-bytes",
+    kDefaultSamplingRateBytes / 2};
 
-// JSON-encoded parameter map that will override the default parameters for the
-// GPU process.
-constexpr base::FeatureParam<std::string> kGPUProcessParameters{
-    &kHeapProfilerReporting, "gpu-process-params", ""};
+constexpr base::FeatureParam<int> kNetworkSamplingRateBytes{
+    &kHeapProfilerReporting, "network-sampling-rate-bytes",
+    kDefaultSamplingRateBytes};
 
-// JSON-encoded parameter map that will override the default parameters for
-// utility processes.
-constexpr base::FeatureParam<std::string> kUtilityProcessParameters{
-    &kHeapProfilerReporting, "utility-process-params", ""};
+constexpr base::FeatureParam<int> kRendererSamplingRateBytes{
+    &kHeapProfilerReporting, "renderer-sampling-rate-bytes",
+    kDefaultSamplingRateBytes};
 
-// JSON-encoded parameter map that will override the default parameters for the
-// network process.
-constexpr base::FeatureParam<std::string> kNetworkProcessParameters{
-    &kHeapProfilerReporting, "network-process-params", ""};
+// Use 1/10th the threshold used in the browser process, because last time it
+// was validated with the default sampling rate (2024-08) the sampler collected
+// 6% to 11% as many samples per snapshot in the utility process, depending on
+// platform.
+constexpr base::FeatureParam<int> kUtilitySamplingRateBytes{
+    &kHeapProfilerReporting, "utility-sampling-rate-bytes",
+    kDefaultSamplingRateBytes / 10};
 
-// Interprets `value` as a positive number of minutes, and writes the converted
-// value to `result`. If `value` contains anything other than a positive
-// integer, returns false to indicate a conversion failure.
-bool ConvertCollectionInterval(const base::Value* value,
-                               base::TimeDelta* result) {
-  if (!value) {
-    // Missing values are ok, so report success without updating `result`.
-    return true;
-  }
-  if (value->is_int()) {
-    const int minutes = value->GetInt();
-    if (minutes > 0) {
-      *result = base::Minutes(minutes);
-      return true;
-    }
-  }
-  return false;
-}
+// The load factor that should be used by PoissonAllocationSampler's hash set in
+// each process type.
+constexpr base::FeatureParam<double> kBrowserHashSetLoadFactor{
+    &kHeapProfilerReporting, "browser-hash-set-load-factor", 1.0};
+constexpr base::FeatureParam<double> kGpuHashSetLoadFactor{
+    &kHeapProfilerReporting, "gpu-hash-set-load-factor", 1.0};
+constexpr base::FeatureParam<double> kNetworkHashSetLoadFactor{
+    &kHeapProfilerReporting, "network-hash-set-load-factor", 1.0};
+constexpr base::FeatureParam<double> kRendererHashSetLoadFactor{
+    &kHeapProfilerReporting, "renderer-hash-set-load-factor", 1.0};
+constexpr base::FeatureParam<double> kUtilityHashSetLoadFactor{
+    &kHeapProfilerReporting, "utility-hash-set-load-factor", 1.0};
 
 }  // namespace
 
-BASE_FEATURE(kHeapProfilerReporting,
-             "HeapProfilerReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kHeapProfilerReporting, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// static
-void HeapProfilerParameters::RegisterJSONConverter(
-    base::JSONValueConverter<HeapProfilerParameters>* converter) {
-  converter->RegisterBoolField("is-supported",
-                               &HeapProfilerParameters::is_supported);
-  converter->RegisterDoubleField("stable-probability",
-                                 &HeapProfilerParameters::stable_probability);
-  converter->RegisterDoubleField(
-      "nonstable-probability", &HeapProfilerParameters::nonstable_probability);
-  converter->RegisterIntField("sampling-rate-bytes",
-                              &HeapProfilerParameters::sampling_rate_bytes);
-  converter->RegisterCustomValueField(
-      "collection-interval-minutes",
-      &HeapProfilerParameters::collection_interval, &ConvertCollectionInterval);
-}
+const base::FeatureParam<double> kStableProbability{
+    &kHeapProfilerReporting, "stable-probability", kDefaultStableProbability};
 
-bool HeapProfilerParameters::UpdateFromJSON(std::string_view json_string) {
-  if (json_string.empty())
-    return true;
+const base::FeatureParam<double> kNonStableProbability{
+    &kHeapProfilerReporting, "nonstable-probability",
+    kDefaultNonStableProbability};
 
-  base::JSONValueConverter<HeapProfilerParameters> converter;
-  std::optional<base::Value> value =
-      base::JSONReader::Read(json_string, base::JSON_ALLOW_TRAILING_COMMAS |
-                                              base::JSON_ALLOW_COMMENTS);
-  if (value && converter.Convert(*value, this))
-    return true;
+const base::FeatureParam<base::TimeDelta> kCollectionInterval{
+    &kHeapProfilerReporting, "collection-interval", kDefaultCollectionInterval};
 
-  // Error reading JSON params. Disable the heap sampler. This will be reported
-  // when HeapProfilerController logs HeapProfiling.InProcess.Enabled.
-  is_supported = false;
-  return false;
-}
-
-HeapProfilerParameters GetDefaultHeapProfilerParameters() {
-  HeapProfilerParameters params = kDefaultHeapProfilerParameters;
-  params.UpdateFromJSON(kDefaultParameters.Get());
-  return params;
-}
-
-HeapProfilerParameters GetHeapProfilerParametersForProcess(
-    base::ProfilerProcessType process_type) {
-  using Process = base::ProfilerProcessType;
-
-  HeapProfilerParameters params = kDefaultHeapProfilerParameters;
-
-  // Apply per-process defaults.
+size_t GetSamplingRateForProcess(
+    sampling_profiler::ProfilerProcessType process_type) {
+  int sampling_rate_bytes;
   switch (process_type) {
-    case Process::kBrowser:
-      params.is_supported = true;
+    case sampling_profiler::ProfilerProcessType::kBrowser:
+      sampling_rate_bytes = kBrowserSamplingRateBytes.Get();
       break;
-    case Process::kNetworkService:
-      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-        params.is_supported = true;
-      }
+    case sampling_profiler::ProfilerProcessType::kRenderer:
+      sampling_rate_bytes = kRendererSamplingRateBytes.Get();
       break;
-    case Process::kGpu:
-      // Only enabled by default on Mac.
-#if BUILDFLAG(IS_MAC)
-      if (base::FeatureList::IsEnabled(kHeapProfilerCentralControl)) {
-        params.is_supported = true;
-        // Use half the threshold used in the browser process, because last time
-        // it was validated the GPU process allocated a bit over half as much
-        // memory at the median.
-        params.sampling_rate_bytes = params.sampling_rate_bytes / 2;
-      }
-#endif
+    case sampling_profiler::ProfilerProcessType::kGpu:
+      sampling_rate_bytes = kGpuSamplingRateBytes.Get();
       break;
-    case Process::kRenderer:
-    case Process::kUtility:
-      // Not enabled by default on any platform.
+    case sampling_profiler::ProfilerProcessType::kUtility:
+      sampling_rate_bytes = kUtilitySamplingRateBytes.Get();
       break;
-    case Process::kUnknown:
+    case sampling_profiler::ProfilerProcessType::kNetworkService:
+      sampling_rate_bytes = kNetworkSamplingRateBytes.Get();
+      break;
+    case sampling_profiler::ProfilerProcessType::kUnknown:
     default:
-      // Do nothing. Profiler hasn't been tested in these process types.
-      break;
+      // Profiler should not be enabled for these process types.
+      NOTREACHED();
   }
+  return base::saturated_cast<size_t>(sampling_rate_bytes);
+}
 
-#if BUILDFLAG(IS_MAC)
-  // On Mac, child processes may not set the channel correctly
-  // (https://crbug.com/329286893) so the profiler must only be enabled in the
-  // browser process unless kHeapProfilerCentralControl is set.
-  CHECK(process_type == Process::kBrowser || !params.is_supported ||
-        base::FeatureList::IsEnabled(kHeapProfilerCentralControl));
-#endif
-
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          variations::switches::kEnableBenchmarking) ||
-      !base::FeatureList::IsEnabled(kHeapProfilerReporting)) {
-    params.is_supported = false;
-    return params;
-  }
-
-  // Override with field trial parameters if any are set.
-  if (!params.UpdateFromJSON(kDefaultParameters.Get())) {
-    // After an error is detected don't alter `params` further.
-    return params;
-  }
+int GetSnapshotProbabilityForProcess(
+    sampling_profiler::ProfilerProcessType process_type) {
+  int snapshot_probability_pct;
   switch (process_type) {
-    case Process::kBrowser:
-      params.UpdateFromJSON(kBrowserProcessParameters.Get());
+    case sampling_profiler::ProfilerProcessType::kBrowser:
+      // Should only be called for child processes.
+      NOTREACHED();
+    case sampling_profiler::ProfilerProcessType::kGpu:
+      snapshot_probability_pct = kGpuSnapshotProbability.Get();
       break;
-    case Process::kRenderer:
-      params.UpdateFromJSON(kRendererProcessParameters.Get());
+    case sampling_profiler::ProfilerProcessType::kNetworkService:
+      snapshot_probability_pct = kNetworkSnapshotProbability.Get();
       break;
-    case Process::kGpu:
-      params.UpdateFromJSON(kGPUProcessParameters.Get());
+    case sampling_profiler::ProfilerProcessType::kRenderer:
+      snapshot_probability_pct = kRendererSnapshotProbability.Get();
       break;
-    case Process::kUtility:
-      params.UpdateFromJSON(kUtilityProcessParameters.Get());
+    case sampling_profiler::ProfilerProcessType::kUtility:
+      snapshot_probability_pct = kUtilitySnapshotProbability.Get();
       break;
-    case Process::kNetworkService:
-      params.UpdateFromJSON(kNetworkProcessParameters.Get());
-      break;
-    case Process::kUnknown:
     default:
-      // Do nothing. Profiler hasn't been tested in these process types.
+      // Unsupported process type.
+      snapshot_probability_pct = 0;
       break;
   }
-  return params;
+  CHECK_GE(snapshot_probability_pct, 0);
+  CHECK_LE(snapshot_probability_pct, 100);
+  return snapshot_probability_pct;
+}
+
+float GetHashSetLoadFactorForProcess(
+    sampling_profiler::ProfilerProcessType process_type) {
+  switch (process_type) {
+    case sampling_profiler::ProfilerProcessType::kBrowser:
+      return kBrowserHashSetLoadFactor.Get();
+    case sampling_profiler::ProfilerProcessType::kGpu:
+      return kGpuHashSetLoadFactor.Get();
+    case sampling_profiler::ProfilerProcessType::kNetworkService:
+      return kNetworkHashSetLoadFactor.Get();
+    case sampling_profiler::ProfilerProcessType::kRenderer:
+      return kRendererHashSetLoadFactor.Get();
+    case sampling_profiler::ProfilerProcessType::kUtility:
+      return kUtilityHashSetLoadFactor.Get();
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace heap_profiling

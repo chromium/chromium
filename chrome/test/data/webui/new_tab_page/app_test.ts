@@ -2,17 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ActionChipsHandlerRemote, ChipType, PageCallbackRouter as ActionChipsPageCallbackRouter, type TabInfo} from 'chrome://new-tab-page/action_chips.mojom-webui.js';
+import type {CustomizeButtonsDocumentRemote} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
+import {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote, SidePanelOpenTrigger} from 'chrome://new-tab-page/customize_buttons.mojom-webui.js';
+import {CustomizeChromeSection} from 'chrome://new-tab-page/customize_chrome.mojom-webui.js';
+import {ActionChipsApiProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import type {Module} from 'chrome://new-tab-page/lazy_load.js';
-import {counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
-import type {AppElement} from 'chrome://new-tab-page/new_tab_page.js';
-import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {ComposeboxProxyImpl, counterfactualLoad, ModuleDescriptor, ModuleRegistry} from 'chrome://new-tab-page/lazy_load.js';
+import {$$, BackgroundManager, BrowserCommandProxy, CUSTOMIZE_CHROME_BUTTON_ELEMENT_ID, CustomizeButtonsProxy, CustomizeDialogPage, NewTabPageProxy, NtpCustomizeChromeEntryPoint, NtpElement, SearchboxBrowserProxy, VoiceAction, WindowProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import type {AppElement, CustomizeButtonsElement} from 'chrome://new-tab-page/new_tab_page.js';
 import type {PageRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
-import {CustomizeChromeSection, NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {NtpBackgroundImageSource, PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
+import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {Command, CommandHandlerRemote} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -23,13 +31,18 @@ import {assertNotStyle, assertStyle, createBackgroundImage, createTheme, install
 
 suite('NewTabPageAppTest', () => {
   let app: AppElement;
+  let customizeButtons: CustomizeButtonsElement;
   let windowProxy: TestMock<WindowProxy>;
   let handler: TestMock<PageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
+  let customizeButtonsHandler: TestMock<CustomizeButtonsHandlerRemote>;
+  let customizeButtonsCallbackRouterRemote: CustomizeButtonsDocumentRemote;
   let metrics: MetricsTracker;
   let moduleRegistry: TestMock<ModuleRegistry>;
   let backgroundManager: TestMock<BackgroundManager>;
   let moduleResolver: PromiseResolver<Module[]>;
+  let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
+  let composeboxHandler: TestMock<ComposeboxPageHandlerRemote>;
 
   const url: URL = new URL(location.href);
   const backgroundImageLoadTime: number = 123;
@@ -41,12 +54,13 @@ suite('NewTabPageAppTest', () => {
     handler = installMock(
         PageHandlerRemote,
         mock => NewTabPageProxy.setInstance(mock, new PageCallbackRouter()));
+    customizeButtonsHandler = installMock(
+        CustomizeButtonsHandlerRemote,
+        mock => CustomizeButtonsProxy.setInstance(
+            mock, new CustomizeButtonsDocumentCallbackRouter()));
     handler.setResultFor('getMostVisitedSettings', Promise.resolve({
       customLinksEnabled: false,
       shortcutsVisible: false,
-    }));
-    handler.setResultFor('getBackgroundCollections', Promise.resolve({
-      collections: [],
     }));
     handler.setResultFor('getDoodle', Promise.resolve({
       doodle: null,
@@ -63,6 +77,9 @@ suite('NewTabPageAppTest', () => {
     windowProxy.setResultFor('url', url);
     callbackRouterRemote = NewTabPageProxy.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    customizeButtonsCallbackRouterRemote =
+        CustomizeButtonsProxy.getInstance()
+            .callbackRouter.$.bindNewPipeAndPassRemote();
     backgroundManager = installMock(BackgroundManager);
     backgroundManager.setResultFor(
         'getBackgroundImageLoadTime', Promise.resolve(backgroundImageLoadTime));
@@ -71,12 +88,46 @@ suite('NewTabPageAppTest', () => {
     moduleRegistry.setResultFor('initializeModules', moduleResolver.promise);
     metrics = fakeMetricsPrivate();
 
+    composeboxHandler = installMock(
+        ComposeboxPageHandlerRemote,
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+            mock, new ComposeboxPageCallbackRouter(),
+            new SearchboxPageHandlerRemote(),
+            new SearchboxPageCallbackRouter())));
+    searchboxHandler = installMock(SearchboxPageHandlerRemote, mock => {
+      ComposeboxProxyImpl.getInstance().searchboxHandler = mock;
+      SearchboxBrowserProxy.getInstance().handler = mock;
+    });
+    searchboxHandler.setResultFor('getRecentTabs', Promise.resolve({tabs: []}));
+
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
+    await microtasksFinished();
+
+    customizeButtons = app.$.customizeButtons;
   });
 
+  function getCustomizeButton(): CrButtonElement {
+    return $$(customizeButtons, '#customizeButton')!;
+  }
+
+  function getWallpaperSearchButton(): CrButtonElement {
+    return $$(customizeButtons, '#wallpaperSearchButton')!;
+  }
+
+  function getComposeButton(): HTMLElement|null {
+    const searchboxContainer = app.shadowRoot.querySelector('cr-searchbox');
+    assertTrue(!!searchboxContainer);
+    return searchboxContainer.shadowRoot.querySelector<HTMLElement>(
+        '#composeButton');
+  }
+
+  function getScrim(): HTMLElement|null {
+    return app.shadowRoot.querySelector<HTMLElement>('#scrim');
+  }
+
   suite('Misc', () => {
-    test('logs height', async () => {
+    test('logs height', () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Height'));
       assertEquals(
@@ -84,7 +135,7 @@ suite('NewTabPageAppTest', () => {
           metrics.count('NewTabPage.Height', Math.floor(window.innerHeight)));
     });
 
-    test('logs width', async () => {
+    test('logs width', () => {
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Width'));
       assertEquals(
@@ -93,11 +144,11 @@ suite('NewTabPageAppTest', () => {
 
     test('open voice search event opens voice search overlay', async () => {
       // Act.
-      $$(app, '#realbox')!.dispatchEvent(new Event('open-voice-search'));
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-voice-search'));
       await microtasksFinished();
 
       // Assert.
-      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
       assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
       assertEquals(
           1,
@@ -116,7 +167,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
       assertEquals(1, metrics.count('NewTabPage.VoiceActions'));
       assertEquals(
           1,
@@ -133,7 +184,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
+      assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
     });
 
     if (isMac) {
@@ -147,11 +198,11 @@ suite('NewTabPageAppTest', () => {
         await microtasksFinished();
 
         // Assert.
-        assertTrue(!!app.shadowRoot!.querySelector('ntp-voice-search-overlay'));
+        assertTrue(!!app.shadowRoot.querySelector('ntp-voice-search-overlay'));
       });
     }
 
-    test('help bubble can correctly find anchor elements', async () => {
+    test('help bubble can correctly find anchor elements', () => {
       assertDeepEquals(
           app.getSortedAnchorStatusesForTesting(),
           [
@@ -173,8 +224,9 @@ suite('NewTabPageAppTest', () => {
       assertFalse(webstoreToast.open);
 
       // Open the side panel.
-      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
-      await callbackRouterRemote.$.flushForTesting();
+      customizeButtonsCallbackRouterRemote
+          .setCustomizeChromeSidePanelVisibility(true);
+      await customizeButtonsCallbackRouterRemote.$.flushForTesting();
 
       // Try to show webstore toast again.
       callbackRouterRemote.showWebstoreToast();
@@ -192,7 +244,7 @@ suite('NewTabPageAppTest', () => {
       // Act.
 
       // Create a dark mode theme with a custom background.
-      const theme = createTheme(true);
+      const theme = createTheme({isDark: true});
       theme.backgroundImage = createBackgroundImage('https://foo.com');
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
@@ -226,7 +278,7 @@ suite('NewTabPageAppTest', () => {
       // Arrange.
 
       // Set theme that triggers the scrim.
-      const theme = createTheme(true);
+      const theme = createTheme({isDark: true});
       theme.backgroundImage = createBackgroundImage('https://foo.com');
       callbackRouterRemote.setTheme(theme);
       await callbackRouterRemote.$.flushForTesting();
@@ -282,8 +334,9 @@ suite('NewTabPageAppTest', () => {
       assertStyle($$(app, '#backgroundImageAttribution')!, 'display', 'none');
       assertStyle($$(app, '#backgroundImageAttribution2')!, 'display', 'none');
       assertFalse(app.$.logo.singleColored);
-      assertFalse(app.$.logo.dark);
-      assertEquals(0xffff0000, app.$.logo.backgroundColor.value);
+      assertTrue(!!app.$.logo.theme);
+      assertFalse(app.$.logo.theme?.isDark);
+      assertEquals(0xffff0000, app.$.logo.theme?.backgroundColor?.value);
     });
 
     test('setting 3p theme shows attribution', async () => {
@@ -329,7 +382,7 @@ suite('NewTabPageAppTest', () => {
       assertEquals(
           'https://img.png',
           (await backgroundManager.whenCalled('setBackgroundImage')).url.url);
-      assertEquals(null, app.$.logo.backgroundColor);
+      assertTrue(!!app.$.logo.theme?.backgroundColor);
     });
 
     test('setting attributions shows attributions', async function() {
@@ -352,9 +405,9 @@ suite('NewTabPageAppTest', () => {
           'https://info.com',
           $$(app, '#backgroundImageAttribution')!.getAttribute('href'));
       assertEquals(
-          'foo', $$(app, '#backgroundImageAttribution1')!.textContent!.trim());
+          'foo', $$(app, '#backgroundImageAttribution1')!.textContent.trim());
       assertEquals(
-          'bar', $$(app, '#backgroundImageAttribution2')!.textContent!.trim());
+          'bar', $$(app, '#backgroundImageAttribution2')!.textContent.trim());
     });
 
     test('setting logo color colors logo', async function() {
@@ -401,7 +454,7 @@ suite('NewTabPageAppTest', () => {
             // Act.
 
             // Create a theme with a custom background.
-            const theme = createTheme(isDark);
+            const theme = createTheme({isDark: isDark});
             theme.backgroundImage = createBackgroundImage('https://foo.com');
             callbackRouterRemote.setTheme(theme);
             await callbackRouterRemote.$.flushForTesting();
@@ -573,7 +626,7 @@ suite('NewTabPageAppTest', () => {
           loadTimeData.overrideValues({backgroundImageUrl: 'https://foo.com'});
         });
 
-        test('background image load time is logged', async () => {
+        test('background image load time is logged', () => {
           // Assert.
           assertEquals(
               1, metrics.count('NewTabPage.Images.ShownTime.BackgroundImage'));
@@ -668,11 +721,10 @@ suite('NewTabPageAppTest', () => {
     ([
       ['#content', NtpElement.BACKGROUND],
       ['ntp-logo', NtpElement.LOGO],
-      ['cr-realbox', NtpElement.REALBOX],
+      ['cr-searchbox', NtpElement.REALBOX],
       ['cr-most-visited', NtpElement.MOST_VISITED],
       ['ntp-middle-slot-promo', NtpElement.MIDDLE_SLOT_PROMO],
       ['#modules', NtpElement.MODULE],
-      ['#customizeButton', NtpElement.CUSTOMIZE_BUTTON],
     ] as Array<[string, NtpElement]>)
         .forEach(([selector, element]) => {
           test(`clicking '${selector}' records click`, () => {
@@ -684,6 +736,16 @@ suite('NewTabPageAppTest', () => {
             assertEquals(1, metrics.count('NewTabPage.Click', element));
           });
         });
+
+    test(`clicking #customizeButton records click`, () => {
+      // Act.
+      getCustomizeButton().click();
+
+      // Assert.
+      assertEquals(1, metrics.count('NewTabPage.Click'));
+      assertEquals(
+          1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_BUTTON));
+    });
 
     test('clicking OGB records click', () => {
       // Act.
@@ -723,7 +785,7 @@ suite('NewTabPageAppTest', () => {
       assertStyle(modules, 'display', 'none');
 
       // Act.
-      modules.dispatchEvent(new Event('modules-loaded'));
+      modules.dispatchEvent(new CustomEvent('modules-loaded', {detail: 1}));
       await microtasksFinished();
 
       // Assert.
@@ -734,108 +796,29 @@ suite('NewTabPageAppTest', () => {
     });
   }
 
-  suite('Modules', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesEnabled: true,
-        modulesRedesignedEnabled: false,
-        wideModulesEnabled: false,
-      });
-    });
-
-    [560, 672, 768].forEach(pageWidth => {
-      test(
-          `module width defaults to search box width rule applied for width: ${
-              pageWidth}px`,
-          () => {
-            document.body.setAttribute('style', `width:${pageWidth}px`);
-            const middleSlotPromo = $$(app, 'ntp-middle-slot-promo')!;
-            middleSlotPromo.dispatchEvent(
-                new Event('ntp-middle-slot-promo-loaded'));
-            const modules = $$(app, 'ntp-modules')!;
-            modules.dispatchEvent(new Event('modules-loaded'));
-            const searchBoxWidth =
-                window.getComputedStyle(app)
-                    .getPropertyValue('--ntp-search-box-width')
-                    .trim();
-
-            assertStyle(modules, 'width', `${searchBoxWidth}`);
-          });
-    });
-
-    test('modules max width media rule applied', async () => {
-      const sampleMaxWidthPx = 768;
-      loadTimeData.overrideValues({wideModulesEnabled: true});
-      document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      document.body.setAttribute('style', `width:${sampleMaxWidthPx}px`);
-      app = document.createElement('ntp-app');
-      document.body.appendChild(app);
-      await microtasksFinished();
-
-      const middleSlotPromo = $$(app, 'ntp-middle-slot-promo')!;
-      middleSlotPromo.dispatchEvent(new Event('ntp-middle-slot-promo-loaded'));
-      const modules = $$(app, 'ntp-modules')!;
-      modules.dispatchEvent(new Event('modules-loaded'));
-      await microtasksFinished();
-
-      assertStyle(modules, 'width', `${sampleMaxWidthPx}px`);
-    });
-
-    modulesCommonTests('ntp-modules');
-  });
-
   suite('V2Modules', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
         modulesEnabled: true,
-        modulesRedesignedEnabled: true,
       });
     });
 
-    test('container is hidden', async () => {
-      const modules = $$(app, 'ntp-modules-v2')!;
-      assertTrue(!!modules);
-      assertStyle(modules, 'display', 'none');
-    });
-
-    test('modules redesigned attribute applied', async () => {
-      assertTrue(app.hasAttribute('modules-redesigned-enabled_'));
-    });
-
-    test(`clicking records click`, () => {
-      // Act.
-      $$<HTMLElement>(app, 'ntp-modules-v2')!.click();
-
-      // Assert.
-      assertEquals(1, metrics.count('NewTabPage.Click'));
-      assertEquals(1, metrics.count('NewTabPage.Click', NtpElement.MODULE));
-    });
-
-    modulesCommonTests('ntp-modules-v2');
-  });
-
-  suite('v2 modules', () => {
-    suiteSetup(() => {
-      loadTimeData.overrideValues({
-        modulesEnabled: true,
-        modulesRedesignedEnabled: true,
-      });
-    });
-
-    test('container is hidden', async () => {
-      const modules = $$(app, 'ntp-modules-v2')!;
+    test('container is hidden', () => {
+      const modules = $$(app, 'ntp-modules')!;
       assertTrue(!!modules);
       assertStyle(modules, 'display', 'none');
     });
 
     test(`clicking records click`, () => {
       // Act.
-      $$<HTMLElement>(app, 'ntp-modules-v2')!.click();
+      $$<HTMLElement>(app, 'ntp-modules')!.click();
 
       // Assert.
       assertEquals(1, metrics.count('NewTabPage.Click'));
       assertEquals(1, metrics.count('NewTabPage.Click', NtpElement.MODULE));
     });
+
+    modulesCommonTests('ntp-modules');
   });
 
   suite('CounterfactualModules', () => {
@@ -869,69 +852,76 @@ suite('NewTabPageAppTest', () => {
       assertTrue(moduleRegistry.getCallCount('initializeModules') > 0);
       assertEquals(1, handler.getCallCount('onModulesLoadedWithData'));
       assertEquals(
-          0, app.shadowRoot!.querySelectorAll('ntp-module-wrapper').length);
+          0, app.shadowRoot.querySelectorAll('ntp-module-wrapper').length);
     });
   });
 
   suite('CustomizeChromeSidePanel', () => {
-    test('customize chrome in product help might show on startup'), () => {
-      assertEquals(1, handler.getCallCount('maybeShowFeaturePromo'));
-    };
-
     test('clicking customize button opens side panel', () => {
       // Act.
-      $$<HTMLElement>(app, '#customizeButton')!.click();
+      getCustomizeButton().click();
 
       // Assert.
       assertDeepEquals(
-          [true, CustomizeChromeSection.kUnspecified],
-          handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+          [
+            true,
+            CustomizeChromeSection.kUnspecified,
+            SidePanelOpenTrigger.kNewTabPage,
+          ],
+          customizeButtonsHandler.getArgs(
+              'setCustomizeChromeSidePanelVisible')[0]);
       assertEquals(
           1,
           metrics.count(
               'NewTabPage.CustomizeChromeOpened',
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
       assertEquals(
-          1, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
+          1,
+          customizeButtonsHandler.getCallCount(
+              'incrementCustomizeChromeButtonOpenCount'));
     });
 
     test('clicking customize button hides side panel', async () => {
       // Act.
-      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
+      customizeButtonsCallbackRouterRemote
+          .setCustomizeChromeSidePanelVisibility(true);
       assertEquals(
           0,
           metrics.count(
               'NewTabPage.CustomizeChromeOpened',
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
-      await callbackRouterRemote.$.flushForTesting();
-      $$<HTMLElement>(app, '#customizeButton')!.click();
+      await customizeButtonsCallbackRouterRemote.$.flushForTesting();
+      getCustomizeButton().click();
 
       // Assert.
       assertDeepEquals(
-          [false, CustomizeChromeSection.kUnspecified],
-          handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+          [
+            false,
+            CustomizeChromeSection.kUnspecified,
+            SidePanelOpenTrigger.kNewTabPage,
+          ],
+          customizeButtonsHandler.getArgs(
+              'setCustomizeChromeSidePanelVisible')[0]);
       assertEquals(
           0,
           metrics.count(
               'NewTabPage.CustomizeChromeOpened',
               NtpCustomizeChromeEntryPoint.CUSTOMIZE_BUTTON));
       assertEquals(
-          0, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
+          0,
+          customizeButtonsHandler.getCallCount(
+              'incrementCustomizeChromeButtonOpenCount'));
     });
 
     test('clicking customize button is accessible', async () => {
-      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
-      await callbackRouterRemote.$.flushForTesting();
-      assertEquals(
-          'true',
-          $$<HTMLElement>(
-              app, '#customizeButton')!.getAttribute('aria-pressed'));
-      callbackRouterRemote.setCustomizeChromeSidePanelVisibility(false);
-      await callbackRouterRemote.$.flushForTesting();
-      assertEquals(
-          'false',
-          $$<HTMLElement>(
-              app, '#customizeButton')!.getAttribute('aria-pressed'));
+      customizeButtonsCallbackRouterRemote
+          .setCustomizeChromeSidePanelVisibility(true);
+      await customizeButtonsCallbackRouterRemote.$.flushForTesting();
+      assertEquals('true', getCustomizeButton().getAttribute('aria-pressed'));
+      customizeButtonsCallbackRouterRemote
+          .setCustomizeChromeSidePanelVisibility(false);
+      await customizeButtonsCallbackRouterRemote.$.flushForTesting();
+      assertEquals('false', getCustomizeButton().getAttribute('aria-pressed'));
     });
 
     suite('modules', () => {
@@ -941,14 +931,19 @@ suite('NewTabPageAppTest', () => {
         });
       });
 
-      test('modules can open side panel', async () => {
+      test('modules can open side panel', () => {
         // Act.
         $$(app, '#modules')!.dispatchEvent(new Event('customize-module'));
 
         // Assert.
         assertDeepEquals(
-            [true, CustomizeChromeSection.kModules],
-            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+            [
+              true,
+              CustomizeChromeSection.kModules,
+              SidePanelOpenTrigger.kNewTabPage,
+            ],
+            customizeButtonsHandler.getArgs(
+                'setCustomizeChromeSidePanelVisible')[0]);
         assertEquals(
             1,
             metrics.count(
@@ -967,8 +962,13 @@ suite('NewTabPageAppTest', () => {
       test('URL opens side panel', () => {
         // Assert.
         assertDeepEquals(
-            [true, CustomizeChromeSection.kAppearance],
-            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
+            [
+              true,
+              CustomizeChromeSection.kAppearance,
+              SidePanelOpenTrigger.kNewTabPage,
+            ],
+            customizeButtonsHandler.getArgs(
+                'setCustomizeChromeSidePanelVisible')[0]);
         assertEquals(
             1,
             metrics.count(
@@ -981,13 +981,13 @@ suite('NewTabPageAppTest', () => {
   suite('LensUploadDialog', () => {
     suiteSetup(() => {
       loadTimeData.overrideValues({
-        realboxLensSearch: true,
+        searchboxLensSearch: true,
       });
     });
 
     test('lens upload dialog closed on start', () => {
       // Assert.
-      assertFalse(!!app.shadowRoot!.querySelector('ntp-lens-upload-dialog'));
+      assertFalse(!!app.shadowRoot.querySelector('ntp-lens-upload-dialog'));
     });
 
     test('realbox is not visible when Lens upload dialog is open', async () => {
@@ -996,24 +996,456 @@ suite('NewTabPageAppTest', () => {
       await callbackRouterRemote.$.flushForTesting();
 
       // Act.
-      $$(app, '#realbox')!.dispatchEvent(new Event('open-lens-search'));
+      $$(app, '#searchbox')!.dispatchEvent(new Event('open-lens-search'));
       await microtasksFinished();
 
       // Assert.
-      const dialog = app.shadowRoot!.querySelector('ntp-lens-upload-dialog');
+      const dialog = app.shadowRoot.querySelector('ntp-lens-upload-dialog');
       assertTrue(!!dialog);
-      assertStyle($$(app, '#realbox')!, 'visibility', 'hidden');
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
 
       // Act.
       dialog.closeDialog();
       await microtasksFinished();
 
       // Assert.
-      assertStyle($$(app, '#realbox')!, 'visibility', 'visible');
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');
+    });
+  });
+
+  suite('ComposeEntryPoint', () => {
+    const DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS = {
+      detail: {
+        button: 0,
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
+      },
+      bubbles: true,
+      composed: true,
+    };
+    suite('compose feature disabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          searchboxShowComposeEntrypoint: false,
+          searchboxShowComposebox: false,
+        });
+      });
+
+      test('compose entrypoint not shown', () => {
+        // Assert entrypoint is not shown.
+        assertFalse(!!getComposeButton());
+
+        // Assert shown histogram not logged.
+        assertEquals(0, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
+        // Assert compose button shown count is not incremented.
+        assertEquals(
+            0, handler.getCallCount('incrementComposeButtonShownCount'));
+      });
+    });
+
+    suite('compose features enabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          searchboxShowComposeEntrypoint: true,
+          searchboxShowComposebox: true,
+        });
+        // Needed so `.click()` calls don't navigate.
+        window.open = () => null;
+      });
+
+      test('compose entrypoint shows', () => {
+        // Assert shown histogram logged.
+        assertEquals(1, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
+        // Assert entrypoint is shown.
+        assertTrue(!!getComposeButton());
+      });
+
+      test('compose entrypoint emits histograms when clicked', () => {
+        // Assert compose button is present.
+        const composeButton = getComposeButton();
+        assertTrue(!!composeButton);
+
+        // Dispatch the 'compose-click' event directly, which cr-searchbox
+        // listens for. This simulates the `cr-searchbox-compose-button`
+        // child `cr-button` being clicked and its `onClick_` function being
+        // called.
+        composeButton.dispatchEvent(new CustomEvent(
+            'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+
+        // Metric should be recorded without user text present.
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.ComposeEntrypoint.Click.UserTextPresent'));
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', false));
+      });
+      test(
+          'compose entrypoint emits histograms when clicked with text present',
+          () => {
+            // Assert compose button is present.
+            const searchboxContainer =
+                app.shadowRoot.querySelector('cr-searchbox');
+            const composeButton = getComposeButton();
+            assertTrue(!!composeButton);
+
+            searchboxContainer!.shadowRoot
+                .querySelector<HTMLInputElement>('#input')!.value = 'hello';
+
+            // Dispatch the 'compose-click' event directly, which cr-searchbox
+            // listens for. This simulates the `cr-searchbox-compose-button`
+            // child `cr-button` being clicked and its `onClick_` function being
+            // called.
+            composeButton.dispatchEvent(new CustomEvent(
+                'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+
+            // Metric should be recorded with user text present.
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.ComposeEntrypoint.Click.UserTextPresent'));
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
+                    true));
+          });
+    });
+
+    suite('compose entrypoint enabled - composebox disabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          searchboxShowComposeEntrypoint: true,
+          searchboxShowComposebox: false,
+        });
+        // Needed so `.click()` calls don't navigate.
+        window.open = () => null;
+      });
+
+      test('compose entrypoint emits histograms when shown', () => {
+        // Assert shown histogram logged.
+        assertEquals(1, metrics.count('NewTabPage.ComposeEntrypoint.Shown'));
+
+        // Assert button is present.
+        assertTrue(!!getComposeButton());
+
+        // Assert increment compose button shown count is called on load.
+        assertEquals(
+            1, handler.getCallCount('incrementComposeButtonShownCount'));
+      });
+      test('compose entrypoint emits histograms when clicked', () => {
+        // Assert compose button is present.
+        const composeButton = getComposeButton();
+        assertTrue(!!composeButton);
+
+        // Dispatch the 'compose-click' event directly, which cr-searchbox
+        // listens for. This simulates the `cr-searchbox-compose-button`
+        // child `cr-button` being clicked and its `onClick_` function being
+        // called.
+        composeButton.dispatchEvent(new CustomEvent(
+            'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+
+        // Metric should be recorded without user text present.
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.ComposeEntrypoint.Click.UserTextPresent'));
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', false));
+      });
+      test(
+          'compose entrypoint emits histograms when clicked with text present',
+          () => {
+            // Assert compose button is present.
+            const searchboxContainer =
+                app.shadowRoot.querySelector('cr-searchbox');
+            const composeButton = getComposeButton();
+            assertTrue(!!composeButton);
+
+            searchboxContainer!.shadowRoot
+                .querySelector<HTMLInputElement>('#input')!.value = 'hello';
+
+            // Dispatch the 'compose-click' event directly, which cr-searchbox
+            // listens for. This simulates the `cr-searchbox-compose-button`
+            // child `cr-button` being clicked and its `onClick_` function being
+            // called.
+            composeButton.dispatchEvent(new CustomEvent(
+                'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+
+            // Metric should be recorded with user text present.
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.ComposeEntrypoint.Click.UserTextPresent'));
+            assertEquals(
+                1,
+                metrics.count(
+                    'NewTabPage.ComposeEntrypoint.Click.UserTextPresent',
+                    true));
+          });
+    });
+  });
+
+  suite('Composebox', () => {
+    const DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS = {
+      detail: {
+        button: 0,
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
+      },
+      bubbles: true,
+      composed: true,
+    };
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        searchboxShowComposeEntrypoint: true,
+        searchboxShowComposebox: true,
+        composeboxCloseByEscape: true,
+        composeboxCloseByClickOutside: true,
+      });
+      // Needed so `.click()` calls don't navigate.
+      window.open = () => null;
+    });
+    test('toggle composebox visibility', async () => {
+      // Arrange.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      ($$(app, '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {searchboxText: '', contextFiles: []},
+      })));
+      await microtasksFinished();
+
+      // Assert.
+      const composebox = app.shadowRoot.querySelector('cr-composebox');
+      assertTrue(!!composebox);
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
+    });
+
+    test('Sequential ESC clears input then closes composebox', async () => {
+      // Arrange: Override the flag to FALSE for this specific test.
+      loadTimeData.overrideValues({composeboxCloseByEscape: false});
+      await microtasksFinished();
+
+      // Arrange: Create and open the Composebox UI.
+      const searchbox = $$(app, '#searchbox');
+      assertTrue(!!searchbox);
+      searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {searchboxText: '', contextFiles: []},
+      }));
+      await microtasksFinished();
+
+      const composebox = app.shadowRoot.querySelector('cr-composebox');
+      assertTrue(!!composebox);
+      // 1. Setup: Simulate input content.
+      composebox.$.input.value = 'test input';
+      composebox.$.input.dispatchEvent(new Event('input'));
+      await microtasksFinished();
+
+      assertEquals('test input', composebox.$.input.value);
+
+      //First ESC: Clear Input (Content present)
+      const closePromise1 = eventToPromise('close-composebox', composebox);
+      let closedAfterFirstEsc = false;
+      closePromise1.then(() => closedAfterFirstEsc = true);
+
+      // Act: Press ESC 1.
+      composebox.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'Escape', bubbles: true, composed: true}));
+      await microtasksFinished();
+
+      // Assert 1: Verify input cleared, component did NOT close.
+      assertFalse(
+          closedAfterFirstEsc,
+          'First ESC should clear input, not close the box.');
+      assertEquals(
+          '', composebox.$.input.value,
+          'Input must be cleared after first ESC.');
+
+      // Second ESC: Close Box (Content empty)
+      // Act: Press ESC 2.
+      const whenCloseComposebox =
+          eventToPromise('close-composebox', composebox);
+
+      composebox.dispatchEvent(new KeyboardEvent(
+          'keydown', {key: 'Escape', bubbles: true, composed: true}));
+      await whenCloseComposebox;  // Wait for the close event
+
+      // Assert 2: Verify close occurred.
+      assertTrue(true, 'Second ESC must trigger the close event.');
+    });
+
+    test(
+        'Clicking the searchbox composebox button notifies composebox handler',
+        async () => {
+          searchboxHandler.reset();
+          assertEquals(
+              searchboxHandler.getCallCount('notifySessionStarted'), 0);
+          assertEquals(
+              0,
+              metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
+
+
+          const composeButton = getComposeButton();
+          assertTrue(!!composeButton);
+
+          // Simulate entrypoint click.
+          composeButton.dispatchEvent(new CustomEvent(
+              'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+          await microtasksFinished();
+
+          // Assert.
+          const composebox = app.shadowRoot.querySelector('cr-composebox');
+          assertTrue(!!composebox);
+          assertEquals(
+              searchboxHandler.getCallCount('notifySessionStarted'), 1);
+          assertEquals(
+              1,
+              metrics.count('NewTabPage.Composebox.FromNTPLoadToSessionStart'));
+        });
+    test(
+        'Clicking the searchbox composebox button displays the composebox',
+        async () => {
+          searchboxHandler.reset();
+          const composeButton = getComposeButton();
+          assertTrue(!!composeButton);
+
+          // Simulate entrypoint click.
+          composeButton.dispatchEvent(new CustomEvent(
+              'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+          await microtasksFinished();
+
+          // Assert.
+          const composebox = app.shadowRoot.querySelector('cr-composebox');
+          assertTrue(!!composebox);
+          assertEquals(
+              searchboxHandler.getCallCount('notifySessionStarted'), 1);
+        });
+    test(
+        'Clicking the searchbox composebox button with text navigates',
+        async () => {
+          searchboxHandler.reset();
+
+          const searchboxContainer =
+              app.shadowRoot.querySelector('cr-searchbox');
+          const composeButton = getComposeButton();
+          assertTrue(!!composeButton);
+
+          searchboxContainer!.shadowRoot
+              .querySelector<HTMLInputElement>('#input')!.value = 'hello';
+
+          // Simulate entrypoint click with text present.
+          composeButton.dispatchEvent(new CustomEvent(
+              'compose-click', DEFAULT_COMPOSE_CLICK_EVENT_OPTIONS));
+
+          await microtasksFinished();
+          assertEquals(
+              1,
+              metrics.count(
+                  'NewTabPage.ComposeEntrypoint.Click.UserTextPresent', true));
+        });
+
+    [false, true].forEach((ntpRealboxNextEnabled) => {
+      test(
+          `Propagate composebox text when closed when ntpRealboxNextEnabled is ${
+              ntpRealboxNextEnabled}`,
+          async () => {
+            searchboxHandler.reset();
+            const searchbox = $$(app, '#searchbox');
+            assertTrue(!!searchbox);
+            searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+              detail: {searchboxText: '', contextFiles: []},
+            }));
+            await microtasksFinished();
+            const composebox = app.shadowRoot.querySelector('cr-composebox');
+            composebox!.setText('hello');
+            const composeboxScrim =
+                app.shadowRoot.querySelector<HTMLElement>('#scrim');
+            assertTrue(!!composeboxScrim);
+            assertEquals(composebox!.getText(), 'hello');
+            composeboxScrim.click();
+            await microtasksFinished();
+
+            const searchboxContainer =
+                app.shadowRoot.querySelector('cr-searchbox');
+
+            assertEquals(
+                'hello',
+                searchboxContainer!.shadowRoot
+                    .querySelector<HTMLInputElement>('#input')!.value);
+          });
+    });
+    suite('Close options disabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          composeboxCloseByEscape: false,
+          composeboxCloseByClickOutside: false,
+        });
+      });
+
+      test('Close by escape is disabled', async () => {
+        searchboxHandler.reset();
+        assertEquals(
+            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
+        ($$(app,
+            '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {searchboxText: '', contextFiles: []},
+        })));
+        await microtasksFinished();
+        const escapeKeyEvent = new KeyboardEvent('keydown', {
+          key: 'Escape',
+          bubbles: true,
+          cancelable: true,
+        });
+        const composebox = app.shadowRoot.querySelector('cr-composebox');
+        assertTrue(!!composebox);
+        composebox.dispatchEvent(escapeKeyEvent);
+        await microtasksFinished();
+
+        // Assert.
+        assertEquals(
+            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
+      });
+
+      test('Exit by click outside is disabled', async () => {
+        searchboxHandler.reset();
+        assertEquals(
+            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
+        ($$(app,
+            '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
+          detail: {searchboxText: '', contextFiles: []},
+        })));
+        await microtasksFinished();
+        const composeboxScrim =
+            app.shadowRoot.querySelector<HTMLElement>('#scrim');
+        assertTrue(!!composeboxScrim);
+        composeboxScrim.click();
+        await microtasksFinished();
+
+        // Assert.
+        assertEquals(
+            searchboxHandler.getCallCount('notifySessionAbandoned'), 0);
+      });
     });
   });
 
   suite('WallpaperSearch', () => {
+    setup(async () => {
+      // Set a theme with no background image and a baseline color to avoid
+      // potential conflicts with the ToT value for
+      // `wallpaperSearchHideCondition`.
+      callbackRouterRemote.setTheme(createTheme({isBaseline: true}));
+      await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+    });
+
     suite('ButtonDisabled', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
@@ -1024,12 +1456,13 @@ suite('NewTabPageAppTest', () => {
       test('does not increment button shown count on startup'), () => {
         assertEquals(
             0,
-            handler.getCallCount('incrementWallpaperSearchButtonShownCount'));
+            customizeButtonsHandler.getCallCount(
+                'incrementWallpaperSearchButtonShownCount'));
       };
 
       test('wallpaper search button is not shown if it is disabled', () => {
-        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-        assertFalse(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!getCustomizeButton());
+        assertFalse(!!getWallpaperSearchButton());
       });
 
       test(
@@ -1037,51 +1470,48 @@ suite('NewTabPageAppTest', () => {
           async () => {
             // Customize chrome button is expanded and its icon has a
             // non-white color.
-            assertNotEquals(
-                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
+            assertNotEquals(32, getCustomizeButton().offsetWidth);
             assertNotStyle(
-                $$(app, '#customizeButton .customize-text')!, 'display',
-                'none');
+                getCustomizeButton().querySelector('.customize-text')!,
+                'display', 'none');
             assertNotStyle(
-                $$(app, '#customizeButton .customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
+                getCustomizeButton().querySelector('.customize-icon')!, 'fill',
+                'rgb(255, 255, 255)');
 
-            const theme = createTheme(true);
+            const theme = createTheme({isDark: true});
             theme.backgroundImage = createBackgroundImage('https://foo.com');
             callbackRouterRemote.setTheme(theme);
             await callbackRouterRemote.$.flushForTesting();
 
             // Customize chrome button is collapsed and its icon is white.
-            assertEquals(
-                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
+            assertEquals(32, getCustomizeButton().offsetWidth);
             assertStyle(
-                $$(app, '#customizeButton .customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
+                getCustomizeButton().querySelector('.customize-icon')!, 'fill',
+                'rgb(255, 255, 255)');
             assertStyle(
-                $$(app, '#customizeButton .customize-text')!, 'display',
-                'none');
+                getCustomizeButton().querySelector('.customize-text')!,
+                'display', 'none');
           });
     });
 
     function assertButtonAnimated() {
+      assertNotStyle(getWallpaperSearchButton(), 'animation-name', 'none');
       assertNotStyle(
-          $$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
-      assertNotStyle(
-          $$(app, '#wallpaperSearchButton .customize-icon')!, 'animation-name',
-          'none');
+          getWallpaperSearchButton().querySelector('.customize-icon')!,
+          'animation-name', 'none');
       assertStyle(
-          $$(app, '#wallpaperSearchButton .customize-text')!, 'animation-name',
-          'none');
+          getWallpaperSearchButton().querySelector('.customize-text')!,
+          'animation-name', 'none');
     }
 
     function assertButtonNotAnimated() {
-      assertStyle($$(app, '#wallpaperSearchButton')!, 'animation-name', 'none');
+      assertStyle(getWallpaperSearchButton(), 'animation-name', 'none');
       assertStyle(
-          $$(app, '#wallpaperSearchButton .customize-icon')!, 'animation-name',
-          'none');
+          getWallpaperSearchButton().querySelector('.customize-icon')!,
+          'animation-name', 'none');
       assertStyle(
-          $$(app, '#wallpaperSearchButton .customize-text')!, 'animation-name',
-          'none');
+          getWallpaperSearchButton().querySelector('.customize-text')!,
+          'animation-name', 'none');
     }
 
     suite('ButtonEnabled', () => {
@@ -1095,17 +1525,246 @@ suite('NewTabPageAppTest', () => {
       test('increments button shown count on startup'), () => {
         assertEquals(
             1,
-            handler.getCallCount('incrementWallpaperSearchButtonShownCount'));
+            customizeButtonsHandler.getCallCount(
+                'incrementWallpaperSearchButtonShownCount'));
       };
 
       test('wallpaper search button shows if it is enabled', () => {
-        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!getCustomizeButton());
+        assertTrue(!!getWallpaperSearchButton());
       });
 
       test('button has animation', () => {
         assertButtonAnimated();
       });
+
+      test(`clicking #customizeButton records click`, () => {
+        getCustomizeButton().click();
+        assertEquals(1, metrics.count('NewTabPage.Click'));
+        assertEquals(
+            1, metrics.count('NewTabPage.Click', NtpElement.CUSTOMIZE_BUTTON));
+      });
+
+      test(`clicking #wallpaperSearchButton records click`, () => {
+        getWallpaperSearchButton().click();
+        assertEquals(1, metrics.count('NewTabPage.Click'));
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.Click', NtpElement.WALLPAPER_SEARCH_BUTTON));
+      });
+
+      test('clicking wallpaper search button opens side panel', () => {
+        getWallpaperSearchButton().click();
+        assertDeepEquals(
+            [
+              true,
+              CustomizeChromeSection.kWallpaperSearch,
+              SidePanelOpenTrigger.kNewTabPage,
+            ],
+            customizeButtonsHandler.getArgs(
+                'setCustomizeChromeSidePanelVisible')[0]);
+        assertEquals(
+            1,
+            metrics.count(
+                'NewTabPage.CustomizeChromeOpened',
+                NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON));
+        assertEquals(
+            1,
+            customizeButtonsHandler.getCallCount(
+                'incrementCustomizeChromeButtonOpenCount'));
+      });
+
+      test(
+          'wallpaper search button can open wallpaper search ' +
+              'and hide side panel',
+          async () => {
+            // Open side panel to non-wallpaper search page.
+            customizeButtonsCallbackRouterRemote
+                .setCustomizeChromeSidePanelVisibility(true);
+            assertEquals(
+                0,
+                metrics.count(
+                    'NewTabPage.CustomizeChromeOpened',
+                    NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON));
+            await customizeButtonsCallbackRouterRemote.$.flushForTesting();
+
+            // Clicking the wallpaper search button should navigate the side
+            // panel to the wallpaper search page.
+            getWallpaperSearchButton().click();
+            assertDeepEquals(
+                [
+                  true,
+                  CustomizeChromeSection.kWallpaperSearch,
+                  SidePanelOpenTrigger.kNewTabPage,
+                ],
+                customizeButtonsHandler.getArgs(
+                    'setCustomizeChromeSidePanelVisible')[0]);
+
+            // Clicking the wallpaper search button, when the wallpaper search
+            // page is opened, should close the side panel.
+            getWallpaperSearchButton().click();
+            assertDeepEquals(
+                [
+                  false,
+                  CustomizeChromeSection.kUnspecified,
+                  SidePanelOpenTrigger.kNewTabPage,
+                ],
+                customizeButtonsHandler.getArgs(
+                    'setCustomizeChromeSidePanelVisible')[1]);
+          });
+
+      test('wallpaper search button is accessible', async () => {
+        // Open side panel to non-wallpaper search page.
+        customizeButtonsCallbackRouterRemote
+            .setCustomizeChromeSidePanelVisibility(true);
+        await customizeButtonsCallbackRouterRemote.$.flushForTesting();
+
+        // Only customize chrome button should be labeled as pressed.
+        assertEquals(
+            'false', getWallpaperSearchButton().getAttribute('aria-pressed'));
+        assertEquals('true', getCustomizeButton().getAttribute('aria-pressed'));
+        // Open wallpaper search page.
+        getWallpaperSearchButton().click();
+        await microtasksFinished();
+
+        // Both buttons should be labeled as pressed.
+        assertEquals(
+            'true', getWallpaperSearchButton().getAttribute('aria-pressed'));
+        assertEquals('true', getCustomizeButton().getAttribute('aria-pressed'));
+        // Close the side panel.
+        customizeButtonsCallbackRouterRemote
+            .setCustomizeChromeSidePanelVisibility(false);
+        await customizeButtonsCallbackRouterRemote.$.flushForTesting();
+
+        // Both buttons should not be labeled as pressed.
+        assertEquals(
+            'false', getWallpaperSearchButton().getAttribute('aria-pressed'));
+        assertEquals(
+            'false', getCustomizeButton().getAttribute('aria-pressed'));
+      });
+
+      test(
+          'clicking wallpaper search button collapses/expands it', async () => {
+            assertNotEquals(32, getWallpaperSearchButton().offsetWidth);
+            assertNotStyle(
+                getWallpaperSearchButton().querySelector('.customize-text')!,
+                'display', 'none');
+            getWallpaperSearchButton().click();
+            await microtasksFinished();
+
+            assertEquals(32, getWallpaperSearchButton().offsetWidth);
+            assertStyle(
+                getWallpaperSearchButton().querySelector('.customize-text')!,
+                'display', 'none');
+          });
+
+      test('button hides in accordance with callback router', async () => {
+        // Both buttons shown.
+        assertNotStyle(getCustomizeButton(), 'display', 'none');
+        assertNotStyle(getWallpaperSearchButton(), 'display', 'none');
+        callbackRouterRemote.setWallpaperSearchButtonVisibility(false);
+        await callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Wallpaper search button hides.
+        assertNotStyle(getCustomizeButton(), 'display', 'none');
+        assertEquals(null, getWallpaperSearchButton());
+        callbackRouterRemote.setWallpaperSearchButtonVisibility(true);
+        await callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Wallpaper search button remains hidden.
+        assertNotStyle(getCustomizeButton(), 'display', 'none');
+        assertEquals(null, getWallpaperSearchButton());
+      });
+    });
+
+    suite('AnimationDisabled', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
+          wallpaperSearchButtonAnimationEnabled: false,
+        });
+      });
+
+      test('button has no animation if the flag is disabled', () => {
+        assertButtonNotAnimated();
+      });
+    });
+
+    suite('UnconditionalVisibility', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonEnabled: true,
+          wallpaperSearchButtonHideCondition: /*NONE*/ 0,
+          wallpaperSearchButtonAnimationEnabled: true,
+        });
+      });
+
+      test('hide condition 0 shows button unconditonally', async () => {
+        assertTrue(!!getCustomizeButton());
+        assertTrue(!!getWallpaperSearchButton());
+        const theme = createTheme({isBaseline: false});
+        theme.backgroundImage = createBackgroundImage('https://foo.com');
+        await callbackRouterRemote.$.flushForTesting();
+        assertTrue(!!getCustomizeButton());
+        assertTrue(!!getWallpaperSearchButton());
+      });
+
+      test(
+          'setting background styles both customize chrome buttons',
+          async () => {
+            // The fill color of wallpaperSearchButton's icon is explicitly
+            // hardcoded to white (#fff) in the SVG <path>, which takes higher
+            // percedence over any CSS fill color.
+            assertStyle(
+                getWallpaperSearchButton()
+                    .querySelector(
+                        '.customize-icon')!.shadowRoot!.querySelector('path')!,
+                'fill', 'rgb(255, 255, 255)');
+            // customizeButton's icon should have a non-white color.
+            assertNotStyle(
+                getCustomizeButton().querySelector('.customize-icon')!, 'fill',
+                'rgb(255, 255, 255)');
+            // Only customize chrome button should be collapsed.
+            assertNotStyle(
+                getWallpaperSearchButton().querySelector('.customize-text')!,
+                'display', 'none');
+            assertStyle(
+                getCustomizeButton().querySelector('.customize-text')!,
+                'display', 'none');
+            assertNotEquals(32, getWallpaperSearchButton().offsetWidth);
+            assertEquals(32, getCustomizeButton().offsetWidth);
+
+            // Create and set theme.
+            const theme = createTheme({isDark: true});
+            theme.backgroundImage = createBackgroundImage('https://foo.com');
+            callbackRouterRemote.setTheme(theme);
+            await callbackRouterRemote.$.flushForTesting();
+
+            // The fill color of wallpaperSearchButton's icon is explicitly
+            // hardcoded to white (#fff) in the SVG <path>, which takes higher
+            // percedence over any CSS fill color.
+            assertStyle(
+                getWallpaperSearchButton()
+                    .querySelector(
+                        '.customize-icon')!.shadowRoot!.querySelector('path')!,
+                'fill', 'rgb(255, 255, 255)');
+            // customizeButton's icon should have a non-white color.
+            assertStyle(
+                getCustomizeButton().querySelector('.customize-icon')!, 'fill',
+                'rgb(255, 255, 255)');
+            // Only customize chrome button should be collapsed.
+            assertNotStyle(
+                getWallpaperSearchButton().querySelector('.customize-text')!,
+                'display', 'none');
+            assertStyle(
+                getCustomizeButton().querySelector('.customize-text')!,
+                'display', 'none');
+            assertNotEquals(32, getWallpaperSearchButton().offsetWidth);
+            assertEquals(32, getCustomizeButton().offsetWidth);
+          });
 
       [NtpBackgroundImageSource.kWallpaperSearch,
        NtpBackgroundImageSource.kWallpaperSearchInspiration]
@@ -1129,215 +1788,332 @@ suite('NewTabPageAppTest', () => {
                   assertButtonNotAnimated();
                 });
           });
-
-      ([
-        ['#customizeButton', NtpElement.CUSTOMIZE_BUTTON],
-        ['#wallpaperSearchButton', NtpElement.WALLPAPER_SEARCH_BUTTON],
-      ] as Array<[string, NtpElement]>)
-          .forEach(([selector, element]) => {
-            test(`clicking #wallpaperSearchButton records click`, () => {
-              $$<HTMLElement>(app, selector)!.click();
-
-              assertEquals(1, metrics.count('NewTabPage.Click'));
-              assertEquals(1, metrics.count('NewTabPage.Click', element));
-            });
-          });
-
-      test('clicking wallpaper search button opens side panel', () => {
-        $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
-
-        assertDeepEquals(
-            [true, CustomizeChromeSection.kWallpaperSearch],
-            handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
-        assertEquals(
-            1,
-            metrics.count(
-                'NewTabPage.CustomizeChromeOpened',
-                NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON));
-        assertEquals(
-            1, handler.getCallCount('incrementCustomizeChromeButtonOpenCount'));
-      });
-
-      test(
-          'wallpaper search button can open wallpaper search ' +
-              'and hide side panel',
-          async () => {
-            // Open side panel to non-wallpaper search page.
-            callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
-            assertEquals(
-                0,
-                metrics.count(
-                    'NewTabPage.CustomizeChromeOpened',
-                    NtpCustomizeChromeEntryPoint.WALLPAPER_SEARCH_BUTTON));
-            await callbackRouterRemote.$.flushForTesting();
-
-            // Clicking the wallpaper search button should navigate the side
-            // panel to the wallpaper search page.
-            $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
-
-            assertDeepEquals(
-                [true, CustomizeChromeSection.kWallpaperSearch],
-                handler.getArgs('setCustomizeChromeSidePanelVisible')[0]);
-
-            // Clicking the wallpaper search button, when the wallpaper search
-            // page is opened, should close the side panel.
-            $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
-
-            assertDeepEquals(
-                [false, CustomizeChromeSection.kUnspecified],
-                handler.getArgs('setCustomizeChromeSidePanelVisible')[1]);
-          });
-
-      test('wallpaper search button is accessible', async () => {
-        // Open side panel to non-wallpaper search page.
-        callbackRouterRemote.setCustomizeChromeSidePanelVisibility(true);
-        await callbackRouterRemote.$.flushForTesting();
-
-        // Only customize chrome button should be labeled as pressed.
-        assertEquals(
-            'false',
-            $$<HTMLElement>(
-                app, '#wallpaperSearchButton')!.getAttribute('aria-pressed'));
-        assertEquals(
-            'true',
-            $$<HTMLElement>(
-                app, '#customizeButton')!.getAttribute('aria-pressed'));
-
-        // Open wallpaper search page.
-        $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
-        await microtasksFinished();
-
-        // Both buttons should be labeled as pressed.
-        assertEquals(
-            'true',
-            $$<HTMLElement>(
-                app, '#wallpaperSearchButton')!.getAttribute('aria-pressed'));
-        assertEquals(
-            'true',
-            $$<HTMLElement>(
-                app, '#customizeButton')!.getAttribute('aria-pressed'));
-
-        // Close the side panel.
-        callbackRouterRemote.setCustomizeChromeSidePanelVisibility(false);
-        await callbackRouterRemote.$.flushForTesting();
-
-        // Both buttons should not be labeled as pressed.
-        assertEquals(
-            'false',
-            $$<HTMLElement>(
-                app, '#wallpaperSearchButton')!.getAttribute('aria-pressed'));
-        assertEquals(
-            'false',
-            $$<HTMLElement>(
-                app, '#customizeButton')!.getAttribute('aria-pressed'));
-      });
-
-      test(
-          'clicking wallpaper search button collapses/expands it', async () => {
-            assertNotEquals(
-                32,
-                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
-            assertNotStyle(
-                $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
-                'none');
-
-            $$<HTMLElement>(app, '#wallpaperSearchButton')!.click();
-            await microtasksFinished();
-
-            assertEquals(
-                32,
-                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
-            assertStyle(
-                $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
-                'none');
-          });
-
-      test(
-          'setting background styles both customize chrome buttons',
-          async () => {
-            // Both buttons' icons should have a non-white color.
-            assertNotStyle(
-                $$<HTMLElement>(app, '#wallpaperSearchButton .customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
-            assertNotStyle(
-                $$<HTMLElement>(app, '#customizeButton .customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
-            // Only customize chrome button should be collapsed.
-            assertNotStyle(
-                $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
-                'none');
-            assertStyle(
-                $$(app, '#customizeButton .customize-text')!, 'display',
-                'none');
-            assertNotEquals(
-                32,
-                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
-            assertEquals(
-                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
-
-            // Create and set theme.
-            const theme = createTheme(true);
-            theme.backgroundImage = createBackgroundImage('https://foo.com');
-            callbackRouterRemote.setTheme(theme);
-            await callbackRouterRemote.$.flushForTesting();
-
-            // Both buttons' icons should be white.
-            assertStyle(
-                $$(app, '#wallpaperSearchButton .customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
-            assertStyle(
-                $$(app, '#customizeButton .customize-icon')!,
-                'background-color', 'rgb(255, 255, 255)');
-            // Only customize chrome button should be collapsed.
-            assertNotStyle(
-                $$(app, '#wallpaperSearchButton .customize-text')!, 'display',
-                'none');
-            assertStyle(
-                $$(app, '#customizeButton .customize-text')!, 'display',
-                'none');
-            assertNotEquals(
-                32,
-                $$<HTMLElement>(app, '#wallpaperSearchButton')!.offsetWidth);
-            assertEquals(
-                32, $$<HTMLElement>(app, '#customizeButton')!.offsetWidth);
-          });
-
-      test(
-          'button hides in accordance with callback router', async () => {
-            // Both buttons shown.
-            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
-            assertNotStyle(
-                $$(app, '#wallpaperSearchButton')!, 'display', 'none');
-
-            callbackRouterRemote.setWallpaperSearchButtonVisibility(false);
-            await callbackRouterRemote.$.flushForTesting();
-            await microtasksFinished();
-
-            // Wallpaper search button hides.
-            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
-            assertEquals(null, $$(app, '#wallpaperSearchButton'));
-
-            callbackRouterRemote.setWallpaperSearchButtonVisibility(true);
-            await callbackRouterRemote.$.flushForTesting();
-            await microtasksFinished();
-
-            // Wallpaper search button remains hidden.
-            assertNotStyle($$(app, '#customizeButton')!, 'display', 'none');
-            assertEquals(null, $$(app, '#wallpaperSearchButton'));
-          });
     });
 
-    suite('AnimationDisabled', () => {
+    suite('ConditionalVisibility', () => {
       suiteSetup(() => {
         loadTimeData.overrideValues({
           wallpaperSearchButtonEnabled: true,
-          wallpaperSearchButtonAnimationEnabled: false,
         });
       });
 
-      test('button has no animation if the flag is disabled', () => {
-        assertButtonNotAnimated();
+      test('hideCondition 1 hides button if background is set', async () => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonHideCondition: /*BACKGROUND_IMAGE_SET*/ 1,
+        });
+        assertTrue(!!getCustomizeButton());
+        assertTrue(!!getWallpaperSearchButton());
+        // Set theme with a background image and baseline color.
+        const theme = createTheme({isBaseline: true});
+        theme.backgroundImage = createBackgroundImage('https://img.png');
+        callbackRouterRemote.setTheme(theme);
+        await backgroundManager.whenCalled('setShowBackgroundImage');
+        await microtasksFinished();
+        assertTrue(!!getCustomizeButton());
+        assertFalse(!!getWallpaperSearchButton());
       });
+
+      test(
+          'hide condition 2 hides button if background or' +
+              ' non-baseline color is set',
+          async () => {
+            loadTimeData.overrideValues({
+              wallpaperSearchButtonHideCondition: /*THEME_SET*/ 2,
+            });
+            assertTrue(!!getCustomizeButton());
+            assertTrue(!!getWallpaperSearchButton());
+            // Set theme with a non-baseline color that has no background image.
+            callbackRouterRemote.setTheme(createTheme({isBaseline: false}));
+            await callbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+            assertTrue(!!getCustomizeButton());
+            assertFalse(!!getWallpaperSearchButton());
+            // Resurface button by setting a theme with a baseline color (and no
+            // background image).
+            callbackRouterRemote.setTheme(createTheme({isBaseline: true}));
+            await callbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+            assertTrue(!!getCustomizeButton());
+            assertTrue(!!getWallpaperSearchButton());
+            // Set theme with a background image and baseline color.
+            const theme = createTheme({isBaseline: true});
+            theme.backgroundImage = createBackgroundImage('https://img.png');
+            callbackRouterRemote.setTheme(theme);
+            await backgroundManager.whenCalled('setShowBackgroundImage');
+            await microtasksFinished();
+            assertTrue(!!getCustomizeButton());
+            assertFalse(!!getWallpaperSearchButton());
+          });
+    });
+  });
+
+  suite('MicrosoftAuth', () => {
+    [true, false].forEach(
+        (microsoftModuleEnabled) =>
+            suite(`microsoftModuleEnabled ${microsoftModuleEnabled}`, () => {
+              suiteSetup(() => {
+                loadTimeData.overrideValues({microsoftModuleEnabled});
+              });
+
+              test('Show iframe when appropriate', () => {
+                const iframe =
+                    $$<HTMLIFrameElement>(app, 'iframe#microsoftAuth');
+
+                if (!microsoftModuleEnabled) {
+                  assertFalse(!!iframe);
+                  return;
+                }
+
+                assertTrue(!!iframe);
+                assertEquals(
+                    'chrome-untrusted://ntp-microsoft-auth/', iframe.src);
+              });
+            }));
+  });
+
+  suite('NewTabFooter', () => {
+    test('hide/show customize chrome and attribution buttons', async () => {
+      // Arrange.
+      const theme = createTheme();
+      theme.backgroundImageAttribution1 = 'foo';
+      theme.backgroundImageAttribution2 = 'bar';
+      theme.backgroundImageAttributionUrl = {url: 'https://info.com'};
+      callbackRouterRemote.setTheme(theme);
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Assert default state of the buttons.
+      assertTrue(!!$$(app, '#customizeButtons'));
+      assertTrue(!!$$(app, '#backgroundImageAttribution'));
+
+      // Act.
+      callbackRouterRemote.footerVisibilityUpdated(true);
+      await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      // Assert.
+      assertFalse(!!$$(app, '#customizeButtons'));
+      assertFalse(!!$$(app, '#backgroundImageAttribution'));
+
+      // Act.
+      callbackRouterRemote.footerVisibilityUpdated(false);
+      await callbackRouterRemote.$.flushForTesting();
+      await microtasksFinished();
+
+      // Assert.
+      assertTrue(!!$$(app, '#customizeButtons'));
+      assertTrue(!!$$(app, '#backgroundImageAttribution'));
+    });
+  });
+
+  suite('RealboxNext', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        ntpRealboxNextEnabled: true,
+      });
+    });
+
+    test(
+        'A scrim is applied when the focus is on the composebox input',
+        async () => {
+          loadTimeData.overrideValues({
+            composeboxCloseByClickOutside: true,
+          });
+          const scrim = getScrim();
+          assertTrue(!!scrim);
+          assertTrue(scrim?.hidden);
+          const realbox = $$(app, '#searchbox');
+          assertTrue(!!realbox);
+          realbox.dispatchEvent(new CustomEvent('open-composebox', {
+            detail: {searchboxText: '', contextFiles: []},
+          }));
+          await microtasksFinished();
+          const composebox = app.shadowRoot.querySelector('cr-composebox');
+          assertTrue(!!composebox);
+          composebox.$.input.dispatchEvent(new FocusEvent('focus'));
+          await microtasksFinished();
+
+          assertFalse(scrim.hidden);
+
+          composebox.$.input.dispatchEvent(
+              new FocusEvent('focusout', {relatedTarget: scrim}));
+          await microtasksFinished();
+          scrim.click();
+          await microtasksFinished();
+          assertTrue(scrim?.hidden);
+          // Composebox should have been closed.
+          assertFalse(!!app.shadowRoot.querySelector('cr-composebox'));
+        });
+
+    test('searchbox text carries over to composebox', async () => {
+      // Arrange.
+      callbackRouterRemote.setTheme(createTheme());
+      await callbackRouterRemote.$.flushForTesting();
+
+      // Act.
+      ($$(app, '#searchbox')!.dispatchEvent(new CustomEvent('open-composebox', {
+        detail: {searchboxText: 'text', contextFiles: []},
+      })));
+      await microtasksFinished();
+
+      // Assert.
+      const composebox = app.shadowRoot.querySelector('cr-composebox');
+      assertTrue(!!composebox);
+      assertEquals(
+          'text',
+          composebox.shadowRoot.querySelector<HTMLInputElement>(
+                                   '#input')!.value);
+      assertStyle($$(app, '#searchbox')!, 'visibility', 'hidden');
+    });
+  });
+
+  suite('ActionChips', () => {
+    suiteSetup(() => {
+      loadTimeData.overrideValues({
+        ntpNextFeaturesEnabled: true,
+        ntpRealboxNextEnabled: true,
+        actionChipsEnabled: true,
+        addTabUploadDelayOnActionChipClick: true,
+      });
+      const actionChipsCallbackRouter = new ActionChipsPageCallbackRouter();
+      const actionChipshandler = installMock(
+          ActionChipsHandlerRemote,
+          mock => ActionChipsApiProxyImpl.setInstance({
+            getHandler: () => mock,
+            getCallbackRouter: () => actionChipsCallbackRouter,
+          }));
+      const fakeTab: TabInfo = {
+        tabId: 1,
+        title: 'Test Title',
+        url: {url: 'https://example.com/test'},
+        lastActiveTime: {internalValue: BigInt(12345)},
+      };
+      const actionChipsPageRemote =
+          actionChipsCallbackRouter.$.bindNewPipeAndPassRemote();
+      actionChipshandler.setResultMapperFor('startActionChipsRetrieval', () => {
+        actionChipsPageRemote.onActionChipsChanged([
+          {
+            title: 'TabContext',
+            suggestion: 'tab-suggestion',
+            type: ChipType.kRecentTab,
+            tab: fakeTab,
+          },
+          {
+            title: 'Nano Banana',
+            suggestion: 'image-suggestion',
+            type: ChipType.kImage,
+            tab: null,
+          },
+          {
+            title: 'DeepSearch',
+            suggestion: 'ds-suggestion',
+            type: ChipType.kDeepSearch,
+            tab: null,
+          },
+        ]);
+      });
+    });
+
+    // Testing Action Chips visibility on initial flag load values.
+    [true, false].forEach(
+        (actionChipsEnabled) => [true, false].forEach(
+            (ntpNextFeaturesEnabled) => suite(
+                'Action Chips settings rendered with actionChipsEnabled: ' +
+                    actionChipsEnabled +
+                    ' and ntpNextFeaturesEnabled: ' + ntpNextFeaturesEnabled,
+                () => {
+                  // Arrange.
+                  const expectedVisibility =
+                      ntpNextFeaturesEnabled && actionChipsEnabled;
+                  suiteSetup(() => {
+                    loadTimeData.overrideValues({
+                      ntpNextFeaturesEnabled,
+                      actionChipsEnabled,
+                    });
+                  });
+
+                  // Assert.
+                  test('Show iframe when appropriate', () => {
+                    const chips = $$<HTMLElement>(app, 'ntp-action-chips');
+                    assertEquals(!!chips, expectedVisibility);
+                  });
+                })));
+
+    // Testing Action Chips visibility on changing visibility prefs.
+    [true, false].forEach(
+        (isActionChipsVisible) => test(
+            'Action chips are rendered/hidden on changing visibility to ' +
+                isActionChipsVisible,
+            async () => {
+              // Act.
+              callbackRouterRemote.setActionChipsVisibility(
+                  isActionChipsVisible);
+              await callbackRouterRemote.$.flushForTesting();
+              await microtasksFinished();
+
+              // Assert.
+              const chips = $$(app, 'ntp-action-chips')!;
+              assertEquals(!!chips, isActionChipsVisible);
+            }));
+
+    test(
+        'Nano Banana chip click opens composebox create image mode',
+        async () => {
+          searchboxHandler.setResultFor(
+              'getRecentTabs', Promise.resolve({tabs: []}));
+          const actionChipsElement =
+              app.shadowRoot.querySelector('ntp-action-chips');
+          assertTrue(!!actionChipsElement);
+          const nanoBananaChip =
+              actionChipsElement.shadowRoot.getElementById('nano-banana');
+          assertTrue(!!nanoBananaChip);
+
+          // Act.
+          nanoBananaChip.click();
+          await microtasksFinished();
+
+          // Assert.
+          const composebox = app.shadowRoot.getElementById('composebox');
+          assertTrue(!!composebox);
+          assertEquals(1, composeboxHandler.getCallCount('setCreateImageMode'));
+        });
+    test(
+        'Deep search chip click opens composebox deep search mode',
+        async () => {
+          const actionChipsElement =
+              app.shadowRoot.querySelector('ntp-action-chips');
+          assertTrue(!!actionChipsElement);
+
+          // Setup.
+          const deepSearchChip =
+              actionChipsElement.shadowRoot.getElementById('deep-search');
+          assertTrue(!!deepSearchChip);
+          deepSearchChip.click();
+          await microtasksFinished();
+
+          // Assert.
+          const composebox = app.shadowRoot.getElementById('composebox');
+          assertTrue(!!composebox);
+          assertEquals(1, composeboxHandler.getCallCount('setDeepSearchMode'));
+        });
+    test('Recent tab chip click opens composebox with context', async () => {
+      const actionChipsElement =
+          app.shadowRoot.querySelector('ntp-action-chips');
+      assertTrue(!!actionChipsElement);
+
+      // Setup.
+      const tabChip =
+          actionChipsElement.shadowRoot.getElementById('tab-context');
+      assertTrue(!!tabChip);
+      tabChip.click();
+      await microtasksFinished();
+
+      // Assert.
+      const composebox = app.shadowRoot.getElementById('composebox');
+      assertTrue(!!composebox);
+      assertEquals(1, searchboxHandler.getCallCount('addTabContext'));
+      const [tabId, delayUpload] = searchboxHandler.getArgs('addTabContext')[0];
+      assertEquals(1, tabId);
+      assertEquals(true, delayUpload);
     });
   });
 });

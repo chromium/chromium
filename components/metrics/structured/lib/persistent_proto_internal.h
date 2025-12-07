@@ -105,6 +105,9 @@ class PersistentProtoInternal
   // has already been destructed.
   void FlushQueuedWrites();
 
+  // Serializes |proto_| to |write_buffer_|.
+  void SerializeProtoForWrite();
+
   // Callback when the file has been loaded into a file.
   void OnReadComplete(ReadCallback callback,
                       base::expected<std::string, ReadStatus> read_status);
@@ -126,6 +129,12 @@ class PersistentProtoInternal
   //
   // If the path is being updated queuing a write needs to be blocked.
   std::atomic_bool updating_path_ = false;
+
+  // Buffer to be used for flushing |proto_| contents into |proto_file_|. When
+  // it is time to flush |proto_| into disk, a string copy will be stored in
+  // |write_buffer_| to be flushed to avoid race conditions. The buffer will be
+  // flushed when the write is complete.
+  std::string write_buffer_;
 
   // The proto itself.
   raw_ptr<google::protobuf::MessageLite> proto_ = nullptr;

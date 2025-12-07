@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "base/types/expected_macros.h"
 
@@ -14,9 +10,9 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/types/expected.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "third_party/google_benchmark/src/include/benchmark/benchmark.h"
 
 namespace base {
@@ -32,7 +28,7 @@ class ReturnLoop {
       : value_(std::move(return_value)) {}
   virtual ~ReturnLoop() = default;
 
-  ABSL_ATTRIBUTE_NO_TAIL_CALL ReturnType Loop(size_t* ops) {
+  DISABLE_TAIL_CALLS ReturnType Loop(size_t* ops) {
     if (!*ops) {
       return value_;
     }

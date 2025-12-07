@@ -8,7 +8,6 @@
 #include <memory>
 #include <utility>
 #include "base/task/single_thread_task_runner.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/keep_alive_handle_factory.mojom-blink.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"

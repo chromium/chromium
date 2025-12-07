@@ -10,17 +10,11 @@ namespace features {
 
 // A holdback that prevents the preconnect to measure benefit of the feature.
 BASE_FEATURE(kNavigationPredictorPreconnectHoldback,
-             "NavigationPredictorPreconnectHoldback",
 #if BUILDFLAG(IS_ANDROID)
              base::FEATURE_DISABLED_BY_DEFAULT
 #else
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
-
-// Enables triggering of same-origin preconnects on same-document navigations.
-BASE_FEATURE(kNavigationPredictorEnablePreconnectOnSameDocumentNavigations,
-             "NavigationPredictorEnablePreconnectOnSameDocumentNavigations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

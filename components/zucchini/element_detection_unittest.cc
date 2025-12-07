@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "components/zucchini/buffer_view.h"
+#include "components/zucchini/image_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace zucchini {
@@ -38,7 +39,8 @@ class ElementDetectionTest : public ::testing::Test {
   ElementDetectionTest()
       : exe_map_({{1, kExeTypeWin32X86}, {2, kExeTypeWin32X64}}) {}
 
-  ElementVector TestElementFinder(std::vector<uint8_t> buffer) {
+  ElementVector TestElementFinder(std::vector<uint8_t> buffer,
+                                  offset_t init_pos) {
     ConstBufferView image(buffer.data(), buffer.size());
 
     ElementFinder finder(
@@ -58,12 +60,17 @@ class ElementDetectionTest : public ::testing::Test {
               }
               return std::nullopt;
             },
-            exe_map_, image));
+            exe_map_, image),
+        init_pos);
     std::vector<Element> elements;
     for (auto element = finder.GetNext(); element; element = finder.GetNext()) {
       elements.push_back(*element);
     }
     return elements;
+  }
+
+  ElementVector TestElementFinder(std::vector<uint8_t> buffer) {
+    return TestElementFinder(buffer, /* init_pos= */ 0U);
   }
 
   // Translation map from mock archive bytes to actual types used in Zucchini.
@@ -76,7 +83,8 @@ TEST_F(ElementDetectionTest, ElementFinderEmpty) {
       ConstBufferView(buffer.data(), buffer.size()),
       base::BindRepeating([](ConstBufferView image) -> std::optional<Element> {
         return std::nullopt;
-      }));
+      }),
+      /* init_pos= */ 0U);
   EXPECT_EQ(std::nullopt, finder.GetNext());
 }
 
@@ -96,6 +104,8 @@ TEST_F(ElementDetectionTest, ElementFinder) {
   EXPECT_EQ(
       ElementVector({{{1, 2}, kExeTypeWin32X86}, {{4, 3}, kExeTypeWin32X64}}),
       TestElementFinder({0, 1, 1, 0, 2, 2, 2}));
+  EXPECT_EQ(ElementVector({{{4, 3}, kExeTypeWin32X64}}),
+            TestElementFinder({0, 1, 1, 0, 2, 2, 2}, /* init_pos= */ 3U));
 }
 
 }  // namespace

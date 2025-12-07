@@ -12,50 +12,72 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/command_updater.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/view_ids.h"
+#include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/theme_provider.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/compositor/compositor.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/metrics.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
+namespace {
+
+WaapUIMetricsRecorder::ReloadButtonMode ToRecorderButtonMode(
+    ReloadButton::Mode mode) {
+  switch (mode) {
+    case ReloadButton::Mode::kReload:
+      return WaapUIMetricsRecorder::ReloadButtonMode::kReload;
+    case ReloadButton::Mode::kStop:
+      return WaapUIMetricsRecorder::ReloadButtonMode::kStop;
+  }
+  NOTREACHED();
+}
+
+}  // namespace
+
 // ReloadButton ---------------------------------------------------------------
 
-ReloadButton::ReloadButton(CommandUpdater* command_updater)
+ReloadButton::ReloadButton(Profile* profile, CommandUpdater* command_updater)
     : ToolbarButton(base::BindRepeating(&ReloadButton::ButtonPressed,
                                         base::Unretained(this)),
                     CreateMenuModel(),
                     nullptr),
+      metrics_recorder_(std::make_unique<WaapUIMetricsRecorder>(profile)),
       command_updater_(command_updater),
       reload_icon_(vector_icons::kReloadChromeRefreshIcon),
       reload_touch_icon_(kReloadTouchIcon),
       stop_icon_(kNavigateStopChromeRefreshIcon),
       stop_touch_icon_(kNavigateStopTouchIcon),
-      double_click_timer_delay_(
-          base::Milliseconds(views::GetDoubleClickInterval())),
+      double_click_timer_delay_(views::GetDoubleClickInterval()),
       mode_switch_timer_delay_(base::Milliseconds(1350)) {
   SetVisibleMode(Mode::kReload);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                            ui::EF_MIDDLE_MOUSE_BUTTON);
   GetViewAccessibility().SetName(l10n_util::GetStringUTF16(IDS_ACCNAME_RELOAD));
+  UpdateAccessibleHasPopup();
   SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
   SetID(VIEW_ID_RELOAD_BUTTON);
+
+  UpdateCachedTooltipText();
 }
 
-ReloadButton::~ReloadButton() {}
+ReloadButton::~ReloadButton() = default;
 
 void ReloadButton::ChangeMode(Mode mode, bool force) {
   intended_mode_ = mode;
@@ -107,38 +129,59 @@ void ReloadButton::SetVectorIconsForMode(Mode mode,
 }
 
 bool ReloadButton::GetMenuEnabled() const {
-  return menu_enabled_;
+  return is_menu_enabled_;
 }
 
-void ReloadButton::SetMenuEnabled(bool enable) {
-  menu_enabled_ = enable;
+void ReloadButton::SetMenuEnabled(bool is_menu_enabled) {
+  is_menu_enabled_ = is_menu_enabled;
+  UpdateAccessibleHasPopup();
+  UpdateCachedTooltipText();
+}
+
+void ReloadButton::OnMouseEntered(const ui::MouseEvent& event) {
+  metrics_recorder_->OnMouseEntered(event.time_stamp());
+  ToolbarButton::OnMouseEntered(event);
 }
 
 void ReloadButton::OnMouseExited(const ui::MouseEvent& event) {
+  metrics_recorder_->OnMouseExited(event.time_stamp());
   ToolbarButton::OnMouseExited(event);
-  if (!IsMenuShowing())
+  if (!IsMenuShowing()) {
     ChangeMode(intended_mode_, true);
+  }
 }
 
-std::u16string ReloadButton::GetTooltipText(const gfx::Point& p) const {
-  int reload_tooltip = menu_enabled_ ?
-      IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
-  return l10n_util::GetStringUTF16(
-      visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP);
+bool ReloadButton::OnMousePressed(const ui::MouseEvent& event) {
+  metrics_recorder_->OnMousePressed(event.time_stamp());
+  return ToolbarButton::OnMousePressed(event);
 }
 
-void ReloadButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (menu_enabled_)
-    ToolbarButton::GetAccessibleNodeData(node_data);
-  else
-    Button::GetAccessibleNodeData(node_data);
+void ReloadButton::OnMouseReleased(const ui::MouseEvent& event) {
+  metrics_recorder_->OnMouseReleased(event.time_stamp());
+  ToolbarButton::OnMouseReleased(event);
+}
+
+void ReloadButton::PaintButtonContents(gfx::Canvas* canvas) {
+  // This has to be called every time the button is painted for various metrics.
+  GetWidget()->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindOnce(&ReloadButton::OnNextPresentation,
+                     weak_ptr_factory_.GetWeakPtr(), visible_mode_,
+                     GetState()));
+  Button::PaintButtonContents(canvas);
+}
+
+void ReloadButton::UpdateCachedTooltipText() {
+  int reload_tooltip =
+      is_menu_enabled_ ? IDS_TOOLTIP_RELOAD_WITH_MENU : IDS_TOOLTIP_RELOAD;
+  SetTooltipText(l10n_util::GetStringUTF16(
+      visible_mode_ == Mode::kReload ? reload_tooltip : IDS_TOOLTIP_STOP));
 }
 
 bool ReloadButton::ShouldShowMenu() {
-  return menu_enabled_ && (visible_mode_ == Mode::kReload);
+  return is_menu_enabled_ && (visible_mode_ == Mode::kReload);
 }
 
-void ReloadButton::ShowDropDownMenu(ui::MenuSourceType source_type) {
+void ReloadButton::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
   ToolbarButton::ShowDropDownMenu(source_type);  // Blocks.
   ChangeMode(intended_mode_, true);
 }
@@ -177,6 +220,9 @@ std::unique_ptr<ui::SimpleMenuModel> ReloadButton::CreateMenuModel() {
 }
 
 void ReloadButton::SetVisibleMode(Mode mode) {
+  metrics_recorder_->OnChangeVisibleMode(ToRecorderButtonMode(visible_mode_),
+                                         ToRecorderButtonMode(mode),
+                                         base::TimeTicks::Now());
   visible_mode_ = mode;
   switch (mode) {
     case Mode::kReload:
@@ -186,6 +232,8 @@ void ReloadButton::SetVisibleMode(Mode mode) {
       SetVectorIcons(*stop_icon_, *stop_touch_icon_);
       break;
   }
+
+  UpdateCachedTooltipText();
 }
 
 void ReloadButton::ButtonPressed(const ui::Event& event) {
@@ -200,10 +248,14 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
 
   ClearPendingMenu();
 
+  metrics_recorder_->OnButtonPressedStart(event,
+                                          ToRecorderButtonMode(visible_mode_));
+
   if (visible_mode_ == Mode::kStop) {
     if (command_updater_) {
       command_updater_->ExecuteCommandWithDisposition(
           IDC_STOP, WindowOpenDisposition::CURRENT_TAB);
+      metrics_recorder_->DidExecuteStopCommand(base::TimeTicks::Now());
     }
     // The user has clicked, so we can feel free to update the button, even if
     // the mouse is still hovering.
@@ -233,25 +285,49 @@ void ReloadButton::ButtonPressed(const ui::Event& event) {
                               &ReloadButton::OnDoubleClickTimer);
 
     ExecuteBrowserCommand(command, flags);
+    metrics_recorder_->DidExecuteReloadCommand(base::TimeTicks::Now());
     ++testing_reload_count_;
   }
 }
 
 void ReloadButton::ExecuteBrowserCommand(int command, int event_flags) {
-  if (!command_updater_)
+  if (!command_updater_) {
     return;
+  }
   command_updater_->ExecuteCommandWithDisposition(
       command, ui::DispositionFromEventFlags(event_flags));
 }
 
 void ReloadButton::OnDoubleClickTimer() {
-  if (!IsMenuShowing())
+  if (!IsMenuShowing()) {
     ChangeMode(intended_mode_, false);
+  }
 }
 
 void ReloadButton::OnStopToReloadTimer() {
   DCHECK(!IsMenuShowing());
   ChangeMode(intended_mode_, true);
+}
+
+void ReloadButton::UpdateAccessibleHasPopup() {
+  if (is_menu_enabled_ && menu_model()) {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kMenu);
+  } else {
+    GetViewAccessibility().SetHasPopup(ax::mojom::HasPopup::kNone);
+  }
+}
+
+void ReloadButton::OnNextPresentation(
+    Mode mode,
+    Button::ButtonState state,
+    const viz::FrameTimingDetails& frame_timing_details) {
+  metrics_recorder_->OnPaintFramePresented(
+      ToRecorderButtonMode(mode), state,
+      frame_timing_details.presentation_feedback.timestamp);
+}
+
+views::View* ReloadButton::GetAsViewClassForTesting() {
+  return this;
 }
 
 BEGIN_METADATA(ReloadButton)

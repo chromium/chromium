@@ -4,10 +4,12 @@
 
 #include "chrome/browser/download/offline_item_utils.h"
 
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/download/public/common/download_item_impl.h"
 #include "components/download/public/common/download_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"
@@ -109,6 +111,7 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   item.is_openable = download_item->CanOpenDownload();
   item.file_path = download_item->GetTargetFilePath();
   item.mime_type = download_item->GetMimeType();
+  item.danger_type = download_item->GetDangerType();
 #if BUILDFLAG(IS_ANDROID)
   item.mime_type = DownloadUtils::RemapGenericMimeType(
       item.mime_type, download_item->GetOriginalUrl(),
@@ -169,7 +172,7 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
       }
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // TODO(crbug.com/40582846): Set pending_state correctly.

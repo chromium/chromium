@@ -6,12 +6,11 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
-#include "base/debug/stack_trace.h"
 #include "base/debug/task_trace.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -22,7 +21,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_event.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_loader.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -50,13 +48,13 @@
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_rep.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // Copy from Android code, all four sides of the ARC foreground and background
 // images are padded 25% of it's width and height.
@@ -119,7 +117,7 @@ gfx::ImageSkia ExtractSubsetForArcImage(const gfx::ImageSkia& image_skia) {
   }
   return subset_image;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using SizeToImageSkiaRep = std::map<int, gfx::ImageSkiaRep>;
 using ScaleToImageSkiaReps = std::map<float, SizeToImageSkiaRep>;
@@ -282,27 +280,22 @@ std::vector<uint8_t> EncodeImageToPngBytes(const gfx::ImageSkia image,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  std::vector<uint8_t> image_data;
-
   const gfx::ImageSkiaRep& image_skia_rep =
       image.GetRepresentation(rep_icon_scale);
   if (image_skia_rep.scale() != rep_icon_scale) {
-    return image_data;
+    return std::vector<uint8_t>();
   }
 
   const SkBitmap& bitmap = image_skia_rep.GetBitmap();
   if (bitmap.drawsNothing()) {
-    return image_data;
+    return std::vector<uint8_t>();
   }
 
   base::AssertLongCPUWorkAllowed();
-  constexpr bool discard_transparency = false;
-  bool success = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                                   &image_data);
-  if (!success) {
-    return std::vector<uint8_t>();
-  }
-  return image_data;
+  constexpr bool kDiscardTransparency = false;
+  std::optional<std::vector<uint8_t>> image_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, kDiscardTransparency);
+  return image_data.value_or(std::vector<uint8_t>());
 }
 
 gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size) {
@@ -327,7 +320,7 @@ gfx::ImageSkia ApplyBackgroundAndMask(const gfx::ImageSkia& image) {
       SK_ColorWHITE, image, LoadMaskImage(GetScaleToSize(image)));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::ImageSkia CompositeImagesAndApplyMask(
     const gfx::ImageSkia& foreground_image,
     const gfx::ImageSkia& background_image) {
@@ -432,7 +425,7 @@ gfx::ImageSkia ConvertSquareBitmapsToImageSkia(
   return image_skia;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 gfx::ImageSkia ConvertIconBitmapsToImageSkia(
     const std::map<web_app::SquareSizePx, SkBitmap>& icon_bitmaps,
@@ -605,9 +598,7 @@ void GetChromeAppCompressedIconData(Profile* profile,
           extension_id),
       scale_factor);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 void GetArcAppCompressedIconData(Profile* profile,
                                  const std::string& app_id,
                                  int size_in_dip,
@@ -648,7 +639,7 @@ void GetGuestOSAppCompressedIconData(Profile* profile,
   icon_loader->GetGuestOSAppCompressedIconData(app_id, scale_factor);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void LoadIconFromFileWithFallback(
     IconType icon_type,

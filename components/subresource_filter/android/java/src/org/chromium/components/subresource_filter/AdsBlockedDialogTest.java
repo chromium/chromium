@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -39,8 +38,6 @@ public class AdsBlockedDialogTest {
 
     @Mock private ModalDialogManager mModalDialogManagerMock;
 
-    @Rule public JniMocker jniMocker = new JniMocker();
-
     @Mock private AdsBlockedDialog.Natives mNativeMock;
 
     @Mock private Handler mDialogHandler;
@@ -52,7 +49,7 @@ public class AdsBlockedDialogTest {
 
     @Before
     public void setUp() {
-        jniMocker.mock(AdsBlockedDialogJni.TEST_HOOKS, mNativeMock);
+        AdsBlockedDialogJni.setInstanceForTesting(mNativeMock);
     }
 
     /**

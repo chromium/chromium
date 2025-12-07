@@ -79,9 +79,8 @@ std::optional<GamepadButton> OpenXrHandTrackerFb::GetButton(
   return std::nullopt;
 }
 
-void OpenXrHandTrackerFb::AppendToLocationStruct(
-    XrHandJointLocationsEXT& locations) {
-  locations.next = &aim_state_;
+void OpenXrHandTrackerFb::ExtendHandTrackingNextChain(void** next) {
+  *next = &aim_state_;
 }
 
 OpenXrHandTrackerFbFactory::OpenXrHandTrackerFbFactory() = default;
@@ -96,9 +95,8 @@ OpenXrHandTrackerFbFactory::GetRequestedExtensions() const {
 }
 
 std::set<device::mojom::XRSessionFeature>
-OpenXrHandTrackerFbFactory::GetSupportedFeatures(
-    const OpenXrExtensionEnumeration* extension_enum) const {
-  if (!IsEnabled(extension_enum)) {
+OpenXrHandTrackerFbFactory::GetSupportedFeatures() const {
+  if (!IsEnabled()) {
     return {};
   }
 
@@ -110,7 +108,7 @@ OpenXrHandTrackerFbFactory::CreateHandTracker(
     const OpenXrExtensionHelper& extension_helper,
     XrSession session,
     OpenXrHandednessType type) const {
-  bool is_supported = IsEnabled(extension_helper.ExtensionEnumeration());
+  bool is_supported = IsEnabled();
   DVLOG(2) << __func__ << " is_supported=" << is_supported;
   if (is_supported) {
     return std::make_unique<OpenXrHandTrackerFb>(extension_helper, session,

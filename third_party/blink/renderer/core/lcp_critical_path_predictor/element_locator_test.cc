@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.h"
+
+#include <string_view>
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -86,8 +83,8 @@ class TokenStreamMatcherTest : public ::testing::Test {
  public:
   struct Expectation {
     enum class Type { kStartTag, kEndTag } type = Type::kStartTag;
-    const char* tag_name;
-    const char* id_attr = nullptr;
+    const std::string_view tag_name;
+    const std::string_view id_attr;
     bool should_match = false;
   };
   static const auto kEndTag = Expectation::Type::kEndTag;
@@ -97,26 +94,26 @@ class TokenStreamMatcherTest : public ::testing::Test {
     size_t i = 0;
     for (const Expectation& exp : exps) {
       SCOPED_TRACE(testing::Message() << "expectation index = " << i);
-      AtomicString tag_name(exp.tag_name);
+      AtomicString tag_name = AtomicString::FromUTF8(exp.tag_name);
       EXPECT_TRUE(tag_name.Impl()->IsStatic());
 
       switch (exp.type) {
         case Expectation::Type::kStartTag: {
           HTMLToken token;
           {
-            const char* c = exp.tag_name;
-            token.BeginStartTag(static_cast<LChar>(*c++));
-            for (; *c != 0; ++c) {
-              token.AppendToName(static_cast<UChar>(*c));
+            auto it = exp.tag_name.begin();
+            token.BeginStartTag(static_cast<LChar>(*it++));
+            for (; it != exp.tag_name.end(); ++it) {
+              token.AppendToName(static_cast<UChar>(*it));
             }
           }
 
-          if (exp.id_attr) {
+          if (!exp.id_attr.empty()) {
             token.AddNewAttribute('i');
             token.AppendToAttributeName('d');
 
-            for (const char* c = exp.id_attr; *c != 0; ++c) {
-              token.AppendToAttributeValue(static_cast<LChar>(*c));
+            for (char it : exp.id_attr) {
+              token.AppendToAttributeValue(static_cast<LChar>(it));
             }
           }
 

@@ -27,7 +27,6 @@ class PrefRegistrySyncable;
 
 namespace usage_stats {
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 
@@ -47,53 +46,43 @@ class UsageStatsBridge : public history::HistoryServiceObserver {
 
   ~UsageStatsBridge() override;
 
-  void Destroy(JNIEnv* j_env, const JavaRef<jobject>& j_this);
+  void Destroy(JNIEnv* j_env);
 
   void GetAllEvents(JNIEnv* j_env,
-                    const JavaRef<jobject>& j_this,
                     const JavaRef<jobject>& j_callback);
 
   void QueryEventsInRange(JNIEnv* j_env,
-                          const JavaRef<jobject>& j_this,
                           const jlong j_start,
                           const jlong j_end,
                           const JavaRef<jobject>& j_callback);
 
   void AddEvents(JNIEnv* j_env,
-                 const JavaRef<jobject>& j_this,
                  const JavaRef<jobjectArray>& j_events,
                  const JavaRef<jobject>& j_callback);
 
   void DeleteAllEvents(JNIEnv* j_env,
-                       const JavaRef<jobject>& j_this,
                        const JavaRef<jobject>& j_callback);
 
   void DeleteEventsInRange(JNIEnv* j_env,
-                           const JavaRef<jobject>& j_this,
                            const jlong j_start,
                            const jlong j_end,
                            const JavaRef<jobject>& j_callback);
 
   void DeleteEventsWithMatchingDomains(JNIEnv* j_env,
-                                       const JavaRef<jobject>& j_this,
                                        const JavaRef<jobjectArray>& j_domains,
                                        const JavaRef<jobject>& j_callback);
 
   void GetAllSuspensions(JNIEnv* j_env,
-                         const JavaRef<jobject>& j_this,
                          const JavaRef<jobject>& j_callback);
 
   void SetSuspensions(JNIEnv* j_env,
-                      const JavaRef<jobject>& j_this,
                       const JavaRef<jobjectArray>& j_domains,
                       const JavaRef<jobject>& j_callback);
 
   void GetAllTokenMappings(JNIEnv* j_env,
-                           const JavaRef<jobject>& j_this,
                            const JavaRef<jobject>& j_callback);
 
   void SetTokenMappings(JNIEnv* j_env,
-                        const JavaRef<jobject>& j_this,
                         const JavaRef<jobjectArray>& j_tokens,
                         const JavaRef<jobjectArray>& j_fqdns,
                         const JavaRef<jobject>& j_callback);

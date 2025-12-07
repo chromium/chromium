@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "testing/gtest/include/gtest/gtest.h"
-
-#include "base/allocator/dispatcher/configuration.h"
 #include "base/allocator/dispatcher/initializer.h"
-#include "base/allocator/dispatcher/testing/observer_mock.h"
-#include "base/allocator/dispatcher/testing/tools.h"
 
 #include <functional>
 #include <map>
 #include <tuple>
+
+#include "base/allocator/dispatcher/configuration.h"
+#include "base/allocator/dispatcher/testing/observer_mock.h"
+#include "base/allocator/dispatcher/testing/tools.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace base::allocator::dispatcher {
 namespace testing {
@@ -42,7 +42,7 @@ struct Dispatcher {
       const std::tuple<Observers*...>& observers) {
     static std::map<std::tuple<Observers*...>, size_t>
         observer_init_counter_map;
-    reseter_[&observer_init_counter_map] = []() {
+    reseter_[&observer_init_counter_map] = [] {
       observer_init_counter_map.clear();
     };
     return observer_init_counter_map[observers];

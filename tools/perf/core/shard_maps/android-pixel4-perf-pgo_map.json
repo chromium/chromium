@@ -82,9 +82,6 @@
             "blink_perf.owp_storage": {
                 "abridged": false
             },
-            "blink_perf.paint": {
-                "abridged": false
-            },
             "blink_perf.parser": {
                 "end": 18,
                 "abridged": false
@@ -109,9 +106,6 @@
                 "begin": 32,
                 "abridged": false
             },
-            "blink_perf.svg": {
-                "abridged": false
-            },
             "blink_perf.webaudio": {
                 "abridged": false
             },
@@ -130,26 +124,13 @@
             "blink_perf.webgl": {
                 "abridged": false
             },
-            "blink_perf.webgl_fast_call": {
-                "abridged": false
-            },
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },
             "dummy_benchmark.stable_benchmark_1": {
                 "abridged": false
             },
-            "jetstream": {
-                "abridged": false
-            },
             "jetstream2": {
-                "abridged": false
-            },
-            "kraken": {
-                "abridged": false
-            },
-            "loading.mobile": {
-                "end": 19,
                 "abridged": false
             }
         },
@@ -163,20 +144,10 @@
         }
     },
     "10": {
-        "benchmarks": {
-            "loading.mobile": {
-                "begin": 19,
-                "end": 63,
-                "abridged": false
-            }
-        }
+        "benchmarks": {}
     },
     "11": {
         "benchmarks": {
-            "loading.mobile": {
-                "begin": 63,
-                "abridged": false
-            },
             "media.mobile": {
                 "end": 11,
                 "abridged": false

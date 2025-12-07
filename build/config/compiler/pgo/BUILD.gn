@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chrome_build.gni")
 import("//build/config/clang/clang.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/compiler/pgo/pgo.gni")
@@ -15,7 +15,7 @@ config("pgo_instrumentation_flags") {
 
   # Only add flags when chrome_pgo_phase == 1, so that variables we would use
   # are not required to be defined when we're not actually using PGO.
-  if (chrome_pgo_phase == 1 && is_clang && !is_nacl && is_a_target_toolchain) {
+  if (chrome_pgo_phase == 1 && is_clang && is_a_target_toolchain) {
     cflags = [ "-fprofile-generate" ]
     if (temporal_pgo_profile) {
       cflags += [
@@ -38,7 +38,7 @@ config("pgo_optimization_flags") {
 
   # Only add flags when chrome_pgo_phase == 2, so that variables we would use
   # are not required to be defined when we're not actually using PGO.
-  if (chrome_pgo_phase == 2 && is_clang && !is_nacl && is_a_target_toolchain) {
+  if (chrome_pgo_phase == 2 && is_clang && is_a_target_toolchain) {
     _pgo_target = ""
 
     # There are txt files used by //tools/update_pgo_profiles.py to decide which
@@ -62,19 +62,11 @@ config("pgo_optimization_flags") {
       }
     } else if (is_linux) {
       _pgo_target = "linux"
-    } else if (is_chromeos_lacros) {
-      if (target_cpu == "arm") {
-        # We don't have the arm device to train arm pgo data. So Lacros arm
-        # would use arm64 profile.
-        _pgo_target = "lacros-arm64"
-      } else if (target_cpu == "arm64") {
-        _pgo_target = "lacros-arm64"
-      } else {
-        _pgo_target = "lacros64"
-      }
     } else if (is_android) {
       # Use |current_cpu| and not |target_cpu|; for Android we may built both.
-      if (current_cpu == "arm64") {
+      if (is_desktop_android && current_cpu == "x64") {
+        _pgo_target = "android-desktop-x64"
+      } else if (current_cpu == "arm64") {
         _pgo_target = "android-arm64"
       } else {
         _pgo_target = "android-arm32"
@@ -105,29 +97,44 @@ config("pgo_optimization_flags") {
       inputs = [ "//chrome/build/mac.pgo.txt" ]
     } else if (_pgo_target == "linux") {
       inputs = [ "//chrome/build/linux.pgo.txt" ]
-    } else if (_pgo_target == "lacros64") {
-      inputs = [ "//chrome/build/lacros64.pgo.txt" ]
-    } else if (_pgo_target == "lacros-arm") {
-      inputs = [ "//chrome/build/lacros-arm.pgo.txt" ]
-    } else if (_pgo_target == "lacros-arm64") {
-      inputs = [ "//chrome/build/lacros-arm64.pgo.txt" ]
     } else if (_pgo_target == "android-arm32") {
       inputs = [ "//chrome/build/android-arm32.pgo.txt" ]
-    } else if (_pgo_target == "android-arm64") {
-      inputs = [ "//chrome/build/android-arm64.pgo.txt" ]
+    } else if (_pgo_target == "android-desktop-x64") {
+      inputs = [ "//chrome/build/android-desktop-x64.pgo.txt" ]
     }
 
     if (_pgo_target != "" && pgo_data_path == "") {
+      common_args = [
+        "--target",
+        _pgo_target,
+      ]
+      if (pgo_override_filename != "") {
+        common_args += [
+          "--override-filename",
+          pgo_override_filename,
+        ]
+
+        # This is slow but it is only expected to be run on the orderfile bots
+        # that require this special step.
+        exec_script("//tools/update_pgo_profiles.py",
+                    common_args + [
+                          "update",
+                          "--gs-url-base=$pgo_gs_bucket/$pgo_gs_bucket_path",
+                        ])
+      }
       pgo_data_path = exec_script("//tools/update_pgo_profiles.py",
-                                  [
-                                    "--target",
-                                    _pgo_target,
-                                    "get_profile_path",
-                                  ],
+                                  common_args + [ "get_profile_path" ],
                                   "value")
     }
     assert(pgo_data_path != "",
            "Please set pgo_data_path to point at the profile data")
+
+    # Ensure that the actual PGO profile that is used in the build is also
+    # listed in inputs in addition to any sha1 .txt files. This way the object
+    # files are rebuilt whenever the .txt files change or whenever the actual
+    # profile changes.
+    inputs += [ pgo_data_path ]
+
     cflags = [
       "-fprofile-use=" + rebase_path(pgo_data_path, root_build_dir),
 
@@ -144,6 +151,14 @@ config("pgo_optimization_flags") {
       # See https://crbug.com/978401
       "-Wno-backend-plugin",
     ]
+
+    # TODO(crbug.com/383537825): Try enabling on all platforms.
+    if (is_android || is_fuchsia) {
+      cflags += [
+        "-mllvm",
+        "-pgo-cold-func-opt=minsize",
+      ]
+    }
 
     # Enable basic block layout based on the extended TSP problem. This aims to
     # improve icache utilization and reduce the binary size.

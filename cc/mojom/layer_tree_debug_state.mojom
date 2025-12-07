@@ -1,0 +1,29 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+// This is a mirror of cc::LayerTreeDebugState.
+struct LayerTreeDebugState {
+  bool debugger_paused;
+  bool show_fps_counter;
+  bool show_render_pass_borders;
+  bool show_surface_borders;
+  bool show_layer_borders;
+  bool show_layout_shift_regions;
+  bool show_paint_rects;
+  bool show_property_changed_rects;
+  bool show_surface_damage_rects;
+  bool show_screen_space_rects;
+  bool show_touch_event_handler_rects;
+  bool show_wheel_event_handler_rects;
+  bool show_scroll_event_handler_rects;
+  bool show_main_thread_scroll_hit_test_rects;
+  bool show_main_thread_scroll_repaint_rects;
+  bool show_raster_inducing_scroll_rects;
+  bool show_layer_animation_bounds_rects;
+  int32 slow_down_raster_scale_factor;
+  bool rasterize_only_visible_content;
+  bool record_rendering_stats;
+};

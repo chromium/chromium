@@ -1,5 +1,5 @@
-Verifies that navigating from a OOPIF to in-process iframe sets the right sessionId.
+Verifies that ExtraInfo CDP events are generated when navigating from a OOPIF to in-process iframe.
 
 Loaded page-out with OOPIF, setting iframe src to in-process URL.
-Got expected iframe events
+In-process iframe loading complete.
 

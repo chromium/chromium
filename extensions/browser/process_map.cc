@@ -4,24 +4,30 @@
 
 #include "extensions/browser/process_map.h"
 
+#include <algorithm>
 #include <string>
 #include <tuple>
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/types/optional_util.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map_factory.h"
 #include "extensions/browser/script_injection_tracker.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#endif
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "extensions/common/constants.h"
@@ -44,6 +50,7 @@ bool ProcessHasWebUIBindings(int process_id) {
 // extension with the specified `extension_id`.
 bool IsWebViewProcessForExtension(int process_id,
                                   const ExtensionId& extension_id) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
   WebViewRendererState* web_view_state = WebViewRendererState::GetInstance();
   if (!web_view_state->IsGuest(process_id)) {
     return false;
@@ -54,6 +61,9 @@ bool IsWebViewProcessForExtension(int process_id,
   bool found_info = web_view_state->GetOwnerInfo(process_id, &owner_process_id,
                                                  &webview_owner);
   return found_info && webview_owner == extension_id;
+#else
+  return false;
+#endif
 }
 
 }  // namespace
@@ -91,6 +101,12 @@ bool ProcessMap::Contains(int process_id) const {
   return base::Contains(items_, process_id);
 }
 
+bool ProcessMap::ExtensionHasProcess(const ExtensionId& extension_id) const {
+  return std::ranges::find_if(items_, [extension_id](const auto& entry) {
+           return entry.second == extension_id;
+         }) != items_.end();
+}
+
 const Extension* ProcessMap::GetEnabledExtensionByProcessID(
     int process_id) const {
   auto* extension_id = base::FindOrNull(items_, process_id);
@@ -113,17 +129,14 @@ bool ProcessMap::IsPrivilegedExtensionProcess(const Extension& extension,
           // ... Unless they're component hosted apps, like the webstore.
           // TODO(https://crbug/1429667): We can clean this up when we remove
           // special handling of component hosted apps.
-          extension.location() == mojom::ManifestLocation::kComponent) &&
-         // Lock screen contexts are not the same as privileged extension
-         // processes.
-         !is_lock_screen_context_;
+          extension.location() == mojom::ManifestLocation::kComponent);
 }
 
 bool ProcessMap::CanProcessHostContextType(
     const Extension* extension,
     const content::RenderProcessHost& process,
     mojom::ContextType context_type) {
-  const int process_id = process.GetID();
+  const int process_id = process.GetDeprecatedID();
   switch (context_type) {
     case mojom::ContextType::kUnspecified:
       // We never consider unspecified contexts valid. Even though they would be
@@ -147,13 +160,6 @@ bool ProcessMap::CanProcessHostContextType(
       return extension &&
              ScriptInjectionTracker::DidProcessRunUserScriptFromExtension(
                  process, extension->id());
-    case mojom::ContextType::kLockscreenExtension:
-      // Lock screen contexts are essentially privileged contexts that run on
-      // the lock screen profile. We don't run component hosted apps there, so
-      // no need to allow those.
-      return is_lock_screen_context_ && extension &&
-             !extension->is_hosted_app() &&
-             Contains(extension->id(), process_id);
     case mojom::ContextType::kPrivilegedWebPage:
       // A privileged web page is a (non-component) hosted app process.
       return extension && extension->is_hosted_app() &&
@@ -245,8 +251,7 @@ mojom::ContextType ProcessMap::GetMostLikelyContextType(
   // this would be a problem if offscreen documents ever have access to APIs
   // that kPrivilegedExtension contexts don't).
 
-  return is_lock_screen_context_ ? mojom::ContextType::kLockscreenExtension
-                                 : mojom::ContextType::kPrivilegedExtension;
+  return mojom::ContextType::kPrivilegedExtension;
 }
 
 }  // namespace extensions

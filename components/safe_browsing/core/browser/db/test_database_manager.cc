@@ -8,18 +8,15 @@
 #include <string>
 #include <vector>
 
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace safe_browsing {
 
 TestSafeBrowsingDatabaseManager::TestSafeBrowsingDatabaseManager(
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> io_task_runner)
-    : SafeBrowsingDatabaseManager(std::move(ui_task_runner),
-                                  std::move(io_task_runner)),
-      enabled_(false) {}
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    : SafeBrowsingDatabaseManager(std::move(ui_task_runner)), enabled_(false) {}
 
 void TestSafeBrowsingDatabaseManager::CancelCheck(Client* client) {
   NOTIMPLEMENTED();
@@ -53,14 +50,13 @@ bool TestSafeBrowsingDatabaseManager::CheckExtensionIDs(
   return true;
 }
 
-std::optional<
-    SafeBrowsingDatabaseManager::HighConfidenceAllowlistCheckLoggingDetails>
-TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
+void TestSafeBrowsingDatabaseManager::CheckUrlForHighConfidenceAllowlist(
     const GURL& url,
-    base::OnceCallback<void(bool)> callback) {
+    CheckUrlForHighConfidenceAllowlistCallback callback) {
   NOTIMPLEMENTED();
-  std::move(callback).Run(false);
-  return std::nullopt;
+  std::move(callback).Run(
+      /*url_on_high_confidence_allowlist=*/false,
+      /*logging_details=*/std::nullopt);
 }
 
 bool TestSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
@@ -97,16 +93,16 @@ TestSafeBrowsingDatabaseManager::GetNonBrowseUrlThreatSource() const {
   return safe_browsing::ThreatSource::UNKNOWN;
 }
 
-void TestSafeBrowsingDatabaseManager::StartOnSBThread(
+void TestSafeBrowsingDatabaseManager::StartOnUIThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {
-  SafeBrowsingDatabaseManager::StartOnSBThread(url_loader_factory, config);
+  SafeBrowsingDatabaseManager::StartOnUIThread(url_loader_factory, config);
   enabled_ = true;
 }
 
-void TestSafeBrowsingDatabaseManager::StopOnSBThread(bool shutdown) {
+void TestSafeBrowsingDatabaseManager::StopOnUIThread(bool shutdown) {
   enabled_ = false;
-  SafeBrowsingDatabaseManager::StopOnSBThread(shutdown);
+  SafeBrowsingDatabaseManager::StopOnUIThread(shutdown);
 }
 
 bool TestSafeBrowsingDatabaseManager::IsDatabaseReady() const {

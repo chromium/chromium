@@ -258,22 +258,22 @@ TEST_F(WebRtcEventLogUploaderImplTest, NonExistentFileReportedToObserver) {
 #endif  // BUILDFLAG(IS_POSIX)
 
 TEST_F(WebRtcEventLogUploaderImplTest, FilesUpToMaxSizeUploaded) {
-  int64_t log_file_size_bytes;
-  ASSERT_TRUE(base::GetFileSize(log_file_, &log_file_size_bytes));
+  std::optional<int64_t> log_file_size_bytes = base::GetFileSize(log_file_);
+  ASSERT_TRUE(log_file_size_bytes.has_value());
 
   SetURLLoaderResponse(net::HTTP_OK, net::OK);
   EXPECT_CALL(observer_, CompletionCallback(log_file_, true)).Times(1);
-  StartAndWaitForUploadWithCustomMaxSize(log_file_size_bytes);
+  StartAndWaitForUploadWithCustomMaxSize(log_file_size_bytes.value());
   EXPECT_FALSE(base::PathExists(log_file_));
 }
 
 TEST_F(WebRtcEventLogUploaderImplTest, ExcessivelyLargeFilesNotUploaded) {
-  int64_t log_file_size_bytes;
-  ASSERT_TRUE(base::GetFileSize(log_file_, &log_file_size_bytes));
+  std::optional<int64_t> log_file_size_bytes = base::GetFileSize(log_file_);
+  ASSERT_TRUE(log_file_size_bytes.has_value());
 
   SetURLLoaderResponse(net::HTTP_OK, net::OK);
   EXPECT_CALL(observer_, CompletionCallback(log_file_, false)).Times(1);
-  StartAndWaitForUploadWithCustomMaxSize(log_file_size_bytes - 1);
+  StartAndWaitForUploadWithCustomMaxSize(log_file_size_bytes.value() - 1);
   EXPECT_FALSE(base::PathExists(log_file_));
 }
 

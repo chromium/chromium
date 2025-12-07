@@ -37,10 +37,7 @@ class MediaItemUIListViewTest : public views::ViewsTestBase,
   void SetUp() override {
     views::ViewsTestBase::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS)
-    feature_list_.InitWithFeatureState(media::kGlobalMediaControlsCrOSUpdatedUI,
-                                       UseUpdatedUI());
-#else
+#if !BUILDFLAG(IS_CHROMEOS)
     feature_list_.InitWithFeatureState(media::kGlobalMediaControlsUpdatedUI,
                                        UseUpdatedUI());
 #endif
@@ -61,7 +58,13 @@ class MediaItemUIListViewTest : public views::ViewsTestBase,
     views::ViewsTestBase::TearDown();
   }
 
-  bool UseUpdatedUI() { return GetParam(); }
+  bool UseUpdatedUI() {
+#if BUILDFLAG(IS_CHROMEOS)
+    return true;
+#else
+    return GetParam();
+#endif
+  }
 
   void ShowItem(const std::string& id) {
     if (UseUpdatedUI()) {

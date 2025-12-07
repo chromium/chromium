@@ -6,75 +6,62 @@
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
-    <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
+    <script>
+      const sampleRate = 48000;
+      const renderSeconds = 1;
+      const renderFrames = sampleRate * renderSeconds;
+      const contextChannels = 2;
 
-      let context;
-      let promise;
-      let renderedData;
-      let promiseData;
+      promise_test(async () => {
+        // Create an offline context and verify that both the oncomplete and
+        // promise are returned with the same stuff.
+        const context = new OfflineAudioContext(
+            contextChannels, renderFrames, sampleRate);
 
-      let sampleRate = 48000;
-      let renderSeconds = 1;
-      let renderFrames = sampleRate * renderSeconds;
-      let contextChannels = 2;
-
-      function compareData(should) {
-        // The spec implies that the same buffer is returned by both oncomplete
-        // and the promise. Check that they are identical.
-
-        should(
-            renderedData === promiseData,
-            'AudioBuffer returned by oncomplete and promise are identical')
-            .beTrue();
-      }
-
-      function checkResult(task, should, event) {
-        renderedData = event.renderedBuffer;
-        promise.then(function(result) {
-          promiseData = result;
-          compareData(should);
-          task.done();
+        const buffer = new AudioBuffer({
+          length: renderFrames,
+          numberOfChannels: contextChannels,
+          sampleRate
         });
-      }
 
-      // Create an offline context and verify that both the oncomplete and
-      // promise are returned with the same stuff.
-      audit.define(
-          {
-            label: 'test',
-            description:
-                'OfflineAudioContext.startRendering Promise with oncomplete'
-          },
-          (task, should) => {
-            context = new OfflineAudioContext(
-                contextChannels, renderFrames, sampleRate);
+        for (let k = 0; k < renderFrames; ++k) {
+          buffer.getChannelData(0)[k] = 1;
+          buffer.getChannelData(1)[k] = 2;
+        }
 
-            let buffer =
-                context.createBuffer(contextChannels, renderFrames, sampleRate);
-            for (let k = 0; k < renderFrames; ++k) {
-              buffer.getChannelData(0)[k] = 1;
-              buffer.getChannelData(1)[k] = 2;
-            }
+        const source = new AudioBufferSourceNode(context, { buffer });
+        source.connect(context.destination);
+        source.start();
 
-            let source = context.createBufferSource();
-            source.buffer = buffer;
-            source.connect(context.destination);
-            source.start();
+        let renderedData;
+        let promiseData;
 
-            context.oncomplete = (event) => {
-              checkResult(task, should, event);
-            };
+        const oncompletePromise = new Promise((resolve) => {
+          context.oncomplete = async (event) => {
+            renderedData = event.renderedBuffer;
+            // Wait for the startRendering promise to resolve
+            // This ensures we're testing that the promise resolved
+            // BEFORE oncomplete fired
+            promiseData = await startRenderingPromise;
+            resolve();
+          };
+        });
 
-            promise = context.startRendering();
+        const startRenderingPromise = context.startRendering();
 
-          });
+        await oncompletePromise;
 
-      audit.run();
+        // Spec guarantee: startRendering() resolves with [[rendered buffer]],
+        // then fires 'complete' whose
+        // OfflineAudioCompletionEvent.renderedBuffer is set to that same
+        // [[rendered buffer]] — i.e., both references must be
+        // the same AudioBuffer object.
+        assert_equals(
+            renderedData, promiseData,
+            'AudioBuffer returned by oncomplete and promise are identical');
+      }, 'OfflineAudioContext.startRendering Promise with oncomplete');
     </script>
   </body>
 </html>

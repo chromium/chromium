@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "url/origin.h"
+#include "url/origin_debug.h"
 
 namespace network {
 

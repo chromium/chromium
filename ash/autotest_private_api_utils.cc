@@ -8,7 +8,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
-#include "ash/frame/non_client_frame_view_ash.h"
+#include "ash/frame/frame_view_ash.h"
 #include "ash/shell.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/scoped_skip_user_session_blocked_check.h"
@@ -155,7 +155,7 @@ std::vector<raw_ptr<aura::Window, VectorExperimental>> GetAppWindowList() {
 
 bool WaitForLauncherState(AppListViewState target_state,
                           base::OnceClosure closure) {
-  const bool in_tablet_mode = display::Screen::GetScreen()->InTabletMode();
+  const bool in_tablet_mode = display::Screen::Get()->InTabletMode();
   if (in_tablet_mode) {
     // App-list can't enter kPeeking or kHalf state in tablet mode. Thus
     // |target_state| should be either kClosed, kFullscreenAllApps or

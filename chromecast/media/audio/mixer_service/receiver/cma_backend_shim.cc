@@ -59,8 +59,7 @@ AudioChannel ConvertChannelSelection(int channel_selection) {
     case 1:
       return AudioChannel::kRight;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return AudioChannel::kAll;
+      NOTREACHED();
   }
 }
 
@@ -154,7 +153,7 @@ void CmaBackendShim::AddData(char* data, int size) {
   } else {
     // TODO(crbug.com/40284755): These functions should use span and size_t.
     buffer = ::media::DecoderBuffer::CopyFrom(base::as_bytes(
-        UNSAFE_BUFFERS(base::span(data, base::checked_cast<size_t>(size)))));
+        UNSAFE_TODO(base::span(data, base::checked_cast<size_t>(size)))));
     buffer->set_timestamp(::media::kNoTimestamp);
   }
   POST_MEDIA_TASK(&CmaBackendShim::AddDataOnMediaThread, std::move(buffer));

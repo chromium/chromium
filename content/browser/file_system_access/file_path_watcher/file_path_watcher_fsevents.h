@@ -8,12 +8,16 @@
 #include <CoreServices/CoreServices.h>
 #include <stddef.h>
 
+#include <map>
+#include <memory>
 #include <vector>
 
 #include "base/apple/scoped_dispatch_object.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_fsevents_change_tracker.h"
+#include "content/browser/file_system_access/file_path_watcher/file_path_watcher_histogram.h"
 
 namespace content {
 
@@ -25,15 +29,29 @@ namespace content {
 // use which one.
 class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
  public:
+  using ChangeEvent = FilePathWatcherFSEventsChangeTracker::ChangeEvent;
+
+  // We only call FSEventStreamCreate once per FilePathWatcher. This number is
+  // used to report usage. If more FSEventStreamCreate calls are added, this
+  // number must be updated.
+  static constexpr size_t kNumberOfFSEventStreamCreateCalls = 1;
+
   FilePathWatcherFSEvents();
   FilePathWatcherFSEvents(const FilePathWatcherFSEvents&) = delete;
   FilePathWatcherFSEvents& operator=(const FilePathWatcherFSEvents&) = delete;
   ~FilePathWatcherFSEvents() override;
 
+  size_t current_usage() const override;
+
   // FilePathWatcher::PlatformDelegate overrides.
   bool Watch(const base::FilePath& path,
              Type type,
              const FilePathWatcher::Callback& callback) override;
+  bool WatchWithChangeInfo(
+      const base::FilePath& path,
+      const WatchOptions& options,
+      const FilePathWatcher::CallbackWithChangeInfo& callback,
+      const FilePathWatcher::UsageChangeCallback& usage_callback) override;
   void Cancel() override;
 
  private:
@@ -44,19 +62,15 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
                                const FSEventStreamEventFlags flags[],
                                const FSEventStreamEventId event_ids[]);
 
-  // Called from FSEventsCallback whenever there is a change to the paths.
-  void OnFilePathsChanged(const std::vector<base::FilePath>& paths);
-
-  // Called on the task_runner() thread to dispatch path events. Can't access
-  // target_ and resolved_target_ directly as those are modified on the
-  // libdispatch thread.
-  void DispatchEvents(const std::vector<base::FilePath>& paths,
-                      const base::FilePath& target,
-                      const base::FilePath& resolved_target);
+  // Called on the watcher task runner from the FSEventsCallback whenever
+  // there is a change to the paths.
+  void OnFilePathsChanged(bool is_root_changed_event,
+                          FSEventStreamEventId root_change_at,
+                          std::map<FSEventStreamEventId, ChangeEvent> events);
 
   // (Re-)Initialize the event stream to start reporting events from
   // |start_event|.
-  void UpdateEventStream(FSEventStreamEventId start_event);
+  WatchWithChangeInfoResult UpdateEventStream(FSEventStreamEventId start_event);
 
   // Returns true if resolving the target path got a different result than
   // last time it was done.
@@ -68,23 +82,21 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   // Destroy the event stream.
   void DestroyEventStream();
 
-  // Start watching the FSEventStream.
-  void StartEventStream(FSEventStreamEventId start_event,
+  // Start watching the FSEventStream. Returns `true` if the FS Events event
+  // stream starts successfully.
+  bool StartEventStream(FSEventStreamEventId start_event,
                         const base::FilePath& path);
 
+  std::optional<FilePathWatcherFSEventsChangeTracker> change_tracker_;
+
   // Callback to notify upon changes.
-  // (Only accessed from the task_runner() thread.)
-  FilePathWatcher::Callback callback_;
+  // (Only accessed from the task_runner() thread).
+  FilePathWatcher::CallbackWithChangeInfo callback_;
 
   // The dispatch queue on which the event stream is scheduled.
   base::apple::ScopedDispatchObject<dispatch_queue_t> queue_;
 
-  // Target path to watch (passed to callback).
-  // (Only accessed from the libdispatch queue.)
   base::FilePath target_;
-
-  // Target path with all symbolic links resolved.
-  // (Only accessed from the libdispatch queue.)
   base::FilePath resolved_target_;
 
   // Backend stream we receive event callbacks from (strong reference).

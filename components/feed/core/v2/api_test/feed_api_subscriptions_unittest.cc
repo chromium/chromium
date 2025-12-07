@@ -5,6 +5,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/api_test/feed_api_test.h"
 #include "components/feed/core/v2/config.h"
@@ -20,6 +21,7 @@
 #include "components/feed/core/v2/test/stream_builder.h"
 #include "components/feed/core/v2/web_feed_subscription_coordinator.h"
 #include "components/feed/feed_feature_list.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,7 +32,7 @@ using feedwire::webfeed::WebFeedChangeReason;
 using testing::PrintToString;
 
 AccountInfo TestAccountInfo() {
-  return {"examplegaia", "example@foo.com"};
+  return {GaiaId("examplegaia"), "example@foo.com"};
 }
 
 FeedNetwork::RawResponse MakeFailedResponse() {
@@ -67,6 +69,10 @@ void WriteSubscribedFeeds(
 
 class FeedApiSubscriptionsTest : public FeedApiTest {
  public:
+  FeedApiSubscriptionsTest() {
+    features_.InitAndDisableFeature(kWebFeedKillSwitch);
+  }
+
   void SetUp() override {
     FeedApiTest::SetUp();
     subscriptions().SetHooksForTesting(&web_feed_subscription_hooks);
@@ -183,6 +189,7 @@ class FeedApiSubscriptionsTest : public FeedApiTest {
 
  protected:
   WebFeedSubscriptionCoordinator::HooksForTesting web_feed_subscription_hooks;
+  base::test::ScopedFeatureList features_;
 };
 
 TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {

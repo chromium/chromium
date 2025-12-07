@@ -52,6 +52,9 @@
   <message name="IDS_POLICY_DM_STATUS_INVALID_PACKAGED_DEVICE_FOR_KIOSK" desc="Message to show when the user tries to enroll a device with a packaged license into Kiosk.">
     This is a bundled device and can not be enrolled with Kiosk and Signage Upgrade.
   </message>
+  <message name="IDS_POLICY_DM_STATUS_ORG_UNIT_ENROLLMENT_LIMIT_EXCEEDED" desc="Error message to show when the user tries to enroll a device but the initial enrollment limit for the organization unit has been reached.">
+    This device can't be enrolled right now because your organization unit has reached its initial enrollment limit. Contact your administrator for assistance.
+  </message>
   <message name="IDS_POLICY_DM_STATUS_SERVICE_DOMAIN_MISMATCH" desc="Message indicating this client cannot be registered with the specified domain.">
     Domain mismatch
   </message>
@@ -72,6 +75,12 @@
   </message>
   <message name="IDS_POLICY_DM_STATUS_ENTERPRISE_ACCOUNT_IS_NOT_ELIGIBLE_TO_ENROLL" desc="Message to show when the user tries to enroll a device with an ineligible enterprise account.">
     Can't enroll with enterprise account (enterprise account is not eligible).
+  </message>
+  <message name="IDS_POLICY_ACTION_BLOCKED_BY_ORGANIZATION" desc="Text to be shown to the user to inform them that an action they initiated was blocked by the organization.">
+    Blocked by your organization
+  </message>
+  <message name="IDS_POLICY_ACTION_FORCED_SAVE_TO_GDRIVE" desc="Text to be shown to the user to inform them that a local download they initiated was blocked and will proceed to GDrive">
+    Local download blocked
   </message>
   <message name="IDS_POLICY_VALIDATION_OK" desc="Message indicating successful policy validation.">
     Validation successful
@@ -193,7 +202,7 @@
   <message name="IDS_POLICY_EMPTY_ORIGIN_LIST_ERROR" desc="The text displayed in the status column for the policy AutoLaunchProtocolsFromOrigins when the origin list is empty">
     Origin list is empty.
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_POLICY_DUPLICATE_FILE_EXTENSION_ERROR" desc="The text displayed in the status column for the policy DefaultHandlersForFileExtensions when a file extension is assigned to more than one handler.">
       Duplicate handlers for file_extension "<ph name="FILE_EXTENSION">$1<ex>txt</ex></ph>" referenced by apps "<ph name="POLICY_IDS_LIST">$2<ex>https://google.com/maps, pnomlkjighijklmnopabcdefghijklff</ex></ph>".
     </message>
@@ -282,7 +291,7 @@
   <message name="IDS_POLICY_INVALID_PROXY_MODE_ERROR" desc="The text displayed in the status column when the value for ProxyMode is invalid.">
     Invalid proxy mode.
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_POLICY_UNKNOWN_ARC_MANAGED_CONFIGURATION_VARIABLE" desc="The warning text displayed in the status column when the managed configuration of an ARC application contains an unknown variable.">
       Unknown variable "<ph name="VARIABLE">$1<ex>${UNKNOWN_VARIABLE}</ex></ph>" in the managed configuration of "<ph name="APPLICATION_ID">$2<ex>com.dropbox.android</ex></ph>".
     </message>
@@ -335,7 +344,7 @@
   <message name="IDS_POLICY_USER_IS_NOT_AFFILIATED_ERROR" desc="The text displayed in the status column when a user cloud policy is ignored due to user is not affiliated to the machine management.">
     Ignored because user is not affiliated to the machine management or the machine is not managed.
   </message>
-  <if expr="chromeos_ash">
+  <if expr="is_chromeos">
     <message name="IDS_POLICY_NETWORK_CONFIG_PARSE_FAILED" desc="The text displayed in the status column when the corresponding network configuration policy failed to parse.">
       Network configuration failed to be parsed (invalid JSON).
     </message>
@@ -382,31 +391,34 @@ Additional details:
   <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_DUPLICATED_SHORTCUT" desc="The text displayed in the status column of the SiteSearchSettings policy when there is more than one entry using the same shortcut.">
     Ignored non-unique shortcut: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_CONTAINS_SPACE" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut contains a space character.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_CONTAINS_SPACE" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut contains a space character.">
     Shortcut can't contain spaces: "<ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>"
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_STARTS_WITH_AT" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut starts with the @ character.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_STARTS_WITH_AT" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut starts with the @ character.">
     Shortcut can't start with the @ character: "<ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>"
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_NO_VALID_PROVIDER" desc="The text displayed in the status column of the SiteSearchSettings policy when there is no valid entry in the policy.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_NO_VALID_PROVIDER" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when there is no valid entry in the policy.">
     The list contains no valid search provider.
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut is defined as an empty string.">
     Shortcut can't be empty
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a name is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_NAME_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings, EnterpriseSearchAggregatorSettings, or NTPShortcuts policy when a name is defined as an empty string.">
     Name can't be empty
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL is defined as an empty string.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_IS_EMPTY" desc="The text displayed in the status column of the SiteSearchSettings, EnterpriseSearchAggregatorSettings, or NTPShortcuts policy when a URL is defined as an empty string.">
     URL can't be empty
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL doesn't contain the replacement string '{searchTerms}'. Please do not translate '{searchTerms}' because it's part of the expected syntax.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_DOESNT_SUPPORT_REPLACEMENT" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL doesn't contain the replacement string '{searchTerms}'. Please do not translate '{searchTerms}' because it's part of the expected syntax.">
     URL doesn't include required replacement string <ph name="SEARCH_TERMS_REPLACEMENT">"{searchTerms}"</ph>: <ph name="SEARCH_URL">$1<ex>https://www.example.com</ex></ph>
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is the same as the keyword defined by the DefaultSearchProviderKeyword policy.">
+  <message name="IDS_SEARCH_POLICY_SETTINGS_SHORTCUT_EQUALS_DSP_KEYWORD" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a shortcut is the same as the keyword defined by the DefaultSearchProviderKeyword policy.">
     Shortcut can't be the same as the default search provider keyword defined by <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME">DefaultSearchProviderKeyword</ph>: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
   </message>
-  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_URL_NOT_HTTPS" desc="The text displayed in the status column of the SiteSearchSettings policy when a URL scheme is not HTTPS.">
+  <message name="IDS_POLICY_SITE_SEARCH_SETTINGS_SHORTCUT_EQUALS_SEARCH_AGGREGATOR_KEYWORD" desc="The text displayed in the status column of the SiteSearchSettings policy when a shortcut is the same as the keyword defined by the SearchAggregatorSettings policy.">
+    Shortcut can't be the same as the search aggregator keyword defined by <ph name="SEARCH_AGGREGATOR_SETTINGS_POLICY">SearchAggregatorSettings</ph>: <ph name="SHORTCUT_NAME">$1<ex>shortcut</ex></ph>
+  </message>
+  <message name="IDS_SEARCH_POLICY_SETTINGS_URL_NOT_HTTPS" desc="The text displayed in the status column of the SiteSearchSettings or EnterpriseSearchAggregatorSettings policy when a URL scheme is not HTTPS.">
     HTTPS scheme recommended for search URL: <ph name="SEARCH_URL">$1<ex>https://www.example.com</ex></ph>
   </message>
   <message name="IDS_POLICY_DATA_CONTROLS_MUTUALLY_EXCLUSIVE_KEYS" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains incoherent values">
@@ -423,6 +435,21 @@ Additional details:
   </message>
   <message name="IDS_POLICY_DATA_CONTROLS_UNSUPPORTED_LEVEL" desc="The text displayed in the status column of the DataControlsRules policy when one of its rules contains an unsupported restriction level">
     "<ph name="DATA_CONTROLS_RESTRICTION">$1<ex>SCREENSHOT</ex></ph>" cannot be set to "<ph name="DATA_CONTROLS_LEVEL">$2<ex>WARN</ex></ph>"
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_MAX_SHORTCUTS_LIMIT_ERROR" desc="The text displayed in the status column of the NTPShortcuts policy when the max number of shortcuts is exceeded.">
+    This policy should not have more than <ph name="MAX_ITEMS_LIMIT">$1<ex>10</ex></ph> shortcuts.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_NO_VALID_PROVIDER" desc="The text displayed in the status column of the NTPShortcuts policy when there is no valid entry in the policy.">
+    The list contains no valid shortcuts.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_DUPLICATED_URL" desc="The text displayed in the status column of the NTPShortcuts policy when there is more than one entry using the same URL.">
+    Ignored non-unique URL: <ph name="URL_NAME">$1<ex>https://www.shortcut.com</ex></ph>
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_NAME_TOO_LONG" desc="The text displayed in the status column of the NTPShortcuts policy when there is an entry with a name that is too long.">
+    The name of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH">$1<ex>1000</ex></ph> characters.
+  </message>
+  <message name="IDS_POLICY_NTP_SHORTCUTS_URL_TOO_LONG" desc="The text displayed in the status column of the NTPShortcuts policy when there is an entry with a url that is too long.">
+    The URL of the shortcut exceeds the maximum allowed length of <ph name="MAX_LENGTH">$1<ex>1000</ex></ph> characters.
   </message>
 
   <!-- chrome://policy -->
@@ -741,6 +768,9 @@ Additional details:
   <message name="IDS_POLICY_IGNORED_UNAFFILIATED" desc="Text describing that the policy value is not applied because the user is unaffiliated.">
     This policy is ignored because the user is unaffiliated. For this policy to be applied, the Chrome browser and profile must be managed through the Admin console by the same organization.
   </message>
+  <message name="IDS_POLICY_IGNORED_EXTENSION" desc="Text explaining that extension policies are likely ignored by the extension.">
+    Likely ignored by the extension.
+  </message>
   <message name="IDS_POLICY_PRECEDENCE_PLATFORM_MACHINE" desc="Text describing the platform machine precedence value.">
     Platform machine
   </message>
@@ -808,6 +838,21 @@ Additional details:
   </message>
   <message name="IDS_POLICY_TABLE_COLUMN_SORT_DESCENDING" desc="Part of the label for policy table sorting arrows denoting descending sort order.">
     in descending order
+  </message>
+  <message name="IDS_POLICY_BANNER_PROMOTION_TITLE" desc="Title for Chrome Enterprise Core (CEC) promotion banner">
+    Streamline how your organization manages policies
+  </message>
+  <message name="IDS_POLICY_BANNER_PROMOTION_DESC" desc="Description for Chrome Enterprise Core (CEC) promotion banner">
+    Chrome Enterprise Core gives you a centralized tool for configuring browser policies from the cloud
+  </message>
+  <message name="IDS_POLICY_BANNER_PROMOTION_BTN" desc="Button for Chrome Enterprise Core (CEC) promotion banner">
+    Try Chrome Enterprise Core
+  </message>
+  <message name="IDS_DEVTOOLS_BLOCKED_BY_POLICY" desc="Message shown when DevTools is blocked by policy.">
+    Your organization has blocked the use of DevTools on this page
+  </message>
+  <message name="IDS_DEVTOOLS_NOT_ALLOWED" desc="Message shown when DevTools is not allowed.">
+    DevTools not allowed on this page
   </message>
 
   <!-- Strings for chrome://policy/logs -->
@@ -1270,8 +1315,17 @@ Additional details:
   <message name="IDS_POLICY_BROWSING_DATA_DEPENDENCY_APPLIED_INFO" desc="The text displayed in the status column when a browsing data policy is applied for types for which sync will be automatically disabled.">
     This policy automatically disables syncing across devices for: <ph name="ACTION_LIST">$1<ex>passwords, autofill</ex></ph>.
   </message>
+  <message name="IDS_POLICY_BROWSING_DATA_PLATFORM_UNSUPPORTED" desc="Warning message displayed on chrome://policy page when policies controlling browser data duration include data types that are not supported on the current platform.">
+    This policy specifies data types that are not supported on your current platform: <ph name="TYPE_LIST">$1<ex>hosted_app_data, download_history</ex></ph>.
+  </message>
   <message name="IDS_POLICY_NOT_SUPPORTED_AS_USER_POLICY_ON_IOS" desc="The text displayed in the status column when a policy is not supported as a user policy on ios.">
     This policy is not yet supported as a user policy on iOS.
+  </message>
+  <message name="IDS_POLICY_GEN_AI_DEFAULT_SETTINGS_CONTROL_MESSAGE" desc="Text listing all GenAI policies whose default behavior is controlled by GenAiDefaultSettings.">
+    This policy is controlling the default behavior of the following policies: <ph name="POLICIES">$1<ex>Policy1, Policy2</ex></ph>
+  </message>
+  <message name="IDS_POLICY_GEN_AI_DEFAULT_SETTINGS_NO_CONTROL_MESSAGE" desc="Text stating that no GenAI policies have their default behavior controlled by GenAiDefaultSettings.">
+    This policy is not controlling the default behavior of any other policies.
   </message>
   <message name="IDS_POLICY_SKYVAULT_DOWNLOAD_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
     Sign in to OneDrive to continue downloading
@@ -1292,14 +1346,26 @@ Additional details:
   <message name="IDS_POLICY_SKYVAULT_MISCONFIGURED_POLICY_MESSAGE" desc="The message informing the user that SkyVault policies aren't configured propely. It can be shown as an error inside the Files App or as a system notification.">
     The file system has been disabled by your administrator
   </message>
-  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_TITLE" desc="The title of the notificaton which shows after a screenshot is taken.">
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_TITLE" desc="The title of the notification which shows while screenshot is saved to cloud storage.">
     Saving screenshot
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_RECORDING_UPLOAD_TITLE" desc="The title of the notification which shows while screen recording is saved to cloud storage.">
+    Saving screen recording
   </message>
   <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_ONEDRIVE_MESSAGE" desc="The message of the notification which shows up informing the user that screenshot is being saved to OneDrive.">
     Saving file to Microsoft OneDrive
   </message>
   <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_UPLOAD_CANCEL_BUTTON" desc="The for the cancel button on the notification that shows up informing the user that screenshot is being saved to OneDrive.">
     Cancel
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the screen capture flow.">
+    Sign in to Microsoft OneDrive to save screenshot
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">
+    Sign in
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_SCREENCAPTURE_SIGN_IN_CANCEL_BUTTON" desc="Cancel button for the notification asking the user to sign-in to Microsoft OneDrive.">
+    Dismiss
   </message>
   <message name="IDS_POLICY_SKYVAULT_CLOUD_PROVIDER_GOOGLE_DRIVE" desc="The title for the notification showing that local files are being moved to the cloud due to SkyVault policies.">
     Google Drive
@@ -1336,5 +1402,95 @@ Additional details:
   </message>
   <message name="IDS_POLICY_SKYVAULT_MIGRATION_ERROR_BUTTON" desc="The button for the notification showing that SkyVault migration completed with errors - clicking the button opens a file with the error summary.">
     Review error log
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_TITLE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
+    File upload to Microsoft OneDrive has been paused
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_MESSAGE" desc="The title for the notification asking the user to sign-in to Microsoft OneDrive to complete the download flow.">
+    Files can only be uploaded if you are signed in to Microsoft OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_SIGN_IN_BUTTON" desc="Label for the button that starts the sign-in flow to Microsoft OneDrive.">
+    Sign in to Microsoft OneDrive
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_HOURS" desc="The title for the dialog informing the user that migration will start in some 2 or more hours.">
+    Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in <ph name="HOURS">$2<ex>24</ex></ph> hours
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_HOUR" desc="The title for the dialog informing the user that migration will start in 1 hour.">
+    Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in 1 hour
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTES" desc="The title for the dialog informing the user that migration will start in 2 or more minutes.">
+    Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in <ph name="MINUTES">$2<ex>36</ex></ph> minutes
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_TITLE_MINUTE" desc="The title for the dialog informing the user that migration will start in 1 minute.">
+    Your file upload to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> will begin in 1 minute
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_MESSAGE" desc="The message for the dialog body informing the user that file upload to the cloud provider will start at a specified time.">
+    Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> at <ph name="DATE_TIME">$2<ex>8/25/24 2:44:30 PM PST</ex></ph>. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_START_ON_MESSAGE" desc="The message for the dialog body informing the user that file upload to the cloud provider will start at a specified time.">
+    Your administrator will start uploading your files to <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> on <ph name="DATE_TIME">$2<ex>8/25/24 2:44:30 PM PST</ex></ph>. Keep your device connected until your file upload is complete. During the upload, you will only be able to read local files.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_DONE_MESSAGE" desc="The message for the dialog body informing the user that local storage will be disabled once the migration of existing files to the cloud provider completes.">
+   Once the upload is complete, you can modify your files in <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph>. Local storage, including any files in Trash, will be automatically removed.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_NOW_BUTTON" desc="Label for the dialog button that starts the file upload to cloud storage.">
+    Upload now
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_IN_HOURS_BUTTON" desc="Label for the dialog button to ackowledge that the file upload to cloud storage will start at the scheduled time, in some number of hours.">
+    Upload in <ph name="HOURS">$1<ex>24</ex></ph> hr
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_DIALOG_UPLOAD_IN_MINUTES_BUTTON" desc="Label for the dialog button to ackowledge that the file upload to cloud storage will start at the scheduled time, in some number of minutes.">
+    Upload in <ph name="MINUTES">$1<ex>36</ex></ph> min
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_TITLE_HOURS" desc="The title for the dialog informing the user that their local files will be deleted in some number of hours.">
+    Your local files will be deleted in <ph name="HOURS">$1<ex>24</ex></ph> hours
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_TITLE_HOUR" desc="The title for the dialog informing the user that their local files will be deleted in 1 hour.">
+    Your local files will be deleted in 1 hour
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_TITLE_MINUTES" desc="The title for the dialog informing the user that their local files will be deleted in some number of minutes.">
+    Your local files will be deleted in <ph name="MINUTES">$1<ex>24</ex></ph> minutes
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_TITLE_MINUTE" desc="The title for the dialog informing the user that their local files will be deleted in 1 minute.">
+    Your local files will be deleted in 1 minute
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_START_MESSAGE" desc="The message for the dialog body informing the user that their local files will be deleted at a specified time.">
+    Your administrator will delete your local files, including any files in the Trash, on <ph name="DATE_TIME">$1<ex>8/25/24 2:44:30 PM PST</ex></ph>.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_STORE_MESSAGE" desc="The message for the dialog body informing the user to ensure their critical data is stored before deletion starts.">
+    Make sure any critical business or personal data is stored externally.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_DELETE_NOW_BUTTON" desc="Label for the dialog button that starts the deletion of local files.">
+    Delete files now
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_DELETE_IN_HOURS_BUTTON" desc="Label for the dialog button to ackowledge that the deletion of local files will start at the scheduled time, in some number of hours.">
+    Delete files in <ph name="HOURS">$1<ex>24</ex></ph> hr
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_DIALOG_DELETE_IN_MINUTES_BUTTON" desc="Label for the dialog button to ackowledge that the deletion of local files will start at the scheduled time, in some number of minutes.">
+    Delete files in <ph name="MINUTES">$1<ex>36</ex></ph> min
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_COMPLETED_TITLE" desc="The title for the notification informing the user that their local files were removed due to SkyVault policy.">
+    Files were successfully deleted
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_COMPLETED_MESSAGE" desc="The message for the notification informing the user that their local files were removed due to SkyVault policy.">
+    From now on, save your files to cloud storage
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_DELETION_BANNER" desc="The Files App banner displayed in local folders before local files are removed due to SkyVault policies.">
+    Local files will be deleted on <ph name="DATE_TIME">$1<ex>8/25/24 2:44:30 PM PST</ex></ph>. Make sure any critical business or personal data is stored externally.
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_NO_SPACE" desc="Error message logged along the affected file name in the SkyVault migration error log, indicating that the user needs to free up space before uploading files to OneDrive/Google Drive.">
+    Free up space in <ph name="CLOUD_PROVIDER">$1<ex>Microsoft OneDrive</ex></ph> before trying again
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_FILE_NOT_EXIST" desc="Error message logged along the affected file name in the SkyVault migration error log, indicating that the file wasn't moved because it no longer exists.">
+    This file wasn’t moved because it no longer exists
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_ODFS_SIGN_IN" desc="Error message logged along the affected file name in the SkyVault migration error log, indicating that the file wasn't moved because the user needs to authenticate with OneDrive.">
+    Sign in to your Microsoft account before trying again
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_NO_INTERNET" desc="Error message logged along the affected file name in the SkyVault migration error log, indicating that the file wasn't moved because of lost internet connection.">
+    Make sure you have stable internet connection before trying again
+  </message>
+  <message name="IDS_POLICY_SKYVAULT_MIGRATION_UPLOAD_ERROR_GENERIC" desc="A generic error message logged along the affected file name in the SkyVault migration error log.">
+   Something went wrong. Try again later.
   </message>
 </grit-part>

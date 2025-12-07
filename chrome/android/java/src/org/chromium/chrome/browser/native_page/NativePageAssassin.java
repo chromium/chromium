@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.lang.ref.WeakReference;
@@ -19,6 +21,7 @@ import java.util.ArrayList;
  *
  * Thread safety: this should only be accessed on the UI thread.
  */
+@NullMarked
 public class NativePageAssassin {
 
     private static final NativePageAssassin sInstance = new NativePageAssassin();
@@ -32,8 +35,7 @@ public class NativePageAssassin {
      * The most recently hidden tabs, limited to MAX_RECENT_TABS elements, ordered from oldest to
      * newest. Visible tabs are not included in this list.
      */
-    private ArrayList<WeakReference<Tab>> mRecentTabs =
-            new ArrayList<WeakReference<Tab>>(MAX_RECENT_TABS + 1);
+    private final ArrayList<WeakReference<Tab>> mRecentTabs = new ArrayList<>(MAX_RECENT_TABS + 1);
 
     private NativePageAssassin() {}
 
@@ -65,7 +67,7 @@ public class NativePageAssassin {
      * @param tab The tab being hidden.
      */
     public void tabHidden(Tab tab) {
-        mRecentTabs.add(new WeakReference<Tab>(tab));
+        mRecentTabs.add(new WeakReference<>(tab));
 
         // If a tab has just passed the threshold from "recent" to "not recent" and it's displaying
         // a native page, freeze the native page.
@@ -81,7 +83,7 @@ public class NativePageAssassin {
         mRecentTabs.clear();
     }
 
-    private void freeze(Tab tab) {
+    private void freeze(@Nullable Tab tab) {
         if (tab != null) tab.freezeNativePage();
     }
 }

@@ -7,31 +7,39 @@ package org.chromium.components.signin.base;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
+import com.google.errorprone.annotations.DoNotMock;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 
-import org.chromium.components.signin.AccountEmailDomainDisplayability;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.signin.AccountEmailDisplayHook;
+import org.chromium.components.signin.SigninConstants;
 import org.chromium.components.signin.Tribool;
+import org.chromium.google_apis.gaia.CoreAccountId;
+import org.chromium.google_apis.gaia.GaiaId;
 
 import java.util.HashMap;
 
 /**
  * Stores all the information known about an account.
  *
- * This class has a native counterpart called AccountInfo.
+ * <p>This class has a native counterpart called AccountInfo.
  */
+@NullMarked
+@DoNotMock("Use TestAccounts or create a real instance.")
 public class AccountInfo extends CoreAccountInfo {
     /** Used to instantiate `AccountInfo`. */
     public static class Builder {
-        private CoreAccountInfo mCoreAccountInfo;
+        private final CoreAccountInfo mCoreAccountInfo;
         private String mFullName = "";
         private String mGivenName = "";
+        private @Nullable String mHostedDomain;
         private @Nullable Bitmap mAccountImage;
         private AccountCapabilities mAccountCapabilities = new AccountCapabilities(new HashMap<>());
 
-        public Builder(String email, String gaiaId) {
+        public Builder(String email, GaiaId gaiaId) {
             mCoreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(email, gaiaId);
         }
 
@@ -44,6 +52,7 @@ public class AccountInfo extends CoreAccountInfo {
             this(accountInfo.getEmail(), accountInfo.getGaiaId());
             mFullName = accountInfo.getFullName();
             mGivenName = accountInfo.getGivenName();
+            mHostedDomain = accountInfo.mHostedDomain;
             mAccountImage = accountInfo.getAccountImage();
             mAccountCapabilities = accountInfo.getAccountCapabilities();
         }
@@ -55,6 +64,11 @@ public class AccountInfo extends CoreAccountInfo {
 
         public Builder givenName(String givenName) {
             mGivenName = givenName;
+            return this;
+        }
+
+        public Builder hostedDomain(String hostedDomain) {
+            mHostedDomain = hostedDomain;
             return this;
         }
 
@@ -75,6 +89,7 @@ public class AccountInfo extends CoreAccountInfo {
                     mCoreAccountInfo.getGaiaId(),
                     mFullName,
                     mGivenName,
+                    mHostedDomain,
                     mAccountImage,
                     mAccountCapabilities);
         }
@@ -82,75 +97,106 @@ public class AccountInfo extends CoreAccountInfo {
 
     private final String mFullName;
     private final String mGivenName;
-    private final @Nullable Bitmap mAccountImage;
-    private AccountCapabilities mAccountCapabilities;
 
-    @VisibleForTesting
+    /**
+     * `null` if the hosted domain isn't know yet. Contains {@link
+     * SigninConstants.NO_HOSTED_DOMAIN_FOUND} if the account is not managed.
+     */
+    private final @Nullable String mHostedDomain;
+
+    private final @Nullable Bitmap mAccountImage;
+    private final AccountCapabilities mAccountCapabilities;
+
+    /** Used from JNI to marshal `AccountInfo` from C++ to Java. */
     @CalledByNative
-    public AccountInfo(
-            CoreAccountId id,
-            String email,
-            String gaiaId,
-            String fullName,
-            String givenName,
+    private AccountInfo(
+            @JniType("CoreAccountId") CoreAccountId id,
+            @JniType("std::string") String email,
+            @JniType("GaiaId") GaiaId gaiaId,
+            @JniType("std::string") String fullName,
+            @JniType("std::string") String givenName,
+            @Nullable String hostedDomain,
             @Nullable Bitmap accountImage,
             AccountCapabilities accountCapabilities) {
         super(id, email, gaiaId);
         mFullName = fullName;
         mGivenName = givenName;
+
+        mHostedDomain = hostedDomain;
+        assert mHostedDomain == null || !mHostedDomain.isEmpty()
+                : "Empty string is not permitted for hostedDomain";
+
         mAccountImage = accountImage;
         mAccountCapabilities = accountCapabilities;
     }
 
     /**
-     * @return Whether the account email can be used in display fields.
-     * If `AccountCapabilities.canHaveEmailAddressDisplayed()` is not available
-     * (Tribool.UNKNOWN), uses fallback.
+     * Returns whether the account email can be used in display fields. If
+     * `AccountCapabilities.canHaveEmailAddressDisplayed()` is not available (Tribool.UNKNOWN), uses
+     * fallback.
      */
     public boolean canHaveEmailAddressDisplayed() {
-        switch (mAccountCapabilities.canHaveEmailAddressDisplayed()) {
-            case Tribool.FALSE:
-                {
-                    return false;
-                }
-            case Tribool.TRUE:
-                {
-                    return true;
-                }
-        }
-        return AccountEmailDomainDisplayability.checkIfDisplayableEmailAddress(getEmail());
+        return switch (mAccountCapabilities.canHaveEmailAddressDisplayed()) {
+            case Tribool.FALSE -> false;
+            case Tribool.TRUE -> true;
+            default -> AccountEmailDisplayHook.canHaveEmailAddressDisplayed(getEmail());
+        };
     }
 
-    /** @return Full name of the account. */
-    public String getFullName() {
+    /** Returns the full name of the account. */
+    @CalledByNative
+    public @JniType("std::string") String getFullName() {
         return mFullName;
     }
 
-    /** @return Given name of the account. */
-    public String getGivenName() {
+    /** Returns the given name of the account. */
+    @CalledByNative
+    public @JniType("std::string") String getGivenName() {
         return mGivenName;
     }
 
+    /** Whether the account is managed. */
+    public @Tribool int isManaged() {
+        if (mHostedDomain == null) {
+            return Tribool.UNKNOWN;
+        }
+        return mHostedDomain.equals(SigninConstants.NO_HOSTED_DOMAIN_FOUND)
+                ? Tribool.FALSE
+                : Tribool.TRUE;
+    }
+
     /**
-     * Gets the account's image.
-     * It can be the image user uploaded, monogram or null.
+     * Management domain for the account. Can only be called if `isManaged` returns `Tribool.TRUE`.
      */
+    public @Nullable String getManagementDomain() {
+        if (isManaged() != Tribool.TRUE) {
+            throw new IllegalStateException("The account isn't managed (or the status is unknown)");
+        }
+        return mHostedDomain;
+    }
+
+    /** Gets the account's image. It can be the image user uploaded, monogram or null. */
     public @Nullable Bitmap getAccountImage() {
         return mAccountImage;
     }
 
-    /** @return the capability values associated with the account. */
+    /** Returns the capability values associated with the account. */
     public AccountCapabilities getAccountCapabilities() {
         return mAccountCapabilities;
     }
 
     /**
-     * @return Whether the {@link AccountInfo} has any valid displayable information.
-     * The displayable information are full name, given name and avatar.
+     * Returns whether the {@link AccountInfo} has any valid displayable information. The
+     * displayable information are full name, given name and avatar.
      */
     public boolean hasDisplayableInfo() {
         return !TextUtils.isEmpty(mFullName)
                 || !TextUtils.isEmpty(mGivenName)
                 || mAccountImage != null;
+    }
+
+    @CalledByNative
+    private @Nullable String getRawHostedDomain() {
+        return mHostedDomain;
     }
 }

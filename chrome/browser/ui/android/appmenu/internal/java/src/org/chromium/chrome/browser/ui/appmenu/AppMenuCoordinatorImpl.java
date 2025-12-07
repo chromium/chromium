@@ -9,58 +9,46 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.ViewConfiguration;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.SubmenuHeaderFactory;
+
+import java.util.function.Supplier;
 
 /** A UI coordinator the app menu. */
+@NullMarked
 class AppMenuCoordinatorImpl implements AppMenuCoordinator {
-    private static Boolean sHasPermanentMenuKeyForTesting;
-
-    /** Factory which creates the AppMenuHandlerImpl. */
-    @VisibleForTesting
-    interface AppMenuHandlerFactory {
-        /**
-         * @param delegate Delegate used to check the desired AppMenu properties on show.
-         * @param appMenuDelegate The AppMenuDelegate to handle menu item selection.
-         * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the
-         *         containing activity.
-         * @param menuResourceId Resource Id that should be used as the source for the menu items.
-         *            It is assumed to have back_menu_id, forward_menu_id, bookmark_this_page_id.
-         * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the
-         *         containing activity.
-         * @return AppMenuHandlerImpl for the given activity and menu resource id.
-         */
-        AppMenuHandlerImpl get(
-                AppMenuPropertiesDelegate delegate,
-                AppMenuDelegate appMenuDelegate,
-                int menuResourceId,
-                View decorView,
-                ActivityLifecycleDispatcher activityLifecycleDispatcher);
-    }
+    private static @Nullable Boolean sHasPermanentMenuKeyForTesting;
 
     private final Context mContext;
     private final MenuButtonDelegate mButtonDelegate;
     private final AppMenuDelegate mAppMenuDelegate;
 
-    private AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
-    private AppMenuHandlerImpl mAppMenuHandler;
+    private final AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
+    private final AppMenuHandlerImpl mAppMenuHandler;
 
     /**
      * Construct a new AppMenuCoordinatorImpl.
+     *
      * @param context The activity context.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the containing
-     *         activity.
+     *     activity.
      * @param buttonDelegate The {@link MenuButtonDelegate} for the containing activity.
      * @param appMenuDelegate The {@link AppMenuDelegate} for the containing activity.
      * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the containing
-     *         activity.
+     *     activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
-     *            displayed using a hardware button.
+     *     displayed using a hardware button.
      * @param appRect Supplier of the app area in Window that the menu should fit in.
+     * @param windowAndroid The window that will be used to fetch KeyboardVisibilityDelegate
+     * @param browserControlsStateProvider a provider that can provide the state of the toolbar
+     * @param submenuHeaderFactory The {@link SubmenuHeaderFactory} to use for the {@link
+     *     HierarchicalMenuController}.
      */
     public AppMenuCoordinatorImpl(
             Context context,
@@ -69,7 +57,10 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
             AppMenuDelegate appMenuDelegate,
             View decorView,
             View hardwareButtonAnchorView,
-            Supplier<Rect> appRect) {
+            Supplier<Rect> appRect,
+            WindowAndroid windowAndroid,
+            BrowserControlsStateProvider browserControlsStateProvider,
+            SubmenuHeaderFactory submenuHeaderFactory) {
         mContext = context;
         mButtonDelegate = buttonDelegate;
         mAppMenuDelegate = appMenuDelegate;
@@ -83,7 +74,10 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                         decorView,
                         activityLifecycleDispatcher,
                         hardwareButtonAnchorView,
-                        appRect);
+                        appRect,
+                        windowAndroid,
+                        browserControlsStateProvider,
+                        submenuHeaderFactory);
     }
 
     @Override
@@ -134,14 +128,16 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
 
     /**
      * @param hasPermanentMenuKey Overrides {@link ViewConfiguration#hasPermanentMenuKey()} for
-     *         testing. Pass null to reset.
+     *     testing. Pass null to reset.
      */
     static void setHasPermanentMenuKeyForTesting(Boolean hasPermanentMenuKey) {
         sHasPermanentMenuKeyForTesting = hasPermanentMenuKey;
         ResettersForTesting.register(() -> sHasPermanentMenuKeyForTesting = null);
     }
 
-    /** @param reporter A means of reporting an exception without crashing. */
+    /**
+     * @param reporter A means of reporting an exception without crashing.
+     */
     static void setExceptionReporter(Callback<Throwable> reporter) {
         AppMenuHandlerImpl.setExceptionReporter(reporter);
     }

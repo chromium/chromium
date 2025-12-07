@@ -37,11 +37,11 @@ export class AppContentItemElement extends CrLitElement {
     };
   }
 
-  app: App = createDummyApp();
+  accessor app: App = createDummyApp();
   appContentLabel: string = '';
   appContentSublabel: string = '';
-  showAppContentDialog: boolean = false;
-  override hidden: boolean = false;
+  accessor showAppContentDialog: boolean = false;
+  override accessor hidden: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -54,7 +54,7 @@ export class AppContentItemElement extends CrLitElement {
   override firstUpdated() {
     // Disable hover styles from cr-actionable-row-style because they do not
     // match the style of App Settings.
-    this.shadowRoot!.querySelector('cr-link-row')!.toggleAttribute(
+    this.shadowRoot.querySelector('cr-link-row')!.toggleAttribute(
         'effectively-disabled_', true);
   }
 

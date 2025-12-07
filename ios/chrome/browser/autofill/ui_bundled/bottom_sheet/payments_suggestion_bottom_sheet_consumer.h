@@ -21,6 +21,9 @@
 // Request to dismiss the bottom sheet.
 - (void)dismiss;
 
+// Activate the primary button so its actions are now effective.
+- (void)activatePrimaryButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_CONSUMER_H_

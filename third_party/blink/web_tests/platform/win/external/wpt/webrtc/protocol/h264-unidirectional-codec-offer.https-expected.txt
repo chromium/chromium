@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[PRECONDITION_FAILED] Offering a recvonly codec on a sendrecv transceiver
+  No recvonly profile-level-id=....1f that matches a higher level sendonly codec
+[PRECONDITION_FAILED] Offer to send a sendonly H264 codec on a sendonly transceiver
+  There are no sendonly H264 codecs available in getCapabilities.
+Harness: the test ran to completion.
+

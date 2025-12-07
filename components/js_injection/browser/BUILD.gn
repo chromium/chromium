@@ -20,8 +20,8 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/back_forward_cache",
-    "//components/js_injection/common",
     "//components/js_injection/common:common_mojom",
+    "//components/origin_matcher",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//third_party/blink/public/common",

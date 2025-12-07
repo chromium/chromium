@@ -44,6 +44,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
       base::WeakPtr<PaymentRequestSpec> spec,
       std::unique_ptr<content::StoredPaymentApp> stored_payment_app_info,
       bool is_incognito,
+      bool prefs_can_make_payment,
       const base::RepeatingClosure& show_processing_spinner);
 
   // This constructor is used for a payment app that has not been installed in
@@ -57,6 +58,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
       std::unique_ptr<WebAppInstallationInfo> installable_payment_app_info,
       const std::string& enabled_method,
       bool is_incognito,
+      bool prefs_can_make_payment,
       const base::RepeatingClosure& show_processing_spinner);
 
   ServiceWorkerPaymentApp(const ServiceWorkerPaymentApp&) = delete;
@@ -65,11 +67,8 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   ~ServiceWorkerPaymentApp() override;
 
   // The callback for ValidateCanMakePayment.
-  // The callback takes two parameters: a weak pointer to the corresponding
-  // ServiceWorkerPaymentApp and a boolean representing the result.
-  // When invoked, it returns void.
   using ValidateCanMakePaymentCallback =
-      base::OnceCallback<void(base::WeakPtr<ServiceWorkerPaymentApp>, bool)>;
+      base::OnceCallback<void(base::WeakPtr<ServiceWorkerPaymentApp>)>;
 
   // Validates whether this payment app can be used for this payment request. It
   // fires CanMakePaymentEvent to the payment app to do validation. The result
@@ -85,7 +84,6 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   bool CanPreselect() const override;
   std::u16string GetMissingInfoLabel() const override;
   bool HasEnrolledInstrument() const override;
-  void RecordUse() override;
   bool NeedsInstallation() const override;
   std::string GetId() const override;
   std::u16string GetLabel() const override;
@@ -122,6 +120,11 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   void CallValidateCanMakePaymentCallback(
       ValidateCanMakePaymentCallback callback);
 
+  bool GetCanMakePaymentEventSkippedForTesting() const {
+    DCHECK(can_make_payment_result_);
+    return can_make_payment_event_skipped_;
+  }
+
   // Called from two places:
   // 1) From PaymentAppProvider after a just-in-time installable payment handler
   //    has been installed.
@@ -139,6 +142,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   base::WeakPtr<Delegate> delegate_;
 
   bool is_incognito_;
+  bool prefs_can_make_payment_;
 
   // Disables user interaction by showing a spinner. Used when the app is
   // invoked.
@@ -153,6 +157,7 @@ class ServiceWorkerPaymentApp : public PaymentApp {
   // PaymentAppProvider::CanMakePayment result of this payment app.
   bool can_make_payment_result_;
   bool has_enrolled_instrument_result_;
+  bool can_make_payment_event_skipped_;
 
   // Below variables are used for installable ServiceWorkerPaymentApp
   // specifically.

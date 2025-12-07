@@ -9,12 +9,15 @@
 
 #include <string>
 
-#include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/strings/strcat.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
+
+namespace base {
+class FileEnumerator;
+}
 
 namespace reporting {
 

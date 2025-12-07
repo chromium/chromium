@@ -12,6 +12,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_handler.h"
+#include "ui/base/accelerators/command.h"
 
 namespace extensions {
 
@@ -26,12 +27,12 @@ struct CommandsInfo : public Extension::ManifestData {
   std::unique_ptr<Command> browser_action_command;
   std::unique_ptr<Command> page_action_command;
   std::unique_ptr<Command> action_command;
-  CommandMap named_commands;
+  ui::CommandMap named_commands;
 
   static const Command* GetBrowserActionCommand(const Extension* extension);
   static const Command* GetPageActionCommand(const Extension* extension);
   static const Command* GetActionCommand(const Extension* extension);
-  static const CommandMap* GetNamedCommands(const Extension* extension);
+  static const ui::CommandMap* GetNamedCommands(const Extension* extension);
 };
 
 // Parses the "commands" manifest key.

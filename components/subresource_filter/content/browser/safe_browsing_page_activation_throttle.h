@@ -11,9 +11,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -66,9 +65,8 @@ class SafeBrowsingPageActivationThrottle final
   // throttle will not be able to adjust activation decisions made by the
   // throttle.
   SafeBrowsingPageActivationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       Delegate* delegate,
-      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
           database_manager);
 
@@ -128,11 +126,7 @@ class SafeBrowsingPageActivationThrottle final
 
   std::vector<SubresourceFilterSafeBrowsingClient::CheckResult> check_results_;
 
-  scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
-
-  std::unique_ptr<SubresourceFilterSafeBrowsingClient,
-                  base::OnTaskRunnerDeleter>
-      database_client_;
+  std::unique_ptr<SubresourceFilterSafeBrowsingClient> database_client_;
 
   // May be null. If non-null, must outlive this class.
   raw_ptr<Delegate> delegate_;

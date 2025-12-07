@@ -6,11 +6,12 @@
 #define MEDIA_BASE_VIDEO_TYPES_H_
 
 #include <stdint.h>
+
 #include <iosfwd>
 #include <string>
 
 #include "build/build_config.h"
-#include "media/base/media_shmem_export.h"
+#include "media/base/media_export.h"
 
 namespace media {
 
@@ -21,6 +22,9 @@ namespace media {
 // When a VideoFrame is backed by native textures, VideoPixelFormat describes
 // how those textures should be sampled and combined to produce the final
 // pixels.
+//
+// WARNING: Do not add pixel formats with more than 8 bytes per pixel or the
+// total size of the frame can overflow on 32-bit platforms.
 enum VideoPixelFormat {
   PIXEL_FORMAT_UNKNOWN = 0,  // Unknown or unspecified format value.
   PIXEL_FORMAT_I420 =
@@ -48,15 +52,15 @@ enum VideoPixelFormat {
   // The P* in the formats below designates the number of bits per pixel
   // component. I.e. P9 is 9-bits per pixel component, P10 is 10-bits per pixel
   // component, etc.
-  PIXEL_FORMAT_YUV420P9 = 16,
-  PIXEL_FORMAT_YUV420P10 = 17,
-  PIXEL_FORMAT_YUV422P9 = 18,
-  PIXEL_FORMAT_YUV422P10 = 19,
-  PIXEL_FORMAT_YUV444P9 = 20,
-  PIXEL_FORMAT_YUV444P10 = 21,
-  PIXEL_FORMAT_YUV420P12 = 22,
-  PIXEL_FORMAT_YUV422P12 = 23,
-  PIXEL_FORMAT_YUV444P12 = 24,
+  /* PIXEL_FORMAT_YUV420P9 = 16,  Deprecated // 13.5bpp YUV planar. */
+  PIXEL_FORMAT_YUV420P10 = 17,  // 15bpp YUV planar, also known as I010
+  /* PIXEL_FORMAT_YUV422P9 = 18,  Deprecated // 18bpp YUV planar. */
+  PIXEL_FORMAT_YUV422P10 = 19,  // 20bpp YUV planar.
+  /* PIXEL_FORMAT_YUV444P9 = 20,  Deprecated // 27bpp YUV planar. */
+  PIXEL_FORMAT_YUV444P10 = 21,  // 30bpp YUV planar.
+  PIXEL_FORMAT_YUV420P12 = 22,  // 18bpp YUV planar.
+  PIXEL_FORMAT_YUV422P12 = 23,  // 24bpp YUV planar.
+  PIXEL_FORMAT_YUV444P12 = 24,  // 36bpp YUV planar.
 
   /* PIXEL_FORMAT_Y8 = 25, Deprecated */
   PIXEL_FORMAT_Y16 = 26,  // single 16bpp plane.
@@ -122,39 +126,38 @@ enum class VideoChromaSampling : uint8_t {
 };
 
 // Return the name of chroma sampling format as a string.
-MEDIA_SHMEM_EXPORT std::string VideoChromaSamplingToString(
+MEDIA_EXPORT std::string VideoChromaSamplingToString(
     VideoChromaSampling chroma_sampling);
 
 // Returns the name of a Format as a string.
-MEDIA_SHMEM_EXPORT std::string VideoPixelFormatToString(
-    VideoPixelFormat format);
+MEDIA_EXPORT std::string VideoPixelFormatToString(VideoPixelFormat format);
 
 // Stream operator of Format for logging etc.
-MEDIA_SHMEM_EXPORT std::ostream& operator<<(std::ostream& os,
-                                            VideoPixelFormat format);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
+                                      VideoPixelFormat format);
 
 // Returns human readable fourcc string.
 // If any of the four characters is non-printable, it outputs
 // "0x<32-bit integer in hex>", e.g. FourccToString(0x66616b00) returns
 // "0x66616b00".
-MEDIA_SHMEM_EXPORT std::string FourccToString(uint32_t fourcc);
+MEDIA_EXPORT std::string FourccToString(uint32_t fourcc);
 
 // Returns the VideoChromaSampling corresponding to the VideoPixelFormat passed
 // in.
-MEDIA_SHMEM_EXPORT VideoChromaSampling
+MEDIA_EXPORT VideoChromaSampling
 VideoPixelFormatToChromaSampling(VideoPixelFormat format);
 
 // Returns true if |format| is a YUV format with multiple planes.
-MEDIA_SHMEM_EXPORT bool IsYuvPlanar(VideoPixelFormat format);
+MEDIA_EXPORT bool IsYuvPlanar(VideoPixelFormat format);
 
 // Returns true if |format| is an RGB format.
-MEDIA_SHMEM_EXPORT bool IsRGB(VideoPixelFormat format);
+MEDIA_EXPORT bool IsRGB(VideoPixelFormat format);
 
 // Returns true if |format| has no Alpha channel (hence is always opaque).
-MEDIA_SHMEM_EXPORT bool IsOpaque(VideoPixelFormat format);
+MEDIA_EXPORT bool IsOpaque(VideoPixelFormat format);
 
 // Returns the number of significant bits per channel.
-MEDIA_SHMEM_EXPORT size_t BitDepth(VideoPixelFormat format);
+MEDIA_EXPORT size_t BitDepth(VideoPixelFormat format);
 
 }  // namespace media
 

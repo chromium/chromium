@@ -16,11 +16,14 @@
 #include "media/base/media_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/dom/quota_exceeded_error.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace base {
@@ -33,7 +36,7 @@ namespace internal {
 
 void SendPlayerNameInformationInternal(media::MediaLog* media_log,
                                        const ExecutionContext& context,
-                                       std::string loadedAs);
+                                       std::string_view name);
 
 }  // namespace internal
 
@@ -88,9 +91,9 @@ class MODULES_EXPORT CodecLogger final {
   }
 
   void SendPlayerNameInformation(const ExecutionContext& context,
-                                 std::string loadedAs) {
+                                 std::string_view name) {
     internal::SendPlayerNameInformationInternal(media_log_.get(), context,
-                                                loadedAs);
+                                                name);
   }
 
   // Creates an OperationError DOMException with the given |error_msg|, and logs
@@ -140,6 +143,12 @@ class MODULES_EXPORT CodecLogger final {
     return MakeEncodingError(error_msg, StatusImpl(code, error_msg, location));
   }
 
+  DOMException* MakeQuotaError(std::string error_msg, StatusImpl status) {
+    return MakeAndLogException(DOMExceptionCode::kQuotaExceededError,
+                               std::move(error_msg), std::move(status),
+                               /*can_log_status_message=*/false);
+  }
+
   // Similar to MakeEncodingError(), but since the error comes from a bundled
   // software codec the error message can include the status message.
   DOMException* MakeSoftwareCodecEncodingError(std::string error_msg,
@@ -176,21 +185,27 @@ class MODULES_EXPORT CodecLogger final {
       status_code_ = status.code();
     }
 
-    if (status.message().empty()) {
-      return MakeGarbageCollected<DOMException>(code, error_msg.c_str());
+    String sanitized_message(std::move(error_msg));
+    String unsanitized_message;
+    if (!status.message().empty()) {
+      // If the message comes from a bundled codec we can log it to JS.
+      auto msg =
+          StrCat({sanitized_message, " (", String(status.message()), ")"});
+      if (can_log_status_message) {
+        sanitized_message = msg;
+      } else {
+        // If not we can only set it as the unsanitized message which the
+        // console will show in some circumstances.
+        unsanitized_message = msg;
+      }
     }
 
-    // If the message comes from a bundled codec we can log it to JS.
-    auto detailed_message =
-        String::Format("%s (%s)", error_msg.c_str(), status.message().c_str());
-    if (can_log_status_message) {
-      return MakeGarbageCollected<DOMException>(code, detailed_message);
+    if (code == DOMExceptionCode::kQuotaExceededError &&
+        RuntimeEnabledFeatures::QuotaExceededErrorUpdateEnabled()) {
+      return MakeGarbageCollected<QuotaExceededError>(sanitized_message);
     }
-
-    // If not we can only set it as the unsanitized message which the console
-    // will show in some circumstances.
-    return MakeGarbageCollected<DOMException>(code, error_msg.c_str(),
-                                              detailed_message);
+    return MakeGarbageCollected<DOMException>(code, sanitized_message,
+                                              unsanitized_message);
   }
 
   std::optional<typename StatusImpl::Codes> status_code_;

@@ -21,7 +21,7 @@ source_set("unit_tests") {
     ":model",
     "//base",
     "//components/strings",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/web/public/test",
     "//testing/gtest",
   ]

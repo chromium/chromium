@@ -28,6 +28,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/interaction/interaction_test_util_views.h"
 #include "ui/views/view_utils.h"
+#include "ui/views/views_switches.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
@@ -50,7 +51,7 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
 
   ~PermissionRHSIndicatorsInteractiveUITest() override = default;
   PermissionRHSIndicatorsInteractiveUITest(
-    const PermissionRHSIndicatorsInteractiveUITest&) = delete;
+      const PermissionRHSIndicatorsInteractiveUITest&) = delete;
   void operator=(const PermissionRHSIndicatorsInteractiveUITest&) = delete;
 
   void SetUp() override {
@@ -68,16 +69,19 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
     https_server()->StartAcceptingConnections();
   }
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTestMixin::SetUpCommandLine(command_line);
+    // Disables the disregarding of potentially unintended input events.
+    command_line->AppendSwitch(
+        views::switches::kDisableInputEventActivationProtectionForTesting);
+  }
+
   void TearDownOnMainThread() override {
     EXPECT_TRUE(https_server()->ShutdownAndWaitUntilComplete());
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 
   net::EmbeddedTestServer* https_server() { return https_server_.get(); }
-
-  ui::ElementContext context() const {
-    return browser()->window()->GetElementContext();
-  }
 
   // Navigates a tab to `GetURL()` and opens PageInfo.
   auto NavigateAndOpenPageInfo() {
@@ -107,8 +111,8 @@ class PermissionRHSIndicatorsInteractiveUITest : public InteractiveBrowserTest {
 // Tests that by default PageInfo has no visible permission.
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        PageInfoWithEmptyPermissionsTest) {
-  RunTestSequenceInContext(
-      context(), NavigateAndOpenPageInfo(),
+  RunTestSequence(
+      NavigateAndOpenPageInfo(),
       // There are no permissions in PageInfo as all of them have default state.
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
@@ -120,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
   // Set Camera permission to Allow so it becomes visible in PageInfo.
   SetPermission(ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_ALLOW);
 
-  RunTestSequenceInContext(
-      context(), NavigateAndOpenPageInfo(),
+  RunTestSequence(
+      NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),
@@ -143,8 +147,8 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
   SetPermission(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD,
                 CONTENT_SETTING_ALLOW);
 
-  RunTestSequenceInContext(
-      context(), NavigateAndOpenPageInfo(),
+  RunTestSequence(
+      NavigateAndOpenPageInfo(),
       CheckViewProperty(PageInfoMainView::kMainLayoutElementId,
                         &PageInfoMainView::GetVisiblePermissionsCountForTesting,
                         1),
@@ -165,16 +169,14 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 // prompt, and verifies that a new entry for Notifications appeared in PageInfo.
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        NotificationsPermissionRequestTest) {
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestNotification"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
@@ -191,16 +193,14 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        CameraPermissionRequestTest) {
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
@@ -217,16 +217,14 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        CameraActivityIndicatorTest) {
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestCamera"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
@@ -239,16 +237,14 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        MicrophoneActivityIndicatorTest) {
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestMicrophone"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),
@@ -261,16 +257,14 @@ IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
 
 IN_PROC_BROWSER_TEST_F(PermissionRHSIndicatorsInteractiveUITest,
                        CameraAndMicrophoneActivityIndicatorTest) {
-  RunTestSequenceInContext(
-      context(), InstrumentTab(kWebContentsElementId),
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
       NavigateWebContents(kWebContentsElementId, GetURL()),
       // Request permission.
       ExecuteJs(kWebContentsElementId, "requestCameraAndMicrophone"),
       WaitForShow(PermissionPromptBubbleBaseView::kMainViewId),
       WaitForShow(PermissionPromptBubbleBaseView::kAllowButtonElementId),
-      // We need to call `FlushEvents` here before `PressButton` because a
-      // `view_` variable in PermissionRequestManager is not yet initialized.
-      FlushEvents(),
+
       // Permission prompt bubble is shown, click on the Allow button.
       PressButton(PermissionPromptBubbleBaseView::kAllowButtonElementId),
       WaitForHide(PermissionPromptBubbleBaseView::kMainViewId),

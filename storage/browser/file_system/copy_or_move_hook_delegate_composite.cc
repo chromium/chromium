@@ -10,7 +10,6 @@
 #include "base/barrier_callback.h"
 #include "base/files/file.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "storage/browser/file_system/copy_or_move_hook_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 

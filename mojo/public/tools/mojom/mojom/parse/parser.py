@@ -174,6 +174,8 @@ class Parser:
 
   def p_attribute_2(self, p):
     """attribute : name EQUALS evaled_literal
+                 | name EQUALS nonempty_pipe_delimited_names
+                 | name EQUALS nonempty_amps_delimited_names
                  | name EQUALS name"""
     p[0] = ast.Attribute(p[1], p[3])
     self._set_lexstate(p, 1, 3)
@@ -194,6 +196,24 @@ class Parser:
       p[0] = False
     else:
       p[0] = eval(p[1].value)
+
+  def p_nonempty_pipe_delimited_names_1(self, p):
+    """nonempty_pipe_delimited_names : name"""
+    p[0] = ast.AttributeValueOrList(p[1])
+
+  def p_nonempty_pipe_delimited_names_2(self, p):
+    """nonempty_pipe_delimited_names : nonempty_pipe_delimited_names PIPE name"""
+    p[0] = p[1]
+    p[0].Append(p[3])
+
+  def p_nonempty_amps_delimited_names_1(self, p):
+    """nonempty_amps_delimited_names : name"""
+    p[0] = ast.AttributeValueAndList(p[1])
+
+  def p_nonempty_amps_delimited_names_2(self, p):
+    """nonempty_amps_delimited_names : nonempty_amps_delimited_names AMPERSAND name"""
+    p[0] = p[1]
+    p[0].Append(p[3])
 
   def p_struct_1(self, p):
     """struct : attribute_section STRUCT name LBRACE struct_body RBRACE SEMI"""
@@ -283,7 +303,44 @@ class Parser:
     p[0] = None
 
   def p_response_2(self, p):
-    """response : RESPONSE LPAREN parameter_list RPAREN"""
+    """response : response_push_state RESPONSE response_type"""
+    p[0] = p[3]
+
+  # Embedded action to disambiguate 'result' keyword from an name. A push
+  # embedded action should be followed by a pop action before the response
+  # type is reduced. Otherwise, 'result' will not be allowed as an identifier
+  # name.
+  def p_response_push_state(self, p):
+    """response_push_state :"""
+    p.lexer.push_state('responsetype')
+    p[0] = None
+
+  def p_response_pop_state(self, p):
+    """response_pop_state :"""
+    p.lexer.pop_state()
+    p[0] = None
+
+  def p_response_type_1(self, p):
+    """response_type : RESULT response_pop_state LANGLE typename COMMA typename RANGLE"""
+
+    success_type = p[4]
+    if success_type.nullable:
+      raise ParseError(self.filename,
+                       "success type cannot be nullable",
+                       lineno=p[4].start.line,
+                       snippet=self._GetSnippet(p.lineno(4)))
+
+    error_type = p[6]
+    if error_type.nullable:
+      raise ParseError(self.filename,
+                       "error type cannot be nullable",
+                       lineno=p[6].start.line,
+                       snippet=self._GetSnippet(p.lineno(6)))
+
+    p[0] = ast.ResultResponse(success_type, error_type)
+
+  def p_response_type_2(self, p):
+    """response_type : LPAREN response_pop_state parameter_list RPAREN"""
     p[0] = p[3]
 
   def p_method(self, p):

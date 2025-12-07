@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.payments.handler;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  * PaymentHandler view binder, which is stateless. It is called to bind a given model to a given
  * view. Should contain as little business logic as possible.
  */
+@NullMarked
 /* package */ class PaymentHandlerViewBinder {
     /* package */ static void bind(
             PropertyModel model, PaymentHandlerView view, PropertyKey propertyKey) {

@@ -6,15 +6,16 @@
 #define GPU_IPC_COMMON_COMMAND_BUFFER_MOJOM_TRAITS_H_
 
 #include "gpu/command_buffer/common/command_buffer.h"
-#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/gpu_channel.mojom-shared.h"
 #include "gpu/ipc/common/gpu_command_buffer_traits.h"
+#include "gpu/ipc/common/gpu_ipc_common_export.h"
 
 namespace mojo {
 
 template <>
-struct GPU_EXPORT StructTraits<gpu::mojom::CommandBufferStateDataView,
-                               gpu::CommandBuffer::State> {
+struct GPU_IPC_COMMON_EXPORT StructTraits<
+    gpu::mojom::CommandBufferStateDataView,
+    gpu::CommandBuffer::State> {
  public:
   static int32_t get_offset(const gpu::CommandBuffer::State& state) {
     return state.get_offset;

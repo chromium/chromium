@@ -6,8 +6,8 @@
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/cookie_manager.mojom-blink.h"
-#include "third_party/blink/public/mojom/cookie_manager/cookie_manager_automation.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/test/mojom/cookie_manager/cookie_manager_automation.test-mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_internal_cookie.h"
@@ -35,7 +35,7 @@ InternalsGetNamedCookie::getNamedCookie(ScriptState* script_state,
   test::mojom::blink::CookieManagerAutomation* raw_cookie_manager =
       cookie_manager.get();
   raw_cookie_manager->GetNamedCookie(
-      name, WTF::BindOnce(
+      name, BindOnce(
                 [](ScriptPromiseResolver<IDLNullable<InternalCookie>>* resolver,
                    ScriptState* script_state,
                    mojo::Remote<test::mojom::blink::CookieManagerAutomation>,

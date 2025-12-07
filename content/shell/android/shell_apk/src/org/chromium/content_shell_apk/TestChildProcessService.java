@@ -15,10 +15,12 @@ import android.util.SparseArray;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
+import org.chromium.base.library_loader.IRelroLibInfo;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.process_launcher.ChildProcessService;
 import org.chromium.base.process_launcher.ChildProcessServiceDelegate;
+import org.chromium.base.process_launcher.IChildProcessArgs;
 
 import java.util.List;
 
@@ -53,15 +55,13 @@ public class TestChildProcessService extends Service {
         }
 
         @Override
-        public void onConnectionSetup(
-                Bundle connectionBundle, List<IBinder> clientInterfaces, IBinder binderBox) {
+        public void onConnectionSetup(IChildProcessArgs args, List<IBinder> clientInterfaces) {
             if (clientInterfaces != null && !clientInterfaces.isEmpty()) {
                 mIChildProcessTest = IChildProcessTest.Stub.asInterface(clientInterfaces.get(0));
             }
             if (mIChildProcessTest != null) {
                 try {
-                    mIChildProcessTest.onConnectionSetup(
-                            mServiceCreated, mServiceBundle, connectionBundle);
+                    mIChildProcessTest.onConnectionSetup(mServiceCreated, mServiceBundle);
                 } catch (RemoteException re) {
                     Log.e(TAG, "Failed to call IChildProcessTest.onConnectionSetup.", re);
                 }
@@ -136,7 +136,7 @@ public class TestChildProcessService extends Service {
         }
 
         @Override
-        public void consumeRelroBundle(Bundle bundle) {}
+        public void consumeRelroLibInfo(IRelroLibInfo libInfo) {}
     }
 
     private ChildProcessService mService;

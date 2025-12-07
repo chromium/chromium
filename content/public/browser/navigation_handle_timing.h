@@ -5,8 +5,12 @@
 #ifndef CONTENT_PUBLIC_BROWSER_NAVIGATION_HANDLE_TIMING_H_
 #define CONTENT_PUBLIC_BROWSER_NAVIGATION_HANDLE_TIMING_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "net/base/load_timing_internal_info.h"
+#include "net/http/alternate_protocol_usage.h"
 
 namespace content {
 
@@ -16,12 +20,27 @@ namespace content {
 // the design doc for details.
 // https://docs.google.com/document/d/16oqu9lyPbfgZIjQsRaCfaKE8r1Cdlb3d4GVSdth4AN8/edit?usp=sharing
 struct CONTENT_EXPORT NavigationHandleTiming {
+  // Represents details about the network session used for the navigation.
+  struct SessionDetails {
+    // Session source information.
+    std::optional<net::SessionSource> session_source;
+    // The state of the advertised alternative service for the navigation.
+    net::AdvertisedAltSvcState advertised_alt_svc_state =
+        net::AdvertisedAltSvcState::kUnknown;
+    // Whether QUIC is enabled in the HttpNetworkSession for the navigation.
+    bool http_network_session_quic_enabled = false;
+  };
+
   NavigationHandleTiming();
   NavigationHandleTiming(const NavigationHandleTiming& timing);
   NavigationHandleTiming& operator=(const NavigationHandleTiming& timing);
 
   // The time the URLLoader for the navigation started.
   base::TimeTicks loader_start_time;
+
+  // The time the browser is ready to fetch the first HTTP request.
+  // This is filled with URLResponseHead::request_start during navigation.
+  std::optional<base::TimeTicks> first_fetch_start_time;
 
   // The time the first HTTP request was sent. This is filled with
   // net::LoadTimingInfo::send_start during navigation.
@@ -124,6 +143,10 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   // process.
   base::TimeTicks navigation_commit_received_time;
 
+  // The time at which the renderer responded to the browser's CommitNavigation
+  // IPC.
+  base::TimeTicks navigation_commit_reply_sent_time;
+
   // The time the DidCommit navigation message was received in the browser
   // process.
   base::TimeTicks navigation_did_commit_time;
@@ -137,6 +160,18 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   base::TimeDelta final_request_domain_lookup_delay;
   base::TimeDelta final_request_connect_delay;
   base::TimeDelta final_request_ssl_delay;
+
+  // CreateStream related delay information.
+  base::TimeDelta create_stream_delay;
+
+  // HttpNetwork::Transaction connected callback delay information.
+  base::TimeDelta connected_callback_delay;
+
+  // InitializeStream related delay information.
+  base::TimeDelta initialize_stream_delay;
+
+  // Details about the network session used for the navigation, if available.
+  std::optional<SessionDetails> session_details;
 };
 
 }  // namespace content

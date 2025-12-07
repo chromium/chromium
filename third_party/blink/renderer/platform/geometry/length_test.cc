@@ -45,52 +45,56 @@ const PixelsAndPercent twenty_px_ten_percent(20,
 
 class LengthTest : public ::testing::Test {
  public:
-  using Pointer = scoped_refptr<const CalculationExpressionNode>;
-
-  Pointer PixelsAndPercent(PixelsAndPercent value) {
-    return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
+  const CalculationExpressionNode* PixelsAndPercent(PixelsAndPercent value) {
+    return MakeGarbageCollected<CalculationExpressionPixelsAndPercentNode>(
         value);
   }
 
-  Pointer Add(Pointer lhs, Pointer rhs) {
-    return base::MakeRefCounted<CalculationExpressionOperationNode>(
-        CalculationExpressionOperationNode::Children(
-            {std::move(lhs), std::move(rhs)}),
+  const CalculationExpressionNode* Add(const CalculationExpressionNode* lhs,
+                                       const CalculationExpressionNode* rhs) {
+    return MakeGarbageCollected<CalculationExpressionOperationNode>(
+        CalculationExpressionOperationNode::Children({lhs, rhs}),
         CalculationOperator::kAdd);
   }
 
-  Pointer Subtract(Pointer lhs, Pointer rhs) {
-    return base::MakeRefCounted<CalculationExpressionOperationNode>(
-        CalculationExpressionOperationNode::Children(
-            {std::move(lhs), std::move(rhs)}),
+  const CalculationExpressionNode* Subtract(
+      const CalculationExpressionNode* lhs,
+      const CalculationExpressionNode* rhs) {
+    return MakeGarbageCollected<CalculationExpressionOperationNode>(
+        CalculationExpressionOperationNode::Children({lhs, rhs}),
         CalculationOperator::kSubtract);
   }
 
-  Pointer Multiply(Pointer node, float factor) {
-    return base::MakeRefCounted<CalculationExpressionOperationNode>(
+  const CalculationExpressionNode* Multiply(
+      const CalculationExpressionNode* node,
+      float factor) {
+    return MakeGarbageCollected<CalculationExpressionOperationNode>(
         CalculationExpressionOperationNode::Children(
-            {std::move(node),
-             base::MakeRefCounted<CalculationExpressionNumberNode>(factor)}),
+            {node,
+             MakeGarbageCollected<CalculationExpressionNumberNode>(factor)}),
         CalculationOperator::kMultiply);
   }
 
-  Pointer Min(Vector<Pointer>&& operands) {
-    return base::MakeRefCounted<CalculationExpressionOperationNode>(
+  const CalculationExpressionNode* Min(
+      HeapVector<Member<const CalculationExpressionNode>>&& operands) {
+    return MakeGarbageCollected<CalculationExpressionOperationNode>(
         std::move(operands), CalculationOperator::kMin);
   }
 
-  Pointer Max(Vector<Pointer>&& operands) {
-    return base::MakeRefCounted<CalculationExpressionOperationNode>(
+  const CalculationExpressionNode* Max(
+      HeapVector<Member<const CalculationExpressionNode>>&& operands) {
+    return MakeGarbageCollected<CalculationExpressionOperationNode>(
         std::move(operands), CalculationOperator::kMax);
   }
 
-  Pointer Clamp(Vector<Pointer>&& operands) {
-    return base::MakeRefCounted<CalculationExpressionOperationNode>(
+  const CalculationExpressionNode* Clamp(
+      HeapVector<Member<const CalculationExpressionNode>>&& operands) {
+    return MakeGarbageCollected<CalculationExpressionOperationNode>(
         std::move(operands), CalculationOperator::kClamp);
   }
 
-  Length CreateLength(Pointer expression) {
-    return Length(CalculationValue::CreateSimplified(std::move(expression),
+  Length CreateLength(const CalculationExpressionNode* expression) {
+    return Length(CalculationValue::CreateSimplified(expression,
                                                      Length::ValueRange::kAll));
   }
 };
@@ -445,7 +449,7 @@ TEST_F(LengthTest, MultiplyPixelsAndPercent) {
       CreateLength(CalculationExpressionOperationNode::CreateSimplified(
           CalculationExpressionOperationNode::Children(
               {PixelsAndPercent(twenty_px_ten_percent),
-               base::MakeRefCounted<CalculationExpressionNumberNode>(2)}),
+               MakeGarbageCollected<CalculationExpressionNumberNode>(2)}),
           CalculationOperator::kMultiply));
   const auto& simplified_calc_value = simplified.GetCalculationValue();
   EXPECT_FALSE(simplified_calc_value.IsExpression());

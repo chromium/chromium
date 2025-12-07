@@ -26,8 +26,9 @@ MATCHER_P(IsCastInternalMessage, json, "") {
     return false;
   }
 
-  if (arg.has_session_id() && arg.session_id() != message->session_id())
+  if (arg.has_session_id() && arg.session_id() != message->session_id()) {
     return false;
+  }
 
   switch (arg.type()) {
     case CastInternalMessage::Type::kAppMessage:

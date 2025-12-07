@@ -15,12 +15,12 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/input_method",
-  "+chrome/browser/ash/login/ui",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/notifications",
-  "+chrome/browser/ash/preferences.h",
+  "+chrome/browser/ash/preferences/preferences.h",
   "+chrome/browser/extensions/extension_commands_global_registry.h",
   "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/login",
   "+chrome/common/pref_names.h",
   "+chrome/test/base",
 ]

@@ -17,7 +17,7 @@ class Incident;
 // service.
 class IncidentReceiver {
  public:
-  virtual ~IncidentReceiver() {}
+  virtual ~IncidentReceiver() = default;
 
   // Adds an incident relating to |profile|. Must be called from the UI thread.
   virtual void AddIncidentForProfile(Profile* profile,

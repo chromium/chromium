@@ -6,11 +6,12 @@
 #define UI_GFX_FONT_H_
 
 #include <string>
+#include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
-#include "ui/gfx/gfx_export.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <CoreText/CoreText.h>
@@ -32,7 +33,7 @@ class PlatformFont;
 //   |        |-------------------+------------------+
 //   |        | descent (height - baseline)          |
 //   +--------+--------------------------------------+
-class GFX_EXPORT Font {
+class COMPONENT_EXPORT(GFX) Font {
  public:
   // The following constants indicate the font style.
   // These are treated as bitwise operators.
@@ -114,7 +115,14 @@ class GFX_EXPORT Font {
   const std::string& GetFontName() const;
 
   // Returns the actually used font name in UTF-8 after font mapping.
+  // This string is for logging or display only. Requesting a font with this
+  // name may return a different font.
+  // In tests prefer GetActualFontNames. The common names used in the tests may
+  // not be the primary actual name of the resolved font.
   std::string GetActualFontName() const;
+
+  // Returns the actually used font names in UTF-8 after font mapping.
+  std::vector<std::string> GetActualFontNames() const;
 
   // Returns the font size in pixels.
   int GetFontSize() const;
@@ -137,12 +145,12 @@ class GFX_EXPORT Font {
 };
 
 #ifndef NDEBUG
-GFX_EXPORT std::ostream& operator<<(std::ostream& stream,
-                                    const Font::Weight weight);
+COMPONENT_EXPORT(GFX)
+std::ostream& operator<<(std::ostream& stream, const Font::Weight weight);
 #endif
 
 // Returns the Font::Weight that matches |weight| or the next bigger one.
-GFX_EXPORT Font::Weight FontWeightFromInt(int weight);
+COMPONENT_EXPORT(GFX) Font::Weight FontWeightFromInt(int weight);
 
 }  // namespace gfx
 

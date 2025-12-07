@@ -291,8 +291,7 @@ void UpdateNetwork(
       break;
     }
     case mojom::NetworkType::kUnsupported:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

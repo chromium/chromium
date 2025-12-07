@@ -5,8 +5,6 @@
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
 #include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
@@ -29,6 +27,8 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -101,39 +101,40 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
 
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame());
-  BrowserAccessibilityManager* main_frame_manager =
+  ui::BrowserAccessibilityManager* main_frame_manager =
       main_frame->browser_accessibility_manager();
   VLOG(1) << "Main frame accessibility tree:\n"
           << main_frame_manager->SnapshotAXTreeForTesting().ToString();
 
   // Assert that we can walk from the main frame down into the child frame
   // directly, getting correct roles and data along the way.
-  BrowserAccessibility* ax_root =
+  ui::BrowserAccessibility* ax_root =
       main_frame_manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_root->GetRole());
   ASSERT_EQ(1U, ax_root->PlatformChildCount());
 
-  BrowserAccessibility* ax_group = ax_root->PlatformGetChild(0);
+  ui::BrowserAccessibility* ax_group = ax_root->PlatformGetChild(0);
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, ax_group->GetRole());
   ASSERT_EQ(2U, ax_group->PlatformChildCount());
 
-  BrowserAccessibility* ax_iframe = ax_group->PlatformGetChild(0);
+  ui::BrowserAccessibility* ax_iframe = ax_group->PlatformGetChild(0);
   EXPECT_EQ(ax::mojom::Role::kIframe, ax_iframe->GetRole());
   ASSERT_EQ(1U, ax_iframe->PlatformChildCount());
 
-  BrowserAccessibility* ax_child_frame_root = ax_iframe->PlatformGetChild(0);
+  ui::BrowserAccessibility* ax_child_frame_root =
+      ax_iframe->PlatformGetChild(0);
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_child_frame_root->GetRole());
   ASSERT_EQ(1U, ax_child_frame_root->PlatformChildCount());
   EXPECT_EQ("Title Of Awesomeness", ax_child_frame_root->GetStringAttribute(
                                         ax::mojom::StringAttribute::kName));
 
-  BrowserAccessibility* ax_child_frame_group =
+  ui::BrowserAccessibility* ax_child_frame_group =
       ax_child_frame_root->PlatformGetChild(0);
   EXPECT_EQ(ax::mojom::Role::kGenericContainer,
             ax_child_frame_group->GetRole());
   ASSERT_EQ(1U, ax_child_frame_group->PlatformChildCount());
 
-  BrowserAccessibility* ax_child_frame_static_text =
+  ui::BrowserAccessibility* ax_child_frame_static_text =
       ax_child_frame_group->PlatformGetChild(0);
   EXPECT_EQ(ax::mojom::Role::kStaticText,
             ax_child_frame_static_text->GetRole());
@@ -241,27 +242,28 @@ IN_PROC_BROWSER_TEST_P(
 
   RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
       shell()->web_contents()->GetPrimaryMainFrame());
-  BrowserAccessibilityManager* main_frame_manager =
+  ui::BrowserAccessibilityManager* main_frame_manager =
       main_frame->browser_accessibility_manager();
   VLOG(1) << "Main frame accessibility tree:\n"
           << main_frame_manager->SnapshotAXTreeForTesting().ToString();
 
   // Assert that we can walk from the main frame down into the child frame
   // directly, getting correct roles and data along the way.
-  BrowserAccessibility* ax_root =
+  ui::BrowserAccessibility* ax_root =
       main_frame_manager->GetBrowserAccessibilityRoot();
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_root->GetRole());
   ASSERT_EQ(1U, ax_root->PlatformChildCount());
 
-  BrowserAccessibility* ax_group = ax_root->PlatformGetChild(0);
+  ui::BrowserAccessibility* ax_group = ax_root->PlatformGetChild(0);
   EXPECT_EQ(ax::mojom::Role::kGenericContainer, ax_group->GetRole());
   ASSERT_EQ(2U, ax_group->PlatformChildCount());
 
-  BrowserAccessibility* ax_iframe = ax_group->PlatformGetChild(0);
+  ui::BrowserAccessibility* ax_iframe = ax_group->PlatformGetChild(0);
   EXPECT_EQ(ax::mojom::Role::kIframe, ax_iframe->GetRole());
   ASSERT_EQ(1U, ax_iframe->PlatformChildCount());
 
-  BrowserAccessibility* ax_child_frame_root = ax_iframe->PlatformGetChild(0);
+  ui::BrowserAccessibility* ax_child_frame_root =
+      ax_iframe->PlatformGetChild(0);
   EXPECT_EQ(ax::mojom::Role::kRootWebArea, ax_child_frame_root->GetRole());
   ASSERT_EQ(1U, ax_child_frame_root->PlatformChildCount());
 

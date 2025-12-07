@@ -9,6 +9,9 @@
 
 #include "media/gpu/test/raw_video.h"
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/bind.h"
@@ -16,6 +19,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread.h"
@@ -110,7 +114,8 @@ class RawVideo::VP9Decoder {
                                     base::Unretained(this), &result, &event));
       event.Wait();
       LOG_ASSERT(result.is_ok())
-          << "Failed to initialize VpxVideoDecoder: " << MediaSerialize(result)
+          << "Failed to initialize VpxVideoDecoder: "
+          << MediaSerializeForTesting(result)
           << "with config=" << config_.AsHumanReadableString();
     }
 
@@ -134,6 +139,8 @@ class RawVideo::VP9Decoder {
 
  private:
   struct VP9Data : public base::RefCountedThreadSafe<VP9Data> {
+    REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
     VP9Data(std::unique_ptr<base::MemoryMappedFile> mmap_file,
             const std::vector<base::span<const uint8_t>>& chunks,
             const std::vector<size_t>& keyframe_indices)
@@ -141,7 +148,8 @@ class RawVideo::VP9Decoder {
           keyframe_indices(keyframe_indices),
           mmap_file_(std::move(mmap_file)) {}
 
-    const std::vector<base::span<const uint8_t>> chunks;
+    // TODO(367764863) Rewrite to base::raw_span.
+    RAW_PTR_EXCLUSION const std::vector<base::span<const uint8_t>> chunks;
     const std::vector<size_t> keyframe_indices;
 
    protected:
@@ -219,7 +227,7 @@ class RawVideo::VP9Decoder {
                          &decode_status));
       LOG_ASSERT(decode_status.is_ok())
           << "Failed to decode the " << i
-          << "-th vp9 chunk: " << MediaSerialize(decode_status);
+          << "-th vp9 chunk: " << MediaSerializeForTesting(decode_status);
       LOG_ASSERT(!!last_decoded_frame_)
           << "|last_decoded_frame_| is not filled";
       auto buffer = CreateBufferFromFrame(*last_decoded_frame_);
@@ -239,13 +247,15 @@ class RawVideo::VP9Decoder {
     LOG_ASSERT(i420_frame.format() == VideoPixelFormat::PIXEL_FORMAT_I420);
     std::vector<uint8_t> buffer(video_frame_size_);
     if (layout_.format() == PIXEL_FORMAT_NV12) {
-      uint8_t* nv12_frame = buffer.data();
+      base::span<uint8_t> nv12_frame = buffer;
       int ret = libyuv::I420ToNV12(
           i420_frame.data(0), i420_frame.stride(0), i420_frame.data(1),
           i420_frame.stride(1), i420_frame.data(2), i420_frame.stride(2),
-          nv12_frame + layout_.planes()[0].offset, layout_.planes()[0].stride,
-          nv12_frame + layout_.planes()[1].offset, layout_.planes()[1].stride,
-          layout_.coded_size().width(), layout_.coded_size().height());
+          nv12_frame.subspan(layout_.planes()[0].offset).data(),
+          layout_.planes()[0].stride,
+          nv12_frame.subspan(layout_.planes()[1].offset).data(),
+          layout_.planes()[1].stride, layout_.coded_size().width(),
+          layout_.coded_size().height());
       LOG_ASSERT(ret == 0) << "Failed converting from I420 to NV12";
     } else {
       CHECK_EQ(layout_.format(), PIXEL_FORMAT_I420);
@@ -281,7 +291,7 @@ class RawVideo::VP9Decoder {
   // frame_index -> file index
   static constexpr size_t kNumCachedFrames = 30;
   size_t cached_frame_indices_[kNumCachedFrames];
-  std::vector<uint8_t> cached_frames_[kNumCachedFrames];
+  std::array<std::vector<uint8_t>, kNumCachedFrames> cached_frames_;
 
   SEQUENCE_CHECKER(decoder_sequence_);
 };
@@ -303,35 +313,32 @@ std::unique_ptr<RawVideo::VP9Decoder> RawVideo::VP9Decoder::Create(
   InitializeMediaLibrary();
 
   // Initialize ffmpeg with the compressed video data.
-  InMemoryUrlProtocol protocol(vp9_webm_data.data(), vp9_webm_data.size(),
-                               /*streaming=*/false);
+  InMemoryUrlProtocol protocol(vp9_webm_data, /*streaming=*/false);
   FFmpegGlue glue(&protocol);
   LOG_ASSERT(glue.OpenContext()) << "Failed to open AVFormatContext";
   // Find the first VP9 stream in the file.
-  std::optional<size_t> vp9_stream_index;
   VideoDecoderConfig config;
-  for (size_t i = 0; i < glue.format_context()->nb_streams; ++i) {
-    AVStream* stream = glue.format_context()->streams[i];
+  base::span<AVStream*> format_context =
+      AVFormatContextToSpan(glue.format_context());
+  auto iter = std::ranges::find_if(format_context, [&config](AVStream* stream) {
     const AVCodecParameters* codec_parameters = stream->codecpar;
     const AVMediaType codec_type = codec_parameters->codec_type;
     const AVCodecID codec_id = codec_parameters->codec_id;
-    if (codec_type == AVMEDIA_TYPE_VIDEO && codec_id == AV_CODEC_ID_VP9 &&
-        AVStreamToVideoDecoderConfig(stream, &config) &&
-        config.IsValidConfig()) {
-      vp9_stream_index = i;
-      break;
-    }
-  }
-  if (!vp9_stream_index) {
+    return codec_type == AVMEDIA_TYPE_VIDEO && codec_id == AV_CODEC_ID_VP9 &&
+           AVStreamToVideoDecoderConfig(stream, &config) &&
+           config.IsValidConfig();
+  });
+  if (iter == format_context.end()) {
     return nullptr;
   }
-
+  std::optional<size_t> vp9_stream_index =
+      std::distance(format_context.begin(), iter);
   auto vp9_data_mmap_file = CreateMemoryMappedFile(vp9_webm_data.size());
   uint8_t* const vp9_data = vp9_data_mmap_file->data();
   size_t vp9_data_size = 0;
   auto packet = ScopedAVPacket::Allocate();
   size_t num_packets = 0;
-  Vp9Parser vp9_parser(/*parsing_compressed_header=*/false);
+  Vp9Parser vp9_parser;
   std::vector<size_t> keyframe_indices;
   std::vector<base::span<const uint8_t>> vp9_data_chunks(num_read_frames);
   while (av_read_frame(glue.format_context(), packet.get()) >= 0 &&
@@ -431,8 +438,8 @@ bool RawVideo::LoadMetadata(const base::FilePath& json_file_path,
     return false;
   }
 
-  auto metadata_result =
-      base::JSONReader::ReadAndReturnValueWithError(json_data);
+  auto metadata_result = base::JSONReader::ReadAndReturnValueWithError(
+      json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!metadata_result.has_value()) {
     LOG(ERROR) << "Failed to parse video metadata: " << json_file_path << ": "
                << metadata_result.error().message;

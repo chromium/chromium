@@ -53,21 +53,32 @@ TEST(OptionalUtilTest, OptionalToExpected) {
   base::expected<float, int> f_exp = OptionalToExpected(i_opt, -1);
   EXPECT_EQ(f_exp, base::ok(2.0));
 
-  // Non-movable error type. "is null" is a const char array, which must be
-  // copied before converting to a string. Forces the compiler to choose the
-  // OptionalToExpected override that copies its error argument, to validate
-  // that it's copied correctly.
-  auto exp_with_str_error =
-      OptionalToExpected<int, std::string>(std::nullopt, "is null");
-  EXPECT_EQ(exp_with_str_error, base::unexpected("is null"));
+  // Const value type. Forces the compiler copy its value argument, to
+  // validate that it's copied correctly.
+  constexpr std::optional<std::string> kConstOptional = "test";
+  auto exp_with_str_value = OptionalToExpected(kConstOptional, 0);
+  EXPECT_EQ(exp_with_str_value, base::ok("test"));
 
-  // Non-copyable error type. Forces the compiler to choose the
-  // OptionalToExpected override that moves its error argument, to validate that
-  // it's moved correctly.
-  auto exp_with_ptr_error = OptionalToExpected<int, std::unique_ptr<int>>(
+  // Non-copyable value type. Forces the compiler to move its value argument, to
+  // validate that it's moved correctly.
+  auto exp_with_ptr_value =
+      OptionalToExpected(std::optional(std::make_unique<int>(-1)), 0);
+  ASSERT_TRUE(exp_with_ptr_value.has_value());
+  EXPECT_EQ(*exp_with_ptr_value.value(), -1);
+
+  // Const error type. Forces the compiler copy its error argument, to
+  // validate that it's copied correctly.
+  constexpr std::string kConstString = "test";
+  auto exp_with_str_error =
+      OptionalToExpected<std::optional<int>>(std::nullopt, kConstString);
+  EXPECT_EQ(exp_with_str_error, base::unexpected("test"));
+
+  // Non-copyable error type. Forces the compiler move its error argument, to
+  // validate that it's moved correctly.
+  auto exp_with_ptr_error = OptionalToExpected<std::optional<int>>(
       std::nullopt, std::make_unique<int>(-1));
   ASSERT_FALSE(exp_with_ptr_error.has_value());
-  EXPECT_EQ(*(exp_with_ptr_error.error()), -1);
+  EXPECT_EQ(*exp_with_ptr_error.error(), -1);
 }
 
 TEST(OptionalUtilTest, OptionalFromExpected) {

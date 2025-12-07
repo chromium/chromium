@@ -13,14 +13,15 @@ namespace blink {
 
 #if DCHECK_IS_ON()
 TEST(ThreadTest, IsBeforeThreadCreated) {
-  WTF::SetIsBeforeThreadCreatedForTest();
-  EXPECT_TRUE(WTF::IsBeforeThreadCreated());
+  SetIsBeforeThreadCreatedForTest();
+  EXPECT_TRUE(IsBeforeThreadCreated());
 
   ThreadCreationParams params(ThreadType::kTestThread);
   std::unique_ptr<NonMainThread> thread = NonMainThread::CreateThread(params);
   thread.reset();
 
-  EXPECT_FALSE(WTF::IsBeforeThreadCreated());
+  EXPECT_FALSE(IsBeforeThreadCreated());
+  SetIsBeforeThreadCreatedForTest();
 }
 #endif
 

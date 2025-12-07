@@ -24,6 +24,18 @@ class MetricTest(unittest.TestCase):
     m.register(Average("b"))
     m.register(Count("c"))
     self.assertEqual(len(m.dump().metrics), 3)
+    self.assertEqual(set([i.name for i in m.dump().metrics]),
+                     set(["a", "b", "c"]))
+
+  def test_tags(self) -> None:
+    m = Metric()
+    m.register(Count("c"))
+    m.tag("t1", "t2")
+    m.tag("t3")
+    self.assertEqual(len(m.dump().metrics), 4)
+    self.assertEqual(set([i.name for i in m.dump().metrics]),
+                     set(["c", "c@t1", "c@t2", "c@t3"]))
+
 
 
 if __name__ == '__main__':

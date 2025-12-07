@@ -22,11 +22,11 @@ goog.provide('goog.labs.mock.timeout.TimeoutMode');
  */
 goog.labs.mock.timeout.TimeoutMode = class TimeoutMode {
   /**
-   * @param {number} duration
+   * @param {number} duration Timeout duration in milliseconds.
    */
   constructor(duration) {
     /**
-     * @type {number} duration
+     * @type {number} duration Timeout duration in milliseconds.
      * @public
      */
     this.duration = duration;
@@ -34,7 +34,7 @@ goog.labs.mock.timeout.TimeoutMode = class TimeoutMode {
 };
 
 /**
- * @param {number} duration
+ * @param {number} duration Timeout duration in milliseconds.
  * @return {!goog.labs.mock.timeout.TimeoutMode}
  */
 goog.labs.mock.timeout.timeout = function(duration) {

@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -22,12 +23,12 @@
 #include "chrome/browser/profiles/profile_downloader_delegate.h"
 #include "components/signin/public/base/avatar_icon_util.h"
 #include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/scope_set.h"
-#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -119,14 +120,9 @@ void ProfileDownloader::StartFetchingImage() {
 }
 
 void ProfileDownloader::StartFetchingOAuth2AccessToken() {
-  signin::ScopeSet scopes;
-  scopes.insert(GaiaConstants::kGoogleUserInfoProfile);
-  // Required to determine if lock should be enabled.
-  scopes.insert(GaiaConstants::kGoogleUserInfoEmail);
-
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          account_id_, "profile_downloader", scopes,
+          account_id_, signin::OAuthConsumerId::kProfileDownloader,
           base::BindOnce(&ProfileDownloader::OnAccessTokenFetchComplete,
                          base::Unretained(this)),
           signin::AccessTokenFetcher::Mode::kWaitUntilRefreshTokenAvailable);
@@ -231,7 +227,7 @@ void ProfileDownloader::FetchImageData() {
 }
 
 void ProfileDownloader::OnURLLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   int response_code = -1;
   if (simple_loader_->ResponseInfo() && simple_loader_->ResponseInfo()->headers)
@@ -240,7 +236,7 @@ void ProfileDownloader::OnURLLoaderComplete(
   if (response_body) {
     simple_loader_.reset();
     DVLOG(1) << "Decoding the image...";
-    ImageDecoder::Start(this, std::move(*response_body));
+    ImageDecoder::Start(this, std::move(response_body).value());
   } else if (response_code == net::HTTP_NOT_FOUND) {
     simple_loader_.reset();
     VLOG(1) << "Got 404, using default picture...";

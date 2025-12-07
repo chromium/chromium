@@ -1,0 +1,22 @@
+<style include="settings-shared site-settings-shared"></style>
+<settings-subpage page-title="$i18n{siteSettingsIdleDetection}"
+    search-label="$i18n{siteSettingsAllSitesFilter}"
+    search-icon="settings20:filter-list"
+    search-term="{{searchTerm}}" route-path$="[[routePath]]">
+  <div class="content-settings-header secondary">
+    $i18n{siteSettingsDeviceUseDescription}
+  </div>
+  <settings-category-default-radio-group
+      category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
+      allow-option-label="$i18n{siteSettingsDeviceUseAllowed}"
+      allow-option-icon="settings:devices"
+      block-option-label="$i18n{siteSettingsDeviceUseBlocked}"
+      block-option-icon="privacy:devices-off">
+  </settings-category-default-radio-group>
+  <category-setting-exceptions
+      category="[[contentSettingsTypesEnum_.IDLE_DETECTION]]"
+      allow-header="$i18n{siteSettingsDeviceUseAllowedExceptions}"
+      block-header="$i18n{siteSettingsDeviceUseBlockedExceptions}"
+      search-filter="[[searchTerm]]">
+  </category-setting-exceptions>
+</settings-subpage>

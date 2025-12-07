@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_dom_snapshot_agent.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
@@ -16,7 +17,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -45,13 +45,11 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_paint_order_iterator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/thread_debugger.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "v8/include/v8-inspector.h"
 
 namespace blink {
 
 using mojom::blink::FormControlType;
-using protocol::Maybe;
 
 namespace {
 
@@ -107,7 +105,7 @@ String GetOriginUrl(const Node* node) {
   if (!isolate || !isolate->InContext() || !debugger)
     return String();
   v8::HandleScope handleScope(isolate);
-  String url = GetCurrentScriptUrl(isolate);
+  String url = CaptureCurrentScriptUrl(isolate);
   if (!url.empty())
     return url;
   // If we did not get anything from the sync stack, let's try the slow
@@ -170,7 +168,7 @@ class DOMTreeIterator {
 
  private:
   Node* current_;
-  WTF::Vector<int> path_to_current_node_;
+  Vector<int> path_to_current_node_;
 };
 
 }  // namespace
@@ -216,13 +214,13 @@ void InspectorDOMSnapshotAgent::CharacterDataModified(
     CharacterData* character_data) {
   String origin_url = GetOriginUrl(character_data);
   if (origin_url)
-    origin_url_map_->insert(character_data->GetDomNodeId(), origin_url);
+    origin_url_map_->map.insert(character_data->GetDomNodeId(), origin_url);
 }
 
 void InspectorDOMSnapshotAgent::DidInsertDOMNode(Node* node) {
   String origin_url = GetOriginUrl(node);
   if (origin_url)
-    origin_url_map_->insert(node->GetDomNodeId(), origin_url);
+    origin_url_map_->map.insert(node->GetDomNodeId(), origin_url);
 }
 
 void InspectorDOMSnapshotAgent::EnableAndReset() {
@@ -255,9 +253,9 @@ protocol::Response InspectorDOMSnapshotAgent::disable() {
 
 protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
     std::unique_ptr<protocol::Array<String>> style_filter,
-    protocol::Maybe<bool> include_event_listeners,
-    protocol::Maybe<bool> include_paint_order,
-    protocol::Maybe<bool> include_user_agent_shadow_tree,
+    std::optional<bool> include_event_listeners,
+    std::optional<bool> include_paint_order,
+    std::optional<bool> include_user_agent_shadow_tree,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DOMNode>>* dom_nodes,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::LayoutTreeNode>>*
         layout_tree_nodes,
@@ -266,8 +264,10 @@ protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
   Document* document = inspected_frames_->Root()->GetDocument();
   if (!document)
     return protocol::Response::ServerError("Document is not available");
-  LegacyDOMSnapshotAgent legacySupport(dom_debugger_agent_,
-                                       origin_url_map_.get());
+  LegacyDOMSnapshotAgent legacySupport(
+      dom_debugger_agent_, origin_url_map_
+                               ? origin_url_map_->weak_ptr_factory.GetWeakPtr()
+                               : base::WeakPtr<OriginUrlMap>());
   return legacySupport.GetSnapshot(
       document, std::move(style_filter), std::move(include_event_listeners),
       std::move(include_paint_order), std::move(include_user_agent_shadow_tree),
@@ -276,10 +276,10 @@ protocol::Response InspectorDOMSnapshotAgent::getSnapshot(
 
 protocol::Response InspectorDOMSnapshotAgent::captureSnapshot(
     std::unique_ptr<protocol::Array<String>> computed_styles,
-    protocol::Maybe<bool> include_paint_order,
-    protocol::Maybe<bool> include_dom_rects,
-    protocol::Maybe<bool> include_blended_background_colors,
-    protocol::Maybe<bool> include_text_color_opacities,
+    std::optional<bool> include_paint_order,
+    std::optional<bool> include_dom_rects,
+    std::optional<bool> include_blended_background_colors,
+    std::optional<bool> include_text_color_opacities,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::DocumentSnapshot>>*
         documents,
     std::unique_ptr<protocol::Array<String>>* strings) {
@@ -519,16 +519,17 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       BuildArrayForElementAttributes(node));
   BuildLayoutTreeNode(node->GetLayoutObject(), node, index, contrast);
 
-  if (origin_url_map_ && origin_url_map_->Contains(backend_node_id)) {
-    String origin_url = origin_url_map_->at(backend_node_id);
+  if (origin_url_map_ && origin_url_map_->map.Contains(backend_node_id)) {
+    String origin_url = origin_url_map_->map.at(backend_node_id);
     // In common cases, it is implicit that a child node would have the same
     // origin url as its parent, so no need to mark twice.
     if (!node->parentNode()) {
       SetRare(nodes->getOriginURL(nullptr), index, std::move(origin_url));
     } else {
       DOMNodeId parent_id = node->parentNode()->GetDomNodeId();
-      auto it = origin_url_map_->find(parent_id);
-      String parent_url = it != origin_url_map_->end() ? it->value : String();
+      auto it = origin_url_map_->map.find(parent_id);
+      String parent_url =
+          it != origin_url_map_->map.end() ? it->value : String();
       if (parent_url != origin_url)
         SetRare(nodes->getOriginURL(nullptr), index, std::move(origin_url));
     }
@@ -572,7 +573,7 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       SetRare(nodes->getPseudoType(nullptr), index,
               InspectorDOMAgent::ProtocolPseudoElementType(
                   element->GetPseudoIdForStyling()));
-      if (auto tag = To<PseudoElement>(element)->view_transition_name()) {
+      if (auto tag = To<PseudoElement>(element)->GetPseudoArgument()) {
         SetRare(nodes->getPseudoIdentifier(nullptr), index, tag);
       }
     }
@@ -590,8 +591,10 @@ void InspectorDOMSnapshotAgent::VisitPseudoElements(
     Element* parent,
     int parent_index,
     InspectorContrast& contrast) {
-  for (PseudoId pseudo_id : {kPseudoIdFirstLetter, kPseudoIdBefore,
-                             kPseudoIdAfter, kPseudoIdMarker}) {
+  for (PseudoId pseudo_id :
+       {kPseudoIdFirstLetter, kPseudoIdCheckMark, kPseudoIdBefore,
+        kPseudoIdAfter, kPseudoIdPickerIcon, kPseudoIdInterestHint,
+        kPseudoIdMarker}) {
     if (Node* pseudo_node = parent->GetPseudoElement(pseudo_id))
       VisitNode(pseudo_node, parent_index, contrast);
   }
@@ -704,7 +707,7 @@ int InspectorDOMSnapshotAgent::BuildLayoutTreeNode(
   layout_tree_snapshot->getText()->emplace_back(AddString(text));
 
   if (node->GetPseudoIdForStyling()) {
-    // For pseudo elements, visit the children of the layout object.
+    // For pseudo-elements, visit the children of the layout object.
     // Combinding ::before { content: 'hello' } and ::first-letter would produce
     // two boxes for the ::before node, one for 'hello' and one for 'ello'.
     for (LayoutObject* child = layout_object->SlowFirstChild(); child;

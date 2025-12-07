@@ -20,11 +20,11 @@
 
 #include "third_party/blink/renderer/core/svg/svg_rect_element.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
+#include "third_party/blink/renderer/platform/geometry/path_builder.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -79,7 +79,11 @@ void SVGRectElement::Trace(Visitor* visitor) const {
 }
 
 Path SVGRectElement::AsPath() const {
-  Path path;
+  return AsMutablePath().Finalize();
+}
+
+PathBuilder SVGRectElement::AsMutablePath() const {
+  PathBuilder builder;
 
   const SVGViewportResolver viewport_resolver(*this);
   const ComputedStyle& style = ComputedStyleRef();
@@ -87,7 +91,7 @@ Path SVGRectElement::AsPath() const {
   gfx::Vector2dF size = VectorForLengthPair(style.Width(), style.Height(),
                                             viewport_resolver, style);
   if (size.x() < 0 || size.y() < 0 || size.IsZero())
-    return path;
+    return builder;
 
   gfx::PointF origin =
       PointForLengthPair(style.X(), style.Y(), viewport_resolver, style);
@@ -109,40 +113,11 @@ Path SVGRectElement::AsPath() const {
     // than half of the width of the rectangle then its set to half of the
     // width; radii.y() is handled similarly.
     radii.SetToMin(gfx::ScaleVector2d(size, 0.5));
-    path.AddRoundedRect(FloatRoundedRect(rect, radii.x(), radii.y()));
+    builder.AddRoundedRect(FloatRoundedRect(rect, radii.x(), radii.y()));
   } else {
-    path.AddRect(rect);
+    builder.AddRect(rect);
   }
-  return path;
-}
-
-void SVGRectElement::CollectStyleForPresentationAttribute(
-    const QualifiedName& name,
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
-  if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
-                                            x_->CssValue());
-  } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
-                                            y_->CssValue());
-  } else if (property == width_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
-                                            width_->CssValue());
-  } else if (property == height_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
-                                            height_->CssValue());
-  } else if (property == rx_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRx,
-                                            rx_->CssValue());
-  } else if (property == ry_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kRy,
-                                            ry_->CssValue());
-  } else {
-    SVGGeometryElement::CollectStyleForPresentationAttribute(name, value,
-                                                             style);
-  }
+  return builder;
 }
 
 void SVGRectElement::SvgAttributeChanged(
@@ -152,19 +127,11 @@ void SVGRectElement::SvgAttributeChanged(
       attr_name == svg_names::kWidthAttr ||
       attr_name == svg_names::kHeightAttr || attr_name == svg_names::kRxAttr ||
       attr_name == svg_names::kRyAttr) {
-    UpdateRelativeLengthsInformation();
-    GeometryPresentationAttributeChanged(attr_name);
+    GeometryPresentationAttributeChanged(params.property);
     return;
   }
 
   SVGGeometryElement::SvgAttributeChanged(params);
-}
-
-bool SVGRectElement::SelfHasRelativeLengths() const {
-  return x_->CurrentValue()->IsRelative() || y_->CurrentValue()->IsRelative() ||
-         width_->CurrentValue()->IsRelative() ||
-         height_->CurrentValue()->IsRelative() ||
-         rx_->CurrentValue()->IsRelative() || ry_->CurrentValue()->IsRelative();
 }
 
 LayoutObject* SVGRectElement::CreateLayoutObject(const ComputedStyle&) {
@@ -198,16 +165,10 @@ void SVGRectElement::SynchronizeAllSVGAttributes() const {
 }
 
 void SVGRectElement::CollectExtraStyleForPresentationAttribute(
-    MutableCSSPropertyValueSet* style) {
-  for (auto* property :
-       (SVGAnimatedPropertyBase*[]){x_.Get(), y_.Get(), width_.Get(),
-                                    height_.Get(), rx_.Get(), ry_.Get()}) {
-    DCHECK(property->HasPresentationAttributeMapping());
-    if (property->IsAnimating()) {
-      CollectStyleForPresentationAttribute(property->AttributeName(),
-                                           g_empty_atom, style);
-    }
-  }
+    HeapVector<CSSPropertyValue, 8>& style) {
+  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
+      {x_.Get(), y_.Get(), width_.Get(), height_.Get(), rx_.Get(), ry_.Get()});
+  AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
   SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

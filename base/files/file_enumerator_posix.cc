@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "base/files/file_enumerator.h"
 
 #include <dirent.h>
@@ -13,6 +18,11 @@
 #include "base/logging.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
+#include "base/files/file_util.h"
+#endif
 
 namespace base {
 namespace {
@@ -32,25 +42,21 @@ bool GetStat(const FilePath& path, bool show_links, stat_wrapper_t* st) {
   return true;
 }
 
+bool ShouldShowSymLinks(int file_type) {
 #if BUILDFLAG(IS_FUCHSIA)
-bool ShouldShowSymLinks(int file_type) {
   return false;
-}
 #else
-bool ShouldShowSymLinks(int file_type) {
   return file_type & FileEnumerator::SHOW_SYM_LINKS;
-}
 #endif  // BUILDFLAG(IS_FUCHSIA)
+}
 
+bool ShouldTrackVisitedDirectories(int file_type) {
 #if BUILDFLAG(IS_FUCHSIA)
-bool ShouldTrackVisitedDirectories(int file_type) {
   return false;
-}
 #else
-bool ShouldTrackVisitedDirectories(int file_type) {
   return !(file_type & FileEnumerator::SHOW_SYM_LINKS);
-}
 #endif  // BUILDFLAG(IS_FUCHSIA)
+}
 
 }  // namespace
 
@@ -59,6 +65,20 @@ bool ShouldTrackVisitedDirectories(int file_type) {
 FileEnumerator::FileInfo::FileInfo() {
   memset(&stat_, 0, sizeof(stat_));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+FileEnumerator::FileInfo::FileInfo(FilePath content_uri,
+                                   FilePath filename,
+                                   bool is_directory,
+                                   off_t size,
+                                   Time time)
+    : content_uri_(std::move(content_uri)), filename_(std::move(filename)) {
+  memset(&stat_, 0, sizeof(stat_));
+  stat_.st_mode = is_directory ? S_IFDIR : S_IFREG;
+  stat_.st_size = size;
+  stat_.st_mtime = time.ToTimeT();
+}
+#endif
 
 bool FileEnumerator::FileInfo::IsDirectory() const {
   return S_ISDIR(stat_.st_mode);
@@ -73,7 +93,7 @@ int64_t FileEnumerator::FileInfo::GetSize() const {
 }
 
 base::Time FileEnumerator::FileInfo::GetLastModifiedTime() const {
-  return base::Time::FromTimeT(stat_.st_mtime);
+  return Time::FromTimeT(stat_.st_mtime);
 }
 
 // FileEnumerator --------------------------------------------------------------
@@ -125,6 +145,16 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
   // INCLUDE_DOT_DOT must not be specified if recursive.
   DCHECK(!(recursive && (INCLUDE_DOT_DOT & file_type_)));
 
+#if BUILDFLAG(IS_ANDROID)
+  if (auto content_uri = base::ResolveToContentUri(root_path); content_uri) {
+    // Get display-name of root path.
+    FileInfo root_info;
+    internal::ContentUriGetFileInfo(*content_uri, &root_info);
+    pending_subdirs_.push(
+        std::vector<std::string>({root_info.GetName().value()}));
+  }
+#endif
+
   if (file_type_ & FileType::NAMES_ONLY) {
     DCHECK(!recursive_);
     DCHECK_EQ(file_type_ & ~(FileType::NAMES_ONLY | FileType::INCLUDE_DOT_DOT),
@@ -133,7 +163,7 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
   }
 
   if (recursive && ShouldTrackVisitedDirectories(file_type_)) {
-    if (stat_wrapper_t st; GetStat(root_path, false, &st)) {
+    if (stat_wrapper_t st; GetStat(root_path, /*show_links=*/false, &st)) {
       MarkVisited(st);
     }
   }
@@ -150,17 +180,43 @@ FilePath FileEnumerator::Next() {
 
   // While we've exhausted the entries in the current directory, do the next
   while (current_directory_entry_ >= directory_entries_.size()) {
-    if (pending_paths_.empty())
+    if (pending_paths_.empty()) {
       return FilePath();
+    }
 
     root_path_ = pending_paths_.top();
     root_path_ = root_path_.StripTrailingSeparators();
     pending_paths_.pop();
 
+#if BUILDFLAG(IS_ANDROID)
+    if (auto content_uri = base::ResolveToContentUri(root_path_); content_uri) {
+      subdirs_ = pending_subdirs_.top();
+      pending_subdirs_.pop();
+      directory_entries_ =
+          internal::ListContentUriDirectory(*content_uri, file_type_);
+      current_directory_entry_ = 0;
+      if (directory_entries_.empty()) {
+        continue;
+      }
+      if (recursive_) {
+        for (auto& info : directory_entries_) {
+          info.subdirs_ = subdirs_;
+          if (info.IsDirectory()) {
+            pending_paths_.push(info.content_uri_);
+            pending_subdirs_.push(subdirs_);
+            pending_subdirs_.top().push_back(info.GetName().value());
+          }
+        }
+      }
+      break;
+    }
+#endif
+
     DIR* dir = opendir(root_path_.value().c_str());
     if (!dir) {
-      if (errno == 0 || error_policy_ == ErrorPolicy::IGNORE_ERRORS)
+      if (errno == 0 || error_policy_ == ErrorPolicy::IGNORE_ERRORS) {
         continue;
+      }
       error_ = File::OSErrorToFileError(errno);
       return FilePath();
     }
@@ -192,23 +248,26 @@ FilePath FileEnumerator::Next() {
       FileInfo info;
       info.filename_ = FilePath(dent->d_name);
 
-      if (ShouldSkip(info.filename_))
+      if (ShouldSkip(info.filename_)) {
         continue;
+      }
 
       const bool is_pattern_matched = IsPatternMatched(info.filename_);
 
       // MATCH_ONLY policy enumerates files and directories which matching
       // pattern only. So we can early skip further checks.
       if (folder_search_policy_ == FolderSearchPolicy::MATCH_ONLY &&
-          !is_pattern_matched)
+          !is_pattern_matched) {
         continue;
+      }
 
       // Do not call OS stat/lstat if there is no sense to do it. If pattern is
       // not matched (file will not appear in results) and search is not
       // recursive (possible directory will not be added to pending paths) -
       // there is no sense to obtain item below.
-      if (!recursive_ && !is_pattern_matched)
+      if (!recursive_ && !is_pattern_matched) {
         continue;
+      }
 
       // If the caller only wants the names of files and directories, then
       // continue without populating `info` further.
@@ -232,8 +291,9 @@ FilePath FileEnumerator::Next() {
         pending_paths_.push(std::move(full_path));
       }
 
-      if (is_pattern_matched && IsTypeMatched(is_dir))
+      if (is_pattern_matched && IsTypeMatched(is_dir)) {
         directory_entries_.push_back(std::move(info));
+      }
     }
     int readdir_errno = errno;
     closedir(dir);
@@ -244,9 +304,16 @@ FilePath FileEnumerator::Next() {
 
     // MATCH_ONLY policy enumerates files in matched subfolders by "*" pattern.
     // ALL policy enumerates files in all subfolders by origin pattern.
-    if (folder_search_policy_ == FolderSearchPolicy::MATCH_ONLY)
+    if (folder_search_policy_ == FolderSearchPolicy::MATCH_ONLY) {
       pattern_.clear();
+    }
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (root_path_.IsContentUri() || root_path_.IsVirtualDocumentPath()) {
+    return directory_entries_[current_directory_entry_].content_uri_;
+  }
+#endif
 
   return root_path_.Append(
       directory_entries_[current_directory_entry_].filename_);

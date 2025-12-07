@@ -1,0 +1,29 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("error") {
+  sources = [
+    "uma_logging.cc",
+    "uma_logging.h",
+    "unusable_swbn_file_error.cc",
+    "unusable_swbn_file_error.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/web_package",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "uma_logging_unittest.cc",
+    "unusable_swbn_file_error_unittest.cc",
+  ]
+  deps = [
+    ":error",
+    "//base/test:test_support",
+  ]
+}

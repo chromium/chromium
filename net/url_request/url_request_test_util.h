@@ -19,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
-#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
@@ -158,6 +157,7 @@ class TestDelegate : public URLRequest::Delegate {
   bool auth_required_called() const { return auth_required_; }
   bool response_completed() const { return response_completed_; }
   int request_status() const { return request_status_; }
+  std::optional<int> response_code() const { return response_code_; }
 
   // URLRequest::Delegate:
   int OnConnected(URLRequest* request,
@@ -213,6 +213,9 @@ class TestDelegate : public URLRequest::Delegate {
 
   // tracks status of request
   int request_status_ = ERR_IO_PENDING;
+
+  // tracks status of response
+  std::optional<int> response_code_;
 
   // our read buffer
   scoped_refptr<IOBuffer> buf_;
@@ -309,7 +312,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      std::optional<GURL>* preserve_fragment_on_redirect_url) override;
+      std::optional<GURL>* preserve_fragment_on_redirect_url,
+      const std::optional<net::SSLInfo>& ssl_info) override;
   void OnBeforeRedirect(URLRequest* request, const GURL& new_location) override;
   void OnBeforeRetry(URLRequest* request) override;
   void OnResponseStarted(URLRequest* request, int net_error) override;
@@ -333,7 +337,8 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
       const GURL& target_url,
       const GURL& referrer_url) const override;
   std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
-      const URLRequest& request) const override;
+      const URLRequest& request,
+      base::optional_ref<const RedirectInfo> redirect_info) const override;
 
   void InitRequestStatesIfNew(int request_id);
 

@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -37,8 +38,7 @@ content::BrowserContext& GetBrowserContextToUse(
 
   // The on-the-record profile always uses itself.
   if (!calling_context.IsOffTheRecord()) {
-    return *client->GetContextForOriginalOnly(&calling_context,
-                                              /*force_guest_profile=*/true);
+    return *client->GetContextForOriginalOnly(&calling_context);
   }
 
   DCHECK(util::IsIncognitoEnabled(extension.id(), &calling_context))
@@ -47,10 +47,9 @@ content::BrowserContext& GetBrowserContextToUse(
   // Split-mode extensions use the incognito (calling) context; spanning mode
   // extensions fall back to the original profile.
   bool is_split_mode = IncognitoInfo::IsSplitMode(&extension);
-  return is_split_mode ? *client->GetContextOwnInstance(
-                             &calling_context, /*force_guest_profile=*/true)
-                       : *client->GetContextRedirectedToOriginal(
-                             &calling_context, /*force_guest_profile=*/true);
+  return is_split_mode
+             ? *client->GetContextOwnInstance(&calling_context)
+             : *client->GetContextRedirectedToOriginal(&calling_context);
 }
 
 // Similar to the above, returns the OffscreenDocumentManager to use for the
@@ -75,7 +74,7 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
 
   GURL url(params->parameters.url);
   if (!url.is_valid()) {
-    url = extension()->GetResourceURL(params->parameters.url);
+    url = extension()->ResolveExtensionURL(params->parameters.url);
   }
 
   if (!url.is_valid() || url::Origin::Create(url) != extension()->origin()) {

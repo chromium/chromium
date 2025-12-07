@@ -52,6 +52,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'loadUnpacked',
       'loadUnpackedFromDrag',
       'notifyDragInstallInProgress',
+      'openDevToolsForError',
       'openUrl',
       'packExtension',
       'recordUserAction',
@@ -62,6 +63,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'requestFileSource',
       'retryLoadUnpacked',
       'setItemAllowedIncognito',
+      'setItemAllowedUserScripts',
       'setItemAllowedOnFileUrls',
       'setItemCollectsErrors',
       'setItemEnabled',
@@ -74,10 +76,12 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
       'shouldIgnoreUpdate',
       'showInFolder',
       'showItemOptionsPage',
+      'showSiteSettings',
       'updateAllExtensions',
       'updateExtensionCommandKeybinding',
       'updateExtensionCommandScope',
       'updateSiteAccess',
+      'uploadItemToAccount',
     ]);
   }
 
@@ -147,6 +151,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
     this.methodCalled('inspectItemView', [id, view]);
   }
 
+  openDevToolsForError(error: chrome.developerPrivate.RuntimeError) {
+    this.methodCalled('openDevToolsForError', [error]);
+  }
+
   removeRuntimeHostPermission(id: string, host: string) {
     this.methodCalled('removeRuntimeHostPermission', [id, host]);
     return Promise.resolve();
@@ -154,6 +162,10 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   setItemAllowedIncognito(id: string, isAllowedIncognito: boolean) {
     this.methodCalled('setItemAllowedIncognito', [id, isAllowedIncognito]);
+  }
+
+  setItemAllowedUserScripts(id: string, isAllowedIncognito: boolean) {
+    this.methodCalled('setItemAllowedUserScripts', [id, isAllowedIncognito]);
   }
 
   setItemAllowedOnFileUrls(id: string, isAllowedOnFileUrls: boolean) {
@@ -166,6 +178,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   setItemEnabled(id: string, isEnabled: boolean) {
     this.methodCalled('setItemEnabled', [id, isEnabled]);
+    return Promise.resolve();
   }
 
   setItemCollectsErrors(id: string, collectsErrors: boolean) {
@@ -187,6 +200,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   shouldIgnoreUpdate(
       extensionId: string, eventType: chrome.developerPrivate.EventType) {
     this.methodCalled('shouldIgnoreUpdate', [extensionId, eventType]);
+    return false;
   }
 
   updateExtensionCommandKeybinding(
@@ -404,5 +418,14 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
 
   dismissMv2DeprecationNotice() {
     this.methodCalled('dismissMv2DeprecationNotice');
+  }
+
+  uploadItemToAccount(id: string) {
+    this.methodCalled('uploadItemToAccount', id);
+    return Promise.resolve(false);
+  }
+
+  showSiteSettings(id: string) {
+    this.methodCalled('showSiteSettings', id);
   }
 }

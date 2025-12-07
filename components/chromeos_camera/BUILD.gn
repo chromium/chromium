@@ -2,12 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//media/gpu/args.gni")
 import("//testing/test.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 source_set("jpeg_encode_accelerator") {
   sources = [
@@ -151,13 +150,14 @@ source_set("mjpeg_decode_accelerator_service_unittest") {
   ]
 }
 
-if (use_v4l2_codec || use_vaapi) {
+if (use_linux_video_acceleration) {
   test("jpeg_encode_accelerator_unittest") {
     deps = [
       ":jpeg_encode_accelerator",
       ":jpeg_encode_accelerator_service",
       "//base",
       "//base/test:test_support",
+      "//components/viz/common/resources:shared_image_format",
       "//media:test_support",
       "//media/gpu:buildflags",
       "//media/gpu/chromeos:video_frame_mapper",
@@ -193,6 +193,7 @@ test("jpeg_decode_accelerator_unittest") {
     ":mjpeg_decode_accelerator_service",
     "//base",
     "//base/test:test_support",
+    "//components/viz/common/resources:shared_image_format",
     "//media:test_support",
     "//media/gpu",
     "//media/gpu:buildflags",

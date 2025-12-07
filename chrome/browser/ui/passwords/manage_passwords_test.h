@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
+#include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
@@ -18,6 +19,7 @@
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 class ManagePasswordsUIController;
@@ -45,6 +47,7 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
 
   // InteractiveBrowserTest:
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
   void SetUpInProcessBrowserTestFixture() override;
 
   // Execute the browser command to open the manage passwords bubble.
@@ -97,6 +100,14 @@ class ManagePasswordsTest : public InteractiveBrowserTest {
   std::unique_ptr<password_manager::PasswordFormManager> CreateFormManager(
       password_manager::PasswordStoreInterface* profile_store = nullptr,
       password_manager::PasswordStoreInterface* account_store = nullptr);
+
+  auto CheckHistogramUniqueSample(const std::string& name,
+                                  int sample,
+                                  int expected_count) {
+    return Do([=, this]() {
+      histogram_tester_.ExpectUniqueSample(name, sample, expected_count);
+    });
+  }
 
  private:
   password_manager::PasswordForm password_form_;

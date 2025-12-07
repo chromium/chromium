@@ -5,8 +5,12 @@
 #ifndef COMPONENTS_REPORTING_STORAGE_STORAGE_H_
 #define COMPONENTS_REPORTING_STORAGE_STORAGE_H_
 
+#include <map>
 #include <memory>
+#include <string>
+#include <utility>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
@@ -14,13 +18,10 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
 #include "components/reporting/compression/compression_module.h"
 #include "components/reporting/encryption/encryption_module_interface.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
-#include "components/reporting/storage/key_delivery.h"
-#include "components/reporting/storage/storage_base.h"
 #include "components/reporting/storage/storage_configuration.h"
 #include "components/reporting/storage/storage_queue.h"
 #include "components/reporting/storage/storage_uploader_interface.h"
@@ -29,48 +30,24 @@
 
 namespace reporting {
 
-// Storage allows for multiple generations for a given priority (if
-// multi-genetation mode is enabled for this priority via finch flag).
-
-// In multi-generation mode each queue is uniquely identifiable by a generation
-// globally unique ID (guid) + priority tuple The generation guid is a randomly
-// generation string. Generation guids have a one-to-one relationship with <DM
-// token, Priority> tuples.
-
-// Queues are created lazily with given priority when Write is called with a
-// DM token we haven't seen before, as opposed to creating all queues during
-// storage creation.
-
-// Multi-generation queue directory names now have the format of
-// <priority>.<generation GUID>, as oppsed to legacy queues named just
-// <priority>
-
-// Storage only creates queues on startup if it finds non-empty queue
-// subdirectories in the storage directory. But these queues do not enqueue
-// new records. They send their records and stay empty until they are deleted
-// on the next restart of Storage.
-
-// Empty subdirectories in the storage directory are deleted on storage
-// creation. TODO(b/278620137): should also delete empty directories every 1-2
-// days.
-
-// In single-generation mode (legacy mode) there is only one queue per priority.
-// Queues are created at the first start of the Storage and never erased.
-
+// Storage represents the data to be collected, stored persistently and uploaded
+// according to the priority.
 class Storage : public base::RefCountedThreadSafe<Storage> {
  public:
-  // Creates Storage instance and returns it with the completion callback.
+  // Creates Storage instance, and returns it with the completion callback.
   static void Create(
       const StorageOptions& options,
-      scoped_refptr<QueuesContainer> queues_container,
+      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       scoped_refptr<EncryptionModuleInterface> encryption_module,
       scoped_refptr<CompressionModule> compression_module,
-      UploaderInterface::AsyncStartUploaderCb async_start_upload_cb,
       base::OnceCallback<void(StatusOr<scoped_refptr<Storage>>)> completion_cb);
 
+  Storage(const Storage& other) = delete;
+  Storage& operator=(const Storage& other) = delete;
+
   // Wraps and serializes Record (taking ownership of it), encrypts and writes
-  // the resulting blob into the Storage (the last file of it) according to
-  // the priority with the next sequencing id assigned. If file is going to
+  // the resulting blob into the Storage (the last file of it) according to the
+  // priority with the next sequencing id assigned. If file is going to
   // become too large, it is closed and new file is created.
   void Write(Priority priority,
              Record record,
@@ -105,49 +82,50 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // to their completion and the Storage is destructed as well.
   void RegisterCompletionCallback(base::OnceClosure callback);
 
+ protected:
+  virtual ~Storage();
+
  private:
   friend class base::RefCountedThreadSafe<Storage>;
 
-  // Private helper class to initialize a single queue
-  friend class CreateQueueContext;
+  // Private bridge class.
+  class QueueUploaderInterface;
 
-  // Private helper class to flush all queues with a given priority
-  friend class FlushContext;
+  // Private helper class for key upload/download to the file system.
+  class KeyInStorage;
+
+  // Private helper class for initial key delivery from the server.
+  // It can be invoked multiple times in parallel, but will only do
+  // one server roundtrip and notify all requestors upon its completion.
+  class KeyDelivery;
 
   // Private constructor, to be called by Create factory method only.
   // Queues need to be added afterwards.
   Storage(const StorageOptions& options,
-          scoped_refptr<QueuesContainer> queues_container,
           scoped_refptr<EncryptionModuleInterface> encryption_module,
           scoped_refptr<CompressionModule> compression_module,
           UploaderInterface::AsyncStartUploaderCb async_start_upload_cb);
-
-  // Private destructor, as required by RefCountedThreadSafe.
-  ~Storage();
 
   // Initializes the object by adding all queues for all priorities.
   // Must be called once and only once after construction.
   // Returns OK or error status, if anything failed to initialize.
   Status Init();
 
-  // Helper method to select queue by priority on the Storage task runner and
-  // return it, if succeeded, or return failure status otherwise.
-  StatusOr<scoped_refptr<StorageQueue>> TryGetQueue(
-      Priority priority,
-      StatusOr<GenerationGuid> generation_guid);
+  // Helper method that selects queue by priority. Returns error
+  // if priority does not match any queue.
+  StatusOr<scoped_refptr<StorageQueue>> GetQueue(Priority priority) const;
 
-  // Writes a record to the given queue.
-  void WriteToQueue(Record record,
-                    scoped_refptr<StorageQueue> queue,
-                    base::OnceCallback<void(Status)> completion_cb);
+  // Helper method to select queue by priority on the Storage task runner and
+  // then perform `queue_action`, if succeeded. Returns failure on any stage
+  // with `completion_cb`.
+  void AsyncGetQueueAndProceed(
+      Priority priority,
+      base::OnceCallback<void(scoped_refptr<StorageQueue>,
+                              base::OnceCallback<void(Status)>)> queue_action,
+      base::OnceCallback<void(Status)> completion_cb);
 
   // Immutable options, stored at the time of creation.
   const StorageOptions options_;
-
-  // Task runner for storage-wide operations (initialized in
-  // `queues_container_`).
-  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
-  SEQUENCE_CHECKER(sequence_checker_);
 
   // Encryption module.
   const scoped_refptr<EncryptionModuleInterface> encryption_module_;
@@ -164,10 +142,13 @@ class Storage : public base::RefCountedThreadSafe<Storage> {
   // Upload provider callback.
   const UploaderInterface::AsyncStartUploaderCb async_start_upload_cb_;
 
-  // Queues container and storage degradation controller. If degradation is
-  // enabled, in case of disk space pressure it facilitates dropping low
-  // priority events to free up space for the higher priority ones.
-  const scoped_refptr<QueuesContainer> queues_container_;
+  // Task runner for storage-wide operations (initialization, queues selection).
+  const scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  // Map priority->StorageQueue.
+  base::flat_map<Priority, scoped_refptr<StorageQueue>> queues_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace reporting

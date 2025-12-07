@@ -31,9 +31,8 @@ if (!is_ios) {
     deps = [
       ":url_ipc",
       "//base",
-      "//ipc:test_support",
       "//testing/gtest",
-      "//url:url",
+      "//url",
     ]
   }
 }

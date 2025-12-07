@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/functional/callback_forward.h"
-#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/tether/disconnect_tethering_operation.h"
 #include "chromeos/ash/components/tether/tether_session_completion_logger.h"

@@ -4,6 +4,8 @@
 
 package org.chromium.components.external_intents;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
@@ -15,8 +17,10 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.EnsuresNonNull;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.HashSet;
@@ -24,6 +28,7 @@ import java.util.List;
 import java.util.function.Function;
 
 /** This class contains the logic to determine effective navigation/redirect. */
+@NullMarked
 public class RedirectHandler {
     private static final String TAG = "RedirectHandler";
 
@@ -46,27 +51,29 @@ public class RedirectHandler {
         final boolean mIsCustomTabIntent;
         final boolean mPreferToStayInChrome;
         final boolean mExternalIntentStartedTask;
+        final boolean mCanInitialNavigationLeaveChrome;
 
         // A resolver list which includes all resolvers of |mInitialIntent|.
-        HashSet<ComponentName> mCachedResolvers = new HashSet<ComponentName>();
+        final HashSet<ComponentName> mCachedResolvers = new HashSet<>();
 
         IntentState(
                 Intent initialIntent,
                 boolean preferToStayInChrome,
                 boolean isCustomTabIntent,
-                boolean externalIntentStartedTask) {
+                boolean externalIntentStartedTask,
+                boolean canInitialNavigationLeaveChrome) {
             mInitialIntent = initialIntent;
             mPreferToStayInChrome = preferToStayInChrome;
             mIsCustomTabIntent = isCustomTabIntent;
             mExternalIntentStartedTask = externalIntentStartedTask;
+            mCanInitialNavigationLeaveChrome = canInitialNavigationLeaveChrome;
         }
     }
 
     /** Captures the state of the initial navigation in a Navigation Chain. */
-    public class InitialNavigationState {
+    public static class InitialNavigationState {
         public final boolean isRendererInitiated;
         public final boolean isFromReload;
-        public final boolean isFromTyping;
         public final boolean isFromFormSubmit;
         public final boolean isFromIntent;
         public final boolean hasUserGesture;
@@ -75,13 +82,11 @@ public class RedirectHandler {
                 boolean isRendererInitiated,
                 boolean hasUserGesture,
                 boolean isFromReload,
-                boolean isFromTyping,
                 boolean isFromFormSubmit,
                 boolean isFromIntent) {
             this.isRendererInitiated = isRendererInitiated;
             this.hasUserGesture = hasUserGesture;
             this.isFromReload = isFromReload;
-            this.isFromTyping = isFromTyping;
             this.isFromFormSubmit = isFromFormSubmit;
             this.isFromIntent = isFromIntent;
         }
@@ -105,15 +110,13 @@ public class RedirectHandler {
         }
     }
 
-    private IntentState mIntentState;
+    private @Nullable IntentState mIntentState;
     private boolean mIsPrefetchLoadForIntent;
-    private NavigationChainState mNavigationChainState;
+    private @Nullable NavigationChainState mNavigationChainState;
 
     // Not part of NavigationChainState as this should persist through resetting of the
     // NavigationChain so that the history state can be correctly set even after the tab is hidden.
     private int mLastCommittedEntryIndexBeforeStartingNavigation = INVALID_ENTRY_INDEX;
-
-    private long mLastUserInteractionTimeMillis;
 
     public static RedirectHandler create() {
         return new RedirectHandler();
@@ -123,10 +126,11 @@ public class RedirectHandler {
 
     /** Resets |mIntentState| for the newly received Intent. */
     public void updateIntent(
-            Intent intent,
+            @Nullable Intent intent,
             boolean isCustomTabIntent,
             boolean sendToExternalApps,
-            boolean externalIntentStartedTask) {
+            boolean externalIntentStartedTask,
+            boolean canInitialNavigationLeaveChrome) {
         if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
             mIntentState = null;
             return;
@@ -147,7 +151,8 @@ public class RedirectHandler {
                         initialIntent,
                         preferToStayInChrome,
                         isCustomTabIntent,
-                        externalIntentStartedTask);
+                        externalIntentStartedTask,
+                        canInitialNavigationLeaveChrome);
     }
 
     /**
@@ -178,7 +183,8 @@ public class RedirectHandler {
      * occurs.
      */
     public void setShouldNotOverrideUrlLoadingOnCurrentRedirectChain() {
-        mNavigationChainState.mShouldNotOverrideUrlLoadingOnCurrentNavigationChain = true;
+        assumeNonNull(mNavigationChainState).mShouldNotOverrideUrlLoadingOnCurrentNavigationChain =
+                true;
     }
 
     /**
@@ -192,20 +198,17 @@ public class RedirectHandler {
     }
 
     /**
-     * Updates new url loading information to trace navigation.
-     * A time based heuristic is used to determine if this loading is an effective redirect or not
-     * if core of |pageTransType| is LINK.
+     * Updates new url loading information to trace navigation. A time based heuristic is used to
+     * determine if this loading is an effective redirect or not if core of |pageTransType| is LINK.
      *
-     * http://crbug.com/322567 : Trace navigation started from an external app.
+     * <p>http://crbug.com/322567 : Trace navigation started from an external app.
      * http://crbug.com/331571 : Trace navigation started from user typing to do not override such
-     * navigation.
-     * http://crbug.com/426679 : Trace every navigation and the last committed entry index right
-     * before starting the navigation.
+     * navigation. http://crbug.com/426679 : Trace every navigation and the last committed entry
+     * index right before starting the navigation.
      *
      * @param pageTransType page transition type of this loading.
      * @param isRedirect whether this loading is http redirect or not.
      * @param hasUserGesture whether this loading is started by a user gesture.
-     * @param lastUserInteractionTime time when the last user interaction was made.
      * @param lastCommittedEntryIndex the last committed entry index right before this loading.
      * @param isInitialNavigation whether this loading is for the initial navigation in a Tab.
      * @param isRendererInitiated whether the navigation was initiated by a Renderer.
@@ -214,18 +217,15 @@ public class RedirectHandler {
             int pageTransType,
             boolean isRedirect,
             boolean hasUserGesture,
-            long lastUserInteractionTime,
             int lastCommittedEntryIndex,
             boolean isInitialNavigation,
             boolean isRendererInitiated) {
-        mLastUserInteractionTimeMillis = lastUserInteractionTime;
-
         // Treat anything renderer-initiated without a gesture as part of the same navigation
         // chain. Server redirects are also part of the same navigation chain.
         boolean isSameNavigationChain = isRedirect || (isRendererInitiated && !hasUserGesture);
 
         if (mNavigationChainState != null && isSameNavigationChain) {
-            updateNavigationChainState(pageTransType);
+            updateNavigationChainState();
         } else {
             resetNavigationChainState(
                     pageTransType,
@@ -238,10 +238,12 @@ public class RedirectHandler {
         if (isBackOrForward) mNavigationChainState.mUsedBackOrForward = true;
     }
 
-    private void updateNavigationChainState(int pageTransType) {
+    @RequiresNonNull({"mNavigationChainState"})
+    private void updateNavigationChainState() {
         mNavigationChainState.mIsOnFirstLoadInChain = false;
     }
 
+    @EnsuresNonNull({"mNavigationChainState"})
     private void resetNavigationChainState(
             int pageTransType,
             boolean hasUserGesture,
@@ -253,7 +255,6 @@ public class RedirectHandler {
         boolean isFromApi = (pageTransType & PageTransition.FROM_API) != 0;
         boolean isFromIntent = isFromApi && (mIntentState != null || mIsPrefetchLoadForIntent);
         boolean isFromReload = pageTransitionCore == PageTransition.RELOAD;
-        boolean isFromTyping = pageTransitionCore == PageTransition.TYPED;
         boolean isFromFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
 
         if (!isFromIntent) {
@@ -265,7 +266,6 @@ public class RedirectHandler {
                         isRendererInitiated,
                         hasUserGesture,
                         isFromReload,
-                        isFromTyping,
                         isFromFormSubmit,
                         isFromIntent);
 
@@ -279,12 +279,14 @@ public class RedirectHandler {
      *         navigation (eg. has followed a client or server redirect).
      */
     public boolean isOnNoninitialLoadForIntentNavigationChain() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mInitialNavigationState.isFromIntent
                 && !mNavigationChainState.mIsOnFirstLoadInChain;
     }
 
     /** @return whether we're on the first load in the current navigation chain. */
     public boolean isOnFirstLoadInNavigationChain() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mIsOnFirstLoadInChain;
     }
 
@@ -293,13 +295,11 @@ public class RedirectHandler {
         return mIntentState != null && mIntentState.mIsCustomTabIntent;
     }
 
-    /** @return whether navigation is from a user's typing or not. */
-    public boolean isNavigationFromUserTyping() {
-        return mNavigationChainState.mInitialNavigationState.isFromTyping;
-    }
-
-    /** @return whether we should stay in Chrome or not. */
+    /**
+     * @return whether we should stay in Chrome or not.
+     */
     public boolean shouldNotOverrideUrlLoading() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mShouldNotOverrideUrlLoadingOnCurrentNavigationChain;
     }
 
@@ -345,7 +345,7 @@ public class RedirectHandler {
     }
 
     /** @return The initial intent of the navigation chain, if available. */
-    public Intent getInitialIntent() {
+    public @Nullable Intent getInitialIntent() {
         return mIntentState != null ? mIntentState.mInitialIntent : null;
     }
 
@@ -355,15 +355,18 @@ public class RedirectHandler {
      * the user was started.
      */
     public boolean isNavigationChainExpired() {
+        assumeNonNull(mNavigationChainState);
         return currentRealtime() - mNavigationChainState.mNavigationChainStartTime
                 > NAVIGATION_CHAIN_TIMEOUT_MILLIS;
     }
 
     public boolean navigationChainUsedBackOrForward() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mUsedBackOrForward;
     }
 
     public InitialNavigationState getInitialNavigationState() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mInitialNavigationState;
     }
 
@@ -371,28 +374,17 @@ public class RedirectHandler {
         return mIntentState != null && mIntentState.mPreferToStayInChrome;
     }
 
-    public void maybeLogExternalRedirectBlockedWithMissingGesture() {
-        if (!mNavigationChainState.mInitialNavigationState.isRendererInitiated
-                || mNavigationChainState.mInitialNavigationState.hasUserGesture) {
-            return;
-        }
-
-        long millisSinceLastGesture =
-                SystemClock.elapsedRealtime() - mLastUserInteractionTimeMillis;
-        Log.w(
-                TAG,
-                "External navigation blocked due to missing gesture. Last input was "
-                        + millisSinceLastGesture
-                        + "ms ago.");
-        RecordHistogram.recordTimesHistogram(
-                "Android.Intent.BlockedExternalNavLastGestureTime", millisSinceLastGesture);
+    public boolean canInitialNavigationLeaveChrome() {
+        return mIntentState != null && mIntentState.mCanInitialNavigationLeaveChrome;
     }
 
     public void setPerformedHiddenCrossFrameNavigation() {
+        assumeNonNull(mNavigationChainState);
         mNavigationChainState.mPerformedHiddenCrossFrameNavigation = true;
     }
 
     public boolean navigationChainPerformedHiddenCrossFrameNavigation() {
+        assumeNonNull(mNavigationChainState);
         return mNavigationChainState.mPerformedHiddenCrossFrameNavigation;
     }
 

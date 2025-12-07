@@ -8,24 +8,19 @@
 
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "build/blink_buildflags.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "components/facilitated_payments/core/util/pix_code_validator.h"
+#include "components/facilitated_payments/core/validation/pix_code_validator.h"
 #include "components/web_package/web_bundle_parser_factory.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/cbor_parser_impl.h"
 #include "services/data_decoder/gzipper.h"
-#include "services/data_decoder/json_parser_impl.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "services/data_decoder/structured_headers_parser_impl.h"
 #include "services/data_decoder/xml_parser.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "services/data_decoder/ble_scan_parser_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(USE_BLINK)
 #include "services/data_decoder/image_decoder_impl.h"
 #endif
 
@@ -47,18 +42,12 @@ void DataDecoderService::BindReceiver(
 
 void DataDecoderService::BindImageDecoder(
     mojo::PendingReceiver<mojom::ImageDecoder> receiver) {
-#if BUILDFLAG(IS_IOS)
-  LOG(FATAL) << "ImageDecoder not supported on iOS.";
+#if !BUILDFLAG(USE_BLINK)
+  LOG(FATAL) << "ImageDecoder not supported on non-Blink platforms.";
 #else
   mojo::MakeSelfOwnedReceiver(std::make_unique<ImageDecoderImpl>(),
                               std::move(receiver));
 #endif
-}
-
-void DataDecoderService::BindJsonParser(
-    mojo::PendingReceiver<mojom::JsonParser> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<JsonParserImpl>(),
-                              std::move(receiver));
 }
 
 void DataDecoderService::BindStructuredHeadersParser(
@@ -99,13 +88,5 @@ void DataDecoderService::BindPixCodeValidator(
       std::make_unique<payments::facilitated::PixCodeValidator>(),
       std::move(receiver));
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void DataDecoderService::BindBleScanParser(
-    mojo::PendingReceiver<mojom::BleScanParser> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<BleScanParserImpl>(),
-                              std::move(receiver));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace data_decoder

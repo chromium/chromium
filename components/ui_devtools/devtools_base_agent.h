@@ -11,8 +11,8 @@ namespace ui_devtools {
 
 class UiDevToolsAgent {
  public:
-  UiDevToolsAgent() {}
-  virtual ~UiDevToolsAgent() {}
+  UiDevToolsAgent() = default;
+  virtual ~UiDevToolsAgent() = default;
 
   virtual void Init(protocol::UberDispatcher*) = 0;
   virtual void Disable() = 0;

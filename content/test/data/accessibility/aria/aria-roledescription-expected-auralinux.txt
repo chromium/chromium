@@ -4,7 +4,7 @@
 ++[push button] name='Clicky button' roledescription:Clicky
 ++[section]
 ++++[static] name='foo'
-++[section] name='bar'
+++[section]
 ++++[static] name='bar'
 ++[paragraph] roledescription:Texty
 ++++[static] name='baz'

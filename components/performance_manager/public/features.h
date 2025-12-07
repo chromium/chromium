@@ -8,16 +8,14 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace performance_manager::features {
-
-// If enabled, the PM runs on the main (UI) thread *and* tasks posted to the PM
-// TaskRunner from the main (UI) thread run synchronously.
-BASE_DECLARE_FEATURE(kRunOnMainThreadSync);
 
 #if !BUILDFLAG(IS_ANDROID)
 
@@ -41,87 +39,85 @@ BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);
 // toggling it.
 BASE_DECLARE_FEATURE(kBatterySaverModeAvailable);
 
-// Flag to control a baseline HaTS survey for Chrome performance.
-BASE_DECLARE_FEATURE(kPerformanceControlsPerformanceSurvey);
-BASE_DECLARE_FEATURE(kPerformanceControlsBatteryPerformanceSurvey);
-BASE_DECLARE_FEATURE(kPerformanceControlsMemorySaverOptOutSurvey);
-BASE_DECLARE_FEATURE(kPerformanceControlsBatterySaverOptOutSurvey);
+// Flags to control HaTS surveys about Chrome performance.
+BASE_DECLARE_FEATURE(kPerformanceControlsPPMSurvey);
 
-// Defines the time delta to look back when checking if a device has used
-// battery.
-extern const base::FeatureParam<base::TimeDelta>
-    kPerformanceControlsBatterySurveyLookback;
+// Defines the minimum and maximum delay before showing the PPM survey. It will
+// be shown the next time the user opens the New Tab Page after a random time in
+// this range.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kPerformanceControlsPPMSurveyMinDelay);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kPerformanceControlsPPMSurveyMaxDelay);
 
-// Round 3 Performance Controls features
+// Controls whether survey responses will be tagged as "Selected For Uniform
+// Sample". The subset of responses with this tag approximate the general
+// population, no matter how many responses are received in individual segments.
+BASE_DECLARE_FEATURE_PARAM(bool,
+                           kPerformanceControlsPPMSurveyUniformSampleValue);
 
-// This enables the performance detection backend.
-BASE_DECLARE_FEATURE(kPerformanceIntervention);
-
-// This enables the performance intervention UI
-BASE_DECLARE_FEATURE(kPerformanceInterventionUI);
+// Defines the names and boundaries of up to 3 segments for the PPM survey.
+// There's no kPerformanceControlsPPMSurveySegmentMaxMemoryGB3 because there's
+// never a 4th segment, so segment 3 has no maximum.
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kPerformanceControlsPPMSurveySegmentName1);
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kPerformanceControlsPPMSurveySegmentName2);
+BASE_DECLARE_FEATURE_PARAM(std::string,
+                           kPerformanceControlsPPMSurveySegmentName3);
+BASE_DECLARE_FEATURE_PARAM(size_t,
+                           kPerformanceControlsPPMSurveySegmentMaxMemoryGB1);
+BASE_DECLARE_FEATURE_PARAM(size_t,
+                           kPerformanceControlsPPMSurveySegmentMaxMemoryGB2);
 
 // This enables performance intervention to run in demo mode. While in demo
 // mode, performance intervention will ignore rate throttling and CPU thresholds
 // to make it easier to trigger performance intervention for testing purposes.
 BASE_DECLARE_FEATURE(kPerformanceInterventionDemoMode);
 
-bool ShouldUsePerformanceInterventionBackend();
+// This enables performance intervention to use the improved notification
+// prompting algorithm to show the intervention more often.
+BASE_DECLARE_FEATURE(kPerformanceInterventionNotificationImprovements);
 
-// This represents the version number for the string displayed on the
-// Performance Intervention Dialog.
-extern const base::FeatureParam<int> kInterventionDialogStringVersion;
+// Minimum time needed before showing another performance intervention.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kMinimumTimeBetweenReshow);
 
-// This represents whether we should show the performance intervention
-// UI when the suggested tabs to take action on include tabs from a
-// profile that is different from the last active browser.
-extern const base::FeatureParam<bool> kInterventionShowMixedProfileSuggestions;
+// Number of recent samples to be taken into consideration when determining
+// performance intervention acceptance rate.
+BASE_DECLARE_FEATURE_PARAM(int, kAcceptanceRateWindowSize);
 
-#if BUILDFLAG(IS_WIN)
-// Prefetch the main browser DLL when a new node is added to the PM graph
-// and no prefetch has been done within a reasonable timeframe.
-BASE_DECLARE_FEATURE(kPrefetchVirtualMemoryPolicy);
-#endif
+// Upper bounds for showing performance intervention and will be scaled down
+// based on the acceptance rate.
+BASE_DECLARE_FEATURE_PARAM(int, kScaleMaxTimesPerDay);
+BASE_DECLARE_FEATURE_PARAM(int, kScaleMaxTimesPerWeek);
 
-// This represents the duration that the performance intervention button
-// should remain in the toolbar after the user dismisses the intervention
-// dialog without taking the suggested action.
-extern const base::FeatureParam<base::TimeDelta> kInterventionButtonTimeout;
+// The amount of time a user needs to wait before being shown performance
+// intervention with a 0% acceptance rate
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kNoAcceptanceBackOff);
 
-// This represents the duration that CPU must be over the threshold before
-// a notification is triggered.
-extern const base::FeatureParam<base::TimeDelta> kCPUTimeOverThreshold;
+// This enables performance intervention to use the updated notification
+// strings.
+BASE_DECLARE_FEATURE(kPerformanceInterventionNotificationStringImprovements);
 
-// Frequency to sample for cpu usage to ensure that the user is experiencing
-// consistent cpu issues before surfacing a notification
-extern const base::FeatureParam<base::TimeDelta> kCPUSampleFrequency;
-
-// If the system CPU consistently exceeds these percent thresholds, then
-// the CPU health will be classified as the threshold it is exceeding
-extern const base::FeatureParam<int> kCPUDegradedHealthPercentageThreshold;
-extern const base::FeatureParam<int> kCPUUnhealthyPercentageThreshold;
-
-// Maximum number of tabs to be actionable
-extern const base::FeatureParam<int> kCPUMaxActionableTabs;
-
-// Minimum percentage to improve CPU health for a tab to be actionable
-extern const base::FeatureParam<int> kMinimumActionableTabCPUPercentage;
-
-// This represents the duration that Memory must be over the threshold before
-// a notification is triggered.
-extern const base::FeatureParam<base::TimeDelta> kMemoryTimeOverThreshold;
-
-// If available Memory percent and bytes are both under the specified thresholds
-// then we will trigger a notification.
-extern const base::FeatureParam<int> kMemoryFreePercentThreshold;
-extern const base::FeatureParam<int> kMemoryFreeBytesThreshold;
+// The version string that is used on the performance detection dialog.
+BASE_DECLARE_FEATURE_PARAM(int, kNotificationStringVersion);
 
 #endif
+
+// Enable best effort task inhibiting based on performance scenario information.
+BASE_DECLARE_FEATURE(kEnableBestEffortTaskInhibitingPolicy);
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kBestEffortTaskInhibitingPeriod);
+BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kBestEffortTaskInhibitingMinimumAllowedTimePerPeriod);
 
 BASE_DECLARE_FEATURE(kPMProcessPriorityPolicy);
 
 extern const base::FeatureParam<bool> kInheritParentPriority;
 
-extern const base::FeatureParam<bool> kDownvoteAdFrames;
+extern const base::FeatureParam<bool> kRenderedOutOfViewIsNotVisible;
+
+extern const base::FeatureParam<bool> kNonSpareRendererHighInitialPriority;
 
 BASE_DECLARE_FEATURE(kPMLoadingPageVoter);
 
@@ -131,9 +127,6 @@ BASE_DECLARE_FEATURE(kBFCachePerformanceManagerPolicy);
 
 // Whether tabs are discarded under high memory pressure.
 BASE_DECLARE_FEATURE(kUrgentPageDiscarding);
-
-// This enables logging to evaluate the efficacy of potential CPU interventions.
-BASE_DECLARE_FEATURE(kCPUInterventionEvaluationLogging);
 
 // This represents the duration that CPU must be over the threshold before
 // logging the delayed metrics.
@@ -145,13 +138,31 @@ extern const base::FeatureParam<int> kThresholdChromeCPUPercent;
 // When enabled, the freezing policy measures background CPU usage.
 BASE_DECLARE_FEATURE(kCPUMeasurementInFreezingPolicy);
 
+// When enabled, the freezing policy measures memory usage. This exists to
+// quantify the overhead of memory measurement in a holdback study.
+BASE_DECLARE_FEATURE(kMemoryMeasurementInFreezingPolicy);
+
+// When enabled, frozen browsing instances in which an origin's private memory
+// footprint grows above a threshold are discarded. Depends on
+// `kMemoryMeasurementInFreezingPolicy`.
+BASE_DECLARE_FEATURE(kDiscardFrozenBrowsingInstancesWithGrowingPMF);
+
+// Per-origin private memory footprint increase above which a frozen browsing
+// instance is discarded.
+BASE_DECLARE_FEATURE_PARAM(int, kFreezingMemoryGrowthThresholdToDiscardKb);
+
 // Proportion of background CPU usage for a group of frames/workers that belong
 // to the same [browsing instance, origin] that is considered "high".
-extern const base::FeatureParam<double>
-    kFreezingOnBatterySaverHighCPUProportion;
+BASE_DECLARE_FEATURE_PARAM(double, kFreezingHighCPUProportion);
+
+// Time for which a page cannot be frozen after being visible.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFreezingVisibleProtectionTime);
+
+// Time for which a page cannot be frozen after being audible.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kFreezingAudioProtectionTime);
 
 // When enabled, browsing instances with high CPU usage in background are frozen
-// when Battery Saver is active. Depends on kCPUMeasurementInFreezingPolicy.
+// when Battery Saver is active. Depends on `kCPUMeasurementInFreezingPolicy`.
 BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);
 
 // This is the similar to `kFreezingOnBatterySaver`, with some changes to
@@ -160,9 +171,81 @@ BASE_DECLARE_FEATURE(kFreezingOnBatterySaver);
 // - Pretend that all tabs have high CPU usage in background.
 BASE_DECLARE_FEATURE(kFreezingOnBatterySaverForTesting);
 
+// When enabled, the freezing policy won't freeze pages that are opted out of
+// tab discarding.
+BASE_DECLARE_FEATURE(kFreezingFollowsDiscardOptOut);
+
+// When enabled, the freezing eligibility UKM event may be recorded.
+BASE_DECLARE_FEATURE(kRecordFreezingEligibilityUKM);
+
+// When enabled, eligible tabs which are not in the N most recently used are
+// frozen. This prevents CPU usage from growing proportionally with the number
+// of tabs, and aims to make the browser support "infinite tabs" with good
+// performance. A tab is eligible if it doesn't have a `CannotFreezeReason`
+// other than `CannotFreezeReason::kRecentlyVisible`. N is configurable with
+// `kInfiniteTabsFreezing_NumProtectedTabs`. Tabs frozen by this feature are
+// periodically unfrozen, to allow showing notifications, refreshing content,
+// maintaining connections... (see `kInfiniteTabsFreezing_UnfreezeInterval` and
+// `kInfiniteTabsFreezing_UnfreezeDuration`).
+BASE_DECLARE_FEATURE(kInfiniteTabsFreezing);
+
+// Number of most recently visible tabs protected from "infinite tabs" freezing.
+BASE_DECLARE_FEATURE_PARAM(int, kInfiniteTabsFreezing_NumProtectedTabs);
+
+// Interval at which tabs frozen to support "infinite tabs" are temporarily
+// unfrozen.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kInfiniteTabsFreezing_UnfreezeInterval);
+
+// Duration for which tabs frozen to support "infinite tabs" are temporarily
+// unfrozen.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kInfiniteTabsFreezing_UnfreezeDuration);
+
+// If enabled, eligible tabs may be frozen on Windows if the system is under
+// memory pressure. A tab is eligible if it would be freezable by the
+// kInfiniteTabsFreezing policy.
+BASE_DECLARE_FEATURE(kInfiniteTabsFreezingOnMemoryPressure);
+
+// The interval at which to check for memory pressure when enabled.
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kInfiniteTabsFreezingOnMemoryPressureInterval);
+
+// The available physical memory percentage below which to trigger freezing when
+// enabled.
+BASE_DECLARE_FEATURE_PARAM(int, kInfiniteTabsFreezingOnMemoryPressurePercent);
+
 // When enabled, Resource Attribution measurements will include contexts for
 // individual origins.
 BASE_DECLARE_FEATURE(kResourceAttributionIncludeOrigins);
+
+// When enabled, change the ordering of frame swap in render (crbug/357649043).
+BASE_DECLARE_FEATURE(kSeamlessRenderFrameSwap);
+
+// When enabled, visible unimportant frames receives a lesser priority than
+// non unimportant frames.
+BASE_DECLARE_FEATURE(kUnimportantFramesPriority);
+
+// When enabled, the begin frame rate of visible unimportant frames would be
+// reduced to half of normal frame rate.
+BASE_DECLARE_FEATURE(kThrottleUnimportantFrameRate);
+
+// When enabled, keep the default search engine render process host alive
+// (crbug.com/365958798).
+BASE_DECLARE_FEATURE(kKeepDefaultSearchEngineRendererAlive);
+
+// A feature to boost the priority of tabs that are being closed.
+BASE_DECLARE_FEATURE(kBoostClosingTabs);
+
+BASE_DECLARE_FEATURE(kTransientKeepAlivePolicy);
+
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTransientKeepAlivePolicyDuration);
+
+BASE_DECLARE_FEATURE_PARAM(size_t, kTransientKeepAlivePolicyMaxCount);
+
+// A feature to set the the priority of extension service worker processes to
+// USER_BLOCKING.
+BASE_DECLARE_FEATURE(kExtensionServiceWorkerVoter);
 
 }  // namespace performance_manager::features
 

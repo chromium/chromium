@@ -86,17 +86,25 @@ static gboolean AXPlatformAtkHyperlinkIsSelectedLink(
 
 static int AXPlatformAtkHyperlinkGetStartIndex(AtkHyperlink* atk_hyperlink) {
   g_return_val_if_fail(IS_AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink), 0);
-  AXPlatformAtkHyperlink* link = AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink);
+  auto* platform_node =
+      ToAXPlatformNodeAuraLinux(AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink));
+  if (!platform_node) {
+    return 0;
+  }
   std::optional<std::pair<int, int>> indices =
-      link->priv->platform_node->GetEmbeddedObjectIndices();
+      platform_node->GetEmbeddedObjectIndices();
   return indices.has_value() ? indices->first : 0;
 }
 
 static int AXPlatformAtkHyperlinkGetEndIndex(AtkHyperlink* atk_hyperlink) {
   g_return_val_if_fail(IS_AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink), 0);
-  AXPlatformAtkHyperlink* link = AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink);
+  auto* platform_node =
+      ToAXPlatformNodeAuraLinux(AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink));
+  if (!platform_node) {
+    return 0;
+  }
   std::optional<std::pair<int, int>> indices =
-      link->priv->platform_node->GetEmbeddedObjectIndices();
+      platform_node->GetEmbeddedObjectIndices();
   return indices.has_value() ? indices->second : 0;
 }
 

@@ -1,0 +1,44 @@
+    <style include="settings-shared cr-spinner-style">
+      .spinner {
+        padding-bottom: 12px;
+      }
+    </style>
+    <cr-dialog id="dialog" close-text="$i18n{close}" ignore-popstate
+         on-close="closeDialog_">
+      <div slot="title">[[title_]]</div>
+      <div slot="body">
+        <cr-page-selector attr-for-selected="id" selected="[[shown_]]"
+            on-iron-select="onIronSelect_">
+          <div id="initial">
+            <p>$i18n{securityKeysResetStep1}</p>
+            <div class="spinner"></div>
+          </div>
+
+          <div id="noReset">
+            <p>$i18n{securityKeysNoReset}</p>
+          </div>
+
+          <div id="resetFailed">
+            <p>[[resetFailed_(errorCode_)]]</p>
+          </div>
+
+          <div id="resetConfirm">
+            <p>$i18n{securityKeysResetStep2}</p>
+          </div>
+
+          <div id="resetSuccess">
+            <p>$i18n{securityKeysResetSuccess}</p>
+          </div>
+
+          <div id="resetNotAllowed">
+            <p>$i18n{securityKeysResetNotAllowed}</p>
+          </div>
+        </cr-page-selector>
+      </div>
+      <div slot="button-container">
+        <cr-button id="button" class$="[[maybeActionButton_(complete_)]]"
+             on-click="closeDialog_">
+          [[closeText_(complete_)]]
+        </cr-button>
+      </div>
+    </cr-dialog>

@@ -41,14 +41,14 @@ struct MESSAGE_CENTER_PUBLIC_EXPORT NotifierId {
 
 // Constructor for non WEB_PAGE type. `catalog_name` is required for CrOS system
 // notifications.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   NotifierId(NotifierType type,
              const std::string& id,
              ash::NotificationCatalogName catalog_name =
                  ash::NotificationCatalogName::kNone);
 #else
   NotifierId(NotifierType type, const std::string& id);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Constructor for WEB_PAGE type.
   explicit NotifierId(const GURL& url);

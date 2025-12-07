@@ -6,10 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_VARIANT_NUMERIC_H_
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -18,23 +15,23 @@ class FontVariantNumeric {
 
  public:
   enum NumericFigure { kNormalFigure = 0, kLiningNums, kOldstyleNums };
-  static WTF::String ToString(NumericFigure);
+  static String ToString(NumericFigure);
 
   enum NumericSpacing { kNormalSpacing = 0, kProportionalNums, kTabularNums };
-  static WTF::String ToString(NumericSpacing);
+  static String ToString(NumericSpacing);
 
   enum NumericFraction {
     kNormalFraction = 0,
     kDiagonalFractions,
     kStackedFractions
   };
-  static WTF::String ToString(NumericFraction);
+  static String ToString(NumericFraction);
 
   enum Ordinal { kOrdinalOff = 0, kOrdinalOn };
-  static WTF::String ToString(Ordinal);
+  static String ToString(Ordinal);
 
   enum SlashedZero { kSlashedZeroOff = 0, kSlashedZeroOn };
-  static WTF::String ToString(SlashedZero);
+  static String ToString(SlashedZero);
 
   FontVariantNumeric() : fields_as_unsigned_(0) {}
 
@@ -78,7 +75,7 @@ class FontVariantNumeric {
     return fields_as_unsigned_ == other.fields_as_unsigned_;
   }
 
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
   FontVariantNumeric(unsigned init_value) : fields_as_unsigned_(init_value) {}

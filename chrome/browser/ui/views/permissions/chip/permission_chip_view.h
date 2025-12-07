@@ -7,15 +7,12 @@
 
 #include "base/check_is_test.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
-#include "chrome/browser/ui/views/content_setting_bubble_contents.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_theme.h"
-#include "chrome/browser/ui/views/permissions/permission_prompt_bubble_base_view.h"
 #include "chrome/browser/ui/views/permissions/permission_prompt_style.h"
 #include "components/permissions/permission_actions_history.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/animation/slide_animation.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/view_tracker.h"
@@ -28,8 +25,7 @@ class PermissionChipView : public views::MdTextButton {
   METADATA_HEADER(PermissionChipView, views::MdTextButton)
 
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kRequestChipElementId);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIndicatorChipElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementIdForTesting);
   explicit PermissionChipView(PressedCallback callback);
   PermissionChipView(const PermissionChipView& button) = delete;
   PermissionChipView& operator=(const PermissionChipView& button) = delete;
@@ -40,6 +36,7 @@ class PermissionChipView : public views::MdTextButton {
     virtual void OnChipVisibilityChanged(bool is_visible) {}
     virtual void OnExpandAnimationEnded() {}
     virtual void OnCollapseAnimationEnded() {}
+    virtual void OnMousePressed() {}
   };
 
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
@@ -59,6 +56,7 @@ class PermissionChipView : public views::MdTextButton {
   // views::MdTextButton:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+  bool OnMousePressed(const ui::MouseEvent& event) override;
   void OnThemeChanged() override;
   void UpdateBackgroundColor() override;
 
@@ -78,8 +76,11 @@ class PermissionChipView : public views::MdTextButton {
   PermissionPromptStyle GetPermissionPromptStyle() const {
     return prompt_style_;
   }
-  PermissionChipTheme GetPermissionChipTheme() const { return theme_; }
-  PermissionChipTheme get_theme_for_testing() { return theme_; }
+  PermissionChipTheme theme() const { return theme_; }
+
+  // Returns whether the theme describes a request state (true) or indicator
+  // state (false).
+  bool GetIsRequestForTesting() const;
 
   // Add/remove observer.
   void AddObserver(Observer* observer);
@@ -149,7 +150,7 @@ class PermissionChipView : public views::MdTextButton {
   bool fully_collapsed_ = false;
   bool is_divider_visible_ = false;
 
-  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::kNoneIcon;
+  raw_ptr<const gfx::VectorIcon> icon_ = &gfx::VectorIcon::EmptyIcon();
 
   base::ObserverList<Observer> observers_;
 };

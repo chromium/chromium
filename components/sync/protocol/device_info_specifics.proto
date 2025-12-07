@@ -70,7 +70,7 @@ message DeviceInfoSpecifics {
   // Name of device manufacturer.
   optional string manufacturer = 12;
 
-  // The interval in minutes with which |last_updated_timestamp| is updated to
+  // The interval in minutes with which `last_updated_timestamp` is updated to
   // the sync servers if online and while sync is actively running (e.g.
   // excludes backgrounded apps on Android). Introduced in M81. The legacy
   // default was 1 day.
@@ -115,43 +115,34 @@ message FeatureSpecificFields {
   // If not set, the in-app message type will be assumed.
   optional SyncEnums.SendTabReceivingType send_tab_to_self_receiving_type = 2;
 
-  // Tracks the last time this device signed-in with the floating workspace
-  // feature enabled. As of 07/2024, this feature is only supported on ChromeOS.
-  optional int64 floating_workspace_last_signin_time_windows_epoch_micros = 3;
+  // Tracks the last time this device signed-in with the Auto Sign-Out
+  // feature enabled. As of 09/2025, this feature is only supported on ChromeOS.
+  optional int64 auto_sign_out_last_signin_timestamp_windows_epoch_micros = 3;
 }
 
 // Device specific information for Sharing feature. Used to send end-to-end
 // encrypted message through FCM or unencrypted message through Chime to other
 // devices.
 message SharingSpecificFields {
-  // FCM registration token of device subscribed using VAPID key.
-  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
-  optional string vapid_fcm_token = 1;
-
-  // Public key for message encryption [RFC8291] using VAPID key.
-  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
-  optional bytes vapid_p256dh = 2;
-
-  // Auth secret for message encryption [RFC8291] using VAPID key.
-  // TODO(crbug.com/40102247): Deprecate when VAPID migration is over.
-  optional bytes vapid_auth_secret = 3;
+  reserved 1, 2, 3;
+  reserved "vapid_fcm_token", "vapid_p256dh", "vapid_auth_secret";
 
   // Enum defining available Sharing features.
   enum EnabledFeatures {
     reserved 5;
     reserved "PEER_CONNECTION";
+    reserved 1;
+    reserved "CLICK_TO_CALL_VAPID";
+    reserved 2;
+    reserved "SHARED_CLIPBOARD_VAPID";
 
     UNKNOWN = 0;
-    // Supports Click to Call only via VAPID.
-    CLICK_TO_CALL_VAPID = 1;
-    // Supports Shared Clipboard only via VAPID.
-    SHARED_CLIPBOARD_VAPID = 2;
     SMS_FETCHER = 3;
     REMOTE_COPY = 4;
     DISCOVERY = 6;
-    // Suppots Click to Call via both VAPID and sender ID.
+    // Supports Click to Call via sender ID.
     CLICK_TO_CALL_V2 = 7;
-    // Suppots Shared Clipboard via both VAPID and sender ID.
+    // Supports Shared Clipboard via sender ID.
     SHARED_CLIPBOARD_V2 = 8;
     // Supports optimization guide push notification.
     OPTIMIZATION_GUIDE_PUSH_NOTIFICATION = 9;
@@ -210,8 +201,8 @@ message PhoneAsASecurityKeySpecificFields {
   // remote end is authorized to talk to the device publishing this secret.
   optional bytes secret = 3;
 
-  // An id that identifies |secret|. This, and |secret|, will be rotated and
-  // the ID allows this device to know which |secret| the counterparty is
+  // An id that identifies `secret`. This, and `secret`, will be rotated and
+  // the ID allows this device to know which `secret` the counterparty is
   // using.
   optional fixed32 id = 4;
 

@@ -13,5 +13,10 @@ This is a testharness.js-based test.
   assert_unreached: Should have rejected: cancelPromise should reject with thrownError Reached unreachable code
 [FAIL] writable.abort() and readable.cancel() should reject if a transformer.cancel() calls controller.error()
   assert_unreached: Should have rejected: cancelPromise should reject with thrownError Reached unreachable code
+[FAIL] readable.cancel() should not call cancel() again when already called from writable.abort()
+  assert_equals: expected 1 but got 0
+[FAIL] writable.close() should not call flush() when cancel() is already called from readable.cancel()
+  assert_true: cancel() was called expected true got false
+[FAIL] writable.abort() should not call cancel() again when already called from readable.cancel()
+  assert_unreached: Should have rejected: undefined Reached unreachable code
 Harness: the test ran to completion.
-

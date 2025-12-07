@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "base/time/time.h"
+#include "google_apis/common/api_error_codes.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace ash {
@@ -43,6 +44,7 @@ struct ASH_EXPORT SelectedPlaylist {
   gfx::ImageSkia thumbnail;
   focus_mode_util::SoundType type = focus_mode_util::SoundType::kNone;
   focus_mode_util::SoundState state = focus_mode_util::SoundState::kNone;
+  uint8_t list_position = 0;
 };
 
 // Values for the "ash.focus_mode.focus_mode_sounds_enabled" policy.
@@ -57,7 +59,11 @@ constexpr std::string_view kPlaylistIdKey = "playlistId";
 
 constexpr base::TimeDelta kMinimumDuration = base::Minutes(1);
 constexpr base::TimeDelta kMaximumDuration = base::Minutes(300);
-constexpr base::TimeDelta kEndingMomentDuration = base::Seconds(9);
+
+constexpr base::TimeDelta kInitialEndingMomentDuration = base::Seconds(9);
+
+// Number of steps we break the tray circular progress indicator into.
+constexpr int kProgressIndicatorSteps = 120;
 
 // The amount of time to extend the focus session duration by during a currently
 // active focus session.
@@ -115,6 +121,25 @@ ASH_EXPORT std::u16string GetCongratulatoryEmoji(const size_t index);
 
 // Returns a congratulatory text followed by an emoji during the ending moment.
 ASH_EXPORT std::u16string GetCongratulatoryTextAndEmoji(const size_t index);
+
+// Returns the next progress ring step the progress ring needs to equal or
+// exceed to trigger a paint. This threshold is calculated by breaking down the
+// entire progress into equal parts (`kProgressIndicatorSteps`), then returning
+// the threshold required to hit the next step.
+ASH_EXPORT int GetNextProgressStep(double current_progress);
+
+ASH_EXPORT void RecordHistogramForApiStatus(
+    const std::string& method,
+    const google_apis::ApiErrorCode error_code);
+
+ASH_EXPORT void RecordHistogramForApiLatency(const std::string& method,
+                                             const base::TimeDelta latency);
+
+ASH_EXPORT void RecordHistogramForApiResult(const std::string& method,
+                                            const bool successful);
+
+ASH_EXPORT void RecordHistogramForApiRetryCount(const std::string& method,
+                                                const int retry_count);
 
 }  // namespace focus_mode_util
 

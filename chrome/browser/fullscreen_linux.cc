@@ -6,12 +6,12 @@
 
 #include <vector>
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/desktop_aura/desktop_window_tree_host_linux.h"
 #include "ui/views/widget/widget.h"
 
 bool IsFullScreenMode() {
-  std::vector<aura::Window*> all_windows =
+  aura::Window::Windows all_windows =
       views::DesktopWindowTreeHostLinux::GetAllOpenWindows();
   // Only the topmost window is checked. This works fine in the most cases, but
   // it may return false when there are multiple displays and one display has

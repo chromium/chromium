@@ -1,0 +1,5 @@
+include_rules = [
+  "+chromeos/ash/components/dbus/session_manager",
+  "+components/policy/core/common",
+  "+components/policy/proto",
+]

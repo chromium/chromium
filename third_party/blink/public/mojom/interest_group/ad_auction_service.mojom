@@ -26,7 +26,8 @@ union AuctionAdConfigAuctionId {
 // that was originally passed in resolved.
 enum AuctionAdConfigField {
   kAuctionSignals,
-  kSellerSignals
+  kSellerSignals,
+  kSellerTKVSignals
 };
 
 // Represents which field that uses the AuctionAdConfigBuyerTimeouts struct is
@@ -52,6 +53,15 @@ interface AbortableAdAuction {
   ResolvedPerBuyerSignalsPromise(
       AuctionAdConfigAuctionId auction,
       map<url.mojom.Origin, string>? per_buyer_signals);
+
+  // Used to provide result of resolving a promise for a single buyer's entry in
+  // the `per_buyer_tkv_signals` field of an AuctionConfig. A nullopt `json_value`
+  // means not to send any signals, either due to the promise being rejected, or
+  // being passed data that is not serializable to JSON.
+  ResolvedBuyerTkvSignalsPromise(
+      AuctionAdConfigAuctionId auction,
+      url.mojom.Origin buyer,
+      string? json_value);
 
   // Used to provide result of resolving a promise specifying
   // `per_buyer_timeouts` or `per_buyer_cumulative_timeouts` field of an
@@ -127,18 +137,6 @@ interface AdAuctionService {
   // re-requesting a new set of ads.
   FinalizeAd(string ads_guid, AuctionAdConfig config)
      => (url.mojom.Url? ad_display_url);
-
-  // Creates an auction nonce, a one-time ID uniquely associated with a single
-  // call to RunAdAuction. This nonce will need to be passed back in via a
-  // subsequent call to RunAdAuction via the AuctionAdConfig. This is currently
-  // only needed for auctions that use additional bids, for which the auction
-  // nonce will be included in each additional bid as a way of ensuring that
-  // those bids are only used in the auctions for which they were intended.
-  // This is only called when
-  // blink::features::kFledgeCreateAuctionNonceSynchronousResolution is *not*
-  // enabled, since synchronous resolution enables the Renderer process to
-  // independently create new auction nonces.
-  CreateAuctionNonce() => (mojo_base.mojom.Uuid nonce);
 
   // Triggers the ad auction to run in a sandboxed JavaScript process. The
   // auction scripts run in this process come from the `bidding_logic_url`'s of
@@ -264,12 +262,10 @@ interface AdAuctionService {
                          array<AdKeywordReplacement> replacements) => ();
 
   // Gets the ad auction data for running an external auction on a bidding and
-  // auction server. Upon success the request will contain the encrypted ad
-  // auction data and `error_message` will be empty.
-  GetInterestGroupAdAuctionData(url.mojom.Origin seller,
-                                url.mojom.Origin? coordinator,
+  // auction server. The requests will contain each seller's encrypted ad
+  // auction data upon success, or error message if there is one upon failure.
+  GetInterestGroupAdAuctionData(map<url.mojom.Origin, url.mojom.Origin?> sellers,
                                 AuctionDataConfig config)
-      => (mojo_base.mojom.BigBuffer request,
-          mojo_base.mojom.Uuid? request_id,
-          string error_message);
+      => (array<AdAuctionPerSellerRequest> requests,
+          mojo_base.mojom.Uuid? request_id);
 };

@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "base/containers/span.h"
+#include "base/strings/string_view_util.h"
 #include "mojo/public/cpp/base/byte_string_mojom_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "net/base/hash_value.h"
@@ -19,8 +21,7 @@ template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::SHA256HashValueDataView, net::SHA256HashValue> {
   static const std::string data(const net::SHA256HashValue& value) {
-    return std::string(reinterpret_cast<const char*>(value.data),
-                       sizeof(value.data));
+    return std::string(base::as_string_view(value));
   }
 
   static bool Read(blink::mojom::SHA256HashValueDataView input,

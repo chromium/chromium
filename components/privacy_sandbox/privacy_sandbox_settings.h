@@ -30,33 +30,34 @@ class CanonicalTopic;
 // 1. Update kMaxValue to match it.
 // 2. Update `PrivacySandboxAttestationsGatedAPIProto` in
 //    `privacy_sandbox_attestations.proto`.
-// 3. Update `AllowAPI` in `privacy_sandbox_attestations_parser.cc`.
+// 3. Update `InsertAPI` in `privacy_sandbox_attestations_parser.cc`.
 enum class PrivacySandboxAttestationsGatedAPI {
   kTopics,
   kProtectedAudience,
   kPrivateAggregation,
   kAttributionReporting,
   kSharedStorage,
+  kFencedStorageRead,
 
-  kMaxValue = kSharedStorage,
+  kMaxValue = kFencedStorageRead,
 };
 
-// A service which acts as a intermediary between Privacy Sandbox APIs and the
-// preferences and content settings which define when they are allowed to be
-// accessed. Privacy Sandbox APIs, regardless of where they live (renderer,
-// browser, network etc), must consult this service to determine when
-// they are allowed to run. While a basic on/off control is provided by this
-// service, embedders are expected to achieve fine-grained control though
-// the underlying preferences and content settings separately.
+// A service which acts as a intermediary between Privacy Sandbox APIs and
+// the preferences and content settings which define when they are allowed
+// to be accessed. Privacy Sandbox APIs, regardless of where they live
+// (renderer, browser, network etc), must consult this service to determine
+// when they are allowed to run. While a basic on/off control is provided by
+// this service, embedders are expected to achieve fine-grained control
+// though the underlying preferences and content settings separately.
 class PrivacySandboxSettings : public KeyedService {
  public:
   class Observer {
    public:
     virtual void OnTopicsDataAccessibleSinceUpdated() {}
 
-    // Fired when the First-Party Sets changes to being `enabled` as a result of
-    // the kPrivacySandboxFirstPartySets preference changing.
-    virtual void OnFirstPartySetsEnabledChanged(bool enabled) {}
+    // Fired when the Related Website Sets changes to being `enabled` as a
+    // result of the kPrivacySandboxRelatedWebsiteSets preference changing.
+    virtual void OnRelatedWebsiteSetsEnabledChanged(bool enabled) {}
   };
 
   class Delegate {
@@ -64,9 +65,9 @@ class PrivacySandboxSettings : public KeyedService {
     virtual ~Delegate() = default;
 
     // Allows the delegate to restrict access to the Privacy Sandbox. When
-    // the Privacy Sandbox is restricted, all API access is disabled. This is
-    // consulted on every access check, and it is acceptable for this to change
-    // return value over the life of the service.
+    // the Privacy Sandbox is restricted, all API access is disabled. This
+    // is consulted on every access check, and it is acceptable for this to
+    // change return value over the life of the service.
     virtual bool IsPrivacySandboxRestricted() const = 0;
 
     // Allows the delegate to query in real time if Privacy Sandbox is currently
@@ -101,9 +102,6 @@ class PrivacySandboxSettings : public KeyedService {
     // eligibility.
     virtual TpcdExperimentEligibility
     GetCookieDeprecationExperimentCurrentEligibility() const = 0;
-
-    // Whether cookie deprecation label is allowed.
-    virtual bool IsCookieDeprecationLabelAllowed() const = 0;
 
     // Whether third-party cookies are blocked due to cookie deprecation
     // experiment. Also returns false if users explicitly block third-party
@@ -268,6 +266,16 @@ class PrivacySandboxSettings : public KeyedService {
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) const = 0;
 
+  // Controls whether fenced storage read is allowable for `accessing_origin` in
+  // the context of `top_frame_origin`.
+  //
+  // If provided, `console_frame` is used to log errors to the console upon
+  // attestation failure.
+  virtual bool IsFencedStorageReadAllowed(
+      const url::Origin& top_frame_origin,
+      const url::Origin& accessing_origin,
+      content::RenderFrameHost* console_frame) const = 0;
+
   // Determines whether the Private Aggregation API is allowable in a particular
   // context. `top_frame_origin` is the associated top-frame origin of the
   // calling context. Applicable to all uses of Private Aggregation.
@@ -296,18 +304,6 @@ class PrivacySandboxSettings : public KeyedService {
   // The eligibility applies for both mode A and mode B experiments.
   virtual TpcdExperimentEligibility
   GetCookieDeprecationExperimentCurrentEligibility() const = 0;
-
-  // Determines whether cookie deprecation label is allowable. This consults
-  // whether the profile is eligible for 3PCD experiments. If true, the more
-  // specific function, IsCookieDeprecationLabelAllowed(), should be consulted
-  // for the relevant context.
-  virtual bool IsCookieDeprecationLabelAllowed() const = 0;
-
-  // Determines whether cookie deprecation label is allowable for
-  // `context_origin` in the context of `top_frame_origin`.
-  virtual bool IsCookieDeprecationLabelAllowedForContext(
-      const url::Origin& top_frame_origin,
-      const url::Origin& context_origin) const = 0;
 
   // Allows all Privacy Sandbox prefs for testing. This should be used if tests
   // don't depend on specific access control and just would like to have Privacy
@@ -350,7 +346,7 @@ class PrivacySandboxSettings : public KeyedService {
   // Overrides the internal delegate for test purposes.
   virtual void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) = 0;
 
-  // Source of truth for whether related websites are enabled.
+  // Source of truth for whether related website sets are enabled.
   virtual bool AreRelatedWebsiteSetsEnabled() const = 0;
 };
 

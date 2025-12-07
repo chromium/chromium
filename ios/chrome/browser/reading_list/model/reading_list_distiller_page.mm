@@ -15,6 +15,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/google/core/common/google_util.h"
 #import "ios/chrome/browser/reading_list/model/favicon_web_state_dispatcher_impl.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -43,7 +44,11 @@ const char16_t* kGetIframeURLJavaScript =
     "  if (link !== null) {"
     "    return link.getAttribute('href');"
     "  }"
-    "  return document.getElementsByTagName('iframe')[0].src;"
+    "  var iframe = document.getElementsByTagName('iframe')[0];"
+    "  if (iframe) {"
+    "    return iframe.src;"
+    "  }"
+    "  return '';"
     "})()";
 
 const char16_t* kWikipediaWorkaround =
@@ -61,10 +66,10 @@ ReadingListDistillerPageDelegate::~ReadingListDistillerPageDelegate() {}
 
 ReadingListDistillerPage::ReadingListDistillerPage(
     const GURL& url,
-    web::BrowserState* browser_state,
+    ProfileIOS* profile,
     FaviconWebStateDispatcher* web_state_dispatcher,
     ReadingListDistillerPageDelegate* delegate)
-    : dom_distiller::DistillerPageIOS(browser_state),
+    : dom_distiller::DistillerPageIOS(profile),
       original_url_(url),
       web_state_dispatcher_(web_state_dispatcher),
       delegate_(delegate),
@@ -74,6 +79,14 @@ ReadingListDistillerPage::ReadingListDistillerPage(
 }
 
 ReadingListDistillerPage::~ReadingListDistillerPage() {}
+
+bool ReadingListDistillerPage::ShouldFetchOfflineData() {
+  return true;
+}
+
+dom_distiller::DistillerType ReadingListDistillerPage::GetDistillerType() {
+  return dom_distiller::DistillerType::kDOMDistiller;
+}
 
 void ReadingListDistillerPage::DistillPageImpl(const GURL& url,
                                                const std::string& script) {
@@ -229,7 +242,7 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
   if (!google_util::IsGoogleDomainUrl(
           url, google_util::DISALLOW_SUBDOMAIN,
           google_util::DISALLOW_NON_STANDARD_PORTS) ||
-      !url.path().compare(0, 4, "amp/")) {
+      !url.GetPath().compare(0, 4, "amp/")) {
     return false;
   }
   const web::SSLStatus& ssl_status = CurrentWebState()
@@ -289,7 +302,7 @@ bool ReadingListDistillerPage::IsWikipediaPage() {
   if (!url.is_valid() || !url.SchemeIs(url::kHttpsScheme)) {
     return false;
   }
-  return (base::EndsWith(url.host(), ".m.wikipedia.org",
+  return (base::EndsWith(url.GetHost(), ".m.wikipedia.org",
                          base::CompareCase::SENSITIVE));
 }
 

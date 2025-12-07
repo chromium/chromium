@@ -6,23 +6,27 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "base/test/test_timeouts.h"
 #include "base/types/expected.h"
 #include "build/build_config.h"
-#include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/back_forward_cache_browsertest.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/public/browser/browser_accessibility_state.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -45,7 +49,15 @@
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/events/base_event_utils.h"
+
+#if defined(USE_AURA)
+#include "content/browser/renderer_host/render_widget_host_view_aura.h"
+#endif
 
 // This file contains back/forward-cache tests that test or use internal
 // features, e.g. cache-flushing, crashes, verifying proxies and other
@@ -98,10 +110,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, BackForwardCacheFlush) {
   delete_observer_rfh_b.WaitUntilDeleted();
 }
 
-// Tests that |RenderFrameHost::ForEachRenderFrameHost| and
-// |WebContents::ForEachRenderFrameHost| behave correctly with bfcached
+// Tests that `RenderFrameHostImpl::ForEachRenderFrameHostImpl` and
+// `WebContentsImpl::ForEachRenderFrameHostImpl` behave correctly with bfcached
 // RenderFrameHosts.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       ForEachRenderFrameHostImpl) {
   // There are sometimes unexpected messages from a renderer to the browser,
   // which caused test flakiness on macOS.
   // TODO(crbug.com/40800266): Fix the test flakiness.
@@ -163,12 +176,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
       ::testing::UnorderedElementsAre(rfh_a, rfh_b, rfh_c, rfh_d, rfh_e));
 
   {
-    // If we stop iteration in |WebContents::ForEachRenderFrameHost|, we stop
-    // the entire iteration, not just iteration in the page being iterated at
-    // that point. In this case, if we stop iteration in the primary page, we do
-    // not continue to iterate in the bfcached page.
+    // If we stop iteration in `WebContentsImpl::ForEachRenderFrameHostImpl`, we
+    // stop the entire iteration, not just iteration in the page being iterated
+    // at that point. In this case, if we stop iteration in the primary page, we
+    // do not continue to iterate in the bfcached page.
     bool stopped = false;
-    web_contents()->ForEachRenderFrameHostWithAction(
+    web_contents()->ForEachRenderFrameHostImplWithAction(
         [&](RenderFrameHostImpl* rfh) {
           EXPECT_FALSE(stopped);
           stopped = true;
@@ -200,12 +213,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ForEachRenderFrameHost) {
   EXPECT_EQ(rfh_e, rfh_e->GetOutermostMainFrameOrEmbedder());
 }
 
-// Tests that |RenderFrameHostImpl::ForEachRenderFrameHostIncludingSpeculative|
-// and |WebContentsImpl::ForEachRenderFrameHostIncludingSpeculative|
-// behave correctly when a FrameTreeNode has both a speculative RFH and a
-// bfcached RFH.
+// Tests that
+// `RenderFrameHostImpl::ForEachRenderFrameHostImplIncludingSpeculative` and
+// `WebContentsImpl::ForEachRenderFrameHostImplIncludingSpeculative` behave
+// correctly when a FrameTreeNode has both a speculative RFH and a bfcached RFH.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       ForEachRenderFrameHostWithSpeculative) {
+                       ForEachRenderFrameHostImplWithSpeculative) {
   IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -551,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   run_loop.Run();
 
   // 4) Check the histogram.
-  base::HistogramBase::Sample sample = base::HistogramBase::Sample(
+  base::HistogramBase::Sample32 sample = base::HistogramBase::Sample32(
       base::TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
           "blink.mojom.LocalFrame"));
 
@@ -699,7 +712,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                     FROM_HERE);
 }
 
-// Navigate from A(B)->C. Send postMessage from A to B upon pagehide, and
+// Navigate from A(B)->C. Send postMessage from A to B upon pagehide, and make
+// sure that the message is deferred. Then go back and make sure the message
+// gets delivered when the cached page is restored.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PostMessageDelivered) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL(
@@ -734,18 +749,30 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PostMessageDelivered) {
   // evicted.
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
-  // 4) Go back to A(B). Make sure that JavaSc
+  // 4) Go back to A(B). Make sure that the message is delivered when the page
+  // is restored.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectRestored(FROM_HERE);
   EXPECT_EQ("dispatched",
             GetLocalStorage(rfh_b.get(), "postMessage_dispatched"));
 }
 
+class BackForwardCacheBrowserTestDisallowBroadcastChannel
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Disallow broadcastchannel to enter bfcache, because there is no
+    // other easy non-sticky feature for testing.
+    DisableFeature(blink::features::kBFCacheOpenBroadcastChannel);
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
 // Navigates from page A -> page B -> page C -> page B -> page C. Page B becomes
 // ineligible for bfcache in pagehide handler, so Page A stays in bfcache
 // without being evicted even after the navigation to Page C.
 IN_PROC_BROWSER_TEST_F(
-    BackForwardCacheBrowserTest,
+    BackForwardCacheBrowserTestDisallowBroadcastChannel,
     PagehideMakesPageIneligibleForBackForwardCacheAndNotCountedInCacheSize) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
@@ -1109,10 +1136,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // └───────┘                     └────────┘
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        SchedulerTrackedFeaturesUpdatedWhileStoring) {
-  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(CreateHttpsServer()->Start());
 
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_a(https_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(https_server()->GetURL("b.com", "/title1.html"));
 
   // 1) Navigate to A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
@@ -1124,7 +1151,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // cached.
   EXPECT_TRUE(ExecJs(rfh_a, R"(
     document.addEventListener('freeze', event => {
-      window.foo = new BroadcastChannel('foo');
+      navigator.xr.isSessionSupported('inline');
     });
   )"));
 
@@ -1171,8 +1198,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TimedEviction) {
       task_runner);
 
   base::TimeDelta time_to_live_in_back_forward_cache =
-      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
-          BackForwardCacheImpl::kNotInCCNSContext);
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetTimeToLiveInBackForwardCache(
+              BackForwardCacheImpl::kNotInCCNSContext);
   // This should match the value we set in EnableFeatureAndSetParams.
   EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(3600));
 
@@ -2189,8 +2219,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ChildImportanceTestForBackForwardCachedPagesTest) {
-  web_contents()->SetPrimaryMainFrameImportance(
-      ChildProcessImportance::MODERATE);
+  web_contents()->SetPrimaryPageImportance(
+      ChildProcessImportance::MODERATE, ChildProcessImportance::NORMAL);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -2218,7 +2248,151 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   EXPECT_EQ(ChildProcessImportance::MODERATE,
             rfh_a->GetProcess()->GetEffectiveImportance());
 }
+
+class BackForwardCacheInternalSubframeImportanceBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeatures(
+        /* enabled_features= */ {features::kSubframePriorityContribution,
+                                 features::kSubframeImportance},
+        /* disabled_features= */ {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheInternalSubframeImportanceBrowserTest,
+    ChildImportanceTestForBackForwardCachedPagesWithSubframeTest) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_b(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_main = current_frame_host();
+  RenderFrameHostImpl* rfh_child = web_contents()
+                                       ->GetPrimaryFrameTree()
+                                       .root()
+                                       ->child_at(0)
+                                       ->current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_main(rfh_main);
+  RenderFrameDeletedObserver delete_observer_rfh_child(rfh_child);
+
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::IMPORTANT,
+                                           ChildProcessImportance::MODERATE);
+
+  EXPECT_EQ(ChildProcessImportance::IMPORTANT,
+            rfh_main->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::MODERATE,
+            rfh_child->GetProcess()->GetEffectiveImportance());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_FALSE(delete_observer_rfh_main.deleted());
+  ASSERT_FALSE(delete_observer_rfh_child.deleted());
+
+  // 3) Verify the importance of page after entering back-forward cache to be
+  // "NORMAL".
+  EXPECT_EQ(ChildProcessImportance::NORMAL,
+            rfh_main->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::NORMAL,
+            rfh_child->GetProcess()->GetEffectiveImportance());
+
+  // 4) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  // 5) Verify the importance was restored correctly after page leaves
+  // back-forward cache.
+  EXPECT_EQ(ChildProcessImportance::IMPORTANT,
+            rfh_main->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::MODERATE,
+            rfh_child->GetProcess()->GetEffectiveImportance());
+
+  // 6) Navigate to B again.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_FALSE(delete_observer_rfh_main.deleted());
+  ASSERT_FALSE(delete_observer_rfh_child.deleted());
+
+  // Change the importance while the page is in back-forward cache.
+  web_contents()->SetPrimaryPageImportance(
+    ChildProcessImportance::MODERATE, ChildProcessImportance::NORMAL);
+
+  // 4) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  // 5) Verify the importance was restored correctly after page leaves
+  // back-forward cache.
+  EXPECT_EQ(ChildProcessImportance::MODERATE,
+            rfh_main->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::NORMAL,
+            rfh_child->GetProcess()->GetEffectiveImportance());
+}
 #endif
+
+class BackForwardCacheInternalSubframePriorityBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitAndEnableFeature(features::kSubframePriorityContribution);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheInternalSubframePriorityBrowserTest,
+                       FrameDepthInBackForwardCache) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* rfh_a = root->current_frame_host();
+  RenderWidgetHostImpl* rwh_a = rfh_a->GetRenderWidgetHost();
+
+  FrameTreeNode* child = root->child_at(0);
+  RenderFrameHostImpl* rfh_b = child->current_frame_host();
+  RenderWidgetHostImpl* rwh_b = rfh_b->GetRenderWidgetHost();
+
+  // Check initial frame depths.
+  EXPECT_EQ(0u, rfh_a->GetFrameDepth());
+  EXPECT_EQ(0u, rwh_a->GetPriority().frame_depth);
+  EXPECT_EQ(1u, rfh_b->GetFrameDepth());
+  EXPECT_EQ(1u, rwh_b->GetPriority().frame_depth);
+
+  // Navigate away to put the first page into the back-forward cache.
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+
+  // Check that page A is in the back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // Check that the frame depths of the widgets in the back-forward cached
+  // page are now `RenderProcessHostImpl::kMaxFrameDepthForPriority`.
+  EXPECT_EQ(RenderProcessHostImpl::kMaxFrameDepthForPriority,
+            rwh_a->GetPriority().frame_depth);
+  EXPECT_EQ(RenderProcessHostImpl::kMaxFrameDepthForPriority,
+            rwh_b->GetPriority().frame_depth);
+
+  // Navigate back to the first page.
+  EXPECT_TRUE(HistoryGoBack(web_contents()));
+
+  // Check that the frame depths of the widgets back from the back-forward cache
+  // are recovered.
+  EXPECT_EQ(0u, rwh_a->GetPriority().frame_depth);
+  EXPECT_EQ(1u, rwh_b->GetPriority().frame_depth);
+}
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PageshowMetrics) {
   // TODO(crbug.com/40702446): Do not check for unexpected messages
@@ -2548,7 +2722,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   ExpectBucketCount(
       "BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName",
-      base::HistogramBase::Sample(
+      base::HistogramBase::Sample32(
           static_cast<int32_t>(base::HashMetricName(mojom::Echo::Name_))),
       1);
 }
@@ -2633,7 +2807,7 @@ IN_PROC_BROWSER_TEST_F(
 
   ExpectBucketCount(
       "BackForwardCache.UnexpectedRendererToBrowserMessage.InterfaceName",
-      base::HistogramBase::Sample(
+      base::HistogramBase::Sample32(
           static_cast<int32_t>(base::HashMetricName(mojom::Echo::Name_))),
       1);
 
@@ -2889,10 +3063,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   RenderViewHostDeletedObserver delete_observer_rvh_b1(b1->GetRenderViewHost());
 
-  RenderProcessHost* process = b1->GetProcess();
-  RenderProcessHostWatcher destruction_observer(
-      process, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
-
   // 2) Navigate to URL B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_TRUE(a1->IsInBackForwardCache());
@@ -2902,9 +3072,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // on eviction.
   EXPECT_TRUE(a1->IsInactiveAndDisallowActivation(
       DisallowActivationReasonId::kForTesting));
-  destruction_observer.Wait();
-  ASSERT_TRUE(delete_observer_rvh_b1.deleted());
   delete_observer_rfh_b1.WaitUntilDeleted();
+  ASSERT_TRUE(delete_observer_rvh_b1.deleted());
 }
 
 // Tests that same-process sub-frame's RenderViewHost is deleted on root
@@ -3258,7 +3427,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   ::testing::NiceMock<MockWebContentsObserver> observer(shell->web_contents());
   EXPECT_CALL(observer, DidFinishNavigation(_))
-      .WillOnce(::testing::Invoke([](NavigationHandle* handle) {
+      .WillOnce([](NavigationHandle* handle) {
         EXPECT_FALSE(handle->HasCommitted());
         EXPECT_TRUE(handle->IsServedFromBackForwardCache());
         // This call checks that |rfh_restored_from_back_forward_cache| is not
@@ -3266,7 +3435,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
         EXPECT_TRUE(NavigationRequest::From(handle)
                         ->GetRenderFrameHostRestoredFromBackForwardCache()
                         ->GetRoutingID());
-      }));
+      });
 
   shell->Close();
 }
@@ -3503,10 +3672,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, NoThrottlesOnCacheRestore) {
   // NavigationThrottles.
   content::ShellContentBrowserClient::Get()
       ->set_create_throttles_for_navigation_callback(base::BindLambdaForTesting(
-          [&did_register_throttles](content::NavigationHandle* handle)
-              -> std::vector<std::unique_ptr<content::NavigationThrottle>> {
+          [&did_register_throttles](
+              content::NavigationThrottleRegistry& registry) -> void {
             did_register_throttles = true;
-            return std::vector<std::unique_ptr<content::NavigationThrottle>>();
           }));
 
   // 2) Navigate to B.
@@ -3713,29 +3881,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(ExecJs(rfh_a->child_at(0)->child_at(0), "true"));
 }
 
-class BackForwardCacheBrowserTestWithFlagForScreenReader
-    : public BackForwardCacheBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    if (IsBackForwardCacheEnabledForScreenReader()) {
-      EnableFeatureAndSetParams(
-          features::kEnableBackForwardCacheForScreenReader, "", "true");
-    } else {
-      DisableFeature(features::kEnableBackForwardCacheForScreenReader);
-    }
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  bool IsBackForwardCacheEnabledForScreenReader() { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheBrowserTestWithFlagForScreenReader,
-                         ::testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
-                       ScreenReaderOn) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, ScreenReaderOn) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -3748,56 +3894,19 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForScreenReader,
   // Navigate to Page A.
   EXPECT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
-  int process_id = current_frame_host()->GetProcess()->GetID();
-  int routing_id = current_frame_host()->GetRoutingID();
 
   // Navigate away to Page B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  if (IsBackForwardCacheEnabledForScreenReader()) {
-    EXPECT_TRUE(rfh_a.get());
-    EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-    // Navigate back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    ExpectRestored(FROM_HERE);
-  } else {
-    EXPECT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
-    // Navigate back.
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    auto reason = BackForwardCacheDisable::DisabledReason(
-        BackForwardCacheDisable::DisabledReasonId::kScreenReader);
-    ExpectNotRestored({NotRestoredReason::kDisableForRenderFrameHostCalled}, {},
-                      {}, {reason}, {}, FROM_HERE);
-    EXPECT_TRUE(
-        tester.IsDisabledForFrameWithReason(process_id, routing_id, reason));
-  }
+  EXPECT_TRUE(rfh_a.get());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  // Navigate back.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
 }
 
-class BackForwardCacheBrowserTestWithFlagForAXEvents
-    : public BackForwardCacheBrowserTest,
-      public ::testing::WithParamInterface<bool> {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kEnableBackForwardCacheForScreenReader,
-                              "", "true");
-    if (ShouldEvictOnAXEvents()) {
-      EnableFeatureAndSetParams(features::kEvictOnAXEvents, "", "true");
-    } else {
-      DisableFeature(features::kEvictOnAXEvents);
-    }
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  bool ShouldEvictOnAXEvents() { return GetParam(); }
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheBrowserTestWithFlagForAXEvents,
-                         ::testing::Bool());
-
-// Verify that the page will be evicted upon accessibility events if the
-// flag to evict on ax events is off, and evicted otherwise.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
-                       EvictOnAccessibilityEventsOrNot) {
+// Verify that the page will not be evicted upon accessibility events.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoNotEvictOnAccessibilityEventsOrNot) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -3813,8 +3922,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   // kLoadStart event has definitely already passed and any kLoadStart we see
   // from this frame in the future is newly generated.
   AccessibilityNotificationWaiter waiter_complete(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kLoadComplete);
+      shell()->web_contents(), ax::mojom::Event::kLoadComplete);
   ASSERT_TRUE(waiter_complete.WaitForNotification());
 
   // 2) Navigate to B.
@@ -3825,10 +3933,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
 
   // 3) Set the callback for generated events, and expect that this is never
   // fired.
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       rfh_a->GetOrCreateBrowserAccessibilityManager();
   manager->SetGeneratedEventCallbackForTesting(
-      base::BindRepeating([](BrowserAccessibilityManager* manager,
+      base::BindRepeating([](ui::BrowserAccessibilityManager* manager,
                              ui::AXEventGenerator::Event event,
                              ui::AXNodeID event_target_id) { FAIL(); }));
   // Generate an event.
@@ -3839,36 +3947,30 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXEvents,
   updates_and_events.events.emplace_back(
       /*id=*/0, ax::mojom::Event::kChildrenChanged);
   // If any events are generated and fired, they will be fired synchronously
-  // in the same task of |HandleAXEventsForTests()| and and result in a test
+  // in the same task of |HandleAXEventsForTesting()| and and result in a test
   // fail.
-  rfh_a->HandleAXEventsForTests(rfh_a->GetAXTreeID(),
-                                std::move(updates_and_events));
+  rfh_a->HandleAXEventsForTesting(rfh_a->GetAXTreeID(),
+                                  std::move(updates_and_events),
+                                  ui::AXLocationAndScrollUpdates());
 
   // Reset the callback before restoring the page so that we will not fail when
   // events are generated.
   manager->SetGeneratedEventCallbackForTesting(
-      GeneratedEventCallbackForTesting());
+      ui::GeneratedEventCallbackForTesting());
 
   // 4) Navigate back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
-  if (ShouldEvictOnAXEvents()) {
-    const uint64_t reason = DisallowActivationReasonId::kAXEvent;
-    ExpectNotRestored({NotRestoredReason::kIgnoreEventAndEvict}, {}, {}, {},
-                      {reason}, FROM_HERE);
-  } else {
-    AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
-                                                 ui::kAXModeComplete,
-                                                 ax::mojom::Event::kLoadStart);
-    // Ensure that |rfh_a| is successfully restored from bfcache and that we see
-    // LOAD_START event.
-    EXPECT_EQ(current_frame_host(), rfh_a.get());
-    ExpectRestored(FROM_HERE);
+  AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
+                                               ax::mojom::Event::kLoadStart);
+  // Ensure that |rfh_a| is successfully restored from bfcache and that we see
+  // LOAD_START event.
+  EXPECT_EQ(current_frame_host(), rfh_a.get());
+  ExpectRestored(FROM_HERE);
 
-    ASSERT_TRUE(waiter_start.WaitForNotification());
-    auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
-        waiter_start.event_browser_accessibility_manager()->delegate());
-    EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
-  }
+  ASSERT_TRUE(waiter_start.WaitForNotification());
+  auto* waiter_start_rfhi = static_cast<RenderFrameHostImpl*>(
+      waiter_start.event_browser_accessibility_manager()->delegate());
+  EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
 }
 
 class BackForwardCacheBrowserTestWithFlagForAXLocationChange
@@ -3876,8 +3978,6 @@ class BackForwardCacheBrowserTestWithFlagForAXLocationChange
       public ::testing::WithParamInterface<bool> {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kEnableBackForwardCacheForScreenReader,
-                              "", "true");
     if (ShouldEvictOnAXLocationChange()) {
       DisableFeature(features::kDoNotEvictOnAXLocationChange);
     } else {
@@ -3911,8 +4011,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
   // kLoadStart event has definitely already passed and any kLoadStart we see
   // from this frame in the future is newly generated.
   AccessibilityNotificationWaiter waiter_complete(
-      shell()->web_contents(), ui::kAXModeComplete,
-      ax::mojom::Event::kLoadComplete);
+      shell()->web_contents(), ax::mojom::Event::kLoadComplete);
   ASSERT_TRUE(waiter_complete.WaitForNotification());
 
   // 2) Navigate to B.
@@ -3922,7 +4021,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
   EXPECT_TRUE(rfh_a->IsInBackForwardCache());
 
   // 3) Set the callback for location change.
-  BrowserAccessibilityManager* manager =
+  ui::BrowserAccessibilityManager* manager =
       rfh_a->GetOrCreateBrowserAccessibilityManager();
   // This callback will count the number of times location change happens.
   // Note that this callback runs even when the page is in back/forward cache.
@@ -3935,22 +4034,22 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
       &location_change_counter_for_testing));
 
   // Generate a location change event.
-  std::vector<blink::mojom::LocationChangesPtr> changes_1;
+  ui::AXLocationAndScrollUpdates changes_1;
   ui::AXRelativeBounds relative_bounds_1;
   relative_bounds_1.bounds =
       gfx::RectF(/*x=*/1, /*y=*/2, /*width=*/3, /*height=*/4);
-  changes_1.push_back(blink::mojom::LocationChanges::New(0, relative_bounds_1));
+  changes_1.location_changes.emplace_back(0, relative_bounds_1);
   rfh_a->HandleAXLocationChanges(rfh_a->GetAXTreeID(), std::move(changes_1),
-                                 /*reset_token=*/1);
+                                 /*reset_token=*/1, {});
 
   // Generate another location change event.
-  std::vector<blink::mojom::LocationChangesPtr> changes_2;
+  ui::AXLocationAndScrollUpdates changes_2;
   ui::AXRelativeBounds relative_bounds_2;
   relative_bounds_2.bounds =
       gfx::RectF(/*x=*/2, /*y=*/3, /*width=*/4, /*height=*/5);
-  changes_2.push_back(blink::mojom::LocationChanges::New(0, relative_bounds_2));
+  changes_2.location_changes.emplace_back(0, relative_bounds_2);
   rfh_a->HandleAXLocationChanges(rfh_a->GetAXTreeID(), std::move(changes_2),
-                                 /*reset_token=*/1);
+                                 /*reset_token=*/1, {});
 
   // 4) Navigate back.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -3962,7 +4061,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
     EXPECT_EQ(0, location_change_counter_for_testing);
   } else {
     AccessibilityNotificationWaiter waiter_start(shell()->web_contents(),
-                                                 ui::kAXModeComplete,
                                                  ax::mojom::Event::kLoadStart);
     // Ensure that |rfh_a| is successfully restored from bfcache and that we see
     // LOAD_START event.
@@ -3977,199 +4075,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheBrowserTestWithFlagForAXLocationChange,
         waiter_start.event_browser_accessibility_manager()->delegate());
     EXPECT_EQ(waiter_start_rfhi, rfh_a.get());
   }
-}
-
-class BackgroundForegroundProcessLimitBackForwardCacheBrowserTest
-    : public BackForwardCacheBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    EnableFeatureAndSetParams(features::kBackForwardCache, "cache_size",
-                              base::NumberToString(kBackForwardCacheSize));
-    EnableFeatureAndSetParams(
-        features::kBackForwardCache, "foreground_cache_size",
-        base::NumberToString(kForegroundBackForwardCacheSize));
-    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
-  }
-
-  void ExpectCached(const RenderFrameHostImplWrapper& rfh,
-                    bool cached,
-                    bool backgrounded) {
-    EXPECT_FALSE(rfh.IsDestroyed());
-    EXPECT_EQ(cached, rfh->IsInBackForwardCache());
-    EXPECT_EQ(backgrounded, rfh->GetProcess()->GetPriority() ==
-                                base::Process::Priority::kBestEffort);
-  }
-  // The number of pages the BackForwardCache can hold per tab.
-  const size_t kBackForwardCacheSize = 4;
-  const size_t kForegroundBackForwardCacheSize = 2;
-};
-
-// Test that a series of same-site navigations (which use the same process)
-// uses the foreground limit.
-IN_PROC_BROWSER_TEST_F(
-    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
-    CacheEvictionSameSite) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  std::vector<RenderFrameHostImplWrapper> rfhs;
-
-  for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
-    SCOPED_TRACE(i);
-    GURL url(embedded_test_server()->GetURL(
-        "a.com", base::StringPrintf("/title1.html?i=%zu", i)));
-    ASSERT_TRUE(NavigateToURL(shell(), url));
-    rfhs.emplace_back(current_frame_host());
-    EXPECT_NE(rfhs.back()->GetProcess()->GetPriority(),
-              base::Process::Priority::kBestEffort);
-
-    for (size_t j = 0; j <= i; ++j) {
-      SCOPED_TRACE(j);
-      // The last page is active, the previous |kForegroundBackForwardCacheSize|
-      // should be in the cache, any before that should be deleted.
-      if (i - j <= kForegroundBackForwardCacheSize) {
-        // All of the processes should be in the foreground.
-        ExpectCached(rfhs[j], /*cached=*/i != j,
-                     /*backgrounded=*/false);
-      } else {
-        ASSERT_TRUE(rfhs[j].WaitUntilRenderFrameDeleted());
-      }
-    }
-  }
-
-  // Navigate back but not to the initial about:blank.
-  for (size_t i = 0; i <= kBackForwardCacheSize * 2 - 1; ++i) {
-    SCOPED_TRACE(i);
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    // The first |kBackForwardCacheSize| navigations should be restored from the
-    // cache. The rest should not.
-    if (i < kForegroundBackForwardCacheSize) {
-      ExpectRestored(FROM_HERE);
-    } else {
-      ExpectNotRestored({NotRestoredReason::kForegroundCacheLimit}, {}, {}, {},
-                        {}, FROM_HERE);
-    }
-  }
-}
-
-// Test that a series of cross-site navigations (which use different processes)
-// use the background limit.
-//
-// TODO(crbug.com/40179515): This test is flaky. It has been reenabled with
-// improved failure output (https://crrev.com/c/2862346). It's OK to disable it
-// again when it fails.
-IN_PROC_BROWSER_TEST_F(
-    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
-    CacheEvictionCrossSite) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  std::vector<RenderFrameHostImplWrapper> rfhs;
-
-  for (size_t i = 0; i <= kBackForwardCacheSize * 2; ++i) {
-    SCOPED_TRACE(i);
-    // Note: do NOT use .com domains here because a4.com is on the HSTS preload
-    // list, which will cause our test requests to timeout.
-    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.test", i),
-                                            "/title1.html"));
-    ASSERT_TRUE(NavigateToURL(shell(), url));
-    rfhs.emplace_back(current_frame_host());
-    EXPECT_NE(rfhs.back()->GetProcess()->GetPriority(),
-              base::Process::Priority::kBestEffort);
-
-    for (size_t j = 0; j <= i; ++j) {
-      SCOPED_TRACE(j);
-      // The last page is active, the previous |kBackgroundBackForwardCacheSize|
-      // should be in the cache, any before that should be deleted.
-      if (i - j <= kBackForwardCacheSize) {
-        EXPECT_FALSE(rfhs[j].IsDestroyed());
-        // Pages except the active one should be cached and in the background.
-        ExpectCached(rfhs[j], /*cached=*/i != j,
-                     /*backgrounded=*/i != j);
-      } else {
-        ASSERT_TRUE(rfhs[j].WaitUntilRenderFrameDeleted());
-      }
-    }
-  }
-
-  // Navigate back but not to the initial about:blank.
-  for (size_t i = 0; i <= kBackForwardCacheSize * 2 - 1; ++i) {
-    SCOPED_TRACE(i);
-    ASSERT_TRUE(HistoryGoBack(web_contents()));
-    // The first |kBackForwardCacheSize| navigations should be restored from the
-    // cache. The rest should not.
-    if (i < kBackForwardCacheSize) {
-      ExpectRestored(FROM_HERE);
-    } else {
-      ExpectNotRestored({NotRestoredReason::kCacheLimit}, {}, {}, {}, {},
-                        FROM_HERE);
-    }
-  }
-}
-
-// Test that the cache responds to processes switching from background to
-// foreground. We set things up so that we have
-// Cached sites:
-//   a0.test
-//   a1.test
-//   a2.test
-//   a3.test
-// and the active page is a4.test. Then set the process for a[1-3] to
-// foregrounded so that there are 3 entries whose processes are foregrounded.
-// BFCache should evict the eldest (a1) leaving a0 because despite being older,
-// it is backgrounded. Setting the priority directly is not ideal but there is
-// no reliable way to cause the processes to go into the foreground just by
-// navigating because proactive browsing instance swap makes it impossible to
-// reliably create a new a1.test renderer in the same process as the old
-// a1.test.
-//
-// Note that we do NOT use .com domains because a4.com is on the HSTS preload
-// list.  Since our test server doesn't use HTTPS, using a4.com results in the
-// test timing out.
-IN_PROC_BROWSER_TEST_F(
-    BackgroundForegroundProcessLimitBackForwardCacheBrowserTest,
-    ChangeToForeground) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-
-  std::vector<RenderFrameHostImplWrapper> rfhs;
-
-  // Navigate through a[0-3].com.
-  for (size_t i = 0; i < kBackForwardCacheSize; ++i) {
-    SCOPED_TRACE(i);
-    GURL url(embedded_test_server()->GetURL(base::StringPrintf("a%zu.test", i),
-                                            "/title1.html"));
-    ASSERT_TRUE(NavigateToURL(shell(), url));
-    rfhs.emplace_back(current_frame_host());
-    EXPECT_NE(rfhs.back()->GetProcess()->GetPriority(),
-              base::Process::Priority::kBestEffort);
-  }
-  // Check that a0-2 are cached and backgrounded.
-  for (size_t i = 0; i < kBackForwardCacheSize - 1; ++i) {
-    SCOPED_TRACE(i);
-    ExpectCached(rfhs[i], /*cached=*/true, /*backgrounded=*/true);
-  }
-
-  // Navigate to a page which causes the processes for a[1-3] to be
-  // foregrounded.
-  GURL url(embedded_test_server()->GetURL("a4.test", "/title1.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), url));
-
-  // Assert that we really have set up the situation we want where the processes
-  // are shared and in the foreground.
-  RenderFrameHostImpl* rfh = current_frame_host();
-  ASSERT_NE(rfh->GetProcess()->GetPriority(),
-            base::Process::Priority::kBestEffort);
-
-  rfhs[1]->GetProcess()->OnMediaStreamAdded();
-  rfhs[2]->GetProcess()->OnMediaStreamAdded();
-  rfhs[3]->GetProcess()->OnMediaStreamAdded();
-
-  // The page should be evicted.
-  ASSERT_TRUE(rfhs[1].WaitUntilRenderFrameDeleted());
-
-  // Check that a0 is cached and backgrounded.
-  ExpectCached(rfhs[0], /*cached=*/true, /*backgrounded=*/true);
-  // Check that a2-3 are cached and foregrounded.
-  ExpectCached(rfhs[2], /*cached=*/true, /*backgrounded=*/false);
-  ExpectCached(rfhs[3], /*cached=*/true, /*backgrounded=*/false);
 }
 
 // Test that the BackForwardCacheTimeToLiveControl feature works and takes
@@ -4187,8 +4092,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TestTimeToLiveParameter) {
       task_runner);
 
   base::TimeDelta time_to_live_in_back_forward_cache =
-      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
-          BackForwardCacheImpl::kNotInCCNSContext);
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetTimeToLiveInBackForwardCache(
+              BackForwardCacheImpl::kNotInCCNSContext);
   // This should match the value set via EnableFeatureAndSetParams by
   // parent test class `BackForwardCacheBrowserTest`.
   EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(3600));
@@ -4209,6 +4117,76 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TestTimeToLiveParameter) {
 
   // 3) Fast forward to just before eviction is due.
   task_runner->FastForwardBy(time_to_live_in_back_forward_cache - delta);
+
+  // 4) Confirm A is still in BackForwardCache.
+  ASSERT_FALSE(rfh_a.IsDestroyed());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // 5) Fast forward to when eviction is due.
+  task_runner->FastForwardBy(delta);
+
+  // 6) Confirm A is evicted.
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  EXPECT_EQ(current_frame_host(), rfh_b.get());
+
+  // 7) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectNotRestored({BackForwardCacheMetrics::NotRestoredReason::kTimeout}, {},
+                    {}, {}, {}, FROM_HERE);
+}
+
+// Test that the embedder-supplied cache size takes precedence over other limits
+// including ones set by the BackForwardCacheTimeToLiveControl feature.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       TestTimeToLiveEmbedderSupplied) {
+  // Inject mock time task runner to be used in the eviction timer, so we can,
+  // check for the functionality we are interested before and after the time to
+  // live. We don't replace SingleThreadTaskRunner::GetCurrentDefault to ensure
+  // that it doesn't affect other unrelated callsites.
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
+      base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+  web_contents()->GetController().GetBackForwardCache().SetTaskRunnerForTesting(
+      task_runner);
+
+  base::TimeDelta original_time_to_live_in_back_forward_cache =
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetTimeToLiveInBackForwardCache(
+              BackForwardCacheImpl::kNotInCCNSContext);
+  // This should match the value set via EnableFeatureAndSetParams by
+  // parent test class `BackForwardCacheBrowserTest`.
+  EXPECT_EQ(original_time_to_live_in_back_forward_cache, base::Seconds(3600));
+
+  // Update the time to live to be significantly lower (1m).
+  base::TimeDelta lower_time_to_live = base::Seconds(60);
+  web_contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .SetEmbedderSuppliedTimeToLive(lower_time_to_live);
+  EXPECT_EQ(lower_time_to_live,
+            web_contents()
+                ->GetController()
+                .GetBackForwardCache()
+                .GetTimeToLiveInBackForwardCache(
+                    BackForwardCacheImpl::kNotInCCNSContext));
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // 3) Fast forward to just before eviction is due.
+  base::TimeDelta delta = base::Milliseconds(1);
+  task_runner->FastForwardBy(lower_time_to_live - delta);
 
   // 4) Confirm A is still in BackForwardCache.
   ASSERT_FALSE(rfh_a.IsDestroyed());
@@ -4291,6 +4269,82 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       {NotRestoredReason::kHTTPStatusNotOK, NotRestoredReason::kErrorDocument},
       {}, {}, {}, {}, FROM_HERE);
 }
+
+#if defined(USE_AURA)
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WheelScrollDuringNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Makes the page scrollable and waits for commit and activation.
+  std::string setup = R"(
+    (async () => {
+      document.body.style.height = '4000px';
+      await document.body.animate({opacity: [0, 1]}, {duration: 1}).finished;
+      next_scroll = Promise.withResolvers();
+      onscroll = () => { next_scroll.resolve(); }
+      return true;
+    })()
+  )";
+
+  // Returns the new scroll offset.
+  std::string wait_for_scroll = R"(
+    (async () => {
+      await next_scroll.promise;
+      next_scroll = Promise.withResolvers();
+      return scrollY;
+    })()
+  )";
+
+  // This is turned into a mousewheel event by the RWHVEventHandler.
+  ui::ScrollEvent scroll_by_20_px(ui::EventType::kScroll, gfx::Point(100, 100),
+                                  ui::EventTimeForNow(), 0, 0, -20, 0, 20, 2);
+
+  // 1) Go to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  auto* rfh_a = current_frame_host();
+  auto* rwhv_a = static_cast<RenderWidgetHostViewAura*>(rfh_a->GetView());
+
+  // Set a high timeout for the synthetic PhaseEnded mousewheel (we will
+  // manually trigger it below).
+  rwhv_a->event_handler()->set_mouse_wheel_wheel_phase_handler_timeout(
+      TestTimeouts::action_max_timeout());
+
+  // Scroll by 20px.
+  EXPECT_EQ(true, EvalJs(rfh_a, setup));
+  rwhv_a->OnScrollEvent(&scroll_by_20_px);
+  EXPECT_EQ(20, EvalJs(rfh_a, wait_for_scroll));
+
+  // 2) Go to B. This puts A into bfcache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  auto* rfh_b = current_frame_host();
+  auto* rwhv_b = static_cast<RenderWidgetHostViewAura*>(rfh_b->GetView());
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Scroll by 20px. This is PhaseBegan for the new page (rwhv_b).
+  EXPECT_EQ(true, EvalJs(rfh_b, setup));
+  rwhv_b->OnScrollEvent(&scroll_by_20_px);
+  EXPECT_EQ(20, EvalJs(rfh_b, wait_for_scroll));
+
+  // Simulate timer firing in the *old* RWHV's MouseWheelPhaseHandler.
+  rwhv_a->GetMouseWheelPhaseHandler()->DispatchPendingWheelEndEvent();
+
+  // Scroll again by 20px (PhaseChanged). The RenderWidgetHostInputEventRouter
+  // should remember that we are scrolling rwhv_b.
+  rwhv_b->OnScrollEvent(&scroll_by_20_px);
+  EXPECT_EQ(40, EvalJs(rfh_b, wait_for_scroll));
+
+  // 3) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(current_frame_host(), rfh_a);
+  EXPECT_EQ(20, EvalJs(rfh_a, "scrollY"));
+
+  // A new scroll of A should work as expected.
+  rwhv_a->OnScrollEvent(&scroll_by_20_px);
+  EXPECT_EQ(40, EvalJs(rfh_a, wait_for_scroll));
+}
+#endif  // defined(USE_AURA)
 
 class BackForwardCacheBrowserTestWithFencedFrames
     : public BackForwardCacheBrowserTest {
@@ -4474,8 +4528,11 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
       task_runner);
 
   base::TimeDelta time_to_live_in_back_forward_cache =
-      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
-          BackForwardCacheImpl::kNotInCCNSContext);
+      web_contents()
+          ->GetController()
+          .GetBackForwardCache()
+          .GetTimeToLiveInBackForwardCache(
+              BackForwardCacheImpl::kNotInCCNSContext);
   // This should match the value we set in EnableFeatureAndSetParams.
   EXPECT_EQ(time_to_live_in_back_forward_cache, base::Seconds(3600));
 
@@ -4648,6 +4705,63 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   ExpectNotRestored({NotRestoredReason::kJavaScriptExecution}, {}, {}, {}, {},
                     FROM_HERE);
+}
+
+class BackForwardCacheBrowserTestReloadHiddenTabsWithCrashedSubframes
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+    EnableFeatureAndSetParams(features::kReloadHiddenTabsWithCrashedSubframes, "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Test that a subframe renderer process crash does not cause a reload if the
+// subframe is in back-forward cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestReloadHiddenTabsWithCrashedSubframes,
+                       ReloadHiddenTabWithCrashedSubframe_BFCached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A(B).
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderProcessHost* process_b = rfh_b->GetProcess();
+
+  // 2) Navigate to C. A(B) is in BFCache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // 3) Hide the tab.
+  web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  web_contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  EXPECT_EQ(Visibility::HIDDEN, web_contents()->GetVisibility());
+
+  // 4) Crash process B.
+  RenderProcessHostWatcher crash_observer(
+      process_b, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process_b->Shutdown(0);
+  crash_observer.Wait();
+  EXPECT_FALSE(rfh_b->IsRenderFrameLive());
+
+  // 5) The tab should not be marked for reload, because the crashed subframe
+  // was in a BFCached page, which is not considered "active".
+  EXPECT_FALSE(web_contents()->GetController().NeedsReload());
+
+  // 6) Show the tab again but no reload should happen.
+  {
+    base::HistogramTester histograms;
+    web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    histograms.ExpectUniqueSample(
+        "Navigation.LoadIfNecessaryType",
+        NavigationControllerImpl::NeedsReloadType::kCrashedSubframe, 0);
+  }
 }
 
 }  // namespace content

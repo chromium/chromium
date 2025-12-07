@@ -2,14 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
 
 // Windows Timer Primer
 //
 // A good article:  http://www.ddj.com/windows/184416651
 // A good mozilla bug:  http://bugzilla.mozilla.org/show_bug.cgi?id=363258
 //
-// The default windows timer, GetSystemTimeAsFileTime is not very precise.
-// It is only good to ~15.5ms.
+// The default windows timer, GetSystemTimePreciseAsFileTime is quite precise.
+// However it is not always fast on some hardware and is slower than the
+// performance counters.
 //
 // QueryPerformanceCounter is the logical choice for a high-precision timer.
 // However, it is known to be buggy on some hardware.  Specifically, it can
@@ -42,10 +47,13 @@
 #include <atomic>
 #include <ostream>
 
+#include "base/base_switches.h"
 #include "base/bit_cast.h"
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/notreached.h"
+#include "base/rand_util.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time_override.h"
@@ -79,7 +87,7 @@ FILETIME MicrosecondsToFileTime(int64_t us) {
 
 int64_t CurrentWallclockMicroseconds() {
   FILETIME ft;
-  ::GetSystemTimeAsFileTime(&ft);
+  ::GetSystemTimePreciseAsFileTime(&ft);
   return FileTimeToMicroseconds(ft);
 }
 
@@ -135,10 +143,12 @@ constexpr UINT kMinTimerIntervalLowResMs = 8;
 // Calculate the desired timer interrupt interval. Note that zero means that the
 // system default should be used.
 UINT GetIntervalMs() {
-  if (!g_high_res_timer_count)
+  if (!g_high_res_timer_count) {
     return 0;  // Use the default, typically 15.625
-  if (g_high_res_timer_enabled)
+  }
+  if (g_high_res_timer_enabled) {
     return kMinTimerIntervalHighResMs;
+  }
   return kMinTimerIntervalLowResMs;
 }
 
@@ -147,8 +157,9 @@ UINT GetIntervalMs() {
 // new request). If there is no change then do nothing.
 void UpdateTimerIntervalLocked() {
   UINT new_interval = GetIntervalMs();
-  if (new_interval == g_last_interval_requested_ms)
+  if (new_interval == g_last_interval_requested_ms) {
     return;
+  }
   if (g_last_interval_requested_ms) {
     // Record how long the timer interrupt frequency was raised.
     g_high_res_timer_usage += subtle::TimeTicksNowIgnoringOverride() -
@@ -174,6 +185,18 @@ int64_t QPCNowRaw() {
   return perf_counter_now.QuadPart;
 }
 
+#if !defined(ARCH_CPU_ARM64)
+// Returns the performance frequency.
+int64_t QPFRaw() {
+  LARGE_INTEGER perf_counter_frequency = {};
+  // According to the MSDN documentation for QueryPerformanceFrequency(), this
+  // will never fail on systems that run XP or later.
+  // https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency
+  ::QueryPerformanceFrequency(&perf_counter_frequency);
+  return perf_counter_frequency.QuadPart;
+}
+#endif
+
 bool SafeConvertToWord(int in, WORD* out) {
   CheckedNumeric<WORD> result = in;
   *out = result.ValueOrDefault(std::numeric_limits<WORD>::max());
@@ -186,12 +209,13 @@ bool SafeConvertToWord(int in, WORD* out) {
 
 namespace subtle {
 Time TimeNowIgnoringOverride() {
-  if (g_initial_time == 0)
+  if (g_initial_time == 0) {
     InitializeClock();
+  }
 
   // We implement time using the high-resolution timers so that we can get
-  // timeouts which are smaller than 10-15ms.  If we just used
-  // CurrentWallclockMicroseconds(), we'd have the less-granular timer.
+  // timeouts which likely are smaller than those if we just used
+  // CurrentWallclockMicroseconds().
   //
   // To make this work, we initialize the clock (g_initial_time) and the
   // counter (initial_ctr).  To compute the initial time, we can check
@@ -224,17 +248,20 @@ Time TimeNowFromSystemTimeIgnoringOverride() {
 
 // static
 Time Time::FromFileTime(FILETIME ft) {
-  if (bit_cast<int64_t, FILETIME>(ft) == 0)
+  if (bit_cast<int64_t, FILETIME>(ft) == 0) {
     return Time();
+  }
   if (ft.dwHighDateTime == std::numeric_limits<DWORD>::max() &&
-      ft.dwLowDateTime == std::numeric_limits<DWORD>::max())
+      ft.dwLowDateTime == std::numeric_limits<DWORD>::max()) {
     return Max();
+  }
   return Time(FileTimeToMicroseconds(ft));
 }
 
 FILETIME Time::ToFileTime() const {
-  if (is_null())
+  if (is_null()) {
     return bit_cast<FILETIME, int64_t>(0);
+  }
   if (is_max()) {
     FILETIME result;
     result.dwHighDateTime = std::numeric_limits<DWORD>::max();
@@ -294,8 +321,9 @@ void Time::ResetHighResolutionTimerUsage() {
   AutoLock lock(*GetHighResLock());
   g_high_res_timer_usage = TimeDelta();
   g_high_res_timer_usage_start = subtle::TimeTicksNowIgnoringOverride();
-  if (g_high_res_timer_count > 0)
+  if (g_high_res_timer_count > 0) {
     g_high_res_timer_last_activation = g_high_res_timer_usage_start;
+  }
 }
 
 // static
@@ -425,9 +453,9 @@ union LastTimeAndRolloversState {
   } as_values;
 };
 std::atomic<int32_t> g_last_time_and_rollovers = 0;
-static_assert(
-    sizeof(LastTimeAndRolloversState) <= sizeof(g_last_time_and_rollovers),
-    "LastTimeAndRolloversState does not fit in a single atomic word");
+static_assert(sizeof(LastTimeAndRolloversState) <=
+                  sizeof(g_last_time_and_rollovers),
+              "LastTimeAndRolloversState does not fit in a single atomic word");
 
 // We use timeGetTime() to implement TimeTicks::Now().  This can be problematic
 // because it returns the number of milliseconds since Windows has started,
@@ -448,20 +476,23 @@ TimeTicks RolloverProtectedNow() {
     state.as_opaque_32 = original;
     now = g_tick_function();
     uint8_t now_8 = static_cast<uint8_t>(now >> 24);
-    if (now_8 < state.as_values.last_8)
+    if (now_8 < state.as_values.last_8) {
       ++state.as_values.rollovers;
+    }
     state.as_values.last_8 = now_8;
 
     // If the state hasn't changed, exit the loop.
-    if (state.as_opaque_32 == original)
+    if (state.as_opaque_32 == original) {
       break;
+    }
 
     // Save the changed state. If the existing value is unchanged from the
     // original so that the operation is successful. Exit the loop.
     bool success = g_last_time_and_rollovers.compare_exchange_strong(
         original, state.as_opaque_32, std::memory_order_release);
-    if (success)
+    if (success) {
       break;
+    }
 
     // Another thread has done something in between so retry from the top.
   }
@@ -540,26 +571,85 @@ TimeTicks QPCNow() {
   return TimeTicks() + QPCValueToTimeDelta(QPCNowRaw());
 }
 
+std::atomic<bool> g_opted_out_of_qpc_trial_because_no_command_line = false;
+
 void InitializeNowFunctionPointer() {
   LARGE_INTEGER ticks_per_sec = {};
-  if (!QueryPerformanceFrequency(&ticks_per_sec))
+  // `QueryPerformanceFrequency` always succeeds and sets its out parameter to a
+  // nonzero value on Windows versions more recent than Windows XP:
+  // https://learn.microsoft.com/en-us/windows/win32/api/profileapi/nf-profileapi-queryperformancefrequency
+  // Once these `CHECK`s are shown to not trigger in the wild, this condition
+  // can be changed to a CHECK and `ticks_per_sec.QuadPart <= 0 ` can be removed
+  // from the ternary below that selects the function pointer.
+  if (!QueryPerformanceFrequency(&ticks_per_sec)) {
     ticks_per_sec.QuadPart = 0;
+    NOTREACHED(base::NotFatalUntil::M138);
+  } else {
+    CHECK(ticks_per_sec.QuadPart > 0, base::NotFatalUntil::M138);
+  }
 
-  // If Windows cannot provide a QPC implementation, TimeTicks::Now() must use
-  // the low-resolution clock.
-  //
   // If the QPC implementation is expensive and/or unreliable, TimeTicks::Now()
   // will still use the low-resolution clock. A CPU lacking a non-stop time
   // counter will cause Windows to provide an alternate QPC implementation that
   // works, but is expensive to use.
   //
-  // Otherwise, Now uses the high-resolution QPC clock. As of 21 August 2015,
-  // ~72% of users fall within this category.
-  CPU cpu;
+  // Otherwise, Now uses the high-resolution QPC clock. As of 9 September 2024,
+  // ~97% of users fall within this category.
+  bool eligible_for_high_res_time_ticks = false;
+
+  // To debug an issue where in the field, all clients are in the Control group.
+  // We suspect it might be due to the command line not being ready before this
+  // function is called in some build configurations.
+  bool opted_out_because_no_command_line = false;
+
+  // `ticks_per_sec.QuadPart <= 0` shouldn't happen post-WinXP (see CHECKs
+  // above) but if it does, QPC is broken and shouldn't be used for any reason.
+  if (ticks_per_sec.QuadPart > 0) {
+    CPU cpu;
+    // QPC is enabled for all devices with invariant TSCs.
+    // On devices where the CPU doesn't report having an invariant TSC, we would
+    // previously have considered the QPC overhead to be unacceptable. For this
+    // field trial, try enabling the high-res, QPC-based implementation of
+    // TimeTicks on 50% of such devices.
+    bool force_high_res_time_ticks = false;
+    // There is an explicit check for
+    // `base::CommandLine::InitializedForCurrentProcess()` not being null here,
+    // because some targets (like `generate_colors_info`) use `TimeTicks` during
+    // the build without initializing this command line object. In those cases,
+    // it's also not necessary to roll the dice to force high res timer since
+    // we're not running a browser.
+    if (base::CommandLine::InitializedForCurrentProcess()) {
+      if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kForceHighResTimeTicks)) {
+        // If `switches::kForceHighResTimeTicks` is present, it's because this
+        // is a child process that is being instructed to use the same clock as
+        // its parent browser process. In this case, force the use of high
+        // resolution TimeTicks iff `switches::kForceHighResTimeTicks` is set to
+        // "enabled". It can also take the value of "disabled" when the browser
+        // is in either the "Control" or "Excluded" groups.
+        auto switch_value =
+            base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+                switches::kForceHighResTimeTicks);
+        if (switch_value == "enabled") {
+          force_high_res_time_ticks = true;
+        }
+      } else {
+        // If `switches::kForceHighResTimeTicks` isn't present, this is either
+        // the browser process so we should roll a dice to determine if we're in
+        // the field trial, or this device already uses high resolution
+        // TimeTicks so the dice roll will not be used.
+        force_high_res_time_ticks = base::RandDouble() < 0.5;
+      }
+    } else {
+      opted_out_because_no_command_line = true;
+    }
+
+    eligible_for_high_res_time_ticks =
+        cpu.has_non_stop_time_stamp_counter() || force_high_res_time_ticks;
+  }
+
   const TimeTicksNowFunction now_function =
-      (ticks_per_sec.QuadPart <= 0 || !cpu.has_non_stop_time_stamp_counter())
-          ? &RolloverProtectedNow
-          : &QPCNow;
+      eligible_for_high_res_time_ticks ? &QPCNow : &RolloverProtectedNow;
 
   // Threading note 1: In an unlikely race condition, it's possible for two or
   // more threads to enter InitializeNowFunctionPointer() in parallel. This is
@@ -567,28 +657,89 @@ void InitializeNowFunctionPointer() {
   // to the global variables, and those variable being atomic are safe to read
   // from other threads.
   //
+  // Under the high resolution field trial for low resolution devices, multiple
+  // threads racing could roll a different dice roll and attempt to set the
+  // functions to different values. To avoid having thread A set the "now"
+  // function to something, and thread B set the "now without override" function
+  // to something else, only the thread where the first compare_exchange
+  // succeeds is allowed to proceed with setting the remainder of the global
+  // state.
+  //
   // Threading note 2: A release fence is placed here to ensure, from the
   // perspective of other threads using the function pointers, that the
   // assignment to |g_qpc_ticks_per_second| happens before the function pointers
   // are changed.
   g_qpc_ticks_per_second = ticks_per_sec.QuadPart;
   std::atomic_thread_fence(std::memory_order_release);
-  // Also set g_time_ticks_now_function to avoid the additional indirection via
-  // TimeTicksNowIgnoringOverride() for future calls to TimeTicks::Now(), only
-  // if it wasn't already overridden to a different value. memory_order_relaxed
-  // is sufficient since an explicit fence was inserted above.
+  // memory_order_relaxed is sufficient since an explicit fence was inserted
+  // above.
   base::TimeTicksNowFunction initial_time_ticks_now_function =
-      &subtle::TimeTicksNowIgnoringOverride;
-  internal::g_time_ticks_now_function.compare_exchange_strong(
-      initial_time_ticks_now_function, now_function, std::memory_order_relaxed);
-  g_time_ticks_now_ignoring_override_function.store(now_function,
-                                                    std::memory_order_relaxed);
+      &InitialNowFunction;
+
+  if (g_time_ticks_now_ignoring_override_function.compare_exchange_strong(
+          initial_time_ticks_now_function, now_function,
+          std::memory_order_relaxed)) {
+    // Also set g_time_ticks_now_function to avoid the additional indirection
+    // via TimeTicksNowIgnoringOverride() for future calls to TimeTicks::Now().
+    internal::g_time_ticks_now_function.store(now_function,
+                                              std::memory_order_relaxed);
+
+    // Only the thread setting the functions should report whether its command
+    // line was ready.
+    g_opted_out_of_qpc_trial_because_no_command_line.store(
+        opted_out_because_no_command_line, std::memory_order_relaxed);
+  }
 }
 
 TimeTicks InitialNowFunction() {
   InitializeNowFunctionPointer();
   return g_time_ticks_now_ignoring_override_function.load(
       std::memory_order_relaxed)();
+}
+
+enum class HighResolutionTrialState {
+  kAlreadyHighResolution,
+  kExcludedFromTrial,
+  kDontUseHighResolution,
+  kUseHighResolution,
+  kExcludedBecauseNoCommandLine,
+};
+
+HighResolutionTrialState GetHighResolutionTrialState() {
+  // This is a copy of the conditions in `InitializeNowFunctionPointer`, minus
+  // the work around global atomics. The return value of this function shouldn't
+  // vary on the same device.
+  // TODO(crbug.com/410560675): Remove this function once experimentation with
+  // QPC is concluded.
+
+  // IsHighResolution() initializes the clock if it hasn't been done.
+  bool is_high_res = TimeTicks::IsHighResolution();
+  if (g_qpc_ticks_per_second == 0) {
+    // QPC is broken and can't be enabled.
+    return HighResolutionTrialState::kExcludedFromTrial;
+  }
+
+  CPU cpu;
+  if (!cpu.has_non_stop_time_stamp_counter()) {
+    if (g_opted_out_of_qpc_trial_because_no_command_line.load(
+            std::memory_order_relaxed)) {
+      // If there was no command line ready when initializing the time
+      // functions, put the client in a separate group.
+      return HighResolutionTrialState::kExcludedBecauseNoCommandLine;
+    } else if (is_high_res) {
+      // If the device isn't considered eligible for QPC-based TimeTicks but is
+      // using it regardless, it means that it's part of the experimental QPC
+      // group.
+      return HighResolutionTrialState::kUseHighResolution;
+    } else {
+      // Otherwise, the device is expectedly using low-res TimeTicks, add it to
+      // the control group.
+      return HighResolutionTrialState::kDontUseHighResolution;
+    }
+  }
+
+  // Don't add clients with ideal QPC implementations to the trial at all.
+  return HighResolutionTrialState::kAlreadyHighResolution;
 }
 
 }  // namespace
@@ -607,12 +758,17 @@ TimeTicks TimeTicksNowIgnoringOverride() {
   return g_time_ticks_now_ignoring_override_function.load(
       std::memory_order_relaxed)();
 }
+
+TimeTicks TimeTicksLowResolutionNowIgnoringOverride() {
+  return RolloverProtectedNow();
+}
 }  // namespace subtle
 
 // static
 bool TimeTicks::IsHighResolution() {
-  if (g_time_ticks_now_ignoring_override_function == &InitialNowFunction)
+  if (g_time_ticks_now_ignoring_override_function == &InitialNowFunction) {
     InitializeNowFunctionPointer();
+  }
   return g_time_ticks_now_ignoring_override_function == &QPCNow;
 }
 
@@ -622,7 +778,8 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
   // Vista. So if we are using QPC then we are consistent which is the same as
   // being high resolution.
   //
-  // [1] https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx
+  // [1]
+  // https://msdn.microsoft.com/en-us/library/windows/desktop/dn553408(v=vs.85).aspx
   //
   // "In general, the performance counter results are consistent across all
   // processors in multi-core and multi-processor systems, even when measured on
@@ -678,7 +835,8 @@ ThreadTicks ThreadTicks::GetForThread(
   ::GetThreadTimes(thread_handle.platform_handle(), &creation_time, &exit_time,
                    &kernel_time, &user_time);
 
-  const int64_t us = FileTimeToMicroseconds(user_time);
+  const int64_t us =
+      FileTimeToMicroseconds(user_time) + FileTimeToMicroseconds(kernel_time);
 #else
   // Get the number of TSC ticks used by the current thread.
   ULONG64 thread_cycle_time = 0;
@@ -686,8 +844,9 @@ ThreadTicks ThreadTicks::GetForThread(
 
   // Get the frequency of the TSC.
   const double tsc_ticks_per_second = time_internal::TSCTicksPerSecond();
-  if (tsc_ticks_per_second == 0)
+  if (tsc_ticks_per_second == 0) {
     return ThreadTicks();
+  }
 
   // Return the CPU time of the current thread.
   const double thread_time_seconds = thread_cycle_time / tsc_ticks_per_second;
@@ -712,14 +871,70 @@ bool ThreadTicks::IsSupportedWin() {
 // static
 void ThreadTicks::WaitUntilInitializedWin() {
 #if !defined(ARCH_CPU_ARM64)
-  while (time_internal::TSCTicksPerSecond() == 0)
+  while (time_internal::TSCTicksPerSecond() == 0) {
     ::Sleep(10);
+  }
 #endif
 }
 
 // static
 TimeTicks TimeTicks::FromQPCValue(LONGLONG qpc_value) {
   return TimeTicks() + QPCValueToTimeDelta(qpc_value);
+}
+
+// static
+bool TimeTicks::GetHighResolutionTimeTicksFieldTrial(std::string* trial_name,
+                                                     std::string* group_name) {
+  auto state = GetHighResolutionTrialState();
+
+  switch (state) {
+    case HighResolutionTrialState::kAlreadyHighResolution:
+      return false;
+    case HighResolutionTrialState::kExcludedFromTrial:
+      *group_name = "Excluded";
+      break;
+    case HighResolutionTrialState::kDontUseHighResolution:
+      *group_name = "Control";
+      break;
+    case HighResolutionTrialState::kUseHighResolution:
+      *group_name = "Enabled";
+      break;
+    case HighResolutionTrialState::kExcludedBecauseNoCommandLine:
+      *group_name = "ExcludedBecauseNoCommandLine";
+      break;
+  }
+
+  *trial_name = "HighResolutionTimeTicks";
+  return true;
+}
+
+// static
+void TimeTicks::MaybeAddHighResolutionTimeTicksSwitch(
+    base::CommandLine* command_line) {
+  auto state = GetHighResolutionTrialState();
+
+  switch (state) {
+    case HighResolutionTrialState::kAlreadyHighResolution:
+      // If the device is already using an ideal QPC implementation for
+      // TimeTicks, don't pass any command line flag.
+      break;
+    case HighResolutionTrialState::kExcludedFromTrial:
+    case HighResolutionTrialState::kExcludedBecauseNoCommandLine:
+      // In the cases of "Control" and "Excluded", tell the child process not to
+      // use QPC for TimeTicks to match the browser process.
+      [[fallthrough]];
+    case HighResolutionTrialState::kDontUseHighResolution:
+      command_line->AppendSwitchASCII(switches::kForceHighResTimeTicks,
+                                      "disabled");
+      break;
+    case HighResolutionTrialState::kUseHighResolution:
+      // If the device doesn't report having an invariant TSC, but the browser
+      // process has rolled a dice and is being included in the high-resolution
+      // trial's "enabled" group, pass this information to the child process.
+      command_line->AppendSwitchASCII(switches::kForceHighResTimeTicks,
+                                      "enabled");
+      break;
+  }
 }
 
 // TimeDelta ------------------------------------------------------------------
@@ -774,8 +989,9 @@ double TSCTicksPerSecond() {
   // The TSC frequency is cached in a static variable because it takes some time
   // to compute it.
   static double tsc_ticks_per_second = 0;
-  if (tsc_ticks_per_second != 0)
+  if (tsc_ticks_per_second != 0) {
     return tsc_ticks_per_second;
+  }
 
   // Increase the thread priority to reduces the chances of having a context
   // switch during a reading of the TSC and the performance counter.
@@ -787,6 +1003,7 @@ double TSCTicksPerSecond() {
 
   static const uint64_t tsc_initial = __rdtsc();
   static const int64_t perf_counter_initial = QPCNowRaw();
+  static const int64_t perf_counter_frequency = QPFRaw();
 
   // Make a another reading of the TSC and the performance counter every time
   // that this function is called.
@@ -802,19 +1019,15 @@ double TSCTicksPerSecond() {
   //   accurate the computed TSC frequency will be. The 50 ms value was
   //   chosen because local benchmarks show that it allows us to get a
   //   stddev of less than 1 tick/us between multiple runs.
-  // Note: According to the MSDN documentation for QueryPerformanceFrequency(),
-  //   this will never fail on systems that run XP or later.
-  //   https://msdn.microsoft.com/library/windows/desktop/ms644905.aspx
-  LARGE_INTEGER perf_counter_frequency = {};
-  ::QueryPerformanceFrequency(&perf_counter_frequency);
   DCHECK_GE(perf_counter_now, perf_counter_initial);
   const int64_t perf_counter_ticks = perf_counter_now - perf_counter_initial;
   const double elapsed_time_seconds =
-      perf_counter_ticks / static_cast<double>(perf_counter_frequency.QuadPart);
+      perf_counter_ticks / static_cast<double>(perf_counter_frequency);
 
   constexpr double kMinimumEvaluationPeriodSeconds = 0.05;
-  if (elapsed_time_seconds < kMinimumEvaluationPeriodSeconds)
+  if (elapsed_time_seconds < kMinimumEvaluationPeriodSeconds) {
     return 0;
+  }
 
   // Compute the frequency of the TSC.
   DCHECK_GE(tsc_now, tsc_initial);

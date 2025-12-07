@@ -1,0 +1,60 @@
+{
+  "doc_root": null,
+  "ws_doc_root": null,
+  "check_subdomains": false,
+  "server_host": "127.0.0.1",
+  "ports": {
+    "http": [8001, 8081],
+    "http-local": [8082],
+    "http-public": [8093],
+    "https": [8444, 8445],
+    "https-local": [8446],
+    "https-public": [8447],
+    "h2": [9000],
+    "ws": [9001],
+    "wss": [9444],
+    "webtransport-h3": [11000]
+  },
+  "ssl": {
+    "type": "pregenerated",
+    "encrypt_after_connect": false,
+    "pregenerated": {
+      "host_key_path": "../../wpt_tools/certs/127.0.0.1.key",
+      "host_cert_path": "../../wpt_tools/certs/127.0.0.1.pem"
+    }
+  },
+  "aliases": [
+    {
+      "url-path": "/wpt_internal/",
+      "local-dir": "wpt_internal"
+    },
+    {
+      "url-path": "/wpt_automation/",
+      "local-dir": "external/wpt_automation"
+    },
+    {
+      "url-path": "/resources/testharnessreport.js",
+      "local-dir": "resources"
+    },
+    {
+      "url-path": "/resources/testdriver.js",
+      "local-dir": "../../wpt_tools/wpt/resources"
+    },
+    {
+      "url-path": "/resources/testdriver-vendor.js",
+      "local-dir": "external/wpt/resources"
+    },
+    {
+      "url-path": "/resources/testdriver-actions.js",
+      "local-dir": "../../wpt_tools/wpt/resources"
+    },
+    {
+      "url-path": "/common/vendor-prefix.js",
+      "local-dir": "resources"
+    }
+  ],
+  "logging": {
+      "level": "info",
+      "suppress_handler_traceback": false
+  }
+}

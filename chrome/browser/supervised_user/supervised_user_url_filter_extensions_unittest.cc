@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-
 #include <map>
 #include <memory>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/test/task_environment.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
-#include "components/prefs/testing_pref_service.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_test_util.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/safe_search_api/fake_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,22 +23,35 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS), "For Enabled extensions only");
 
-class SupervisedUserURLFilterExtensionsTest : public ::testing::Test {
+namespace supervised_user {
+namespace {
+
+// URL filter delegate that verifies url extensions support.
+class FakeURLFilterDelegate : public SupervisedUserURLFilter::Delegate {
  public:
-  SupervisedUserURLFilterExtensionsTest() {
-    filter_.SetDefaultFilteringBehavior(
-        supervised_user::FilteringBehavior::kBlock);
+  bool SupportsWebstoreURL(const GURL& url) const override {
+    return IsSupportedChromeExtensionURL(url);
+  }
+};
+
+class SupervisedUserURLFilterExtensionsTest
+    : public ChromeRenderViewHostTestHarness {
+ protected:
+  std::unique_ptr<TestingProfile> CreateTestingProfile() override {
+    return TestingProfile::Builder()
+        .SetIsSupervisedProfile()
+        .AddTestingFactory(
+            SupervisedUserServiceFactory::GetInstance(),
+            base::BindRepeating(
+                &supervised_user_test_util::BuildSupervisedUserService<
+                    SupervisedUserURLFilter, FakeURLFilterDelegate>))
+        .Build();
   }
 
- protected:
-  base::test::TaskEnvironment task_environment_;
-  TestingPrefServiceSimple pref_service_;
-  // Test with the real method for url extensions support.
-  supervised_user::SupervisedUserURLFilter filter_ =
-      supervised_user::SupervisedUserURLFilter(
-          pref_service_,
-          std::make_unique<safe_search_api::FakeURLCheckerClient>(),
-          base::BindRepeating(supervised_user::IsSupportedChromeExtensionURL));
+  SupervisedUserURLFilter& filter() {
+    return *SupervisedUserServiceFactory::GetForProfile(profile())
+                ->GetURLFilter();
+  }
 };
 
 TEST_F(SupervisedUserURLFilterExtensionsTest,
@@ -66,37 +82,34 @@ TEST_F(SupervisedUserURLFilterExtensionsTest,
   GURL webstore_url("https://chrome.google.com/webstore");
   GURL new_webstore_url("https://chromewebstore.google.com/");
 
-  filter_.SetDefaultFilteringBehavior(
-      supervised_user::FilteringBehavior::kBlock);
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url1));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url2));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url3));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(webstore_url));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(new_webstore_url));
+  supervised_user_test_util::SetWebFilterType(profile(),
+                                              WebFilterType::kCertainSites);
+  EXPECT_TRUE(filter().GetFilteringBehavior(crx_download_url1).IsAllowed());
+  EXPECT_TRUE(filter().GetFilteringBehavior(crx_download_url2).IsAllowed());
+  EXPECT_TRUE(filter().GetFilteringBehavior(crx_download_url3).IsAllowed());
+  EXPECT_TRUE(filter().GetFilteringBehavior(webstore_url).IsAllowed());
+  EXPECT_TRUE(filter().GetFilteringBehavior(new_webstore_url).IsAllowed());
 
   // Set explicit host rules to block those website, and make sure the
   // URLs still work.
-  std::map<std::string, bool> hosts;
-  hosts["clients2.google.com"] = false;
-  hosts["clients2.googleusercontent.com"] = false;
-  hosts["chrome.google.com"] = false;
-  hosts["chromewebstore.google.com"] = false;
-  filter_.SetManualHosts(std::move(hosts));
-  filter_.SetDefaultFilteringBehavior(
-      supervised_user::FilteringBehavior::kAllow);
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url1));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url2));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(crx_download_url3));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(webstore_url));
-  EXPECT_EQ(supervised_user::FilteringBehavior::kAllow,
-            filter_.GetFilteringBehaviorForURL(new_webstore_url));
+  supervised_user_test_util::SetManualFilterForHost(
+      profile(), "clients2.google.com", /*allowlist=*/false);
+  supervised_user_test_util::SetManualFilterForHost(
+      profile(), "clients2.googleusercontent.com",
+      /*allowlist=*/false);
+  supervised_user_test_util::SetManualFilterForHost(
+      profile(), "chrome.google.com", /*allowlist=*/false);
+  supervised_user_test_util::SetManualFilterForHost(
+      profile(), "chromewebstore.google.com", /*allowlist=*/false);
+  supervised_user_test_util::SetWebFilterType(profile(),
+                                              WebFilterType::kAllowAllSites);
+
+  EXPECT_TRUE(filter().GetFilteringBehavior(crx_download_url1).IsAllowed());
+  EXPECT_TRUE(filter().GetFilteringBehavior(crx_download_url2).IsAllowed());
+  EXPECT_TRUE(filter().GetFilteringBehavior(crx_download_url3).IsAllowed());
+  EXPECT_TRUE(filter().GetFilteringBehavior(webstore_url).IsAllowed());
+  EXPECT_TRUE(filter().GetFilteringBehavior(new_webstore_url).IsAllowed());
 }
+
+}  // namespace
+}  // namespace supervised_user

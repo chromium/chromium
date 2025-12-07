@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -40,9 +41,10 @@ std::optional<ModelError> InitOnBackendSequence(
     const base::FilePath& level_db_path,
     scoped_refptr<DataTypeStoreBackend> store_backend,
     bool migrate_rl_from_local_to_account) {
-  std::vector<std::pair<std::string, std::string>> prefixes_to_migrate;
+  base::flat_map<std::string, std::optional<std::string>>
+      prefixes_to_update_or_delete;
   if (migrate_rl_from_local_to_account) {
-    prefixes_to_migrate.emplace_back(
+    prefixes_to_update_or_delete.emplace(
         BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
             READING_LIST, StorageType::kUnspecified),
         BlockingDataTypeStoreImpl::FormatPrefixForDataTypeAndStorageType(
@@ -50,7 +52,7 @@ std::optional<ModelError> InitOnBackendSequence(
     RecordSyncToSigninMigrationReadingListStep(
         ReadingListMigrationStep::kMigrationStarted);
   }
-  return store_backend->Init(level_db_path, prefixes_to_migrate);
+  return store_backend->Init(level_db_path, prefixes_to_update_or_delete);
 }
 
 std::unique_ptr<BlockingDataTypeStoreImpl, base::OnTaskRunnerDeleter>
@@ -84,7 +86,9 @@ void ConstructDataTypeStoreOnFrontendSequence(
                                             backend_task_runner));
   } else {
     std::move(callback).Run(
-        ModelError(FROM_HERE, "DataTypeStore backend initialization failed"),
+        ModelError(
+            FROM_HERE,
+            ModelError::Type::kDataTypeStoreServiceBackendInitializationFailed),
         /*store=*/nullptr);
   }
 }
@@ -123,7 +127,7 @@ DataTypeStoreServiceImpl::DataTypeStoreServiceImpl(
       store_backend_(DataTypeStoreBackend::CreateUninitialized()) {
   DCHECK(backend_task_runner_);
   bool migrate_rl_from_local_to_account = pref_service_->GetBoolean(
-      syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+      prefs::internal::kMigrateReadingListFromLocalToAccount);
   backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&InitOnBackendSequence, leveldb_path_, store_backend_,
@@ -143,10 +147,10 @@ void DataTypeStoreServiceImpl::BackendInitializationDone(
   // If the ReadingList local-to-account migration was performed (or attempted)
   // as part of this initialization, record the outcome.
   if (pref_service_->GetBoolean(
-          syncer::prefs::internal::kMigrateReadingListFromLocalToAccount)) {
+          prefs::internal::kMigrateReadingListFromLocalToAccount)) {
     if (!error) {
       pref_service_->ClearPref(
-          syncer::prefs::internal::kMigrateReadingListFromLocalToAccount);
+          prefs::internal::kMigrateReadingListFromLocalToAccount);
     }
     RecordSyncToSigninMigrationReadingListStep(
         error ? ReadingListMigrationStep::kMigrationFailed
@@ -154,9 +158,6 @@ void DataTypeStoreServiceImpl::BackendInitializationDone(
   }
 
   base::UmaHistogramBoolean("Sync.DataTypeStoreBackendInitializationSuccess",
-                            !error.has_value());
-  // Legacy equivalent, before the metric was renamed.
-  base::UmaHistogramBoolean("Sync.ModelTypeStoreBackendInitializationSuccess",
                             !error.has_value());
   if (error) {
     DLOG(ERROR) << "Failed to initialize DataTypeStore backend: "

@@ -35,8 +35,16 @@
   _playing = NO;
 }
 
+- (void)pause {
+  _playing = NO;
+}
+
 // Called to set a color for a key path.
 - (void)setColorValue:(UIColor*)color forKeypath:(NSString*)keypath {
+}
+
+- (void)setGradientValue:(NSArray<UIColor*>*)colors
+              forKeypath:(NSString*)keypath {
 }
 
 // Called to set a dictionary text provider.

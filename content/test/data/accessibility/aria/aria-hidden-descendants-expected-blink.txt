@@ -1,7 +1,6 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++slider horizontal ignored invisible name='Slider#1 now inside hidden subtree'
 ++++++group name='Subtree starts hidden ends visible'
 ++++++++group
 ++++++++++group

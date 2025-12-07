@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_DEVTOOLS_VISUAL_LOGGING_H_
 #define CHROME_BROWSER_DEVTOOLS_VISUAL_LOGGING_H_
 
+#include <cstdint>
 #include <vector>
 
 struct VisualElementImpression {
-  int id = -1;
+  int64_t id = -1;
   int type = -1;
-  int parent = -1;
+  int64_t parent = -1;
   int context = -1;
   int width = -1;
   int height = -1;
@@ -23,38 +24,56 @@ struct ImpressionEvent {
 };
 
 struct ResizeEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int width = -1;
   int height = -1;
 };
 
 struct ClickEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int mouse_button = -1;
   int context = -1;
   int double_click = -1;
 };
 
 struct HoverEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int time = -1;
   int context = -1;
 };
 
 struct DragEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int distance = -1;
   int context = -1;
 };
 
 struct ChangeEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int context = -1;
 };
 
 struct KeyDownEvent {
-  int veid = -1;
+  int64_t veid = -1;
   int context = -1;
+};
+
+struct SettingAccessEvent {
+  int name = -1;
+  int numeric_value = -1;
+  int string_value = -1;
+};
+
+struct FunctionCallEvent {
+  int name = -1;
+  int context = -1;
+};
+
+enum SessionTags {
+  kUserSignedIn = 1 << 0,
+  kDevToolsGetAiEnterprisePolicyDisabled = 1 << 1,
+  kDevToolsGetAiEnterprisePolicyAllowWithoutLogging = 1 << 2,
+  kDevToolsRemoteDebuggingDisabled = 1 << 3,
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_VISUAL_LOGGING_H_

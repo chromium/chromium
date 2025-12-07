@@ -4,7 +4,10 @@
 
 #include "chrome/browser/apps/app_discovery_service/recommended_arc_apps/recommend_apps_fetcher_impl.h"
 
+#include <optional>
+#include <string>
 #include <string_view>
+#include <utility>
 
 #include "base/base64url.h"
 #include "base/containers/contains.h"
@@ -79,7 +82,7 @@ bool HasHardKeyboard() {
 }
 
 gfx::Size GetScreenSize() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().GetSizeInPixel();
+  return display::Screen::Get()->GetPrimaryDisplay().GetSizeInPixel();
 }
 
 // TODO(rsgingerrs): This function is copied from Play. We need to find a way to
@@ -454,7 +457,7 @@ void RecommendAppsFetcherImpl::OnDownloadTimeout() {
 }
 
 void RecommendAppsFetcherImpl::OnDownloaded(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   download_timer_.Stop();
 
   RecordUmaDownloadTime(base::TimeTicks::Now() - start_time_);
@@ -481,7 +484,7 @@ void RecommendAppsFetcherImpl::OnDownloaded(
   // The response starts with a prefix ")]}'". This needs to be removed before
   // further parsing.
   const std::string json_xss_prevention_prefix = ")]}'";
-  std::string response_body_json = *response_body;
+  std::string response_body_json = *std::move(response_body);
   if (base::StartsWith(response_body_json, json_xss_prevention_prefix)) {
     response_body_json =
         response_body_json.substr(json_xss_prevention_prefix.length());

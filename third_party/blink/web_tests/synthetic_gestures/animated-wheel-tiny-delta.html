@@ -2,7 +2,6 @@
 <script src='../resources/testharness.js'></script>
 <script src='../resources/testharnessreport.js'></script>
 <script src='../resources/gesture-util.js'></script>
-<script src="../resources/percent-based-util.js"></script>
 
 <style>
   body, html {
@@ -42,20 +41,18 @@
     const source_type = GestureSourceType.MOUSE_INPUT;
 
     promise_test(async () => {
-      const expectedScrollY =
-              calculateExpectedScroll(document.scrollingElement, 0, 1).y;
+      const pixelsToScroll = 1;
       assert_equals(window.scrollY, 0);
-      await tryScroll(1, source_type, expectedScrollY);
-      assert_approx_equals(window.scrollY, expectedScrollY, 0.00001);
+      await tryScroll(pixelsToScroll, source_type, pixelsToScroll);
+      assert_equals(window.scrollY, pixelsToScroll);
     }, 'Synthetic animated ' + GestureSourceType.ToString(source_type) +
        ' gestures accurately scroll delta (0, 1).');
 
     promise_test(async () => {
       const scrollYBefore = window.scrollY;
-      const expectedScrollY =
-              calculateExpectedScroll(document.scrollingElement, 0, 2).y;
-      await tryScroll(2, source_type, expectedScrollY);
-      assert_approx_equals(window.scrollY, scrollYBefore + expectedScrollY, 0.00001);
+      const pixelsToScroll = 2;
+      await tryScroll(pixelsToScroll, source_type, pixelsToScroll);
+      assert_equals(window.scrollY, scrollYBefore + pixelsToScroll);
       window.scrollTo(0, 0);
     }, 'Synthetic animated ' + GestureSourceType.ToString(source_type) +
        ' gestures accurately scroll delta (0, 2).');

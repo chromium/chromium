@@ -7,6 +7,7 @@ package org.chromium.base.supplier;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import android.os.Handler;
@@ -14,9 +15,13 @@ import android.os.Handler;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link ObservableSupplierImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -25,9 +30,11 @@ public class ObservableSupplierImplTest {
     private static final String TEST_STRING_1 = "Test";
     private static final String TEST_STRING_2 = "Test2";
 
+    private final SettableNullableObservableSupplier<@Nullable String> mSupplier =
+            ObservableSuppliers.createNullable();
+
     private int mCallCount;
     private String mLastSuppliedString;
-    private ObservableSupplierImpl<String> mSupplier = new ObservableSupplierImpl<>();
 
     @Test
     public void testObserverNotification_SetMultiple() {
@@ -48,6 +55,85 @@ public class ObservableSupplierImplTest {
 
         mSupplier.set(null);
         checkState(3, null, null, "after setting third string.");
+    }
+
+    @Test
+    public void testAddObserver_ShouldNotifyOnAdd() {
+        mSupplier.set(TEST_STRING_1);
+
+        AtomicBoolean called = new AtomicBoolean(false);
+        Callback<String> supplierObserver = ignored -> called.set(true);
+
+        mSupplier.addObserver(supplierObserver);
+        ShadowLooper.runUiThreadTasks();
+        assertTrue(called.get());
+    }
+
+    @Test
+    public void testAddObserver_ShouldNotNotifyOnAdd() {
+        mSupplier.set(TEST_STRING_1);
+
+        AtomicBoolean called = new AtomicBoolean(false);
+        Callback<String> supplierObserver = ignored -> called.set(true);
+
+        mSupplier.addSyncObserver(supplierObserver);
+        ShadowLooper.runUiThreadTasks();
+        assertFalse(called.get());
+
+        mSupplier.set(TEST_STRING_2);
+        ShadowLooper.runUiThreadTasks();
+        assertTrue(called.get());
+    }
+
+    @Test
+    public void testAddObserver_ShouldOmitNullOnAdd() {
+        AtomicBoolean called = new AtomicBoolean(false);
+        Callback<String> supplierObserver = ignored -> called.set(true);
+
+        mSupplier.addSyncObserverAndCallIfNonNull(supplierObserver);
+        ShadowLooper.runUiThreadTasks();
+        assertFalse(called.get());
+
+        mSupplier.set(TEST_STRING_2);
+        ShadowLooper.runUiThreadTasks();
+        assertTrue(called.get());
+    }
+
+    @Test
+    public void testAddObserver_ShouldPostOnAdd() {
+        mSupplier.set(TEST_STRING_1);
+        AtomicBoolean called = new AtomicBoolean(false);
+        Callback<String> supplierObserver = ignored -> called.set(true);
+
+        mSupplier.addSyncObserverAndPostIfNonNull(supplierObserver);
+        ShadowLooper.runUiThreadTasks();
+        assertTrue(called.get());
+    }
+
+    @Test
+    public void testAddObserver_ShouldCallOnAdd() {
+        mSupplier.set(TEST_STRING_1);
+        AtomicBoolean called = new AtomicBoolean(false);
+        Callback<String> supplierObserver = ignored -> called.set(true);
+
+        mSupplier.addSyncObserverAndCallIfNonNull(supplierObserver); // !NotifyBehavior.POST_ON_ADD
+        boolean idle = ShadowLooper.shadowMainLooper().isIdle();
+        assertTrue(idle);
+    }
+
+    @Test
+    public void testAddObserver_ShouldCallOnChange() {
+        mSupplier.set(TEST_STRING_1);
+        AtomicBoolean called = new AtomicBoolean(false);
+        Callback<String> supplierObserver = ignored -> called.set(true);
+
+        mSupplier.addSyncObserver(supplierObserver); // !NotifyBehavior.POST_ON_CHANGE
+        boolean idle = ShadowLooper.shadowMainLooper().isIdle();
+        assertTrue(idle);
+
+        mSupplier.set(TEST_STRING_2);
+        idle = ShadowLooper.shadowMainLooper().isIdle();
+        assertTrue(idle);
     }
 
     @Test
@@ -218,6 +304,15 @@ public class ObservableSupplierImplTest {
 
         mSupplier.removeObserver(observer2);
         assertFalse("Both observers should be gone", mSupplier.hasObservers());
+    }
+
+    @Test
+    public void testMonotonicNonNull() {
+        SettableObservableSupplier<String> supplier = ObservableSuppliers.createMonotonic();
+        assertThrows(AssertionError.class, () -> supplier.set(null));
+        assertThrows(AssertionError.class, () -> supplier.asNonNull());
+        supplier.set("some value");
+        assertEquals("some value", supplier.asNonNull().get());
     }
 
     private void checkState(

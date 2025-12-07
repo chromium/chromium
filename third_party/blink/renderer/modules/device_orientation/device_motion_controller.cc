@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_controller.h"
 
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_device_orientation_permission_state.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_data.h"
@@ -23,19 +23,16 @@ namespace blink {
 
 DeviceMotionController::DeviceMotionController(LocalDOMWindow& window)
     : DeviceSingleWindowEventController(window),
-      Supplement<LocalDOMWindow>(window),
+      local_dom_window_(window),
       permission_service_(&window) {}
 
 DeviceMotionController::~DeviceMotionController() = default;
 
-const char DeviceMotionController::kSupplementName[] = "DeviceMotionController";
-
 DeviceMotionController& DeviceMotionController::From(LocalDOMWindow& window) {
-  DeviceMotionController* controller =
-      Supplement<LocalDOMWindow>::From<DeviceMotionController>(window);
+  DeviceMotionController* controller = window.GetDeviceMotionController();
   if (!controller) {
     controller = MakeGarbageCollected<DeviceMotionController>(window);
-    ProvideTo(window, controller);
+    window.SetDeviceMotionController(controller);
   }
   return *controller;
 }
@@ -70,8 +67,8 @@ void DeviceMotionController::DidAddEventListener(
 
   if (!has_event_listener_) {
     if (!CheckPolicyFeatures(
-            {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
-             mojom::blink::PermissionsPolicyFeature::kGyroscope})) {
+            {network::mojom::PermissionsPolicyFeature::kAccelerometer,
+             network::mojom::PermissionsPolicyFeature::kGyroscope})) {
       DeviceOrientationController::LogToConsolePolicyFeaturesDisabled(
           *GetWindow().GetFrame(), EventTypeName());
       return;
@@ -120,12 +117,12 @@ void DeviceMotionController::Trace(Visitor* visitor) const {
   DeviceSingleWindowEventController::Trace(visitor);
   visitor->Trace(motion_event_pump_);
   visitor->Trace(permission_service_);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
-ScriptPromise<V8DeviceOrientationPermissionState>
-DeviceMotionController::RequestPermission(ScriptState* script_state) {
-  ExecutionContext* context = GetSupplementable();
+ScriptPromise<V8PermissionState> DeviceMotionController::RequestPermission(
+    ScriptState* script_state) {
+  ExecutionContext* context = local_dom_window_;
   DCHECK_EQ(context, ExecutionContext::From(script_state));
 
   has_requested_permission_ = true;
@@ -136,29 +133,27 @@ DeviceMotionController::RequestPermission(ScriptState* script_state) {
                                    context->GetTaskRunner(TaskType::kSensor)));
   }
 
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<V8DeviceOrientationPermissionState>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8PermissionState>>(
+          script_state);
   auto promise = resolver->Promise();
 
   permission_service_->HasPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolver<V8DeviceOrientationPermissionState>*
-                 resolver,
-             mojom::blink::PermissionStatus status) {
+      resolver->WrapCallbackInScriptScope(
+          BindOnce([](ScriptPromiseResolver<V8PermissionState>* resolver,
+                      mojom::blink::PermissionStatus status) {
             switch (status) {
               case mojom::blink::PermissionStatus::GRANTED:
               case mojom::blink::PermissionStatus::DENIED:
-                resolver->Resolve(*V8DeviceOrientationPermissionState::Create(
-                    PermissionStatusToString(status)));
+                resolver->Resolve(ToV8PermissionState(status));
                 break;
               case mojom::blink::PermissionStatus::ASK:
                 // At the moment, this state is not reachable because there
                 // is no "ask" or "prompt" state in the Chromium
                 // permissions UI for sensors, so HasPermissionStatus() will
                 // always return GRANTED or DENIED.
-                NOTREACHED_IN_MIGRATION();
-                break;
+                NOTREACHED();
             }
           })));
 

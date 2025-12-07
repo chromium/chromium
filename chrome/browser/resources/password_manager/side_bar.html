@@ -3,7 +3,7 @@
     box-sizing: border-box;
     display: block;
     height: 100%;
-    overflow: auto;
+    overflow: visible;
     overscroll-behavior: contain;
     padding-top: 8px;
     width: 250px;
@@ -20,13 +20,13 @@
       selected="[[getSelectedPage_(selectedPage_)]]">
     <a id="passwords" role="menuitem" class="cr-nav-menu-item"
         path="passwords" href="/passwords" on-click="onItemClick_">
-      <iron-icon icon="cr20:password"></iron-icon>
+      <cr-icon icon="cr20:password"></cr-icon>
       $i18n{passwords}
       <cr-ripple></cr-ripple>
     </a>
     <a id="checkup" role="menuitem" class="cr-nav-menu-item"
         path="checkup" href="/checkup" on-click="onItemClick_">
-      <iron-icon icon="passwords-icon:checkup"></iron-icon>
+      <cr-icon icon="passwords-icon:checkup"></cr-icon>
       <span>$i18n{checkup}</span>
       <div id="compromisedPasswords" hidden$="[[!compromisedPasswords_]]">
         [[getCompromisedPasswordsBadge_(compromisedPasswords_)]]</div>
@@ -34,7 +34,7 @@
     </a>
     <a id="settings" role="menuitem" class="cr-nav-menu-item"
         path="settings" href="/settings" on-click="onItemClick_">
-      <iron-icon icon="passwords-icon:settings"></iron-icon>
+      <cr-icon icon="passwords-icon:settings"></cr-icon>
       $i18n{settings}
       <cr-ripple></cr-ripple>
     </a>

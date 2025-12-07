@@ -14,11 +14,18 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:focusable="false"
     android:orientation="vertical">
+      <TextView
+          android:id="@+id/radio_button_title"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:padding="16dp"
+          android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+          android:text="@string/website_settings_category_permission_title" />
 
     <org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionLayout
         android:id="@+id/radio_button_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
 
         <org.chromium.components.browser_ui.widget.RadioButtonWithDescription

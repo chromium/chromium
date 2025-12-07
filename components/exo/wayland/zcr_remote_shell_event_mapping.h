@@ -9,8 +9,6 @@
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
-#include "base/functional/callback.h"
-
 // These structs are populated with function pointers and values from the v1 and
 // v2 remote shell protocol.
 struct WaylandRemoteOutputEventMapping {

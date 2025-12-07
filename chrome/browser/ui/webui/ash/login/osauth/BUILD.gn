@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("osauth") {
   sources = [
@@ -22,7 +20,14 @@ static_library("osauth") {
 
   deps = [
     "//chrome/app:generated_resources",
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/screens/osauth",
     "//components/login",
     "//ui/chromeos",
+  ]
+
+  allow_circular_includes_from = [
+    "//chrome/browser/ash/login",
+    "//chrome/browser/ash/login/screens/osauth",
   ]
 }

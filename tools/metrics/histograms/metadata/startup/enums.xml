@@ -113,12 +113,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Broadcast Receiver"/>
 </enum>
 
+<!-- LINT.IfChange(StartupTemperature) -->
+
 <enum name="StartupTemperature">
   <int value="0" label="Cold startup (mostly hard faults)"/>
   <int value="1" label="Warm startup (nearly no hard faults)"/>
   <int value="2" label="Lukewarm startup (in between cold and warm)"/>
   <int value="3" label="Unable to determine the startup temperature"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/startup_metric_utils/browser/startup_metric_utils.h:StartupTemperature) -->
 
 </enums>
 

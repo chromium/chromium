@@ -4,9 +4,11 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/history_clusters/core/features.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -14,7 +16,14 @@ class NewTabPageBrowserTest : public WebUIMochaBrowserTest {
  protected:
   NewTabPageBrowserTest() {
     set_test_loader_host(chrome::kChromeUINewTabPageHost);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{omnibox::kAimServerEligibilityEnabled,
+                               ntp_realbox::kNtpRealboxNext});
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 using NewTabPageTest = NewTabPageBrowserTest;
@@ -61,6 +70,41 @@ IN_PROC_BROWSER_TEST_F(NewTabPageTest, Transparency) {
   RunTest("new_tab_page/transparency_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, Composebox) {
+  RunTest("new_tab_page/composebox/composebox_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileCarousel) {
+  RunTest("new_tab_page/composebox/file_carousel_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ComposeboxFileThumbnail) {
+  RunTest("new_tab_page/composebox/file_thumbnail_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ContextualEntrypointAndCarousel) {
+  RunTest("new_tab_page/composebox/contextual_entrypoint_and_carousel_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ActionChips) {
+  RunTest("new_tab_page/action_chips/action_chips_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageTest, ErrorScrim) {
+  RunTest("new_tab_page/composebox/error_scrim_test.js", "mocha.run()");
+}
+
+using NewTabPageNtpPromoTest = NewTabPageBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, IndividualPromosTest) {
+  RunTest("new_tab_page/ntp_promo/individual_promos_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageNtpPromoTest, NtpSetupListTest) {
+  RunTest("new_tab_page/ntp_promo/setup_list_test.js", "mocha.run()");
+}
+
 using NewTabPageModulesTest = NewTabPageBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleWrapper) {
@@ -68,15 +112,11 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleWrapper) {
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModulesV2) {
-  RunTest("new_tab_page/modules/v2/modules_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/modules_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleHeaderV2) {
-  RunTest("new_tab_page/modules/v2/module_header_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Modules) {
-  RunTest("new_tab_page/modules/modules_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/module_header_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleDescriptor) {
@@ -87,10 +127,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleRegistry) {
   RunTest("new_tab_page/modules/module_registry_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, ModuleHeader) {
-  RunTest("new_tab_page/modules/module_header_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, InfoDialog) {
   RunTest("new_tab_page/modules/info_dialog_test.js", "mocha.run()");
 }
@@ -98,37 +134,62 @@ IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, InfoDialog) {
 #if !defined(OFFICIAL_BUILD)
 // The dummy module is not available in official builds.
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DummyModule) {
-  RunTest("new_tab_page/modules/v2/dummy/module_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/dummy/module_test.js", "mocha.run()");
 }
 #endif  // !defined(OFFICIAL_BUILD)
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, Calendar) {
-  RunTest("new_tab_page/modules/v2/calendar/calendar_test.js", "mocha.run()");
+  RunTest("new_tab_page/modules/calendar/calendar_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarTest general')");
 }
 
-// TODO(crbug.com/357958395): Re-enable the test.
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DISABLED_CalendarEvent) {
-  RunTest("new_tab_page/modules/v2/calendar/calendar_event_test.js",
-          "mocha.run()");
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarMetrics) {
+  RunTest("new_tab_page/modules/calendar/calendar_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarTest metrics')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEvent) {
+  RunTest("new_tab_page/modules/calendar/calendar_event_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarEventTest general')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, CalendarEventMetrics) {
+  RunTest("new_tab_page/modules/calendar/calendar_event_test.js",
+          "runMochaSuite('NewTabPageModulesCalendarEventTest metrics')");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, GoogleCalendarModule) {
-  RunTest("new_tab_page/modules/v2/calendar/google_calendar_module_test.js",
+  RunTest("new_tab_page/modules/calendar/google_calendar_module_test.js",
           "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, OutlookCalendarModule) {
-  RunTest("new_tab_page/modules/v2/calendar/outlook_calendar_module_test.js",
+  RunTest("new_tab_page/modules/calendar/outlook_calendar_module_test.js",
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModule) {
-  RunTest("new_tab_page/modules/drive/module_test.js", "mocha.run()");
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, DriveModuleV2) {
+  RunTest("new_tab_page/modules/file_suggestion/drive_module_test.js",
+          "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestionModule) {
-  RunTest("new_tab_page/modules/v2/file_suggestion/module_test.js",
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, FileSuggestion) {
+  RunTest("new_tab_page/modules/file_suggestion/file_suggestion_test.js",
           "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MicrosoftFilesModule) {
+  RunTest("new_tab_page/modules/file_suggestion/microsoft_files_module_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, MicrosoftAuthModule) {
+  RunTest("new_tab_page/modules/authentication/microsoft_auth_module_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageModulesTest, TabGroupsModule) {
+  RunTest("new_tab_page/modules/tab_groups/module_test.js", "mocha.run()");
 }
 
 using NewTabPageAppTest = NewTabPageBrowserTest;
@@ -163,11 +224,6 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Clicks) {
           "runMochaSuite('NewTabPageAppTest Clicks')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Modules) {
-  RunTest("new_tab_page/app_test.js",
-          "runMochaSuite('NewTabPageAppTest Modules')");
-}
-
 IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, V2Modules) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest V2Modules')");
@@ -188,26 +244,40 @@ IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, LensUploadDialog) {
           "runMochaSuite('NewTabPageAppTest LensUploadDialog')");
 }
 
-IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, WallpaperSearch) {
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, Composebox) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest Composebox')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ComposeEntryPoint) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest ComposeEntryPoint')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, RealboxNext) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest RealboxNext')");
+}
+
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, ActionChips) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest ActionChips')");
+}
+
+// TODO(crbug.com/428156129): Re-enable test
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, DISABLED_WallpaperSearch) {
   RunTest("new_tab_page/app_test.js",
           "runMochaSuite('NewTabPageAppTest WallpaperSearch')");
 }
 
-class NewTabPageModulesTabResumptionModuleTest : public NewTabPageBrowserTest {
- protected:
-  NewTabPageModulesTabResumptionModuleTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpTabResumptionModule},
-        /*disabled_features=*/{});
-  }
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, MicrosoftAuth) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest MicrosoftAuth')");
+}
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(NewTabPageModulesTabResumptionModuleTest, Core) {
-  RunTest("new_tab_page/modules/v2/tab_resumption/module_test.js",
-          "runMochaSuite('NewTabPageModulesTabResumptionModuleTest Core')");
+IN_PROC_BROWSER_TEST_F(NewTabPageAppTest, NewTabFooter) {
+  RunTest("new_tab_page/app_test.js",
+          "runMochaSuite('NewTabPageAppTest NewTabFooter')");
 }
 
 class NewTabPageModulesMostRelevantTabResumptionModuleTest
@@ -226,7 +296,7 @@ class NewTabPageModulesMostRelevantTabResumptionModuleTest
 
 IN_PROC_BROWSER_TEST_F(NewTabPageModulesMostRelevantTabResumptionModuleTest,
                        Core) {
-  RunTest("new_tab_page/modules/v2/most_relevant_tab_resumption/module_test.js",
+  RunTest("new_tab_page/modules/most_relevant_tab_resumption/module_test.js",
           "runMochaSuite('NewTabPageModulesMostRelevantTabResumptionModuleTest "
           "Core')");
 }

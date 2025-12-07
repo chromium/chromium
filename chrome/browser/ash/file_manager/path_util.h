@@ -134,6 +134,9 @@ bool MigrateToDriveFs(Profile* profile,
 // The canonical mount point name for "Downloads" folder.
 std::string GetDownloadsMountPointName(Profile* profile);
 
+// The canonical mount point name for "ShareCache" folder.
+std::string GetShareCacheMountPointName(Profile* profile);
+
 // The canonical mount point name for ARC "Play files" folder.
 std::string GetAndroidFilesMountPointName();
 
@@ -169,6 +172,12 @@ bool ConvertFileSystemURLToPathInsideCrostini(
     const storage::FileSystemURL& file_system_url,
     base::FilePath* inside);
 
+// Convert a Fusebox Moniker path to a path inside VM mounted at `vm_mount`.
+// `inside` is modified only when the return value is true (success).
+bool ConvertFuseboxMonikerPathToPathInsideVM(const base::FilePath& path,
+                                             const base::FilePath& vm_mount,
+                                             base::FilePath* inside);
+
 // Convert a path inside a VM mounted at |vm_mount| (e.g. /mnt/chromeos) to a
 // FileSystemURL. If |map_crostini_home| is set, paths
 // under the user's home directory (e.g. /home/user) are translated to be under
@@ -199,6 +208,11 @@ bool ConvertPathToArcUrl(const base::FilePath& path,
 using ConvertToContentUrlsCallback =
     base::OnceCallback<void(const std::vector<GURL>& content_urls,
                             const std::vector<base::FilePath>& paths_to_share)>;
+
+// Converts the given FileSystemURL to a file path which can be passed to
+// ConvertPathToArcUrl().
+base::FilePath ConvertFileSystemURLToPathForSharingWithArc(
+    const storage::FileSystemURL& file_system_url);
 
 // Asynchronously converts Chrome OS file system URLs to content:// URLs.
 // Always returns a vector of the same size as |file_system_urls|.

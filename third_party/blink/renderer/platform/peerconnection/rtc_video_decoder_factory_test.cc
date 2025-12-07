@@ -24,6 +24,16 @@ using ::testing::UnorderedElementsAre;
 namespace blink {
 
 namespace {
+#if BUILDFLAG(RTC_USE_H265)
+const media::SupportedVideoDecoderConfig kH265MaxSupportedVideoDecoderConfig =
+    media::SupportedVideoDecoderConfig(
+        media::VideoCodecProfile::HEVCPROFILE_MAIN,
+        media::VideoCodecProfile::HEVCPROFILE_MAIN10,
+        media::kDefaultSwDecodeSizeMin,
+        media::kDefaultSwDecodeSizeMax,
+        true,
+        false);
+#endif  // BUILDFLAG(RTC_USE_H265)
 
 const webrtc::SdpVideoFormat kVp9Profile0Sdp("VP9", {{"profile-id", "0"}});
 const webrtc::SdpVideoFormat kVp9Profile1Sdp("VP9", {{"profile-id", "1"}});
@@ -60,16 +70,27 @@ const webrtc::SdpVideoFormat kH264MainPacketizatonMode1Sdp(
      {"packetization-mode", "1"},
      {"profile-level-id", "4d001f"}});
 #if BUILDFLAG(RTC_USE_H265)
-const webrtc::SdpVideoFormat kH265MainProfileSdp("H265",
-                                                 {{"profile-id", "1"},
-                                                  {"tier-flag", "0"},
-                                                  {"level-id", "93"},
-                                                  {"tx-mode", "SRST"}});
-const webrtc::SdpVideoFormat kH265Main10ProfileSdp("H265",
-                                                   {{"profile-id", "2"},
-                                                    {"tier-flag", "0"},
-                                                    {"level-id", "93"},
-                                                    {"tx-mode", "SRST"}});
+const webrtc::SdpVideoFormat kH265MainProfileLevel31Sdp("H265",
+                                                        {{"profile-id", "1"},
+                                                         {"tier-flag", "0"},
+                                                         {"level-id", "93"},
+                                                         {"tx-mode", "SRST"}});
+const webrtc::SdpVideoFormat kH265Main10ProfileLevel31Sdp("H265",
+                                                          {{"profile-id", "2"},
+                                                           {"tier-flag", "0"},
+                                                           {"level-id", "93"},
+                                                           {"tx-mode",
+                                                            "SRST"}});
+const webrtc::SdpVideoFormat kH265MainProfileLevel6Sdp("H265",
+                                                       {{"profile-id", "1"},
+                                                        {"tier-flag", "0"},
+                                                        {"level-id", "180"},
+                                                        {"tx-mode", "SRST"}});
+const webrtc::SdpVideoFormat kH265Main10ProfileLevel6Sdp("H265",
+                                                         {{"profile-id", "2"},
+                                                          {"tier-flag", "0"},
+                                                          {"level-id", "180"},
+                                                          {"tx-mode", "SRST"}});
 #endif  // BUILDFLAG(RTC_USE_H265)
 
 bool Equals(webrtc::VideoDecoderFactory::CodecSupport a,
@@ -114,14 +135,24 @@ class MockGpuVideoDecodeAcceleratorFactories
       return Supported::kFalse;
     }
   }
+
+  // Since we currently only use this for checking supported decoder configs for
+  // HEVC, we only add HEVC related configs for now.
+  std::optional<media::SupportedVideoDecoderConfigs>
+  GetSupportedVideoDecoderConfigs() override {
+    media::SupportedVideoDecoderConfigs supported_configs;
+#if BUILDFLAG(RTC_USE_H265)
+    supported_configs.push_back({kH265MaxSupportedVideoDecoderConfig});
+#endif
+    return supported_configs;
+  }
 };
 
 }  // anonymous namespace
 
 class RTCVideoDecoderFactoryTest : public ::testing::Test {
  public:
-  RTCVideoDecoderFactoryTest()
-      : decoder_factory_(&mock_gpu_factories_, nullptr, nullptr, {}) {}
+  RTCVideoDecoderFactoryTest() : decoder_factory_(&mock_gpu_factories_, {}) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -187,36 +218,7 @@ TEST_F(RTCVideoDecoderFactoryTest, QueryCodecSupportReturnsExpectedResults) {
           true /*reference_scaling*/),
       kUnsupported));
 
-  // If WebRTCAllowH265Receive is not enabled, H.265 decode should not be
-  // supported.
-  EXPECT_TRUE(
-      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("H265"),
-                                                false /*reference_scaling*/),
-             kUnsupported));
-}
-
-TEST_F(RTCVideoDecoderFactoryTest, GetSupportedFormatsReturnsAllExpectedModes) {
-  EXPECT_CALL(mock_gpu_factories_, IsDecoderSupportKnown())
-      .WillRepeatedly(Return(true));
-
-  EXPECT_THAT(
-      decoder_factory_.GetSupportedFormats(),
-      UnorderedElementsAre(
-          kH264CbPacketizatonMode0Sdp, kH264CbPacketizatonMode1Sdp,
-          kH264BaselinePacketizatonMode0Sdp, kH264BaselinePacketizatonMode1Sdp,
-          kH264MainPacketizatonMode0Sdp, kH264MainPacketizatonMode1Sdp,
-          kVp9Profile0Sdp, kVp9Profile1Sdp, kVp9Profile2Sdp, kAv1Sdp));
-}
-
 #if BUILDFLAG(RTC_USE_H265)
-TEST_F(RTCVideoDecoderFactoryTest,
-       QueryCodecSupportH265WithWebRtcAllowH265ReceiveEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({::features::kWebRtcAllowH265Receive},
-                                       {});
-  EXPECT_CALL(mock_gpu_factories_, IsDecoderSupportKnown())
-      .WillRepeatedly(Return(true));
-
   // H265 decode should be supported without reference scaling.
   EXPECT_TRUE(
       Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("H265"),
@@ -235,11 +237,17 @@ TEST_F(RTCVideoDecoderFactoryTest,
                          false /*reference_scaling*/),
                      kSupportedPowerEfficient));
 
-  // H265 main10 profile is not supported.
+  // H265 main10 profile is not supported via QueryCodecSupport().
   EXPECT_TRUE(Equals(decoder_factory_.QueryCodecSupport(
                          webrtc::SdpVideoFormat("H265", {{"profile-id", "2"}}),
                          false /*reference_scaling*/),
                      kUnsupported));
+#endif  // BUILDFLAG(RTC_USE_H265)
+}
+
+TEST_F(RTCVideoDecoderFactoryTest, GetSupportedFormatsReturnsAllExpectedModes) {
+  EXPECT_CALL(mock_gpu_factories_, IsDecoderSupportKnown())
+      .WillRepeatedly(Return(true));
 
   EXPECT_THAT(
       decoder_factory_.GetSupportedFormats(),
@@ -247,8 +255,36 @@ TEST_F(RTCVideoDecoderFactoryTest,
           kH264CbPacketizatonMode0Sdp, kH264CbPacketizatonMode1Sdp,
           kH264BaselinePacketizatonMode0Sdp, kH264BaselinePacketizatonMode1Sdp,
           kH264MainPacketizatonMode0Sdp, kH264MainPacketizatonMode1Sdp,
-          kVp9Profile0Sdp, kVp9Profile1Sdp, kVp9Profile2Sdp, kAv1Sdp,
-          kH265MainProfileSdp));
+          kVp9Profile0Sdp, kVp9Profile1Sdp, kVp9Profile2Sdp, kAv1Sdp
+#if BUILDFLAG(RTC_USE_H265)
+          ,
+          kH265MainProfileLevel6Sdp, kH265Main10ProfileLevel6Sdp
+#endif  // BUILDFLAG(RTC_USE_H265)
+          ));
+}
+
+#if BUILDFLAG(RTC_USE_H265)
+TEST_F(RTCVideoDecoderFactoryTest,
+       QueryCodecSupportH265WithWebRtcAllowH265ReceiveDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({},
+                                       {::features::kWebRtcAllowH265Receive});
+  EXPECT_CALL(mock_gpu_factories_, IsDecoderSupportKnown())
+      .WillRepeatedly(Return(true));
+
+  // H265 is missing from this list.
+  EXPECT_THAT(
+      decoder_factory_.GetSupportedFormats(),
+      UnorderedElementsAre(
+          kH264CbPacketizatonMode0Sdp, kH264CbPacketizatonMode1Sdp,
+          kH264BaselinePacketizatonMode0Sdp, kH264BaselinePacketizatonMode1Sdp,
+          kH264MainPacketizatonMode0Sdp, kH264MainPacketizatonMode1Sdp,
+          kVp9Profile0Sdp, kVp9Profile1Sdp, kVp9Profile2Sdp, kAv1Sdp));
+
+  EXPECT_TRUE(
+      Equals(decoder_factory_.QueryCodecSupport(webrtc::SdpVideoFormat("H265"),
+                                                false /*reference_scaling*/),
+             kUnsupported));
 }
 #endif  // BUILDFLAG(RTC_USE_H265)
 }  // namespace blink

@@ -6,13 +6,18 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_WORKLET_TEST_UTIL_H_
 
 #include <optional>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/types/optional_ref.h"
+#include "content/services/auction_worklet/public/cpp/creative_info.h"
 #include "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom.h"
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
+#include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/trusted_signals.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/mojom/shared_storage.mojom-forward.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -26,12 +31,14 @@ class AuctionV8Helper;
 
 // The official Javascript, JSON, and WASM MIME types. For JS and JSON there are
 // also other supported MIME types.
-extern const char kJavascriptMimeType[];
-extern const char kJsonMimeType[];
-extern const char kWasmMimeType[];
+inline constexpr char kJavascriptMimeType[] = "application/javascript";
+inline constexpr char kJsonMimeType[] = "application/json";
+inline constexpr char kWasmMimeType[] = "application/wasm";
+inline constexpr char kAdAuctionTrustedSignalsMimeType[] =
+    "message/ad-auction-trusted-signals-response";
 
 // "X-Allow-Fledge: true" header.
-extern const char kAllowFledgeHeader[];
+inline constexpr char kAllowFledgeHeader[] = "Ad-Auction-Allowed: true";
 
 // Enqueues a response to `url_loader_factory` using the specified values.
 //
@@ -79,21 +86,43 @@ base::WaitableEvent* WedgeV8Thread(AuctionV8Helper* v8_helper);
 // Receives shared storage mojom messages.
 class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
  public:
-  enum RequestType {
-    kSet,
-    kAppend,
-    kDelete,
-    kClear,
-  };
-
   struct Request {
-    RequestType type;
-    std::u16string key;
-    std::u16string value;
-    bool ignore_if_present;
+    Request(network::mojom::SharedStorageModifierMethodWithOptionsPtr
+                method_with_options,
+            mojom::AuctionWorkletFunction source_auction_worklet_function);
+    ~Request();
+
+    Request(const Request& other);
+    Request& operator=(const Request& other);
+    Request(Request&& other);
+    Request& operator=(Request&& other);
+
+    network::mojom::SharedStorageModifierMethodWithOptionsPtr
+        method_with_options;
     mojom::AuctionWorkletFunction source_auction_worklet_function;
 
     bool operator==(const Request& rhs) const;
+  };
+
+  struct BatchRequest {
+    BatchRequest(
+        std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+            methods_with_options,
+        const std::optional<std::string>& with_lock,
+        mojom::AuctionWorkletFunction source_auction_worklet_function);
+    ~BatchRequest();
+
+    BatchRequest(const BatchRequest& other);
+    BatchRequest& operator=(const BatchRequest& other) = delete;
+    BatchRequest(BatchRequest&& other);
+    BatchRequest& operator=(BatchRequest&& other);
+
+    std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+        methods_with_options;
+    std::optional<std::string> with_lock;
+    mojom::AuctionWorkletFunction source_auction_worklet_function;
+
+    bool operator==(const BatchRequest& rhs) const;
   };
 
   TestAuctionSharedStorageHost();
@@ -101,32 +130,31 @@ class TestAuctionSharedStorageHost : public mojom::AuctionSharedStorageHost {
   ~TestAuctionSharedStorageHost() override;
 
   // mojom::AuctionSharedStorageHost:
-  void Set(
-      const std::u16string& key,
-      const std::u16string& value,
-      bool ignore_if_present,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Append(
-      const std::u16string& key,
-      const std::u16string& value,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Delete(
-      const std::u16string& key,
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
-
-  void Clear(
-      mojom::AuctionWorkletFunction source_auction_worklet_function) override;
+  void SharedStorageUpdate(
+      network::mojom::SharedStorageModifierMethodWithOptionsPtr
+          method_with_options,
+      auction_worklet::mojom::AuctionWorkletFunction
+          source_auction_worklet_function) override;
+  void SharedStorageBatchUpdate(
+      std::vector<network::mojom::SharedStorageModifierMethodWithOptionsPtr>
+          methods_with_options,
+      const std::optional<std::string>& with_lock,
+      auction_worklet::mojom::AuctionWorkletFunction
+          source_auction_worklet_function) override;
 
   const std::vector<Request>& observed_requests() const {
     return observed_requests_;
+  }
+
+  const std::vector<BatchRequest>& observed_batch_requests() const {
+    return observed_batch_requests_;
   }
 
   void ClearObservedRequests();
 
  private:
   std::vector<Request> observed_requests_;
+  std::vector<BatchRequest> observed_batch_requests_;
 };
 
 class TestAuctionNetworkEventsHandler
@@ -160,6 +188,13 @@ class TestAuctionNetworkEventsHandler
   mojo::ReceiverSet<auction_worklet::mojom::AuctionNetworkEventsHandler>
       auction_network_events_handlers_;
 };
+
+// A helper to make testing common cases in trusted seller signals easier, by
+// construsting the larger type it needs from simpler string input.
+std::set<CreativeInfo> CreateCreativeInfoSet(
+    const std::vector<std::string>& urls);
+std::vector<mojom::CreativeInfoWithoutOwnerPtr>
+CreateMojoCreativeInfoWithoutOwnerVector(const std::vector<std::string>& urls);
 
 }  // namespace auction_worklet
 

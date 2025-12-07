@@ -9,42 +9,24 @@ It also contains a Linux command-line test binary.
 
 ## Building the WASM Module
 
-### 1. Install Emscripten
+### Install Emscripten
 
-This step needs to be only once.
-
-1. `git clone` emscripten:
-https://emscripten.org/docs/getting_started/downloads.html
-2. Install the known working version:
-   ```sh
-   cd $EMSDK; ./emsdk install 3.1.9 && ./emsdk activate 3.1.9
-   ```
-3. Activate it via environment variables:
-   ```sh
-   cd $EMSDK; source emsdk_env.sh
-   ```
-
-### 2. Apply Local Patches
-
-Caspian needs some minor edits that we don't want to commit:
+This step needs to be only once. Docs: https://emscripten.org/docs/getting_started/downloads.html
 
 ```sh
-git apply -3 tools/binary_size/libsupersize/viewer/caspian/wasmbuild.patch
+cd /usr/local/google/code
+git clone https://github.com/emscripten-core/emsdk.git
+cd emsdk
+./emsdk install 4.0.9
+./emsdk activate 4.0.9
+source emsdk_env.sh
 ```
 
-To re-create .patch file:
-```sh
-git add ...files to include in patch...
-git diff --staged > tools/binary_size/libsupersize/viewer/caspian/wasmbuild.patch
-# Double check that only expected files are included in the patch:
-grep +++ tools/binary_size/libsupersize/viewer/caspian/wasmbuild.patch
-```
-
-### 3. Build
+### Build
 
 ```sh
 # Omit is_official_build=true if developing locally.
-gn gen out/caspian --args='is_official_build=true treat_warnings_as_errors=false fatal_linker_warnings=false chrome_pgo_phase=0 enable_rust=false'
+gn gen out/caspian --args='enable_caspian=true is_official_build=true treat_warnings_as_errors=false fatal_linker_warnings=false emscripten_path="/usr/local/google/code/emsdk/upstream/emscripten"'
 # Build and copy into static/ directory:
 ( cd out/caspian; autoninja caspian_web && cp wasm/caspian_web.* ../../tools/binary_size/libsupersize/viewer/static/ )
 ```
@@ -90,6 +72,9 @@ The every-time steps are:
    ```
    cd $PATH_TO_EMSDK
    git pull origin main --tags
+   ./emsdk install latest
+   ./emsdk activate latest
+   source ./emsdk_env.sh
    ```
 2.  Update this README's Emscripten version above, then follow its steps.
 

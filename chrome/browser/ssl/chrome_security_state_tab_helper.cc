@@ -12,11 +12,10 @@
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lookalikes/safety_tip_web_contents_observer.h"
+#include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/ssl/known_interception_disclosure_infobar_delegate.h"
 #include "chrome/common/chrome_features.h"
@@ -33,6 +32,7 @@
 #include "components/security_interstitials/core/pref_names.h"
 #include "components/security_state/content/content_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -50,13 +50,12 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/policy/networking/policy_cert_service.h"
-#include "chrome/browser/policy/networking/policy_cert_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
+#endif
+
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #endif
 
 using password_manager::metrics_util::PasswordType;
@@ -85,6 +84,14 @@ ChromeSecurityStateTabHelper::~ChromeSecurityStateTabHelper() = default;
 std::unique_ptr<security_state::VisibleSecurityState>
 ChromeSecurityStateTabHelper::GetVisibleSecurityState() {
   auto state = SecurityStateTabHelper::GetVisibleSecurityState();
+
+  // Get the 2-QWAC state.
+  QwacWebContentsObserver::QwacStatus* qwac_status =
+      QwacWebContentsObserver::QwacStatus::GetForPage(
+          web_contents()->GetPrimaryPage());
+  if (qwac_status && qwac_status->is_finished()) {
+    state->two_qwac = qwac_status->verified_2qwac_cert();
+  }
 
   // Malware status might already be known even if connection security
   // information is still being initialized, thus no need to check for that.
@@ -129,15 +136,6 @@ void ChromeSecurityStateTabHelper::DidStartNavigation(
   if (!navigation_handle->IsFormSubmission()) {
     return;
   }
-  UMA_HISTOGRAM_ENUMERATION("Security.SecurityLevel.FormSubmission",
-                            GetSecurityLevel(),
-                            security_state::SECURITY_LEVEL_COUNT);
-  if (navigation_handle->IsInMainFrame() &&
-      !security_state::IsSchemeCryptographic(GetVisibleSecurityState()->url)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Security.SecurityLevel.InsecureMainFrameFormSubmission",
-        GetSecurityLevel(), security_state::SECURITY_LEVEL_COUNT);
-  }
 
   if (navigation_handle->GetURL().SchemeIs(url::kHttpsScheme)) {
     ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
@@ -152,33 +150,12 @@ void ChromeSecurityStateTabHelper::DidStartNavigation(
 
 void ChromeSecurityStateTabHelper::PrimaryPageChanged(content::Page& page) {
   net::CertStatus cert_status = GetVisibleSecurityState()->cert_status;
-  if (net::IsCertStatusError(cert_status) &&
-      !page.GetMainDocument().IsErrorDocument()) {
-    // Record each time a user visits a site after having clicked through a
-    // certificate warning interstitial. This is used as a baseline for
-    // interstitial.ssl.did_user_revoke_decision2 in order to determine how
-    // many times the re-enable warnings button is clicked, as a fraction of
-    // the number of times it was available.
-    UMA_HISTOGRAM_BOOLEAN("interstitial.ssl.visited_site_after_warning", true);
-  }
-
   MaybeShowKnownInterceptionDisclosureDialog(web_contents(), cert_status);
 }
 
-bool ChromeSecurityStateTabHelper::UsedPolicyInstalledCertificate() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  policy::PolicyCertService* service =
-      policy::PolicyCertServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
-  if (service && service->UsedPolicyCertificates()) {
-    return true;
-  }
-#endif
-  return false;
-}
-
 security_state::MaliciousContentStatus
-ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
+ChromeSecurityStateTabHelper::GetMaliciousContentStatus() {
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   using enum safe_browsing::SBThreatType;
 
   content::NavigationEntry* entry =
@@ -263,9 +240,9 @@ ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
         // These threat types are not currently associated with
         // interstitials, and thus resources with these threat types are
         // not ever whitelisted or pending whitelisting.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
+#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;
 }

@@ -16,14 +16,15 @@
 #include "base/test/task_environment.h"
 #include "base/test/test.pb.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "components/optimization_guide/core/feature_registry/feature_registration.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
-#include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
+#include "components/optimization_guide/optimization_guide_buildflags.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -34,6 +35,10 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+#include "components/optimization_guide/core/model_execution/performance_class.h"
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
 namespace optimization_guide {
 
@@ -94,11 +99,16 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
 
   ~ModelQualityLogsUploaderServiceTest() override = default;
 
-  void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
-    pref_service_.SetInteger(
-        model_execution::prefs::localstate::kOnDevicePerformanceClass,
-        base::to_underlying(OnDeviceModelPerformanceClass::kVeryHigh));
+  void SetUp() override {
+    model_execution::prefs::RegisterProfilePrefs(pref_service_.registry());
   }
+
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
+  void WritePerformanceClassToPref(OnDeviceModelPerformanceClass perf_class) {
+    UpdatePerformanceClassPref(&pref_service_,
+                               OnDeviceModelPerformanceClass::kVeryHigh);
+  }
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
   void UploadModelQualityLogs(
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request) {
@@ -119,28 +129,28 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
   std::unique_ptr<ModelQualityLogEntry> GetModelQualityLogEntryAndSetFeedback(
       UserVisibleFeatureKey feature,
       proto::UserFeedback feedback) {
-    std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request(
-        new proto::LogAiDataRequest());
     std::unique_ptr<ModelQualityLogEntry> log_entry =
         std::make_unique<ModelQualityLogEntry>(
-            std::move(log_ai_data_request),
             model_quality_logs_uploader_service_->GetWeakPtr());
     switch (feature) {
       case UserVisibleFeatureKey::kCompose:
-        log_entry->quality_data<ComposeFeatureTypeMap>()->set_user_feedback(
+        log_entry->log_ai_data_request()->mutable_compose()->mutable_quality()->set_user_feedback(
             feedback);
         break;
       case UserVisibleFeatureKey::kTabOrganization:
-        log_entry->quality_data<TabOrganizationFeatureTypeMap>()
-            ->add_organizations()
-            ->set_user_feedback(feedback);
+        // No longer used.
         break;
       case UserVisibleFeatureKey::kWallpaperSearch:
-        log_entry->quality_data<WallpaperSearchFeatureTypeMap>()
+        log_entry->log_ai_data_request()
+            ->mutable_wallpaper_search()
+            ->mutable_quality()
             ->set_user_feedback(feedback);
         break;
       case UserVisibleFeatureKey::kHistorySearch:
         // TODO(crbug.com/345308285): Add user feedback for history searches.
+      case UserVisibleFeatureKey::kPasswordChangeSubmission:
+        // TODO(crbug.com/375569995): Add user feedback for password change
+        // submission.
         break;
     }
 
@@ -195,7 +205,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ModelQualityLogsUploaderService>
@@ -209,7 +219,9 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
 };
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   WritePerformanceClassToPref(OnDeviceModelPerformanceClass::kVeryHigh);
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
 
   auto ai_data_request = BuildComposeLogAiDataReuqest();
   UploadModelQualityLogs(std::move(ai_data_request));
@@ -221,11 +233,13 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TestSuccessfulResponse) {
   auto pending_request = GetPendingLogsUploadRequest();
   EXPECT_EQ(proto::LogAiDataRequest::FeatureCase::kCompose,
             pending_request->feature_case());
+#if BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   // Performance class should be attached.
   EXPECT_EQ(proto::PERFORMANCE_CLASS_VERY_HIGH,
             pending_request->logging_metadata()
                 .on_device_system_profile()
                 .performance_class());
+#endif  // BUILDFLAG(BUILD_WITH_MODEL_EXECUTION)
   EXPECT_EQ(
       12345,
       pending_request->logging_metadata().system_profile().build_timestamp());
@@ -332,6 +346,8 @@ TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
+  // Nothing gets recorded since the per-organization feedback logic has been
+  // removed.
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(
           UserVisibleFeatureKey::kTabOrganization,
@@ -340,7 +356,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
 
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_UP, 1);
+      proto::USER_FEEDBACK_THUMBS_UP, 0);
 
   std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
       GetModelQualityLogEntryAndSetFeedback(
@@ -349,26 +365,22 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_DOWN, 1);
+      proto::USER_FEEDBACK_THUMBS_DOWN, 0);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest,
        TabOrganizationUserFeedbackNullCheck) {
   // Set TabOrganization ModelQualityLogEntry without any quality data tab
   // organization.
-  std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request_1(
-      new proto::LogAiDataRequest());
-
   proto::TabOrganizationLoggingData tab_organization_logging_data;
 
   proto::TabOrganizationRequest tab_request;
 
   *(tab_organization_logging_data.mutable_request()) = tab_request;
-  *(log_ai_data_request_1->mutable_tab_organization()) =
-      tab_organization_logging_data;
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      std::make_unique<ModelQualityLogEntry>(std::move(log_ai_data_request_1),
-                                             nullptr);
+      std::make_unique<ModelQualityLogEntry>(nullptr);
+  *(log_entry_1->log_ai_data_request()->mutable_tab_organization()) =
+      tab_organization_logging_data;
 
   // Upload logs without quality data set this should mark user_feedback as
   // unspecified.
@@ -386,20 +398,22 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
           UserVisibleFeatureKey::kTabOrganization,
           proto::USER_FEEDBACK_THUMBS_UP);
   // Add one more tab organization to existing log_entry with user feedback.
-  log_entry->quality_data<TabOrganizationFeatureTypeMap>()
+  log_entry->log_ai_data_request()
+      ->mutable_tab_organization()
+      ->mutable_quality()
       ->add_organizations()
       ->set_user_feedback(proto::USER_FEEDBACK_THUMBS_DOWN);
 
   UploadModelQualityLogsWithLogEntry(std::move(log_entry));
 
-  // We should record two user feedback values corresponding to each of the tab
-  // organization.
+  // Nothing gets recorded since the per-organization feedback logic has been
+  // removed.
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_UP, 1);
+      proto::USER_FEEDBACK_THUMBS_UP, 0);
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_DOWN, 1);
+      proto::USER_FEEDBACK_THUMBS_DOWN, 0);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {

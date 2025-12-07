@@ -63,9 +63,6 @@ class WTF_EXPORT Decimal {
     EncodedData(Sign, int exponent, uint64_t coefficient);
 
     bool operator==(const EncodedData&) const;
-    bool operator!=(const EncodedData& another) const {
-      return !operator==(another);
-    }
 
     uint64_t Coefficient() const { return coefficient_; }
     int CountDigits() const;

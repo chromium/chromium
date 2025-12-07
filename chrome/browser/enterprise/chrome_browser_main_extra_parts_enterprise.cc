@@ -4,13 +4,20 @@
 
 #include "chrome/browser/enterprise/chrome_browser_main_extra_parts_enterprise.h"
 
-#include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "components/enterprise/buildflags/buildflags.h"
+#include "content/public/browser/browser_thread.h"
 
-namespace chrome::enterprise_util {
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
+    BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_sdk_manager.h"  // nogncheck
+#include "chrome/browser/enterprise/connectors/connectors_service.h"  // nogncheck
+#endif
+
+namespace enterprise_util {
 
 namespace {
 
+#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 // If a local agent has been configured for content analysis, this function
 // connects to the agent immediately.  Agents expect chrome to connect to them
 // at some point during startup to determine if chrome is configuredcorrectly.
@@ -36,6 +43,7 @@ void MaybePrimeLocalContentAnalysisAgentConnection(Profile* profile) {
         {configs[0]->local_path, configs[0]->user_specific});
   }
 }
+#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
 }  // namespace
 
@@ -45,10 +53,19 @@ ChromeBrowserMainExtraPartsEnterprise::ChromeBrowserMainExtraPartsEnterprise() =
 ChromeBrowserMainExtraPartsEnterprise::
     ~ChromeBrowserMainExtraPartsEnterprise() = default;
 
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)) && \
+    BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 void ChromeBrowserMainExtraPartsEnterprise::PostProfileInit(
     Profile* profile,
     bool is_initial_profile) {
   MaybePrimeLocalContentAnalysisAgentConnection(profile);
 }
+#endif
 
-}  // namespace chrome::enterprise_util
+void ChromeBrowserMainExtraPartsEnterprise::PostCreateMainMessageLoop() {
+  // Set up and register ERP reporting client.
+  reporting_client_ =
+      reporting::ReportingClient::Create(content::GetUIThreadTaskRunner({}));
+}
+
+}  // namespace enterprise_util

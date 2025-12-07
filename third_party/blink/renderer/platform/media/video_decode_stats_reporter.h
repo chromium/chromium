@@ -5,9 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_VIDEO_DECODE_STATS_REPORTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIA_VIDEO_DECODE_STATS_REPORTER_H_
 
-#include <memory>
 #include <optional>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -18,10 +16,11 @@
 #include "media/base/cdm_config.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/video_codecs.h"
-#include "media/mojo/mojom/video_decode_stats_recorder.mojom.h"
+#include "media/mojo/mojom/video_decode_stats_recorder.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -36,7 +35,7 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
       base::RepeatingCallback<media::PipelineStatistics(void)>;
 
   VideoDecodeStatsReporter(
-      mojo::PendingRemote<media::mojom::VideoDecodeStatsRecorder>
+      mojo::PendingRemote<media::mojom::blink::VideoDecodeStatsRecorder>
           recorder_remote,
       GetPipelineStatsCB get_pipeline_stats_cb,
       media::VideoCodecProfile codec_profile,
@@ -151,7 +150,7 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
 
   // mojo::Remote for the recorder. The recorder runs in the browser process
   // and finalizes the record in the event of fast render process tear down.
-  mojo::Remote<media::mojom::VideoDecodeStatsRecorder> recorder_remote_;
+  mojo::Remote<media::mojom::blink::VideoDecodeStatsRecorder> recorder_remote_;
 
   // Callback for retrieving playback statistics.
   GetPipelineStatsCB get_pipeline_stats_cb_;
@@ -165,7 +164,7 @@ class PLATFORM_EXPORT VideoDecodeStatsReporter {
   const gfx::Size natural_size_;
 
   // The name of the current key system. Empty for unencrypted playback.
-  const std::string key_system_;
+  const String key_system_;
 
   // From media::CdmConfig in constructor.
   const bool use_hw_secure_codecs_;

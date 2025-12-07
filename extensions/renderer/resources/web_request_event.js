@@ -6,6 +6,8 @@ var CHECK = requireNative('logging').CHECK;
 var idGeneratorNatives = requireNative('id_generator');
 var utils = require('utils');
 var webRequestInternal = getInternalApi('webRequestInternal');
+const allowAsyncResponsesForAllEvents =
+    requireNative('web_request_natives').AllowAsyncResponsesForAllEvents();
 const isServiceWorkerContext =
     requireNative('service_worker_natives').IsServiceWorkerContext();
 
@@ -49,8 +51,9 @@ function getUniqueSubEventName(eventName) {
 //   ^ callback will only be called for onBeforeRequests matching the filter.
 function WebRequestEventImpl(eventName, opt_argSchemas, opt_extraArgSchemas,
                              opt_eventOptions, opt_webViewInstanceId) {
-  if (typeof eventName != 'string')
+  if (typeof eventName != 'string') {
     throw new Error('chrome.WebRequestEvent requires an event name.');
+  }
 
   bindingUtil.addCustomSignature(eventName, opt_extraArgSchemas);
 
@@ -102,14 +105,33 @@ WebRequestEventImpl.prototype.addListener =
     var webViewInstanceId = this.webViewInstanceId;
     subEventCallback = function() {
       var requestId = arguments[0].requestId;
-      try {
-        var result = $Function.apply(cb, null, arguments);
+
+      function sendEventHandledWithResult(result) {
         webRequestInternal.eventHandled(
             eventName, subEventName, requestId, webViewInstanceId, result);
-      } catch (e) {
+      }
+      function handleHandlerError(e) {
         webRequestInternal.eventHandled(
             eventName, subEventName, requestId, webViewInstanceId);
         throw e;
+      }
+
+      try {
+        let result = $Function.apply(cb, null, arguments);
+        if (allowAsyncResponsesForAllEvents &&
+            result instanceof $Promise.self) {
+          $Promise.catch(
+              $Promise.then(result, (asyncResult) => {
+                sendEventHandledWithResult(asyncResult);
+              }),
+              (e) => {
+                handleHandlerError(e);
+              });
+        } else {
+          sendEventHandledWithResult(result);
+        }
+      } catch (e) {
+        handleHandlerError(e);
       }
     };
   } else if (
@@ -149,8 +171,9 @@ WebRequestEventImpl.prototype.findListener_ = function(cb) {
   for (var i in this.subEvents) {
     var e = this.subEvents[i];
     if (e.callback === cb) {
-      if (e.subEvent.hasListener(e.subEventCallback))
+      if (e.subEvent.hasListener(e.subEventCallback)) {
         return i;
+      }
       console.error('Internal error: webRequest subEvent has no callback.');
     }
   }

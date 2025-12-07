@@ -18,20 +18,13 @@
 // other utility functions in StartupUtils.
 class StartupUtilsTest : public testing::Test {
  protected:
-  StartupUtilsTest() {
-    RegisterLocalState(fake_local_state_.registry());
-    TestingBrowserProcess::GetGlobal()->SetLocalState(&fake_local_state_);
-  }
-
   ~StartupUtilsTest() override {
     TestingBrowserProcess::GetGlobal()->SetShuttingDown(true);
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
   }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  TestingPrefServiceSimple fake_local_state_;
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   base::test::ScopedCommandLine command_line_;
   policy::test::EnrollmentTestHelper enrollment_test_helper_{

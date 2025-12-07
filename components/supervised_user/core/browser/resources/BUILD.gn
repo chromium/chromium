@@ -1,0 +1,45 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/supervised_user/buildflags.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//ui/webui/resources/tools/minify_js.gni")
+import("//ui/webui/webui_features.gni")
+
+assert(enable_supervised_users)
+
+group("bundle_js") {
+  if (optimize_webui) {
+    public_deps = [ ":minify_js" ]
+  } else {
+    public_deps = [ ":preprocess" ]
+  }
+}
+
+preprocess_if_expr("preprocess") {
+  visibility = [
+    ":bundle_js",
+    ":minify_js",
+  ]
+  out_folder = "${target_gen_dir}/preprocessed"
+  in_files = [
+    "supervised_user_block_interstitial_v2.js",
+    "supervised_user_block_interstitial_v3.js",
+    "supervised_user_block_interstitial_no_approvals.js",
+  ]
+}
+
+if (optimize_webui) {
+  minify_js("minify_js") {
+    visibility = [ ":bundle_js" ]
+    in_folder = "${target_gen_dir}/preprocessed"
+    out_folder = "${target_gen_dir}/minified"
+    in_files = [
+      "supervised_user_block_interstitial_v2.js",
+      "supervised_user_block_interstitial_v3.js",
+      "supervised_user_block_interstitial_no_approvals.js",
+    ]
+    deps = [ ":preprocess" ]
+  }
+}

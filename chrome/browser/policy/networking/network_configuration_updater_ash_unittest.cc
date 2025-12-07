@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
@@ -113,7 +114,7 @@ class FakeCertificateImporter : public ash::onc::CertificateImporter {
   FakeCertificateImporter(const FakeCertificateImporter&) = delete;
   FakeCertificateImporter& operator=(const FakeCertificateImporter&) = delete;
 
-  ~FakeCertificateImporter() override {}
+  ~FakeCertificateImporter() override = default;
 
   void SetExpectedONCClientCertificates(
       const std::vector<OncParsedCertificates::ClientCertificate>&
@@ -125,19 +126,6 @@ class FakeCertificateImporter : public ash::onc::CertificateImporter {
     unsigned int count = call_count_;
     call_count_ = 0;
     return count;
-  }
-
-  void ImportAllCertificatesUserInitiated(
-      const std::vector<OncParsedCertificates::ServerOrAuthorityCertificate>&
-          server_or_authority_certificates,
-      const std::vector<OncParsedCertificates::ClientCertificate>&
-          client_certificates,
-      DoneCallback done_callback) override {
-    // As policy-provided server and authority certificates are not permanently
-    // imported, only ImportClientCertificaates should be called.
-    // ImportAllCertificatesUserInitiated should never be called from
-    // UserNetworkConfigurationUpdater.
-    NOTREACHED_IN_MIGRATION();
   }
 
   void ImportClientCertificates(

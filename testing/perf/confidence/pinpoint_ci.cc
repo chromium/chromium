@@ -17,15 +17,14 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/strings/safe_sprintf.h"
 #include "base/strings/string_split.h"
 #include "testing/perf/confidence/ratio_bootstrap_estimator.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// Not used with untrusted inputs.
-#pragma allow_unsafe_buffers
-#endif
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 using std::pair;
 using std::string;
@@ -55,7 +54,7 @@ vector<unordered_map<string, string>> ReadCSV(const char* filename) {
       contents, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   vector<string_view> headers = SplitCSVLine(lines[0]);
   if (headers.empty()) {
-    fprintf(stderr, "%s: Empty header line!\n", filename);
+    LOG(WARNING) << filename << ": Empty header line!";
     exit(1);
   }
 
@@ -63,8 +62,8 @@ vector<unordered_map<string, string>> ReadCSV(const char* filename) {
   for (unsigned i = 1; i < lines.size(); ++i) {
     vector<string_view> line = SplitCSVLine(lines[i]);
     if (line.size() != headers.size()) {
-      fprintf(stderr, "%s: Line had %zu columns, expected %zu\n", filename,
-              line.size(), headers.size());
+      LOG(WARNING) << filename << ": Line had " << line.size()
+                   << " columns, expected " << headers.size();
       break;
     }
 
@@ -81,17 +80,20 @@ vector<unordered_map<string, string>> ReadCSV(const char* filename) {
 }  // namespace
 
 int main(int argc, char** argv) {
+  // SAFETY: `argv` is a command-line argument array, and `argc` is the number
+  // of arguments. This is a valid span.
+  auto argv_span = UNSAFE_BUFFERS(base::span(argv, static_cast<size_t>(argc)));
   if (argc < 2 || argc > 3) {
-    fprintf(stderr, "USAGE: pinpoint_ci CSV_FILE [CONFIDENCE_LEVEL]\n");
+    LOG(WARNING) << "USAGE: pinpoint_ci CSV_FILE [CONFIDENCE_LEVEL]";
     exit(1);
   }
 
   // The default 0.99 matches Pinpoint.
-  double confidence_level = (argc > 2) ? atof(argv[2]) : 0.99;
+  double confidence_level = (argc > 2) ? atof(argv_span[2]) : 0.99;
   unordered_map<string, pair<vector<double>, vector<double>>> samples;
   bool any_is_speedometer = false;
 
-  for (unordered_map<string, string>& line : ReadCSV(argv[1])) {
+  for (unordered_map<string, string>& line : ReadCSV(argv_span[1])) {
     if (line.count("name") == 0 || line.count("displayLabel") == 0 ||
         line.count("avg") == 0) {
       continue;
@@ -117,7 +119,7 @@ int main(int argc, char** argv) {
     string story;
     if (name == "motionmark") {
       if (line.count("stories") == 0) {
-        fprintf(stderr, "WARNING: Could not find MotionMark story\n");
+        LOG(WARNING) << "Could not find MotionMark story";
         continue;
       }
       story = line["stories"];
@@ -130,9 +132,15 @@ int main(int argc, char** argv) {
     } else if (display_label.find("exp:") != string::npos) {
       samples[story].second.push_back(avg);
     } else {
-      fprintf(stderr, "WARNING: Unknown display_label %s\n",
-              display_label.c_str());
+      LOG(WARNING) << "Unknown display_label " << display_label;
     }
+  }
+
+  // This tool currently supports Speedometer and MotionMark.
+  if (samples.empty()) {
+    LOG(WARNING)
+        << "No samples collected from CSV. Is this an unsupported benchmark?";
+    return 1;
   }
 
   // Estimate the ratios for all of our data.
@@ -151,7 +159,8 @@ int main(int argc, char** argv) {
   RatioBootstrapEstimator estimator(base::RandUint64());
   constexpr int kNumRuns = 2000;
   vector<RatioBootstrapEstimator::Estimate> estimates =
-      estimator.ComputeRatioEstimates(data, kNumRuns, confidence_level);
+      estimator.ComputeRatioEstimates(data, kNumRuns, confidence_level,
+                                      /*compute_geometric_mean=*/false);
 
   // Sort by name, then print. (We assume all names are ASCII.)
   unsigned data_index = 0;
@@ -195,7 +204,8 @@ int main(int argc, char** argv) {
       }
     }
 
-    printf("%s %-*s  [%+5.1f%%, %+5.1f%%]\n", emoji, max_key_len, key.c_str(),
-           lower, upper);
+    std::string result = absl::StrFormat("%s %-*s  [%+5.1f%%, %+5.1f%%]",
+                                         emoji, max_key_len, key, lower, upper);
+    printf("%s\n", result.c_str());
   }
 }

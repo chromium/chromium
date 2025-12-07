@@ -22,12 +22,11 @@
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/ble_adapter_manager.h"
 #include "device/fido/discoverable_credential_metadata.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
-#include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "device/fido/mac/icloud_keychain.h"
+#include "device/fido/public/features.h"
+#include "device/fido/public/fido_constants.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
@@ -37,6 +36,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/process/process_info.h"
+#include "device/fido/mac/icloud_keychain.h"
 #include "device/fido/mac/util.h"
 #endif
 
@@ -54,10 +54,9 @@ bool IsGpmPasskeyAuthenticator(const FidoAuthenticator& authenticator) {
     case AuthenticatorType::kOther:
       return false;
     case AuthenticatorType::kEnclave:
-    case AuthenticatorType::kChromeOSPasskeys:
       return true;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void MaybeRecordPlatformCredentialStatus(AuthenticatorType type,
@@ -193,6 +192,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
     std::vector<std::unique_ptr<FidoDiscoveryBase>> additional_discoveries,
     base::flat_set<FidoTransportProtocol> available_transports,
     bool consider_enclave) {
+  FIDO_LOG(DEBUG) << "Initializing FIDO discoveries";
 #if BUILDFLAG(IS_WIN)
   // Try to instantiate the discovery for proxying requests to the native
   // Windows WebAuthn API; or fall back to using the regular device transport
@@ -206,6 +206,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
     // instantiated. The embedder will be responsible for dispatch of the
     // authenticator and whether they display any UI in addition to the one
     // provided by the OS.
+    FIDO_LOG(DEBUG) << "Adding Windows Hello discovery";
     win_discovery->set_observer(this);
     discoveries_.push_back(std::move(win_discovery));
 
@@ -213,7 +214,6 @@ void FidoRequestHandlerBase::InitDiscoveries(
     transport_availability_callback_readiness_->win_is_uvpaa_check_pending =
         true;
     WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
-        transport_availability_info_.is_off_the_record_context,
         device::WinWebAuthnApi::GetDefault(),
         base::BindOnce(&FidoRequestHandlerBase::OnWinIsUvpaa,
                        weak_factory_.GetWeakPtr()));
@@ -240,6 +240,8 @@ void FidoRequestHandlerBase::InitDiscoveries(
       continue;
     }
 
+    FIDO_LOG(DEBUG) << "Adding discovery for transport "
+                    << static_cast<int>(transport);
     for (auto& discovery : discoveries) {
       discovery->set_observer(this);
       discoveries_.emplace_back(std::move(discovery));
@@ -262,6 +264,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
     std::optional<std::unique_ptr<FidoDiscoveryBase>> enclave_discovery =
         fido_discovery_factory->MaybeCreateEnclaveDiscovery();
     if (enclave_discovery) {
+      FIDO_LOG(DEBUG) << "Adding discovery for enclave";
       enclave_discovery.value()->set_observer(this);
       discoveries_.emplace_back(std::move(*enclave_discovery));
     }
@@ -291,10 +294,12 @@ void FidoRequestHandlerBase::InitDiscoveries(
   // Thus, if the responsible process is not Chromium itself, then we do not
   // make any Bluetooth API calls.
   const bool can_call_ble_apis =
-      g_always_allow_ble_calls || base::IsProcessSelfResponsible();
+      g_always_allow_ble_calls ||
+      base::DoesResponsibleProcessHaveBluetoothMetadata();
   if (!can_call_ble_apis) {
-    FIDO_LOG(ERROR) << "Cannot test Bluetooth power status because process is "
-                       "not self-responsible. Launch from Finder to fix.";
+    FIDO_LOG(ERROR) << "Cannot use Bluetooth because the responsible app for "
+                       "the process does not have Bluetooth metadata in its "
+                       "Info.plist. Launch from Finder to fix.";
   }
 #else
   const bool can_call_ble_apis = true;
@@ -309,6 +314,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
       device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
       base::Contains(transport_availability_info_.available_transports,
                      FidoTransportProtocol::kHybrid)) {
+    FIDO_LOG(DEBUG) << "Checking for bluetooth availability";
     transport_availability_callback_readiness_->ble_information_pending = true;
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -319,10 +325,12 @@ void FidoRequestHandlerBase::InitDiscoveries(
 #if BUILDFLAG(IS_MAC)
   transport_availability_info_.platform_has_biometrics =
       device::fido::mac::DeviceHasBiometricsAvailable();
+  FIDO_LOG(DEBUG) << "MacOS biometrics availability check done";
   MaybeSignalTransportsEnumerated();
 #elif BUILDFLAG(IS_WIN)
   transport_availability_callback_readiness_
       ->platform_biometrics_check_pending = true;
+  FIDO_LOG(DEBUG) << "Checking for Windows biometrics availability";
   device::fido::win::DeviceHasBiometricsAvailable(base::BindOnce(
       [](base::WeakPtr<FidoRequestHandlerBase> handler,
          bool biometrics_available) {
@@ -333,15 +341,20 @@ void FidoRequestHandlerBase::InitDiscoveries(
             biometrics_available;
         handler->transport_availability_callback_readiness_
             ->platform_biometrics_check_pending = false;
+        FIDO_LOG(DEBUG) << "Windows biometric availability check done";
         handler->MaybeSignalTransportsEnumerated();
       },
       GetWeakPtr()));
 #else
+  FIDO_LOG(DEBUG) << "No need to check for biometrics on this platform";
   MaybeSignalTransportsEnumerated();
 #endif
 }
 
 FidoRequestHandlerBase::~FidoRequestHandlerBase() {
+  if (observer_) {
+    observer_->StopObserving(this);
+  }
   CancelActiveAuthenticators();
 }
 
@@ -382,6 +395,7 @@ void FidoRequestHandlerBase::OnBluetoothAdapterEnumerated(
   transport_availability_callback_readiness_->ble_information_pending = false;
   transport_availability_info_.ble_status = ble_status;
   transport_availability_info_.can_power_on_ble_adapter = can_power_on;
+  FIDO_LOG(DEBUG) << "Bluetooth status enumerated";
   MaybeSignalTransportsEnumerated();
 }
 
@@ -412,12 +426,18 @@ base::WeakPtr<FidoRequestHandlerBase> FidoRequestHandlerBase::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void FidoRequestHandlerBase::set_observer(
+void FidoRequestHandlerBase::SetObserver(
     FidoRequestHandlerBase::Observer* observer) {
   DCHECK(!observer_) << "Only one observer is supported.";
   observer_ = observer;
 
+  FIDO_LOG(DEBUG) << "FidoRequestHandler observer set";
   MaybeSignalTransportsEnumerated();
+}
+
+void FidoRequestHandlerBase::RemoveObserver(
+    FidoRequestHandlerBase::Observer* observer) {
+  observer_ = nullptr;
 }
 
 void FidoRequestHandlerBase::Start() {
@@ -493,11 +513,14 @@ void FidoRequestHandlerBase::DiscoveryStarted(
             AuthenticatorType::kICloudKeychain;
         transport_availability_callback_readiness_
             ->num_platform_credential_checks_pending++;
+        FIDO_LOG(DEBUG) << "Getting platform credential status";
         GetPlatformCredentialStatus(platform_authenticator);
       }
     }
   }
 
+  FIDO_LOG(DEBUG) << "Discovery started for transport "
+                  << static_cast<int>(discovery->transport());
   MaybeSignalTransportsEnumerated();
 }
 
@@ -509,10 +532,8 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
   std::tie(std::ignore, was_inserted) =
       active_authenticators_.insert({authenticator->GetId(), authenticator});
   if (!was_inserted) {
-    NOTREACHED_IN_MIGRATION();
-    FIDO_LOG(ERROR) << "Authenticator with duplicate ID "
-                    << authenticator->GetId();
-    return;
+    NOTREACHED() << "Authenticator with duplicate ID "
+                 << authenticator->GetId();
   }
 
   // If |observer_| exists, dispatching request to |authenticator| is
@@ -546,7 +567,7 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
     transport_availability_info_
         .win_native_ui_shows_resident_credential_notice =
         static_cast<WinWebAuthnApiAuthenticator*>(authenticator)
-            ->ShowsPrivacyNotice();
+            ->ShowsResidentCredentialNotice();
   }
 #endif  // BUILDFLAG(IS_WIN)
 }
@@ -594,6 +615,7 @@ void FidoRequestHandlerBase::OnHavePlatformCredentialStatus(
 
   transport_availability_callback_readiness_
       ->num_platform_credential_checks_pending--;
+  FIDO_LOG(DEBUG) << "Obtained platform credential status";
   MaybeSignalTransportsEnumerated();
 }
 
@@ -605,9 +627,11 @@ bool FidoRequestHandlerBase::HasAuthenticator(
 void FidoRequestHandlerBase::MaybeSignalTransportsEnumerated() {
   if (!observer_ ||
       !transport_availability_callback_readiness_->CanMakeCallback()) {
+    FIDO_LOG(DEBUG) << "Transport availability not yet ready";
     return;
   }
 
+  FIDO_LOG(DEBUG) << "Transport availability checks done";
   transport_availability_callback_readiness_->callback_made = true;
   observer_->OnTransportAvailabilityEnumerated(transport_availability_info_);
 }
@@ -632,6 +656,7 @@ void FidoRequestHandlerBase::OnWinIsUvpaa(bool is_uvpaa) {
   transport_availability_info_.win_is_uvpaa = is_uvpaa;
   transport_availability_callback_readiness_->win_is_uvpaa_check_pending =
       false;
+  FIDO_LOG(DEBUG) << "Windows Hello IsUvpaa check done";
   MaybeSignalTransportsEnumerated();
 }
 

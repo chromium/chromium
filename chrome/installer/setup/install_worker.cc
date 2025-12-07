@@ -32,6 +32,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
+#include "base/version_info/channel.h"
 #include "base/win/registry.h"
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
@@ -60,6 +61,7 @@
 #include "chrome/installer/util/install_service_work_item.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installation_state.h"
+#include "chrome/installer/util/installer_util_strings.h"
 #include "chrome/installer/util/l10n_string_util.h"
 #include "chrome/installer/util/set_reg_value_work_item.h"
 #include "chrome/installer/util/shell_util.h"
@@ -83,7 +85,6 @@ void AddInstallerCopyTasks(const InstallParams& install_params,
 
   const InstallerState& installer_state = *install_params.installer_state;
   const base::FilePath& setup_path = *install_params.setup_path;
-  const base::FilePath& archive_path = *install_params.archive_path;
   const base::FilePath& temp_path = *install_params.temp_path;
   const base::Version& new_version = *install_params.new_version;
 
@@ -104,25 +105,6 @@ void AddInstallerCopyTasks(const InstallParams& install_params,
     base::FilePath active_setup_exe(installer_dir.Append(kActiveSetupExe));
     install_list->AddCopyTreeWorkItem(setup_path, active_setup_exe, temp_path,
                                       WorkItem::ALWAYS);
-  }
-
-  base::FilePath archive_dst(installer_dir.Append(archive_path.BaseName()));
-  if (archive_path != archive_dst) {
-    // In the past, we copied rather than moved for system level installs so
-    // that the permissions of %ProgramFiles% would be picked up.  Now that
-    // |temp_path| is in %ProgramFiles% for system level installs (and in
-    // %LOCALAPPDATA% otherwise), there is no need to do this for the archive.
-    // Setup.exe, on the other hand, is created elsewhere so it must always be
-    // copied.
-    if (temp_path.IsParent(archive_path)) {
-      install_list->AddMoveTreeWorkItem(archive_path, archive_dst, temp_path,
-                                        WorkItem::ALWAYS_MOVE);
-    } else {
-      // This may occur when setup is run out of an existing installation
-      // directory. We cannot remove the system-level archive.
-      install_list->AddCopyTreeWorkItem(archive_path, archive_dst, temp_path,
-                                        WorkItem::ALWAYS);
-    }
   }
 }
 
@@ -220,7 +202,6 @@ void AddDeleteUninstallEntryForMSIWorkItems(
 void AddChromeWorkItems(const InstallParams& install_params,
                         WorkItemList* install_list) {
   const InstallerState& installer_state = *install_params.installer_state;
-  const base::FilePath& archive_path = *install_params.archive_path;
   const base::FilePath& src_path = *install_params.src_path;
   const base::FilePath& temp_path = *install_params.temp_path;
   const base::Version& current_version = *install_params.current_version;
@@ -229,21 +210,17 @@ void AddChromeWorkItems(const InstallParams& install_params,
   const base::FilePath& target_path = installer_state.target_path();
 
   if (current_version.IsValid()) {
+    // TODO(crbug.com/441478433): Delete this cleanup some time in 2027.
     // Delete the archive from an existing install to save some disk space.
     base::FilePath old_installer_dir(
         installer_state.GetInstallerDirectory(current_version));
     base::FilePath old_archive(
         old_installer_dir.Append(installer::kChromeArchive));
-    // Don't delete the archive that we are actually installing from.
-    if (archive_path != old_archive) {
-      auto* delete_old_archive_work_item =
-          install_list->AddDeleteTreeWorkItem(old_archive, temp_path);
-      // Don't cause failure of |install_list| if this WorkItem fails.
-      delete_old_archive_work_item->set_best_effort(true);
-      // No need to roll this back; if installation fails we'll be moved to the
-      // "-full" channel anyway.
-      delete_old_archive_work_item->set_rollback_enabled(false);
-    }
+    auto* delete_old_archive_work_item =
+        install_list->AddDeleteTreeWorkItem(old_archive, temp_path);
+    // Don't cause failure of |install_list| if this WorkItem fails.
+    delete_old_archive_work_item->set_best_effort(true);
+    delete_old_archive_work_item->set_rollback_enabled(false);
   }
 
   // Delete any new_chrome.exe if present (we will end up creating a new one
@@ -308,13 +285,75 @@ void AddElevationServiceWorkItems(const base::FilePath& elevation_service_path,
 
   WorkItem* install_service_work_item = new InstallServiceWorkItem(
       install_static::GetElevationServiceName(),
-      install_static::GetElevationServiceDisplayName(), SERVICE_DEMAND_START,
-      base::CommandLine(elevation_service_path),
+      install_static::GetElevationServiceDisplayName(),
+      GetLocalizedStringF(IDS_ELEVATION_SERVICE_DESCRIPTION_BASE,
+                          {install_static::GetBaseAppName()}),
+      SERVICE_DEMAND_START, base::CommandLine(elevation_service_path),
       base::CommandLine(base::CommandLine::NO_PROGRAM),
       install_static::GetClientStateKeyPath(),
       {install_static::GetElevatorClsid()}, {install_static::GetElevatorIid()});
-  install_service_work_item->set_best_effort(true);
   list->AddWorkItem(install_service_work_item);
+}
+
+// Adds work items to register or unregister the elevated tracing service.
+void AddTracingServiceWorkItems(const InstallationState& original_state,
+                                const base::FilePath& tracing_service_path,
+                                WorkItemList* list) {
+  DCHECK(::IsUserAnAdmin());
+
+  if (tracing_service_path.empty()) {
+    LOG(DFATAL) << "The path to tracing_service.exe is invalid.";
+    return;
+  }
+
+  const CLSID clsid = install_static::GetTracingServiceClsid();
+  bool install_service = false;
+
+  if (install_static::GetChromeChannel() == version_info::Channel::DEV) {
+    // Install the service if installing/updating a dev channel install.
+    install_service = true;
+  } else if (InstallServiceWorkItem::IsComServiceInstalled(clsid)) {
+    // Update the service if it's already installed and this is not a migration
+    // from dev to another channel. In that case, uninstall the service.
+    const auto* previous_state =
+        original_state.GetProductState(install_static::IsSystemInstall());
+    install_service =
+        previous_state && (previous_state->channel() !=
+                           base::ASCIIToWide(version_info::GetChannelString(
+                               version_info::Channel::DEV)));
+  } else {
+    return;  // The service is not already installed, so there is nothing to do.
+  }
+
+  // Create a work item to install the service. This will be used either to
+  // perform the install/update or to roll back in case deletion fails.
+  auto install_service_work_item = std::make_unique<InstallServiceWorkItem>(
+      install_static::GetTracingServiceName(),
+      install_static::GetTracingServiceDisplayName(),
+      GetLocalizedStringF(IDS_TRACING_SERVICE_DESCRIPTION_BASE,
+                          {install_static::GetBaseAppName()}),
+      SERVICE_DEMAND_START, base::CommandLine(tracing_service_path),
+      base::CommandLine(base::CommandLine::NO_PROGRAM),
+      install_static::GetClientStateKeyPath(), std::vector<GUID>{clsid},
+      std::vector<GUID>{install_static::GetTracingServiceIid()});
+
+  if (install_service) {
+    install_service_work_item->set_best_effort(true);
+    list->AddWorkItem(install_service_work_item.release());
+  } else {
+    list->AddCallbackWorkItem(
+            base::BindOnce([](const CallbackWorkItem&) {
+              return InstallServiceWorkItem::DeleteService(
+                  install_static::GetTracingServiceName(),
+                  install_static::GetClientStateKeyPath(),
+                  {install_static::GetTracingServiceClsid()},
+                  {install_static::GetTracingServiceIid()});
+            }),
+            base::BindOnce([](std::unique_ptr<InstallServiceWorkItem> work_item,
+                              const CallbackWorkItem&) { work_item->Do(); },
+                           std::move(install_service_work_item)))
+        ->set_best_effort(true);
+  }
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -417,6 +456,28 @@ void AddEnterpriseDeviceTrustWorkItems(const InstallerState& installer_state,
   // by Google Update.  Could revisit this should Google Update change the
   // way permissions are handled for commands.
   cmd.set_is_web_accessible(true);
+  cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
+}
+
+// Adds work items to add the "PEH Install" command to Chrome's version key.
+// This method is a no-op if this is anything other than system-level Chrome.
+// The command is used on first run of Chrome, and installs the Platform
+// Experience Helper.
+void AddPlatformExperienceHelperWorkItems(const InstallerState& installer_state,
+                                          const base::Version& new_version,
+                                          WorkItemList* install_list) {
+  if (!installer_state.system_install()) {
+    return;
+  }
+
+  base::CommandLine install_peh_cmd(installer_state.target_path()
+                                        .AppendASCII(new_version.GetString())
+                                        .Append(kOsUpdateHandlerExe));
+  InstallUtil::AppendModeAndChannelSwitches(&install_peh_cmd);
+  install_peh_cmd.AppendSwitch(kPEHForceInstall);
+  install_peh_cmd.AppendSwitch(installer::switches::kSystemLevel);
+
+  AppCommand cmd(kCmdInstallPEH, install_peh_cmd.GetCommandLineString());
   cmd.AddCreateAppCommandWorkItems(installer_state.root_key(), install_list);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -574,11 +635,9 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
     return;
 
   // Only update if this machine is a managed device, including domain join.
-  if (!base::IsManagedDevice()) {
-    return;
-  }
-
-  std::wstring new_brand = GetUpdatedBrandCode(brand);
+  // Also map in the reverse direction to fix an issue introduced in M136 by
+  // mapping indiscriminately in the forward direction.
+  std::wstring new_brand = GetUpdatedBrandCode(brand, base::IsManagedDevice());
   // Rewrite the old brand so that the next step can potentially apply both
   // changes at once.
   if (!new_brand.empty()) {
@@ -629,7 +688,8 @@ void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
       KEY_WOW64_32KEY, google_update::kRegRLZBrandField, new_brand, true);
 }
 
-std::wstring GetUpdatedBrandCode(const std::wstring& brand_code) {
+std::wstring GetUpdatedBrandCode(const std::wstring& brand_code,
+                                 bool to_enterprise) {
   // Brand codes to be remapped on enterprise installs.
   static constexpr struct EnterpriseBrandRemapping {
     const wchar_t* old_brand;
@@ -641,8 +701,12 @@ std::wstring GetUpdatedBrandCode(const std::wstring& brand_code) {
   };
 
   for (auto mapping : kEnterpriseBrandRemapping) {
-    if (brand_code == mapping.old_brand)
+    if (to_enterprise && brand_code == mapping.old_brand) {
       return mapping.new_brand;
+    }
+    if (!to_enterprise && brand_code == mapping.new_brand) {
+      return mapping.old_brand;
+    }
   }
   return std::wstring();
 }
@@ -658,10 +722,8 @@ std::wstring TransformCloudManagementBrandCode(const std::wstring& brand_code,
     const wchar_t* cbe_brand;
     const wchar_t* cbcm_brand;
   } kCbcmBrandRemapping[] = {
-      {L"GCE", L"GCC"},
-      {L"GCF", L"GCK"},
-      {L"GCG", L"GCL"},
-      {L"GCH", L"GCM"},
+      {L"GCE", L"GCC"}, {L"GCF", L"GCK"}, {L"GCG", L"GCL"}, {L"GCH", L"GCM"},
+      {L"GCO", L"GCT"}, {L"GCP", L"GCU"}, {L"GCQ", L"GCV"}, {L"GCS", L"GCW"},
   };
   if (to_cbcm) {
     for (auto mapping : kCbcmBrandRemapping) {
@@ -780,7 +842,8 @@ bool AppendPostInstallTasks(const InstallParams& install_params,
     // with it so that the browser knows which channel to use, otherwise delete
     // whatever value that key holds.
     AddChannelWorkItems(root, clients_key, regular_update_work_items.get());
-    AddFinalizeUpdateWorkItems(new_version, installer_state, installer_path,
+    AddFinalizeUpdateWorkItems(*install_params.installation_state, new_version,
+                               installer_state, installer_path,
                                regular_update_work_items.get());
 
     // Since this was not an in-use-update, delete 'opv', 'cpv',
@@ -863,8 +926,7 @@ void AddInstallWorkItems(const InstallParams& install_params,
       base::BindOnce(
           [](const base::FilePath& target_path, const base::FilePath& temp_path,
              const CallbackWorkItem& work_item) {
-            return ConfigureAppContainerSandbox(
-                std::array<const base::FilePath*, 2>{&target_path, &temp_path});
+            return ConfigureAppContainerSandbox({&target_path, &temp_path});
           },
           target_path, temp_path),
       base::DoNothing());
@@ -916,6 +978,8 @@ void AddInstallWorkItems(const InstallParams& install_params,
                                      install_list);
   AddEnterpriseDeviceTrustWorkItems(installer_state, setup_path, new_version,
                                     install_list);
+  AddPlatformExperienceHelperWorkItems(installer_state, new_version,
+                                       install_list);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING
   AddFirewallRulesWorkItems(installer_state, !current_version.IsValid(),
                             install_list);
@@ -1146,8 +1210,14 @@ void AddOsUpgradeWorkItems(const InstallerState& installer_state,
       cmd_line.AppendSwitch(installer::switches::kSystemLevel);
     // Log everything for now.
     cmd_line.AppendSwitch(installer::switches::kVerboseLogging);
+    // This will make the updater append
+    // <prev_windows_version>-<new_windows_version> to the upgrade commandline.
+    cmd_line.AppendArg("%1");
 
-    AppCommand cmd(kCmdOnOsUpgrade, cmd_line.GetCommandLineString());
+    // `GetCommandLineStringWithUnsafeInsertSequences` should be safe to use
+    // because the updater will do the substitution, not the Windows shell.
+    AppCommand cmd(kCmdOnOsUpgrade,
+                   cmd_line.GetCommandLineStringWithUnsafeInsertSequences());
     cmd.set_is_auto_run_on_os_upgrade(true);
     cmd.AddCreateAppCommandWorkItems(root_key, install_list);
   }
@@ -1188,7 +1258,8 @@ void AddChannelSelectionWorkItems(const InstallerState& installer_state,
 }
 #endif  // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
 
-void AddFinalizeUpdateWorkItems(const base::Version& new_version,
+void AddFinalizeUpdateWorkItems(const InstallationState& original_state,
+                                const base::Version& new_version,
                                 const InstallerState& installer_state,
                                 const base::FilePath& setup_path,
                                 WorkItemList* list) {
@@ -1196,11 +1267,16 @@ void AddFinalizeUpdateWorkItems(const base::Version& new_version,
   // overwriting any of the following post-install tasks.
   AddDowngradeCleanupItems(new_version, list);
 
+  const base::FilePath target_path = installer_state.target_path();
   AddOldWerHelperRegistrationCleanupItems(installer_state.root_key(),
-                                          installer_state.target_path(), list);
-  AddWerHelperRegistration(
-      installer_state.root_key(),
-      GetWerHelperPath(installer_state.target_path(), new_version), list);
+                                          target_path, list);
+  AddWerHelperRegistration(installer_state.root_key(),
+                           GetWerHelperPath(target_path, new_version), list);
+
+  if (installer_state.system_install()) {
+    AddTracingServiceWorkItems(
+        original_state, GetTracingServicePath(target_path, new_version), list);
+  }
 
   const std::wstring client_state_key = install_static::GetClientStateKeyPath();
 

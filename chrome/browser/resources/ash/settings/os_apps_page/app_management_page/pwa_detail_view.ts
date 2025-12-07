@@ -14,14 +14,13 @@ import './supported_links_item.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
-import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
-import {PrefsState} from '../../common/types.js';
+import type {PrefsState} from '../../common/types.js';
 
 import {getTemplate} from './pwa_detail_view.html.js';
 
@@ -45,14 +44,6 @@ export class AppManagementPwaDetailViewElement extends
         notify: true,
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
       app_: Object,
       apps_: Object,
     };
@@ -61,7 +52,6 @@ export class AppManagementPwaDetailViewElement extends
   prefs: PrefsState;
   private app_: App;
   private apps_: AppMap;
-  private isRevampWayfindingEnabled_: boolean;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -69,12 +59,6 @@ export class AppManagementPwaDetailViewElement extends
     this.watch('app_', state => getSelectedApp(state));
     this.watch('apps_', state => state.apps);
     this.updateFromStore();
-  }
-
-  private getAppManagementMorePermissionsLabel_(): string {
-    return this.isRevampWayfindingEnabled_ ?
-        this.i18n('appManagementMorePermissionsLabelWebApp') :
-        this.i18n('appManagementMorePermissionsLabel');
   }
 }
 

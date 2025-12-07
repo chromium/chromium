@@ -5,14 +5,18 @@
 #include "ui/message_center/views/notification_view.h"
 
 #include <memory>
+#include <utility>
 
 #include "build/build_config.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_variant.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/message_center/message_center.h"
@@ -127,8 +131,10 @@ class NotificationTextButton : public views::MdTextButton {
     views::InstallRectHighlightPathGenerator(this);
     SetTextSubpixelRenderingEnabled(false);
   }
+
   NotificationTextButton(const NotificationTextButton&) = delete;
   NotificationTextButton& operator=(const NotificationTextButton&) = delete;
+
   ~NotificationTextButton() override = default;
 
   // views::MdTextButton:
@@ -138,21 +144,20 @@ class NotificationTextButton : public views::MdTextButton {
 
   void OnThemeChanged() override {
     views::MdTextButton::OnThemeChanged();
-    SetEnabledTextColors(color_);
     label()->SetBackgroundColor(
         GetColorProvider()->GetColor(ui::kColorNotificationActionsBackground));
   }
 
-  void SetEnabledTextColors(std::optional<SkColor> color) override {
+  void SetEnabledTextColors(std::optional<ui::ColorVariant> color) override {
     color_ = std::move(color);
     views::MdTextButton::SetEnabledTextColors(color_);
     label()->SetAutoColorReadabilityEnabled(true);
   }
 
-  std::optional<SkColor> color() const { return color_; }
+  const std::optional<ui::ColorVariant>& color() const { return color_; }
 
  private:
-  std::optional<SkColor> color_;
+  std::optional<ui::ColorVariant> color_;
 };
 
 BEGIN_METADATA(NotificationTextButton)
@@ -272,7 +277,7 @@ NotificationView::NotificationView(
             views::InkDrop::Get(host)->GetVisibleOpacity());
       },
       this));
-  views::InkDrop::Get(this)->SetBaseColorId(
+  views::InkDrop::Get(this)->SetBaseColor(
       ui::kColorNotificationBackgroundActive);
 
   auto header_row = CreateHeaderRowBuilder().Build();
@@ -335,11 +340,12 @@ NotificationView::~NotificationView() {
   views::InkDrop::Remove(this);
 }
 
-SkColor NotificationView::GetActionButtonColorForTesting(
+const std::optional<ui::ColorVariant>&
+NotificationView::GetActionButtonColorForTesting(
     views::LabelButton* action_button) {
   NotificationTextButton* button =
       static_cast<NotificationTextButton*>(action_button);
-  return button->color().value_or(SkColor());
+  return button->color();
 }
 
 void NotificationView::CreateOrUpdateHeaderView(
@@ -443,8 +449,7 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
       [[fallthrough]];
     // PhoneHub notifications do not have inline settings.
     case NotifierType::PHONE_HUB:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DCHECK_NE(block_notifications_message_id, 0);
 
@@ -643,11 +648,11 @@ void NotificationView::Layout(PassKey) {
 
     // Use vertically larger clip path, so that actions row's top corners will
     // not be rounded.
-    SkPath path;
     gfx::Rect bounds = actions_row()->GetLocalBounds();
     bounds.set_y(bounds.y() - bounds.height());
     bounds.set_height(bounds.height() * 2);
-    path.addRoundRect(gfx::RectToSkRect(bounds), kCornerRadius, kCornerRadius);
+    const SkPath path =
+        SkPath::RRect(gfx::RectToSkRect(bounds), kCornerRadius, kCornerRadius);
 
     action_buttons_row()->SetClipPath(path);
 

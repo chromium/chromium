@@ -27,17 +27,9 @@ namespace {
 
 Encryptor GetInstanceSync(OSCryptAsync& factory,
                           Encryptor::Option option = Encryptor::Option::kNone) {
-  base::RunLoop run_loop;
-  std::optional<Encryptor> encryptor;
-  auto sub = factory.GetInstance(
-      base::BindLambdaForTesting([&](Encryptor instance, bool result) {
-        EXPECT_TRUE(result);
-        encryptor.emplace(std::move(instance));
-        run_loop.Quit();
-      }),
-      option);
-  run_loop.Run();
-  return std::move(*encryptor);
+  base::test::TestFuture<Encryptor> future;
+  factory.GetInstance(future.GetCallback(), option);
+  return future.Take();
 }
 
 }  // namespace
@@ -54,8 +46,6 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, EncryptDecrypt) {
   // GetInstance callback above has happened, since the browser registers its
   // metrics callback before anything else gets a chance to.
   histogram_tester_.ExpectTotalCount("OSCrypt.AsyncInitialization.Time", 1u);
-  histogram_tester_.ExpectUniqueSample("OSCrypt.AsyncInitialization.Result",
-                                       true, 1u);
 
   auto ciphertext = encryptor.EncryptString("plaintext");
   ASSERT_TRUE(ciphertext);
@@ -102,7 +92,8 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, SandboxedEncryptionTest) {
 }
 
 // This test verifies that an Encryptor obtained with the kEncryptSyncCompat
-// option encrypts data that can be decrypted by OSCrypt.
+// option encrypts data that can be decrypted by OSCrypt, as well as ensuring
+// that kEncryptSyncCompat and kNone options are interoperable with each other.
 IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, OSCryptBackwardsCompatTest) {
   auto encryptor = GetInstanceSync(*g_browser_process->os_crypt_async(),
                                    Encryptor::Option::kEncryptSyncCompat);
@@ -120,6 +111,24 @@ IN_PROC_BROWSER_TEST_F(OSCryptAsyncBrowserTest, OSCryptBackwardsCompatTest) {
     ASSERT_TRUE(OSCrypt::DecryptString(
         std::string(ciphertext->begin(), ciphertext->end()), &decrypted));
     EXPECT_EQ(decrypted, "plaintext");
+  }
+
+  {
+    // Verify that data encrypted from a kEncryptSyncCompat encryptor can be
+    // decrypted with a kNone encryptor.
+    auto full_encryptor = GetInstanceSync(*g_browser_process->os_crypt_async(),
+                                          Encryptor::Option::kNone);
+    const auto decrypted = full_encryptor.DecryptData(*ciphertext);
+    ASSERT_TRUE(decrypted);
+    EXPECT_EQ(decrypted, "plaintext");
+
+    // Verify that data encrypted from a kNone encryptor can be decrypted with a
+    // kEncryptSyncCompat encryptor.
+    const auto ciphertext2 = full_encryptor.EncryptString("more_plaintext");
+    ASSERT_TRUE(ciphertext2);
+    const auto decrypted2 = encryptor.DecryptData(*ciphertext2);
+    ASSERT_TRUE(decrypted2);
+    EXPECT_EQ(*decrypted2, "more_plaintext");
   }
 }
 

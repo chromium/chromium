@@ -10,8 +10,10 @@ import static android.view.MotionEvent.TOOL_TYPE_UNKNOWN;
 import android.view.MotionEvent;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /** Filters touch events which cannot be handled by the web contents due to invalid properties. */
+@NullMarked
 public class TouchEventFilter {
     // crbug.com/1493531 we're receiving motion events with an unsupported tool type but we
     // don't know what the value is. This code logs any offending values so that we can decide

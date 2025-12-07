@@ -15,7 +15,8 @@ from six.moves import input  # pylint: disable=redefined-builtin
 from chrome_telemetry_build import chromium_config
 from core import benchmark_finders
 from core import path_util
-from page_sets import speedometer3_pages
+from page_sets import (
+    crossbench_embedder, crossbench_loading, speedometer3_pages)
 from py_utils import cloud_storage
 
 from telemetry.core import optparse_argparse_migration as oam
@@ -83,10 +84,15 @@ def _FetchDepsForBenchmark(benchmark):
 
 
 def FetchDepsForCrossbench():
-  # TODO: Fetch all crossbench archive files when they are available.
-  story_set = speedometer3_pages.Speedometer30CrossbenchStory()
-  story_names = [s.name for s in story_set]
-  story_set.wpr_archive_info.DownloadArchivesIfNeeded(story_names=story_names)
+  # Note: Any new crossbench archives need to be added below
+  cb_story_sets = [
+      speedometer3_pages.Speedometer30CrossbenchStory(),
+      crossbench_loading.LoadingCrossbenchStorySet(),
+      crossbench_embedder.EmbedderCrossbenchStorySet(),
+  ]
+  for story_set in cb_story_sets:
+    story_set.wpr_archive_info.DownloadArchivesIfNeeded()
+
   platform = platform_module.GetHostPlatform()
   binary_manager.InitDependencyManager(None)
   binary_manager.FetchBinaryDependencies(

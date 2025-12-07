@@ -149,8 +149,7 @@ std::ostream& operator<<(std::ostream& out,
   out << "HostAppId: " << shortcut_update.HostAppId() << std::endl;
   out << "LocalId: " << shortcut_update.LocalId() << std::endl;
   out << "Name: " << shortcut_update.Name() << std::endl;
-  out << "ShortcutSource: " << EnumToString(shortcut_update.ShortcutSource())
-      << std::endl;
+  out << "ShortcutSource: " << shortcut_update.ShortcutSource() << std::endl;
   out << "AllowRemoval: " << PRINT_OPTIONAL_BOOL(shortcut_update.AllowRemoval())
       << std::endl;
   return out;

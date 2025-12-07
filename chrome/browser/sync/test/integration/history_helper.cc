@@ -130,7 +130,10 @@ class GetVisitsTask : public history::HistoryDBTask {
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     // Fetch the visits.
-    backend->GetVisitsForURL(id_, visits_);
+    const int kMaxVisitsToQuery = 100;
+    db->GetMostRecentVisitsForURL(id_, kMaxVisitsToQuery,
+                                  history::VisitQuery404sPolicy::kInclude404s,
+                                  visits_);
     wait_event_->Signal();
     return true;
   }
@@ -154,9 +157,12 @@ class GetAnnotatedVisitsTask : public history::HistoryDBTask {
 
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
+    const int kMaxVisitsToQuery = 100;
     // Fetch the visits.
     history::VisitVector basic_visits;
-    backend->GetVisitsForURL(id_, &basic_visits);
+    db->GetMostRecentVisitsForURL(id_, kMaxVisitsToQuery,
+                                  history::VisitQuery404sPolicy::kInclude404s,
+                                  &basic_visits);
     *annotated_visits_ = backend->ToAnnotatedVisitsFromRows(
         basic_visits, /*compute_redirect_chain_start_properties=*/false);
     wait_event_->Signal();
@@ -225,7 +231,8 @@ void AddToHistory(history::HistoryService* service,
   service->AddPage(url, timestamp, /*context_id=*/0,
                    /*nav_entry_id=*/1234,
                    /*referrer=*/GURL(), history::RedirectList(), transition,
-                   source, /*did_replace_entry=*/false);
+                   source, history::VisitResponseCodeCategory::kNot404,
+                   /*did_replace_entry=*/false);
 }
 
 bool GetUrlFromHistoryService(history::HistoryService* service,

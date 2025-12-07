@@ -12,10 +12,12 @@
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -31,6 +33,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -47,6 +50,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/media_start_stop_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -59,6 +63,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
@@ -67,16 +72,22 @@
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
+#include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/test/event_generator.h"
+#endif
+
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
 #endif
 
 using content::EvalJs;
@@ -170,7 +181,6 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {blink::features::kDocumentPictureInPictureAPI,
-         blink::features::kCSSDisplayModePictureInPicture,
          blink::features::kDocumentPictureInPicturePreferInitialPlacement},
         /*disabled_features=*/{});
     InProcessBrowserTest::SetUp();
@@ -199,7 +209,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
       Browser* browser,
       const gfx::Size& window_size = gfx::Size(500, 500),
       bool prefer_initial_window_placement = false) {
-    GURL test_page_url = ui_test_utils::GetTestUrl(
+    GURL test_page_url = chrome_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(kPictureInPictureDocumentPipPage));
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, test_page_url));
@@ -215,7 +225,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
                       base::NumberToString(window_size.width()),
                       ",height:", base::NumberToString(window_size.height()),
                       ",preferInitialWindowPlacement:",
-                      prefer_initial_window_placement ? "true" : "false"});
+                      base::ToString(prefer_initial_window_placement)});
     script = base::StrCat({script, "})"});
     ASSERT_EQ(true, EvalJs(active_web_contents, script));
     ASSERT_TRUE(window_controller() != nullptr);
@@ -229,9 +239,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
   }
 
   void ClickButton(views::Button* button) {
-    const ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(),
-                               gfx::Point(), ui::EventTimeForNow(), 0, 0);
-    views::test::ButtonTestApi(button).NotifyClick(event);
+    views::test::ButtonTestApi(button).NotifyDefaultMouseClick();
   }
 
   void WaitForPageLoad(content::WebContents* contents) {
@@ -254,6 +262,22 @@ class DocumentPictureInPictureWindowControllerBrowserTest
         true, base::Minutes(1))
         .Wait();
     EXPECT_NE(browser_view->GetBounds().origin(), gfx::Point(0, 0));
+  }
+
+  const std::string GetPipWindowPageTitle(content::WebContents* web_contents) {
+    return EvalJs(web_contents, "getPipWindowPageTitle();").ExtractString();
+  }
+
+  void SetPipWindowPageTitle(content::WebContents* web_contents,
+                             std::string title) {
+    std::string script =
+        base::StrCat({"setPipWindowPageTitle(\"", title, "\");"});
+
+    ASSERT_EQ(true, EvalJs(web_contents, script));
+  }
+
+  const std::string GetWindowPageTitle(content::WebContents* web_contents) {
+    return EvalJs(web_contents, "getWindowPageTitle();").ExtractString();
   }
 
   // Watch for destruction of a WebContents. `is_destroyed()` will report if the
@@ -396,7 +420,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        ClosePictureInPictureWhenOpenerNavigates) {
   LoadTabAndEnterPictureInPicture(browser());
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
@@ -506,7 +530,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* opener_web_contents = window_controller()->GetWebContents();
 
   // Open a new tab.
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -523,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   ASSERT_TRUE(browser_view);
 
   auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-      browser_view->frame()->GetFrameView());
+      browser_view->browser_widget()->GetFrameView());
   ASSERT_TRUE(pip_frame_view);
 
   ClickButton(
@@ -572,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        MaximumWindowOuterBounds) {
   const BrowserWindow* const browser_window = browser()->window();
   const gfx::NativeWindow native_window = browser_window->GetNativeWindow();
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   const display::Display display =
       screen->GetDisplayNearestWindow(native_window);
   const gfx::Size maximum_window_size =
@@ -583,15 +607,18 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   LoadTabAndEnterPictureInPicture(browser(),
                                   maximum_window_size + gfx::Size(1000, 2000));
 
-  // Confirm that the size of the outer window bounds are equal to the maximum
-  // window size.
+  // Confirm that the size of the outer window bounds are equal to or less than
+  // the maximum size.
   auto* pip_web_contents = window_controller()->GetChildWebContents();
   ASSERT_NE(nullptr, pip_web_contents);
   WaitForPageLoad(pip_web_contents);
 
   auto* browser_view = static_cast<BrowserView*>(
       BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
-  ASSERT_EQ(maximum_window_size, browser_view->GetBounds().size());
+  EXPECT_LE(browser_view->GetBounds().size().width(),
+            maximum_window_size.width());
+  EXPECT_LE(browser_view->GetBounds().size().height(),
+            maximum_window_size.height());
 }
 
 // Context menu should not be shown when right clicking on a document picture in
@@ -606,7 +633,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* browser_view = static_cast<BrowserView*>(
       BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
   auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-      browser_view->frame()->GetFrameView());
+      browser_view->browser_widget()->GetFrameView());
 
   // Get the document picture in picture window title and the location to be
   // clicked.
@@ -616,10 +643,11 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
   // Simulate a click on the document picture in picture window title, and
   // verify that the context menu is not shown.
-  pip_frame_view->frame()->ShowContextMenuForViewImpl(
-      window_title, click_location, ui::MenuSourceType::MENU_SOURCE_MOUSE);
+  pip_frame_view->browser_widget()->ShowContextMenuForViewImpl(
+      window_title, click_location, ui::mojom::MenuSourceType::kMouse);
 
-  EXPECT_EQ(false, pip_frame_view->frame()->IsMenuRunnerRunningForTesting());
+  EXPECT_EQ(false,
+            pip_frame_view->browser_widget()->IsMenuRunnerRunningForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
@@ -634,7 +662,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* browser_view = static_cast<BrowserView*>(
       BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
   auto* pip_frame_view = static_cast<PictureInPictureBrowserFrameView*>(
-      browser_view->frame()->GetFrameView());
+      browser_view->browser_widget()->GetFrameView());
   // Make the window manager forget about the window controller, which will
   // cause it to fail to close the window when asked.
   PictureInPictureWindowManager::GetInstance()
@@ -645,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   EXPECT_FALSE(window_controller()->GetChildWebContents());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Verify that it is possible to resize a document picture in picture window
 // using the resize outside bound in ChromeOS ASH.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
@@ -679,10 +707,18 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   const auto expected_size = initial_window_size + gfx::Size(drag_distance, 0);
   ASSERT_EQ(expected_size, window->GetBoundsInScreen().size());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                        WindowBoundsAreCached) {
+#if BUILDFLAG(IS_OZONE)
+  // Ozone/wayland doesn't support getting/setting window position in global
+  // screen coordinates. So this test is not applicable there as it essentially
+  // validates that.
+  if (ui::OzonePlatform::GetPlatformNameForTest() == "wayland") {
+    GTEST_SKIP();
+  }
+#endif
   // Create a Document PiP window with any size.  We want to be sure that this
   // fits in the display comfortably.
   const gfx::Size size(400, 410);
@@ -802,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(DocumentPictureInPictureWindowControllerBrowserTest,
                        MAYBE_VerifyWindowMargins) {
   const BrowserWindow* const browser_window = browser()->window();
   const gfx::NativeWindow native_window = browser_window->GetNativeWindow();
-  const display::Screen* const screen = display::Screen::GetScreen();
+  const display::Screen* const screen = display::Screen::Get();
   const display::Display display =
       screen->GetDisplayNearestWindow(native_window);
 
@@ -840,7 +876,7 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
   auto* opener_web_contents = window_controller()->GetWebContents();
 
   // Open a new foreground tab.
-  GURL test_page_url = ui_test_utils::GetTestUrl(
+  GURL test_page_url = chrome_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
@@ -907,4 +943,146 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
 
   // The picture-in-picture window should no longer have system focus.
   EXPECT_TRUE(widget_activation_waiter.WaitForActivationState(false));
+}
+
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       AccessibleTabLabelReturnsCorrectTitle) {
+  LoadTabAndEnterPictureInPicture(browser());
+  auto* opener_web_contents = window_controller()->GetWebContents();
+  auto* pip_web_contents = window_controller()->GetChildWebContents();
+  ASSERT_NE(nullptr, pip_web_contents);
+  WaitForPageLoad(pip_web_contents);
+  auto* browser_view = static_cast<BrowserView*>(
+      BrowserWindow::FindBrowserWindowWithWebContents(pip_web_contents));
+
+  // Verify that the pip window page title is empty and, the opener window page
+  // title is not.
+  const std::string pip_window_page_title =
+      GetPipWindowPageTitle(opener_web_contents);
+  EXPECT_TRUE(pip_window_page_title.empty());
+  const std::string window_page_title = GetWindowPageTitle(opener_web_contents);
+  EXPECT_FALSE(window_page_title.empty());
+
+  // Verify that the accessible label returns the opener window page title, when
+  // the pip window page title is not set.
+  EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
+            browser_view->GetAccessibleTabLabel(
+                browser()->tab_strip_model()->active_index()));
+
+  // Set the pip window page title and ensure that the pip and opener window
+  // page titles are different.
+  const std::string new_pip_window_page_title = "Test PiP Page Title";
+  SetPipWindowPageTitle(opener_web_contents, new_pip_window_page_title);
+  EXPECT_EQ(new_pip_window_page_title,
+            GetPipWindowPageTitle(opener_web_contents));
+  EXPECT_NE(new_pip_window_page_title, window_page_title);
+
+  // Verify that, although the pip window page title is set, the accessible
+  // label returns the opener window page title.
+  EXPECT_EQ(base::UTF8ToUTF16(window_page_title),
+            browser_view->GetAccessibleTabLabel(
+                browser()->tab_strip_model()->active_index()));
+}
+
+// A dialog that checks if the picture-in-picture window is force-tucked
+// when the dialog is shown, and then immediately cancels itself.
+class TuckingTestSelectFileDialog : public ui::SelectFileDialog {
+ public:
+  TuckingTestSelectFileDialog(Listener* listener,
+                              std::unique_ptr<ui::SelectFilePolicy> policy,
+                              bool* was_tucked)
+      : ui::SelectFileDialog(listener, std::move(policy)),
+        was_tucked_(was_tucked) {}
+
+ private:
+  ~TuckingTestSelectFileDialog() override = default;
+
+  // ui::SelectFileDialog overrides
+  void SelectFileImpl(Type type,
+                      const std::u16string& title,
+                      const base::FilePath& default_path,
+                      const FileTypeInfo* file_types,
+                      int file_type_index,
+                      const base::FilePath::StringType& default_extension,
+                      gfx::NativeWindow owning_window,
+                      const GURL* caller) override {
+    *was_tucked_ = PictureInPictureWindowManager::GetInstance()
+                       ->IsPictureInPictureForceTucked();
+    listener_->FileSelectionCanceled();
+  }
+
+  bool IsRunning(gfx::NativeWindow owning_window) const override {
+    return true;
+  }
+  void ListenerDestroyed() override {}
+  bool HasMultipleFileTypeChoicesImpl() override { return false; }
+
+  raw_ptr<bool> was_tucked_;
+  base::WeakPtrFactory<TuckingTestSelectFileDialog> weak_factory_{this};
+};
+
+class TuckingTestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
+ public:
+  explicit TuckingTestSelectFileDialogFactory(bool* was_tucked)
+      : was_tucked_(was_tucked) {}
+  ~TuckingTestSelectFileDialogFactory() override = default;
+
+  ui::SelectFileDialog* Create(
+      ui::SelectFileDialog::Listener* listener,
+      std::unique_ptr<ui::SelectFilePolicy> policy) override {
+    return new TuckingTestSelectFileDialog(listener, std::move(policy),
+                                           was_tucked_);
+  }
+
+ private:
+  raw_ptr<bool> was_tucked_;
+};
+
+class DocumentPictureInPictureWindowControllerTuckingBrowserTest
+    : public DocumentPictureInPictureWindowControllerBrowserTest {
+ public:
+  DocumentPictureInPictureWindowControllerTuckingBrowserTest() = default;
+
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {blink::features::kDocumentPictureInPictureAPI,
+         blink::features::kDocumentPictureInPicturePreferInitialPlacement,
+         media::kFileDialogsTuckPictureInPicture},
+        {});
+    InProcessBrowserTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test when the file picker is opened, the pip window is tucked.
+IN_PROC_BROWSER_TEST_F(
+    DocumentPictureInPictureWindowControllerTuckingBrowserTest,
+    TuckOnOpenFilePicker) {
+  LoadTabAndEnterPictureInPicture(browser());
+  // Initially it was not tucked
+  EXPECT_FALSE(PictureInPictureWindowManager::GetInstance()
+                   ->IsPictureInPictureForceTucked());
+
+  // `was_tucked_during_picker` will be updated if the window is tucked while
+  // the file picker dialog is open.
+  bool was_tucked_during_picker = false;
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TuckingTestSelectFileDialogFactory>(
+          &was_tucked_during_picker));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  auto result = EvalJs(web_contents, "window.showOpenFilePicker();");
+  EXPECT_TRUE(result.ExtractError().find("aborted") != std::string::npos)
+      << result;
+
+  ui::SelectFileDialog::SetFactory(nullptr);
+
+  // The pip window should be tucked once, and now it's back to non-tucked
+  // state.
+  EXPECT_TRUE(was_tucked_during_picker);
+  EXPECT_FALSE(PictureInPictureWindowManager::GetInstance()
+                   ->IsPictureInPictureForceTucked());
 }

@@ -19,7 +19,7 @@ class Event;
 namespace views {
 class MdTextButton;
 class View;
-}
+}  // namespace views
 
 namespace payments {
 
@@ -200,6 +200,9 @@ class PaymentRequestSheetController {
   // concrete (aka leaf) class in order to avoid subtle use-after-destroy
   // issues.
   virtual base::WeakPtr<PaymentRequestSheetController> GetWeakPtr() = 0;
+
+ protected:
+  views::View* header_view() { return header_view_; }
 
  private:
   // Add the primary/secondary buttons to |container|.

@@ -9,7 +9,6 @@
 
 #include "base/functional/callback.h"
 #include "base/metrics/user_metrics.h"
-#include "base/not_fatal_until.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -43,7 +42,7 @@ void SetUserDisplayModeCommand::StartWithLock(
     std::unique_ptr<AppLock> app_lock) {
   app_lock_ = std::move(app_lock);
 
-  if (app_lock_->registrar().IsNotInRegistrar(app_id_)) {
+  if (!app_lock_->registrar().IsInRegistrar(app_id_)) {
     CompleteAndSelfDestruct(CommandResult::kFailure);
     return;
   }
@@ -112,7 +111,7 @@ bool SetUserDisplayModeCommand::DoSetDisplayMode(
   {
     ScopedRegistryUpdate update = resources.sync_bridge().BeginUpdate();
     WebApp* web_app = update->UpdateApp(app_id);
-    CHECK(web_app, base::NotFatalUntil::M127);
+    CHECK(web_app);
     if (web_app) {
       web_app->SetUserDisplayMode(user_display_mode);
       if (needs_os_integration_sync) {

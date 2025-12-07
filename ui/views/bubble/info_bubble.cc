@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -57,7 +58,7 @@ InfoBubble::InfoBubble(View* anchor,
                                arrow,
                                views::BubbleBorder::DIALOG_SHADOW,
                                true) {
-  DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  DialogDelegate::SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   set_margins(LayoutProvider::Get()->GetInsetsMetric(
       InsetsMetric::INSETS_TOOLTIP_BUBBLE));
@@ -84,17 +85,17 @@ void InfoBubble::Show() {
 
 void InfoBubble::Hide() {
   Widget* widget = GetWidget();
-  if (widget && !widget->IsClosed())
+  if (widget && !widget->IsClosed()) {
     widget->Close();
+  }
 }
 
-std::unique_ptr<NonClientFrameView> InfoBubble::CreateNonClientFrameView(
-    Widget* widget) {
+std::unique_ptr<FrameView> InfoBubble::CreateFrameView(Widget* widget) {
   DCHECK(!frame_);
   auto frame = std::make_unique<InfoBubbleFrame>(margins());
   frame->set_available_bounds(anchor_widget()->GetWindowBoundsInScreen());
   auto border = std::make_unique<BubbleBorder>(arrow(), GetShadow());
-  border->SetColor(color());
+  border->SetColor(background_color());
   frame->SetBubbleBorder(std::move(border));
   frame_ = frame.get();
   return frame;
@@ -102,8 +103,9 @@ std::unique_ptr<NonClientFrameView> InfoBubble::CreateNonClientFrameView(
 
 gfx::Size InfoBubble::CalculatePreferredSize(
     const SizeBounds& available_size) const {
-  if (preferred_width_ == 0)
+  if (preferred_width_ == 0) {
     return BubbleDialogDelegateView::CalculatePreferredSize(available_size);
+  }
 
   int pref_width = preferred_width_;
   pref_width -= frame_->GetInsets().width();
@@ -115,14 +117,16 @@ gfx::Size InfoBubble::CalculatePreferredSize(
 void InfoBubble::OnWidgetBoundsChanged(Widget* widget,
                                        const gfx::Rect& new_bounds) {
   BubbleDialogDelegateView::OnWidgetBoundsChanged(widget, new_bounds);
-  if (anchor_widget() == widget)
+  if (anchor_widget() == widget) {
     frame_->set_available_bounds(widget->GetWindowBoundsInScreen());
+  }
 }
 
 void InfoBubble::UpdatePosition() {
   Widget* const widget = GetWidget();
-  if (!widget)
+  if (!widget) {
     return;
+  }
 
   if (anchor_widget()->IsVisible() &&
       !GetAnchorView()->GetVisibleBounds().IsEmpty()) {

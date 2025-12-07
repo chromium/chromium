@@ -7,6 +7,8 @@
 
 #include "base/functional/callback_forward.h"
 
+class PrefService;
+
 // This file contains a collection of functions that are used to support
 // removing users from the device.
 //
@@ -21,7 +23,8 @@ namespace user_removal_manager {
 // removes users from the device in case the magic pref is set to true, and
 // otherwise it does nothing. Returns true if users were removed, false
 // otherwise.
-bool RemoveUsersIfNeeded();
+// `local_state` must be non-null.
+bool RemoveUsersIfNeeded(PrefService* local_state);
 
 // Performs a log out. Can be overridden for testing.
 void LogOut();
@@ -35,7 +38,9 @@ void OverrideLogOutForTesting(base::OnceClosure callback);
 // back to the login screen). Also start a fail-safe timer that shuts down
 // Chrome in case the callback doesn't do its job in time (eg. callback wants to
 // do some network communication, but the connection is lost).
-void InitiateUserRemoval(base::OnceClosure on_pref_persisted_callback);
+// `local_state` must be non-null.
+void InitiateUserRemoval(PrefService* local_state,
+                         base::OnceClosure on_pref_persisted_callback);
 
 }  // namespace user_removal_manager
 }  // namespace ash

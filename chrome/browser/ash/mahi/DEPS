@@ -14,25 +14,28 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/feedback/show_feedback_page.h",
   "+chrome/browser/history/history_service_factory.h",
   "+chrome/browser/manta",
+  "+chrome/browser/policy/profile_policy_connector.h",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/browser_finder.h",
-  "+chrome/browser/ui/chrome_pages.h",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
   "mahi_availability.cc": [
-    "+chrome/browser/ash/login/demo_mode/demo_session.h",
     "+chrome/browser/browser_process.h",
+  ],
+  "mahi_manager_impl.cc" : [
+    "+chrome/browser/ui/browser.h",
   ],
   "mahi_ui_browsertest.cc": [
     "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/views/mahi/mahi_menu_constants.h",
+    "+chrome/browser/ui/views/mahi/mahi_menu_view.h",
   ],
   "mahi_ui_browser_test_base.cc": [
     "+chrome/browser/ui/views/mahi/mahi_menu_constants.h",

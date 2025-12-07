@@ -11,7 +11,7 @@ desc: |-
   called without prior user gesture.
 
   For detailed information on valid url patterns, please see
-  https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. * is
+  https://chromeenterprise.google/policies/url-patterns/. * is
   not an accepted value for this policy.
 
   If this policy is unset, all origins will require a prior user gesture to call

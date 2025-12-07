@@ -10,13 +10,13 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -35,7 +35,19 @@
 #include "services/network/public/mojom/ssl_config.mojom.h"
 #include "url/url_canon.h"
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#include "net/cert/internal/trust_store_chrome.h"
+#endif
+
 namespace {
+
+// Pref value identifying the compliance regime specified by the Commercial
+// National Security Algorithm Suite 2.0 (CNSA 2.0).
+const char kPrefStringValueCnsa2[] = "cnsa2";
+
+// Pref value identifying the compliance regime specified by the Commercial
+// National Security Algorithm Suite versions 1.0 and 2.0 (CNSA 1.0 and 2.0).
+const char kPrefStringValueCnsa[] = "cnsa";
 
 // Converts a `base::Value::List` of StringValues into a vector of strings. Any
 // values which cannot be converted will be skipped.
@@ -96,9 +108,8 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
     std::string canon_pattern;
     url::Component canon_component;
     url::StdStringCanonOutput canon_output(&canon_pattern);
-    if (!url::CanonicalizeHost(pattern.data(),
-                               url::Component(0, pattern.size()), &canon_output,
-                               &canon_component)) {
+    if (!url::CanonicalizeHost(pattern, url::Component(0, pattern.size()),
+                               &canon_output, &canon_component)) {
       continue;
     }
     canon_output.Complete();
@@ -136,6 +147,10 @@ SSLConfigServiceManager::SSLConfigServiceManager(PrefService* local_state) {
 #endif
   ech_enabled_.Init(prefs::kEncryptedClientHelloEnabled, local_state,
                     local_state_callback);
+  key_exchange_compliance_.Init(prefs::kPreferSlowKexAlgorithms, local_state,
+                                local_state_callback);
+  tls13_cipher_compliance_.Init(prefs::kPreferSlowCiphers, local_state,
+                                local_state_callback);
 
   local_state_change_registrar_.Init(local_state);
   local_state_change_registrar_.Add(prefs::kCipherSuiteBlacklist,
@@ -162,6 +177,11 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterListPref(prefs::kH2ClientCertCoalescingHosts);
   registry->RegisterBooleanPref(prefs::kEncryptedClientHelloEnabled,
                                 default_context_config.ech_enabled);
+  // The following two prefs for SSL compliance policies are used here as
+  // local_state prefs, but the same pref names are also used as Profile prefs
+  // in certain Profiles. Their value is only used if managed.
+  registry->RegisterStringPref(prefs::kPreferSlowKexAlgorithms, std::string());
+  registry->RegisterStringPref(prefs::kPreferSlowCiphers, std::string());
 
   // Default value for these prefs don't matter since they are only used when
   // managed.
@@ -174,11 +194,26 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void SSLConfigServiceManager::AddToNetworkContextParams(
     network::mojom::NetworkContextParams* network_context_params) {
-  network_context_params->initial_ssl_config = GetSSLConfigFromPrefs();
+  network_context_params->initial_ssl_config = GetNewSSLConfig();
   mojo::Remote<network::mojom::SSLConfigClient> ssl_config_client;
   network_context_params->ssl_config_client_receiver =
       ssl_config_client.BindNewPipeAndPassReceiver();
   ssl_config_client_set_.Add(std::move(ssl_config_client));
+}
+
+void SSLConfigServiceManager::UpdateTrustAnchorIDs(
+    std::vector<std::vector<uint8_t>> trust_anchor_ids,
+    std::vector<std::vector<uint8_t>> mtc_trust_anchor_ids) {
+  trust_anchor_ids_ = std::move(trust_anchor_ids);
+  mtc_trust_anchor_ids_ = std::move(mtc_trust_anchor_ids);
+  network::mojom::SSLConfigPtr new_config = GetNewSSLConfig();
+  network::mojom::SSLConfig* raw_config = new_config.get();
+
+  for (const auto& client : ssl_config_client_set_) {
+    // Mojo calls consume all InterfacePtrs passed to them, so have to
+    // clone the config for each call.
+    client->OnSSLConfigUpdated(raw_config->Clone());
+  }
 }
 
 void SSLConfigServiceManager::FlushForTesting() {
@@ -192,7 +227,7 @@ void SSLConfigServiceManager::OnPreferenceChanged(
   if (pref_name_in == prefs::kCipherSuiteBlacklist)
     OnDisabledCipherSuitesChange(prefs);
 
-  network::mojom::SSLConfigPtr new_config = GetSSLConfigFromPrefs();
+  network::mojom::SSLConfigPtr new_config = GetNewSSLConfig();
   network::mojom::SSLConfig* raw_config = new_config.get();
 
   for (const auto& client : ssl_config_client_set_) {
@@ -202,8 +237,7 @@ void SSLConfigServiceManager::OnPreferenceChanged(
   }
 }
 
-network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
-    const {
+network::mojom::SSLConfigPtr SSLConfigServiceManager::GetNewSSLConfig() const {
   network::mojom::SSLConfigPtr config = network::mojom::SSLConfig::New();
 
   // rev_checking_enabled was formerly a user-settable preference, but now
@@ -233,19 +267,27 @@ network::mojom::SSLConfigPtr SSLConfigServiceManager::GetSSLConfigFromPrefs()
 
   config->ech_enabled = ech_enabled_.GetValue();
 
-  config->post_quantum_override = network::mojom::OptionalBool::kUnset;
   if (post_quantum_enabled_.IsManaged()) {
-    config->post_quantum_override = post_quantum_enabled_.GetValue()
-                                        ? network::mojom::OptionalBool::kTrue
-                                        : network::mojom::OptionalBool::kFalse;
+    config->post_quantum_key_agreement_enabled =
+        post_quantum_enabled_.GetValue();
   }
 #if BUILDFLAG(IS_CHROMEOS)
   if (device_post_quantum_enabled_.IsManaged()) {
-    config->post_quantum_override = device_post_quantum_enabled_.GetValue()
-                                        ? network::mojom::OptionalBool::kTrue
-                                        : network::mojom::OptionalBool::kFalse;
+    config->post_quantum_key_agreement_enabled =
+        device_post_quantum_enabled_.GetValue();
   }
 #endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  config->trust_anchor_ids =
+      trust_anchor_ids_.has_value()
+          ? trust_anchor_ids_.value()
+          : net::TrustStoreChrome::GetTrustAnchorIDsFromCompiledInRootStore();
+  config->mtc_trust_anchor_ids = mtc_trust_anchor_ids_;
+#endif
+
+  ConfigureSSLComplianceSettings(key_exchange_compliance_,
+                                 tls13_cipher_compliance_, config.get());
 
   return config;
 }
@@ -255,4 +297,28 @@ void SSLConfigServiceManager::OnDisabledCipherSuitesChange(
   const base::Value::List& list =
       local_state->GetList(prefs::kCipherSuiteBlacklist);
   disabled_cipher_suites_ = ParseCipherSuites(ValueListToStringVector(list));
+}
+
+// static
+void SSLConfigServiceManager::ConfigureSSLComplianceSettings(
+    const StringPrefMember& key_exchange_compliance_pref,
+    const StringPrefMember& tls13_cipher_compliance_pref,
+    network::mojom::SSLConfig* config) {
+  if (base::FeatureList::IsEnabled(features::kCryptographyComplianceCnsa)) {
+    config->named_groups_preset = network::mojom::SSLNamedGroupsPreset::kCnsa2;
+    config->tls13_cipher_prefer_aes_256 = true;
+    return;
+  }
+
+  if (key_exchange_compliance_pref.IsManaged()) {
+    config->named_groups_preset =
+        key_exchange_compliance_pref.GetValue() == kPrefStringValueCnsa2
+            ? network::mojom::SSLNamedGroupsPreset::kCnsa2
+            : network::mojom::SSLNamedGroupsPreset::kDefault;
+  }
+
+  if (tls13_cipher_compliance_pref.IsManaged()) {
+    config->tls13_cipher_prefer_aes_256 =
+        tls13_cipher_compliance_pref.GetValue() == kPrefStringValueCnsa;
+  }
 }

@@ -18,7 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
-#include "device/fido/fido_constants.h"
+#include "device/fido/public/fido_constants.h"
 
 namespace device {
 
@@ -43,12 +43,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorData {
   AuthenticatorData(base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
                     uint8_t flags,
                     base::span<const uint8_t, kSignCounterLength> sign_counter,
-                    std::optional<AttestedCredentialData> data,
-                    std::optional<cbor::Value> extensions = std::nullopt);
-
-  AuthenticatorData(base::span<const uint8_t, kRpIdHashLength> rp_id_hash,
-                    std::initializer_list<Flag> flags,
-                    uint32_t sign_counter,
                     std::optional<AttestedCredentialData> data,
                     std::optional<cbor::Value> extensions = std::nullopt);
 

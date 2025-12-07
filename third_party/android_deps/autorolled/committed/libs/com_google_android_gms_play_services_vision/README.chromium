@@ -1,0 +1,16 @@
+Name: play-services-vision
+Short Name: play-services-vision
+URL: https://dl.google.com/dl/android/maven2/com/google/android/gms/play-services-vision/20.1.3/play-services-vision-20.1.3.aar
+Version: 20.1.3
+Update Mechanism: Autoroll
+License: Android Software Development Kit License
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+Vision library for gmscore / Google Play Services.
+
+Local Modifications:
+No modifications.

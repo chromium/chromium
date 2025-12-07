@@ -7,8 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credit_card.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
 @protocol CardListDelegate;
 @protocol ManualFillContentInjector;
@@ -16,14 +16,17 @@
 // Wrapper to show card cells in a LegacyChromeTableViewController.
 @interface ManualFillCardItem : TableViewItem
 
-// `cellIndexAccessibilityLabel` is the part of the cell's accessibility label
-// that is used to indicate the index at which the payment method represented by
-// this item is positioned in the list of payment methods to show.
+// `cellIndex` indicates the index (0-based) at which the payment method
+// represented by this item is positioned in the list of payment methods to
+// show. `cellIndexAccessibilityLabel` is the cell's accessibility label and is
+// used to indicate the cell's index (1-based) and the number of available
+// payment methods to accessibility users.
 - (instancetype)initWithCreditCard:(ManualFillCreditCard*)card
                    contentInjector:
                        (id<ManualFillContentInjector>)contentInjector
                 navigationDelegate:(id<CardListDelegate>)navigationDelegate
                        menuActions:(NSArray<UIAction*>*)menuActions
+                         cellIndex:(NSInteger)cellIndex
        cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
             showAutofillFormButton:(BOOL)showAutofillFormButton
     NS_DESIGNATED_INITIALIZER;
@@ -34,18 +37,20 @@
 
 // Cell to display a Card where the username and password are interactable
 // and send the data to the delegate.
-@interface ManualFillCardCell : TableViewCell
+@interface ManualFillCardCell : LegacyTableViewCell
 
 // Updates the cell with credit card and the `navigationDelegate` to be
 // notified. `menuActions` are the UIActions that should be available from the
-// cell's overflow menu button. `cellIndexAccessibilityLabel` is the part of
-// this cell's accessibility label that is used to indicate the index at which
-// the payment method represented by this cell is positioned in the list of
-// payment methods to show.
+// cell's overflow menu button. `cellIndex` indicates the index (0-based) at
+// which the payment method represented by this cell is positioned in the list
+// of payment methods to show. `cellIndexAccessibilityLabel` is the cell's
+// accessibility label and is used to indicate the cell's index (1-based) and
+// the number of available payment methods to accessibility users.
 - (void)setUpWithCreditCard:(ManualFillCreditCard*)card
                 contentInjector:(id<ManualFillContentInjector>)contentInjector
              navigationDelegate:(id<CardListDelegate>)navigationDelegate
                     menuActions:(NSArray<UIAction*>*)menuActions
+                      cellIndex:(NSInteger)cellIndex
     cellIndexAccessibilityLabel:(NSString*)cellIndexAccessibilityLabel
          showAutofillFormButton:(BOOL)showAutofillFormButton;
 

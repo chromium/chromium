@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Property cursor value 'linear-gradient(200grad, red 10%, blue calc(75% - 2px)), auto'
+  assert_true: 'linear-gradient(200grad, red 10%, blue calc(75% - 2px)), auto' is a supported value for cursor. expected true got false
+[FAIL] Property cursor value 'radial-gradient(farthest-side at calc(5px + 10%), red, blue), pointer'
+  assert_true: 'radial-gradient(farthest-side at calc(5px + 10%), red, blue), pointer' is a supported value for cursor. expected true got false
+[FAIL] Property cursor value 'conic-gradient(from 3.1416rad at 20% 20%, red, blue), crosshair'
+  assert_true: 'conic-gradient(from 3.1416rad at 20% 20%, red, blue), crosshair' is a supported value for cursor. expected true got false
+Harness: the test ran to completion.
+

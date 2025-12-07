@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ASSOCIATED_URL_LOADER_CLIENT_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ASSOCIATED_URL_LOADER_CLIENT_H_
 
+#include "base/containers/span.h"
+
 namespace blink {
 
 class WebURL;
@@ -21,7 +23,7 @@ class WebAssociatedURLLoaderClient {
                            uint64_t total_bytes_to_be_sent) {}
   virtual void DidReceiveResponse(const WebURLResponse&) {}
   virtual void DidDownloadData(uint64_t data_length) {}
-  virtual void DidReceiveData(const char* data, int data_length) {}
+  virtual void DidReceiveData(base::span<const char> data) {}
   virtual void DidFinishLoading() {}
   virtual void DidFail(const WebURLError&) {}
 

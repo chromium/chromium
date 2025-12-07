@@ -39,9 +39,9 @@ export class PrivateStateTokensListContainerElement extends CrLitElement {
     };
   }
 
-  data: ListItem[] = [];
+  accessor data: ListItem[] = [];
 
-  protected isAnyRowCollapsed: boolean = true;
+  protected accessor isAnyRowCollapsed: boolean = true;
 
   private rowExpandedStates_: Map<string, boolean> = new Map();
 
@@ -53,7 +53,7 @@ export class PrivateStateTokensListContainerElement extends CrLitElement {
 
   protected onClick_() {
     const rows =
-        this.shadowRoot!.querySelectorAll('private-state-tokens-list-item');
+        this.shadowRoot.querySelectorAll('private-state-tokens-list-item');
     for (const row of rows) {
       (row).expanded =
           this.isAnyRowCollapsed;

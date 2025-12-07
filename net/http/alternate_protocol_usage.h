@@ -34,6 +34,21 @@ enum AlternateProtocolUsage {
   ALTERNATE_PROTOCOL_USAGE_MAX,
 };
 
+// The state of the advertised alternative service.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AdvertisedAltSvcState)
+enum class AdvertisedAltSvcState {
+  // The state is unknown.
+  kUnknown = 0,
+  // QUIC is advertised and it's not broken.
+  kQuicNotBroken = 1,
+  // QUIC is advertised but it's broken.
+  kQuicBroken = 2,
+  kMaxValue = kQuicBroken,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/page/enums.xml:AdvertisedAltSvcState)
+
 }  // namespace net
 
 #endif  // NET_HTTP_ALTERNATE_PROTOCOL_USAGE_H_

@@ -1,0 +1,27 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  background-color: var(--md-background-color);
+  color: var(--cr-primary-text-color);
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+}
+
+.empty-message {
+  margin: auto;
+  text-align: center;
+}
+
+log-details {
+  flex: 1;
+  overflow-y: auto;
+}

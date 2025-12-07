@@ -8,8 +8,9 @@ include_rules = [
     # It is allowed to depend on common chromium stuff (and itself).
     "+base",
     "+build",
-    "+crypto/sha2.h",
+    "+crypto/hash.h",
     "+cc/mojom/browser_controls_params.mojom.h",
+    "+gpu/command_buffer/common/shared_image_usage.h",
     "+net",
     "+media",
     "+mojo",
@@ -27,6 +28,7 @@ include_rules = [
     "+services/network/public/mojom/url_loader_factory.mojom.h",
     "+services/network/public/mojom/url_response_head.mojom.h",
     "+services/network/public/mojom/url_response_head.mojom-forward.h",
+    "+services/network/public/mojom/permissions_policy",
     "+services/viz/public/mojom/compositing/local_surface_id.mojom.h",
     "+services/viz/public/mojom/compositing/view_transition_element_resource_id.mojom.h",
     "+skia/public/mojom/bitmap_skbitmap_mojom_traits.h",
@@ -38,6 +40,8 @@ include_rules = [
     "+third_party/icu/source/common/unicode/unistr.h",
     "+ui/base/page_transition_types.h",
     "+ui/base/ui_base_switches_util.h",
+    "+ui/base/mojom/menu_source_type.mojom-forward.h",
+    "+ui/base/mojom/menu_source_type.mojom-shared.h",
     "+ui/base/mojom/ui_base_types.mojom.h",
     "+ui/base/dragdrop/mojom",
     "+ui/display",
@@ -61,5 +65,10 @@ specific_include_rules = {
     "+v8",
   ],
   'ad_display_size_utils.cc': [ "+third_party/re2/src/re2/re2.h" ],
-  'content_to_visible_time_reporter*' :[ "+components/viz/common/frame_timing_details.h"]
+  'content_to_visible_time_reporter*': [
+    "+components/viz/common/frame_timing_details.h"
+  ],
+  'features.cc': [
+    "+net/http/http_cache.h"
+  ]
 }

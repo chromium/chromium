@@ -8,6 +8,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <string_view>
+
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 
 namespace content {
@@ -17,12 +20,12 @@ bool CanUserConnectToDevTools(
   struct passwd* creds = getpwuid(credentials.user_id);
   if (!creds || !creds->pw_name) {
     LOG(WARNING) << "DevTools: can't obtain creds for uid "
-        << credentials.user_id;
+                 << credentials.user_id;
     return false;
   }
   if (credentials.group_id == credentials.user_id &&
-      (strcmp("root", creds->pw_name) == 0 ||   // For rooted devices
-       strcmp("shell", creds->pw_name) == 0 ||  // For non-rooted devices
+      (std::string_view("root") == creds->pw_name ||   // For rooted devices
+       std::string_view("shell") == creds->pw_name ||  // For non-rooted devices
 
        // From processes signed with the same key
        credentials.user_id == getuid())) {

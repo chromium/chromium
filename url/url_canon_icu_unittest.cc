@@ -2,17 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/350788890): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "url/url_canon_icu.h"
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include <array>
+
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "url/url_canon.h"
@@ -29,18 +26,19 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
     const wchar_t* input;
     const char* encoding;
     const char* expected;
-  } icu_cases[] = {
-      // UTF-8.
-    {L"Hello, world", "utf-8", "Hello, world"},
-    {L"\x4f60\x597d", "utf-8", "\xe4\xbd\xa0\xe5\xa5\xbd"},
-      // Non-BMP UTF-8.
-    {L"!\xd800\xdf00!", "utf-8", "!\xf0\x90\x8c\x80!"},
-      // Big5
-    {L"\x4f60\x597d", "big5", "\xa7\x41\xa6\x6e"},
-      // Unrepresentable character in the destination set.
-    {L"hello\x4f60\x06de\x597dworld", "big5",
-      "hello\xa7\x41%26%231758%3B\xa6\x6eworld"},
   };
+  auto icu_cases = std::to_array<ICUCase>({
+      // UTF-8.
+      {L"Hello, world", "utf-8", "Hello, world"},
+      {L"\x4f60\x597d", "utf-8", "\xe4\xbd\xa0\xe5\xa5\xbd"},
+      // Non-BMP UTF-8.
+      {L"!\xd800\xdf00!", "utf-8", "!\xf0\x90\x8c\x80!"},
+      // Big5
+      {L"\x4f60\x597d", "big5", "\xa7\x41\xa6\x6e"},
+      // Unrepresentable character in the destination set.
+      {L"hello\x4f60\x06de\x597dworld", "big5",
+       "hello\xa7\x41%26%231758%3B\xa6\x6eworld"},
+  });
 
   for (size_t i = 0; i < std::size(icu_cases); i++) {
     test::UConvScoper conv(icu_cases[i].encoding);
@@ -52,8 +50,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
 
     std::u16string input_str(
         test_utils::TruncateWStringToUTF16(icu_cases[i].input));
-    int input_len = static_cast<int>(input_str.length());
-    converter.ConvertFromUTF16(input_str.c_str(), input_len, &output);
+    converter.ConvertFromUTF16(input_str, &output);
     output.Complete();
 
     EXPECT_STREQ(icu_cases[i].expected, str.c_str());
@@ -72,8 +69,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
       input.push_back('a');
 
     RawCanonOutput<static_size> output;
-    converter.ConvertFromUTF16(input.c_str(), static_cast<int>(input.length()),
-                               &output);
+    converter.ConvertFromUTF16(input, &output);
     EXPECT_EQ(input.length(), output.length());
   }
 }
@@ -84,21 +80,22 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
     const wchar_t* input16;
     const char* encoding;
     const char* expected;
-  } query_cases[] = {
+  };
+  auto query_cases = std::to_array<QueryCase>({
       // Regular ASCII case in some different encodings.
-    {"foo=bar", L"foo=bar", "utf-8", "?foo=bar"},
-    {"foo=bar", L"foo=bar", "shift_jis", "?foo=bar"},
-    {"foo=bar", L"foo=bar", "gb2312", "?foo=bar"},
+      {"foo=bar", L"foo=bar", "utf-8", "?foo=bar"},
+      {"foo=bar", L"foo=bar", "shift_jis", "?foo=bar"},
+      {"foo=bar", L"foo=bar", "gb2312", "?foo=bar"},
       // Chinese input/output
-    {"q=\xe4\xbd\xa0\xe5\xa5\xbd", L"q=\x4f60\x597d", "gb2312",
-      "?q=%C4%E3%BA%C3"},
-    {"q=\xe4\xbd\xa0\xe5\xa5\xbd", L"q=\x4f60\x597d", "big5", "?q=%A7A%A6n"},
+      {"q=\xe4\xbd\xa0\xe5\xa5\xbd", L"q=\x4f60\x597d", "gb2312",
+       "?q=%C4%E3%BA%C3"},
+      {"q=\xe4\xbd\xa0\xe5\xa5\xbd", L"q=\x4f60\x597d", "big5", "?q=%A7A%A6n"},
       // Unencodable character in the destination character set should be
       // escaped. The escape sequence unescapes to be the entity name:
       // "?q=&#20320;"
-    {"q=Chinese\xef\xbc\xa7", L"q=Chinese\xff27", "iso-8859-1",
-      "?q=Chinese%26%2365319%3B"},
-  };
+      {"q=Chinese\xef\xbc\xa7", L"q=Chinese\xff27", "iso-8859-1",
+       "?q=Chinese%26%2365319%3B"},
+  });
 
   for (size_t i = 0; i < std::size(query_cases); i++) {
     Component out_comp;
@@ -108,13 +105,9 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
     ICUCharsetConverter converter(conv.converter());
 
     if (query_cases[i].input8) {
-      int len = static_cast<int>(strlen(query_cases[i].input8));
-      Component in_comp(0, len);
       std::string out_str;
-
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(query_cases[i].input8, in_comp, &converter, &output,
-                        &out_comp);
+      CanonicalizeQuery(query_cases[i].input8, &converter, &output, &out_comp);
       output.Complete();
 
       EXPECT_EQ(query_cases[i].expected, out_str);
@@ -128,7 +121,7 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
       std::string out_str;
 
       StdStringCanonOutput output(&out_str);
-      CanonicalizeQuery(input16.c_str(), in_comp, &converter, &output,
+      CanonicalizeQuery(in_comp.AsViewOn(input16), &converter, &output,
                         &out_comp);
       output.Complete();
 
@@ -140,7 +133,8 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
   std::string out_str;
   StdStringCanonOutput output(&out_str);
   Component out_comp;
-  CanonicalizeQuery("a \x00z\x01", Component(0, 5), NULL, &output, &out_comp);
+  CanonicalizeQuery(base::MakeStringViewWithNulChars("a \x00z\x01"), nullptr,
+                    &output, &out_comp);
   output.Complete();
   EXPECT_EQ("?a%20%00z%01", out_str);
 }

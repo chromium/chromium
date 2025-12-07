@@ -8,7 +8,7 @@
 #include "base/i18n/rtl.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace autofill {
 

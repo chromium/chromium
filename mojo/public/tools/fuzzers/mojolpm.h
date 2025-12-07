@@ -685,6 +685,7 @@ void Testcase<ProtoTestcase, ProtoAction, kMaxActionCount, kMaxActionSize>::Run(
       }
     } else {
       next_sequence_idx_++;
+      next_action_idx_ = 0;
       fuzzer_task_runner->PostTask(FROM_HERE, std::move(run_closure));
     }
   }

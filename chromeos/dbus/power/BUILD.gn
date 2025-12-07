@@ -11,6 +11,7 @@ component("power") {
 
   deps = [
     ":power_manager_proto",
+    "//ash/constants",
     "//base",
     "//chromeos/dbus/common",
     "//components/device_event_log",

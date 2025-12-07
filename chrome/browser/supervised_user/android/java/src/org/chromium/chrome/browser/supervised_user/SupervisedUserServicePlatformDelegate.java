@@ -6,12 +6,19 @@ package org.chromium.chrome.browser.supervised_user;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHost;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabHostRegistry;
 
+@NullMarked
 class SupervisedUserServicePlatformDelegate {
     /** Closes all open incognito tabs */
     @CalledByNative
     private static void closeIncognitoTabs() {
-        IncognitoTabHostUtils.closeAllIncognitoTabs();
+        // TODO(https://crbug.com/429478269): Switch back to IncognitoTabHostUtils helper once
+        // calling things during init is handled for us.
+        for (IncognitoTabHost host : IncognitoTabHostRegistry.getInstance().getHosts()) {
+            host.closeAllIncognitoTabsOnInit();
+        }
     }
 }

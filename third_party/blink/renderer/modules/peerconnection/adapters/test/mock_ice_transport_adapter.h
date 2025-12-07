@@ -18,16 +18,16 @@ class MockIceTransportAdapter : public testing::NiceMock<IceTransportAdapter> {
 
   // IceTransportAdapter overrides.
   MOCK_METHOD4(StartGathering,
-               void(const cricket::IceParameters&,
-                    const cricket::ServerAddresses&,
-                    const WebVector<cricket::RelayServerConfig>&,
+               void(const webrtc::IceParameters&,
+                    const webrtc::ServerAddresses&,
+                    const std::vector<webrtc::RelayServerConfig>&,
                     IceTransportPolicy));
   MOCK_METHOD3(Start,
-               void(const cricket::IceParameters&,
-                    cricket::IceRole,
-                    const Vector<cricket::Candidate>&));
-  MOCK_METHOD1(HandleRemoteRestart, void(const cricket::IceParameters&));
-  MOCK_METHOD1(AddRemoteCandidate, void(const cricket::Candidate&));
+               void(const webrtc::IceParameters&,
+                    webrtc::IceRole,
+                    const Vector<webrtc::Candidate>&));
+  MOCK_METHOD1(HandleRemoteRestart, void(const webrtc::IceParameters&));
+  MOCK_METHOD1(AddRemoteCandidate, void(const webrtc::Candidate&));
 };
 
 }  // namespace blink

@@ -39,16 +39,21 @@ message LocalDeviceRegistrationInfo {
   // already registered. Not set if `device_registered` is false.
   optional int32 device_registered_version = 3;
 
-  // If true, it indicates that a previous attempt to register or reregister
-  // the device failed, with a failure that suggests future attempts will fail
-  // too. This usually means additional keys are needed, which can be resolved
-  // via key retrieval.
-  //
-  // Note that true doesn't imply the device isn't registered. It may be that
-  // the failure corresponds to a re-registration attempt. In this case, besides
-  // key retrieval, it may be possible to resolve the error by attempting to
-  // download new keys.
-  optional bool last_registration_returned_local_data_obsolete = 4;
+  // Deprecated. Use
+  // `LocalTrustedVaultPerUser.last_registration_returned_local_data_obsolete`
+  // instead.
+  optional bool deprecated_last_registration_returned_local_data_obsolete = 4
+      [deprecated = true];
+}
+
+message ICloudKeychainRegistrationInfo {
+  // Indicates whether iCloud Keychain is registered, i.e. whether its public
+  // key is successfully submitted to the server.
+  // Note: The iCloud Keychain could have been registered successfully on
+  // another device already, which isn't reflected in this field initially.
+  // Attempting a registration will, however, detect that state an update this
+  // field.
+  optional bool registered = 1;
 }
 
 message LocalTrustedVaultDegradedRecoverabilityState {
@@ -61,22 +66,6 @@ message LocalTrustedVaultDegradedRecoverabilityState {
   // Indicates whether the recoverability is degraded.
   optional DegradedRecoverabilityValue degraded_recoverability_value = 3;
 }
-
-message RecoveryKeyStoreState {
-  // Whether LSKF-wrapped recovery keys should be uploaded to the Recovery Key
-  // Store service periodically.
-  optional bool recovery_key_store_upload_enabled = 1;
-
-  // The last time an update to recovery key store succeeded.
-  optional int64 last_recovery_key_store_update_millis_since_unix_epoch = 2;
-
-  // The public part of the LSKF-wrapped application key pair that was uploaded
-  // to the recovery key store service.
-  optional bytes public_key = 3;
-
-  // Whether `public_key` is registered as a member of the security domain.
-  optional bool recovery_key_is_registered_to_security_domain = 4;
-};
 
 message LocalTrustedVaultPerUser {
   // User identifier.
@@ -98,6 +87,10 @@ message LocalTrustedVaultPerUser {
   // Device key and corresponding registration metadata.
   optional LocalDeviceRegistrationInfo local_device_registration_info = 5;
 
+  // Registration metadata for iCloud Keychain member.
+  optional ICloudKeychainRegistrationInfo icloud_keychain_registration_info =
+      10;
+
   // The time (in milliseconds since UNIX epoch) at which last unsuccessful (due
   // to transient errors) request was sent to the vault service. Used for
   // throttling requests to the server.
@@ -112,7 +105,18 @@ message LocalTrustedVaultPerUser {
   optional LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state = 8;
 
-  optional RecoveryKeyStoreState recovery_key_store_state = 9;
+  // If true, it indicates that a previous attempt to register or reregister
+  // the device failed, with a failure that suggests future attempts will fail
+  // too. This usually means additional keys are needed, which can be resolved
+  // via key retrieval.
+  //
+  // Note that true doesn't imply the device isn't registered. It may be that
+  // the failure corresponds to a re-registration attempt. In this case, besides
+  // key retrieval, it may be possible to resolve the error by attempting to
+  // download new keys.
+  optional bool last_registration_returned_local_data_obsolete = 11;
+
+  reserved 9;
 }
 
 message LocalTrustedVault {
@@ -131,4 +135,9 @@ message LocalTrustedVaultFileContent {
   // MD5 digest of `serialized_local_trusted_vault` formatted as hexadecimal
   // string.
   optional string md5_digest_hex_string = 2;
+
+  // SHA256 digest of `serialized_local_trusted_vault` formatted as hexadecimal
+  // string. Added in crrev.com/c/6702027 as part of a migtation effort away
+  // from MD5.
+  optional string sha256_digest_hex_string = 3;
 }

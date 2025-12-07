@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/cookie_manager.h"
 
 #include <algorithm>
+#include <array>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
@@ -64,11 +60,6 @@
 //        a cookie store, a cookie service wrapping it, a mojo pipe
 //        connected to the server, and the cookie service implemented
 //        by the other end of the pipe.
-//
-//      # Functions
-//      * CompareCanonicalCookies: Comparison function to make it easy to
-//        sort cookie list responses from the mojom::CookieManager.
-//      * CompareCookiesByValue: As above, but only by value.
 
 namespace network {
 namespace {
@@ -186,8 +177,6 @@ class SynchronousCookieManager {
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
     if (modify_http_only)
       options.set_include_httponly();
-    net::CookieInclusionStatus result_out(
-        net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR);
     base::test::TestFuture<net::CookieAccessResult> future;
     cookie_service_->SetCanonicalCookie(cookie, source_url, options,
                                         future.GetCallback());
@@ -386,11 +375,6 @@ class CookieManagerTest : public testing::Test {
   std::unique_ptr<SynchronousCookieManager> service_wrapper_;
 };
 
-bool CompareCanonicalCookies(const net::CanonicalCookie& c1,
-                             const net::CanonicalCookie& c2) {
-  return c1.PartialCompare(c2);
-}
-
 // Test the GetAllCookies accessor.  Also tests that canonical
 // cookies come out of the store unchanged.
 TEST_F(CookieManagerTest, GetAllCookies) {
@@ -433,7 +417,7 @@ TEST_F(CookieManagerTest, GetAllCookies) {
       service_wrapper()->GetAllCookies();
 
   ASSERT_EQ(4u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
 
   EXPECT_EQ("A", cookies[0].Name());
   EXPECT_EQ("B", cookies[0].Value());
@@ -604,7 +588,7 @@ TEST_F(CookieManagerTest, GetCookieList) {
       net::CookiePartitionKeyCollection());
 
   ASSERT_EQ(2u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
 
   EXPECT_EQ("A", cookies[0].Name());
   EXPECT_EQ("B", cookies[0].Value());
@@ -624,7 +608,8 @@ TEST_F(CookieManagerTest, GetCookieList) {
   EXPECT_EQ("F", excluded_cookies[0].cookie.Value());
   EXPECT_TRUE(excluded_cookies[0]
                   .access_result.status.HasExactlyExclusionReasonsForTesting(
-                      {net::CookieInclusionStatus::EXCLUDE_HTTP_ONLY}));
+                      {net::CookieInclusionStatus::ExclusionReason::
+                           EXCLUDE_HTTP_ONLY}));
 }
 
 TEST_F(CookieManagerTest, GetCookieListHttpOnly) {
@@ -673,7 +658,7 @@ TEST_F(CookieManagerTest, GetCookieListHttpOnly) {
       GURL("https://foo_host.com/with/path"), options,
       net::CookiePartitionKeyCollection());
   ASSERT_EQ(2u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
 
   EXPECT_EQ("A", cookies[0].Name());
   EXPECT_EQ("C", cookies[1].Name());
@@ -735,7 +720,7 @@ TEST_F(CookieManagerTest, GetCookieListSameSite) {
       GURL("https://foo_host.com/with/path"), options,
       net::CookiePartitionKeyCollection());
   ASSERT_EQ(2u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A", cookies[0].Name());
   EXPECT_EQ("C", cookies[1].Name());
 
@@ -750,7 +735,7 @@ TEST_F(CookieManagerTest, GetCookieListSameSite) {
       GURL("https://foo_host.com/with/path"), options,
       net::CookiePartitionKeyCollection());
   ASSERT_EQ(3u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A", cookies[0].Name());
   EXPECT_EQ("C", cookies[1].Name());
   EXPECT_EQ("E", cookies[2].Name());
@@ -970,7 +955,7 @@ TEST_F(CookieManagerTest, DeleteThroughSet) {
       service_wrapper()->GetAllCookies();
 
   ASSERT_EQ(3u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
 
   EXPECT_EQ("C", cookies[0].Name());
   EXPECT_EQ("D", cookies[0].Value());
@@ -993,7 +978,7 @@ TEST_F(CookieManagerTest, ConfirmSecureSetFails) {
           "http", false);
 
   EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+      {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_SECURE_ONLY}));
   EXPECT_EQ(access_result.effective_same_site,
             net::CookieEffectiveSameSite::NO_RESTRICTION);
   std::vector<net::CanonicalCookie> cookies =
@@ -1037,7 +1022,8 @@ TEST_F(CookieManagerTest, SecureCookieNonCryptographicPotentiallyTrustworthy) {
           ->SetCanonicalCookieFromUrlWithStatus(
               *http_other_cookie, http_other_url, false /* modify_http_only */)
           .HasExactlyExclusionReasonsForTesting(
-              {net::CookieInclusionStatus::EXCLUDE_SECURE_ONLY}));
+              {net::CookieInclusionStatus::ExclusionReason::
+                   EXCLUDE_SECURE_ONLY}));
 
   // Set a CookieAccessDelegateImpl which allows other origins registered
   // as trustworthy to set a Secure cookie.
@@ -1081,7 +1067,7 @@ TEST_F(CookieManagerTest, ConfirmHttpOnlySetFails) {
           "http", false);
 
   EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_HTTP_ONLY}));
+      {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_HTTP_ONLY}));
   EXPECT_EQ(access_result.effective_same_site,
             net::CookieEffectiveSameSite::LAX_MODE);
   std::vector<net::CanonicalCookie> cookies =
@@ -1110,14 +1096,14 @@ TEST_F(CookieManagerTest, ConfirmSecureOverwriteFails) {
           "http", false);
 
   EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_OVERWRITE_SECURE}));
+      {net::CookieInclusionStatus::ExclusionReason::EXCLUDE_OVERWRITE_SECURE}));
   EXPECT_EQ(access_result.effective_same_site,
             net::CookieEffectiveSameSite::LAX_MODE);
 
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(1u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("Secure", cookies[0].Name());
   EXPECT_EQ("F", cookies[0].Value());
 }
@@ -1142,14 +1128,15 @@ TEST_F(CookieManagerTest, ConfirmHttpOnlyOverwriteFails) {
           "https", false);
 
   EXPECT_TRUE(access_result.status.HasExactlyExclusionReasonsForTesting(
-      {net::CookieInclusionStatus::EXCLUDE_OVERWRITE_HTTP_ONLY}));
+      {net::CookieInclusionStatus::ExclusionReason::
+           EXCLUDE_OVERWRITE_HTTP_ONLY}));
   EXPECT_EQ(access_result.effective_same_site,
             net::CookieEffectiveSameSite::LAX_MODE);
 
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(1u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("HttpOnly", cookies[0].Name());
   EXPECT_EQ("F", cookies[0].Value());
 }
@@ -1229,7 +1216,7 @@ TEST_F(CookieManagerTest, DeleteByTime) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(2u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A1", cookies[0].Name());
   EXPECT_EQ("A3", cookies[1].Name());
 }
@@ -1482,7 +1469,7 @@ TEST_F(CookieManagerTest, DeleteDetails_HostDomain) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(2u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A3", cookies[0].Name());
   EXPECT_EQ("A4", cookies[1].Name());
 }
@@ -1531,7 +1518,7 @@ TEST_F(CookieManagerTest, DeleteDetails_eTLDvsPrivateRegistry) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(3u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A3", cookies[0].Name());
   EXPECT_EQ("A4", cookies[1].Name());
   EXPECT_EQ("A5", cookies[2].Name());
@@ -1572,7 +1559,7 @@ TEST_F(CookieManagerTest, DeleteDetails_PrivateRegistry) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(2u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A2", cookies[0].Name());
   EXPECT_EQ("A3", cookies[1].Name());
 }
@@ -1678,7 +1665,7 @@ TEST_F(CookieManagerTest, DeleteDetails_IgnoredFields) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(5u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A02", cookies[0].Name());
   EXPECT_EQ("A04", cookies[1].Name());
   EXPECT_EQ("A06", cookies[2].Name());
@@ -1719,7 +1706,8 @@ TEST_F(CookieManagerTest, DeleteDetails_Consumer) {
     std::string domain;
     std::string path;
     bool expect_delete;
-  } test_cases[] = {
+  };
+  auto test_cases = std::to_array<TestCase>({
       // We match any URL on the specified domains.
       {"www.google.com", "/foo/bar", true},
       {"www.sub.google.com", "/foo/bar", true},
@@ -1746,7 +1734,7 @@ TEST_F(CookieManagerTest, DeleteDetails_Consumer) {
 
       // Check both a bare eTLD.
       {"sp.nom.br", "/", false},
-  };
+  });
 
   mojom::CookieDeletionFilter clear_filter;
   for (int i = 0; i < static_cast<int>(std::size(test_cases)); ++i) {
@@ -1852,7 +1840,7 @@ TEST_F(CookieManagerTest, DeleteByName) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(2u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A2", cookies[0].Name());
   EXPECT_EQ("A3", cookies[1].Name());
 }
@@ -1964,7 +1952,7 @@ TEST_F(CookieManagerTest, DeleteByURL) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(6u, cookies.size()) << DumpAllCookies();
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A01", cookies[0].Name());
   EXPECT_EQ("A02", cookies[1].Name());
   EXPECT_EQ("A03", cookies[2].Name());
@@ -2008,7 +1996,7 @@ TEST_F(CookieManagerTest, DeleteBySessionStatus) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(2u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A1", cookies[0].Name());
   EXPECT_EQ("A3", cookies[1].Name());
 }
@@ -2113,7 +2101,7 @@ TEST_F(CookieManagerTest, DeleteByAll) {
   std::vector<net::CanonicalCookie> cookies =
       service_wrapper()->GetAllCookies();
   ASSERT_EQ(6u, cookies.size());
-  std::sort(cookies.begin(), cookies.end(), &CompareCanonicalCookies);
+  std::sort(cookies.begin(), cookies.end());
   EXPECT_EQ("A2", cookies[0].Name());
   EXPECT_EQ("A3", cookies[1].Name());
   EXPECT_EQ("A4", cookies[2].Name());
@@ -2166,7 +2154,7 @@ TEST_F(CookieManagerTest, AddCookieChangeListener) {
   const std::string listener_url_host("www.testing.com");
   const std::string listener_url_domain("testing.com");
   const std::string listener_cookie_name("Cookie_Name");
-  ASSERT_EQ(listener_url.host(), listener_url_host);
+  ASSERT_EQ(listener_url.GetHost(), listener_url_host);
 
   mojo::PendingRemote<mojom::CookieChangeListener> listener_remote;
   CookieChangeListener listener(
@@ -2327,7 +2315,7 @@ TEST_F(CookieManagerTest, ListenerDestroyed) {
   // Create two identical listeners.
   const GURL listener_url("http://www.testing.com/pathele");
   const std::string listener_url_host("www.testing.com");
-  ASSERT_EQ(listener_url.host(), listener_url_host);
+  ASSERT_EQ(listener_url.GetHost(), listener_url_host);
   const std::string listener_cookie_name("Cookie_Name");
 
   mojo::PendingRemote<mojom::CookieChangeListener> listener1_remote;
@@ -2424,26 +2412,26 @@ TEST_F(CookieManagerTest, CloningAndClientDestructVisible) {
 
 TEST_F(CookieManagerTest, BlockThirdPartyCookies) {
   const GURL kThisURL = GURL("http://www.this.com");
-  const GURL kThatURL = GURL("http://www.that.com");
+  const net::CookiePartitionKey cookie_partition_key =
+      net::CookiePartitionKey::FromURLForTesting(kThisURL);
   const url::Origin kThisOrigin = url::Origin::Create(kThisURL);
   const net::SiteForCookies kThisSiteForCookies =
       net::SiteForCookies::FromOrigin(kThisOrigin);
-  const net::SiteForCookies kThatSiteForCookies =
-      net::SiteForCookies::FromUrl(kThatURL);
+  const net::SiteForCookies kNullSiteForCookies;
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThatSiteForCookies, kThisOrigin,
-      net::CookieSettingOverrides()));
+      kThisURL, kNullSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
+      cookie_partition_key));
 
   // Set block third party cookies to true, cookie should now be blocked.
   cookie_service_client()->BlockThirdPartyCookies(true);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_FALSE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThatSiteForCookies, kThisOrigin,
-      net::CookieSettingOverrides()));
+      kThisURL, kNullSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
+      cookie_partition_key));
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThisSiteForCookies, kThisOrigin,
-      net::CookieSettingOverrides()));
+      kThisURL, kThisSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
+      cookie_partition_key));
 
   // Set block third party cookies back to false, cookie should no longer be
   // blocked.
@@ -2451,8 +2439,8 @@ TEST_F(CookieManagerTest, BlockThirdPartyCookies) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_TRUE(service()->cookie_settings().IsFullCookieAccessAllowed(
-      kThisURL, kThatSiteForCookies, kThisOrigin,
-      net::CookieSettingOverrides()));
+      kThisURL, kNullSiteForCookies, kThisOrigin, net::CookieSettingOverrides(),
+      cookie_partition_key));
 }
 
 // A test class having cookie store with a persistent backing store.

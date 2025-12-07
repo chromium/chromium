@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/threading/platform_thread.h"
 
 namespace dbus {

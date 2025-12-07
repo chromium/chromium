@@ -28,8 +28,9 @@ void UnsentLogStoreMetricsImpl::RecordLastUnsentLogMetadataMetrics(
     int unsent_samples_count,
     int sent_samples_count,
     int persisted_size_in_kb) {
-  if (!base::FeatureList::IsEnabled(kRecordLastUnsentLogMetadataMetrics))
+  if (!base::FeatureList::IsEnabled(kRecordLastUnsentLogMetadataMetrics)) {
     return;
+  }
 
   if (unsent_samples_count < 0 || sent_samples_count < 0 ||
       persisted_size_in_kb < 0) {

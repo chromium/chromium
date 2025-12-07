@@ -6,6 +6,7 @@
 
 #include <sysinfoapi.h>
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <set>
@@ -23,7 +24,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -98,7 +98,7 @@ ReadAdapterUnicastAddresses() {
   for (unsigned tries = 0; (tries < 3) && (rv == ERROR_BUFFER_OVERFLOW);
        tries++) {
     out.reset(static_cast<PIP_ADAPTER_ADDRESSES>(malloc(len)));
-    memset(out.get(), 0, len);
+    UNSAFE_TODO(memset(out.get(), 0, len));
     rv = GetAdaptersAddresses(AF_UNSPEC,
                               GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_DNS_SERVER |
                               GAA_FLAG_SKIP_MULTICAST |
@@ -304,7 +304,7 @@ void ConfigureSuffixSearch(const WinDnsSystemSettings& settings,
   // behavior (see also ParseSearchList). If a suffix is not valid, it will be
   // discarded when the fully-qualified name is converted to DNS format.
 
-  unsigned num_dots = base::ranges::count(primary_suffix, '.');
+  unsigned num_dots = std::ranges::count(primary_suffix, '.');
 
   for (size_t offset = 0; num_dots >= devolution.level.value(); --num_dots) {
     offset = primary_suffix.find('.', offset + 1);
@@ -559,7 +559,8 @@ class DnsConfigServiceWin::Watcher
   }
 
   // NetworkChangeNotifier::IPAddressObserver:
-  void OnIPAddressChanged() override {
+  void OnIPAddressChanged(
+      NetworkChangeNotifier::IPAddressChangeType change_type) override {
     // Need to update non-loopback IP of local host.
     OnHostsChanged(true);
   }

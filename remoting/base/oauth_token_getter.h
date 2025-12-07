@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "remoting/base/oauth_token_info.h"
 
 namespace remoting {
 
@@ -26,13 +27,8 @@ class OAuthTokenGetter {
   };
 
   typedef base::OnceCallback<void(Status status,
-                                  const std::string& user_email,
-                                  const std::string& access_token)>
+                                  const OAuthTokenInfo& token_info)>
       TokenCallback;
-
-  typedef base::RepeatingCallback<void(const std::string& user_email,
-                                       const std::string& refresh_token)>
-      CredentialsUpdatedCallback;
 
   // This structure contains information required to perform authorization
   // with the authorization server.
@@ -105,6 +101,9 @@ class OAuthTokenGetter {
   // Invalidates the cache, so the next CallWithToken() will get a fresh access
   // token.
   virtual void InvalidateCache() = 0;
+
+  // Returns a WeakPtr to this instance.
+  virtual base::WeakPtr<OAuthTokenGetter> GetWeakPtr() = 0;
 };
 
 }  // namespace remoting

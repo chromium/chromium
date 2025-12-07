@@ -22,13 +22,15 @@ import android.view.View;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -43,6 +45,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 /** Tests for {@link NotificationPermissionRationaleBottomSheet}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class NotificationPermissionRationaleBottomSheetTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private BottomSheetController mBottomSheetController;
     private Context mContext;
 
@@ -52,7 +55,6 @@ public class NotificationPermissionRationaleBottomSheetTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mBottomSheetController = Mockito.mock(BottomSheetController.class);
         when(mBottomSheetController.requestShowContent(any(), anyBoolean())).thenReturn(true);
 

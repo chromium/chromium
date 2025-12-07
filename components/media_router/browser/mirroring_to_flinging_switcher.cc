@@ -14,7 +14,7 @@
 
 namespace media_router {
 
-void SwitchToFlingingIfPossible(int frame_tree_node_id) {
+void SwitchToFlingingIfPossible(content::FrameTreeNodeId frame_tree_node_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto* web_contents =

@@ -7,6 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds_view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -16,7 +18,8 @@ namespace payments {
 // credentials flow.
 class SecurePaymentConfirmationNoCredsDialogView
     : public SecurePaymentConfirmationNoCredsView,
-      public views::DialogDelegateView {
+      public views::DialogDelegateView,
+      public PictureInPictureOcclusionObserver {
   METADATA_HEADER(SecurePaymentConfirmationNoCredsDialogView,
                   views::DialogDelegateView)
 
@@ -51,6 +54,7 @@ class SecurePaymentConfirmationNoCredsDialogView
                   OptOutCallback opt_out_callback) override;
   void HideDialog() override;
   bool ClickOptOutForTesting() override;
+  bool AcceptDialogForTesting() override;
 
   // views::DialogDelegate:
   bool ShouldShowCloseButton() const override;
@@ -64,6 +68,9 @@ class SecurePaymentConfirmationNoCredsDialogView
   void InitChildViews();
   std::unique_ptr<views::View> CreateBodyView();
 
+  // PictureInPictureOcclusionObserver:
+  void OnOcclusionStateChanged(bool occluded) override;
+
   base::WeakPtr<SecurePaymentConfirmationNoCredsModel> model_;
 
   // May be null.
@@ -71,6 +78,8 @@ class SecurePaymentConfirmationNoCredsDialogView
 
   ResponseCallback response_callback_;
   OptOutCallback opt_out_callback_;
+
+  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 
   base::WeakPtrFactory<SecurePaymentConfirmationNoCredsDialogView>
       weak_ptr_factory_{this};

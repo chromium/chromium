@@ -10,16 +10,15 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service.h"
 #import "ios/chrome/browser/enterprise/model/idle/idle_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_cofirmation_presenter.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_coordinator_delegate.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_mediator.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_view_controller.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_utils.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 namespace {
@@ -56,8 +55,7 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
   CHECK(titleId)
       << "The idle timeout confirmation dialog title id should not be empty";
   int subtitleId = enterprise_idle::GetIdleTimeoutActionsSubtitleId(
-      actions,
-      /*is_data_cleared_on_signout=*/authService->ShouldClearDataOnSignOut());
+      actions, authService->ShouldClearDataForSignedInPeriodOnSignOut());
 
   _presentedViewController = [[IdleTimeoutConfirmationViewController alloc]
       initWithIdleTimeoutTitleId:*titleId
@@ -72,8 +70,8 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
       _presentedViewController.sheetPresentationController;
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
-    UISheetPresentationControllerDetent.mediumDetent,
-    UISheetPresentationControllerDetent.largeDetent
+    [UISheetPresentationControllerDetent mediumDetent],
+    [UISheetPresentationControllerDetent largeDetent]
   ];
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
@@ -113,8 +111,7 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 
 // Returns the idle timeout the admin has set.
 - (int)idleTimeout {
-  return self.browser->GetBrowserState()
-      ->GetPrefs()
+  return self.profile->GetPrefs()
       ->GetTimeDelta(enterprise_idle::prefs::kIdleTimeout)
       .InMinutes();
 }
@@ -128,13 +125,11 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 }
 
 - (enterprise_idle::IdleService*)idleService {
-  return enterprise_idle::IdleServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return enterprise_idle::IdleServiceFactory::GetForProfile(self.profile);
 }
 
 - (AuthenticationService*)authService {
-  return AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return AuthenticationServiceFactory::GetForProfile(self.profile);
 }
 
 - (void)setInitialVoiceOverFocus {

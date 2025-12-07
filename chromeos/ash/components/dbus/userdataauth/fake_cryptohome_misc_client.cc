@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/userdataauth/fake_cryptohome_misc_client.h"
 
+#include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -144,8 +140,9 @@ void FakeCryptohomeMiscClient::ReturnProtobufMethodCallback(
 // static
 std::vector<uint8_t> FakeCryptohomeMiscClient::GetStubSystemSalt() {
   const char kStubSystemSalt[] = "stub_system_salt";
-  return std::vector<uint8_t>(kStubSystemSalt,
-                              kStubSystemSalt + std::size(kStubSystemSalt) - 1);
+  return std::vector<uint8_t>(
+      kStubSystemSalt,
+      UNSAFE_TODO(kStubSystemSalt + std::size(kStubSystemSalt) - 1));
 }
 
 }  // namespace ash

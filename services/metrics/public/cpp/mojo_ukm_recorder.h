@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/metrics_export.h"
@@ -49,6 +48,8 @@ class METRICS_EXPORT MojoUkmRecorder
 
   ~MojoUkmRecorder() override;
 
+  void UpdateSourceURL(SourceId source_id, const GURL& url) override;
+
   base::WeakPtr<MojoUkmRecorder> GetWeakPtr();
 
  protected:
@@ -59,7 +60,6 @@ class METRICS_EXPORT MojoUkmRecorder
   void ClientDisconnected();
 
   // UkmRecorder:
-  void UpdateSourceURL(SourceId source_id, const GURL& url) override;
   void UpdateAppURL(SourceId source_id,
                     const GURL& url,
                     const AppType app_type) override;

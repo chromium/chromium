@@ -16,7 +16,7 @@ import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedHiding;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryStartedShowing;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyHidden;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.accessoryViewFullyShown;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryTestHelper.checkThatAccessoryViewFullyShown;
 import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_GONE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.StringRes;
@@ -57,11 +58,12 @@ import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAcce
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
-import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
+import org.chromium.chrome.browser.keyboard_accessory.data.Provider;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContents;
@@ -71,7 +73,6 @@ import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
 import org.chromium.ui.DropdownPopupWindowInterface;
 import org.chromium.ui.test.util.ViewUtils;
-import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicReference;
@@ -85,7 +86,7 @@ public class ManualFillingTestHelper {
     private static final String SUBMIT_NODE_ID = "input_submit_button";
     private static final String NO_COMPLETION_FIELD_ID = "field_without_completion";
 
-    private final ChromeTabbedActivityTestRule mActivityTestRule;
+    private final FreshCtaTransitTestRule mActivityTestRule;
     private final AtomicReference<WebContents> mWebContentsRef = new AtomicReference<>();
     private TestInputMethodManagerWrapper mInputMethodManagerWrapper;
 
@@ -97,7 +98,7 @@ public class ManualFillingTestHelper {
         return (FakeKeyboard) mActivityTestRule.getKeyboardDelegate();
     }
 
-    public ManualFillingTestHelper(ChromeTabbedActivityTestRule activityTestRule) {
+    public ManualFillingTestHelper(FreshCtaTransitTestRule activityTestRule) {
         mActivityTestRule = activityTestRule;
     }
 
@@ -111,30 +112,31 @@ public class ManualFillingTestHelper {
         return mEmbeddedTestServer;
     }
 
-    public void loadTestPage(boolean isRtl) {
-        loadTestPage("/chrome/test/data/password/password_form.html", isRtl);
+    public WebPageStation startAtTestPage(boolean isRtl) {
+        return startAtTestPage("/chrome/test/data/password/password_form.html", isRtl);
     }
 
-    public void loadTestPage(String url, boolean isRtl) {
-        loadTestPage(url, isRtl, false, FakeKeyboard::new);
+    public WebPageStation startAtTestPage(String url, boolean isRtl) {
+        return startAtTestPage(url, isRtl, /* waitForNode= */ false, FakeKeyboard::new);
     }
 
-    public void loadTestPage(
+    public WebPageStation startAtTestPage(
             String url,
             boolean isRtl,
             boolean waitForNode,
             ChromeWindow.KeyboardVisibilityDelegateFactory keyboardDelegate) {
+        assert mActivityTestRule.getActivity() == null;
         getOrCreateTestServer();
         ChromeWindow.setKeyboardVisibilityDelegateFactory(keyboardDelegate);
-        if (mActivityTestRule.getActivity() == null) {
-            mActivityTestRule.startMainActivityWithURL(mEmbeddedTestServer.getURL(url));
-        } else {
-            mActivityTestRule.loadUrl(mEmbeddedTestServer.getURL(url));
-        }
+
+        WebPageStation page = mActivityTestRule.startOnUrl(mEmbeddedTestServer.getURL(url));
+
         setRtlForTesting(isRtl);
         updateWebContentsDependentState();
         cacheCredentials("mpark@gmail.com", "S3cr3t"); // Providing suggestions ensures visibility.
         if (waitForNode) DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
+
+        return page;
     }
 
     public void loadUrl(String url) {
@@ -211,18 +213,6 @@ public class ManualFillingTestHelper {
         return DOMUtils.getNodeValue(mWebContentsRef.get(), nodeId);
     }
 
-    public void clickEmailField(boolean forceAccessory) throws TimeoutException {
-        // TODO(fhorschig): This should be |focusNode|. Change with autofill popup deprecation.
-        DOMUtils.clickNode(mWebContentsRef.get(), USERNAME_NODE_ID);
-        if (forceAccessory) {
-            ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        getManualFillingCoordinator().getMediatorForTesting().show(true);
-                    });
-        }
-        getKeyboard().showKeyboard(mActivityTestRule.getActivity().getCurrentFocus());
-    }
-
     public void clickFieldWithoutCompletion() throws TimeoutException {
         DOMUtils.waitForNonZeroNodeBounds(mWebContentsRef.get(), PASSWORD_NODE_ID);
         DOMUtils.focusNode(mWebContentsRef.get(), NO_COMPLETION_FIELD_ID);
@@ -266,8 +256,7 @@ public class ManualFillingTestHelper {
         pollUiThread(
                 () -> {
                     Activity activity = mActivityTestRule.getActivity();
-                    return !getKeyboard()
-                            .isSoftKeyboardShowing(activity, activity.getCurrentFocus());
+                    return !getKeyboard().isSoftKeyboardShowing(activity.getCurrentFocus());
                 });
     }
 
@@ -288,7 +277,6 @@ public class ManualFillingTestHelper {
                             mActivityTestRule
                                     .getKeyboardDelegate()
                                     .isKeyboardShowing(
-                                            mActivityTestRule.getActivity(),
                                             mActivityTestRule.getActivity().getTabsView());
                     Criteria.checkThat(isKeyboardShowing, Matchers.is(true));
                 });
@@ -296,7 +284,7 @@ public class ManualFillingTestHelper {
 
     public void waitForKeyboardAccessoryToBeShown(boolean waitForSuggestionsToLoad) {
         pollInstrumentationThread(() -> accessoryStartedShowing(getKeyboardAccessoryBar()));
-        pollUiThread(() -> accessoryViewFullyShown(mActivityTestRule.getActivity()));
+        pollUiThread(() -> checkThatAccessoryViewFullyShown(mActivityTestRule.getActivity()));
         if (waitForSuggestionsToLoad) {
             pollUiThread(
                     () -> {
@@ -471,11 +459,11 @@ public class ManualFillingTestHelper {
 
     // --------------------------------------------------
     // Generic helpers to match, check or wait for views.
-    // TODO(fhorschig): Consider Moving to ViewUtils.
     // --------------------------------------------------
 
     /**
      * Use in a |onView().perform| action to select the tab at |tabIndex| for the found tab layout.
+     *
      * @param tabIndex The index to be selected.
      * @return The action executed by |perform|.
      */
@@ -534,7 +522,7 @@ public class ManualFillingTestHelper {
                 for (int buttonIndex = 0;
                         buttonIndex < buttonGroupView.getButtons().size();
                         buttonIndex++) {
-                    final ChromeImageButton button = buttonGroupView.getButtons().get(buttonIndex);
+                    final ImageButton button = buttonGroupView.getButtons().get(buttonIndex);
                     if (descriptionToMatch.equals(button.getContentDescription())) {
                         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, button::performClick);
                         return;
@@ -580,10 +568,11 @@ public class ManualFillingTestHelper {
 
     /**
      * Matches any {@link TextView} which applies a {@link PasswordTransformationMethod}.
+     *
      * @return The matcher checking the transformation method.
      */
     public static Matcher<View> isTransformed() {
-        return new BoundedMatcher<View, TextView>(TextView.class) {
+        return new BoundedMatcher<>(TextView.class) {
             @Override
             public boolean matchesSafely(TextView textView) {
                 return textView.getTransformationMethod() instanceof PasswordTransformationMethod;
@@ -628,12 +617,11 @@ public class ManualFillingTestHelper {
 
     // --------------------------------------------
     // Helpers that force override the native side.
-    // TODO(fhorschig): Search alternatives.
     // --------------------------------------------
 
     public void addGenerationButton() {
-        PropertyProvider<KeyboardAccessoryData.Action[]> generationActionProvider =
-                new PropertyProvider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
+        Provider<KeyboardAccessoryData.Action[]> generationActionProvider =
+                new Provider<>(AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
         getManualFillingCoordinator()
                 .registerActionProvider(mWebContentsRef.get(), generationActionProvider);
         ThreadUtils.runOnUiThreadBlocking(
@@ -657,8 +645,7 @@ public class ManualFillingTestHelper {
     public void registerSheetDataProvider(@AccessoryTabType int tabType) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    PropertyProvider<AccessorySheetData> sheetDataProvider =
-                            new PropertyProvider<>();
+                    Provider<AccessorySheetData> sheetDataProvider = new Provider<>();
                     getManualFillingCoordinator()
                             .registerSheetDataProvider(
                                     mWebContentsRef.get(), tabType, sheetDataProvider);

@@ -20,9 +20,6 @@ const char kContextLossReason[] = "context-loss-reason";
 
 const char kSupportLibraryWebkitVersion[] = "androidx-webkit-version";
 
-extern const char kWeblayerWebViewCompatMode[] =
-    "WEBLAYER_WEB_VIEW_COMPAT_MODE";
-
 // clang-format off
 const char* const kWebViewCrashKeyAllowList[] = {
     kAppPackageName,
@@ -166,17 +163,62 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     // CRX components
     "crx-components",
+    "crx-components-cohort-hashes",
 
     // sandbox/linux
     "seccomp-sigsys",
-
-    kWeblayerWebViewCompatMode,
+    "seccomp-sigsys-ioctl",
 
     // Used to report switches/feature flags overridden in the DevUI
     "commandline-enabled-feature-*",
     "commandline-disabled-feature-*",
     "switch-*",
     "num-switches",
+
+    // NavigationListener investigation
+    "NoTrackedNav-message",
+    "NoTrackedNav-nav_id",
+    "NoTrackedNav-url_type",
+    "NoTrackedNav-prev_url_type",
+
+    "NoTrackedNav-discard_reason",
+    "NoTrackedNav-tracked_navs_size",
+    "NoTrackedNav-all_navs_size",
+    "NoTrackedNav-net_error_code",
+
+    "NoTrackedNav-has_committed",
+    "NoTrackedNav-was_redirect",
+    "NoTrackedNav-is_activation",
+    "NoTrackedNav-is_same_doc",
+    "NoTrackedNav-is_renderer",
+    "NoTrackedNav-is_reload",
+    "NoTrackedNav-is_history",
+    "NoTrackedNav-is_restore",
+
+    // crbug.com/370872370
+    "OriginCalc-debug_info",
+    "OriginCalc-url_stripped",
+    "OriginCalc-same_ptr",
+    "OriginCalc-origin",
+    "OriginCalc-origin_to_commit",
+    "OriginCalc-origin_local",
+    "OriginCalc-origin_to_commit_local",
+    "OriginCalc-origin_blcok",
+    "OriginCalc-origin_to_commit_block",
+
+    // crbug.com/423037052
+    "SIFactory-DebugLabel",
+    "SIFactory-Format",
+    "SIFactory-GMBType",
+    "SIFactory-SharedBwThreads",
+    "SIFactory-Usage",
+    "SIFactory-Size",
+
+    // crbug.com/453113611
+    "SubprocessMetricsProvider-histogram",
+
+    // crbug.com/456871291
+    "BadHistogramArgs-name",
 
     nullptr};
 // clang-format on

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/video_util.h"
 
 #include <stdint.h>
@@ -14,6 +9,9 @@
 #include <cmath>
 #include <memory>
 
+#include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
@@ -30,9 +28,9 @@ void FillPlaneWithPattern(uint8_t* data,
 
   uint32_t val = 0;
   uint8_t* src = data;
-  for (int i = 0; i < visible_size.height(); ++i, src += stride) {
+  for (int i = 0; i < visible_size.height(); ++i, UNSAFE_TODO(src += stride)) {
     for (int j = 0; j < visible_size.width(); ++j, ++val)
-      src[j] = val & 0xff;
+      UNSAFE_TODO(src[j]) = val & 0xff;
   }
 }
 
@@ -88,19 +86,22 @@ bool VerifyPlanCopyWithPadding(const uint8_t* src,
     return false;
 
   const uint8_t *src_ptr = src, *dst_ptr = dst;
-  for (size_t i = 0; i < src_height;
-       ++i, src_ptr += src_stride, dst_ptr += dst_stride) {
-    if (memcmp(src_ptr, dst_ptr, src_width))
+  for (size_t i = 0; i < src_height; ++i, UNSAFE_TODO(src_ptr += src_stride),
+              UNSAFE_TODO(dst_ptr += dst_stride)) {
+    if (UNSAFE_TODO(memcmp(src_ptr, dst_ptr, src_width))) {
       return false;
+    }
     for (size_t j = src_width; j < dst_width; ++j) {
-      if (src_ptr[src_width - 1] != dst_ptr[j])
+      if (UNSAFE_TODO(src_ptr[src_width - 1]) != UNSAFE_TODO(dst_ptr[j])) {
         return false;
+      }
     }
   }
   if (src_height < dst_height) {
-    src_ptr = dst + (src_height - 1) * dst_stride;
-    if (memcmp(src_ptr, dst_ptr, dst_width))
+    src_ptr = UNSAFE_TODO(dst + (src_height - 1) * dst_stride);
+    if (UNSAFE_TODO(memcmp(src_ptr, dst_ptr, dst_width))) {
       return false;
+    }
   }
   return true;
 }
@@ -156,31 +157,10 @@ namespace media {
 
 class VideoUtilTest : public testing::Test {
  public:
-  VideoUtilTest()
-      : height_(0),
-        y_stride_(0),
-        u_stride_(0),
-        v_stride_(0) {
-  }
+  VideoUtilTest() = default;
   VideoUtilTest(const VideoUtilTest&) = delete;
   VideoUtilTest& operator=(const VideoUtilTest&) = delete;
   ~VideoUtilTest() override = default;
-
-  void CreateSourceFrame(int width, int height,
-                         int y_stride, int u_stride, int v_stride) {
-    EXPECT_GE(y_stride, width);
-    EXPECT_GE(u_stride, width / 2);
-    EXPECT_GE(v_stride, width / 2);
-
-    height_ = height;
-    y_stride_ = y_stride;
-    u_stride_ = u_stride;
-    v_stride_ = v_stride;
-
-    y_plane_ = std::make_unique<uint8_t[]>(y_stride * height);
-    u_plane_ = std::make_unique<uint8_t[]>(u_stride * height / 2);
-    v_plane_ = std::make_unique<uint8_t[]>(v_stride * height / 2);
-  }
 
   void CreateDestinationFrame(int width, int height) {
     gfx::Size size(width, height);
@@ -189,15 +169,6 @@ class VideoUtilTest : public testing::Test {
   }
 
  private:
-  std::unique_ptr<uint8_t[]> y_plane_;
-  std::unique_ptr<uint8_t[]> u_plane_;
-  std::unique_ptr<uint8_t[]> v_plane_;
-
-  int height_;
-  int y_stride_;
-  int u_stride_;
-  int v_stride_;
-
   scoped_refptr<VideoFrame> destination_frame_;
 };
 
@@ -281,11 +252,9 @@ uint8_t* target4x6_270_y_n = target4x6_90_n_y;
 uint8_t* target4x6_270_y_y = target4x6_90_n_n;
 
 struct VideoRotationTestData {
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
+  // These fields are not raw_ptr<>s because they only ever point to
+  // statically-allocated data which is never freed, and hence cannot dangle.
   RAW_PTR_EXCLUSION uint8_t* src;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #global-scope
   RAW_PTR_EXCLUSION uint8_t* target;
   int width;
   int height;
@@ -341,32 +310,32 @@ const VideoRotationTestData kVideoRotationTestData[] = {
 class VideoUtilRotationTest
     : public testing::TestWithParam<VideoRotationTestData> {
  public:
-  VideoUtilRotationTest() {
-    dest_ = std::make_unique<uint8_t[]>(GetParam().width * GetParam().height);
+  VideoUtilRotationTest()
+      : dest_(base::HeapArray<uint8_t>::Uninit(GetParam().width *
+                                               GetParam().height)) {
+    std::ranges::fill(dest_, 255);
   }
   VideoUtilRotationTest(const VideoUtilRotationTest&) = delete;
   VideoUtilRotationTest& operator=(const VideoUtilRotationTest&) = delete;
   ~VideoUtilRotationTest() override = default;
 
-  uint8_t* dest_plane() { return dest_.get(); }
+  base::span<uint8_t> dest_plane() { return dest_; }
 
  private:
-  std::unique_ptr<uint8_t[]> dest_;
+  base::HeapArray<uint8_t> dest_;
 };
 
 TEST_P(VideoUtilRotationTest, Rotate) {
   int rotation = GetParam().rotation;
   EXPECT_TRUE((rotation >= 0) && (rotation < 360) && (rotation % 90 == 0));
 
-  int size = GetParam().width * GetParam().height;
-  uint8_t* dest = dest_plane();
-  memset(dest, 255, size);
+  base::span<uint8_t> dest = dest_plane();
 
-  RotatePlaneByPixels(GetParam().src, dest, GetParam().width,
-                      GetParam().height, rotation,
-                      GetParam().flip_vert, GetParam().flip_horiz);
-
-  EXPECT_EQ(memcmp(dest, GetParam().target, size), 0);
+  RotatePlaneByPixels(GetParam().src, dest.data(), GetParam().width,
+                      GetParam().height, rotation, GetParam().flip_vert,
+                      GetParam().flip_horiz);
+  auto expected = UNSAFE_TODO(base::span(GetParam().target, dest.size()));
+  EXPECT_EQ(dest, expected);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -580,17 +549,20 @@ TEST_F(VideoUtilTest, LetterboxVideoFrame) {
                   x < view_area.x() + view_area.width() &&
                   y >= view_area.y() &&
                   y < view_area.y() + view_area.height();
-              EXPECT_EQ(frame->data(VideoFrame::Plane::kY)
-                            [y * frame->stride(VideoFrame::Plane::kY) + x],
-                        inside ? 0x01 : 0x00);
-              EXPECT_EQ(frame->data(VideoFrame::Plane::kU)
-                            [(y / 2) * frame->stride(VideoFrame::Plane::kU) +
-                             (x / 2)],
-                        inside ? 0x02 : 0x80);
-              EXPECT_EQ(frame->data(VideoFrame::Plane::kV)
-                            [(y / 2) * frame->stride(VideoFrame::Plane::kV) +
-                             (x / 2)],
-                        inside ? 0x03 : 0x80);
+              UNSAFE_TODO(
+                  EXPECT_EQ(frame->data(VideoFrame::Plane::kY)
+                                [y * frame->stride(VideoFrame::Plane::kY) + x],
+                            inside ? 0x01 : 0x00));
+              UNSAFE_TODO(EXPECT_EQ(
+                  frame->data(VideoFrame::Plane::kU)
+                      [(y / 2) * frame->stride(VideoFrame::Plane::kU) +
+                       (x / 2)],
+                  inside ? 0x02 : 0x80));
+              UNSAFE_TODO(EXPECT_EQ(
+                  frame->data(VideoFrame::Plane::kV)
+                      [(y / 2) * frame->stride(VideoFrame::Plane::kV) +
+                       (x / 2)],
+                  inside ? 0x03 : 0x80));
             }
           }
         }
@@ -653,7 +625,8 @@ TEST_F(VideoUtilTest, WrapAsI420VideoFrame) {
   // ASAN.
   src_frame.reset();
   for (auto plane : planes)
-    memset(dst_frame->writable_data(plane), 1, dst_frame->stride(plane));
+    UNSAFE_TODO(
+        memset(dst_frame->writable_data(plane), 1, dst_frame->stride(plane)));
 }
 
 }  // namespace media

@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
-namespace WTF {
+namespace blink {
 
 class TextCodec;
 class TextEncoding;
@@ -56,13 +56,6 @@ WTF_EXPORT Vector<String> TextEncodingAliasesForTesting();
 void DumpTextEncodingNameMap();
 #endif
 
-}  // namespace WTF
-
-using WTF::NewTextCodec;
-using WTF::AtomicCanonicalTextEncodingName;
-using WTF::NoExtendedTextEncodingNameUsed;
-#ifndef NDEBUG
-using WTF::DumpTextEncodingNameMap;
-#endif
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_ENCODING_REGISTRY_H_

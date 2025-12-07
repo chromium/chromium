@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 
@@ -29,7 +25,6 @@
 
 using ::base::test::TestFuture;
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -50,7 +45,7 @@ void ExpectReadingChangedEvent(MockPlatformSensorClient* sensor_client,
                                mojom::SensorType sensor_type) {
   base::RunLoop run_loop;
   EXPECT_CALL(*sensor_client, OnSensorReadingChanged(sensor_type))
-      .WillOnce(Invoke([&](SensorType) { run_loop.Quit(); }));
+      .WillOnce([&](SensorType) { run_loop.Quit(); });
   run_loop.Run();
 }
 
@@ -314,10 +309,10 @@ TEST_F(PlatformSensorFusionTest, SourceSensorIsNotAvailable) {
   // Accelerometer is not available.
   ON_CALL(*provider_, CreateSensorInternal(SensorType::ACCELEROMETER, _))
       .WillByDefault(
-          Invoke([](mojom::SensorType,
-                    FakePlatformSensorProvider::CreateSensorCallback callback) {
+          [](mojom::SensorType,
+             FakePlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
-          }));
+          });
 
   CreateLinearAccelerationFusionSensor();
   EXPECT_FALSE(fusion_sensor_);
@@ -355,10 +350,10 @@ TEST_F(PlatformSensorFusionTest, BothSourceSensorsAreNotAvailable) {
   // Failure.
   ON_CALL(*provider_, CreateSensorInternal)
       .WillByDefault(
-          Invoke([](mojom::SensorType,
-                    FakePlatformSensorProvider::CreateSensorCallback callback) {
+          [](mojom::SensorType,
+             FakePlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
-          }));
+          });
 
   CreateAbsoluteOrientationEulerAnglesFusionSensor();
   EXPECT_FALSE(fusion_sensor_);
@@ -386,10 +381,10 @@ TEST_F(PlatformSensorFusionTest,
   // Magnetometer is not available.
   ON_CALL(*provider_, CreateSensorInternal(SensorType::MAGNETOMETER, _))
       .WillByDefault(
-          Invoke([](mojom::SensorType,
-                    FakePlatformSensorProvider::CreateSensorCallback callback) {
+          [](mojom::SensorType,
+             FakePlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
-          }));
+          });
 
   CreateAbsoluteOrientationEulerAnglesFusionSensor();
   EXPECT_FALSE(fusion_sensor_);
@@ -401,10 +396,10 @@ TEST_F(PlatformSensorFusionTest,
   // Magnetometer is not available.
   ON_CALL(*provider_, CreateSensorInternal(SensorType::MAGNETOMETER, _))
       .WillByDefault(
-          Invoke([](mojom::SensorType,
-                    FakePlatformSensorProvider::CreateSensorCallback callback) {
+          [](mojom::SensorType,
+             FakePlatformSensorProvider::CreateSensorCallback callback) {
             std::move(callback).Run(nullptr);
-          }));
+          });
 
   CreateAbsoluteOrientationEulerAnglesFusionSensor();
   EXPECT_FALSE(fusion_sensor_);
@@ -481,6 +476,9 @@ TEST_F(PlatformSensorFusionTest, OnSensorReadingChanged) {
   // Accelerometer is selected as low-level sensor.
   CreateAccelerometer();
   EXPECT_TRUE(accelerometer_);
+
+  ON_CALL(*accelerometer_, StartSensor(_)).WillByDefault(Return(true));
+
   auto client_low_level_ =
       std::make_unique<NiceMock<MockPlatformSensorClient>>(accelerometer_);
 

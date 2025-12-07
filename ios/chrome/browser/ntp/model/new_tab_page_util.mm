@@ -4,10 +4,13 @@
 
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 
+#import "components/regional_capabilities/regional_capabilities_service.h"
 #import "components/search/search.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
@@ -21,6 +24,14 @@ bool IsVisibleURLNewTabPage(web::WebState* web_state) {
   if (!web_state) {
     return false;
   }
+  // On construction, NewTabPageTabHelper::IsActive() is initialized based
+  // on the visible URL, so for unrealized WebState, check whether the URL
+  // corresponds to an NTP URL.
+  if (web::features::CreateTabHelperOnlyForRealizedWebStates()) {
+    if (!web_state->IsRealized()) {
+      return IsUrlNtp(web_state->GetVisibleURL());
+    }
+  }
   NewTabPageTabHelper* ntp_helper =
       NewTabPageTabHelper::FromWebState(web_state);
   return ntp_helper && ntp_helper->IsActive();
@@ -31,9 +42,4 @@ bool IsNTPWithoutHistory(web::WebState* web_state) {
          web_state->GetNavigationManager() &&
          !web_state->GetNavigationManager()->CanGoBack() &&
          !web_state->GetNavigationManager()->CanGoForward();
-}
-
-bool ShouldHideFeedWithSearchChoice(TemplateURLService* template_url_service) {
-  return !search::DefaultSearchProviderIsGoogle(template_url_service) &&
-         template_url_service->IsEeaChoiceCountry();
 }

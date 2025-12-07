@@ -1,0 +1,80 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("content") {
+  sources = [
+    "content_bookmark_parser.cc",
+    "content_bookmark_parser.h",
+    "content_bookmark_parser_in_utility_process.cc",
+    "content_bookmark_parser_in_utility_process.h",
+    "content_bookmark_parser_utils.cc",
+    "content_bookmark_parser_utils.h",
+    "favicon_reencode.cc",
+    "favicon_reencode.h",
+    "stable_portability_data_importer.cc",
+    "stable_portability_data_importer.h",
+  ]
+  deps = [
+    "//base",
+    "//components/favicon_base",
+    "//components/history/core/browser",
+    "//components/search_engines",
+    "//components/strings:components_strings_grit",
+    "//components/user_data_importer/common",
+    "//components/user_data_importer/mojom",
+    "//components/user_data_importer/utility",
+    "//components/user_data_importer/utility:bookmarks",
+    "//components/user_data_importer/utility:zip_ffi_glue",
+    "//content/public/browser",
+    "//content/public/child",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_bookmark_html_parser.cc",
+    "fake_bookmark_html_parser.h",
+  ]
+
+  deps = [
+    ":content",
+    "//components/user_data_importer/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "content_bookmark_parser_unittest.cc",
+    "content_bookmark_parser_utils_unittest.cc",
+    "stable_portability_data_importer_unittest.cc",
+  ]
+  deps = [
+    ":content",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/browser:test_support",
+    "//components/bookmarks/test",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/reading_list/core",
+    "//components/reading_list/core:test_support",
+    "//components/strings:components_strings_grit",
+    "//components/user_data_importer/common",
+    "//components/user_data_importer/mojom",
+    "//components/user_data_importer/utility:zip_ffi_glue",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}

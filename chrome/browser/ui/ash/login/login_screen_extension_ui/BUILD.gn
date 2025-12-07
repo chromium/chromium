@@ -1,0 +1,69 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("login_screen_extension_ui") {
+  sources = [
+    "create_options.cc",
+    "create_options.h",
+    "dialog_delegate.cc",
+    "dialog_delegate.h",
+    "login_web_view.cc",
+    "login_web_view.h",
+    "window.cc",
+    "window.h",
+  ]
+
+  public_deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser:browser_public_dependencies",
+    "//ui/base",
+    "//ui/base:types",
+    "//ui/gfx",
+    "//ui/views/controls/webview",
+    "//ui/web_dialogs",
+    "//url",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/login",
+    "//content/public/browser",
+    "//ui/display",
+    "//ui/gfx/geometry",
+    "//ui/views",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "dialog_delegate_unittest.cc",
+    "login_web_view_unittest.cc",
+  ]
+
+  deps = [
+    ":login_screen_extension_ui",
+    "//ash:test_support",
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/ash/extensions/login_screen_ui",
+    "//chrome/browser/ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}

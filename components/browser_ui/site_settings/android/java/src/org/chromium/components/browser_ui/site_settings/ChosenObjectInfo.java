@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.site_settings;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.BrowserContextHandle;
 
@@ -15,6 +16,7 @@ import java.io.Serializable;
  * Information about an object (such as a USB device) the user has granted permission for an origin
  * to access.
  */
+@NullMarked
 public class ChosenObjectInfo implements Serializable {
     private final @ContentSettingsType.EnumType int mContentSettingsType;
     private final String mOrigin;

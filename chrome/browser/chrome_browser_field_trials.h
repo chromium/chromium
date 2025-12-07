@@ -28,15 +28,12 @@ class ChromeBrowserFieldTrials : public variations::PlatformFieldTrials {
   ~ChromeBrowserFieldTrials() override;
 
   // variations::PlatformFieldTrials:
-  void OnVariationsSetupComplete() override;
   void SetUpClientSideFieldTrials(
       bool has_seed,
       const variations::EntropyProviders& entropy_providers,
       base::FeatureList* feature_list) override;
   void RegisterSyntheticTrials() override;
-#if BUILDFLAG(IS_LINUX)
   void RegisterFeatureOverrides(base::FeatureList* feature_list) override;
-#endif
 
  private:
   // Weak pointer to the local state prefs store.

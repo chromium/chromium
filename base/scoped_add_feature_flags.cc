@@ -68,10 +68,12 @@ bool ScopedAddFeatureFlags::IsEnabledWithParameter(
   if (!parameter_name.empty()) {
     StrAppend(&feature_name, {":", parameter_name, "/", parameter_value});
   }
-  if (Contains(disabled_features_, feature_name))
+  if (Contains(disabled_features_, feature_name)) {
     return false;
-  if (Contains(enabled_features_, feature_name))
+  }
+  if (Contains(enabled_features_, feature_name)) {
     return true;
+  }
   return feature.default_state == FEATURE_ENABLED_BY_DEFAULT;
 }
 

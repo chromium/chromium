@@ -12,30 +12,29 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <array>
 #include <functional>
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/bits.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(ENABLE_BASE_TRACING)
-#include <optional>
-
-#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 namespace base {
 
@@ -47,12 +46,12 @@ namespace base {
 // extra storage for supporting debug checks for things like iterators.
 TEST(ValuesTest, SizeOfValue) {
 #if defined(__GLIBCXX__)
-  // libstdc++ std::string takes already 4 machine words, so the absl::variant
+  // libstdc++ std::string takes already 4 machine words, so the std::variant
   // takes 5
   constexpr size_t kExpectedSize = 5 * sizeof(void*);
 #else   // !defined(__GLIBCXX__)
   // libc++'s std::string and std::vector both take 3 machine words. An
-  // additional word is used by absl::variant for the type index.
+  // additional word is used by std::variant for the type index.
   constexpr size_t kExpectedSize = 4 * sizeof(void*);
 #endif  // defined(__GLIBCXX__)
 
@@ -453,7 +452,7 @@ TEST(ValuesTest, MoveAssignDictionary) {
 
 TEST(ValuesTest, ConstructDictWithIterators) {
   std::vector<std::pair<std::string, Value>> values;
-  values.emplace_back(std::make_pair("Int", 123));
+  values.emplace_back("Int", 123);
 
   Value blank;
   blank = Value(Value::Dict(std::make_move_iterator(values.begin()),
@@ -762,6 +761,40 @@ TEST(ValuesTest, ListBackWhenEmpty) {
   EXPECT_CHECK_DEATH(const_list.back());
 }
 
+TEST(ValuesTest, ListContains) {
+  Value::List list;
+  list.Append(false);
+  list.Append(1);
+  list.Append(2.3);
+  list.Append("banana");
+  Value::BlobStorage blob = {0xF, 0x0, 0x0, 0xB, 0xA, 0x2};
+  list.Append(Value(blob));
+  Value::Dict dict;
+  dict.Set("foo", "bar");
+  list.Append(dict.Clone());
+  Value::List list2;
+  list2.Append(99);
+  list.Append(list2.Clone());
+
+  EXPECT_TRUE(list.contains(false));
+  EXPECT_TRUE(list.contains(1));
+  EXPECT_TRUE(list.contains(2.3));
+  EXPECT_TRUE(list.contains("banana"));
+  EXPECT_TRUE(list.contains(std::string_view("banana")));
+  EXPECT_TRUE(list.contains(std::string("banana")));
+  EXPECT_TRUE(list.contains(blob));
+  EXPECT_TRUE(list.contains(dict));
+  EXPECT_TRUE(list.contains(list2));
+
+  EXPECT_FALSE(list.contains(true));
+  EXPECT_FALSE(list.contains(0));
+  EXPECT_FALSE(list.contains(4.5));
+  EXPECT_FALSE(list.contains("orange"));
+  EXPECT_FALSE(list.contains(Value::BlobStorage({1, 2, 3})));
+  EXPECT_FALSE(list.contains(Value::Dict()));
+  EXPECT_FALSE(list.contains(list));
+}
+
 TEST(ValuesTest, ListErase) {
   Value::List list;
   list.Append(1);
@@ -972,6 +1005,24 @@ TEST(ValuesTest, MutableFindStringKey) {
   EXPECT_EQ(expected_value, value);
 }
 
+TEST(ValuesTest, MutableFindBlobKey) {
+  Value::BlobStorage original_blob = {0xF, 0x0, 0x0, 0xB, 0xA, 0x2};
+  Value::Dict dict;
+  dict.Set("blob", std::move(original_blob));
+
+  Value::BlobStorage new_blob = {0x0, 0x3, 0x0};
+  *(dict.FindBlob("blob")) = new_blob;
+
+  Value::Dict expected_dict;
+  expected_dict.Set("blob", std::move(new_blob));
+
+  EXPECT_EQ(expected_dict, dict);
+
+  Value value(std::move(dict));
+  Value expected_value(std::move(expected_dict));
+  EXPECT_EQ(expected_value, value);
+}
+
 TEST(ValuesTest, FindDictKey) {
   Value::Dict dict;
   dict.Set("null", Value());
@@ -1129,7 +1180,7 @@ TEST(ValuesTest, SetStringKey) {
 
   std::string movable_value("movable_value");
   dict.Set("movable_key", std::move(movable_value));
-  ASSERT_TRUE(movable_value.empty());
+  ASSERT_TRUE(movable_value.empty());  // NOLINT(bugprone-use-after-move)
 
   const std::string* value;
 
@@ -1177,6 +1228,26 @@ TEST(ValuesTest, RvalueSet) {
   Value::Dict nested_dict;
   nested_dict.Set("key", "value");
   expected.Set("dict", std::move(nested_dict));
+
+  EXPECT_EQ(dict, expected);
+}
+
+TEST(ValuesTest, DictSetHintAtEnd) {
+  // Set values with keys not all in order, to validate correctness for both the
+  // "hint was correct" and "hint was incorrect" cases.
+  Value::Dict dict;
+  dict.Set_HintAtEnd("a", Value("a"));
+  dict.Set_HintAtEnd("b", Value("b"));
+  dict.Set_HintAtEnd("c", Value("c"));
+  dict.Set_HintAtEnd("e", Value("e"));
+  dict.Set_HintAtEnd("d", Value("d"));
+
+  Value::Dict expected;
+  expected.Set("a", Value("a"));
+  expected.Set("b", Value("b"));
+  expected.Set("c", Value("c"));
+  expected.Set("e", Value("e"));
+  expected.Set("d", Value("d"));
 
   EXPECT_EQ(dict, expected);
 }
@@ -1453,8 +1524,8 @@ TEST(ValuesTest, List) {
   EXPECT_EQ("foo", mixed_list[3]);
 
   // Try searching in the mixed list.
-  ASSERT_TRUE(Contains(mixed_list, 42));
-  ASSERT_FALSE(Contains(mixed_list, false));
+  ASSERT_TRUE(Contains(mixed_list, 42, &Value::GetIfInt));
+  ASSERT_FALSE(Contains(mixed_list, false, &Value::GetIfBool));
 }
 
 TEST(ValuesTest, RvalueAppend) {
@@ -1509,23 +1580,23 @@ TEST(ValuesTest, BinaryValue) {
   ASSERT_EQ(original_buffer, binary.GetBlob().data());
   ASSERT_EQ(15U, binary.GetBlob().size());
 
-  char stack_buffer[42];
-  memset(stack_buffer, '!', 42);
-  binary = Value(Value::BlobStorage(stack_buffer, stack_buffer + 42));
+  std::array<char, 42> stack_buffer;
+  std::fill(stack_buffer.begin(), stack_buffer.end(), '!');
+  binary = Value(Value::BlobStorage(stack_buffer.begin(), stack_buffer.end()));
   ASSERT_TRUE(binary.GetBlob().data());
-  ASSERT_NE(stack_buffer,
+  ASSERT_NE(stack_buffer.data(),
             reinterpret_cast<const char*>(binary.GetBlob().data()));
   ASSERT_EQ(42U, binary.GetBlob().size());
-  ASSERT_EQ(0, memcmp(stack_buffer, binary.GetBlob().data(),
+  ASSERT_EQ(0, memcmp(stack_buffer.data(), binary.GetBlob().data(),
                       binary.GetBlob().size()));
 }
 
 TEST(ValuesTest, StringValue) {
   // Test overloaded StringValue constructor.
-  std::unique_ptr<Value> narrow_value(new Value("narrow"));
+  auto narrow_value = std::make_unique<Value>("narrow");
   ASSERT_TRUE(narrow_value.get());
   ASSERT_TRUE(narrow_value->is_string());
-  std::unique_ptr<Value> utf16_value(new Value(u"utf16"));
+  auto utf16_value = std::make_unique<Value>(u"utf16");
   ASSERT_TRUE(utf16_value.get());
   ASSERT_TRUE(utf16_value->is_string());
 
@@ -1648,6 +1719,22 @@ TEST(ValuesTest, PopulateAfterTakeString) {
   EXPECT_EQ(value, Value(false));
 }
 
+TEST(ValuesTest, TakeBlob) {
+  Value::BlobStorage original_blob = {0xF, 0x0, 0x0, 0xB, 0xA, 0x2};
+  Value value(original_blob);
+  Value::BlobStorage taken = std::move(value).TakeBlob();
+  EXPECT_EQ(taken, original_blob);
+}
+
+TEST(ValuesTest, PopulateAfterTakeBlob) {
+  Value::BlobStorage original_blob = {0xF, 0x0, 0x0, 0xB, 0xA, 0x2};
+  Value value(original_blob);
+  Value::BlobStorage taken = std::move(value).TakeBlob();
+
+  value = Value(false);
+  EXPECT_EQ(value, Value(false));
+}
+
 TEST(ValuesTest, TakeDict) {
   Value::Dict dict;
   dict.Set("foo", 123);
@@ -1738,7 +1825,7 @@ TEST(ValuesTest, SpecializedEquals) {
       // subtypes.
       outer_value.Visit([&](const auto& outer_member) {
         using T = std::decay_t<decltype(outer_member)>;
-        if constexpr (!std::is_same_v<T, absl::monostate> &&
+        if constexpr (!std::is_same_v<T, std::monostate> &&
                       !std::is_same_v<T, Value::BlobStorage>) {
           if (should_be_equal) {
             EXPECT_EQ(outer_member, inner_value);
@@ -2117,7 +2204,29 @@ TEST(ValuesTest, MutableGetString) {
   EXPECT_EQ("new_value", value.GetString());
 }
 
-#if BUILDFLAG(ENABLE_BASE_TRACING)
+TEST(ValuesTest, MutableFindBlobPath) {
+  Value::BlobStorage original_blob = {0xF, 0x0, 0x0, 0xB, 0xA, 0x2};
+  Value::Dict dict;
+  dict.SetByDottedPath("foo.bar", std::move(original_blob));
+
+  Value::BlobStorage new_blob = {0x0, 0x3, 0x0};
+  *(dict.FindBlobByDottedPath("foo.bar")) = new_blob;
+
+  Value::Dict expected_dict;
+  expected_dict.SetByDottedPath("foo.bar", std::move(new_blob));
+
+  EXPECT_EQ(expected_dict, dict);
+}
+
+TEST(ValuesTest, MutableGetBlob) {
+  Value::BlobStorage original_blob = {0xF, 0x0, 0x0, 0xB, 0xA, 0x2};
+  Value value(std::move(original_blob));
+
+  Value::BlobStorage new_blob = {0x0, 0x3, 0x0};
+  value.GetBlob() = new_blob;
+  EXPECT_EQ(new_blob, value.GetBlob());
+}
+
 TEST(ValuesTest, TracingSupport) {
   EXPECT_EQ(perfetto::TracedValueToString(Value(false)), "false");
   EXPECT_EQ(perfetto::TracedValueToString(Value(1)), "1");
@@ -2141,43 +2250,42 @@ TEST(ValuesTest, TracingSupport) {
               "{key:value}");
   }
 }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
 TEST(ValueViewTest, BasicConstruction) {
   {
     ValueView v = true;
-    EXPECT_EQ(true, absl::get<bool>(v.data_view_for_test()));
+    EXPECT_EQ(true, std::get<bool>(v.data_view_for_test()));
   }
   {
     ValueView v = 25;
-    EXPECT_EQ(25, absl::get<int>(v.data_view_for_test()));
+    EXPECT_EQ(25, std::get<int>(v.data_view_for_test()));
   }
   {
     ValueView v = 3.14;
-    EXPECT_DOUBLE_EQ(3.14, absl::get<ValueView::DoubleStorageForTest>(
+    EXPECT_DOUBLE_EQ(3.14, std::get<ValueView::DoubleStorageForTest>(
                                v.data_view_for_test()));
   }
   {
     ValueView v = std::string_view("hello world");
     EXPECT_EQ("hello world",
-              absl::get<std::string_view>(v.data_view_for_test()));
+              std::get<std::string_view>(v.data_view_for_test()));
   }
   {
     ValueView v = "hello world";
     EXPECT_EQ("hello world",
-              absl::get<std::string_view>(v.data_view_for_test()));
+              std::get<std::string_view>(v.data_view_for_test()));
   }
   {
     std::string str = "hello world";
     ValueView v = str;
     EXPECT_EQ("hello world",
-              absl::get<std::string_view>(v.data_view_for_test()));
+              std::get<std::string_view>(v.data_view_for_test()));
   }
   {
     Value::Dict dict;
     dict.Set("hello", "world");
     ValueView v = dict;
-    EXPECT_EQ(dict, absl::get<std::reference_wrapper<const Value::Dict>>(
+    EXPECT_EQ(dict, std::get<std::reference_wrapper<const Value::Dict>>(
                         v.data_view_for_test()));
   }
   {
@@ -2185,7 +2293,7 @@ TEST(ValueViewTest, BasicConstruction) {
     list.Append("hello");
     list.Append("world");
     ValueView v = list;
-    EXPECT_EQ(list, absl::get<std::reference_wrapper<const Value::List>>(
+    EXPECT_EQ(list, std::get<std::reference_wrapper<const Value::List>>(
                         v.data_view_for_test()));
   }
 }
@@ -2194,31 +2302,31 @@ TEST(ValueViewTest, ValueConstruction) {
   {
     Value val(true);
     ValueView v = val;
-    EXPECT_EQ(true, absl::get<bool>(v.data_view_for_test()));
+    EXPECT_EQ(true, std::get<bool>(v.data_view_for_test()));
   }
   {
     Value val(25);
     ValueView v = val;
-    EXPECT_EQ(25, absl::get<int>(v.data_view_for_test()));
+    EXPECT_EQ(25, std::get<int>(v.data_view_for_test()));
   }
   {
     Value val(3.14);
     ValueView v = val;
-    EXPECT_DOUBLE_EQ(3.14, absl::get<ValueView::DoubleStorageForTest>(
+    EXPECT_DOUBLE_EQ(3.14, std::get<ValueView::DoubleStorageForTest>(
                                v.data_view_for_test()));
   }
   {
     Value val("hello world");
     ValueView v = val;
     EXPECT_EQ("hello world",
-              absl::get<std::string_view>(v.data_view_for_test()));
+              std::get<std::string_view>(v.data_view_for_test()));
   }
   {
     Value::Dict dict;
     dict.Set("hello", "world");
     Value val(dict.Clone());
     ValueView v = val;
-    EXPECT_EQ(dict, absl::get<std::reference_wrapper<const Value::Dict>>(
+    EXPECT_EQ(dict, std::get<std::reference_wrapper<const Value::Dict>>(
                         v.data_view_for_test()));
   }
   {
@@ -2227,7 +2335,7 @@ TEST(ValueViewTest, ValueConstruction) {
     list.Append("world");
     Value val(list.Clone());
     ValueView v = val;
-    EXPECT_EQ(list, absl::get<std::reference_wrapper<const Value::List>>(
+    EXPECT_EQ(list, std::get<std::reference_wrapper<const Value::List>>(
                         v.data_view_for_test()));
   }
 }

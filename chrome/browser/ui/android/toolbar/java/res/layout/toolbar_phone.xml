@@ -4,43 +4,58 @@ Copyright 2015 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-
-<!-- The toolbar containing the URL bar, back button, and NTP button.
--->
-
+<!-- The toolbar containing the URL bar, back button, and NTP button. -->
 <org.chromium.chrome.browser.toolbar.top.ToolbarPhone
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/toolbar_height_no_shadow" >
+    android:layout_height="@dimen/toolbar_height_no_shadow"
+    android:minHeight="@dimen/toolbar_height_no_shadow">
 
     <org.chromium.chrome.browser.toolbar.home_button.HomeButton
         android:id="@+id/home_button"
         style="@style/ToolbarHoverableButton"
         android:src="@drawable/btn_toolbar_home"
         android:contentDescription="@string/accessibility_toolbar_btn_home"
+        android:tooltipText="@string/accessibility_toolbar_btn_home"
         android:visibility="gone"
         app:menuVerticalOverlapAnchor="false"
         app:menuMaxWidth="@dimen/home_button_list_menu_width"
-        app:menuPositionedAtEnd="false"
-        app:tint="@color/default_icon_color_tint_list" />
+        app:menuPositionedAtStart="true"
+        app:tint="@color/default_icon_color_tint_list"/>
+
+    <ViewStub
+        android:layout_height="match_parent"
+        android:layout_width="wrap_content"
+        android:id="@+id/home_page_buttons_stub"
+        android:layout="@layout/home_page_buttons_layout"
+        android:visibility="gone"/>
+
+    <View
+        android:id="@+id/location_bar_background_view"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
     <org.chromium.chrome.browser.omnibox.LocationBarPhone
         android:id="@+id/location_bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_gravity="top"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|left"
         android:paddingStart="@dimen/location_bar_start_padding"
-        android:paddingEnd="@dimen/location_bar_end_padding"/>
+        android:paddingEnd="@dimen/location_bar_end_padding"
+        tools:ignore="RtlHardcoded" />
 
-    <LinearLayout android:id="@+id/toolbar_buttons"
+    <LinearLayout
+        android:id="@+id/toolbar_buttons"
         android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="top|end"
-        android:focusable="true"
-        android:focusableInTouchMode="true">
+        android:focusable="false"
+        android:focusableInTouchMode="false">
 
         <ViewStub
             android:id="@+id/optional_button_stub"
@@ -48,17 +63,15 @@ found in the LICENSE file.
             android:layout_gravity="top"
             android:visibility="gone"
             android:layout_width="52dp"
-            style="@style/ToolbarHoverableButton" />
+            style="@style/ToolbarHoverableButton"/>
 
         <org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton
             android:id="@+id/tab_switcher_button"
             style="@style/ToolbarHoverableButton"
             android:layout_gravity="top"
-            android:contentDescription="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             android:clickable="false"
-            android:tooltipText="@string/accessibility_toolbar_btn_tabswitcher_toggle_default"
             app:menuMaxWidth="@dimen/tab_switcher_menu_width"
-            app:menuVerticalOverlapAnchor="false" />
+            app:menuVerticalOverlapAnchor="false"/>
 
         <include layout="@layout/menu_button"/>
 

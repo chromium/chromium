@@ -4,19 +4,23 @@
 
 package org.chromium.chrome.browser.tab.state;
 
-import androidx.annotation.Nullable;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.VisibleForTesting;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.proto.ArchivePersistedTabData.ArchivePersistedTabDataProto;
 
 import java.nio.ByteBuffer;
 
 /** {@link PersistedTabData} for archiving/auto-deleting inactive tabs. */
+@NullMarked
 public class ArchivePersistedTabData extends PersistedTabData {
     @VisibleForTesting protected static final long INVALID_TIMESTAMP = -1;
     private static final String TAG = "ArchivePTD";
@@ -32,9 +36,9 @@ public class ArchivePersistedTabData extends PersistedTabData {
      *
      * @param tab The {@link Tab} to get/create the tab data for.
      * @param callback The {@link Callback} to be invoked when the {@link ArchivePersistedTabData}
-     *     is ready.
+     *     is ready. The returned value can be null.
      */
-    public static void from(Tab tab, Callback<ArchivePersistedTabData> callback) {
+    public static void from(Tab tab, Callback<@Nullable ArchivePersistedTabData> callback) {
         PersistedTabData.from(tab, () -> new ArchivePersistedTabData(tab), USER_DATA_KEY, callback);
     }
 
@@ -43,7 +47,7 @@ public class ArchivePersistedTabData extends PersistedTabData {
         if (tab.getUserDataHost().getUserData(USER_DATA_KEY) == null) {
             tab.getUserDataHost().setUserData(USER_DATA_KEY, new ArchivePersistedTabData(tab));
         }
-        return tab.getUserDataHost().getUserData(USER_DATA_KEY);
+        return assumeNonNull(tab.getUserDataHost().getUserData(USER_DATA_KEY));
     }
 
     private ArchivePersistedTabData(Tab tab) {
@@ -78,7 +82,7 @@ public class ArchivePersistedTabData extends PersistedTabData {
 
     @Override
     boolean deserialize(@Nullable ByteBuffer bytes) {
-        if (bytes == null || bytes.limit() == 0) return false;
+        if (bytes == null || !bytes.hasRemaining()) return false;
 
         try {
             mArchivedTimeMs = ArchivePersistedTabDataProto.parseFrom(bytes).getArchivedTimeMs();

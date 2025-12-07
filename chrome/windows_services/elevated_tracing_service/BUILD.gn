@@ -1,0 +1,144 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/toolchain/win/midl.gni")
+import("//chrome/process_version_rc_template.gni")
+import("//testing/test.gni")
+
+midl("tracing_service_idl") {
+  sources = [ "tracing_service_idl.idl" ]
+
+  writes_tlb = true
+}
+
+executable("elevated_tracing_service") {
+  sources = [
+    "elevated_tracing_service.cc",
+    "elevated_tracing_service.rc",
+  ]
+
+  configs -= [
+    "//build/config/compiler:cet_shadow_stack",
+    "//build/config/win:console",
+  ]
+  configs += [ "//build/config/win:windowed" ]
+
+  deps = [
+    ":lib",
+    ":service_lib",
+    ":tracing_service_idl",
+    ":version_resources",
+    "//build/win:default_exe_manifest",
+    "//chrome/windows_services/service_program:service_program_with_crashpad",
+    "//components/crash/core/app:crash_export_thunks",
+    "//mojo/core/embedder",
+  ]
+}
+
+# A source set for use by the service and by its clients.
+source_set("integration") {
+  public = [ "service_integration.h" ]
+  sources = [ "service_integration.cc" ]
+  deps = [
+    "//base",
+    "//chrome/install_static:install_static_util",
+  ]
+}
+
+source_set("lib") {
+  visibility = [ ":*" ]
+
+  sources = [
+    "process_watcher.cc",
+    "process_watcher.h",
+    "session_registry.cc",
+    "session_registry.h",
+    "system_tracing_session.cc",
+    "system_tracing_session.h",
+  ]
+
+  deps = [
+    ":integration",
+    "//chrome/windows_services/service_program:common",
+    "//chrome/windows_services/service_program:crash_integration",
+    "//components/tracing:tracing_etw",
+    "//mojo/public/cpp/bindings",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//services/tracing/public/cpp",
+    "//services/tracing/public/cpp:traced_process",
+    "//services/tracing/public/mojom",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  public_deps = [
+    ":tracing_service_idl",
+    "//base",
+  ]
+}
+
+source_set("service_lib") {
+  visibility = [ ":*" ]
+
+  public = [ "elevated_tracing_service_delegate.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/windows_services/service_program:delegate",
+  ]
+  sources = [ "elevated_tracing_service_delegate.cc" ]
+  configs -= [ "//build/config/win:winver" ]
+  configs += [
+    "//chrome/windows_services/service_program:classic_com",
+    "//chrome/windows_services/service_program:winver",
+  ]
+  deps = [
+    ":lib",
+    "//chrome/common/win:eventlog_provider",
+    "//chrome/install_static:install_static_util",
+    "//services/tracing/public/cpp",
+  ]
+}
+
+process_version_rc_template("version_resources") {
+  sources = [ "elevated_tracing_service_exe.ver" ]
+  output = "$target_gen_dir/elevated_tracing_service_exe.rc"
+}
+
+test("elevated_tracing_service_unittests") {
+  sources = [
+    "elevated_tracing_service_unittest.cc",
+    "process_watcher_unittest.cc",
+    "run_all_unittests.cc",
+    "session_registry_unittest.cc",
+    "system_tracing_session_unittest.cc",
+    "with_child_test.cc",
+    "with_child_test.h",
+  ]
+
+  deps = [
+    ":lib",
+    ":service_lib",
+    ":tracing_service_idl",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common/win:eventlog_provider",
+    "//chrome/install_static:install_static_util",
+    "//chrome/install_static/test:test_support",
+    "//chrome/windows_services/service_program:common",
+    "//chrome/windows_services/service_program:lib",
+    "//chrome/windows_services/service_program:unit_tests",
+    "//chrome/windows_services/service_program/test_support",
+    "//chrome/windows_services/service_program/test_support:unit_tests",
+    "//components/crash/core/app:crash_export_thunks",
+    "//mojo/core/embedder",
+    "//mojo/public/cpp/platform",
+    "//mojo/public/cpp/system",
+    "//services/tracing/public/mojom",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  data_deps = [ ":elevated_tracing_service" ]
+}

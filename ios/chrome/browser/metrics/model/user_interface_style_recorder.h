@@ -15,7 +15,6 @@
 
 - (instancetype)init NS_UNAVAILABLE;
 
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_USER_INTERFACE_STYLE_RECORDER_H_

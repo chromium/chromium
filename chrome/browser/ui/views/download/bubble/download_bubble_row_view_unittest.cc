@@ -7,7 +7,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/download_item_model.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_ui_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
@@ -50,21 +52,25 @@ class DownloadBubbleRowViewTest : public TestWithBrowserView {
     ON_CALL(download_item_, GetURL())
         .WillByDefault(ReturnRef(GURL::EmptyGURL()));
 
-    DownloadToolbarButtonView* button =
-        browser_view()->toolbar()->download_button();
+    DownloadBubbleNavigationHandler* navigation_handler;
+      navigation_handler =
+          browser()->GetFeatures().download_toolbar_ui_controller();
+    DownloadBubbleUIController* controller =
+        browser_view()->GetDownloadBubbleUIController();
+
     const int bubble_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
         views::DISTANCE_BUBBLE_PREFERRED_WIDTH);
     info_ = std::make_unique<DownloadBubbleRowViewInfo>(DownloadItemModel::Wrap(
         &download_item_,
         std::make_unique<DownloadUIModel::BubbleStatusTextBuilder>()));
     row_view_ = std::make_unique<DownloadBubbleRowView>(
-        *info_, button->bubble_controller()->GetWeakPtr(), button->GetWeakPtr(),
+        *info_, controller->GetWeakPtr(), navigation_handler->GetWeakPtr(),
         browser()->AsWeakPtr(), bubble_width);
 
     auto input_protector =
         std::make_unique<NiceMock<views::MockInputEventActivationProtector>>();
     input_protector_ = input_protector.get();
-    ON_CALL(*input_protector_, IsPossiblyUnintendedInteraction(_))
+    ON_CALL(*input_protector_, IsPossiblyUnintendedInteraction(_, _))
         .WillByDefault(Return(false));
     row_view_->SetInputProtectorForTesting(std::move(input_protector));
   }
@@ -118,7 +124,7 @@ TEST_F(DownloadBubbleRowViewTest, UpdateTimeFromCompletedDownload) {
   download_item()->NotifyObserversDownloadUpdated();
   // Get starting label for a finished download and ensure it stays
   // the same until one timer interval.
-  std::u16string row_label = row_view()->GetSecondaryLabelTextForTesting();
+  std::u16string row_label(row_view()->GetSecondaryLabelTextForTesting());
   FastForward(base::Seconds(kTimeSinceDownloadCompletedUpdateSeconds - 1));
   EXPECT_EQ(row_label, row_view()->GetSecondaryLabelTextForTesting());
   // After a timer interval, check to make sure that the label has
@@ -167,7 +173,7 @@ TEST_F(DownloadBubbleRowViewTest, OnlyEnabledQuickActionsVisible) {
 
 // Test that the input protector can deny button clicks.
 TEST_F(DownloadBubbleRowViewTest, InputProtectorDeniesClicks) {
-  EXPECT_CALL(*input_protector_, IsPossiblyUnintendedInteraction(_))
+  EXPECT_CALL(*input_protector_, IsPossiblyUnintendedInteraction(_, _))
       .WillRepeatedly(Return(true));
 
   // Test main button

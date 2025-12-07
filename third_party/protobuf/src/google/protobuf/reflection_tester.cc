@@ -1,41 +1,26 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
+#include "google/protobuf/reflection_tester.h"
 
-#include <google/protobuf/reflection_tester.h>
+#include <array>
+#include <cstddef>
+#include <cstdint>
+#include <string>
+#include <vector>
 
 #include <gtest/gtest.h>
-#include <google/protobuf/map_field.h>
-#include <google/protobuf/message.h>
+#include "absl/container/flat_hash_map.h"
+#include "absl/strings/string_view.h"
+#include "google/protobuf/descriptor.h"
+#include "google/protobuf/map_field.h"
+#include "google/protobuf/message.h"
 
 // Must include last.
-#include <google/protobuf/port_def.inc>
+#include "google/protobuf/port_def.inc"
 
 namespace google {
 namespace protobuf {
@@ -43,81 +28,85 @@ namespace protobuf {
 MapReflectionTester::MapReflectionTester(const Descriptor* base_descriptor)
     : base_descriptor_(base_descriptor) {
   const DescriptorPool* pool = base_descriptor->file()->pool();
-  std::string package = base_descriptor->file()->package();
+  const absl::string_view package = base_descriptor->file()->package();
 
-  map_enum_foo_ = pool->FindEnumValueByName(package + ".MAP_ENUM_FOO");
-  map_enum_bar_ = pool->FindEnumValueByName(package + ".MAP_ENUM_BAR");
-  map_enum_baz_ = pool->FindEnumValueByName(package + ".MAP_ENUM_BAZ");
+  map_enum_foo_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".MAP_ENUM_FOO"));
+  map_enum_bar_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".MAP_ENUM_BAR"));
+  map_enum_baz_ =
+      pool->FindEnumValueByName(absl::StrCat(package, ".MAP_ENUM_BAZ"));
 
-  foreign_c_ = pool->FindFieldByName(package + ".ForeignMessage.c");
-  map_int32_int32_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32Int32Entry.key");
-  map_int32_int32_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32Int32Entry.value");
-  map_int64_int64_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt64Int64Entry.key");
-  map_int64_int64_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt64Int64Entry.value");
-  map_uint32_uint32_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapUint32Uint32Entry.key");
-  map_uint32_uint32_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapUint32Uint32Entry.value");
-  map_uint64_uint64_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapUint64Uint64Entry.key");
-  map_uint64_uint64_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapUint64Uint64Entry.value");
-  map_sint32_sint32_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapSint32Sint32Entry.key");
-  map_sint32_sint32_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapSint32Sint32Entry.value");
-  map_sint64_sint64_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapSint64Sint64Entry.key");
-  map_sint64_sint64_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapSint64Sint64Entry.value");
-  map_fixed32_fixed32_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapFixed32Fixed32Entry.key");
-  map_fixed32_fixed32_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapFixed32Fixed32Entry.value");
-  map_fixed64_fixed64_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapFixed64Fixed64Entry.key");
-  map_fixed64_fixed64_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapFixed64Fixed64Entry.value");
-  map_sfixed32_sfixed32_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapSfixed32Sfixed32Entry.key");
+  foreign_c_ =
+      pool->FindFieldByName(absl::StrCat(package, ".ForeignMessage.c"));
+  map_int32_int32_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32Int32Entry.key"));
+  map_int32_int32_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32Int32Entry.value"));
+  map_int64_int64_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt64Int64Entry.key"));
+  map_int64_int64_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt64Int64Entry.value"));
+  map_uint32_uint32_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapUint32Uint32Entry.key"));
+  map_uint32_uint32_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapUint32Uint32Entry.value"));
+  map_uint64_uint64_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapUint64Uint64Entry.key"));
+  map_uint64_uint64_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapUint64Uint64Entry.value"));
+  map_sint32_sint32_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapSint32Sint32Entry.key"));
+  map_sint32_sint32_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapSint32Sint32Entry.value"));
+  map_sint64_sint64_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapSint64Sint64Entry.key"));
+  map_sint64_sint64_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapSint64Sint64Entry.value"));
+  map_fixed32_fixed32_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapFixed32Fixed32Entry.key"));
+  map_fixed32_fixed32_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapFixed32Fixed32Entry.value"));
+  map_fixed64_fixed64_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapFixed64Fixed64Entry.key"));
+  map_fixed64_fixed64_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapFixed64Fixed64Entry.value"));
+  map_sfixed32_sfixed32_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapSfixed32Sfixed32Entry.key"));
   map_sfixed32_sfixed32_val_ = pool->FindFieldByName(
-      package + ".TestMap.MapSfixed32Sfixed32Entry.value");
-  map_sfixed64_sfixed64_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapSfixed64Sfixed64Entry.key");
+      absl::StrCat(package, ".TestMap.MapSfixed32Sfixed32Entry.value"));
+  map_sfixed64_sfixed64_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapSfixed64Sfixed64Entry.key"));
   map_sfixed64_sfixed64_val_ = pool->FindFieldByName(
-      package + ".TestMap.MapSfixed64Sfixed64Entry.value");
-  map_int32_float_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32FloatEntry.key");
-  map_int32_float_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32FloatEntry.value");
-  map_int32_double_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32DoubleEntry.key");
-  map_int32_double_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32DoubleEntry.value");
-  map_bool_bool_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapBoolBoolEntry.key");
-  map_bool_bool_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapBoolBoolEntry.value");
-  map_string_string_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapStringStringEntry.key");
-  map_string_string_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapStringStringEntry.value");
-  map_int32_bytes_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32BytesEntry.key");
-  map_int32_bytes_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32BytesEntry.value");
-  map_int32_enum_key_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32EnumEntry.key");
-  map_int32_enum_val_ =
-      pool->FindFieldByName(package + ".TestMap.MapInt32EnumEntry.value");
+      absl::StrCat(package, ".TestMap.MapSfixed64Sfixed64Entry.value"));
+  map_int32_float_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32FloatEntry.key"));
+  map_int32_float_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32FloatEntry.value"));
+  map_int32_double_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32DoubleEntry.key"));
+  map_int32_double_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32DoubleEntry.value"));
+  map_bool_bool_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapBoolBoolEntry.key"));
+  map_bool_bool_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapBoolBoolEntry.value"));
+  map_string_string_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapStringStringEntry.key"));
+  map_string_string_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapStringStringEntry.value"));
+  map_int32_bytes_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32BytesEntry.key"));
+  map_int32_bytes_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32BytesEntry.value"));
+  map_int32_enum_key_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32EnumEntry.key"));
+  map_int32_enum_val_ = pool->FindFieldByName(
+      absl::StrCat(package, ".TestMap.MapInt32EnumEntry.value"));
   map_int32_foreign_message_key_ = pool->FindFieldByName(
-      package + ".TestMap.MapInt32ForeignMessageEntry.key");
+      absl::StrCat(package, ".TestMap.MapInt32ForeignMessageEntry.key"));
   map_int32_foreign_message_val_ = pool->FindFieldByName(
-      package + ".TestMap.MapInt32ForeignMessageEntry.value");
+      absl::StrCat(package, ".TestMap.MapInt32ForeignMessageEntry.value"));
 
   EXPECT_FALSE(map_enum_foo_ == nullptr);
   EXPECT_FALSE(map_enum_bar_ == nullptr);
@@ -193,7 +182,7 @@ MapReflectionTester::MapReflectionTester(const Descriptor* base_descriptor)
       map_int32_foreign_message_key_,
       map_int32_foreign_message_val_};
   for (const FieldDescriptor* fdesc : all_map_descriptors) {
-    GOOGLE_CHECK(fdesc->containing_type() != nullptr) << fdesc->name();
+    ABSL_CHECK(fdesc->containing_type() != nullptr) << fdesc->name();
     if (fdesc->name() == "key") {
       EXPECT_EQ(fdesc->containing_type()->map_key(), fdesc);
     } else {
@@ -201,13 +190,17 @@ MapReflectionTester::MapReflectionTester(const Descriptor* base_descriptor)
       EXPECT_EQ(fdesc->containing_type()->map_value(), fdesc);
     }
   }
+
+  // Must be heap allocated.
+  EXPECT_NE(long_string().capacity(), std::string().capacity());
+  EXPECT_NE(long_string_2().capacity(), std::string().capacity());
 }
 
 // Shorthand to get a FieldDescriptor for a field of unittest::TestMap.
-const FieldDescriptor* MapReflectionTester::F(const std::string& name) {
+const FieldDescriptor* MapReflectionTester::F(absl::string_view name) {
   const FieldDescriptor* result = nullptr;
   result = base_descriptor_->FindFieldByName(name);
-  GOOGLE_CHECK(result != nullptr);
+  ABSL_CHECK(result != nullptr);
   return result;
 }
 
@@ -289,14 +282,14 @@ void MapReflectionTester::SetMapFieldsViaReflection(Message* message) {
 
   sub_message = reflection->AddMessage(message, F("map_string_string"));
   sub_message->GetReflection()->SetString(sub_message, map_string_string_key_,
-                                          "0");
+                                          long_string());
   sub_message->GetReflection()->SetString(sub_message, map_string_string_val_,
-                                          "0");
+                                          long_string());
 
   sub_message = reflection->AddMessage(message, F("map_int32_bytes"));
   sub_message->GetReflection()->SetInt32(sub_message, map_int32_bytes_key_, 0);
   sub_message->GetReflection()->SetString(sub_message, map_int32_bytes_val_,
-                                          "0");
+                                          long_string());
 
   sub_message = reflection->AddMessage(message, F("map_int32_enum"));
   sub_message->GetReflection()->SetInt32(sub_message, map_int32_enum_key_, 0);
@@ -384,14 +377,14 @@ void MapReflectionTester::SetMapFieldsViaReflection(Message* message) {
 
   sub_message = reflection->AddMessage(message, F("map_string_string"));
   sub_message->GetReflection()->SetString(sub_message, map_string_string_key_,
-                                          "1");
+                                          long_string_2());
   sub_message->GetReflection()->SetString(sub_message, map_string_string_val_,
-                                          "1");
+                                          long_string_2());
 
   sub_message = reflection->AddMessage(message, F("map_int32_bytes"));
   sub_message->GetReflection()->SetInt32(sub_message, map_int32_bytes_key_, 1);
   sub_message->GetReflection()->SetString(sub_message, map_int32_bytes_val_,
-                                          "1");
+                                          long_string_2());
 
   sub_message = reflection->AddMessage(message, F("map_int32_enum"));
   sub_message->GetReflection()->SetInt32(sub_message, map_int32_enum_key_, 1);
@@ -415,6 +408,7 @@ void MapReflectionTester::SetMapFieldsViaMapReflection(Message* message) {
   MapValueConstRef map_val_const;
 
   // Add first element.
+  std::string map_key_string;
   MapKey map_key;
   map_key.SetInt32Value(0);
   EXPECT_FALSE(reflection->LookupMapValue(*message, F("map_int32_int32"),
@@ -489,19 +483,20 @@ void MapReflectionTester::SetMapFieldsViaMapReflection(Message* message) {
                                                  map_key, &map_val));
   map_val.SetBoolValue(false);
 
-  map_key.SetStringValue("0");
+  map_key_string = long_string();
+  map_key.SetStringValue(map_key_string);
   EXPECT_FALSE(reflection->LookupMapValue(*message, F("map_string_string"),
                                           map_key, &map_val_const));
   EXPECT_TRUE(reflection->InsertOrLookupMapValue(
       message, F("map_string_string"), map_key, &map_val));
-  map_val.SetStringValue("0");
+  map_val.SetStringValue(long_string());
 
   map_key.SetInt32Value(0);
   EXPECT_FALSE(reflection->LookupMapValue(*message, F("map_int32_bytes"),
                                           map_key, &map_val_const));
   EXPECT_TRUE(reflection->InsertOrLookupMapValue(message, F("map_int32_bytes"),
                                                  map_key, &map_val));
-  map_val.SetStringValue("0");
+  map_val.SetStringValue(long_string());
 
   map_key.SetInt32Value(0);
   EXPECT_FALSE(reflection->LookupMapValue(*message, F("map_int32_enum"),
@@ -589,15 +584,16 @@ void MapReflectionTester::SetMapFieldsViaMapReflection(Message* message) {
                                      &map_val);
   map_val.SetBoolValue(true);
 
-  map_key.SetStringValue("1");
+  map_key_string = long_string_2();
+  map_key.SetStringValue(map_key_string);
   reflection->InsertOrLookupMapValue(message, F("map_string_string"), map_key,
                                      &map_val);
-  map_val.SetStringValue("1");
+  map_val.SetStringValue(long_string_2());
 
   map_key.SetInt32Value(1);
   reflection->InsertOrLookupMapValue(message, F("map_int32_bytes"), map_key,
                                      &map_val);
-  map_val.SetStringValue("1");
+  map_val.SetStringValue(long_string_2());
 
   map_key.SetInt32Value(1);
   reflection->InsertOrLookupMapValue(message, F("map_int32_enum"), map_key,
@@ -613,33 +609,51 @@ void MapReflectionTester::SetMapFieldsViaMapReflection(Message* message) {
 }
 
 void MapReflectionTester::GetMapValueViaMapReflection(
-    Message* message, const std::string& field_name, const MapKey& map_key,
+    Message* message, absl::string_view field_name, const MapKey& map_key,
     MapValueRef* map_val) {
   const Reflection* reflection = message->GetReflection();
   EXPECT_FALSE(reflection->InsertOrLookupMapValue(message, F(field_name),
                                                   map_key, map_val));
 }
 
+void MapReflectionTester::DeleteMapValueViaMapReflection(
+    Message* message, absl::string_view field_name, const MapKey& map_key) {
+  const Reflection* reflection = message->GetReflection();
+  reflection->DeleteMapValue(message, F(field_name), map_key);
+}
+
 Message* MapReflectionTester::GetMapEntryViaReflection(
-    Message* message, const std::string& field_name, int index) {
+    Message* message, absl::string_view field_name, int index) {
   const Reflection* reflection = message->GetReflection();
   return reflection->MutableRepeatedMessage(message, F(field_name), index);
 }
 
 MapIterator MapReflectionTester::MapBegin(Message* message,
-                                          const std::string& field_name) {
+                                          absl::string_view field_name) {
   const Reflection* reflection = message->GetReflection();
   return reflection->MapBegin(message, F(field_name));
 }
 
 MapIterator MapReflectionTester::MapEnd(Message* message,
-                                        const std::string& field_name) {
+                                        absl::string_view field_name) {
   const Reflection* reflection = message->GetReflection();
   return reflection->MapEnd(message, F(field_name));
 }
 
+ConstMapIterator MapReflectionTester::ConstMapBegin(
+    const Message* message, absl::string_view field_name) {
+  const Reflection* reflection = message->GetReflection();
+  return reflection->ConstMapBegin(message, F(field_name));
+}
+
+ConstMapIterator MapReflectionTester::ConstMapEnd(
+    const Message* message, absl::string_view field_name) {
+  const Reflection* reflection = message->GetReflection();
+  return reflection->ConstMapEnd(message, F(field_name));
+}
+
 int MapReflectionTester::MapSize(const Message& message,
-                                 const std::string& field_name) {
+                                 absl::string_view field_name) {
   const Reflection* reflection = message.GetReflection();
   return reflection->MapSize(message, F(field_name));
 }
@@ -672,6 +686,7 @@ void MapReflectionTester::ModifyMapFieldsViaReflection(Message* message) {
   Message* sub_foreign_message;
 
   // Modify the second element
+  std::string map_key_string;
   MapKey map_key;
   map_key.SetInt32Value(1);
   EXPECT_FALSE(reflection->InsertOrLookupMapValue(message, F("map_int32_int32"),
@@ -738,7 +753,8 @@ void MapReflectionTester::ModifyMapFieldsViaReflection(Message* message) {
                                      &map_val);
   map_val.SetBoolValue(false);
 
-  map_key.SetStringValue("1");
+  map_key_string = long_string_2();
+  map_key.SetStringValue(map_key_string);
   reflection->InsertOrLookupMapValue(message, F("map_string_string"), map_key,
                                      &map_val);
   map_val.SetStringValue("2");
@@ -766,7 +782,7 @@ void MapReflectionTester::RemoveLastMapsViaReflection(Message* message) {
 
   std::vector<const FieldDescriptor*> output;
   reflection->ListFields(*message, &output);
-  for (int i = 0; i < output.size(); ++i) {
+  for (size_t i = 0; i < output.size(); ++i) {
     const FieldDescriptor* field = output[i];
     if (!field->is_repeated()) continue;
     reflection->RemoveLast(message, field);
@@ -778,7 +794,7 @@ void MapReflectionTester::ReleaseLastMapsViaReflection(Message* message) {
 
   std::vector<const FieldDescriptor*> output;
   reflection->ListFields(*message, &output);
-  for (int i = 0; i < output.size(); ++i) {
+  for (size_t i = 0; i < output.size(); ++i) {
     const FieldDescriptor* field = output[i];
     if (!field->is_repeated()) continue;
     if (field->cpp_type() != FieldDescriptor::CPPTYPE_MESSAGE) continue;
@@ -794,7 +810,7 @@ void MapReflectionTester::SwapMapsViaReflection(Message* message) {
   const Reflection* reflection = message->GetReflection();
   std::vector<const FieldDescriptor*> output;
   reflection->ListFields(*message, &output);
-  for (int i = 0; i < output.size(); ++i) {
+  for (size_t i = 0; i < output.size(); ++i) {
     const FieldDescriptor* field = output[i];
     if (!field->is_repeated()) continue;
     reflection->SwapElements(message, field, 0, 1);
@@ -888,7 +904,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
   ASSERT_EQ(2, reflection->FieldSize(message, F("map_int32_foreign_message")));
 
   {
-    std::map<int32_t, int32_t> map;
+    absl::flat_hash_map<int32_t, int32_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -916,7 +932,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int64_t, int64_t> map;
+    absl::flat_hash_map<int64_t, int64_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -944,7 +960,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<uint32_t, uint32_t> map;
+    absl::flat_hash_map<uint32_t, uint32_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -972,7 +988,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<uint64_t, uint64_t> map;
+    absl::flat_hash_map<uint64_t, uint64_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -1000,7 +1016,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int32_t, int32_t> map;
+    absl::flat_hash_map<int32_t, int32_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -1028,7 +1044,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int64_t, int64_t> map;
+    absl::flat_hash_map<int64_t, int64_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -1056,7 +1072,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<uint32_t, uint32_t> map;
+    absl::flat_hash_map<uint32_t, uint32_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -1084,7 +1100,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<uint64_t, uint64_t> map;
+    absl::flat_hash_map<uint64_t, uint64_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -1112,7 +1128,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int32_t, int32_t> map;
+    absl::flat_hash_map<int32_t, int32_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -1141,7 +1157,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int64_t, int64_t> map;
+    absl::flat_hash_map<int64_t, int64_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -1170,7 +1186,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int32_t, float> map;
+    absl::flat_hash_map<int32_t, float> map;
     map[0] = 0.0;
     map[1] = 1.0;
     for (int i = 0; i < 2; i++) {
@@ -1198,7 +1214,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int32_t, double> map;
+    absl::flat_hash_map<int32_t, double> map;
     map[0] = 0.0;
     map[1] = 1.0;
     for (int i = 0; i < 2; i++) {
@@ -1226,9 +1242,9 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<bool, bool> map;
-    map[false] = false;
-    map[true] = true;
+    std::array<bool, 2> map;
+    map[0] = false;
+    map[1] = true;
     std::vector<bool> keys = {false, true};
     std::vector<bool> vals = {false, true};
     for (int i = 0; i < 2; i++) {
@@ -1243,7 +1259,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
                                                          map_bool_bool_key_);
         bool val = sub_message->GetReflection()->GetBool(*sub_message,
                                                          map_bool_bool_val_);
-        EXPECT_EQ(map[key], val);
+        EXPECT_EQ(map[key ? 1 : 0], val);
       } else {
         // Check with Map Reflection
         map_key.SetBoolValue(keys[i]);
@@ -1256,11 +1272,11 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<std::string, std::string> map;
-    map["0"] = "0";
-    map["1"] = "1";
-    std::vector<std::string> keys = {"0", "1"};
-    std::vector<std::string> vals = {"0", "1"};
+    absl::flat_hash_map<std::string, std::string> map;
+    map[long_string()] = long_string();
+    map[long_string_2()] = long_string_2();
+    std::vector<std::string> keys = {long_string(), long_string_2()};
+    std::vector<std::string> vals = {long_string(), long_string_2()};
     for (int i = 0; i < 2; i++) {
       const internal::MapFieldBase& map_field =
           reflection->GetRaw<internal::MapFieldBase>(message,
@@ -1286,9 +1302,9 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int32_t, std::string> map;
-    map[0] = "0";
-    map[1] = "1";
+    absl::flat_hash_map<int32_t, std::string> map;
+    map[0] = long_string();
+    map[1] = long_string_2();
     for (int i = 0; i < 2; i++) {
       const internal::MapFieldBase& map_field =
           reflection->GetRaw<internal::MapFieldBase>(message,
@@ -1314,7 +1330,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int32_t, const EnumValueDescriptor*> map;
+    absl::flat_hash_map<int32_t, const EnumValueDescriptor*> map;
     map[0] = map_enum_bar_;
     map[1] = map_enum_baz_;
     for (int i = 0; i < 2; i++) {
@@ -1342,7 +1358,7 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflection(
     }
   }
   {
-    std::map<int32_t, int32_t> map;
+    absl::flat_hash_map<int32_t, int32_t> map;
     map[0] = 0;
     map[1] = 1;
     for (int i = 0; i < 2; i++) {
@@ -1403,12 +1419,13 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflectionIterator(
   ASSERT_EQ(2, reflection->FieldSize(*message, F("map_int32_foreign_message")));
 
   {
-    std::map<int32_t, int32_t> map;
+    absl::flat_hash_map<int32_t, int32_t> map;
     map[0] = 0;
     map[1] = 1;
     int size = 0;
-    for (MapIterator iter = reflection->MapBegin(message, F("map_int32_int32"));
-         iter != reflection->MapEnd(message, F("map_int32_int32"));
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_int32_int32"));
+         iter != reflection->ConstMapEnd(message, F("map_int32_int32"));
          ++iter, ++size) {
       // Check const methods do not invalidate map.
       message->DebugString();
@@ -1422,134 +1439,144 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflectionIterator(
     EXPECT_EQ(size, 2);
   }
   {
-    std::map<int64_t, int64_t> map;
+    absl::flat_hash_map<int64_t, int64_t> map;
     map[0] = 0;
     map[1] = 1;
-    for (MapIterator iter = reflection->MapBegin(message, F("map_int64_int64"));
-         iter != reflection->MapEnd(message, F("map_int64_int64")); ++iter) {
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_int64_int64"));
+         iter != reflection->ConstMapEnd(message, F("map_int64_int64"));
+         ++iter) {
       EXPECT_EQ(map[iter.GetKey().GetInt64Value()],
                 iter.GetValueRef().GetInt64Value());
     }
   }
   {
-    std::map<uint32_t, uint32_t> map;
+    absl::flat_hash_map<uint32_t, uint32_t> map;
     map[0] = 0;
     map[1] = 1;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_uint32_uint32"));
-         iter != reflection->MapEnd(message, F("map_uint32_uint32")); ++iter) {
-      EXPECT_EQ(map[iter.GetKey().GetUInt32Value()],
-                iter.GetValueRef().GetUInt32Value());
-    }
-  }
-  {
-    std::map<uint64_t, uint64_t> map;
-    map[0] = 0;
-    map[1] = 1;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_uint64_uint64"));
-         iter != reflection->MapEnd(message, F("map_uint64_uint64")); ++iter) {
-      EXPECT_EQ(map[iter.GetKey().GetUInt64Value()],
-                iter.GetValueRef().GetUInt64Value());
-    }
-  }
-  {
-    std::map<int32_t, int32_t> map;
-    map[0] = 0;
-    map[1] = 1;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_sint32_sint32"));
-         iter != reflection->MapEnd(message, F("map_sint32_sint32")); ++iter) {
-      EXPECT_EQ(map[iter.GetKey().GetInt32Value()],
-                iter.GetValueRef().GetInt32Value());
-    }
-  }
-  {
-    std::map<int64_t, int64_t> map;
-    map[0] = 0;
-    map[1] = 1;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_sint64_sint64"));
-         iter != reflection->MapEnd(message, F("map_sint64_sint64")); ++iter) {
-      EXPECT_EQ(map[iter.GetKey().GetInt64Value()],
-                iter.GetValueRef().GetInt64Value());
-    }
-  }
-  {
-    std::map<uint32_t, uint32_t> map;
-    map[0] = 0;
-    map[1] = 1;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_fixed32_fixed32"));
-         iter != reflection->MapEnd(message, F("map_fixed32_fixed32"));
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_uint32_uint32"));
+         iter != reflection->ConstMapEnd(message, F("map_uint32_uint32"));
          ++iter) {
       EXPECT_EQ(map[iter.GetKey().GetUInt32Value()],
                 iter.GetValueRef().GetUInt32Value());
     }
   }
   {
-    std::map<uint64_t, uint64_t> map;
+    absl::flat_hash_map<uint64_t, uint64_t> map;
     map[0] = 0;
     map[1] = 1;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_fixed64_fixed64"));
-         iter != reflection->MapEnd(message, F("map_fixed64_fixed64"));
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_uint64_uint64"));
+         iter != reflection->ConstMapEnd(message, F("map_uint64_uint64"));
          ++iter) {
       EXPECT_EQ(map[iter.GetKey().GetUInt64Value()],
                 iter.GetValueRef().GetUInt64Value());
     }
   }
   {
-    std::map<int32_t, int32_t> map;
+    absl::flat_hash_map<int32_t, int32_t> map;
     map[0] = 0;
     map[1] = 1;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_sfixed32_sfixed32"));
-         iter != reflection->MapEnd(message, F("map_sfixed32_sfixed32"));
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_sint32_sint32"));
+         iter != reflection->ConstMapEnd(message, F("map_sint32_sint32"));
          ++iter) {
       EXPECT_EQ(map[iter.GetKey().GetInt32Value()],
                 iter.GetValueRef().GetInt32Value());
     }
   }
   {
-    std::map<int32_t, float> map;
+    absl::flat_hash_map<int64_t, int64_t> map;
+    map[0] = 0;
+    map[1] = 1;
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_sint64_sint64"));
+         iter != reflection->ConstMapEnd(message, F("map_sint64_sint64"));
+         ++iter) {
+      EXPECT_EQ(map[iter.GetKey().GetInt64Value()],
+                iter.GetValueRef().GetInt64Value());
+    }
+  }
+  {
+    absl::flat_hash_map<uint32_t, uint32_t> map;
+    map[0] = 0;
+    map[1] = 1;
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_fixed32_fixed32"));
+         iter != reflection->ConstMapEnd(message, F("map_fixed32_fixed32"));
+         ++iter) {
+      EXPECT_EQ(map[iter.GetKey().GetUInt32Value()],
+                iter.GetValueRef().GetUInt32Value());
+    }
+  }
+  {
+    absl::flat_hash_map<uint64_t, uint64_t> map;
+    map[0] = 0;
+    map[1] = 1;
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_fixed64_fixed64"));
+         iter != reflection->ConstMapEnd(message, F("map_fixed64_fixed64"));
+         ++iter) {
+      EXPECT_EQ(map[iter.GetKey().GetUInt64Value()],
+                iter.GetValueRef().GetUInt64Value());
+    }
+  }
+  {
+    absl::flat_hash_map<int32_t, int32_t> map;
+    map[0] = 0;
+    map[1] = 1;
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_sfixed32_sfixed32"));
+         iter != reflection->ConstMapEnd(message, F("map_sfixed32_sfixed32"));
+         ++iter) {
+      EXPECT_EQ(map[iter.GetKey().GetInt32Value()],
+                iter.GetValueRef().GetInt32Value());
+    }
+  }
+  {
+    absl::flat_hash_map<int32_t, float> map;
     map[0] = 0.0;
     map[1] = 1.0;
-    for (MapIterator iter = reflection->MapBegin(message, F("map_int32_float"));
-         iter != reflection->MapEnd(message, F("map_int32_float")); ++iter) {
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_int32_float"));
+         iter != reflection->ConstMapEnd(message, F("map_int32_float"));
+         ++iter) {
       EXPECT_EQ(map[iter.GetKey().GetInt32Value()],
                 iter.GetValueRef().GetFloatValue());
     }
   }
   {
-    std::map<int32_t, double> map;
+    absl::flat_hash_map<int32_t, double> map;
     map[0] = 0.0;
     map[1] = 1.0;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_int32_double"));
-         iter != reflection->MapEnd(message, F("map_int32_double")); ++iter) {
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_int32_double"));
+         iter != reflection->ConstMapEnd(message, F("map_int32_double"));
+         ++iter) {
       EXPECT_EQ(map[iter.GetKey().GetInt32Value()],
                 iter.GetValueRef().GetDoubleValue());
     }
   }
   {
-    std::map<bool, bool> map;
-    map[false] = false;
-    map[true] = true;
-    for (MapIterator iter = reflection->MapBegin(message, F("map_bool_bool"));
-         iter != reflection->MapEnd(message, F("map_bool_bool")); ++iter) {
-      EXPECT_EQ(map[iter.GetKey().GetBoolValue()],
+    std::array<bool, 2> map;
+    map[0] = false;
+    map[1] = true;
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_bool_bool"));
+         iter != reflection->ConstMapEnd(message, F("map_bool_bool")); ++iter) {
+      EXPECT_EQ(map[iter.GetKey().GetBoolValue() ? 1 : 0],
                 iter.GetValueRef().GetBoolValue());
     }
   }
   {
-    std::map<std::string, std::string> map;
-    map["0"] = "0";
-    map["1"] = "1";
+    absl::flat_hash_map<std::string, std::string> map;
+    map[long_string()] = long_string();
+    map[long_string_2()] = long_string_2();
     int size = 0;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_string_string"));
-         iter != reflection->MapEnd(message, F("map_string_string"));
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_string_string"));
+         iter != reflection->ConstMapEnd(message, F("map_string_string"));
          ++iter, ++size) {
       // Check const methods do not invalidate map.
       message->DebugString();
@@ -1563,33 +1590,38 @@ void MapReflectionTester::ExpectMapFieldsSetViaReflectionIterator(
     EXPECT_EQ(size, 2);
   }
   {
-    std::map<int32_t, std::string> map;
-    map[0] = "0";
-    map[1] = "1";
-    for (MapIterator iter = reflection->MapBegin(message, F("map_int32_bytes"));
-         iter != reflection->MapEnd(message, F("map_int32_bytes")); ++iter) {
+    absl::flat_hash_map<int32_t, std::string> map;
+    map[0] = long_string();
+    map[1] = long_string_2();
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_int32_bytes"));
+         iter != reflection->ConstMapEnd(message, F("map_int32_bytes"));
+         ++iter) {
       EXPECT_EQ(map[iter.GetKey().GetInt32Value()],
                 iter.GetValueRef().GetStringValue());
     }
   }
   {
-    std::map<int32_t, const EnumValueDescriptor*> map;
+    absl::flat_hash_map<int32_t, const EnumValueDescriptor*> map;
     map[0] = map_enum_bar_;
     map[1] = map_enum_baz_;
-    for (MapIterator iter = reflection->MapBegin(message, F("map_int32_enum"));
-         iter != reflection->MapEnd(message, F("map_int32_enum")); ++iter) {
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_int32_enum"));
+         iter != reflection->ConstMapEnd(message, F("map_int32_enum"));
+         ++iter) {
       EXPECT_EQ(map[iter.GetKey().GetInt32Value()]->number(),
                 iter.GetValueRef().GetEnumValue());
     }
   }
   {
-    std::map<int32_t, int32_t> map;
+    absl::flat_hash_map<int32_t, int32_t> map;
     map[0] = 0;
     map[1] = 1;
     int size = 0;
-    for (MapIterator iter =
-             reflection->MapBegin(message, F("map_int32_foreign_message"));
-         iter != reflection->MapEnd(message, F("map_int32_foreign_message"));
+    for (ConstMapIterator iter =
+             reflection->ConstMapBegin(message, F("map_int32_foreign_message"));
+         iter !=
+         reflection->ConstMapEnd(message, F("map_int32_foreign_message"));
          ++iter, ++size) {
       // Check const methods do not invalidate map.
       message->DebugString();
@@ -1631,43 +1663,44 @@ void MapReflectionTester::ExpectClearViaReflection(const Message& message) {
 
 void MapReflectionTester::ExpectClearViaReflectionIterator(Message* message) {
   const Reflection* reflection = message->GetReflection();
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_int32_int32")) ==
-              reflection->MapEnd(message, F("map_int32_int32")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_int64_int64")) ==
-              reflection->MapEnd(message, F("map_int64_int64")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_uint32_uint32")) ==
-              reflection->MapEnd(message, F("map_uint32_uint32")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_uint64_uint64")) ==
-              reflection->MapEnd(message, F("map_uint64_uint64")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_sint32_sint32")) ==
-              reflection->MapEnd(message, F("map_sint32_sint32")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_sint64_sint64")) ==
-              reflection->MapEnd(message, F("map_sint64_sint64")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_fixed32_fixed32")) ==
-              reflection->MapEnd(message, F("map_fixed32_fixed32")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_fixed64_fixed64")) ==
-              reflection->MapEnd(message, F("map_fixed64_fixed64")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_sfixed32_sfixed32")) ==
-              reflection->MapEnd(message, F("map_sfixed32_sfixed32")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_sfixed64_sfixed64")) ==
-              reflection->MapEnd(message, F("map_sfixed64_sfixed64")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_int32_float")) ==
-              reflection->MapEnd(message, F("map_int32_float")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_int32_double")) ==
-              reflection->MapEnd(message, F("map_int32_double")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_bool_bool")) ==
-              reflection->MapEnd(message, F("map_bool_bool")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_string_string")) ==
-              reflection->MapEnd(message, F("map_string_string")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_int32_bytes")) ==
-              reflection->MapEnd(message, F("map_int32_bytes")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_int32_enum")) ==
-              reflection->MapEnd(message, F("map_int32_enum")));
-  EXPECT_TRUE(reflection->MapBegin(message, F("map_int32_foreign_message")) ==
-              reflection->MapEnd(message, F("map_int32_foreign_message")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_int32_int32")) ==
+              reflection->ConstMapEnd(message, F("map_int32_int32")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_int64_int64")) ==
+              reflection->ConstMapEnd(message, F("map_int64_int64")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_uint32_uint32")) ==
+              reflection->ConstMapEnd(message, F("map_uint32_uint32")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_uint64_uint64")) ==
+              reflection->ConstMapEnd(message, F("map_uint64_uint64")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_sint32_sint32")) ==
+              reflection->ConstMapEnd(message, F("map_sint32_sint32")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_sint64_sint64")) ==
+              reflection->ConstMapEnd(message, F("map_sint64_sint64")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_fixed32_fixed32")) ==
+              reflection->ConstMapEnd(message, F("map_fixed32_fixed32")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_fixed64_fixed64")) ==
+              reflection->ConstMapEnd(message, F("map_fixed64_fixed64")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_sfixed32_sfixed32")) ==
+              reflection->ConstMapEnd(message, F("map_sfixed32_sfixed32")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_sfixed64_sfixed64")) ==
+              reflection->ConstMapEnd(message, F("map_sfixed64_sfixed64")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_int32_float")) ==
+              reflection->ConstMapEnd(message, F("map_int32_float")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_int32_double")) ==
+              reflection->ConstMapEnd(message, F("map_int32_double")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_bool_bool")) ==
+              reflection->ConstMapEnd(message, F("map_bool_bool")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_string_string")) ==
+              reflection->ConstMapEnd(message, F("map_string_string")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_int32_bytes")) ==
+              reflection->ConstMapEnd(message, F("map_int32_bytes")));
+  EXPECT_TRUE(reflection->ConstMapBegin(message, F("map_int32_enum")) ==
+              reflection->ConstMapEnd(message, F("map_int32_enum")));
+  EXPECT_TRUE(
+      reflection->ConstMapBegin(message, F("map_int32_foreign_message")) ==
+      reflection->ConstMapEnd(message, F("map_int32_foreign_message")));
 }
 
 }  // namespace protobuf
 }  // namespace google
 
-#include <google/protobuf/port_undef.inc>
+#include "google/protobuf/port_undef.inc"

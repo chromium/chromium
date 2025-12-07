@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Verify that startViewTransition propagates task state</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
+
+<div id="target">This is some text</div>
+
+<script>
+  promise_test(async t => {
+    const initialId = initializeTaskId();
+    const transition = document.startViewTransition(() => {
+      assert_equals(scheduler.taskId, initialId);
+      target.textContent = "This is some different text";
+    });
+    return transition.finished;
+  }, "Tasks state is propagated to startViewTransition callback");
+</script>

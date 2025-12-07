@@ -10,18 +10,19 @@
  */
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
-import {beforeNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
-import {Constructor} from '../common/types.js';
+import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import type {Constructor} from '../common/types.js';
 import {ensureLazyLoaded} from '../ensure_lazy_loaded.js';
-import {Section} from '../mojom-webui/routes.mojom-webui.js';
-import {SettingsIdleLoadElement} from '../os_settings_page/settings_idle_load.js';
-import {isAboutRoute, isAdvancedRoute, Route, Router, routes} from '../router.js';
+import type {Section} from '../mojom-webui/routes.mojom-webui.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {PageDisplayerElement} from './page_displayer.js';
+import type {PageDisplayerElement} from './page_displayer.js';
 
 /**
  * A categorization of every possible Settings URL, necessary for implementing
@@ -90,7 +91,6 @@ const FIRST_PAGE_ROUTE: Route = routes.INTERNET;
 
 export interface MainPageMixinInterface extends RouteObserverMixinInterface {
   containsRoute(route: Route|undefined): boolean;
-  loadAdvancedPage(): Promise<Element>;
 }
 
 export const MainPageMixin = dedupingMixin(
@@ -119,18 +119,20 @@ export const MainPageMixin = dedupingMixin(
           assertNotReached();
         }
 
-        loadAdvancedPage(): Promise<Element> {
-          return this.shadowRoot!
-              .querySelector<SettingsIdleLoadElement>(
-                  '#advancedPageTemplate')!.get();
-        }
-
         private async enterSubpage(route: Route): Promise<void> {
           // Immediately record the last scroll position before continuing.
           this.lastScrollTop_ = this.scroller_.scrollTop;
 
           // Make the parent page visible to ensure the subpage is visible
-          await this.activatePage(route);
+          if (route === routes.BLUETOOTH_DEVICES) {
+            // The Bluetooth subpage (L2) acts as the top-level (L1) page, so
+            // focus it when navigating to it. See crbug.com/328315423 for more
+            // context.
+            await this.activatePage(route, {focus: true});
+          } else {
+            await this.activatePage(route);
+          }
+
           this.scroller_.scrollTop = 0;
           this.classList.add('showing-subpage');
           this.dispatchCustomEvent_('showing-subpage');
@@ -163,21 +165,10 @@ export const MainPageMixin = dedupingMixin(
         }
 
         /**
-         * Simple helper method to display a page/section depending on if the
-         * `OsSettingsRevampWayfinding` is enabled.
+         * Simple helper method to display a page/section.
          */
         private showPage(route: Route): void {
-          if (isRevampWayfindingEnabled()) {
-            this.activatePage(route, {focus: true});
-          } else {
-            this.scrollToSection(route);
-          }
-        }
-
-        private async scrollToSection(route: Route): Promise<void> {
-          const page = await this.ensurePageForRoute(route);
-          this.dispatchCustomEvent_('showing-section', {detail: page});
-          this.dispatchCustomEvent_('show-container');
+          this.activatePage(route, {focus: true});
         }
 
         /**
@@ -211,11 +202,9 @@ export const MainPageMixin = dedupingMixin(
          * should be the default visible page when the root page is visited.
          */
         private activateInitialPage(): void {
-          if (isRevampWayfindingEnabled()) {
-            // Note: This should not focus the Network page since the search box
-            // should be the element initially focused after app load.
-            this.activatePage(FIRST_PAGE_ROUTE, {focus: false});
-          }
+          // Note: This should not focus the Network page since the search box
+          // should be the element initially focused after app load.
+          this.activatePage(FIRST_PAGE_ROUTE, {focus: false});
         }
 
         /**
@@ -336,19 +325,9 @@ export const MainPageMixin = dedupingMixin(
             assert(oldRoute);
             switch (newState) {
               case RouteState.SECTION:
-                if (isRevampWayfindingEnabled()) {
-                  this.enterMainPage().then(() => {
-                    this.activatePage(newRoute, {focus: true});
-                  });
-                } else {
-                  this.enterMainPage();
-
-                  // Only if the user explicitly navigated to a section (via
-                  // the left menu), scroll to the corresponding section.
-                  if (!Router.getInstance().lastRouteChangeWasPopstate()) {
-                    this.scrollToSection(newRoute);
-                  }
-                }
+                this.enterMainPage().then(() => {
+                  this.activatePage(newRoute, {focus: true});
+                });
                 return;
 
               case RouteState.SUBPAGE:
@@ -411,12 +390,7 @@ export const MainPageMixin = dedupingMixin(
         }
 
         /**
-         * Finds the settings page corresponding to the given route. If the
-         * page is lazily loaded (ie. under the advanced section), then
-         * force-render it.
-         * Note: If the page resides within "advanced" settings, a
-         * 'hide-container' event is fired (necessary to avoid flashing).
-         * Callers are responsible for firing a 'show-container' event.
+         * Finds the settings page corresponding to the given route.
          */
         private ensurePageForRoute(route: Route):
             Promise<PageDisplayerElement> {
@@ -429,17 +403,9 @@ export const MainPageMixin = dedupingMixin(
           const waitFn = beforeNextRender.bind(null, this);
 
           return new Promise(resolve => {
-            if (isAdvancedRoute(route) || isAboutRoute(route)) {
-              this.dispatchCustomEvent_('hide-container');
-              waitFn(async () => {
-                await this.loadAdvancedPage();
-                resolve(castExists(this.queryPage(route.section)));
-              });
-            } else {
-              waitFn(() => {
-                resolve(castExists(this.queryPage(route.section)));
-              });
-            }
+            waitFn(() => {
+              resolve(castExists(this.queryPage(route.section)));
+            });
           });
         }
 

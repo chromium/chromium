@@ -11,12 +11,8 @@
 namespace blink {
 
 // static
-const char TextSuggestionBackendImpl::kSupplementName[] =
-    "TextSuggestionBackendImpl";
-
-// static
 TextSuggestionBackendImpl* TextSuggestionBackendImpl::From(LocalFrame& frame) {
-  return Supplement<LocalFrame>::From<TextSuggestionBackendImpl>(frame);
+  return frame.GetTextSuggestionBackendImpl();
 }
 
 // static
@@ -27,56 +23,51 @@ void TextSuggestionBackendImpl::Bind(
   DCHECK(!TextSuggestionBackendImpl::From(*frame));
   auto* text_suggestion = MakeGarbageCollected<TextSuggestionBackendImpl>(
       base::PassKey<TextSuggestionBackendImpl>(), *frame, std::move(receiver));
-  Supplement<LocalFrame>::ProvideTo(*frame, text_suggestion);
+  frame->SetTextSuggestionBackendImpl(text_suggestion);
 }
 
 TextSuggestionBackendImpl::TextSuggestionBackendImpl(
     base::PassKey<TextSuggestionBackendImpl>,
     LocalFrame& frame,
     mojo::PendingReceiver<mojom::blink::TextSuggestionBackend> receiver)
-    : Supplement<LocalFrame>(frame), receiver_(this, frame.DomWindow()) {
+    : local_frame_(frame), receiver_(this, frame.DomWindow()) {
   receiver_.Bind(std::move(receiver),
                  frame.GetTaskRunner(TaskType::kInternalUserInteraction));
 }
 
 void TextSuggestionBackendImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
-  Supplement<LocalFrame>::Trace(visitor);
+  visitor->Trace(local_frame_);
 }
 
 void TextSuggestionBackendImpl::ApplySpellCheckSuggestion(
-    const WTF::String& suggestion) {
-  GetSupplementable()->GetTextSuggestionController().ApplySpellCheckSuggestion(
+    const String& suggestion) {
+  local_frame_->GetTextSuggestionController().ApplySpellCheckSuggestion(
       suggestion);
 }
 
 void TextSuggestionBackendImpl::ApplyTextSuggestion(int32_t marker_tag,
                                                     int32_t suggestion_index) {
-  GetSupplementable()->GetTextSuggestionController().ApplyTextSuggestion(
+  local_frame_->GetTextSuggestionController().ApplyTextSuggestion(
       marker_tag, suggestion_index);
 }
 
 void TextSuggestionBackendImpl::DeleteActiveSuggestionRange() {
-  GetSupplementable()
-      ->GetTextSuggestionController()
-      .DeleteActiveSuggestionRange();
+  local_frame_->GetTextSuggestionController().DeleteActiveSuggestionRange();
 }
 
-void TextSuggestionBackendImpl::OnNewWordAddedToDictionary(
-    const WTF::String& word) {
-  GetSupplementable()->GetTextSuggestionController().OnNewWordAddedToDictionary(
-      word);
+void TextSuggestionBackendImpl::OnNewWordAddedToDictionary(const String& word) {
+  local_frame_->GetTextSuggestionController().OnNewWordAddedToDictionary(word);
 }
 
 void TextSuggestionBackendImpl::OnSuggestionMenuClosed() {
-  GetSupplementable()->GetTextSuggestionController().OnSuggestionMenuClosed();
+  local_frame_->GetTextSuggestionController().OnSuggestionMenuClosed();
 }
 
 void TextSuggestionBackendImpl::SuggestionMenuTimeoutCallback(
     int32_t max_number_of_suggestions) {
-  GetSupplementable()
-      ->GetTextSuggestionController()
-      .SuggestionMenuTimeoutCallback(max_number_of_suggestions);
+  local_frame_->GetTextSuggestionController().SuggestionMenuTimeoutCallback(
+      max_number_of_suggestions);
 }
 
 }  // namespace blink

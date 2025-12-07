@@ -9,7 +9,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/test/env_test_helper.h"
@@ -56,7 +55,6 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
                                      int accelerator_state) override;
   bool SendMouseClick(ui_controls::MouseButton type) override;
 #if BUILDFLAG(IS_CHROMEOS)
-  bool SendTouchEvents(int action, int id, int x, int y) override;
   bool SendTouchEventsNotifyWhenDone(int action,
                                      int id,
                                      int x,
@@ -67,17 +65,10 @@ class UIControlsOzone : public ui_controls::UIControlsAura {
   // Use |optional_host| to specify the host.
   // When |optional_host| is not null, event will be sent to |optional_host|.
   // When |optional_host| is null, event will be sent to the default host.
-  //
-  // By default, the closure is posted at the beginning of this method. Set
-  // |post_task_after_dispatch| to true to post the closure at the end instead.
-  // This is useful for controlling the order of outbound Wayland messages.
-  // This should only be used if it is known that the event to be dispatched
-  // will not result in a nested message loop.
   void SendEventToSink(ui::Event* event,
                        int64_t display_id,
                        base::OnceClosure closure,
-                       WindowTreeHost* optional_host = nullptr,
-                       bool post_task_after_dispatch = false);
+                       WindowTreeHost* optional_host = nullptr);
 
   void PostKeyEvent(ui::EventType type,
                     ui::KeyboardCode key_code,

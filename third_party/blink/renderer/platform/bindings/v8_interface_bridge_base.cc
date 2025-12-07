@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_interface_bridge_base.h"
 
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 
 namespace blink {
 namespace bindings {

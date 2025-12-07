@@ -4,9 +4,10 @@
 
 #include "extensions/common/permissions/api_permission_set.h"
 
+#include <algorithm>
+
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -135,7 +136,7 @@ bool ParseChildPermissions(const std::string& base_name,
 void APIPermissionSet::insert(APIPermissionID id) {
   const APIPermissionInfo* permission_info =
       PermissionsInfo::GetInstance()->GetByID(id);
-  DCHECK(permission_info);
+  DCHECK(permission_info) << id;
   insert(permission_info->CreateAPIPermission());
 }
 
@@ -304,7 +305,7 @@ PermissionIDSet PermissionIDSet::GetAllPermissionsWithIDs(
 }
 
 bool PermissionIDSet::Includes(const PermissionIDSet& subset) const {
-  return base::ranges::includes(permissions_, subset.permissions_);
+  return std::ranges::includes(permissions_, subset.permissions_);
 }
 
 bool PermissionIDSet::Equals(const PermissionIDSet& set) const {

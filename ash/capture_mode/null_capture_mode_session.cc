@@ -16,7 +16,7 @@ NullCaptureModeSession::NullCaptureModeSession(
 views::Widget* NullCaptureModeSession::GetCaptureModeBarWidget() {
   // The null session will never have a bar widget, so this function should
   // never be called.
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 aura::Window* NullCaptureModeSession::GetSelectedWindow() const {
@@ -41,7 +41,7 @@ void NullCaptureModeSession::OnCaptureSourceChanged(
   // Currently, the null session only applies to game dashboard, which only
   // records selected windows.
   if (new_source != CaptureModeSource::kWindow) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -77,11 +77,11 @@ void NullCaptureModeSession::StartCountDown(
 }
 
 void NullCaptureModeSession::OnCaptureFolderMayHaveChanged() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NullCaptureModeSession::OnDefaultCaptureFolderSelectionChanged() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool NullCaptureModeSession::CalculateCameraPreviewTargetVisibility() const {
@@ -100,9 +100,10 @@ void NullCaptureModeSession::OnCameraPreviewBoundsOrVisibilityChanged(
 
 void NullCaptureModeSession::OnCameraPreviewDestroyed() {}
 
-void NullCaptureModeSession::MaybeDismissUserNudgeForever() {}
+void NullCaptureModeSession::MaybeDismissSunfishRegionNudgeForever() {}
 
-void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root) {
+void NullCaptureModeSession::MaybeChangeRoot(aura::Window* new_root,
+                                             bool root_window_will_shutdown) {
   DCHECK(new_root->IsRootWindow());
   current_root_ = new_root;
 }
@@ -112,10 +113,54 @@ NullCaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return std::set<aura::Window*>();
 }
 
+void NullCaptureModeSession::OnPerformCaptureForSearchStarting(
+    PerformCaptureType capture_type) {}
+
+void NullCaptureModeSession::OnPerformCaptureForSearchEnded(
+    PerformCaptureType capture_type) {}
+
+base::WeakPtr<BaseCaptureModeSession>
+NullCaptureModeSession::GetImageSearchToken() {
+  return nullptr;
+}
+
+ActionButtonView* NullCaptureModeSession::AddActionButton(
+    views::Button::PressedCallback callback,
+    std::u16string text,
+    const gfx::VectorIcon* icon,
+    const ActionButtonRank rank,
+    ActionButtonViewID id) {
+  return nullptr;
+}
+
+void NullCaptureModeSession::AddSmartActionsButton() {}
+
+void NullCaptureModeSession::MaybeShowScannerDisclaimer(
+    ScannerEntryPoint entry_point,
+    base::RepeatingClosure accept_callback,
+    base::RepeatingClosure decline_callback) {}
+
+void NullCaptureModeSession::OnScannerActionsFetched(
+    ScannerSession::FetchActionsResponse actions_response) {}
+
+void NullCaptureModeSession::ShowActionContainerError(
+    const std::u16string& error_message) {}
+
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");
 }
 
 void NullCaptureModeSession::ShutdownInternal() {}
+
+void NullCaptureModeSession::OnSearchResultsPanelCreated(
+    views::Widget* panel_widget) {}
+
+bool NullCaptureModeSession::TakeFocusForSearchResultsPanel(bool reverse) {
+  return false;
+}
+
+void NullCaptureModeSession::ClearPseudoFocus() {}
+
+void NullCaptureModeSession::SetA11yOverrideWindowToSearchResultsPanel() {}
 
 }  // namespace ash

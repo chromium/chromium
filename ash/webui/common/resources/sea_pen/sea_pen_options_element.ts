@@ -10,16 +10,17 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
-import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import type {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
+import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SeaPenOption} from './constants.js';
-import {SeaPenTemplateChip} from './sea_pen_generated.mojom-webui.js';
+import type {SeaPenOption} from './constants.js';
+import type {SeaPenTemplateChip} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_options_element.html.js';
-import {ChipToken, isNonEmptyArray} from './sea_pen_utils.js';
+import type {ChipToken} from './sea_pen_utils.js';
+import {isNonEmptyArray} from './sea_pen_utils.js';
 
 const SeaPenOptionsElementBase = I18nMixin(PolymerElement);
 
@@ -135,9 +136,25 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     switch (e.detail.key) {
       case 'left':
         selector.selectPrevious();
+        // If the previous item is hidden after pressing 'left' key at the first
+        // option or at Expand button, we should navigate to the last visible
+        // chip option.
+        if (this.isHiddenOptionSelected_()) {
+          selector.selectIndex(this.getLastVisibleChipOptionIndex_());
+        }
         break;
       case 'right':
         selector.selectNext();
+        if (this.isHiddenExpandButtonSelected_()) {
+          // If the options are fully expanded and the previous selector is at
+          // last chip option, pressing 'right' should navigate to the first
+          // chip option.
+          selector.selectIndex(0);
+        } else if (this.isHiddenChipOptionSelected_()) {
+          // If the next option is hidden, select and focus the expand button.
+          const expandButton = selector.querySelector('#expandButton');
+          selector.selectIndex(selector.indexOf(expandButton));
+        }
         break;
       case 'esc':
         this.dispatchEvent(new SeaPenOptionEscapeEvent());
@@ -151,11 +168,6 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     }
     // Add focus state for new button.
     if (this.ironSelectedOption_) {
-      // if the next option is hidden, select and focus the expand button.
-      if (this.ironSelectedOption_.classList.contains('hidden')) {
-        const expandButton = selector.querySelector('#expandButton');
-        selector.selectIndex(selector.indexOf(expandButton!));
-      }
       this.ironSelectedOption_.setAttribute('tabindex', '0');
       this.ironSelectedOption_.focus();
     }
@@ -177,12 +189,32 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
     event.stopPropagation();
   }
 
+  private isHiddenOptionSelected_() {
+    return this.ironSelectedOption_.classList.contains('hidden');
+  }
+
+  private isHiddenExpandButtonSelected_() {
+    return this.ironSelectedOption_?.id === 'expandButton' &&
+        this.isHiddenOptionSelected_();
+  }
+
+  private isHiddenChipOptionSelected_() {
+    return this.ironSelectedOption_.classList.contains('option') &&
+        this.isHiddenOptionSelected_();
+  }
+
   private isSelected_(
       option: SeaPenOption, selectedChip: ChipToken|null,
       selectedOptions: Map<SeaPenTemplateChip, SeaPenOption>): boolean {
     return !!selectedOptions && !!selectedChip &&
         selectedOptions.has(selectedChip.id) &&
         option === selectedOptions.get(selectedChip.id);
+  }
+
+  private getLastVisibleChipOptionIndex_(): number {
+    const options = this.shadowRoot!.querySelectorAll<CrButtonElement>(
+        '.option:not(.hidden)');
+    return options.length > 0 ? options.length - 1 : 0;
   }
 
   private getOptionTabIndex_(

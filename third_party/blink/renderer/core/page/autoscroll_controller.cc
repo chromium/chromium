@@ -29,7 +29,6 @@
 
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -43,6 +42,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/platform/cursors.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/base/cursor/cursor.h"
 
 namespace blink {
@@ -226,6 +226,29 @@ void AutoscrollController::UpdateDragAndDrop(Node* drop_target_node,
   }
 }
 
+#if BUILDFLAG(IS_IOS)
+void AutoscrollController::StartAutoscrollForSelectionToPoint(
+    LayoutObject* layout_object,
+    const gfx::PointF& point_in_viewport) {
+  LayoutBox* scrollable = LayoutBox::FindAutoscrollable(
+      layout_object, /*is_middle_click_autoscroll*/ false);
+  if (!scrollable) {
+    return;
+  }
+
+  autoscroll_layout_object_ = scrollable;
+  PhysicalOffset offset =
+      scrollable->CalculateAutoscrollDirection(point_in_viewport);
+  autoscroll_to_point_reference_position_ =
+      PhysicalOffset::FromPointFRound(point_in_viewport) + offset;
+  if (autoscroll_type_ == kNoAutoscroll) {
+    autoscroll_type_ = kAutoscrollForSelectionToPoint;
+    UpdateCachedAutoscrollForSelectionState(true);
+    ScheduleMainThreadAnimation();
+  }
+}
+#endif  // BUILDFLAG(IS_IOS)
+
 bool CanScrollDirection(LayoutBox* layout_box,
                         Page* page,
                         ScrollOrientation orientation) {
@@ -293,17 +316,13 @@ void AutoscrollController::HandleMouseMoveForMiddleClickAutoscroll(
       pow(fabs(distance.y()), kExponent) * kMultiplier * y_signum);
 
   bool can_scroll_vertically =
-      vertical_autoscroll_possible
-          ? CanScrollDirection(vertical_autoscroll_layout_box_,
-                               frame->GetPage(),
-                               ScrollOrientation::kVerticalScroll)
-          : false;
+      vertical_autoscroll_possible &&
+      CanScrollDirection(vertical_autoscroll_layout_box_, frame->GetPage(),
+                         ScrollOrientation::kVerticalScroll);
   bool can_scroll_horizontally =
-      horizontal_autoscroll_possible
-          ? CanScrollDirection(horizontal_autoscroll_layout_box_,
-                               frame->GetPage(),
-                               ScrollOrientation::kHorizontalScroll)
-          : false;
+      horizontal_autoscroll_possible &&
+      CanScrollDirection(horizontal_autoscroll_layout_box_, frame->GetPage(),
+                         ScrollOrientation::kHorizontalScroll);
 
   if (velocity != last_velocity_) {
     last_velocity_ = velocity;
@@ -464,21 +483,34 @@ void AutoscrollController::Animate() {
         autoscroll_layout_object_->Autoscroll(
             drag_and_drop_autoscroll_reference_position_);
       break;
-    case kAutoscrollForSelection:
+    case kAutoscrollForSelection: {
       if (!event_handler.MousePressed()) {
         StopAutoscroll();
         return;
       }
-      event_handler.UpdateSelectionForMouseDrag();
+
+      if (!RuntimeEnabledFeatures::
+              SelectionUpdateOnlyAfterAutoscrollEnabled() ||
+          scroll_result_) {
+        event_handler.UpdateSelectionForMouseDrag();
+      }
 
       // UpdateSelectionForMouseDrag may call layout to cancel auto scroll
       // animation.
       if (autoscroll_type_ != kNoAutoscroll) {
         DCHECK(autoscroll_layout_object_);
         ScheduleMainThreadAnimation();
-        autoscroll_layout_object_->Autoscroll(selection_point);
+        scroll_result_ = autoscroll_layout_object_->Autoscroll(selection_point);
       }
       break;
+    }
+#if BUILDFLAG(IS_IOS)
+    case kAutoscrollForSelectionToPoint:
+      ScheduleMainThreadAnimation();
+      autoscroll_layout_object_->Autoscroll(
+          autoscroll_to_point_reference_position_);
+      break;
+#endif  // BUILDFLAG(IS_IOS)
     case kNoAutoscroll:
     case kAutoscrollForMiddleClick:
       break;

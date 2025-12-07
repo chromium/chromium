@@ -4,35 +4,31 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
 
-#include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
+#include "ash/wm/window_pin_util.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
-#include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/immersive/immersive_revealed_lock.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_targeter.h"
-#include "ui/compositor/layer.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/paint_context.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/screen.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/native_widget_aura.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/window/non_client_view.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/lacros/window_properties.h"
-#else
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
-#endif
+#include "ui/views/window/frame_view.h"
 
 namespace {
 
@@ -47,7 +43,7 @@ ToImmersiveFullscreenControllerAnimateReveal(
     case ImmersiveModeController::ANIMATE_REVEAL_NO:
       return chromeos::ImmersiveFullscreenController::ANIMATE_REVEAL_NO;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 class ImmersiveRevealedLockChromeos : public ImmersiveRevealedLock {
@@ -65,36 +61,34 @@ class ImmersiveRevealedLockChromeos : public ImmersiveRevealedLock {
 
 }  // namespace
 
-ImmersiveModeControllerChromeos::ImmersiveModeControllerChromeos() = default;
+ImmersiveModeControllerChromeos::ImmersiveModeControllerChromeos(
+    BrowserWindowInterface* browser)
+    : ImmersiveModeController(browser) {}
 
 ImmersiveModeControllerChromeos::~ImmersiveModeControllerChromeos() = default;
 
 void ImmersiveModeControllerChromeos::Init(BrowserView* browser_view) {
   browser_view_ = browser_view;
-  controller_.Init(this, browser_view_->frame(),
+  controller_.Init(this, browser_view_->browser_widget(),
                    browser_view_->top_container());
 
   window_observation_.Observe(browser_view_->GetNativeWindow());
 }
 
 void ImmersiveModeControllerChromeos::SetEnabled(bool enabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // On Ash, state transition happens synchronously, so we can compare it
-  // against the current state. For Lacros, it will be skipped inside
-  // WaylandExtension.
   if (controller_.IsEnabled() == enabled) {
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (!fullscreen_observer_.IsObserving()) {
     fullscreen_observer_.Observe(browser_view_->browser()
-                                     ->exclusive_access_manager()
+                                     ->GetFeatures()
+                                     .exclusive_access_manager()
                                      ->fullscreen_controller());
   }
 
   chromeos::ImmersiveFullscreenController::EnableForWidget(
-      browser_view_->frame(), enabled);
+      browser_view_->browser_widget(), enabled);
 }
 
 bool ImmersiveModeControllerChromeos::IsEnabled() const {
@@ -111,8 +105,9 @@ bool ImmersiveModeControllerChromeos::IsRevealed() const {
 
 int ImmersiveModeControllerChromeos::GetTopContainerVerticalOffset(
     const gfx::Size& top_container_size) const {
-  if (!IsEnabled())
+  if (!IsEnabled()) {
     return 0;
+  }
 
   return static_cast<int>(top_container_size.height() *
                           (visible_fraction_ - 1));
@@ -133,36 +128,7 @@ void ImmersiveModeControllerChromeos::OnFindBarVisibleBoundsChanged(
 bool ImmersiveModeControllerChromeos::
     ShouldStayImmersiveAfterExitingFullscreen() {
   return !browser_view_->GetSupportsTabStrip() &&
-         display::Screen::GetScreen()->InTabletMode();
-}
-
-void ImmersiveModeControllerChromeos::OnWidgetActivationChanged(
-    views::Widget* widget,
-    bool active) {
-  if (browser_view_->GetSupportsTabStrip())
-    return;
-
-  if (!display::Screen::GetScreen()->InTabletMode()) {
-    return;
-  }
-
-  // Don't use immersive mode as long as we are in the locked fullscreen mode
-  // since immersive shows browser controls which allow exiting the mode.
-  if (platform_util::IsBrowserLockedFullscreen(browser_view_->browser()))
-    return;
-
-  // TODO(sammiequon): Investigate if we can move immersive mode logic to the
-  // browser non client frame view.
-  DCHECK_EQ(browser_view_->frame(), widget);
-  if (widget->GetNativeWindow()->GetProperty(chromeos::kWindowStateTypeKey) ==
-      chromeos::WindowStateType::kFloated) {
-    SetEnabled(false);
-    return;
-  }
-
-  // Enable immersive mode if the widget is activated. Do not disable immersive
-  // mode if the widget deactivates, but is not minimized.
-  SetEnabled(active || !widget->IsMinimized());
+         display::Screen::Get()->InTabletMode();
 }
 
 int ImmersiveModeControllerChromeos::GetMinimumContentOffset() const {
@@ -177,7 +143,7 @@ void ImmersiveModeControllerChromeos::OnContentFullscreenChanged(
     bool is_content_fullscreen) {}
 
 void ImmersiveModeControllerChromeos::LayoutBrowserRootView() {
-  views::Widget* widget = browser_view_->frame();
+  views::Widget* widget = browser_view_->browser_widget();
   // Update the window caption buttons.
   widget->non_client_view()->frame_view()->ResetWindowControls();
   widget->non_client_view()->frame_view()->InvalidateLayout();
@@ -187,15 +153,22 @@ void ImmersiveModeControllerChromeos::LayoutBrowserRootView() {
 
 void ImmersiveModeControllerChromeos::OnImmersiveRevealStarted() {
   visible_fraction_ = 0;
-  for (Observer& observer : observers_)
+
+  for (Observer& observer : observers_) {
     observer.OnImmersiveRevealStarted();
+  }
 }
 
 void ImmersiveModeControllerChromeos::OnImmersiveRevealEnded() {
   visible_fraction_ = 0;
-  browser_view_->contents_web_view()->holder()->SetHitTestTopInset(0);
-  for (Observer& observer : observers_)
+  std::vector<ContentsWebView*> contents_views =
+      browser_view_->GetAllVisibleContentsWebViews();
+  for (ContentsWebView* contents_view : contents_views) {
+    contents_view->holder()->SetHitTestTopInset(0);
+  }
+  for (Observer& observer : observers_) {
     observer.OnImmersiveRevealEnded();
+  }
 }
 
 void ImmersiveModeControllerChromeos::OnImmersiveFullscreenEntered() {
@@ -205,15 +178,21 @@ void ImmersiveModeControllerChromeos::OnImmersiveFullscreenEntered() {
 }
 
 void ImmersiveModeControllerChromeos::OnImmersiveFullscreenExited() {
-  browser_view_->contents_web_view()->holder()->SetHitTestTopInset(0);
-  for (Observer& observer : observers_)
+  std::vector<ContentsWebView*> contents_views =
+      browser_view_->GetAllVisibleContentsWebViews();
+  for (ContentsWebView* contents_view : contents_views) {
+    contents_view->holder()->SetHitTestTopInset(0);
+  }
+  for (Observer& observer : observers_) {
     observer.OnImmersiveFullscreenExited();
+  }
 }
 
 void ImmersiveModeControllerChromeos::SetVisibleFraction(
     double visible_fraction) {
-  if (visible_fraction_ == visible_fraction)
+  if (visible_fraction_ == visible_fraction) {
     return;
+  }
 
   // Sets the top inset only when the top-of-window views is fully visible. This
   // means some gesture may not be recognized well during the animation, but
@@ -221,15 +200,26 @@ void ImmersiveModeControllerChromeos::SetVisibleFraction(
   // animation duration. See: https://crbug.com/901544.
   if (browser_view_->GetSupportsTabStrip()) {
     if (visible_fraction == 1.0) {
-      browser_view_->contents_web_view()->holder()->SetHitTestTopInset(
-          browser_view_->top_container()->height());
+      std::vector<ContentsWebView*> contents_views =
+          browser_view_->GetAllVisibleContentsWebViews();
+      for (ContentsWebView* contents_view : contents_views) {
+        contents_view->holder()->SetHitTestTopInset(
+            browser_view_->top_container()->height());
+      }
     } else if (visible_fraction_ == 1.0) {
-      browser_view_->contents_web_view()->holder()->SetHitTestTopInset(0);
+      std::vector<ContentsWebView*> contents_views =
+          browser_view_->GetAllVisibleContentsWebViews();
+      for (ContentsWebView* contents_view : contents_views) {
+        contents_view->holder()->SetHitTestTopInset(0);
+      }
     }
   }
   visible_fraction_ = visible_fraction;
   browser_view_->top_container()->OnImmersiveRevealUpdated();
   browser_view_->DeprecatedLayoutImmediately();
+  // Invalidate the contents container bounds to ensure the capture contents
+  // border is being drawn below the top container.
+  browser_view_->contents_container()->InvalidateLayout();
 }
 
 std::vector<gfx::Rect>
@@ -252,12 +242,14 @@ ImmersiveModeControllerChromeos::GetVisibleBoundsInScreen() const {
 }
 
 void ImmersiveModeControllerChromeos::OnFullscreenStateChanged() {
-  if (!controller_.IsEnabled())
+  if (!controller_.IsEnabled()) {
     return;
+  }
 
   // Auto hide the shelf in immersive browser fullscreen.
   bool in_tab_fullscreen = browser_view_->browser()
-                               ->exclusive_access_manager()
+                               ->GetFeatures()
+                               .exclusive_access_manager()
                                ->fullscreen_controller()
                                ->IsWindowFullscreenForTabOrPending();
   browser_view_->GetNativeWindow()->SetProperty(
@@ -268,31 +260,28 @@ void ImmersiveModeControllerChromeos::OnWindowPropertyChanged(
     aura::Window* window,
     const void* key,
     intptr_t old) {
-  // Lacros pinned state is controlled on Ash side and will be triggered when
-  // Lacros receives configure event.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Track locked fullscreen changes.
   if (key == chromeos::kWindowStateTypeKey) {
     auto old_type = static_cast<chromeos::WindowStateType>(old);
     // Check if there is a transition into or out of a pinned state.
-    if (IsWindowPinned(window) || chromeos::IsPinnedWindowStateType(old_type)) {
+    if (ash::IsWindowPinned(window) ||
+        chromeos::IsPinnedWindowStateType(old_type)) {
       browser_view_->FullscreenStateChanging();
       return;
     }
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   if (key == aura::client::kShowStateKey) {
-    ui::WindowShowState new_state =
+    ui::mojom::WindowShowState new_state =
         window->GetProperty(aura::client::kShowStateKey);
-    auto old_state = static_cast<ui::WindowShowState>(old);
+    auto old_state = static_cast<ui::mojom::WindowShowState>(old);
 
     // Make sure the browser stays up to date with the window's state. This is
     // necessary in classic Ash if the user exits fullscreen with the restore
     // button, and it's necessary in OopAsh if the window manager initiates a
     // fullscreen mode change (e.g. due to a WM shortcut).
-    if (new_state == ui::SHOW_STATE_FULLSCREEN ||
-        old_state == ui::SHOW_STATE_FULLSCREEN) {
+    if (new_state == ui::mojom::WindowShowState::kFullscreen ||
+        old_state == ui::mojom::WindowShowState::kFullscreen) {
       // If the browser view initiated this state change,
       // BrowserView::ProcessFullscreen will no-op, so this call is harmless.
       browser_view_->FullscreenStateChanging();

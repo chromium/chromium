@@ -65,7 +65,6 @@ class TestGpuChannelManagerDelegate : public GpuChannelManagerDelegate {
                        const blink::WebGPUExecutionContextToken& token,
                        GetIsolationKeyCallback cb) override {}
   void MaybeExitOnContextLost(
-      bool synthetic_loss,
       error::ContextLostReason context_lost_reason) override {
     is_exiting_ = true;
   }
@@ -113,8 +112,7 @@ GpuChannelTestCommon::GpuChannelTestCommon(
       task_environment_.GetMainThreadTaskRunner(),
       task_environment_.GetMainThreadTaskRunner(), scheduler_.get(),
       sync_point_manager_.get(), shared_image_manager_.get(),
-      nullptr, /* gpu_memory_buffer_factory */
-      std::move(feature_info), GpuProcessShmCount(),
+      std::move(feature_info), /*use_shader_cache_count_shm_=*/nullptr,
       gl::init::CreateOffscreenGLSurface(display_, gfx::Size()),
       nullptr /* image_decode_accelerator_worker */);
 }
@@ -131,7 +129,8 @@ GpuChannel* GpuChannelTestCommon::CreateChannel(int32_t client_id,
   uint64_t kClientTracingId = 1;
   GpuChannel* channel = channel_manager()->EstablishChannel(
       base::UnguessableToken::Create(), client_id, kClientTracingId,
-      is_gpu_host, gfx::GpuExtraInfo(), /*gpu_memory_buffer_factory=*/nullptr);
+      is_gpu_host, /*enable_extra_handles_validation=*/false,
+      gfx::GpuExtraInfo());
   base::ProcessId kProcessId = 1;
   channel->set_client_pid(kProcessId);
   return channel;

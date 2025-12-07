@@ -1,0 +1,28 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./pdf_shared.css.js
+ * #import=./viewer_save_controls_shared.css.js
+ * #include=pdf-shared viewer-save-controls-shared
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:host([state='uploading']) #save {
+  z-index: 1;
+
+  /* The following is to force using the same dark mode color even
+   * in light mode. */
+  --pdf-toolbar-text-color: var(--cr-fallback-color-inverse-primary);
+
+  @media (prefers-color-scheme: dark) {
+    --pdf-toolbar-text-color: var(--cr-fallback-color-primary);
+  }
+}

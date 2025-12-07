@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loading_log.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 
 namespace blink {
 
@@ -98,8 +99,6 @@ void HTMLImageLoader::ImageNotifyFinished(ImageResourceContent*) {
     if (load_error) {
       image->EnsureCollapsedOrFallbackContent();
     } else {
-      if (cached_image->IsAdResource())
-        image->SetIsAdRelated();
       image->EnsurePrimaryContent();
     }
   }

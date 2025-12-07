@@ -14,6 +14,10 @@ namespace mojo {
 class BinderMap;
 }
 
+namespace viz {
+class GpuServiceImpl;
+}
+
 class ChromeContentGpuClient;
 
 // Populates a BinderMap with interfaces exposed by Chrome from the GPU process
@@ -21,6 +25,7 @@ class ChromeContentGpuClient;
 // |GpuProcessHost::BindReceiver()|.
 void ExposeChromeGpuInterfacesToBrowser(
     ChromeContentGpuClient* client,
+    viz::GpuServiceImpl* gpu_service,
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders);

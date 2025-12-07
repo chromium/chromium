@@ -7,15 +7,15 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "gpu/vulkan/buildflags.h"
-#include "gpu/vulkan/init/skia_vk_memory_allocator_impl.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "gpu/vulkan/vulkan_instance.h"
 #include "gpu/vulkan/vulkan_util.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/vk/GrVkDirectContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanBackendContext.h"
 #include "third_party/skia/include/gpu/vk/VulkanExtensions.h"
@@ -76,10 +76,11 @@ VulkanInProcessContextProvider::VulkanInProcessContextProvider(
       sync_cpu_memory_limit_(sync_cpu_memory_limit),
       cooldown_duration_at_memory_pressure_critical_(
           cooldown_duration_at_memory_pressure_critical) {
-  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
-      FROM_HERE,
-      base::BindRepeating(&VulkanInProcessContextProvider::OnMemoryPressure,
-                          base::Unretained(this)));
+  memory_pressure_listener_registration_ =
+      std::make_unique<base::AsyncMemoryPressureListenerRegistration>(
+          FROM_HERE,
+          base::MemoryPressureListenerTag::kVulkanInProcessContextProvider,
+          this);
 }
 
 VulkanInProcessContextProvider::~VulkanInProcessContextProvider() {
@@ -132,8 +133,7 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
   backend_context.fMaxAPIVersion = vulkan_implementation_->GetVulkanInstance()
                                        ->vulkan_info()
                                        .used_api_version;
-  backend_context.fMemoryAllocator =
-      gpu::CreateSkiaVulkanMemoryAllocator(device_queue_.get());
+  backend_context.fMemoryAllocator = device_queue_->GetSkiaVkMemoryAllocator();
 
   skgpu::VulkanGetProc get_proc = [](const char* proc_name, VkInstance instance,
                                      VkDevice device) {
@@ -143,16 +143,18 @@ bool VulkanInProcessContextProvider::InitializeGrContext(
       // vkQueue*Hook routes all skia side access to the same
       // VulkanFunctionPointers vkQueue* api which chrome uses and is under the
       // lock.
-      if (std::strcmp("vkCreateGraphicsPipelines", proc_name) == 0) {
+      if (UNSAFE_TODO(std::strcmp("vkCreateGraphicsPipelines", proc_name)) ==
+          0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::CreateGraphicsPipelinesHook);
-      } else if (std::strcmp("vkQueueSubmit", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueueSubmit", proc_name)) == 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueueSubmitHook);
-      } else if (std::strcmp("vkQueueWaitIdle", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueueWaitIdle", proc_name)) == 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueueWaitIdleHook);
-      } else if (std::strcmp("vkQueuePresentKHR", proc_name) == 0) {
+      } else if (UNSAFE_TODO(std::strcmp("vkQueuePresentKHR", proc_name)) ==
+                 0) {
         return reinterpret_cast<PFN_vkVoidFunction>(
             &gpu::VulkanQueuePresentKHRHook);
       }
@@ -227,12 +229,12 @@ VulkanInProcessContextProvider::GetGrSecondaryCBDrawContext() {
 
 void VulkanInProcessContextProvider::EnqueueSecondaryCBSemaphores(
     std::vector<VkSemaphore> semaphores) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void VulkanInProcessContextProvider::EnqueueSecondaryCBPostSubmitTask(
     base::OnceClosure closure) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
@@ -248,9 +250,10 @@ std::optional<uint32_t> VulkanInProcessContextProvider::GetSyncCpuMemoryLimit()
 }
 
 void VulkanInProcessContextProvider::OnMemoryPressure(
-    base::MemoryPressureListener::MemoryPressureLevel level) {
-  if (level != base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL)
+    base::MemoryPressureLevel level) {
+  if (level != base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
     return;
+  }
 
   critical_memory_pressure_expiration_time_ =
       base::TimeTicks::Now() + cooldown_duration_at_memory_pressure_critical_;

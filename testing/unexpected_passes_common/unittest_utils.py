@@ -5,8 +5,10 @@
 
 from typing import Generator, Iterable, List, Optional, Set, Tuple, Type
 
-import pandas
+# vpython-provided modules.
+import pandas  # pylint: disable=import-error
 
+# //testing imports.
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
 from unexpected_passes_common import data_types
@@ -52,6 +54,18 @@ class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
   def _StripPrefixFromTestId(self, test_id: str) -> str:
     return test_id.split('.')[-1]
 
+  def _GetPublicCiQuery(self) -> str:
+    return 'public_ci'
+
+  def _GetInternalCiQuery(self) -> str:
+    return 'internal_ci'
+
+  def _GetPublicTryQuery(self) -> str:
+    return 'public_try'
+
+  def _GetInternalTryQuery(self) -> str:
+    return 'internal_try'
+
 
 def CreateGenericQuerier(
     suite: Optional[str] = None,
@@ -96,14 +110,14 @@ class GenericBuilders(builders.Builders):
   def _BuilderRunsTestOfInterest(self, _test_map) -> bool:
     return True
 
-  def GetIsolateNames(self) -> dict:
-    return {}
+  def GetIsolateNames(self) -> Set[str]:
+    return set()
 
   def GetFakeCiBuilders(self) -> dict:
     return {}
 
-  def GetNonChromiumBuilders(self) -> dict:
-    return {}
+  def GetNonChromiumBuilders(self) -> Set[data_types.BuilderEntry]:
+    return set()
 
 
 def RegisterGenericBuildersImplementation() -> None:

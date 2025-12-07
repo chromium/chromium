@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
@@ -26,31 +27,7 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
     return v8::Local<v8::Value>();
   }
 
-  // Verify that COOP: restrict-properties does not prevent this access.
-  // TODO(https://crbug.com/1467216): This will block all same-origin only
-  // properties accesses with a "Named property" access failure, because the
-  // properties will be tried here as part of the algorithm. See if we need to
-  // have a custom message in that case, possibly by actually printing the
-  // passed name.
   v8::Isolate* isolate = frame->GetWindowProxyManager()->GetIsolate();
-  if (window->IsAccessBlockedByCoopRestrictProperties(isolate)) [[unlikely]] {
-    // We need to not throw an exception if we're dealing with the special
-    // "then" property but return undefined instead. See
-    // https://html.spec.whatwg.org/#crossoriginpropertyfallback-(-p-). This
-    // makes sure WindowProxy is thenable, see the original discussion here:
-    // https://github.com/whatwg/dom/issues/536.
-    if (name == "then") {
-      return v8::Local<v8::Value>();
-    }
-    ExceptionState exception_state(isolate, v8::ExceptionContext::kNamedGetter,
-                                   "Window", name,
-                                   ExceptionState::kForInterceptor);
-    exception_state.ThrowSecurityError(
-        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the access.",
-        "Cross-Origin-Opener-Policy: 'restrict-properties' blocked the "
-        "access.");
-    return v8::Null(isolate);
-  }
 
   // Note that named access on WindowProxy is allowed in the cross-origin case.
   // 7.4.5 [[GetOwnProperty]] (P), step 6.
@@ -63,8 +40,6 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   if (child) {
     window->ReportCoopAccess("named");
     window->RecordWindowProxyAccessMetrics(
-        WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-        WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
         mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
     UseCounter::Count(CurrentExecutionContext(isolate),
                       WebFeature::kNamedAccessOnWindow_ChildBrowsingContext);
@@ -107,8 +82,6 @@ v8::Local<v8::Value> WindowProperties::AnonymousNamedGetter(
   }
   window->ReportCoopAccess("named");
   window->RecordWindowProxyAccessMetrics(
-      WebFeature::kWindowProxyCrossOriginAccessNamedGetter,
-      WebFeature::kWindowProxyCrossOriginAccessFromOtherPageNamedGetter,
       mojom::blink::WindowProxyAccessType::kAnonymousNamedGetter);
 
   // If we've reached this point, we know that we're accessing an element (or

@@ -8,12 +8,12 @@ source_set("public") {
   deps = [
     ":android",
     "//base",
-    "//chrome/browser/autofill:autofill",
+    "//chrome/browser/autofill",
     "//chrome/browser/keyboard_accessory/android:public",
     "//chrome/browser/password_manager/android:utils",
-    "//components/password_manager/content/browser:browser",
-    "//components/password_manager/core/browser:browser",
-    "//components/prefs:prefs",
+    "//components/password_manager/content/browser",
+    "//components/password_manager/core/browser",
+    "//components/prefs",
     "//content/public/browser",
   ]
 
@@ -34,9 +34,9 @@ source_set("android") {
   deps = [
     "//chrome/browser/touch_to_fill/password_manager/password_generation/android/internal:jni",
     "//components/password_manager/core/common:features",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//content/public/browser",
-    "//ui/android:android",
+    "//ui/android",
     "//ui/gfx:native_widget_types",
   ]
 }
@@ -47,7 +47,7 @@ source_set("test_support") {
   deps = [
     ":android",
     "//base",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//testing/gmock",
     "//ui/gfx:native_widget_types",
   ]
@@ -70,7 +70,7 @@ source_set("unit_tests") {
     "//chrome/browser/keyboard_accessory/test_utils/android",
     "//chrome/browser/password_manager/android:utils",
     "//chrome/test:test_support",
-    "//components/password_manager/content/browser:browser",
+    "//components/password_manager/content/browser",
     "//content/test:test_support",
   ]
 

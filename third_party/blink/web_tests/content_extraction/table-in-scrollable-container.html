@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link href="./resources/consistent-rendering.css" rel="stylesheet" />
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="./resources/content-extraction-test-helpers.js"></script>
+  <script src="../resources/ahem.js"></script>
+  <script>
+    function runTest() {
+      document.scrollingElement.scrollBy(10,10);
+      finishTest(dumpContentNodeTree(document));
+    }
+  </script>
+<script async> <!-- Use async to ensure layout/paint so that we can scroll. -->
+  function scrollAndFinishTest() {
+    // Before scroll:
+    // Fragment #0: ABC DEF
+    // Fragment #1: GHI JKL
+    // Fragment #2: MNO PQR
+    // Clipped: STU VWX YZ
+    // Clipped: 0123456789
+    const textNode = document.querySelector('td').firstChild;
+
+    let resultText = 'Before scroll:\n' + dumpContentNode(textNode);
+
+    document.querySelector('main').scrollBy(15, 15);
+
+    // After scroll:
+    // Expectations are that the fragment boxes are both clipped and shifted by 15px.
+    // ABC DEF:
+    // Partially clipped: Fragment #0: GHI JKL
+    // Complete         : Fragment #1: MNO PQR
+    // Complete         : Fragment #2: STU VWX YZ
+    // Partially clipped: Fragment #3: 0123456789
+    resultText += '\n\nAfter scroll:\n' + dumpContentNode(textNode);
+
+    if (window.testRunner) {
+      testRunner.setCustomTextOutput(resultText);
+      testRunner.notifyDone();
+    }
+  }
+</script>
+  <style>
+    html, body { width: 100%; height: 30px; }
+    main { width: 70px; height: 30px; overflow: scroll; }
+    table { width: 120%; height: 30px; table-layout: fixed; border-collapse:collapse;}
+    td { vertical-align: top;}
+    td.small10x10 { width: 10ch; height: 3ch; background-color: beige;}
+    /* Add extra space to ensure the page is scrollable. */
+    td.spacer {
+      height: 100vh;
+      width: 100vh;
+    }
+    * { padding: 0; margin: 0; box-sizing: border-box; }
+  </style>
+</head>
+
+<!--
+This document will be scrolled by 10px to the right and 10px down when the test runs.
+The outer bounding box is relative to the root of the top (root) document.
+In contrast, the visible_bounding_box and fragment_visible_bounding_boxes are clipped and relative to to the viewport.
+The horizontal clipping causes them to all be 10px less that the outer bonunding box widths.
+-->
+<body onload="scrollAndFinishTest()">
+<main>
+<table>
+  <tr>
+    <td class="small10x10">ABC DEF GHI JKL MNO PQR STU VWX YZ 0123456789</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td></td>
+    <td class="spacer">Spacer bottom right</td>
+  </tr>
+</table>
+</main>
+</body>
+</html>

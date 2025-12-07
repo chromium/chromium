@@ -8,13 +8,11 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/push_messaging_service.h"
-#include "content/public/browser/resource_context.h"
 #include "content/public/test/mock_client_hints_controller_delegate.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/test/mock_background_sync_controller.h"

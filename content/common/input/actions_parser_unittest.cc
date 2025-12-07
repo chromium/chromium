@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "base/json/json_reader.h"
+#include "base/test/fuzztest_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
 namespace content {
 
@@ -17,7 +19,8 @@ TEST(ActionsParserTest, ParseMousePointerActionSequence) {
                 "actions": [{"name": "pointerDown", "x": 2, "y": 3,
                              "button": 0},
                             {"name": "pointerUp", "x": 2, "y": 3,
-                             "button": 0}]}] )JSON");
+                             "button": 0}]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_TRUE(actions_parser.Parse());
@@ -45,7 +48,8 @@ TEST(ActionsParserTest, ParseTouchPointerActionSequence1) {
                {"source": "touch", "id": 2,
                 "actions": [{"name": "pointerDown", "x": 10, "y": 10},
                             {"name": "pointerMove", "x": 50, "y": 50},
-                            {"name": "pointerUp" } ]}] )JSON");
+                            {"name": "pointerUp" } ]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_TRUE(actions_parser.Parse());
@@ -74,7 +78,8 @@ TEST(ActionsParserTest, ParseTouchPointerActionSequenceWithoutId) {
                {"source": "touch", "id": 1,
                 "actions": [{"name": "pointerDown", "x": 10, "y": 10},
                             {"name": "pointerMove", "x": 50, "y": 50},
-                            {"name": "pointerUp" } ]}] )JSON");
+                            {"name": "pointerUp" } ]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_TRUE(actions_parser.Parse());
@@ -100,7 +105,8 @@ TEST(ActionsParserTest, ParseMousePointerActionSequenceNoSource) {
                 "actions": [{"name": "pointerDown", "x": 2, "y": 3,
                              "button": 0},
                             {"name": "pointerUp", "x": 2, "y": 3,
-                             "button": 0}]}] )JSON");
+                             "button": 0}]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_FALSE(actions_parser.Parse());
@@ -110,7 +116,8 @@ TEST(ActionsParserTest, ParseMousePointerActionSequenceNoSource) {
 
 TEST(ActionsParserTest, ParseMousePointerActionSequenceNoAction) {
   std::optional<base::Value> value =
-      base::JSONReader::Read(R"JSON( [{"source": "mouse", "id": 0}] )JSON");
+      base::JSONReader::Read(R"JSON( [{"source": "mouse", "id": 0}] )JSON",
+                             base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_FALSE(actions_parser.Parse());
@@ -124,7 +131,8 @@ TEST(ActionsParserTest, ParseMousePointerActionSequenceUnsupportedButton) {
                 "actions": [{"name": "pointerDown", "x": 2, "y": 3,
                              "button": -1},
                             {"name": "pointerUp", "x": 2, "y": 3,
-                             "button": 0}]}] )JSON");
+                             "button": 0}]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_FALSE(actions_parser.Parse());
@@ -141,7 +149,8 @@ TEST(ActionsParserTest, ParseTouchPointerActionSequenceMultiSource) {
                {"source": "mouse", "id": 2,
                 "actions": [{"name": "pointerDown", "x": 10, "y": 10},
                             {"name": "pointerMove", "x": 50, "y": 50},
-                            {"name": "pointerUp" } ]}] )JSON");
+                            {"name": "pointerUp" } ]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_FALSE(actions_parser.Parse());
@@ -158,7 +167,8 @@ TEST(ActionsParserTest, ParseTouchPointerActionSequenceMultiMouse) {
                {"source": "mouse", "id": 2,
                 "actions": [{"name": "pointerDown", "x": 10, "y": 10},
                             {"name": "pointerMove", "x": 50, "y": 50},
-                            {"name": "pointerUp" } ]}] )JSON");
+                            {"name": "pointerUp" } ]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_FALSE(actions_parser.Parse());
@@ -172,7 +182,8 @@ TEST(ActionsParserTest, ParsePointerActionSequenceInvalidKey) {
   std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"source": "mouse", "id": 0,
                 "actions": [{"name": "pointerDown", "x": 3, "y": 5,
-                             "keys": "Ctrl"} ]}] )JSON");
+                             "keys": "Ctrl"} ]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_FALSE(actions_parser.Parse());
@@ -183,7 +194,8 @@ TEST(ActionsParserTest, ParsePointerActionSequenceInvalidKey) {
 TEST(ActionsParserTest, ParsePointerActionSequenceEmptyActionList) {
   std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"source": "mouse", "id": 0,
-                "actions": []}] )JSON");
+                "actions": []}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_FALSE(actions_parser.Parse());
@@ -195,12 +207,49 @@ TEST(ActionsParserTest, ParsePointerActionSequenceInvalidPointerType) {
   std::optional<base::Value> value = base::JSONReader::Read(
       R"JSON( [{"source": "wheel", "id": 0,
                 "actions": [{"name": "pointerDown", "x": 3, "y": 5,
-                             "keys": "Ctrl"} ]}] )JSON");
+                             "keys": "Ctrl"} ]}] )JSON",
+      base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
   ActionsParser actions_parser(std::move(value.value()));
   EXPECT_FALSE(actions_parser.Parse());
   EXPECT_EQ("source type wheel is an unsupported input type",
             actions_parser.error_message());
 }
+
+void ParsesJSONCorrectly(base::Value value) {
+  content::ActionsParser parser(std::move(value));
+  std::ignore = parser.Parse();
+}
+
+FUZZ_TEST(ActionsParserFuzzTest, ParsesJSONCorrectly)
+    .WithSeeds({
+        *base::JSONReader::Read(R"JSON([{
+          "source":"mouse",
+          "id":0,
+          "actions":[
+             { "name":"pointerDown" , "x":2 , "y":3 , "button":0 } ,
+             { "name":"pointerUp"   , "x":2 , "y":3 , "button":0 }
+          ]
+        }])JSON",
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+        *base::JSONReader::Read(R"JSON([{
+          "source":"touch",
+          "id":1,
+          "actions":[
+             { "name":"pointerDown" , "x":3  , "y":5 }  ,
+             { "name":"pointerMove" , "x":30 , "y":30 } ,
+             { "name":"pointerUp" }
+          ]
+        },{
+          "source":"touch",
+          "id":2,
+          "actions":[
+             { "name":"pointerDown" , "x":10 , "y":10 } ,
+             { "name":"pointerMove" , "x":50 , "y":50 } ,
+             { "name":"pointerUp" }
+          ]
+        }])JSON",
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS),
+    });
 
 }  // namespace content

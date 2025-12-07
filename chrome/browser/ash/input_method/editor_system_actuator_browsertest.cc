@@ -4,7 +4,11 @@
 
 #include "chrome/browser/ash/input_method/editor_system_actuator.h"
 
+#include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/chromevox_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_mock_provider.h"
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
@@ -15,14 +19,17 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/browsertest_util.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash::input_method {
 namespace {
 
-class EditorSystemActuatorAccessibilityTest : public InProcessBrowserTest {
+class EditorSystemActuatorAccessibilityTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<ManifestVersion> {
  public:
-  EditorSystemActuatorAccessibilityTest() {}
+  EditorSystemActuatorAccessibilityTest() = default;
   ~EditorSystemActuatorAccessibilityTest() override = default;
   EditorSystemActuatorAccessibilityTest(
       const EditorSystemActuatorAccessibilityTest&) = delete;
@@ -31,48 +38,51 @@ class EditorSystemActuatorAccessibilityTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    ash::AccessibilityManager::Get()->EnableSpokenFeedback(true);
-    // Ignore the intro.
-    sm_.ExpectSpeechPattern("ChromeVox*");
-    // Disable earcons which can be annoying in tests.
-    sm_.Call([this]() {
-      ImportJSModuleForChromeVox("ChromeVox",
-                                 "/chromevox/background/chromevox.js");
-      DisableEarcons();
-    });
+    chromevox_test_utils_ = std::make_unique<ash::ChromeVoxTestUtils>();
+    chromevox_test_utils_->EnableChromeVox();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+
+    std::vector<base::test::FeatureRef> enabled_features, disabled_features;
+    if (GetParam() == ManifestVersion::kTwo) {
+      disabled_features.push_back(
+          ::features::kAccessibilityManifestV3ChromeVox);
+    } else if (GetParam() == ManifestVersion::kThree) {
+      enabled_features.push_back(::features::kAccessibilityManifestV3ChromeVox);
+    }
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
   void TearDownOnMainThread() override {
+    chromevox_test_utils_.reset();
     ash::AccessibilityManager::Get()->EnableSpokenFeedback(false);
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
+  ChromeVoxTestUtils* chromevox_test_utils() {
+    return chromevox_test_utils_.get();
+  }
+
+  test::SpeechMonitor* sm() { return chromevox_test_utils()->sm(); }
+
  protected:
-  ash::test::SpeechMonitor sm_;
-
- private:
-  void ImportJSModuleForChromeVox(std::string_view name,
-                                  std::string_view path) {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-        ash::AccessibilityManager::Get()->profile(),
-        extension_misc::kChromeVoxExtensionId,
-        base::ReplaceStringPlaceholders(
-            R"(import('$1').then(mod => {
-            globalThis.$2 = mod.$2;
-            window.domAutomationController.send('done');
-          }))",
-            {std::string(path), std::string(name)}, nullptr));
-  }
-
-  void DisableEarcons() {
-    extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-        ash::AccessibilityManager::Get()->profile(),
-        extension_misc::kChromeVoxExtensionId,
-        "ChromeVox.earcons.playEarcon = function() {};");
-  }
+  std::unique_ptr<ash::ChromeVoxTestUtils> chromevox_test_utils_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(EditorSystemActuatorAccessibilityTest,
+// TODO(crbug.com/384675323): Remove manifest v2 variant after ChromeVox in
+// manifest v3 launches.
+INSTANTIATE_TEST_SUITE_P(ManifestV2,
+                         EditorSystemActuatorAccessibilityTest,
+                         ::testing::Values(ManifestVersion::kTwo));
+
+INSTANTIATE_TEST_SUITE_P(ManifestV3,
+                         EditorSystemActuatorAccessibilityTest,
+                         ::testing::Values(ManifestVersion::kThree));
+
+IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
                        AnnounceFeedbackSubmitted) {
   EditorMediator editor_mediator(
       ash::AccessibilityManager::Get()->profile(),
@@ -83,13 +93,13 @@ IN_PROC_BROWSER_TEST_F(EditorSystemActuatorAccessibilityTest,
           .InitWithNewEndpointAndPassReceiver(),
       &editor_mediator);
 
-  sm_.Call([&]() { system_actuator.SubmitFeedback("dummy feedback"); });
-  sm_.ExpectSpeechPattern(
+  sm()->Call([&]() { system_actuator.SubmitFeedback("dummy feedback"); });
+  sm()->ExpectSpeechPattern(
       l10n_util::GetStringUTF8(IDS_EDITOR_ANNOUNCEMENT_TEXT_FOR_FEEDBACK));
-  sm_.Replay();
+  sm()->Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(EditorSystemActuatorAccessibilityTest,
+IN_PROC_BROWSER_TEST_P(EditorSystemActuatorAccessibilityTest,
                        AnnounceTextInsertion) {
   EditorMediator editor_mediator(
       ash::AccessibilityManager::Get()->profile(),
@@ -100,10 +110,10 @@ IN_PROC_BROWSER_TEST_F(EditorSystemActuatorAccessibilityTest,
           .InitWithNewEndpointAndPassReceiver(),
       &editor_mediator);
 
-  sm_.Call([&]() { system_actuator.InsertText("dummy text"); });
-  sm_.ExpectSpeechPattern(
+  sm()->Call([&]() { system_actuator.InsertText("dummy text"); });
+  sm()->ExpectSpeechPattern(
       l10n_util::GetStringUTF8(IDS_EDITOR_ANNOUNCEMENT_TEXT_FOR_INSERTION));
-  sm_.Replay();
+  sm()->Replay();
 }
 
 }  // namespace

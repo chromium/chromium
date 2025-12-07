@@ -25,7 +25,7 @@ SiteDataCounter::SiteDataCounter(Profile* profile)
     : profile_(profile),
       sync_tracker_(this, SyncServiceFactory::GetForProfile(profile)) {}
 
-SiteDataCounter::~SiteDataCounter() {}
+SiteDataCounter::~SiteDataCounter() = default;
 
 void SiteDataCounter::OnInitialized() {
   sync_tracker_.OnInitialized(

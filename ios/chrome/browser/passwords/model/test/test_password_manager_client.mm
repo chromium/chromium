@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/passwords/model/test/test_password_manager_client.h"
 
+#import <algorithm>
+
 #import "base/functional/callback_helpers.h"
-#import "base/ranges/algorithm.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -22,7 +23,7 @@ constexpr char kHttpsWebOrigin[] = "https://www.example.com/";
 TestPasswordManagerClient::TestPasswordManagerClient()
     : last_committed_url_(kHttpsWebOrigin), password_manager_(this) {
   store_ = base::MakeRefCounted<TestPasswordStore>();
-  store_->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store_->Init(/*affiliated_match_helper=*/nullptr);
   prefs_ = std::make_unique<TestingPrefServiceSimple>();
   prefs_->registry()->RegisterBooleanPref(
       password_manager::prefs::kCredentialsEnableAutosignin, true);
@@ -93,9 +94,8 @@ bool TestPasswordManagerClient::PromptUserToChooseCredentials(
       base::BindOnce(std::move(callback),
                      base::Owned(new password_manager::PasswordForm(*form))));
   std::vector<password_manager::PasswordForm*> raw_forms(local_forms.size());
-  base::ranges::transform(
-      local_forms, raw_forms.begin(),
-      &std::unique_ptr<password_manager::PasswordForm>::get);
+  std::ranges::transform(local_forms, raw_forms.begin(),
+                         &std::unique_ptr<password_manager::PasswordForm>::get);
   PromptUserToChooseCredentialsPtr(raw_forms, origin, base::DoNothing());
   return true;
 }

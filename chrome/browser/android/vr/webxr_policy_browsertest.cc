@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 
@@ -37,8 +38,8 @@ class PolicyTestWebXRImmersiveAR : public AndroidBrowserTest {
   // because the AR provider was not available due to the runtime OS check.
   // We should skip the test if we know that this is what will happen.
   bool ShouldSkipTest() {
-    return base::android::BuildInfo::GetInstance()->sdk_int() <
-           base::android::SDK_VERSION_NOUGAT;
+    return base::android::android_info::sdk_int() <
+           base::android::android_info::SDK_VERSION_NOUGAT;
   }
 };
 

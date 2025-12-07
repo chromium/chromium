@@ -5,28 +5,23 @@
 package org.chromium.android_webview.common;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.HandlerThread;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * This class manages platform-specific services. (i.e. Google Services) The platform should extend
  * this class and use this base class to fetch their specialized version.
  */
+@NullMarked
 public abstract class PlatformServiceBridge {
-    private static final String TAG = "PlatformServiceBrid-";
-
-    private static PlatformServiceBridge sInstance;
+    private static @Nullable PlatformServiceBridge sInstance;
     private static final Object sInstanceLock = new Object();
-
-    private static HandlerThread sHandlerThread;
-    private static Handler sHandler;
-    private static final Object sHandlerLock = new Object();
 
     protected PlatformServiceBridge() {}
 
@@ -34,10 +29,14 @@ public abstract class PlatformServiceBridge {
     public static PlatformServiceBridge getInstance() {
         synchronized (sInstanceLock) {
             if (sInstance == null) {
-                // Load an instance of PlatformServiceBridgeImpl. Because this can change
-                // depending on the GN configuration, this may not be the PlatformServiceBridgeImpl
-                // defined upstream.
-                sInstance = new PlatformServiceBridgeImpl();
+                try (TraceEvent ignoredEvent =
+                                TraceEvent.scoped("PlatformServiceBridge.getInstance.maybeCreate");
+                        StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+                    sInstance = ServiceLoaderUtil.maybeCreate(PlatformServiceBridge.class);
+                }
+                if (sInstance == null) {
+                    sInstance = new NoOpPlatformServiceBridge();
+                }
             }
             return sInstance;
         }
@@ -52,18 +51,6 @@ public abstract class PlatformServiceBridge {
         }
     }
 
-    // Return a handler appropriate for executing blocking Platform Service tasks.
-    public static Handler getHandler() {
-        synchronized (sHandlerLock) {
-            if (sHandler == null) {
-                sHandlerThread = new HandlerThread("PlatformServiceBridgeHandlerThread");
-                sHandlerThread.start();
-                sHandler = new Handler(sHandlerThread.getLooper());
-            }
-        }
-        return sHandler;
-    }
-
     // Can WebView use Google Play Services (a.k.a. GMS)?
     public boolean canUseGms() {
         return false;
@@ -76,7 +63,7 @@ public abstract class PlatformServiceBridge {
     }
 
     // Overriding implementations may call "callback" asynchronously, on any thread.
-    public void querySafeBrowsingUserConsent(@NonNull final Callback<Boolean> callback) {
+    public void querySafeBrowsingUserConsent(final Callback<Boolean> callback) {
         // User opt-in preference depends on a SafetyNet API. In purely upstream builds (which don't
         // communicate with GMS), assume the user has not opted in.
         callback.onResult(false);
@@ -97,7 +84,7 @@ public abstract class PlatformServiceBridge {
         // We don't have this specialized service.
     }
 
-    public void warmUpSafeBrowsing(Context context, @NonNull final Callback<Boolean> callback) {
+    public void warmUpSafeBrowsing(Context context, final Callback<Boolean> callback) {
         callback.onResult(false);
     }
 
@@ -143,10 +130,13 @@ public abstract class PlatformServiceBridge {
      * @param callback Callback to call with the result containing either a non-null
      *     MediaIntegrityProvider implementation or an appropriate exception.
      */
-    public void getMediaIntegrityProvider(
+    public void getMediaIntegrityProvider2(
             long cloudProjectNumber,
             @MediaIntegrityApiStatus int apiStatus,
-            ValueOrErrorCallback<MediaIntegrityProvider, Integer> callback) {
-        callback.onError(MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR);
+            ValueOrErrorCallback<MediaIntegrityProvider, MediaIntegrityErrorWrapper> callback) {
+        MediaIntegrityNonRecoverableErrorLogger.log(
+                MediaIntegrityNonRecoverableErrorLogger.AOSP_BUILD);
+        callback.onError(
+                new MediaIntegrityErrorWrapper(MediaIntegrityErrorCode.NON_RECOVERABLE_ERROR));
     }
 }

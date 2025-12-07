@@ -113,7 +113,7 @@ ActionEditView::ActionEditView(DisplayOverlayController* controller,
   auto* container = AddChildView(std::make_unique<views::TableLayoutView>());
   container->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(14, kHorizontalInsets)));
-  container->SetBackground(views::CreateThemedRoundedRectBackground(
+  container->SetBackground(views::CreateRoundedRectBackground(
       cros_tokens::kCrosSysSystemOnBase,
       /*top_radius=*/for_editing_list ? kCornerRadius : 0.0f,
       /*bottom_radius=*/kCornerRadius));

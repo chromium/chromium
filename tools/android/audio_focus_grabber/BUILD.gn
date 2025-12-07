@@ -34,5 +34,4 @@ android_resources("audio_focus_grabber_apk_resources") {
     "java/res/raw/ping.mp3",
     "java/res/values/strings.xml",
   ]
-  android_manifest = "java/AndroidManifest.xml"
 }

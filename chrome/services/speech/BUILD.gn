@@ -18,6 +18,8 @@ source_set("lib") {
     "speech_recognition_recognizer_impl.h",
     "speech_recognition_service_impl.cc",
     "speech_recognition_service_impl.h",
+    "speech_timestamp_estimator.cc",
+    "speech_timestamp_estimator.h",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
@@ -43,38 +45,64 @@ source_set("lib") {
     "//services/audio/public/cpp",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "cros_speech_recognition_recognizer_impl.cc",
       "cros_speech_recognition_recognizer_impl.h",
     ]
-    deps += [ "//chromeos/services/machine_learning/public/mojom" ]
+    deps += [
+      "//chromeos/services/machine_learning/public/mojom",
+      "//components/soda",
+    ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "soda_speech_recognizer_impl_unittest.cc" ]
+  sources = [
+    "soda_speech_recognizer_impl_unittest.cc",
+    "speech_recognition_recognizer_impl_unittest.cc",
+    "speech_timestamp_estimator_unittest.cc",
+  ]
   deps = [
     ":lib",
     "//base",
     "//base/test:test_support",
+    "//chrome/services/speech/soda:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom:web_speech_recognition",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "audio_source_fetcher_unittest.cc",
       "cros_speech_recognition_recognizer_impl_test.cc",
     ]
 
     deps += [
+      "//ash/constants",
+      "//chromeos/services/machine_learning/public/cpp",
+      "//chromeos/services/machine_learning/public/cpp:stub",
       "//chromeos/services/machine_learning/public/mojom",
+      "//components/soda",
+      "//components/soda:test_support",
+      "//content/test:test_support",
       "//services/audio/public/cpp:test_support",
     ]
   }
+}
+
+source_set("test_mojo_client") {
+  testonly = true
+
+  sources = [ "fake_speech_recognition_recognizer_client.h" ]
+  deps = [
+    "//base",
+    "//media/mojo/common",
+    "//media/mojo/mojom:speech_recognition",
+    "//mojo/public/cpp/bindings",
+  ]
 }

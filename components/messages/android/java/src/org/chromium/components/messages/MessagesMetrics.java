@@ -4,17 +4,18 @@
 
 package org.chromium.components.messages;
 
-
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Static utility methods for recording messages related metrics. TODO(crbug.com/40877562): remove
  * logs.
  */
+@NullMarked
 public class MessagesMetrics {
     private static final String TAG = "MessagesMetrics";
     private static final String ENQUEUED_HISTOGRAM_NAME = "Android.Messages.Enqueued";
@@ -31,8 +32,6 @@ public class MessagesMetrics {
     private static final String ENQUEUED_HIDDEN_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hidden";
     private static final String ENQUEUED_HIDING_HISTOGRAM_NAME = "Android.Messages.Enqueued.Hiding";
     private static final String FULLY_VISIBLE_NAME = "Android.Messages.FullyVisible";
-    private static final String ERROR_FULLY_VISIBLE_NOT_INFORMED_NAME =
-            "Android.Messages.Error.FullyVisibleNotInformed";
     private static final String DISMISSED_WITHOUT_FULLY_VISIBLE =
             "Android.Messages.DismissedWithoutFullyVisible";
     private static final String DISMISSED_HISTOGRAM_PREFIX = "Android.Messages.Dismissed.";
@@ -44,15 +43,8 @@ public class MessagesMetrics {
     static final String STACKING_HIDING_NAME = "Android.Messages.Stacking.Hiding";
     static final String STACKING_REQUEST_TO_SHOW_NAME =
             "Android.Messages.Stacking.RequestToFullyShow";
-    static final String STACKING_BLOCKED_BY_BROWSER_CONTROL_NAME =
-            "Android.Messages.Stacking.BlockedByBrowserControl";
-    static final String STACKING_BLOCKED_BY_CONTAINER_INITING_NAME =
-            "Android.Messages.Stacking.BlockedByContainerInitializing";
-    static final String STACKING_BLOCKED_BY_CONTAINER_NOT_INITED_NAME =
-            "Android.Messages.Stacking.BlockedByContainerNotInitialized";
     static final String STACKING_TIME_TO_FULLY_SHOW_PREFIX = "Android.Messages.TimeToFullyShow.";
     static final String STACKING_ACTION_HISTOGRAM_PREFIX = "Android.Messages.Stacking.";
-    static final String THREE_STACKED_HISTOGRAM_NAME = "Android.Messages.Stacking.ThreeStacked";
 
     @IntDef({
         StackingAnimationType.SHOW_ALL,
@@ -94,17 +86,6 @@ public class MessagesMetrics {
         int REMOVE_FRONT = 4;
         int REMOVE_BACK = 5;
         int MAX_VALUE = 6;
-    }
-
-    @IntDef({
-        ThreeStackedScenario.HIGH_PRIORITY,
-        ThreeStackedScenario.IN_SEQUENCE,
-        ThreeStackedScenario.MAX_VALUE
-    })
-    public @interface ThreeStackedScenario {
-        int HIGH_PRIORITY = 0;
-        int IN_SEQUENCE = 1;
-        int MAX_VALUE = 2;
     }
 
     /** Records metrics when a message is being enqueued. */
@@ -165,10 +146,10 @@ public class MessagesMetrics {
             boolean messageDismissedByGesture,
             long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 TIME_TO_ACTION_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
         if (messageDismissedByGesture) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
         }
     }
@@ -183,48 +164,9 @@ public class MessagesMetrics {
                 STACKING_REQUEST_TO_SHOW_NAME, messageIdentifier, MessageIdentifier.COUNT);
     }
 
-    /**
-     * Record the id of candidate which will be displayed in the foreground but now is waiting for
-     * browser control to be ready.
-     *
-     * @param messageIdentifier The id of the next front message.
-     */
-    static void recordBlockedByBrowserControl(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                STACKING_BLOCKED_BY_BROWSER_CONTROL_NAME,
-                messageIdentifier,
-                MessageIdentifier.COUNT);
-    }
-
-    /**
-     * Record the id of candidate which will be displayed in the foreground but now is waiting for
-     * message container to finishing initialization.
-     *
-     * @param messageIdentifier The id of the next front message.
-     */
-    static void recordBlockedByContainerInitializing(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                STACKING_BLOCKED_BY_CONTAINER_INITING_NAME,
-                messageIdentifier,
-                MessageIdentifier.COUNT);
-    }
-
-    /**
-     * Record the id of candidate which will be displayed in the foreground but container has not
-     * been initialized.
-     *
-     * @param messageIdentifier The id of the next front message.
-     */
-    static void recordBlockedByContainerNotInitialized(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                STACKING_BLOCKED_BY_CONTAINER_NOT_INITED_NAME,
-                messageIdentifier,
-                MessageIdentifier.COUNT);
-    }
-
     static void recordTimeToFullyShow(@MessageIdentifier int messageIdentifier, long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 STACKING_TIME_TO_FULLY_SHOW_PREFIX + histogramSuffix, durationMs);
     }
 
@@ -261,24 +203,10 @@ public class MessagesMetrics {
                 MessageIdentifier.COUNT);
     }
 
-    static void recordThreeStackedScenario(@ThreeStackedScenario int scenario) {
-        RecordHistogram.recordEnumeratedHistogram(
-                THREE_STACKED_HISTOGRAM_NAME, scenario, ThreeStackedScenario.MAX_VALUE);
-    }
-
     /** Record the message has been fully visible. */
     static void recordFullyVisible(@MessageIdentifier int messageIdentifier) {
         RecordHistogram.recordEnumeratedHistogram(
                 FULLY_VISIBLE_NAME, messageIdentifier, MessageIdentifier.COUNT);
-    }
-
-    /**
-     * Record the fully visible callback is not triggered when it is supposed to be. E.g. when the
-     * message is dismissed by gesture, primary action, secondary action, timer.
-     */
-    static void recordErrorFullyVisibleNotInformed(@MessageIdentifier int messageIdentifier) {
-        RecordHistogram.recordEnumeratedHistogram(
-                ERROR_FULLY_VISIBLE_NOT_INFORMED_NAME, messageIdentifier, MessageIdentifier.COUNT);
     }
 
     /** Record when the message is dismissed without being fully visible before. */
@@ -336,10 +264,6 @@ public class MessagesMetrics {
                 return "SaveAddressProfile";
             case MessageIdentifier.MERCHANT_TRUST:
                 return "MerchantTrust";
-            case MessageIdentifier.ADD_TO_HOMESCREEN_IPH:
-                return "AddToHomescreenIPH";
-            case MessageIdentifier.SEND_TAB_TO_SELF:
-                return "SendTabToSelf";
             case MessageIdentifier.READER_MODE:
                 return "ReaderMode";
             case MessageIdentifier.SAVE_CARD:
@@ -392,8 +316,6 @@ public class MessagesMetrics {
                 return "DownloadIncognitoWarning";
             case MessageIdentifier.CVC_SAVE:
                 return "CvcSave";
-            case MessageIdentifier.TRACKING_PROTECTION_NOTICE:
-                return "TrackingProtectionNotice";
             case MessageIdentifier.DESKTOP_SITE_WINDOW_SETTING:
                 return "DesktopSiteWindowSetting";
             case MessageIdentifier.PROMPT_HATS_LOCATION_CUSTOM_INVITATION:
@@ -414,8 +336,32 @@ public class MessagesMetrics {
                 return "SaveCardFailure";
             case MessageIdentifier.VIRTUAL_CARD_ENROLL_FAILURE:
                 return "VirtualCardEnrollFailure";
-            case MessageIdentifier.PROMPT_HATS_QUICK_DELETE:
-                return "PromptHatsQuickDelete";
+            case MessageIdentifier.DEFAULT_BROWSER_PROMO:
+                return "DefaultBrowserPromo";
+            case MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION:
+                return "TabRemovedThroughCollaboration";
+            case MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION:
+                return "TabNavigatedThroughCollaboration";
+            case MessageIdentifier.COLLABORATION_MEMBER_ADDED:
+                return "CollaborationMemberAdded";
+            case MessageIdentifier.COLLABORATION_REMOVED:
+                return "CollaborationRemoved";
+            case MessageIdentifier.CCT_ACCOUNT_MISMATCH_NOTICE:
+                return "CctAccountMismatchNotice";
+            case MessageIdentifier.OS_ADVANCED_PROTECTION_SETTING_CHANGED_MESSAGE:
+                return "OsAdvancedProtectionSettingChangedMessage";
+            case MessageIdentifier.MULTI_INSTANCE_RESTORATION_ON_DOWNGRADED_LIMIT:
+                return "MultiInstanceRestorationOnDowngradedLimit";
+            case MessageIdentifier.UPDATE_CHROME_FOR_TAB_GROUP_SHARE:
+                return "UpdateChromeForTabGroupShare";
+            case MessageIdentifier.MODE_B_ROLLBACK_MESSAGE:
+                return "ModeBRollbackMessage";
+            case MessageIdentifier.RELOAD_PAGE:
+                return "ReloadPage";
+            case MessageIdentifier.MULTI_INSTANCE_CREATION_LIMIT:
+                return "MultiInstanceCreationLimit";
+            case MessageIdentifier.PERMISSION_PROMPT_LOUD:
+                return "PermissionPromptLoud";
             default:
                 return "Unknown";
         }

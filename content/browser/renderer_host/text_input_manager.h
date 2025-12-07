@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-forward.h"
 #include "ui/base/ime/mojom/text_input_state.mojom.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/gfx/geometry/rect.h"
@@ -60,13 +61,10 @@ class CONTENT_EXPORT TextInputManager {
     // Called when |updated_view| has changed its CompositionRangeInfo.
     // |character_bounds_changed| marks whether the current
     // CompositionRangeInfo::character_bounds should be updated.
-    // |line_bounds| (used by Android) is an optional list of line rectangles.
-    // If it has no value, no update is required.
     virtual void OnImeCompositionRangeChanged(
         TextInputManager* text_input_manager,
         RenderWidgetHostViewBase* updated_view,
-        bool character_bounds_changed,
-        const std::optional<std::vector<gfx::Rect>>& line_bounds) {}
+        bool character_bounds_changed) {}
     // Called when the text selection for the |updated_view_| has changed.
     virtual void OnTextSelectionChanged(
         TextInputManager* text_input_manager,
@@ -184,6 +182,28 @@ class CONTENT_EXPORT TextInputManager {
   // |active_view_|. Returns nullptr If |active_view_| == nullptr.
   const TextInputManager::CompositionRangeInfo* GetCompositionRangeInfo() const;
 
+#if BUILDFLAG(IS_WIN)
+  // `ProximateCharacterRangeBounds` is provided by the renderer and contains a
+  // character offset range and associated character bounding boxes in widget
+  // coordinates for a subset of the actual character bounding boxes. This data
+  // enables StylusHandwritingWin gesture support for renderer content, but is
+  // a compromise since it only contains a limited subset of content for
+  // performance (CPU and memory) reasons, since computing and copying all of
+  // the character bounds from a renderer document may be costly and slow for
+  // large documents.
+  //
+  // For views content, since they exist in the browser process it's possible to
+  // retrieve accurate results without ProximateCharacterRangeBounds.
+  // ProximateCharacterRangeBounds will not be updated for views content, and
+  // shouldn't be relied upon for views use cases as it could be null or stale.
+  // Views that implement `ui::TextInputClient` should instead implement both
+  // `GetProximateCharacterBounds` and `GetProximateCharacterIndexFromPoint` to
+  // query their content directly. For example, `views::Textfield` could collect
+  // character bounds through `gfx::RenderText`, GetRenderText().
+  const blink::mojom::ProximateCharacterRangeBounds*
+  GetProximateCharacterBoundsInfo(const RenderWidgetHostViewBase& view) const;
+#endif  // BUILDFLAG(IS_WIN)
+
   // The following method returns the text selection state for the given |view|.
   // If |view| == nullptr, it will assume |active_view_| and return its state.
   // In the case of |active_view_| == nullptr, the method will return nullptr.
@@ -203,6 +223,16 @@ class CONTENT_EXPORT TextInputManager {
   // Updates the TextInputState for |view|.
   void UpdateTextInputState(RenderWidgetHostViewBase* view,
                             const ui::mojom::TextInputState& state);
+
+#if BUILDFLAG(IS_WIN)
+  // Takes ownership of `proximate_bounds` so it can be retrieved later by
+  // GetProximateCharacterBoundsInfo(). When populated by the renderer process,
+  // enables StylusHandwritingWin gesture support for renderer content.
+  // If `proximate_bounds` is null, removes `view` from the cache.
+  void UpdateProximateCharacterBounds(
+      RenderWidgetHostViewBase& view,
+      blink::mojom::ProximateCharacterRangeBoundsPtr proximate_bounds);
+#endif  // BUILDFLAG(IS_WIN)
 
   // The current IME composition has been cancelled on the renderer side for
   // the widget corresponding to |view|.
@@ -227,8 +257,7 @@ class CONTENT_EXPORT TextInputManager {
   void ImeCompositionRangeChanged(
       RenderWidgetHostViewBase* view,
       const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds);
+      const std::optional<std::vector<gfx::Rect>>& character_bounds);
 
   // Updates the new text selection information for the |view|.
   void SelectionChanged(RenderWidgetHostViewBase* view,
@@ -288,6 +317,10 @@ class CONTENT_EXPORT TextInputManager {
   ViewMap<SelectionRegion> selection_region_map_;
   ViewMap<CompositionRangeInfo> composition_range_info_map_;
   ViewMap<TextSelection> text_selection_map_;
+#if BUILDFLAG(IS_WIN)
+  ViewMap<blink::mojom::ProximateCharacterRangeBoundsPtr>
+      proximate_character_bounds_map_;
+#endif  // BUILDFLAG(IS_WIN)
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 };

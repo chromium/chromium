@@ -4,6 +4,8 @@
 
 #include "services/network/proxy_config_service_mojo.h"
 
+#include <array>
+
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -110,7 +112,7 @@ TEST_F(ProxyConfigServiceMojoTest, ObserveProxyChanges) {
   EXPECT_EQ(net::ProxyConfigService::CONFIG_PENDING,
             proxy_config_service_.GetLatestProxyConfig(&temp));
 
-  net::ProxyConfig proxy_configs[3];
+  std::array<net::ProxyConfig, 3> proxy_configs;
   proxy_configs[0].proxy_rules().ParseFromString("http=foopy:80");
   proxy_configs[1].proxy_rules().ParseFromString("http=foopy:80;ftp=foopy2");
   proxy_configs[2] = net::ProxyConfig::CreateDirect();

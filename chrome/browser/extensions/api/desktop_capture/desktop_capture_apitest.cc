@@ -9,33 +9,35 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/desktop_capture/desktop_capture_api.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 #include "ui/base/ozone_buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
 namespace {
 
-using content::DesktopMediaID;
-using content::WebContentsMediaCaptureId;
-using testing::Combine;
-using testing::Values;
+using ::blink::mojom::MediaStreamRequestResult;
+using ::content::DesktopMediaID;
+using ::content::WebContentsMediaCaptureId;
+using ::testing::Combine;
+using ::testing::Values;
 
 class DesktopCaptureApiTest : public ExtensionApiTest {
  public:
@@ -75,11 +77,9 @@ class DesktopCaptureApiTest : public ExtensionApiTest {
 
 }  // namespace
 
-// TODO(crbug.com/40805699): Crashes on Lacros.
 // TODO(crbug.com/40805704): Fails on the linux-wayland-rel bot.
 // TODO(crbug.com/40805725): Fails on Mac.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_ChooseDesktopMedia DISABLED_ChooseDesktopMedia
 #else
 #define MAYBE_ChooseDesktopMedia ChooseDesktopMedia
@@ -88,89 +88,98 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_ChooseDesktopMedia) {
   // Each element in the following array corresponds to one test in
   // chrome/test/data/extensions/api_test/desktop_capture/test.js .
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
-    // pickerUiCanceled()
-    {.expect_screens = true, .expect_windows = true},
-    // chooseMedia()
-    {.expect_screens = true,
-     .expect_windows = true,
-     .selected_source =
-         DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId)},
-    // screensOnly()
-    {.expect_screens = true},
-    // WindowsOnly()
-    {.expect_windows = true},
-    // tabOnly()
-    {.expect_tabs = true},
-    // audioShareNoApproval()
-    {.expect_screens = true,
-     .expect_windows = true,
-     .expect_tabs = true,
-     .expect_audio = true,
-     .selected_source =
-         DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, 123, false)},
-    // audioShareApproval()
-    {.expect_screens = true,
-     .expect_windows = true,
-     .expect_tabs = true,
-     .expect_audio = true,
-     .selected_source =
-         DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, 123, true)},
-    // chooseMediaAndGetStream()
-    {.expect_screens = true,
-     .expect_windows = true,
-     .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+      // pickerUiCanceled()
+      {.expect_screens = true,
+       .expect_windows = true,
+       .picker_result = base::unexpected(
+           MediaStreamRequestResult::PERMISSION_DENIED_BY_USER)},
+      // chooseMedia()
+      {.expect_screens = true,
+       .expect_windows = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+                                       DesktopMediaID::kNullId)},
+      // screensOnly()
+      {.expect_screens = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+                                       DesktopMediaID::kNullId)},
+      // WindowsOnly()
+      {.expect_windows = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_WINDOW,
+                                       DesktopMediaID::kFakeId)},
+      // tabOnly()
+      {.expect_tabs = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, 123)},
+      // audioShareNoApproval()
+      {.expect_screens = true,
+       .expect_windows = true,
+       .expect_tabs = true,
+       .expect_audio = true,
+       .picker_result =
+           DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, 123, false)},
+      // audioShareApproval()
+      {.expect_screens = true,
+       .expect_windows = true,
+       .expect_tabs = true,
+       .expect_audio = true,
+       .picker_result =
+           DesktopMediaID(DesktopMediaID::TYPE_WEB_CONTENTS, 123, true)},
+      // chooseMediaAndGetStream()
+      {.expect_screens = true,
+       .expect_windows = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
                                        webrtc::kFullDesktopScreenId)},
-    // chooseMediaAndTryGetStreamWithInvalidId()
-    {.expect_screens = true,
-     .expect_windows = true,
-     .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+      // chooseMediaAndTryGetStreamWithInvalidId()
+      {.expect_screens = true,
+       .expect_windows = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
                                        webrtc::kFullDesktopScreenId)},
-    // cancelDialog()
-    {.expect_screens = true, .expect_windows = true, .cancelled = true},
+      // cancelDialog()
+      {.expect_screens = true, .expect_windows = true, .cancelled = true},
   // TODO(crbug.com/41366624): Test fails; invalid device IDs being generated.
 #if 0
       // tabShareWithAudioPermissionGetStream()
       {.expect_tabs = true,
        .expect_audio = true,
-       .selected_source = MakeFakeWebContentsMediaId(true)},
+       .picker_result = MakeFakeWebContentsMediaId(true)},
 #endif
-    // windowShareWithAudioGetStream()
-    {.expect_windows = true,
-     .expect_audio = true,
-     .selected_source = DesktopMediaID(DesktopMediaID::TYPE_WINDOW,
+      // windowShareWithAudioGetStream()
+      {.expect_windows = true,
+       .expect_audio = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_WINDOW,
                                        DesktopMediaID::kFakeId, true)},
-    // screenShareWithAudioGetStream()
-    {.expect_screens = true,
-     .expect_audio = true,
-     .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+      // screenShareWithAudioGetStream()
+      {.expect_screens = true,
+       .expect_audio = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
                                        webrtc::kFullDesktopScreenId, true)},
   // TODO(crbug.com/41366624): Test fails; invalid device IDs being generated.
 #if 0
       // tabShareWithoutAudioPermissionGetStream()
       {.expect_tabs = true,
        .expect_audio = true,
-       .selected_source = MakeFakeWebContentsMediaId(false)},
+       .picker_result = MakeFakeWebContentsMediaId(false)},
 #endif
-    // windowShareWithoutAudioGetStream()
-    {.expect_windows = true,
-     .expect_audio = true,
-     .selected_source =
-         DesktopMediaID(DesktopMediaID::TYPE_WINDOW, DesktopMediaID::kFakeId)},
-    // screenShareWithoutAudioGetStream()
-    {.expect_screens = true,
-     .expect_audio = true,
-     .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+      // windowShareWithoutAudioGetStream()
+      {.expect_windows = true,
+       .expect_audio = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_WINDOW,
+                                       DesktopMediaID::kFakeId)},
+      // screenShareWithoutAudioGetStream()
+      {.expect_screens = true,
+       .expect_audio = true,
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
                                        webrtc::kFullDesktopScreenId)},
   };
   picker_factory_.SetTestFlags(test_flags, std::size(test_flags));
   ASSERT_TRUE(RunExtensionTest("desktop_capture")) << message_;
 }
 
-// TODO(crbug.com/40805699): Crashes on Lacros.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/405218400): Port to desktop Android when getUserMedia() is
+// supported (see DesktopCaptureAccessHandler).
 // TODO(crbug.com/40805704): Fails on the linux-wayland-rel bot.
 // TODO(crbug.com/40805725): Fails on Mac.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_Delegation DISABLED_Delegation
 #else
 #define MAYBE_Delegation Delegation
@@ -189,28 +198,27 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
   const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
 
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURLForPath("localhost", "/example.com.html")));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GetURLForPath("localhost", "/example.com.html")));
 
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
       {.expect_screens = true,
        .expect_windows = true,
-       .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
-                                         webrtc::kFullDesktopScreenId)},
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+                                       webrtc::kFullDesktopScreenId)},
       {.expect_screens = true,
        .expect_windows = true,
-       .selected_source = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
-                                         DesktopMediaID::kNullId)},
+       .picker_result = DesktopMediaID(DesktopMediaID::TYPE_SCREEN,
+                                       DesktopMediaID::kNullId)},
       {.expect_screens = true,
        .expect_windows = true,
-       .selected_source =
+       .picker_result =
            DesktopMediaID(DesktopMediaID::TYPE_SCREEN, DesktopMediaID::kNullId),
        .cancelled = true},
   };
   picker_factory_.SetTestFlags(test_flags, std::size(test_flags));
 
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
+  content::WebContents* web_contents = GetActiveWebContents();
 
   EXPECT_EQ(true, content::EvalJs(web_contents, "getStream()"));
 
@@ -226,6 +234,7 @@ IN_PROC_BROWSER_TEST_F(DesktopCaptureApiTest, MAYBE_Delegation) {
   destroyed_watcher.Wait();
   EXPECT_TRUE(test_flags[2].picker_deleted);
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Not specifying a tab defaults to the extension's background page.
 // Service worker-based extensions don't have one, so they must specify
@@ -308,12 +317,11 @@ void DesktopCaptureApiMediaPickerOptionsBaseTest::FromServiceWorker(
   // Open a tab to capture.
   embedded_test_server()->ServeFilesFromDirectory(GetTestResourcesParentDir());
   ASSERT_TRUE(StartEmbeddedTestServer());
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(
-      browser(), GetURLForPath("localhost", "/test_file.html")));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            GetURLForPath("localhost", "/test_file.html")));
 
   FakeDesktopMediaPickerFactory::TestFlags test_flags[] = {
-      {.expect_tabs = true,
-       .selected_source = MakeFakeWebContentsMediaId(true)},
+      {.expect_tabs = true, .picker_result = MakeFakeWebContentsMediaId(true)},
   };
   picker_factory_.SetTestFlags(test_flags, std::size(test_flags));
 

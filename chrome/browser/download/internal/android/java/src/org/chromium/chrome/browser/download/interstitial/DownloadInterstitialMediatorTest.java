@@ -28,10 +28,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -65,12 +67,13 @@ public class DownloadInterstitialMediatorTest {
     private static final String OPEN_BUTTON_TEXT = "Open";
     private static final String DELETE_BUTTON_TEXT = "Delete";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SnackbarManager mSnackbarManager;
 
     private final TestOfflineContentProvider mProvider = new TestOfflineContentProvider();
     private FakeModalDialogManager mModalDialogManager;
     private DownloadInterstitialMediator mMediator;
-    private UmaTestingHelper mUmaTestingHelper = new UmaTestingHelper();
+    private final UmaTestingHelper mUmaTestingHelper = new UmaTestingHelper();
     private PropertyModel mModel;
     private OfflineItem mItem0;
 
@@ -78,7 +81,6 @@ public class DownloadInterstitialMediatorTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
         mSnackbarShown = false;
         doAnswer((invocation) -> mSnackbarShown = true)
                 .when(mSnackbarManager)
@@ -334,10 +336,10 @@ public class DownloadInterstitialMediatorTest {
      * logs to test how many metrics of each type were logged during the test.
      */
     private static class UmaTestingHelper {
-        private Map<Integer, Integer> mValues;
+        private final Map<Integer, Integer> mValues;
 
         UmaTestingHelper() {
-            mValues = new HashMap<Integer, Integer>();
+            mValues = new HashMap<>();
         }
 
         /**

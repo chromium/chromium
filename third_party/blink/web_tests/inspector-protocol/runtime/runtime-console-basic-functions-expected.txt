@@ -405,6 +405,17 @@ Testing console.clear with optional args inside page context
             }
         ]
         executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 8
+                    functionName : 
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+        }
         timestamp : <number>
         type : clear
     }
@@ -897,6 +908,17 @@ Testing console.clear with optional args inside frame context
             }
         ]
         executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 8
+                    functionName : 
+                    lineNumber : 0
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+        }
         timestamp : <number>
         type : clear
     }

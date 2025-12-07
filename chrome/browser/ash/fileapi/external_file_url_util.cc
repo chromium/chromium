@@ -10,7 +10,6 @@
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
@@ -46,10 +45,11 @@ GURL FileSystemURLToExternalFileURL(
 }
 
 base::FilePath ExternalFileURLToVirtualPath(const GURL& url) {
-  if (!url.is_valid() || url.scheme() != content::kExternalFileScheme)
+  if (!url.is_valid() || url.GetScheme() != content::kExternalFileScheme) {
     return base::FilePath();
+  }
   return base::FilePath::FromUTF8Unsafe(
-      base::UnescapeBinaryURLComponent(url.path_piece()));
+      base::UnescapeBinaryURLComponent(url.path()));
 }
 
 GURL VirtualPathToExternalFileURL(const base::FilePath& virtual_path) {

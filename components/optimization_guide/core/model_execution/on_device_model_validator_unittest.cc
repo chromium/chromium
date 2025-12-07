@@ -6,8 +6,9 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "components/optimization_guide/core/model_execution/test/fake_on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
+#include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,16 +19,20 @@ namespace {
 class OnDeviceModelValidatorTest : public testing::Test {
  public:
   OnDeviceModelValidatorTest() {
-    service_ = std::make_unique<on_device_model::FakeOnDeviceModelService>(
-        service_remote_.BindNewPipeAndPassReceiver(), &fake_settings_);
-    service_remote_->LoadModel(on_device_model::mojom::LoadModelParams::New(),
+    fake_launcher_.LaunchFn().Run(service_remote_.BindNewPipeAndPassReceiver());
+    auto paths = on_device_model::ModelAssetPaths();
+    paths.weights = model_asset_.path().Append(kWeightsFile);
+    auto params = on_device_model::mojom::LoadModelParams::New();
+    params->assets = on_device_model::LoadModelAssets(paths);
+    service_remote_->LoadModel(std::move(params),
                                model_remote_.BindNewPipeAndPassReceiver(),
                                base::DoNothing());
   }
 
   mojo::Remote<on_device_model::mojom::Session> StartSession() {
     mojo::Remote<on_device_model::mojom::Session> session_remote;
-    model_remote_->StartSession(session_remote.BindNewPipeAndPassReceiver());
+    model_remote_->StartSession(session_remote.BindNewPipeAndPassReceiver(),
+                                nullptr);
     return session_remote;
   }
 
@@ -41,10 +46,11 @@ class OnDeviceModelValidatorTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  FakeBaseModelAsset model_asset_{FakeBaseModelAsset::Content{}};
   mojo::Remote<on_device_model::mojom::OnDeviceModelService> service_remote_;
   mojo::Remote<on_device_model::mojom::OnDeviceModel> model_remote_;
   on_device_model::FakeOnDeviceServiceSettings fake_settings_;
-  std::unique_ptr<on_device_model::FakeOnDeviceModelService> service_;
+  on_device_model::FakeServiceLauncher fake_launcher_{&fake_settings_};
 };
 
 TEST_F(OnDeviceModelValidatorTest, Succeeds) {
@@ -57,12 +63,12 @@ TEST_F(OnDeviceModelValidatorTest, SucceedsWithEmptyConfig) {
             WaitForValidation(proto::OnDeviceModelValidationConfig()));
 }
 
-TEST_F(OnDeviceModelValidatorTest, FailsWhenSessionKilled) {
+TEST_F(OnDeviceModelValidatorTest, FailsOnServiceCrash) {
   base::test::TestFuture<OnDeviceModelValidationResult> result_future;
   auto validator = std::make_unique<OnDeviceModelValidator>(
       WillPassValidationConfig(), result_future.GetCallback(), StartSession());
-  model_remote_.reset();
-  EXPECT_EQ(OnDeviceModelValidationResult::kInterrupted, result_future.Get());
+  fake_launcher_.CrashService();
+  EXPECT_EQ(OnDeviceModelValidationResult::kServiceCrash, result_future.Get());
 }
 
 TEST_F(OnDeviceModelValidatorTest, Fails) {

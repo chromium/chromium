@@ -2,26 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <string>
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "base/version.h"
-#include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer_test_util.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chrome/test/base/test_launcher_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/proto/privacy_sandbox_attestations.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "content/public/browser/web_contents.h"
@@ -37,7 +34,7 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "url/gurl.h"
 
 // Tests for the Conversion Measurement API that rely on chrome/ layer features.
@@ -97,12 +94,18 @@ class ChromeAttributionBrowserTest : public MixinBasedInProcessBrowserTest {
     return new_contents;
   }
 
-  void RegisterTrigger(content::WebContents* contents) {
+  void RegisterTrigger(
+      content::WebContents* contents,
+      std::string_view registration_js = "createAttributionSrcImg($1)") {
     GURL register_trigger_url =
         server_.GetURL("c.test", "/register_trigger_headers.html");
-    EXPECT_TRUE(
-        ExecJs(contents, content::JsReplace("createAttributionSrcImg($1);",
-                                            register_trigger_url)));
+    EXPECT_TRUE(ExecJs(
+        contents, content::JsReplace(registration_js, register_trigger_url)));
+  }
+
+  void ExpectUseCounter(const base::HistogramTester& histogram_tester,
+                        blink::mojom::WebFeature feature) {
+    histogram_tester.ExpectBucketCount("Blink.UseCounter.Features", feature, 1);
   }
 
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
@@ -118,7 +121,7 @@ struct ExpectedReportWaiter {
       : expected_url(std::move(report_url)),
         response(std::make_unique<net::test_server::ControllableHttpResponse>(
             server,
-            expected_url.path())) {}
+            expected_url.GetPath())) {}
 
   GURL expected_url;
   std::unique_ptr<net::test_server::ControllableHttpResponse> response;
@@ -146,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   // the web contents would not belong to the tab strip.
   EXPECT_EQ(1,
             browser()->tab_strip_model()->GetIndexOfWebContents(new_contents));
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
+  EXPECT_EQ(chrome::GetTotalBrowserCount(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
 }
 
@@ -215,64 +218,98 @@ IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
   EXPECT_FALSE(console_observer.messages().empty());
 }
 
-class ChromeAttributionAttestationsBrowserTest
-    : public ChromeAttributionBrowserTest {
- public:
-  ChromeAttributionAttestationsBrowserTest() = default;
-
-  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
-    ChromeAttributionBrowserTest::SetUpDefaultCommandLine(command_line);
-    command_line->RemoveSwitch(switches::kDisableComponentUpdate);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
-                       PRE_AttributionUponAttestationsLoading) {
-  privacy_sandbox::PrivacySandboxAttestationsProto proto;
-
-  // Create an attestations file that contains the site with attestation for
-  // Attribution Reporting API.
-  std::string site = net::SchemefulSite(GURL(kReportEndpoint)).Serialize();
-  privacy_sandbox::PrivacySandboxAttestationsProto::
-      PrivacySandboxAttestedAPIsProto site_attestation;
-  site_attestation.add_attested_apis(privacy_sandbox::ATTRIBUTION_REPORTING);
-  (*proto.mutable_site_attestations())[site] = site_attestation;
-
-  // There is a pre-installed attestations component. Choose a version number
-  // that is sure to be higher than the pre-installed one. This makes sure that
-  // the component installer will choose the attestations file in the user-wide
-  // component directory.
-  ASSERT_TRUE(
-      component_updater::InstallPrivacySandboxAttestationsComponentForTesting(
-          proto, base::Version("12345.0.0.0")));
-}
-
-// TODO(crbug.com/327794975) Test is flaky on various platforms.
-IN_PROC_BROWSER_TEST_F(ChromeAttributionAttestationsBrowserTest,
-                       AttributionUponAttestationsLoading) {
-  PrivacySandboxSettingsFactory::GetForProfile(browser()->profile())
-      ->SetAllPrivacySandboxAllowedForTesting();
-
-  ExpectedReportWaiter expected_report(GURL(kReportEndpoint), &server_);
-  ASSERT_TRUE(server_.Start());
+IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest,
+                       SourceClicked_FeatureRecorded) {
+  base::HistogramTester histogram_tester;
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
+  waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kAttributionReportingAPIAll);
+
+  ASSERT_TRUE(server_.Start());
+
+  RegisterSourceWithNavigation();
+
+  waiter.Wait();
+
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kAttributionReportingAPIAll);
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kPrivacySandboxAdsAPIs);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAttributionBrowserTest, XhrUseCounterRecorded) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
+  waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kAttributionReportingXhr);
+
+  ASSERT_TRUE(server_.Start());
 
   EXPECT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      server_.GetURL("d.test", "/page_with_impression_creator.html")));
+      server_.GetURL("a.test", "/page_with_conversion_redirect.html")));
 
-  GURL register_source_url = server_.GetURL(
-      "c.test", "/register_source_headers_and_redirect_trigger.html");
-  EXPECT_TRUE(ExecJs(
-      web_contents,
-      content::JsReplace("createAttributionSrcImg($1);", register_source_url)));
+  GURL register_source_url =
+      server_.GetURL("c.test", "/register_source_headers.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents, content::JsReplace("doAttributionEligibleXHR($1);",
+                                              register_source_url)));
 
-  content::WebContentsConsoleObserver console_observer(web_contents);
-  console_observer.SetPattern(
-      "Attestation check for Attribution Reporting on * failed.");
+  waiter.Wait();
 
-  expected_report.WaitForRequest();
-  EXPECT_TRUE(console_observer.messages().empty());
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kAttributionReportingXhr);
+}
+
+class ChromeAttributionTriggerUseCounterBrowserTest
+    : public ChromeAttributionBrowserTest,
+      public ::testing::WithParamInterface<std::string_view> {
+ public:
+  ChromeAttributionTriggerUseCounterBrowserTest() = default;
+
+ protected:
+  void RegisterTrigger(content::WebContents* web_contents) {
+    ChromeAttributionBrowserTest::RegisterTrigger(web_contents, GetParam());
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ChromeAttributionTriggerUseCounterBrowserTest,
+                         ::testing::Values("createAttributionSrcImg($1);",
+                                           "createTrackingPixel($1);",
+                                           R"(fetch($1, {keepalive: true}))"));
+
+IN_PROC_BROWSER_TEST_P(ChromeAttributionTriggerUseCounterBrowserTest,
+                       UseCounterRecorded) {
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  page_load_metrics::PageLoadMetricsTestWaiter waiter(web_contents);
+  waiter.AddWebFeatureExpectation(
+      blink::mojom::WebFeature::kAttributionReportingAPIAll);
+
+  ASSERT_TRUE(server_.Start());
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      server_.GetURL("a.test", "/page_with_conversion_redirect.html")));
+
+  RegisterTrigger(web_contents);
+
+  waiter.Wait();
+
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kAttributionReportingAPIAll);
+  ExpectUseCounter(histogram_tester,
+                   blink::mojom::WebFeature::kPrivacySandboxAdsAPIs);
 }

@@ -15,9 +15,10 @@ DevtoolsInteractionTracker::DevtoolsInteractionTracker(
 DevtoolsInteractionTracker::~DevtoolsInteractionTracker() = default;
 
 void DevtoolsInteractionTracker::ToggleForceActivation(bool force_activation) {
-  if (!activated_via_devtools_ && force_activation)
+  if (!activated_via_devtools_ && force_activation) {
     ContentSubresourceFilterThrottleManager::LogAction(
         SubresourceFilterAction::kForcedActivationEnabled);
+  }
   activated_via_devtools_ = force_activation;
 }
 

@@ -18,7 +18,6 @@ import 'chrome://resources/ash/common/cr_elements/policy/cr_policy_indicator.js'
 import 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
-import '/shared/settings/prefs/prefs.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
@@ -32,36 +31,47 @@ import './internet_config.js';
 import './internet_detail_menu.js';
 import './network_summary.js';
 
-import {PrefsMixin, PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import type {PrefsMixinInterface} from '/shared/settings/prefs/prefs_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {getNumESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
-import {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
-import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {WebUiListenerMixin, WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {HotspotInfo, HotspotState} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import type {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
+import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {WebUiListenerMixinInterface} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
+import type {HotspotInfo} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
+import {HotspotState} from 'chrome://resources/ash/common/hotspot/cros_hotspot_config.mojom-webui.js';
 import {hasActiveCellularNetwork, isConnectedToNonCellularNetwork} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import type {NetworkListenerBehaviorInterface} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
+import {NetworkListenerBehavior} from 'chrome://resources/ash/common/network/network_listener_behavior.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrosNetworkConfigInterface, GlobalPolicy, NetworkStateProperties, StartConnectResult, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import type {CrosNetworkConfigInterface, GlobalPolicy, NetworkStateProperties, VpnProvider} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
-import {afterNextRender, DomRepeatEvent, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
-import {DeepLinkingMixin, DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
-import {RouteOriginMixin, RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
+import type {DeepLinkingMixinInterface} from '../common/deep_linking_mixin.js';
+import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
+import type {RouteOriginMixinInterface} from '../common/route_origin_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {ApnSubpageElement} from './apn_subpage.js';
-import {InternetConfigElement} from './internet_config.js';
+import type {ApnSubpageElement} from './apn_subpage.js';
+import type {InternetConfigElement} from './internet_config.js';
 import {getTemplate} from './internet_page.html.js';
-import {InternetPageBrowserProxy, InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
+import type {InternetPageBrowserProxy} from './internet_page_browser_proxy.js';
+import {InternetPageBrowserProxyImpl} from './internet_page_browser_proxy.js';
 
 const ESIM_PROFILE_LIMIT = 5;
 
@@ -306,24 +316,17 @@ export class SettingsInternetPageElement extends
         computed: 'showProviderLocked_(subpageType_, deviceStates)',
       },
 
+      isDeviceUpdating_: {
+        type: Boolean,
+        computed: 'showDeviceUpdating_(subpageType_, deviceStates)',
+      },
+
       /**
        * eSIM network used in internet detail menu.
        */
       eSimNetworkState_: {
         type: Object,
         value: '',
-      },
-
-      /**
-       * Used by DeepLinkingMixin to focus this page's deep links.
-       */
-      supportedSettingIds: {
-        type: Object,
-        value: () => new Set<Setting>([
-          Setting.kWifiOnOff,
-          Setting.kMobileOnOff,
-          Setting.kCellularAddApn,
-        ]),
       },
 
       errorToastMessage_: {
@@ -372,6 +375,14 @@ export class SettingsInternetPageElement extends
   deviceStates: Record<string, OncMojo.DeviceStateProperties>|undefined;
   hotspotInfo: HotspotInfo|undefined;
   managedNetworkAvailable: boolean;
+
+  // DeepLinkingMixin override
+  override supportedSettingIds = new Set<Setting>([
+    Setting.kWifiOnOff,
+    Setting.kMobileOnOff,
+    Setting.kCellularAddApn,
+  ]);
+
   private addConnectionExpanded_: boolean;
   private browserProxy_: InternetPageBrowserProxy;
   private cellularSetupDialogPageName_: CellularSetupPageName|null;
@@ -380,6 +391,7 @@ export class SettingsInternetPageElement extends
   private eSimNetworkState_: NetworkStateProperties;
   private globalPolicy_: GlobalPolicy|undefined;
   private hasActiveCellularNetwork_: boolean;
+  private readonly isApnRevampEnabled_: boolean;
   private isConnectedToNonCellularNetwork_: boolean;
   private isNumCustomApnsLimitReached_: boolean;
   private isInstantHotspotRebrandEnabled_: boolean;
@@ -399,6 +411,7 @@ export class SettingsInternetPageElement extends
   private showInternetConfig_: boolean;
   private showSimLockDialog_: boolean;
   private isProviderLocked_: boolean;
+  private isDeviceUpdating_: boolean;
   private showSpinner_: boolean;
   private subpageType_: NetworkType;
   private vpnIsProhibited_: boolean;
@@ -518,7 +531,7 @@ export class SettingsInternetPageElement extends
     afterNextRender(this, () => {
       const networkRow =
           this.shadowRoot!.querySelector('network-summary')!.getNetworkRow(
-              networkType!);
+              networkType);
       if (networkRow) {
         const toggleEl = networkRow.getDeviceEnabledToggle();
         if (toggleEl) {
@@ -788,6 +801,18 @@ export class SettingsInternetPageElement extends
     return true;
   }
 
+  private showDeviceUpdating_(): boolean {
+    if (this.subpageType_ !== NetworkType.kCellular) {
+      return false;
+    }
+    const cellularDeviceState =
+        this.getDeviceState_(NetworkType.kCellular, this.deviceStates);
+    if (!cellularDeviceState || !cellularDeviceState.isFlashing) {
+      return false;
+    }
+    return true;
+  }
+
   private getDeviceState_(
       subpageType: NetworkType,
       deviceStates: Record<string, OncMojo.DeviceStateProperties>|
@@ -1012,15 +1037,15 @@ export class SettingsInternetPageElement extends
         }
         return;
       case StartConnectResult.kBlocked:
-        // This shouldn't happen, the UI should prevent this, fall through and
-        // show the error.
+      // This shouldn't happen, the UI should prevent this, fall through and
+      // show the error.
       case StartConnectResult.kUnknown:
+      default:
         console.warn(
             'startConnect failed for: ' + networkState.guid +
             ' Error: ' + response.message);
         return;
     }
-    assertNotReached();
   }
 
   /** Opens the three dots menu. */

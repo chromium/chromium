@@ -12,7 +12,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -160,7 +159,7 @@ DebugDaemonLogSource::DebugDaemonLogSource(bool scrub)
       num_pending_requests_(0),
       scrub_(scrub) {}
 
-DebugDaemonLogSource::~DebugDaemonLogSource() {}
+DebugDaemonLogSource::~DebugDaemonLogSource() = default;
 
 void DebugDaemonLogSource::Fetch(SysLogsSourceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

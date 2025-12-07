@@ -1,0 +1,73 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("webid") {
+  sources = [
+    "account_selection_view.h",
+    "identity_dialog_controller.cc",
+    "identity_dialog_controller.h",
+    "identity_ui_utils.cc",
+    "identity_ui_utils.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/webid:fedcm_clickthrough_rate_metadata_proto",
+    "//components/segmentation_platform/public",
+    "//content/public/browser",
+    "//ui/gfx",
+  ]
+
+  deps = [
+    "//base:i18n",
+    "//chrome/app/resources:platform_locale_settings",
+    "//chrome/app/resources:platform_locale_settings_grit",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/segmentation_platform",
+    "//chrome/browser/webid",
+    "//components/favicon/content",
+    "//components/favicon/core",
+    "//components/permissions",
+    "//skia",
+    "//ui/base",
+  ]
+
+  if (!is_android || is_desktop_android) {
+    deps += [ "//chrome/browser/ui/browser_window" ]
+  }
+}
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "identity_dialog_controller_unittest.cc",
+      "identity_ui_utils_unittest.cc",
+    ]
+    deps = [
+      ":webid",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/test:test_support",
+      "//components/optimization_guide/core:hints_test_support",
+      "//components/permissions",
+      "//components/permissions:test_support",
+      "//components/segmentation_platform/public",
+      "//components/segmentation_platform/public:test_support",
+      "//content/public/browser",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//third_party/blink/public/common",
+      "//url",
+    ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+}

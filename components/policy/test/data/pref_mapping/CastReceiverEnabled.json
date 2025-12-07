@@ -1,38 +1,15 @@
 [
   {
     "os": [
-      "chromeos_ash"
+      "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "default_for_enterprise_users=false",
-        "policies": {},
-        "prefs": {
-          "cast_receiver.enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "CastReceiverEnabled": true
-        },
-        "prefs": {
-          "cast_receiver.enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "CastReceiverEnabled": false
-        },
-        "prefs": {
-          "cast_receiver.enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "cast_receiver.enabled",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

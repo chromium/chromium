@@ -7,16 +7,18 @@
 #import <memory>
 
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_app_interface.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/bring_android_tabs_test_session.h"
 #import "ios/chrome/browser/bring_android_tabs/ui_bundled/constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
+#import "ios/chrome/browser/safari_data_import/test/safari_data_import_earl_grey_ui.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
-#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
+#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -27,10 +29,8 @@ namespace {
 // Timeout in seconds to wait for asynchronous sync operations.
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
-// Returns GREYElementInteraction for `matcher`, using `scrollViewMatcher` to
-// scroll.
-void TapPromoStyleButton(NSString* buttonIdentifier) {
-  id<GREYMatcher> buttonMatcher = grey_accessibilityID(buttonIdentifier);
+// Taps a promo button.
+void TapPromoStyleButton(id<GREYMatcher> buttonMatcher) {
   id<GREYMatcher> scrollViewMatcher =
       grey_accessibilityID(kPromoStyleScrollViewAccessibilityIdentifier);
   // Needs to scroll slowly to make sure to not miss a cell if it is not
@@ -54,6 +54,10 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
     config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
     config.additional_args.push_back("AndroidPhone");
   }
+  // TODO(crbug.com/379306137): If feature is not launched, fix
+  // SignInViaFREWithHistorySyncEnabled() by moving the default browser
+  // dismissal to after sign-in and sync.
+  config.additional_args.push_back("--enable-features=UpdatedFirstRunSequence");
   // Relaunch app at each test to rewind the startup state.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   return config;
@@ -62,18 +66,16 @@ AppLaunchConfiguration GetConfiguration(BOOL is_android_switcher) {
 void SignInViaFREWithHistorySyncEnabled(BOOL enable_history_sync) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fake_identity];
+  // Default browser promo dismissal.
+  TapPromoStyleButton(chrome_test_util::ButtonStackSecondaryButton());
   // Sign in.
-  TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
+  TapPromoStyleButton(chrome_test_util::ButtonStackPrimaryButton());
   // Enable history/tab sync if appropriate.
   TapPromoStyleButton(enable_history_sync
-                          ? kPromoStylePrimaryActionAccessibilityIdentifier
-                          : kPromoStyleSecondaryActionAccessibilityIdentifier);
-  // Default browser promo dismissal.
-  TapPromoStyleButton(kPromoStyleSecondaryActionAccessibilityIdentifier);
-  // Omnibox position choice promo dismissal.
-  if ([FirstRunAppInterface isOmniboxPositionChoiceEnabled]) {
-    TapPromoStyleButton(kPromoStylePrimaryActionAccessibilityIdentifier);
-  }
+                          ? chrome_test_util::ButtonStackPrimaryButton()
+                          : chrome_test_util::ButtonStackSecondaryButton());
+  // If Safari import landing sheet is displayed, dismiss it.
+  DismissSafariDataImportEntryPoint(/*verify_visibility=*/false);
   [ChromeEarlGrey
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
@@ -117,8 +119,6 @@ void VerifyThatPromptDoesNotShowOnRestart(const GURL& test_server) {
 
 void CleanUp() {
   [SigninEarlGrey signOut];
-  [ChromeEarlGrey waitForSyncEngineInitialized:NO
-                                   syncTimeout:kSyncOperationTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
   [ChromeEarlGrey
       clearUserPrefWithName:"ios.bring_android_tabs.prompt_displayed"];

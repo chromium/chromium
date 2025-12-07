@@ -4,6 +4,7 @@
 
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 
+#include <algorithm>
 #include <vector>
 
 #include "ash/root_window_controller.h"
@@ -27,7 +28,6 @@
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/ranges/algorithm.h"
 #include "base/time/time.h"
 #include "chromeos/ui/base/display_util.h"
 #include "chromeos/ui/base/window_state_type.h"
@@ -101,7 +101,7 @@ bool IsRecordingTabletMultiDisplaySplitView() {
 // Number of root windows in split view.
 int NumRootWindowsInSplitViewRecording() {
   auto root_windows = Shell::GetAllRootWindows();
-  return base::ranges::count_if(root_windows, [](aura::Window* root_window) {
+  return std::ranges::count_if(root_windows, [](aura::Window* root_window) {
     return SplitViewController::Get(root_window)
         ->split_view_metrics_controller()
         ->in_split_view_recording();
@@ -109,7 +109,7 @@ int NumRootWindowsInSplitViewRecording() {
 }
 
 bool InTabletMode() {
-  return display::Screen::GetScreen()->InTabletMode();
+  return display::Screen::Get()->InTabletMode();
 }
 
 bool TopTwoVisibleWindowsBothSnapped(
@@ -202,7 +202,7 @@ SplitViewMetricsController::SplitViewMetricsController(
   aura::Env::GetInstance()->AddObserver(this);
 
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
+      display::Screen::Get()->GetDisplayNearestWindow(
           split_view_controller->root_window());
   orientation_ = GetDeviceOrientation(display);
   ResetTimeAndCounter();
@@ -425,7 +425,7 @@ void SplitViewMetricsController::OnWindowInitialized(aura::Window* window) {
   // Note: The display id saved in window_info has no value. Need to use the
   // restore bounds/
   if (!window_info->current_bounds.has_value() ||
-      !display::Screen::GetScreen()
+      !display::Screen::Get()
            ->GetDisplayNearestWindow(split_view_controller_->root_window())
            .work_area()
            .Contains(window_info->current_bounds.value())) {
@@ -582,7 +582,7 @@ void SplitViewMetricsController::AddOrStackWindowOnTop(aura::Window* window) {
   if (!CanIncludeWindowInMruList(window))
     return;
 
-  auto iter = base::ranges::find(observed_windows_, window);
+  auto iter = std::ranges::find(observed_windows_, window);
   if (iter == observed_windows_.end()) {
     AddObservedWindow(window);
   } else {

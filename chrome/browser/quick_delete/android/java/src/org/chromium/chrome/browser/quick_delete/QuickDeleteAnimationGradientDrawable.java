@@ -25,13 +25,13 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.FloatRange;
 import androidx.annotation.IntRange;
 import androidx.annotation.Keep;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.animation.PathInterpolatorCompat;
 
 import com.google.android.material.color.MaterialColors;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -39,6 +39,7 @@ import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.util.ColorUtils;
 
 /** The {@link Drawable} that will be used to run animations for Quick Delete. */
+@NullMarked
 public class QuickDeleteAnimationGradientDrawable extends Drawable {
     private static final String TAG = "QuickDeleteAnimationGradientDrawable";
 
@@ -69,8 +70,8 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
             PathInterpolatorCompat.create(0.25F, 0F, 0.15F, 1F);
     private static final int QUICK_DELETE_WIPE_ANIMATION_TIME_MS = 1200;
     private static final int QUICK_DELETE_FADE_ANIMATION_TIME_MS = 230;
-    private final @NonNull Paint mPaint;
-    private final @NonNull LinearGradient mShader;
+    private final Paint mPaint;
+    private final LinearGradient mShader;
 
     /* The value that will be used to translate the gradient across the bounds of a view. */
     private float mTranslationY;
@@ -84,7 +85,7 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
      * @param isIncognito Whether the surface is in incognito mode.
      */
     public static QuickDeleteAnimationGradientDrawable createQuickDeleteWipeAnimationDrawable(
-            @NonNull Context context, int tabGridHeight, boolean isIncognito) {
+            Context context, int tabGridHeight, boolean isIncognito) {
         int gradientColor =
                 isIncognito
                         ? ContextCompat.getColor(context, R.color.baseline_primary_80)
@@ -123,7 +124,7 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
      * @param isIncognito Whether the surface is in incognito mode.
      */
     public static QuickDeleteAnimationGradientDrawable createQuickDeleteFadeAnimationDrawable(
-            @NonNull Context context, int tabHeight, boolean isIncognito) {
+            Context context, int tabHeight, boolean isIncognito) {
         // The color of the background behind the tab.
         int backgroundColor = ChromeColors.getPrimaryBackgroundColor(context, isIncognito);
 
@@ -144,9 +145,9 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
      * @param gradientHeight The height of the gradient.
      */
     public QuickDeleteAnimationGradientDrawable(
-            @NonNull Context context,
-            @NonNull @ColorInt int[] colors,
-            @Nullable float[] positions,
+            Context context,
+            @ColorInt int[] colors,
+            float @Nullable [] positions,
             int gradientHeight) {
         super();
         assert positions == null || colors.length == positions.length;
@@ -213,7 +214,7 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
     }
 
     @Override
-    public void draw(@NonNull Canvas canvas) {
+    public void draw(Canvas canvas) {
         Matrix matrix = new Matrix();
         mShader.getLocalMatrix(matrix);
         matrix.setTranslate(0, mTranslationY);
@@ -241,7 +242,7 @@ public class QuickDeleteAnimationGradientDrawable extends Drawable {
         return ObjectAnimator.ofFloat(this, "translationY", startValue, endValue);
     }
 
-    private float dpToPixels(@NonNull Context context, float dp) {
+    private float dpToPixels(Context context, float dp) {
         Resources res = context.getResources();
         DisplayMetrics metrics = res.getDisplayMetrics();
         return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics);

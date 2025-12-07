@@ -56,7 +56,7 @@ ScriptPromise<IDLUndefined> PeriodicSyncManager::registerPeriodicSync(
 
   GetBackgroundSyncServiceRemote()->Register(
       std::move(sync_registration), registration_->RegistrationId(),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &PeriodicSyncManager::RegisterCallback, WrapPersistent(this))));
 
   return promise;
@@ -89,8 +89,8 @@ ScriptPromise<IDLSequence<IDLString>> PeriodicSyncManager::getTags(
     GetBackgroundSyncServiceRemote()->GetRegistrations(
         registration_->RegistrationId(),
         resolver->WrapCallbackInScriptScope(
-            WTF::BindOnce(&PeriodicSyncManager::GetRegistrationsCallback,
-                          WrapPersistent(this))));
+            BindOnce(&PeriodicSyncManager::GetRegistrationsCallback,
+                     WrapPersistent(this))));
   }
   return promise;
 }
@@ -119,7 +119,7 @@ ScriptPromise<IDLUndefined> PeriodicSyncManager::unregister(
 
   GetBackgroundSyncServiceRemote()->Unregister(
       registration_->RegistrationId(), tag,
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
+      resolver->WrapCallbackInScriptScope(BindOnce(
           &PeriodicSyncManager::UnregisterCallback, WrapPersistent(this))));
   return promise;
 }
@@ -144,8 +144,7 @@ void PeriodicSyncManager::RegisterCallback(
       resolver->Resolve();
       break;
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::BackgroundSyncError::STORAGE:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),
@@ -175,13 +174,14 @@ void PeriodicSyncManager::RegisterCallback(
 void PeriodicSyncManager::GetRegistrationsCallback(
     ScriptPromiseResolver<IDLSequence<IDLString>>* resolver,
     mojom::blink::BackgroundSyncError error,
-    WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
+    Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations) {
   switch (error) {
     case mojom::blink::BackgroundSyncError::NONE: {
       Vector<String> tags;
-      for (const auto& registration : registrations)
+      for (const auto& registration : registrations) {
         tags.push_back(registration->tag);
-      resolver->Resolve(tags);
+      }
+      resolver->Resolve(std::move(tags));
       break;
     }
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
@@ -189,8 +189,7 @@ void PeriodicSyncManager::GetRegistrationsCallback(
     case mojom::blink::BackgroundSyncError::PERMISSION_DENIED:
       // These errors should never be returned from
       // BackgroundSyncManager::GetPeriodicSyncRegistrations
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::BackgroundSyncError::STORAGE:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),
@@ -224,8 +223,7 @@ void PeriodicSyncManager::UnregisterCallback(
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
     case mojom::blink::BackgroundSyncError::NOT_ALLOWED:
     case mojom::BackgroundSyncError::PERMISSION_DENIED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

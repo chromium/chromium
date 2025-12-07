@@ -5,6 +5,7 @@ desc: |-
   If this policy is set to Enabled or left unset, it will allow the predictive writing feature on the physical keyboard.
 
   If this policy is set to Disabled, it will disallow the predictive writing feature on the physical keyboard.
+default: true
 
 example_value: false
 features:

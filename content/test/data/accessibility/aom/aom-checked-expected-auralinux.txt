@@ -1,5 +1,0 @@
-[document web]
-++[check box] checkable:true
-++[check box] checkable:true
-++[check box] checkable:true
-++[check box] checkable:true

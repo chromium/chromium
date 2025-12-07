@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/notreached.h"
 #include "base/values.h"
 #include "build/buildflag.h"
 #include "printing/buildflags/buildflags.h"
@@ -32,13 +31,16 @@ namespace printing {
 // static
 std::unique_ptr<PrintingContext> PrintingContext::CreateImpl(
     Delegate* delegate,
-    ProcessBehavior process_behavior) {
-  return std::make_unique<PrintingContextLinux>(delegate, process_behavior);
+    OutOfProcessBehavior out_of_process_behavior) {
+  return std::make_unique<PrintingContextLinux>(delegate,
+                                                out_of_process_behavior);
 }
 
-PrintingContextLinux::PrintingContextLinux(Delegate* delegate,
-                                           ProcessBehavior process_behavior)
-    : PrintingContext(delegate, process_behavior), print_dialog_(nullptr) {}
+PrintingContextLinux::PrintingContextLinux(
+    Delegate* delegate,
+    OutOfProcessBehavior out_of_process_behavior)
+    : PrintingContext(delegate, out_of_process_behavior),
+      print_dialog_(nullptr) {}
 
 PrintingContextLinux::~PrintingContextLinux() {
   ReleaseContext();
@@ -52,10 +54,8 @@ void PrintingContextLinux::AskUserForSettings(int max_pages,
                                               bool is_scripted,
                                               PrintSettingsCallback callback) {
   if (!print_dialog_) {
-    // Can only get here if the renderer is sending bad messages.
-    // http://crbug.com/341777
-    NOTREACHED_IN_MIGRATION();
-    std::move(callback).Run(mojom::ResultCode::kFailed);
+    // Can only get here if the renderer is sending bad messages. Ignore.
+    // https://crbug.com/41088489
     return;
   }
 
@@ -130,11 +130,13 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
   document_name_ = document_name;
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING_NO_OOP_BASIC_PRINT_DIALOG)
-  if (process_behavior() == ProcessBehavior::kOopEnabledSkipSystemCalls) {
+  if (out_of_process_behavior() ==
+      OutOfProcessBehavior::kEnabledSkipSystemCalls) {
     return mojom::ResultCode::kSuccess;
   }
 
-  if (process_behavior() == ProcessBehavior::kOopEnabledPerformSystemCalls &&
+  if (out_of_process_behavior() ==
+          OutOfProcessBehavior::kEnabledPerformSystemCalls &&
       !settings_->system_print_dialog_data().empty()) {
     // Take the settings captured by the browser process from the system print
     // dialog and apply them to this printing context in the PrintBackend

@@ -65,6 +65,9 @@ DeviceOrientationInspectorAgent::clearDeviceOrientationOverride() {
 }
 
 protocol::Response DeviceOrientationInspectorAgent::disable() {
+  if (!enabled_.Get()) {
+    return protocol::Response::Success();
+  }
   agent_state_.ClearAllFields();
   if (!inspected_frames_->Root()->DomWindow()->IsContextDestroyed()) {
     Controller().RestartPumpIfNeeded();

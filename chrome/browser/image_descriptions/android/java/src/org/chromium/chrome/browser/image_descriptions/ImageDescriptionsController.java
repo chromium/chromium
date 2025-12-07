@@ -10,6 +10,8 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -27,12 +29,13 @@ import org.chromium.ui.widget.Toast;
  * Singleton class to control the Image Descriptions feature. This class can be used to initiate the
  * user flow, to turn the feature on/off and to update settings as needed.
  */
+@NullMarked
 public class ImageDescriptionsController {
     // We display a "Don't ask again" choice if the user has selected the Just Once option 3 times.
     public static final int DONT_ASK_AGAIN_DISPLAY_LIMIT = 3;
 
     // Static instance of this singleton, lazily initialized during first getInstance() call.
-    private static ImageDescriptionsController sInstance;
+    private static @Nullable ImageDescriptionsController sInstance;
 
     private ImageDescriptionsControllerDelegate mDelegate;
 
@@ -122,10 +125,11 @@ public class ImageDescriptionsController {
 
         if (enabledBeforeMenuItemSelected) {
             // If descriptions are enabled, and the user has selected "only on wifi", and we
-            // currently do not have a wifi connection, then do a "just once" fetch.
+            // currently do not have a wifi or Ethernet connection, then do a "just once" fetch.
+            int currentNetType = DeviceConditions.getCurrentNetConnectionType(context);
             if (onlyOnWifiEnabled(profile)
-                    && DeviceConditions.getCurrentNetConnectionType(context)
-                            != ConnectionType.CONNECTION_WIFI) {
+                    && currentNetType != ConnectionType.CONNECTION_WIFI
+                    && currentNetType != ConnectionType.CONNECTION_ETHERNET) {
                 mDelegate.getImageDescriptionsJustOnce(false, webContents);
                 Toast.makeText(
                                 context,
@@ -172,7 +176,7 @@ public class ImageDescriptionsController {
     }
 
     public boolean shouldShowImageDescriptionsMenuItem() {
-        return AccessibilityState.isScreenReaderEnabled();
+        return AccessibilityState.isKnownScreenReaderEnabled();
     }
 
     public boolean imageDescriptionsEnabled(Profile profile) {

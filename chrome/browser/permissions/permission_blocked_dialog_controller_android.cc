@@ -86,6 +86,21 @@ void PermissionBlockedDialogController::DismissDialog() {
   }
 }
 
+void PermissionBlockedDialogController::ShowPageInfo() {
+  if (!web_contents_ || web_contents_->GetNativeView() == nullptr ||
+      web_contents_->GetNativeView()->GetWindowAndroid() == nullptr) {
+    // TODO(crbug.com/458351800): Add a histogram to track how often this
+    // happens.
+    return;
+  }
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PermissionBlockedDialog_showPageInfo(
+      env, web_contents_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
+      web_contents_->GetJavaWebContents(),
+      static_cast<int>(delegate_->GetContentSettingsType()));
+}
+
 base::android::ScopedJavaGlobalRef<jobject>
 PermissionBlockedDialogController::GetOrCreateJavaObject() {
   if (java_object_) {
@@ -103,3 +118,5 @@ PermissionBlockedDialogController::GetOrCreateJavaObject() {
              env, reinterpret_cast<intptr_t>(this),
              view_android->GetWindowAndroid()->GetJavaObject());
 }
+
+DEFINE_JNI(PermissionBlockedDialog)

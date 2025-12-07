@@ -7,17 +7,19 @@ package org.chromium.chrome.browser.password_manager;
 import android.accounts.Account;
 
 import org.chromium.base.Callback;
+import org.chromium.build.annotations.NullMarked;
 
 import java.util.Date;
 import java.util.Optional;
 
 /**
- * Interface to send backend requests to a downstream implementation to fulfill password store
- * jobs. All methods are expected to respond asynchronously to callbacks.
+ * Interface to send backend requests to a downstream implementation to fulfill password store jobs.
+ * All methods are expected to respond asynchronously to callbacks.
  */
+@NullMarked
 public interface PasswordStoreAndroidBackend {
     /** Serves as a general exception for failed requests to the PasswordStoreAndroidBackend. */
-    public class BackendException extends Exception {
+    class BackendException extends Exception {
         public @AndroidBackendErrorType int errorCode;
 
         public BackendException(String message, @AndroidBackendErrorType int error) {
@@ -27,31 +29,12 @@ public interface PasswordStoreAndroidBackend {
     }
 
     /**
-     * Subscribes to notifications from the downstream implementation.
-     *
-     * @param successCallback Callback that is called on success.
-     * @param failureCallback A callback that is called on failure for any reason. May return sync.
-     *     TODO(crbug.com/40208314): Remove default keyword after downstream implementation.
-     */
-    default void subscribe(Runnable successCallback, Callback<Exception> failureCallback) {}
-
-    /**
-     * Unsubscribes from notifications from the downstream implementation.
-     *
-     * @param successCallback Callback that is called on success.
-     * @param failureCallback A callback that is called on failure for any reason. May return sync.
-     *     TODO(crbug.com/40208314): Remove default keyword after downstream implementation.
-     */
-    default void unsubscribe(Runnable successCallback, Callback<Exception> failureCallback) {}
-
-    /**
      * Triggers an async list call to retrieve all logins.
      *
      * @param syncingAccount Account used to sync passwords. If the syncingAccount is empty local
-     *         account will be used.
+     *     account will be used.
      * @param loginsReply Callback that is called on success with serialized {@link
-     *         org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult}
-     * data.
+     *     org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult} data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
     void getAllLogins(
@@ -86,21 +69,19 @@ public interface PasswordStoreAndroidBackend {
      *     org.chromium.components.password_manager.core.browser.proto.ListPasswordsWithUiInfoResult
      *     } data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
-     *     TODO(crbug.com/40262259): Remove default keyword after downstream implementation.
      */
-    default void getAllLoginsWithBrandingInfo(
+    void getAllLoginsWithBrandingInfo(
             Optional<Account> syncingAccount,
             Callback<byte[]> loginsReply,
-            Callback<Exception> failureCallback) {}
+            Callback<Exception> failureCallback);
 
     /**
      * Triggers an async list call to retrieve autofillable logins.
      *
      * @param syncingAccount Account used to sync passwords. If the syncingAccount is empty local
-     *         account will be used.
+     *     account will be used.
      * @param loginsReply Callback that is called on success with serialized {@link
-     *         org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult}
-     * data.
+     *     org.chromium.components.password_manager.core.browser.proto.ListPasswordsResult} data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
     void getAutofillableLogins(

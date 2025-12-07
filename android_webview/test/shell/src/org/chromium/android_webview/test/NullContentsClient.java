@@ -20,6 +20,7 @@ import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.android_webview.AwHttpAuthHandler;
 import org.chromium.android_webview.AwRenderProcess;
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
+import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.JsPromptResultReceiver;
 import org.chromium.android_webview.JsResultReceiver;
 import org.chromium.android_webview.SafeBrowsingAction;
@@ -53,7 +54,7 @@ public class NullContentsClient extends AwContentsClient {
     }
 
     @Override
-    public boolean shouldOverrideUrlLoading(AwContentsClient.AwWebResourceRequest request) {
+    public boolean shouldOverrideUrlLoading(AwWebResourceRequest request) {
         return false;
     }
 
@@ -70,8 +71,7 @@ public class NullContentsClient extends AwContentsClient {
     public void onProgressChanged(int progress) {}
 
     @Override
-    public WebResourceResponseInfo shouldInterceptRequest(
-            AwContentsClient.AwWebResourceRequest request) {
+    public WebResourceResponseInfo shouldInterceptRequest(AwWebResourceRequest request) {
         return null;
     }
 

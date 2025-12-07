@@ -17,7 +17,6 @@ using content::OpenURLParams;
 using sessions_helper::GetLocalSession;
 using sessions_helper::GetSessionData;
 using sessions_helper::OpenMultipleTabs;
-using sessions_helper::SessionWindowMap;
 using sessions_helper::SyncedSessionVector;
 using sessions_helper::WaitForTabsToLoad;
 using sync_timing_helper::TimeMutualSyncCycle;
@@ -130,7 +129,7 @@ GURL SessionsSyncPerfTest::IntToURL(int n) {
 }
 
 IN_PROC_BROWSER_TEST_F(SessionsSyncPerfTest, P0) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumTabs) + "_tabs");

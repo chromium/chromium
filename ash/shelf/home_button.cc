@@ -40,6 +40,7 @@
 #include "base/time/time.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "home_button.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -58,6 +59,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/highlight_border.h"
@@ -72,7 +74,6 @@ namespace {
 // The space between the home button and quick app.
 constexpr int kQuickAppStartMargin = 8;
 
-constexpr uint8_t kAssistantVisibleAlpha = 255;    // 100% alpha
 constexpr uint8_t kAssistantInvisibleAlpha = 138;  // 54% alpha
 
 // Nudge animation constants
@@ -153,13 +154,15 @@ class HomeButton::ButtonImageView : public views::View {
 
     gfx::PointF circle_center(gfx::Rect(size()).CenterPoint());
 
-    const bool is_assistant_available =
-        button_controller_->IsAssistantAvailable();
+    const bool is_long_press_action_available =
+        button_controller_->IsLongPressActionAvailable();
     // Paint a white ring as the foreground for the app list circle. The
     // ceil/dsf math assures that the ring draws sharply and is centered at all
     // scale factors.
-    const float ring_outer_radius_dp = is_assistant_available ? 8.0f : 7.0f;
-    const float ring_thickness_dp = is_assistant_available ? 1.0f : 1.5f;
+    const float ring_outer_radius_dp =
+        is_long_press_action_available ? 8.0f : 7.0f;
+    const float ring_thickness_dp =
+        is_long_press_action_available ? 1.0f : 1.5f;
     {
       gfx::ScopedCanvas scoped_canvas(canvas);
       const float dsf = canvas->UndoDeviceScaleFactor();
@@ -169,11 +172,8 @@ class HomeButton::ButtonImageView : public views::View {
       fg_flags.setStyle(cc::PaintFlags::kStroke_Style);
       fg_flags.setColor(GetColorProvider()->GetColor(GetIconColorId()));
 
-      if (is_assistant_available) {
-        // active: 100% alpha, inactive: 54% alpha
-        fg_flags.setAlphaf(button_controller_->IsAssistantVisible()
-                               ? kAssistantVisibleAlpha / 255.0f
-                               : kAssistantInvisibleAlpha / 255.0f);
+      if (is_long_press_action_available) {
+        fg_flags.setAlphaf(kAssistantInvisibleAlpha / 255.0f);
       }
 
       const float thickness = std::ceil(ring_thickness_dp * dsf);
@@ -183,7 +183,7 @@ class HomeButton::ButtonImageView : public views::View {
       // Make sure the center of the circle lands on pixel centers.
       canvas->DrawCircle(circle_center, radius, fg_flags);
 
-      if (is_assistant_available) {
+      if (is_long_press_action_available) {
         fg_flags.setAlphaf(1.0f);
         const float kCircleRadiusDp = 5.f;
         fg_flags.setStyle(cc::PaintFlags::kFill_Style);
@@ -232,7 +232,7 @@ class HomeButton::ButtonImageView : public views::View {
       return;
     }
 
-    SetBackground(views::CreateThemedRoundedRectBackground(
+    SetBackground(views::CreateRoundedRectBackground(
         GetBackgroundColorId(), shelf_config->control_border_radius()));
 
     if (shelf_config->in_tablet_mode() && !shelf_config->is_in_app()) {
@@ -345,20 +345,10 @@ HomeButton::HomeButton(Shelf* shelf)
   button_image_view_ =
       AddChildViewAt(std::make_unique<ButtonImageView>(&controller_), 0);
 
-  if (features::IsHomeButtonWithTextEnabled()) {
-    // Directly shows the nudge label if the text-in-shelf feature is enabled.
-    CreateNudgeLabel();
-    expandable_container_->SetVisible(true);
-    shelf_->shelf_layout_manager()->LayoutShelf(false);
-  }
-
-  if (features::IsHomeButtonQuickAppAccessEnabled() &&
-      !features::IsHomeButtonWithTextEnabled()) {
-    shell_observation_.Observe(Shell::Get());
-    app_list_model_observation_.Observe(AppListModelProvider::Get());
-    quick_app_model_observation_.Observe(
-        AppListModelProvider::Get()->quick_app_access_model());
-  }
+  shell_observation_.Observe(Shell::Get());
+  app_list_model_observation_.Observe(AppListModelProvider::Get());
+  quick_app_model_observation_.Observe(
+      AppListModelProvider::Get()->quick_app_access_model());
 
   if (features::IsUserEducationEnabled()) {
     // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
@@ -430,15 +420,13 @@ void HomeButton::Layout(PassKey) {
   }
 }
 
+void HomeButton::AddedToWidget() {
+  UpdateTooltipText();
+}
+
 void HomeButton::OnGestureEvent(ui::GestureEvent* event) {
   if (!controller_.MaybeHandleGestureEvent(event))
     Button::OnGestureEvent(event);
-}
-
-std::u16string HomeButton::GetTooltipText(const gfx::Point& p) const {
-  // Don't show a tooltip if we're already showing the app list.
-  return IsShowingAppList() ? std::u16string()
-                            : GetViewAccessibility().GetCachedName();
 }
 
 void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
@@ -467,7 +455,7 @@ void HomeButton::OnShelfButtonAboutToRequestFocusFromTabTraversal(
 void HomeButton::ButtonPressed(views::Button* sender,
                                const ui::Event& event,
                                views::InkDrop* ink_drop) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  if (display::Screen::Get()->InTabletMode()) {
     base::RecordAction(
         base::UserMetricsAction("AppList_HomeButtonPressedTablet"));
   } else {
@@ -480,10 +468,6 @@ void HomeButton::ButtonPressed(views::Button* sender,
 
   // If the home button is pressed, fade out the nudge label if it is showing.
   if (expandable_container_ && !quick_app_button_) {
-    // The label shouldn't be removed if the text-in-shelf feature is enabled.
-    if (features::IsHomeButtonWithTextEnabled())
-      return;
-
     if (!expandable_container_->GetVisible()) {
       // If the nudge label is not visible and will not be animating, directly
       // remove them as the nudge won't be showing anymore.
@@ -492,7 +476,7 @@ void HomeButton::ButtonPressed(views::Button* sender,
     }
 
     if (label_nudge_timer_.IsRunning())
-      label_nudge_timer_.AbandonAndStop();
+      label_nudge_timer_.Stop();
     AnimateNudgeLabelFadeOut();
   }
 }
@@ -501,7 +485,7 @@ void HomeButton::OnShelfConfigUpdated() {
   button_image_view_->UpdateForShelfConfigChange();
 }
 
-void HomeButton::OnAssistantAvailabilityChanged() {
+void HomeButton::OnIconUpdated() {
   // `button_image_view_` may not be set during `HomeButton` construction -
   // `button_image_view_` is created after `controller_`, which can end up
   // calling this method in response to registering assistant state observer.
@@ -519,6 +503,7 @@ void HomeButton::HandleLocaleChange() {
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_SHELF_APP_LIST_LAUNCHER_TITLE));
   TooltipTextChanged();
+  UpdateTooltipText();
   // Reset the bounds rect so the child layer bounds get updated on next shelf
   // layout if the RTL changed.
   SetBoundsRect(gfx::Rect());
@@ -526,7 +511,7 @@ void HomeButton::HandleLocaleChange() {
 
 int64_t HomeButton::GetDisplayId() const {
   aura::Window* window = GetWidget()->GetNativeWindow();
-  return display::Screen::GetScreen()->GetDisplayNearestWindow(window).id();
+  return display::Screen::Get()->GetDisplayNearestWindow(window).id();
 }
 
 std::unique_ptr<HomeButton::ScopedNoClipRect>
@@ -581,11 +566,6 @@ bool HomeButton::CanShowNudgeLabel() const {
 }
 
 void HomeButton::StartNudgeAnimation() {
-  // Don't animate the label as it is already visible when text-in-shelf is
-  // enabled.
-  if (features::IsHomeButtonWithTextEnabled())
-    return;
-
   // Ensure any in-progress nudge animations are completed before initializing
   // a new nudge animation, and creating a rippler layer. Nudge animation
   // callbacks may otherwise delete ripple layer mid new animation set up (and
@@ -665,15 +645,16 @@ void HomeButton::CreateExpandableContainer() {
   expandable_container_ = AddChildViewAt(std::make_unique<views::View>(), 0);
   expandable_container_->SetLayoutManager(
       std::make_unique<views::FillLayout>());
-  expandable_container_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  expandable_container_->layer()->SetMasksToBounds(true);
-  if (GetColorProvider()) {
-    expandable_container_->layer()->SetColor(
-        GetColorProvider()->GetColor(cros_tokens::kCrosSysSystemOnBase));
-  }
-  expandable_container_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(home_button_width / 2.f));
-  expandable_container_->layer()->SetName("NudgeLabelContainer");
+  expandable_container_->SetBackground(views::CreateLayerBasedRoundedBackground(
+      cros_tokens::kCrosSysSystemOnBase,
+      gfx::RoundedCornersF(home_button_width / 2.f)));
+  expandable_container_->background()->SetInternalName("NudgeLabelContainer");
+}
+
+void HomeButton::UpdateTooltipText() {
+  // Don't show a tooltip if we're already showing the app list.
+  SetTooltipText(IsShowingAppList() ? std::u16string()
+                                    : GetViewAccessibility().GetCachedName());
 }
 
 void HomeButton::CreateNudgeLabel() {
@@ -701,7 +682,7 @@ void HomeButton::CreateNudgeLabel() {
   nudge_label_->layer()->SetFillsBoundsOpaquely(false);
   nudge_label_->SetTextContext(CONTEXT_LAUNCHER_NUDGE_LABEL);
   nudge_label_->SetTextStyle(views::style::STYLE_EMPHASIZED);
-  nudge_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  nudge_label_->SetEnabledColor(cros_tokens::kCrosSysOnSurface);
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosButton2,
                                         *nudge_label_);
   expandable_container_->SetVisible(false);

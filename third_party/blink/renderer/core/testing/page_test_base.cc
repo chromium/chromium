@@ -16,15 +16,16 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/font_face_set_document.h"
-#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/frame/csp/test_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text_fragment.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
@@ -92,9 +93,8 @@ void PageTestBase::MockClipboardHostProvider::Install(
   interface_broker_ = &interface_broker;
   interface_broker_->SetBinderForTesting(
       blink::mojom::blink::ClipboardHost::Name_,
-      WTF::BindRepeating(
-          &PageTestBase::MockClipboardHostProvider::BindClipboardHost,
-          base::Unretained(this)));
+      BindRepeating(&PageTestBase::MockClipboardHostProvider::BindClipboardHost,
+                    Unretained(this)));
 }
 
 void PageTestBase::MockClipboardHostProvider::BindClipboardHost(
@@ -199,6 +199,18 @@ void PageTestBase::SetupPageWithClients(
 void PageTestBase::TearDown() {
   dummy_page_holder_ = nullptr;
   MemoryCache::Get()->EvictResources();
+
+  // `SimpleFontData` is leaked because of
+  // `ComputedStyle::GetInitialStyleSingleton()`. i.e.
+  // `ComputedStyleBase::inherited_data_::font_` ->
+  // `Font::font_fallback_list_` -> `FontFallbackList::font_list_`. The leak
+  // may cause `Debug check failed: isolate == isolate_` while running
+  // `~SimpleFontData`. So we have to decouple FontFallbackList from the
+  // initial style. `FontFallbackList` will be recreated by
+  // `EnsureFallbackList()` if needed.
+  const_cast<ComputedStyle*>(ComputedStyle::GetInitialStyleSingleton())
+      ->GetFont()
+      ->NullifyForTesting();
 }
 
 Document& PageTestBase::GetDocument() const {
@@ -211,6 +223,10 @@ Page& PageTestBase::GetPage() const {
 
 LocalFrame& PageTestBase::GetFrame() const {
   return GetDummyPageHolder().GetFrame();
+}
+
+LocalFrameView& PageTestBase::GetFrameView() const {
+  return *GetFrame().View();
 }
 
 FrameSelection& PageTestBase::Selection() const {
@@ -257,7 +273,7 @@ void PageTestBase::LoadNoto(LocalFrame& frame) {
 
 // Both sets the inner html and runs the document lifecycle.
 void PageTestBase::SetBodyInnerHTML(const String& body_content) {
-  GetDocument().body()->setInnerHTML(body_content, ASSERT_NO_EXCEPTION);
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(body_content);
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -266,7 +282,8 @@ void PageTestBase::SetBodyContent(const std::string& body_content) {
 }
 
 void PageTestBase::SetHtmlInnerHTML(const std::string& html_content) {
-  GetDocument().documentElement()->setInnerHTML(String::FromUTF8(html_content));
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(
+      String::FromUTF8(html_content));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -276,12 +293,12 @@ void PageTestBase::InsertStyleElement(const std::string& style_rules) {
   DCHECK_EQ(head, GetOrCreateElement(&GetDocument(), html_names::kHeadTag));
   Element* const style = GetDocument().CreateRawElement(
       html_names::kStyleTag, CreateElementFlags::ByCreateElement());
-  style->setTextContent(String(style_rules.data(), style_rules.size()));
+  style->setTextContent(String(style_rules));
   head->appendChild(style);
 }
 
 void PageTestBase::NavigateTo(const KURL& url,
-                              const WTF::HashMap<String, String>& headers) {
+                              const HashMap<String, String>& headers) {
   auto params = WebNavigationParams::CreateWithEmptyHTMLForTesting(url);
 
   for (const auto& header : headers)
@@ -319,6 +336,10 @@ StyleEngine& PageTestBase::GetStyleEngine() {
 
 Element* PageTestBase::GetElementById(const char* id) const {
   return GetDocument().getElementById(AtomicString(id));
+}
+
+Element* PageTestBase::QuerySelector(const char* selector) const {
+  return GetDocument().QuerySelector(AtomicString(selector));
 }
 
 AnimationClock& PageTestBase::GetAnimationClock() {

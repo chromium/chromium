@@ -75,7 +75,7 @@ void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
       base::BindRepeating(&OfflineSigninLimiter::UpdateLockScreenLimit,
                           base::Unretained(this)));
   // Start listening to power state.
-  base::PowerMonitor::AddPowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->AddPowerSuspendObserver(this);
 
   // Start listening to session lock state
   auto* session_manager = session_manager::SessionManager::Get();
@@ -122,7 +122,7 @@ OfflineSigninLimiter::OfflineSigninLimiter(Profile* profile,
           std::make_unique<base::WallClockTimer>()) {}
 
 OfflineSigninLimiter::~OfflineSigninLimiter() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager) {
     session_manager->RemoveObserver(this);
@@ -349,13 +349,16 @@ void OfflineSigninLimiter::UpdateOnlineSigninData(
   user_manager::KnownUser known_user(g_browser_process->local_state());
   known_user.SetLastOnlineSignin(user.GetAccountId(), time);
   known_user.SetOfflineSigninLimit(user.GetAccountId(), limit);
+
+  // We need to store the last online timestamp in both local state
+  // and prefs, because for ephemeral users local state can be unavailable
+  // and we need this information on login screen, where prefs are unavailable.
+  PrefService* prefs = profile_->GetPrefs();
+  prefs->SetTime(prefs::kLastOnlineSignInTime, time);
 }
 
 base::Time OfflineSigninLimiter::GetLastOnlineSigninTime() {
-  const user_manager::User& user = GetUser();
-
-  user_manager::KnownUser known_user(g_browser_process->local_state());
-  return known_user.GetLastOnlineSignin(user.GetAccountId());
+  return pref_change_registrar_.prefs()->GetTime(prefs::kLastOnlineSignInTime);
 }
 
 const user_manager::User& OfflineSigninLimiter::GetUser() {

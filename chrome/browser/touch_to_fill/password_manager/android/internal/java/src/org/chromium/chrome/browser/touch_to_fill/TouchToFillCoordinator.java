@@ -10,8 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
-import org.chromium.chrome.browser.touch_to_fill.data.Credential;
-import org.chromium.chrome.browser.touch_to_fill.data.WebauthnCredential;
+import org.chromium.chrome.browser.touch_to_fill.data.CredentialBase;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
@@ -30,6 +29,7 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
     private final TouchToFillMediator mMediator = new TouchToFillMediator();
     private final PropertyModel mModel =
             TouchToFillProperties.createDefaultModel(mMediator::onDismissed);
+    private TouchToFillView mView;
 
     @Override
     public void initialize(
@@ -51,28 +51,31 @@ public class TouchToFillCoordinator implements TouchToFillComponent {
                 context.getResources()
                         .getDimensionPixelSize(R.dimen.touch_to_fill_favicon_size_modern),
                 bottomSheetFocusHelper);
-        setUpModelChangeProcessors(mModel, new TouchToFillView(context, sheetController));
+        mView = new TouchToFillView(context, sheetController);
+        setUpModelChangeProcessors(mModel, mView);
     }
 
     @Override
     public void showCredentials(
             GURL url,
             boolean isOriginSecure,
-            List<WebauthnCredential> webAuthnCredentials,
-            List<Credential> credentials,
+            List<CredentialBase> credentials,
             boolean triggerSubmission,
-            boolean managePasskeysHidesPasswords,
             boolean showHybridPasskeyOption,
             boolean showCredManEntry) {
         mMediator.showCredentials(
                 url,
                 isOriginSecure,
-                webAuthnCredentials,
                 credentials,
                 showCredManEntry,
                 triggerSubmission,
-                managePasskeysHidesPasswords,
                 showHybridPasskeyOption);
+    }
+
+    @Override
+    public void cleanUp() {
+        if (mView == null) return;
+        mView.destroy();
     }
 
     /**

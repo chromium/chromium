@@ -1,0 +1,24 @@
+{
+  "name": "fetch() headers test",
+  "version": "0.1",
+  "manifest_version": 3,
+  "description": "",
+  "host_permissions": ["http://127.0.0.1/*"],
+  "background": {
+    "service_worker": "background.js",
+     "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://127.0.0.1/*"],
+      "js": ["content_script.js"]
+    }
+  ],
+  "action": {
+   "default_popup": "popup.html"
+ },
+ "web_accessible_resources": [{
+     "matches": ["<all_urls>"],
+     "resources": ["_test_resources/api_test/service_worker/worker_fetch_headers/fetch_common_tests.js"]
+   }]
+}

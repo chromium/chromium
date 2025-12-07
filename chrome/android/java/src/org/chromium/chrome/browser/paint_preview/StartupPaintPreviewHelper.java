@@ -4,13 +4,17 @@
 
 package org.chromium.chrome.browser.paint_preview;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.os.SystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
@@ -25,11 +29,14 @@ import org.chromium.chrome.browser.toolbar.load_progress.LoadProgressCoordinator
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
+import java.util.function.Supplier;
+
 /** Glue code for the Paint Preview show-on-startup feature. */
-public class StartupPaintPreviewHelper {
+@NullMarked
+public class StartupPaintPreviewHelper implements Destroyable {
     /**
-     * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt
-     * to display a paint preview on the first tab restoration that happens on Chrome startup when
+     * Tracks whether a paint preview should be shown on tab restore. We use this to only attempt to
+     * display a paint preview on the first tab restoration that happens on Chrome startup when
      * cold.
      */
     private static boolean sShouldShowOnRestore;
@@ -41,6 +48,8 @@ public class StartupPaintPreviewHelper {
     private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
     private final ObserverList<PaintPreviewMetricsObserver> mMetricsObservers =
             new ObserverList<>();
+
+    private @Nullable Destroyable mServiceObserver;
 
     /**
      * Initializes the logic required for the Paint Preview on startup feature. Mainly, observes a
@@ -63,6 +72,7 @@ public class StartupPaintPreviewHelper {
         mBrowserControlsManager = browserControlsManager;
         mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;
 
+        assumeNonNull(windowAndroid.getContext().get());
         if (MultiWindowUtils.getInstance()
                 .areMultipleChromeInstancesRunning(windowAndroid.getContext().get())) {
             sShouldShowOnRestore = false;
@@ -81,19 +91,21 @@ public class StartupPaintPreviewHelper {
                             sShouldShowOnRestore = false;
                         }
 
-                        Context context = windowAndroid.getContext().get();
+                        Context context = assumeNonNull(windowAndroid.getContext().get());
                         boolean runAudit =
                                 context == null
                                         || !MultiWindowUtils.getInstance()
                                                 .areMultipleChromeInstancesRunning(context);
                         // Avoid running the audit in multi-window mode as otherwise we will delete
                         // data that is possibly in use by the other Activity's TabModelSelector.
-                        PaintPreviewTabServiceFactory.getServiceInstance()
-                                .onRestoreCompleted(tabModelSelector, runAudit);
+                        assert mServiceObserver == null;
+                        mServiceObserver =
+                                PaintPreviewTabServiceFactory.getServiceInstance()
+                                        .onRestoreCompleted(tabModelSelector, runAudit);
                         tabModelSelector.removeObserver(this);
                     }
 
-                    private boolean preventShowOnRestore(Tab tab) {
+                    private boolean preventShowOnRestore(@Nullable Tab tab) {
                         if (tab == null || tab.isShowingErrorPage() || tab.isNativePage()) {
                             return true;
                         }
@@ -112,8 +124,10 @@ public class StartupPaintPreviewHelper {
 
     /** Attempts to display the Paint Preview representation for the given Tab. */
     public static void showPaintPreviewOnRestore(Tab tab) {
+        WindowAndroid windowAndroid = tab.getWindowAndroid();
+        assumeNonNull(windowAndroid);
         ObservableSupplier<StartupPaintPreviewHelper> paintPreviewSupplier =
-                StartupPaintPreviewHelperSupplier.from(tab.getWindowAndroid());
+                StartupPaintPreviewHelperSupplier.from(windowAndroid);
         if (paintPreviewSupplier == null) return;
 
         StartupPaintPreviewHelper paintPreviewHelper = paintPreviewSupplier.get();
@@ -172,5 +186,12 @@ public class StartupPaintPreviewHelper {
      */
     public void addMetricsObserver(PaintPreviewMetricsObserver observer) {
         mMetricsObservers.addObserver(observer);
+    }
+
+    @Override
+    public void destroy() {
+        if (mServiceObserver != null) {
+            mServiceObserver.destroy();
+        }
     }
 }

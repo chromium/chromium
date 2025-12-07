@@ -129,10 +129,6 @@ class ExampleFloatIterator {
            string_list_index_ == other.string_list_index_;
   }
 
-  bool operator!=(const ExampleFloatIterator& other) const {
-    return !(*this == other);
-  }
-
  private:
   // Returns the end iterator.
   explicit ExampleFloatIterator(

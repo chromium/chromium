@@ -28,18 +28,18 @@
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import io
 import json
 import re
-import six
 import unittest
 from unittest import mock
 
 from blinkpy.common import exit_codes
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.path_finder import WEB_TESTS_LAST_COMPONENT
 from blinkpy.common.system.path import abspath_to_uri
 from blinkpy.common.system.system_host import SystemHost
-
 from blinkpy.w3c.wpt_manifest import MANIFEST_NAME
 from blinkpy.web_tests import run_web_tests
 from blinkpy.web_tests.models import test_failures
@@ -47,17 +47,16 @@ from blinkpy.web_tests.models.typ_types import ResultType
 from blinkpy.web_tests.port import test
 from blinkpy.web_tests.views.printing import Printer
 
-from six import StringIO
 
-
-def parse_args(extra_args=None, tests_included=False):
+def parse_args(extra_args=None, tests_included=False, show_results=False):
     extra_args = extra_args or []
     args = []
     if not '--platform' in extra_args:
         args.extend(['--platform', 'test'])
-
     if not {'--jobs', '-j', '--child-processes'}.intersection(set(args)):
         args.extend(['--jobs', '1'])
+    if not show_results:
+        args.append('--no-show-results')
     args.extend(extra_args)
     if not tests_included:
         # We use the glob to test that globbing works.
@@ -80,7 +79,7 @@ def passing_run(extra_args=None,
     if shared_port:
         port_obj.host.port_factory.get = lambda *args, **kwargs: port_obj
 
-    printer = Printer(host, options, StringIO())
+    printer = Printer(host, options, io.StringIO())
     run_details = run_web_tests.run(port_obj, options, parsed_args, printer)
     return run_details.exit_code == 0
 
@@ -88,11 +87,22 @@ def passing_run(extra_args=None,
 def logging_run(extra_args=None,
                 port_obj=None,
                 tests_included=False,
+                show_results=False,
                 host=None,
                 shared_port=True):
-    options, parsed_args = parse_args(
-        extra_args=extra_args, tests_included=tests_included)
+    options, parsed_args = parse_args(extra_args=extra_args,
+                                      tests_included=tests_included,
+                                      show_results=show_results)
     host = host or MockHost()
+    if show_results:
+        finder = PathFinder(host.filesystem)
+        host.filesystem.write_text_file(
+            finder.path_from_blink_tools('blinkpy', 'web_tests',
+                                         'results.html'),
+            '<h1>Test run summary</h1> ...')
+        host.filesystem.write_text_file(
+            finder.path_from_blink_tools('blinkpy', 'web_tests',
+                                         'results.html.version'), '1.0')
     if not port_obj:
         port_obj = host.port_factory.get(
             port_name=options.platform, options=options)
@@ -105,7 +115,7 @@ def logging_run(extra_args=None,
 def run_and_capture(port_obj, options, parsed_args, shared_port=True):
     if shared_port:
         port_obj.host.port_factory.get = lambda *args, **kwargs: port_obj
-    logging_stream = StringIO()
+    logging_stream = io.StringIO()
     printer = Printer(port_obj.host, options, logging_stream)
     run_details = run_web_tests.run(port_obj, options, parsed_args, printer)
     return (run_details, logging_stream)
@@ -138,7 +148,7 @@ def get_test_results(args, host=None, port_obj=None):
     port_obj = port_obj or host.port_factory.get(
         port_name=options.platform, options=options)
 
-    printer = Printer(host, options, StringIO())
+    printer = Printer(host, options, io.StringIO())
     run_details = run_web_tests.run(port_obj, options, parsed_args, printer)
 
     all_results = []
@@ -177,7 +187,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
     def test_basic(self):
         options, args = parse_args(
             tests_included=True)
-        logging_stream = StringIO()
+        logging_stream = io.StringIO()
         host = MockHost()
         port_obj = host.port_factory.get(options.platform, options)
         printer = Printer(host, options, logging_stream)
@@ -206,11 +216,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         one_line_summary = "%d tests ran as expected%s, %d didn't:\n" % (
             expected_tests, expected_summary_str,
             len(details.initial_results.unexpected_results_by_name))
-        if six.PY2:
-            self.assertIn(one_line_summary, logging_stream.buflist)
-        else:
-            self.assertIn(one_line_summary, logging_stream.getvalue())
-
+        self.assertIn(one_line_summary, logging_stream.getvalue())
 
         # Ensure the results were summarized properly.
         self.assertEqual(details.summarized_failing_results['num_regressions'],
@@ -239,26 +245,18 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         _, regular_output, _ = logging_run(
             ['--debug-rwt-logging', '--jobs', '2', 'passes', 'http/tests', 'perf/foo'],
             tests_included=True, shared_port=False)
-        if six.PY2:
-            self.assertTrue(
-                any('1 locked' in line for line in regular_output.buflist))
-        else:
-            self.assertTrue(
-                any('1 locked' in line
-                    for line in regular_output.getvalue().splitlines()))
+        self.assertTrue(
+            any('1 locked' in line
+                for line in regular_output.getvalue().splitlines()))
 
     def test_child_processes_2(self):
         _, regular_output, _ = logging_run(
             ['--debug-rwt-logging', '--jobs', '2'], shared_port=False)
-        if six.PY2:
-            self.assertTrue(
-                any(['Running 2 ' in line for line in regular_output.buflist]))
-        else:
-            self.assertTrue(
-                any([
-                    'Running 2 ' in line
-                    for line in regular_output.getvalue().splitlines()
-                ]))
+        self.assertTrue(
+            any([
+                'Running 2 ' in line
+                for line in regular_output.getvalue().splitlines()
+            ]))
 
     def test_child_processes_min(self):
         _, regular_output, _ = logging_run([
@@ -267,15 +265,11 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         ],
                                            tests_included=True,
                                            shared_port=False)
-        if six.PY2:
-            self.assertTrue(
-                any(['Running 1 ' in line for line in regular_output.buflist]))
-        else:
-            self.assertTrue(
-                any([
-                    'Running 1 ' in line
-                    for line in regular_output.getvalue().splitlines()
-                ]))
+        self.assertTrue(
+            any([
+                'Running 1 ' in line
+                for line in regular_output.getvalue().splitlines()
+            ]))
 
     def test_dryrun(self):
         tests_run = get_tests_run(['--dry-run'])
@@ -316,24 +310,40 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
     def test_device_failure(self):
         # Test that we handle a device going offline during a test properly.
         host = MockHost()
-        details, regular_output, _ = logging_run(
-            ['passes/text.html',
-             'failures/expected/device_failure.html',
-             '--ignore-default-expectations', '--order=none'], tests_included=True,
-            host=host)
+        args = [
+            'passes/text.html',
+            'failures/expected/device_failure.html',
+            'virtual/virtual_failures/failures/expected/device_failure.html',
+            '--ignore-default-expectations',
+            '--order=none',
+        ]
+        details, regular_output, _ = logging_run(args,
+                                                 tests_included=True,
+                                                 host=host)
         self.assertEqual(details.exit_code, exit_codes.EARLY_EXIT_STATUS)
         output = regular_output.getvalue()
         self.assertIn('failed unexpectedly (skipped due to early exit)', output)
         self.assertIn('worker/0 has failed', output)
+        self.assertIn('All workers have device failures. Exiting.', output)
+
         results = json.loads(
             host.filesystem.read_text_file(
                 '/tmp/layout-test-results/full_results.json'))
-        self.assertEqual(results['num_regressions'], 1)
+        self.assertEqual(results['num_regressions'], 2)
+        self.assertEqual(results['tests']['passes']['text.html']['actual'],
+                         'PASS')
+        # The first `device_failure.html` ran, so it's reported as an unexpected
+        # timeout.
         test_results = results['tests']['failures']['expected']['device_failure.html']
+        self.assertEqual(test_results['actual'], 'TIMEOUT')
+        self.assertTrue(test_results['is_regression'])
+        # The second `device_failure.html` was skipped because the only worker
+        # went offline.
+        test_results = results['tests']['virtual']['virtual_failures']
+        test_results = test_results['failures']['expected'][
+            'device_failure.html']
         self.assertEqual(test_results['actual'], 'SKIP')
-        self.assertEqual(test_results['is_regression'], True)
-        self.assertIn('All workers have device failures. Exiting.', output)
-        self.assertEqual(results['tests']['passes']['text.html']['actual'], 'PASS')
+        self.assertTrue(test_results['is_regression'])
 
     def test_keyboard_interrupt(self):
         # Note that this also tests running a test marked as SKIP if
@@ -1394,6 +1404,19 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         self.assertTrue('0 tests ran as expected, 2 didn\'t:\n' in
                         regular_output.getvalue())
 
+    def test_exit_after_n_failures_with_skipped_tests(self):
+        # Test that we don't count skipped tests as "run".
+        host = MockHost()
+        _, regular_output, _ = logging_run([
+            '--exit-after-n-failures', '1', '--order', 'natural',
+            'failures/unexpected/text-image-checksum.html',
+            'passes/skipped/skip.html'
+        ],
+                                           tests_included=True,
+                                           host=host)
+        self.assertIn('Exiting early after 1 failures. 1 tests run.',
+                      regular_output.getvalue())
+
     def test_exit_after_n_failures(self):
         # Unexpected failures should result in tests stopping.
         tests_run = get_tests_run([
@@ -1443,6 +1466,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             _, _, user = logging_run(
                 ['--results-directory=' + str(tmpdir), '--order', 'natural'],
                 tests_included=True,
+                show_results=True,
                 host=host)
             self.assertEqual(user.opened_urls, [
                 abspath_to_uri(
@@ -1456,7 +1480,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         # look for what the output results url was.
 
         # This is the default location.
-        _, _, user = logging_run(tests_included=True)
+        _, _, user = logging_run(tests_included=True, show_results=True)
         self.assertEqual(user.opened_urls, [
             abspath_to_uri(MockHost().platform,
                            '/tmp/layout-test-results/results.html')
@@ -1470,6 +1494,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         host.filesystem.chdir('/tmp/cwd')
         _, _, user = logging_run(['--results-directory=foo'],
                                  tests_included=True,
+                                 show_results=True,
                                  host=host)
         self.assertEqual(user.opened_urls, [
             abspath_to_uri(host.platform,
@@ -2310,7 +2335,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
             any(path.endswith('-wdiff.html') for path in written_files))
 
     def test_unsupported_platform(self):
-        stderr = StringIO()
+        stderr = io.StringIO()
         res = run_web_tests.main(['--platform', 'foo'], stderr)
 
         self.assertEqual(res, exit_codes.UNEXPECTED_ERROR_EXIT_STATUS)
@@ -2330,7 +2355,7 @@ class RunTest(unittest.TestCase, StreamTestingMixin):
         host = MockHost()
         port_obj = host.port_factory.get(
             port_name=options.platform, options=options)
-        logging_stream = StringIO()
+        logging_stream = io.StringIO()
         printer = Printer(host, options, logging_stream)
         run_web_tests.run(port_obj, options, parsed_args, printer)
         self.assertTrue('text.html passed' in logging_stream.getvalue())
@@ -2976,7 +3001,7 @@ class MainTest(unittest.TestCase):
         def exception_raising_run(port, options, args, printer):
             assert False
 
-        stderr = StringIO()
+        stderr = io.StringIO()
         try:
             run_web_tests.run = interrupting_run
             res = run_web_tests.main([], stderr)

@@ -44,8 +44,8 @@ void TestPageBroadcast::UpdateWebPreferences(
 void TestPageBroadcast::UpdateRendererPreferences(
     const blink::RendererPreferences& preferences) {}
 
-void TestPageBroadcast::SetHistoryOffsetAndLength(int32_t history_offset,
-                                                  int32_t history_length) {}
+void TestPageBroadcast::SetHistoryIndexAndLength(int32_t history_index,
+                                                 int32_t history_length) {}
 
 void TestPageBroadcast::SetPageBaseBackgroundColor(
     std::optional<SkColor> color) {}
@@ -56,16 +56,20 @@ void TestPageBroadcast::CreateRemoteMainFrame(
     blink::mojom::FrameReplicationStatePtr replication_state,
     bool is_loading,
     const base::UnguessableToken& devtools_frame_token,
+    const std::optional<base::UnguessableToken>& navigation_metrics_token,
     blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
     blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces) {}
 
 void TestPageBroadcast::UpdatePageBrowsingContextGroup(
-    const blink::BrowsingContextGroupInfo& browsing_context_group_info) {}
+    const base::UnguessableToken& browsing_context_group_token) {}
 
 void TestPageBroadcast::SetPageAttributionSupport(
     network::mojom::AttributionSupport support) {}
 
 void TestPageBroadcast::UpdateColorProviders(
     const blink::ColorProviderColorMaps& color_provider_colors) {}
+
+void TestPageBroadcast::SetSupportsDraggableRegions(
+    bool supports_draggable_regions) {}
 
 }  // namespace content

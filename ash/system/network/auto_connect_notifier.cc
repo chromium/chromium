@@ -68,9 +68,11 @@ AutoConnectNotifier::~AutoConnectNotifier() {
   }
 }
 
-void AutoConnectNotifier::ConnectToNetworkRequested(
+ConnectToNetworkRequestVerdict AutoConnectNotifier::ConnectToNetworkRequested(
     const std::string& /* service_path */) {
   has_user_explicitly_requested_connection_ = true;
+
+  return ConnectToNetworkRequestVerdict::kProceed;
 }
 
 void AutoConnectNotifier::NetworkConnectionStateChanged(
@@ -136,6 +138,11 @@ void AutoConnectNotifier::OnAutoConnectedInitiated(int auto_connect_reasons) {
   // join but did not succeed in joining one (in that case, no notification
   // should be shown).
   timer_->Start(FROM_HERE, kNetworkConnectionTimeout, base::DoNothing());
+}
+
+void AutoConnectNotifier::set_timer_for_testing(
+    std::unique_ptr<base::OneShotTimer> test_timer) {
+  timer_ = std::move(test_timer);
 }
 
 void AutoConnectNotifier::DisplayToast(const NetworkState* network) {

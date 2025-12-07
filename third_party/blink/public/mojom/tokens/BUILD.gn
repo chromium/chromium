@@ -66,6 +66,10 @@ mojom_component("tokens") {
           cpp = "::blink::PaintWorkletToken"
         },
         {
+          mojom = "blink.mojom.SharedStorageWorkletToken"
+          cpp = "::blink::SharedStorageWorkletToken"
+        },
+        {
           mojom = "blink.mojom.WorkletToken"
           cpp = "::blink::WorkletToken"
         },
@@ -86,10 +90,6 @@ mojom_component("tokens") {
         {
           mojom = "blink.mojom.AttributionSrcToken"
           cpp = "::blink::AttributionSrcToken"
-        },
-        {
-          mojom = "blink.mojom.ClipboardSequenceNumberToken"
-          cpp = "::blink::ClipboardSequenceNumberToken"
         },
         {
           mojom = "blink.mojom.ExecutionContextToken"
@@ -116,8 +116,12 @@ mojom_component("tokens") {
           cpp = "::blink::WebNNContextToken"
         },
         {
-          mojom = "blink.mojom.WebNNBufferToken"
-          cpp = "::blink::WebNNBufferToken"
+          mojom = "blink.mojom.WebNNPendingConstantToken"
+          cpp = "::blink::WebNNPendingConstantToken"
+        },
+        {
+          mojom = "blink.mojom.WebNNTensorToken"
+          cpp = "::blink::WebNNTensorToken"
         },
       ]
       traits_headers = [
@@ -142,6 +146,11 @@ mojom_component("tokens") {
   export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
 
   generate_java = true
+
+  webui_module_path = "/"
+
+  # Used from locations that rely on legacy bindings.
+  generate_legacy_js_bindings = true
 }
 
 source_set("tokens_traits_headers") {

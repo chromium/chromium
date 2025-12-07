@@ -24,6 +24,7 @@ void ChromeStorageImpl::Put(const std::string& key, std::string* data) {
   DCHECK(data);
   backing_store_->SetValue(key, base::Value(*data),
                            WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+  delete data;
 }
 
 void ChromeStorageImpl::Get(const std::string& key,

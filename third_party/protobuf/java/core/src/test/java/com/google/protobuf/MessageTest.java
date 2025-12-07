@@ -1,43 +1,20 @@
 // Protocol Buffers - Google's data interchange format
 // Copyright 2008 Google Inc.  All rights reserved.
-// https://developers.google.com/protocol-buffers/
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted provided that the following conditions are
-// met:
-//
-//     * Redistributions of source code must retain the above copyright
-// notice, this list of conditions and the following disclaimer.
-//     * Redistributions in binary form must reproduce the above
-// copyright notice, this list of conditions and the following disclaimer
-// in the documentation and/or other materials provided with the
-// distribution.
-//     * Neither the name of Google Inc. nor the names of its
-// contributors may be used to endorse or promote products derived from
-// this software without specific prior written permission.
-//
-// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-// "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-// LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-// A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-// OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-// SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-// LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-// DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-// THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-// (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file or at
+// https://developers.google.com/open-source/licenses/bsd
 
 package com.google.protobuf;
 
 import static com.google.common.truth.Truth.assertThat;
 import static com.google.common.truth.Truth.assertWithMessage;
 
-import protobuf_unittest.UnittestProto.ForeignMessage;
-import protobuf_unittest.UnittestProto.TestAllExtensions;
-import protobuf_unittest.UnittestProto.TestAllTypes;
-import protobuf_unittest.UnittestProto.TestRequired;
-import protobuf_unittest.UnittestProto.TestRequiredForeign;
+import proto2_unittest.UnittestProto.ForeignMessage;
+import proto2_unittest.UnittestProto.TestAllExtensions;
+import proto2_unittest.UnittestProto.TestAllTypes;
+import proto2_unittest.UnittestProto.TestRequired;
+import proto2_unittest.UnittestProto.TestRequiredForeign;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -89,7 +66,7 @@ public class MessageTest {
   public void testMergeFrom() throws Exception {
     TestAllTypes result = TestAllTypes.newBuilder(MERGE_DEST).mergeFrom(MERGE_SOURCE).build();
 
-    assertThat(result.toString()).isEqualTo(MERGE_RESULT_TEXT);
+    assertThat(TextFormat.printer().printToString(result)).isEqualTo(MERGE_RESULT_TEXT);
   }
 
   /**
@@ -103,7 +80,7 @@ public class MessageTest {
             .mergeFrom(DynamicMessage.newBuilder(MERGE_SOURCE).build())
             .build();
 
-    assertThat(result.toString()).isEqualTo(MERGE_RESULT_TEXT);
+    assertThat(TextFormat.printer().printToString(result)).isEqualTo(MERGE_RESULT_TEXT);
   }
 
   /** Test merging two DynamicMessages. */
@@ -114,7 +91,7 @@ public class MessageTest {
             .mergeFrom(DynamicMessage.newBuilder(MERGE_SOURCE).build())
             .build();
 
-    assertThat(result.toString()).isEqualTo(MERGE_RESULT_TEXT);
+    assertThat(TextFormat.printer().printToString(result)).isEqualTo(MERGE_RESULT_TEXT);
   }
 
   // =================================================================
@@ -267,7 +244,7 @@ public class MessageTest {
   }
 
   @Test
-  public void testParseUnititialized() throws Exception {
+  public void testParseUninitialized() throws Exception {
     try {
       TestRequired.parseFrom(ByteString.EMPTY);
       assertWithMessage("Should have thrown an exception.").fail();
@@ -277,7 +254,7 @@ public class MessageTest {
   }
 
   @Test
-  public void testParseNestedUnititialized() throws Exception {
+  public void testParseNestedUninitialized() throws Exception {
     ByteString data =
         TestRequiredForeign.newBuilder()
             .setOptionalMessage(TEST_REQUIRED_UNINITIALIZED)
@@ -324,7 +301,7 @@ public class MessageTest {
   }
 
   @Test
-  public void testDynamicParseUnititialized() throws Exception {
+  public void testDynamicParseUninitialized() throws Exception {
     try {
       Descriptors.Descriptor descriptor = TestRequired.getDescriptor();
       DynamicMessage.parseFrom(descriptor, ByteString.EMPTY);
@@ -409,5 +386,52 @@ public class MessageTest {
             .setOptionalDouble(0.0)
             .build();
     assertThat(message1).isNotEqualTo(message2);
+  }
+
+  /** Tests that unpaired surrogates are replaced by a question mark when serializing a string. */
+  @Test
+  public void testUnpairedSurrogatesReplacedByQuestionMark() throws InvalidProtocolBufferException {
+    String testString = "foo \ud83d bar";
+    String expectedString = "foo ? bar";
+
+    proto3_unittest.UnittestProto3.TestAllTypes testMessage =
+        proto3_unittest.UnittestProto3.TestAllTypes.newBuilder()
+            .setOptionalString(testString)
+            .build();
+    ByteString serializedMessage = testMessage.toByteString();
+
+    // Behavior is compatible with String.getBytes("UTF-8"), which replaces
+    // unpaired surrogates with a question mark.
+    proto3_unittest.UnittestProto3.TestAllTypes parsedMessage =
+        proto3_unittest.UnittestProto3.TestAllTypes.parseFrom(serializedMessage);
+    assertThat(parsedMessage.getOptionalString()).isEqualTo(expectedString);
+
+    // Conversion happens during serialization.
+    ByteString expectedBytes = ByteString.copyFromUtf8(expectedString);
+    assertWithMessage(
+            String.format(
+                "Expected serializedMessage (%s) to contain \"%s\" (%s).",
+                encodeHex(serializedMessage), expectedString, encodeHex(expectedBytes)))
+        .that(contains(serializedMessage, expectedBytes))
+        .isTrue();
+  }
+
+  private static String encodeHex(ByteString bytes) {
+    String hexDigits = "0123456789abcdef";
+    StringBuilder stringBuilder = new StringBuilder(bytes.size() * 2);
+    for (byte b : bytes) {
+      stringBuilder.append(hexDigits.charAt((b & 0xf0) >> 4));
+      stringBuilder.append(hexDigits.charAt(b & 0x0f));
+    }
+    return stringBuilder.toString();
+  }
+
+  private static boolean contains(ByteString a, ByteString b) {
+    for (int i = 0; i <= a.size() - b.size(); ++i) {
+      if (a.substring(i, i + b.size()).equals(b)) {
+        return true;
+      }
+    }
+    return false;
   }
 }

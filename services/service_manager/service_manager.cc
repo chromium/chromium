@@ -13,7 +13,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
@@ -336,8 +335,7 @@ ServiceInstance* ServiceManager::FindOrCreateMatchingTargetInstance(
     }
 #else   // !BUILDFLAG(IS_IOS)
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
 #endif  // !BUILDFLAG(IS_IOS)
   }
 
@@ -394,7 +392,7 @@ void ServiceManager::DestroyInstance(ServiceInstance* instance) {
 
   MakeInstanceUnreachable(instance);
   auto it = instances_.find(instance);
-  CHECK(it != instances_.end(), base::NotFatalUntil::M130);
+  CHECK(it != instances_.end());
 
   // Deletes |instance|.
   instances_.erase(it);

@@ -54,18 +54,18 @@ namespace {
 
 // Gets the encoding for the form.
 // TODO(tkent): Use FormDataEncoder::encodingFromAcceptCharset().
-void GetFormEncoding(const HTMLFormElement& form, WTF::TextEncoding* encoding) {
+void GetFormEncoding(const HTMLFormElement& form, TextEncoding* encoding) {
   String str(form.FastGetAttribute(html_names::kAcceptCharsetAttr));
   str.Replace(',', ' ');
   Vector<String> charsets;
   str.Split(' ', charsets);
   for (const String& charset : charsets) {
-    *encoding = WTF::TextEncoding(charset);
+    *encoding = TextEncoding(charset);
     if (encoding->IsValid())
       return;
   }
   if (form.GetDocument().Loader())
-    *encoding = WTF::TextEncoding(form.GetDocument().Encoding());
+    *encoding = TextEncoding(form.GetDocument().Encoding());
 }
 
 // If the form does not have an activated submit button, the first submit
@@ -91,10 +91,11 @@ HTMLFormControlElement* ButtonToActivate(const HTMLFormElement& form) {
 // selected state.
 bool IsSelectInDefaultState(const HTMLSelectElement& select) {
   if (select.IsMultiple() || select.size() > 1) {
-    for (auto* const option_element : select.GetOptionList()) {
-      if (option_element->Selected() !=
-          option_element->FastHasAttribute(html_names::kSelectedAttr))
+    for (auto& option_element : select.GetOptionList()) {
+      if (option_element.Selected() !=
+          option_element.FastHasAttribute(html_names::kSelectedAttr)) {
         return false;
+      }
     }
     return true;
   }
@@ -102,14 +103,15 @@ bool IsSelectInDefaultState(const HTMLSelectElement& select) {
   // The select is rendered as a combobox (called menulist in WebKit). At
   // least one item is selected, determine which one.
   HTMLOptionElement* initial_selected = nullptr;
-  for (auto* const option_element : select.GetOptionList()) {
-    if (option_element->FastHasAttribute(html_names::kSelectedAttr)) {
+  for (auto& option_element : select.GetOptionList()) {
+    if (option_element.FastHasAttribute(html_names::kSelectedAttr)) {
       // The page specified the option to select.
-      initial_selected = option_element;
+      initial_selected = &option_element;
       break;
     }
-    if (!initial_selected)
-      initial_selected = option_element;
+    if (!initial_selected) {
+      initial_selected = &option_element;
+    }
   }
   return !initial_selected || initial_selected->Selected();
 }
@@ -182,7 +184,7 @@ HTMLInputElement* FindSuitableSearchInputElement(const HTMLFormElement& form) {
 // Return false if the provided HTMLInputElement is not found in the form
 bool BuildSearchString(const HTMLFormElement& form,
                        Vector<char>* encoded_string,
-                       const WTF::TextEncoding& encoding,
+                       const TextEncoding& encoding,
                        const HTMLInputElement* text_element) {
   bool is_element_found = false;
   for (ListedElement* item : form.ListedElements()) {
@@ -204,7 +206,7 @@ bool BuildSearchString(const HTMLFormElement& form,
                                               FormDataEncoder::kNormalizeCRLF);
       encoded_string->push_back('=');
       if (control == text_element) {
-        encoded_string->Append("{searchTerms}", 13);
+        encoded_string->AppendSpan(base::span_from_cstring("{searchTerms}"));
         is_element_found = true;
       } else {
         FormDataEncoder::EncodeStringAsFormData(
@@ -230,7 +232,7 @@ WebSearchableFormData::WebSearchableFormData(
           form_element->FastGetAttribute(html_names::kMethodAttr), "post"))
     return;
 
-  WTF::TextEncoding encoding;
+  TextEncoding encoding;
   GetFormEncoding(*form_element, &encoding);
   if (!encoding.IsValid()) {
     // Need a valid encoding to encode the form elements.

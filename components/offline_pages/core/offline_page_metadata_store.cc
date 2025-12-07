@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -24,6 +23,7 @@
 #include "sql/meta_table.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace offline_pages {
 
@@ -88,12 +88,15 @@ bool UpgradeWithQuery(sql::Database* db, const base::cstring_view upgrade_sql) {
       " request_origin VARCHAR NOT NULL DEFAULT '',"
       " digest VARCHAR NOT NULL DEFAULT ''"
       ")";
-  if (!db->Execute(kCreateOfflinePagesTableVersion1Sql))
+  if (!db->Execute(kCreateOfflinePagesTableVersion1Sql)) {
     return false;
-  if (!db->Execute(upgrade_sql))
+  }
+  if (!db->Execute(upgrade_sql)) {
     return false;
-  if (!db->Execute("DROP TABLE IF EXISTS temp_" OFFLINE_PAGES_TABLE_NAME))
+  }
+  if (!db->Execute("DROP TABLE IF EXISTS temp_" OFFLINE_PAGES_TABLE_NAME)) {
     return false;
+  }
   return true;
 }
 
@@ -210,19 +213,23 @@ bool CreatePageThumbnailsTable(sql::Database* db) {
 
 bool CreateLatestSchema(sql::Database* db) {
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   // First time database initialization.
-  if (!CreateOfflinePagesTable(db))
+  if (!CreateOfflinePagesTable(db)) {
     return false;
-  if (!CreatePageThumbnailsTable(db))
+  }
+  if (!CreatePageThumbnailsTable(db)) {
     return false;
+  }
 
   sql::MetaTable meta_table;
   if (!meta_table.Init(db, OfflinePageMetadataStore::kCurrentVersion,
-                       OfflinePageMetadataStore::kCompatibleVersion))
+                       OfflinePageMetadataStore::kCompatibleVersion)) {
     return false;
+  }
 
   return transaction.Commit();
 }
@@ -231,38 +238,47 @@ bool CreateLatestSchema(sql::Database* db) {
 // MetaTable. This function should never need to be modified.
 bool UpgradeFromLegacyVersion(sql::Database* db) {
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   // Legacy upgrade section. Details are described in the header file.
   if (!db->DoesColumnExist(OFFLINE_PAGES_TABLE_NAME, "expiration_time") &&
       !db->DoesColumnExist(OFFLINE_PAGES_TABLE_NAME, "title")) {
-    if (!UpgradeFrom52(db))
+    if (!UpgradeFrom52(db)) {
       return false;
+    }
   } else if (!db->DoesColumnExist(OFFLINE_PAGES_TABLE_NAME, "title")) {
-    if (!UpgradeFrom53(db))
+    if (!UpgradeFrom53(db)) {
       return false;
+    }
   } else if (db->DoesColumnExist(OFFLINE_PAGES_TABLE_NAME, "offline_url")) {
-    if (!UpgradeFrom54(db))
+    if (!UpgradeFrom54(db)) {
       return false;
+    }
   } else if (!db->DoesColumnExist(OFFLINE_PAGES_TABLE_NAME, "original_url")) {
-    if (!UpgradeFrom55(db))
+    if (!UpgradeFrom55(db)) {
       return false;
+    }
   } else if (db->DoesColumnExist(OFFLINE_PAGES_TABLE_NAME, "expiration_time")) {
-    if (!UpgradeFrom56(db))
+    if (!UpgradeFrom56(db)) {
       return false;
+    }
   } else if (!db->DoesColumnExist(OFFLINE_PAGES_TABLE_NAME, "request_origin")) {
-    if (!UpgradeFrom57(db))
+    if (!UpgradeFrom57(db)) {
       return false;
+    }
   } else if (!db->DoesColumnExist(OFFLINE_PAGES_TABLE_NAME, "digest")) {
-    if (!UpgradeFrom61(db))
+    if (!UpgradeFrom61(db)) {
       return false;
+    }
   }
 
   sql::MetaTable meta_table;
   if (!meta_table.Init(db, OfflinePageMetadataStore::kFirstPostLegacyVersion,
-                       OfflinePageMetadataStore::kCompatibleVersion))
+                       OfflinePageMetadataStore::kCompatibleVersion)) {
     return false;
+  }
 
   return transaction.Commit();
 }
@@ -276,8 +292,9 @@ bool UpgradeFromVersion1ToVersion2(sql::Database* db,
 bool UpgradeFromVersion2ToVersion3(sql::Database* db,
                                    sql::MetaTable* meta_table) {
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   static const char kCreatePageThumbnailsSql[] =
       "CREATE TABLE IF NOT EXISTS page_thumbnails"
@@ -285,8 +302,9 @@ bool UpgradeFromVersion2ToVersion3(sql::Database* db,
       "expiration INTEGER NOT NULL,"
       "thumbnail BLOB NOT NULL"
       ")";
-  if (!db->Execute(kCreatePageThumbnailsSql))
+  if (!db->Execute(kCreatePageThumbnailsSql)) {
     return false;
+  }
 
   return meta_table->SetVersionNumber(3) && transaction.Commit();
 }
@@ -294,21 +312,29 @@ bool UpgradeFromVersion2ToVersion3(sql::Database* db,
 bool UpgradeFromVersion3ToVersion4(sql::Database* db,
                                    sql::MetaTable* meta_table) {
   sql::Transaction transaction(db);
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
-  const char kSql[] = "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
-                      " ADD COLUMN snippet VARCHAR NOT NULL DEFAULT ''; "
-                      "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
-                      " ADD COLUMN attribution VARCHAR NOT NULL DEFAULT '';";
-  if (!db->Execute(kSql))
+  static constexpr char kAddSnippetColumnSql[] =
+      "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
+      " ADD COLUMN snippet VARCHAR NOT NULL DEFAULT ''";
+
+  static constexpr char kAddAttributionColumnSql[] =
+      "ALTER TABLE " OFFLINE_PAGES_TABLE_NAME
+      " ADD COLUMN attribution VARCHAR NOT NULL DEFAULT ''";
+
+  if (!db->Execute(kAddSnippetColumnSql) ||
+      !db->Execute(kAddAttributionColumnSql)) {
     return false;
+  }
 
-  const char kUpgradeThumbnailsTableSql[] =
+  static constexpr char kUpgradeThumbnailsTableSql[] =
       "ALTER TABLE page_thumbnails"
       " ADD COLUMN favicon BLOB NOT NULL DEFAULT x''";
-  if (!db->Execute(kUpgradeThumbnailsTableSql))
+  if (!db->Execute(kUpgradeThumbnailsTableSql)) {
     return false;
+  }
 
   return meta_table->SetVersionNumber(4) && transaction.Commit();
 }
@@ -316,32 +342,38 @@ bool UpgradeFromVersion3ToVersion4(sql::Database* db,
 bool CreateSchema(sql::Database* db) {
   if (!sql::MetaTable::DoesTableExist(db)) {
     // If this looks like a completely empty DB, simply start from scratch.
-    if (!db->DoesTableExist(OFFLINE_PAGES_TABLE_NAME))
+    if (!db->DoesTableExist(OFFLINE_PAGES_TABLE_NAME)) {
       return CreateLatestSchema(db);
+    }
 
     // Otherwise we need to run a legacy upgrade.
-    if (!UpgradeFromLegacyVersion(db))
+    if (!UpgradeFromLegacyVersion(db)) {
       return false;
+    }
   }
 
   sql::MetaTable meta_table;
   if (!meta_table.Init(db, OfflinePageMetadataStore::kCurrentVersion,
-                       OfflinePageMetadataStore::kCompatibleVersion))
+                       OfflinePageMetadataStore::kCompatibleVersion)) {
     return false;
+  }
 
   for (;;) {
     switch (meta_table.GetVersionNumber()) {
       case 1:
-        if (!UpgradeFromVersion1ToVersion2(db, &meta_table))
+        if (!UpgradeFromVersion1ToVersion2(db, &meta_table)) {
           return false;
+        }
         break;
       case 2:
-        if (!UpgradeFromVersion2ToVersion3(db, &meta_table))
+        if (!UpgradeFromVersion2ToVersion3(db, &meta_table)) {
           return false;
+        }
         break;
       case 3:
-        if (!UpgradeFromVersion3ToVersion4(db, &meta_table))
+        if (!UpgradeFromVersion3ToVersion4(db, &meta_table)) {
           return false;
+        }
         break;
       case OfflinePageMetadataStore::kCurrentVersion:
         return true;
@@ -392,35 +424,38 @@ StoreState OfflinePageMetadataStore::GetStateForTesting() const {
 }
 
 void OfflinePageMetadataStore::OnOpenStart(base::TimeTicks last_closing_time) {
-  TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Metadata Store", this, "is reopen",
-                           !last_closing_time.is_null());
+  TRACE_EVENT_BEGIN("offline_pages", "Metadata Store",
+                    perfetto::Track::FromPointer(this), "is reopen",
+                    !last_closing_time.is_null());
+  TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: Initializing",
+                    perfetto::Track::FromPointer(this));
 }
 
 void OfflinePageMetadataStore::OnOpenDone(bool success) {
-  TRACE_EVENT_ASYNC_STEP_PAST1("offline_pages", "Metadata Store", this,
-                               "Initializing", "succeeded", success);
-  if (!success) {
-    TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store", this);
-  }
+  TRACE_EVENT_END(
+      "offline_pages",
+      /*Metadata Store: Initializing */ perfetto::Track::FromPointer(this),
+      "succeeded", success);
 }
 
 void OfflinePageMetadataStore::OnTaskBegin(bool is_initialized) {
-  TRACE_EVENT_ASYNC_BEGIN1("offline_pages", "Metadata Store: task execution",
-                           this, "is store loaded", is_initialized);
+  TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: task execution",
+                    perfetto::Track::FromPointer(this), "is store loaded",
+                    is_initialized);
 }
 
 void OfflinePageMetadataStore::OnTaskRunComplete() {
   // Note: the time recorded for this trace step will include thread hop wait
   // times to the background thread and back.
-  TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages",
-                               "Metadata Store: task execution", this, "Task");
+  TRACE_EVENT_END(
+      "offline_pages",
+      /* Metadata Store: task execution*/ perfetto::Track::FromPointer(this));
 }
 
 void OfflinePageMetadataStore::OnTaskReturnComplete() {
-  TRACE_EVENT_ASYNC_STEP_PAST0(
-      "offline_pages", "Metadata Store: task execution", this, "Callback");
-  TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store: task execution",
-                         this);
+  TRACE_EVENT_END(
+      "offline_pages",
+      /* Metadata Store: task execution */ perfetto::Track::FromPointer(this));
 }
 
 void OfflinePageMetadataStore::OnCloseStart(
@@ -428,13 +463,16 @@ void OfflinePageMetadataStore::OnCloseStart(
   if (status_before_close != InitializationStatus::kSuccess) {
     return;
   }
-  TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Metadata Store", this, "Open");
+  TRACE_EVENT_BEGIN("offline_pages", "Metadata Store: Closing",
+                    perfetto::Track::FromPointer(this));
 }
 
 void OfflinePageMetadataStore::OnCloseComplete() {
-  TRACE_EVENT_ASYNC_STEP_PAST0("offline_pages", "Metadata Store", this,
-                               "Closing");
-  TRACE_EVENT_ASYNC_END0("offline_pages", "Metadata Store", this);
+  TRACE_EVENT_END(
+      "offline_pages",
+      /* Metadata Store: Closing */ perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("offline_pages",
+                  /* Metadata Store */ perfetto::Track::FromPointer(this));
 }
 
 }  // namespace offline_pages

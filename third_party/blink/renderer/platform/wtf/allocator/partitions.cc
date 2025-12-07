@@ -48,14 +48,13 @@
 #include "partition_alloc/partition_root.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-namespace WTF {
+namespace blink {
 
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
 
 BASE_FEATURE(kBlinkUseLargeEmptySlotSpanRingForBufferRoot,
-             "BlinkUseLargeEmptySlotSpanRingForBufferRoot",
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -101,28 +100,11 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   const auto memory_tagging =
       enable_memory_tagging ? partition_alloc::PartitionOptions::kEnabled
                             : partition_alloc::PartitionOptions::kDisabled;
-#if PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-  const bool pool_offset_freelists_enabled =
-      base::FeatureList::IsEnabled(base::features::kUsePoolOffsetFreelists);
-#else
-  const bool pool_offset_freelists_enabled = false;
-#endif  // PA_BUILDFLAG(USE_FREELIST_DISPATCHER)
-  const auto use_pool_offset_freelists =
-      pool_offset_freelists_enabled
-          ? partition_alloc::PartitionOptions::kEnabled
-          : partition_alloc::PartitionOptions::kDisabled;
   // No need to call ChangeMemoryTaggingModeForAllThreadsPerProcess() as it will
   // be handled in ReconfigureAfterFeatureListInit().
   PartitionOptions opts;
-  opts.star_scan_quarantine = PartitionOptions::kAllowed;
   opts.backup_ref_ptr = brp_setting;
   opts.memory_tagging = {.enabled = memory_tagging};
-  opts.use_pool_offset_freelists = use_pool_offset_freelists;
-  opts.use_small_single_slot_spans =
-      base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocUseSmallSingleSlotSpans)
-          ? partition_alloc::PartitionOptions::kEnabled
-          : partition_alloc::PartitionOptions::kDisabled;
   return opts;
 }
 
@@ -141,24 +123,12 @@ bool Partitions::InitializeOnce() {
   partition_alloc::PartitionAllocGlobalInit(&Partitions::HandleOutOfMemory);
 
   auto options = PartitionOptionsFromFeatures();
-
-  const auto actual_brp_setting = options.backup_ref_ptr;
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocDisableBRPInBufferPartition)) {
-    options.backup_ref_ptr = PartitionOptions::kDisabled;
-  }
-
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       buffer_allocator(options);
   buffer_root_ = buffer_allocator->root();
   if (base::FeatureList::IsEnabled(
           kBlinkUseLargeEmptySlotSpanRingForBufferRoot)) {
     buffer_root_->EnableLargeEmptySlotSpanRing();
-  }
-
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocDisableBRPInBufferPartition)) {
-    options.backup_ref_ptr = actual_brp_setting;
   }
 
   // FastMalloc doesn't provide isolation, only a (hopefully fast) malloc().
@@ -189,7 +159,6 @@ void Partitions::InitializeArrayBufferPartition() {
   static base::NoDestructor<partition_alloc::PartitionAllocator>
       array_buffer_allocator([]() {
         partition_alloc::PartitionOptions opts;
-        opts.star_scan_quarantine = partition_alloc::PartitionOptions::kAllowed;
         opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
         // When the V8 virtual memory cage is enabled, the ArrayBuffer
         // partition must be placed inside of it. For that, PA's
@@ -282,7 +251,7 @@ size_t Partitions::TotalSizeOfCommittedPages() {
 // static
 size_t Partitions::TotalActiveBytes() {
   LightPartitionStatsDumperImpl dumper;
-  WTF::Partitions::DumpMemoryStats(true, &dumper);
+  Partitions::DumpMemoryStats(true, &dumper);
   return dumper.TotalActiveBytes();
 }
 
@@ -480,4 +449,4 @@ void Partitions::AdjustPartitionsForBackground() {
   }
 }
 
-}  // namespace WTF
+}  // namespace blink

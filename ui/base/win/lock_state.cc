@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/win/session_change_observer.h"
 
 namespace ui {
@@ -18,19 +19,18 @@ namespace {
 
 // Checks if the current session is locked.
 bool IsSessionLocked() {
-  bool is_locked = false;
   LPWSTR buffer = nullptr;
   DWORD buffer_length = 0;
-  if (::WTSQuerySessionInformation(WTS_CURRENT_SERVER, WTS_CURRENT_SESSION,
-                                   WTSSessionInfoEx, &buffer, &buffer_length) &&
-      buffer_length >= sizeof(WTSINFOEXW)) {
-    auto* info = reinterpret_cast<WTSINFOEXW*>(buffer);
-    is_locked =
-        info->Data.WTSInfoExLevel1.SessionFlags == WTS_SESSIONSTATE_LOCK;
+  if (!::WTSQuerySessionInformation(WTS_CURRENT_SERVER, WTS_CURRENT_SESSION,
+                                    WTSSessionInfoEx, &buffer,
+                                    &buffer_length) ||
+      buffer_length < sizeof(WTSINFOEXW)) {
+    return false;
   }
-  if (buffer)
-    ::WTSFreeMemory(buffer);
-  return is_locked;
+
+  absl::Cleanup wts_deleter = [buffer] { ::WTSFreeMemory(buffer); };
+  auto* info = reinterpret_cast<WTSINFOEXW*>(buffer);
+  return info->Data.WTSInfoExLevel1.SessionFlags == WTS_SESSIONSTATE_LOCK;
 }
 
 // Observes the screen lock state of Windows and caches the current state. This

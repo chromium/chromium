@@ -1,0 +1,9 @@
+include_rules = [
+  "+components/download/public/background_service",
+  "+components/keyed_service/core",
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
+  "+components/performance_manager/scenario_api",
+  "+mojo/public/cpp/bindings",
+  "+services/passage_embeddings/public/mojom",
+]

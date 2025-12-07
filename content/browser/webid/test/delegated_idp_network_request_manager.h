@@ -9,10 +9,14 @@
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 // Forwards IdpNetworkRequestManager calls to delegate. The purpose of this
-// class is to enable querying the delegate after FederatedAuthRequestImpl
+// class is to enable querying the delegate after RequestService
 // destroys the DelegatedIdpNetworkRequestManager.
 class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
  public:
@@ -37,13 +41,15 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                            int rp_brand_icon_ideal_size,
                            int rp_brand_icon_minimum_size,
                            FetchClientMetadataCallback callback) override;
-  void SendAccountsRequest(const GURL& accounts_url,
+  bool SendAccountsRequest(const url::Origin& idp_origin,
+                           const GURL& accounts_url,
                            const std::string& client_id,
                            AccountsRequestCallback callback) override;
   void SendTokenRequest(
       const GURL& token_url,
       const std::string& account,
       const std::string& url_encoded_post_data,
+      bool idp_blidness,
       TokenRequestCallback callback,
       ContinueOnCallback continue_on_callback,
       RecordErrorMetricsCallback record_error_metrics_callback) override;
@@ -55,7 +61,8 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
       base::TimeDelta api_call_to_token_response_time) override;
   void SendFailedTokenRequestMetrics(
       const GURL& metrics_endpoint_url,
-      MetricsEndpointErrorCode error_code) override;
+      bool did_show_ui,
+      webid::MetricsEndpointErrorCode error_code) override;
   void SendLogout(const GURL& logout_url, LogoutCallback callback) override;
   void SendDisconnectRequest(const GURL& disconnect_url,
                              const std::string& account_hint,
@@ -63,6 +70,13 @@ class DelegatedIdpNetworkRequestManager : public MockIdpNetworkRequestManager {
                              DisconnectCallback callback) override;
 
   void DownloadAndDecodeImage(const GURL& url, ImageCallback callback) override;
+
+  void DownloadAndDecodeCachedImage(const url::Origin& idp_origin,
+                                    const GURL& url,
+                                    ImageCallback callback) override;
+
+  void CacheAccountPictures(const url::Origin& idp_origin,
+                            const std::vector<GURL>& picture_urls) override;
 
  private:
   raw_ptr<IdpNetworkRequestManager, DanglingUntriaged> delegate_;

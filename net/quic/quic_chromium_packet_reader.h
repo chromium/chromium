@@ -7,6 +7,7 @@
 #define NET_QUIC_QUIC_CHROMIUM_PACKET_READER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/safety_checks.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_export.h"
@@ -27,6 +28,10 @@ const int kQuicYieldAfterPacketsRead = 32;
 const int kQuicYieldAfterDurationMilliseconds = 2;
 
 class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
+  // TODO(crbug.com/422045782): Remove this macro once we identified the cause
+  // of the bug.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   class NET_EXPORT_PRIVATE Visitor {
    public:
@@ -40,17 +45,11 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
                           const quic::QuicSocketAddress& peer_address) = 0;
   };
 
-  // If |report_ecn| is true, then the reader will call GetLastTos() on the
-  // socket after each read and report the ECN codepoint in the
-  // QuicReceivedPacket.
-  // TODO(crbug.com/332924003): When the relevant config flags are deprecated,
-  // this argument can be removed.
   QuicChromiumPacketReader(std::unique_ptr<DatagramClientSocket> socket,
                            const quic::QuicClock* clock,
                            Visitor* visitor,
                            int yield_after_packets,
                            quic::QuicTime::Delta yield_after_duration,
-                           bool report_ecn,
                            const NetLogWithSource& net_log);
 
   QuicChromiumPacketReader(const QuicChromiumPacketReader&) = delete;
@@ -83,9 +82,6 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketReader {
   quic::QuicTime yield_after_;
   scoped_refptr<IOBufferWithSize> read_buffer_;
   NetLogWithSource net_log_;
-  // Stores whether receiving ECN is in the feature list to avoid accessing
-  // the feature list for every packet.
-  bool report_ecn_;
 
   base::WeakPtrFactory<QuicChromiumPacketReader> weak_factory_{this};
 };

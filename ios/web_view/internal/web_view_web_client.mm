@@ -11,11 +11,14 @@
 #import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
 #import "base/ios/ns_error_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
 #import "components/autofill/ios/browser/suggestion_controller_java_script_feature.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
+#import "components/autofill/ios/form_util/programmatic_form_submission_handler_java_script_feature.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "components/security_interstitials/core/unsafe_resource.h"
@@ -34,6 +37,7 @@
 #import "ios/web/public/security/ssl_status.h"
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
+#import "ios/web_view/internal/cwv_global_state_internal.h"
 #import "ios/web_view/internal/cwv_lookalike_url_handler_internal.h"
 #import "ios/web_view/internal/cwv_ssl_error_handler_internal.h"
 #import "ios/web_view/internal/cwv_ssl_status_internal.h"
@@ -71,11 +75,12 @@ bool WebViewWebClient::IsAppSpecificURL(const GURL& url) const {
 }
 
 std::string WebViewWebClient::GetUserAgent(web::UserAgentType type) const {
-  if (CWVWebView.customUserAgent) {
-    return base::SysNSStringToUTF8(CWVWebView.customUserAgent);
+  if (CWVGlobalState.sharedInstance.customUserAgent) {
+    return base::SysNSStringToUTF8(
+        CWVGlobalState.sharedInstance.customUserAgent);
   } else {
-    return web::BuildMobileUserAgent(
-        base::SysNSStringToUTF8([CWVWebView userAgentProduct]));
+    return web::BuildMobileUserAgent(base::SysNSStringToUTF8(
+        CWVGlobalState.sharedInstance.userAgentProduct));
   }
 }
 
@@ -94,7 +99,7 @@ base::RefCountedMemory* WebViewWebClient::GetDataResourceBytes(
 
 std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
     web::BrowserState* browser_state) const {
-  return {
+  std::vector<web::JavaScriptFeature*> features = {
       autofill::AutofillJavaScriptFeature::GetInstance(),
       autofill::FormHandlersJavaScriptFeature::GetInstance(),
       autofill::SuggestionControllerJavaScriptFeature::GetInstance(),
@@ -105,6 +110,14 @@ std::vector<web::JavaScriptFeature*> WebViewWebClient::GetJavaScriptFeatures(
       translate::TranslateJavaScriptFeature::GetInstance(),
       WebViewMessageHandlerJavaScriptFeature::FromBrowserState(browser_state),
       WebViewScriptsJavaScriptFeature::FromBrowserState(browser_state)};
+
+  if (base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos)) {
+    features.push_back(
+        autofill::ProgrammaticFormSubmissionHandlerJavaScriptFeature::
+            GetInstance());
+  }
+
+  return features;
 }
 
 void WebViewWebClient::PrepareErrorPage(
@@ -129,7 +142,8 @@ void WebViewWebClient::PrepareErrorPage(
   if ([final_underlying_error.domain isEqual:kSafeBrowsingErrorDomain] &&
       [navigation_delegate
           respondsToSelector:@selector(webView:handleUnsafeURLWithHandler:)]) {
-    DCHECK_EQ(kUnsafeResourceErrorCode, final_underlying_error.code);
+    DCHECK_EQ(SafeBrowsingErrorCode::kUnsafeResource,
+              static_cast<SafeBrowsingErrorCode>(final_underlying_error.code));
     SafeBrowsingUnsafeResourceContainer* container =
         SafeBrowsingUnsafeResourceContainer::FromWebState(web_state);
     const security_interstitials::UnsafeResource* resource =
@@ -184,5 +198,8 @@ bool WebViewWebClient::IsInsecureFormWarningEnabled(
   return base::FeatureList::IsEnabled(
       security_interstitials::features::kInsecureFormSubmissionInterstitial);
 }
+
+void WebViewWebClient::BuildEditMenu(web::WebState* web_state,
+                                     id<UIMenuBuilder>) const {}
 
 }  // namespace ios_web_view

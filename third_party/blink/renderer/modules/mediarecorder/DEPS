@@ -1,5 +1,4 @@
 include_rules = [
-    "+base/containers/fixed_flat_map.h",
     "+base/containers/queue.h",
     "+base/memory/read_only_shared_memory_region.h",
     "+base/memory/unsafe_shared_memory_region.h",
@@ -7,7 +6,7 @@ include_rules = [
     "+base/files/file_path.h",
     "+base/files/memory_mapped_file.h",
     "+base/path_service.h",
-    "+base/strings/string_number_conversions.h",
+    "+base/task/common/task_annotator.h",
     "+base/task/task_runner_util.h",
     "+base/task/task_traits.h",
     "+base/threading/sequenced_task_runner_handle.h",
@@ -15,6 +14,7 @@ include_rules = [
     "+base/win/windows_version.h",
     "+cc/paint",
     "+media",
+    "+gpu",
     "+skia/ext/platform_canvas.h",
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/event_modules.h",
@@ -32,6 +32,5 @@ include_rules = [
 specific_include_rules = {
     ".*_unittest.cc": [
         "+base/run_loop.h",
-        "+ui/gfx/gpu_memory_buffer.h",
     ],
 }

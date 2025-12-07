@@ -5,13 +5,11 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 
 #include "base/notreached.h"
-#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_device_orientation_permission_state.h"
-#include "third_party/blink/renderer/core/frame/dactyloscoper.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -31,7 +29,7 @@ namespace blink {
 
 DeviceOrientationController::DeviceOrientationController(LocalDOMWindow& window)
     : DeviceSingleWindowEventController(window),
-      Supplement<LocalDOMWindow>(window),
+      local_dom_window_(window),
       permission_service_(&window) {}
 
 DeviceOrientationController::~DeviceOrientationController() = default;
@@ -42,16 +40,13 @@ void DeviceOrientationController::DidUpdateData() {
   DispatchDeviceEvent(LastEvent());
 }
 
-const char DeviceOrientationController::kSupplementName[] =
-    "DeviceOrientationController";
-
 DeviceOrientationController& DeviceOrientationController::From(
     LocalDOMWindow& window) {
   DeviceOrientationController* controller =
-      Supplement<LocalDOMWindow>::From<DeviceOrientationController>(window);
+      window.GetDeviceOrientationController();
   if (!controller) {
     controller = MakeGarbageCollected<DeviceOrientationController>(window);
-    ProvideTo(window, controller);
+    window.SetDeviceOrientationController(controller);
   }
   return *controller;
 }
@@ -78,8 +73,6 @@ void DeviceOrientationController::DidAddEventListener(
     return;
 
   UseCounter::Count(GetWindow(), WebFeature::kDeviceOrientationSecureOrigin);
-  Dactyloscoper::RecordDirectSurface(
-      &GetWindow(), WebFeature::kDeviceOrientationSecureOrigin, String());
 
   if (!has_requested_permission_) {
     UseCounter::Count(
@@ -89,8 +82,8 @@ void DeviceOrientationController::DidAddEventListener(
 
   if (!has_event_listener_) {
     if (!CheckPolicyFeatures(
-            {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
-             mojom::blink::PermissionsPolicyFeature::kGyroscope})) {
+            {network::mojom::PermissionsPolicyFeature::kAccelerometer,
+             network::mojom::PermissionsPolicyFeature::kGyroscope})) {
       LogToConsolePolicyFeaturesDisabled(*GetWindow().GetFrame(),
                                          EventTypeName());
       return;
@@ -101,11 +94,10 @@ void DeviceOrientationController::DidAddEventListener(
 }
 
 DeviceOrientationData* DeviceOrientationController::LastData() const {
-  return override_orientation_data_
-             ? override_orientation_data_.Get()
-             : orientation_event_pump_
-                   ? orientation_event_pump_->LatestDeviceOrientationData()
-                   : nullptr;
+  return override_orientation_data_ ? override_orientation_data_.Get()
+         : orientation_event_pump_
+             ? orientation_event_pump_->LatestDeviceOrientationData()
+             : nullptr;
 }
 
 bool DeviceOrientationController::HasLastData() {
@@ -168,7 +160,7 @@ void DeviceOrientationController::Trace(Visitor* visitor) const {
   visitor->Trace(orientation_event_pump_);
   visitor->Trace(permission_service_);
   DeviceSingleWindowEventController::Trace(visitor);
-  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(local_dom_window_);
 }
 
 void DeviceOrientationController::RegisterWithOrientationEventPump(
@@ -180,9 +172,9 @@ void DeviceOrientationController::RegisterWithOrientationEventPump(
   orientation_event_pump_->SetController(this);
 }
 
-ScriptPromise<V8DeviceOrientationPermissionState>
-DeviceOrientationController::RequestPermission(ScriptState* script_state) {
-  ExecutionContext* context = GetSupplementable();
+ScriptPromise<V8PermissionState> DeviceOrientationController::RequestPermission(
+    ScriptState* script_state) {
+  ExecutionContext* context = local_dom_window_;
   DCHECK_EQ(context, ExecutionContext::From(script_state));
 
   has_requested_permission_ = true;
@@ -193,29 +185,27 @@ DeviceOrientationController::RequestPermission(ScriptState* script_state) {
                                    context->GetTaskRunner(TaskType::kSensor)));
   }
 
-  auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolver<V8DeviceOrientationPermissionState>>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<V8PermissionState>>(
+          script_state);
   auto promise = resolver->Promise();
 
   permission_service_->HasPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
-      resolver->WrapCallbackInScriptScope(WTF::BindOnce(
-          [](ScriptPromiseResolver<V8DeviceOrientationPermissionState>*
-                 resolver,
-             mojom::blink::PermissionStatus status) {
+      resolver->WrapCallbackInScriptScope(
+          BindOnce([](ScriptPromiseResolver<V8PermissionState>* resolver,
+                      mojom::blink::PermissionStatus status) {
             switch (status) {
               case mojom::blink::PermissionStatus::GRANTED:
               case mojom::blink::PermissionStatus::DENIED:
-                resolver->Resolve(*V8DeviceOrientationPermissionState::Create(
-                    PermissionStatusToString(status)));
+                resolver->Resolve(ToV8PermissionState(status));
                 break;
               case mojom::blink::PermissionStatus::ASK:
                 // At the moment, this state is not reachable because there
                 // is no "ask" or "prompt" state in the Chromium
                 // permissions UI for sensors, so HasPermissionStatus() will
                 // always return GRANTED or DENIED.
-                NOTREACHED_IN_MIGRATION();
-                break;
+                NOTREACHED();
             }
           })));
 

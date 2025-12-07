@@ -19,8 +19,10 @@ class CommitQuota {
  public:
   CommitQuota(int max_tokens, base::TimeDelta refill_interval);
 
-  CommitQuota(const CommitQuota&) = delete;
-  CommitQuota& operator=(const CommitQuota&) = delete;
+  CommitQuota(const CommitQuota&);
+  CommitQuota& operator=(const CommitQuota&);
+  CommitQuota(CommitQuota&&);
+  CommitQuota& operator=(CommitQuota&&);
 
   ~CommitQuota();
 

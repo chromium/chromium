@@ -1,16 +1,19 @@
 # mypy: allow-untyped-defs
+import configparser
+import json
 import os
 import platform
 import re
 import shutil
 import stat
 import subprocess
+import sys
 import tempfile
 from abc import ABCMeta, abstractmethod
 from datetime import datetime, timedelta, timezone
 from shutil import which
-from typing import Optional
-from urllib.parse import urlsplit
+from typing import Any, Dict, List, Optional, Tuple
+from urllib.parse import urlsplit, quote
 
 import html5lib
 import requests
@@ -79,6 +82,11 @@ def get_taskcluster_artifact(index, path):
     resp.raise_for_status()
 
     return resp
+
+
+def get_file_github(repo: str, ref: str, path: str) -> bytes:
+    data: bytes = get(f"https://raw.githubusercontent.com/{repo}/{ref}/{path}").content  # type: ignore
+    return data
 
 
 class Browser:
@@ -195,6 +203,235 @@ class Browser:
         return NotImplemented
 
 
+class FirefoxPrefs:
+    def __init__(self, logger):
+        self.logger = logger
+
+    def install_prefs(self, binary: Optional[str], dest: Optional[str] = None, channel: Optional[str] = None) -> str:
+        if binary and not binary.endswith(".apk"):
+            version, channel_, rev = self.get_version_and_channel(binary)
+            if channel is not None and channel != channel_:
+                # Beta doesn't always seem to have the b in the version string, so allow the
+                # manually supplied value to override the one from the binary
+                self.logger.warning("Supplied channel doesn't match binary, using supplied channel")
+            elif channel is None:
+                channel = channel_
+        else:
+            rev = None
+            version = None
+
+        if channel is None:
+            self.logger.warning("No browser channel passed to install_prefs, taking prefs from main branch")
+            channel = "nightly"
+
+        if dest is None:
+            dest = os.curdir
+
+        dest = os.path.join(dest, "profiles", rev if rev is not None else channel)
+        if version:
+            dest = os.path.join(dest, version)
+        have_cache = False
+        if os.path.exists(dest) and os.path.exists(os.path.join(dest, "profiles.json")):
+            if channel != "nightly":
+                have_cache = True
+            else:
+                now = datetime.now()
+                have_cache = (datetime.fromtimestamp(os.stat(dest).st_mtime) >
+                              now - timedelta(days=1))
+
+        # If we don't have a recent download, grab and extract the latest one
+        if not have_cache:
+            if os.path.exists(dest):
+                rmtree(dest)
+            os.makedirs(dest)
+
+            self.get_profile_github(version, channel, dest, rev)
+            self.logger.info(f"Test prefs downloaded to {dest}")
+        else:
+            self.logger.info(f"Using cached test prefs from {dest}")
+
+        return dest
+
+    def get_profile_github(self, version: Optional[str], channel: str, dest: str, rev: Optional[str]) -> None:
+        """Read the testing/profiles data from firefox source on GitHub"""
+
+        # There are several possible approaches here, none of which are great:
+        # 1. Shallow, sparse, clone of the repo with no history and just the testing/profiles
+        #    directory. This is too slow to be usable.
+        # 2. Use the Github repository contents API to read all the files under that directory.
+        #    This requires auth to not run into rate limits.
+        # 3. Gitub tree API has basically the same problems
+        # 4. Download a full archive of the relevant commit from Github and extract only the
+        #    required directory. This is also too slow to be useful.
+        #
+        # In the end we use githubusercontent.com, which has the problem that it doesn't allow
+        # directory listings. So we have to hardcode in all the files we need. In particular
+        # for each profile we are currently just downloading the user.js file and ignoring the
+        # extensions/ directory, which is currently unused.
+        ref = self.get_git_ref(version, channel, rev)
+        self.logger.info(f"Getting profile data from git ref {ref}")
+        file_data = {}
+        profiles_bytes = get_file_github("mozilla-firefox/firefox", ref, "testing/profiles/profiles.json")
+        profiles = json.loads(profiles_bytes)
+        file_data["profiles.json"] = profiles_bytes
+        for subdir in profiles["web-platform-tests"]:
+            rel_path = os.path.join(subdir, "user.js")
+            file_data[rel_path] = get_file_github("mozilla-firefox/firefox",
+                                                  ref,
+                                                  f"testing/profiles/{subdir}/user.js")
+
+        for path, data in file_data.items():
+            dest_path = os.path.join(dest, path)
+            os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+            with open(dest_path, "wb") as f:
+                f.write(data)
+
+    def get_version_and_channel(self, binary: str) -> Tuple[Optional[str], str, Optional[str]]:
+        application_ini_path = os.path.join(os.path.dirname(binary), "application.ini")
+        if os.path.exists(application_ini_path):
+            try:
+                return self.get_version_and_channel_application_ini(application_ini_path)
+            except ValueError as e:
+                self.logger.info(f"Reading application ini file failed: {e}")
+                # Fall back to calling the binary
+        version_string: str = call(binary, "--version").strip()  # type: ignore
+        version_re = re.compile(r"Mozilla Firefox (.*)")
+        m = version_re.match(version_string)
+        if not m:
+            return None, "nightly", None
+        version, channel = self.extract_version_number(m.group(1))
+        return version, channel, None
+
+    def get_version_and_channel_application_ini(self, path: str) -> Tuple[Optional[str], str, Optional[str]]:
+        """Try to read application version from an ini file
+
+        This doesn't work in all cases e.g. local builds don't have
+        all the information, or builds where the binary path is a shell
+        script or similar."""
+        config = configparser.ConfigParser()
+        paths = config.read(path)
+        if path not in paths:
+            raise ValueError("Failed to read config file")
+
+        version = config.get("App", "Version", fallback=None)
+        if version is None:
+            raise ValueError("Failed to find Version key")
+        version, channel = self.extract_version_number(version)
+
+        rev = None
+        if channel == "nightly":
+            source_repo = config.get("App", "SourceRepository", fallback=None)
+            commit = config.get("App", "SourceStamp", fallback=None)
+            if source_repo is not None and commit is not None:
+                if source_repo.startswith("https://hg.mozilla.org"):
+                    try:
+                        commit_data: Dict[str, Any] = get(
+                            f"https://hg-edge.mozilla.org/integration/autoland/json-rev/{commit}"
+                        ).json()  # type: ignore
+                        rev = commit_data.get("git_commit")
+                    except Exception:
+                        pass
+                else:
+                    rev = commit
+
+        return version, channel, rev
+
+    def extract_version_number(self, version_string: str) -> Tuple[Optional[str], str]:
+        version_parser = re.compile(r"^(\d+)\.(\d+)(?:\.(\d+))?((a|b)\d+)?")
+        m = version_parser.match(version_string)
+        if not m:
+            return None, "nightly"
+        major, minor, patch, pre, channel_id = m.groups()
+        version = f"{major}.{minor}"
+        if patch is not None:
+            version += f".{patch}"
+        if pre is not None:
+            version += pre
+        channel = {"a": "nightly", "b": "beta"}.get(channel_id, "stable")
+        return version, channel
+
+    def get_git_tags(self, ref_prefix: str) -> List[str]:
+        tags = []
+        for tag_data in get(
+                f"https://api.github.com/repos/mozilla-firefox/firefox/git/matching-refs/tags/{ref_prefix}"
+        ).json():  # type: ignore
+            tag = tag_data["ref"].rsplit("/", 1)[1]
+            tags.append(tag)
+        return tags
+
+    def get_git_ref(self, version: Optional[str], channel: str, rev: Optional[str]) -> str:
+        if rev is not None:
+            return rev
+
+        ref_prefix = "FIREFOX_"
+        ref_re = None
+        tags = []
+
+        if channel == "stable":
+            if version:
+                return "FIREFOX_%s_RELEASE" % version.replace(".", "_")
+            ref_re = re.compile(r"FIREFOX_(\d+)_(\d+)(?:_(\d+))?_RELEASE")
+        elif channel == "beta":
+            if version:
+                ref_prefix = "FIREFOX_%s" % version.replace(".", "_")
+                if "b" not in version:
+                    ref_re = re.compile(fr"{ref_prefix}b(\d+)_(?:BUILD(\d+)|RELEASE)")
+                else:
+                    ref_re = re.compile(fr"{ref_prefix}_(?:BUILD(\d+)|RELEASE)")
+            else:
+                ref_re = re.compile(r"FIREFOX_(\d+)_(\d+)b(\d+)_(?:BUILD(\d+)|RELEASE)")
+        else:
+            return "main"
+
+        assert ref_re is not None
+
+        for tag in self.get_git_tags(ref_prefix):
+            m = ref_re.match(tag)
+            if not m:
+                continue
+            order = [int(item) for item in m.groups() if item is not None]
+            if channel == "beta" and tag.endswith("_RELEASE"):
+                order[-1] = sys.maxsize
+            tags.append((tuple(order), tag))
+        if not tags:
+            raise ValueError(f"No tag found for version {version} channel {channel}")
+        return max(tags)[1]
+
+
+class FirefoxAndroidPrefs(FirefoxPrefs):
+    def get_git_ref(self, version: Optional[str], channel: str, rev: Optional[str]) -> str:
+        if rev is not None:
+            return rev
+
+        tags = []
+        ref_prefix = "FIREFOX-ANDROID_"
+        ref_re = None
+        if channel == "stable":
+            if version is not None:
+                return "FIREFOX-ANDROID_%s_RELEASE" % version.replace(".", "_")
+
+            ref_re = re.compile(r"FIREFOX-ANDROID_(\d+)_(\d+)(?:_(\d+))?_RELEASE")
+
+        elif channel == "beta":
+            if version:
+                ref_prefix = "FIREFOX-ANDROID_%s" % version.replace(".", "_")
+            ref_re = re.compile(r"FIREFOX-ANDROID_(\d+)_(\d+)b(\d+)_RELEASE")
+        else:
+            return "main"
+
+        assert ref_re is not None
+        for tag in self.get_git_tags(ref_prefix):
+            m = ref_re.match(tag)
+            if m is None:
+                continue
+            order = tuple(int(item) for item in m.groups() if item is not None)
+            tags.append((order, tag))
+
+        if not tags:
+            raise ValueError(f"No tag found for {version} beta")
+        return max(tags)[1]
+
+
 class Firefox(Browser):
     """Firefox-specific interface.
 
@@ -296,6 +533,9 @@ class Firefox(Browser):
         os.remove(installer_path)
         return self.find_binary_path(dest)
 
+    def install_prefs(self, binary, dest=None, channel=None):
+        return FirefoxPrefs(self.logger).install_prefs(binary, dest, channel)
+
     def find_binary_path(self, path=None, channel="nightly"):
         """Looks for the firefox binary in the virtual environment"""
 
@@ -358,92 +598,6 @@ class Firefox(Browser):
 
     def find_webdriver(self, venv_path=None, channel=None):
         return which("geckodriver")
-
-    def get_version_and_channel(self, binary):
-        version_string = call(binary, "--version").strip()
-        m = re.match(r"Mozilla Firefox (\d+\.\d+(?:\.\d+)?)(a|b)?", version_string)
-        if not m:
-            return None, "nightly"
-        version, status = m.groups()
-        channel = {"a": "nightly", "b": "beta"}
-        return version, channel.get(status, "stable")
-
-    def get_profile_bundle_url(self, version, channel):
-        if channel == "stable":
-            repo = "https://hg.mozilla.org/releases/mozilla-release"
-            tag = "FIREFOX_%s_RELEASE" % version.replace(".", "_")
-        elif channel == "beta":
-            repo = "https://hg.mozilla.org/releases/mozilla-beta"
-            major_version = version.split(".", 1)[0]
-            # For beta we have a different format for betas that are now in stable releases
-            # vs those that are not
-            tags = get("https://hg.mozilla.org/releases/mozilla-beta/json-tags").json()["tags"]
-            tags = {item["tag"] for item in tags}
-            end_tag = "FIREFOX_BETA_%s_END" % major_version
-            if end_tag in tags:
-                tag = end_tag
-            else:
-                tag = "tip"
-        else:
-            repo = "https://hg.mozilla.org/mozilla-central"
-            # Always use tip as the tag for nightly; this isn't quite right
-            # but to do better we need the actual build revision, which we
-            # can get if we have an application.ini file
-            tag = "tip"
-
-        return "%s/archive/%s.zip/testing/profiles/" % (repo, tag)
-
-    def install_prefs(self, binary, dest=None, channel=None):
-        if binary and not binary.endswith(".apk"):
-            version, channel_ = self.get_version_and_channel(binary)
-            if channel is not None and channel != channel_:
-                # Beta doesn't always seem to have the b in the version string, so allow the
-                # manually supplied value to override the one from the binary
-                self.logger.warning("Supplied channel doesn't match binary, using supplied channel")
-            elif channel is None:
-                channel = channel_
-        else:
-            version = None
-
-        if dest is None:
-            dest = os.curdir
-
-        dest = os.path.join(dest, "profiles", channel)
-        if version:
-            dest = os.path.join(dest, version)
-        have_cache = False
-        if os.path.exists(dest) and os.path.exists(os.path.join(dest, "profiles.json")):
-            if channel != "nightly":
-                have_cache = True
-            else:
-                now = datetime.now()
-                have_cache = (datetime.fromtimestamp(os.stat(dest).st_mtime) >
-                              now - timedelta(days=1))
-
-        # If we don't have a recent download, grab and extract the latest one
-        if not have_cache:
-            if os.path.exists(dest):
-                rmtree(dest)
-            os.makedirs(dest)
-
-            url = self.get_profile_bundle_url(version, channel)
-
-            self.logger.info(f"Downloading test prefs from {url}")
-            try:
-                extract_dir = tempfile.mkdtemp()
-                unzip(get(url).raw, dest=extract_dir)
-
-                profiles = os.path.join(extract_dir, os.listdir(extract_dir)[0], 'testing', 'profiles')
-                for name in os.listdir(profiles):
-                    path = os.path.join(profiles, name)
-                    shutil.move(path, dest)
-            finally:
-                rmtree(extract_dir)
-            self.logger.info(f"Test prefs downloaded to {dest}")
-        else:
-            self.logger.info(f"Using cached test prefs from {dest}")
-
-        return dest
 
     def _latest_geckodriver_version(self):
         """Get and return latest version number for geckodriver."""
@@ -543,8 +697,14 @@ class FirefoxAndroid(Browser):
         if dest is None:
             dest = os.pwd
 
+        branches = {
+            "stable": "mozilla-release",
+            "beta": "mozilla-beta",
+        }
+        branch = branches.get(channel, "mozilla-central")
+
         resp = get_taskcluster_artifact(
-            "gecko.v2.mozilla-central.shippable.latest.mobile.android-x86_64-opt",
+            f"gecko.v2.{branch}.shippable.latest.mobile.android-x86_64-opt",
             "public/build/geckoview-test_runner.apk")
 
         filename = "geckoview-test_runner.apk"
@@ -561,7 +721,7 @@ class FirefoxAndroid(Browser):
         return self.download(dest, channel)
 
     def install_prefs(self, binary, dest=None, channel=None):
-        return self._fx_browser.install_prefs(binary, dest, channel)
+        return FirefoxAndroidPrefs(self.logger).install_prefs(binary, dest, channel)
 
     def find_binary(self, venv_path=None, channel=None):
         return self.apk_path
@@ -1244,7 +1404,8 @@ class Chrome(ChromeChromiumBase):
             suffix = ""
             if channel in ("beta", "dev", "canary"):
                 suffix = " " + channel.capitalize()
-            return f"/Applications/Google Chrome{suffix}.app/Contents/MacOS/Google Chrome{suffix}"
+            path = f"/Applications/Google Chrome{suffix}.app/Contents/MacOS/Google Chrome{suffix}"
+            return path if os.path.isfile(path) else None
         if uname[0] == "Windows":
             name = "Chrome"
             if channel == "beta":
@@ -1254,7 +1415,7 @@ class Chrome(ChromeChromiumBase):
             path = os.path.expandvars(fr"$PROGRAMFILES\Google\{name}\Application\chrome.exe")
             if channel == "canary":
                 path = os.path.expandvars(r"$LOCALAPPDATA\Google\Chrome SxS\Application\chrome.exe")
-            return path
+            return path if os.path.isfile(path) else None
         self.logger.warning("Unable to find the browser binary.")
         return None
 
@@ -1693,7 +1854,7 @@ class Edge(Browser):
 
         try:
             # MojoJS version url must match the browser binary version exactly.
-            url = ("https://msedgedriver.azureedge.net/wpt-mojom/"
+            url = ("https://msedgedriver.microsoft.com/wpt-mojom/"
                    f"{edge_version}/linux64/mojojs.zip")
             # Check the status without downloading the content (this is a
             # streaming request).
@@ -1739,7 +1900,8 @@ class Edge(Browser):
             suffix = ""
             if channel in ("beta", "dev", "canary"):
                 suffix = " " + channel.capitalize()
-            return f"/Applications/Microsoft Edge{suffix}.app/Contents/MacOS/Microsoft Edge{suffix}"
+            path = f"/Applications/Microsoft Edge{suffix}.app/Contents/MacOS/Microsoft Edge{suffix}"
+            return path if os.path.isfile(path) else None
         if self.platform == "win":
             suffix = ""
             if channel in ("beta", "dev"):
@@ -1749,7 +1911,7 @@ class Edge(Browser):
             path = which("msedge.exe", path=os.pathsep.join(winpaths))
             if channel == "canary":
                 path = os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge SxS\Application\msedge.exe")
-            return path
+            return path if os.path.isfile(path) else None
         self.logger.warning("Unable to find the browser binary.")
         return None
 
@@ -1793,7 +1955,7 @@ class Edge(Browser):
         elif self.platform == "win":
             bits = "win64" if uname[4] == "x86_64" else "win32"
 
-        url = f"https://msedgedriver.azureedge.net/{version}/edgedriver_{bits}.zip"
+        url = f"https://msedgedriver.microsoft.com/{version}/edgedriver_{bits}.zip"
         self.logger.info(f"Downloading MSEdgeDriver from {url}")
         unzip(get(url).raw, dest)
         edgedriver_path = which("msedgedriver", path=dest)
@@ -2109,11 +2271,12 @@ class Servo(Browser):
     requirements = None
 
     def platform_components(self):
-        platform = {
-            "Linux": "linux",
-            "Windows": "win",
-            "Darwin": "mac"
-        }.get(uname[0])
+        platform, triple = {
+            ("Darwin", "arm64"): ("mac-arm64", "aarch64-apple-darwin"),
+            ("Darwin", "x86_64"): ("mac", "x86_64-apple-darwin"),
+            ("Linux", "x86_64"): ("linux", "x86_64-linux-gnu"),
+            ("Windows", "AMD64"): ("win", "x86_64-windows-msvc"),
+        }.get((uname[0], uname[4]), (None, None))
 
         if platform is None:
             raise ValueError("Unable to construct a valid Servo package for current platform")
@@ -2121,27 +2284,28 @@ class Servo(Browser):
         if platform == "linux":
             extension = ".tar.gz"
             decompress = untar
-        elif platform == "win" or platform == "mac":
+        elif platform in ["win", "mac", "mac-arm64"]:
             raise ValueError("Unable to construct a valid Servo package for current platform")
 
-        return (platform, extension, decompress)
+        default_filename = f"servo-{triple}"
+        return (platform, default_filename, extension, decompress)
 
     def _get(self, channel="nightly"):
         if channel != "nightly":
             raise ValueError("Only nightly versions of Servo are available")
 
-        platform, extension, _ = self.platform_components()
-        url = "https://download.servo.org/nightly/%s/servo-latest%s" % (platform, extension)
-        return get(url)
+        platform, filename, extension, _ = self.platform_components()
+        artifact = f"{filename}{extension}"
+        return get(f"https://download.servo.org/nightly/{platform}/{artifact}")
 
     def download(self, dest=None, channel="nightly", rename=None):
         if dest is None:
             dest = os.pwd
 
         resp = self._get(dest, channel)
-        _, extension, _ = self.platform_components()
+        _, default_filename, extension, _ = self.platform_components()
 
-        filename = rename if rename is not None else "servo-latest"
+        filename = rename if rename is not None else default_filename
         with open(os.path.join(dest, "%s%s" % (filename, extension,)), "w") as f:
             f.write(resp.content)
 
@@ -2150,7 +2314,7 @@ class Servo(Browser):
         if dest is None:
             dest = os.pwd
 
-        _, _, decompress = self.platform_components()
+        _, _, _, decompress = self.platform_components()
 
         resp = self._get(channel)
         decompress(resp.raw, dest=dest)
@@ -2374,116 +2538,130 @@ class WebKitTestRunner(Browser):
             return f.read().strip()
 
 
-class WebKitGTKMiniBrowser(WebKit):
-    def _get_osidversion(self):
-        with open('/etc/os-release') as osrelease_handle:
-            for line in osrelease_handle.readlines():
-                if line.startswith('ID='):
-                    os_id = line.split('=')[1].strip().strip('"')
-                if line.startswith('VERSION_ID='):
-                    version_id = line.split('=')[1].strip().strip('"')
-        assert os_id
-        assert version_id
-        osidversion = os_id + '-' + version_id
-        assert ' ' not in osidversion
-        assert len(osidversion) > 3
-        return osidversion.capitalize()
+class WebKitGlibBaseMiniBrowser(WebKit):
+    """WebKitGTK and WPE MiniBrowser specific interface (base class)."""
 
+    # This class is not meant to be used directly.
+    # And the class variables below should be defined on the subclasses.
+    BASE_DOWNLOAD_URI = ""
+    PORT_PRETTY_NAME = ""
+    WEBDRIVER_BINARY_NAME = ""
+    LIBEXEC_SUBDIR_PREFIXES = [""]
+    product = ""
+
+    def __init__(self, *args, **kwargs):
+        if self.__class__.__name__ == "WebKitGlibBaseMiniBrowser":
+            raise RuntimeError("class WebKitGlibBaseMiniBrowser should not be used directly, but subclassed")
+        for required_class_var in ["BASE_DOWNLOAD_URI", "PORT_PRETTY_NAME", "WEBDRIVER_BINARY_NAME", "LIBEXEC_SUBDIR_PREFIXES", "product"]:
+            class_var_value = getattr(self, required_class_var, "")
+            if all(len(i) == 0 for i in class_var_value):
+                raise NotImplementedError('subclass "%s" should define class variable "%s"' % (self.__class__.__name__, required_class_var))
+        return super().__init__(*args, **kwargs)
 
     def download(self, dest=None, channel=None, rename=None):
-        base_dowload_uri = "https://webkitgtk.org/built-products/"
-        base_download_dir = base_dowload_uri + "x86_64/release/" + channel + "/" + self._get_osidversion() + "/MiniBrowser/"
+        base_download_dir = self.BASE_DOWNLOAD_URI + platform.machine() + "/release/" + channel + "/MiniBrowser/"
         try:
             response = get(base_download_dir + "LAST-IS")
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 404:
-                raise RuntimeError("Can't find a WebKitGTK MiniBrowser %s bundle for %s at %s"
-                                   % (channel, self._get_osidversion(), base_dowload_uri))
+                raise RuntimeError("Can't find a %s MiniBrowser %s bundle for %s at %s"
+                                   % (self.PORT_PRETTY_NAME, channel, platform.machine(), self.BASE_DOWNLOAD_URI))
             raise
 
         bundle_filename = response.text.strip()
-        bundle_url = base_download_dir + bundle_filename
+        bundle_url = base_download_dir + quote(bundle_filename)
 
         dest = self._get_browser_download_dir(dest, channel)
         bundle_file_path = os.path.join(dest, bundle_filename)
 
-        self.logger.info("Downloading WebKitGTK MiniBrowser bundle from %s" % bundle_url)
+        self.logger.info("Downloading %s MiniBrowser bundle from %s" % (self.PORT_PRETTY_NAME, bundle_url))
         with open(bundle_file_path, "w+b") as f:
             get_download_to_descriptor(f, bundle_url)
 
-        bundle_filename_no_ext, _ = os.path.splitext(bundle_filename)
+        ext_ndots = 2 if '.tar.' in bundle_filename else 1
+        bundle_filename_no_ext = '.'.join(bundle_filename.split('.')[:-ext_ndots])
         bundle_hash_url = base_download_dir + bundle_filename_no_ext + ".sha256sum"
         bundle_expected_hash = get(bundle_hash_url).text.strip().split(" ")[0]
         bundle_computed_hash = sha256sum(bundle_file_path)
 
         if bundle_expected_hash != bundle_computed_hash:
-            self.logger.error("Calculated SHA256 hash is %s but was expecting %s" % (bundle_computed_hash,bundle_expected_hash))
-            raise RuntimeError("The WebKitGTK MiniBrowser bundle at %s has incorrect SHA256 hash." % bundle_file_path)
+            self.logger.error("Calculated SHA256 hash is %s but was expecting %s" % (bundle_computed_hash, bundle_expected_hash))
+            raise RuntimeError("The %s MiniBrowser bundle at %s has incorrect SHA256 hash." % (self.PORT_PRETTY_NAME, bundle_file_path))
         return bundle_file_path
 
     def install(self, dest=None, channel=None, prompt=True):
         dest = self._get_browser_binary_dir(dest, channel)
         bundle_path = self.download(dest, channel)
-        bundle_uncompress_directory = os.path.join(dest, "webkitgtk_minibrowser")
+        bundle_uncompress_directory = os.path.join(dest, self.product)
 
         # Clean it from previous runs
         if os.path.exists(bundle_uncompress_directory):
             rmtree(bundle_uncompress_directory)
         os.mkdir(bundle_uncompress_directory)
 
+        bundle_file_name = os.path.basename(bundle_path)
         with open(bundle_path, "rb") as f:
-            unzip(f, bundle_uncompress_directory)
+            if bundle_file_name.endswith(".zip"):
+                unzip(f, bundle_uncompress_directory)
+            elif ".tar." in bundle_file_name:
+                untar(f, bundle_uncompress_directory)
+            else:
+                raise NotImplementedError("Don't know how to install the file: %s" % bundle_file_name)
+        os.remove(bundle_path)
 
-        install_dep_script = os.path.join(bundle_uncompress_directory, "install-dependencies.sh")
-        if os.path.isfile(install_dep_script):
-            self.logger.info("Executing install-dependencies.sh script from bundle.")
-            install_dep_cmd = [install_dep_script]
-            if not prompt:
-                install_dep_cmd.append("--autoinstall")
-            # use subprocess.check_call() directly to display unbuffered stdout/stderr in real-time.
-            subprocess.check_call(install_dep_cmd)
+        for expected_binary in ["MiniBrowser", self.WEBDRIVER_BINARY_NAME]:
+            binary_path = os.path.join(bundle_uncompress_directory, expected_binary)
+            if not (os.path.isfile(binary_path) and os.access(binary_path, os.X_OK)):
+                raise RuntimeError("Can't find a %s binary at %s" % (expected_binary, binary_path))
 
         minibrowser_path = os.path.join(bundle_uncompress_directory, "MiniBrowser")
-        if not os.path.isfile(minibrowser_path):
-            raise RuntimeError("Can't find a MiniBrowser binary at %s" % minibrowser_path)
-
-        os.remove(bundle_path)
+        version_str = subprocess.check_output([minibrowser_path, "--version"]).decode("utf-8").strip()
+        self.logger.info("%s MiniBrowser bundle for channel %s installed: %s" % (self.PORT_PRETTY_NAME, channel, version_str))
         install_ok_file = os.path.join(bundle_uncompress_directory, ".installation-ok")
         open(install_ok_file, "w").close()  # touch
-        self.logger.info("WebKitGTK MiniBrowser bundle for channel %s installed." % channel)
         return minibrowser_path
 
     def _find_executable_in_channel_bundle(self, binary, venv_path=None, channel=None):
         if venv_path:
             venv_base_path = self._get_browser_binary_dir(venv_path, channel)
-            bundle_dir = os.path.join(venv_base_path, "webkitgtk_minibrowser")
+            bundle_dir = os.path.join(venv_base_path, self.product)
             install_ok_file = os.path.join(bundle_dir, ".installation-ok")
             if os.path.isfile(install_ok_file):
-                return which(binary, path=bundle_dir)
+                return shutil.which(binary, path=bundle_dir)
         return None
 
     def find_binary(self, venv_path=None, channel=None):
         minibrowser_path = self._find_executable_in_channel_bundle("MiniBrowser", venv_path, channel)
         if minibrowser_path:
+            self.logger.info("Found %s MiniBrowser %s at path: %s" % (self.PORT_PRETTY_NAME, channel, minibrowser_path))
             return minibrowser_path
 
-        libexecpaths = ["/usr/libexec/webkit2gtk-4.0"]  # Fedora path
+        # Find MiniBrowser on the system which is usually installed on the libexec dir
         triplet = "x86_64-linux-gnu"
         # Try to use GCC to detect this machine triplet
-        gcc = which("gcc")
+        gcc = shutil.which("gcc")
         if gcc:
             try:
                 triplet = call(gcc, "-dumpmachine").strip()
             except subprocess.CalledProcessError:
                 pass
-        # Add Debian/Ubuntu path
-        libexecpaths.append("/usr/lib/%s/webkit2gtk-4.0" % triplet)
-        return which("MiniBrowser", path=os.pathsep.join(libexecpaths))
+        for libexec_dir in ["/usr/libexec", f"/usr/lib/{triplet}", "/usr/lib"]:
+            if os.path.isdir(libexec_dir):
+                for libexec_entry in sorted(os.listdir(libexec_dir), reverse=True):
+                    for libexec_subdir_prefix in self.LIBEXEC_SUBDIR_PREFIXES:
+                        if libexec_entry.startswith(libexec_subdir_prefix):
+                            minibrowser_candidate_path = os.path.join(libexec_dir, libexec_entry, 'MiniBrowser')
+                            if os.path.isfile(minibrowser_candidate_path) and os.access(minibrowser_candidate_path, os.X_OK):
+                                self.logger.info("Found %s MiniBrowser at path: %s" % (self.PORT_PRETTY_NAME, minibrowser_candidate_path))
+                                return minibrowser_candidate_path
+        return None
 
     def find_webdriver(self, venv_path=None, channel=None):
-        webdriver_path = self._find_executable_in_channel_bundle("WebKitWebDriver", venv_path, channel)
+        webdriver_path = self._find_executable_in_channel_bundle(self.WEBDRIVER_BINARY_NAME, venv_path, channel)
         if not webdriver_path:
-            webdriver_path = which("WebKitWebDriver")
+            webdriver_path = shutil.which(self.WEBDRIVER_BINARY_NAME)
+        if webdriver_path:
+            self.logger.info("Found %s WebDriver at path: %s" % (self.PORT_PRETTY_NAME, webdriver_path))
         return webdriver_path
 
     def version(self, binary=None, webdriver_binary=None):
@@ -2495,12 +2673,32 @@ class WebKitGTKMiniBrowser(WebKit):
             return None
         # Example output: "WebKitGTK 2.26.1"
         if output:
-            m = re.match(r"WebKitGTK (.+)", output)
+            m = re.match(r"%s (.+)" % self.PORT_PRETTY_NAME, output)
             if not m:
                 self.logger.warning("Failed to extract version from: %s" % output)
                 return None
             return m.group(1)
         return None
+
+
+class WebKitGTKMiniBrowser(WebKitGlibBaseMiniBrowser):
+    """WebKitGTK MiniBrowser specific interface."""
+
+    BASE_DOWNLOAD_URI = "https://webkitgtk.org/built-products/"
+    PORT_PRETTY_NAME = "WebKitGTK"
+    WEBDRIVER_BINARY_NAME = "WebKitWebDriver"
+    LIBEXEC_SUBDIR_PREFIXES = ["webkitgtk", "webkit2gtk"]
+    product = "webkitgtk_minibrowser"
+
+
+class WPEWebKitMiniBrowser(WebKitGlibBaseMiniBrowser):
+    """WPE WebKit MiniBrowser specific interface."""
+
+    BASE_DOWNLOAD_URI = "https://wpewebkit.org/built-products/"
+    PORT_PRETTY_NAME = "WPE WebKit"
+    WEBDRIVER_BINARY_NAME = "WPEWebDriver"
+    LIBEXEC_SUBDIR_PREFIXES = ["wpe-webkit"]
+    product = "wpewebkit_minibrowser"
 
 
 class Epiphany(Browser):

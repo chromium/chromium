@@ -5,21 +5,24 @@
 #ifndef IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
 #define IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_
 
+#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
+
 #import <string>
 #import <vector>
 
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/shared/model/browser/browser_observer.h"
+#import "base/scoped_observation.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
-#import "ios/chrome/browser/snapshots/model/snapshot_id.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_types.h"
+#import "ios/chrome/browser/tabs/model/tabs_dependency_installer.h"
 
-@class SnapshotStorageWrapper;
+@protocol SnapshotStorage;
 
 // Associates a SnapshotStorage to a Browser.
-class SnapshotBrowserAgent : public BrowserObserver,
-                             public WebStateListObserver,
-                             public BrowserUserData<SnapshotBrowserAgent> {
+class SnapshotBrowserAgent : public BrowserUserData<SnapshotBrowserAgent>,
+                             public TabsDependencyInstaller {
  public:
   SnapshotBrowserAgent(const SnapshotBrowserAgent&) = delete;
   SnapshotBrowserAgent& operator=(const SnapshotBrowserAgent&) = delete;
@@ -38,41 +41,30 @@ class SnapshotBrowserAgent : public BrowserObserver,
   // Permanently removes all snapshots.
   void RemoveAllSnapshots();
 
-  SnapshotStorageWrapper* snapshot_storage() { return snapshot_storage_; }
+  id<SnapshotStorage> snapshot_storage() { return snapshot_storage_; }
+
+  // Retrieves snapshot of `snapshot_kind` for `snapshot_id` invoking
+  // `completion` with the image retrieved (or nil in case of failure).
+  void RetrieveSnapshotWithID(SnapshotID snapshot_id,
+                              SnapshotKind snapshot_kind,
+                              SnapshotRetrievedBlock completion);
+
+  // TabsDependencyInstaller
+  void OnWebStateInserted(web::WebState* web_state) override;
+  void OnWebStateRemoved(web::WebState* web_state) override;
+  void OnWebStateDeleted(web::WebState* web_state) override;
+  void OnActiveWebStateChanged(web::WebState* old_active,
+                               web::WebState* new_active) override;
 
  private:
   friend class BrowserUserData<SnapshotBrowserAgent>;
-  BROWSER_USER_DATA_KEY_DECL();
 
   explicit SnapshotBrowserAgent(Browser* browser);
-
-  // BrowserObserver methods
-  void BrowserDestroyed(Browser* browser) override;
-
-  // WebStateListObserver methods
-  void WebStateListDidChange(WebStateList* web_state_list,
-                             const WebStateListChange& change,
-                             const WebStateListStatus& status) override;
-  void WillBeginBatchOperation(WebStateList* web_state_list) override;
-  void BatchOperationEnded(WebStateList* web_state_list) override;
-
-  // Helper methods to set a snapshot storage for `web_state`.
-  void InsertWebState(web::WebState* web_state);
-  void DetachWebState(web::WebState* web_state);
-
-  // Migrates the snapshot storage if a folder exists in the old snapshots
-  // storage location.
-  void MigrateStorageIfNecessary();
 
   // Purges the snapshots folder of unused snapshots.
   void PurgeUnusedSnapshots();
 
-  // Returns the snapshot IDs of all the WebStates in the Browser.
-  std::vector<SnapshotID> GetSnapshotIDs();
-
-  __strong SnapshotStorageWrapper* snapshot_storage_;
-
-  raw_ptr<Browser> browser_ = nullptr;
+  __strong id<SnapshotStorage> snapshot_storage_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_SNAPSHOT_BROWSER_AGENT_H_

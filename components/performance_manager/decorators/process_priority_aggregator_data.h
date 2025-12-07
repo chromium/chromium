@@ -15,6 +15,8 @@ namespace performance_manager {
 class ProcessPriorityAggregatorData
     : public NodeInlineData<ProcessPriorityAggregatorData> {
  public:
+  ProcessPriorityAggregatorData();
+
   // Decrements/increments the appropriate count variable.
   void Decrement(base::TaskPriority priority);
   void Increment(base::TaskPriority priority);

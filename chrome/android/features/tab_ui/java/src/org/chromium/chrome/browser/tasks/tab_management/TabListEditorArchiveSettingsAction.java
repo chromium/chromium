@@ -4,36 +4,26 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinator.ArchiveDelegate;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 
 import java.util.List;
 
 /** Launches the archive settings activity {@link TabListEditorMenu}. */
+@NullMarked
 public class TabListEditorArchiveSettingsAction extends TabListEditorAction {
-    private final @NonNull Context mContext;
-    private final @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
+    private final ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
 
-    /**
-     * Create an action for closing tabs.
-     *
-     * @param context to load drawable from.
-     */
-    public static TabListEditorAction createAction(
-            @NonNull Context context,
-            @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate archiveDelegate) {
-        return new TabListEditorArchiveSettingsAction(context, archiveDelegate);
+    /** Create an action for closing tabs. */
+    public static TabListEditorAction createAction(ArchiveDelegate archiveDelegate) {
+        return new TabListEditorArchiveSettingsAction(archiveDelegate);
     }
 
-    @VisibleForTesting
-    TabListEditorArchiveSettingsAction(
-            @NonNull Context context,
-            @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate archiveDelegate) {
+    private TabListEditorArchiveSettingsAction(ArchiveDelegate archiveDelegate) {
         super(
                 R.id.tab_list_editor_archive_settings_menu_item,
                 ShowMode.MENU_ONLY,
@@ -43,7 +33,6 @@ public class TabListEditorArchiveSettingsAction extends TabListEditorAction {
                 null,
                 null);
 
-        mContext = context;
         mArchiveDelegate = archiveDelegate;
     }
 
@@ -53,12 +42,15 @@ public class TabListEditorArchiveSettingsAction extends TabListEditorAction {
     }
 
     @Override
-    public void onSelectionStateChange(List<Integer> tabIds) {
-        setEnabledAndItemCount(true, tabIds.size());
+    public void onSelectionStateChange(List<TabListEditorItemSelectionId> itemIds) {
+        setEnabledAndItemCount(true, itemIds.size());
     }
 
     @Override
-    public boolean performAction(List<Tab> tabs) {
+    public boolean performAction(
+            List<Tab> tabs,
+            List<String> tabGroupSyncIds,
+            @Nullable MotionEventInfo triggeringMotion) {
         mArchiveDelegate.openArchiveSettings();
         return true;
     }

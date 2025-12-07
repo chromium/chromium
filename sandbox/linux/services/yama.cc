@@ -13,7 +13,6 @@
 #include <unistd.h>
 
 #include "base/check.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
@@ -97,8 +96,7 @@ int Yama::GetStatus() {
       return STATUS_KNOWN | STATUS_PRESENT | STATUS_ENFORCING |
              STATUS_STRICT_ENFORCING;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

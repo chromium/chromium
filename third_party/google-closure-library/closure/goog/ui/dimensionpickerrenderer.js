@@ -13,7 +13,6 @@
 
 goog.provide('goog.ui.DimensionPickerRenderer');
 
-goog.forwardDeclare('goog.ui.DimensionPicker');
 goog.require('goog.a11y.aria.Announcer');
 goog.require('goog.a11y.aria.LivePriority');
 goog.require('goog.dom');
@@ -22,6 +21,8 @@ goog.require('goog.i18n.bidi');
 goog.require('goog.style');
 goog.require('goog.ui.ControlRenderer');
 goog.require('goog.userAgent');
+goog.requireType('goog.ui.Control');
+goog.requireType('goog.ui.DimensionPicker');
 
 
 
@@ -416,7 +417,7 @@ goog.ui.DimensionPickerRenderer.prototype.adjustParentDirection_ = function(
       }
     }
 
-    // When a table is inserted, the containing elemet's position is
+    // When a table is inserted, the containing element's position is
     // recalculated the next time it shows, set left back to '' to prevent
     // extra white space on the left.
     var left = goog.style.getStyle(parentElement, 'left');

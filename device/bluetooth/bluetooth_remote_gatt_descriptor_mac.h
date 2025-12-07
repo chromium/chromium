@@ -5,14 +5,12 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_REMOTE_GATT_DESCRIPTOR_MAC_H_
 
-#include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
-
 #import <CoreBluetooth/CoreBluetooth.h>
 
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "device/bluetooth/bluetooth_remote_gatt_descriptor.h"
 
 namespace device {
 
@@ -36,7 +34,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorMac
   const std::vector<uint8_t>& GetValue() const override;
   BluetoothRemoteGattCharacteristic* GetCharacteristic() const override;
   void ReadRemoteDescriptor(ValueCallback callback) override;
-  void WriteRemoteDescriptor(const std::vector<uint8_t>& new_value,
+  void WriteRemoteDescriptor(base::span<const uint8_t> new_value,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) override;
 

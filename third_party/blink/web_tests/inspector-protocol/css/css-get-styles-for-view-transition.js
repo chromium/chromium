@@ -2,7 +2,9 @@
   const {page, session, dp} = await testRunner.startHTML(`
       <style> ::view-transition-new(shared) {animation-duration: 300s;} </style>
       <style> ::view-transition-old(*) {background: red;} </style>
-      <div style='width:100px; height:100px; view-transition-name: shared; contain:paint;'></div>`,
+      <style> ::view-transition-group(.transition-group) {font-size: 10px;} </style>
+      <style> ::view-transition-image-pair(shared.transition-group) {left: 100px;} </style>
+      <div style='width:100px; height:100px; view-transition-name: shared; view-transition-class: transition-group; contain:paint;'></div>`,
       'The test verifies functionality of querying style information for view-transition pseudo elements');
 
   await session.evaluateAsync(`
@@ -24,11 +26,19 @@
 
   // The root node styles should include styles for each pseudo element.
   const rootNodeStyles = await dp.CSS.getMatchedStylesForNode({'nodeId': rootNode.nodeId});
-  testRunner.log(rootNodeStyles);
+  for (const pseudo of rootNodeStyles.result.pseudoElements) {
+    testRunner.log(`PseudoElement: ${pseudo.pseudoType}${pseudo.pseudoIdentifier ? ' ' + pseudo.pseudoIdentifier : ''}`);
+    for (const match of pseudo.matches) {
+      cssHelper.dumpRuleMatch(match);
+    }
+  }
 
   for (const node of getAllPseudos(rootNode)) {
     const styles = await dp.CSS.getMatchedStylesForNode({'nodeId': node.nodeId});
-    testRunner.log(styles, "Dumping styles for : " + node.localName + " with id " + node.pseudoIdentifier);
+    testRunner.log("Dumping styles for : " + node.localName + " with id " + node.pseudoIdentifier);
+    for (const match of styles.result.matchedCSSRules) {
+      cssHelper.dumpRuleMatch(match);
+    }
   }
 
   testRunner.completeTest();

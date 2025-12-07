@@ -14,16 +14,15 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Looper;
-
-import androidx.annotation.RequiresApi;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
@@ -40,8 +39,8 @@ import java.util.List;
 
 /** Tests that ChannelsUpdater correctly initializes channels on the notification manager. */
 @RunWith(BaseRobolectricTestRunner.class)
-@RequiresApi(Build.VERSION_CODES.O)
 public class ChannelsUpdaterTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private BaseNotificationManagerProxy mNotificationManagerProxy;
     private SharedPreferencesManager mSharedPreferences;
     private ChannelsInitializer mChannelsInitializer;
@@ -49,10 +48,8 @@ public class ChannelsUpdaterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         Context context = RuntimeEnvironment.getApplication();
-        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create(context);
+        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
 
         mMockResources = context.getResources();
 
@@ -104,14 +101,15 @@ public class ChannelsUpdaterTest {
         ChannelsUpdater updater = new ChannelsUpdater(mSharedPreferences, mChannelsInitializer, 21);
         updater.updateChannels();
 
-        assertThat(getChannelsIgnoringDefault(), hasSize((greaterThan(0))));
+        assertThat(getChannelsIgnoringDefault(), hasSize(greaterThan(0)));
         assertThat(
                 getChannelIds(getChannelsIgnoringDefault()),
                 containsInAnyOrder(
                         ChromeChannelDefinitions.ChannelId.BROWSER,
                         ChromeChannelDefinitions.ChannelId.DOWNLOADS,
                         ChromeChannelDefinitions.ChannelId.INCOGNITO,
-                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK));
+                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
+                        ChromeChannelDefinitions.ChannelId.TIPS));
         assertThat(
                 mSharedPreferences.readInt(ChromePreferenceKeys.NOTIFICATIONS_CHANNELS_VERSION, -1),
                 is(21));
@@ -146,7 +144,8 @@ public class ChannelsUpdaterTest {
                         ChromeChannelDefinitions.ChannelId.BROWSER,
                         ChromeChannelDefinitions.ChannelId.DOWNLOADS,
                         ChromeChannelDefinitions.ChannelId.INCOGNITO,
-                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK));
+                        ChromeChannelDefinitions.ChannelId.MEDIA_PLAYBACK,
+                        ChromeChannelDefinitions.ChannelId.TIPS));
     }
 
     private static List<String> getChannelIds(List<NotificationChannel> channels) {

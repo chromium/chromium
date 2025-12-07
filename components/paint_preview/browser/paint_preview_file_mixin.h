@@ -67,7 +67,7 @@ class PaintPreviewFileMixin {
   // Writes an Accessibility Tree snapshot to the directory listed in key.
   void WriteAXTreeUpdate(const DirectoryKey& key,
                          base::OnceCallback<void(bool)> finished_callback,
-                         const ui::AXTreeUpdate& ax_tree_update);
+                         ui::AXTreeUpdate& ax_tree_update);
 
   // Gets an Accessibility Tree snapshot for key.
   void GetAXTreeUpdate(const DirectoryKey& key, OnReadAXTree callback);

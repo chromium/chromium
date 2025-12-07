@@ -9,8 +9,6 @@
 
 #include "content/common/content_export.h"
 #include "net/cert/cert_status_flags.h"
-#include "net/cert/ct_policy_status.h"
-#include "net/cert/sct_status_flags.h"
 #include "net/cert/x509_certificate.h"
 
 namespace net {
@@ -47,7 +45,7 @@ struct CONTENT_EXPORT SSLStatus {
   SSLStatus();
   explicit SSLStatus(const net::SSLInfo& ssl_info);
   SSLStatus(const SSLStatus& other);
-  SSLStatus& operator=(SSLStatus other);
+  SSLStatus& operator=(const SSLStatus& other);
   ~SSLStatus();
 
   bool initialized;
@@ -61,12 +59,9 @@ struct CONTENT_EXPORT SSLStatus {
   int content_status;
   // True if PKP was bypassed due to a local trust anchor.
   bool pkp_bypassed;
-  // Whether the page's main resource complied with the Certificate Transparency
-  // policy.
-  net::ct::CTPolicyCompliance ct_policy_compliance;
 
-  // If you add new fields here, be sure to add them in the copy constructor and
-  // copy assignment operator definitions in ssl_status.cc.
+  // If you add new fields here, be sure to add them in the constructor
+  // definitions in ssl_status.cc.
 };
 
 }  // namespace content

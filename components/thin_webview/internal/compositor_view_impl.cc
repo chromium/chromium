@@ -17,7 +17,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/thin_webview/internal/jni_headers/CompositorViewImpl_jni.h"
 
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace thin_webview {
@@ -26,10 +25,11 @@ namespace {
 const int kPixelFormatUnknown = 0;
 }  // namespace
 
-jlong JNI_CompositorViewImpl_Init(JNIEnv* env,
-                                  const JavaParamRef<jobject>& obj,
-                                  const JavaParamRef<jobject>& jwindow_android,
-                                  jint java_background_color) {
+static jlong JNI_CompositorViewImpl_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    const JavaRef<jobject>& jwindow_android,
+    jint java_background_color) {
   ui::WindowAndroid* window_android =
       ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   auto compositor_view = std::make_unique<CompositorViewImpl>(
@@ -48,10 +48,11 @@ CompositorView* CompositorView::FromJavaObject(
                                            jcompositor_view));
 }
 
-CompositorViewImpl::CompositorViewImpl(JNIEnv* env,
-                                       jobject obj,
-                                       ui::WindowAndroid* window_android,
-                                       int64_t java_background_color)
+CompositorViewImpl::CompositorViewImpl(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj,
+    ui::WindowAndroid* window_android,
+    int64_t java_background_color)
     : obj_(env, obj),
       root_layer_(cc::slim::SolidColorLayer::Create()),
       current_surface_format_(kPixelFormatUnknown) {
@@ -66,40 +67,36 @@ CompositorViewImpl::CompositorViewImpl(JNIEnv* env,
 
 CompositorViewImpl::~CompositorViewImpl() = default;
 
-void CompositorViewImpl::Destroy(JNIEnv* env,
-                                 const JavaParamRef<jobject>& object) {
+void CompositorViewImpl::Destroy(JNIEnv* env) {
   delete this;
 }
 
-void CompositorViewImpl::SurfaceCreated(JNIEnv* env,
-                                        const JavaParamRef<jobject>& object) {
+void CompositorViewImpl::SurfaceCreated(JNIEnv* env) {
   compositor_->SetRootLayer(root_layer_);
   current_surface_format_ = kPixelFormatUnknown;
 }
 
-void CompositorViewImpl::SurfaceDestroyed(JNIEnv* env,
-                                          const JavaParamRef<jobject>& object) {
+void CompositorViewImpl::SurfaceDestroyed(JNIEnv* env) {
   // When we switch from Chrome to other app we can't detach child surface
   // controls because it leads to a visible hole: b/157439199. To avoid this we
   // don't detach surfaces if the surface is going to be destroyed, they will be
   // detached and freed by OS.
   compositor_->PreserveChildSurfaceControls();
 
-  compositor_->SetSurface(nullptr, false);
+  compositor_->SetSurface(nullptr, false, nullptr);
   current_surface_format_ = kPixelFormatUnknown;
 }
 
 void CompositorViewImpl::SurfaceChanged(JNIEnv* env,
-                                        const JavaParamRef<jobject>& object,
                                         jint format,
                                         jint width,
                                         jint height,
                                         bool can_be_used_with_surface_control,
-                                        const JavaParamRef<jobject>& surface) {
+                                        const JavaRef<jobject>& surface) {
   DCHECK(surface);
   if (current_surface_format_ != format) {
     current_surface_format_ = format;
-    compositor_->SetSurface(surface, can_be_used_with_surface_control);
+    compositor_->SetSurface(surface, can_be_used_with_surface_control, nullptr);
   }
 
   gfx::Size content_size(width, height);
@@ -107,9 +104,7 @@ void CompositorViewImpl::SurfaceChanged(JNIEnv* env,
   root_layer_->SetBounds(content_size);
 }
 
-void CompositorViewImpl::SetNeedsComposite(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& object) {
+void CompositorViewImpl::SetNeedsComposite(JNIEnv* env) {
   compositor_->SetNeedsComposite();
 }
 
@@ -125,7 +120,7 @@ void CompositorViewImpl::SetRootLayer(scoped_refptr<cc::slim::Layer> layer) {
 
 void CompositorViewImpl::RecreateSurface() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  compositor_->SetSurface(nullptr, false);
+  compositor_->SetSurface(nullptr, false, nullptr);
   Java_CompositorViewImpl_recreateSurface(env, obj_);
 }
 
@@ -136,3 +131,5 @@ void CompositorViewImpl::UpdateLayerTreeHost() {
 
 }  // namespace android
 }  // namespace thin_webview
+
+DEFINE_JNI(CompositorViewImpl)

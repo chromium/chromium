@@ -6,16 +6,22 @@
 #define CHROME_BROWSER_PRINTING_PRINT_PREVIEW_DIALOG_CONTROLLER_H_
 
 #include <map>
+#include <memory>
 
 #include "base/check.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/tab_contents/web_contents_collection.h"
 #include "components/printing/common/print.mojom.h"
+#include "components/tabs/public/tab_interface.h"
 
 class GURL;
 
 namespace content {
 class WebContents;
+}
+
+namespace ui {
+class WebDialogDelegate;
 }
 
 namespace printing {
@@ -75,6 +81,9 @@ class PrintPreviewDialogController : public WebContentsCollection::Observer {
   // Erases the initiator info associated with `preview_dialog`.
   void EraseInitiatorInfo(content::WebContents* preview_dialog);
 
+  static std::unique_ptr<ui::WebDialogDelegate>
+  CreatePrintPreviewDialogDelegateForTesting(content::WebContents* initiator);
+
   // Exposes GetOrCreatePreviewDialog() for testing.
   content::WebContents* GetOrCreatePreviewDialogForTesting(
       content::WebContents* initiator);
@@ -86,8 +95,10 @@ class PrintPreviewDialogController : public WebContentsCollection::Observer {
                                         content::WebContents* preview_dialog) {
     CHECK(initiator);
     CHECK(preview_dialog);
-    preview_dialog_map_[preview_dialog].initiator = initiator;
-    preview_dialog_map_[preview_dialog].request_params.is_modifiable = true;
+    mojom::RequestPrintPreviewParams params;
+    params.is_modifiable = true;
+    InitiatorData data(initiator, params, /*scoper=*/nullptr);
+    preview_dialog_map_.emplace(preview_dialog, std::move(data));
   }
   void DisassociateWebContentsesForTesting(
       content::WebContents* preview_dialog) {
@@ -104,8 +115,18 @@ class PrintPreviewDialogController : public WebContentsCollection::Observer {
  private:
   // Tracks the initiator, as well as some of its Print Preview properties.
   struct InitiatorData {
+    InitiatorData(content::WebContents* initiator,
+                  const mojom::RequestPrintPreviewParams& request_params,
+                  std::unique_ptr<tabs::ScopedTabModalUI> scoper);
+    InitiatorData(InitiatorData&&) noexcept;
+    InitiatorData& operator=(InitiatorData&&) noexcept;
+    ~InitiatorData();
+
     raw_ptr<content::WebContents> initiator;
     mojom::RequestPrintPreviewParams request_params;
+
+    // Prevents other tab-modal UIs from showing.
+    std::unique_ptr<tabs::ScopedTabModalUI> scoper;
   };
 
   // 1:1 relationship between a print preview dialog and its initiator data.
@@ -143,6 +164,7 @@ class PrintPreviewDialogController : public WebContentsCollection::Observer {
   // Creates a new print preview dialog if GetOrCreatePreviewDialog() cannot
   // find a print preview dialog for `initiator`.
   content::WebContents* CreatePrintPreviewDialog(
+      tabs::TabInterface* tab,
       content::WebContents* initiator,
       const mojom::RequestPrintPreviewParams& params);
 

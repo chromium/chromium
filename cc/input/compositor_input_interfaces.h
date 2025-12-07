@@ -7,13 +7,20 @@
 
 #include <memory>
 
+#include "base/containers/flat_set.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "cc/input/actively_scrolling_type.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
+#include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/metrics/events_metrics_manager.h"
+#include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/paint/element_id.h"
+#include "cc/trees/latency_info_swap_promise_monitor.h"
+#include "cc/trees/scroll_node.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/latency/latency_info.h"
 
 namespace viz {
 struct BeginFrameArgs;
@@ -54,6 +61,7 @@ class InputDelegateForCompositor {
   virtual void WillDraw() = 0;
   virtual void WillBeginImplFrame(const viz::BeginFrameArgs& args) = 0;
   virtual void DidCommit() = 0;
+  virtual void DidImplSideInvalidate() = 0;
   virtual void DidActivatePendingTree() = 0;
   virtual void DidFinishImplFrame() = 0;
   virtual void OnBeginImplFrameDeadline() = 0;
@@ -74,7 +82,11 @@ class InputDelegateForCompositor {
 
   // Called to let the input handler know that a scroll offset animation has
   // completed.
-  virtual void ScrollOffsetAnimationFinished() = 0;
+  virtual void ScrollOffsetAnimationFinished(ElementId element_id) = 0;
+
+  // Called to let the input handler know that an elastic overscroll animation
+  // has completed.
+  virtual void ElasticOverscrollAnimationFinished(ElementId element_id) = 0;
 
   // Called to inform the input handler when prefers-reduced-motion changes.
   virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;
@@ -119,21 +131,61 @@ class CompositorDelegateForInput {
       std::unique_ptr<InputDelegateForCompositor> delegate) = 0;
 
   virtual ScrollTree& GetScrollTree() const = 0;
+  virtual void ScrollAnimationAbort(ElementId element_id) const = 0;
+  virtual float GetBrowserControlsTopOffset() const = 0;
+  virtual void ScrollBegin() const = 0;
+  virtual void ScrollEnd() const = 0;
+  virtual void StartScrollSequence(
+      FrameSequenceTrackerType type,
+      FrameInfo::SmoothEffectDrivingThread scrolling_thread) = 0;
+  virtual void StopSequence(FrameSequenceTrackerType type) = 0;
+  virtual void ScrollbarAnimationMouseLeave(ElementId element_id) const = 0;
+  virtual void ScrollbarAnimationMouseMove(
+      ElementId element_id,
+      gfx::PointF device_viewport_point) const = 0;
+  virtual bool ScrollbarAnimationMouseDown(ElementId element_id) const = 0;
+  virtual bool ScrollbarAnimationMouseUp(ElementId element_id) const = 0;
+  virtual void PinchBegin() const = 0;
+  virtual void PinchEnd() const = 0;
+  virtual void SetNeedsAnimateInput() = 0;
+  virtual bool ScrollAnimationCreate(const ScrollNode& scroll_node,
+                                     const gfx::Vector2dF& scroll_amount,
+                                     base::TimeDelta delayed_by) = 0;
+  virtual void TickScrollAnimations() const = 0;
+  virtual std::unique_ptr<LatencyInfoSwapPromiseMonitor>
+  CreateLatencyInfoSwapPromiseMonitor(ui::LatencyInfo* latency) = 0;
+  virtual std::unique_ptr<EventsMetricsManager::ScopedMonitor>
+  GetScopedEventMetricsMonitor(
+      EventsMetricsManager::ScopedMonitor::DoneCallback done_callback) = 0;
+  virtual void DidScrollForMetrics() = 0;
+  virtual double PredictViewportBoundsDelta(
+      double current_bounds_delta,
+      gfx::Vector2dF scroll_distance) const = 0;
+  virtual void NotifyInputEvent(bool is_fling) = 0;
+  virtual bool ElementHasImplOnlyScrollAnimation(
+      ElementId element_id) const = 0;
+  virtual std::optional<gfx::PointF> UpdateImplAnimationScrollTargetWithDelta(
+      gfx::Vector2dF adjusted_delta,
+      int scroll_node_id,
+      base::TimeDelta delayed_by,
+      ElementId element_id) const = 0;
   virtual bool HasAnimatedScrollbars() const = 0;
   virtual void SetNeedsCommit() = 0;
   virtual void SetNeedsFullViewportRedraw() = 0;
   virtual void SetDeferBeginMainFrame(bool defer_begin_main_frame) const = 0;
   virtual void DidUpdateScrollAnimationCurve() = 0;
-  virtual void AccumulateScrollDeltaForTracing(const gfx::Vector2dF& delta) = 0;
   virtual void DidStartPinchZoom() = 0;
   virtual void DidUpdatePinchZoom() = 0;
   virtual void DidEndPinchZoom() = 0;
   virtual void DidStartScroll() = 0;
   virtual void DidEndScroll() = 0;
+  virtual void DidMouseEnterNonViewportScroller(ElementId element_id) = 0;
   virtual void DidMouseLeave() = 0;
   virtual bool IsInHighLatencyMode() const = 0;
   virtual void WillScrollContent(ElementId element_id) = 0;
-  virtual void DidScrollContent(ElementId element_id, bool animated) = 0;
+  virtual void DidScrollContent(ElementId element_id,
+                                bool animated,
+                                const gfx::Vector2dF& scroll_delta) = 0;
   virtual float DeviceScaleFactor() const = 0;
   virtual float PageScaleFactor() const = 0;
   virtual gfx::Size VisualDeviceViewportSize() const = 0;
@@ -142,13 +194,13 @@ class CompositorDelegateForInput {
       BrowserControlsState constraints,
       BrowserControlsState current,
       bool animate,
-      base::optional_ref<const BrowserControlsOffsetTagsInfo>
-          offset_tags_info) = 0;
+      base::optional_ref<const BrowserControlsOffsetTagModifications>
+          offset_tag_modifications) = 0;
   virtual bool HasScrollLinkedAnimation(ElementId for_scroller) const = 0;
 
-  // TODO(bokan): Temporary escape hatch for code that hasn't yet been
-  // converted to use the input<->compositor interface. This will eventually be
-  // removed.
+  // TODO(crbug.com/404586886): Temporary escape hatch for code that hasn't yet
+  // been converted to use the input<->compositor interface. This will
+  // eventually be removed.
   virtual LayerTreeHostImpl& GetImplDeprecated() = 0;
   virtual const LayerTreeHostImpl& GetImplDeprecated() const = 0;
 };

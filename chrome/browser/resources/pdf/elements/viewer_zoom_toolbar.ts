@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 import './viewer_zoom_button.js';
 
 import {isRTL} from 'chrome://resources/js/util.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {FittingType} from '../constants.js';
 
 import type {ViewerZoomButtonElement} from './viewer_zoom_button.js';
-import {getTemplate} from './viewer_zoom_toolbar.html.js';
+import {getCss} from './viewer_zoom_toolbar.css.js';
+import {getHtml} from './viewer_zoom_toolbar.html.js';
 
 const FIT_TO_PAGE_BUTTON_STATE = 0;
 const FIT_TO_WIDTH_BUTTON_STATE = 1;
@@ -24,42 +24,37 @@ export interface ViewerZoomToolbarElement {
   };
 }
 
-export class ViewerZoomToolbarElement extends PolymerElement {
+export class ViewerZoomToolbarElement extends CrLitElement {
   static get is() {
     return 'viewer-zoom-toolbar';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      keyboardNavigationActive_: {
-        type: Boolean,
-        value: false,
-      },
+      keyboardNavigationActive_: {type: Boolean},
 
       visible_: {
         type: Boolean,
-        reflectToAttribute: true,
+        reflect: true,
       },
     };
   }
 
-  private keyboardNavigationActive_: boolean;
-  private visible_: boolean;
+  protected accessor keyboardNavigationActive_: boolean = false;
+  private accessor visible_: boolean = false;
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.addEventListener('focus', this.onFocus_);
     this.addEventListener('keyup', this.onKeyUp_);
     this.addEventListener('pointerdown', this.onPointerDown_);
-  }
-
-  private fire_(eventName: string, detail?: any): void {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
   isVisible(): boolean {
@@ -73,17 +68,17 @@ export class ViewerZoomToolbarElement extends PolymerElement {
 
     // For Print Preview, ensure the parent element knows that keyboard
     // navigation is now active and show the toolbar.
-    this.fire_('keyboard-navigation-active', true);
+    this.fire('keyboard-navigation-active', true);
     this.show();
   }
 
   private onKeyUp_(): void {
-    this.fire_('keyboard-navigation-active', true);
+    this.fire('keyboard-navigation-active', true);
     this.keyboardNavigationActive_ = true;
   }
 
   private onPointerDown_(): void {
-    this.fire_('keyboard-navigation-active', false);
+    this.fire('keyboard-navigation-active', false);
     this.keyboardNavigationActive_ = false;
   }
 
@@ -124,17 +119,17 @@ export class ViewerZoomToolbarElement extends PolymerElement {
    * @param fittingType to include as payload.
    */
   private fireFitToChangedEvent_(fittingType: FittingType) {
-    this.fire_('fit-to-changed', fittingType);
+    this.fire('fit-to-changed', fittingType);
   }
 
   /** Handle clicks of the zoom-in-button. */
   zoomIn() {
-    this.fire_('zoom-in');
+    this.fire('zoom-in');
   }
 
   /** Handle clicks of the zoom-out-button. */
   zoomOut() {
-    this.fire_('zoom-out');
+    this.fire('zoom-out');
   }
 
   show() {

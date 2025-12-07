@@ -13,9 +13,9 @@
 namespace payments {
 namespace android {
 // static
-void JNI_PaymentHandlerNavigationThrottle_MarkPaymentHandlerWebContents(
+static void JNI_PaymentHandlerNavigationThrottle_MarkPaymentHandlerWebContents(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jweb_contents) {
+    const base::android::JavaRef<jobject>& jweb_contents) {
   content::WebContents* web_contents =
       content::WebContents::FromJavaWebContents(jweb_contents);
   if (!web_contents)
@@ -24,3 +24,5 @@ void JNI_PaymentHandlerNavigationThrottle_MarkPaymentHandlerWebContents(
 }
 }  // namespace android
 }  // namespace payments
+
+DEFINE_JNI(PaymentHandlerNavigationThrottle)

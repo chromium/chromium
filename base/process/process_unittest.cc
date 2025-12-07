@@ -34,15 +34,19 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
+#include "base/test/scoped_feature_list.h"
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/base_win_buildflags.h"
+#include "base/win/windows_version.h"
 #endif
 
 namespace {
@@ -108,8 +112,7 @@ bool AddProcessToCpuCgroup(const base::Process& process,
 
 namespace base {
 
-class ProcessTest : public MultiProcessTest {
-};
+class ProcessTest : public MultiProcessTest {};
 
 TEST_F(ProcessTest, Create) {
   Process process(SpawnChild("SimpleChildProcess"));
@@ -138,14 +141,14 @@ TEST_F(ProcessTest, Move) {
 
   process2 = std::move(process1);
   EXPECT_TRUE(process2.IsValid());
-  EXPECT_FALSE(process1.IsValid());
+  EXPECT_FALSE(process1.IsValid());  // NOLINT(bugprone-use-after-move)
   EXPECT_FALSE(process2.is_current());
 
   Process process3 = Process::Current();
   process2 = std::move(process3);
   EXPECT_TRUE(process2.is_current());
   EXPECT_TRUE(process2.IsValid());
-  EXPECT_FALSE(process3.IsValid());
+  EXPECT_FALSE(process3.IsValid());  // NOLINT(bugprone-use-after-move)
 }
 
 TEST_F(ProcessTest, Duplicate) {
@@ -248,6 +251,13 @@ TEST_F(ProcessTest, Terminate) {
 #endif
 }
 
+TEST_F(ProcessTest, TerminateProcessForBadMessage) {
+  Process process(SpawnChild("SleepyChildProcess"));
+  ASSERT_TRUE(process.IsValid());
+  int exit_code = Process::kResultCodeKilledBadMessage;
+  EXPECT_TRUE(process.Terminate(exit_code, /* wait= */ false));
+}
+
 void AtExitHandler(void*) {
   // At-exit handler should not be called at
   // Process::TerminateCurrentProcessImmediately.
@@ -318,6 +328,20 @@ TEST_F(ProcessTest, WaitForExitWithTimeout) {
   process.Terminate(kDummyExitCode, false);
 }
 
+TEST_F(ProcessTest, WaitForExitWithNegativeTimeout) {
+  Process process(SpawnChild("SleepyChildProcess"));
+  ASSERT_TRUE(process.IsValid());
+
+  int exit_code = kDummyExitCode;
+  EXPECT_FALSE(process.WaitForExitWithTimeout(TimeDelta::Min(), &exit_code));
+  EXPECT_EQ(kDummyExitCode, exit_code);
+
+  EXPECT_FALSE(process.WaitForExitWithTimeout(Seconds(-1000), &exit_code));
+  EXPECT_EQ(kDummyExitCode, exit_code);
+
+  process.Terminate(kDummyExitCode, false);
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(ProcessTest, WaitForExitOrEventWithProcessExit) {
   Process process(SpawnChild("FastSleepyChildProcess"));
@@ -377,6 +401,37 @@ TEST_F(ProcessTest, SetProcessPriority) {
   EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserBlocking));
   EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  // Eco QoS level read & write are not supported prior to WIN11_22H2,
+  // Priority::kUserVisible has same behavior as Priority::kUserBlocking, and
+  // is translated as Priority::kUserBlocking.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11_22H2) {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserVisible);
+  } else {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+  }
+
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kBestEffort));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kBestEffort);
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN11_22H2) {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserVisible);
+  } else {
+    EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+  }
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserBlocking));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+#elif !BUILDFLAG(IS_APPLE)
+  // On other platforms, Process::Priority::kUserVisible is translated as
+  // Process::Priority::kUserBlocking.
+  EXPECT_TRUE(process.SetPriority(base::Process::Priority::kUserVisible));
+  EXPECT_EQ(process.GetPriority(), Process::Priority::kUserBlocking);
+#endif
+
   int new_os_priority = process.GetOSPriority();
   EXPECT_EQ(old_os_priority, new_os_priority);
 }
@@ -385,7 +440,7 @@ TEST_F(ProcessTest, SetProcessPriority) {
 bool IsThreadRT(PlatformThreadId thread_id) {
   // Check if the thread is running in real-time mode
   int sched = sched_getscheduler(
-      PlatformThread::CurrentId() == thread_id ? 0 : thread_id);
+      PlatformThread::CurrentId() == thread_id ? 0 : thread_id.raw());
   if (sched == -1) {
     // The thread may disappear for any reason so ignore ESRCH.
     DPLOG_IF(ERROR, errno != ESRCH)
@@ -428,7 +483,7 @@ class FunctionTestThread : public PlatformThread::Delegate {
   FunctionTestThread& operator=(const FunctionTestThread&) = delete;
 
   void ThreadMain() override {
-    PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+    PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
     while (true) {
       PlatformThread::Sleep(Milliseconds(100));
     }
@@ -460,7 +515,7 @@ class RTDisplayFunctionTestThread : public PlatformThread::Delegate {
       delete;
 
   void ThreadMain() override {
-    PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+    PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
     while (true) {
       PlatformThread::Sleep(Milliseconds(100));
     }
@@ -510,9 +565,10 @@ MULTIPROCESS_TEST_MAIN(ProcessThreadBackgroundingMain) {
   FunctionTestThread thread1, thread2, thread3;
   base::test::ScopedFeatureList scoped_feature_list(kSetThreadBgForBgProcess);
   PlatformThreadChromeOS::InitializeFeatures();
-  PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+  PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
 
-  // Register signal handler to be notified to create threads after backgrounding.
+  // Register signal handler to be notified to create threads after
+  // backgrounding.
   signal(SIGUSR1, sig_create_threads_after_bg);
 
   if (!PlatformThread::Create(0, &thread1, &handle1)) {
@@ -551,7 +607,7 @@ MULTIPROCESS_TEST_MAIN(ProcessThreadBackgroundingMain) {
 // that the threads in the process are backgrounded correctly.
 TEST_F(ProcessTest, ProcessThreadBackgrounding) {
   if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
-                                           ThreadType::kCompositing)) {
+                                           ThreadType::kDisplayCritical)) {
     return;
   }
 
@@ -572,7 +628,7 @@ TEST_F(ProcessTest, ProcessThreadBackgrounding) {
   }
 
   // Verify that the threads are initially in the foreground.
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), false);
 
   EXPECT_TRUE(process.SetPriority(Process::Priority::kBestEffort));
@@ -586,14 +642,14 @@ TEST_F(ProcessTest, ProcessThreadBackgrounding) {
   }
 
   // Verify that the threads are backgrounded.
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), true);
 
   EXPECT_TRUE(process.SetPriority(Process::Priority::kUserBlocking));
   EXPECT_TRUE(process.GetPriority() == base::Process::Priority::kUserBlocking);
 
   // Verify that the threads are foregrounded.
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), false);
 }
 
@@ -620,7 +676,7 @@ MULTIPROCESS_TEST_MAIN(ProcessRTAudioBgMain) {
 // Test the property of kRealTimeAudio threads in a backgrounded process.
 TEST_F(ProcessTest, ProcessRTAudioBg) {
   if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
-                                           ThreadType::kCompositing)) {
+                                           ThreadType::kDisplayCritical)) {
     return;
   }
 
@@ -667,7 +723,7 @@ MULTIPROCESS_TEST_MAIN(ProcessRTDisplayBgMain) {
       {kSetThreadBgForBgProcess, kSetRtForDisplayThreads}, {});
   PlatformThreadChromeOS::InitializeFeatures();
 
-  PlatformThread::SetCurrentThreadType(ThreadType::kCompositing);
+  PlatformThread::SetCurrentThreadType(ThreadType::kDisplayCritical);
 
   if (!PlatformThread::Create(0, &thread1, &handle1)) {
     ADD_FAILURE() << "ProcessRTDisplayBgMain: Failed to create thread1";
@@ -682,10 +738,10 @@ MULTIPROCESS_TEST_MAIN(ProcessRTDisplayBgMain) {
   }
 }
 
-// Test the property of kCompositing threads in a backgrounded process.
+// Test the property of kDisplayCritical threads in a backgrounded process.
 TEST_F(ProcessTest, ProcessRTDisplayBg) {
   if (!PlatformThread::CanChangeThreadType(ThreadType::kDefault,
-                                           ThreadType::kCompositing)) {
+                                           ThreadType::kDisplayCritical)) {
     return;
   }
 
@@ -706,7 +762,7 @@ TEST_F(ProcessTest, ProcessRTDisplayBg) {
   }
 
   AssertThreadsRT(process.Pid(), true);
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), false);
 
   EXPECT_TRUE(process.SetPriority(Process::Priority::kBestEffort));
@@ -715,7 +771,7 @@ TEST_F(ProcessTest, ProcessRTDisplayBg) {
   // Verify that the threads transitioned away from RT when process is
   // kBestEffort
   AssertThreadsRT(process.Pid(), false);
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), true);
 
   EXPECT_TRUE(process.SetPriority(Process::Priority::kUserBlocking));
@@ -723,7 +779,7 @@ TEST_F(ProcessTest, ProcessRTDisplayBg) {
 
   // Verify that it is back to RT when process is kUserBlocking
   AssertThreadsRT(process.Pid(), true);
-  AssertThreadsType(process.Pid(), ThreadType::kCompositing);
+  AssertThreadsType(process.Pid(), ThreadType::kDisplayCritical);
   AssertThreadsBgState(process.Pid(), false);
 }
 
@@ -735,16 +791,16 @@ TEST_F(ProcessTest, ProcessRTDisplayBg) {
 // on all platforms. But for the controllable scenario in the test cases, the
 // behavior should be guaranteed.
 TEST_F(ProcessTest, CurrentProcessIsRunning) {
-  EXPECT_FALSE(Process::Current().WaitForExitWithTimeout(
-      base::TimeDelta(), nullptr));
+  EXPECT_FALSE(
+      Process::Current().WaitForExitWithTimeout(base::TimeDelta(), nullptr));
 }
 
 #if BUILDFLAG(IS_APPLE)
 // On Mac OSX, we can detect whether a non-child process is running.
 TEST_F(ProcessTest, PredefinedProcessIsRunning) {
   // Process 1 is the /sbin/launchd, it should be always running.
-  EXPECT_FALSE(Process::Open(1).WaitForExitWithTimeout(
-      base::TimeDelta(), nullptr));
+  EXPECT_FALSE(
+      Process::Open(1).WaitForExitWithTimeout(base::TimeDelta(), nullptr));
 }
 #endif
 
@@ -778,11 +834,9 @@ TEST_F(ProcessTest, MAYBE_ControlFlowViolation) {
 
 TEST_F(ProcessTest, ChildProcessIsRunning) {
   Process process(SpawnChild("SleepyChildProcess"));
-  EXPECT_FALSE(process.WaitForExitWithTimeout(
-      base::TimeDelta(), nullptr));
+  EXPECT_FALSE(process.WaitForExitWithTimeout(base::TimeDelta(), nullptr));
   process.Terminate(0, true);
-  EXPECT_TRUE(process.WaitForExitWithTimeout(
-      base::TimeDelta(), nullptr));
+  EXPECT_TRUE(process.WaitForExitWithTimeout(base::TimeDelta(), nullptr));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -805,8 +859,9 @@ TEST_F(ProcessTest, InitializePriorityEmptyProcess) {
   // TODO(b/172213843): base::Process is used by base::TestSuite::Initialize
   // before we can use ScopedFeatureList here. Update the test to allow the
   // use of ScopedFeatureList before base::TestSuite::Initialize runs.
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   Process process;
   process.InitializePriority();
@@ -815,8 +870,9 @@ TEST_F(ProcessTest, InitializePriorityEmptyProcess) {
 }
 
 TEST_F(ProcessTest, SetProcessBackgroundedOneCgroupPerRender) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   base::test::TaskEnvironment task_env;
 
@@ -843,8 +899,9 @@ TEST_F(ProcessTest, SetProcessBackgroundedOneCgroupPerRender) {
 }
 
 TEST_F(ProcessTest, CleanUpBusyProcess) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   base::test::TaskEnvironment task_env;
 
@@ -886,8 +943,9 @@ TEST_F(ProcessTest, CleanUpBusyProcess) {
 }
 
 TEST_F(ProcessTest, SetProcessBackgroundedEmptyToken) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   Process process(SpawnChild("SimpleChildProcess"));
   const std::string unique_token = process.unique_token();
@@ -902,8 +960,9 @@ TEST_F(ProcessTest, SetProcessBackgroundedEmptyToken) {
 }
 
 TEST_F(ProcessTest, CleansUpStaleGroups) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   base::test::TaskEnvironment task_env;
 
@@ -946,8 +1005,9 @@ TEST_F(ProcessTest, CleansUpStaleGroups) {
 }
 
 TEST_F(ProcessTest, OneCgroupDoesNotCleanUpGroupsWithWrongPrefix) {
-  if (!Process::OneGroupPerRendererEnabledForTesting())
+  if (!Process::OneGroupPerRendererEnabledForTesting()) {
     return;
+  }
 
   base::test::TaskEnvironment task_env;
 

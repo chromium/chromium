@@ -1,0 +1,340 @@
+Test reported issues for customizable <select> accessibility
+[
+    [0] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [1] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [2] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [3] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [4] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : NonPhrasingContentOptionChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [5] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : NonPhrasingContentOptionChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [6] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : NonPhrasingContentOptionChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [7] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : NonPhrasingContentOptionChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [8] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [9] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [10] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [11] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedOptGroupChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [12] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedOptGroupChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [13] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedOptGroupChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [14] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentLegendChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [15] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedOptGroupChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [16] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentOptionChild
+                        hasDisallowedAttributes : true
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [17] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentOptionChild
+                        hasDisallowedAttributes : true
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [18] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentOptionChild
+                        hasDisallowedAttributes : true
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [19] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : InteractiveContentOptionChild
+                        hasDisallowedAttributes : true
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+    [20] : {
+        method : Audits.issueAdded
+        params : {
+            issue : {
+                code : ElementAccessibilityIssue
+                details : {
+                    elementAccessibilityIssueDetails : {
+                        elementAccessibilityIssueReason : DisallowedSelectChild
+                        hasDisallowedAttributes : false
+                        nodeId : <number>
+                    }
+                }
+            }
+        }
+        sessionId : <string>
+    }
+]
+

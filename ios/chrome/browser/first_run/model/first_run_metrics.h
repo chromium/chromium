@@ -95,11 +95,11 @@ enum FirstRunStage {
   // Sync screen is closed when user taps on advance sync settings button.
   // kSyncScreenCompletionWithSyncSettings_DEPRECATED = 5,
   // SignIn screen is shown.
-  kSignInScreenStart = 6,
+  // kSignInScreenStart_DEPRECATED = 6,
   // SignIn screen is closed with sign in.
-  kSignInScreenCompletionWithSignIn = 7,
+  // kSignInScreenCompletionWithSignIn_DEPRECATED = 7,
   // SignIn screen is closed without sign in.
-  kSignInScreenCompletionWithoutSignIn = 8,
+  // kSignInScreenCompletionWithoutSignIn_DEPRECATED = 8,
   // Default browser screen is shown.
   kDefaultBrowserScreenStart = 9,
   // Default browser screen is closed with opening Settings.app.
@@ -113,20 +113,44 @@ enum FirstRunStage {
   // Welcome+SignIn screen is closed without sign in.
   kWelcomeAndSigninScreenCompletionWithoutSignIn = 14,
   // Sync screen is shown.
-  kTangibleSyncScreenStart = 15,
+  // kTangibleSyncScreenStart_DEPRECATED = 15,
   // Sync screen is closed with sync.
-  kTangibleSyncScreenCompletionWithSync = 16,
+  // kTangibleSyncScreenCompletionWithSync_DEPRECATED = 16,
   // Sync screen is closed without sync.
-  kTangibleSyncScreenCompletionWithoutSync = 17,
+  // kTangibleSyncScreenCompletionWithoutSync_DEPRECATED = 17,
   // History Sync screen is shown.
   kHistorySyncScreenStart = 18,
   // History Sync screen is closed with history sync enabled.
   kHistorySyncScreenCompletionWithSync = 19,
   // History Sync screen is closed without history sync enabled.
   kHistorySyncScreenCompletionWithoutSync = 20,
+  // The Search Engine Choice screen is shown.
+  kSearchEngineChoiceScreenStart = 21,
+  // The Search Engine Choice screen is closed with a Search Engine Choice
+  // selected.
+  kSearchEngineChoiceScreenCompletionWithSelection = 22,
+  // The Search Engine Choice screen is closed without a Search Engine Choice
+  // selected.
+  // DEPRECATED: It is not possible to complete the search engine choice screen
+  // without a selection.
+  // kSearchEngineChoiceScreenCompletionWithoutSelection = 23,
+  // The FRE is interrupted due to a Chrome shutdown.
+  kFirstRunInterrupted = 24,
+  // The Best Features screens are shown.
+  kBestFeaturesExperienceStart = 25,
+  // The Best Features screens are completed by exiting through the main screen.
+  kBestFeaturesExperienceCompletionThroughMainScreen = 26,
+  // The Best Features screens are completed by exiting through a detail screen.
+  kBestFeaturesExperienceCompletionThroughDetailScreen = 27,
+  // Interactive Lens screen shown.
+  kInteractiveLensStart = 28,
+  // Interactive Lens screen completed after interaction with Lens.
+  kInteractiveLensCompletionWithInteraction = 29,
+  // Interactive Lens screen completed without interaction with Lens.
+  kInteractiveLensCompletionWithoutInteraction = 30,
   // Max value of the first run experience stages.
   // kMaxValue should share the value of the highest enumerator.
-  kMaxValue = kHistorySyncScreenCompletionWithoutSync,
+  kMaxValue = kInteractiveLensCompletionWithoutInteraction,
 };
 
 }  // namespace first_run

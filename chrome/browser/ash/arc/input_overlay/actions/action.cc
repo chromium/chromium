@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check_op.h"
+#include "base/strings/string_util.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
@@ -126,7 +127,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
 
 std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
-    const std::string_view key_name) {
+    std::string_view key_name) {
   const std::string* key = value.FindString(kKey);
   if (!key) {
     LOG(ERROR) << "No key-value for {" << key_name << "}.";
@@ -306,111 +307,25 @@ bool IsMouseBound(const InputElement& input_element) {
   return (input_element.input_sources() & InputSource::IS_MOUSE) != 0;
 }
 
-void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
-  if (pending_input_) {
-    pending_input_.reset();
-  }
-  pending_input_ = std::move(input_element);
-
-  if (IsBeta() || !action_view_) {
-    return;
-  }
-  action_view_->SetViewContent(BindingOption::kPending);
-}
-
-void Action::BindPending() {
-  // Check whether position is adjusted.
-  if (pending_position_) {
-    current_positions_[0] = *pending_position_;
-    pending_position_.reset();
-    UpdateTouchDownPositions();
-  }
-
-  // Check whether input is changed.
-  if (!pending_input_) {
-    return;
-  }
-
+void Action::BindInput(std::unique_ptr<InputElement> input_element) {
   current_input_.reset();
-  current_input_ = std::move(pending_input_);
-  DCHECK(!pending_input_);
+  current_input_ = std::move(input_element);
 }
 
-void Action::CancelPendingBind() {
-  // Clear the pending positions.
-  bool canceled = false;
-  if (pending_position_) {
-    pending_position_.reset();
-    canceled = true;
-  }
-  // Clear the pending input.
-  if (pending_input_) {
-    pending_input_.reset();
-    canceled = true;
-  }
+void Action::BindPosition(const gfx::Point& new_touch_center) {
+  Position new_position = Position(PositionType::kDefault);
+  new_position.Normalize(new_touch_center, touch_injector_->content_bounds_f());
 
-  // For unit test, `action_view_` could be nullptr.
-  if (!action_view_ || !canceled) {
-    return;
-  }
-  action_view_->SetViewContent(BindingOption::kCurrent);
-}
-
-void Action::ResetPendingBind() {
-  pending_position_.reset();
-  pending_input_.reset();
-}
-
-void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
-  DCHECK(!current_positions().empty());
-
-  if (pending_position_) {
-    pending_position_.reset();
-  }
-
-  // Keep the customized position to default type.
-  pending_position_ = std::make_unique<Position>(PositionType::kDefault);
-  pending_position_->Normalize(new_touch_center,
-                               touch_injector_->content_bounds_f());
-
-  // "Restore to default" and "Cancel" functions are removed for Beta version,
-  // so the change is applied immediately after change.
-  if (IsBeta()) {
-    BindPending();
-  }
-}
-
-void Action::RestoreToDefault() {
-  bool restored = false;
-  if (GetCurrentDisplayedInput() != *original_input_) {
-    pending_input_.reset();
-    pending_input_ = std::make_unique<InputElement>(*original_input_);
-    restored = true;
-  }
-  if (GetCurrentDisplayedPosition() != original_positions_[0]) {
-    pending_position_.reset();
-    pending_position_ = std::make_unique<Position>(original_positions_[0]);
-    restored = true;
-  }
-
-  // For unit test, `action_view_` could be nullptr.
-  if (!action_view_ || !restored) {
-    return;
-  }
-
-  action_view_->SetViewContent(BindingOption::kPending);
-  // Set to `DisplayMode::kRestore` to clear the focus even the current
-  // binding is same as original binding.
-  action_view_->SetDisplayMode(DisplayMode::kRestore);
+  current_positions_[0] = std::move(new_position);
+  UpdateTouchDownPositions();
 }
 
 const InputElement& Action::GetCurrentDisplayedInput() {
   DCHECK(current_input_);
-  return pending_input_ ? *pending_input_ : *current_input_;
+  return *current_input_;
 }
 
 bool Action::IsOverlapped(const InputElement& input_element) {
-  DCHECK(current_input_);
   if (!current_input_) {
     return false;
   }
@@ -419,15 +334,10 @@ bool Action::IsOverlapped(const InputElement& input_element) {
 }
 
 const Position& Action::GetCurrentDisplayedPosition() {
-  // TODO(b/229912890): When mouse overlay is involved, `original_positions_`
-  // may be empty. Add the situation for empty `original_positions_` when
-  // supporting mouse.
   DCHECK(!original_positions_.empty());
 
-  return pending_position_
-             ? *pending_position_
-             : (!current_positions_.empty() ? current_positions_[0]
-                                            : original_positions_[0]);
+  return (!current_positions_.empty() ? current_positions_[0]
+                                      : original_positions_[0]);
 }
 
 std::optional<ui::TouchEvent> Action::GetTouchCanceledEvent() {
@@ -545,33 +455,18 @@ bool Action::VerifyOnKeyRelease(ui::DomCode code) {
   return true;
 }
 
-void Action::PostUnbindInputProcess() {
-  if (IsBeta() || !action_view_) {
-    return;
-  }
-  action_view_->SetViewContent(BindingOption::kPending);
-  const int label_index = action_view_->unbind_label_index();
-  action_view_->SetDisplayMode(DisplayMode::kEditedUnbound,
-                               (label_index == kDefaultLabelIndex
-                                    ? nullptr
-                                    : action_view_->labels()[label_index]));
-  action_view_->set_unbind_label_index(kDefaultLabelIndex);
-}
-
 std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
   auto proto = std::make_unique<ActionProto>();
   proto->set_id(id_);
+  proto->set_name_index(name_label_index_);
 
   if (IsDefaultAction()) {
     // Check if the default action is customized.
     bool customized = false;
 
-    if (IsBeta()) {
-      DCHECK(original_type_);
-      if (*original_type_ != GetType()) {
-        customized = true;
-      }
-      proto->set_name_index(name_label_index_);
+    DCHECK(original_type_);
+    if (*original_type_ != GetType()) {
+      customized = true;
     }
 
     if (*original_input_ != *current_input_) {
@@ -591,16 +486,13 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
     if (!customized) {
       return nullptr;
     }
-  } else if (IsBeta()) {
+  } else {
     // Save everything for user-added action.
     proto->set_allocated_input_element(
         current_input_->ConvertToProto().release());
     auto pos_proto = current_positions_[0].ConvertToProto();
     *proto->add_positions() = *pos_proto;
     pos_proto.reset();
-    proto->set_name_index(name_label_index_);
-  } else {
-    // Disregard the user-added actions if the beta flag is off.
   }
 
   return proto;
@@ -618,7 +510,7 @@ void Action::UpdateTouchDownPositions() {
   // floating. In this scenario, the parent window of the target
   // window is temporarily set to null when this function is called.
   const float scale = host ? host->device_scale_factor()
-                           : display::Screen::GetScreen()
+                           : display::Screen::Get()
                                  ->GetDisplayNearestWindow(window)
                                  .device_scale_factor();
 
@@ -678,13 +570,10 @@ void Action::CreateTouchEvent(ui::EventType type,
       .set_target(touch_injector_->window());
 }
 
-void Action::PrepareToBindPositionForTesting(
-    std::unique_ptr<Position> position) {
-  if (pending_position_) {
-    pending_position_.reset();
-  }
+void Action::BindPositionForTesting(std::unique_ptr<Position> position) {
   // Now it only supports changing the first touch position.
-  pending_position_ = std::move(position);
+  current_positions_[0] = std::move(*position);
+  UpdateTouchDownPositions();
 }
 
 }  // namespace arc::input_overlay

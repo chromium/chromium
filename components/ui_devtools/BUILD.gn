@@ -66,6 +66,8 @@ component("ui_devtools") {
     "devtools_client.cc",
     "devtools_client.h",
     "devtools_export.h",
+    "devtools_process_observer.cc",
+    "devtools_process_observer.h",
     "devtools_server.cc",
     "devtools_server.h",
     "dom_agent.cc",
@@ -91,17 +93,17 @@ component("ui_devtools") {
     ":features",
     ":protocol_generated_sources",
     "//base",
+    "//content/public/common",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//net",
     "//third_party/inspector_protocol:crdtp",
-    "//ui/base:base",
+    "//ui/base/interaction",
     "//ui/gfx",
   ]
 
   public_deps = [
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
+    "//content/public/browser",
     "//services/service_manager/public/cpp",
     "//services/tracing/public/cpp",
     "//services/tracing/public/mojom",
@@ -153,9 +155,8 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//base/test:test_support",
+    "//net",
     "//net:test_support",
-    "//services/network:network_service",
-    "//services/network:test_support",
     "//testing/gtest",
   ]
 

@@ -26,6 +26,12 @@ bool ClipNode::operator==(const ClipNode& other) const {
          pixel_moving_filter_id == other.pixel_moving_filter_id &&
          transform_id == other.transform_id;
 }
+
+std::string ClipNode::ToString() const {
+  base::trace_event::TracedValueJSON value;
+  AsValueInto(&value);
+  return value.ToFormattedJSON();
+}
 #endif
 
 void ClipNode::AsValueInto(base::trace_event::TracedValue* value) const {

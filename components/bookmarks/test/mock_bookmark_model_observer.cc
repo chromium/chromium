@@ -6,8 +6,8 @@
 
 namespace bookmarks {
 
-MockBookmarkModelObserver::MockBookmarkModelObserver() {}
+MockBookmarkModelObserver::MockBookmarkModelObserver() = default;
 
-MockBookmarkModelObserver::~MockBookmarkModelObserver() {}
+MockBookmarkModelObserver::~MockBookmarkModelObserver() = default;
 
 }  // namespace bookmarks

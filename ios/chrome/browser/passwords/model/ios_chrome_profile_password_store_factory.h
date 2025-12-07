@@ -5,11 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PROFILE_PASSWORD_STORE_FACTORY_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PROFILE_PASSWORD_STORE_FACTORY_H_
 
-#include "base/memory/ref_counted.h"
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
+#import "base/memory/scoped_refptr.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/refcounted_profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
 enum class ServiceAccessType;
 
 namespace password_manager {
@@ -17,20 +16,14 @@ class PasswordStoreInterface;
 }
 
 // Singleton that owns all PasswordStores and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class IOSChromeProfilePasswordStoreFactory
-    : public RefcountedBrowserStateKeyedServiceFactory {
+    : public RefcountedProfileKeyedServiceFactoryIOS {
  public:
-  static scoped_refptr<password_manager::PasswordStoreInterface>
-  GetForBrowserState(ChromeBrowserState* browser_state,
-                     ServiceAccessType access_type);
-
+  static scoped_refptr<password_manager::PasswordStoreInterface> GetForProfile(
+      ProfileIOS* profile,
+      ServiceAccessType access_type);
   static IOSChromeProfilePasswordStoreFactory* GetInstance();
-
-  IOSChromeProfilePasswordStoreFactory(
-      const IOSChromeProfilePasswordStoreFactory&) = delete;
-  IOSChromeProfilePasswordStoreFactory& operator=(
-      const IOSChromeProfilePasswordStoreFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeProfilePasswordStoreFactory>;
@@ -38,12 +31,9 @@ class IOSChromeProfilePasswordStoreFactory
   IOSChromeProfilePasswordStoreFactory();
   ~IOSChromeProfilePasswordStoreFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   scoped_refptr<RefcountedKeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_MODEL_IOS_CHROME_PROFILE_PASSWORD_STORE_FACTORY_H_

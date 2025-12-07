@@ -7,13 +7,15 @@
 namespace content {
 ServiceWorkerVersionBaseInfo::ServiceWorkerVersionBaseInfo() = default;
 ServiceWorkerVersionBaseInfo::ServiceWorkerVersionBaseInfo(
+    const GURL& script_url,
     const GURL& scope,
     const blink::StorageKey& storage_key,
     int64_t registration_id,
     int64_t version_id,
     int process_id,
     blink::mojom::AncestorFrameType ancestor_frame_type)
-    : scope(scope),
+    : script_url(script_url),
+      scope(scope),
       storage_key(storage_key),
       registration_id(registration_id),
       version_id(version_id),

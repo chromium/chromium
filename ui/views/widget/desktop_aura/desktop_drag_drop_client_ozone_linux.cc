@@ -34,8 +34,9 @@ void DesktopDragDropClientOzoneLinux::OnDragLocationChanged(
     const gfx::Point& screen_point_px) {
   DCHECK(drag_context());
 
-  if (!drag_context()->widget)
+  if (!drag_context()->widget) {
     return;
+  }
   const bool dispatch_mouse_event = !drag_context()->last_screen_location_px;
   drag_context()->last_screen_location_px = screen_point_px;
   if (dispatch_mouse_event) {
@@ -54,8 +55,9 @@ void DesktopDragDropClientOzoneLinux::OnDragOperationChanged(
     ui::mojom::DragOperation operation) {
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(root_window());
-  if (!cursor_client)
+  if (!cursor_client) {
     return;
+  }
 
   ui::mojom::CursorType cursor_type = ui::mojom::CursorType::kNull;
   switch (operation) {
@@ -78,17 +80,19 @@ void DesktopDragDropClientOzoneLinux::OnDragOperationChanged(
 std::optional<gfx::AcceleratedWidget>
 DesktopDragDropClientOzoneLinux::GetDragWidget() {
   DCHECK(drag_context());
-  if (drag_context()->widget)
+  if (drag_context()->widget) {
     return drag_context()
         ->widget->GetNativeWindow()
         ->GetHost()
         ->GetAcceleratedWidget();
+  }
   return std::nullopt;
 }
 
 void DesktopDragDropClientOzoneLinux::UpdateDragWidgetLocation() {
-  if (!drag_context())
+  if (!drag_context()) {
     return;
+  }
 
   float scale_factor = ui::GetScaleFactorForNativeView(
       drag_context()->widget->GetNativeWindow());

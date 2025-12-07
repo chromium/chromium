@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.carousel;
 
-import android.content.Context;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Color;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.ViewOutlineProvider;
@@ -12,31 +13,38 @@ import android.view.ViewOutlineProvider;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
-import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Binder for the Carousel suggestions. */
+@NullMarked
 public interface BaseCarouselSuggestionViewBinder {
     /**
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
-    public static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
+    static void bind(PropertyModel model, BaseCarouselSuggestionView view, PropertyKey key) {
 
         if (key == BaseCarouselSuggestionViewProperties.TILES) {
             var items = model.get(BaseCarouselSuggestionViewProperties.TILES);
-            var adapter = (SimpleRecyclerViewAdapter) view.getAdapter();
+            var adapter = assumeNonNull((SimpleRecyclerViewAdapter) view.getAdapter());
             if (items != null) {
                 adapter.getModelList().set(items);
             } else {
                 adapter.getModelList().clear();
             }
             view.resetSelection();
+            propagateCommonProperties(adapter.getModelList(), model);
+        } else if (key == SuggestionCommonProperties.COLOR_SCHEME) {
+            // Propagate color scheme to all tiles.
+            var adapter = assumeNonNull((SimpleRecyclerViewAdapter) view.getAdapter());
+            propagateCommonProperties(adapter.getModelList(), model);
         } else if (key == BaseCarouselSuggestionViewProperties.ITEM_DECORATION) {
             view.setItemDecoration(model.get(BaseCarouselSuggestionViewProperties.ITEM_DECORATION));
         } else if (key == BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION) {
@@ -59,7 +67,10 @@ public interface BaseCarouselSuggestionViewBinder {
             // Specific values to apply if background is enabled.
             if (useBackground) {
                 // Note: this assumes carousel is not showing in the incognito mode.
-                bgColor = getSuggestionBackgroundColor(model, view.getContext());
+                bgColor =
+                        OmniboxResourceProvider.getStandardSuggestionBackgroundColor(
+                                view.getContext(),
+                                model.get(SuggestionCommonProperties.COLOR_SCHEME));
                 horizontalMargin = OmniboxResourceProvider.getSideSpacing(view.getContext());
                 outline =
                         new RoundedCornerOutlineProvider(
@@ -83,16 +94,13 @@ public interface BaseCarouselSuggestionViewBinder {
         }
     }
 
-    /**
-     * Retrieve the background color to be applied to suggestion.
-     *
-     * @param model A property model to look up relevant properties.
-     * @param ctx Context used to retrieve appropriate color value.
-     * @return @ColorInt value representing the color to be applied.
-     */
-    public static @ColorInt int getSuggestionBackgroundColor(PropertyModel model, Context ctx) {
-        return model.get(SuggestionCommonProperties.COLOR_SCHEME) == BrandedColorScheme.INCOGNITO
-                ? ctx.getColor(R.color.omnibox_suggestion_bg_incognito)
-                : OmniboxResourceProvider.getStandardSuggestionBackgroundColor(ctx);
+    private static void propagateCommonProperties(ModelList list, PropertyModel model) {
+        for (int i = 0; i < list.size(); i++) {
+            PropertyModel tileModel = list.get(i).model;
+
+            tileModel.set(
+                    SuggestionCommonProperties.COLOR_SCHEME,
+                    model.get(SuggestionCommonProperties.COLOR_SCHEME));
+        }
     }
 }

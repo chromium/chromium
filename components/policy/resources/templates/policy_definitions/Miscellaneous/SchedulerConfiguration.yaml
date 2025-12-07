@@ -17,7 +17,6 @@ items:
   value: performance
 owners:
 - file://components/policy/OWNERS
-- emaxx@chromium.org
 schema:
   enum:
   - conservative

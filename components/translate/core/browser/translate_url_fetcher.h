@@ -6,8 +6,10 @@
 #define COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_URL_FETCHER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
+#include "net/http/http_request_headers.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -45,11 +47,8 @@ class TranslateURLFetcher {
     max_retry_on_5xx_ = count;
   }
 
-  const std::string& extra_request_header() {
-    return extra_request_header_;
-  }
-  void set_extra_request_header(const std::string& header) {
-    extra_request_header_ = header;
+  void set_extra_request_header(const net::HttpRequestHeaders& header) {
+    extra_request_header_.MergeFrom(header);
   }
 
   // Requests to |url|. |callback| will be invoked when the function returns
@@ -63,7 +62,7 @@ class TranslateURLFetcher {
   State state() { return state_; }
 
  private:
-  void OnSimpleLoaderComplete(std::unique_ptr<std::string> response_body);
+  void OnSimpleLoaderComplete(std::optional<std::string> response_body);
 
   // URL to send the request.
   GURL url_;
@@ -85,7 +84,7 @@ class TranslateURLFetcher {
   int max_retry_on_5xx_;
 
   // An extra HTTP request header
-  std::string extra_request_header_;
+  net::HttpRequestHeaders extra_request_header_;
 };
 
 }  // namespace translate

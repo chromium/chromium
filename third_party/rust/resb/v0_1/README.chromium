@@ -1,0 +1,11 @@
+Name: resb
+URL: https://crates.io/crates/resb
+Version: 0.1.1
+Revision: 55c44ca800f1332126cfbf2d5b529ec4e5451e2c
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/resb-v0_1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: Utilities for reading and writing ICU resource bundle files

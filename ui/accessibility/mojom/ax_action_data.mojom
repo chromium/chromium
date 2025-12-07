@@ -10,8 +10,6 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // A compact representation of an accessibility action and the arguments
 // associated with that action. See ui::AXActionData for full documentation.
-// Next version: 3
-[Stable, Uuid="977807b3-17e0-4186-8398-deae1aeba2ec"]
 struct AXActionData {
   Action action;
   ax.mojom.AXTreeID target_tree_id;
@@ -33,8 +31,8 @@ struct AXActionData {
   ScrollAlignment horizontal_scroll_alignment;
   ScrollAlignment vertical_scroll_alignment;
   ScrollBehavior scroll_behavior;
-  [MinVersion=1] ax.mojom.AXTreeID? child_tree_id;
+  ax.mojom.AXTreeID child_tree_id;
   // Note that `target_role` should not be set if `target_node_id` is set, or
   // vice versa.
-  [MinVersion=2] ax.mojom.Role target_role = ax.mojom.Role.kUnknown;
+  ax.mojom.Role target_role = ax.mojom.Role.kUnknown;
 };

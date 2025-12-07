@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/queue.h"
 #include "base/functional/bind.h"
@@ -25,6 +26,7 @@
 #include "chromecast/media/common/base/decoder_config_logging.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_sample_types.h"
 #include "media/base/cdm_context.h"
 #include "media/base/channel_layout.h"
 #include "media/base/decoder_buffer.h"
@@ -49,7 +51,7 @@ class DecoderBufferExternalMemory
       : buffer_(std::move(buffer)) {}
 
   const base::span<const uint8_t> Span() const override {
-    return {buffer_->data(), buffer_->data_size()};
+    return UNSAFE_TODO({buffer_->data(), buffer_->data_size()});
   }
 
  private:
@@ -283,12 +285,12 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
       // Data in an AudioBus is already in planar float format; just copy each
       // channel into the result buffer in order.
       float* ptr = reinterpret_cast<float*>(result->writable_data());
-      for (int c = 0; c < bus->channels(); ++c) {
-        std::copy_n(bus->channel(c), num_frames, ptr);
-        ptr += num_frames;
+      for (auto channel : bus->AllChannels()) {
+        std::copy_n(channel.data(), num_frames, ptr);
+        UNSAFE_TODO(ptr += num_frames);
       }
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     result->set_duration(
@@ -348,8 +350,7 @@ int CastAudioDecoder::OutputFormatSizeInBytes(
     case CastAudioDecoder::OutputFormat::kOutputPlanarFloat:
       return 4;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 1;
+  NOTREACHED();
 }
 
 }  // namespace media

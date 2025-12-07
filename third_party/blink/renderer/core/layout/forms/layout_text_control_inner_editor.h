@@ -13,12 +13,39 @@ namespace blink {
 // in <input> and <textarea>.
 class LayoutTextControlInnerEditor final : public LayoutBlockFlow {
  public:
-  explicit LayoutTextControlInnerEditor(Element* element)
-      : LayoutBlockFlow(element) {}
+  explicit LayoutTextControlInnerEditor(Element* element);
 
   const char* GetName() const override {
     NOT_DESTROYED();
     return "LayoutTextControlInnerEditor";
+  }
+
+  bool IsTextControlInnerEditor() const override {
+    NOT_DESTROYED();
+    return true;
+  }
+
+  // Returns true if the host is a <textarea> and TextareaMultipleIfcs flag
+  // is enabled.
+  bool IsMultiline() const {
+    NOT_DESTROYED();
+    return is_multiline_;
+  }
+
+  void AddChild(LayoutObject* new_child,
+                LayoutObject* before_child = nullptr) override;
+  void StyleDidChange(StyleDifference diff,
+                      const ComputedStyle* old_style,
+                      const StyleChangeContext&) override;
+
+ private:
+  const bool is_multiline_;
+};
+
+template <>
+struct DowncastTraits<LayoutTextControlInnerEditor> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsTextControlInnerEditor();
   }
 };
 

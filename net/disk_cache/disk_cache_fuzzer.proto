@@ -20,6 +20,7 @@ message FuzzCommands {
     SIMPLE = 0;
     IN_MEMORY = 1;
     BLOCK = 2;
+    SQL = 3;
   }
   required CacheBackend cache_backend = 5;
 
@@ -27,7 +28,6 @@ message FuzzCommands {
     APP_CACHE = 1;
     REMOVED_MEDIA_CACHE = 2;
     SHADER_CACHE = 3;
-    PNACL_CACHE = 4;
     GENERATED_BYTE_CODE_CACHE = 5;
     DISK_CACHE = 6;
     GENERATED_NATIVE_CODE_CACHE = 7;
@@ -42,7 +42,6 @@ message FuzzCommands {
 
 message FuzzCommand {
   oneof fuzz_command_oneof {
-    SetMaxSize set_max_size = 87;
     CreateEntry create_entry = 1;
     OpenEntry open_entry = 2;
     OpenOrCreateEntry open_or_create_entry = 345;
@@ -72,12 +71,15 @@ message FuzzCommand {
     DestructBackend destruct_backend = 22;
 
     AddRealDelay add_real_delay = 23;
+    SetMaxSize recreate_with_size = 24;
 
     // Not included: GetStats, CalculateSizesOf, GetEntryInMemoryData,
     // SetEntryInMemoryData, CouldBeSparse, ReadyForSparseIO
 
     // TODO(mpdenton) FlushWorkerPoolForTesting
   }
+
+  reserved 87;  // previously set_max_size member of the oneof.
 }
 
 message SetMaxSize {

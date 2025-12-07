@@ -1,0 +1,11 @@
+Name: zerofrom
+URL: https://crates.io/crates/zerofrom
+Version: 0.1.6
+Revision: f4290a877dfcb0f87cad6de4abdd65f0cbb33c9c
+Update Mechanism: Manual (https://crbug.com/449898466)
+License: Unicode-3.0
+License File: //third_party/rust/chromium_crates_io/vendor/zerofrom-v0_1/LICENSE
+Shipped: yes
+Security Critical: yes
+
+Description: ZeroFrom trait for constructing

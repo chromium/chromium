@@ -4,6 +4,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 
+#include <algorithm>
 #include <iterator>
 #include <memory>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/events/peripheral_customization_event_rewriter.h"
+#include "ash/login/login_screen_controller.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
@@ -40,8 +42,9 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_tree.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/hash/sha1.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -65,6 +68,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/mojom/extended_fkeys_modifier.mojom.h"
+#include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/devices/touchpad_device.h"
@@ -130,6 +135,8 @@ constexpr mojom::TopRowActionKey ConvertTopRowActionKey(
       return mojom::TopRowActionKey::kDictation;
     case ui::TopRowActionKey::kAccessibility:
       return mojom::TopRowActionKey::kAccessibility;
+    case ui::TopRowActionKey::kDoNotDisturb:
+      return mojom::TopRowActionKey::kDoNotDisturb;
     case ui::TopRowActionKey::kUnknown:
     case ui::TopRowActionKey::kNone:
       return mojom::TopRowActionKey::kNone;
@@ -230,10 +237,15 @@ mojom::BatteryInfoPtr GetBatteryInfo(const device::BluetoothDevice& bt_device) {
     return nullptr;
   }
   const int percentage = battery_info->percentage.value();
-  CHECK_GE(percentage, 0);
-  CHECK_LE(percentage, 100);
-  return mojom::BatteryInfo::New(percentage, GetChargeStateFromBluetoothDevice(
-                                                 battery_info->charge_state));
+  // Log if the raw percentage is outside the expected range
+  if (percentage < 0 || percentage > 100) {
+    LOG(ERROR) << "Invalid battery percentage detected: " << percentage;
+  }
+  // Clamp the value to the valid range
+  const int clamped_percentage = std::clamp(percentage, 0, 100);
+  return mojom::BatteryInfo::New(
+      clamped_percentage,
+      GetChargeStateFromBluetoothDevice(battery_info->charge_state));
 }
 
 mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
@@ -245,14 +257,10 @@ mojom::KeyboardPtr BuildMojomKeyboard(const ui::KeyboardDevice& keyboard) {
           keyboard);
   mojom_keyboard->is_external =
       keyboard.type != ui::InputDeviceType::INPUT_DEVICE_INTERNAL;
-  // Enable only when flag is enabled to avoid crashing while problem is
-  // addressed. See b/272960076
-  if (features::IsInputDeviceSettingsSplitEnabled()) {
-    mojom_keyboard->modifier_keys =
-        Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
-    mojom_keyboard->meta_key =
-        Shell::Get()->keyboard_capability()->GetMetaKey(keyboard);
-  }
+  mojom_keyboard->modifier_keys =
+      Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard);
+  mojom_keyboard->meta_key =
+      Shell::Get()->keyboard_capability()->GetMetaKey(keyboard);
   if (::features::AreF11AndF12ShortcutsEnabled()) {
     mojom_keyboard->top_row_action_keys = GetTopRowActionKeys(keyboard);
   }
@@ -350,12 +358,12 @@ void AddButtonToButtonRemappingList(
     // Otherwise, give it the default button name indexed at the number of
     // non-middle click buttons in `button_remappings` + 1.
     auto iter =
-        base::ranges::find(button_remappings,
-                           *mojom::Button::NewCustomizableButton(
-                               mojom::CustomizableButton::kMiddle),
-                           [](const mojom::ButtonRemappingPtr& remapping) {
-                             return *remapping->button;
-                           });
+        std::ranges::find(button_remappings,
+                          *mojom::Button::NewCustomizableButton(
+                              mojom::CustomizableButton::kMiddle),
+                          [](const mojom::ButtonRemappingPtr& remapping) {
+                            return *remapping->button;
+                          });
 
     int button_number = button_remappings.size() + 1;
     if (is_mouse_button_remapping && iter != button_remappings.end()) {
@@ -385,7 +393,7 @@ bool KeyboardSettingsAreValid(
       base::Contains(keyboard.modifier_keys, ui::mojom::ModifierKey::kFunction);
 
   for (const auto& remapping : settings.modifier_remappings) {
-    auto it = base::ranges::find(keyboard.modifier_keys, remapping.first);
+    auto it = std::ranges::find(keyboard.modifier_keys, remapping.first);
     if (it == keyboard.modifier_keys.end()) {
       return false;
     }
@@ -501,6 +509,29 @@ void RecordSetMouseSettingsValidMetric(bool is_valid) {
       "ChromeOS.Settings.Device.Mouse.SetSettingsSucceeded", is_valid);
 }
 
+void RefreshKeyDisplayInRemappingList(
+    std::vector<mojom::ButtonRemappingPtr>& remappings) {
+  for (const auto& remapping : remappings) {
+    if (!remapping->remapping_action ||
+        !remapping->remapping_action->is_key_event()) {
+      continue;
+    }
+    mojom::KeyEvent& key_event = *remapping->remapping_action->get_key_event();
+    key_event.key_display = base::UTF16ToUTF8(GetKeyDisplay(key_event.vkey));
+  }
+}
+
+void RefreshKeyDisplayMouse(mojom::Mouse& mouse) {
+  RefreshKeyDisplayInRemappingList(mouse.settings->button_remappings);
+}
+
+void RefreshKeyDisplayGraphicsTablet(mojom::GraphicsTablet& graphics_tablet) {
+  RefreshKeyDisplayInRemappingList(
+      graphics_tablet.settings->tablet_button_remappings);
+  RefreshKeyDisplayInRemappingList(
+      graphics_tablet.settings->pen_button_remappings);
+}
+
 // Check the list of keyboards to see if any have the same |device_key|.
 // If so, their settings need to also be updated.
 template <typename T>
@@ -514,6 +545,40 @@ void UpdateDuplicateDeviceSettings(
     if (device_id != updated_device.id &&
         device->device_key == updated_device.device_key) {
       device->settings = updated_device.settings->Clone();
+      settings_updated_callback.Run(device_id);
+    }
+  }
+}
+
+template <>
+void UpdateDuplicateDeviceSettings<mojom::Mouse>(
+    const mojom::Mouse& updated_mouse,
+    base::flat_map<InputDeviceSettingsControllerImpl::DeviceId,
+                   mojo::StructPtr<mojom::Mouse>>& mice,
+    base::RepeatingCallback<void(InputDeviceSettingsControllerImpl::DeviceId)>
+        settings_updated_callback) {
+  for (const auto& [device_id, mouse] : mice) {
+    if (device_id != updated_mouse.id &&
+        mouse->device_key == updated_mouse.device_key) {
+      mouse->settings = updated_mouse.settings->Clone();
+      RefreshKeyDisplayMouse(*mouse);
+      settings_updated_callback.Run(device_id);
+    }
+  }
+}
+
+template <>
+void UpdateDuplicateDeviceSettings<mojom::GraphicsTablet>(
+    const mojom::GraphicsTablet& updated_graphics_tablet,
+    base::flat_map<InputDeviceSettingsControllerImpl::DeviceId,
+                   mojo::StructPtr<mojom::GraphicsTablet>>& mice,
+    base::RepeatingCallback<void(InputDeviceSettingsControllerImpl::DeviceId)>
+        settings_updated_callback) {
+  for (const auto& [device_id, graphics_tablet] : mice) {
+    if (device_id != updated_graphics_tablet.id &&
+        graphics_tablet->device_key == updated_graphics_tablet.device_key) {
+      graphics_tablet->settings = updated_graphics_tablet.settings->Clone();
+      RefreshKeyDisplayGraphicsTablet(*graphics_tablet);
       settings_updated_callback.Run(device_id);
     }
   }
@@ -548,40 +613,6 @@ T* FindDevice(InputDeviceSettingsControllerImpl::DeviceId id,
   return nullptr;
 }
 
-void DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
-    PrefService* local_state) {
-  // local_state could be null in tests.
-  if (!local_state) {
-    return;
-  }
-  user_manager::KnownUser known_user(local_state);
-  AccountId account_id =
-      Shell::Get()->session_controller()->GetActiveAccountId();
-
-  known_user.SetPath(account_id, prefs::kMouseLoginScreenInternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id, prefs::kMouseLoginScreenExternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kKeyboardLoginScreenInternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kKeyboardLoginScreenExternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kPointingStickLoginScreenInternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kPointingStickLoginScreenExternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kTouchpadLoginScreenInternalSettingsPref,
-                     std::nullopt);
-  known_user.SetPath(account_id,
-                     prefs::kTouchpadLoginScreenExternalSettingsPref,
-                     std::nullopt);
-}
-
 void DeleteLoginScreenButtonRemappingListPrefWhenPeripheralCustomizationDisabled(
     PrefService* local_state) {
   // local_state could be null in tests.
@@ -604,33 +635,68 @@ void DeleteLoginScreenButtonRemappingListPrefWhenPeripheralCustomizationDisabled
                      std::nullopt);
 }
 
-void RefreshKeyDisplayInRemappingList(
-    std::vector<mojom::ButtonRemappingPtr>& remappings) {
-  for (const auto& remapping : remappings) {
-    if (!remapping->remapping_action ||
-        !remapping->remapping_action->is_key_event()) {
-      continue;
-    }
-    mojom::KeyEvent& key_event = *remapping->remapping_action->get_key_event();
-    key_event.key_display = base::UTF16ToUTF8(GetKeyDisplay(key_event.vkey));
-  }
-}
-
-void RefreshKeyDisplayMouse(mojom::Mouse& mouse) {
-  RefreshKeyDisplayInRemappingList(mouse.settings->button_remappings);
-}
-
-void RefreshKeyDisplayGraphicsTablet(mojom::GraphicsTablet& graphics_tablet) {
-  RefreshKeyDisplayInRemappingList(
-      graphics_tablet.settings->tablet_button_remappings);
-  RefreshKeyDisplayInRemappingList(
-      graphics_tablet.settings->pen_button_remappings);
-}
-
 bool BatteryInfoChanged(const mojom::BatteryInfo& existing_info,
                         const mojom::BatteryInfo& new_info) {
   return existing_info.battery_percentage != new_info.battery_percentage ||
          existing_info.charge_state != new_info.charge_state;
+}
+
+void ApplyDefaultsToButtonRemappingList(
+    const std::vector<mojom::ButtonRemappingPtr>& default_button_remappings,
+    std::vector<mojom::ButtonRemappingPtr>& button_remappings) {
+  for (auto& button_remapping : button_remappings) {
+    auto matching_remapping_iter = std::ranges::find(
+        default_button_remappings, *button_remapping->button,
+        [](const mojom::ButtonRemappingPtr& button_remapping) {
+          return *button_remapping->button;
+        });
+    if (matching_remapping_iter == default_button_remappings.end()) {
+      continue;
+    }
+
+    // If the button is already assigned to some action, do not attempt to
+    // reassign it back to the OEM default. This reassignment should only happen
+    // if the button is not assigned to anything yet AND the OEM decided that
+    // the button has a default action assigned.
+    if (!button_remapping->remapping_action.is_null()) {
+      continue;
+    }
+
+    const auto& matching_remapping = *matching_remapping_iter;
+    if (!matching_remapping->remapping_action) {
+      continue;
+    }
+
+    button_remapping->remapping_action =
+        matching_remapping->remapping_action->Clone();
+  }
+}
+
+void ApplyDefaultsToMouseButtons(mojom::Mouse& mouse) {
+  if (mouse.mouse_button_config == mojom::MouseButtonConfig::kNoConfig) {
+    return;
+  }
+
+  ApplyDefaultsToButtonRemappingList(
+      GetButtonRemappingListForConfig(mouse.mouse_button_config),
+      mouse.settings->button_remappings);
+}
+
+void ApplyDefaultsToGraphicsTabletButtons(
+    mojom::GraphicsTablet& graphics_tablet) {
+  if (graphics_tablet.graphics_tablet_button_config ==
+      mojom::GraphicsTabletButtonConfig::kNoConfig) {
+    return;
+  }
+
+  ApplyDefaultsToButtonRemappingList(
+      GetTabletButtonRemappingListForConfig(
+          graphics_tablet.graphics_tablet_button_config),
+      graphics_tablet.settings->tablet_button_remappings);
+  ApplyDefaultsToButtonRemappingList(
+      GetPenButtonRemappingListForConfig(
+          graphics_tablet.graphics_tablet_button_config),
+      graphics_tablet.settings->pen_button_remappings);
 }
 
 }  // namespace
@@ -671,6 +737,7 @@ void InputDeviceSettingsControllerImpl::Init() {
   Shell::Get()->session_controller()->AddObserver(this);
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->AddObserver(this);
+  Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
 
   if (features::IsWelcomeExperienceEnabled()) {
     message_center::MessageCenter::Get()->AddObserver(this);
@@ -758,8 +825,10 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), keyboard->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (keyboard->battery_info.is_null() ||
-          BatteryInfoChanged(*keyboard->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (keyboard->battery_info.is_null() ||
+           BatteryInfoChanged(*keyboard->battery_info,
+                              *updated_battery_info))) {
         keyboard->battery_info = std::move(updated_battery_info);
         DispatchKeyboardBatteryInfoChanged(id);
       }
@@ -771,8 +840,10 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), touchpad->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (touchpad->battery_info.is_null() ||
-          BatteryInfoChanged(*touchpad->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (touchpad->battery_info.is_null() ||
+           BatteryInfoChanged(*touchpad->battery_info,
+                              *updated_battery_info))) {
         touchpad->battery_info = std::move(updated_battery_info);
         DispatchTouchpadBatteryInfoChanged(id);
       }
@@ -784,8 +855,9 @@ void InputDeviceSettingsControllerImpl::
             GetBluetoothDevice(bluetooth_adapter_.get(), mouse->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (mouse->battery_info.is_null() ||
-          BatteryInfoChanged(*mouse->battery_info, *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (mouse->battery_info.is_null() ||
+           BatteryInfoChanged(*mouse->battery_info, *updated_battery_info))) {
         mouse->battery_info = std::move(updated_battery_info);
         DispatchMouseBatteryInfoChanged(id);
       }
@@ -797,9 +869,10 @@ void InputDeviceSettingsControllerImpl::
                                           graphics_tablet->device_key);
         device != nullptr) {
       auto updated_battery_info = GetBatteryInfo(*device);
-      if (graphics_tablet->battery_info.is_null() ||
-          BatteryInfoChanged(*graphics_tablet->battery_info,
-                             *updated_battery_info)) {
+      if (!updated_battery_info.is_null() &&
+          (graphics_tablet->battery_info.is_null() ||
+           BatteryInfoChanged(*graphics_tablet->battery_info,
+                              *updated_battery_info))) {
         graphics_tablet->battery_info = std::move(updated_battery_info);
         DispatchGraphicsTabletBatteryInfoChanged(id);
       }
@@ -817,6 +890,8 @@ void InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady(
 
 InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
   Shell::Get()->session_controller()->RemoveObserver(this);
+  Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(
+      this);
   if (features::IsWelcomeExperienceEnabled()) {
     message_center::MessageCenter::Get()->RemoveObserver(this);
   }
@@ -925,6 +1000,11 @@ void InputDeviceSettingsControllerImpl::OnSessionStateChanged(
       last_session_ == session_manager::SessionState::OOBE) {
     RefreshCachedKeyboardSettings();
 
+    if (!active_pref_service_) {
+      last_session_ = state;
+      return;
+    }
+
     for (auto& [id, keyboard] : keyboards_) {
       if (IsSplitModifierKeyboard(*keyboard)) {
         active_pref_service_->SetBoolean(
@@ -957,35 +1037,10 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   }
 
   if (!features::IsWelcomeExperienceEnabled()) {
-    pref_service->ClearPref(prefs::kMiceWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kGraphicsTabletsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kKeyboardsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kTouchpadsWelcomeNotificationSeen);
-    pref_service->ClearPref(prefs::kPointingSticksWelcomeNotificationSeen);
+    pref_service->ClearPref(prefs::kWelcomeExperienceNotificationSeen);
     if (local_state_) {
       local_state_->ClearPref(prefs::kDeviceImagesDictPref);
     }
-  }
-
-  // If the flag is disabled, clear all the settings dictionaries.
-  if (!features::IsInputDeviceSettingsSplitEnabled()) {
-    active_pref_service_ = nullptr;
-    pref_service->SetDict(prefs::kKeyboardDeviceSettingsDictPref, {});
-    pref_service->SetDict(prefs::kMouseDeviceSettingsDictPref, {});
-    pref_service->SetDict(prefs::kPointingStickDeviceSettingsDictPref, {});
-    pref_service->SetDict(prefs::kTouchpadDeviceSettingsDictPref, {});
-    pref_service->SetList(prefs::kKeyboardDeviceImpostersListPref, {});
-    pref_service->SetList(prefs::kMouseDeviceImpostersListPref, {});
-
-    pref_service->ClearPref(prefs::kKeyboardInternalSettings);
-    pref_service->ClearPref(prefs::kKeyboardUpdateSettingsMetricInfo);
-    pref_service->ClearPref(prefs::kMouseUpdateSettingsMetricInfo);
-    pref_service->ClearPref(prefs::kTouchpadUpdateSettingsMetricInfo);
-    pref_service->ClearPref(prefs::kPointingStickUpdateSettingsMetricInfo);
-
-    DeleteLoginScreenSettingsPrefWhenInputDeviceSettingsSplitDisabled(
-        local_state_);
-    return;
   }
 
   // If the flag is disabled, clear the new touchpad and keyboard settings from
@@ -1134,6 +1189,16 @@ void InputDeviceSettingsControllerImpl::ShowFirstTimeConnectedNotifications() {
   }
 }
 
+void InputDeviceSettingsControllerImpl::
+    ForceKeyboardSettingRefreshWhenFeatureEnabled() {
+  sequenced_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &InputDeviceSettingsControllerImpl::RefreshMetaAndModifierKeys,
+          weak_ptr_factory_.GetWeakPtr()));
+  ScheduleDeviceSettingsRefresh();
+}
+
 void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
   if (settings_refresh_pending_) {
     return;
@@ -1141,12 +1206,12 @@ void InputDeviceSettingsControllerImpl::ScheduleDeviceSettingsRefresh() {
 
   // Modifiers must be refreshed before settings so settings are retrieved for
   // the correct modifiers.
-  if (features::IsModifierSplitDogfoodEnabled() &&
-      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
+  if (features::IsModifierSplitEnabled()) {
     sequenced_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&InputDeviceSettingsControllerImpl::RefreshModifierKeys,
-                       weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::RefreshMetaAndModifierKeys,
+            weak_ptr_factory_.GetWeakPtr()));
   }
 
   settings_refresh_pending_ = true;
@@ -1198,10 +1263,10 @@ void InputDeviceSettingsControllerImpl::
 
   // Our map of keyboards is sorted so iterating in reverse order guarantees
   // that we'll select the most recently connected device.
-  auto external_iter = base::ranges::find(
+  auto external_iter = std::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
       [](const auto& keyboard) { return keyboard.second->is_external; });
-  auto internal_iter = base::ranges::find(
+  auto internal_iter = std::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/false,
       [](const auto& keyboard) { return keyboard.second->is_external; });
 
@@ -1234,10 +1299,10 @@ void InputDeviceSettingsControllerImpl::
 
   // Our map of mice is sorted so iterating in reverse order guarantees
   // that we'll select the most recently connected device.
-  auto external_iter = base::ranges::find(
+  auto external_iter = std::ranges::find(
       mice_.rbegin(), mice_.rend(), /*value=*/true,
       [](const auto& mouse) { return mouse.second->is_external; });
-  auto internal_iter = base::ranges::find(
+  auto internal_iter = std::ranges::find(
       mice_.rbegin(), mice_.rend(), /*value=*/false,
       [](const auto& mouse) { return mouse.second->is_external; });
 
@@ -1269,15 +1334,15 @@ void InputDeviceSettingsControllerImpl::
   // Our map of pointing sticks is sorted so iterating in reverse order
   // guarantees that we'll select the most recently connected device.
   auto external_iter =
-      base::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
-                         /*value=*/true, [](const auto& pointing_stick) {
-                           return pointing_stick.second->is_external;
-                         });
+      std::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
+                        /*value=*/true, [](const auto& pointing_stick) {
+                          return pointing_stick.second->is_external;
+                        });
   auto internal_iter =
-      base::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
-                         /*value=*/false, [](const auto& pointing_stick) {
-                           return pointing_stick.second->is_external;
-                         });
+      std::ranges::find(pointing_sticks_.rbegin(), pointing_sticks_.rend(),
+                        /*value=*/false, [](const auto& pointing_stick) {
+                          return pointing_stick.second->is_external;
+                        });
 
   if (external_iter != pointing_sticks_.rend()) {
     auto& external_pointing_stick = *external_iter->second;
@@ -1306,10 +1371,10 @@ void InputDeviceSettingsControllerImpl::
 
   // Our map of touchpads is sorted so iterating in reverse order guarantees
   // that we'll select the most recently connected device.
-  auto external_iter = base::ranges::find(
+  auto external_iter = std::ranges::find(
       touchpads_.rbegin(), touchpads_.rend(), /*value=*/true,
       [](const auto& touchpad) { return touchpad.second->is_external; });
-  auto internal_iter = base::ranges::find(
+  auto internal_iter = std::ranges::find(
       touchpads_.rbegin(), touchpads_.rend(), /*value=*/false,
       [](const auto& touchpad) { return touchpad.second->is_external; });
 
@@ -1639,10 +1704,14 @@ bool InputDeviceSettingsControllerImpl::SetMouseSettings(
             WelcomeExperienceNotificationEventType::kSettingChanged);
     welcome_notification_clicked_device_keys_.erase(it);
   }
+
   const auto old_settings = std::move(found_mouse.settings);
   found_mouse.settings = settings.Clone();
+  ApplyDefaultsToMouseButtons(found_mouse);
   mouse_pref_handler_->UpdateMouseSettings(
       active_pref_service_, policy_handler_->mouse_policies(), found_mouse);
+  RefreshKeyDisplayMouse(found_mouse);
+
   PR_LOG(INFO, Feature::IDS) << GetMouseSettingsLog("Updated", found_mouse);
   metrics_manager_->RecordMouseChangedMetrics(found_mouse, *old_settings);
   DispatchMouseSettingsChanged(id);
@@ -1718,10 +1787,14 @@ bool InputDeviceSettingsControllerImpl::SetGraphicsTabletSettings(
             WelcomeExperienceNotificationEventType::kSettingChanged);
     welcome_notification_clicked_device_keys_.erase(it);
   }
+
   const auto old_settings = std::move(found_graphics_tablet.settings);
   found_graphics_tablet.settings = settings.Clone();
+  ApplyDefaultsToGraphicsTabletButtons(found_graphics_tablet);
   graphics_tablet_pref_handler_->UpdateGraphicsTabletSettings(
       active_pref_service_, found_graphics_tablet);
+  RefreshKeyDisplayGraphicsTablet(found_graphics_tablet);
+
   PR_LOG(INFO, Feature::IDS)
       << GetGraphicsTabletSettingsLog("Updated", found_graphics_tablet);
   metrics_manager_->RecordGraphicsTabletChangedMetrics(found_graphics_tablet,
@@ -1990,7 +2063,6 @@ void InputDeviceSettingsControllerImpl::OnKeyboardListUpdated(
 
   RefreshCachedKeyboardSettings();
   RefreshBatteryInfoForConnectedDevices();
-  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
@@ -2012,7 +2084,6 @@ void InputDeviceSettingsControllerImpl::OnTouchpadListUpdated(
 
   RefreshCachedTouchpadSettings();
   RefreshBatteryInfoForConnectedDevices();
-  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::OnMouseListUpdated(
@@ -2087,7 +2158,6 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletListUpdated(
   }
   RefreshStoredLoginScreenGraphicsTabletSettings();
   RefreshBatteryInfoForConnectedDevices();
-  RefreshCompanionAppInfoForConnectedDevices();
 }
 
 void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
@@ -2097,6 +2167,8 @@ void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
   mojom::KeyboardSettingsPtr new_settings = keyboard.settings->Clone();
   new_settings->modifier_remappings = {};
   new_settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
+  new_settings->f11 = ui::mojom::ExtendedFkeysModifier::kDisabled;
+  new_settings->f12 = ui::mojom::ExtendedFkeysModifier::kDisabled;
   if (keyboard.meta_key == ui::mojom::MetaKey::kCommand) {
     new_settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
         ui::mojom::ModifierKey::kMeta;
@@ -2141,10 +2213,10 @@ void InputDeviceSettingsControllerImpl::InitializeKeyboardSettings(
 // latest external keyboard which has the largest device id.
 const mojom::Keyboard*
 InputDeviceSettingsControllerImpl::GetGeneralizedKeyboard() {
-  auto external_iter = base::ranges::find(
+  auto external_iter = std::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
       [](const auto& keyboard) { return keyboard.second->is_external; });
-  auto internal_iter = base::ranges::find(
+  auto internal_iter = std::ranges::find(
       keyboards_.rbegin(), keyboards_.rend(), /*value=*/false,
       [](const auto& keyboard) { return keyboard.second->is_external; });
   if (external_iter != keyboards_.rend()) {
@@ -2389,10 +2461,10 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
   auto& mouse = *mouse_ptr;
   auto& button_remappings = mouse.settings->button_remappings;
   auto remapping_iter =
-      base::ranges::find(button_remappings, button,
-                         [](const mojom::ButtonRemappingPtr& remapping) {
-                           return *remapping->button;
-                         });
+      std::ranges::find(button_remappings, button,
+                        [](const mojom::ButtonRemappingPtr& remapping) {
+                          return *remapping->button;
+                        });
   if (remapping_iter != button_remappings.end()) {
     DispatchCustomizableMouseButtonPressed(mouse, button);
     return;
@@ -2453,10 +2525,10 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
   auto& tablet_button_remappings =
       graphics_tablet.settings->tablet_button_remappings;
   auto tablet_remapping_iter =
-      base::ranges::find(tablet_button_remappings, button,
-                         [](const mojom::ButtonRemappingPtr& remapping) {
-                           return *remapping->button;
-                         });
+      std::ranges::find(tablet_button_remappings, button,
+                        [](const mojom::ButtonRemappingPtr& remapping) {
+                          return *remapping->button;
+                        });
   if (tablet_remapping_iter != tablet_button_remappings.end()) {
     DispatchCustomizableTabletButtonPressed(graphics_tablet, button);
     return;
@@ -2464,10 +2536,10 @@ void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
 
   auto& pen_button_remappings = graphics_tablet.settings->pen_button_remappings;
   auto pen_remapping_iter =
-      base::ranges::find(pen_button_remappings, button,
-                         [](const mojom::ButtonRemappingPtr& remapping) {
-                           return *remapping->button;
-                         });
+      std::ranges::find(pen_button_remappings, button,
+                        [](const mojom::ButtonRemappingPtr& remapping) {
+                          return *remapping->button;
+                        });
   if (pen_remapping_iter != pen_button_remappings.end()) {
     DispatchCustomizablePenButtonPressed(graphics_tablet, button);
     return;
@@ -2799,20 +2871,21 @@ void InputDeviceSettingsControllerImpl::RefreshKeyboardDefaultSettings() {
   }
 
   auto chromeos_iter =
-      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
-                         [](const auto& keyboard) {
-                           return IsChromeOSKeyboard(*keyboard.second);
-                         });
+      std::ranges::find(keyboards_.rbegin(), keyboards_.rend(), /*value=*/true,
+                        [](const auto& keyboard) {
+                          return IsChromeOSKeyboard(*keyboard.second);
+                        });
   auto non_chromeos_iter =
-      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
-                         /*value=*/false, [](const auto& keyboard) {
-                           return IsChromeOSKeyboard(*keyboard.second);
-                         });
+      std::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
+                        /*value=*/false, [](const auto& keyboard) {
+                          return IsChromeOSKeyboard(*keyboard.second) ||
+                                 IsSplitModifierKeyboard(*keyboard.second);
+                        });
   auto split_modifier_iter =
-      base::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
-                         /*value=*/true, [](const auto& keyboard) {
-                           return IsSplitModifierKeyboard(*keyboard.second);
-                         });
+      std::ranges::find(keyboards_.rbegin(), keyboards_.rend(),
+                        /*value=*/true, [](const auto& keyboard) {
+                          return IsSplitModifierKeyboard(*keyboard.second);
+                        });
 
   if (chromeos_iter != keyboards_.rend()) {
     keyboard_pref_handler_->UpdateDefaultChromeOSKeyboardSettings(
@@ -2936,8 +3009,10 @@ void InputDeviceSettingsControllerImpl::DeviceBatteryChanged(
   RefreshBatteryInfoForConnectedDevices();
 }
 
-void InputDeviceSettingsControllerImpl::RefreshModifierKeys() {
+void InputDeviceSettingsControllerImpl::RefreshMetaAndModifierKeys() {
   for (auto& [_, keyboard] : keyboards_) {
+    keyboard->meta_key =
+        Shell::Get()->keyboard_capability()->GetMetaKey(keyboard->id);
     keyboard->modifier_keys =
         Shell::Get()->keyboard_capability()->GetModifierKeys(keyboard->id);
   }
@@ -2981,6 +3056,23 @@ void InputDeviceSettingsControllerImpl::DispatchTouchpadCompanionAppInfoChanged(
 }
 
 void InputDeviceSettingsControllerImpl::
+    RefreshCompanionAppInfoForConnectedDevices() {
+  if (!delegate_ || !active_pref_service_) {
+    return;
+  }
+  for (const auto& [id, mouse] : mice_) {
+    if (!DeviceHasCompanionAppAvailable(mouse->device_key)) {
+      continue;
+    }
+    delegate_->GetCompanionAppInfo(
+        mouse->device_key,
+        base::BindOnce(
+            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
+            weak_ptr_factory_.GetWeakPtr(), id, mouse->device_key));
+  }
+}
+
+void InputDeviceSettingsControllerImpl::
     DispatchGraphicsTabletCompanionAppInfoChanged(
         const mojom::GraphicsTablet& graphics_tablet) {
   CHECK(features::IsWelcomeExperienceEnabled());
@@ -2997,7 +3089,7 @@ void InputDeviceSettingsControllerImpl::SetPeripheralsAppDelegate(
 
 void InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived(
     DeviceId id,
-    const std::string& device_key,
+    const std::string device_key,
     const std::optional<mojom::CompanionAppInfo>& info) {
   if (!info) {
     return;
@@ -3009,77 +3101,6 @@ void InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived(
     mouse->app_info = info->Clone();
     package_id_to_device_id_map_[mouse->app_info->package_id] = id;
     DispatchMouseCompanionAppInfoChanged(*mouse);
-    return;
-  }
-
-  if (auto* keyboard = FindKeyboard(id); keyboard != nullptr) {
-    keyboard->app_info = info->Clone();
-    package_id_to_device_id_map_[keyboard->app_info->package_id] = id;
-    DispatchKeyboardCompanionAppInfoChanged(*keyboard);
-    return;
-  }
-
-  if (auto* touchpad = FindTouchpad(id); touchpad != nullptr) {
-    touchpad->app_info = info->Clone();
-    package_id_to_device_id_map_[touchpad->app_info->package_id] = id;
-    DispatchTouchpadCompanionAppInfoChanged(*touchpad);
-    return;
-  }
-
-  if (auto* graphics_tablet = FindGraphicsTablet(id);
-      graphics_tablet != nullptr) {
-    graphics_tablet->app_info = info->Clone();
-    package_id_to_device_id_map_[graphics_tablet->app_info->package_id] = id;
-    DispatchGraphicsTabletCompanionAppInfoChanged(*graphics_tablet);
-    return;
-  }
-}
-
-void InputDeviceSettingsControllerImpl::
-    RefreshCompanionAppInfoForConnectedDevices() {
-  if (!delegate_ || !active_pref_service_) {
-    return;
-  }
-
-  for (const auto& [id, mouse] : mice_) {
-    if (!mouse->is_external) {
-      continue;
-    }
-    delegate_->GetCompanionAppInfo(
-        mouse->device_key,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id, mouse->device_key));
-  }
-
-  for (const auto& [id, touchpad] : touchpads_) {
-    if (!touchpad->is_external) {
-      continue;
-    }
-    delegate_->GetCompanionAppInfo(
-        touchpad->device_key,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id, touchpad->device_key));
-  }
-
-  for (const auto& [id, keyboard] : keyboards_) {
-    if (!keyboard->is_external) {
-      continue;
-    }
-    delegate_->GetCompanionAppInfo(
-        keyboard->device_key,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id, keyboard->device_key));
-  }
-
-  for (const auto& [id, graphics_tablet] : graphics_tablets_) {
-    delegate_->GetCompanionAppInfo(
-        graphics_tablet->device_key,
-        base::BindOnce(
-            &InputDeviceSettingsControllerImpl::OnCompanionAppInfoReceived,
-            weak_ptr_factory_.GetWeakPtr(), id, graphics_tablet->device_key));
   }
 }
 

@@ -38,6 +38,10 @@ struct StructTraits<spellcheck::mojom::SpellCheckResultDataView,
     return result.replacements;
   }
 
+  static bool should_hide_suggestion_menu(const SpellCheckResult& result) {
+    return result.should_hide_suggestion_menu;
+  }
+
   static bool Read(spellcheck::mojom::SpellCheckResultDataView,
                    SpellCheckResult*);
 };

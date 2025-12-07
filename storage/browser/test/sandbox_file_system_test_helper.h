@@ -15,11 +15,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
-#include "storage/browser/file_system/file_system_util.h"
 #include "storage/browser/file_system/task_runner_bound_observer_list.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace base {
 class FilePath;
@@ -97,9 +95,6 @@ class SandboxFileSystemTestHelper {
   }
 
   FileSystemType type() const { return type_; }
-  blink::mojom::StorageType storage_type() const {
-    return FileSystemTypeToQuotaStorageType(type_);
-  }
   FileSystemFileUtil* file_util() const { return file_util_; }
   FileSystemUsageCache* usage_cache();
 

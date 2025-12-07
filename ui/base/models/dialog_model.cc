@@ -4,15 +4,17 @@
 
 #include "ui/base/models/dialog_model.h"
 
+#include <algorithm>
 #include <memory>
+#include <variant>
 #include <vector>
 
 #include "base/functional/callback_helpers.h"
-#include "base/functional/overloaded.h"
 #include "base/notreached.h"
-#include "base/ranges/algorithm.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
 
 namespace ui {
@@ -22,23 +24,23 @@ DialogModel::Button::Params::~Params() = default;
 
 DialogModel::Button::Params& DialogModel::Button::Params::SetId(
     ElementIdentifier id) {
-  CHECK(!id_, base::NotFatalUntil::M123);
-  CHECK(id, base::NotFatalUntil::M123);
+  CHECK(!id_);
+  CHECK(id);
   id_ = id;
   return *this;
 }
 
 DialogModel::Button::Params& DialogModel::Button::Params::SetLabel(
     std::u16string label) {
-  CHECK(label_.empty(), base::NotFatalUntil::M123);
-  CHECK(!label.empty(), base::NotFatalUntil::M123);
+  CHECK(label_.empty());
+  CHECK(!label.empty());
   label_ = label;
   return *this;
 }
 
 DialogModel::Button::Params& DialogModel::Button::Params::SetStyle(
     std::optional<ButtonStyle> style) {
-  CHECK(style_ != style, base::NotFatalUntil::M123);
+  CHECK(style_ != style);
   style_ = style;
   return *this;
 }
@@ -59,11 +61,11 @@ DialogModel::Button::Button(
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModel::Button::Params& params)
     : DialogModelField(kCustom, params.id_, params.accelerators_, params),
-      label_(std::move(params.label_)),
+      label_(params.label_),
       style_(params.style_),
       is_enabled_(params.is_enabled_),
       callback_(std::move(callback)) {
-  CHECK(callback_, base::NotFatalUntil::M123);
+  CHECK(callback_);
 }
 
 DialogModel::Button::~Button() = default;
@@ -80,11 +82,11 @@ DialogModel::Builder::Builder(std::unique_ptr<DialogModelDelegate> delegate)
 DialogModel::Builder::Builder() : Builder(nullptr) {}
 
 DialogModel::Builder::~Builder() {
-  CHECK(!model_, base::NotFatalUntil::M123) << "Model should've been built.";
+  CHECK(!model_) << "Model should've been built.";
 }
 
 std::unique_ptr<DialogModel> DialogModel::Builder::Build() {
-  CHECK(model_, base::NotFatalUntil::M123);
+  CHECK(model_);
   return std::move(model_);
 }
 
@@ -109,8 +111,8 @@ DialogModel::Builder& DialogModel::Builder::AddButtonInternal(
     ButtonCallbackVariant& model_callback) {
   CHECK(params.is_visible_);
   CHECK(!model_button.has_value());
-  absl::visit(
-      base::Overloaded{
+  std::visit(
+      absl::Overload{
           [](decltype(base::DoNothing())& callback) {
             // Intentional noop
           },
@@ -131,35 +133,35 @@ DialogModel::Builder& DialogModel::Builder::AddExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModel::Button::Params& params) {
   CHECK(params.is_visible_);
-  CHECK(!model_->extra_button_, base::NotFatalUntil::M123);
-  CHECK(!model_->extra_link_, base::NotFatalUntil::M123);
+  CHECK(!model_->extra_button_);
+  CHECK(!model_->extra_link_);
   // Extra buttons are required to have labels.
-  CHECK(!params.label_.empty(), base::NotFatalUntil::M123);
+  CHECK(!params.label_.empty());
   model_->extra_button_.emplace(std::move(callback), params);
   return *this;
 }
 
 DialogModel::Builder& DialogModel::Builder::AddExtraLink(
     DialogModelLabel::TextReplacement link) {
-  CHECK(!model_->extra_button_, base::NotFatalUntil::M123);
-  CHECK(!model_->extra_link_, base::NotFatalUntil::M123);
+  CHECK(!model_->extra_button_);
+  CHECK(!model_->extra_link_);
   model_->extra_link_.emplace(std::move(link));
   return *this;
 }
 
 DialogModel::Builder& DialogModel::Builder::OverrideDefaultButton(
-    DialogButton button) {
+    mojom::DialogButton button) {
   // This can only be called once.
-  CHECK(!model_->override_default_button_, base::NotFatalUntil::M123);
+  CHECK(!model_->override_default_button_);
   // Confirm the button exists.
   switch (button) {
-    case DIALOG_BUTTON_NONE:
+    case mojom::DialogButton::kNone:
       break;
-    case DIALOG_BUTTON_OK:
-      CHECK(model_->ok_button_, base::NotFatalUntil::M123);
+    case mojom::DialogButton::kOk:
+      CHECK(model_->ok_button_);
       break;
-    case DIALOG_BUTTON_CANCEL:
-      CHECK(model_->cancel_button_, base::NotFatalUntil::M123);
+    case mojom::DialogButton::kCancel:
+      CHECK(model_->cancel_button_);
       break;
   }
   model_->override_default_button_ = button;
@@ -169,9 +171,9 @@ DialogModel::Builder& DialogModel::Builder::OverrideDefaultButton(
 DialogModel::Builder& DialogModel::Builder::SetInitiallyFocusedField(
     ElementIdentifier id) {
   // This must be called with a non-null id
-  CHECK(id, base::NotFatalUntil::M123);
+  CHECK(id);
   // This can only be called once.
-  CHECK(!model_->initially_focused_field_, base::NotFatalUntil::M123);
+  CHECK(!model_->initially_focused_field_);
   model_->initially_focused_field_ = id;
   return *this;
 }
@@ -186,14 +188,14 @@ DialogModel::DialogModel(base::PassKey<Builder>,
 DialogModel::~DialogModel() = default;
 
 bool DialogModel::HasField(ElementIdentifier id) const {
-  return base::ranges::any_of(contents_.fields(),
-                              [id](auto& field) {
-                                // TODO(pbos): This does not
-                                // work recursively yet.
-                                CHECK_NE(field->type_,
-                                         DialogModelField::kSection);
-                                return field->id_ == id;
-                              }) ||
+  return std::ranges::any_of(contents_.fields(),
+                             [id](auto& field) {
+                               // TODO(pbos): This does not
+                               // work recursively yet.
+                               CHECK_NE(field->type_,
+                                        DialogModelField::kSection);
+                               return field->id_ == id;
+                             }) ||
          (ok_button_ && ok_button_->id_ == id) ||
          (cancel_button_ && cancel_button_->id_ == id) ||
          (extra_button_ && extra_button_->id_ == id);
@@ -238,8 +240,8 @@ bool DialogModel::OnDialogCancelAction(base::PassKey<DialogModelHost>) {
 }
 
 bool DialogModel::RunButtonCallback(ButtonCallbackVariant& callback_variant) {
-  return absl::visit(
-      base::Overloaded{
+  return std::visit(
+      absl::Overload{
           [](decltype(base::DoNothing())& callback) { return true; },
           [](base::RepeatingCallback<bool()>& callback) {
             return callback.Run();

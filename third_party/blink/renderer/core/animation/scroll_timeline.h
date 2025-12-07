@@ -10,6 +10,7 @@
 #include "cc/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_axis.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/core/animation/animation_trigger.h"
 #include "third_party/blink/renderer/core/animation/scroll_snapshot_timeline.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -77,10 +78,19 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   void AnimationAttached(Animation*) override;
   void AnimationDetached(Animation*) override;
 
+  std::optional<double> GetCurrentScrollPosition() const;
+
+  Node* ComputeResolvedSource() const;
+
   void Trace(Visitor*) const override;
 
+  TimelineState ComputeTimelineState() const override;
+
+  static ScrollOrientation ToPhysicalScrollOrientation(
+      ScrollAxis axis,
+      const LayoutBox& source_box);
+
  protected:
-  Node* ComputeResolvedSource() const;
 
   // Scroll offsets corresponding to 0% and 100% progress. By default, these
   // correspond to the scroll range of the container.
@@ -97,6 +107,9 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
 
   Element* GetReferenceElement() const { return reference_element_.Get(); }
 
+  void AddTrigger(TimelineTrigger* trigger) override;
+  void RemoveTrigger(TimelineTrigger* trigger) override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, MultipleScrollOffsetsClamping);
   FRIEND_TEST_ALL_PREFIXES(ScrollTimelineTest, ResolveScrollOffsets);
@@ -106,8 +119,6 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   //
   // See Node::[Un]RegisterScrollTimeline.
   Element* RetainingElement() const;
-
-  TimelineState ComputeTimelineState() const override;
 
   ReferenceType reference_type_;
   Member<Element> reference_element_;

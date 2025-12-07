@@ -69,11 +69,10 @@ function exactSearch<T extends ItemData>(
 
   // Controls how heavily weighted the search field weights are relative to each
   // other in the scoring function.
-  const searchFieldWeights =
-      (options.keys as OptionKeyObject[]).reduce((acc, {name, weight}) => {
-        acc[name as string] = weight;
-        return acc;
-      }, {} as {[key: string]: number});
+  const searchFieldWeights = (options.keys).reduce((acc, {name, weight}) => {
+    acc[name] = weight;
+    return acc;
+  }, {} as {[key: string]: number});
 
   // Perform an exact match search with range discovery.
   const exactMatches = [];
@@ -132,6 +131,12 @@ function hasRegexMatch(
   });
 }
 
+// https://crbug.com/433531973: Replace single and double left and right
+// quotation characters with the regular ones.
+function replaceSpecialQuotationCharacters(text: string) {
+  return text.replace(/[‘’]/g, '\'').replace(/[“”]/g, '"');
+}
+
 /**
  * Returns an array of matches that indicate where in the target string the
  * searchText appears. If there are no identified matches an empty array is
@@ -139,6 +144,8 @@ function hasRegexMatch(
  */
 function getRanges(target: string, searchText: string):
     Array<{start: number, length: number}> {
+  target = replaceSpecialQuotationCharacters(target);
+  searchText = replaceSpecialQuotationCharacters(searchText);
   const escapedText = quoteString(searchText);
   const ranges = [];
   let match = null;
@@ -165,7 +172,7 @@ function scoringFunction(
   // [1, 0].
   for (const key in searchFieldWeights) {
     if (tabData.highlightRanges[key]) {
-      for (const {start} of tabData.highlightRanges[key]!) {
+      for (const {start} of tabData.highlightRanges[key]) {
         score += Math.max((distance - start) / distance, 0) *
             searchFieldWeights[key]!;
       }

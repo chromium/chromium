@@ -1,0 +1,142 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos)
+
+static_library("lobster") {
+  sources = [
+    "announcement_label.cc",
+    "announcement_label.h",
+    "announcement_view.cc",
+    "announcement_view.h",
+    "lobster_announcer.cc",
+    "lobster_announcer.h",
+    "lobster_bubble_coordinator.cc",
+    "lobster_bubble_coordinator.h",
+    "lobster_candidate_id_generator.cc",
+    "lobster_candidate_id_generator.h",
+    "lobster_candidate_resizer.cc",
+    "lobster_candidate_resizer.h",
+    "lobster_client_factory_impl.cc",
+    "lobster_client_factory_impl.h",
+    "lobster_client_impl.cc",
+    "lobster_client_impl.h",
+    "lobster_event_sink.h",
+    "lobster_image_fetcher.cc",
+    "lobster_image_fetcher.h",
+    "lobster_image_provider_from_memory.cc",
+    "lobster_image_provider_from_memory.h",
+    "lobster_image_provider_from_snapper.cc",
+    "lobster_image_provider_from_snapper.h",
+    "lobster_insertion.cc",
+    "lobster_insertion.h",
+    "lobster_service.cc",
+    "lobster_service.h",
+    "lobster_service_provider.cc",
+    "lobster_service_provider.h",
+    "lobster_system_state_provider.h",
+    "lobster_system_state_provider_impl.cc",
+    "lobster_system_state_provider_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/magic_boost",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/chromeos/mako:resources",
+    "//chrome/browser/signin",
+    "//chrome/browser/ui/webui/ash/lobster",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/demo_mode",
+    "//chromeos/ash/components/editor_menu/public/cpp",
+    "//chromeos/ash/components/specialized_features",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//components/keyed_service/core",
+    "//components/manta",
+    "//components/signin/public/identity_manager",
+    "//components/variations/service",
+    "//content/public/browser",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp",
+    "//ui/base/ime/ash",
+    "//ui/chromeos/strings:strings_grit",
+    "//ui/display",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "lobster_test_utils.cc",
+    "lobster_test_utils.h",
+    "mock_lobster_system_state_provider.cc",
+    "mock_lobster_system_state_provider.h",
+  ]
+
+  deps = [
+    ":lobster",
+    "//ash/public/cpp",
+    "//base",
+    "//base/test:test_support",
+    "//components/manta",
+    "//components/manta/proto",
+    "//net/traffic_annotation",
+    "//services/data_decoder/public/cpp:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "lobster_candidate_resizer_unittest.cc",
+    "lobster_feedback_unittest.cc",
+    "lobster_image_provider_from_snapper_unittest.cc",
+    "lobster_service_unittest.cc",
+    "lobster_system_state_provider_impl_unittest.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":lobster",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/ash/lobster:test_support",
+    "//chrome/browser/ash/lobster/mock:test_support",
+    "//chrome/browser/feedback",
+    "//chrome/browser/signin",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_unit",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/editor_menu/public/cpp",
+    "//chromeos/ash/components/specialized_features",
+    "//components/feedback/proto",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/user_manager",
+    "//components/user_manager:test_support",
+    "//net",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/network:network_service",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base/ime/ash",
+    "//ui/display",
+    "//ui/display:test_support",
+    "//ui/gfx:test_support",
+  ]
+}

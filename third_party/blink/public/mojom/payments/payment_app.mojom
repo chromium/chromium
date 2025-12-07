@@ -64,11 +64,6 @@ struct PaymentInstrument {
   string name;
   array<blink.mojom.ManifestImageResource> icons;
   string method;
-  string stringified_capabilities;
-
-  // Parsed basic-card specific capabilities.
-  // Non-empty only if |method| is "basic-card".
-  array<BasicCardNetwork> supported_networks;
 };
 
 enum PaymentDelegation {

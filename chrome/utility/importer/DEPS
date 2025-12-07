@@ -4,4 +4,7 @@ include_rules = [
   "+components/favicon_base",
   "+components/search_engines",
   "+components/strings/grit",
+  "+components/user_data_importer/common",
+  "+components/user_data_importer/content",
+  "+components/user_data_importer/utility",
 ]

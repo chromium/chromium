@@ -8,6 +8,7 @@
 #include <sstream>
 #include <string_view>
 
+#include "base/component_export.h"
 #include "base/logging.h"
 #include "components/cross_device/logging/log_buffer.h"
 
@@ -23,9 +24,10 @@
 // logging::LogMessage instance. When this object is destroyed, the message will
 // be logged with the standard logging system and also added to Nearby Sharing
 // specific log buffer.
-class CrossDeviceScopedLogMessage {
+class COMPONENT_EXPORT(COMPONENTS_CROSS_DEVICE_LOGGING)
+    CrossDeviceScopedLogMessage {
  public:
-  CrossDeviceScopedLogMessage(const std::string_view file,
+  CrossDeviceScopedLogMessage(std::string_view file,
                               int line,
                               logging::LogSeverity severity,
                               Feature feature);

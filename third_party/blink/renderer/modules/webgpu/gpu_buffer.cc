@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_map_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -21,6 +22,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_queue.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_callback.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_buffer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -127,6 +129,18 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
 
   // Save the requested size of the buffer, for reflection and defaults.
   uint64_t buffer_size = dawn_desc.size;
+
+  // If the buffer is mappedAtCreation, validate that its size is a multiple of
+  // 4, which is a requirement for all mappings.
+  if (dawn_desc.mappedAtCreation && buffer_size % 4 != 0) {
+    exception_state.ThrowRangeError(
+        String::Format("createBuffer failed, size (%" PRIu64
+                       ") is not a multiple of 4 when "
+                       "mappedAtCreation == true",
+                       buffer_size));
+    return nullptr;
+  }
+
   // If the buffer is mappable, make sure the size stays in a size_t but still
   // guarantees that we have an OOM.
   bool is_mappable = dawn_desc.usage & (wgpu::BufferUsage::MapRead |
@@ -143,8 +157,11 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
   if (wgpuBuffer == nullptr) {
     DCHECK(dawn_desc.mappedAtCreation);
     exception_state.ThrowRangeError(
-        "createBuffer failed, size is too large for the implementation when "
-        "mappedAtCreation == true");
+        String::Format("createBuffer failed, size (%" PRIu64
+                       ") is too large for "
+                       "the implementation when "
+                       "mappedAtCreation == true",
+                       buffer_size));
     return nullptr;
   }
 
@@ -155,7 +172,7 @@ GPUBuffer* GPUBuffer::Create(GPUDevice* device,
     GPU* gpu = device->adapter()->gpu();
     gpu->TrackMappableBuffer(buffer);
     device->TrackMappableBuffer(buffer);
-    buffer->mappable_buffer_handles_ = gpu->mappable_buffer_handles();
+    buffer->mappable_buffer_handles_ = gpu->GetMappableBufferHandles();
   }
 
   return buffer;
@@ -167,10 +184,23 @@ GPUBuffer::GPUBuffer(GPUDevice* device,
                      const String& label)
     : DawnObject<wgpu::Buffer>(device, std::move(buffer), label), size_(size) {}
 
+GPUBuffer::GPUBuffer(GPUDevice* device,
+                     uint64_t size,
+                     scoped_refptr<WebGPUMailboxBuffer> mailbox_buffer,
+                     const String& label)
+    : DawnObject<wgpu::Buffer>(device, mailbox_buffer->GetBuffer(), label),
+      size_(size),
+      mailbox_buffer_(std::move(mailbox_buffer)) {
+  if (mailbox_buffer_) {
+    device_->TrackBufferWithMailbox(this);
+  }
+}
+
 GPUBuffer::~GPUBuffer() {
   if (mappable_buffer_handles_) {
     mappable_buffer_handles_->erase(GetHandle());
   }
+  DissociateMailbox();
 }
 
 void GPUBuffer::Trace(Visitor* visitor) const {
@@ -217,6 +247,12 @@ void GPUBuffer::unmap(v8::Isolate* isolate) {
 
 void GPUBuffer::destroy(v8::Isolate* isolate) {
   ResetMappingState(isolate);
+
+  if (mailbox_buffer_) {
+    DissociateMailbox();
+    device_->UntrackBufferWithMailbox(this);
+  }
+
   GetHandle().Destroy();
   // Destroyed, so it can never be mapped again. Stop tracking.
   device_->adapter()->gpu()->UntrackMappableBuffer(this);
@@ -234,8 +270,15 @@ uint32_t GPUBuffer::usage() const {
   return static_cast<uint32_t>(GetHandle().GetUsage());
 }
 
-String GPUBuffer::mapState() const {
+V8GPUBufferMapState GPUBuffer::mapState() const {
   return FromDawnEnum(GetHandle().GetMapState());
+}
+
+void GPUBuffer::DissociateMailbox() {
+  if (mailbox_buffer_) {
+    mailbox_buffer_->Dissociate();
+    mailbox_buffer_ = nullptr;
+  }
 }
 
 ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
@@ -268,7 +311,7 @@ ScriptPromise<IDLUndefined> GPUBuffer::MapAsyncImpl(
 
   // And send the command, leaving remaining validation to Dawn.
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
+      BindOnce(&GPUBuffer::OnMapAsyncCallback, WrapPersistent(this))));
 
   GetHandle().MapAsync(static_cast<wgpu::MapMode>(mode), map_offset, map_size,
                        wgpu::CallbackMode::AllowSpontaneous,
@@ -305,7 +348,9 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
   if (range_size > std::numeric_limits<size_t>::max() - range_offset) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
-        "getMappedRange failed, offset + size overflows size_t");
+        String::Format(
+            "getMappedRange failed, offset(%zu) + size(%zu) overflows size_t",
+            range_offset, range_size));
     return nullptr;
   }
   size_t range_end = range_offset + range_size;
@@ -320,10 +365,10 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
     if (range_end > candidate_start && range_offset < candidate_end) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kOperationError,
-          WTF::String::Format("getMappedRange [%zu, %zu) overlaps with "
-                              "previously returned range [%zu, %zu).",
-                              range_offset, range_end, candidate_start,
-                              candidate_end));
+          String::Format("getMappedRange [%zu, %zu) overlaps with "
+                         "previously returned range [%zu, %zu).",
+                         range_offset, range_end, candidate_start,
+                         candidate_end));
       return nullptr;
     }
   }
@@ -351,7 +396,9 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
   // be done before the creation of ArrayBuffer.
   if (range_size > v8::TypedArray::kMaxByteLength) {
     exception_state.ThrowRangeError(
-        "getMappedRange failed, size is too large for the implementation");
+        String::Format("getMappedRange failed, size (%zu) is too large "
+                       "for the implementation. max size = %zu",
+                       range_size, v8::TypedArray::kMaxByteLength));
     return nullptr;
   }
 
@@ -369,24 +416,22 @@ DOMArrayBuffer* GPUBuffer::GetMappedRangeImpl(ScriptState* script_state,
 void GPUBuffer::OnMapAsyncCallback(
     ScriptPromiseResolver<IDLUndefined>* resolver,
     wgpu::MapAsyncStatus status,
-    const char* message) {
+    wgpu::StringView message) {
   switch (status) {
     case wgpu::MapAsyncStatus::Success:
       resolver->Resolve();
       break;
-    case wgpu::MapAsyncStatus::InstanceDropped:
-      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, message);
+    case wgpu::MapAsyncStatus::CallbackCancelled:
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       String::FromUTF8(message));
+      break;
+    case wgpu::MapAsyncStatus::Aborted:
+      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
+                                       String::FromUTF8(message));
       break;
     case wgpu::MapAsyncStatus::Error:
       resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       message);
-      break;
-    case wgpu::MapAsyncStatus::Aborted:
-      resolver->RejectWithDOMException(DOMExceptionCode::kAbortError, message);
-      break;
-    case wgpu::MapAsyncStatus::Unknown:
-      resolver->RejectWithDOMException(DOMExceptionCode::kOperationError,
-                                       message);
+                                       String::FromUTF8(message));
       break;
   }
 }

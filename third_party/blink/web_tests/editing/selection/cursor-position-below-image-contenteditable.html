@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<html lang="en">
+<head>
+    <style>
+        .container {
+            border: 1px solid black;
+            height: 64px;
+            padding: 4px 2px;
+        }
+    </style>
+</head>
+<body>
+    <pre id="container" class="container"
+        contenteditable="true"><img id="testImage" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='27' height='30'%3E%3Crect width='27' height='30' fill='%23ccc'/%3E%3C/svg%3E"></pre>
+
+    <script>
+        async_test(function (t) {
+            const container = document.getElementById('container');
+            const image = document.getElementById('testImage');
+            container.focus();
+
+            const containerRect = container.getBoundingClientRect();
+            const containerClickX = containerRect.left + (containerRect.width / 2);
+            const containerClickY = containerRect.bottom - (containerRect.height / 8);
+
+            const actions = [{
+                source: "mouse",
+                actions: [
+                    { name: "pointerMove", x: containerClickX, y: containerClickY },
+                    { name: "pointerDown", x: containerClickX, y: containerClickY, button: 0 },
+                    { name: "pause", duration: 100 },
+                    { name: "pointerUp", x: containerClickX, y: containerClickY, button: 0 }
+                ]
+            }];
+            chrome.gpuBenchmarking.pointerActionSequence(actions, t.step_func_done(function () {
+                const selection = window.getSelection();
+                assert_equals(selection.anchorNode, container, 'anchorNode should be container');
+                assert_equals(selection.anchorOffset, 1, 'anchorOffset should be 1 (after image)');
+                assert_equals(selection.focusNode, container, 'focusNode should be container');
+                assert_equals(selection.focusOffset, 1, 'focusOffset should be 1');
+                assert_true(selection.isCollapsed, 'selection should be collapsed');
+            }));
+        }, 'Test cursor positioning when clicking below image in contenteditable')</script>
+</body>
+</html>

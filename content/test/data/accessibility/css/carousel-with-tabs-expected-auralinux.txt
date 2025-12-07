@@ -1,0 +1,16 @@
+[document web]
+++[push button] name='up' controller-for=[section]
+++[push button] name='prev' controller-for=[section]
+++[push button] name='next' controller-for=[section]
+++[push button] name='down' controller-for=[section]
+++[section] controlled-by=[landmark,push button,push button,push button,push button]
+++++[section] details-for=[link]
+++++++[static] name='One'
+++++[section] details-for=[link]
+++++++[static] name='Two'
+++++[section] details-for=[link]
+++++++[static] name='Three'
+++[landmark] controller-for=[section]
+++++[link] details=[section] details-from:css-scroll-marker-pseudo-element
+++++[link] details=[section] details-from:css-scroll-marker-pseudo-element
+++++[link] details=[section] details-from:css-scroll-marker-pseudo-element

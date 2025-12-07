@@ -41,14 +41,14 @@ interface PerformanceResourceTiming : PerformanceEntry {
     readonly attribute DOMString nextHopProtocol;
     [Measure] readonly attribute DOMString deliveryType;
     readonly attribute DOMHighResTimeStamp workerStart;
-    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo]
+    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo, Measure]
         readonly attribute DOMHighResTimeStamp workerRouterEvaluationStart;
-    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo]
+    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo, Measure]
         readonly attribute DOMHighResTimeStamp workerCacheLookupStart;
-    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo]
-        readonly attribute DOMString matchedSourceType;
-    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo]
-        readonly attribute DOMString finalSourceType;
+    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo, Measure]
+        readonly attribute DOMString workerMatchedSourceType;
+    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo, Measure]
+        readonly attribute DOMString workerFinalSourceType;
     readonly attribute DOMHighResTimeStamp redirectStart;
     readonly attribute DOMHighResTimeStamp redirectEnd;
     readonly attribute DOMHighResTimeStamp fetchStart;
@@ -77,7 +77,18 @@ interface PerformanceResourceTiming : PerformanceEntry {
     [RuntimeEnabled=ResourceTimingContentType]
         readonly attribute DOMString contentType;
 
+    // PerformanceResourceTiming#contentEncoding
+    // see: https://github.com/guohuideng2024/resource-timing/blob/gh-pages/Explainers/Content_Encoding.md
+    [RuntimeEnabled=ResourceTimingContentEncoding]
+        readonly attribute DOMString contentEncoding;
+
+    readonly attribute DOMHighResTimeStamp finalResponseHeadersStart;
     readonly attribute DOMHighResTimeStamp firstInterimResponseStart;
+
+    // PerformanceResourceTiming#initiatorUrl
+    // see: https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ResourceTimingInitiatorInfo/explainer.md
+    [RuntimeEnabled=ResourceTimingInitiator]
+    readonly attribute DOMString initiatorUrl;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

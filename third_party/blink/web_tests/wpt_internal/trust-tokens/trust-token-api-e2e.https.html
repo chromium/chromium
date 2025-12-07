@@ -101,7 +101,7 @@
         }).then(function (response) {
             assert_unreached();
         }).catch(function (error) {
-            assert_equals(error.message, 'No keys currently available for PST issuer. Issuer may need to register their key commitments.');
+            assert_true(error.message.includes('No keys currently available for PST issuer. Issuer may need to register their key commitments.'));
         });
     }, 'Token issuance fails with missing issuer keys.');
 

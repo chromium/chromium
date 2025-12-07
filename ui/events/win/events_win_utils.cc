@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -126,9 +127,17 @@ bool IsScrollEvent(const CHROME_MSG& native_event) {
 int KeyStateFlags(const CHROME_MSG& native_event) {
   int flags = GetModifiersFromKeyState();
 
-  // Check key messages for the extended key flag.
-  if (IsKeyEvent(native_event) && (HIWORD(native_event.lParam) & KF_EXTENDED))
-    flags |= EF_IS_EXTENDED_KEY;
+  if (IsKeyEvent(native_event)) {
+    // Check key messages for the extended key flag.
+    if (HIWORD(native_event.lParam) & KF_EXTENDED) {
+      flags |= EF_IS_EXTENDED_KEY;
+    }
+    // Check key messages for the repeat flag.
+    if (native_event.message == WM_KEYDOWN &&
+        HIWORD(native_event.lParam) & KF_REPEAT) {
+      flags |= EF_IS_REPEAT;
+    }
+  }
 
   // Most client mouse messages include key state information.
   if (IsClientMouseEvent(native_event)) {

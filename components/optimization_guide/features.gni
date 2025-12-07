@@ -3,8 +3,12 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/compiler/compiler.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
+}
+if (is_fuchsia) {
+  import("//build/config/fuchsia/config.gni")
 }
 
 declare_args() {
@@ -17,10 +21,11 @@ declare_args() {
 
 if (is_ios) {
   declare_args() {
-    # iOS is bring-your-own-model. If ios_on_device_llm_path is set to a
-    # non-empty value, bundles the given model file. Paths can be absolute or
-    # relative to the source root directory.
-    ios_on_device_llm_path = ""
+    # iOS is bring-your-own-model. ios_on_device_llm_files should include 3 paths:
+    # - /path/to/weights.bin
+    # - /path/to/manifest.json
+    # - /path/to/config.pb
+    ios_on_device_llm_files = []
   }
 }
 
@@ -42,7 +47,7 @@ declare_args() {
     # not needlessly increase the binary size.
     build_with_internal_optimization_guide = false
   } else if (is_ios) {
-    build_with_internal_optimization_guide = ios_on_device_llm_path != ""
+    build_with_internal_optimization_guide = false
   } else if (build_with_tflite_lib) {
     # When TFLite works for windows arm64, this lib should just work seamlessly.
     # Use is_chrome_branded as a proxy for "does src-internal exist".
@@ -50,4 +55,10 @@ declare_args() {
   } else {
     build_with_internal_optimization_guide = false
   }
+}
+
+declare_args() {
+  # Exclude the model on builders targeting web_engine on fuchsia.
+  # TODO: crbug.com/393434571 - Clarify the boundary / strategy here.
+  build_with_model_execution = !(is_fuchsia && is_web_engine)
 }

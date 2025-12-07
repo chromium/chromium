@@ -11,7 +11,7 @@ function sendTouchStart(touches: Point[]) {
   const touchList = touches.map(function(xy: Point) {
     const touchInit = {
       identifier: id++,
-      target: viewer.shadowRoot!.querySelector('embed')!,
+      target: viewer.shadowRoot.querySelector('embed')!,
       clientX: xy.x,
       clientY: xy.y,
     };
@@ -19,7 +19,7 @@ function sendTouchStart(touches: Point[]) {
     return new window.Touch(touchInit);
   });
 
-  const target = viewer.shadowRoot!.querySelector('#content')!;
+  const target = viewer.shadowRoot.querySelector('#content')!;
   target.dispatchEvent(new TouchEvent('touchstart', {
     bubbles: true,
     composed: true,

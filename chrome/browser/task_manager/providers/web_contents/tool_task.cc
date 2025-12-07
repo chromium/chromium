@@ -14,7 +14,7 @@ namespace {
 
 std::u16string GetTitle(int tool_name) {
   if (tool_name == 0) {
-    return std::u16string(u"");
+    return std::u16string();
   }
 
   return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TOOL_PREFIX,

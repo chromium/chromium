@@ -5,36 +5,15 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("common_mojom") {
-  sources = [
-    "interfaces.mojom",
-    "origin_matcher.mojom",
-  ]
+  sources = [ "interfaces.mojom" ]
 
   public_deps = [
+    "//components/origin_matcher:mojom",
     "//mojo/public/mojom/base",
     "//third_party/blink/public/mojom:mojom_core",
   ]
 
   cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "js_injection.mojom.OriginMatcher"
-          cpp = "::js_injection::OriginMatcher"
-        },
-        {
-          mojom = "js_injection.mojom.OriginMatcherRule"
-          cpp = "::std::unique_ptr<::js_injection::OriginMatcherRule>"
-          move_only = true
-        },
-      ]
-      traits_headers = [
-        "origin_matcher_mojom_traits.h",
-        "origin_matcher.h",
-      ]
-      traits_sources = [ "origin_matcher_mojom_traits.cc" ]
-      traits_public_deps = [ ":common" ]
-    },
     {
       types = [
         {
@@ -52,33 +31,10 @@ mojom("common_mojom") {
   component_deps = [ "//third_party/blink/public/common" ]
 }
 
-source_set("common") {
-  public = [
-    "origin_matcher.h",
-  ]
-  sources = [
-    "origin_matcher.cc",
-    "origin_matcher_internal.cc",
-    "origin_matcher_internal.h",
-  ]
-  deps = [
-    "//base",
-    "//net",
-    "//url",
-  ]
-
-  # origin_matcher_internal is needed by mojom traits and tests.
-  friend = [ ":*" ]
-}
-
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "origin_matcher_unittest.cc",
-    "web_message_mojom_traits_unittest.cc",
-  ]
+  sources = [ "web_message_mojom_traits_unittest.cc" ]
   deps = [
-    ":common",
     ":common_mojom",
     "//base",
     "//base/test:test_support",

@@ -41,8 +41,8 @@ namespace blink {
 
 class ExecutionContext;
 class RTCSessionDescriptionInit;
+class ScriptObject;
 class ScriptState;
-class ScriptValue;
 
 class RTCSessionDescription final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -54,13 +54,13 @@ class RTCSessionDescription final : public ScriptWrappable {
 
   explicit RTCSessionDescription(RTCSessionDescriptionPlatform*);
 
-  String type() const;
+  std::optional<V8RTCSdpType> type() const;
   void setType(std::optional<V8RTCSdpType> type);
 
   String sdp() const;
   void setSdp(const String&);
 
-  ScriptValue toJSONForBinding(ScriptState*);
+  ScriptObject toJSONForBinding(ScriptState*);
 
   RTCSessionDescriptionPlatform* WebSessionDescription();
 

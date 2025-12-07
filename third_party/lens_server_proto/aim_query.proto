@@ -1,0 +1,52 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_request_id.proto";
+import "lens_overlay_visual_input_type.proto";
+import "lens_overlay_visual_search_interaction_data.proto";
+
+// The collection of parameters required to execute a Lens query as part of AI
+// Mode.
+message LensImageQueryData {
+  // ID for subsequent search requests.
+  string search_session_id = 1;
+
+  // A preformatted request ID to send for the current Lens query.
+  LensOverlayRequestId request_id = 2;
+
+  // The type of visual input provided for the query.
+  LensOverlayVisualInputType visual_input_type = 4;
+
+  // The visual input interaction data for the query.
+  LensOverlayVisualSearchInteractionData visual_search_interaction_data = 7;
+
+  // Deprecated fields to match the Silk LensImageQueryData.
+  reserved 3, 5;
+}
+
+// The set of data that's required to generate a response from the LLM.
+message QueryPayload {
+  // The input source of the query text.
+  enum QueryTextSource {
+    QUERY_TEXT_SOURCE_UNSPECIFIED = 0;
+    QUERY_TEXT_SOURCE_KEYBOARD_INPUT = 1;
+  }
+  // The user query.
+  string query_text = 1;
+
+  // The input source of the query text.
+  QueryTextSource query_text_source = 3;
+
+  // Query data returned if Lens was invoked.
+  repeated LensImageQueryData lens_image_query_data = 2;
+
+  // Deprecated fields to match the Silk QueryPayload.
+  reserved 5, 7;
+}

@@ -1,0 +1,2 @@
+Tests --start-fullscreen switch.
+Screen: 1600x1200, Outer: 1600x1200

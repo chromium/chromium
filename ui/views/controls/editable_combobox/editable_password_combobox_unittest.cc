@@ -77,7 +77,7 @@ class EditablePasswordComboboxTest : public ViewsTestBase {
   }
 
  private:
-  raw_ptr<Widget> widget_ = nullptr;
+  std::unique_ptr<Widget> widget_;
   base::MockCallback<Button::PressedCallback::Callback> eye_callback_;
 
   // Used for simulating eye button clicks.
@@ -100,9 +100,9 @@ void EditablePasswordComboboxTest::SetUp() {
   combobox->GetViewAccessibility().SetName(u"Password field");
   combobox->SetID(kComboboxId);
 
-  widget_ = new Widget();
+  widget_ = std::make_unique<Widget>();
   Widget::InitParams params =
-      CreateParams(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
                    Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.bounds = gfx::Rect(0, 0, 1000, 1000);
   combobox->SetBoundsRect(gfx::Rect(0, 0, 500, 40));
@@ -112,7 +112,7 @@ void EditablePasswordComboboxTest::SetUp() {
   container->AddChildView(std::move(combobox));
 
   generator_ =
-      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_));
+      std::make_unique<ui::test::EventGenerator>(GetRootWindow(widget_.get()));
 
   widget_->Show();
 
@@ -132,7 +132,7 @@ void EditablePasswordComboboxTest::SetUp() {
 void EditablePasswordComboboxTest::TearDown() {
   generator_.reset();
   if (widget_) {
-    widget_.ExtractAsDangling()->Close();
+    widget_->Close();
   }
   ViewsTestBase::TearDown();
 }

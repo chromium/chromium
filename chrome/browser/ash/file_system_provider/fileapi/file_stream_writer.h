@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/files/file.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "storage/browser/file_system/file_stream_writer.h"

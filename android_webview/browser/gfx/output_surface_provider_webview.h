@@ -8,8 +8,9 @@
 #include <memory>
 
 #include "android_webview/browser/gfx/aw_gl_surface.h"
+#include "android_webview/common/gfx/aw_gr_context_options_provider.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "gpu/command_buffer/service/gpu_task_scheduler_helper.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -57,6 +58,8 @@ class OutputSurfaceProviderWebView {
   void InitializeContext();
 
   const raw_ptr<AwVulkanContextProvider> vulkan_context_provider_;
+  const std::unique_ptr<AwGrContextOptionsProvider>
+      aw_gr_context_options_provider_;
   // The member variables are effectively const after constructor, so it's safe
   // to call accessors on different threads.
   viz::RendererSettings renderer_settings_;

@@ -59,7 +59,7 @@ class PLATFORM_EXPORT BlinkStorageKey {
   // Only in StorageKey, but could be added if needed.
 
   // (1F) Construct a first-party storage key for tests.
-  static BlinkStorageKey CreateFromStringForTesting(const WTF::String& origin);
+  static BlinkStorageKey CreateFromStringForTesting(const String& origin);
 
   // (1G) Copy, move, and destruct.
   BlinkStorageKey(const BlinkStorageKey& other) = default;
@@ -127,6 +127,10 @@ class PLATFORM_EXPORT BlinkStorageKey {
 
   const BlinkSchemefulSite& GetTopLevelSite() const { return top_level_site_; }
 
+  // Returns true if unpartitioned storage access is forbidden for the current
+  // storage key.
+  bool ForbidsUnpartitionedStorageAccess() const { return nonce_.has_value(); }
+
   const std::optional<base::UnguessableToken>& GetNonce() const {
     return nonce_;
   }
@@ -179,13 +183,17 @@ class PLATFORM_EXPORT BlinkStorageKey {
 
   // (7B) Operators.
   // Note that not all must be friends, but all are to consolidate the header.
-  PLATFORM_EXPORT
   friend bool operator==(const BlinkStorageKey& lhs,
-                         const BlinkStorageKey& rhs);
-  PLATFORM_EXPORT
-  friend bool operator!=(const BlinkStorageKey& lhs,
-                         const BlinkStorageKey& rhs);
-  // If there were a need for an operator< it would go here.
+                         const BlinkStorageKey& rhs) {
+    DCHECK(lhs.origin_);
+    DCHECK(rhs.origin_);
+
+    return lhs.origin_->IsSameOriginWith(rhs.origin_.get()) &&
+           lhs.nonce_ == rhs.nonce_ &&
+           lhs.top_level_site_ == rhs.top_level_site_ &&
+           lhs.ancestor_chain_bit_ == rhs.ancestor_chain_bit_;
+  }
+  // If there were a need for `operator<=>()` it would go here.
   PLATFORM_EXPORT
   friend std::ostream& operator<<(std::ostream& ostream,
                                   const BlinkStorageKey& sk);

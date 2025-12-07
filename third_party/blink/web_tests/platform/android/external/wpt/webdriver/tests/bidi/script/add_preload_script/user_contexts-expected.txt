@@ -1,0 +1,11 @@
+This is a wdspec test.
+[FAIL] test_add_preload_script_to_user_context
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_add_preload_script_to_default_user_context
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_add_preload_script_to_multiple_user_contexts
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+[FAIL] test_identical_user_contexts
+  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to create browser context.)
+Harness: the test ran to completion.
+

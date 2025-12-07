@@ -38,7 +38,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "chrome_wer_module_unittest.cc" ]
   deps = [
-    "//base:base",
+    "//base",
     "//testing/gtest",
   ]
   data_deps = [ ":chrome_wer" ]

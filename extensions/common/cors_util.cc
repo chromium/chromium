@@ -33,15 +33,15 @@ void AddURLPatternSetToList(
     std::vector<network::mojom::CorsOriginPatternPtr>* list,
     network::mojom::CorsOriginAccessMatchPriority priority) {
   static const char* const kSchemes[] = {
-    content::kChromeUIScheme,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    content::kExternalFileScheme,
+      content::kChromeUIScheme,
+#if BUILDFLAG(IS_CHROMEOS)
+      content::kExternalFileScheme,
 #endif
-    extensions::kExtensionScheme,
-    url::kFileScheme,
-    url::kFtpScheme,
-    url::kHttpScheme,
-    url::kHttpsScheme,
+      extensions::kExtensionScheme,
+      url::kFileScheme,
+      url::kFtpScheme,
+      url::kHttpScheme,
+      url::kHttpsScheme,
   };
   for (const URLPattern& pattern : pattern_set) {
     for (const char* const scheme : kSchemes) {
@@ -142,14 +142,14 @@ CreateCorsOriginAccessBlockList(const Extension& extension) {
 
   GURL webstore_launch_url = extension_urls::GetWebstoreLaunchURL();
   block_list.push_back(network::mojom::CorsOriginPattern::New(
-      webstore_launch_url.scheme(), webstore_launch_url.host(), /*port=*/0,
-      network::mojom::CorsDomainMatchMode::kAllowSubdomains,
+      webstore_launch_url.GetScheme(), webstore_launch_url.GetHost(),
+      /*port=*/0, network::mojom::CorsDomainMatchMode::kAllowSubdomains,
       network::mojom::CorsPortMatchMode::kAllowAnyPort,
       network::mojom::CorsOriginAccessMatchPriority::kHighPriority));
 
   GURL new_webstore_launch_url = extension_urls::GetNewWebstoreLaunchURL();
   block_list.push_back(network::mojom::CorsOriginPattern::New(
-      new_webstore_launch_url.scheme(), new_webstore_launch_url.host(),
+      new_webstore_launch_url.GetScheme(), new_webstore_launch_url.GetHost(),
       /*port=*/0, network::mojom::CorsDomainMatchMode::kAllowSubdomains,
       network::mojom::CorsPortMatchMode::kAllowAnyPort,
       network::mojom::CorsOriginAccessMatchPriority::kHighPriority));

@@ -8,18 +8,21 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/test/test_constants.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/device_signals/core/browser/pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/test/scoped_policy_update.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace enterprise_connectors::test {
+
+using ManagementContext = enterprise::test::ManagementContext;
 
 namespace {
 
@@ -33,7 +36,7 @@ base::Value GetEmptyListValue() {
   return base::Value(base::Value::List());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::vector<std::string> ParseUrlsValue(const base::Value& urls_value) {
   std::vector<std::string> url_strings;
   for (const base::Value& value : urls_value.GetList()) {
@@ -41,7 +44,7 @@ std::vector<std::string> ParseUrlsValue(const base::Value& urls_value) {
   }
   return url_strings;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ManagementContext ToManagementContext(
     const DeviceTrustConnectorState& device_trust_state) {
@@ -63,10 +66,11 @@ DeviceTrustManagementMixin::DeviceTrustManagementMixin(
     : InProcessBrowserTestMixin(host),
       test_base_(test_base),
       device_trust_state_(std::move(device_trust_state)),
-      management_context_mixin_(ManagementContextMixin::Create(
-          host,
-          test_base,
-          ToManagementContext(device_trust_state_))) {}
+      management_context_mixin_(
+          enterprise::test::ManagementContextMixin::Create(
+              host,
+              test_base,
+              ToManagementContext(device_trust_state_))) {}
 
 DeviceTrustManagementMixin::~DeviceTrustManagementMixin() = default;
 
@@ -137,7 +141,7 @@ void DeviceTrustManagementMixin::SetMachineInlinePolicy(
     base::Value policy_value) {
   CHECK(device_trust_state_.cloud_machine_management_level.is_managed);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto device_policy_update =
       management_context_mixin_->RequestDevicePolicyUpdate();
   auto* allowed_urls_proto =

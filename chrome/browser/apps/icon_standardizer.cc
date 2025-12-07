@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/apps/icon_standardizer.h"
 
+#include "base/compiler_specific.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
@@ -65,7 +61,8 @@ float GetFarthestVisiblePointFromCenter(const SkBitmap& bitmap) {
     bool does_row_have_visible_pixels = false;
 
     for (int x = 0; x < width; x++) {
-      if (SkColorGetA(nativeRow ? nativeRow[x] : pixmap.getColor(x, y)) >
+      if (UNSAFE_TODO(
+              SkColorGetA(nativeRow ? nativeRow[x] : pixmap.getColor(x, y))) >
           kMinimumVisibleAlpha) {
         gfx::PointF current_point(x, y);
         max_distance =
@@ -83,7 +80,8 @@ float GetFarthestVisiblePointFromCenter(const SkBitmap& bitmap) {
     }
 
     for (int x = width - 1; x > 0; x--) {
-      if (SkColorGetA(nativeRow ? nativeRow[x] : pixmap.getColor(x, y)) >
+      if (UNSAFE_TODO(
+              SkColorGetA(nativeRow ? nativeRow[x] : pixmap.getColor(x, y))) >
           kMinimumVisibleAlpha) {
         gfx::PointF current_point(x, y);
         max_distance =
@@ -117,13 +115,13 @@ bool IsIconRepCircleShaped(const gfx::ImageSkiaRep& rep) {
     for (int x = 0; x < width; x++) {
       SkColor target_color;
 
-      if (SkColorGetA(src_color[x]) < 1) {
+      if (UNSAFE_TODO(SkColorGetA(src_color[x])) < 1) {
         target_color = SK_ColorTRANSPARENT;
       } else {
         target_color = SK_ColorRED;
       }
 
-      preview_color[x] = target_color;
+      UNSAFE_TODO(preview_color[x]) = target_color;
     }
   }
 
@@ -176,7 +174,7 @@ bool IsIconRepCircleShaped(const gfx::ImageSkiaRep& rep) {
   for (int y = 0; y < preview.height(); ++y) {
     SkColor* src_color = reinterpret_cast<SkColor*>(preview.getAddr32(0, y));
     for (int x = 0; x < preview.width(); ++x) {
-      if (SkColorGetA(src_color[x]) >= kMinimumVisibleAlpha) {
+      if (UNSAFE_TODO(SkColorGetA(src_color[x])) >= kMinimumVisibleAlpha) {
         total_pixel_difference++;
       }
     }
@@ -221,7 +219,7 @@ gfx::ImageSkia StandardizeSize(const gfx::ImageSkia& image) {
   TRACE_EVENT0("ui", "apps::StandardizeSize");
   gfx::ImageSkia final_image;
 
-  for (gfx::ImageSkiaRep rep : image.image_reps()) {
+  for (const gfx::ImageSkiaRep& rep : image.image_reps()) {
     std::optional<gfx::ImageSkiaRep> new_rep =
         StandardizeSizeOfImageRep(rep, rep.scale());
     if (!new_rep) {
@@ -344,7 +342,7 @@ gfx::ImageSkia CreateStandardIconImage(const gfx::ImageSkia& image) {
   gfx::ImageSkia final_image;
   gfx::ImageSkia standard_size_image = StandardizeSize(image);
 
-  for (gfx::ImageSkiaRep rep : standard_size_image.image_reps()) {
+  for (const gfx::ImageSkiaRep& rep : standard_size_image.image_reps()) {
     std::optional<gfx::ImageSkiaRep> standard_rep =
         CreateStandardIconImageRep(rep, rep.scale());
     final_image.AddRepresentation(standard_rep.value_or(rep));

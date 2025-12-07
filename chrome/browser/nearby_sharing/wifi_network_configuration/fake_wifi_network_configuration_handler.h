@@ -10,9 +10,9 @@
 
 namespace {
 
-const uint64_t kDefaultId = 0;
-const char kDefaultSsid[] = "not_set";
-const WifiCredentialsAttachment::SecurityType kDefaultSecurityType =
+inline constexpr uint64_t kDefaultId = 0;
+inline constexpr char kDefaultSsid[] = "not_set";
+inline constexpr WifiCredentialsAttachment::SecurityType kDefaultSecurityType =
     sharing::mojom::WifiCredentialsMetadata::SecurityType::kWpaPsk;
 
 }  // namespace
@@ -51,4 +51,4 @@ class FakeWifiNetworkConfigurationHandler
   std::string error_message_ = "not set";
 };
 
-#endif  //  CHROME_BROWSER_NEARBY_SHARING_WIFI_NETWORK_CONFIGURATION_FAKE_WIFI_NETWORK_CONFIGURATION_HANDLER_H_
+#endif  // CHROME_BROWSER_NEARBY_SHARING_WIFI_NETWORK_CONFIGURATION_FAKE_WIFI_NETWORK_CONFIGURATION_HANDLER_H_

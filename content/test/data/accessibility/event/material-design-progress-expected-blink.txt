@@ -1,0 +1,68 @@
+=== Accessibility tree before go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Progress Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-linear-progress'
+++++++++++progressIndicator className='progress   ' htmlTag='div' name='Test Progress' valueForRange=0.50 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 1 ===
+rootWebArea htmlTag='#document' name='Material Web Progress Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-linear-progress'
+++++++++++progressIndicator className='progress   ' htmlTag='div' name='Test Progress' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=1.00 <<<<<< CHANGED
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Progress Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-linear-progress'
+++++++++++progressIndicator className='progress   ' htmlTag='div' name='Test Progress' valueForRange=0.00 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 2 ===
+rootWebArea htmlTag='#document' name='Material Web Progress Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-linear-progress'
+++++++++++progressIndicator className='progress   ' htmlTag='div' name='Test Progress' valueForRange=0.70 minValueForRange=0.00 maxValueForRange=1.00 <<<<<< CHANGED
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Progress Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-linear-progress'
+++++++++++progressIndicator className='progress   ' htmlTag='div' name='Test Progress' valueForRange=0.70 minValueForRange=0.00 maxValueForRange=1.00
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+=== End accessibility tree ===
+=== Accessibility tree after go() pass 3 ===
+rootWebArea htmlTag='#document' name='Material Web Progress Events'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer htmlTag='md-linear-progress'
+++++++++++progressIndicator className='progress   ' htmlTag='div' name='Test Progress' valueForRange=1.00 minValueForRange=0.00 maxValueForRange=1.00 <<<<<< CHANGED
+++++++++++++genericContainer className='inactive-track' htmlTag='div'
+++++++++++++genericContainer className='bar primary-bar' htmlTag='div'
+++++++++++++++genericContainer className='bar-inner' htmlTag='div'
+=== End accessibility tree ===

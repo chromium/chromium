@@ -18,6 +18,7 @@ import java.util.Set;
 public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private boolean mIsPrivacySandboxRestricted /* = false*/;
     private boolean mIsRestrictedNoticeEnabled /* = false*/;
+    private boolean mIsRwsManaged /* = false*/;
 
     private final HashMap<String, Topic> mTopics = new HashMap<>();
     private final Set<Topic> mCurrentTopTopics = new LinkedHashSet<>();
@@ -28,7 +29,10 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     private final Set<String> mBlockedFledgeSites = new LinkedHashSet<>();
     private @PromptType int mPromptType = PromptType.NONE;
     private Integer mLastPromptAction;
+    private Integer mLastSurfaceType;
     private boolean mLastTopicsToggleValue;
+    private static final String GOOGLE_EMBEDDED_PRIVACY_POLICY_U_R_L =
+            "https://policies.google.com/privacy/embedded";
 
     public void setCurrentTopTopics(String... topics) {
         mCurrentTopTopics.clear();
@@ -88,26 +92,30 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessEnabled(Profile profile) {
+    public boolean isRelatedWebsiteSetsDataAccessEnabled(Profile profile) {
+        return true;
+    }
+
+    @Override
+    public boolean isRelatedWebsiteSetsDataAccessManaged(Profile profile) {
         return false;
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessManaged(Profile profile) {
-        return false;
+    public boolean isPartOfManagedRelatedWebsiteSet(Profile profile, String origin) {
+        return mIsRwsManaged;
     }
 
     @Override
-    public boolean isPartOfManagedFirstPartySet(Profile profile, String origin) {
-        return false;
-    }
+    public void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled) {}
 
     @Override
-    public void setFirstPartySetsDataAccessEnabled(Profile profile, boolean enabled) {}
-
-    @Override
-    public String getFirstPartySetOwner(Profile profile, String memberOrigin) {
+    public String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin) {
         return null;
+    }
+
+    public void setIsRwsManaged(boolean managed) {
+        mIsRwsManaged = managed;
     }
 
     public void setPrivacySandboxRestricted(boolean restricted) {
@@ -188,22 +196,28 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
         mPromptType = type;
     }
 
-    public int getRequiredPromptType() {
+    public int getRequiredPromptType(@SurfaceType int surfaceType) {
         return mPromptType;
     }
 
     @Override
-    public int getRequiredPromptType(Profile profile) {
-        return getRequiredPromptType();
+    public int getRequiredPromptType(Profile profile, @SurfaceType int surfaceType) {
+        return getRequiredPromptType(surfaceType);
     }
 
     @Override
-    public void promptActionOccurred(Profile profile, @PromptAction int action) {
+    public void promptActionOccurred(
+            Profile profile, @PromptAction int action, @SurfaceType int surfaceType) {
         mLastPromptAction = action;
+        mLastSurfaceType = surfaceType;
     }
 
     public Integer getLastPromptAction() {
         return mLastPromptAction;
+    }
+
+    public Integer getLastSurfaceType() {
+        return mLastSurfaceType;
     }
 
     public void resetLastPromptAction() {
@@ -226,7 +240,20 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public void recordActivityType(Profile profile, int activityType) {}
 
     @Override
-    public boolean isConsentCountry() {
+    public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile) {
         return false;
+    }
+
+    @Override
+    public boolean shouldUsePrivacyPolicyChinaDomain(Profile profile) {
+        return false;
+    }
+
+    @Override
+    public String getEmbeddedPrivacyPolicyURL(
+            @PrivacyPolicyDomainType int domainType,
+            @PrivacyPolicyColorScheme int colorScheme,
+            String locale) {
+        return GOOGLE_EMBEDDED_PRIVACY_POLICY_U_R_L;
     }
 }

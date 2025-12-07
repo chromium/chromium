@@ -10,11 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url.h"
@@ -39,8 +41,9 @@ namespace {
 std::unique_ptr<HttpResponse> HandleRequest(const std::string& match_path,
                                             const std::string& osdd_xml_url,
                                             const HttpRequest& request) {
-  if (!match_path.empty() && request.GetURL().path() != match_path)
+  if (!match_path.empty() && request.GetURL().GetPath() != match_path) {
     return nullptr;
+  }
 
   std::string html = base::StringPrintf(
       "<html>"
@@ -74,7 +77,7 @@ class TemplateURLServiceObserver {
   TemplateURLServiceObserver& operator=(const TemplateURLServiceObserver&) =
       delete;
 
-  ~TemplateURLServiceObserver() {}
+  ~TemplateURLServiceObserver() = default;
 
  private:
   void StopLoop() { runner_->Quit(); }
@@ -84,13 +87,15 @@ class TemplateURLServiceObserver {
 
 testing::AssertionResult VerifyTemplateURLServiceLoad(
     TemplateURLService* service) {
-  if (service->loaded())
+  if (service->loaded()) {
     return testing::AssertionSuccess();
+  }
   base::RunLoop runner;
   TemplateURLServiceObserver observer(service, &runner);
   runner.Run();
-  if (service->loaded())
+  if (service->loaded()) {
     return testing::AssertionSuccess();
+  }
   return testing::AssertionFailure() << "TemplateURLService isn't loaded";
 }
 
@@ -111,7 +116,7 @@ class SearchEngineTabHelperBrowserTest : public InProcessBrowserTest {
   // Starts a test server that serves a page pointing to a opensearch descriptor
   // from a file:// url.
   bool StartTestServer() {
-    GURL file_url = ui_test_utils::GetTestUrl(
+    GURL file_url = chrome_test_utils::GetTestUrl(
         base::FilePath(),
         base::FilePath().AppendASCII("simple_open_search.xml"));
     embedded_test_server()->RegisterRequestHandler(
@@ -127,7 +132,7 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(url_service);
-  VerifyTemplateURLServiceLoad(url_service);
+  EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =
       url_service->GetTemplateURLs();
   // Navigate to a page with a search descriptor. Path doesn't matter as the
@@ -141,8 +146,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,
 class TestSearchEngineTabHelper : public SearchEngineTabHelper {
  public:
   static void CreateForWebContents(content::WebContents* contents) {
-    if (FromWebContents(contents))
+    if (FromWebContents(contents)) {
       return;
+    }
     contents->SetUserData(
         UserDataKey(), std::make_unique<TestSearchEngineTabHelper>(contents));
   }
@@ -154,8 +160,9 @@ class TestSearchEngineTabHelper : public SearchEngineTabHelper {
       content::NavigationEntry* entry) override {
     std::u16string keyword =
         SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(entry);
-    if (!keyword.empty())
+    if (!keyword.empty()) {
       return keyword;
+    }
 
     const std::u16string kTestKeyword(u"TestKeyword");
     return kTestKeyword;
@@ -242,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
   TemplateURLService* url_service =
       TemplateURLServiceFactory::GetForProfile(browser()->profile());
   ASSERT_TRUE(url_service);
-  VerifyTemplateURLServiceLoad(url_service);
+  EXPECT_TRUE(VerifyTemplateURLServiceLoad(url_service));
   TemplateURLService::TemplateURLVector template_urls =
       url_service->GetTemplateURLs();
 
@@ -251,7 +258,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
 
   // Loads a page in the prerender.
   auto prerender_url = embedded_test_server()->GetURL("/form_search.html");
-  int host_id = prerender_helper()->AddPrerender(
+  content::FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(host_id);
@@ -260,7 +267,8 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
   content::RenderFrameHost* render_frame_host =
       content::test::PrerenderTestHelper::GetPrerenderedMainFrameHost(
           *prerender_web_contents, host_id);
-  EXPECT_EQ(nullptr, content::EvalJs(render_frame_host, "submit_form();"));
+  EXPECT_EQ(base::Value(),
+            content::EvalJs(render_frame_host, "submit_form();"));
   // Since navigation from a prerendering page is disallowed, prerendering is
   // canceled.
   host_observer.WaitForDestroyed();
@@ -273,8 +281,9 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
   EXPECT_FALSE(host_observer.was_activated());
   // Submits a search query.
   content::TestNavigationObserver observer(GetWebContents());
-  EXPECT_EQ(nullptr, content::EvalJs(GetWebContents()->GetPrimaryMainFrame(),
-                                     "submit_form();"));
+  EXPECT_EQ(base::Value(),
+            content::EvalJs(GetWebContents()->GetPrimaryMainFrame(),
+                            "submit_form();"));
   observer.Wait();
 
   // A new template url is added on the primary page.
@@ -289,7 +298,7 @@ IN_PROC_BROWSER_TEST_P(SearchEngineTabHelperPrerenderingBrowserTest,
 
   // Prerender a page that contains a opensearch descriptor.
   auto prerender_url = embedded_test_server()->GetURL(osdd_seeding_path());
-  int host_id = prerender_helper()->AddPrerender(
+  content::FrameTreeNodeId host_id = prerender_helper()->AddPrerender(
       prerender_url, /*eagerness=*/std::nullopt, GetTargetHint());
   auto* prerender_web_contents =
       content::WebContents::FromFrameTreeNodeId(host_id);

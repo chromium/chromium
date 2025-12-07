@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "extensions/browser/api/web_request/web_request_info.h"
 
+#include <array>
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -18,7 +14,10 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/notimplemented.h"
+#include "base/types/zip.h"
 #include "base/values.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/websocket_handshake_request_info.h"
 #include "extensions/browser/api/web_request/upload_data_presenter.h"
@@ -26,8 +25,9 @@
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "extensions/browser/extensions_browser_client.h"
-#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
+#include "ipc/constants.mojom.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/upload_bytes_element_reader.h"
 #include "net/base/upload_data_stream.h"
@@ -36,6 +36,12 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/url_loader.h"
+
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
+#include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
+#endif
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace keys = extension_web_request_api_constants;
 
@@ -91,8 +97,9 @@ class FileUploadDataSource : public UploadDataSource {
 bool CreateUploadDataSourcesFromResourceRequest(
     const network::ResourceRequest& request,
     std::vector<std::unique_ptr<UploadDataSource>>* data_sources) {
-  if (!request.request_body)
+  if (!request.request_body) {
     return false;
+  }
 
   for (auto& element : *request.request_body->elements()) {
     switch (element.type()) {
@@ -124,28 +131,32 @@ std::optional<base::Value::Dict> CreateRequestBodyData(
     const std::string& method,
     const net::HttpRequestHeaders& request_headers,
     const std::vector<std::unique_ptr<UploadDataSource>>& data_sources) {
-  if (method != "POST" && method != "PUT")
+  if (method != "POST" && method != "PUT") {
     return std::nullopt;
+  }
 
   base::Value::Dict request_body_data;
 
   // Get the data presenters, ordered by how specific they are.
   ParsedDataPresenter parsed_data_presenter(request_headers);
   RawDataPresenter raw_data_presenter;
-  UploadDataPresenter* const presenters[] = {
+  const auto presenters = std::to_array<UploadDataPresenter*>({
       &parsed_data_presenter,  // 1: any parseable forms? (Specific to forms.)
       &raw_data_presenter      // 2: any data at all? (Non-specific.)
-  };
+  });
   // Keys for the results of the corresponding presenters.
-  static const char* const kKeys[] = {keys::kRequestBodyFormDataKey,
-                                      keys::kRequestBodyRawKey};
+  static const auto kKeys = std::to_array<const char*>({
+      keys::kRequestBodyFormDataKey,
+      keys::kRequestBodyRawKey,
+  });
   bool some_succeeded = false;
   if (!data_sources.empty()) {
-    for (size_t i = 0; i < std::size(presenters); ++i) {
-      for (auto& source : data_sources)
-        source->FeedToPresenter(presenters[i]);
-      if (presenters[i]->Succeeded()) {
-        request_body_data.Set(kKeys[i], presenters[i]->TakeResult().value());
+    for (auto [presenter, key] : base::zip(presenters, kKeys)) {
+      for (auto& source : data_sources) {
+        source->FeedToPresenter(presenter);
+      }
+      if (presenter->Succeeded()) {
+        request_body_data.Set(key, presenter->TakeResult().value());
         some_succeeded = true;
         break;
       }
@@ -209,12 +220,17 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
     const ExtensionNavigationUIData* navigation_ui_data) {
   if (navigation_ui_data) {
     is_web_view = navigation_ui_data->is_web_view();
-    web_view_instance_id = navigation_ui_data->web_view_instance_id();
-    web_view_rules_registry_id =
-        navigation_ui_data->web_view_rules_registry_id();
+    if (is_web_view) {
+      web_view_instance_id = navigation_ui_data->web_view_instance_id();
+      web_view_rules_registry_id =
+          navigation_ui_data->web_view_rules_registry_id();
+      web_view_embedder_process_id =
+          navigation_ui_data->web_view_embedder_process_id();
+    }
     frame_data = navigation_ui_data->frame_data();
     parent_routing_id = navigation_ui_data->parent_routing_id();
-  } else if (frame_routing_id != MSG_ROUTING_NONE) {
+  } else if (frame_routing_id != IPC::mojom::kRoutingIdNone) {
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
     // Grab any WebView-related information if relevant.
     WebViewRendererState::WebViewInfo web_view_info;
     if (WebViewRendererState::GetInstance()->GetInfo(
@@ -224,6 +240,7 @@ void WebRequestInfoInitParams::InitializeWebViewAndFrameData(
       web_view_rules_registry_id = web_view_info.rules_registry_id;
       web_view_embedder_process_id = web_view_info.embedder_process_id;
     }
+#endif
 
     parent_routing_id =
         content::GlobalRenderFrameHostId(render_process_id, frame_routing_id);
@@ -259,10 +276,16 @@ WebRequestInfo::~WebRequestInfo() = default;
 void WebRequestInfo::AddResponseInfoFromResourceResponse(
     const network::mojom::URLResponseHead& response) {
   response_headers = response.headers;
-  if (response_headers)
+  if (response_headers) {
     response_code = response_headers->response_code();
+  }
   response_ip = response.remote_endpoint.ToStringWithoutPort();
   response_from_cache = response.was_fetched_via_cache;
+}
+
+void WebRequestInfo::AddSslInfo(
+    const std::optional<net::SSLInfo>& ssl_info_opt) {
+  ssl_info = ssl_info_opt;
 }
 
 void WebRequestInfo::EraseDNRActionsForExtension(
@@ -311,7 +334,7 @@ bool WebRequestInfo::ShouldRecordMatchedAllowRuleInOnHeadersReceived(
   // should match since said actions are no longer relevant in
   // onHeadersReceived.
   bool only_request_headers_modified =
-      base::ranges::all_of(*dnr_actions, [](const auto& action) {
+      std::ranges::all_of(*dnr_actions, [](const auto& action) {
         return action.type == declarative_net_request::RequestAction::Type::
                                   MODIFY_HEADERS &&
                action.response_headers_to_modify.empty();

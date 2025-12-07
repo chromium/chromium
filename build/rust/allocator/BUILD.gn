@@ -1,0 +1,128 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/rust.gni")
+import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_static_library.gni")
+
+rust_allocator_uses_partition_alloc = false
+if (build_with_chromium) {
+  import("//base/allocator/partition_allocator/partition_alloc.gni")
+  rust_allocator_uses_partition_alloc = use_partition_alloc_as_malloc
+}
+
+# In ASAN builds, PartitionAlloc-Everywhere is disabled, meaning malloc() and
+# friends in C++ do not go to PartitionAlloc. So we also don't point the Rust
+# allocation functions at PartitionAlloc. Generally, this means we just direct
+# them to the Standard Library's allocator.
+#
+# However, on Windows the Standard Library uses HeapAlloc() and Windows ASAN
+# does *not* hook that method, so ASAN does not get to hear about allocations
+# made in Rust. To resolve this, we redirect allocation to _aligned_malloc
+# which Windows ASAN *does* hook.
+#
+# Note that there is a runtime option to make ASAN hook HeapAlloc() but
+# enabling it breaks Win32 APIs like CreateProcess:
+# https://crbug.com/368070343#comment29
+rust_allocator_uses_aligned_malloc = false
+if (!rust_allocator_uses_partition_alloc && is_win && is_asan) {
+  rust_allocator_uses_aligned_malloc = true
+}
+
+rust_allocator_uses_allocator_impls_h =
+    rust_allocator_uses_partition_alloc || rust_allocator_uses_aligned_malloc
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "RUST_ALLOCATOR_USES_PARTITION_ALLOC=$rust_allocator_uses_partition_alloc",
+    "RUST_ALLOCATOR_USES_ALIGNED_MALLOC=$rust_allocator_uses_aligned_malloc",
+  ]
+  visibility = [ ":*" ]
+}
+
+if (toolchain_has_rust) {
+  # All targets which depend on Rust code but are not linked by rustc must
+  # depend on this. Usually, this dependency will come from a `rust_target` or
+  # `cargo_crate` GN template, but note that this may be overridden by setting
+  # `no_allocator_crate` of `rust_static_library` or `no_std` of `cargo_crate`.
+  rust_static_library("allocator") {
+    sources = [ "lib.rs" ]
+    crate_root = "lib.rs"
+
+    rustflags = []
+    if (!rustc_nightly_capability) {
+      rustflags += [ "--cfg=rust_allocator_no_nightly_capability" ]
+    }
+
+    deps = [ ":alloc_error_handler_impl_ffi" ]
+    if (rust_allocator_uses_allocator_impls_h) {
+      deps += [ ":allocator_impls_ffi" ]
+      rustflags += [ "--cfg=rust_allocator_uses_allocator_impls_h" ]
+    }
+
+    # Avoid cyclic dependencies:
+    no_chromium_prelude = true
+    no_allocator_crate = true
+
+    # Allow `unsafe` for FFI calls:
+    allow_unsafe = true
+
+    # TODO(https://crbug.com/410596442): Stop using unstable features here.
+    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  }
+
+  if (rust_allocator_uses_allocator_impls_h) {
+    rust_bindgen("allocator_impls_ffi") {
+      deps = [ ":allocator_impls" ]
+      header = "allocator_impls.h"
+      cpp = true
+      visibility = [ ":*" ]
+
+      # Giving an explicit `crate_name`, because `allocator` target needs to
+      # set `no_chromium_prelude` and cannot import mangled crate names.
+      crate_name = "allocator_impls_ffi"
+    }
+
+    static_library("allocator_impls") {
+      deps = [ ":buildflags" ]
+      if (rust_allocator_uses_partition_alloc) {
+        deps += [ "//base/allocator/partition_allocator:partition_alloc" ]
+      }
+
+      sources = [
+        "allocator_impls.cc",
+        "allocator_impls.h",
+      ]
+      visibility = [ ":*" ]
+    }
+  }
+
+  rust_bindgen("alloc_error_handler_impl_ffi") {
+    deps = [ ":alloc_error_handler_impl" ]
+    header = "alloc_error_handler_impl.h"
+    cpp = true
+    visibility = [ ":*" ]
+
+    # Giving an explicit `crate_name`, because `allocator` target needs to
+    # set `no_chromium_prelude` and cannot import mangled crate names.
+    crate_name = "alloc_error_handler_impl_ffi"
+  }
+
+  static_library("alloc_error_handler_impl") {
+    sources = [
+      # `alias.*`, `compiler_specific.h`, and `immediate_crash.*` have been
+      # copied from `//base`.
+      # TODO(crbug.com/40279749): Avoid duplication / reuse code.
+      "alias.cc",
+      "alias.h",
+      "alloc_error_handler_impl.cc",
+      "alloc_error_handler_impl.h",
+      "compiler_specific.h",
+      "immediate_crash.h",
+    ]
+    visibility = [ ":*" ]
+  }
+}

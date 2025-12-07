@@ -1,0 +1,10 @@
+monorail {
+  component: "Privacy>NavTracking"
+}
+team_email: "navtracking-team@google.com"
+buganizer_public: {
+  component_id: 1456144
+}
+wpt {
+  notify: YES
+}

@@ -11,42 +11,36 @@
 #import "ios/chrome/browser/photos/model/photos_policy.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
 #import "ios/chrome/browser/photos/model/photos_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "url/gurl.h"
 
-bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state) {
-  CHECK(browser_state);
-
-  // Check flag.
-  if (!base::FeatureList::IsEnabled(kIOSSaveToPhotos)) {
-    return false;
-  }
+bool IsSaveToPhotosAvailable(ProfileIOS* profile) {
+  CHECK(profile);
 
   // Check policy.
-  if (browser_state->GetPrefs()->GetInteger(
+  if (profile->GetPrefs()->GetInteger(
           prefs::kIosSaveToPhotosContextMenuPolicySettings) ==
       static_cast<int>(SaveToPhotosPolicySettings::kDisabled)) {
     return false;
   }
 
   // Check incognito.
-  if (browser_state->IsOffTheRecord()) {
+  if (profile->IsOffTheRecord()) {
     return false;
   }
 
   // Check PhotosService is available.
-  PhotosService* photos_service =
-      PhotosServiceFactory::GetForBrowserState(browser_state);
+  PhotosService* photos_service = PhotosServiceFactory::GetForProfile(profile);
   if (!photos_service || !photos_service->IsAvailable()) {
     return false;
   }
 
   // Check user is signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForBrowserState(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;

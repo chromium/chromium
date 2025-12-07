@@ -4,17 +4,24 @@
 
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
 
-#import <AuthenticationServices/AuthenticationServices.h>
 #import <Foundation/Foundation.h>
 
 #import <string>
 #import <utility>
 #import <vector>
 
+#import "base/barrier_callback.h"
 #import "base/functional/callback.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
-#import "chrome/browser/platform_util.h"
+#import "chrome/browser/browser_process.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_entra.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
+#import "chrome/common/pref_names.h"
+#import "components/policy/core/common/policy_logger.h"
+#import "components/prefs/pref_service.h"
 #import "net/base/apple/http_response_headers_util.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/http/http_request_headers.h"
@@ -23,121 +30,79 @@
 #import "net/url_request/url_request.h"
 #import "url/gurl.h"
 
-// Interface that provides a presentation context to the platform
-// and a delegate for the authorization controller.
-@interface SSOServiceAuthControllerDelegate
-    : NSObject <ASAuthorizationControllerDelegate,
-                ASAuthorizationControllerPresentationContextProviding>
-@end
-
-// Class that allows fetching authentication headers for a url if it is
-// supported by any SSO extension on the device.
-@implementation SSOServiceAuthControllerDelegate {
-  enterprise_auth::PlatformAuthProviderManager::GetDataCallback _callback;
-}
-
-- (void)dealloc {
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Destroying "
-             "SSOServiceAuthControllerDelegate";
-  if (_callback) {
-    VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers aborted.";
-    std::move(_callback).Run(net::HttpRequestHeaders());
-  }
-}
-
-// Gets authentication headers for `url` if the device can perform
-// authentication for it.
-// If the device can perform the authentication, `withCallback` is called
-// with headers built from the response from the device, otherwise it is called
-// with empty headers.
-- (void)getAuthHeaders:(GURL)url
-          withCallback:
-              (enterprise_auth::PlatformAuthProviderManager::GetDataCallback)
-                  callback {
-  _callback = std::move(callback);
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Attempting to get headers for " << url;
-  ASAuthorizationSingleSignOnProvider* auth_provider =
-      [ASAuthorizationSingleSignOnProvider
-          authorizationProviderWithIdentityProviderURL:net::NSURLWithGURL(url)];
-
-  if (!auth_provider.canPerformAuthorization) {
-    VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers for not supported.";
-    std::move(_callback).Run(net::HttpRequestHeaders());
-    return;
-  }
-
-  // Create a login request for `url`.
-  ASAuthorizationSingleSignOnRequest* request = [auth_provider createRequest];
-  request.requestedOperation = ASAuthorizationOperationLogin;
-  ASAuthorizationController* controller = [[ASAuthorizationController alloc]
-      initWithAuthorizationRequests:[NSArray arrayWithObject:request]];
-  controller.delegate = self;
-  controller.presentationContextProvider = self;
-
-  [controller performRequests];
-}
-
-// ASAuthorizationControllerDelegate implementation
-
-// Called when the authentication was successful and creates a
-// HttpRequestHeaders from `authorization`.
-- (void)authorizationController:(ASAuthorizationController*)controller
-    didCompleteWithAuthorization:(ASAuthorization*)authorization {
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers completed.";
-  ASAuthorizationSingleSignOnRequest* request =
-      (ASAuthorizationSingleSignOnRequest*)
-          controller.authorizationRequests.firstObject;
-  if (!request || request.requestedOperation != ASAuthorizationOperationLogin) {
-    VLOG(1)
-        << "[ExtensibleEnterpriseSSO] Fetching headers completed for non-login "
-           "operation.";
-    std::move(_callback).Run(net::HttpRequestHeaders());
-    return;
-  }
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers completed for login "
-             "operation.";
-  ASAuthorizationSingleSignOnCredential* credential = authorization.credential;
-  NSDictionary* headers = credential.authenticatedResponse.allHeaderFields;
-  net::HttpRequestHeaders request_headers;
-  for (NSString* key in headers) {
-    const std::string header_name = base::SysNSStringToUTF8(key);
-    if (!net::HttpUtil::IsValidHeaderName(header_name)) {
-      VLOG(1) << "[ExtensibleEnterpriseSSO] Invalid header name "
-              << header_name;
-      continue;
-    }
-
-    const std::string header_value = base::SysNSStringToUTF8(
-        net::FixNSStringIncorrectlyDecodedAsLatin1(headers[key]));
-    if (!net::HttpUtil::IsValidHeaderValue(header_value)) {
-      VLOG(1) << "[ExtensibleEnterpriseSSO] Invalid header value "
-              << header_value;
-      continue;
-    }
-
-    request_headers.SetHeader(header_name, header_value);
-  }
-  std::move(_callback).Run(std::move(request_headers));
-}
-
-// Called when the authentication failed and creates a
-// empty HttpRequestHeaders.
-- (void)authorizationController:(ASAuthorizationController*)controller
-           didCompleteWithError:(NSError*)error {
-  VLOG(1) << "[ExtensibleEnterpriseSSO] Fetching headers failed";
-  std::move(_callback).Run(net::HttpRequestHeaders());
-}
-
-// ASAuthorizationControllerPresentationContextProviding implementation
-- (ASPresentationAnchor)presentationAnchorForAuthorizationController:
-    (ASAuthorizationController*)controller {
-  // TODO(b/340868357): Pick the window where the url is being used.
-  return platform_util::GetActiveWindow();
-}
-
-@end
-
 namespace enterprise_auth {
+
+namespace {
+
+constexpr std::array<const char*, 1> kSupportedIdps{
+    kMicrosoftIdentityProvider,
+};
+
+// Empty function used to ensure SSOServiceEntraAuthControllerDelegate does not
+// get destroyed until the data is fetched.
+void OnDataFetched(SSOServiceEntraAuthControllerDelegate*) {
+  VLOG_POLICY(2, EXTENSIBLE_SSO) << "[ExtensibleEnterpriseSSO] Deleting "
+                                    "SSOServiceEntraAuthControllerDelegate";
+}
+
+void RecordMetrics(
+    std::unique_ptr<ExtensibleEnterpriseSSOProvider::Metrics> metrics) {
+  // TODO(crbug.com/340868357) Check for known hosts.
+  if (metrics->url_is_supported) {
+    base::UmaHistogramBoolean(
+        "Enterprise.ExtensibleEnterpriseSSO.Supported.Result",
+        metrics->success);
+    base::UmaHistogramTimes(
+        metrics->success
+            ? "Enterprise.ExtensibleEnterpriseSSO.Supported.Success.Duration"
+            : "Enterprise.ExtensibleEnterpriseSSO.Supported.Failure.Duration",
+        metrics->end_time - metrics->start_time);
+  } else {
+    base::UmaHistogramTimes(
+        "Enterprise.ExtensibleEnterpriseSSO.NotSupported.Duration",
+        metrics->end_time - metrics->start_time);
+  }
+}
+
+// Function that takes all the possible idp handlers' results and records
+// metrics about duration, success and returns the headers of the handler that
+// was able to authenticate the request.
+void OnAuthorizationDone(
+    PlatformAuthProviderManager::GetDataCallback callback,
+    std::unique_ptr<ExtensibleEnterpriseSSOProvider::Metrics> metrics,
+    std::vector<
+        std::unique_ptr<ExtensibleEnterpriseSSOProvider::DelegateResult>>
+        results) {
+  net::HttpRequestHeaders headers;
+  for (const auto& result : results) {
+    metrics->success |= result->success;
+    if (result->success && !result->headers.IsEmpty()) {
+      headers = result->headers;
+      break;
+    }
+  }
+  metrics->end_time = base::Time::Now();
+  RecordMetrics(std::move(metrics));
+  std::move(callback).Run(std::move(headers));
+}
+
+}  // namespace
+
+ExtensibleEnterpriseSSOProvider::Metrics::Metrics(const std::string& host)
+    : host(host), start_time(base::Time::Now()) {}
+
+ExtensibleEnterpriseSSOProvider::Metrics::~Metrics() = default;
+
+ExtensibleEnterpriseSSOProvider::DelegateResult::DelegateResult(
+    const std::string& name,
+    bool success,
+    net::HttpRequestHeaders headers)
+    : name(name), success(success), headers(std::move(headers)) {}
+ExtensibleEnterpriseSSOProvider::DelegateResult::~DelegateResult() = default;
+
+ExtensibleEnterpriseSSOProvider::ExtensibleEnterpriseSSOProvider() = default;
+
+ExtensibleEnterpriseSSOProvider::~ExtensibleEnterpriseSSOProvider() = default;
 
 bool ExtensibleEnterpriseSSOProvider::SupportsOriginFiltering() {
   return false;
@@ -145,18 +110,71 @@ bool ExtensibleEnterpriseSSOProvider::SupportsOriginFiltering() {
 
 void ExtensibleEnterpriseSSOProvider::FetchOrigins(
     FetchOriginsCallback on_fetch_complete) {
-  // Origin filtering is nor supported.
-  NOTREACHED_NORETURN();
+  // Origin filtering is not supported.
+  NOTREACHED();
 }
 
 void ExtensibleEnterpriseSSOProvider::GetData(
     const GURL& url,
     PlatformAuthProviderManager::GetDataCallback callback) {
-  SSOServiceAuthControllerDelegate* delegate =
-      [[SSOServiceAuthControllerDelegate alloc] init];
-  [delegate
-      getAuthHeaders:url
-        withCallback:base::BindPostTaskToCurrentDefault(std::move(callback))];
+  auto metrics = std::make_unique<Metrics>(url.GetHost());
+  NSURL* nativeUrl = net::NSURLWithGURL(url);
+  ASAuthorizationSingleSignOnProvider* auth_provider =
+      [ASAuthorizationSingleSignOnProvider
+          authorizationProviderWithIdentityProviderURL:nativeUrl];
+
+  metrics->url_is_supported = auth_provider.canPerformAuthorization;
+
+  if (!auth_provider.canPerformAuthorization) {
+    OnAuthorizationDone(std::move(callback), std::move(metrics), {});
+    return;
+  }
+
+  const base::Value::List& supported_idps =
+      g_browser_process->local_state()->GetList(
+          prefs::kExtensibleEnterpriseSSOEnabledIdps);
+
+  // Wait for all idps to call this before continuing. This allows to launch all
+  // of them in parallel, waiting for all of their results and picking the right
+  // ones.
+  auto barrier = base::BarrierCallback<
+      std::unique_ptr<ExtensibleEnterpriseSSOProvider::DelegateResult>>(
+      supported_idps.size(),
+      base::BindOnce(&OnAuthorizationDone, std::move(callback),
+                     std::move(metrics)));
+
+  for (const base::Value& idp_value : supported_idps) {
+    // Setup Microsoft Entra handler
+    if (const std::string* idp = idp_value.GetIfString();
+        idp && *idp == kMicrosoftIdentityProvider) {
+      SSOServiceEntraAuthControllerDelegate* delegate =
+          [[SSOServiceEntraAuthControllerDelegate alloc]
+              initWithAuthorizationSingleSignOnProvider:auth_provider];
+
+      // Pass `delegate` as a callback parameter so that it lives beyond the
+      // scope of this function and until the callback is called.
+      auto final_callback = base::BindPostTaskToCurrentDefault(
+          barrier.Then(base::BindRepeating(&OnDataFetched, delegate)));
+      [delegate getAuthHeaders:nativeUrl
+                  withCallback:std::move(final_callback)];
+    }
+  }
+}
+
+// static
+std::set<std::string>
+ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProviders() {
+  return {kSupportedIdps.begin(), kSupportedIdps.end()};
+}
+
+// static
+base::Value::List
+ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProvidersList() {
+  base::Value::List idps;
+  for (const char* idp : kSupportedIdps) {
+    idps.Append(idp);
+  }
+  return idps;
 }
 
 }  // namespace enterprise_auth

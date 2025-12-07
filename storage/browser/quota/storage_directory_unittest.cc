@@ -88,7 +88,7 @@ TEST_F(StorageDirectoryTest, CreateBucketDirectory) {
   BucketLocator example_bucket(
       BucketId(123),
       blink::StorageKey::CreateFromStringForTesting("http://example/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
 
   base::FilePath bucket_path =
       CreateBucketPath(storage_directory_->path().DirName(), example_bucket);
@@ -106,11 +106,11 @@ TEST_F(StorageDirectoryTest, DoomAndClearBucketDirectory) {
   BucketLocator bucket1(
       BucketId(1),
       blink::StorageKey::CreateFromStringForTesting("http://example/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
   BucketLocator bucket2(
       BucketId(2),
       blink::StorageKey::CreateFromStringForTesting("http://example/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
 
   // Create directories for buckets.
   ASSERT_TRUE(storage_directory_->CreateBucket(bucket1));
@@ -147,11 +147,11 @@ TEST_F(StorageDirectoryTest, ClearMultipleDoomedBuckets) {
   BucketLocator bucket1(
       BucketId(1),
       blink::StorageKey::CreateFromStringForTesting("http://example/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
   BucketLocator bucket2(
       BucketId(2),
       blink::StorageKey::CreateFromStringForTesting("http://example/"),
-      blink::mojom::StorageType::kTemporary, /*is_default=*/false);
+      /*is_default=*/false);
 
   ASSERT_TRUE(storage_directory_->CreateBucket(bucket1));
   ASSERT_TRUE(storage_directory_->CreateBucket(bucket2));

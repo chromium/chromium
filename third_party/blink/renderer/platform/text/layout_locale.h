@@ -41,9 +41,6 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   bool operator==(const LayoutLocale& other) const {
     return string_ == other.string_;
   }
-  bool operator!=(const LayoutLocale& other) const {
-    return string_ != other.string_;
-  }
 
   const AtomicString& LocaleString() const { return string_; }
   static const AtomicString& LocaleString(const LayoutLocale* locale) {
@@ -63,6 +60,11 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   bool HasScriptForHan() const;
   static const LayoutLocale* LocaleForHan(const LayoutLocale*);
   const char* LocaleForHanForSkFontMgr() const;
+
+  bool IsMacrolanguageChinese() const {
+    return is_macrolanguage_chinese_computed_ ? is_macrolanguage_chinese_
+                                              : IsMacrolanguageChineseSlow();
+  }
 
   // The normalized locale data to construct |CaseMap| from.
   const CaseMap::Locale& CaseMapLocale() const {
@@ -89,6 +91,8 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
  private:
   explicit LayoutLocale(const AtomicString&);
 
+  bool IsMacrolanguageChineseSlow() const;
+
   void ComputeScriptForHan() const;
   void ComputeCaseMapLocale() const;
 
@@ -102,12 +106,14 @@ class PLATFORM_EXPORT LayoutLocale : public RefCounted<LayoutLocale> {
   raw_ptr<const hb_language_impl_t> harfbuzz_language_;
 
   UScriptCode script_;
-  mutable UScriptCode script_for_han_;
+  mutable UScriptCode script_for_han_ = USCRIPT_COMMON;
 
-  mutable unsigned has_script_for_han_ : 1;
-  mutable unsigned hyphenation_computed_ : 1;
-  mutable unsigned quotes_data_computed_ : 1;
-  mutable unsigned case_map_computed_ : 1;
+  mutable unsigned has_script_for_han_ : 1 = false;
+  mutable unsigned hyphenation_computed_ : 1 = false;
+  mutable unsigned quotes_data_computed_ : 1 = false;
+  mutable unsigned case_map_computed_ : 1 = false;
+  mutable unsigned is_macrolanguage_chinese_computed_ : 1 = false;
+  mutable unsigned is_macrolanguage_chinese_ : 1 = false;
 };
 
 }  // namespace blink

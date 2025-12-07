@@ -1,18 +1,17 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXTextField AXRoleDescription='text field'
+++++AXDateField AXRoleDescription='local date and time picker'
 ++++++AXGroup AXRoleDescription='group'
 ++++++++AXGroup AXRoleDescription='group'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0'
+++++++++++AXIncrementor AXDescription='Month' AXRoleDescription='stepper' AXValue=0
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0'
+++++++++++AXIncrementor AXDescription='Day' AXRoleDescription='stepper' AXValue=0
 ++++++++++AXStaticText AXRoleDescription='text' AXValue='/'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0'
+++++++++++AXIncrementor AXDescription='Year' AXRoleDescription='stepper' AXValue=0
+++++++++++AXStaticText AXRoleDescription='text' AXValue=', '
+++++++++++AXIncrementor AXDescription='Hours' AXRoleDescription='stepper' AXValue=0
 ++++++++++AXStaticText AXRoleDescription='text' AXValue=':'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0'
-++++++++++AXIncrementor AXRoleDescription='stepper' AXValue='0'
-++++++AXPopUpButton AXRoleDescription='pop up button'
-++++++AXIncrementor AXRoleDescription='stepper' AXValue='0'
-++++++++AXButton AXRoleDescription='button'
-++++++++AXButton AXRoleDescription='button'
+++++++++++AXIncrementor AXDescription='Minutes' AXRoleDescription='stepper' AXValue=0
+++++++++++AXStaticText AXRoleDescription='text' AXValue=' '
+++++++++++AXIncrementor AXDescription='AM/PM' AXRoleDescription='stepper' AXValue=0
+++++++AXPopUpButton AXDescription='Show local date and time picker' AXRoleDescription='pop up button'

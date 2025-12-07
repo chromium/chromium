@@ -4,6 +4,9 @@
 
 #include "ui/ozone/platform/headless/headless_window_manager.h"
 
+#include "ui/gfx/geometry/rect.h"
+#include "ui/ozone/platform/headless/headless_window.h"
+
 namespace ui {
 
 HeadlessWindowManager::HeadlessWindowManager() = default;
@@ -12,18 +15,34 @@ HeadlessWindowManager::~HeadlessWindowManager() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-int32_t HeadlessWindowManager::AddWindow(HeadlessWindow* window) {
+gfx::AcceleratedWidget HeadlessWindowManager::AddWindow(
+    HeadlessWindow* window) {
   return windows_.Add(window);
 }
 
-void HeadlessWindowManager::RemoveWindow(int32_t window_id,
+void HeadlessWindowManager::RemoveWindow(gfx::AcceleratedWidget widget,
                                          HeadlessWindow* window) {
-  DCHECK_EQ(window, windows_.Lookup(window_id));
-  windows_.Remove(window_id);
+  DCHECK_EQ(window, windows_.Lookup(widget));
+  windows_.Remove(widget);
 }
 
-HeadlessWindow* HeadlessWindowManager::GetWindow(int32_t window_id) {
-  return windows_.Lookup(window_id);
+HeadlessWindow* HeadlessWindowManager::GetWindow(
+    gfx::AcceleratedWidget widget) {
+  return windows_.Lookup(widget);
+}
+
+gfx::AcceleratedWidget HeadlessWindowManager::GetAcceleratedWidgetAtScreenPoint(
+    const gfx::Point& point) {
+  for (base::IDMap<HeadlessWindow*>::const_iterator it(&windows_);
+       !it.IsAtEnd(); it.Advance()) {
+    const HeadlessWindow* window = it.GetCurrentValue();
+    gfx::Rect bounds = window->GetBoundsInPixels();
+    if (bounds.Contains(point)) {
+      return window->widget();
+    }
+  }
+
+  return gfx::kNullAcceleratedWidget;
 }
 
 }  // namespace ui

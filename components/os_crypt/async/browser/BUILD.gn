@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
 component("browser") {
   sources = [
     "os_crypt_async.cc",
@@ -25,7 +27,10 @@ source_set("test_support") {
     "test_utils.h",
   ]
   deps = [ "//crypto" ]
-  public_deps = [ ":browser" ]
+  public_deps = [
+    ":browser",
+    "//components/os_crypt/async/common:test_support",
+  ]
 }
 
 source_set("key_provider_interface") {
@@ -35,6 +40,24 @@ source_set("key_provider_interface") {
     "//base",
     "//components/os_crypt/async/common",
   ]
+}
+
+if (is_apple) {
+  source_set("keychain_key_provider") {
+    sources = [
+      "keychain_key_provider.h",
+      "keychain_key_provider.mm",
+    ]
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/os_crypt/async/common",
+      "//components/os_crypt/common:keychain_password_mac",
+      "//components/os_crypt/common:switches",
+      "//crypto",
+      "//crypto:mock_apple_keychain",
+    ]
+  }
 }
 
 if (is_win) {
@@ -56,6 +79,77 @@ if (is_win) {
   }
 }
 
+if ((is_posix || is_fuchsia) && !is_apple) {
+  source_set("posix_key_provider") {
+    sources = [
+      "posix_key_provider.cc",
+      "posix_key_provider.h",
+    ]
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/os_crypt/async/common",
+    ]
+  }
+}
+
+if (is_linux && use_dbus) {
+  source_set("secret_portal_key_provider") {
+    sources = [
+      "secret_portal_key_provider.cc",
+      "secret_portal_key_provider.h",
+    ]
+
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/dbus",
+      "//components/os_crypt/async/common",
+      "//components/os_crypt/sync",
+      "//components/prefs",
+      "//crypto",
+      "//dbus",
+    ]
+  }
+
+  source_set("freedesktop_secret_key_provider") {
+    sources = [
+      "freedesktop_secret_key_provider.cc",
+      "freedesktop_secret_key_provider.h",
+    ]
+
+    deps = [
+      ":key_provider_interface",
+      "//base",
+      "//components/dbus",
+      "//components/os_crypt/async/common",
+      "//components/os_crypt/sync",
+      "//crypto",
+      "//dbus",
+    ]
+    public_deps = [ "//build:branding_buildflags" ]
+  }
+
+  source_set("test_secret_portal") {
+    testonly = true
+
+    sources = [
+      "test_secret_portal.cc",
+      "test_secret_portal.h",
+    ]
+
+    deps = [
+      ":key_provider_interface",
+      ":secret_portal_key_provider",
+      "//base",
+      "//components/dbus",
+      "//components/os_crypt/async/common",
+      "//dbus",
+      "//testing/gtest",
+    ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "os_crypt_async_unittest.cc" ]
@@ -72,11 +166,41 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
+  if (is_apple) {
+    sources += [
+      "keychain_key_provider_compat_unittest.mm",
+      "keychain_key_provider_unittest.mm",
+    ]
+    deps += [
+      ":keychain_key_provider",
+      "//components/os_crypt/sync:test_support",
+      "//components/os_crypt/sync:unit_tests",
+      "//crypto:mock_apple_keychain",
+    ]
+  }
+
   if (is_win) {
     sources += [ "dpapi_key_provider_unittest.cc" ]
     deps += [
       ":dpapi_key_provider",
       "//components/prefs:test_support",
+    ]
+  }
+
+  if (is_linux && use_dbus) {
+    sources += [
+      "freedesktop_secret_key_provider_compat_unittest.cc",
+      "freedesktop_secret_key_provider_unittest.cc",
+      "secret_portal_key_provider_unittest.cc",
+    ]
+    deps += [
+      ":freedesktop_secret_key_provider",
+      ":posix_key_provider",
+      ":secret_portal_key_provider",
+      "//components/dbus",
+      "//components/prefs:test_support",
+      "//dbus:test_support",
+      "//testing/gmock",
     ]
   }
 }

@@ -1,0 +1,65 @@
+<style>
+  :host {
+    --interactive-bg-hover: rgb(242, 242, 242);
+    --interactive-bg-active: rgb(234, 234, 234);
+    --icon-fill-default: lightgray;
+    --icon-fill-hover: gray;
+    --icon-fill-active: black;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    color: var(--header-text-color);
+  }
+
+  #ps-page {
+    width: 100%;
+  }
+
+  div.content-settings {
+    display: grid;
+    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 28rem), 1fr));
+  }
+
+  content-setting-pattern-source {
+    display: grid;
+    box-shadow: rgba(0, 0, 0, 0.3) 0 1px 2px 0,
+      rgba(0, 0, 0, 0.15) 0 2px 6px 2px;
+    background: white;
+    border-radius: 8px;
+  }
+
+  content-setting-pattern-source[hidden] {
+    display: none;
+  }
+
+  cr-frame-list {
+    height: 100%;
+  }
+
+  .main-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
+    width: 100%;
+  }
+
+  search-bar {
+    padding: 16px 24px;
+    flex-shrink: 0;
+    border-bottom: 1px solid var(--cr-separator-color, #e0e0e0);
+  }
+
+  .panels-container {
+    flex-grow: 1;
+    padding: 0 24px;
+    padding-bottom: 24px;
+  }
+</style>
+
+<cr-frame-list id="ps-page">
+</cr-frame-list>

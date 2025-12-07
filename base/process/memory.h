@@ -8,9 +8,14 @@
 #include <stddef.h>
 
 #include "base/base_export.h"
+#include "base/check.h"
 #include "base/process/process_handle.h"
 #include "build/build_config.h"
-#include "partition_alloc/oom.h"
+#include "partition_alloc/buildflags.h"
+
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
+#include "partition_alloc/oom.h"  // nogncheck
+#endif
 
 namespace base {
 
@@ -21,9 +26,13 @@ BASE_EXPORT void EnableTerminationOnHeapCorruption();
 // Turns on process termination if memory runs out.
 BASE_EXPORT void EnableTerminationOnOutOfMemory();
 
-// The function has been moved to partition_alloc:: namespace. The base:: alias
-// has been provided to avoid changing too many callers.
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC)
 using partition_alloc::TerminateBecauseOutOfMemory;
+#else
+inline void TerminateBecauseOutOfMemory(size_t) {
+  logging::RawCheckFailure("Out of memory");
+}
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
     BUILDFLAG(IS_AIX)
@@ -90,6 +99,14 @@ BASE_EXPORT void UncheckedFree(void* ptr);
 struct UncheckedFreeDeleter {
   inline void operator()(void* ptr) const { UncheckedFree(ptr); }
 };
+
+#if BUILDFLAG(IS_WIN)
+// As above, but allocates/frees an aligned region of memory.
+[[nodiscard]] BASE_EXPORT bool UncheckedAlignedAlloc(size_t size,
+                                                     size_t alignment,
+                                                     void** result);
+BASE_EXPORT void UncheckedAlignedFree(void* ptr);
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base
 

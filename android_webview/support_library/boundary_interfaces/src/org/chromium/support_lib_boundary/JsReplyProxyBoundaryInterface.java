@@ -4,12 +4,16 @@
 
 package org.chromium.support_lib_boundary;
 
+import org.jspecify.annotations.NullMarked;
+import org.jspecify.annotations.Nullable;
+
 import java.lang.reflect.InvocationHandler;
 
 /** Boundary interface for org.chromium.android_webview.WebMessageListener. */
+@NullMarked
 public interface JsReplyProxyBoundaryInterface extends IsomorphicObjectBoundaryInterface {
     /** Prefer using {@link #postMessageWithPayload}. */
     void postMessage(String message);
 
-    void postMessageWithPayload(/* MessagePayload */ InvocationHandler payload);
+    void postMessageWithPayload(/* MessagePayload */ @Nullable InvocationHandler payload);
 }

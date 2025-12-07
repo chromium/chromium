@@ -50,7 +50,7 @@ SimpleKeyedServiceFactory::SimpleKeyedServiceFactory(
     SimpleDependencyManager* manager)
     : KeyedServiceFactory(name, manager, SIMPLE) {}
 
-SimpleKeyedServiceFactory::~SimpleKeyedServiceFactory() {}
+SimpleKeyedServiceFactory::~SimpleKeyedServiceFactory() = default;
 
 KeyedService* SimpleKeyedServiceFactory::GetServiceForKey(SimpleFactoryKey* key,
                                                           bool create) {

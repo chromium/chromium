@@ -42,9 +42,7 @@
   const TRACK_WIDTH = calculateScrollbarThickness();
   const BUTTON_WIDTH = TRACK_WIDTH;
   const SCROLL_CORNER = TRACK_WIDTH;
-  const SCROLL_DELTA = (internals.runtimeFlags.percentBasedScrollingEnabled) ? 
-      Math.floor(scroller.clientHeight * SCROLLBAR_SCROLL_PERCENTAGE) * 10 :
-      SCROLLBAR_SCROLL_PIXELS * 10;
+  const SCROLL_DELTA = SCROLLBAR_SCROLL_PIXELS * 10;
   const MAX_SCROLLER_OFFSET = 1900 + TRACK_WIDTH;
 
   promise_test (async () => {

@@ -9,7 +9,7 @@
     Serializable,
     RuntimeEnabled=FileSystemAccess
 ] interface FileSystemDirectoryHandle : FileSystemHandle {
-    async iterable<USVString, FileSystemHandle>;
+    async_iterable<USVString, FileSystemHandle>;
 
     [
         CallWith=ScriptState,

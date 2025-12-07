@@ -10,18 +10,13 @@
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include <fnmatch.h>
-#include "base/files/file_util.h"
+#include "ash/constants/ambient_time_of_day_constants.h"
 #include "base/system/sys_info.h"
 #include "chrome/common/chrome_paths.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ambient_time_of_day_constants.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #include "base/android/path_utils.h"
 #endif
 
@@ -45,13 +40,6 @@ bool IsPathOnAllowlist(const base::FilePath& path,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-bool IsLacrosLogFile(const base::FilePath& path) {
-  return (fnmatch("/home/chronos/user/lacros/lacros*.log", path.value().c_str(),
-                  FNM_NOESCAPE) == 0) ||
-         (fnmatch("/var/log/lacros/lacros*.log", path.value().c_str(),
-                  FNM_NOESCAPE) == 0);
-}
-
 // Returns true if access is allowed for |path| for a user with |profile_path).
 bool IsAccessAllowedChromeOS(const base::FilePath& path,
                              const base::FilePath& profile_path) {
@@ -66,16 +54,12 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
     }
   }
 
-  if (IsLacrosLogFile(path))
-    return true;
-
   // Use an allowlist to only allow access to files residing in the list of
   // directories below.
   static const base::FilePath::CharType* const kLocalAccessAllowList[] = {
       "/home/chronos/user/MyFiles",
       "/home/chronos/user/WebRTC Logs",
       "/home/chronos/user/google-assistant-library/log",
-      "/home/chronos/user/lacros/Crash Reports",
       "/home/chronos/user/log",
       "/home/chronos/user/crostini.icons",
       "/media",
@@ -92,7 +76,6 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   if (base::PathService::Get(base::DIR_TEMP, &temp_dir))
     allowlist.push_back(temp_dir);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // The actual location of "/home/chronos/user/Xyz" is the Xyz directory under
   // the profile path ("/home/chronos/user' is a hard link to current primary
   // logged in profile.) For the support of multi-profile sessions, we are
@@ -114,24 +97,6 @@ bool IsAccessAllowedChromeOS(const base::FilePath& path,
   // specifically contains assets required for one of ash's screen saver themes.
   allowlist.push_back(
       base::FilePath("/run/imageloader").Append(ash::kTimeOfDayDlcId));
-#else
-  // Lacros uses the system-level documents directory and downloads directory
-  // under /home/chronos/u-<hash>, which are provided via PathService. Since
-  // they are system-level, they are not subdirectories of |profile_path|.
-  // PathService also provides valid paths for developers using the
-  // linux-chromeos emulator.
-  base::FilePath documents_dir;
-  if (base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &documents_dir))
-    allowlist.push_back(documents_dir);
-
-  base::FilePath downloads_dir;
-  if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS, &downloads_dir))
-    allowlist.push_back(downloads_dir);
-
-  // Lacros can access WebRTC logs under its browser profile directories.
-  if (!profile_path.empty())
-    allowlist.push_back(profile_path.AppendASCII("WebRTC Logs"));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return IsPathOnAllowlist(path, allowlist);
 }
@@ -153,9 +118,8 @@ bool IsAccessAllowedAndroid(const base::FilePath& path) {
   allowlist.insert(allowlist.end(), all_download_dirs.begin(),
                    all_download_dirs.end());
 
-  base::android::BuildInfo* build_info =
-      base::android::BuildInfo::GetInstance();
-  if (build_info->sdk_int() > base::android::SDK_VERSION_Q) {
+  if (base::android::android_info::sdk_int() >
+      base::android::android_info::SDK_VERSION_Q) {
     std::vector<base::FilePath> all_external_download_volumes =
         base::android::GetSecondaryStorageDownloadDirectories();
     allowlist.insert(allowlist.end(), all_external_download_volumes.begin(),

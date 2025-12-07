@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetProperties.ViewState;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Stateless AccountPickerBottomSheet view binder. */
+@NullMarked
 class AccountPickerBottomSheetViewBinder {
     static void bind(
             PropertyModel model, AccountPickerBottomSheetView view, PropertyKey propertyKey) {
@@ -21,6 +23,7 @@ class AccountPickerBottomSheetViewBinder {
                                             .ON_SELECTED_ACCOUNT_CLICKED));
         } else if (propertyKey == AccountPickerBottomSheetProperties.VIEW_STATE) {
             @ViewState int viewState = model.get(AccountPickerBottomSheetProperties.VIEW_STATE);
+            assert viewState != ViewState.NONE : "This indicates no specific active view state";
             view.setDisplayedView(viewState);
         } else if (propertyKey == AccountPickerBottomSheetProperties.SELECTED_ACCOUNT_DATA) {
             DisplayableProfileData profileData =
@@ -42,9 +45,9 @@ class AccountPickerBottomSheetViewBinder {
             AccountPickerBottomSheetStrings bottomSheetStrings =
                     model.get(AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS);
             view.setBottomSheetStrings(
-                    bottomSheetStrings.titleStringId,
-                    bottomSheetStrings.subtitleStringId,
-                    bottomSheetStrings.dismissButtonStringId);
+                    bottomSheetStrings.titleString,
+                    bottomSheetStrings.subtitleString,
+                    bottomSheetStrings.dismissButtonString);
         }
     }
 

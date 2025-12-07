@@ -21,17 +21,17 @@ shouldThrow("document.implementation.createDocumentType(null, null)", ExpectedNo
 shouldThrow("document.implementation.createDocumentType(null, '')", ExpectedNotEnoughArgumentsMessage(2));
 shouldThrow("document.implementation.createDocumentType('', null)", ExpectedNotEnoughArgumentsMessage(2));
 shouldThrow("document.implementation.createDocumentType('', '')", ExpectedNotEnoughArgumentsMessage(2));
-shouldThrow("document.implementation.createDocumentType('a:', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\'a:\') has an empty local name."');
-shouldThrow("document.implementation.createDocumentType(':foo', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\':foo\') has an empty namespace prefix."');
-shouldThrow("document.implementation.createDocumentType(':', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\':\') has an empty namespace prefix."');
+shouldNotThrow("document.implementation.createDocumentType('a:', null, null)");
+shouldNotThrow("document.implementation.createDocumentType(':foo', null, null)");
+shouldNotThrow("document.implementation.createDocumentType(':', null, null)");
 shouldNotThrow("document.implementation.createDocumentType('foo', null, null)");
 shouldNotThrow("document.implementation.createDocumentType('foo:bar', null, null)");
-shouldThrow("document.implementation.createDocumentType('foo::bar', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\'foo::bar\') contains multiple colons."');
-shouldThrow("document.implementation.createDocumentType('\t:bar', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\'\t:bar\') contains the invalid name-start character \'\t\'."');
-shouldThrow("document.implementation.createDocumentType('foo:\t', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\'foo:\t\') contains the invalid name-start character \'\t\'."');
-shouldThrow("document.implementation.createDocumentType('foo :bar', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\'foo :bar\') contains the invalid character \' \'."');
-shouldThrow("document.implementation.createDocumentType('foo: bar', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\'foo: bar\') contains the invalid name-start character \' \'."');
-shouldThrow("document.implementation.createDocumentType('a:b:c', null, null)", '"InvalidCharacterError: Failed to execute \'createDocumentType\' on \'DOMImplementation\': The qualified name provided (\'a:b:c\') contains multiple colons."');
+shouldNotThrow("document.implementation.createDocumentType('foo::bar', null, null)");
+shouldThrow("document.implementation.createDocumentType('\t:bar', null, null)", `"InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The provided doctype name ('\t:bar') contains an invalid character."`);
+shouldThrow("document.implementation.createDocumentType('foo:\t', null, null)", `"InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The provided doctype name ('foo:\t') contains an invalid character."`);
+shouldThrow("document.implementation.createDocumentType('foo :bar', null, null)", `"InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The provided doctype name ('foo :bar') contains an invalid character."`);
+shouldThrow("document.implementation.createDocumentType('foo: bar', null, null)", `"InvalidCharacterError: Failed to execute 'createDocumentType' on 'DOMImplementation': The provided doctype name ('foo: bar') contains an invalid character."`);
+shouldNotThrow("document.implementation.createDocumentType('a:b:c', null, null)");
 
 </script>
 </body>

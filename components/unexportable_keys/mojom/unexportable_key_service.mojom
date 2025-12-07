@@ -1,0 +1,116 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module unexportable_keys.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+
+// Unfortunately //net depends on the unexportable_keys components. This means
+// that we can't add mojo as a dependency to unexportable_keys. For this reason
+// we have to define the ServiceError and BackgroundTaskPriority enums both
+// in mojom and in cpp.
+
+// The possible signing algorithms for which a key can be generated.
+// This reflects the enum crypto::SignatureVerifier::SignatureAlgorithm.
+// LINT.IfChange
+enum SignatureAlgorithm {
+  RSA_PKCS1_SHA1,
+  RSA_PKCS1_SHA256,
+  ECDSA_SHA256,
+  RSA_PSS_SHA256,
+};
+
+// LINT.ThenChange(/crypto/signature_verifier.h)
+
+// All the possible errors the unexportable key service can return.
+// See components/unexportable_keys/service_error.h for more details.
+// LINT.IfChange(ServiceError)
+enum ServiceError {
+  // kNone = 0
+  kCryptoApiFailed = 1,
+  kKeyNotFound = 2,
+  kKeyCollision = 3,
+  kNoKeyProvider = 4,
+  kAlgorithmNotSupported = 5,
+  kKeyNotReady = 6,
+  kVerifySignatureFailed = 7,
+  kOperationNotSupported = 8,
+};
+
+// LINT.ThenChange(
+//     /components/unexportable_keys/service_error.h:ServiceError,
+//     /tools/metrics/histograms/metadata/net/enums.xml:UnexportableKeyServiceResult
+// )
+
+// The priority at which the task will run.
+// LINT.IfChange
+enum BackgroundTaskPriority {
+  kBestEffort = 0,
+  kUserVisible = 1,
+  kUserBlocking = 2,
+};
+
+// LINT.ThenChange(/components/unexportable_keys/background_task_priority.h)
+struct UnexportableKeyId {
+  mojo_base.mojom.UnguessableToken key_id;
+};
+
+// A struct that holds the new key id, as well as metadata like the wrapped
+// key, or the key's algorithm.
+struct NewKeyData {
+  UnexportableKeyId key_id;
+  array<uint8> subject_public_key_info;
+  array<uint8> wrapped_key;
+  SignatureAlgorithm algorithm;
+};
+
+// Interface for proxying calls to UnexportableKeyService from less privileged
+// processes.
+// Remotes to this interface are only meant to be sent from the browser process
+// (where it is implemented) to the network process.
+interface UnexportableKeyService {
+  // Generates a new key.
+  //
+  // The first supported value of `acceptable_algorithms` determines the type of
+  // the key. The task will be executed at the requested priority. In success, a
+  // NewKeyData struct will be returned. If there was a failure a ServiceError
+  // will be returned instead.
+  GenerateSigningKey(array<SignatureAlgorithm> acceptable_algorithms,
+                     BackgroundTaskPriority priority)
+      => result<NewKeyData, ServiceError>;
+
+  // Loads a key from the wrapped_key object. The task will be executed at
+  // the requested priority. In success, a NewKeyData struct will be
+  // returned. If there was a failure a ServiceError will be returned instead.
+  FromWrappedSigningKey(
+      array<uint8> wrapped_key, BackgroundTaskPriority priority)
+      => result<NewKeyData, ServiceError>;
+
+  // Signs the data using the key identified by key_id, at the requested
+  // priority. Retries up to max_retries times before returning an error. In
+  // success the serialized signature will be returned. If there was a
+  // failure a ServiceError will be returned instead.
+  Sign(UnexportableKeyId key_id,
+       array<uint8> data,
+       BackgroundTaskPriority priority) => result<array<uint8>, ServiceError>;
+
+  // Returns all signing keys currently stored by the OS that are being
+  // managed by this service. In success an array of UnexportableKeyId will
+  // be returned. If there was a failure a ServiceError will be returned
+  // instead.
+  GetAllSigningKeysForGarbageCollection(BackgroundTaskPriority priority)
+      => result<array<UnexportableKeyId>, ServiceError>;
+
+  // Deletes the key identified by key_id.
+  // On Success no value is returned. On error a ServiceError is
+  // returned instead.
+  DeleteKey(UnexportableKeyId key_id, BackgroundTaskPriority priority)
+      => (ServiceError? error);
+
+  // Delete all keys.
+  // On success the number of keys deleted is returned. On error a ServiceError
+  // is returned instead.
+  DeleteAllKeys(BackgroundTaskPriority priority)
+      => result<uint64, ServiceError>;
+};

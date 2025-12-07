@@ -9,12 +9,14 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
+#include "base/check_deref.h"
 #include "base/lazy_instance.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/search_engines/template_url_prepopulate_data_resolver_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 #include "chrome/common/pref_names.h"
@@ -23,6 +25,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data_util.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
+#include "components/search_engines/template_url_prepopulate_data_resolver.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_prefs_helper.h"
@@ -55,22 +58,13 @@ std::string SubstituteInstallParam(std::string str,
 }
 
 std::unique_ptr<TemplateURLData> ConvertSearchProvider(
-    PrefService* prefs,
-    search_engines::SearchEngineChoiceService* search_engine_choice_service,
+    const TemplateURLPrepopulateData::Resolver& prepopulate_data_resolver,
     const ChromeSettingsOverrides::SearchProvider& search_provider,
     const std::string& install_parameter) {
   std::unique_ptr<TemplateURLData> data;
   if (search_provider.prepopulated_id) {
-    if (base::FeatureList::IsEnabled(
-            kPrepopulatedSearchEngineOverrideRollout)) {
-      data = TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
-          prefs, search_engine_choice_service,
-          *search_provider.prepopulated_id);
-    } else {
-      data = TemplateURLPrepopulateData::GetPrepopulatedEngine(
-          prefs, search_engine_choice_service,
-          *search_provider.prepopulated_id);
-    }
+    data = prepopulate_data_resolver.GetEngineFromFullList(
+        *search_provider.prepopulated_id);
 
     if (data) {
       // We need to override the prepopulate_id and Sync GUID of the generated
@@ -141,21 +135,13 @@ std::unique_ptr<TemplateURLData> ConvertSearchProvider(
 
 }  // namespace
 
-// Kill-switch for the updated logic to fetch the prepopulated search engine
-// for settings override.
-// Exposed for tests. To be removed in M122.
-BASE_FEATURE(kPrepopulatedSearchEngineOverrideRollout,
-             "PrepopulatedSearchEngineOverrideRollout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 SettingsOverridesAPI::SettingsOverridesAPI(content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
       url_service_(TemplateURLServiceFactory::GetForProfile(profile_)) {
   extension_registry_observation_.Observe(ExtensionRegistry::Get(profile_));
 }
 
-SettingsOverridesAPI::~SettingsOverridesAPI() {
-}
+SettingsOverridesAPI::~SettingsOverridesAPI() = default;
 
 BrowserContextKeyedAPIFactory<SettingsOverridesAPI>*
 SettingsOverridesAPI::GetFactoryInstance() {
@@ -267,12 +253,12 @@ void SettingsOverridesAPI::RegisterSearchProvider(
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile_);
   std::string install_parameter = GetInstallParam(prefs, extension->id());
   std::unique_ptr<TemplateURLData> data = ConvertSearchProvider(
-      profile_->GetPrefs(),
-      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_),
+      CHECK_DEREF(
+          TemplateURLPrepopulateData::ResolverFactory::GetForProfile(profile_)),
       *settings->search_engine, install_parameter);
   auto turl = std::make_unique<TemplateURL>(
       *data, TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION, extension->id(),
-      prefs->GetLastUpdateTime(extension->id()),
+      GetLastUpdateTime(prefs, extension->id()),
       settings->search_engine->is_default);
 
   url_service_->Add(std::move(turl));

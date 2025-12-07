@@ -33,6 +33,7 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/services/app_service/public/cpp/app_shortcut_image.h"
+#include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -158,9 +159,7 @@ ui::ColorId GetLabelColorId(SearchResultView::LabelType label_type,
 
   switch (color_tag) {
     case SearchResult::Tag::NONE:
-      ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::DIM:
-      ABSL_FALLTHROUGH_INTENDED;
     case SearchResult::Tag::MATCH:
       switch (label_type) {
         case SearchResultView::LabelType::kBigTitle:
@@ -206,7 +205,7 @@ std::optional<TypographyToken> GetTypographyToken(
       if (is_inline_detail) {
         return TypographyToken::kCrosBody1;
       }
-      ABSL_FALLTHROUGH_INTENDED;
+      [[fallthrough]];
     case SearchResultView::LabelType::kKeyboardShortcut:
       return TypographyToken::kCrosAnnotation1;
   }
@@ -242,7 +241,7 @@ views::Label* SetupChildLabelView(
   label->GetViewAccessibility().SetIsIgnored(true);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetEnabledColorId(color_id);
+  label->SetEnabledColor(color_id);
   label->SetVisible(false);
   label->SetElideBehavior(overflow_behavior ==
                                   SearchResultTextItem::OverflowBehavior::kElide
@@ -385,7 +384,6 @@ class MaskedImageView : public views::ImageView {
  protected:
   // views::ImageView:
   void OnPaint(gfx::Canvas* canvas) override {
-    SkPath mask;
     const gfx::Rect& bounds = GetImageBounds();
 
     switch (shape_) {
@@ -394,17 +392,19 @@ class MaskedImageView : public views::ImageView {
         // Noop.
         break;
       case SearchResult::IconShape::kRoundedRectangle:
-        mask.addRoundRect(gfx::RectToSkRect(bounds), kImageIconCornerRadius,
-                          kImageIconCornerRadius);
-        canvas->ClipPath(mask, true);
+        canvas->ClipPath(
+            SkPath::RRect(gfx::RectToSkRect(bounds), kImageIconCornerRadius,
+                          kImageIconCornerRadius),
+            /*do_anti_alias=*/true);
         break;
       case SearchResult::IconShape::kCircle:
         // Calculate the radius of the circle based on the minimum of width and
         // height in case the icon isn't square.
-        mask.addCircle(bounds.x() + bounds.width() / 2,
-                       bounds.y() + bounds.height() / 2,
-                       std::min(bounds.width(), bounds.height()) / 2);
-        canvas->ClipPath(mask, true);
+        canvas->ClipPath(
+            SkPath::Circle(bounds.x() + bounds.width() / 2,
+                           bounds.y() + bounds.height() / 2,
+                           std::min(bounds.width(), bounds.height()) / 2),
+            /*do_anti_alias=*/true);
         break;
     }
 
@@ -617,6 +617,8 @@ SearchResultView::SearchResultView(
   rating_star_ = SetupChildImageView(title_and_details_container_);
   rating_star_->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(0, kSearchRatingStarPadding, 0, 0)));
+  rating_star_->SetImage(ui::ImageModel::FromVectorIcon(
+      kBadgeRatingIcon, kColorAshTextColorSecondary, kSearchRatingStarSize));
 
   keyboard_shortcut_container_ = body_text_container_->AddChildView(
       std::make_unique<views::FlexLayoutView>());
@@ -972,7 +974,8 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
         gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
             kSearchListHostBadgeContainerDimension / 2, background_color,
             std::move(resized_badge_icon_image));
-    badge_icon_view_->SetImage(std::move(badge_icon_with_background));
+    badge_icon_view_->SetImage(
+        ui::ImageModel::FromImageSkia(std::move(badge_icon_with_background)));
   } else {
     // Badge icon that isn't part of App Shortcuts or using background needs
     // to add shadows.
@@ -985,7 +988,8 @@ void SearchResultView::UpdateIconAndBadgeIcon() {
     gfx::ImageSkia badge_icon_with_shadow =
         gfx::ImageSkiaOperations::CreateImageWithDropShadow(
             std::move(resized_badge_icon_image), std::move(shadow_values));
-    badge_icon_view_->SetImage(std::move(badge_icon_with_shadow));
+    badge_icon_view_->SetImage(
+        ui::ImageModel::FromImageSkia(std::move(badge_icon_with_shadow)));
   }
 }
 
@@ -1284,7 +1288,6 @@ gfx::Rect SearchResultView::GetIconBadgeViewBounds(
 }
 
 void SearchResultView::Layout(PassKey) {
-  // TODO(crbug.com/40220083) add test coverage for search result view layout.
   gfx::Rect rect(GetContentsBounds());
   if (rect.IsEmpty()) {
     return;
@@ -1467,9 +1470,6 @@ void SearchResultView::OnMouseExited(const ui::MouseEvent& event) {
 void SearchResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateIconAndBadgeIcon();
-  rating_star_->SetImage(gfx::CreateVectorIcon(
-      kBadgeRatingIcon, kSearchRatingStarSize,
-      GetColorProvider()->GetColor(kColorAshTextColorSecondary)));
   SchedulePaint();
 }
 
@@ -1522,7 +1522,7 @@ void SearchResultView::SetIconImage(const gfx::ImageSkia& source,
   gfx::ImageSkia image(source);
   image = gfx::ImageSkiaOperations::CreateResizedImage(
       source, skia::ImageOperations::RESIZE_BEST, size);
-  icon->SetImage(image);
+  icon->SetImage(ui::ImageModel::FromImageSkia(image));
   icon->SetImageSize(size);
 }
 

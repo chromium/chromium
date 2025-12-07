@@ -1,9 +1,0 @@
-Tests that printing PDF to a tiny page returns error.
-{
-    error : {
-        code : -32602
-        message : invalid print parameters: content area is empty
-    }
-    id : <number>
-    sessionId : <string>
-}

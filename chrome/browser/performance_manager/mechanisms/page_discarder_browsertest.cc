@@ -7,8 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
+#include "base/byte_count.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
@@ -20,7 +19,6 @@
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/performance_manager.h"
-#include "components/performance_manager/test_support/run_in_graph.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -57,36 +55,34 @@ IN_PROC_BROWSER_TEST_P(PageDiscarderBrowserTest, DiscardPageNodes) {
   ASSERT_TRUE(frame_host);
   auto* contents = content::WebContents::FromRenderFrameHost(frame_host);
 
-  uint64_t total = 0;
+  base::ByteCount total;
   base::WeakPtr<PageNode> page_node =
       PerformanceManager::GetPrimaryPageNodeForWebContents(contents);
-  RunInGraph([&](base::OnceClosure quit_closure) {
-    EXPECT_TRUE(page_node);
+  ASSERT_TRUE(page_node);
 
-    // Simulate that there are PMF estimates available for the frames in
-    // this page.
-    GraphOperations::VisitFrameTreePreOrder(
-        page_node.get(), [&total](const FrameNode* frame_node) {
-          total += 1;
-          FrameNodeImpl::FromNode(frame_node)->SetPrivateFootprintKbEstimate(1);
-          return true;
-        });
+  // Simulate that there are PMF estimates available for the frames in
+  // this page.
+  GraphOperations::VisitFrameTreePreOrder(
+      page_node.get(), [&total](const FrameNode* frame_node) {
+        constexpr base::ByteCount kUsage = base::KiB(1);
+        total += kUsage;
+        FrameNodeImpl::FromNode(frame_node)
+            ->SetPrivateFootprintEstimate(kUsage);
+        return true;
+      });
 
-    PageDiscarder discarder;
-    discarder.DiscardPageNodes(
-        {page_node.get()}, discard_reason,
-        base::BindOnce([](const std::vector<PageDiscarder::DiscardEvent>&
-                              discard_events) {
-          EXPECT_EQ(discard_events.size(), 1U);
-        }).Then(std::move(quit_closure)));
-  });
+  PageDiscarder discarder;
+  std::optional<base::ByteCount> estimated_memory_freed_kb =
+      discarder.DiscardPageNode(page_node.get(), discard_reason);
+
+  EXPECT_TRUE(estimated_memory_freed_kb.has_value());
 
   auto* new_contents = browser()->tab_strip_model()->GetWebContentsAt(1);
   EXPECT_TRUE(new_contents->WasDiscarded());
   auto* pre_discard_resource_usage = user_tuning::UserPerformanceTuningManager::
       PreDiscardResourceUsage::FromWebContents(new_contents);
   EXPECT_TRUE(pre_discard_resource_usage);
-  EXPECT_EQ(total, pre_discard_resource_usage->memory_footprint_estimate_kb());
+  EXPECT_EQ(total, pre_discard_resource_usage->memory_footprint_estimate());
 }
 
 }  // namespace performance_manager

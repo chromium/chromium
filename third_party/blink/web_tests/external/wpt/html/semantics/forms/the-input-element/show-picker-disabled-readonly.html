@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta name=timeout content=long>
 <title>Test showPicker() disabled/readonly requirement</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -37,10 +38,12 @@ for (const inputType of inputTypes) {
       const input = document.createElement("input");
       input.setAttribute("type", inputType);
       input.setAttribute("readonly", "");
+      document.body.appendChild(input);
 
       await test_driver.bless('show picker');
       input.showPicker();
       input.blur();
+      input.remove();
 
       assert_false(navigator.userActivation.isActive, 'User activation is consumed for non-readonly showPicker() call');
     }, `input[type=${inputType}] showPicker() doesn't throw when readonly`);

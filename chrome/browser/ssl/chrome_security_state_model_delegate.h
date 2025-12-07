@@ -19,6 +19,10 @@ class ChromeSecurityStateModelDelegate : public SecurityStateModelDelegate {
   // SecurityStateModelDelegate.
   security_state::SecurityLevel GetSecurityLevel(
       content::WebContents* web_contents) const override;
+
+  // SecurityStateModelDelegate.
+  security_state::MaliciousContentStatus GetMaliciousContentStatus(
+      content::WebContents* web_contents) const override;
 };
 
 #endif  // CHROME_BROWSER_SSL_CHROME_SECURITY_STATE_MODEL_DELEGATE_H_

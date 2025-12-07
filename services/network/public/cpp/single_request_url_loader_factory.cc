@@ -19,27 +19,32 @@ class SingleRequestURLLoaderFactory::HandlerState
     : public base::RefCountedThreadSafe<
           SingleRequestURLLoaderFactory::HandlerState> {
  public:
-  explicit HandlerState(RequestHandler handler)
+  explicit HandlerState(FullRequestHandler handler)
       : handler_(std::move(handler)),
         handler_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
   HandlerState(const HandlerState&) = delete;
   HandlerState& operator=(const HandlerState&) = delete;
 
-  void HandleRequest(const ResourceRequest& resource_request,
-                     mojo::PendingReceiver<mojom::URLLoader> loader,
-                     mojo::PendingRemote<mojom::URLLoaderClient> client) {
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const ResourceRequest& request,
+      mojo::PendingRemote<mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
     if (!handler_task_runner_->RunsTasksInCurrentSequence()) {
       handler_task_runner_->PostTask(
           FROM_HERE,
-          base::BindOnce(&HandlerState::HandleRequest, this, resource_request,
-                         std::move(loader), std::move(client)));
+          base::BindOnce(&HandlerState::CreateLoaderAndStart, this,
+                         std::move(loader), request_id, options, request,
+                         std::move(client), traffic_annotation));
       return;
     }
 
     DCHECK(handler_);
-    std::move(handler_).Run(resource_request, std::move(loader),
-                            std::move(client));
+    std::move(handler_).Run(std::move(loader), request_id, options, request,
+                            std::move(client), traffic_annotation);
   }
 
  private:
@@ -53,9 +58,9 @@ class SingleRequestURLLoaderFactory::HandlerState
     }
   }
 
-  static void DropHandlerOnHandlerSequence(RequestHandler handler) {}
+  static void DropHandlerOnHandlerSequence(FullRequestHandler handler) {}
 
-  RequestHandler handler_;
+  FullRequestHandler handler_;
   const scoped_refptr<base::SequencedTaskRunner> handler_task_runner_;
 };
 
@@ -81,7 +86,23 @@ class SingleRequestURLLoaderFactory::PendingFactory
 
 SingleRequestURLLoaderFactory::SingleRequestURLLoaderFactory(
     RequestHandler handler)
-    : state_(base::MakeRefCounted<HandlerState>(std::move(handler))) {}
+    : state_(base::MakeRefCounted<HandlerState>(base::BindOnce(
+          [](RequestHandler handler,
+             mojo::PendingReceiver<network::mojom::URLLoader> loader,
+             int32_t request_id,
+             uint32_t options,
+             const network::ResourceRequest& request,
+             mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+             const net::MutableNetworkTrafficAnnotationTag&
+                 traffic_annotation) {
+            std::move(handler).Run(request, std::move(loader),
+                                   std::move(client));
+          },
+          std::move(handler)))) {}
+
+SingleRequestURLLoaderFactory::SingleRequestURLLoaderFactory(
+    FullRequestHandler full_handler)
+    : state_(base::MakeRefCounted<HandlerState>(std::move(full_handler))) {}
 
 void SingleRequestURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> loader,
@@ -90,7 +111,8 @@ void SingleRequestURLLoaderFactory::CreateLoaderAndStart(
     const ResourceRequest& request,
     mojo::PendingRemote<mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
-  state_->HandleRequest(request, std::move(loader), std::move(client));
+  state_->CreateLoaderAndStart(std::move(loader), request_id, options, request,
+                               std::move(client), traffic_annotation);
 }
 
 void SingleRequestURLLoaderFactory::Clone(

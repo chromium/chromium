@@ -1,0 +1,9 @@
+<Root> [box: 0,0 800x600]
+  <Container> [box: 0,0 800x60]
+    <Container> [box: 0,0 800x60]
+      <Container> [box: 0,0 100x60]
+        <Text> "     ABCDEFGHIJKL" [box: 90,0 10x120]
+        <Container> [outerBox: -10,0 100x10] [visibleBox: 0,0 90x10]
+          <Text> "horizontal" [outerBox: -10,0 100x10] [visibleBox: 0,0 90x10]
+        <Text> "MNOPQRSTU   " [outerBox: -20,0 10x90] [visibleBox: 0,0 0x0]
+

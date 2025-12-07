@@ -9,14 +9,16 @@
 
 #include "base/containers/heap_array.h"
 #include "base/json/json_writer.h"
+#include "base/strings/string_view_util.h"
 #include "base/values.h"
 
 namespace base {
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  if (size < 2)
+  if (size < 2) {
     return 0;
+  }
 
   // SAFETY: LibFuzzer provides a valid data/size pair.
   auto data_span = UNSAFE_BUFFERS(base::span(data, size));
@@ -39,8 +41,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     std::string serialized;
     CHECK(JSONWriter::Write(value, &serialized));
 
-    std::optional<Value> deserialized =
-        JSONReader::Read(std::string_view(serialized));
+    std::optional<Value> deserialized = JSONReader::Read(
+        std::string_view(serialized), JSON_PARSE_CHROMIUM_EXTENSIONS);
     CHECK(deserialized);
     CHECK_EQ(value, deserialized.value());
   }

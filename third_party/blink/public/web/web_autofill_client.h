@@ -49,13 +49,13 @@ class WebAutofillClient {
  public:
   // These methods are called when the users edits a text-field.
   virtual void TextFieldDidEndEditing(const WebInputElement&) {}
-  virtual void TextFieldDidChange(const WebFormControlElement&) {}
+  virtual void TextFieldValueChanged(const WebFormControlElement&) {}
   virtual void TextFieldDidReceiveKeyDown(const WebInputElement&,
                                           const WebKeyboardEvent&) {}
   // Called when a text field is cleared either by simply deleting the text or
   // briefly cleared when the whole text is selected and replaced. The latter
-  // would not be conveyed by `TextFieldDidChange()` and some clients might need
-  // that information.
+  // would not be conveyed by `TextFieldValueChanged()` and some clients might
+  // need that information.
   virtual void TextFieldCleared(const WebFormControlElement&) {}
   // This is called once per-character when a user edits a contenteditable
   // element by typing.
@@ -68,11 +68,10 @@ class WebAutofillClient {
   // Called when the selected option of a <select> control is changed as a
   // result of user activation - see
   // https://html.spec.whatwg.org/multipage/interaction.html#tracking-user-activation
-  virtual void SelectControlDidChange(const WebFormControlElement&) {}
+  virtual void SelectControlSelectionChanged(const WebFormControlElement&) {}
 
   // Called when the options of a select control change.
-  virtual void SelectOrSelectListFieldOptionsChanged(
-      const WebFormControlElement&) {}
+  virtual void SelectFieldOptionsChanged(const WebFormControlElement&) {}
 
   // Called when the user interacts with the page after a load.
   virtual void UserGestureObserved() {}
@@ -96,14 +95,12 @@ class WebAutofillClient {
 
   virtual void DidReceiveLeftMouseDownOrGestureTapInNode(const WebNode&) {}
 
-  // Asks the client whether to suppess the keyboard for the given control
-  // element.
-  virtual bool ShouldSuppressKeyboard(const WebFormControlElement&) {
-    return false;
-  }
-
   // Called when the given form element is reset.
   virtual void FormElementReset(const WebFormElement&) {}
+
+  // Called when DevTools is connected or disconnect to the frame.
+  // The document is not fired again when the document changes.
+  virtual void OnDevToolsSessionConnectionChanged(bool attached) {}
 
   // Determines the form-related issues in the WebAutofillClient's document and
   // adds them to the associated frame's DevTools issues.

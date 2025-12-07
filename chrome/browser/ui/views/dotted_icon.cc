@@ -6,14 +6,13 @@
 
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace {
-
-constexpr float kRingStrokeWidthDp = 1.5;
 
 // Ring Segments
 constexpr int kNumSmallSegments = 4;
@@ -33,15 +32,18 @@ void PaintArc(gfx::Canvas* canvas,
               const gfx::Rect& bounds,
               const SkScalar start_angle,
               const SkScalar sweep,
-              const cc::PaintFlags& flags) {
+              const cc::PaintFlags& flags,
+              float stroke_width) {
+  CHECK_GT(stroke_width, 0);
   gfx::RectF oval(bounds);
   // Inset by half the stroke width to make sure the whole arc is inside
   // the visible rect.
-  const double inset = kRingStrokeWidthDp / 2.0;
+  const double inset = stroke_width / 2.0;
   oval.Inset(inset);
 
-  SkPath path;
-  path.arcTo(RectFToSkRect(oval), start_angle, sweep, true);
+  const SkPath path = SkPathBuilder()
+                          .arcTo(RectFToSkRect(oval), start_angle, sweep, true)
+                          .detach();
   canvas->DrawPath(path, flags);
 }
 
@@ -50,14 +52,15 @@ void PaintArc(gfx::Canvas* canvas,
 void PaintRingDottedPath(gfx::Canvas* canvas,
                          const gfx::Rect& ring_bounds,
                          SkColor ring_color,
-                         double opacity_ratio) {
+                         double opacity_ratio,
+                         float stroke_width) {
   opacity_ratio = std::clamp(opacity_ratio, 0.0, 1.0);
 
   // Common flags for both parts of the ring.
   cc::PaintFlags flags;
   flags.setColor(ring_color);
   flags.setStrokeCap(cc::PaintFlags::kRound_Cap);
-  flags.setStrokeWidth(kRingStrokeWidthDp);
+  flags.setStrokeWidth(stroke_width);
   flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setAntiAlias(true);
   const float ring_color_opacity =
@@ -69,7 +72,7 @@ void PaintRingDottedPath(gfx::Canvas* canvas,
   // Draw the large segment centered on the left side.
   const int large_segment_start_angle = 180 - kLargeSegmentSweepAngle / 2;
   PaintArc(canvas, ring_bounds, large_segment_start_angle,
-           kLargeSegmentSweepAngle, flags);
+           kLargeSegmentSweepAngle, flags, stroke_width);
 
   // Draw the small segments evenly spaced around the rest of the ring.
   const int small_segments_start_angle =
@@ -79,6 +82,6 @@ void PaintRingDottedPath(gfx::Canvas* canvas,
         small_segments_start_angle +
         (i * (kSmallSegmentSweepAngle + kSpacingSweepAngle));
     PaintArc(canvas, ring_bounds, start_angle % 360, kSmallSegmentSweepAngle,
-             flags);
+             flags, stroke_width);
   }
 }

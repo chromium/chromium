@@ -66,10 +66,6 @@ class BorderImageLengthBox {
            top_ == other.top_ && bottom_ == other.bottom_;
   }
 
-  bool operator!=(const BorderImageLengthBox& other) const {
-    return !(*this == other);
-  }
-
   bool NonZero() const {
     return !(left_.IsZero() && right_.IsZero() && top_.IsZero() &&
              bottom_.IsZero());

@@ -10,6 +10,8 @@
 
 #include "base/component_export.h"
 
+class GaiaId;
+
 namespace account_manager {
 
 // Type of an account, based on the authentication backend of the account.
@@ -18,25 +20,25 @@ enum class AccountType : int {
   // Gaia account (aka Google account) - including enterprise and consumer
   // accounts.
   kGaia = 1,
-  // Microsoft Active Directory accounts.
-  kActiveDirectory = 2,
+  // Value 2 was used for the deprecated `kActiveDirectory` account type.
 };
 
 // Uniquely identifies an account.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountKey {
  public:
+  // Convenience factory function to create an instance for
+  // `AccountType::kGaia`.
+  static AccountKey FromGaiaId(const GaiaId& gaia_id);
+
   // `id` cannot be empty.
   AccountKey(const std::string& id, AccountType type);
 
-  // |id| is obfuscated GAIA id for |AccountType::kGaia|, and cannot be empty.
-  // |id| is object GUID (|AccountId::GetObjGuid|) for
-  // |AccountType::kActiveDirectory|.
+  // `id` is obfuscated GAIA id for `AccountType::kGaia`, and cannot be empty.
   const std::string& id() const { return id_; }
   AccountType account_type() const { return account_type_; }
 
-  bool operator<(const AccountKey& other) const;
-  bool operator==(const AccountKey& other) const;
-  bool operator!=(const AccountKey& other) const;
+  friend bool operator==(const AccountKey&, const AccountKey&) = default;
+  friend auto operator<=>(const AccountKey&, const AccountKey&) = default;
 
  private:
   // Fields are not const to allow assignment operator.
@@ -52,9 +54,8 @@ struct COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) Account {
   // The raw, un-canonicalized email id for this account.
   std::string raw_email;
 
-  bool operator<(const Account& other) const;
-  bool operator==(const Account& other) const;
-  bool operator!=(const Account& other) const;
+  friend bool operator==(const Account&, const Account&) = default;
+  friend auto operator<=>(const Account&, const Account&) = default;
 };
 
 // For logging.

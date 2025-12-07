@@ -44,7 +44,7 @@ CrashUploadListAndroid::CrashUploadListAndroid(
     const base::FilePath& upload_log_path)
     : TextLogUploadList(upload_log_path) {}
 
-CrashUploadListAndroid::~CrashUploadListAndroid() {}
+CrashUploadListAndroid::~CrashUploadListAndroid() = default;
 
 // static
 bool CrashUploadListAndroid::BrowserCrashMetricsInitialized() {
@@ -64,17 +64,15 @@ CrashUploadListAndroid::LoadUploadList() {
   LoadUnsuccessfulUploadList(&uploads);
 
   auto complete_uploads = TextLogUploadList::LoadUploadList();
-  for (auto& info : complete_uploads) {
-    uploads.push_back(std::move(info));
-  }
+  uploads.insert(uploads.end(),
+                 std::make_move_iterator(complete_uploads.begin()),
+                 std::make_move_iterator(complete_uploads.end()));
   return uploads;
 }
 
 void CrashUploadListAndroid::RequestSingleUpload(const std::string& local_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_local_id =
-      base::android::ConvertUTF8ToJavaString(env, local_id);
-  Java_MinidumpUploadServiceImpl_tryUploadCrashDumpWithLocalId(env, j_local_id);
+  Java_MinidumpUploadServiceImpl_tryUploadCrashDumpWithLocalId(env, local_id);
 }
 
 void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
@@ -111,8 +109,8 @@ void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
       continue;
     }
 
-    int64_t file_size = 0;
-    if (!base::GetFileSize(file, &file_size)) {
+    std::optional<int64_t> file_size = base::GetFileSize(file);
+    if (!file_size.has_value()) {
       RecordUnsuccessfulUploadListState(
           UnsuccessfulUploadListState::FAILED_TO_LOAD_FILE_SIZE);
       continue;
@@ -138,6 +136,8 @@ void CrashUploadListAndroid::LoadUnsuccessfulUploadList(
         UnsuccessfulUploadListState::ADDING_AN_UPLOAD_ENTRY);
     id = id.substr(pos + 1);
     uploads->push_back(std::make_unique<UploadList::UploadInfo>(
-        id, info.creation_time, upload_state, file_size));
+        id, info.creation_time, upload_state, file_size.value()));
   }
 }
+
+DEFINE_JNI(MinidumpUploadServiceImpl)

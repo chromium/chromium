@@ -29,7 +29,7 @@ build_webui("build") {
     "text_group_button.ts",
   ]
 
-  non_web_component_files = [
+  ts_files = [
     "constants.ts",
     "emoji_picker.ts",
     "emoji_picker_api_proxy.ts",
@@ -51,6 +51,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/components/emoji/emoji_search.mojom-webui.ts",
+    "$root_gen_dir/chromeos/ash/components/emoji/tenor_types.mojom-webui.ts",
   ]
 
   ts_composite = true

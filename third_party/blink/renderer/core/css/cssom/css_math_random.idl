@@ -1,0 +1,15 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Represents CSS random() function.
+[
+  Exposed=(Window,LayoutWorklet,PaintWorklet),
+  RuntimeEnabled=CSSRandomFunction
+] interface CSSMathRandom : CSSMathValue {
+  [RaisesException] constructor(double baseValue, CSSNumberish min, CSSNumberish max, optional CSSNumberish? step = null);
+  readonly attribute double baseValue;
+  readonly attribute CSSNumericValue min;
+  readonly attribute CSSNumericValue max;
+  readonly attribute CSSNumericValue? step;
+};

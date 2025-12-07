@@ -1,0 +1,75 @@
+# These tests rely on LayerTreeHostImpl to produce CompositorFrames, which it
+# doesn't do in TreesInViz mode.
+-CommitToPendingTreeLayerTreeHostImplTest.FarAwayQuadsDontNeedAA
+-LayerTreeHostImplViewportCoveredTest.ActiveTreeGrowViewportInvalid
+-LayerTreeHostImplViewportCoveredTest.ActiveTreeShrinkViewportInvalid
+-LayerTreeHostImplViewportCoveredTest.ViewportCovered
+-LayerTreeHostImplViewportCoveredTest.ViewportCoveredScaled
+# These tests use FakeLayerTreeFrameSink properties that are not set in TreesInViz.
+-CommitToPendingTreeLayerTreeHostImplTest.CompositorFrameMetadataFrameIntervalInputs
+-CommitToPendingTreeLayerTreeHostImplTest.LatencyInfoPassedToCompositorFrameMetadata
+
+# These tests directly append quads to FrameData, which isn't
+# a meaningful test for TreesInViz mode.
+-LayerTreeHostTestSubmitFrameResources.RunMultiThread_DelegatingRenderer
+-LayerTreeHostTestSubmitFrameResources.RunSingleThread_DelegatingRenderer
+
+# TODO(crbug.com/406251942) Investigate PictureLayerTilingSet::CleanUpTilings path
+-LayerTreeHostPictureTestForceRecalculateScales.RunSingleThread_DelegatingRenderer
+-LayerTreeHostTestDamageWithScale.RunMultiThread_DelegatingRenderer
+-LayerTreeHostTestDamageWithScale.RunSingleThread_DelegatingRenderer
+
+# TODO(crbug.com/448874765): Fix RunMultiThread_DelegatingRenderer unittests
+-LayerTreeHostAnimationTestNoDamageAnimation.RunMultiThread_DelegatingRenderer
+-LayerTreeHostTestVideoLayerInvalidate.RunSingleThread_DelegatingRenderer
+-LayerTreeHostContextTestDontUseLostResources.RunSingleThread_DelegatingRenderer
+-LayerTreeHostVideoTestSetNeedsDisplay.RunSingleThread_DelegatingRenderer
+-LayerTreeHostContextTestDontUseLostResources.RunMultiThread_DelegatingRenderer
+-LayerTreeHostVideoTestSetNeedsDisplay.RunMultiThread_DelegatingRenderer
+-LayerTreeHostTestImageAnimationSynchronousScheduling.RunMultiThread_DelegatingRenderer
+-LayerTreeHostTestVideoLayerInvalidate.RunMultiThread_DelegatingRenderer
+-SoftwareTextureLayerLoseFrameSinkTest.RunMultiThread_DelegatingRenderer
+-TextureLayerChangeInvisibleMailboxTest.RunMultiThread_DelegatingRenderer
+-TextureLayerImplWithMailboxThreadedCallback.RunMultiThread_DelegatingRenderer
+-TextureLayerNoExtraCommitForMailboxTest.RunMultiThread_DelegatingRenderer
+
+# TODO(crbug.com/448683984) These tests fails with TreesInViz because the
+# tiling removal optimization during pinch zoom is disabled which might impact
+# the test expectations. Note that the test
+# LegacySWPictureLayerImplTest.SnappedTilingDuringZoom fails both with and
+# without TreesInViz enabled which indicates that test expectation depends on
+# tiling removal optimizations
+-LayerTreeHostTestCrispUpAfterPinchEnds.RunMultiThread_DelegatingRenderer
+-LegacySWPictureLayerImplTest.SnappedTilingDuringZoom
+
+# TODO(crbug.com/438242521) These tests are failing in TreesInViz due to
+# mismatch in shared image count expectations. This is because when Renderer's
+# visibility is set to False, it evicts all the UI resources. It triggers UI
+# resource deletion request which is sent to Viz. Renderer does not delete the
+# UI resource until it gets ack back from the Viz on the deletion request it
+# has sent. This typically causes a frame delay in general on when the Renderer
+# delete the UI resource compared to non-TreesInViz mode.
+# Note that this test specifically started failing with TreesInViz mode after
+# we made changes to sent no-damage frames to Viz. Since the test had UI
+# resource changes for no-damage frame, Renderer started sending those
+# resources to Viz hence incrementing its export/ref count for those resource.
+# It can not delete those resource now until it gets an ack back from Viz as
+# explained above.
+-UIResourceLostEviction.RunMultiThread_DelegatingRenderer
+-UIResourceLostEviction.RunSingleThread_DelegatingRenderer
+
+# TODO(crbug.com/438242521): This test is failing for similar reasons as above
+# where a no damage frame is present with UI resource changes and hence is sent
+# to Viz resulting in incrementing the export count on resouce in Renderer.
+# When Renderer deletes its UI resource via DeleteUIResource(), it sends an IPC
+# to Viz also for the resource deletion. Renderer can not immediately delete
+# its UI resource until the export count of resource is 0 which only happens
+# when Viz sends an ack back for the resource deletion request which Renderer
+# sends. Due to this, test expectations on shared image count can not be met at
+# the intended frame and might happen at later frames.
+-LayerTreeHostTestUIResource.RunMultiThread_DelegatingRenderer
+
+# TODO(crbug.com/383016428): Triage failures
+-TextureLayerChangeInvisibleMailboxTest.RunSingleThread_DelegatingRenderer
+-TextureLayerImplWithMailboxThreadedCallback.RunSingleThread_DelegatingRenderer
+-TextureLayerNoExtraCommitForMailboxTest.RunSingleThread_DelegatingRenderer

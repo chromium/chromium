@@ -1,0 +1,41 @@
+<!--
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:role*
+-->
+<html>
+<head>
+<style>
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
+  .viewport-section {
+    height: 100vh; /* Make each section the height of the viewport */
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Center content horizontally */
+    align-items: center; /* Center content vertically */
+    font-size: 2em;
+  }
+</style>
+</head>
+<body>
+
+  <div class="viewport-section">
+    This content is visible on-screen
+  </div>
+
+  <div class="viewport-section">
+    This content is not visible on-screen, but will be included in the AXTree because it is one screen down the view port.
+  </div>
+
+  <div class="viewport-section">
+    <p>this content is included via the extra nodes rule</p>
+    <p> this content will not be included, unless scrolled to. </p>
+  </div>
+
+</body>
+</html>

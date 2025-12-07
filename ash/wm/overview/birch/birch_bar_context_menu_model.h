@@ -6,7 +6,7 @@
 #define ASH_WM_OVERVIEW_BIRCH_BIRCH_BAR_CONTEXT_MENU_MODEL_H_
 
 #include "ash/ash_export.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace ash {
 
@@ -22,6 +22,7 @@ class ASH_EXPORT BirchBarContextMenuModel : public ui::SimpleMenuModel {
   // The commands for the birch bar menu items.
   enum class ASH_EXPORT CommandId {
     kShowSuggestions = 0,   // Show/hide the birch bar with a switch button.
+    kCoralSuggestions,      // Show/hide coral suggestions.
     kWeatherSuggestions,    // Show/hide the weather related suggestions.
     kCalendarSuggestions,   // Show/hide the Calendar related suggestions.
     kDriveSuggestions,      // Show/hide the Drive related suggestions.

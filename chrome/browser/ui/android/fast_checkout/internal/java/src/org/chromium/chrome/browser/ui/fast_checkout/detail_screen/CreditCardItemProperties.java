@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.fast_checkout.detail_screen;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.fast_checkout.data.FastCheckoutCreditCard;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -11,6 +12,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 
 /** Model for an {@link FastCheckoutCreditCard} entry in the credit card screen sheet. */
+@NullMarked
 public class CreditCardItemProperties {
     /** The credit card represented by this entry. */
     public static final ReadableObjectPropertyKey<FastCheckoutCreditCard> CREDIT_CARD =

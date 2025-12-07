@@ -10,7 +10,6 @@
 #include <string>
 #include <utility>
 
-#include "base/atomicops.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -47,8 +46,7 @@ content::BrowserThread::ID MapWebToBrowserID(WebThread::ID identifier) {
   if (identifier == WebThread::IO) {
     return content::BrowserThread::IO;
   }
-  NOTREACHED_IN_MIGRATION();
-  return content::BrowserThread::UI;  // default?
+  NOTREACHED();
 }
 
 WebThread::ID MapBrowserToWebID(content::BrowserThread::ID identifier) {

@@ -1,0 +1,71 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("network") {
+  sources = [
+    "network_bandwidth_sampler.cc",
+    "network_bandwidth_sampler.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:constants",
+    "//components/prefs",
+    "//components/reporting/metrics:metrics_data_collection",
+    "//components/reporting/proto:metric_data_proto",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "network_bandwidth_sampler_unittest.cc" ]
+
+  deps = [
+    ":network",
+    "//base/test:test_support",
+    "//chrome/browser:browser_process",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "network_bandwidth_sampler_ash_browsertest.cc" ]
+
+  deps = [
+    ":network",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/chromeos/reporting",
+    "//chromeos/ash/components/policy/device_policy:test_support",
+    "//chromeos/ash/components/settings",
+    "//chromeos/dbus/missive:test_support",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

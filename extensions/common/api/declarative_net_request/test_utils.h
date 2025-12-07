@@ -58,6 +58,8 @@ struct TestRuleCondition : public DictionarySource {
   std::optional<std::vector<std::string>> excluded_initiator_domains;
   std::optional<std::vector<std::string>> request_domains;
   std::optional<std::vector<std::string>> excluded_request_domains;
+  std::optional<std::vector<std::string>> top_domains;
+  std::optional<std::vector<std::string>> excluded_top_domains;
   std::optional<std::vector<std::string>> request_methods;
   std::optional<std::vector<std::string>> excluded_request_methods;
   std::optional<std::vector<std::string>> resource_types;
@@ -210,6 +212,20 @@ enum ConfigFlag {
 
   // Whether the extension has an manifest sandbox page entry.
   kConfig_HasManifestSandbox = 1 << 7,
+
+  // Whether the extension has a manifest action (popup) entry. This is needed
+  // to activate chrome.action API.
+  kConfig_HasAction = 1 << 8,
+
+  // Whether the "webRequest" permission should be included.
+  kConfig_HasWebRequestPermission = 1 << 9,
+
+  // Whether the "webRequestBlocking" permission should be included. Requires
+  // MV2 flag below.
+  kConfig_DEPRECATED_HasWebRequestBlockingPermission = 1 << 10,
+
+  // Whether to use deprecated Manifest Version 2.
+  kConfig_DEPRECATED_ManifestVersion2 = 1 << 11,
 };
 
 // Describes a single extension ruleset.
@@ -248,9 +264,9 @@ struct TestRulesetInfo {
 };
 
 // Helper to build an extension manifest which uses the
-// kDeclarativeNetRequestKey manifest key. |hosts| specifies the host
-// permissions to grant. |flags| is a bitmask of ConfigFlag to configure the
-// extension. |ruleset_info| specifies the static rulesets for the extension.
+// kDeclarativeNetRequestKey manifest key. `hosts` specifies the host
+// permissions to grant. `flags` is a bitmask of ConfigFlag to configure the
+// extension. `ruleset_info` specifies the static rulesets for the extension.
 base::Value::Dict CreateManifest(
     const std::vector<TestRulesetInfo>& ruleset_info,
     const std::vector<std::string>& hosts = {},
@@ -263,9 +279,9 @@ base::Value::List ToListValue(const std::vector<std::string>& vec);
 // Returns a base::Value::List corresponding to a vector of TestRules.
 base::Value::List ToListValue(const std::vector<TestRule>& rules);
 
-// Writes the rulesets specified in |ruleset_info| in the given |extension_dir|
-// together with the manifest file. |hosts| specifies the host permissions, the
-// extensions should have. |flags| is a bitmask of ConfigFlag to configure the
+// Writes the rulesets specified in `ruleset_info` in the given `extension_dir`
+// together with the manifest file. `hosts` specifies the host permissions, the
+// extensions should have. `flags` is a bitmask of ConfigFlag to configure the
 // extension.
 void WriteManifestAndRulesets(
     const base::FilePath& extension_dir,

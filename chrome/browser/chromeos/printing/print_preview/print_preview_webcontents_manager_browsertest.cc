@@ -20,7 +20,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/print_preview_cros.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -51,35 +50,15 @@ class PrintPreviewWebContentsManagerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    if (!IsServiceAvailable()) {
-      return;
-    }
-#endif
-
     webcontents_manager_.Initialize();
     scoped_print_preview_web_contents_manager_ =
         std::make_unique<ScopedPrintPreviewWebContentsManagerForTesting>(
             &webcontents_manager_);
 
-// Replace the production PrintPreviewCrosDelegate with a mock for testing
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    webcontents_manager_.BindPrintPreviewCrosDelegateForTesting(
-        receiver_.BindNewPipeAndPassRemote());
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+    // Replace the production PrintPreviewCrosDelegate with a mock for testing.
     webcontents_manager_.SetPrintPreviewCrosDelegateForTesting(
         &browser_delegate_);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool IsServiceAvailable() const {
-    chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-    return lacros_service &&
-           lacros_service
-               ->IsAvailable<crosapi::mojom::PrintPreviewCrosDelegate>();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Create a new tab in the browser, which also creates a new webcontent.
   void CreateNewTab() {
@@ -131,14 +110,6 @@ class PrintPreviewWebContentsManagerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewWebContentsManagerBrowserTest,
                        RequestAndClosePreview) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If `PrintPreviewCrosDelegate` interface is not available on ash-chrome,
-  // this test suite will no-op.
-  if (!IsServiceAvailable()) {
-    GTEST_SKIP();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   const auto expected_token = base::UnguessableToken::Create();
   CreateNewDialog(expected_token);
 
@@ -160,14 +131,6 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewWebContentsManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PrintPreviewWebContentsManagerBrowserTest,
                        HandleCloseDialog) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If `PrintPreviewCrosDelegate` interface is not available on ash-chrome,
-  // this test suite will no-op.
-  if (!IsServiceAvailable()) {
-    GTEST_SKIP();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   const auto expected_token = base::UnguessableToken::Create();
   CreateNewDialog(expected_token);
 

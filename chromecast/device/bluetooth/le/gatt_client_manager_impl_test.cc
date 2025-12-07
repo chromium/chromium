@@ -4,6 +4,7 @@
 
 #include "chromecast/device/bluetooth/le/gatt_client_manager_impl.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_type.h"
@@ -1188,11 +1189,11 @@ TEST_F(GattClientManagerTest, WriteType) {
     ASSERT_TRUE(characteristics[i]);
     auto* characteristic =
         static_cast<RemoteCharacteristicImpl*>(characteristics[i].get());
-    EXPECT_CALL(
-        *gatt_client_,
-        WriteCharacteristic(kTestAddr1, characteristic->characteristic(),
-                            bluetooth_v2_shlib::Gatt::Client::AUTH_REQ_NONE,
-                            kWriteTypes[i], kTestData1))
+    UNSAFE_TODO(EXPECT_CALL(*gatt_client_,
+                            WriteCharacteristic(
+                                kTestAddr1, characteristic->characteristic(),
+                                bluetooth_v2_shlib::Gatt::Client::AUTH_REQ_NONE,
+                                kWriteTypes[i], kTestData1)))
         .WillOnce(Return(true));
 
     base::MockCallback<RemoteCharacteristic::StatusCallback> write_cb;

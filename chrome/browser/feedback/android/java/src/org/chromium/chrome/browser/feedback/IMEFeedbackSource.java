@@ -6,24 +6,25 @@ package org.chromium.chrome.browser.feedback;
 
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.Pair;
 
-import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.util.Map;
 
 /** Grabs feedback about the default IME input method. */
+@NullMarked
 public class IMEFeedbackSource implements FeedbackSource {
     IMEFeedbackSource() {}
 
     @Override
-    public Map<String, String> getFeedback() {
+    public @Nullable Map<String, String> getFeedback() {
         String imePackage =
                 Settings.Secure.getString(
                         ContextUtils.getApplicationContext().getContentResolver(),
                         Settings.Secure.DEFAULT_INPUT_METHOD);
         if (TextUtils.isEmpty(imePackage)) return null;
-        return CollectionUtil.newHashMap(Pair.create("Default IME", imePackage));
+        return Map.of("Default IME", imePackage);
     }
 }

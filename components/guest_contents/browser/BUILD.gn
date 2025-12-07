@@ -1,0 +1,59 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//components/guest_contents/common/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enable_guest_contents)
+
+static_library("browser") {
+  sources = [
+    "guest_contents_handle.cc",
+    "guest_contents_handle.h",
+    "guest_contents_host_impl.cc",
+    "guest_contents_host_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/guest_contents/common:mojom",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "guest_contents_handle_unittest.cc",
+    "guest_contents_host_impl_unittest.cc",
+  ]
+
+  public_deps = [ "//content/test:test_support" ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "guest_contents_security_browsertest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base/test:test_support",
+    "//components/guest_contents/common:mojom",
+    "//components/network_session_configurator/common",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+}

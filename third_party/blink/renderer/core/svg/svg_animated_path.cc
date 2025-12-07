@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_path.h"
 
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/svg/svg_path_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
@@ -45,11 +46,18 @@ SVGAnimatedPath::SVGAnimatedPath(SVGElement* context_element,
 
 SVGAnimatedPath::~SVGAnimatedPath() = default;
 
-const CSSValue& SVGAnimatedPath::CssValue() const {
-  const cssvalue::CSSPathValue& path_value = CurrentValue()->PathValue();
+const CSSValue* SVGAnimatedPath::CssValue() const {
+  DCHECK(HasPresentationAttributeMapping());
+  const SVGAnimatedPath* path = this;
+  // If this is a <use> instance, return the referenced path to maximize
+  // geometry sharing.
+  if (const SVGElement* element = ContextElement()->CorrespondingElement()) {
+    path = To<SVGPathElement>(element)->GetPath();
+  }
+  const cssvalue::CSSPathValue& path_value = path->CurrentValue()->PathValue();
   if (path_value.GetStylePath()->ByteStream().IsEmpty())
-    return *CSSIdentifierValue::Create(CSSValueID::kNone);
-  return path_value;
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  return &path_value;
 }
 
 }  // namespace blink

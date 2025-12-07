@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "chrome/browser/ash/login/hwid_checker.h"
 
@@ -167,9 +163,8 @@ bool IsMachineHWIDCorrect() {
       return false;
     if (check_result == "success")
       return true;
-    NOTREACHED_IN_MIGRATION()
-        << "Wrong " << switches::kForceHWIDCheckResultForTest
-        << "value: " << check_result;
+    NOTREACHED() << "Wrong " << switches::kForceHWIDCheckResultForTest
+                 << "value: " << check_result;
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (cmd_line->HasSwitch(::switches::kTestType))

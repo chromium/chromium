@@ -1,0 +1,123 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//pdf/features.gni")
+
+source_set("contextual_cueing") {
+  sources = [
+    "caching_zero_state_suggestions_manager.h",
+    "contextual_cueing_enums.h",
+    "contextual_cueing_features.h",
+    "contextual_cueing_helper.h",
+    "contextual_cueing_prefs.h",
+    "contextual_cueing_service_factory.h",
+    "nudge_cap_tracker.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/optimization_guide/core",
+    "//components/prefs",
+    "//content/public/browser",
+  ]
+  deps = [ "//chrome/common:buildflags" ]
+}
+
+source_set("impl") {
+  sources = [
+    "contextual_cueing_features.cc",
+    "contextual_cueing_page_data.cc",
+    "contextual_cueing_page_data.h",
+    "contextual_cueing_prefs.cc",
+    "nudge_cap_tracker.cc",
+    "zero_state_suggestions_page_data.cc",
+    "zero_state_suggestions_page_data.h",
+    "zero_state_suggestions_request.cc",
+    "zero_state_suggestions_request.h",
+  ]
+  deps = [
+    "//chrome/browser:browser_process",
+    "//chrome/browser/contextual_cueing",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//components/content_extraction/content/browser",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/content/browser",
+    "//components/optimization_guide/content/browser:page_context_eligibility",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/pdf/common:constants",
+    "//components/prefs",
+    "//components/variations/service",
+    "//pdf:buildflags",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//url",
+  ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/actor",
+      "//chrome/browser/glic",
+    ]
+  }
+  if (!is_android) {
+    deps += [ "//chrome/browser/contextual_tasks:ui" ]
+  }
+  if (enable_pdf) {
+    deps += [ "//components/pdf/browser" ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_contextual_cueing_service.cc",
+    "mock_contextual_cueing_service.h",
+  ]
+  deps = [
+    ":contextual_cueing",
+    "//chrome/test:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "caching_zero_state_suggestions_manager_unittest.cc",
+    "contextual_cueing_helper_unittest.cc",
+    "contextual_cueing_page_data_unittest.cc",
+    "contextual_cueing_service_unittest.cc",
+    "nudge_cap_tracker_unittest.cc",
+  ]
+  deps = [
+    ":contextual_cueing",
+    ":impl",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser:global_features",
+    "//chrome/browser/content_extraction",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:buildflags",
+    "//chrome/test:test_support",
+    "//components/sync_preferences:test_support",
+    "//pdf:buildflags",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  if (enable_glic) {
+    deps += [
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
+    ]
+  }
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/test:test_support" ]
+  }
+}

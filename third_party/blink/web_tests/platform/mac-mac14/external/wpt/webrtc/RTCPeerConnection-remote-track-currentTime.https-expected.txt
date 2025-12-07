@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] currentTime advances for receive audio track of inactive sender
+  assert_unreached: Timed out waiting for timeupdate Reached unreachable code
+[FAIL] currentTime advances for receive video track of inactive sender
+  assert_unreached: Timed out waiting for timeupdate Reached unreachable code
+Harness: the test ran to completion.
+

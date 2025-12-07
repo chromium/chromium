@@ -24,6 +24,10 @@ mojom("mojom") {
           cpp = "::metrics::SystemProfileProto_AntiVirusProduct"
         },
         {
+          mojom = "chrome.mojom.TpmIdentifier"
+          cpp = "::metrics::SystemProfileProto_TpmIdentifier"
+        },
+        {
           mojom = "chrome.mojom.CertificateType"
           cpp = "::CertificateInfo::Type"
         },

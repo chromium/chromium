@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -10,7 +12,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
@@ -18,6 +19,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/test_helper.h"
 #include "components/user_manager/user.h"
 
 namespace ash {
@@ -30,12 +32,12 @@ const char kTestAccountEmail[] = "test@test.com";
 
 class MultiUserUtilTest : public ChromeAshTestBase {
  public:
-  MultiUserUtilTest() {}
+  MultiUserUtilTest() = default;
 
   MultiUserUtilTest(const MultiUserUtilTest&) = delete;
   MultiUserUtilTest& operator=(const MultiUserUtilTest&) = delete;
 
-  ~MultiUserUtilTest() override {}
+  ~MultiUserUtilTest() override = default;
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
@@ -65,8 +67,8 @@ class MultiUserUtilTest : public ChromeAshTestBase {
     auto* user = fake_user_manager_->AddUser(
         multi_user_util::GetAccountIdFromEmail(account_info.email));
     fake_user_manager_->UserLoggedIn(
-        user->GetAccountId(), user->username_hash(),
-        false /* browser_restart */, false /* is_child */);
+        user->GetAccountId(),
+        user_manager::TestHelper::GetFakeUsernameHash(user->GetAccountId()));
 
     return account_info.account_id;
   }

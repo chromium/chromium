@@ -33,11 +33,10 @@
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/dom/text_diff_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
-#include "third_party/blink/renderer/core/events/mutation_event.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 
 namespace blink {
 
@@ -66,9 +65,9 @@ String CharacterData::substringData(unsigned offset,
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The offset " + String::Number(offset) +
-            " is greater than the node's length (" + String::Number(length()) +
-            ").");
+        StrCat({"The offset ", String::Number(offset),
+                " is greater than the node's length (",
+                String::Number(length()), ")."}));
     return String();
   }
 
@@ -76,7 +75,7 @@ String CharacterData::substringData(unsigned offset,
 }
 
 void CharacterData::ParserAppendData(const String& data) {
-  String new_str = this->data() + data;
+  String new_str = StrCat({this->data(), data});
 
   SetDataAndUpdate(new_str,
                    TextDiffRange::Insert(this->data().length(), data.length()),
@@ -84,7 +83,7 @@ void CharacterData::ParserAppendData(const String& data) {
 }
 
 void CharacterData::appendData(const String& data) {
-  String new_str = this->data() + data;
+  String new_str = StrCat({this->data(), data});
 
   SetDataAndUpdate(new_str,
                    TextDiffRange::Insert(this->data().length(), data.length()),
@@ -99,21 +98,17 @@ void CharacterData::insertData(unsigned offset,
   if (offset > length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The offset " + String::Number(offset) +
-            " is greater than the node's length (" + String::Number(length()) +
-            ").");
+        StrCat({"The offset ", String::Number(offset),
+                " is greater than the node's length (",
+                String::Number(length()), ")."}));
     return;
   }
 
   String current_data = this->data();
-  StringBuilder new_str;
-  new_str.ReserveCapacity(data.length() + current_data.length());
-  new_str.Append(StringView(current_data, 0, offset));
-  new_str.Append(data);
-  new_str.Append(StringView(current_data, offset));
+  String new_str = StrCat({StringView(current_data, 0, offset), data,
+                           StringView(current_data, offset)});
 
-  SetDataAndUpdate(new_str.ReleaseString(),
-                   TextDiffRange::Insert(offset, data.length()),
+  SetDataAndUpdate(new_str, TextDiffRange::Insert(offset, data.length()),
                    kUpdateFromNonParser);
 
   GetDocument().DidInsertText(*this, offset, data.length());
@@ -127,9 +122,9 @@ static bool ValidateOffsetCount(unsigned offset,
   if (offset > length) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
-        "The offset " + String::Number(offset) +
-            " is greater than the node's length (" + String::Number(length) +
-            ").");
+        StrCat({"The offset ", String::Number(offset),
+                " is greater than the node's length (", String::Number(length),
+                ")."}));
     return false;
   }
 
@@ -153,12 +148,9 @@ void CharacterData::deleteData(unsigned offset,
     return;
 
   String current_data = this->data();
-  StringBuilder new_str;
-  new_str.ReserveCapacity(current_data.length() - real_count);
-  new_str.Append(StringView(current_data, 0, offset));
-  new_str.Append(StringView(current_data, offset + real_count));
-  SetDataAndUpdate(new_str.ReleaseString(),
-                   TextDiffRange::Delete(offset, real_count),
+  String new_str = StrCat({StringView(current_data, 0, offset),
+                           StringView(current_data, offset + real_count)});
+  SetDataAndUpdate(new_str, TextDiffRange::Delete(offset, real_count),
                    kUpdateFromNonParser);
 
   GetDocument().DidRemoveText(*this, offset, real_count);
@@ -174,13 +166,10 @@ void CharacterData::replaceData(unsigned offset,
     return;
 
   String current_data = this->data();
-  StringBuilder new_str;
-  new_str.ReserveCapacity(data.length() + current_data.length() - real_count);
-  new_str.Append(StringView(current_data, 0, offset));
-  new_str.Append(data);
-  new_str.Append(StringView(current_data, offset + real_count));
+  String new_str = StrCat({StringView(current_data, 0, offset), data,
+                           StringView(current_data, offset + real_count)});
 
-  SetDataAndUpdate(new_str.ReleaseString(),
+  SetDataAndUpdate(new_str,
                    TextDiffRange::Replace(offset, real_count, data.length()),
                    kUpdateFromNonParser);
 
@@ -243,26 +232,13 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
         .old_text = &old_data};
     parentNode()->ChildrenChanged(change);
   }
-
-  // Skip DOM mutation events if the modification is from parser.
-  // Note that mutation observer events will still fire.
-  // Spec: https://html.spec.whatwg.org/C/#insert-a-character
-  if (source != kUpdateFromParser && !IsInShadowTree() &&
-      !GetDocument().ShouldSuppressMutationEvents()) {
-    if (GetDocument().HasListenerType(
-            Document::kDOMCharacterDataModifiedListener)) {
-      DispatchScopedEvent(*MutationEvent::Create(
-          event_type_names::kDOMCharacterDataModified, Event::Bubbles::kYes,
-          nullptr, old_data, data()));
-    }
-    DispatchSubtreeModifiedEvent();
-  }
   probe::CharacterDataModified(this);
 }
 
 Node* CharacterData::Clone(Document& factory,
                            NodeCloningData& cloning_data,
                            ContainerNode* append_to,
+                           CustomElementRegistry*,
                            ExceptionState& append_exception_state) const {
   CharacterData* clone = CloneWithData(factory, data());
   if (cloning_data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) &&

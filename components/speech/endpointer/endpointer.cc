@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/speech/endpointer/endpointer.h"
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "components/speech/audio_buffer.h"
 
@@ -108,8 +104,9 @@ EpStatus Endpointer::ProcessAudio(const int16_t* audio_data,
   while (sample_index < num_samples) {
     int frame_size = std::min(frame_size_, num_samples - sample_index);
     // Have the endpointer process the frame.
-    energy_endpointer_.ProcessAudioFrame(
-        audio_frame_time_us_, audio_data + sample_index, frame_size, rms_out);
+    energy_endpointer_.ProcessAudioFrame(audio_frame_time_us_,
+                                         UNSAFE_TODO(audio_data + sample_index),
+                                         frame_size, rms_out);
     sample_index += frame_size;
     audio_frame_time_us_ +=
         (frame_size * kMicrosecondsPerSecond) / sample_rate_;

@@ -14,6 +14,7 @@
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/KnownInterceptionDisclosureInfoBar_jni.h"
@@ -65,3 +66,5 @@ KnownInterceptionDisclosureInfoBarDelegate*
 KnownInterceptionDisclosureInfoBar::GetDelegate() {
   return static_cast<KnownInterceptionDisclosureInfoBarDelegate*>(delegate());
 }
+
+DEFINE_JNI(KnownInterceptionDisclosureInfoBar)

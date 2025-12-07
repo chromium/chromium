@@ -74,7 +74,7 @@ class ElementStyleResources {
   SVGResource* GetSVGResourceFromValue(CSSPropertyID,
                                        const cssvalue::CSSURIValue&);
 
-  void LoadPendingResources(ComputedStyleBuilder&);
+  void LoadPendingResources(ComputedStyleBuilder&, const CSSLengthResolver&);
 
   void UpdateLengthConversionData(const CSSToLengthConversionData*);
 
@@ -85,7 +85,7 @@ class ElementStyleResources {
   StyleImage* LoadMaskSource(CSSValue&);
 
   void LoadPendingSVGResources(ComputedStyleBuilder&);
-  void LoadPendingImages(ComputedStyleBuilder&);
+  void LoadPendingImages(ComputedStyleBuilder&, const CSSLengthResolver&);
 
   Element& element_;
   HashSet<CSSPropertyID> pending_image_properties_;

@@ -19,6 +19,7 @@ desc: |-
   whether iCloud Drive is enabled, and whether the user has recently used or
   created a credential in their
   <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profile.
+default: null
 example_value: false
 features:
   dynamic_refresh: true
@@ -33,6 +34,8 @@ items:
   value: true
 - caption: Default to creating passkeys in other stores such as the <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> profile.
   value: false
+- caption: Default is determined by other factors
+  value: null
 tags: []
 supported_on:
 - chrome.mac:118-

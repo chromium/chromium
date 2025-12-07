@@ -2,22 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_coding.h"
 
 #include <sstream>
 #include <string_view>
 #include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 
-namespace content {
+namespace content::indexed_db {
 namespace {
 
 void EncodeBigEndianFixed64(uint64_t number, std::string* output) {
@@ -58,8 +57,9 @@ std::tuple<bool, int64_t> ParseScopeMetadataId(
     return std::make_tuple(false, 0);
 
   int64_t scope_id = 0;
-  std::string_view part(key.data() + prefix_size, key.size() - prefix_size);
-  bool decode_success = DecodeVarInt(&part, &scope_id);
+  std::string_view key_without_prefix =
+      std::string_view(key.begin(), key.end()).substr(prefix_size);
+  bool decode_success = DecodeVarInt(&key_without_prefix, &scope_id);
   DCHECK_GE(scope_id, 0);
   return std::make_tuple(decode_success, scope_id);
 }
@@ -73,7 +73,7 @@ std::string KeyToDebugString(base::span<const uint8_t> key_without_prefix) {
   }
   char type_byte = key_without_prefix[0];
   std::string_view key_after_type =
-      MakeStringView(key_without_prefix.subspan(1));
+      MakeStringView(key_without_prefix.subspan<1>());
   switch (type_byte) {
     case kGlobalMetadataByte:
       result << "GlobalMetadata";
@@ -124,8 +124,7 @@ std::string KeyToDebugString(base::span<const uint8_t> key_without_prefix) {
 leveldb::Slice ScopesEncoder::GlobalMetadataKey(
     base::span<const uint8_t> scopes_prefix) {
   key_buffer_.clear();
-  key_buffer_.assign(reinterpret_cast<const char*>(scopes_prefix.data()),
-                     scopes_prefix.size());
+  key_buffer_ = base::as_string_view(scopes_prefix);
   key_buffer_.push_back(leveldb_scopes::kGlobalMetadataByte);
   return leveldb::Slice(key_buffer_);
 }
@@ -134,8 +133,7 @@ leveldb::Slice ScopesEncoder::ScopeMetadataKey(
     base::span<const uint8_t> scopes_prefix,
     int64_t scope_number) {
   key_buffer_.clear();
-  key_buffer_.assign(reinterpret_cast<const char*>(scopes_prefix.data()),
-                     scopes_prefix.size());
+  key_buffer_ = base::as_string_view(scopes_prefix);
   key_buffer_.push_back(leveldb_scopes::kScopesMetadataByte);
   DCHECK_GE(scope_number, 0);
   EncodeVarInt(static_cast<uint64_t>(scope_number), &key_buffer_);
@@ -145,16 +143,14 @@ leveldb::Slice ScopesEncoder::ScopeMetadataKey(
 leveldb::Slice ScopesEncoder::ScopeMetadataPrefix(
     base::span<const uint8_t> scopes_prefix) {
   key_buffer_.clear();
-  key_buffer_.assign(reinterpret_cast<const char*>(scopes_prefix.data()),
-                     scopes_prefix.size());
+  key_buffer_ = base::as_string_view(scopes_prefix);
   key_buffer_.push_back(leveldb_scopes::kScopesMetadataByte);
   return leveldb::Slice(key_buffer_);
 }
 
 leveldb::Slice ScopesEncoder::TasksKeyPrefix(base::span<const uint8_t> prefix) {
   key_buffer_.clear();
-  key_buffer_.assign(reinterpret_cast<const char*>(prefix.data()),
-                     prefix.size());
+  key_buffer_ = base::as_string_view(prefix);
   key_buffer_.push_back(leveldb_scopes::kLogByte);
   return leveldb::Slice(key_buffer_);
 }
@@ -162,8 +158,7 @@ leveldb::Slice ScopesEncoder::TasksKeyPrefix(base::span<const uint8_t> prefix) {
 leveldb::Slice ScopesEncoder::TasksKeyPrefix(base::span<const uint8_t> prefix,
                                              int64_t scope_number) {
   key_buffer_.clear();
-  key_buffer_.assign(reinterpret_cast<const char*>(prefix.data()),
-                     prefix.size());
+  key_buffer_ = base::as_string_view(prefix);
   key_buffer_.push_back(leveldb_scopes::kLogByte);
   DCHECK_GE(scope_number, 0);
   EncodeVarInt(static_cast<uint64_t>(scope_number), &key_buffer_);
@@ -174,8 +169,7 @@ leveldb::Slice ScopesEncoder::UndoTaskKeyPrefix(
     base::span<const uint8_t> prefix,
     int64_t scope_number) {
   key_buffer_.clear();
-  key_buffer_.assign(reinterpret_cast<const char*>(prefix.data()),
-                     prefix.size());
+  key_buffer_ = base::as_string_view(prefix);
   key_buffer_.push_back(leveldb_scopes::kLogByte);
   DCHECK_GE(scope_number, 0);
   EncodeVarInt(static_cast<uint64_t>(scope_number), &key_buffer_);
@@ -187,8 +181,7 @@ leveldb::Slice ScopesEncoder::CleanupTaskKeyPrefix(
     base::span<const uint8_t> prefix,
     int64_t scope_number) {
   key_buffer_.clear();
-  key_buffer_.assign(reinterpret_cast<const char*>(prefix.data()),
-                     prefix.size());
+  key_buffer_ = base::as_string_view(prefix);
   key_buffer_.push_back(leveldb_scopes::kLogByte);
   DCHECK_GE(scope_number, 0);
   EncodeVarInt(static_cast<uint64_t>(scope_number), &key_buffer_);
@@ -214,4 +207,4 @@ leveldb::Slice ScopesEncoder::CleanupTaskKey(
   return leveldb::Slice(key_buffer_);
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

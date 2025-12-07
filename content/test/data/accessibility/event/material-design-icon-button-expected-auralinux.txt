@@ -1,0 +1,41 @@
+=== Accessibility tree before go() pass 1 ===
+[document web] name='Material Web Icon Button Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[toggle button] name='Toggle favorite'
+=== End accessibility tree ===
+STATE-CHANGE:PRESSED:TRUE role=ROLE_TOGGLE_BUTTON name='Toggle favorite' ENABLED,FOCUSABLE,PRESSED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 1 ===
+[document web] name='Material Web Icon Button Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[toggle button] name='Toggle favorite' pressed <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+[document web] name='Material Web Icon Button Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[toggle button] name='Toggle favorite' pressed
+=== End accessibility tree ===
+STATE-CHANGE:PRESSED:FALSE role=ROLE_TOGGLE_BUTTON name='Toggle favorite' ENABLED,FOCUSABLE,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 2 ===
+[document web] name='Material Web Icon Button Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[toggle button] name='Toggle favorite' <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+[document web] name='Material Web Icon Button Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[toggle button] name='Toggle favorite'
+=== End accessibility tree ===
+STATE-CHANGE:PRESSED:TRUE role=ROLE_TOGGLE_BUTTON name='Toggle favorite' ENABLED,FOCUSABLE,PRESSED,SENSITIVE,SHOWING,VISIBLE
+=== Accessibility tree after go() pass 3 ===
+[document web] name='Material Web Icon Button Events' focused
+++[section] name='Ready'
+++++[section]
+++++++[toggle button] name='Toggle favorite' pressed <<<<<< CHANGED
+=== End accessibility tree ===

@@ -1,0 +1,245 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "sandbox/policy/mojom/context.mojom";
+import "services/network/public/mojom/clear_data_filter.mojom";
+import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
+import "url/mojom/url.mojom";
+
+// LINT.IfChange
+struct DeviceBoundSessionKey {
+  // The site the session is scoped to.
+  SchemefulSite site;
+
+  // The site-scoped identifier for the session.
+  string id;
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_key.h)
+
+// LINT.IfChange
+enum DeviceBoundSessionAccessType {
+  kCreation = 0,
+  kUpdate = 1,
+  kTermination = 2,
+};
+
+struct DeviceBoundSessionAccess {
+  // Type of access
+  DeviceBoundSessionAccessType access_type;
+
+  // Key of accessed session
+  DeviceBoundSessionKey session_key;
+
+  // Bound cookie names. Only populated when `access_type` is `kTermination`.
+  array<string> cookies;
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_access.h)
+
+// LINT.IfChange
+enum DeviceBoundSessionUsage {
+  kUnknown = 0,
+  kNoUsage = 1,
+  kInScopeNotDeferred = 2,
+  kDeferred = 3,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_usage.h)
+
+// LINT.IfChange(DeviceBoundSessionDeletionReason)
+enum DeviceBoundSessionDeletionReason {
+  kExpired = 0,  // Session was not used for too long.
+  kFailedToRestoreKey = 1,  // Could not restore key from disk.
+  kFailedToUnwrapKey = 2,  // Could not unwrap a key loaded from disk.
+  kStoragePartitionCleared = 3,  // Site data is being cleared due to the Clear-Site-Data header.
+  kClearBrowsingData = 4,  // Site data is being cleared by the user on chrome://settings/clearBrowsingData.
+  kServerRequested = 5,  // Server explicitly requested termination.
+  kInvalidSessionParams = 6,  // Refresh provided invalid params.
+  kRefreshFatalError = 7,  // Fatal error during refresh.
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/deletion_reason.h:DeletionReason)
+
+// LINT.IfChange(DeviceBoundSessionParams)
+
+// The following provides Mojo bindings over the DBSC JSON registration
+// payload. See the spec for details about their intended semantics:
+// https://w3c.github.io/webappsec-dbsc/#format-session-instructions
+enum DeviceBoundSessionScopeSpecificationType {
+  kExclude,
+  kInclude,
+};
+
+struct DeviceBoundSessionScopeSpecification {
+  DeviceBoundSessionScopeSpecificationType type;
+  string domain;
+  string path;
+};
+
+struct DeviceBoundSessionScope {
+  bool include_site;
+  array<DeviceBoundSessionScopeSpecification> specifications;
+  string origin;
+};
+
+struct DeviceBoundSessionCredential {
+  string name;
+  string attributes;
+};
+
+struct DeviceBoundSessionParams {
+  string session_id;
+  url.mojom.Url fetcher_url;
+  string refresh_url;
+  DeviceBoundSessionScope scope;
+  array<DeviceBoundSessionCredential> credentials;
+  array<string> allowed_refresh_initiators;
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_params.h:SessionParams)
+
+// LINT.IfChange(DeviceBoundSessionError)
+enum DeviceBoundSessionError {
+  kSuccess = 0,  // Only used for metrics, a session error will never have
+                   // this error type.
+
+  kKeyError = 1,
+  kSigningError = 2,
+  // Deprecated: kNetError = 3,
+  // Deprecated: kHttpError = 4,
+  kServerRequestedTermination = 5,
+  // Deprecated: kInvalidConfigJson = 6,
+  kInvalidSessionId = 7,
+  // Deprecated: kInvalidCredentials = 8,
+  kInvalidChallenge = 9,
+  kTooManyChallenges = 10,
+  kInvalidFetcherUrl = 11,
+  kInvalidRefreshUrl = 12,
+  kTransientHttpError = 13,
+  // Deprecated: kPersistentHttpError = 14,
+  kScopeOriginSameSiteMismatch = 15,
+  kRefreshUrlSameSiteMismatch = 16,
+  // Deprecated: kInvalidScopeOrigin = 17,
+  kMismatchedSessionId = 18,
+  // Deprecated: kInvalidRefreshInitiators = 19,
+  // Deprecated: kInvalidScopeRule = 20,
+  kMissingScope = 21,
+  kNoCredentials = 22,
+  // Deprecated: kInvalidScopeIncludeSite = 23,
+  kSubdomainRegistrationWellKnownUnavailable = 24,
+  kSubdomainRegistrationUnauthorized = 25,
+  kSubdomainRegistrationWellKnownMalformed = 26,
+  // Deprecated: kFederatedNotAuthorized = 27,
+  kSessionProviderWellKnownUnavailable = 28,
+  // Deprecated: kSessionProviderWellKnownMalformed = 29,
+  kRelyingPartyWellKnownUnavailable = 30,
+  // Deprecated: kRelyingPartyWellKnownMalformed = 31,
+  kFederatedKeyThumbprintMismatch = 32,
+  kInvalidFederatedSessionUrl = 33,
+  // Deprecated: kInvalidFederatedSession = 34,
+  kInvalidFederatedKey = 35,
+  kTooManyRelyingOriginLabels = 36,
+  kBoundCookieSetForbidden = 37,
+  kNetError = 38,
+  kProxyError = 39,
+  // Deprecated: kInvalidConfigJson = 40,
+  kEmptySessionConfig = 41,
+  kInvalidCredentialsConfig = 42,
+  kInvalidCredentialsType = 43,
+  kInvalidCredentialsEmptyName = 44,
+  kInvalidCredentialsCookie = 45,
+  kPersistentHttpError = 46,
+  kRegistrationAttemptedChallenge = 47,
+  kInvalidScopeOrigin = 48,
+  kScopeOriginContainsPath = 49,
+  kRefreshInitiatorNotString = 50,
+  kRefreshInitiatorInvalidHostPattern = 51,
+  kInvalidScopeSpecification = 52,
+  kMissingScopeSpecificationType = 53,
+  kEmptyScopeSpecificationDomain = 54,
+  kEmptyScopeSpecificationPath = 55,
+  kInvalidScopeSpecificationType = 56,
+  kInvalidScopeIncludeSite = 57,
+  kMissingScopeIncludeSite = 58,
+  kFederatedNotAuthorizedByProvider = 59,
+  kFederatedNotAuthorizedByRelyingParty = 60,
+  kSessionProviderWellKnownMalformed = 61,
+  kSessionProviderWellKnownHasProviderOrigin = 62,
+  kRelyingPartyWellKnownMalformed = 63,
+  kRelyingPartyWellKnownHasRelyingOrigins = 64,
+  kInvalidFederatedSessionProviderSessionMissing = 65,
+  kInvalidFederatedSessionWrongProviderOrigin = 66,
+  kInvalidCredentialsCookieCreationTime = 67,
+  kInvalidCredentialsCookieName = 68,
+  kInvalidCredentialsCookieParsing = 69,
+  kInvalidCredentialsCookieUnpermittedAttribute = 70,
+  kInvalidCredentialsCookieInvalidDomain = 71,
+  kInvalidCredentialsCookiePrefix = 72,
+  kInvalidScopeRulePath = 73,
+  kInvalidScopeRuleHostPattern = 74,
+  kScopeRuleOriginScopedHostPatternMismatch = 75,
+  kScopeRuleSiteScopedHostPatternMismatch = 76,
+  kSigningQuotaExceeded = 77,
+  kInvalidConfigJson = 78,
+  kInvalidFederatedSessionProviderFailedToRestoreKey = 79,
+  kFailedToUnwrapKey = 80,
+};
+
+// LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError)
+
+// DeviceBoundSessionManager is a privileged interface that should only
+// be used in trusted processes.
+[RequireContext=sandbox.mojom.Context.kBrowser]
+interface DeviceBoundSessionManager {
+  // Asynchronously fetch all sessions currently registered.
+  GetAllSessions() => (array<DeviceBoundSessionKey> sessions);
+
+  // Delete a session by key.
+  DeleteSession(
+      DeviceBoundSessionDeletionReason reason, DeviceBoundSessionKey session);
+
+  // Delete all sessions matching the filter logic. Conditions are AND'ed
+  // together and providing no arguments at all will delete all sessions.
+  // - If present, sessions must be created after `created_after_time`.
+  // - If present, sessions must be created before `created_before_time`.
+  // - If present, sessions must match `filter` (see clear_data_filter.mojom).
+  DeleteAllSessions(DeviceBoundSessionDeletionReason reason,
+                    mojo_base.mojom.Time? created_after_time,
+                    mojo_base.mojom.Time? created_before_time,
+                    ClearDataFilter? filter) => ();
+
+  // Add an observer for accesses to sessions including `url`.
+  AddObserver(url.mojom.Url url,
+              pending_remote<DeviceBoundSessionAccessObserver> observer);
+
+  // Creates a session for each param in `params`, and sets each cookie in
+  // `cookies_to_set`. This combined functionality allows callers to
+  // prevent sessions from applying to stale cookies and to ensure that
+  // sessions always apply to the new cookies. Returns the results of creating
+  // each session and setting each cookie.
+  CreateBoundSessions(array<DeviceBoundSessionParams> params,
+                      array<uint8> wrapped_key,
+                      array<CanonicalCookie> cookies_to_set,
+                      CookieOptions cookie_options)
+      => (array<DeviceBoundSessionError> session_results,
+          array<CookieInclusionStatus> cookie_results);
+};
+
+// Observer that is notified on use of a device bound session.
+interface DeviceBoundSessionAccessObserver {
+  // Called when a device bound session is used. This includes:
+  // - Newly registered sessions
+  // - Sessions deferring requests
+  // - Session deletion
+  OnDeviceBoundSessionAccessed(DeviceBoundSessionAccess access);
+
+  // Called to create a copy of this observer. (e.g. when cloning observers
+  // from ResourceRequest).
+  Clone(pending_receiver<DeviceBoundSessionAccessObserver> observer);
+};

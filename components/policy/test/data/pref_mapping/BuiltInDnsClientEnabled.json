@@ -18,8 +18,7 @@
       "win",
       "mac",
       "android",
-      "chromeos_ash",
-      "chromeos_lacros",
+      "chromeos",
       "linux"
     ],
     "simple_policy_pref_mapping_test": {

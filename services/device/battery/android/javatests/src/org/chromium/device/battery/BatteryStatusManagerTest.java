@@ -179,7 +179,7 @@ public class BatteryStatusManagerTest {
     @Test
     @SmallTest
     public void testStartStopSucceeds() {
-        Assert.assertTrue(mManager.start());
+        mManager.start();
         mManager.stop();
     }
 

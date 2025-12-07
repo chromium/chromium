@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 
 #include <stddef.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <unordered_set>
@@ -26,7 +22,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_init_params.h"
@@ -36,6 +31,7 @@
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
@@ -46,18 +42,23 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
-#include "ui/native_theme/native_theme.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "ui/native_theme/mock_os_settings_provider.h"
+#include "ui/native_theme/native_theme.h"
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
@@ -104,7 +105,7 @@ void TestAccessors(ProfileAttributesEntry** entry,
 void VerifyInitialValues(ProfileAttributesEntry* entry,
                          const base::FilePath& profile_path,
                          const std::u16string& profile_name,
-                         const std::string& gaia_id,
+                         const GaiaId& gaia_id,
                          const std::u16string& user_name,
                          bool is_consented_primary_account,
                          size_t icon_index,
@@ -125,6 +126,7 @@ void VerifyInitialValues(ProfileAttributesEntry* entry,
   EXPECT_EQ(is_signed_in_with_credential_provider,
             entry->IsSignedInWithCredentialProvider());
   EXPECT_EQ(std::string(), entry->GetHostedDomain());
+  EXPECT_EQ(signin::Tribool::kUnknown, entry->GetIsManaged());
 }
 
 class ProfileAttributesTestObserver
@@ -155,6 +157,8 @@ class ProfileAttributesTestObserver
                void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileHostedDomainChanged,
                void(const base::FilePath& profile_path));
+  MOCK_METHOD1(OnProfileIsManagedChanged,
+               void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileUserManagementAcceptanceChanged,
                void(const base::FilePath& profile_path));
   MOCK_METHOD1(OnProfileManagementEnrollmentTokenChanged,
@@ -183,13 +187,13 @@ class ProfileAttributesStorageTest : public testing::Test {
  public:
   ProfileAttributesStorageTest()
       : testing_profile_manager_(TestingBrowserProcess::GetGlobal()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     scoped_cros_settings_test_helper_ =
         std::make_unique<ash::ScopedCrosSettingsTestHelper>();
 #endif
   }
 
-  ~ProfileAttributesStorageTest() override {}
+  ~ProfileAttributesStorageTest() override = default;
 
  protected:
   void SetUp() override {
@@ -217,6 +221,7 @@ class ProfileAttributesStorageTest : public testing::Test {
     EXPECT_CALL(observer_, OnProfileIsOmittedChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileThemeColorsChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileHostedDomainChanged(_)).Times(0);
+    EXPECT_CALL(observer_, OnProfileIsManagedChanged(_)).Times(0);
     EXPECT_CALL(observer_, OnProfileManagementEnrollmentTokenChanged(_))
         .Times(0);
     EXPECT_CALL(observer_, OnProfileManagementIdChanged(_)).Times(0);
@@ -257,8 +262,8 @@ class ProfileAttributesStorageTest : public testing::Test {
     params.profile_path = profile_path;
     params.profile_name = base::ASCIIToUTF16(
         base::StringPrintf("testing_profile_name%" PRIuS, number_of_profiles));
-    params.gaia_id =
-        base::StringPrintf("testing_profile_gaia%" PRIuS, number_of_profiles);
+    params.gaia_id = GaiaId(
+        base::StringPrintf("testing_profile_gaia%" PRIuS, number_of_profiles));
     params.user_name = base::ASCIIToUTF16(
         base::StringPrintf("testing_profile_user%" PRIuS, number_of_profiles));
     params.is_consented_primary_account = true;
@@ -300,11 +305,11 @@ class ProfileAttributesStorageTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfileManager testing_profile_manager_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ash::ScopedCrosSettingsTestHelper>
       scoped_cros_settings_test_helper_;
 #endif
+  TestingProfileManager testing_profile_manager_;
   ProfileAttributesTestObserver observer_;
   base::ScopedObservation<ProfileAttributesStorage,
                           ProfileAttributesStorage::Observer>
@@ -338,7 +343,7 @@ TEST_F(ProfileAttributesStorageTest, AddProfile) {
   ProfileAttributesInitParams params;
   params.profile_path = GetProfilePath("new_profile_path_1");
   params.profile_name = u"new_profile_name_1";
-  params.gaia_id = "new_profile_gaia_1";
+  params.gaia_id = GaiaId("new_profile_gaia_1");
   params.user_name = u"new_profile_username_1";
   params.is_consented_primary_account = true;
   params.icon_index = 1;
@@ -459,20 +464,22 @@ TEST_F(ProfileAttributesStorageTest, RemoveProfile) {
 TEST_F(ProfileAttributesStorageTest, RemoveProfileByAccountId) {
   DisableObserver();  // This test doesn't test observers.
   EXPECT_EQ(0u, storage()->GetNumberOfProfiles());
-  const struct {
+  struct TestCases {
     const char* profile_path;
     const char* profile_name;
     AccountId account_id;
     bool is_consented_primary_account;
-  } kTestCases[] = {
-      {"path_1", "name_1", AccountId::FromUserEmailGaiaId("email1", "111111"),
-       true},
-      {"path_2", "name_3", AccountId::FromUserEmailGaiaId("email2", "222222"),
-       true},
-      {"path_3", "name_3", AccountId::FromUserEmailGaiaId("email3", "333333"),
-       false},
-      {"path_4", "name_4", AccountId::FromUserEmailGaiaId("email4", "444444"),
-       false}};
+  };
+  const auto kTestCases = std::to_array<TestCases>({
+      {"path_1", "name_1",
+       AccountId::FromUserEmailGaiaId("email1", GaiaId("111111")), true},
+      {"path_2", "name_3",
+       AccountId::FromUserEmailGaiaId("email2", GaiaId("222222")), true},
+      {"path_3", "name_3",
+       AccountId::FromUserEmailGaiaId("email3", GaiaId("333333")), false},
+      {"path_4", "name_4",
+       AccountId::FromUserEmailGaiaId("email4", GaiaId("444444")), false},
+  });
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     ProfileAttributesInitParams params;
@@ -609,7 +616,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues) {
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = u"testing_profile_name";
-  params.gaia_id = "testing_profile_gaia";
+  params.gaia_id = GaiaId("testing_profile_gaia");
   params.user_name = u"testing_profile_username";
   params.is_consented_primary_account = true;
   params.icon_index = kIconIndex;
@@ -627,7 +634,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues) {
       storage()->GetProfileAttributesWithPath(profile_path);
   VerifyInitialValues(
       entry, profile_path, /*profile_name=*/u"testing_profile_name",
-      /*gaia_id=*/"testing_profile_gaia",
+      /*gaia_id=*/GaiaId("testing_profile_gaia"),
       /*user_name=*/u"testing_profile_username",
       /*is_consented_primary_account=*/true, /*icon_index=*/kIconIndex,
       /*supervised_user_id=*/"testing_supervised_user_id",
@@ -661,7 +668,7 @@ TEST_F(ProfileAttributesStorageTest, InitialValues_Defaults) {
   ProfileAttributesEntry* entry =
       storage()->GetProfileAttributesWithPath(profile_path);
   VerifyInitialValues(entry, profile_path, /*profile_name=*/std::u16string(),
-                      /*gaia_id=*/std::string(), /*user_name=*/std::u16string(),
+                      GaiaId(), /*user_name=*/std::u16string(),
                       /*is_consented_primary_account=*/false, /*icon_index=*/0,
                       /*supervised_user_id=*/std::string(),
                       /*is_ephemeral=*/false, /*is_omitted=*/false,
@@ -676,7 +683,8 @@ TEST_F(ProfileAttributesStorageTest, ModifyEntryWhileInitializing) {
   base::FilePath profile_path = GetProfilePath("test");
   {
     signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
-    AccountId account_id = AccountId::FromUserEmailGaiaId("email", "111111");
+    AccountId account_id =
+        AccountId::FromUserEmailGaiaId("email", GaiaId("111111"));
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
     params.profile_name = u"Test";
@@ -766,8 +774,8 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
 
   // GaiaIds.
   EXPECT_TRUE(entry->GetGaiaIds().empty());
-  base::flat_set<std::string> accounts1({"a"});
-  base::flat_set<std::string> accounts2({"b", "c"});
+  base::flat_set<GaiaId> accounts1({GaiaId("a")});
+  base::flat_set<GaiaId> accounts2({GaiaId("b"), GaiaId("c")});
   entry->SetGaiaIds(accounts1);
   EXPECT_EQ(accounts1, entry->GetGaiaIds());
   entry->SetGaiaIds(accounts2);
@@ -796,6 +804,11 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
 
   EXPECT_CALL(observer(), OnProfileHostedDomainChanged(path)).Times(2);
   TEST_STRING_ACCESSORS(ProfileAttributesEntry, entry, HostedDomain);
+  VerifyAndResetCallExpectations();
+
+  EXPECT_CALL(observer(), OnProfileIsManagedChanged(path)).Times(2);
+  TEST_ACCESSORS(ProfileAttributesEntry, entry, IsManaged,
+                 signin::Tribool::kTrue, signin::Tribool::kFalse);
   VerifyAndResetCallExpectations();
 
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsEphemeral);
@@ -950,18 +963,18 @@ TEST_F(ProfileAttributesStorageTest, AuthInfo) {
   ASSERT_NE(entry, nullptr);
 
   EXPECT_CALL(observer(), OnProfileAuthInfoChanged(path)).Times(1);
-  entry->SetAuthInfo("", std::u16string(), false);
+  entry->SetAuthInfo(GaiaId(), std::u16string(), false);
   VerifyAndResetCallExpectations();
   ASSERT_EQ(entry->GetSigninState(), SigninState::kNotSignedIn);
   EXPECT_EQ(std::u16string(), entry->GetUserName());
-  EXPECT_EQ("", entry->GetGAIAId());
+  EXPECT_EQ(GaiaId(), entry->GetGAIAId());
 
   EXPECT_CALL(observer(), OnProfileAuthInfoChanged(path)).Times(1);
-  entry->SetAuthInfo("foo", u"bar", true);
+  entry->SetAuthInfo(GaiaId("foo"), u"bar", true);
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsAuthenticated());
   EXPECT_EQ(u"bar", entry->GetUserName());
-  EXPECT_EQ("foo", entry->GetGAIAId());
+  EXPECT_EQ(GaiaId("foo"), entry->GetGAIAId());
 }
 
 TEST_F(ProfileAttributesStorageTest, GAIAName) {
@@ -1008,6 +1021,7 @@ TEST_F(ProfileAttributesStorageTest, ConcatenateGaiaNameAndProfileName) {
 
   // We should only append the profile name to the GAIA name if:
   // - The user has chosen a profile name on purpose.
+  // - The user is managed and has an enterprise label.
   // - Two profiles has the sama GAIA name and we need to show it to
   //   clear ambiguity.
   // If one of the two conditions hold, we will show the profile name in this
@@ -1029,6 +1043,11 @@ TEST_F(ProfileAttributesStorageTest, ConcatenateGaiaNameAndProfileName) {
   // Set a custom profile name.
   entry_1->SetLocalProfileName(u"Work", false);
   EXPECT_EQ(u"Patt (Work)", entry_1->GetName());
+
+  // Set an enterprise label, which takes priority over custom profile name.
+  entry_1->SetEnterpriseProfileLabel(u"Google");
+  EXPECT_EQ(u"Patt (Google)", entry_1->GetName());
+  entry_1->SetEnterpriseProfileLabel(u"");
 
   // Set the profile name to be equal to GAIA name.
   entry_1->SetLocalProfileName(u"patt", false);
@@ -1056,10 +1075,23 @@ TEST_F(ProfileAttributesStorageTest, ConcatenateGaiaNameAndProfileName) {
   EXPECT_EQ(u"Patt (Work)", entry_1->GetName());
   EXPECT_EQ(u"Olly", entry_2->GetName());
 
+  // Enterprise label still takes priority for the first profile if set.
+  entry_1->SetEnterpriseProfileLabel(u"Google");
+  EXPECT_EQ(u"Patt (Google)", entry_1->GetName());
+  entry_1->SetEnterpriseProfileLabel(u"");
+
   // Mark profile name as default.
   entry_1->SetLocalProfileName(u"Person 1", true);
   EXPECT_EQ(u"Patt", entry_1->GetName());
   EXPECT_EQ(u"Olly", entry_2->GetName());
+
+  // Enterprise label will still show if set.
+  entry_1->SetEnterpriseProfileLabel(u"Google1");
+  EXPECT_EQ(u"Patt (Google1)", entry_1->GetName());
+  entry_2->SetEnterpriseProfileLabel(u"Google2");
+  EXPECT_EQ(u"Olly (Google2)", entry_2->GetName());
+  entry_1->SetEnterpriseProfileLabel(u"");
+  entry_2->SetEnterpriseProfileLabel(u"");
 
   // Add a third profile with the same GAIA name as the first.
   // The two profiles are marked as using default profile names.
@@ -1113,19 +1145,16 @@ TEST_F(ProfileAttributesStorageTest, SupervisedUsersAccessors) {
 
   entry->SetSupervisedUserId("");
   ASSERT_FALSE(entry->IsSupervised());
-  ASSERT_FALSE(entry->IsChild());
 
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
   entry->SetSupervisedUserId("some_supervised_user_id");
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
-  ASSERT_FALSE(entry->IsChild());
 
   EXPECT_CALL(observer(), OnProfileSupervisedUserIdChanged(path)).Times(1);
   entry->SetSupervisedUserId(supervised_user::kChildAccountSUID);
   VerifyAndResetCallExpectations();
   ASSERT_TRUE(entry->IsSupervised());
-  ASSERT_TRUE(entry->IsChild());
 }
 
 TEST_F(ProfileAttributesStorageTest, CreateSupervisedTestingProfile) {
@@ -1159,7 +1188,7 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
   ProfileAttributesInitParams alpha_params;
   alpha_params.profile_path = GetProfilePath("alpha_path");
   alpha_params.profile_name = u"alpha";
-  alpha_params.gaia_id = "alpha_gaia";
+  alpha_params.gaia_id = GaiaId("alpha_gaia");
   alpha_params.user_name = u"alpha_username";
   alpha_params.is_consented_primary_account = true;
   alpha_params.icon_index = 1;
@@ -1168,7 +1197,7 @@ TEST_F(ProfileAttributesStorageTest, ReSortTriggered) {
   ProfileAttributesInitParams lima_params;
   lima_params.profile_path = GetProfilePath("lime_path");
   lima_params.profile_name = u"lima";
-  lima_params.gaia_id = "lima_gaia";
+  lima_params.gaia_id = GaiaId("lima_gaia");
   lima_params.user_name = u"lima_username";
   lima_params.is_consented_primary_account = true;
   lima_params.icon_index = 1;
@@ -1305,7 +1334,7 @@ TEST_F(ProfileAttributesStorageTest, IsSigninRequiredOnInit_Authenticated) {
   ProfileAttributesInitParams params;
   params.profile_path = profile_path;
   params.profile_name = u"testing_profile_name";
-  params.gaia_id = "testing_profile_gaia";
+  params.gaia_id = GaiaId("testing_profile_gaia");
   params.user_name = u"testing_profile_username";
   params.is_consented_primary_account = true;
   storage()->AddProfile(std::move(params));
@@ -1329,7 +1358,7 @@ TEST_F(ProfileAttributesStorageTest,
     ProfileAttributesInitParams params;
     params.profile_path = profile_path;
     params.profile_name = u"testing_profile_name";
-    params.gaia_id = "testing_profile_gaia";
+    params.gaia_id = GaiaId("testing_profile_gaia");
     params.user_name = u"testing_profile_username";
     params.is_consented_primary_account = true;
     storage()->AddProfile(std::move(params));
@@ -1413,7 +1442,7 @@ TEST_F(ProfileAttributesStorageTest, AvatarIconIndex) {
 #endif
 
 // High res avatar downloading is only supported on desktop.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileAttributesStorageTest, DownloadHighResAvatarTest) {
   storage()->set_disable_avatar_download_for_testing(false);
 
@@ -1663,7 +1692,7 @@ TEST_F(ProfileAttributesStorageTest, ProfilesState_SingleProfile) {
 // Themes aren't used on Android
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
-  ui::NativeTheme::GetInstanceForNativeUi()->set_use_dark_colors(false);
+  ui::MockOsSettingsProvider os_settings_provider;
   AddTestingProfile();
   base::FilePath profile_path = GetProfilePath("testing_profile_path0");
 
@@ -1677,8 +1706,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   ProfileThemeColors light_colors = GetDefaultProfileThemeColors();
   EXPECT_EQ(entry->GetProfileThemeColors(), light_colors);
 
-  auto* native_theme = ui::NativeTheme::GetInstanceForNativeUi();
-  native_theme->set_use_dark_colors(true);
+  os_settings_provider.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kDark);
   EXPECT_EQ(entry->GetProfileThemeColors(), GetDefaultProfileThemeColors());
   EXPECT_NE(entry->GetProfileThemeColors(), light_colors);
 
@@ -1691,7 +1720,8 @@ TEST_F(ProfileAttributesStorageTest, ProfileThemeColors) {
   VerifyAndResetCallExpectations();
 
   // Colors shouldn't change after switching back to the light mode.
-  native_theme->set_use_dark_colors(false);
+  os_settings_provider.SetPreferredColorScheme(
+      ui::NativeTheme::PreferredColorScheme::kLight);
   EXPECT_EQ(entry->GetProfileThemeColors(), colors);
 
   // std::nullopt resets the colors to default.
@@ -1870,7 +1900,7 @@ TEST_F(ProfileAttributesStorageTest, GetAllProfilesKeys) {
                 "testing_profile_path%" PRIuS, (size_t)0U)}));
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
   storage()->set_disable_avatar_download_for_testing(false);
 
@@ -1921,26 +1951,57 @@ TEST_F(ProfileAttributesStorageTest, GetGaiaImageForAvatarMenu) {
                                               kArbitraryPreferredSize));
   EXPECT_TRUE(gfx::test::AreImagesEqual(gaia_image, image_loaded));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ProfileAttributesStorageTest, ChooseNameForNewProfile) {
+  DisableObserver();  // This test doesn't test observers.
+
+  // Default profile names should be "Your Chrome" and then "Person 1",
+  // "Person 2", etc...
+  const auto kExpectedProfileNames = std::to_array<std::u16string>(
+      {l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME),
+       u"Person 1", u"Person 2", u"Person 3"});
+
+  for (size_t i = 0; i < kExpectedProfileNames.size(); ++i) {
+    const std::u16string expected_name = kExpectedProfileNames[i];
+    std::u16string profile_name = storage()->ChooseNameForNewProfile();
+    EXPECT_EQ(profile_name, expected_name);
+
+    // Add the profile, so that the next call to `ChooseNameForNewProfile()`
+    // generates the next name.
+    ProfileAttributesInitParams params;
+    params.profile_name = std::move(profile_name);
+    params.profile_path = GetProfilePath(base::StringPrintf("path_%u", i));
+    storage()->AddProfile(std::move(params));
+  }
+}
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileAttributesStorageTest,
        MigrateLegacyProfileNamesAndRecomputeIfNeeded) {
   DisableObserver();  // This test doesn't test observers.
   EXPECT_EQ(0U, storage()->GetNumberOfProfiles());
   // Mimic a pre-existing Directory with profiles that has legacy profile
   // names.
-  const struct {
+  struct TestCases {
     const char* profile_path;
     const char* profile_name;
     bool is_using_default_name;
-  } kTestCases[] = {
-      {"path_1", "Default Profile", true}, {"path_2", "First user", true},
-      {"path_3", "Lemonade", true},        {"path_4", "Batman", true},
-      {"path_5", "Batman", false},         {"path_6", "Person 2", true},
-      {"path_7", "Person 3", true},        {"path_8", "Person 1", true},
-      {"path_9", "Person 2", true},        {"path_10", "Person 1", true},
-      {"path_11", "Smith", false},         {"path_12", "Person 2", true}};
+  };
+  const auto kTestCases = std::to_array<TestCases>({
+      {"path_1", "Default Profile", true},
+      {"path_2", "First user", true},
+      {"path_3", "Lemonade", true},
+      {"path_4", "Batman", true},
+      {"path_5", "Batman", false},
+      {"path_6", "Person 2", true},
+      {"path_7", "Person 3", true},
+      {"path_8", "Person 1", true},
+      {"path_9", "Person 2", true},
+      {"path_10", "Person 1", true},
+      {"path_11", "Smith", false},
+      {"path_12", "Person 2", true},
+  });
   const size_t kNumProfiles = std::size(kTestCases);
 
   ProfileAttributesEntry* entry = nullptr;
@@ -1972,10 +2033,18 @@ TEST_F(ProfileAttributesStorageTest,
   EXPECT_EQ(base::ASCIIToUTF16(kTestCases[10].profile_name), entry->GetName());
 
   // Legacy profile names like "Default Profile" and "First user" should be
-  // migrated to "Person %n" type names, i.e. any permutation of "Person %n".
+  // migrated to "Your Chrome" and "Person %n" type names.
   std::set<std::u16string> expected_profile_names{
-      u"Person 1", u"Person 2", u"Person 3", u"Person 4", u"Person 5",
-      u"Person 6", u"Person 7", u"Person 8", u"Person 9", u"Person 10"};
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_PLACEHOLDER_PROFILE_NAME),
+      u"Person 1",
+      u"Person 2",
+      u"Person 3",
+      u"Person 4",
+      u"Person 5",
+      u"Person 6",
+      u"Person 7",
+      u"Person 8",
+      u"Person 9"};
 
   const char* profile_paths[] = {
       kTestCases[0].profile_path, kTestCases[1].profile_path,
@@ -1991,7 +2060,7 @@ TEST_F(ProfileAttributesStorageTest,
   }
   EXPECT_EQ(actual_profile_names, expected_profile_names);
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfileAttributesStorageTest,
        InitialSavedOrderValidWithAddRemoveProfiles) {
@@ -2210,7 +2279,7 @@ class ProfileAttributesStorageTestWithProfileReorderingParam
       public ProfileAttributesStorageTest {
  public:
   ProfileAttributesStorageTestWithProfileReorderingParam()
-      : base::test::WithFeatureOverride(kProfilesReordering) {}
+      : base::test::WithFeatureOverride(switches::kProfilesReordering) {}
 };
 
 // In this test we are checking the order of which the method
@@ -2267,6 +2336,24 @@ TEST_P(ProfileAttributesStorageTestWithProfileReorderingParam,
       EXPECT_EQ(profile1, sorted_entries[2]->GetLocalProfileName());
     }
   }
+}
+
+TEST_F(ProfileAttributesStorageTest, EnterpriseLabelOverridesLocalProfileName) {
+  AddTestingProfile();
+
+  base::FilePath path = GetProfilePath("testing_profile_path0");
+
+  ProfileAttributesEntry* entry = storage()->GetProfileAttributesWithPath(path);
+  ASSERT_NE(entry, nullptr);
+  EXPECT_EQ(path, entry->GetPath());
+
+  EXPECT_CALL(observer(), OnProfileNameChanged(path, _));
+  entry->SetLocalProfileName(u"first_value", true);
+  EXPECT_EQ(u"first_value", entry->GetLocalProfileName());
+
+  entry->SetEnterpriseProfileLabel(u"management_label");
+  EXPECT_EQ(u"management_label", entry->GetEnterpriseProfileLabel());
+  EXPECT_EQ(u"management_label", entry->GetLocalProfileName());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(

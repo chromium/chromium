@@ -30,22 +30,26 @@ import './source_select.js';
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrContainerShadowMixin, CrContainerShadowMixinInterface} from 'chrome://resources/ash/common/cr_elements/cr_container_shadow_mixin.js';
+import type {CrContainerShadowMixinInterface} from 'chrome://resources/ash/common/cr_elements/cr_container_shadow_mixin.js';
+import {CrContainerShadowMixin} from 'chrome://resources/ash/common/cr_elements/cr_container_shadow_mixin.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import type {UnguessableToken} from 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
+import type {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getScanService} from './mojo_interface_provider.js';
-import {ColorMode, FileType, MultiPageScanControllerRemote, PageSize, ScanJobObserverInterface, ScanJobObserverReceiver, Scanner, ScannerCapabilities, ScanResult, ScanSettings as ScanSettingsMojom, SourceType} from './scanning.mojom-webui.js';
+import type {ColorMode, MultiPageScanControllerRemote, PageSize, ScanJobObserverInterface, Scanner, ScannerCapabilities, ScanSettings as ScanSettingsMojom} from './scanning.mojom-webui.js';
+import {FileType, ScanJobObserverReceiver, ScanResult, SourceType} from './scanning.mojom-webui.js';
 import {getTemplate} from './scanning_app.html.js';
-import {AppState, MAX_NUM_SAVED_SCANNERS, ScanJobSettingsForMetrics, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScannersReceivedResponse, ScanSettings, StartMultiPageScanResponse, SuccessResponse} from './scanning_app_types.js';
-import {colorModeFromString, fileTypeFromString, getScannerDisplayName, pageSizeFromString, tokenToString} from './scanning_app_util.js';
+import type {ScanJobSettingsForMetrics, ScannerCapabilitiesResponse, ScannerInfo, ScannerSetting, ScannersReceivedResponse, ScanSettings, StartMultiPageScanResponse, SuccessResponse} from './scanning_app_types.js';
+import {AppState, MAX_NUM_SAVED_SCANNERS} from './scanning_app_types.js';
+import {colorModeFromString, fileTypeFromString, getScannerDisplayName, pageSizeFromString} from './scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from './scanning_browser_proxy.js';
 
 /**
@@ -592,7 +596,7 @@ export class ScanningAppElement extends ScanningAppElementBase implements
     for (const scanner of response.scanners) {
       this.setScannerInfo(scanner);
       if (this.isLastUsedScanner(scanner)) {
-        this.lastUsedScannerId = tokenToString(scanner.id);
+        this.lastUsedScannerId = scanner.id;
       }
     }
 
@@ -1032,8 +1036,7 @@ export class ScanningAppElement extends ScanningAppElementBase implements
   }
 
   private setScannerInfo(scanner: Scanner): void {
-    this.scannerInfoMap.set(
-        tokenToString(scanner.id), this.createScannerInfo(scanner));
+    this.scannerInfoMap.set(scanner.id, this.createScannerInfo(scanner));
   }
 
   private isLastUsedScanner(scanner: Scanner): boolean {

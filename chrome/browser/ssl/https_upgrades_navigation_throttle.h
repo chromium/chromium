@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/security_interstitials/content/security_blocking_page_factory.h"
 #include "components/security_interstitials/core/https_only_mode_metrics.h"
 #include "content/public/browser/navigation_throttle.h"
@@ -26,14 +27,13 @@ class Profile;
 // data, so it can't be used as a channel between these classes.)
 class HttpsUpgradesNavigationThrottle : public content::NavigationThrottle {
  public:
-  static std::unique_ptr<HttpsUpgradesNavigationThrottle>
-  MaybeCreateThrottleFor(
-      content::NavigationHandle* handle,
+  static void MaybeCreateAndAdd(
+      content::NavigationThrottleRegistry& registry,
       std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
       Profile* profile);
 
   HttpsUpgradesNavigationThrottle(
-      content::NavigationHandle* handle,
+      content::NavigationThrottleRegistry& registry,
       Profile* profile,
       std::unique_ptr<SecurityBlockingPageFactory> blocking_page_factory,
       security_interstitials::https_only_mode::HttpInterstitialState
@@ -54,7 +54,7 @@ class HttpsUpgradesNavigationThrottle : public content::NavigationThrottle {
       override;
   const char* GetNameForLogging() override;
 
-  static void set_timeout_for_testing(int timeout_in_seconds);
+  static void set_timeout_for_testing(base::TimeDelta timeout);
 
  private:
   raw_ptr<Profile> profile_;

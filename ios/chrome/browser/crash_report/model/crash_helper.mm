@@ -15,7 +15,6 @@
 #import "base/feature_list.h"
 #import "base/files/file_enumerator.h"
 #import "base/files/file_path.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/location.h"
@@ -23,17 +22,18 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/path_service.h"
+#import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "components/crash/core/app/crashpad.h"
 #import "components/crash/core/common/crash_key.h"
 #import "components/crash/core/common/reporter_running_ios.h"
+#import "components/gwp_asan/crash_handler/crash_handler.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/browser/crash_report/model/crash_report_user_application_state.h"
 #import "ios/chrome/browser/crash_report/model/crash_upload_list.h"
 #import "ios/chrome/browser/crash_report/model/features.h"
-#import "ios/chrome/browser/crash_report/model/main_thread_freeze_detector.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
@@ -49,9 +49,7 @@ namespace {
 // will mark any pending reports as skipped. By disabling UserEnabledUploading
 // safe mode crashes will be ignored. This also disables the main thread freeze
 // detector.
-BASE_FEATURE(kIOSCrashUploadKillSwitch,
-             "IOSCrashUploadKillSwitch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSCrashUploadKillSwitch, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kUptimeAtRestoreInMs[] = "uptime_at_restore_in_ms";
 const char kUploadedInRecoveryMode[] = "uploaded_in_recovery_mode";
@@ -75,7 +73,7 @@ enum MobileSessionShutdownType {
 // currently calls crash_helper::HasReportToUpload() before Crashpad calls
 // ProcessIntermediateDumps. Experiment with instead calling this later during
 // startup, but after Crashpad can process intermediate dumps.
-MobileSessionShutdownType GetLastShutdownType() {
+MobileSessionShutdownType GetLastShutdownType(bool has_reports_to_upload) {
   if ([[PreviousSessionInfo sharedInstance] isFirstSessionAfterUpgrade]) {
     return FIRST_LAUNCH_AFTER_UPGRADE;
   }
@@ -86,7 +84,7 @@ MobileSessionShutdownType GetLastShutdownType() {
     return SHUTDOWN_IN_BACKGROUND;
   }
 
-  if (crash_helper::HasReportToUpload()) {
+  if (has_reports_to_upload) {
     // The cause of the crash is known.
     if ([[PreviousSessionInfo sharedInstance]
             didSeeMemoryWarningShortlyBeforeTerminating]) {
@@ -97,9 +95,6 @@ MobileSessionShutdownType GetLastShutdownType() {
 
   // The cause of the crash is not known. Check the common causes in order of
   // severity and likeliness to have caused the crash.
-  if ([MainThreadFreezeDetector sharedInstance].lastSessionEndedFrozen) {
-    return SHUTDOWN_IN_FOREGROUND_WITH_MAIN_THREAD_FROZEN;
-  }
   if ([[PreviousSessionInfo sharedInstance]
           didSeeMemoryWarningShortlyBeforeTerminating]) {
     return SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_WITH_MEMORY_WARNING;
@@ -108,12 +103,48 @@ MobileSessionShutdownType GetLastShutdownType() {
   return SHUTDOWN_IN_FOREGROUND_NO_CRASH_LOG_NO_MEMORY_WARNING;
 }
 
+// Cleaning up the cache is best effort. Ignore removal results and errors.
+// Remove this after a few milestones.
+void ClearMainThreadFreezeDetectorCache() {
+  NSString* cacheDirectory = NSSearchPathForDirectoriesInDomains(
+      NSCachesDirectory, NSUserDomainMask, YES)[0];
+  // The directory containing old UTE crash reports.
+  NSString* UTEDirectory =
+      [cacheDirectory stringByAppendingPathComponent:@"UTE"];
+  BOOL isDirectory = NO;
+  NSError* error = nil;
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:UTEDirectory isDirectory:&isDirectory] &&
+      isDirectory) {
+    [fileManager removeItemAtPath:UTEDirectory error:&error];
+  }
+
+  // The directory containing old UTE crash reports eligible for crashpad
+  // processing.
+  NSString* UTEPendingCrashpadDirectory =
+      [cacheDirectory stringByAppendingPathComponent:@"UTE_CrashpadPending"];
+  isDirectory = NO;
+  if ([fileManager fileExistsAtPath:UTEPendingCrashpadDirectory
+                        isDirectory:&isDirectory] &&
+      isDirectory) {
+    [fileManager removeItemAtPath:UTEPendingCrashpadDirectory error:&error];
+  }
+}
+
 // Tells crashpad to start processing previously created intermediate dumps and
 // begin uploading when possible.
 void ProcessIntermediateDumps() {
-  crash_reporter::ProcessIntermediateDumps();
-  [[MainThreadFreezeDetector sharedInstance] processIntermediateDumps];
+  crashpad::UserStreamDataSources user_stream_data_sources;
+  user_stream_data_sources.push_back(
+      std::make_unique<gwp_asan::UserStreamDataSource>());
+  crash_reporter::ProcessIntermediateDumps({}, &user_stream_data_sources);
   crash_reporter::StartProcessingPendingReports();
+
+  // Remove this after a few milestones.
+  ClearMainThreadFreezeDetectorCache();
+
+  bool has_reports_to_upload = HasReportToUpload();
+
   // Wait until after processing intermediate dumps to record last shutdown
   // type.
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -121,9 +152,10 @@ void ProcessIntermediateDumps() {
     // appear in the initial stability log. Because of this, the stability flag
     // on this histogram doesn't matter. It will be reported like any other
     // metric.
-    UMA_STABILITY_HISTOGRAM_ENUMERATION("Stability.MobileSessionShutdownType2",
-                                        GetLastShutdownType(),
-                                        MOBILE_SESSION_SHUTDOWN_TYPE_COUNT);
+    UMA_STABILITY_HISTOGRAM_ENUMERATION(
+        "Stability.MobileSessionShutdownType2",
+        GetLastShutdownType(has_reports_to_upload),
+        MOBILE_SESSION_SHUTDOWN_TYPE_COUNT);
   });
 }
 
@@ -168,9 +200,6 @@ void Start() {
   if (base::ios::IsApplicationPreWarmed()) {
     static crash_reporter::CrashKeyString<4> prewarmed_key("is_prewarmed");
     prewarmed_key.Set("yes");
-  } else {
-    // Don't start MTFD when prewarmed, the check thread will just get confused.
-    [[MainThreadFreezeDetector sharedInstance] start];
   }
 }
 
@@ -181,10 +210,6 @@ void SetEnabled(bool enabled) {
   // Caches the uploading flag in NSUserDefaults, so that we can access the
   // value immediately on startup, such as in safe mode or extensions.
   crash_helper::common::SetUserEnabledUploading(enabled);
-
-  // It is necessary to always call `MainThreadFreezeDetector setEnabled` as
-  // the function will update its preference based on finch.
-  [[MainThreadFreezeDetector sharedInstance] setEnabled:enabled];
 
   // Don't sync upload consent when the app is backgrounded. Crashpad
   // flocks the settings file, and because Chrome puts this in a shared

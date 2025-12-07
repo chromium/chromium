@@ -19,7 +19,13 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.net.test.util.TestWebServer;
+
+import java.util.Collections;
+import java.util.List;
 
 /** Test suite for the WebView specific JavaBridge features. */
 @RunWith(Parameterized.class)
@@ -27,7 +33,7 @@ import org.chromium.base.test.util.Feature;
 public class AwJavaBridgeTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
-    private TestAwContentsClient mContentsClient = new TestAwContentsClient();
+    private final TestAwContentsClient mContentsClient = new TestAwContentsClient();
     private AwTestContainerView mTestContainerView;
 
     // The system retains a strong ref to the last focused view (in InputMethodManager)
@@ -46,6 +52,112 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @CommandLineFlags.Add({ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+    public void testAllowlist() throws Throwable {
+        TestWebServer webServer = TestWebServer.start();
+        String firstPartyOrigin = webServer.setServerHost("1porigin.test");
+        String thirdPartyOrigin = firstPartyOrigin.replace("1porigin.test", "3porigin.test");
+
+        String path = "/cookie_test.html";
+        final String html = "<html>Hello World</html>";
+
+        String url = webServer.setResponse(path, html, null);
+        String thirdPartyUrl = url.replace(firstPartyOrigin, thirdPartyOrigin);
+
+        final AwContents awContents = mTestContainerView.getAwContents();
+        AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
+
+        class Foo {
+            Foo(int value) {
+                mValue = value;
+            }
+
+            @JavascriptInterface
+            public int getValue() {
+                return mValue;
+            }
+
+            private final int mValue;
+        }
+
+        // addJavascriptInterfaceOnUiThread returns any bad rules when adding an interface.
+        Assert.assertEquals(
+                AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                        awContents,
+                        new Foo(1),
+                        "testNotAllowed",
+                        List.of("http://notallowed.test")),
+                Collections.emptyList());
+        Assert.assertEquals(
+                AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                        awContents, new Foo(2), "testAllowed", List.of(firstPartyOrigin)),
+                Collections.emptyList());
+        Assert.assertEquals(
+                AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                        awContents, new Foo(3), "testAllowed3p", List.of(thirdPartyOrigin)),
+                Collections.emptyList());
+        Assert.assertEquals(
+                AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                        awContents, new Foo(4), "testUniversal", List.of("*")),
+                Collections.emptyList());
+        Assert.assertEquals(
+                AwActivityTestRule.addJavascriptInterfaceOnUiThread(
+                        awContents,
+                        new Foo(1),
+                        "testIllformed",
+                        List.of(firstPartyOrigin, thirdPartyOrigin, "://ill_formed.test")),
+                List.of("://ill_formed.test"));
+
+        mActivityTestRule.loadUrlSync(awContents, mContentsClient.getOnPageFinishedHelper(), url);
+        Assert.assertEquals(
+                "null",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testNotAllowed.getValue()"));
+        Assert.assertEquals(
+                "2",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testAllowed.getValue()"));
+        Assert.assertEquals(
+                "null",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testAllowed3p.getValue()"));
+        Assert.assertEquals(
+                "4",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testUniversal.getValue()"));
+        Assert.assertEquals(
+                "null",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testIllformed.getValue()"));
+
+        // Then navigated to a new url to confirm the allowlists are still applied appropriately
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), thirdPartyUrl);
+        Assert.assertEquals(
+                "null",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testNotAllowed.getValue()"));
+        Assert.assertEquals(
+                "null",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testAllowed.getValue()"));
+        Assert.assertEquals(
+                "3",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testAllowed3p.getValue()"));
+        Assert.assertEquals(
+                "4",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testUniversal.getValue()"));
+        Assert.assertEquals(
+                "null",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        awContents, mContentsClient, "testIllformed.getValue()"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
     public void testDestroyFromJavaObject() throws Throwable {
         final String html = "<html>Hello World</html>";
         final TestAwContentsClient client2 = new TestAwContentsClient();
@@ -53,7 +165,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 mActivityTestRule.createAwTestContainerViewOnMainSync(client2);
         final AwContents awContents = mTestContainerView.getAwContents();
 
-        class Test {
+        class Foo {
             @JavascriptInterface
             public void destroy() {
                 try {
@@ -71,7 +183,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         }
 
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, new Test(), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents, new Foo(), "test");
 
         mActivityTestRule.loadDataSync(
                 awContents, mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
@@ -101,8 +213,8 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents1);
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents2);
 
-        class Test {
-            Test(int value) {
+        class Foo {
+            Foo(int value) {
                 mValue = value;
             }
 
@@ -111,11 +223,11 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 return mValue;
             }
 
-            private int mValue;
+            private final int mValue;
         }
 
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Test(1), "test");
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents2, new Test(2), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Foo(1), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents2, new Foo(2), "test");
         final String html = "<html>Hello World</html>";
         mActivityTestRule.loadDataSync(
                 awContents1, mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
@@ -139,8 +251,8 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         final AwContents awContents1 = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents1);
 
-        class Test {
-            Test(int value) {
+        class Foo {
+            Foo(int value) {
                 mValue = value;
             }
 
@@ -149,10 +261,10 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
                 return mValue;
             }
 
-            private int mValue;
+            private final int mValue;
         }
 
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Test(1), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents1, new Foo(1), "test");
         final String html = "<html>Hello World</html>";
         mActivityTestRule.loadDataSync(
                 awContents1, mContentsClient.getOnPageFinishedHelper(), html, "text/html", false);
@@ -167,7 +279,7 @@ public class AwJavaBridgeTest extends AwParameterizedTest {
         final AwContents awContents2 = view2.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents2);
 
-        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents2, new Test(2), "test");
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(awContents2, new Foo(2), "test");
         mActivityTestRule.loadDataSync(
                 awContents2, client2.getOnPageFinishedHelper(), html, "text/html", false);
 

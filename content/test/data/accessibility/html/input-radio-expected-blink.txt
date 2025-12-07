@@ -13,14 +13,14 @@ rootWebArea
 ++++++sectionWithoutName
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio3' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton
-++++++++++staticText ignored name='Radio3'
+++++++++++staticText ignored
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio4' setSize=2 posInSet=2 checkedState=true radioGroupIds=radioButton,radioButton
-++++++++++staticText ignored name='Radio4'
+++++++++++staticText ignored
 ++++++sectionWithoutName
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio5' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton
-++++++++++staticText ignored name='Radio5'
+++++++++++staticText ignored
 ++++++++labelText ignored
 ++++++++++radioButton inputType='radio' name='Radio6' setSize=2 posInSet=2 checkedState=true radioGroupIds=radioButton
-++++++++++staticText ignored name='Radio6'
+++++++++++staticText ignored

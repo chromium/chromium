@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -49,7 +48,6 @@ using blink::WebPluginContainer;
 using blink::WebString;
 using blink::WebURLError;
 using blink::WebURLResponse;
-using blink::WebVector;
 using blink::WebView;
 using blink::web_pref::WebPreferences;
 
@@ -90,7 +88,7 @@ void WebViewPlugin::ReplayReceivedData(WebPlugin* plugin) {
   if (!response_.IsNull()) {
     plugin->DidReceiveResponse(response_);
     for (auto it = data_.begin(); it != data_.end(); ++it) {
-      plugin->DidReceiveData(it->c_str(), it->length());
+      plugin->DidReceiveData(*it);
     }
   }
   // We need to transfer the |focused_| to new plugin after it loaded.
@@ -246,8 +244,8 @@ void WebViewPlugin::DidReceiveResponse(const WebURLResponse& response) {
   response_ = response;
 }
 
-void WebViewPlugin::DidReceiveData(const char* data, size_t data_length) {
-  data_.push_back(std::string(data, data_length));
+void WebViewPlugin::DidReceiveData(base::span<const char> data) {
+  data_.push_back(std::string(data.data(), data.size()));
 }
 
 void WebViewPlugin::DidFinishLoading() {
@@ -279,8 +277,10 @@ WebViewPlugin::WebViewHelper::WebViewHelper(
       *agent_group_scheduler_,
       /*session_storage_namespace_id=*/std::string(),
       /*page_base_background_color=*/std::nullopt,
-      blink::BrowsingContextGroupInfo::CreateUnique(),
-      /*color_provider_colors=*/nullptr);
+      /*browsing_context_group_token=*/base::UnguessableToken(),
+      /*color_provider_colors=*/nullptr,
+      /*history_index=*/-1,
+      /*history_length=*/0);
   // ApplyWebPreferences before making a WebLocalFrame so that the frame sees a
   // consistent view of our preferences.
   blink::WebView::ApplyWebPreferences(parent_web_preferences, web_view_);
@@ -403,8 +403,9 @@ void WebViewPlugin::WebViewHelper::DidClearWindowObject() {
       .Check();
 }
 
-void WebViewPlugin::WebViewHelper::FrameDetached() {
-  frame_->Close();
+void WebViewPlugin::WebViewHelper::FrameDetached(
+    blink::DetachReason detach_reason) {
+  frame_->Close(detach_reason);
   frame_ = nullptr;
 }
 

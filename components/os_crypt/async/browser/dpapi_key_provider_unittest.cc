@@ -4,10 +4,15 @@
 
 #include "components/os_crypt/async/browser/dpapi_key_provider.h"
 
+#include <windows.h>
+
+#include <dpapi.h>
+
 #include <optional>
 #include <utility>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/rand_util.h"
@@ -15,6 +20,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
+#include "base/win/scoped_localalloc.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/os_crypt/async/common/encryptor.h"
@@ -24,37 +31,55 @@
 
 namespace os_crypt_async {
 
+namespace {
+
+// Utility function to encrypt data using the raw DPAPI interface.
+bool EncryptStringWithDPAPI(const std::string& plaintext,
+                            std::string& ciphertext) {
+  DATA_BLOB input = {};
+  input.pbData =
+      const_cast<BYTE*>(reinterpret_cast<const BYTE*>(plaintext.data()));
+  input.cbData = static_cast<DWORD>(plaintext.length());
+
+  BOOL result = FALSE;
+  DATA_BLOB output = {};
+  result =
+      ::CryptProtectData(&input, /*szDataDescr=*/L"",
+                         /*pOptionalEntropy=*/nullptr, /*pvReserved=*/nullptr,
+                         /*pPromptStruct=*/nullptr, /*dwFlags=*/0, &output);
+  if (!result) {
+    return false;
+  }
+
+  auto local_alloc = base::win::TakeLocalAlloc(output.pbData);
+
+  static_assert(sizeof(std::string::value_type) == 1);
+
+  ciphertext.assign(
+      reinterpret_cast<std::string::value_type*>(local_alloc.get()),
+      output.cbData);
+
+  return true;
+}
+
+}  // namespace
 // This class tests that DPAPIKeyProvider is forwards and backwards
 // compatible with OSCrypt.
-class DPAPIKeyProviderTest : public ::testing::Test {
- public:
-  void SetUp() override {
-    OSCrypt::RegisterLocalPrefs(prefs_.registry());
-    OSCrypt::Init(&prefs_);
-  }
-
-  void TearDown() override {
-    OSCrypt::ResetStateForTesting();
-    histograms_.ExpectBucketCount("OSCrypt.DPAPIProvider.Status",
-                                  expected_histogram_, 1);
-  }
-
+class DPAPIKeyProviderTestBase : public ::testing::Test {
  protected:
+  void TearDown() override {
+    if (expected_histogram_) {
+      histograms_.ExpectBucketCount("OSCrypt.DPAPIProvider.Status",
+                                    *expected_histogram_, 1);
+    }
+  }
+
   Encryptor GetInstanceSync(
       OSCryptAsync& factory,
       Encryptor::Option option = Encryptor::Option::kNone) {
-    base::RunLoop run_loop;
-    std::optional<Encryptor> encryptor;
-    auto sub =
-        factory.GetInstance(base::BindLambdaForTesting(
-                                [&](Encryptor encryptor_param, bool success) {
-                                  EXPECT_TRUE(success);
-                                  encryptor.emplace(std::move(encryptor_param));
-                                  run_loop.Quit();
-                                }),
-                            option);
-    run_loop.Run();
-    return std::move(*encryptor);
+    base::test::TestFuture<Encryptor> future;
+    factory.GetInstance(future.GetCallback(), option);
+    return future.Take();
   }
 
   Encryptor GetInstanceWithDPAPI() {
@@ -65,17 +90,33 @@ class DPAPIKeyProviderTest : public ::testing::Test {
     return GetInstanceSync(factory);
   }
 
-  DPAPIKeyProvider::KeyStatus expected_histogram_ =
-      DPAPIKeyProvider::KeyStatus::kSuccess;
   TestingPrefServiceSimple prefs_;
+  std::optional<DPAPIKeyProvider::KeyStatus> expected_histogram_ =
+      DPAPIKeyProvider::KeyStatus::kSuccess;
 
  private:
-  base::test::TaskEnvironment task_environment_;
   base::HistogramTester histograms_;
+  base::test::TaskEnvironment task_environment_;
+};
+
+class DPAPIKeyProviderTest : public DPAPIKeyProviderTestBase {
+ protected:
+  void SetUp() override {
+    OSCrypt::RegisterLocalPrefs(prefs_.registry());
+    OSCrypt::Init(&prefs_);
+  }
+
+  void TearDown() override {
+    OSCrypt::ResetStateForTesting();
+    DPAPIKeyProviderTestBase::TearDown();
+  }
 };
 
 TEST_F(DPAPIKeyProviderTest, Basic) {
   Encryptor encryptor = GetInstanceWithDPAPI();
+
+  ASSERT_TRUE(encryptor.IsEncryptionAvailable());
+  ASSERT_TRUE(encryptor.IsDecryptionAvailable());
 
   std::string plaintext = "secrets";
   std::string ciphertext;
@@ -112,6 +153,10 @@ TEST_F(DPAPIKeyProviderTest, EncryptForOld) {
 
 // Very small Key Provider that provides a random key.
 class RandomKeyProvider : public KeyProvider {
+ public:
+  RandomKeyProvider(bool use_for_encryption = true)
+      : use_for_encryption_(use_for_encryption) {}
+
  private:
   void GetKey(KeyCallback callback) final {
     std::vector<uint8_t> key(Encryptor::Key::kAES256GCMKeySize);
@@ -120,8 +165,10 @@ class RandomKeyProvider : public KeyProvider {
                             Encryptor::Key(key, mojom::Algorithm::kAES256GCM));
   }
 
-  bool UseForEncryption() final { return true; }
+  bool UseForEncryption() final { return use_for_encryption_; }
   bool IsCompatibleWithOsCryptSync() final { return false; }
+
+  const bool use_for_encryption_;
 };
 
 TEST_F(DPAPIKeyProviderTest, EncryptWithOptions) {
@@ -196,11 +243,140 @@ TEST_F(DPAPIKeyProviderTest, EncryptWithOptions) {
     }
   }
 }
+
+TEST_F(DPAPIKeyProviderTest, ShouldReencrypt) {
+  std::string ciphertext;
+  // This test re-initializes the DPAPIKeyProvider a few times, so ignore
+  // histogram results. These histograms are tested elsewhere.
+  expected_histogram_ = std::nullopt;
+
+  ASSERT_TRUE(OSCrypt::EncryptString("oscryptsecrets", &ciphertext));
+
+  {
+    auto encryptor = GetInstanceWithDPAPI();
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    // This should not require re-encryption because the only provider
+    // registered, the DPAPI one, successfully decrypted the data, even though
+    // it was originally encrypted by OSCrypt Sync.
+    EXPECT_FALSE(flags.should_reencrypt);
+  }
+
+  {
+    std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>> providers;
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/15u, std::make_unique<RandomKeyProvider>()));
+
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    // This decryption used OSCrypt sync fallback, but there was a key provider
+    // registered for encryption, so the data should be re-encrypted for the new
+    // key provider.
+    EXPECT_TRUE(flags.should_reencrypt);
+  }
+
+  {
+    std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>> providers;
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/15u,
+        std::make_unique<RandomKeyProvider>(/*use_for_encryption=*/false)));
+
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    // This decryption used OSCrypt sync fallback, and the only key provider
+    // registered did not say it should encrypt, so this should not re-encrypt.
+    EXPECT_FALSE(flags.should_reencrypt);
+  }
+
+  {
+    std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>> providers;
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/10u, std::make_unique<DPAPIKeyProvider>(&prefs_)));
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/15u, std::make_unique<RandomKeyProvider>()));
+
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    // This decryption used the DPAPI key provider, but there is also a
+    // RandomKeyProvider registered so data should be re-encrypted.
+    EXPECT_TRUE(flags.should_reencrypt);
+  }
+
+  {
+    std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>> providers;
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/10u, std::make_unique<DPAPIKeyProvider>(&prefs_)));
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/15u,
+        std::make_unique<RandomKeyProvider>(/*use_for_encryption=*/false)));
+
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    // This decryption used the DPAPI key provider. The RandomKeyProvider is not
+    // to be used for encryption, so the data can remain encrypted OSCrypt Sync
+    // compatible.
+    EXPECT_FALSE(flags.should_reencrypt);
+  }
+
+  {
+    std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>> providers;
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/10u, std::make_unique<DPAPIKeyProvider>(&prefs_)));
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/5u, std::make_unique<RandomKeyProvider>()));
+
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(ciphertext, &plaintext, &flags));
+    // In this test, both key providers are enabled for encryption but the
+    // RandomKeyProvider is a lower precedence than the DPAPI key provider, so
+    // will not be the default for encryption, therefore since the data is
+    // already encrypted with DPAPI, a re-encryption should not be requested.
+    EXPECT_FALSE(flags.should_reencrypt);
+  }
+
+  {
+    std::vector<std::pair<size_t, std::unique_ptr<KeyProvider>>> providers;
+    providers.emplace_back(std::make_pair(
+        /*precedence=*/10u, std::make_unique<DPAPIKeyProvider>(&prefs_)));
+    OSCryptAsync factory(std::move(providers));
+    Encryptor encryptor = GetInstanceSync(factory);
+    std::string dpapi_ciphertext;
+    ASSERT_TRUE(EncryptStringWithDPAPI("dpapisecret", dpapi_ciphertext));
+    Encryptor::DecryptFlags flags;
+    std::string plaintext;
+    ASSERT_TRUE(encryptor.DecryptString(dpapi_ciphertext, &plaintext, &flags));
+    // In this test, a re-encryption should be requested, because the data was
+    // encrypted using very old (pre-m79) DPAPI.
+    EXPECT_TRUE(flags.should_reencrypt);
+  }
+}
+
 // Only test a few scenarios here, just to verify the error histogram is always
 // logged.
 TEST_F(DPAPIKeyProviderTest, OSCryptNotInit) {
   prefs_.ClearPref("os_crypt.encrypted_key");
   Encryptor encryptor = GetInstanceWithDPAPI();
+  // Encryption is available because OSCrypt sync already initialized before the
+  // test fixture invalidated the key for the DPAPI Key Provider, and so while
+  // the encryptor has no keyring, it delegates successfully to OSCrypt sync.
+  EXPECT_TRUE(encryptor.IsEncryptionAvailable());
+  EXPECT_TRUE(encryptor.IsDecryptionAvailable());
   expected_histogram_ = DPAPIKeyProvider::KeyStatus::kKeyNotFound;
 }
 
@@ -208,6 +384,44 @@ TEST_F(DPAPIKeyProviderTest, OSCryptBadKeyHeader) {
   prefs_.SetString("os_crypt.encrypted_key", "badkeybadkey");
   Encryptor encryptor = GetInstanceWithDPAPI();
   expected_histogram_ = DPAPIKeyProvider::KeyStatus::kInvalidKeyHeader;
+}
+
+TEST_F(DPAPIKeyProviderTestBase, NoOSCrypt) {
+  Encryptor encryptor = GetInstanceWithDPAPI();
+  // Compare with DPAPIKeyProviderTest.OSCryptNotInit above: Encryption is not
+  // available for this test because OSCrypt was never initialized and so the
+  // encryptor has no key, and OSCrypt::IsEncryptionAvailable is also returning
+  // false.
+  EXPECT_FALSE(encryptor.IsEncryptionAvailable());
+  EXPECT_FALSE(encryptor.IsDecryptionAvailable());
+  expected_histogram_ = DPAPIKeyProvider::KeyStatus::kKeyNotFound;
+}
+
+TEST_F(DPAPIKeyProviderTest, DPAPIFailing) {
+  // This first part obtains an encryptor with the DPAPI Key provider, then
+  // encrypts some data with it.
+  std::optional<std::vector<uint8_t>> ciphertext;
+  {
+    Encryptor encryptor = GetInstanceWithDPAPI();
+    ciphertext = encryptor.EncryptString("secret");
+    ASSERT_TRUE(ciphertext);
+  }
+
+  // Now, break the DPAPI key provider by storing a key that will not decrypt
+  // with DPAPI. This encryptor should fall back to OSCrypt sync, which has
+  // already been initialized. This decryption should function correctly since
+  // the DPAPI key provider is OSCrypt Sync compatible.
+  prefs_.SetString("os_crypt.encrypted_key", base::Base64Encode("DPAPIBadKey"));
+  expected_histogram_ = DPAPIKeyProvider::KeyStatus::kDPAPIDecryptFailure;
+  {
+    Encryptor encryptor = GetInstanceWithDPAPI();
+    Encryptor::DecryptFlags flags;
+    const auto decrypted = encryptor.DecryptData(*ciphertext, &flags);
+    ASSERT_TRUE(decrypted);
+    ASSERT_FALSE(flags.temporarily_unavailable);
+    ASSERT_FALSE(flags.should_reencrypt);
+    EXPECT_EQ(*decrypted, "secret");
+  }
 }
 
 }  // namespace os_crypt_async

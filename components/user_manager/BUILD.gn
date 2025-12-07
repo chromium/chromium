@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-
 component("common") {
   sources = [
     "user_type.cc",
@@ -30,6 +28,7 @@ component("user_manager") {
     "//base",
     "//components/account_id",
     "//components/prefs",
+    "//google_apis",
     "//ui/gfx",
   ]
 
@@ -40,7 +39,7 @@ component("user_manager") {
 
   defines = [ "USER_MANAGER_IMPLEMENTATION" ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "account_id_util.cc",
       "account_id_util.h",
@@ -64,13 +63,16 @@ component("user_manager") {
       "user_image/user_image.h",
       "user_manager.cc",
       "user_manager.h",
-      "user_manager_base.cc",
-      "user_manager_base.h",
+      "user_manager_impl.cc",
+      "user_manager_impl.h",
+      "user_manager_policy_util.cc",
+      "user_manager_policy_util.h",
     ]
 
     deps += [
       "//ash/constants",
       "//chromeos/ash/components/install_attributes",
+      "//chromeos/ash/components/policy/device_local_account",
       "//chromeos/ash/components/settings",
       "//components/pref_registry",
       "//skia",
@@ -81,7 +83,7 @@ component("user_manager") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   source_set("test_support") {
     testonly = true
     sources = [
@@ -91,6 +93,8 @@ if (is_chromeos_ash) {
       "fake_user_manager.h",
       "fake_user_manager_delegate.cc",
       "fake_user_manager_delegate.h",
+      "test_helper.cc",
+      "test_helper.h",
     ]
 
     public_deps = [
@@ -98,6 +102,17 @@ if (is_chromeos_ash) {
       "//base",
       "//chromeos/ash/components/install_attributes",
       "//components/account_id",
+    ]
+
+    deps = [
+      "//chromeos/ash/components/cryptohome",
+      "//chromeos/ash/components/dbus/cryptohome",
+      "//chromeos/ash/components/dbus/cryptohome:cryptohome_proto",
+      "//chromeos/ash/components/dbus/userdataauth",
+      "//chromeos/ash/components/policy/device_local_account",
+      "//chromeos/ash/components/settings",
+      "//components/policy/core/common",
+      "//components/prefs",
     ]
   }
 
@@ -120,5 +135,9 @@ if (is_chromeos_ash) {
       "//testing/gmock",
       "//testing/gtest",
     ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

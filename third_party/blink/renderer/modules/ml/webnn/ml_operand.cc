@@ -7,9 +7,11 @@
 #include <functional>
 
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/cpp/webnn_errors.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
@@ -19,17 +21,27 @@ namespace blink {
 
 // static
 base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
+    const webnn::ContextProperties& context_properties,
     MLGraphBuilder* builder,
-    V8MLOperandDataType::Enum data_type,
+    V8MLOperandDataType::Enum v8_data_type,
     Vector<uint32_t> dimensions,
     String name) {
-  ASSIGN_OR_RETURN(webnn::OperandDescriptor descriptor,
-                   webnn::OperandDescriptor::Create(
-                       FromBlinkDataType(data_type), dimensions),
-                   [](std::string error) { return String(error); });
-
   if (name.empty()) {
     return base::unexpected("The name is empty.");
+  }
+
+  const webnn::OperandDataType data_type = FromBlinkDataType(v8_data_type);
+
+  ASSIGN_OR_RETURN(
+      webnn::OperandDescriptor descriptor,
+      webnn::OperandDescriptor::Create(
+          context_properties, data_type, dimensions,
+          webnn::GetErrorLabelPrefix(base::StrCat({"input ", name.Utf8()}))),
+      [](std::string error) { return String(error); });
+
+  if (!context_properties.data_type_limits.input.Supports(descriptor)) {
+    return base::unexpected(String(webnn::NotSupportedInputError(
+        name.Utf8(), descriptor, context_properties.data_type_limits.input)));
   }
 
   auto* input = MakeGarbageCollected<MLOperand>(
@@ -42,7 +54,7 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateInput(
 // static
 MLOperand* MLOperand::CreateOutput(MLGraphBuilder* builder,
                                    webnn::OperandDescriptor descriptor,
-                                   const MLOperator* ml_operator) {
+                                   MLOperator* ml_operator) {
   CHECK(ml_operator);
 
   auto* output = MakeGarbageCollected<MLOperand>(
@@ -72,9 +84,13 @@ const String& MLOperand::Name() const {
   return name_;
 }
 
-const MLOperator* MLOperand::Operator() const {
+MLOperator* MLOperand::Operator() const {
   CHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kOutput);
   return operator_.Get();
+}
+
+HeapHashSet<Member<MLOperator>>& MLOperand::DependentOperators() {
+  return dependent_operators_;
 }
 
 const webnn::OperandDescriptor& MLOperand::Descriptor() const {
@@ -98,9 +114,8 @@ size_t MLOperand::ByteLength() const {
 }
 
 wtf_size_t MLOperand::Rank() const {
-  // TODO(crbug.com/325598628): Make this a static_cast if validation is added
-  // to check that the rank is less than the max uint32_t.
-  return base::checked_cast<wtf_size_t>(descriptor_.Rank());
+  static_assert(sizeof(descriptor_.Rank()) == sizeof(wtf_size_t));
+  return static_cast<wtf_size_t>(descriptor_.Rank());
 }
 
 Vector<uint32_t> MLOperand::shape() const {
@@ -111,14 +126,19 @@ V8MLOperandDataType MLOperand::dataType() const {
   return ToBlinkDataType(descriptor_.data_type());
 }
 
-MLConstantOperand const* MLOperand::AsConstantOperand() const {
+MLConstantOperand* MLOperand::AsConstantOperand() {
   CHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kConstant);
-  return static_cast<MLConstantOperand const*>(this);
+  return static_cast<MLConstantOperand*>(this);
+}
+
+void MLOperand::AddDependentOperator(MLOperator* ml_operator) {
+  dependent_operators_.insert(ml_operator);
 }
 
 void MLOperand::Trace(Visitor* visitor) const {
   visitor->Trace(builder_);
   visitor->Trace(operator_);
+  visitor->Trace(dependent_operators_);
   ScriptWrappable::Trace(visitor);
 }
 

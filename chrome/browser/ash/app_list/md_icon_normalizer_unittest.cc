@@ -183,29 +183,35 @@ TEST_F(MdIconNormalizerTest, CompareShapes) {
   // frame than a circle, but still large enough to require downscaling.
   // The scale should be greater.
   ResetCanvas();
-  SkPath octagon;
   constexpr int kCutoff = kIconSize / 3;
-  octagon.moveTo(0, kCutoff);
-  octagon.lineTo(kCutoff, 0);
-  octagon.lineTo(kIconSize - kCutoff, 0);
-  octagon.lineTo(kIconSize, kCutoff);
-  octagon.lineTo(kIconSize, kIconSize - kCutoff);
-  octagon.lineTo(kIconSize - kCutoff, kIconSize);
-  octagon.lineTo(kCutoff, kIconSize);
-  octagon.lineTo(0, kIconSize - kCutoff);
-  octagon.lineTo(0, kCutoff);
+  const SkPath octagon = SkPath::Polygon(
+      {
+          {0, kCutoff},
+          {kCutoff, 0},
+          {kIconSize - kCutoff, 0},
+          {kIconSize, kCutoff},
+          {kIconSize, kIconSize - kCutoff},
+          {kIconSize - kCutoff, kIconSize},
+          {kCutoff, kIconSize},
+          {0, kIconSize - kCutoff},
+          {0, kCutoff},
+      },
+      /*isClosed=*/false);
   canvas->DrawPath(octagon, flags_opaque);
   const float scale_octagon = GetScale();
   EXPECT_LT(scale_circle, scale_octagon);
 
   // A diamond fills too small a fraction of the frame, should not be scaled.
   ResetCanvas();
-  SkPath diamond;
-  diamond.moveTo(0, kHalfSize);
-  diamond.lineTo(kHalfSize, 0);
-  diamond.lineTo(kIconSize, kHalfSize);
-  diamond.lineTo(kHalfSize, kIconSize);
-  diamond.lineTo(0, kHalfSize);
+  const SkPath diamond = SkPath::Polygon(
+      {
+          {0, kHalfSize},
+          {kHalfSize, 0},
+          {kIconSize, kHalfSize},
+          {kHalfSize, kIconSize},
+          {0, kHalfSize},
+      },
+      /*isClosed=*/false);
   canvas->DrawPath(diamond, flags_opaque);
   EXPECT_EQ(1, GetScale());
 }

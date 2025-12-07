@@ -2,80 +2,64 @@
 <html>
   <head>
     <title>
-      panner-loop.html
+      panner-loop: PannerNode handling of feedback loops
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/panner-model-testing.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let audit = Audit.createTaskRunner();
-
+    <script>
       // See crbug.com/331446.
 
       // Create a simple feedback loop and make sure the panner node processes
       // it correctly.
 
-      audit.define(
-          {label: 'test', description: 'PannerNode handling of feedback loops'},
-          (task, should) => {
+      promise_test(async () => {
+        const sampleRate = 44100;
+        const renderLengthSeconds = 1;
 
-            let sampleRate = 44100;
-            let renderLengthSeconds = 1;
+        // Create offline audio context.
+        const context = new OfflineAudioContext(
+            2, sampleRate * renderLengthSeconds, sampleRate);
 
-            // Create offline audio context.
-            let context = new OfflineAudioContext(
-                2, sampleRate * renderLengthSeconds, sampleRate);
+        // Create nodes in graph. This is based on the test given in
+        // crbug.com/331446.
+        const source = new AudioBufferSourceNode(context,
+            {buffer: createImpulseBuffer(context,
+                sampleRate * renderLengthSeconds)});
+        const activateNode = new GainNode(context);
+        const dry = new GainNode(context, {gain: 1});
+        const wet = new GainNode(context, {gain: 0.5});
+        const filter = new BiquadFilterNode(context, {frequency: 20000});
+        const delay = new DelayNode(context, {delayTime: 0.1});
+        const feedbackNode = new GainNode(context, {gain: 0.45});
+        const output = new GainNode(context);
 
-            // Create nodes in graph. This is based on the test given in
-            // crbug.com/331446.
-            let source = context.createBufferSource();
-            source.buffer =
-                createImpulseBuffer(context, sampleRate * renderLengthSeconds);
-            let activateNode = context.createGain();
-            let dry = context.createGain();
-            let wet = context.createGain();
-            let filter = context.createBiquadFilter();
-            let delay = context.createDelay();
-            let feedbackNode = context.createGain();
-            let output = context.createGain();
+        source.connect(activateNode);
+        activateNode.connect(delay);
+        activateNode.connect(dry);
+        delay.connect(filter);
+        filter.connect(feedbackNode);
+        feedbackNode.connect(delay);
+        feedbackNode.connect(wet);
+        wet.connect(output);
+        dry.connect(output);
 
-            delay.delayTime.value = 0.1;
-            wet.gain.value = 0.5;
-            dry.gain.value = 1;
-            feedbackNode.gain.value = 0.45;
-            filter.frequency.value = 20000;
+        const panner = new PannerNode(context, {
+          coneOuterGain: 0.1,
+          coneOuterAngle: 180,
+          coneInnerAngle: 0,
+        });
 
-            source.connect(activateNode);
-            activateNode.connect(delay);
-            activateNode.connect(dry);
-            delay.connect(filter);
-            filter.connect(feedbackNode);
-            feedbackNode.connect(delay);
-            feedbackNode.connect(wet);
-            wet.connect(output);
-            dry.connect(output);
+        panner.connect(context.destination);
 
-            let panner = context.createPanner();
-            panner.coneOuterGain = 0.1;
-            panner.coneOuterAngle = 180;
-            panner.coneInnerAngle = 0;
+        output.connect(panner);
 
-            panner.connect(context.destination);
-
-            output.connect(panner);
-
-            // Render.  We don't care what the output is, though.
-
-            should(context.startRendering(), 'Rendering of offline context')
-                .beResolved()
-                .then(() => task.done());
-          });
-
-      audit.run();
+        // Render.  We don't care what the output is, though.
+        await context.startRendering();
+      }, 'test: PannerNode handling of feedback loops');
     </script>
   </body>
 </html>

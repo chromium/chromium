@@ -22,7 +22,7 @@
     {
       "name": "LayoutBlockFlow (positioned, children-inline) DIV",
       "position": [8, 500],
-      "bounds": [300, 155],
+      "bounds": [300, 150],
       "invalidations": [
         [8, 8, 29, 19]
       ]

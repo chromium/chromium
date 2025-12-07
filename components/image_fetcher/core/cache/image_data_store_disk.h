@@ -21,7 +21,7 @@ namespace image_fetcher {
 // Saves/loads image data on disk. Performs i/o in a task runner.
 class ImageDataStoreDisk : public ImageDataStore {
  public:
-  // Stores the image data under the given |generic_storage_path|. The path will
+  // Stores the image data under the given `generic_storage_path`. The path will
   // be postfixed with a special directory.
   ImageDataStoreDisk(base::FilePath generic_storage_path,
                      scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -54,7 +54,7 @@ class ImageDataStoreDisk : public ImageDataStore {
                      std::string data);
 
   // Set to be INITIALIZED if a directory exists, or can be created under
-  // |storage_path|. If initialization fails, there's no need to retry.
+  // `storage_path`. If initialization fails, there's no need to retry.
   InitializationStatus initialization_status_;
 
   // The base path that's available to the store. A postfix will be appended

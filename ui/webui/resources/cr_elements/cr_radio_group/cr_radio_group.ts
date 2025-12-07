@@ -50,12 +50,12 @@ export class CrRadioGroupElement extends CrLitElement {
     };
   }
 
-  disabled: boolean = false;
-  selected?: string;
-  selectableElements: string =
+  accessor disabled: boolean = false;
+  accessor selected: string|undefined;
+  accessor selectableElements: string =
       'cr-radio-button, cr-card-radio-button, controlled-radio-button';
-  nestedSelectable: boolean = false;
-  private selectableRegExp_: RegExp = new RegExp('');
+  accessor nestedSelectable: boolean = false;
+  private accessor selectableRegExp_: RegExp = new RegExp('');
 
   private buttons_: CrRadioButtonElement[]|null = null;
   private buttonEventTracker_: EventTracker = new EventTracker();
@@ -86,7 +86,7 @@ export class CrRadioGroupElement extends CrLitElement {
 
     this.populateBound_ = () => this.populate_();
     assert(this.populateBound_);
-    this.shadowRoot!.querySelector('slot')!.addEventListener(
+    this.shadowRoot.querySelector('slot')!.addEventListener(
         'slotchange', this.populateBound_);
 
     this.populate_();
@@ -95,7 +95,7 @@ export class CrRadioGroupElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     assert(this.populateBound_);
-    this.shadowRoot!.querySelector('slot')!.removeEventListener(
+    this.shadowRoot.querySelector('slot')!.removeEventListener(
         'slotchange', this.populateBound_);
     this.buttonEventTracker_.removeAll();
   }
@@ -214,7 +214,7 @@ export class CrRadioGroupElement extends CrLitElement {
   }
 
   private populate_() {
-    const elements = this.shadowRoot!.querySelector('slot')!.assignedElements(
+    const elements = this.shadowRoot.querySelector('slot')!.assignedElements(
         {flatten: true});
     this.buttons_ = Array.from(elements).flatMap(el => {
       let result = [];
@@ -229,10 +229,10 @@ export class CrRadioGroupElement extends CrLitElement {
       return result;
     }) as CrRadioButtonElement[];
     this.buttonEventTracker_.removeAll();
-    this.buttons_!.forEach(el => {
-      this.buttonEventTracker_!.add(
+    this.buttons_.forEach(el => {
+      this.buttonEventTracker_.add(
           el, 'disabled-changed', () => this.populate_());
-      this.buttonEventTracker_!.add(el, 'name-changed', () => this.populate_());
+      this.buttonEventTracker_.add(el, 'name-changed', () => this.populate_());
     });
     this.update_();
   }

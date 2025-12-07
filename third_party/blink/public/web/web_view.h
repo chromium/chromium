@@ -35,7 +35,7 @@
 
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/public/common/fenced_frame/redacted_fenced_frame_config.h"
-#include "third_party/blink/public/common/page/browsing_context_group_info.h"
+#include "third_party/blink/public/common/fingerprinting_protection/noise_token.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/mojom/fenced_frame/fenced_frame.mojom-shared.h"
@@ -60,7 +60,6 @@ class PaintCanvas;
 
 namespace gfx {
 class ColorSpace;
-class Point;
 class PointF;
 class Rect;
 class Size;
@@ -72,7 +71,6 @@ struct ColorProviderColorMaps;
 class PageScheduler;
 class WebFrame;
 class WebFrameWidget;
-class WebHitTestResult;
 class WebLocalFrame;
 class WebNoStatePrefetchClient;
 class WebPagePopup;
@@ -134,6 +132,9 @@ class BLINK_EXPORT WebView {
   // TODO(yuzus): Remove |is_hidden| and start using |PageVisibilityState|.
   // |color_provider_colors| is used to create color providers that live in the
   // Page. Passing in nullptr indicates the default color maps should be used.
+  // |history_index| and |history_length| are information about the frame tree's
+  // history list at the point when this view was created. These values are
+  // updated again at navigation commit time.
   static WebView* Create(
       WebViewClient*,
       bool is_hidden,
@@ -148,8 +149,10 @@ class BLINK_EXPORT WebView {
       scheduler::WebAgentGroupScheduler& agent_group_scheduler,
       const SessionStorageNamespaceId& session_storage_namespace_id,
       std::optional<SkColor> page_base_background_color,
-      const BrowsingContextGroupInfo& browsing_context_group_info,
-      const ColorProviderColorMaps* color_provider_colors);
+      const base::UnguessableToken& browsing_context_group_token,
+      const ColorProviderColorMaps* color_provider_colors,
+      int32_t history_index,
+      int32_t history_length);
 
   // Destroys the WebView synchronously.
   virtual void Close() = 0;
@@ -309,13 +312,6 @@ class BLINK_EXPORT WebView {
   // Disable auto resize.
   virtual void DisableAutoResizeForTesting(const gfx::Size& new_size) = 0;
 
-  // Data exchange -------------------------------------------------------
-
-  // Do a hit test equivalent to what would be done for a GestureTap event
-  // that has width/height corresponding to the supplied |tapArea|.
-  virtual WebHitTestResult HitTestResultForTap(const gfx::Point& tap_point,
-                                               const gfx::Size& tap_area) = 0;
-
   // Developer tools -----------------------------------------------------
 
   // Enables device emulation as specified in params.
@@ -332,9 +328,6 @@ class BLINK_EXPORT WebView {
   virtual void DidCloseContextMenu() = 0;
 
   // Popup menu ----------------------------------------------------------
-
-  // Sets whether select popup menus should be rendered by the browser.
-  static void SetUseExternalPopupMenus(bool);
 
   // Cancels and hides the current popup (datetime, select...) if any.
   virtual void CancelPagePopup() = 0;
@@ -449,7 +442,7 @@ class BLINK_EXPORT WebView {
 
   // History list ---------------------------------------------------------
   virtual void SetHistoryListFromNavigation(
-      int32_t history_offset,
+      int32_t history_index,
       std::optional<int32_t> history_length) = 0;
   virtual void IncreaseHistoryListFromNavigation() = 0;
 
@@ -461,11 +454,6 @@ class BLINK_EXPORT WebView {
 
   // Returns whether this WebView represents a fenced frame root or not.
   virtual bool IsFencedFrameRoot() const = 0;
-
-  // Draggable Regions ---------------------------------------------------
-  // Indicates that this WebView should collect draggable regions set using the
-  // app-region CSS property.
-  virtual void SetSupportsDraggableRegions(bool supports_draggable_regions) = 0;
 
   // Misc -------------------------------------------------------------
 

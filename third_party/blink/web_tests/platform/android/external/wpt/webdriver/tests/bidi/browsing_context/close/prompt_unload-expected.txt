@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_prompt_unload_not_triggering_dialog[None-window]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Browser window not found)
+[FAIL] test_prompt_unload_not_triggering_dialog[False-window]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Browser window not found)
+[FAIL] test_prompt_unload_triggering_dialog[window]
+  webdriver.bidi.error.UnknownErrorException: unknown error (Browser window not found)
+Harness: the test ran to completion.
+

@@ -7,10 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -25,8 +22,8 @@ class InternalsStorageAccess {
   static ScriptPromise<IDLUndefined> setStorageAccess(
       ScriptState*,
       Internals&,
-      const WTF::String& origin,
-      const WTF::String& embedding_origin,
+      const String& origin,
+      const String& embedding_origin,
       const bool blocked,
       ExceptionState&);
 };

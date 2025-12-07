@@ -2,21 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/tracing/perfetto/producer_host.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/process/process.h"
-#include "base/tracing/perfetto_task_runner.h"
 #include "build/build_config.h"
 #include "services/tracing/perfetto/perfetto_service.h"
-#include "services/tracing/public/cpp/perfetto/producer_client.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/client_identity.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/commit_data_request.h"
@@ -25,8 +19,7 @@
 
 namespace tracing {
 
-ProducerHost::ProducerHost(base::tracing::PerfettoTaskRunner* task_runner)
-    : task_runner_(task_runner) {}
+ProducerHost::ProducerHost() = default;
 
 ProducerHost::~ProducerHost() {
   // Manually reset to prevent any callbacks from the ProducerEndpoint
@@ -129,8 +122,8 @@ void ProducerHost::Flush(
     size_t num_data_sources,
     perfetto::FlushFlags /*ignored*/) {
   DCHECK(producer_client_);
-  std::vector<uint64_t> data_source_ids(raw_data_source_ids,
-                                        raw_data_source_ids + num_data_sources);
+  std::vector<uint64_t> data_source_ids(
+      raw_data_source_ids, UNSAFE_TODO(raw_data_source_ids + num_data_sources));
   DCHECK_EQ(data_source_ids.size(), num_data_sources);
   producer_client_->Flush(id, data_source_ids);
 }
@@ -160,6 +153,11 @@ void ProducerHost::CommitData(const perfetto::CommitDataRequest& data_request,
 void ProducerHost::RegisterDataSource(
     const perfetto::DataSourceDescriptor& registration_info) {
   producer_endpoint_->RegisterDataSource(registration_info);
+}
+
+void ProducerHost::UpdateDataSource(
+    const perfetto::DataSourceDescriptor& registration_info) {
+  producer_endpoint_->UpdateDataSource(registration_info);
 }
 
 void ProducerHost::RegisterTraceWriter(uint32_t writer_id,

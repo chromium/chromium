@@ -21,11 +21,11 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
-#include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/common/pref_names.h"
@@ -64,9 +64,11 @@ class DeviceLoginScreenPolicyBrowsertest : public DevicePolicyCrosBrowserTest {
   raw_ptr<Profile, DanglingUntriaged> login_profile_ = nullptr;
 };
 
-DeviceLoginScreenPolicyBrowsertest::DeviceLoginScreenPolicyBrowsertest() {}
+DeviceLoginScreenPolicyBrowsertest::DeviceLoginScreenPolicyBrowsertest() =
+    default;
 
-DeviceLoginScreenPolicyBrowsertest::~DeviceLoginScreenPolicyBrowsertest() {}
+DeviceLoginScreenPolicyBrowsertest::~DeviceLoginScreenPolicyBrowsertest() =
+    default;
 
 void DeviceLoginScreenPolicyBrowsertest::SetUpOnMainThread() {
   DevicePolicyCrosBrowserTest::SetUpOnMainThread();

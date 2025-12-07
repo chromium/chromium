@@ -4,14 +4,17 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {OneDriveConnectionState, SettingsOneDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
-import {CrButtonElement, OneDriveBrowserProxy} from 'chrome://os-settings/os_settings.js';
+import type {SettingsOneDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {OneDriveConnectionState} from 'chrome://os-settings/lazy_load.js';
+import type {CrButtonElement} from 'chrome://os-settings/os_settings.js';
+import {OneDriveBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {assertAsync} from '../utils.js';
 
-import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
+import type {ProxyOptions} from './one_drive_test_browser_proxy.js';
+import {OneDriveTestBrowserProxy} from './one_drive_test_browser_proxy.js';
 
 suite('<one-drive-subpage>', function() {
   /* The <one-drive-subpage> page. */
@@ -37,8 +40,8 @@ suite('<one-drive-subpage>', function() {
     const email = 'email@gmail.com';
     await setupOneDrivePage({email});
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
@@ -46,7 +49,7 @@ suite('<one-drive-subpage>', function() {
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#openOneDriveFolder')!;
     assertEquals('Signed in as ' + email, signedInAsLabelElement.innerText);
-    assertEquals('Remove access', connectDisconnectButton.textContent!.trim());
+    assertEquals('Remove access', connectDisconnectButton.textContent.trim());
     assertFalse(connectDisconnectButton.hasAttribute('disabled'));
     assertTrue(openOneDriveFolderButton.checkVisibility());
   });
@@ -56,8 +59,8 @@ suite('<one-drive-subpage>', function() {
       email: null,
     });
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
@@ -66,7 +69,7 @@ suite('<one-drive-subpage>', function() {
             '#openOneDriveFolder')!;
     assertEquals(
         'Add your Microsoft account', signedInAsLabelElement.innerText);
-    assertEquals('Connect', connectDisconnectButton.textContent!.trim());
+    assertEquals('Connect', connectDisconnectButton.textContent.trim());
     assertFalse(connectDisconnectButton.hasAttribute('disabled'));
     assertFalse(!!openOneDriveFolderButton);
   });
@@ -77,8 +80,8 @@ suite('<one-drive-subpage>', function() {
       email: 'email@gmail.com',
     });
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
@@ -90,7 +93,7 @@ suite('<one-drive-subpage>', function() {
         OneDriveConnectionState.LOADING);
     flush();
     assertEquals('Loading…', signedInAsLabelElement.innerText);
-    assertEquals('Connect', connectDisconnectButton.textContent!.trim());
+    assertEquals('Connect', connectDisconnectButton.textContent.trim());
     assertTrue(connectDisconnectButton.hasAttribute('disabled'));
     assertFalse(openOneDriveFolderButton.checkVisibility());
   });
@@ -98,14 +101,14 @@ suite('<one-drive-subpage>', function() {
   test('Update page to signed in state on OneDrive mount', async () => {
     await setupOneDrivePage({email: null});
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
     assertEquals(
         'Add your Microsoft account', signedInAsLabelElement.innerText);
-    assertEquals('Connect', connectDisconnectButton.textContent!.trim());
+    assertEquals('Connect', connectDisconnectButton.textContent.trim());
 
     // Simulate OneDrive mount: mount signal to observer and ability to return
     // an email address.
@@ -115,20 +118,20 @@ suite('<one-drive-subpage>', function() {
 
     await assertAsync(
         () => signedInAsLabelElement.innerText === 'Signed in as ' + email);
-    assertEquals('Remove access', connectDisconnectButton.textContent!.trim());
+    assertEquals('Remove access', connectDisconnectButton.textContent.trim());
   });
 
   test('Update page to signed out state on OneDrive unmount', async () => {
     const email = 'email@gmail.com';
     await setupOneDrivePage({email});
     const signedInAsLabelElement =
-        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
-            '#signedInAsLabel')!;
+        oneDrivePage.shadowRoot!.querySelector<HTMLElement>('#signedInAsLabel')!
+        ;
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
     assertEquals('Signed in as ' + email, signedInAsLabelElement.innerText);
-    assertEquals('Remove access', connectDisconnectButton.textContent!.trim());
+    assertEquals('Remove access', connectDisconnectButton.textContent.trim());
 
     // Simulate OneDrive unmount: unmount signal and returns an empty email
     // address.
@@ -139,7 +142,7 @@ suite('<one-drive-subpage>', function() {
     await assertAsync(
         () =>
             signedInAsLabelElement.innerText === 'Add your Microsoft account');
-    assertEquals('Connect', connectDisconnectButton.textContent!.trim());
+    assertEquals('Connect', connectDisconnectButton.textContent.trim());
   });
 
   test('Connect button click', async () => {
@@ -147,7 +150,7 @@ suite('<one-drive-subpage>', function() {
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
-    assertEquals('Connect', connectDisconnectButton.textContent!.trim());
+    assertEquals('Connect', connectDisconnectButton.textContent.trim());
 
     connectDisconnectButton.click();
     assertEquals(
@@ -162,7 +165,7 @@ suite('<one-drive-subpage>', function() {
     const connectDisconnectButton =
         oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
             '#oneDriveConnectDisconnect')!;
-    assertEquals('Remove access', connectDisconnectButton.textContent!.trim());
+    assertEquals('Remove access', connectDisconnectButton.textContent.trim());
 
     connectDisconnectButton.click();
     assertEquals(

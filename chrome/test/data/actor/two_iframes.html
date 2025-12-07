@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width,minimum-scale=1">
+    <title>Two cross origin iframe Test Case</title>
+    <style>
+      iframe {
+        position: absolute;
+        width: 50vw;
+        height: 50vh;
+        top: 0;
+        left: 0;
+        border: 0;
+      }
+      #topframe {
+        z-index: 5;
+        background-color: darkred;
+      }
+      #bottomframe {
+        z-index: 1;
+        background-color:lightblue;
+      }
+    </style>
+  </head>
+  <iframe id="topframe"></iframe>
+  <iframe id="bottomframe"></iframe>
+  <script>
+    const topframe = document.getElementById('topframe');
+    const bottomframe = document.getElementById('bottomframe');
+
+    let topframeLoaded = false;
+    let bottomframeLoaded = false;
+
+    topframe.addEventListener('load', () => {
+        topframeLoaded = true;
+    });
+
+    bottomframe.addEventListener('load', () => {
+        bottomframeLoaded = true;
+    });
+  </script>
+</html>

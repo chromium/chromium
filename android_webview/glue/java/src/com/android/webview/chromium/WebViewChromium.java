@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Picture;
 import android.graphics.Rect;
@@ -19,6 +20,7 @@ import android.net.http.SslCertificate;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.print.PrintDocumentAdapter;
@@ -31,6 +33,7 @@ import android.view.PointerIcon;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStructure;
+import android.view.WindowInsets;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
@@ -53,23 +56,26 @@ import android.webkit.WebViewClient;
 import android.webkit.WebViewProvider;
 import android.webkit.WebViewRenderProcess;
 import android.webkit.WebViewRenderProcessClient;
-import android.widget.TextView;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.RequiresApi;
+
+import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
 
 import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
+import org.chromium.android_webview.AwLayoutSizer;
 import org.chromium.android_webview.AwPrintDocumentAdapter;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.AwThreadUtils;
+import org.chromium.android_webview.DarkModeHelper;
+import org.chromium.android_webview.DualTraceEvent;
 import org.chromium.android_webview.ManifestMetadataUtil;
-import org.chromium.android_webview.R;
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.renderer_priority.RendererPriority;
+import org.chromium.base.CommandLine;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
@@ -84,18 +90,18 @@ import org.chromium.url.GURL;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.lang.reflect.Field;
 import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * This class is the delegate to which WebViewProxy forwards all API calls.
  *
- * Most of the actual functionality is implemented by AwContents (or WebContents within
- * it). This class also contains WebView-specific APIs that require the creation of other
- * adapters (otherwise org.chromium.content would depend on the webview.chromium package)
- * and a small set of no-op deprecated APIs.
+ * <p>Most of the actual functionality is implemented by AwContents (or WebContents within it). This
+ * class also contains WebView-specific APIs that require the creation of other adapters (otherwise
+ * org.chromium.content would depend on the webview.chromium package) and a small set of no-op
+ * deprecated APIs.
  */
 @SuppressWarnings("deprecation")
 @Lifetime.WebView
@@ -113,7 +119,7 @@ class WebViewChromium
     // The client adapter class.
     private WebViewContentsClientAdapter mContentsClientAdapter;
     // The wrapped Context.
-    private Context mContext;
+    private final Context mContext;
 
     // Variables for functionality provided by this adapter ---------------------------------------
     private ContentSettingsAdapter mWebSettings;
@@ -124,17 +130,18 @@ class WebViewChromium
 
     private final int mAppTargetSdkVersion;
 
-    protected WebViewChromiumFactoryProvider mFactory;
+    private final WebViewChromiumFactoryProvider mFactory;
+    private final WebViewChromiumAwInit mAwInit;
 
     protected final SharedWebViewChromium mSharedWebViewChromium;
-
-    private final boolean mShouldDisableThreadChecking;
 
     private static boolean sRecordWholeDocumentEnabledByApi;
 
     static void enableSlowWholeDocumentDraw() {
         sRecordWholeDocumentEnabledByApi = true;
     }
+
+    private static final AtomicBoolean sFirstWebViewInstanceCreated = new AtomicBoolean();
 
     // Used to record the UMA histogram WebView.WebViewApiCall. Since these values are persisted to
     // logs, they should never be renumbered or reused.
@@ -671,8 +678,7 @@ class WebViewChromium
     public WebViewChromium(
             WebViewChromiumFactoryProvider factory,
             WebView webView,
-            WebView.PrivateAccess webViewPrivate,
-            boolean shouldDisableThreadChecking) {
+            WebView.PrivateAccess webViewPrivate) {
         try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.constructor")) {
             WebViewChromiumFactoryProvider.checkStorageIsNotDeviceProtected(webView.getContext());
             mWebView = webView;
@@ -681,10 +687,10 @@ class WebViewChromium
             mContext = ClassLoaderContextWrapperFactory.get(mWebView.getContext());
             mAppTargetSdkVersion = mContext.getApplicationInfo().targetSdkVersion;
             mFactory = factory;
-            mShouldDisableThreadChecking = shouldDisableThreadChecking;
+            mAwInit = mFactory.getAwInit();
             factory.addWebViewAssetPath(mWebView.getContext());
-            mSharedWebViewChromium =
-                    new SharedWebViewChromium(mFactory.getRunQueue(), mFactory.getAwInit());
+            mSharedWebViewChromium = new SharedWebViewChromium(mFactory.getRunQueue(), mAwInit);
+            mAwInit.maybeSetChromiumUiThread(Looper.myLooper());
         }
     }
 
@@ -704,53 +710,33 @@ class WebViewChromium
     public void init(
             final Map<String, Object> javaScriptInterfaces, final boolean privateBrowsing) {
         long startTime = SystemClock.uptimeMillis();
-        boolean isFirstWebViewInit = !mFactory.hasStarted();
-        try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.init")) {
+        boolean wasChromiumAlreadyInitialized = mAwInit.isChromiumInitialized();
+        boolean isFirstWebViewInstance = !sFirstWebViewInstanceCreated.getAndSet(true);
+        try (DualTraceEvent ignored = DualTraceEvent.scoped("WebViewChromium.init")) {
             if (privateBrowsing) {
-                mFactory.startYourEngines(true);
-                final String msg = "Private browsing is not supported in WebView.";
-                if (mAppTargetSdkVersion >= Build.VERSION_CODES.KITKAT) {
-                    throw new IllegalArgumentException(msg);
-                } else {
-                    Log.w(TAG, msg);
-                    TextView warningLabel = new TextView(mContext);
-                    warningLabel.setText(mContext.getString(R.string.private_browsing_warning));
-                    mWebView.addView(warningLabel);
-                }
+                throw new IllegalArgumentException("Private browsing is not supported in WebView.");
             }
-
             // Needed for https://crbug.com/1417872
             mWebView.setDefaultFocusHighlightEnabled(false);
-
-            if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
-                // If the app targets >= JB MR2 then we require that WebView is only used from a
-                // single thread. So, we:
-                // 1) start Chromium using the current thread as the UI thread (this is a no-op if
-                //    it was already started).
-                mFactory.startYourEngines(false);
-                // 2) check that the current thread is the UI thread, which will throw if it was
-                //    already started using a different thread as the UI thread.
-                checkThread();
+            if (CommandLine.getInstance()
+                    .hasSwitch(AwSwitches.STARTUP_NON_BLOCKING_WEBVIEW_CONSTRUCTOR)) {
+                mAwInit.postChromiumStartupIfNeeded(CallSite.WEBVIEW_INSTANCE_INIT);
             } else {
-                // For older apps, only the view methods that relate to the view hierarchy must come
-                // from a single thread. Other calls, including the constructor itself, can come
-                // from any thread, and will be posted to the UI thread if necessary.
-                //
-                // We used to defer the decision about which thread is the UI thread for as long as
-                // possible to allow for the case where an app targeting < JB MR2 used a different
-                // thread, but this significantly complicated initialization and is virtually never
-                // encountered in the wild. We can't just use the current thread as the UI thread as
-                // the normal case does, because it *is* somewhat common for old apps to construct
-                // WebView on a background thread and then attach it to the view hierarchy on the
-                // main looper.
-                //
-                // So, we just start Chromium using the main looper as the UI thread, which works
-                // for virtually every old app, and accept that a very tiny number of them will
-                // break.
-                mFactory.startYourEngines(true);
+                mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_INIT);
             }
 
-            final boolean isAccessFromFileURLsGrantedByDefault =
+            if (mAppTargetSdkVersion >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                // Check that the current thread is the UI thread, which will throw if it was
+                // already started using a different thread as the UI thread.
+                checkThread();
+            }
+
+            // At this point it is guaranteed that global Chromium init has completed on the UI
+            // thread, as all paths have called `triggerAndWaitForChromiumStarted`.
+            // However, this function itself is *not* necessarily running on the UI thread in
+            // pre-JBMR2.
+
+            final boolean isAccessFromFileUrlsGrantedByDefault =
                     mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN;
             final boolean areLegacyQuirksEnabled =
                     mAppTargetSdkVersion < Build.VERSION_CODES.KITKAT;
@@ -771,7 +757,7 @@ class WebViewChromium
                         mFactory.createContentSettingsAdapter(
                                 new AwSettings(
                                         mContext,
-                                        isAccessFromFileURLsGrantedByDefault,
+                                        isAccessFromFileUrlsGrantedByDefault,
                                         areLegacyQuirksEnabled,
                                         allowEmptyDocumentPersistence,
                                         allowGeolocationOnInsecureOrigins,
@@ -786,96 +772,80 @@ class WebViewChromium
             }
 
             if (mAppTargetSdkVersion >= Build.VERSION_CODES.P) {
-                mWebSettings.getAwSettings().setCSSHexAlphaColorEnabled(true);
+                mWebSettings.getAwSettings().setCssHexAlphaColorEnabled(true);
                 mWebSettings.getAwSettings().setScrollTopLeftInteropEnabled(true);
             }
 
-            if (mShouldDisableThreadChecking) disableThreadChecking();
-
             mSharedWebViewChromium.init(mContentsClientAdapter);
 
+            // In the normal case where we are currently on the UI thread, this will run initForReal
+            // synchronously. For pre-JBMR2 apps we might not be on the UI thread, in which case it
+            // will be posted and we do not wait for it.
             mFactory.addTask(
                     new Runnable() {
                         @Override
                         public void run() {
                             initForReal();
-                            if (privateBrowsing) {
-                                // Intentionally irreversibly disable the webview instance, so that
-                                // private user data cannot leak through misuse of a
-                                // non-private-browsing WebView instance. Can't just null out
-                                // mAwContents as we never null-check
-                                // it before use.
-                                destroy();
-                            }
                         }
                     });
         }
 
-        // If initialization hasn't been deferred, record a startup time histogram entry
-        // and trace event(s).
-        if (mFactory.hasStarted()) {
-            if (isFirstWebViewInit) {
+        long elapsedTime = SystemClock.uptimeMillis() - startTime;
+        if (isFirstWebViewInstance) {
+            if (wasChromiumAlreadyInitialized) {
+                // This is the first WebView created, but global Chromium initialization happened
+                // before the constructor was called.
                 RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold",
-                        SystemClock.uptimeMillis() - startTime);
-
-                TraceEvent.webViewStartupTotalFactoryInit(
-                        mFactory.getInitInfo().mTotalFactoryInitStartTime,
-                        mFactory.getInitInfo().mTotalFactoryInitDuration);
-
-                TraceEvent.webViewStartupStage1(
-                        mFactory.getInitInfo().mStartTime, mFactory.getInitInfo().mDuration);
-
-                TraceEvent.webViewStartupStage2(
-                        startTime, SystemClock.uptimeMillis() - startTime, true);
+                        "Android.WebView.Startup.CreationTime.FirstInstanceAfterGlobalStartup",
+                        elapsedTime);
+                TraceEvent.webViewStartupFirstInstance(startTime, elapsedTime, false);
             } else {
+                // This is the first WebView created, and we blocked running global Chromium
+                // initialization during the constructor.
                 RecordHistogram.recordTimesHistogram(
-                        "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm",
-                        SystemClock.uptimeMillis() - startTime);
-
-                TraceEvent.webViewStartupStage2(
-                        startTime, SystemClock.uptimeMillis() - startTime, false);
+                        "Android.WebView.Startup.CreationTime.FirstInstanceWithGlobalStartup",
+                        elapsedTime);
+                TraceEvent.webViewStartupFirstInstance(startTime, elapsedTime, true);
             }
+        } else {
+            // This is not the first WebView created; global Chromium initialization must have
+            // happened beforehand.
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.NotFirstInstance", elapsedTime);
+            TraceEvent.webViewStartupNotFirstInstance(startTime, elapsedTime);
         }
-    }
 
-    // This is a workaround for https://crbug.com/622151.
-    // In HTC's email app, InputConnection.setComposingText() will call WebView.evaluateJavaScript,
-    // and thread assertion will occur. We turn off WebView thread assertion for this app.
-    // SuppressLint rationale: https://crrev.com/c/3439168/comments/d612ae09_b7bfca2b
-    @SuppressLint("SoonBlockedPrivateApi")
-    private void disableThreadChecking() {
-        try {
-            Class<?> webViewClass = Class.forName("android.webkit.WebView");
-            Field field = webViewClass.getDeclaredField("sEnforceThreadChecking");
-            field.setAccessible(true);
-            field.setBoolean(null, false);
-            field.setAccessible(false);
-        } catch (ClassNotFoundException
-                | NoSuchFieldException
-                | IllegalAccessException
-                | IllegalArgumentException e) {
-            Log.w(TAG, "Failed to disable thread checking.");
+        // Record "legacy" metrics. These have suboptimal definitions because they don't allow for
+        // the case where global Chromium initialization happened before the first WebView instance
+        // was constructed, and just use "cold/warm" to refer to whether global Chromium
+        // initialization had to be run during the constructor or not, giving the "cold" case a
+        // bimodal distribution.
+        if (!wasChromiumAlreadyInitialized) {
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Cold", elapsedTime);
+        } else {
+            RecordHistogram.recordTimesHistogram(
+                    "Android.WebView.Startup.CreationTime.Stage2.ProviderInit.Warm", elapsedTime);
         }
     }
 
     private void initForReal() {
-        try (ScopedSysTraceEvent e1 = ScopedSysTraceEvent.scoped("WebViewChromium.initForReal")) {
+        try (DualTraceEvent ignored = DualTraceEvent.scoped("WebViewChromium.initForReal")) {
             AwContentsStatics.setRecordFullDocument(
                     sRecordWholeDocumentEnabledByApi
                             || mAppTargetSdkVersion < Build.VERSION_CODES.LOLLIPOP);
 
-            AwBrowserContext browserContext = null;
+            final AwBrowserContext browserContext;
             // Temporary workaround for setting the profile at WebView startup.
             Integer appProfileNameTagKey =
                     ManifestMetadataUtil.getAppMultiProfileProfileNameTagKey();
             if (appProfileNameTagKey != null
                     && mWebView.getTag(appProfileNameTagKey) instanceof String profileName) {
                 browserContext = AwBrowserContextStore.getNamedContext(profileName, true);
-            }
-
-            if (browserContext == null) {
-                browserContext = mFactory.getDefaultBrowserContextOnUiThread();
+            } else {
+                browserContext =
+                        AwBrowserContextStore.getNamedContext(
+                                AwBrowserContext.getDefaultContextName(), true);
             }
 
             mAwContents =
@@ -884,7 +854,7 @@ class WebViewChromium
                             mWebView,
                             mContext,
                             new InternalAccessAdapter(),
-                            new WebViewNativeDrawFunctorFactory(),
+                            mFactory.getWebViewDelegate()::drawWebViewFunctor,
                             mContentsClientAdapter,
                             mWebSettings.getAwSettings(),
                             new AwContents.DependencyFactory());
@@ -901,7 +871,7 @@ class WebViewChromium
             }
 
             // TODO: This assumes AwContents ignores second Paint param.
-            mAwContents.setLayerType(mWebView.getLayerType(), null);
+            mAwContents.getViewMethods().setLayerType(mWebView.getLayerType(), null);
 
             mSharedWebViewChromium.initForReal(mAwContents);
         }
@@ -968,7 +938,8 @@ class WebViewChromium
 
     @Override
     public boolean overlayHorizontalScrollbar() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_OVERLAY_HORIZONTAL_SCROLLBAR);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -989,7 +960,8 @@ class WebViewChromium
 
     @Override
     public boolean overlayVerticalScrollbar() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_OVERLAY_VERTICAL_SCROLLBAR);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1016,7 +988,7 @@ class WebViewChromium
 
     @Override
     public SslCertificate getCertificate() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_CERTIFICATE);
         if (checkNeedsPost()) {
             SslCertificate ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1067,7 +1039,8 @@ class WebViewChromium
 
     @Override
     public String[] getHttpAuthUsernamePassword(final String host, final String realm) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_GET_HTTP_AUTH_USERNAME_PASSWORD);
         if (checkNeedsPost()) {
             String[] ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1137,7 +1110,7 @@ class WebViewChromium
 
     @Override
     public WebBackForwardList saveState(final Bundle outState) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SAVE_STATE);
         if (checkNeedsPost()) {
             WebBackForwardList ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1171,7 +1144,7 @@ class WebViewChromium
 
     @Override
     public WebBackForwardList restoreState(final Bundle inState) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_RESTORE_STATE);
         if (checkNeedsPost()) {
             WebBackForwardList ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1193,7 +1166,8 @@ class WebViewChromium
 
     @Override
     public void loadUrl(final String url, final Map<String, String> additionalHttpHeaders) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_LOAD_URL_ADDITIONAL_HEADERS);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
             assert mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN_MR2;
@@ -1223,7 +1197,7 @@ class WebViewChromium
 
     @Override
     public void loadUrl(final String url) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_LOAD_URL);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
             assert mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN_MR2;
@@ -1252,7 +1226,7 @@ class WebViewChromium
 
     @Override
     public void postUrl(final String url, final byte[] postData) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_POST_URL);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
             assert mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN_MR2;
@@ -1277,7 +1251,7 @@ class WebViewChromium
 
     @Override
     public void loadData(final String data, final String mimeType, final String encoding) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_LOAD_DATA);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
             assert mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN_MR2;
@@ -1307,7 +1281,7 @@ class WebViewChromium
             final String mimeType,
             final String encoding,
             final String historyUrl) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_LOAD_DATA_WITH_BASE_URL);
         if (checkNeedsPost()) {
             // Disallowed in WebView API for apps targeting a new SDK
             assert mAppTargetSdkVersion < Build.VERSION_CODES.JELLY_BEAN_MR2;
@@ -1344,30 +1318,13 @@ class WebViewChromium
     @Override
     public void evaluateJavaScript(
             final String script, final ValueCallback<String> resultCallback) {
-        if (mShouldDisableThreadChecking && checkNeedsPost()) {
-            // This is a workaround for https://crbug.com/622151.
-            mFactory.addTask(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            try (TraceEvent event =
-                                    TraceEvent.scoped(
-                                            "WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
-                                recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
-                                mAwContents.evaluateJavaScript(
-                                        script,
-                                        CallbackConverter.fromValueCallback(resultCallback));
-                            }
-                        }
-                    });
-        } else {
-            try (TraceEvent event =
-                    TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
-                recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
-                checkThread();
-                mAwContents.evaluateJavaScript(
-                        script, CallbackConverter.fromValueCallback(resultCallback));
-            }
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_EVALUATE_JAVASCRIPT);
+        try (TraceEvent event =
+                TraceEvent.scoped("WebView.APICall.Framework.EVALUATE_JAVASCRIPT")) {
+            recordWebViewApiCall(ApiCall.EVALUATE_JAVASCRIPT);
+            checkThread();
+            mAwContents.evaluateJavaScript(
+                    script, CallbackConverter.fromValueCallback(resultCallback));
         }
     }
 
@@ -1435,7 +1392,7 @@ class WebViewChromium
 
     @Override
     public boolean canGoBack() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_CAN_GO_BACK);
         if (checkNeedsPost()) {
             Boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1473,7 +1430,7 @@ class WebViewChromium
 
     @Override
     public boolean canGoForward() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_CAN_GO_FORWARD);
         if (checkNeedsPost()) {
             Boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1511,7 +1468,7 @@ class WebViewChromium
 
     @Override
     public boolean canGoBackOrForward(final int steps) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_CAN_GO_BACK_OR_FORWARD);
         if (checkNeedsPost()) {
             Boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1560,7 +1517,7 @@ class WebViewChromium
 
     @Override
     public boolean pageUp(final boolean top) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_PAGE_UP);
         if (checkNeedsPost()) {
             Boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1580,7 +1537,7 @@ class WebViewChromium
 
     @Override
     public boolean pageDown(final boolean bottom) {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_PAGE_DOWN);
         if (checkNeedsPost()) {
             Boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1637,7 +1594,7 @@ class WebViewChromium
 
     @Override
     public Picture capturePicture() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_CAPTURE_PICTURE);
         if (checkNeedsPost()) {
             Picture ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1657,16 +1614,17 @@ class WebViewChromium
 
     @Override
     public float getScale() {
+        // No checkThread() as it is mostly thread safe (workaround for b/10652991).
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_SCALE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_SCALE")) {
             recordWebViewApiCall(ApiCall.GET_SCALE);
-            // No checkThread() as it is mostly thread safe (workaround for b/10652991).
-            mFactory.startYourEngines(true);
             return mAwContents.getScale();
         }
     }
 
     @Override
     public void setInitialScale(final int scaleInPercent) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_INITIAL_SCALE);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_INITIAL_SCALE")) {
             recordWebViewApiCall(ApiCall.SET_INITIAL_SCALE);
             // No checkThread() as it is thread safe
@@ -1694,7 +1652,7 @@ class WebViewChromium
 
     @Override
     public WebView.HitTestResult getHitTestResult() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_HIT_TEST_RESULT);
         if (checkNeedsPost()) {
             WebView.HitTestResult ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1755,7 +1713,7 @@ class WebViewChromium
 
     @Override
     public String getUrl() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_URL);
         if (checkNeedsPost()) {
             String ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1776,7 +1734,7 @@ class WebViewChromium
 
     @Override
     public String getOriginalUrl() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_ORIGINAL_URL);
         if (checkNeedsPost()) {
             String ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1796,7 +1754,7 @@ class WebViewChromium
 
     @Override
     public String getTitle() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_TITLE);
         if (checkNeedsPost()) {
             String ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1816,7 +1774,7 @@ class WebViewChromium
 
     @Override
     public Bitmap getFavicon() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_FAVICON);
         if (checkNeedsPost()) {
             Bitmap ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1944,7 +1902,7 @@ class WebViewChromium
 
     @Override
     public boolean isPaused() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_IS_PAUSED);
         if (checkNeedsPost()) {
             Boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -2043,7 +2001,7 @@ class WebViewChromium
 
     @Override
     public WebBackForwardList copyBackForwardList() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_COPY_BACK_FORWARD_LIST);
         if (checkNeedsPost()) {
             WebBackForwardList ret =
                     mFactory.runOnUiThreadBlocking(
@@ -2121,7 +2079,7 @@ class WebViewChromium
     public boolean showFindDialog(final String text, final boolean showIme) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SHOW_FIND_DIALOG")) {
             recordWebViewApiCall(ApiCall.SHOW_FIND_DIALOG);
-            mFactory.startYourEngines(false);
+            mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SHOW_FIND_DIALOG);
             if (checkNeedsPost()) {
                 return false;
             }
@@ -2207,11 +2165,13 @@ class WebViewChromium
 
     @Override
     public void setWebViewClient(WebViewClient client) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_WEBVIEW_CLIENT);
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_WEBVIEW_CLIENT")) {
             recordWebViewApiCall(ApiCall.SET_WEBVIEW_CLIENT);
             mAwContents.cancelAllPrerendering();
             mSharedWebViewChromium.setWebViewClient(client);
             mContentsClientAdapter.setWebViewClient(mSharedWebViewChromium.getWebViewClient());
+            mAwContents.onWebViewClientUpdated(client);
             if (client != null) {
                 ApiImplementationLogger.logWebViewClientImplementation(client);
             }
@@ -2226,7 +2186,6 @@ class WebViewChromium
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public WebViewRenderProcess getWebViewRenderProcess() {
         try (TraceEvent event =
@@ -2237,7 +2196,6 @@ class WebViewChromium
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public void setWebViewRenderProcessClient(
             Executor executor, WebViewRenderProcessClient webViewRenderProcessClient) {
@@ -2257,7 +2215,6 @@ class WebViewChromium
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public WebViewRenderProcessClient getWebViewRenderProcessClient() {
         SharedWebViewRendererClientAdapter adapter =
@@ -2283,6 +2240,7 @@ class WebViewChromium
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_WEBCHROME_CLIENT);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_WEBCHROME_CLIENT")) {
             recordWebViewApiCall(ApiCall.SET_WEBCHROME_CLIENT);
@@ -2308,8 +2266,8 @@ class WebViewChromium
     /**
      * Returns true if the supplied {@link WebChromeClient} supports fullscreen.
      *
-     * <p>For fullscreen support, implementations of {@link WebChromeClient#onShowCustomView}
-     * and {@link WebChromeClient#onHideCustomView()} are required.
+     * <p>For fullscreen support, implementations of {@link WebChromeClient#onShowCustomView} and
+     * {@link WebChromeClient#onHideCustomView()} are required.
      */
     private boolean doesSupportFullscreen(WebChromeClient client) {
         try (TraceEvent event =
@@ -2324,8 +2282,9 @@ class WebViewChromium
             while (clientClass != WebChromeClient.class && (!foundShowMethod || !foundHideMethod)) {
                 if (!foundShowMethod) {
                     try {
-                        clientClass.getDeclaredMethod(
-                                "onShowCustomView", View.class, CustomViewCallback.class);
+                        var unused =
+                                clientClass.getDeclaredMethod(
+                                        "onShowCustomView", View.class, CustomViewCallback.class);
                         foundShowMethod = true;
                     } catch (NoSuchMethodException e) {
                         // Intentionally empty.
@@ -2334,7 +2293,7 @@ class WebViewChromium
 
                 if (!foundHideMethod) {
                     try {
-                        clientClass.getDeclaredMethod("onHideCustomView");
+                        var unused = clientClass.getDeclaredMethod("onHideCustomView");
                         foundHideMethod = true;
                     } catch (NoSuchMethodException e) {
                         // Intentionally empty.
@@ -2463,7 +2422,7 @@ class WebViewChromium
 
     @Override
     public View getZoomControls() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_ZOOM_CONTROLS);
         if (checkNeedsPost()) {
             return null;
         }
@@ -2498,7 +2457,7 @@ class WebViewChromium
 
     @Override
     public boolean zoomIn() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ZOOM_IN);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -2518,7 +2477,7 @@ class WebViewChromium
 
     @Override
     public boolean zoomOut() {
-        mFactory.startYourEngines(true);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ZOOM_OUT);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -2542,8 +2501,7 @@ class WebViewChromium
     public boolean zoomBy(float factor) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ZOOM_BY")) {
             recordWebViewApiCall(ApiCall.ZOOM_BY);
-            mFactory.startYourEngines(true);
-            // This is an L API and therefore we can enforce stricter threading constraints.
+            mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ZOOM_BY);
             checkThread();
             mAwContents.zoomBy(factor);
             return true;
@@ -2564,6 +2522,8 @@ class WebViewChromium
     @Override
     public void setRendererPriorityPolicy(
             int rendererRequestedPriority, boolean waivedWhenNotVisible) {
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_SET_RENDERER_PRIORITY_POLICY);
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.SET_RENDERER_PRIORITY_POLICY",
@@ -2589,6 +2549,8 @@ class WebViewChromium
 
     @Override
     public int getRendererRequestedPriority() {
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_GET_RENDERER_REQUESTED_PRIORITY);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_RENDERER_REQUESTED_PRIORITY")) {
             recordWebViewApiCall(ApiCall.GET_RENDERER_REQUESTED_PRIORITY);
@@ -2608,6 +2570,8 @@ class WebViewChromium
 
     @Override
     public boolean getRendererPriorityWaivedWhenNotVisible() {
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE);
         try (TraceEvent event =
                 TraceEvent.scoped(
                         "WebView.APICall.Framework.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE")) {
@@ -2618,6 +2582,7 @@ class WebViewChromium
 
     @Override
     public void setTextClassifier(TextClassifier textClassifier) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_TEXT_CLASSIFIER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_TEXT_CLASSIFIER")) {
             recordWebViewApiCall(ApiCall.SET_TEXT_CLASSIFIER);
@@ -2627,6 +2592,7 @@ class WebViewChromium
 
     @Override
     public TextClassifier getTextClassifier() {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_TEXT_CLASSIFIER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_TEXT_CLASSIFIER")) {
             recordWebViewApiCall(ApiCall.GET_TEXT_CLASSIFIER);
@@ -2636,7 +2602,7 @@ class WebViewChromium
 
     @Override
     public void autofill(final SparseArray<AutofillValue> values) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_AUTOFILL);
         if (checkNeedsPost()) {
             mFactory.runVoidTaskOnUiThreadBlocking(
                     new Runnable() {
@@ -2654,7 +2620,8 @@ class WebViewChromium
 
     @Override
     public void onProvideAutofillVirtualStructure(final ViewStructure structure, final int flags) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_AUTOFILL_VIRTUAL_STRUCTURE);
         if (checkNeedsPost()) {
             mFactory.runVoidTaskOnUiThreadBlocking(
                     new Runnable() {
@@ -2675,6 +2642,8 @@ class WebViewChromium
 
     @Override
     public void onProvideContentCaptureStructure(ViewStructure structure, int flags) {
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_CONTENT_CAPTURE_STRUCTURE);
         if (ContentCaptureFeatures.isDumpForTestingEnabled()) {
             Log.i("ContentCapture", "onProvideContentCaptureStructure");
         }
@@ -2711,7 +2680,8 @@ class WebViewChromium
     // ViewGroup.
     @Override
     public boolean shouldDelayChildPressedState() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_SHOULD_DELAY_CHILD_PRESSED_STATE);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -2728,7 +2698,8 @@ class WebViewChromium
 
     @Override
     public AccessibilityNodeProvider getAccessibilityNodeProvider() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_GET_ACCESSIBILITY_NODE_PROVIDER);
         if (checkNeedsPost()) {
             AccessibilityNodeProvider ret =
                     mFactory.runOnUiThreadBlocking(
@@ -2743,13 +2714,14 @@ class WebViewChromium
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.GET_ACCESSIBILITY_NODE_PROVIDER")) {
             recordWebViewApiCall(ApiCall.GET_ACCESSIBILITY_NODE_PROVIDER);
-            return mAwContents.getAccessibilityNodeProvider();
+            return mAwContents.getViewMethods().getAccessibilityNodeProvider();
         }
     }
 
     @Override
     public void onProvideVirtualStructure(final ViewStructure structure) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_ON_PROVIDE_VIRTUAL_STRUCTURE);
         if (checkNeedsPost()) {
             mFactory.runVoidTaskOnUiThreadBlocking(
                     new Runnable() {
@@ -2782,7 +2754,8 @@ class WebViewChromium
 
     @Override
     public boolean performAccessibilityAction(final int action, final Bundle arguments) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_PERFORM_ACCESSIBILITY_ACTION);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -2868,7 +2841,9 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onContainerViewOverScrolled(scrollX, scrollY, clampedX, clampedY);
+        mAwContents
+                .getViewMethods()
+                .onContainerViewOverScrolled(scrollX, scrollY, clampedX, clampedY);
     }
 
     @Override
@@ -2883,42 +2858,37 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onWindowVisibilityChanged(visibility);
+        mAwContents.getViewMethods().onWindowVisibilityChanged(visibility);
     }
 
     @Override
     @SuppressLint("DrawAllocation")
     public void onDraw(final Canvas canvas) {
-        mFactory.startYourEngines(true);
-        if (checkNeedsPost()) {
-            mFactory.runVoidTaskOnUiThreadBlocking(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            onDraw(canvas);
-                        }
-                    });
-            return;
+        if (mAwInit.isChromiumInitialized()) {
+            if (ThreadUtils.runningOnUiThread()) {
+                mAwContents.getViewMethods().onDraw(canvas);
+            } else {
+                mFactory.runVoidTaskOnUiThreadBlocking(() -> onDraw(canvas));
+            }
+        } else {
+            boolean isAppUsingDarkTheme =
+                    DarkModeHelper.getLightTheme(mContext)
+                            == DarkModeHelper.LightTheme.LIGHT_THEME_FALSE;
+            if (isAppUsingDarkTheme) {
+                canvas.drawColor(Color.BLACK);
+            } else {
+                // In force-dark mode, the framework will invert this and display Color.BLACK
+                canvas.drawColor(Color.WHITE);
+            }
         }
-        mAwContents.onDraw(canvas);
     }
 
     @Override
     public void setLayoutParams(final ViewGroup.LayoutParams layoutParams) {
-        // This API is our strongest signal from the View system that this
-        // WebView is going to be bound to a View hierarchy and so at this
-        // point we must bind Chromium's UI thread to the current thread.
-        mFactory.startYourEngines(false);
         checkThread();
         mWebViewPrivate.super_setLayoutParams(layoutParams);
         if (checkNeedsPost()) {
-            mFactory.runVoidTaskOnUiThreadBlocking(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            mAwContents.setLayoutParams(layoutParams);
-                        }
-                    });
+            mFactory.addTask(() -> setLayoutParams(layoutParams));
             return;
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_LAYOUT_PARAMS")) {
@@ -2963,12 +2933,12 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onConfigurationChanged(newConfig);
+        mAwContents.getViewMethods().onConfigurationChanged(newConfig);
     }
 
     @Override
     public boolean onDragEvent(final DragEvent event) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_DRAG_EVENT);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -2982,26 +2952,27 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent = TraceEvent.scoped("WebView.APICall.Framework.ON_DRAG_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_DRAG_EVENT);
-            return mAwContents.onDragEvent(event);
+            return mAwContents.getViewMethods().onDragEvent(event);
         }
     }
 
     @Override
     public InputConnection onCreateInputConnection(final EditorInfo outAttrs) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_ON_CREATE_INPUT_CONNECTION);
         if (checkNeedsPost()) {
             return null;
         }
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_CREATE_INPUT_CONNECTION")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_CREATE_INPUT_CONNECTION);
-            return mAwContents.onCreateInputConnection(outAttrs);
+            return mAwContents.getViewMethods().onCreateInputConnection(outAttrs);
         }
     }
 
     @Override
     public boolean onKeyMultiple(final int keyCode, final int repeatCount, final KeyEvent event) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_KEY_MULTIPLE);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3022,7 +2993,7 @@ class WebViewChromium
 
     @Override
     public boolean onKeyDown(final int keyCode, final KeyEvent event) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_KEY_DOWN);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3042,7 +3013,7 @@ class WebViewChromium
 
     @Override
     public boolean onKeyUp(final int keyCode, final KeyEvent event) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_KEY_UP);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3056,18 +3027,18 @@ class WebViewChromium
         }
         try (TraceEvent traceEvent = TraceEvent.scoped("WebView.APICall.Framework.ON_KEY_UP")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_KEY_UP);
-            return mAwContents.onKeyUp(keyCode, event);
+            return mAwContents.getViewMethods().onKeyUp(keyCode, event);
         }
     }
 
     @Override
     public void onAttachedToWindow() {
-        // This API is our strongest signal from the View system that this
-        // WebView is going to be bound to a View hierarchy and so at this
-        // point we must bind Chromium's UI thread to the current thread.
-        mFactory.startYourEngines(false);
         checkThread();
-        mAwContents.onAttachedToWindow();
+        if (checkNeedsPost()) {
+            mFactory.addTask(this::onAttachedToWindow);
+            return;
+        }
+        mAwContents.getViewMethods().onAttachedToWindow();
     }
 
     @Override
@@ -3083,7 +3054,7 @@ class WebViewChromium
             return;
         }
 
-        mAwContents.onDetachedFromWindow();
+        mAwContents.getViewMethods().onDetachedFromWindow();
     }
 
     @Override
@@ -3102,7 +3073,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onVisibilityChanged(changedView, visibility);
+        mAwContents.getViewMethods().onVisibilityChanged(changedView, visibility);
     }
 
     @Override
@@ -3120,7 +3091,7 @@ class WebViewChromium
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_WINDOW_FOCUS_CHANGED")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_WINDOW_FOCUS_CHANGED);
-            mAwContents.onWindowFocusChanged(hasWindowFocus);
+            mAwContents.getViewMethods().onWindowFocusChanged(hasWindowFocus);
         }
     }
 
@@ -3139,7 +3110,7 @@ class WebViewChromium
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.ON_FOCUS_CHANGED")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_FOCUS_CHANGED);
-            mAwContents.onFocusChanged(focused, direction, previouslyFocusedRect);
+            mAwContents.getViewMethods().onFocusChanged(focused, direction, previouslyFocusedRect);
         }
     }
 
@@ -3160,7 +3131,7 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onSizeChanged(w, h, ow, oh);
+        mAwContents.getViewMethods().onSizeChanged(w, h, ow, oh);
     }
 
     @Override
@@ -3175,12 +3146,12 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.onContainerViewScrollChanged(l, t, oldl, oldt);
+        mAwContents.getViewMethods().onContainerViewScrollChanged(l, t, oldl, oldt);
     }
 
     @Override
     public boolean dispatchKeyEvent(final KeyEvent event) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_DISPATCH_KEY_EVENT);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3195,13 +3166,13 @@ class WebViewChromium
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.DISPATCH_KEY_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.DISPATCH_KEY_EVENT);
-            return mAwContents.dispatchKeyEvent(event);
+            return mAwContents.getViewMethods().dispatchKeyEvent(event);
         }
     }
 
     @Override
     public boolean onTouchEvent(final MotionEvent ev) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_TOUCH_EVENT);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3216,13 +3187,13 @@ class WebViewChromium
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_TOUCH_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_TOUCH_EVENT);
-            return mAwContents.onTouchEvent(ev);
+            return mAwContents.getViewMethods().onTouchEvent(ev);
         }
     }
 
     @Override
     public boolean onHoverEvent(final MotionEvent event) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_HOVER_EVENT);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3237,13 +3208,13 @@ class WebViewChromium
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_HOVER_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_HOVER_EVENT);
-            return mAwContents.onHoverEvent(event);
+            return mAwContents.getViewMethods().onHoverEvent(event);
         }
     }
 
     @Override
     public boolean onGenericMotionEvent(final MotionEvent event) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_GENERIC_MOTION_EVENT);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3258,7 +3229,7 @@ class WebViewChromium
         try (TraceEvent traceEvent =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_GENERIC_MOTION_EVENT")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_GENERIC_MOTION_EVENT);
-            return mAwContents.onGenericMotionEvent(event);
+            return mAwContents.getViewMethods().onGenericMotionEvent(event);
         }
     }
 
@@ -3273,7 +3244,7 @@ class WebViewChromium
 
     @Override
     public boolean requestFocus(final int direction, final Rect previouslyFocusedRect) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_REQUEST_FOCUS);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3287,7 +3258,7 @@ class WebViewChromium
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.REQUEST_FOCUS")) {
             recordWebViewApiCall(ApiCall.REQUEST_FOCUS);
-            mAwContents.requestFocus();
+            mAwContents.getViewMethods().requestFocus();
             return mWebViewPrivate.super_requestFocus(direction, previouslyFocusedRect);
         }
     }
@@ -3295,24 +3266,25 @@ class WebViewChromium
     @Override
     @SuppressLint("DrawAllocation")
     public void onMeasure(final int widthMeasureSpec, final int heightMeasureSpec) {
-        mFactory.startYourEngines(false);
-        if (checkNeedsPost()) {
-            mFactory.runVoidTaskOnUiThreadBlocking(
-                    new Runnable() {
-                        @Override
-                        public void run() {
-                            onMeasure(widthMeasureSpec, heightMeasureSpec);
-                        }
-                    });
-            return;
+        if (mAwInit.isChromiumInitialized()) {
+            if (ThreadUtils.runningOnUiThread()) {
+                mAwContents.getViewMethods().onMeasure(widthMeasureSpec, heightMeasureSpec);
+            } else {
+                mFactory.runVoidTaskOnUiThreadBlocking(
+                        () -> onMeasure(widthMeasureSpec, heightMeasureSpec));
+            }
+        } else {
+            mWebViewPrivate.setMeasuredDimension(
+                    AwLayoutSizer.getMeasuredWidthAttributes(widthMeasureSpec, 0).measuredWidth,
+                    AwLayoutSizer.getMeasuredHeightAttributes(heightMeasureSpec, 0).measuredHeight);
         }
-        mAwContents.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override
     public boolean requestChildRectangleOnScreen(
             final View child, final Rect rect, final boolean immediate) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_REQUEST_CHILD_RECTANGLE_ON_SCREEN);
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3333,7 +3305,7 @@ class WebViewChromium
 
     @Override
     public void setBackgroundColor(final int color) {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_SET_BACKGROUND_COLOR);
         if (checkNeedsPost()) {
             mFactory.addTask(
                     new Runnable() {
@@ -3368,12 +3340,11 @@ class WebViewChromium
         }
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.SET_LAYER_TYPE")) {
             recordWebViewApiCall(ApiCall.SET_LAYER_TYPE);
-            mAwContents.setLayerType(layerType, paint);
+            mAwContents.getViewMethods().setLayerType(layerType, paint);
         }
     }
 
     // Overrides method added to WebViewProvider.ViewDelegate interface
-    // (not called in M and below)
     @Override
     public Handler getHandler(Handler originalHandler) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.GET_HANDLER")) {
@@ -3383,7 +3354,6 @@ class WebViewChromium
     }
 
     // Overrides method added to WebViewProvider.ViewDelegate interface
-    // (not called in M and below)
     @Override
     public View findFocus(View originalFocusedView) {
         try (TraceEvent event = TraceEvent.scoped("WebView.APICall.Framework.FIND_FOCUS")) {
@@ -3401,26 +3371,36 @@ class WebViewChromium
 
     @Override
     public void onStartTemporaryDetach() {
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_ON_START_TEMPORARY_DETACH);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_START_TEMPORARY_DETACH")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_START_TEMPORARY_DETACH);
-            mAwContents.onStartTemporaryDetach();
+            mAwContents.getViewMethods().onStartTemporaryDetach();
         }
     }
 
     @Override
     public void onFinishTemporaryDetach() {
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_ON_FINISH_TEMPORARY_DETACH);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.ON_FINISH_TEMPORARY_DETACH")) {
             recordWebViewSystemApiCall(SystemApiCall.ON_FINISH_TEMPORARY_DETACH);
-            mAwContents.onFinishTemporaryDetach();
+            mAwContents.getViewMethods().onFinishTemporaryDetach();
         }
     }
 
     @Override
     public boolean onCheckIsTextEditor() {
-        mFactory.startYourEngines(false);
-        if (checkNeedsPost()) {
+        if (mAwInit.isChromiumInitialized()) {
+            if (ThreadUtils.runningOnUiThread()) {
+                try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.ON_CHECK_IS_TEXT_EDITOR")) {
+                    recordWebViewSystemApiCall(SystemApiCall.ON_CHECK_IS_TEXT_EDITOR);
+                    return mAwContents.getViewMethods().onCheckIsTextEditor();
+                }
+            }
             return mFactory.runOnUiThreadBlocking(
                     new Callable<Boolean>() {
                         @Override
@@ -3429,15 +3409,18 @@ class WebViewChromium
                         }
                     });
         }
-        try (TraceEvent event =
-                TraceEvent.scoped("WebView.APICall.Framework.ON_CHECK_IS_TEXT_EDITOR")) {
-            recordWebViewSystemApiCall(SystemApiCall.ON_CHECK_IS_TEXT_EDITOR);
-            return mAwContents.onCheckIsTextEditor();
-        }
+        return false;
+    }
+
+    @Override
+    public WindowInsets onApplyWindowInsets(WindowInsets insets) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_APPLY_WINDOW_INSETS);
+        return mAwContents.onApplyWindowInsets(insets);
     }
 
     // TODO(crbug.com/40280893): Add override annotation when SDK includes this method.
     public PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_ON_RESOLVE_POINTER_ICON);
         return mAwContents.onResolvePointerIcon(event, pointerIndex);
     }
 
@@ -3445,7 +3428,8 @@ class WebViewChromium
 
     @Override
     public int computeHorizontalScrollRange() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_COMPUTE_HORIZONTAL_SCROLL_RANGE);
         if (checkNeedsPost()) {
             int ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3457,12 +3441,13 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeHorizontalScrollRange();
+        return mAwContents.getViewMethods().computeHorizontalScrollRange();
     }
 
     @Override
     public int computeHorizontalScrollOffset() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_COMPUTE_HORIZONTAL_SCROLL_OFFSET);
         if (checkNeedsPost()) {
             int ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3474,12 +3459,13 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeHorizontalScrollOffset();
+        return mAwContents.getViewMethods().computeHorizontalScrollOffset();
     }
 
     @Override
     public int computeVerticalScrollRange() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_RANGE);
         if (checkNeedsPost()) {
             int ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3491,12 +3477,13 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeVerticalScrollRange();
+        return mAwContents.getViewMethods().computeVerticalScrollRange();
     }
 
     @Override
     public int computeVerticalScrollOffset() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_OFFSET);
         if (checkNeedsPost()) {
             int ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3508,12 +3495,13 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeVerticalScrollOffset();
+        return mAwContents.getViewMethods().computeVerticalScrollOffset();
     }
 
     @Override
     public int computeVerticalScrollExtent() {
-        mFactory.startYourEngines(false);
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_COMPUTE_VERTICAL_SCROLL_EXTENT);
         if (checkNeedsPost()) {
             int ret =
                     mFactory.runOnUiThreadBlocking(
@@ -3525,14 +3513,13 @@ class WebViewChromium
                             });
             return ret;
         }
-        return mAwContents.computeVerticalScrollExtent();
+        return mAwContents.getViewMethods().computeVerticalScrollExtent();
     }
 
     @Override
     public void computeScroll() {
-        mFactory.startYourEngines(false);
         if (checkNeedsPost()) {
-            mFactory.runVoidTaskOnUiThreadBlocking(
+            mFactory.addTask(
                     new Runnable() {
                         @Override
                         public void run() {
@@ -3541,32 +3528,18 @@ class WebViewChromium
                     });
             return;
         }
-        mAwContents.computeScroll();
+        mAwContents.getViewMethods().computeScroll();
     }
 
     @Override
     public PrintDocumentAdapter createPrintDocumentAdapter(String documentName) {
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_CREATE_PRINT_DOCUMENT_ADAPTER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.CREATE_PRINT_DOCUMENT_ADAPTER")) {
             recordWebViewApiCall(ApiCall.CREATE_PRINT_DOCUMENT_ADAPTER);
             checkThread();
             return new AwPrintDocumentAdapter(mAwContents.getPdfExporter(), documentName);
-        }
-    }
-
-    // AwContents.NativeDrawFunctorFactory implementation ----------------------------------
-    private class WebViewNativeDrawFunctorFactory implements AwContents.NativeDrawFunctorFactory {
-        @Override
-        public AwContents.NativeDrawGLFunctor createGLFunctor(long context) {
-            return new DrawGLFunctor(context, mFactory.getWebViewDelegate());
-        }
-
-        @Override
-        public AwDrawFnImpl.DrawFnAccess getDrawFnAccess() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                return mFactory.getWebViewDelegate()::drawWebViewFunctor;
-            }
-            return null;
         }
     }
 
@@ -3644,6 +3617,7 @@ class WebViewChromium
         }
 
         // @Override
+        @SuppressWarnings("UnusedMethod")
         public boolean super_onHoverEvent(MotionEvent event) {
             return mWebViewPrivate.super_onHoverEvent(event);
         }
@@ -3652,6 +3626,7 @@ class WebViewChromium
     // Implements SmartClipProvider
     @Override
     public void extractSmartClipData(int x, int y, int width, int height) {
+        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_EXTRACT_SMART_CLIP_DATA);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.EXTRACT_SMART_CLIP_DATA")) {
             recordWebViewApiCall(ApiCall.EXTRACT_SMART_CLIP_DATA);
@@ -3663,6 +3638,8 @@ class WebViewChromium
     // Implements SmartClipProvider
     @Override
     public void setSmartClipResultHandler(final Handler resultHandler) {
+        mAwInit.triggerAndWaitForChromiumStarted(
+                CallSite.WEBVIEW_INSTANCE_SET_SMART_CLIP_RESULT_HANDLER);
         try (TraceEvent event =
                 TraceEvent.scoped("WebView.APICall.Framework.SET_SMART_CLIP_RESULT_HANDLER")) {
             recordWebViewApiCall(ApiCall.SET_SMART_CLIP_RESULT_HANDLER);

@@ -4,9 +4,8 @@
   "type": "stdio",
   "path": "{{ ME2ME_HOST_PATH }}",
   "allowed_origins": [
-    {# Chrome Extension (Prod) #}
-    "chrome-extension://inomeogfingihgjfjlpeplalcfajhgai/",
-    {# Chrome Extension (Dev Build) #}
-    "chrome-extension://hpodccmdligbeohchckkeajbfohibipg/"
+    {%- for id in COMPANION_EXTENSION_IDS %}
+      "chrome-extension://{{ id }}/"{% if not loop.last %},{% endif %}
+    {%- endfor %}
   ]
 }

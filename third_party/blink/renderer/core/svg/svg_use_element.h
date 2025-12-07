@@ -68,11 +68,6 @@ class SVGUseElement final : public SVGGraphicsElement,
  private:
   gfx::RectF GetBBox() override;
 
-  void CollectStyleForPresentationAttribute(
-      const QualifiedName&,
-      const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
-
   bool IsStructurallyExternal() const override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
@@ -117,7 +112,7 @@ class SVGUseElement final : public SVGGraphicsElement,
       const QualifiedName& attribute_name) const override;
   void SynchronizeAllSVGAttributes() const override;
   void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet* style) override;
+      HeapVector<CSSPropertyValue, 8>& style) override;
 
   Member<SVGResourceDocumentContent> document_content_;
   Member<SVGResourceTarget> external_resource_target_;
@@ -132,6 +127,10 @@ class SVGUseElement final : public SVGGraphicsElement,
   KURL element_url_;
   bool element_url_is_local_;
   bool needs_shadow_tree_recreation_;
+  // Tracks whether this element initiated a resource fetch and expects a call
+  // to `ResourceNotifyFinished()`. Used to filter out (redundant) multiple
+  // notifications for the same resource.
+  bool notification_pending_ = false;
   Member<IdTargetObserver> target_id_observer_;
 
   FRIEND_TEST_ALL_PREFIXES(SVGUseElementTest,

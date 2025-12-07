@@ -35,6 +35,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/test/navigation_simulator.h"
+#include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -102,9 +103,13 @@ void SubresourceFilterTestHarness::SetUp() {
       web_contents(), throttle_manager_test_support_->profile_context(),
       database_manager_, dealer);
 
-  // Observe web_contents() to add subresource filter navigation throttles at
-  // the start of navigations.
-  Observe(web_contents());
+  // Setup the inserter to add subresource filter navigation throttles at the
+  // start of navigations.
+  throttle_inserter_ =
+      std::make_unique<content::TestNavigationThrottleInserter>(
+          web_contents(),
+          base::BindRepeating(&SubresourceFilterTestHarness::InsertThrottle,
+                              base::Unretained(this)));
 
   NavigateAndCommit(GURL("https://example.first"));
 
@@ -117,6 +122,8 @@ void SubresourceFilterTestHarness::SetUp() {
 }
 
 void SubresourceFilterTestHarness::TearDown() {
+  // Delete `WebContents` before deleting the service.
+  DeleteContents();
   ruleset_service_.reset();
 
   content::RenderViewHostTestHarness::TearDown();
@@ -125,22 +132,18 @@ void SubresourceFilterTestHarness::TearDown() {
 #endif
 }
 
-// content::WebContentsObserver:
-void SubresourceFilterTestHarness::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsSameDocument())
+void SubresourceFilterTestHarness::InsertThrottle(
+    content::NavigationThrottleRegistry& registry) {
+  content::NavigationHandle& navigation_handle = registry.GetNavigationHandle();
+  if (navigation_handle.IsSameDocument()) {
     return;
-
-  std::vector<std::unique_ptr<content::NavigationThrottle>> throttles;
-  ContentSubresourceFilterThrottleManager::FromNavigationHandle(
-      *navigation_handle)
-      ->MaybeAppendNavigationThrottles(navigation_handle, &throttles);
-
-  AppendCustomNavigationThrottles(navigation_handle, &throttles);
-
-  for (auto& it : throttles) {
-    navigation_handle->RegisterThrottleForTesting(std::move(it));
   }
+
+  ContentSubresourceFilterThrottleManager::FromNavigationHandle(
+      navigation_handle)
+      ->MaybeCreateAndAddNavigationThrottles(registry);
+
+  AppendCustomNavigationThrottles(registry);
 }
 
 // Will return nullptr if the navigation fails.

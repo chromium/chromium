@@ -58,7 +58,16 @@ def _GetCurrentVersionFromManifest() -> Optional[str]:
   if not os.path.exists(_VERSION_FILE):
     return None
   with open(_VERSION_FILE) as f:
-    return json.load(f)['id']
+    try:
+      data = json.load(f)
+    except json.decoder.JSONDecodeError:
+      logging.warning(
+          'manifest.json is not at the JSON format and may be empty.')
+      return None
+    if 'id' not in data:
+      logging.warning('The key "id" does not exist in manifest.json')
+      return None
+    return data['id']
 
 
 def main():
@@ -69,6 +78,9 @@ def main():
                       '-v',
                       action='store_true',
                       help='Enable debug-level logging.')
+  parser.add_argument('--ignore-gen-build-defs',
+                      action='store_true',
+                      help='Do not run gen_build_defs.py.')
   parser.add_argument(
       '--file',
       help='Specifies the sdk tar.gz file name without .tar.gz suffix',
@@ -132,13 +144,13 @@ def main():
   # sees that the SDK manifest has changed, regardless of the mtime set by
   # the download & unpack steps above, by setting mtime to now.
   # See crbug.com/1457463
-  os.utime(os.path.join(SDK_ROOT, 'meta', 'manifest.json'), None)
+  os.utime(_VERSION_FILE, None)
 
-  root_dir = os.path.dirname(os.path.realpath(__file__))
-  build_def_cmd = [
-      os.path.join(root_dir, 'gen_build_defs.py'),
-  ]
-  subprocess.run(build_def_cmd, check=True)
+  if not args.ignore_gen_build_defs:
+    subprocess.run([
+        os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                    'gen_build_defs.py'),
+    ], check=True)
 
   return 0
 

@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_text_track_manager.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace blink {
 
@@ -22,9 +23,10 @@ namespace {
 // The CSS class to use if we should use the closed captions icon.
 const char kClosedCaptionClass[] = "closed-captions";
 
-const char* kClosedCaptionLocales[] = {
+constexpr const char* kClosedCaptionLocales[] = {
     // English (United States)
-    "en", "en-US",
+    "en",
+    "en-US",
 
     // Spanish (Latin America and Caribbean)
     "es-419",
@@ -35,7 +37,7 @@ const char* kClosedCaptionLocales[] = {
 
 // Returns true if the default language should use the closed captions icon.
 bool UseClosedCaptionsIcon() {
-  for (auto*& locale : kClosedCaptionLocales) {
+  for (const char* locale : kClosedCaptionLocales) {
     if (locale == DefaultLanguage())
       return true;
   }
@@ -50,7 +52,7 @@ MediaControlToggleClosedCaptionsButtonElement::
         MediaControlsImpl& media_controls)
     : MediaControlInputElement(media_controls) {
   setAttribute(html_names::kAriaLabelAttr,
-               WTF::AtomicString(GetLocale().QueryString(
+               AtomicString(GetLocale().QueryString(
                    IDS_AX_MEDIA_SHOW_CLOSED_CAPTIONS_MENU_BUTTON)));
   setType(input_type_names::kButton);
   SetShadowPseudoId(

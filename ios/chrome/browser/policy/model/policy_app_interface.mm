@@ -18,7 +18,8 @@
 #import "base/threading/scoped_blocking_call.h"
 #import "base/values.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
-#import "components/policy/core/browser/url_blocklist_manager.h"
+#import "components/policy/core/browser/url_list/policy_blocklist_service.h"
+#import "components/policy/core/browser/url_list/url_blocklist_manager.h"
 #import "components/policy/core/common/cloud/cloud_policy_client.h"
 #import "components/policy/core/common/cloud/cloud_policy_core.h"
 #import "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -34,11 +35,10 @@
 #import "components/policy/policy_constants.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/test_platform_policy_provider.h"
-#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service.h"
+#import "ios/chrome/browser/policy_url_blocking/model/policy_url_blocking_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state_manager.h"
 #import "ios/chrome/browser/shared/model/paths/paths.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/test/app/chrome_test_util.h"
 
 namespace {
@@ -74,7 +74,8 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
     return base::Value();
   }
 
-  return base::JSONReader::Read(base::SysNSStringToUTF8(json_value));
+  return base::JSONReader::Read(base::SysNSStringToUTF8(json_value),
+                                base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 }
 
 }  // namespace
@@ -146,8 +147,8 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
 + (BOOL)isURLBlocked:(NSString*)URL {
   GURL gurl = GURL(base::SysNSStringToUTF8(URL));
   PolicyBlocklistService* service =
-      PolicyBlocklistServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
+      PolicyBlocklistServiceFactory::GetForProfile(
+          chrome_test_util::GetOriginalProfile());
   return service->GetURLBlocklistState(gurl) ==
          policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
 }
@@ -169,7 +170,7 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
 
 + (void)setUserCloudPolicyDataWithDomain:(NSString*)domain {
   policy::UserCloudPolicyManager* manager =
-      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+      chrome_test_util::GetOriginalProfile()->GetUserCloudPolicyManager();
   DCHECK(manager);
 
   policy::CloudPolicyStore* store = manager->core()->store();
@@ -231,9 +232,9 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
       });
 }
 
-+ (BOOL)hasUserPolicyDataInCurrentBrowserState {
++ (BOOL)hasUserPolicyDataInCurrentProfile {
   policy::UserCloudPolicyManager* manager =
-      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+      chrome_test_util::GetOriginalProfile()->GetUserCloudPolicyManager();
   DCHECK(manager);
 
   policy::CloudPolicyStore* store = manager->core()->store();
@@ -242,10 +243,10 @@ std::optional<base::Value> DeserializeValue(NSString* json_value) {
   return store->has_policy() && store->is_managed();
 }
 
-+ (BOOL)hasUserPolicyInCurrentBrowserState:(NSString*)policyName
-                          withIntegerValue:(int)expectedValue {
++ (BOOL)hasUserPolicyInCurrentProfile:(NSString*)policyName
+                     withIntegerValue:(int)expectedValue {
   policy::UserCloudPolicyManager* manager =
-      chrome_test_util::GetOriginalBrowserState()->GetUserCloudPolicyManager();
+      chrome_test_util::GetOriginalProfile()->GetUserCloudPolicyManager();
   DCHECK(manager);
 
   policy::CloudPolicyStore* store = manager->core()->store();

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/base/test_helpers.h"
 
 #include <stdint.h>
@@ -15,7 +10,10 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
+#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/run_loop.h"
@@ -71,15 +69,15 @@ void I4xxxRect(VideoFrame* dest_frame,
       << VideoPixelFormatToString(dest_frame->format());
 
   // Write known full size planes first.
-  libyuv::SetPlane(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kY) +
-                       y * dest_frame->stride(VideoFrame::Plane::kY) + x,
-                   dest_frame->stride(VideoFrame::Plane::kY), width, height,
-                   value_y);
+  libyuv::SetPlane(
+      UNSAFE_TODO(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kY) +
+                  y * dest_frame->stride(VideoFrame::Plane::kY) + x),
+      dest_frame->stride(VideoFrame::Plane::kY), width, height, value_y);
   if (num_planes == 4) {
-    libyuv::SetPlane(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kA) +
-                         y * dest_frame->stride(VideoFrame::Plane::kA) + x,
-                     dest_frame->stride(VideoFrame::Plane::kA), width, height,
-                     value_a);
+    libyuv::SetPlane(
+        UNSAFE_TODO(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kA) +
+                    y * dest_frame->stride(VideoFrame::Plane::kA) + x),
+        dest_frame->stride(VideoFrame::Plane::kA), width, height, value_a);
   }
 
   // Adjust rect start and offset.
@@ -90,15 +88,17 @@ void I4xxxRect(VideoFrame* dest_frame,
 
   // Write variable sized planes.
   libyuv::SetPlane(
-      dest_frame->GetWritableVisibleData(VideoFrame::Plane::kU) +
-          start_xy.height() * dest_frame->stride(VideoFrame::Plane::kU) +
-          start_xy.width(),
+      UNSAFE_TODO(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kU) +
+                  start_xy.height() *
+                      dest_frame->stride(VideoFrame::Plane::kU) +
+                  start_xy.width()),
       dest_frame->stride(VideoFrame::Plane::kU), uv_size.width(),
       uv_size.height(), value_u);
   libyuv::SetPlane(
-      dest_frame->GetWritableVisibleData(VideoFrame::Plane::kV) +
-          start_xy.height() * dest_frame->stride(VideoFrame::Plane::kV) +
-          start_xy.width(),
+      UNSAFE_TODO(dest_frame->GetWritableVisibleData(VideoFrame::Plane::kV) +
+                  start_xy.height() *
+                      dest_frame->stride(VideoFrame::Plane::kV) +
+                  start_xy.width()),
       dest_frame->stride(VideoFrame::Plane::kV), uv_size.width(),
       uv_size.height(), value_v);
 }
@@ -246,8 +246,9 @@ void FillFourColorsFrameARGB(VideoFrame& dest_frame,
 // Utility mock for testing methods expecting Closures and PipelineStatusCBs.
 class MockCallback : public base::RefCountedThreadSafe<MockCallback> {
  public:
-  MockCallback();
+  REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
 
+  MockCallback() = default;
   MockCallback(const MockCallback&) = delete;
   MockCallback& operator=(const MockCallback&) = delete;
 
@@ -257,28 +258,25 @@ class MockCallback : public base::RefCountedThreadSafe<MockCallback> {
 
  protected:
   friend class base::RefCountedThreadSafe<MockCallback>;
-  virtual ~MockCallback();
+  virtual ~MockCallback() = default;
 };
 
-MockCallback::MockCallback() = default;
-MockCallback::~MockCallback() = default;
-
 base::OnceClosure NewExpectedClosure() {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, Run());
-  return base::BindOnce(&MockCallback::Run, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::Run, std::move(callback));
 }
 
 base::OnceCallback<void(bool)> NewExpectedBoolCB(bool success) {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, RunWithBool(success));
-  return base::BindOnce(&MockCallback::RunWithBool, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::RunWithBool, std::move(callback));
 }
 
 PipelineStatusCallback NewExpectedStatusCB(PipelineStatus status) {
-  StrictMock<MockCallback>* callback = new StrictMock<MockCallback>();
+  auto callback = base::MakeRefCounted<StrictMock<MockCallback>>();
   EXPECT_CALL(*callback, RunWithStatus(status));
-  return base::BindOnce(&MockCallback::RunWithStatus, WrapRefCounted(callback));
+  return base::BindOnce(&MockCallback::RunWithStatus, std::move(callback));
 }
 
 WaitableMessageLoopEvent::WaitableMessageLoopEvent()
@@ -558,7 +556,9 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
                                            T increment,
                                            size_t frames,
                                            base::TimeDelta timestamp) {
-  const size_t channels = ChannelLayoutToChannelCount(channel_layout);
+  const size_t channels = (channel_layout == CHANNEL_LAYOUT_DISCRETE)
+                              ? channel_count
+                              : ChannelLayoutToChannelCount(channel_layout);
   scoped_refptr<AudioBuffer> output =
       AudioBuffer::CreateBuffer(format,
                                 channel_layout,
@@ -582,7 +582,7 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer(SampleFormat format,
         reinterpret_cast<T*>(output->channel_data()[is_planar ? ch : 0]);
     const T v = static_cast<T>(start + ch * frames * increment);
     for (size_t i = 0; i < frames; ++i) {
-      buffer[is_planar ? i : ch + i * channels] =
+      UNSAFE_TODO(buffer[is_planar ? i : ch + i * channels]) =
           static_cast<T>(v + i * increment);
     }
   }
@@ -598,7 +598,9 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
                                                   float increment,
                                                   size_t frames,
                                                   base::TimeDelta timestamp) {
-  const size_t channels = ChannelLayoutToChannelCount(channel_layout);
+  const size_t channels = (channel_layout == CHANNEL_LAYOUT_DISCRETE)
+                              ? channel_count
+                              : ChannelLayoutToChannelCount(channel_layout);
   scoped_refptr<AudioBuffer> output = AudioBuffer::CreateBuffer(
       format, channel_layout, static_cast<int>(channel_count), sample_rate,
       static_cast<int>(frames));
@@ -620,7 +622,7 @@ scoped_refptr<AudioBuffer> MakeAudioBuffer<float>(SampleFormat format,
         reinterpret_cast<float*>(output->channel_data()[is_planar ? ch : 0]);
     const float v = static_cast<float>(start + ch * frames * increment);
     for (size_t i = 0; i < frames; ++i) {
-      buffer[is_planar ? i : ch + i * channels] =
+      UNSAFE_TODO(buffer[is_planar ? i : ch + i * channels]) =
           static_cast<float>(v + i * increment) /
           std::numeric_limits<uint16_t>::max();
     }
@@ -649,25 +651,44 @@ scoped_refptr<AudioBuffer> MakeBitstreamAudioBuffer(
   //   start + 2 * increment, ...
   uint8_t* buffer = reinterpret_cast<uint8_t*>(output->channel_data()[0]);
   for (size_t i = 0; i < data_size; ++i) {
-    buffer[i] = static_cast<uint8_t>(start + i * increment);
+    UNSAFE_TODO(buffer[i]) = static_cast<uint8_t>(start + i * increment);
   }
 
   return output;
 }
 
-void VerifyBitstreamAudioBus(AudioBus* bus,
-                             size_t data_size,
-                             uint8_t start,
-                             uint8_t increment) {
+void VerifyBitstreamAudioBus(AudioBus* bus, uint8_t start, uint8_t increment) {
   ASSERT_TRUE(bus->is_bitstream_format());
 
   // Values in channel 0 will be:
   //   start
   //   start + increment
   //   start + 2 * increment, ...
-  uint8_t* buffer = reinterpret_cast<uint8_t*>(bus->channel(0));
-  for (size_t i = 0; i < data_size; ++i) {
-    ASSERT_EQ(buffer[i], static_cast<uint8_t>(start + i * increment));
+  uint8_t expected_value = start;
+  for (uint8_t datum : bus->bitstream_data()) {
+    EXPECT_EQ(datum, expected_value);
+    expected_value += increment;
+  }
+}
+
+void VerifyBitstreamIECDtsAudioBus(AudioBus* bus,
+                                   size_t data_size,
+                                   uint8_t start,
+                                   uint8_t increment) {
+  ASSERT_TRUE(bus->is_bitstream_format());
+
+  // Values in channel 0 will be:
+  //   start
+  //   start + increment
+  //   start + 2 * increment, ...
+  uint8_t expected_value = start;
+  for (uint8_t datum : bus->bitstream_data().first(data_size)) {
+    ASSERT_EQ(datum, expected_value);
+    expected_value += increment;
+  }
+
+  for (uint8_t datum : bus->bitstream_data().subspan(data_size)) {
+    ASSERT_EQ(datum, 0u);
   }
 }
 
@@ -725,7 +746,7 @@ scoped_refptr<DecoderBuffer> CreateFakeEncryptedBuffer() {
       base::MakeRefCounted<DecoderBuffer>(buffer_size));
 
   const uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
-  const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
+  const uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {};
   buffer->set_decrypt_config(DecryptConfig::CreateCencConfig(
       std::string(reinterpret_cast<const char*>(kFakeKeyId),
                   std::size(kFakeKeyId)),
@@ -772,8 +793,7 @@ std::unique_ptr<StrictMock<MockDemuxerStream>> CreateMockDemuxerStream(
                                            : TestVideoConfig::Normal());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return stream;
@@ -795,6 +815,44 @@ std::tuple<uint8_t, uint8_t, uint8_t, uint8_t> RGBToYUV(uint32_t argb) {
                      &v, 1, 1, 1);
   a = argb >> 24;
   return std::tie(y, u, v, a);
+}
+
+int CountDifferentPixels(const VideoFrame& frame1,
+                         const VideoFrame& frame2,
+                         int tolerance) {
+  int diff_cnt = 0;
+
+  if (frame1.format() != frame2.format() ||
+      frame1.visible_rect().size() != frame2.visible_rect().size()) {
+    return frame1.coded_size().GetArea();
+  }
+
+  VideoPixelFormat format = frame1.format();
+  size_t num_planes = VideoFrame::NumPlanes(format);
+  gfx::Size visible_size = frame1.visible_rect().size();
+  for (size_t plane = 0; plane < num_planes; ++plane) {
+    int stride1 = frame1.stride(plane);
+    int stride2 = frame2.stride(plane);
+    size_t rows = VideoFrame::Rows(plane, format, visible_size.height());
+    size_t row_bytes =
+        VideoFrame::RowBytes(plane, format, visible_size.width());
+    auto data1 = frame1.GetVisiblePlaneData(plane);
+    auto data2 = frame2.GetVisiblePlaneData(plane);
+
+    for (size_t r = 0; r < rows; ++r) {
+      auto row1 = data1.subspan(stride1 * r, row_bytes);
+      auto row2 = data2.subspan(stride2 * r, row_bytes);
+      for (size_t c = 0; c < row_bytes; ++c) {
+        uint8_t b1 = row1[c];
+        uint8_t b2 = row2[c];
+        uint8_t diff = std::max(b1, b2) - std::min(b1, b2);
+        if (diff > tolerance) {
+          ++diff_cnt;
+        }
+      }
+    }
+  }
+  return diff_cnt;
 }
 
 }  // namespace media

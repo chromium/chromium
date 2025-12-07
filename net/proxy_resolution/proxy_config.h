@@ -7,15 +7,13 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/base/proxy_server.h"
-#include "net/proxy_resolution/proxy_bypass_rules.h"
+#include "net/proxy_resolution/proxy_host_matching_rules.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "url/gurl.h"
-
-namespace base {
-class Value;
-}
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -23,12 +21,13 @@ class ProxyInfo;
 
 // ProxyConfig describes a user's proxy settings.
 //
-// There are two categories of proxy settings:
-//   (1) Automatic (indicates the methods to obtain a PAC script)
-//   (2) Manual (simple set of proxy servers per scheme, and bypass patterns)
+// There are three categories of proxy settings:
+// (1) Override rules (enterprise administrator-configured hosts and conditions)
+// (2) Automatic (indicates the methods to obtain a PAC script)
+// (3) Manual (simple set of proxy servers per scheme, and bypass patterns)
 //
-// When both automatic and manual settings are specified, the Automatic ones
-// take precedence over the manual ones.
+// When multiple settings types are specified, the above ordering is used for
+// precedence.
 //
 // For more details see:
 // http://www.chromium.org/developers/design-documents/network-stack/proxy-settings-fallback
@@ -36,6 +35,8 @@ class NET_EXPORT ProxyConfig {
  public:
   // ProxyRules describes the "manual" proxy settings.
   struct NET_EXPORT ProxyRules {
+    // A `Type` other than `EMPTY` does not guarantee the presence of a valid
+    // proxy chain.
     enum class Type {
       EMPTY,
       PROXY_LIST,
@@ -48,9 +49,7 @@ class NET_EXPORT ProxyConfig {
     ProxyRules(const ProxyRules& other);
     ~ProxyRules();
 
-    bool empty() const {
-      return type == Type::EMPTY;
-    }
+    bool empty() const { return type == Type::EMPTY; }
 
     // Sets |result| with the proxies to use for |url| based on the current
     // rules.
@@ -81,6 +80,8 @@ class NET_EXPORT ProxyConfig {
     //    to all otherwise unspecified url-schemes, however the default proxy-
     //    scheme for proxy urls in the 'socks' list is understood to be
     //    socks4:// if unspecified.
+    //  * In debug mode, allow_bracketed_proxy_chains can be set to true. In
+    //    this case, brackets can be used to format multi-proxy chains.
     //
     // For example:
     //   "http=foopy:80;ftp=foopy2"  -- use HTTP proxy "foopy:80" for http://
@@ -102,7 +103,9 @@ class NET_EXPORT ProxyConfig {
     //   "http=foopy;socks=foopy2   --  use HTTP proxy "foopy" for http URLs,
     //                                  and use socks4://foopy2 for all other
     //                                  URLs.
-    void ParseFromString(const std::string& proxy_rules);
+    void ParseFromString(std::string_view proxy_rules,
+                         bool allow_bracketed_proxy_chains = false,
+                         bool is_quic_allowed = false);
 
     // Returns one of {&proxies_for_http, &proxies_for_https, &proxies_for_ftp,
     // &fallback_proxies}, or NULL if there is no proxy to use.
@@ -121,7 +124,7 @@ class NET_EXPORT ProxyConfig {
     }
 
     // Exceptions for when not to use a proxy.
-    ProxyBypassRules bypass_rules;
+    ProxyHostMatchingRules bypass_rules;
 
     // Reverse the meaning of |bypass_rules|.
     bool reverse_bypass = false;
@@ -143,20 +146,76 @@ class NET_EXPORT ProxyConfig {
    private:
     // Returns one of {&proxies_for_http, &proxies_for_https, &proxies_for_ftp}
     // or NULL if it is a scheme that we don't have a mapping for. Should only
-    // call this if the type is Type::PROXY_LIST_PER_SCHEME. Intentionally returns
-    // NULL for "ws" and "wss" as those are handled specially by
+    // call this if the type is Type::PROXY_LIST_PER_SCHEME. Intentionally
+    // returns NULL for "ws" and "wss" as those are handled specially by
     // GetProxyListForWebSocketScheme().
-    ProxyList* MapUrlSchemeToProxyListNoFallback(const std::string& scheme);
+    ProxyList* MapUrlSchemeToProxyListNoFallback(std::string_view scheme);
 
     // Returns the first of {&fallback_proxies, &proxies_for_https,
     // &proxies_for_http} that is non-empty, or NULL.
     const ProxyList* GetProxyListForWebSocketScheme() const;
   };
 
+  // `ProxyOverrideRule` represents an entry in the "ProxyOverrideRules" policy.
+  // For the rule's override logic to be applied, the `destination_matchers`
+  // field must match the provided hostname and every condition in
+  // `dns_conditions` must be met. If `dns_conditions` is empty, only
+  // `destination_matchers` has to be matched for the rule to apply.
+  //
+  // This is currently a distinct class from `ProxyRules` since it aims to cover
+  // different functionality (ex. having its logic applied before PAC scripts,
+  // supporting DNS resolution conditions). If both classes end up supporting
+  // the same set of functionality, they can be merged and simply populate
+  // different data members of `ProxyConfig` to correctly apply precedence
+  // between override rules and manual settings.
+  struct NET_EXPORT ProxyOverrideRule {
+    // Represents a DNS condition to be met by the rule for its `proxy_list` to
+    // be used. Each condition includes a `host` to try to resolve, and the rule
+    // only applies if host resolution matches the expected `result`.
+    struct NET_EXPORT DnsProbeCondition {
+      enum Result { kNotFound, kResolved };
+
+      bool operator==(const DnsProbeCondition& other) const;
+
+      // Creates a Value::Dict dump of this condition.
+      base::Value::Dict ToDict() const;
+
+      url::SchemeHostPort host;
+      Result result = kNotFound;
+    };
+
+    ProxyOverrideRule();
+    ProxyOverrideRule(const ProxyOverrideRule& other);
+    ProxyOverrideRule& operator=(const ProxyOverrideRule& other);
+    ProxyOverrideRule(ProxyOverrideRule&& other);
+    ProxyOverrideRule& operator=(ProxyOverrideRule&& other);
+    ~ProxyOverrideRule();
+
+    // Returns true if `this` has the same serialized list of rules as `other`.
+    bool operator==(const ProxyOverrideRule& other) const;
+
+    // Creates a Value::Dict dump of this override rule.
+    base::Value::Dict ToDict() const;
+
+    // Returns true if `url` matches `destination_matchers` without matching
+    // `exclude_destination_matchers`. This should be used instead of directly
+    // accessing the matcher members for evaluating if the rule is applicable or
+    // not.
+    bool MatchesDestination(const GURL& url) const;
+
+    ProxyHostMatchingRules destination_matchers;
+    ProxyHostMatchingRules exclude_destination_matchers;
+    std::vector<DnsProbeCondition> dns_conditions;
+
+    ProxyList proxy_list;
+  };
+
   ProxyConfig();
   ProxyConfig(const ProxyConfig& config);
-  ~ProxyConfig();
+  ProxyConfig(ProxyConfig&& config);
   ProxyConfig& operator=(const ProxyConfig& config);
+  ProxyConfig& operator=(ProxyConfig&& config);
+  ~ProxyConfig();
 
   // Returns true if the given config is equivalent to this config.
   bool Equals(const ProxyConfig& other) const;
@@ -170,41 +229,35 @@ class NET_EXPORT ProxyConfig {
   // Creates a Value dump of this configuration.
   base::Value ToValue() const;
 
-  ProxyRules& proxy_rules() {
-    return proxy_rules_;
+  const std::vector<ProxyOverrideRule>& proxy_override_rules() const {
+    return proxy_override_rules_;
   }
 
-  const ProxyRules& proxy_rules() const {
-    return proxy_rules_;
+  void set_proxy_override_rules(std::vector<ProxyOverrideRule> rules) {
+    proxy_override_rules_ = std::move(rules);
   }
 
-  void set_pac_url(const GURL& url) {
-    pac_url_ = url;
-  }
+  ProxyRules& proxy_rules() { return proxy_rules_; }
 
-  const GURL& pac_url() const {
-    return pac_url_;
-  }
+  const ProxyRules& proxy_rules() const { return proxy_rules_; }
+
+  void set_pac_url(const GURL& url) { pac_url_ = url; }
+
+  const GURL& pac_url() const { return pac_url_; }
 
   void set_pac_mandatory(bool enable_pac_mandatory) {
     pac_mandatory_ = enable_pac_mandatory;
   }
 
-  bool pac_mandatory() const {
-    return pac_mandatory_;
-  }
+  bool pac_mandatory() const { return pac_mandatory_; }
 
-  bool has_pac_url() const {
-    return pac_url_.is_valid();
-  }
+  bool has_pac_url() const { return pac_url_.is_valid(); }
 
   void set_auto_detect(bool enable_auto_detect) {
     auto_detect_ = enable_auto_detect;
   }
 
-  bool auto_detect() const {
-    return auto_detect_;
-  }
+  bool auto_detect() const { return auto_detect_; }
 
   void set_from_system(bool from_system) { from_system_ = from_system; }
 
@@ -212,9 +265,7 @@ class NET_EXPORT ProxyConfig {
 
   // Helpers to construct some common proxy configurations.
 
-  static ProxyConfig CreateDirect() {
-    return ProxyConfig();
-  }
+  static ProxyConfig CreateDirect() { return ProxyConfig(); }
 
   static ProxyConfig CreateAutoDetect() {
     ProxyConfig config;
@@ -237,6 +288,12 @@ class NET_EXPORT ProxyConfig {
   }
 
  private:
+  // Rules set by the "ProxyOverrideRules" policy. These are checked in order
+  // until one matches, in which case its `proxy_list` is used. This field is
+  // checked before the other fields in this class, see the comment on top of
+  // `ProxyConfig` for more details.
+  std::vector<ProxyOverrideRule> proxy_override_rules_;
+
   // True if the proxy configuration should be auto-detected.
   bool auto_detect_ = false;
 
@@ -255,7 +312,5 @@ class NET_EXPORT ProxyConfig {
 };
 
 }  // namespace net
-
-
 
 #endif  // NET_PROXY_RESOLUTION_PROXY_CONFIG_H_

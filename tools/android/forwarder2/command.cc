@@ -11,6 +11,7 @@
 
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/posix/safe_strerror.h"
 #include "base/strings/string_number_conversions.h"

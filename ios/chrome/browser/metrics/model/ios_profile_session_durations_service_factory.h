@@ -5,25 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_DURATIONS_SERVICE_FACTORY_H_
 #define IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_DURATIONS_SERVICE_FACTORY_H_
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
 class IOSProfileSessionDurationsService;
+class ProfileIOS;
 
+// A factory that owns all IOSProfileSessionDurationsService and associate
+// the to ProfileIOS instances.
 class IOSProfileSessionDurationsServiceFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-  // Creates the service if it doesn't exist already for `browser_state`.
-  static IOSProfileSessionDurationsService* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
+  static IOSProfileSessionDurationsService* GetForProfile(ProfileIOS* profile);
   static IOSProfileSessionDurationsServiceFactory* GetInstance();
-
-  IOSProfileSessionDurationsServiceFactory(
-      const IOSProfileSessionDurationsServiceFactory&) = delete;
-  IOSProfileSessionDurationsServiceFactory& operator=(
-      const IOSProfileSessionDurationsServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSProfileSessionDurationsServiceFactory>;
@@ -32,12 +26,9 @@ class IOSProfileSessionDurationsServiceFactory
   ~IOSProfileSessionDurationsServiceFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
-  bool ServiceIsNULLWhileTesting() const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_MODEL_IOS_PROFILE_SESSION_DURATIONS_SERVICE_FACTORY_H_

@@ -5,17 +5,24 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_SELECT_ACCOUNT_SHEET_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_SELECT_ACCOUNT_SHEET_VIEW_H_
 
+#include <cstddef>
 #include <memory>
+#include <utility>
 
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/account_hover_list_model.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/view.h"
 
 // Web Authentication request dialog sheet view for selecting between one or
 // more accounts.
 class AuthenticatorSelectAccountSheetView
     : public AuthenticatorRequestSheetView,
       public AccountHoverListModel::Delegate {
+  METADATA_HEADER(AuthenticatorSelectAccountSheetView,
+                  AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorSelectAccountSheetView(
       std::unique_ptr<AuthenticatorSelectAccountSheetModel> model);

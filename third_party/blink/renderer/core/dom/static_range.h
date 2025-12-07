@@ -48,7 +48,7 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
     return start_container_ == end_container_ && start_offset_ == end_offset_;
   }
 
-  Range* toRange(ExceptionState& = ASSERT_NO_EXCEPTION) const;
+  Range* toRange(ExceptionState&) const;
 
   bool IsValid() const;
   bool IsStaticRange() const override { return true; }
@@ -67,6 +67,7 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
 };
 
 using StaticRangeVector = HeapVector<Member<StaticRange>>;
+using GCedStaticRangeVector = GCedHeapVector<Member<StaticRange>>;
 
 template <>
 struct DowncastTraits<StaticRange> {

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/android/jni_android.h"
-#include "base/base_jni/ClangProfiler_jni.h"
 #include "base/test/clang_profiling.h"
+
+#include "base/android/jni_android.h"
+#include "base/clang_profiler_jni/ClangProfiler_jni.h"
 
 // Used in java tests when clang profiling is enabled.
 namespace base {
@@ -14,3 +15,5 @@ static void JNI_ClangProfiler_WriteClangProfilingProfile(JNIEnv* env) {
 }
 
 }  // namespace base
+
+DEFINE_JNI(ClangProfiler)

@@ -8,7 +8,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/common/content_client.h"
-#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
@@ -49,10 +48,10 @@ class CONTENT_EXPORT ContentUtilityClient {
   // Only called from the main thread.
   virtual void RegisterMainThreadServices(mojo::ServiceFactory& services) {}
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Initialize the endpoint of mojo service manager.
   virtual mojo::GenericPendingReceiver InitMojoServiceManager();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace content

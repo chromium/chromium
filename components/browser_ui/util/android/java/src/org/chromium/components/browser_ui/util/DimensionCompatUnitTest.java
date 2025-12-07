@@ -18,7 +18,6 @@ import android.os.Build.VERSION_CODES;
 import android.view.WindowInsets;
 import android.view.WindowMetrics;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -96,13 +95,13 @@ public class DimensionCompatUnitTest {
         assertEquals(
                 "Status bar height is not as expected.",
                 TEST_STATUS_BAR_HEIGHT,
-                dimensionCompat.getStatusbarHeight());
+                dimensionCompat.getStatusBarHeight());
 
         try {
             dimensionCompat.updatePosition();
             helper.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Position updater was not invoked.");
+            throw new AssertionError("Position updater was not invoked.", e);
         }
     }
 
@@ -130,6 +129,6 @@ public class DimensionCompatUnitTest {
         assertEquals(
                 "Status bar height is not as expected.",
                 statusBarHeight,
-                dimensionCompat.getStatusbarHeight());
+                dimensionCompat.getStatusBarHeight());
     }
 }

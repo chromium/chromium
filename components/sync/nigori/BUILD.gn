@@ -28,7 +28,10 @@ static_library("nigori") {
     "pending_local_nigori_commit.h",
   ]
 
-  deps = [ "//components/os_crypt/sync" ]
+  deps = [
+    "//components/os_crypt/async/common",
+    "//components/os_crypt/sync",
+  ]
 
   public_deps = [
     "//base",

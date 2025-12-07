@@ -18,11 +18,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/svg/svg_transform.h"
 
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -48,12 +43,6 @@ SVGTransform::~SVGTransform() = default;
 SVGTransform* SVGTransform::Clone() const {
   return MakeGarbageCollected<SVGTransform>(transform_type_, angle_, center_,
                                             matrix_);
-}
-
-SVGPropertyBase* SVGTransform::CloneForAnimation(const String&) const {
-  // SVGTransform is never animated.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
 }
 
 void SVGTransform::SetMatrix(const AffineTransform& matrix) {
@@ -140,8 +129,7 @@ const char* TransformTypePrefixForParsing(SVGTransformType type) {
     case SVGTransformType::kSkewy:
       return "skewY(";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 gfx::PointF DecomposeRotationCenter(const AffineTransform& matrix,
@@ -168,7 +156,7 @@ gfx::PointF DecomposeRotationCenter(const AffineTransform& matrix,
 }  // namespace
 
 String SVGTransform::ValueAsString() const {
-  double arguments[6];
+  std::array<double, 6> arguments;
   size_t argument_count = 0;
   switch (transform_type_) {
     case SVGTransformType::kUnknown:
@@ -213,19 +201,14 @@ String SVGTransform::ValueAsString() const {
 
   StringBuilder builder;
   builder.Append(TransformTypePrefixForParsing(transform_type_));
-
-  for (size_t i = 0; i < argument_count; ++i) {
-    if (i)
-      builder.Append(' ');
-    builder.AppendNumber(arguments[i]);
-  }
+  builder.AppendRange(base::span(arguments).first(argument_count), " ");
   builder.Append(')');
-  return builder.ToString();
+  return builder.ReleaseString();
 }
 
 void SVGTransform::Add(const SVGPropertyBase*, const SVGElement*) {
   // SVGTransform is not animated by itself.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SVGTransform::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
@@ -236,15 +219,13 @@ void SVGTransform::CalculateAnimatedValue(const SMILAnimationEffectParameters&,
                                           const SVGPropertyBase*,
                                           const SVGElement*) {
   // SVGTransform is not animated by itself.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 float SVGTransform::CalculateDistance(const SVGPropertyBase*,
                                       const SVGElement*) const {
   // SVGTransform is not animated by itself.
-  NOTREACHED_IN_MIGRATION();
-
-  return -1;
+  NOTREACHED();
 }
 
 }  // namespace blink

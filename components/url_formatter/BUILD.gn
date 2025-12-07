@@ -25,7 +25,7 @@ static_library("url_formatter") {
     "elide_url.h",
     "spoof_checks/idn_spoof_checker.cc",
     "spoof_checks/idn_spoof_checker.h",
-    "spoof_checks/idna_metrics.h",
+    "spoof_checks/idn_spoof_checker_types.h",
     "url_fixer.cc",
     "url_fixer.h",
     "url_formatter.cc",
@@ -82,20 +82,33 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/url_formatter/spoof_checks/top_domains:generate_idn_top_domains_test_trie",
+    "//components/url_formatter/spoof_checks/top_domains:generate_top_domains_test_trie",
     "//net",
     "//net:preload_decoder",
     "//testing/gtest",
     "//ui/gfx",
     "//url",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-fuzzer_test("url_formatter_fixer_fuzzer") {
+test("url_formatter_fixer_fuzzer") {
   sources = [ "url_fixer_fuzzer.cc" ]
+  fuzztests = [
+    "URLFixerFuzzer.FuzzSegmentURL",
+    "URLFixerFuzzer.FuzzUTF16SegmentURL",
+    "URLFixerFuzzer.FuzzFormatURL",
+    "URLFixerFuzzer.FuzzFixupURL",
+    "URLFixerFuzzer.FuzzFixupRelativeFile",
+  ]
   deps = [
     ":url_formatter",
     "//base",
     "//base:i18n",
+    "//third_party/fuzztest:fuzztest_gtest_main",
     "//url",
   ]
 }

@@ -260,7 +260,6 @@ std::optional<ParsedSignalsError> ConvertAvProductsResponse(
     const auto& av_product = av_response.av_products[i];
     api::enterprise_reporting_private::AntiVirusSignal api_av_signal;
     api_av_signal.display_name = av_product.display_name;
-    api_av_signal.product_id = av_product.product_id;
 
     switch (av_product.state) {
       case device_signals::AvProductState::kOn:

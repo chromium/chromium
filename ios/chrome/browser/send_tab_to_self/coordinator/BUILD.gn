@@ -1,0 +1,44 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "send_tab_to_self_coordinator.h",
+    "send_tab_to_self_coordinator.mm",
+    "send_tab_to_self_coordinator_delegate.h",
+    "send_tab_to_self_mediator.h",
+    "send_tab_to_self_mediator.mm",
+    "send_tab_to_self_mediator_delegate.h",
+  ]
+  deps = [
+    "//base",
+    "//components/send_tab_to_self",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/add_account_signin/coordinator",
+    "//ios/chrome/browser/authentication/ui_bundled:signin_presenter",
+    "//ios/chrome/browser/authentication/ui_bundled/change_profile",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
+    "//ios/chrome/browser/infobars/ui_bundled/presentation",
+    "//ios/chrome/browser/main/model",
+    "//ios/chrome/browser/send_tab_to_self/model",
+    "//ios/chrome/browser/send_tab_to_self/ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/sync/model",
+    "//ui/base",
+    "//url",
+  ]
+}

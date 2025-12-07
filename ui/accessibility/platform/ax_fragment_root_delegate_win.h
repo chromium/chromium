@@ -5,7 +5,7 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_DELEGATE_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_DELEGATE_WIN_H_
 
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 
@@ -13,6 +13,8 @@ namespace ui {
 // to relate the fragment root to its neighbors in a loosely coupled way.
 class AXFragmentRootDelegateWin {
  public:
+  virtual ~AXFragmentRootDelegateWin() = default;
+
   // In our design, a fragment root can have at most one child.
   // See AXFragmentRootWin for more details.
   virtual gfx::NativeViewAccessible GetChildOfAXFragmentRoot() = 0;
@@ -29,6 +31,9 @@ class AXFragmentRootDelegateWin {
   // not be exposed to assistive technology users. See AXFragmentRootWin for
   // more details.
   virtual bool IsAXFragmentRootAControlElement() = 0;
+
+ protected:
+  AXFragmentRootDelegateWin() = default;
 };
 
 }  // namespace ui

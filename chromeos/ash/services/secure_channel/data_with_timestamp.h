@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_DATA_WITH_TIMESTAMP_H_
 #define CHROMEOS_ASH_SERVICES_SECURE_CHANNEL_DATA_WITH_TIMESTAMP_H_
 
+#include <stdint.h>
+
 #include <string>
 #include <vector>
 

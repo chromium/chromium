@@ -17,3 +17,5 @@ static jboolean JNI_LensPolicyUtils_GetLensCameraAssistedSearchEnabled(
   return g_browser_process->local_state()->GetBoolean(
       lens::kLensCameraAssistedSearchEnabled);
 }
+
+DEFINE_JNI(LensPolicyUtils)

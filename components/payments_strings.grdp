@@ -190,6 +190,9 @@
     <message name="IDS_PAYMENTS_CANCEL_PAYMENT" desc="Label of the secondary button in payment request editors. Clicking that button closes the dialog and aborts the payment request completely. Sentence-cased.">
       Cancel payment
     </message>
+    <message name="IDS_PAYMENTS_CONFIRM_BUTTON" desc="Label of the primary button in a payment confirmation UI. Pressing the button indicates acceptance of the payment details shown. Sentence-cased." formatter_data="android_java">
+      Confirm
+    </message>
   </if>  <!-- not use_titlecase -->
   <!-- Buttons, Title-Cased -->
   <if expr="use_titlecase">
@@ -216,6 +219,9 @@
     </message>
     <message name="IDS_PAYMENTS_CANCEL_PAYMENT" desc="Label of the secondary button in payment request editors. Clicking that button closes the dialog and aborts the payment request completely. Title-Cased.">
       Cancel Payment
+    </message>
+    <message name="IDS_PAYMENTS_CONFIRM_BUTTON" desc="Label of the primary button in a payment confirmation UI. Pressing the button indicates acceptance of the payment details shown. Title-Cased.">
+      Confirm
     </message>
   </if>  <!-- use_titlecase -->
 
@@ -452,6 +458,9 @@
   <message name="IDS_PAYMENTS_ORDER_SUMMARY_ACCESSIBLE_LABEL" desc="The string used to format what the screenreader reads out for the order summary section of the Payment Sheet.">
     Order Summary, <ph name="TOTAL_LABEL">$1<ex>Total, USD $10.00</ex></ph>, More Details
   </message>
+  <message name="IDS_PAYMENTS_ITEM_ICON" desc="The default content description used for payments item icons." formatter_data="android_java">
+    Payments Item Icon
+  </message>
 
   <!-- Payment Handler strings -->
   <message name="IDS_PAYMENT_HANDLER_SHEET_DESCRIPTION" desc="Accessibility string read when the payment-handler bottom sheet is opened. It describes the payment-handler where users can fill in the payment info." formatter_data="android_java">
@@ -478,6 +487,11 @@
     <!-- Strings that don't refer to specific platform authenticator names -->
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_PURCHASE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Cancel' or 'Continue', and clicking 'Continue' will open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">
         Verify your purchase
+    </message><message name="IDS_SECURE_PAYMENT_CONFIRMATION_TITLE" desc="The title string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user has the option to click 'Continue' to open the system interface to verify their identity, for example with their fingerprint." formatter_data="android_java">
+        Verify it's you
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INFORM_ONLY_TITLE" desc="The title string on a payment confirmation dialog that confirms the details of the payment." formatter_data="android_java">
+        Confirm your purchase
     </message>
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_INLINE_DESCRIPTION" desc="The description string on a payment confirmation dialog that confirms the details of the payment that the user is about to verify. The user will verify the purchase using an OS-level system (e.g., Touch ID).">
       Complete your purchase using your device
@@ -527,13 +541,7 @@
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_TOTAL_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the total price, e.g. $20.00 USD." formatter_data="android_java">
     Total
   </message>
-  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NETWORK_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the credit card network, e.g. Mastercard">
-    Network
-  </message>
-  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_ISSUER_LABEL" desc="In a secure payment confirmation dialog, this is the label for the row of data that shows the issuing bank, e.g. Bank of America">
-    Issuer
-  </message>
-  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL" desc="As in 'Verify my identity', this is the label of the affirmitive button in a payment confirmation dialog that asks the user to verify their identity with a platform authenticator such as a fingerprint reader.">
+  <message name="IDS_SECURE_PAYMENT_CONFIRMATION_VERIFY_BUTTON_LABEL" desc="As in 'Verify my identity', this is the label of the affirmitive button in a payment confirmation dialog that asks the user to verify their identity with a platform authenticator such as a fingerprint reader." formatter_data="android_java">
     Verify
   </message>
   <message name="IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL" desc="Part of a longer text string where the user is being offered the choice to request that previously stored information on them be deleted. The longer text string is 'This provider may have stored information about your payment method, which you can [request to be deleted].'">
@@ -542,6 +550,9 @@
   <if expr="is_android">
     <message name="IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION" desc="Description on a dialog that appears when there are no matching payment credentials to authenticate. Informs users that additional steps are needed to verify the payment." formatter_data="android_java">
         <ph name="URL">%1$s<ex>merchant.com</ex></ph> may need to take additional steps to verify your payment
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_FOOTNOTE" desc="Footnote on a secure payment confirmation dialog that explains what will happen next and provides a link to verify by another way." formatter_data="android_java">
+        Unlock your screen in the next step, typically using your fingerprint. Or you can <ph name="BEGIN_LINK">BEGIN_LINK</ph>verify another way<ph name="END_LINK">END_LINK</ph>.
     </message>
   </if>
   <if expr="not is_android">
@@ -569,6 +580,12 @@
     </message>
     <message name="IDS_SECURE_PAYMENT_CONFIRMATION_NO_MATCHING_CREDENTIAL_SHEET_CLOSED" desc="Accessibility string read when the bottom sheet of no matching payment credential is closed." formatter_data="android_java">
       Secure payment credential no matching credential sheet is closed
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_HEADER_LOGO_PRIMARY" desc="Accessibility string for the primary header logo shown on the Secure Payment Confirmation verification or confirmation prompt. The logo is provided by the web api and intended to be the logo of an entity facilitating the Secure Payment Confirmation transaction." formatter_data="android_java">
+      Primary Header Logo
+    </message>
+    <message name="IDS_SECURE_PAYMENT_CONFIRMATION_HEADER_LOGO_SECONDARY" desc="Accessibility string for the secondary header logo shown on the Secure Payment Confirmation verification or confirmation prompt. The logo is provided by the web api and intended to be the logo of an entity facilitating the Secure Payment Confirmation transaction." formatter_data="android_java">
+      Secondary Header Logo
     </message>
   </if>  <!-- is_android -->
 </grit-part>

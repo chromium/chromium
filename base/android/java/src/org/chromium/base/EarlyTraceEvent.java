@@ -12,7 +12,12 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
+
+import org.chromium.build.annotations.EnsuresNonNullIf;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,20 +28,21 @@ import javax.annotation.concurrent.GuardedBy;
 /**
  * Support for early tracing, before the native library is loaded.
  *
- * Note that arguments are not currently supported for early events, but could
- * be added in the future.
+ * <p>Note that arguments are not currently supported for early events, but could be added in the
+ * future.
  *
- * Events recorded here are buffered in Java until the native library is available, at which point
- * they are flushed to the native side and regular java tracing (TraceEvent) takes over.
+ * <p>Events recorded here are buffered in Java until the native library is available, at which
+ * point they are flushed to the native side and regular java tracing (TraceEvent) takes over.
  *
- * Locking: This class is threadsafe. It is enabled when general tracing is, and then disabled when
- *          tracing is enabled from the native side. At this point, buffered events are flushed to
- *          the native side and then early tracing is permanently disabled after dumping the events.
+ * <p>Locking: This class is threadsafe. It is enabled when general tracing is, and then disabled
+ * when tracing is enabled from the native side. At this point, buffered events are flushed to the
+ * native side and then early tracing is permanently disabled after dumping the events.
  *
- * Like the TraceEvent, the event name of the trace events must be a string literal or a |static
+ * <p>Like the TraceEvent, the event name of the trace events must be a string literal or a |static
  * final String| class member. Otherwise NoDynamicStringsInTraceEventCheck error will be thrown.
  */
 @JNINamespace("base::android")
+@NullMarked
 public class EarlyTraceEvent {
     /** Single trace event. */
     @VisibleForTesting
@@ -135,11 +141,11 @@ public class EarlyTraceEvent {
     // Not final because in many configurations these objects are not used.
     @GuardedBy("sLock")
     @VisibleForTesting
-    static List<Event> sEvents;
+    static @Nullable List<Event> sEvents;
 
     @GuardedBy("sLock")
     @VisibleForTesting
-    static List<AsyncEvent> sAsyncEvents;
+    static @Nullable List<AsyncEvent> sAsyncEvents;
 
     @GuardedBy("sLock")
     @VisibleForTesting
@@ -216,7 +222,14 @@ public class EarlyTraceEvent {
         }
     }
 
-    static void enable() {
+    /**
+     * Enables early startup tracing.
+     *
+     * <p>Tracing will be disabled and events emitted if and only if tracing is enabled. Callers
+     * must ensure to also call {@link #reset()} once early tracing should no longer be collected to
+     * avoid indefinitely collecting trace events if no trace session is started.
+     */
+    public static void enable() {
         synchronized (sLock) {
             if (sState != STATE_DISABLED) return;
             sEvents = new ArrayList<Event>();
@@ -228,7 +241,7 @@ public class EarlyTraceEvent {
     /**
      * Disables Early tracing and flushes buffered events to the native side.
      *
-     * Once this is called, no new event will be registered.
+     * <p>Once this is called, no new event will be registered.
      */
     static void disable() {
         synchronized (sLock) {
@@ -249,9 +262,12 @@ public class EarlyTraceEvent {
         }
     }
 
-    /** Stops early tracing without flushing the buffered events. */
-    @VisibleForTesting
-    static void reset() {
+    /**
+     * Stops early tracing without flushing the buffered events.
+     *
+     * <p>This is safe to call even if tracing has never been enabled or has since been disabled.
+     */
+    public static void reset() {
         synchronized (sLock) {
             sState = STATE_DISABLED;
             sEvents = null;
@@ -259,7 +275,9 @@ public class EarlyTraceEvent {
         }
     }
 
-    static boolean enabled() {
+    @EnsuresNonNullIf({"sEvents", "sAsyncEvents"})
+    @SuppressWarnings("NullAway")
+    public static boolean enabled() {
         return sState == STATE_ENABLED;
     }
 
@@ -351,6 +369,7 @@ public class EarlyTraceEvent {
     static List<Event> getMatchingCompletedEventsForTesting(String eventName) {
         synchronized (sLock) {
             List<Event> matchingEvents = new ArrayList<Event>();
+            if (!enabled()) return matchingEvents;
             for (Event evt : EarlyTraceEvent.sEvents) {
                 if (evt.mName.equals(eventName)) {
                     matchingEvents.add(evt);
@@ -365,8 +384,7 @@ public class EarlyTraceEvent {
             if (e.mIsStart) {
                 if (e.mIsToplevel) {
                     EarlyTraceEventJni.get()
-                            .recordEarlyToplevelBeginEvent(
-                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                            .recordEarlyToplevelBeginEvent(e.mName, e.mTimeNanos, e.mThreadId);
                 } else {
                     EarlyTraceEventJni.get()
                             .recordEarlyBeginEvent(
@@ -375,8 +393,7 @@ public class EarlyTraceEvent {
             } else {
                 if (e.mIsToplevel) {
                     EarlyTraceEventJni.get()
-                            .recordEarlyToplevelEndEvent(
-                                    e.mName, e.mTimeNanos, e.mThreadId, e.mThreadTimeMillis);
+                            .recordEarlyToplevelEndEvent(e.mName, e.mTimeNanos, e.mThreadId);
                 } else {
                     EarlyTraceEventJni.get()
                             .recordEarlyEndEvent(
@@ -416,17 +433,26 @@ public class EarlyTraceEvent {
 
     @NativeMethods
     interface Natives {
-        void recordEarlyBeginEvent(String name, long timeNanos, int threadId, long threadMillis);
+        void recordEarlyBeginEvent(
+                @JniType("std::string") String name,
+                long timeNanos,
+                int threadId,
+                long threadMillis);
 
-        void recordEarlyEndEvent(String name, long timeNanos, int threadId, long threadMillis);
+        void recordEarlyEndEvent(
+                @JniType("std::string") String name,
+                long timeNanos,
+                int threadId,
+                long threadMillis);
 
         void recordEarlyToplevelBeginEvent(
-                String name, long timeNanos, int threadId, long threadMillis);
+                @JniType("std::string") String name, long timeNanos, int threadId);
 
         void recordEarlyToplevelEndEvent(
-                String name, long timeNanos, int threadId, long threadMillis);
+                @JniType("std::string") String name, long timeNanos, int threadId);
 
-        void recordEarlyAsyncBeginEvent(String name, long id, long timeNanos);
+        void recordEarlyAsyncBeginEvent(
+                @JniType("std::string") String name, long id, long timeNanos);
 
         void recordEarlyAsyncEndEvent(long id, long timeNanos);
     }

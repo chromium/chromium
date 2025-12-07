@@ -93,7 +93,7 @@ AnswerRanker::AnswerRanker() = default;
 AnswerRanker::~AnswerRanker() = default;
 
 void AnswerRanker::Start(const std::u16string& query,
-                         CategoriesList& categories) {
+                         const CategoriesList& categories) {
   burn_in_elapsed_ = false;
   chosen_answer_ = nullptr;
   omnibox_candidates_.clear();

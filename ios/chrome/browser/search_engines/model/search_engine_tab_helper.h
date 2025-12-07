@@ -84,8 +84,6 @@ class SearchEngineTabHelper
   // successfully, this ivar will be used to add a new TemplateURL and then it
   // will be set to empty GURL again.
   GURL searchable_url_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
 };
 
 #endif  // IOS_CHROME_BROWSER_SEARCH_ENGINES_MODEL_SEARCH_ENGINE_TAB_HELPER_H_

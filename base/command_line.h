@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
@@ -70,6 +71,7 @@ class BASE_EXPORT CommandLine {
   explicit CommandLine(const FilePath& program);
 
   // Construct a new command line from an argument list.
+  // TODO(tsepez): two-arg form should be UNSAFE_BUFFER_USAGE.
   CommandLine(int argc, const CharType* const* argv);
   explicit CommandLine(const StringVector& argv);
 
@@ -100,6 +102,7 @@ class BASE_EXPORT CommandLine {
   // CommandLineToArgvW to parse the command line and convert it back to
   // argc and argv. Tests who don't want this dependency on shell32 and need
   // to honor the arguments passed in should use this function.
+  // TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
   static void InitUsingArgvForTesting(int argc, const char* const* argv);
 #endif
 
@@ -108,8 +111,10 @@ class BASE_EXPORT CommandLine {
   // don't trust the CRT's parsing of the command line, but it still must be
   // called to set up the command line. Returns false if initialization has
   // already occurred, and true otherwise. Only the caller receiving a 'true'
-  // return value should take responsibility for calling Reset.
+  // return value should take responsibility for calling Reset().
+  // TODO(tsepez): should be UNSAFE_BUFFER_USAGE.
   static bool Init(int argc, const char* const* argv);
+  static bool Init(const StringVector& argv);
 
   // Destroys the current process CommandLine singleton. This is necessary if
   // you want to reset the base library to its initial state (for example, in an
@@ -127,6 +132,7 @@ class BASE_EXPORT CommandLine {
   static bool InitializedForCurrentProcess();
 
   // Initialize from an argv vector.
+  // TODO(tsepez): two-arg form should be UNSAFE_BUFFER_USAGE.
   void InitFromArgv(int argc, const CharType* const* argv);
   void InitFromArgv(const StringVector& argv);
 
@@ -178,7 +184,7 @@ class BASE_EXPORT CommandLine {
   StringType GetArgumentsString() const;
 
   // Returns the original command line string as a vector of strings.
-  const StringVector& argv() const { return argv_; }
+  const StringVector& argv() const LIFETIME_BOUND { return argv_; }
 
   // Get and Set the program part of the command line string (the first item).
   FilePath GetProgram() const;
@@ -196,11 +202,12 @@ class BASE_EXPORT CommandLine {
   // value or isn't present, this method returns the empty string.
   // Switch names must be lowercase.
   std::string GetSwitchValueASCII(std::string_view switch_string) const;
+  std::string GetSwitchValueUTF8(std::string_view switch_string) const;
   FilePath GetSwitchValuePath(std::string_view switch_string) const;
   StringType GetSwitchValueNative(std::string_view switch_string) const;
 
   // Get a copy of all switches, along with their values.
-  const SwitchMap& GetSwitches() const { return switches_; }
+  const SwitchMap& GetSwitches() const LIFETIME_BOUND { return switches_; }
 
   // Append a switch [with optional value] to the command line.
   // Note: Switches will precede arguments regardless of appending order.
@@ -209,6 +216,7 @@ class BASE_EXPORT CommandLine {
   void AppendSwitchNative(std::string_view switch_string, StringViewType value);
   void AppendSwitchASCII(std::string_view switch_string,
                          std::string_view value);
+  void AppendSwitchUTF8(std::string_view switch_string, std::string_view value);
 
   // Removes the switch that matches |switch_key_without_prefix|, regardless of
   // prefix and value. If no such switch is present, this has no effect.

@@ -5,27 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_FACTORY_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class BrowsingDataRemover;
-class ChromeBrowserState;
+class ProfileIOS;
 
 // Singleton that owns all BrowsingDataRemovers and associates them with
-// ChromeBrowserState.
-class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
+// ProfileIOS.
+class BrowsingDataRemoverFactory : public ProfileKeyedServiceFactoryIOS {
  public:
-  static BrowsingDataRemover* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-  static BrowsingDataRemover* GetForBrowserStateIfExists(
-      ChromeBrowserState* browser_state);
+  static BrowsingDataRemover* GetForProfile(ProfileIOS* profile);
+  static BrowsingDataRemover* GetForProfileIfExists(ProfileIOS* profile);
   static BrowsingDataRemoverFactory* GetInstance();
-
-  BrowsingDataRemoverFactory(const BrowsingDataRemoverFactory&) = delete;
-  BrowsingDataRemoverFactory& operator=(const BrowsingDataRemoverFactory&) =
-      delete;
 
  private:
   friend class base::NoDestructor<BrowsingDataRemoverFactory>;
@@ -33,11 +27,9 @@ class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
   BrowsingDataRemoverFactory();
   ~BrowsingDataRemoverFactory() override;
 
-  // BrowserStateKeyedServiceFactory implementation.
+  // ProfileKeyedServiceFactoryIOS implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  web::BrowserState* GetBrowserStateToUse(
-      web::BrowserState* context) const override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_MODEL_BROWSING_DATA_REMOVER_FACTORY_H_

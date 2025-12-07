@@ -9,11 +9,11 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_origin_trials.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -37,8 +37,8 @@ using blink::frame_test_helpers::WebViewHelper;
 using blink::url_test_helpers::ToKURL;
 
 const char kDefaultOrigin[] = "https://example.test/";
-const char kOriginTrialDummyFilePath[] = "origin-trial-dummy.html";
-const char kNoOriginTrialDummyFilePath[] = "simple_div.html";
+const char kOriginTrialTestFilePath[] = "origin-trial-enabled.html";
+const char kNoOriginTrialTestFilePath[] = "simple_div.html";
 
 class WebDocumentTest : public testing::Test {
  protected:
@@ -54,11 +54,11 @@ class WebDocumentTest : public testing::Test {
 
 void WebDocumentTest::SetUpTestSuite() {
   url_test_helpers::RegisterMockedURLLoad(
-      ToKURL(std::string(kDefaultOrigin) + kNoOriginTrialDummyFilePath),
-      test::CoreTestDataPath(kNoOriginTrialDummyFilePath));
+      ToKURL(std::string(kDefaultOrigin) + kNoOriginTrialTestFilePath),
+      test::CoreTestDataPath(kNoOriginTrialTestFilePath));
   url_test_helpers::RegisterMockedURLLoad(
-      ToKURL(std::string(kDefaultOrigin) + kOriginTrialDummyFilePath),
-      test::CoreTestDataPath(kOriginTrialDummyFilePath));
+      ToKURL(std::string(kDefaultOrigin) + kOriginTrialTestFilePath),
+      test::CoreTestDataPath(kOriginTrialTestFilePath));
 }
 
 void WebDocumentTest::LoadURL(const std::string& url) {
@@ -135,19 +135,29 @@ TEST_F(WebDocumentTest, OriginTrialDisabled) {
   blink::ScopedTestOriginTrialPolicy policy;
 
   // Load a document with no origin trial token.
-  LoadURL(std::string(kDefaultOrigin) + kNoOriginTrialDummyFilePath);
+  LoadURL(std::string(kDefaultOrigin) + kNoOriginTrialTestFilePath);
   WebDocument web_doc = TopWebDocument();
-  EXPECT_FALSE(WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
+  EXPECT_FALSE(WebOriginTrials::IsOriginTrialsSampleAPIEnabled(&web_doc));
+  EXPECT_FALSE(
+      blink::WebRuntimeFeatures::IsOriginTrialsSampleAPIEnabledByRuntimeFlag());
 }
 
 TEST_F(WebDocumentTest, OriginTrialEnabled) {
   blink::ScopedTestOriginTrialPolicy policy;
   // Load a document with a valid origin trial token for the test trial.
-  LoadURL(std::string(kDefaultOrigin) + kOriginTrialDummyFilePath);
+  LoadURL(std::string(kDefaultOrigin) + kOriginTrialTestFilePath);
   WebDocument web_doc = TopWebDocument();
-  EXPECT_TRUE(WebOriginTrials::isTrialEnabled(&web_doc, "Frobulate"));
-  // Ensure that other trials are not also enabled
-  EXPECT_FALSE(WebOriginTrials::isTrialEnabled(&web_doc, "NotATrial"));
+  // Verify the runtime feature is only enabled by the origin trial, not also by
+  // the static flag.
+  EXPECT_TRUE(WebOriginTrials::IsOriginTrialsSampleAPIEnabled(&web_doc));
+  EXPECT_FALSE(
+      blink::WebRuntimeFeatures::IsOriginTrialsSampleAPIEnabledByRuntimeFlag());
+  // Ensure that other runtime features with origin trial configured are not
+  // also enabled.
+  EXPECT_FALSE(
+      WebOriginTrials::IsOriginTrialsSampleAPIDeprecationEnabled(&web_doc));
+  EXPECT_FALSE(WebRuntimeFeatures::
+                   IsOriginTrialsSampleAPIDeprecationEnabledByRuntimeFlag());
 }
 
 namespace {
@@ -474,7 +484,7 @@ TEST_F(WebDocumentFirstPartyTest,
   // TODO(crbug.com/1329535): Remove if threaded preload scanner doesn't launch.
   // This is needed because the preload scanner creates a thread when loading a
   // page.
-  WTF::SetIsBeforeThreadCreatedForTest();
+  SetIsBeforeThreadCreatedForTest();
 #endif
   SchemeRegistry::RegisterURLSchemeAsFirstPartyWhenTopLevel("http");
 

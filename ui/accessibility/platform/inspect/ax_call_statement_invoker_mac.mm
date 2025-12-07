@@ -6,11 +6,14 @@
 
 #import <Accessibility/Accessibility.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "ui/accessibility/platform/ax_platform_node_cocoa.h"
 #include "ui/accessibility/platform/ax_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_element_wrapper_mac.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/inspect/ax_property_node.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 
@@ -50,7 +53,7 @@ AXCallStatementInvoker::AXCallStatementInvoker(
     std::map<std::string, id>* storage)
     : node(nullptr), indexer_(indexer), storage_(storage) {}
 
-AXCallStatementInvoker::AXCallStatementInvoker(const id node,
+AXCallStatementInvoker::AXCallStatementInvoker(id node,
                                                const AXTreeIndexerMac* indexer)
     : node(node), indexer_(indexer), storage_(nullptr) {}
 
@@ -95,7 +98,7 @@ AXOptionalNSObject AXCallStatementInvoker::Invoke(
   // a result accessible tree. The tree indexer keeps the mappings between
   // accessible elements and their DOM ids and line numbers.
   if (!target)
-    target = indexer_->NodeBy(property_node.name_or_value);
+    target = indexer_->NodeBy(property_node.name_or_value).Get();
 
   // Case 3: no target either indicates an error or default target (if
   // applicable) or the property node is an object or a scalar value (for
@@ -157,7 +160,7 @@ AXOptionalNSObject AXCallStatementInvoker::Invoke(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   if (target == nil) {
     return AXOptionalNSObject::Error(
@@ -189,7 +192,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeFor(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForAXCustomContent(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   AXCustomContent* content = target;
 
@@ -262,14 +265,14 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
   // Methods whose names start with "isAccessibility" returns a BOOL, so we
   // need to handle the returned value differently than methods whose return
   // types are id.
-  if (base::StartsWith(property_node.name_or_value, "isAccessibility")) {
+  if (property_node.name_or_value.starts_with("isAccessibility")) {
     std::optional<SEL> optional_arg_selector;
     std::string selector_string = property_node.name_or_value;
     // In some cases, we might want to pass a SEL as argument instead of an id.
     // When an argument is prefixed with "@SEL:", transform the string into a
     // valid SEL to pass to the main selector.
     if (property_node.arguments.size() == 1 &&
-        base::StartsWith(property_node.arguments[0].name_or_value, "@SEL:")) {
+        property_node.arguments[0].name_or_value.starts_with("@SEL:")) {
       optional_arg_selector = NSSelectorFromString(base::SysUTF8ToNSString(
           property_node.arguments[0].name_or_value.substr(5)));
       selector_string += ":";
@@ -310,7 +313,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
     return AXOptionalNSObject::Error();
   }
 
-  if (base::StartsWith(property_node.name_or_value, "accessibility")) {
+  if (property_node.name_or_value.starts_with("accessibility")) {
     if (property_node.arguments.size() == 1) {
       std::optional<id> optional_id =
           ax_element.PerformSelector(property_node.name_or_value,
@@ -347,7 +350,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXElement(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForAXTextMarkerRange(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "anchor")
     return AXOptionalNSObject(AXTextMarkerRangeStart(target));
@@ -369,7 +372,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForAXTextMarkerRange(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForArray(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   if (property_node.name_or_value == "count") {
     if (property_node.arguments.size()) {
@@ -413,7 +416,7 @@ AXOptionalNSObject AXCallStatementInvoker::InvokeForArray(
 }
 
 AXOptionalNSObject AXCallStatementInvoker::InvokeForDictionary(
-    const id target,
+    id target,
     const AXPropertyNode& property_node) const {
   if (property_node.arguments.size() > 0) {
     LOG(ERROR) << "dictionary key is expected, got: "
@@ -492,7 +495,7 @@ AXOptionalNSObject AXCallStatementInvoker::ParamFrom(
   if (attribute == "AXIndexForChildUIElement" ||
       attribute == "AXTextMarkerRangeForUIElement") {  // UIElement
     return AXOptionalNSObject::NotNullOrError(
-        PropertyNodeToUIElement(argument));
+        PropertyNodeToUIElement(argument).Get());
   }
   if (attribute == "AXIndexForTextMarker" ||
       attribute == "AXNextWordEndTextMarkerForTextMarker" ||
@@ -640,10 +643,11 @@ gfx::NativeViewAccessible AXCallStatementInvoker::PropertyNodeToUIElement(
   gfx::NativeViewAccessible uielement =
       indexer_->NodeBy(uielement_node.name_or_value);
   if (!uielement) {
-    if (log_failure)
+    if (log_failure) {
       UIELEMENT_FAIL(uielement_node,
                      "no corresponding UIElement was found in the tree")
-    return nil;
+    }
+    return gfx::NativeViewAccessible();
   }
   return uielement;
 }
@@ -652,28 +656,34 @@ id AXCallStatementInvoker::DictionaryNodeToTextMarker(
     const AXPropertyNode& dictnode,
     bool log_failure) const {
   if (!dictnode.IsDict()) {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "dictionary is expected")
+    }
     return nil;
   }
   if (dictnode.arguments.size() != 3) {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "wrong number of dictionary elements")
+    }
     return nil;
   }
 
-  AXPlatformNodeCocoa* anchor_cocoa = static_cast<AXPlatformNodeCocoa*>(
-      indexer_->NodeBy(dictnode.arguments[0].name_or_value));
+  gfx::NativeViewAccessible anchor =
+      indexer_->NodeBy(dictnode.arguments[0].name_or_value);
+  AXPlatformNodeCocoa* anchor_cocoa =
+      base::apple::ObjCCast<AXPlatformNodeCocoa>(anchor.Get());
   if (!anchor_cocoa) {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "1st argument: wrong anchor")
+    }
     return nil;
   }
 
   std::optional<int> offset = dictnode.arguments[1].AsInt();
   if (!offset) {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "2nd argument: wrong offset")
+    }
     return nil;
   }
 
@@ -686,8 +696,9 @@ id AXCallStatementInvoker::DictionaryNodeToTextMarker(
   } else if (affinity_str == "up") {
     affinity = ax::mojom::TextAffinity::kUpstream;
   } else {
-    if (log_failure)
+    if (log_failure) {
       TEXTMARKER_FAIL(dictnode, "3rd argument: wrong affinity")
+    }
     return nil;
   }
 

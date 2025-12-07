@@ -4,34 +4,33 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.ObserverList;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
-import javax.inject.Inject;
+import java.util.function.Supplier;
 
 /**
  * Holds the Tab currently shown in a Custom Tab activity. Unlike {@link ActivityTabProvider}, is
  * aware of early created tabs that are not yet attached. Is also aware of tab swapping when
- * navigating by links with target="_blank". Thus it is a single source of truth about
- * the current Tab of a Custom Tab activity.
+ * navigating by links with target="_blank". Thus it is a single source of truth about the current
+ * Tab of a Custom Tab activity.
  */
-@ActivityScope
-public class CustomTabActivityTabProvider {
+@NullMarked
+public class CustomTabActivityTabProvider implements Supplier<@Nullable Tab> {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
 
-    @Nullable private Tab mTab;
+    private @Nullable Tab mTab;
     private @TabCreationMode int mTabCreationMode = TabCreationMode.NONE;
-    @Nullable private String mSpeculatedUrl;
+    private @Nullable String mSpeculatedUrl;
 
-    @Inject
-    CustomTabActivityTabProvider() {}
+    public CustomTabActivityTabProvider(String speculatedUrl) {
+        mSpeculatedUrl = speculatedUrl;
+    }
 
     /** Adds an {@link Observer} */
     public void addObserver(Observer observer) {
@@ -57,9 +56,14 @@ public class CustomTabActivityTabProvider {
         return mTab;
     }
 
+    @Override
+    public @Nullable Tab get() {
+        return getTab();
+    }
+
     /**
-     * Returns a {@link TabCreationMode} specifying how the initial tab was created.
-     * Returns {@link TabCreationMode#NONE} if and only if the initial tab has not been yet created.
+     * Returns a {@link TabCreationMode} specifying how the initial tab was created. Returns {@link
+     * TabCreationMode#NONE} if and only if the initial tab has not been yet created.
      */
     public @TabCreationMode int getInitialTabCreationMode() {
         return mTabCreationMode;
@@ -70,7 +74,7 @@ public class CustomTabActivityTabProvider {
         return mSpeculatedUrl;
     }
 
-    public void setInitialTab(@NonNull Tab tab, @TabCreationMode int creationMode) {
+    public void setInitialTab(Tab tab, @TabCreationMode int creationMode) {
         assert mTab == null;
         assert creationMode != TabCreationMode.NONE;
         mTab = tab;
@@ -81,10 +85,6 @@ public class CustomTabActivityTabProvider {
         for (Observer observer : mObservers) {
             observer.onInitialTabCreated(tab, creationMode);
         }
-    }
-
-    void setSpeculatedUrl(@Nullable String url) {
-        mSpeculatedUrl = url;
     }
 
     void removeTab() {
@@ -100,7 +100,7 @@ public class CustomTabActivityTabProvider {
         if (mTab == tab) return;
         assert mTab != null : "swapTab shouldn't be called before setInitialTab";
         mTab = tab;
-        if (mTab == null) {
+        if (tab == null) {
             for (Observer observer : mObservers) {
                 observer.onAllTabsClosed();
             }
@@ -117,13 +117,13 @@ public class CustomTabActivityTabProvider {
      */
     public abstract static class Observer {
         /** Fired when the initial tab has been created. */
-        public void onInitialTabCreated(@NonNull Tab tab, @TabCreationMode int mode) {}
+        public void onInitialTabCreated(Tab tab, @TabCreationMode int mode) {}
 
         /**
          * Fired when the currently visible tab has changed when navigating by a link with
          * target="_blank" or backwards.
          */
-        public void onTabSwapped(@NonNull Tab tab) {}
+        public void onTabSwapped(Tab tab) {}
 
         /**
          * Fired when all the Tabs are closed (during shutdown or reparenting).

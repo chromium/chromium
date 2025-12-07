@@ -1,0 +1,22 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  margin: 0;
+  /* LINT.IfChange(PdfBackgroundColor) */
+  background-color: rgb(40, 40, 40);
+  /* LINT.ThenChange(//chrome/browser/resources/pdf/pdf_viewer.ts:PdfBackgroundColor, //components/pdf/common/pdf_util.cc:PdfBackgroundColor) */
+}
+
+iframe {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  border-style: none;
+}

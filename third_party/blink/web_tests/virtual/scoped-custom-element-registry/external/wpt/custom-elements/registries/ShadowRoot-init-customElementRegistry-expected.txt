@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] attachShadow() should use null registry when customElementRegistry is null (host uses global registry)
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] attachShadow() should use null registry when customElementRegistry is null (host uses custom registry)
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] attchShadow on a builtin element with null customElementRegistry should create a ShadowRoot with null registry
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] attchShadow on a custom elememnt candidate with null customElementRegistry should create a ShadowRoot with null registry
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+[FAIL] attchShadow on a custom elememnt with null customElementRegistry should create a ShadowRoot with null registry
+  assert_equals: expected null but got object "[object CustomElementRegistry]"
+Harness: the test ran to completion.
+

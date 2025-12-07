@@ -1,0 +1,41 @@
+=== Accessibility tree before go() pass 1 ===
+AXWebArea AXTitle='Material Web Icon Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=1
+=== Accessibility tree after go() pass 1 ===
+AXWebArea AXTitle='Material Web Icon Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=1 <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 2 ===
+AXWebArea AXTitle='Material Web Icon Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=1
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=0
+=== Accessibility tree after go() pass 2 ===
+AXWebArea AXTitle='Material Web Icon Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=0 <<<<<< CHANGED
+=== End accessibility tree ===
+=== Start Continuation ===
+=== Accessibility tree before go() pass 3 ===
+AXWebArea AXTitle='Material Web Icon Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=0
+=== End accessibility tree ===
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=1
+=== Accessibility tree after go() pass 3 ===
+AXWebArea AXTitle='Material Web Icon Button Events'
+++AXGroup AXDescription='Ready'
+++++AXGroup
+++++++AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=1 <<<<<< CHANGED
+=== End accessibility tree ===

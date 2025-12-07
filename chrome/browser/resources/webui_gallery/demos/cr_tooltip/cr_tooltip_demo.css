@@ -11,14 +11,8 @@
  * #css_wrapper_metadata_end */
 
 .target {
-  border: 1px black;
+  border: 1px solid light-dark(black, white);
   padding: 8px;
   margin: 40px;
   width: fit-content;
-}
-
-@media (prefers-color-scheme: dark) {
-  .target {
-    border: 1px white;
-  }
 }

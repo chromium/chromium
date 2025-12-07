@@ -27,6 +27,7 @@ void OnFileAdded(mojom::Quarantine::QuarantineFileCallback callback,
 void QuarantineFile(const base::FilePath& file,
                     const GURL& source_url_unsafe,
                     const GURL& referrer_url_unsafe,
+                    const std::optional<url::Origin>& request_initiator,
                     const std::string& client_guid,
                     mojom::Quarantine::QuarantineFileCallback callback) {
   if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {

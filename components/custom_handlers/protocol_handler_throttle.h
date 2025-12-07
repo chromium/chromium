@@ -5,10 +5,8 @@
 #ifndef COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_THROTTLE_H_
 #define COMPONENTS_CUSTOM_HANDLERS_PROTOCOL_HANDLER_THROTTLE_H_
 
-#include "base/memory/ref_counted.h"
-#include "url/gurl.h"
-
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "url/gurl.h"
 
 namespace custom_handlers {
 

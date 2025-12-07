@@ -33,7 +33,7 @@ bool DeleteRegistryValue(HKEY reg_root,
 // DeleteRegistryValueIf.
 class RegistryValuePredicate {
  public:
-  virtual ~RegistryValuePredicate() {}
+  virtual ~RegistryValuePredicate() = default;
   virtual bool Evaluate(const std::wstring& value) const = 0;
 };
 

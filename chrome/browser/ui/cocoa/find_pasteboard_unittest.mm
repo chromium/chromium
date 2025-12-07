@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "ui/base/cocoa/find_pasteboard.h"
+
 #import <Cocoa/Cocoa.h>
 
 #include "base/memory/ref_counted.h"
@@ -9,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_util_mac.h"
-#import "ui/base/cocoa/find_pasteboard.h"
 
 // A subclass of FindPasteboard that doesn't write to the real find pasteboard.
 @interface FindPasteboardTesting : FindPasteboard {

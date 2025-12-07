@@ -7,32 +7,23 @@ source_set("prerender_pref") {
 }
 
 source_set("model") {
-  public = [
-    "preload_controller_delegate.h",
-    "prerender_service.h",
-    "prerender_service_factory.h",
-  ]
   sources = [
-    "preload_controller.h",
-    "preload_controller.mm",
-    "prerender_service_factory.mm",
-    "prerender_service_impl.h",
-    "prerender_service_impl.mm",
+    "prerender_browser_agent.h",
+    "prerender_browser_agent.mm",
+    "prerender_browser_agent_delegate.h",
+    "prerender_tab_helper.h",
+    "prerender_tab_helper.mm",
+    "prerender_tab_helper_delegate.h",
   ]
-
-  friend = [ ":unit_tests" ]
-
-  public_deps = [ "//base" ]
   deps = [
     ":prerender_pref",
-    "//components/keyed_service/core",
-    "//components/keyed_service/ios",
+    "//base",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/signin/ios/browser",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
-    "//ios/chrome/browser/app_launcher/model:model",
+    "//ios/chrome/browser/app_launcher/model",
     "//ios/chrome/browser/crash_report/model:model_internal",
     "//ios/chrome/browser/download/model:mime_types",
     "//ios/chrome/browser/geolocation/model",
@@ -40,11 +31,11 @@ source_set("model") {
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/net/model",
     "//ios/chrome/browser/ntp/model:util",
-    "//ios/chrome/browser/sessions/model:session_restoration_service",
-    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/utils",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model",
@@ -56,22 +47,10 @@ source_set("model") {
   ]
 }
 
-source_set("test_support") {
-  sources = [
-    "fake_prerender_service.h",
-    "fake_prerender_service.mm",
-  ]
-
-  deps = [ ":model" ]
-}
-
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "preload_controller_unittest.mm",
-    "prerender_service_impl_unittest.mm",
-  ]
+  sources = [ "prerender_browser_agent_unittest.mm" ]
   deps = [
     ":model",
     ":prerender_pref",
@@ -83,10 +62,14 @@ source_set("unit_tests") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common:features",
     "//components/supervised_user/test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//net:test_support",
@@ -101,9 +84,9 @@ source_set("eg2_tests") {
   deps = [
     "//build:branding_buildflags",
     "//components/version_info",
+    "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
+    "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/ui/content_suggestions:constants",
-    "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/web/common:user_agent",

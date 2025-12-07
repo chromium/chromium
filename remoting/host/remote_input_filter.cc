@@ -27,12 +27,30 @@ const unsigned int kNumRemoteKeyPresses = 20;
 // is received.
 const int64_t kRemoteBlockTimeoutMillis = 2000;
 
+// In GNOME Wayland, the echoed cursor position can be off by one pixel in each
+// dimension, probably due to some rounding errors when converting between
+// physical pixels and DIPs, so we need this function for fuzzy comparisons.
+// Note that with this fuzzy comparison logic, an observed position may be
+// matched to a previously injected position that has been skipped, causing
+// `injected_mouse_positions_` to be undertrimmed. This is fine, since its
+// corresponding injected position can be considered skipped, and it will be
+// eventually trimmed. Overtrimming cannot happen, since an observed position
+// will always be matched to its corresponding injected position before it has a
+// chance to be matched to a later position.
+bool PositionsRoughlyEqual(const webrtc::DesktopVector& a,
+                           const webrtc::DesktopVector& b) {
+  return abs(a.x() - b.x()) < 2 && abs(a.y() - b.y()) < 2;
+}
+
 }  // namespace
 
 namespace remoting {
 
-RemoteInputFilter::RemoteInputFilter(protocol::InputEventTracker* event_tracker)
-    : event_tracker_(event_tracker), expect_local_echo_(true) {}
+RemoteInputFilter::RemoteInputFilter(InputStub* input_stub,
+                                     base::RepeatingClosure release_all)
+    : InputFilter(input_stub),
+      release_all_(std::move(release_all)),
+      expect_local_echo_(true) {}
 
 RemoteInputFilter::~RemoteInputFilter() = default;
 
@@ -47,7 +65,7 @@ bool RemoteInputFilter::LocalPointerMoved(const webrtc::DesktopVector& pos,
   if (expect_local_echo_ && type == ui::EventType::kMouseMoved) {
     auto found_position = injected_mouse_positions_.begin();
     while (found_position != injected_mouse_positions_.end() &&
-           !pos.equals(*found_position)) {
+           !PositionsRoughlyEqual(*found_position, pos)) {
       ++found_position;
     }
     if (found_position != injected_mouse_positions_.end()) {
@@ -83,7 +101,7 @@ bool RemoteInputFilter::LocalKeyPressed(uint32_t usb_keycode) {
 }
 
 void RemoteInputFilter::LocalInputDetected() {
-  event_tracker_->ReleaseAll();
+  release_all_.Run();
   latest_local_input_time_ = base::TimeTicks::Now();
 }
 
@@ -105,14 +123,14 @@ void RemoteInputFilter::InjectKeyEvent(const protocol::KeyEvent& event) {
       injected_key_presses_.clear();
     }
   }
-  event_tracker_->InjectKeyEvent(event);
+  InputFilter::InjectKeyEvent(event);
 }
 
 void RemoteInputFilter::InjectTextEvent(const protocol::TextEvent& event) {
   if (ShouldIgnoreInput()) {
     return;
   }
-  event_tracker_->InjectTextEvent(event);
+  InputFilter::InjectTextEvent(event);
 }
 
 void RemoteInputFilter::InjectMouseEvent(const protocol::MouseEvent& event) {
@@ -127,14 +145,14 @@ void RemoteInputFilter::InjectMouseEvent(const protocol::MouseEvent& event) {
       injected_mouse_positions_.pop_front();
     }
   }
-  event_tracker_->InjectMouseEvent(event);
+  InputFilter::InjectMouseEvent(event);
 }
 
 void RemoteInputFilter::InjectTouchEvent(const protocol::TouchEvent& event) {
   if (ShouldIgnoreInput()) {
     return;
   }
-  event_tracker_->InjectTouchEvent(event);
+  InputFilter::InjectTouchEvent(event);
 }
 
 bool RemoteInputFilter::ShouldIgnoreInput() const {

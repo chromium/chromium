@@ -1,0 +1,141 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tabs_api.mojom;
+
+import "components/browser_apis/tab_strip/tab_strip_api_types.mojom";
+import "components/tab_groups/public/mojom/tab_group_types.mojom";
+import "url/mojom/url.mojom";
+
+// Holds a data URL representation of an image, ie: favicon.
+struct Image {
+  url.mojom.Url data_url;
+};
+
+// Must contain the same values as `TabAlertState` in
+// chrome/browser/ui/tabs/alert/tab_alert.h Matching order is not important.
+enum AlertState {
+  kAudioMuting,
+  kAudioRecording,
+  kAudioPlaying,
+  kBluetoothConnected,
+  kBluetoothScanActive,
+  kDesktopCapturing,
+  kActorAccessing,
+  kActorWaitingOnUser,
+  kGlicAccessing,
+  kGlicSharing,
+  kHidConnected,
+  kMediaRecording,
+  kPipPlaying,
+  kSerialConnected,
+  kTabCapturing,
+  kUsbConnected,
+  kVideoRecording,
+  kVrPresentingInHeadset,
+};
+
+enum NetworkState {
+  kNone,
+  kWaiting,
+  kLoading,
+  kError,
+};
+
+struct Tab {
+  NodeId id;
+  string title;
+  url.mojom.Url url;
+
+  Image favicon;
+
+  array<AlertState> alert_states;
+  NetworkState network_state;
+
+  // The current tab is active.
+  bool is_active;
+  // The current tab is selected.
+  bool is_selected;
+  // The current tab is blocked (by a modal).
+  bool is_blocked;
+};
+
+// Tabstrip is a TabCollection that represents the top-level collection of
+// a browser.
+struct TabStrip {
+  NodeId id;
+};
+
+// PinnedTabs is a TabCollection of all tabs that have been
+// pinned by the user in a browser.
+struct PinnedTabs {
+  NodeId id;
+};
+
+// UnpinnedTabs is a TabCollection of all tabs that are not part of any
+// other collection in a browser.
+struct UnpinnedTabs {
+  NodeId id;
+};
+
+// TabGroup is a TabCollection created by the user to organize a group
+// of tabs with an associated set of visual data.
+struct TabGroup {
+  NodeId id;
+  TabGroupVisualData data;
+};
+
+// TODO(crbug.com/425652802): This should be merged with struct
+// TabGroupVisualData in
+// //chrome/browser/ui/webui/tab_strip/tab_strip.mojom and moved to
+// //components/tab_groups/public/mojom/tab_group_types.mojom
+struct TabGroupVisualData {
+  string title;
+  tab_groups.mojom.Color color;
+  bool is_collapsed;
+};
+
+struct SplitTab {
+  NodeId id;
+  SplitTabVisualData data;
+};
+
+struct SplitTabVisualData {
+  enum Layout {
+    kVertical,
+    kHorizontal,
+  };
+
+  Layout layout;
+  double split_ratio;
+};
+
+// Data is the actual unit of any node in the tab strip tree. Using a
+// union enforces that a node must be exactly one of the types below thus
+// preventing inconsistent states.
+union Data {
+  Tab tab;
+  TabStrip tab_strip;
+  PinnedTabs pinned_tabs;
+  UnpinnedTabs unpinned_tabs;
+  TabGroup tab_group;
+  SplitTab split_tab;
+};
+
+// Container represents a node in the tree hierarchy.
+// This struct is used to construct the tree snapshot for the initial GetTabs
+// call. For all other operations, use specific structs like Tab,
+// TabGroup or SplitTab as the base unit.
+struct Container {
+  Data data;
+  array<Container> children;
+};
+
+// When a Tab is created, it also needs to know the position.
+// Use this container to hold tab data as well as the position the tab was
+// created in.
+struct TabCreatedContainer {
+  Tab tab;
+  Position position;
+};

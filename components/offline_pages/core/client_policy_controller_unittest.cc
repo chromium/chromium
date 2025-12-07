@@ -187,10 +187,11 @@ TEST_F(ClientPolicyControllerTest, AllTemporaryNamespaces) {
   std::set<std::string> cache_reset_namespaces(
       cache_reset_namespaces_list.begin(), cache_reset_namespaces_list.end());
   for (auto name_space : cache_reset_namespaces) {
-    if (cache_reset_namespaces.count(name_space) > 0)
+    if (cache_reset_namespaces.count(name_space) > 0) {
       ExpectTemporary(name_space);
-    else
+    } else {
       ExpectPersistent(name_space);
+    }
   }
 }
 

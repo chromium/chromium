@@ -1,0 +1,21 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+// Chrome may use Android PerformanceHint API differently for different thread
+// types, thus threads need to be classified.
+enum ThreadType {
+    kMain,
+    kIO,
+    kCompositor,
+    kVideo,
+    kOther,
+};
+
+struct Thread {
+    [EnableIf=thread_id_is_64_bit] uint64 id;
+    [EnableIf=thread_id_is_32_bit] uint32 id;
+    ThreadType type;
+};

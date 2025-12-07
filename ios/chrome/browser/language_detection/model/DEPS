@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/language_detection/ios/browser",
+  "+ios/chrome/browser/optimization_guide/model",
+]

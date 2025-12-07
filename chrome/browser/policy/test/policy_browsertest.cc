@@ -22,15 +22,14 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
@@ -63,7 +62,7 @@ namespace policy {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const int kOneHourInMs = 60 * 60 * 1000;
 const int kThreeHoursInMs = 180 * 60 * 1000;
 #endif
@@ -118,8 +117,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_Disable3DAPIs) {
   EXPECT_TRUE(IsWebGLEnabled(contents));
 }
 
-// TODO(crbug.com/40243891): Re-enable this flaky test on Linux
-// and lacros asan builder.
+// TODO(crbug.com/40243891): Re-enable this flaky test.
 #if BUILDFLAG(IS_LINUX) || \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_HomepageLocation DISABLED_HomepageLocation
@@ -170,20 +168,18 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_HomepageLocation) {
 IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_IncognitoEnabled) {
   // Verifies that incognito windows can't be opened when disabled by policy.
 
-  const BrowserList* active_browser_list = BrowserList::GetInstance();
-
   // Disable incognito via policy and verify that incognito windows can't be
   // opened.
-  EXPECT_EQ(1u, active_browser_list->size());
-  EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_FALSE(IsOffTheRecordSessionActive());
   PolicyMap policies;
   policies.Set(key::kIncognitoEnabled, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
                nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_FALSE(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
-  EXPECT_EQ(1u, active_browser_list->size());
-  EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+  EXPECT_FALSE(IsOffTheRecordSessionActive());
 
   // Enable via policy and verify that incognito windows can be opened.
   policies.Set(key::kIncognitoEnabled, POLICY_LEVEL_MANDATORY,
@@ -191,11 +187,11 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, MAYBE_IncognitoEnabled) {
                nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
-  EXPECT_EQ(2u, active_browser_list->size());
-  EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_TRUE(IsOffTheRecordSessionActive());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // We need to block mouse events in |WaitForInitialUserActivityUnsatisfied| test
 // to avoid flakiness due to unexpected mouse input.
@@ -286,6 +282,6 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {
   EXPECT_TRUE(observer.WasAppTerminated());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- Layout used by CardWithButtonPreference for the widget style. -->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_with_button_preference"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <!--
+    We use a nested layout in order to have a background on the preference with correct margin.
+    -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        style="@style/PreferenceLayout"
+        android:id="@+id/card_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/card_with_button_pref_vertical_padding"
+        android:layout_marginHorizontal="@dimen/card_with_button_pref_horizontal_padding"
+        android:background="@drawable/rounded_corner_card">
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/icon"
+            android:layout_width="@dimen/card_with_button_pref_icon_size"
+            android:layout_height="@dimen/card_with_button_pref_icon_size"
+            android:layout_marginEnd="@dimen/card_with_button_pref_icon_margin_right"
+            android:gravity="center_vertical"
+            android:scaleType="centerCrop"
+            android:importantForAccessibility="no"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@android:id/title"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:minHeight="@dimen/card_with_button_pref_icon_size"
+            android:layout_marginStart="@dimen/card_with_button_pref_icon_margin_right"
+            app:layout_goneMarginStart="0dp"
+            android:layout_marginBottom="@dimen/card_with_button_pref_title_padding_bottom"
+            android:gravity="center_vertical"
+            style="@style/PreferenceTitle"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@id/icon"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@android:id/summary"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_marginTop="@dimen/card_with_button_pref_title_padding_bottom"
+            style="@style/PreferenceSummary"
+            app:layout_constraintTop_toBottomOf="@android:id/title"
+            app:layout_constraintStart_toStartOf="@android:id/title"
+            app:layout_constraintEnd_toEndOf="@android:id/title"/>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/card_button"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_gravity="end"
+            android:focusable="true"
+            style="@style/FilledButton"
+            android:layout_marginTop="@dimen/card_with_button_pref_summary_padding_bottom"
+            app:layout_constraintTop_toBottomOf="@android:id/summary"
+            app:layout_constraintEnd_toEndOf="@android:id/title"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

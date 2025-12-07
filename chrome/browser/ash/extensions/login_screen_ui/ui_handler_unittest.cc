@@ -6,17 +6,18 @@
 
 #include <memory>
 
+#include "ash/login/test_login_screen.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_callback.h"
-#include "chrome/browser/ash/login/ui/login_screen_extension_ui/create_options.h"
-#include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/ui/ash/test_login_screen.h"
+#include "chrome/browser/ui/ash/login/login_screen_extension_ui/create_options.h"
+#include "chrome/browser/ui/ash/login/login_screen_extension_ui/window.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
@@ -209,7 +210,8 @@ class LoginScreenExtensionUiHandlerUnittest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   const extensions::ScopedCurrentChannel scoped_current_channel_;
 
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   TestingProfileManager profile_manager_;
   raw_ptr<ash::StubInstallAttributes> stub_install_attributes_ = nullptr;
   raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;

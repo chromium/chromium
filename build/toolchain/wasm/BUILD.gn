@@ -1,0 +1,54 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/toolchain/gcc_toolchain.gni")
+
+declare_args() {
+  # Path to emsdk directory.
+  emscripten_path = "//third_party/emsdk/upstream/emscripten/"
+}
+
+# This WASM toolchain is NOT to be used to build any Chromium code,
+# i.e. tests and samples are currently fine.
+# Usage of this toolchain requires getting explicit approval from
+# build/OWNERS.
+gcc_toolchain("wasm") {
+  _suffix = ""
+  if (host_os == "win") {
+    _suffix = ".bat"
+  }
+
+  cc = rebase_path("$emscripten_path/emcc$_suffix")
+  cxx = rebase_path("$emscripten_path/em++$_suffix")
+  ar = rebase_path("$emscripten_path/emar$_suffix")
+  nm = cc
+  ld = cxx
+
+  toolchain_args = {
+    current_cpu = "wasm"
+    current_os = "emscripten"
+
+    is_clang = true
+    use_remoteexec = false
+    use_debug_fission = false
+    clang_use_chrome_plugins = false
+    use_allocator_shim = false
+    is_component_build = false
+
+    # We do not support clang profiling in the WASM toolchains.
+    use_clang_profiling = false
+    use_clang_coverage = false
+
+    # WASM builds cannot currently use the custom libc++ because
+    # there are custom entry points and defines in the one that is
+    # shipped with emsdk.
+    use_custom_libcxx = false
+    use_custom_libcxx_for_host = false
+  }
+  executable_extension = ".html"
+  link_outputs = [
+    "{{output_dir}}/{{target_output_name}}.wasm",
+    "{{output_dir}}/{{target_output_name}}.wasm.debug.wasm",
+  ]
+}

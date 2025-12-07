@@ -12,9 +12,9 @@ initiator: network-columns-visible.js:18Script
 cookies: 0
 set-cookies: 0
 priority: HighHigh
-cache-control: 
-connection: Keep-Alive
-content-encoding: 
-content-length: 0
-vary: 
+response-header-cache-control: 
+response-header-connection: Keep-Alive
+response-header-content-encoding: 
+response-header-content-length: 0
+response-header-vary: 
 

@@ -1,5 +1,5 @@
 // META: title=test WebNN API reshape operation
-// META: global=window,dedicatedworker
+// META: global=window
 // META: variant=?cpu
 // META: variant=?gpu
 // META: variant=?npu
@@ -13,14 +13,6 @@
 //
 // MLOperand reshape(
 //     MLOperand input, sequence<[EnforceRange] unsigned long> newShape);
-
-
-const getReshapePrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
 
 const reshapeTests = [
   {
@@ -38,7 +30,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -58,7 +50,49 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 2, 3], dataType: 'float32'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape float32 constant tensor to a new shape (reorder all dimensions)',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0561466217041,  99.56941986083984,   88.04620361328125,
+            -91.87507629394531, -23.7972354888916,   -91.28665161132812,
+            -63.15204620361328, 12.0669527053833,    -96.1172866821289,
+            -44.77365493774414, -80.08650970458984,  -64.43756866455078,
+            27.64195442199707,  -96.86306762695312,  83.6834716796875,
+            50.599483489990234, -20.18765640258789,  -1.3904608488082886,
+            -96.93603515625,    65.34143829345703,   34.835994720458984,
+            62.01485824584961,  -2.8698415756225586, 27.903749465942383
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 2, 3]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0561466217041,  99.56941986083984,   88.04620361328125,
+            -91.87507629394531, -23.7972354888916,   -91.28665161132812,
+            -63.15204620361328, 12.0669527053833,    -96.1172866821289,
+            -44.77365493774414, -80.08650970458984,  -64.43756866455078,
+            27.64195442199707,  -96.86306762695312,  83.6834716796875,
+            50.599483489990234, -20.18765640258789,  -1.3904608488082886,
+            -96.93603515625,    65.34143829345703,   34.835994720458984,
+            62.01485824584961,  -2.8698415756225586, 27.903749465942383
+          ],
+          'descriptor': {shape: [4, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -78,7 +112,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 1, 1, 1, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 1, 1, 1, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -98,7 +132,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 1, 1, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 1, 1, 6], dataType: 'float32'}
         }
       }
     }
@@ -118,7 +152,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -138,7 +172,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3, 1], dataType: 'float32'}
         }
       }
     }
@@ -158,7 +192,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [3, 2, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 2, 2, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -178,7 +212,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 2, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 2, 3, 1], dataType: 'float32'}
         }
       }
     }
@@ -198,7 +232,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [3, 2, 2, 2], 'dataType': 'float32'}
+          'descriptor': {shape: [3, 2, 2, 2], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -218,7 +252,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -238,7 +272,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 24], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -258,7 +292,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -278,7 +312,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 1, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 1, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -298,7 +332,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -318,7 +352,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 24, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 24, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -338,7 +372,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -358,7 +392,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 4, 1, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 4, 1, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -378,7 +412,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -389,7 +423,7 @@ const reshapeTests = [
       'inputs': {
         'reshapeInput': {
           'data': [-33.82555389404297],
-          'descriptor': {'dimensions': [1, 1, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -400,7 +434,7 @@ const reshapeTests = [
       'expectedOutputs': {
         'reshapeOutput': {
           'data': [-33.82555389404297],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       }
     }
@@ -421,7 +455,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 1, 1, 24, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 24, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -441,7 +475,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -461,7 +495,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 24], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -481,7 +515,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -502,7 +536,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [24, 1, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -522,7 +556,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       }
     }
@@ -543,7 +577,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 4, 6, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 4, 6, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -563,7 +597,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -584,7 +618,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 1, 1, 12, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 1, 12, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -604,7 +638,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 12, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 12, 1], dataType: 'float32'}
         }
       }
     }
@@ -625,7 +659,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 1, 1, 24, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 24, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -645,7 +679,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 24], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 24], dataType: 'float32'}
         }
       }
     }
@@ -656,7 +690,7 @@ const reshapeTests = [
       'inputs': {
         'reshapeInput': {
           'data': [-33.82555389404297],
-          'descriptor': {'dimensions': [], 'dataType': 'float32'}
+          'descriptor': {shape: [], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -667,7 +701,7 @@ const reshapeTests = [
       'expectedOutputs': {
         'reshapeOutput': {
           'data': [-33.82555389404297],
-          'descriptor': {'dimensions': [1, 1, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float32'}
         }
       }
     }
@@ -687,7 +721,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -707,7 +741,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 24], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 24], dataType: 'float32'}
         }
       }
     }
@@ -727,7 +761,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -747,7 +781,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 24, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 24, 1], dataType: 'float32'}
         }
       }
     }
@@ -767,7 +801,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -788,7 +822,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 1, 1, 24, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 1, 1, 24, 1], dataType: 'float32'}
         }
       }
     }
@@ -809,7 +843,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -829,7 +863,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24, 1, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [24, 1, 1], dataType: 'float32'}
         }
       }
     }
@@ -849,7 +883,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -869,7 +903,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 1, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 1, 6], dataType: 'float32'}
         }
       }
     }
@@ -889,7 +923,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -909,7 +943,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 4, 1, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 4, 1, 6], dataType: 'float32'}
         }
       }
     }
@@ -929,7 +963,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24], 'dataType': 'float32'}
+          'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -949,7 +983,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 24], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 24], dataType: 'float32'}
         }
       }
     }
@@ -970,7 +1004,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -990,7 +1024,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 4, 6, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 4, 6, 1], dataType: 'float32'}
         }
       }
     }
@@ -1011,7 +1045,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 12, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 12, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -1032,7 +1066,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 1, 1, 12, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 1, 12, 1], dataType: 'float32'}
         }
       }
     }
@@ -1052,7 +1086,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -1072,7 +1106,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 1, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 2, 2, 3], dataType: 'float32'}
         }
       }
     }
@@ -1092,7 +1126,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 1, 4, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 3, 1], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -1113,8 +1147,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor':
-              {'dimensions': [2, 1, 4, 1, 3, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 1, 4, 1, 3, 1], dataType: 'float32'}
         }
       }
     }
@@ -1134,7 +1167,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 3, 4], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 3, 4], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -1154,7 +1187,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 12], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 12], dataType: 'float32'}
         }
       }
     }
@@ -1174,7 +1207,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -1194,7 +1227,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [4, 6], 'dataType': 'float32'}
+          'descriptor': {shape: [4, 6], dataType: 'float32'}
         }
       }
     }
@@ -1214,7 +1247,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -1234,7 +1267,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [1, 24], 'dataType': 'float32'}
+          'descriptor': {shape: [1, 24], dataType: 'float32'}
         }
       }
     }
@@ -1254,7 +1287,7 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [2, 2, 2, 3], 'dataType': 'float32'}
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float32'}
         }
       },
       'operators': [{
@@ -1274,18 +1307,1058 @@ const reshapeTests = [
             -96.93603515625,    65.34143829345703,   34.835994720458984,
             62.01485824584961,  -2.8698415756225586, 27.903749465942383
           ],
-          'descriptor': {'dimensions': [24, 1], 'dataType': 'float32'}
+          'descriptor': {shape: [24, 1], dataType: 'float32'}
+        }
+      }
+    }
+  },
+
+  // float16 tests
+  {
+    'name': 'reshape float16 tensor to a new shape (reorder all dimensions)',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 2, 3]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape float16 constant tensor to a new shape (reorder all dimensions)',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'},
+          'constant': true
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 2, 3]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape float16 tensor to a new shape (reduce dimensions)',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 1, 1, 1, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 1, 1, 6]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 1, 1, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape float16 tensor to a new shape (extend dimensions)',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [2, 2, 2, 3, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape float16 tensor to a new shape (4D to 4D)',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [3, 2, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 2, 3, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 2, 3, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape float16 tensor to 1D tensor',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [3, 2, 2, 2], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (squeeze) float16 2D tensor by eliminating one dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (squeeze) float16 3D tensor by eliminating one dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 1, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 6]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (squeeze) float16 3D tensor by eliminating two dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 24, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (squeeze) float16 4D tensor by eliminating two dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 4, 1, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 6]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (squeeze) float16 4D tensor by eliminating all dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [-33.8125],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': []}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput':
+            {'data': [-33.8125], 'descriptor': {shape: [], dataType: 'float16'}}
+      }
+    }
+  },
+  {
+    'name':
+        'reshape (squeeze) float16 5D tensor by eliminating four dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 1, 1, 24, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (squeeze) float16 2D tensor by eliminating 1st dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape (squeeze) float16 3D tensor by eliminating 2nd and 3rd dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24, 1, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape (squeeze) float16 4D tensor by eliminating 1st and 4th dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 4, 6, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 6]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape (squeeze) float16 5D tensor by eliminating 2nd and 3rd dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 1, 1, 12, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [2, 12, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 12, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape (squeeze) float16 5D tensor by eliminating 1st, 2nd and 5th dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 1, 1, 24, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 0D tensor to 4D',
+    'graph': {
+      'inputs': {
+        'reshapeInput':
+            {'data': [-33.8125], 'descriptor': {shape: [], dataType: 'float16'}}
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 1, 1, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [-33.8125],
+          'descriptor': {shape: [1, 1, 1, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 1D tensor by adding one dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 1D tensor by adding two dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 24, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 24, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 1D tensor to 5D',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments':
+            [{'input': 'reshapeInput'}, {'newShape': [1, 1, 1, 24, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 1, 1, 24, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape (unsqueeze) float16 1D tensor by adding 2nd and 3rd dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [24, 1, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24, 1, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 2D tensor by adding one dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 1, 6]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 1, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 2D tensor by adding two dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 4, 1, 6]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 4, 1, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 2D tensor by adding 1st dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape (unsqueeze) float16 2D tensor by adding 1st and 4th dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 4, 6, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 4, 6, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name':
+        'reshape (unsqueeze) float16 3D tensor by adding 2nd and 3rd dimensions',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 12, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments':
+            [{'input': 'reshapeInput'}, {'newShape': [2, 1, 1, 12, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 1, 1, 12, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 4D tensor by adding 2nd dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [2, 1, 2, 2, 3]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 1, 2, 2, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (unsqueeze) float16 5D tensor by adding 4th dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 1, 4, 3, 1], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments':
+            [{'input': 'reshapeInput'}, {'newShape': [2, 1, 4, 1, 3, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 1, 4, 1, 3, 1], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (flatten) float16 3D tensor to 2D',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 3, 4], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [2, 12]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 12], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (flatten) float16 4D to 2D',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [4, 6]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [4, 6], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (flatten) float16 4D to 2D exclusive 1st dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 24]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [1, 24], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape (flatten) float16 4D to 2D exclusive 4th dimension',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [2, 2, 2, 3], dataType: 'float16'}
+        }
+      },
+      'operators': [{
+        'name': 'reshape',
+        'arguments': [{'input': 'reshapeInput'}, {'newShape': [24, 1]}],
+        'outputs': 'reshapeOutput'
+      }],
+      'expectedOutputs': {
+        'reshapeOutput': {
+          'data': [
+            -30.0625,  99.5625,    88.0625,  -91.875,   -23.796875,   -91.3125,
+            -63.15625, 12.0703125, -96.125,  -44.78125, -80.0625,     -64.4375,
+            27.640625, -96.875,    83.6875,  50.59375,  -20.1875,     -1.390625,
+            -96.9375,  65.3125,    34.84375, 62,        -2.869140625, 27.90625
+          ],
+          'descriptor': {shape: [24, 1], dataType: 'float16'}
         }
       }
     }
   }
 ];
 
-if (navigator.ml) {
-  reshapeTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getReshapePrecisionTolerance, test);
-  });
-} else {
-  test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
-}
+webnn_conformance_test(reshapeTests, buildAndExecuteGraph, getZeroULPTolerance);

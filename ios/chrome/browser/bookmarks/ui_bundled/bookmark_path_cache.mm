@@ -20,7 +20,7 @@ const int64_t kFolderNone = -1;
 
 @implementation BookmarkPathCache
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterInt64Pref(prefs::kIosBookmarkCachedFolderId, kFolderNone);
   registry->RegisterInt64Pref(
       prefs::kIosBookmarkCachedFolderModel,

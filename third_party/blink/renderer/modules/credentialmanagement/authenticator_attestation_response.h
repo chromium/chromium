@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_AUTHENTICATOR_ATTESTATION_RESPONSE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CREDENTIALMANAGEMENT_AUTHENTICATOR_ATTESTATION_RESPONSE_H_
 
+#include <variant>
+
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_response.h"
@@ -44,8 +46,8 @@ class MODULES_EXPORT AuthenticatorAttestationResponse final
 
   Vector<String> getTransports() const;
 
-  absl::variant<AuthenticatorAssertionResponseJSON*,
-                AuthenticatorAttestationResponseJSON*>
+  std::variant<AuthenticatorAssertionResponseJSON*,
+               AuthenticatorAttestationResponseJSON*>
   toJSON() const override;
 
   void Trace(Visitor*) const override;

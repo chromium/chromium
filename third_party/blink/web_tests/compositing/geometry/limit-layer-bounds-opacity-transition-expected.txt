@@ -16,7 +16,9 @@ Fader
     },
     {
       "name": "LayoutBlockFlow (relative positioned, children-inline) DIV class='test'",
-      "bounds": [108, 99],
+      "position": [8, 0],
+      "bounds": [100, 99],
+      "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     }
   ],

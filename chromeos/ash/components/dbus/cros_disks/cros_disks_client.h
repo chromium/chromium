@@ -360,8 +360,8 @@ class COMPONENT_EXPORT(ASH_DBUS_CROS_DISKS) CrosDisksClient
 
   // Composes a list of mount options.
   static std::vector<std::string> ComposeMountOptions(
-      const std::vector<std::string>& options,
-      const std::string& mount_label,
+      std::vector<std::string> options,
+      std::string_view mount_label,
       MountAccessMode access_mode,
       RemountOption remount);
 

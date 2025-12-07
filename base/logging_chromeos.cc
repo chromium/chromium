@@ -13,6 +13,7 @@
 #include "base/logging.h"
 
 #include <errno.h>
+#include <sys/time.h>
 
 #include <iomanip>
 #include <string_view>
@@ -47,8 +48,9 @@ void LogMessage::InitWithSyslogPrefix(std::string_view filename,
                                       bool enable_thread_id,
                                       bool enable_timestamp,
                                       bool enable_tickcount) {
-  if (log_prefix)
+  if (log_prefix) {
     stream_ << log_prefix << ':';
+  }
   if (enable_timestamp) {
     timeval tv{};
     gettimeofday(&tv, nullptr);
@@ -65,8 +67,9 @@ void LogMessage::InitWithSyslogPrefix(std::string_view filename,
             << std::setw(6) << tv.tv_usec                      // millisecond
             << "Z ";                                           // timezone UTC
   }
-  if (enable_tickcount)
+  if (enable_tickcount) {
     stream_ << tick_count << ' ';
+  }
   if (severity_ >= 0) {
     stream_ << log_severity_name_c_str;
   } else {
@@ -84,7 +87,7 @@ void LogMessage::InitWithSyslogPrefix(std::string_view filename,
     stream_ << "]";
   }
   stream_ << ": ";
-  stream_ << "[" << filename << "(" << line << ")] ";
+  stream_ << "[" << filename << ":" << line << "] ";
 }
 
 }  // namespace logging

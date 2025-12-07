@@ -60,12 +60,15 @@ DeskIconButton::DeskIconButton(DeskBarViewBase* bar_view,
                                ui::ColorId icon_color_id,
                                ui::ColorId background_color_id,
                                bool initially_enabled,
-                               base::RepeatingClosure callback)
+                               base::RepeatingClosure callback,
+                               base::RepeatingClosure state_change_callback)
     : DeskButtonBase(text, /*set_text=*/false, bar_view, callback),
       state_(bar_view_->IsZeroState() ? State::kZero : State::kExpanded),
       button_icon_(button_icon),
       icon_color_id_(icon_color_id),
-      background_color_id_(background_color_id) {
+      background_color_id_(background_color_id),
+      state_change_callback_(std::move(state_change_callback)) {
+  CHECK(state_change_callback_);
   SetEnabled(initially_enabled);
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
@@ -111,11 +114,18 @@ void DeskIconButton::UpdateState(State state) {
 
   state_ = state;
 
-  SetBackground(views::CreateRoundedRectBackground(
-      background()->get_color(), GetCornerRadiusOnState(state_)));
+  // A null `background()` means this view's hierarchy is not attached to a
+  // widget yet. When that happens, `OnThemeChanged()` -> `UpdateEnabledState()`
+  // will cause the background to be painted with a corner radius reflecting
+  // the new `state_`.
+  if (background()) {
+    SetBackground(views::CreateRoundedRectBackground(
+        background()->color(), GetCornerRadiusOnState(state_)));
+  }
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(kWindowMiniViewFocusRingHaloInset),
       GetFocusRingRadiusForState(state_));
+  state_change_callback_.Run();
 }
 
 bool DeskIconButton::IsPointOnButton(const gfx::Point& screen_location) const {
@@ -177,8 +187,8 @@ gfx::Size DeskIconButton::CalculatePreferredSize(
     return gfx::Size(kZeroStateButtonWidth, kZeroStateButtonHeight);
   }
 
-  gfx::Rect desk_preview_bounds = DeskMiniView::GetDeskPreviewBounds(
-      GetWidget()->GetNativeWindow()->GetRootWindow());
+  gfx::Rect desk_preview_bounds =
+      DeskMiniView::GetDeskPreviewBounds(bar_view_->root());
   if (state_ == State::kExpanded) {
     return gfx::Size(kExpandedStateButtonWidth, desk_preview_bounds.height());
   }

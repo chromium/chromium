@@ -8,6 +8,8 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -30,10 +32,12 @@ class PamAuthorizer : public protocol::Authenticator {
   State state() const override;
   bool started() const override;
   RejectionReason rejection_reason() const override;
+  RejectionDetails rejection_details() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
                       base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
+  const SessionPolicies* GetSessionPolicies() const override;
   std::unique_ptr<protocol::ChannelAuthenticator> CreateChannelAuthenticator()
       const override;
 
@@ -91,6 +95,14 @@ protocol::Authenticator::RejectionReason PamAuthorizer::rejection_reason()
   }
 }
 
+protocol::Authenticator::RejectionDetails PamAuthorizer::rejection_details()
+    const {
+  if (local_login_status_ == DISALLOWED) {
+    return RejectionDetails("Local login check failed.");
+  }
+  return underlying_->rejection_details();
+}
+
 void PamAuthorizer::ProcessMessage(const jingle_xmpp::XmlElement* message,
                                    base::OnceClosure resume_callback) {
   // |underlying_| is owned, so Unretained() is safe here.
@@ -114,6 +126,10 @@ std::unique_ptr<jingle_xmpp::XmlElement> PamAuthorizer::GetNextMessage() {
 
 const std::string& PamAuthorizer::GetAuthKey() const {
   return underlying_->GetAuthKey();
+}
+
+const SessionPolicies* PamAuthorizer::GetSessionPolicies() const {
+  return underlying_->GetSessionPolicies();
 }
 
 std::unique_ptr<protocol::ChannelAuthenticator>
@@ -165,12 +181,18 @@ int PamAuthorizer::PamConversation(int num_messages,
   // need to be free()-able zero-initialized memory.
   *responses = static_cast<struct pam_response*>(
       calloc(num_messages, sizeof(struct pam_response)));
-
+  // SAFETY: `messages` is a pointer to a dynamically allocated array of
+  // `pam_message`s, which should be at least `num_messages` long.
+  // PamConversation is invoked as a callback from pam_start API, and is
+  // documented to have this signature:
+  // https://man7.org/linux/man-pages/man3/pam_start.3.html,
+  // https://linux.die.net/man/3/pam_conv
+  auto messages_span =
+      UNSAFE_BUFFERS(base::span(messages, static_cast<size_t>(num_messages)));
   // We don't expect this function to be called. Since we have no easy way
   // of returning a response, we consider it to be an error if we're asked
   // for one and abort. Informational and error messages are logged.
-  for (int i = 0; i < num_messages; ++i) {
-    const struct pam_message* message = messages[i];
+  for (const pam_message* message : messages_span) {
     switch (message->msg_style) {
       case PAM_ERROR_MSG:
         LOG(ERROR) << "PAM conversation error message: " << message->msg;

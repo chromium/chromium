@@ -8,19 +8,11 @@
 
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/i18n/rtl.h"
-#include "base/metrics/field_trial_params.h"
-#include "cc/resources/scoped_ui_resource.h"
-#include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/nine_patch_layer.h"
-#include "cc/slim/solid_color_layer.h"
-#include "chrome/browser/android/compositor/decoration_title.h"
+#include "chrome/browser/android/compositor/decoration_tab_title.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "ui/android/resources/nine_patch_resource.h"
-#include "ui/android/resources/resource_manager.h"
 #include "ui/base/l10n/l10n_util_android.h"
 
 namespace android {
@@ -35,12 +27,19 @@ void TabHandleLayer::SetProperties(
     int id,
     ui::Resource* close_button_resource,
     ui::Resource* close_button_background_resource,
+    bool is_close_keyboard_focused,
+    ui::Resource* close_button_keyboard_focus_ring_resource,
     ui::Resource* divider_resource,
     ui::NinePatchResource* tab_handle_resource,
     ui::NinePatchResource* tab_handle_outline_resource,
     bool foreground,
+    bool is_pinned,
     bool shouldShowTabOutline,
     bool close_pressed,
+    bool should_hide_favicon,
+    bool should_show_media_indicator,
+    ui::Resource* media_indicator_resource,
+    float media_indicator_width,
     float toolbar_width,
     float x,
     float y,
@@ -56,29 +55,21 @@ void TabHandleLayer::SetProperties(
     bool is_end_divider_visible,
     bool is_loading,
     float spinner_rotation,
-    float brightness,
-    float opacity) {
-  if (brightness != brightness_ || foreground != foreground_ ||
-      opacity != opacity_) {
-    brightness_ = brightness;
+    float opacity,
+    bool is_keyboard_focused,
+    ui::NinePatchResource* keyboard_focus_ring_drawable,
+    int keyboard_focus_ring_offset,
+    int stroke_width,
+    float folio_foot_length,
+    float width_to_hide_tab_title) {
+  if (foreground != foreground_ || opacity != opacity_ ||
+      is_pinned != is_pinned_) {
     foreground_ = foreground;
     opacity_ = opacity;
-
-    // With the Tab Strip Redesign (TSR), inactive tabs no longer have a visible
-    // container. To achieve the same dimming effect, we need to set the opacity
-    // rather than adding a brightness filter. We can't swap to simply setting
-    // the opacity when TSR is disabled, because then, the tab containers can
-    // be seen overlapping. (See https://crbug.com/1373632).
-    tab_->SetOpacity(brightness_);
+    is_pinned_ = is_pinned;
   }
 
   y += top_margin;
-  float original_x = x;
-  float original_y = y;
-  if (foreground_) {
-    x = 0;
-    y = 0;
-  }
 
   bool is_rtl = l10n_util::IsLayoutRtl();
 
@@ -107,15 +98,14 @@ void TabHandleLayer::SetProperties(
 
   layer_->SetPosition(gfx::PointF(x, y));
 
-  DecorationTitle* title_layer = nullptr;
+  DecorationTabTitle* title_layer = nullptr;
   // Only pull if tab id is valid.
   if (layer_title_cache_ && id != -1) {
     title_layer = layer_title_cache_->GetTitleLayer(id);
   }
 
   if (title_layer) {
-    title_layer->setOpacity(1.0f);
-    unsigned expected_children = 4;
+    unsigned expected_children = 5;
     title_layer_ = title_layer->layer();
     if (tab_->children().size() < expected_children) {
       tab_->AddChild(title_layer_);
@@ -145,14 +135,6 @@ void TabHandleLayer::SetProperties(
   tab_outline_->SetBounds(tab_bounds);
   tab_outline_->SetBorder(
       tab_handle_outline_resource->Border(tab_outline_->bounds()));
-
-  if (foreground_) {
-    decoration_tab_->SetPosition(gfx::PointF(original_x, original_y));
-    tab_outline_->SetPosition(gfx::PointF(original_x, original_y));
-  } else {
-    decoration_tab_->SetPosition(gfx::PointF(0, 0));
-    tab_outline_->SetPosition(gfx::PointF(0, 0));
-  }
 
   // Display the tab outline only for the currently selected tab in group when
   // TabGroupIndicator is enabled.
@@ -193,11 +175,7 @@ void TabHandleLayer::SetProperties(
     start_divider_->SetBounds(divider_resource->size());
     int divider_x =
         is_rtl ? width - divider_width - divider_offset_x : divider_offset_x;
-    if (foreground_) {
-      divider_x += original_x;
-    }
     start_divider_->SetPosition(gfx::PointF(divider_x, divider_y));
-    start_divider_->SetOpacity(1.0f);
   }
 
   if (!is_end_divider_visible) {
@@ -208,11 +186,20 @@ void TabHandleLayer::SetProperties(
     end_divider_->SetBounds(divider_resource->size());
     int divider_x =
         is_rtl ? divider_offset_x : width - divider_width - divider_offset_x;
-    if (foreground_) {
-      divider_x += original_x;
-    }
     end_divider_->SetPosition(gfx::PointF(divider_x, divider_y));
-    end_divider_->SetOpacity(1.0f);
+  }
+
+  float media_indicator_size = 0.f;
+  if (should_show_media_indicator && media_indicator_resource) {
+    media_indicator_size = media_indicator_width;
+    media_indicator_layer_->SetIsDrawable(true);
+    media_indicator_layer_->SetUIResourceId(
+        media_indicator_resource->ui_resource()->id());
+    media_indicator_layer_->SetBounds(
+        gfx::Size(media_indicator_size, media_indicator_size));
+    media_indicator_layer_->SetOpacity(1.0f);
+  } else {
+    media_indicator_layer_->SetIsDrawable(false);
   }
 
   if (title_layer) {
@@ -223,13 +210,17 @@ void TabHandleLayer::SetProperties(
     // 8dp top padding for folio.
     title_y = std::min(content_offset_y, title_y_offset_mid);
 
-    int title_x = is_rtl ? padding_left + close_width : padding_left;
-    title_layer->setBounds(
-        gfx::Size(width - padding_right - padding_left - close_width, height));
-    if (foreground_) {
-      title_x += original_x;
-      title_y += original_y;
-    }
+    // Hide tab title text when it reached threshold.
+    title_layer->SetShouldHideTitleText(width <= width_to_hide_tab_title);
+
+    // Hide tab favicon if necessary.
+    title_layer->SetShouldHideIcon(should_hide_favicon);
+
+    int title_x = is_rtl ? padding_left + close_width + media_indicator_size
+                         : padding_left;
+    int title_width = width - padding_left - padding_right - close_width -
+                      media_indicator_size;
+    title_layer->setBounds(gfx::Size(title_width, height));
     title_layer->layer()->SetPosition(gfx::PointF(title_x, title_y));
     if (is_loading) {
       title_layer->SetIsLoading(true);
@@ -238,30 +229,32 @@ void TabHandleLayer::SetProperties(
       title_layer->SetIsLoading(false);
     }
   }
+
+  // Pull this out of the close-button-related block so it can be used for
+  // keyboard focus ring calculation as well.
+  int close_y;
+
+  // Close button image is larger than divider image, so close button will
+  // appear slightly lower even the close_y are set in the same value as
+  // divider_y. Thus need this offset to account for the effect of image
+  // size difference has on close_y.
+  int close_y_offset_tsr = std::max(0, (close_button_resource->size().height() -
+                                        divider_resource->size().height()) /
+                                           2);
+  close_y = content_offset_y - std::abs(close_y_offset_tsr);
+
+  // The keyboard focus ring should not be drawn by default. Make sure this
+  // happens whether the parent tab is selected or unselected.
+  close_keyboard_focus_ring_->SetIsDrawable(false);
   if (close_button_alpha == 0.f) {
     close_button_->SetIsDrawable(false);
     close_button_hover_highlight_->SetIsDrawable(false);
   } else {
     close_button_->SetIsDrawable(true);
     close_button_hover_highlight_->SetIsDrawable(true);
-    int close_y;
-
-    // Close button image is larger than divider image, so close button will
-    // appear slightly lower even the close_y are set in the same value as
-    // divider_y. Thus need this offset to account for the effect of image
-    // size difference has on close_y.
-    int close_y_offset_tsr =
-        std::max(0, (close_button_resource->size().height() -
-                     divider_resource->size().height()) /
-                        2);
-    close_y = content_offset_y - std::abs(close_y_offset_tsr);
 
     int close_x = is_rtl ? padding_left - close_button_padding
                          : width - padding_right - close_width;
-    if (foreground_) {
-      close_x += original_x;
-      close_y += original_y;
-    }
 
     float background_left_offset =
         (close_button_background_resource->size().width() -
@@ -275,7 +268,83 @@ void TabHandleLayer::SetProperties(
         gfx::PointF(background_left_offset, background_top_offset));
     close_button_->SetOpacity(close_button_alpha);
     close_button_hover_highlight_->SetPosition(gfx::PointF(close_x, close_y));
+    if (is_close_keyboard_focused) {
+      close_keyboard_focus_ring_->SetIsDrawable(true);
+      close_keyboard_focus_ring_->SetUIResourceId(
+          close_button_keyboard_focus_ring_resource->ui_resource()->id());
+      // We need to make sure that the keyboard focus ring's position is
+      // int-aligned. That is, we want the final position of the focus ring to
+      // be (close_x + std::round(x), close_y + std::round(y)). Because
+      // close_keyboard_focus_ring is a child of layer, the final position of
+      // the ring will be whatever coordinates we use in SetPosition plus
+      // (x, y). Therefore we just use the coordinates we want,
+      // (close_x + std::round(x), close_y + std::round(y)), and subtract
+      // (x, y).
+      close_keyboard_focus_ring_->SetPosition(gfx::PointF(
+          close_x + std::round(x) - x, close_y + std::round(y) - y));
+      close_keyboard_focus_ring_->SetBounds(gfx::Size(
+          close_button_keyboard_focus_ring_resource->size().width(),
+          close_button_keyboard_focus_ring_resource->size().height()));
+    }
   }
+
+  if (media_indicator_size > 0) {
+    float right_aligned_icon_x = is_rtl ? padding_left - close_button_padding
+                                        : width - padding_right - close_width;
+    if (close_button_alpha == 0.f) {
+      right_aligned_icon_x = is_rtl ? padding_left : width - padding_right;
+    }
+
+    float media_x = is_rtl ? right_aligned_icon_x + close_width
+                           : right_aligned_icon_x - media_indicator_size;
+    float media_y =
+        close_y + std::round((close_button_resource->size().height() -
+                              media_indicator_size) /
+                             2);
+    media_indicator_layer_->SetPosition(gfx::PointF(media_x, media_y));
+  }
+
+  if (is_keyboard_focused) {
+    keyboard_focus_ring_->SetIsDrawable(true);
+    keyboard_focus_ring_->SetUIResourceId(
+        keyboard_focus_ring_drawable->ui_resource()->id());
+    keyboard_focus_ring_->SetAperture(keyboard_focus_ring_drawable->aperture());
+
+    float close_button_center_y =
+        close_y + close_button_resource->size().height() / 2;
+    if (shouldShowTabOutline) {
+      float keyboard_focus_ring_y = keyboard_focus_ring_offset + stroke_width;
+      keyboard_focus_ring_->SetPosition(
+          gfx::PointF(folio_foot_length + keyboard_focus_ring_offset,
+                      keyboard_focus_ring_y));
+      keyboard_focus_ring_->SetBounds(gfx::Size(
+          width - folio_foot_length * 2 - keyboard_focus_ring_offset * 2,
+          (close_button_center_y - keyboard_focus_ring_y) * 2));
+    } else {
+      float keyboard_focus_ring_y = 0;
+      keyboard_focus_ring_->SetPosition(
+          gfx::PointF(folio_foot_length, keyboard_focus_ring_y));
+      keyboard_focus_ring_->SetBounds(
+          gfx::Size(width - folio_foot_length * 2,
+                    (close_button_center_y - keyboard_focus_ring_y) * 2));
+    }
+
+    keyboard_focus_ring_->SetFillCenter(true);
+    keyboard_focus_ring_->SetBorder(
+        keyboard_focus_ring_drawable->Border(keyboard_focus_ring_->bounds()));
+  } else {
+    // Clean up the keyboard focus ring if it was previously showing but
+    // shouldn't be showing now.
+    keyboard_focus_ring_->SetIsDrawable(false);
+  }
+}
+
+bool TabHandleLayer::foreground() {
+  return foreground_;
+}
+
+bool TabHandleLayer::is_pinned() {
+  return is_pinned_;
 }
 
 scoped_refptr<cc::slim::Layer> TabHandleLayer::layer() {
@@ -288,27 +357,34 @@ TabHandleLayer::TabHandleLayer(LayerTitleCache* layer_title_cache)
       tab_(cc::slim::Layer::Create()),
       close_button_(cc::slim::UIResourceLayer::Create()),
       close_button_hover_highlight_(cc::slim::UIResourceLayer::Create()),
+      close_keyboard_focus_ring_(cc::slim::UIResourceLayer::Create()),
       start_divider_(cc::slim::UIResourceLayer::Create()),
       end_divider_(cc::slim::UIResourceLayer::Create()),
+      media_indicator_layer_(cc::slim::UIResourceLayer::Create()),
       decoration_tab_(cc::slim::NinePatchLayer::Create()),
       tab_outline_(cc::slim::NinePatchLayer::Create()),
-      brightness_(1.0f),
+      keyboard_focus_ring_(cc::slim::NinePatchLayer::Create()),
       foreground_(false) {
   decoration_tab_->SetIsDrawable(true);
 
   tab_->AddChild(decoration_tab_);
   tab_->AddChild(tab_outline_);
   tab_->AddChild(close_button_hover_highlight_);
+  tab_->AddChild(media_indicator_layer_);
   close_button_hover_highlight_->AddChild(close_button_);
+
+  decoration_tab_->SetPosition(gfx::PointF(0, 0));
+  tab_outline_->SetPosition(gfx::PointF(0, 0));
 
   // The divider is added as a separate child so its opacity can be controlled
   // separately from the other tab items.
   layer_->AddChild(tab_);
   layer_->AddChild(start_divider_);
   layer_->AddChild(end_divider_);
+  layer_->AddChild(close_keyboard_focus_ring_);
+  layer_->AddChild(keyboard_focus_ring_);
 }
 
-TabHandleLayer::~TabHandleLayer() {
-}
+TabHandleLayer::~TabHandleLayer() = default;
 
 }  // namespace android

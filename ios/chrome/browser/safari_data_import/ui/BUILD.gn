@@ -1,0 +1,42 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "safari_data_import_entry_point_view_controller.h",
+    "safari_data_import_entry_point_view_controller.mm",
+    "safari_data_import_export_view_controller.h",
+    "safari_data_import_export_view_controller.mm",
+    "safari_data_import_import_view_controller.h",
+    "safari_data_import_import_view_controller.mm",
+  ]
+  public_deps = [
+    "//ios/chrome/browser/shared/ui/animated_promo",
+    "//ios/chrome/browser/shared/ui/bottom_sheet:bottom_sheet_view_controller",
+    "//ios/chrome/common/ui/promo_style",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/data_import/ui",
+    "//ios/chrome/browser/first_run/ui_bundled:constants",
+    "//ios/chrome/browser/safari_data_import/public",
+    "//ios/chrome/browser/safari_data_import/public:metrics",
+    "//ios/chrome/browser/safari_data_import/public:ui_utils",
+    "//ios/chrome/browser/safari_data_import/ui/resources",
+    "//ios/chrome/browser/safari_data_import/ui/resources:animation_files",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common:string_util",
+    "//ios/chrome/common/ui/button_stack",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/instruction_view",
+    "//ios/chrome/common/ui/promo_style:utils",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+    "//ui/strings",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

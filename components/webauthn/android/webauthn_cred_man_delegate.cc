@@ -4,10 +4,14 @@
 
 #include "components/webauthn/android/webauthn_cred_man_delegate.h"
 
+#include <optional>
+#include <string>
 #include <utility>
 
 #include "base/android/jni_android.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "components/webauthn/android/cred_man_support.h"
 #include "content/public/browser/web_contents.h"
 
@@ -32,6 +36,11 @@ void WebAuthnCredManDelegate::OnCredManConditionalRequestPending(
     base::RepeatingCallback<void(bool)> full_assertion_request) {
   has_passkeys_ = has_passkeys ? kHasPasskeys : kNoPasskeys;
   show_cred_man_ui_callback_ = std::move(full_assertion_request);
+
+  std::vector<base::OnceClosure> notification_closures;
+  if (credentials_available_closure_) {
+    std::move(credentials_available_closure_).Run();
+  }
 }
 
 void WebAuthnCredManDelegate::OnCredManUiClosed(bool success) {
@@ -42,6 +51,13 @@ void WebAuthnCredManDelegate::OnCredManUiClosed(bool success) {
 
 void WebAuthnCredManDelegate::TriggerCredManUi(
     RequestPasswords request_passwords) {
+  if (!passkeys_after_fill_recorded_) {
+    passkeys_after_fill_recorded_ = true;
+    base::UmaHistogramBoolean(
+        "PasswordManager.PasskeysArrivedAfterAutofillDisplay",
+        has_passkeys_ == kNotReady);
+  }
+
   if (show_cred_man_ui_callback_.is_null()) {
     return;
   }
@@ -75,6 +91,20 @@ void WebAuthnCredManDelegate::FillUsernameAndPassword(
   std::move(filling_callback_).Run(username, password);
 }
 
+void WebAuthnCredManDelegate::RequestNotificationWhenCredentialsReady(
+    base::OnceClosure closure) {
+  if (has_passkeys_ != kNotReady) {
+    std::move(closure).Run();
+    return;
+  }
+  CHECK(!credentials_available_closure_);
+  credentials_available_closure_ = std::move(closure);
+}
+
+base::WeakPtr<WebAuthnCredManDelegate> WebAuthnCredManDelegate::AsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 // static
 WebAuthnCredManDelegate::CredManEnabledMode
 WebAuthnCredManDelegate::CredManMode() {
@@ -84,9 +114,8 @@ WebAuthnCredManDelegate::CredManMode() {
   }
   switch (cred_man_support_.value()) {
     case CredManSupport::NOT_EVALUATED:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case CredManSupport::DISABLED:
-    case CredManSupport::IF_REQUIRED:
       return CredManEnabledMode::kNotEnabled;
     case CredManSupport::FULL_UNLESS_INAPPLICABLE:
       return CredManEnabledMode::kAllCredMan;
@@ -99,3 +128,5 @@ WebAuthnCredManDelegate::CredManMode() {
 std::optional<int> WebAuthnCredManDelegate::cred_man_support_ = std::nullopt;
 
 }  // namespace webauthn
+
+DEFINE_JNI(CredManSupportProvider)

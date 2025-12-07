@@ -17,7 +17,6 @@
 #import "components/variations/pref_names.h"
 #import "components/variations/service/safe_seed_manager.h"
 #import "components/variations/variations_test_utils.h"
-
 #import "ios/chrome/browser/variations/model/variations_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -69,6 +68,21 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
                   actualStreak);
 }
 
+// Helper method to synchronously wait for the async hasSafeSeed check
+- (BOOL)hasSafeSeed {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"Wait for hasSafeSeed check"];
+  __block BOOL safeSeedPresent = NO;
+  [VariationsAppInterface hasSafeSeed:^(BOOL hasSeed) {
+    safeSeedPresent = hasSeed;
+    [expectation fulfill];
+  }];
+  NSTimeInterval timeout = 5.0;
+  [self waitForExpectationsWithTimeout:timeout handler:nil];
+
+  return safeSeedPresent;
+}
+
 // Restarts the app and ensures there's no variations/crash state active.
 - (void)resetAppState:(AppLaunchConfiguration)config {
   // Clear local state variations prefs since local state is persisted between
@@ -87,7 +101,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   //   * No active crash streak
   XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
                 @"App should be launched.");
-  GREYAssertFalse([VariationsAppInterface hasSafeSeed], @"No safe seed.");
+  GREYAssertFalse([self hasSafeSeed], @"No safe seed.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
                   @"No field trial from test seed.");
   [self checkCrashStreakValue:0];
@@ -116,9 +130,9 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   self.continueAfterFailure = YES;
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self resetAppState:[self appConfigurationForCleanRestart]];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -127,20 +141,13 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 //
 // Corresponds to VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd
 // in variations_safe_mode_browsertest.cc.
-- (void)testVariationsSafeModeEndToEnd {
-// TODO(crbug.com/40215027): Test fails on iOS 17.5+ iPad devices.
-#if !TARGET_IPHONE_SIMULATOR
-  if (@available(iOS 17.5, *)) {
-    if ([ChromeEarlGrey isIPadIdiom]) {
-      EARL_GREY_TEST_DISABLED(@"This test fails on iOS 17.5+ iPad device.");
-    }
-  }
-#endif
+// TODO(crbug.com/379849501): Test is flaky on various bots.
+- (void)DISABLED_testVariationsSafeModeEndToEnd {
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
 
   // Set the safe seed value. Validate that the seed is set but not active.
   [VariationsAppInterface setTestSafeSeedAndSignature];
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
+  GREYAssertTrue([self hasSafeSeed],
                  @"The variations safe seed pref should be set.");
   GREYAssertFalse([VariationsAppInterface fieldTrialExistsForTestSeed],
                   @"Safe seed field trials should not be active.");
@@ -166,7 +173,7 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
   XCTAssertTrue([[AppLaunchManager sharedManager] appIsLaunched],
                 @"App should be launched.");
-  GREYAssertTrue([VariationsAppInterface hasSafeSeed],
+  GREYAssertTrue([self hasSafeSeed],
                  @"The variations safe seed pref should be set.");
   GREYAssertTrue([VariationsAppInterface fieldTrialExistsForTestSeed],
                  @"There should be field trials from kTestSeedData.");

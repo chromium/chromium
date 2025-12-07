@@ -65,7 +65,7 @@ struct Unicode16BitEscapeSequence {
   template <typename CharType>
   static String DecodeRun(const CharType* run,
                           wtf_size_t run_length,
-                          const WTF::TextEncoding&) {
+                          const TextEncoding&) {
     // Each %u-escape sequence represents a UTF-16 code unit.  See
     // <http://www.w3.org/International/iri-edit/draft-duerst-iri.html#anchor29>.
     // For 16-bit escape sequences, we know that findEndOfRun() has given us a
@@ -124,7 +124,7 @@ struct URLEscapeSequence {
   template <typename CharType>
   static String DecodeRun(const CharType* run,
                           wtf_size_t run_length,
-                          const WTF::TextEncoding& encoding) {
+                          const TextEncoding& encoding) {
     // For URL escape sequences, we know that findEndOfRun() has given us a run
     // where every %-sign introduces a valid escape sequence, but there may be
     // characters between the sequences.
@@ -152,7 +152,7 @@ struct URLEscapeSequence {
 
 template <typename EscapeSequence>
 String DecodeEscapeSequences(const String& string,
-                             const WTF::TextEncoding& encoding) {
+                             const TextEncoding& encoding) {
   StringBuilder result;
   wtf_size_t length = string.length();
   wtf_size_t decoded_position = 0;

@@ -25,7 +25,7 @@ public final class ProcessScopeDependencyProviderImplTest {
     ProcessScopeDependencyProviderImpl mProvider;
     boolean mMetricsReportingEnabled;
 
-    private PrivacyPreferencesManager mStubPrivacyPrefsManager =
+    private final PrivacyPreferencesManager mStubPrivacyPrefsManager =
             new PrivacyPreferencesManager() {
                 @Override
                 public boolean isMetricsReportingEnabled() {
@@ -33,12 +33,6 @@ public final class ProcessScopeDependencyProviderImplTest {
                 }
 
                 // Boilerplate.
-                @Override
-                public void addObserver(Observer observer) {}
-
-                @Override
-                public void removeObserver(Observer observer) {}
-
                 @Override
                 public void setUsageAndCrashReporting(boolean enabled) {}
 

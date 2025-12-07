@@ -1,0 +1,9 @@
+include_rules = [
+  "+ash/public",
+  "+components/google/core",
+  "+components/url_formatter",
+  "+ui/aura",
+  "+ui/base",
+  "+ui/gfx",
+  "+ui/views",
+]

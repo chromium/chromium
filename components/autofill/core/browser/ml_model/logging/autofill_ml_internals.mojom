@@ -1,0 +1,60 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module autofill_ml_internals.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/url.mojom";
+
+enum OptimizationTarget {
+  kUnknown,
+  kAutofill,
+  kPassword,
+};
+
+struct SelectOption {
+  string value;
+  string text;
+};
+
+// Prediction for a single field.
+struct MlFieldPredictionLog {
+  string label;
+  string placeholder;
+  string name;
+  string id;
+  string autocomplete;
+  string form_control_type;
+  array<SelectOption> select_options;
+
+  array<float>? probabilities;
+  array<string> tokenized_field_representation;
+};
+
+// Represents a single ML prediction log entry.
+struct MlPredictionLog {
+  string form_signature;
+  url.mojom.Url form_url;
+  array<string> model_output_types;
+  array<MlFieldPredictionLog> field_predictions;
+  mojo_base.mojom.Time start_time;
+  mojo_base.mojom.Time end_time;
+  mojo_base.mojom.TimeDelta duration;
+  OptimizationTarget optimization_target;
+};
+
+// The frontend implements this interface to receive log updates from the
+// browser process.
+interface Page {
+  // Called by the backend when a new prediction log is available.
+  OnLogAdded(MlPredictionLog log);
+};
+
+// The browser process implements this interface. The frontend uses this to
+// establish communication.
+interface PageHandler {
+  // The frontend calls this method to register its Page interface and start
+  // receiving log updates.
+  SetPage(pending_remote<Page> page);
+};

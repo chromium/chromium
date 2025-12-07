@@ -27,6 +27,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.filters.MediumTest;
@@ -36,6 +37,8 @@ import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterSet;
@@ -50,7 +53,8 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
+import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -61,6 +65,7 @@ import org.chromium.components.browser_ui.bottomsheet.TestBottomSheetContent;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -74,26 +79,22 @@ import java.util.List;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AccountSelectionIntegrationTest extends AccountSelectionIntegrationTestBase {
     @ParameterAnnotations.ClassParameter
-    private static List<ParameterSet> sClassParams =
+    private static final List<ParameterSet> sClassParams =
             Arrays.asList(
-                    new ParameterSet().value(RpMode.WIDGET).name("widget"),
-                    new ParameterSet().value(RpMode.BUTTON).name("button"));
+                    new ParameterSet().value(RpMode.PASSIVE).name("passive"),
+                    new ParameterSet().value(RpMode.ACTIVE).name("active"));
 
-    private @BottomSheetController.SheetState int mExpectedSheetState;
+    private final @BottomSheetController.SheetState int mExpectedSheetState;
 
     @Mock AccountSelectionComponent.Delegate mCustomTabMockBridge;
 
     public AccountSelectionIntegrationTest(@RpMode.EnumType int rpMode) {
         mRpMode = rpMode;
         mExpectedSheetState =
-                rpMode == RpMode.BUTTON
+                rpMode == RpMode.ACTIVE
                         ? BottomSheetController.SheetState.HALF
                         : BottomSheetController.SheetState.FULL;
     }
-
-    private static final String TEST_ERROR_CODE = "invalid_request";
-    private static final IdentityCredentialTokenError TOKEN_ERROR =
-            new IdentityCredentialTokenError(TEST_ERROR_CODE, TEST_URL);
 
     @Test
     @MediumTest
@@ -101,22 +102,20 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
-                            /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
+                            Arrays.asList(mReturningAna, mNewBob),
+                            Arrays.asList(mIdpData),
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
         Espresso.pressBack();
 
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+        verify(mMockBridge, never()).onAccountSelected(any());
     }
 
     @Test
@@ -125,15 +124,13 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
-                            /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
+                            Arrays.asList(mReturningAna, mNewBob),
+                            Arrays.asList(mIdpData),
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
         BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
@@ -142,22 +139,20 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+        verify(mMockBridge, never()).onAccountSelected(any());
     }
 
     private void testClickOnConsentLink(int linkIndex, String expectedUrl) {
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
-                            /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
+                            Arrays.asList(mNewBob),
+                            Arrays.asList(mIdpData),
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
@@ -226,18 +221,16 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showAccounts(
-                            EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
-                            Arrays.asList(RETURNING_ANA, NEW_BOB),
-                            IDP_METADATA,
-                            mClientIdMetadata,
-                            /* isAutoReauthn= */ false,
-                            RpContext.SIGN_IN,
-                            /* requestPermission= */ true,
-                            /* newAccountsIdp= */ null);
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
+                            Arrays.asList(mReturningAna, mNewBob),
+                            Arrays.asList(mIdpData),
+                            /* newAccounts= */ Collections.EMPTY_LIST);
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+        verify(mMockBridge, never()).onAccountSelected(any());
         Espresso.onView(withText("Another bottom sheet content")).check(matches(isDisplayed()));
 
         runOnUiThreadBlocking(
@@ -253,7 +246,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showFailureDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
                             RpContext.SIGN_IN);
@@ -263,7 +259,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         Espresso.pressBack();
 
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+        verify(mMockBridge, never()).onAccountSelected(any());
     }
 
     @Test
@@ -272,7 +268,10 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
         runOnUiThreadBlocking(
                 () -> {
                     mAccountSelection.showFailureDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
                             TEST_ETLD_PLUS_ONE_2,
                             IDP_METADATA,
                             RpContext.SIGN_IN);
@@ -284,7 +283,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                     sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
                 });
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+        verify(mMockBridge, never()).onAccountSelected(any());
     }
 
     @Test
@@ -352,7 +351,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
                 });
         CriteriaHelper.pollUiThread(() -> activity.isDestroyed());
         waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+        verify(mMockBridge, never()).onAccountSelected(any());
     }
 
     @Test
@@ -372,43 +371,54 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
 
     @Test
     @MediumTest
-    public void testErrorDialogBackDismissesAndCallsCallback() {
+    public void testDismissAddAccountCctReopensAccountChooser() {
         runOnUiThreadBlocking(
                 () -> {
-                    mAccountSelection.showErrorDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
-                            IDP_METADATA,
-                            RpContext.SIGN_IN,
-                            TOKEN_ERROR);
+                    mAccountSelection.showAccounts(
+                            new RelyingPartyData(
+                                    EXAMPLE_ETLD_PLUS_ONE,
+                                    /* iframeForDisplay= */ "",
+                                    /* rpIcon= */ null),
+                            Arrays.asList(mNewBobWithAddAccount, mReturningAnaWithAddAccount),
+                            Arrays.asList(mIdpDataWithAddAccount),
+                            /* newAccounts= */ Collections.EMPTY_LIST);
+                    mAccountSelection.getMediator().setComponentShowTime(-1000);
                 });
         pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
 
-        Espresso.pressBack();
+        View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
+        assertNotNull(contentView);
 
-        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.BACK_PRESS);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
-    }
+        RecyclerView accountsList = contentView.findViewById(R.id.sheet_item_list);
+        int expectedChildCount = mRpMode == RpMode.ACTIVE ? 3 : 4;
+        assertEquals(expectedChildCount, accountsList.getChildCount());
+        assertEquals(
+                AccountSelectionProperties.ITEM_TYPE_LOGIN,
+                accountsList.getAdapter().getItemViewType(expectedChildCount - 1));
 
-    @Test
-    @MediumTest
-    public void testErrorDialogSwipeDismissesAndCallsCallback() {
+        // Close the use other account CCT when it is opened.
+        doAnswer(
+                        new Answer<>() {
+                            @Override
+                            public Void answer(InvocationOnMock invocation) {
+                                mAccountSelection
+                                        .getMediator()
+                                        .onDismissed(IdentityRequestDialogDismissReason.OTHER);
+                                return null;
+                            }
+                        })
+                .when(mMockBridge)
+                .onLoginToIdP(any(), any());
+
+        // Click "Use a different account".
         runOnUiThreadBlocking(
                 () -> {
-                    mAccountSelection.showErrorDialog(
-                            EXAMPLE_ETLD_PLUS_ONE,
-                            TEST_ETLD_PLUS_ONE_2,
-                            IDP_METADATA,
-                            RpContext.SIGN_IN,
-                            TOKEN_ERROR);
+                    accountsList.getChildAt(expectedChildCount - 1).performClick();
                 });
-        pollUiThread(() -> getBottomSheetState() == mExpectedSheetState);
-        BottomSheetTestSupport sheetSupport = new BottomSheetTestSupport(mBottomSheetController);
-        runOnUiThreadBlocking(
-                () -> {
-                    sheetSupport.suppressSheet(BottomSheetController.StateChangeReason.SWIPE);
-                });
-        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.SWIPE);
-        verify(mMockBridge, never()).onAccountSelected(any(), any());
+
+        // Verify that account chooser remains open.
+        assertEquals(HeaderType.SIGN_IN, mAccountSelection.getMediator().getHeaderType());
+        waitForEvent(mMockBridge).onDismissed(IdentityRequestDialogDismissReason.OTHER);
+        verify(mMockBridge, never()).onAccountSelected(any());
     }
 }

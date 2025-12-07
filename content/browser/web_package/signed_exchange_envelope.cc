@@ -11,11 +11,13 @@
 #include "base/format_macros.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "components/cbor/reader.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_utils.h"
+#include "crypto/hash.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "url/origin.h"
@@ -98,11 +100,11 @@ bool IsCacheableBySharedCache(const SignedExchangeEnvelope::HeaderMap& headers,
   if (found == headers.end())
     return true;
   net::HttpUtil::NameValuePairsIterator it(
-      found->second.begin(), found->second.end(), ',',
+      found->second, /*delimiter=*/',',
       net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (it.GetNext()) {
-    std::string_view name = it.name_piece();
+    std::string_view name = it.name();
     if (name == "no-store" || name == "private") {
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,
@@ -391,12 +393,7 @@ void SignedExchangeEnvelope::set_cbor_header(base::span<const uint8_t> data) {
 }
 
 net::SHA256HashValue SignedExchangeEnvelope::ComputeHeaderIntegrity() const {
-  net::SHA256HashValue hash;
-  crypto::SHA256HashString(
-      std::string_view(reinterpret_cast<const char*>(cbor_header().data()),
-                       cbor_header().size()),
-      &hash, sizeof(net::SHA256HashValue));
-  return hash;
+  return crypto::hash::Sha256(cbor_header());
 }
 
 }  // namespace content

@@ -6,22 +6,17 @@
 
 #include <optional>
 
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/app_service.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace web_app {
 
@@ -30,38 +25,26 @@ namespace {
 std::optional<webapps::AppId> GetAppIdForManagementLinkInWebContents(
     content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithTab(web_contents);
-  if (!browser)
+  if (!browser) {
     return std::nullopt;
+  }
 
   const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents);
-  if (!app_id)
+  if (!app_id) {
     return std::nullopt;
-
-  if (!web_app::WebAppTabHelper::FromWebContents(web_contents)->acting_as_app())
-    return std::nullopt;
+  }
 
   if (!WebAppProvider::GetForWebApps(browser->profile())
            ->registrar_unsafe()
-           .IsInstalled(*app_id)) {
+           .IsInstallState(*app_id,
+                           {proto::INSTALLED_WITH_OS_INTEGRATION,
+                            proto::INSTALLED_WITHOUT_OS_INTEGRATION})) {
     return std::nullopt;
   }
 
   return *app_id;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool ShowAppManagementPageInAsh(const webapps::AppId& app_id) {
-  auto* service = chromeos::LacrosService::Get();
-  if (!service || !service->IsAvailable<crosapi::mojom::AppServiceProxy>()) {
-    LOG(ERROR) << "AppServiceProxy not available.";
-    return false;
-  }
-  service->GetRemote<crosapi::mojom::AppServiceProxy>()->ShowAppManagementPage(
-      app_id);
-  return true;
-}
-#endif
 
 }  // namespace
 
@@ -71,8 +54,9 @@ bool GetLabelIdsForAppManagementLinkInPageInfo(
     int* tooltip_text_id) {
   std::optional<webapps::AppId> app_id =
       GetAppIdForManagementLinkInWebContents(web_contents);
-  if (!app_id)
+  if (!app_id) {
     return false;
+  }
 
   *link_text_id = IDS_WEB_APP_SETTINGS_LINK;
   *tooltip_text_id = IDS_WEB_APP_SETTINGS_LINK_TOOLTIP;
@@ -83,16 +67,15 @@ bool HandleAppManagementLinkClickedInPageInfo(
     content::WebContents* web_contents) {
   std::optional<webapps::AppId> app_id =
       GetAppIdForManagementLinkInWebContents(web_contents);
-  if (!app_id)
+  if (!app_id) {
     return false;
+  }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chrome::ShowAppManagementPage(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()), *app_id,
       ash::settings::AppManagementEntryPoint::kPageInfoView);
   return true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return ShowAppManagementPageInAsh(*app_id);
 #else
   chrome::ShowWebAppSettings(chrome::FindBrowserWithTab(web_contents), *app_id,
                              AppSettingsPageEntryPoint::kPageInfoView);
@@ -102,15 +85,24 @@ bool HandleAppManagementLinkClickedInPageInfo(
 
 void OpenAppSettingsForParentApp(const webapps::AppId& parent_app_id,
                                  Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ShowAppManagementPageInAsh(parent_app_id);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chrome::ShowAppManagementPage(
       profile, parent_app_id,
       ash::settings::AppManagementEntryPoint::kSubAppsInstallPrompt);
 #else
   chrome::ShowWebAppSettings(profile, parent_app_id,
                              AppSettingsPageEntryPoint::kSubAppsInstallPrompt);
+#endif
+}
+
+void OpenAppSettingsForInstalledRelatedApp(const webapps::AppId& app_id,
+                                           Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS)
+  chrome::ShowAppManagementPage(
+      profile, app_id, ash::settings::AppManagementEntryPoint::kSiteDataDialog);
+#else
+  chrome::ShowWebAppSettings(profile, app_id,
+                             AppSettingsPageEntryPoint::kSiteDataDialog);
 #endif
 }
 

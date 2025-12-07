@@ -7,10 +7,11 @@
 #import <AppKit/AppKit.h>
 #include <stddef.h>
 
+#include <string_view>
+
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
@@ -64,8 +65,7 @@ void ResourceBundle::LoadCommonResources() {
 }
 
 // static
-base::FilePath ResourceBundle::GetLocaleFilePath(
-    const std::string& app_locale) {
+base::FilePath ResourceBundle::GetLocaleFilePath(std::string_view app_locale) {
   NSString* mac_locale = base::SysUTF8ToNSString(app_locale);
 
   // macOS uses "_" instead of "-", so swap to get a Mac-style value.
@@ -78,11 +78,6 @@ base::FilePath ResourceBundle::GetLocaleFilePath(
 
   base::FilePath locale_file_path =
       GetResourcesPakFilePath(@"locale", mac_locale);
-
-  if (HasSharedInstance() && GetSharedInstance().delegate_) {
-    locale_file_path = GetSharedInstance().delegate_->GetPathForLocalePack(
-        locale_file_path, app_locale);
-  }
 
   // Don't try to load from paths that are not absolute.
   return locale_file_path.IsAbsolute() ? locale_file_path : base::FilePath();

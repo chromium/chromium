@@ -9,6 +9,12 @@ states and transitions between them.
 
 See the [Getting Started with Public Transit](getting_started.md) guide.
 
+See some example tests:
+
+* [ExampleAutoResetCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java)
+* [ExampleFreshCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java)
+* [ExampleReusedCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleReusedCtaTest.java)
+
 ## Why Use Public Transit?
 
 **Scalability**
@@ -139,23 +145,62 @@ current state, increasing discoverability of shared code.
 It is recommended to batch Public Transit tests to reduce runtime and save CQ/CI
 resources.
 
-#### How to Batch a Public Transit Test
+#### How to Batch restarting the Activity between tests
+
+This restarts the Android Activities while keeping the browser process alive.
+Static fields, singletons and globals are not reset unless ResettersForTesting
+was used.
 
 1. Add `@Batch(Batch.PER_CLASS)` to the test class.
-2. Add the [`BatchedPublicTransitRule<>`] specifying the home station. The *home
-   station* is where each test starts and ends.
-3. Get the first station in each test case from a batched entry point, e.g.
-   `ChromeTabbedActivityPublicTransitEntryPoints#startOnBlankPage()`.
-4. Each test should return to the home station. If a test does not end in the
-   home station, it will fail (if it already hasn't) with a descriptive message.
-   The following tests will also fail right at the start.
+2. Use the `@Rule` returned by
+   `ChromeTransitTestRules.freshChromeTabbedActivityRule()`.
+3. Get the first station in each test case from the test rule. e.g.
+   `mCtaTestRule.startOnBlankPage()`.
 
-In Chrome, in many situations, [`BlankCTATabInitialStatePublicTransitRule`] is
-more practical to use to automatically reset Tab state. It also acts as entry
-point.
+The `BatchedPublicTransitRule` is not necessary. Returning to the home station
+is not necessary. However, this does not run as fast as "reusing the Activity"
+below, especially in Release.
 
-[`BatchedPublicTransitRule<>`]: https://source.chromium.org/search?q=symbol:BatchedPublicTransitRule&ss=chromium
-[`BlankCTATabInitialStatePublicTransitRule`]: https://source.chromium.org/search?q=symbol:BlankCTATabInitialStatePublicTransitRule&ss=chromium
+
+Example: [ExampleFreshCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleFreshCtaTest.java)
+
+#### How to Batch reusing the Activity between tests but resetting tab state
+
+This keeps the Activity, but closes all tabs between tests and returns to a
+blank page.
+
+Using `AutoResetCtaTransitTestRule`:
+
+1. Add `@Batch(Batch.PER_CLASS)` to the test class.
+2. Use `ChromeTransitTestRules.autoResetCtaActivityRule()`.
+3. Get the first station in each test case from the test rule:
+   `mCtaTestRule.startOnBlankPage()`.
+
+Tests don't need to return to the home station. Only some reset paths are
+supported - this is best effort since this reset transition is not part of a
+regular user flow.
+
+Example: [ExampleAutoResetCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleAutoResetCtaTest.java)
+
+#### How to Batch reusing the Activity between tests staying on the same state
+
+This both keeps the Activiy and doesn't reset any app state between tests (apart
+from ResettersForTesting) - a test is started immediately after the previous
+finished.
+
+Using `ReusedCtaTransitTestRule`:
+
+1. Add `@Batch(Batch.PER_CLASS)` to the test class.
+2. Use a "Reused" factory method such as
+   `ChromeTransitTestRules.blankPageStartReusedActivityRule()`.
+3. Get the first station in each test case from the test rule:
+   `mCtaTestRule.start()`.
+
+Each test should return to the home station. If a test does not end in the
+home station, it will fail (if it already hasn't) with a descriptive message.
+The following tests will also fail right at the start.
+
+Example: [ExampleReusedCtaTest](/chrome/android/javatests/src/org/chromium/chrome/browser/ExampleReusedCtaTest.java)
 
 ### ViewPrinter
 
@@ -255,7 +300,7 @@ An example of Test Layer code:
 ```java
 @Test
 public void testOpenTabSwitcher() {
-    BasePageStation page = mTransitEntryPoints.startOnBlankPage();
+    PageStation page = mTransitEntryPoints.startOnBlankPage();
     AppMenuFacility appMenu = page.openAppMenu();
     page = appMenu.openNewIncognitoTab();
     TabSwitcherStation tabSwitcher = page.openTabSwitcher();
@@ -292,8 +337,8 @@ mostly full) window view. Only one `Station` can be active at any time.
 For each screen in the app, a concrete implementation of `Station` should be
 created in the Transit Layer, implementing:
 
-* **`declareElements()`** declaring the `Views` and other enter/exit conditions
-  define this `Station`.
+* **constructor** and/or **`declareExtraElements()`** declaring the `Views` and
+  other enter/exit conditions define this `Station`.
 * **transition methods** to travel to other `Stations` or to enter `Facilities`.
   These methods are synchronous and return a handle to the entered
   `ConditionalState` only after the transition is done and the new
@@ -303,24 +348,17 @@ Example of a concrete `Station`:
 
 ```java
 /** The tab switcher screen, with the tab grid and the tab management toolbar. */
-public class TabSwitcherStation extends Station {
-    public static final ViewSpec NEW_TAB_BUTTON =
-            viewSpec(withId(R.id.new_tab_button));
-    public static final ViewSpec INCOGNITO_TOGGLE_TABS =
-            viewSpec(withId(R.id.incognito_toggle_tabs));
+public class TabSwitcherStation extends Station<ChromeTabbedActivity> {
+    public ViewElement<View> newTabButtonElement;
+    public ViewElement<View> incognitoToggleTabsElement;
 
-    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
-
-    @Override
-    public void declareElements(Elements.Builder elements) {
-        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
-        elements.declareView(NEW_TAB_BUTTON);
-        elements.declareView(INCOGNITO_TOGGLE_TABS);
+    public TabSwitcherStation() {
+        newTabButtonElement = declareView(withId(R.id.new_tab_button));
+        incognitoToggleTabsElement = declareView(withId(R.id.incognito_toggle_tabs));
     }
 
     public NewTabPageStation openNewTabFromButton() {
-        NewTabPageStation newTab = new NewTabPageStation();
-        return travelToSync(this, newTab, () -> NEW_TAB_BUTTON.perform(click()))
+        return newTabButtonElement.clickTo().arriveAt(new NewTabPageStation()))
     }
 }
 ```
@@ -336,7 +374,7 @@ Multiple `Facilities` may be active at one time besides the active Station that
 contains them.
 
 As with `Stations`, concrete, app-specific implementations of Facility should be
-created in the Transit Layer overriding **`declareElements()`** and **transition
+created in the Transit Layer declaring **Elements** and **transition
 methods**.
 
 [**`Facility`**]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Facility&ss=chromium
@@ -349,8 +387,8 @@ to disk, or a popup that persists through different `Stations`.
 Multiple `CarryOns` may be active at one time.
 
 As with `Stations`, concrete, app-specific implementations of CarryOn should be
-created in the Transit Layer overriding **`declareElements()`**. It often won't
-have any transition methods.
+created in the Transit Layer declaring **Elements**. It usually won't have any
+transition methods.
 
 ### ConditionalStates
 
@@ -395,9 +433,9 @@ method.
 
 Custom Conditions may require a dependency to be checked which might not exist
 before the transition's trigger is run. They should take the dependency as a
-constructor argument of type `Condition` that implements `Supplier<DependencyT>`
-and call `dependOnSupplier()`. The dependency should supply `DependencyT` when
-fulfilled.
+constructor argument of type `Condition` or `Element` that implements
+`Supplier<DependencyT>` and call `dependOnSupplier()`. The dependency should
+supply `DependencyT` when fulfilled.
 
 An example of a custom condition:
 
@@ -405,8 +443,8 @@ An example of a custom condition:
 class PageLoadedCondition extends UiThreadCondition {
     private Supplier<Tab> mTabSupplier;
 
-    PageLoadedCondition(ConditionWithResult<Tab> tabCondition) {
-        mTabSupplier = dependOnCondition(tabCondition, "Tab");
+    PageLoadedCondition(Supplier<Tab> tabCondition) {
+        mTabSupplier = dependOnSupplier(tabCondition, "Tab");
     }
 
     @Override
@@ -441,22 +479,27 @@ a `Station` or `Facility` is returned by one of those methods, it is always
 
 #### Transition APIs
 
-Transitions between `Stations` are done by calling `travelToSync()`.
+Transitions are triggered by methods that end in `To()`. Some common ones are
+`clickTo()`, `runTo()`, `pressBackTo()`. This doesn't execute the transition,
+but creates a `TripBuilder`. When `arriveAt()`, `enterFacility()`,
+`waitForConditions()` or other methods are called in the `TripBuilder`, the
+transition is executed.
 
-Transitions into and out of `Facilities` are done by calling
-`enterFacilitySync()`, `exitFacilitySync()` or `swapFacilitySync()`. If the app
-moves to another `Station`, any active `Facilities` have their exit conditions
-added to the transition conditions.
+Transitions between `Stations` are done by calling `arriveAt()`.
 
-Transitions into and out of `CarryOns` are done by calling `CarryOn#pickUp()`
-and `CarryOn#drop()`. `Condition#runAndWaitFor()` is a convenience shortcut for
-`CarryOn#pickUp()`.
+Transitions into and out of `Facilities` are done by calling `enterFacility()`,
+`enterFacilities()` `exitFacility()` or `exitFacilities()`. If the app moves to
+another `Station`, any active `Facilities` have their exit conditions added to
+the transition conditions.
 
-These methods takes as parameter a [`Trigger`], which is the code that should be
-run to actually make the app move to the next state. Often this will be a UI
-interaction like `() -> BUTTON_ELEMENT.perform(click())`.
+Transitions into and out of `CarryOns` are done by calling `pickUpCarryOn()` and
+`dropCarryOn()`.
 
-[`Trigger`]: https://source.chromium.org/search?q=symbol:org.chromium.base.test.transit.Transition.Trigger%5Cb&ss=chromium
+Conditions not tied to Conditional States can be checked with
+`waitForConditions()`.
+
+Multiple expectations can be chained by the methods ending with `And()`, e.g.
+`clickTo().waitForConditionsAnd(c1, c2).exitFacilityAnd(e).enterFacility(f)`.
 
 #### Enter, Exit and Transition Conditions {#transition-conditions}
 
@@ -465,7 +508,7 @@ The Conditions of a transition are the aggregation of:
 * The **enter Conditions** of a `ConditionalState` being entered.
 * The **exit Conditions** of a `ConditionalState` being exited unless the same
   Element is in a state being entered too.
-* Any extra **transition Conditions** specific to that transition.
+* Any extra **transition Conditions** added to the `TripBuilder`.
   * Most transitions don't need to add extra special Conditions.
 
 

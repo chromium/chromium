@@ -12,6 +12,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_android_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -52,6 +54,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_webview_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -85,25 +89,6 @@
       }
     ]
   },
-  "chromeos-arm-generic-cfi-thin-lto-chrome-reclient": {
-    "additional_compile_targets": [
-      "chromiumos_preflight"
-    ]
-  },
-  "lacros-arm-generic-chrome-fyi-reclient": {
-    "additional_compile_targets": [
-      "chrome"
-    ]
-  },
-  "linux-chrome-reclient": {
-    "additional_compile_targets": [
-      "base_unittests",
-      "chrome",
-      "chrome/installer/linux",
-      "chrome_sizes",
-      "variations_smoke_tests"
-    ]
-  },
   "linux-finch-smoke-chrome": {
     "isolated_scripts": [
       {
@@ -113,6 +98,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_desktop_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -144,6 +131,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_desktop_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -157,7 +146,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-14",
+            "os": "Mac-15",
             "pool": "chrome.tests.finch"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -165,23 +154,6 @@
         "test": "variations_desktop_smoke_tests",
         "test_id_prefix": "ninja://chrome/test/variations:variations_desktop_smoke_tests/"
       }
-    ]
-  },
-  "mac-chrome-reclient": {
-    "additional_compile_targets": [
-      "chrome",
-      "chrome/installer/mac",
-      "chrome_sizes",
-      "variations_smoke_tests"
-    ]
-  },
-  "win-chrome-reclient": {
-    "additional_compile_targets": [
-      "base_unittests",
-      "chrome",
-      "chrome_official_builder",
-      "chrome_sizes",
-      "variations_smoke_tests"
     ]
   },
   "win-finch-smoke-chrome": {
@@ -193,6 +165,8 @@
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
+        "module_name": "//chrome/test/variations:variations_desktop_smoke_tests",
+        "module_scheme": "flat",
         "name": "variations_desktop_smoke_tests",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",

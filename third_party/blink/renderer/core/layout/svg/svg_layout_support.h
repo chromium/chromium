@@ -26,7 +26,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/platform/graphics/dash_array.h"
+#include "third_party/blink/renderer/platform/geometry/dash_array.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -92,7 +92,7 @@ class CORE_EXPORT SVGLayoutSupport {
                                            const LayoutObject&,
                                            float dash_scale_factor);
 
-  static DashArray ResolveSVGDashArray(const SVGDashArray&,
+  static DashArray ResolveSVGDashArray(const SVGDashArray*,
                                        const ComputedStyle&,
                                        const SVGViewportResolver&);
 

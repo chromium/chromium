@@ -104,7 +104,7 @@ int CombinedNetworkStatusCodeToCanonicalStatus(
 
 static jlong JNI_FeedReliabilityLoggingBridge_Init(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& j_this) {
+    const base::android::JavaRef<jobject>& j_this) {
   return reinterpret_cast<intptr_t>(new FeedReliabilityLoggingBridge(j_this));
 }
 
@@ -265,3 +265,5 @@ void FeedReliabilityLoggingBridge::Destroy(JNIEnv* env) {
 
 }  // namespace android
 }  // namespace feed
+
+DEFINE_JNI(FeedReliabilityLoggingBridge)

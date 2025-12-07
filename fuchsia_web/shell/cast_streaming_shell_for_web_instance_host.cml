@@ -8,7 +8,6 @@
 {
   include: [
     "//fuchsia_web/webinstance_host/web_instance_host.shard.cml",
-    "syslog/client.shard.cml",
   ],
   program: {
     runner: "elf",
@@ -24,7 +23,10 @@
     {
       protocol: "fuchsia.posix.socket.Provider",
     },
-
+    {
+      protocol: "fuchsia.logger.LogSink",
+      from: "parent/diagnostics",
+    },
     // Required if not run with --headless.
     {
       protocol: [ "fuchsia.element.GraphicalPresenter" ],

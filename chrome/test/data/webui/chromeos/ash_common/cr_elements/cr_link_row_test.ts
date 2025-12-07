@@ -5,8 +5,8 @@
 // clang-format off
 import 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 
-import {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
-import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrIconButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_icon_button/cr_icon_button.js';
+import type {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -60,15 +60,15 @@ suite('cr-link-row', function() {
     const defaultString = 'Opens in new tab';
     const customString = 'Opens in new window';
 
-    assertEquals('', buttonAriaDescription.textContent!.trim());
+    assertEquals('', buttonAriaDescription.textContent.trim());
 
     linkRow.external = true;
-    assertEquals(defaultString, buttonAriaDescription.textContent!.trim());
+    assertEquals(defaultString, buttonAriaDescription.textContent.trim());
 
     linkRow.buttonAriaDescription = customString;
-    assertEquals(customString, buttonAriaDescription.textContent!.trim());
+    assertEquals(customString, buttonAriaDescription.textContent.trim());
 
     linkRow.buttonAriaDescription = '';
-    assertEquals('', buttonAriaDescription.textContent!.trim());
+    assertEquals('', buttonAriaDescription.textContent.trim());
   });
 });

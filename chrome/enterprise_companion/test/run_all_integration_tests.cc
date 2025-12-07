@@ -3,20 +3,23 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
+#include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/enterprise_companion_branding.h"
+#include "chrome/enterprise_companion/flags.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #elif BUILDFLAG(IS_WIN)
-#include <windows.h>
-
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+#include <shlobj.h>
 #endif
 
 namespace {
@@ -25,35 +28,29 @@ bool IsUserElevated() {
 #if BUILDFLAG(IS_POSIX)
   return getuid() == 0;
 #elif BUILDFLAG(IS_WIN)
-  SID_IDENTIFIER_AUTHORITY nt_authority = SECURITY_NT_AUTHORITY;
-  PSID administrators_group = nullptr;
-  if (!::AllocateAndInitializeSid(&nt_authority, 2, SECURITY_BUILTIN_DOMAIN_RID,
-                                  DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0, 0, 0, 0,
-                                  &administrators_group)) {
-    PLOG(ERROR) << "AllocateAndInitializeSid failed";
-    return false;
-  }
-  absl::Cleanup free_sid = [&] { ::FreeSid(administrators_group); };
-  BOOL is_admin = false;
-  if (!::CheckTokenMembership(NULL, administrators_group, &is_admin)) {
-    PLOG(ERROR) << "CheckTokenMembership failed";
-    return false;
-  }
-  return is_admin;
+  return ::IsUserAnAdmin();
 #endif
 }
 
 std::optional<base::FilePath> GetLogFilePath() {
   const char* var = std::getenv("ISOLATED_OUTDIR");
   return var ? std::make_optional(
-                   base::FilePath::FromUTF8Unsafe(var).AppendASCII(
-                       "enterprise_companion_integration_test.log"))
+                   base::FilePath::FromUTF8Unsafe(var).Append(FILE_PATH_LITERAL(
+                       "enterprise_companion_integration_test.log")))
              : std::nullopt;
 }
 
 }  // namespace
 
 int main(int argc, char* argv[]) {
+  base::CommandLine::Init(argc, argv);
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(enterprise_companion::kLoggingModuleSwitch)) {
+    command_line->AppendSwitchASCII(
+        enterprise_companion::kLoggingModuleSwitch,
+        enterprise_companion::kLoggingModuleSwitchValue);
+  }
+
   logging::LoggingSettings settings{.logging_dest = logging::LOG_TO_STDERR};
   std::optional<base::FilePath> log_file_path = GetLogFilePath();
   if (log_file_path) {
@@ -67,7 +64,7 @@ int main(int argc, char* argv[]) {
                        /*enable_tickcount=*/false);
 
   if (!IsUserElevated()) {
-    LOG(ERROR) << "Integration tests must be run as root/Admin.";
+    VLOG(1) << "Integration tests must be run as root/Admin.";
     return 1;
   }
 
@@ -75,12 +72,13 @@ int main(int argc, char* argv[]) {
   // Otherwise, don't run branded tests on a developer's system because doing so
   // can break the updater on the system.
   if (!std::getenv("ISOLATED_OUTDIR") &&
-      std::strcmp(PRODUCT_FULLNAME_STRING, "ChromiumEnterpriseCompanion")) {
-    LOG(ERROR) << "Running branded enterprise companion tests can break the "
-                  "updater for the branded browser. If you don't care about "
-                  "broken updaters and want to run the branded enterprise "
-                  "companion tests locally, define an environment variable "
-                  "ISOLATED_OUTDIR and set it to a local directory.";
+      std::string_view(PRODUCT_FULLNAME_STRING) !=
+          "ChromiumEnterpriseCompanion") {
+    VLOG(1) << "Running branded enterprise companion tests can break the "
+               "updater for the branded browser. If you don't care about "
+               "broken updaters and want to run the branded enterprise "
+               "companion tests locally, define an environment variable "
+               "ISOLATED_OUTDIR and set it to a local directory.";
     return 1;
   }
 

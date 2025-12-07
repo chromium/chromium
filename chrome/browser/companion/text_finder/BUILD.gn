@@ -10,24 +10,19 @@ static_library("text_finder") {
   sources = [
     "text_finder.cc",
     "text_finder.h",
+    "text_finder_manager.cc",
+    "text_finder_manager.h",
     "text_highlighter.cc",
     "text_highlighter.h",
+    "text_highlighter_manager.cc",
+    "text_highlighter_manager.h",
   ]
 
   deps = [
     "//base",
-    "//ui/gfx/geometry:geometry",
+    "//content/public/browser",
+    "//ui/gfx/geometry",
   ]
-
-  if (!is_ios) {
-    sources += [
-      "text_finder_manager.cc",
-      "text_finder_manager.h",
-      "text_highlighter_manager.cc",
-      "text_highlighter_manager.h",
-    ]
-    deps += [ "//content/public/browser" ]
-  }
 }
 
 source_set("unit_tests") {

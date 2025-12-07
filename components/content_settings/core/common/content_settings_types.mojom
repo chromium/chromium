@@ -33,7 +33,15 @@ enum ContentSettingsType {
   // might not be worth the trouble.
   POPUPS,
 
+  // Geolocation permission state persisted as a ContentSetting
   GEOLOCATION,
+
+  // To support approximate geolocation, the permission is migrating to use
+  // permissions with options, which won't be stored as ContentSettings. Upon
+  // launch of the feature, GEOLOCATION and GEOLOCATION_WITH_OPTIONS should be
+  // merged.
+  GEOLOCATION_WITH_OPTIONS,
+
   NOTIFICATIONS,
   AUTO_SELECT_CERTIFICATE,
   MIXEDSCRIPT,
@@ -100,7 +108,8 @@ enum ContentSettingsType {
   // provide a custom accessibility experience. Requires explicit user consent
   // because some users may not want sites to know they're using assistive
   // technology.
-  ACCESSIBILITY_EVENTS,
+  // Deprecated in M131.
+  DEPRECATED_ACCESSIBILITY_EVENTS,
 
   // Used to store whether to allow a website to install a payment handler.
   PAYMENT_HANDLER,
@@ -217,11 +226,6 @@ enum ContentSettingsType {
   // screens. See also: https://w3c.github.io/window-management
   WINDOW_MANAGEMENT,
 
-  // Stores whether to allow insecure websites to make private network requests.
-  // See also: https://wicg.github.io/cors-rfc1918
-  // Set through enterprise policies only.
-  INSECURE_PRIVATE_NETWORK,
-
   // Content setting which stores whether or not a site can access low-level
   // locally installed font data using the Local Fonts Access API.
   LOCAL_FONTS,
@@ -301,17 +305,12 @@ enum ContentSettingsType {
   // store origin blocklist from review notification permissions feature.
   NOTIFICATION_PERMISSION_REVIEW,
 
-  // Website setting to store permissions granted to access particular devices
-  // in private network.
-  PRIVATE_NETWORK_GUARD,
-  PRIVATE_NETWORK_CHOOSER_DATA,
-
   // Website setting which stores whether the browser has observed the user
   // signing into an identity-provider based on observing the IdP-SignIn-Status
   // HTTP header.
   FEDERATED_IDENTITY_IDENTITY_PROVIDER_SIGNIN_STATUS,
 
-  // Website setting which is used for UnusedSitePermissionsService to
+  // Website setting which is used for RevokedPermissionsService to
   // store revoked permissions of unused sites from unused site permissions
   // feature.
   REVOKED_UNUSED_SITE_PERMISSIONS,
@@ -354,22 +353,6 @@ enum ContentSettingsType {
   // component updater service. This type will only be used when
   // `net::features::kTpcdMetadataGrants` is enabled.
   TPCD_METADATA_GRANTS,
-
-  // Content Setting for 3PC accesses granted via 3PC deprecation trial.
-  TPCD_TRIAL,
-
-  // Content Setting for 3PC accesses granted via top-level 3PC deprecation
-  // trial. Similar to TPCD_TRIAL, but applicable at the page-level for the
-  // lifetime of the page that served the token, rather than being specific to a
-  // requesting-origin/top-level-site combination and persistent.
-  TOP_LEVEL_TPCD_TRIAL,
-
-  // Content Setting for a first-party origin trial that allows websites to
-  // enable third-party cookie deprecation.
-  // ALLOW (default): no effect (e.g. third-party cookies allowed, if not
-  //                  blocked otherwise).
-  // BLOCK: third-party cookies blocked, but 3PCD mitigations enabled.
-  TOP_LEVEL_TPCD_ORIGIN_TRIAL,
 
   // Content setting used to indicate whether entering picture-in-picture
   // automatically should be enabled.
@@ -420,7 +403,7 @@ enum ContentSettingsType {
   // to mouse inputs.
   POINTER_LOCK,
 
-  // Website setting which is used for UnusedSitePermissionsService to store
+  // Website setting which is used for RevokedPermissionsService to store
   // auto-revoked notification permissions from abusive sites.
   REVOKED_ABUSIVE_NOTIFICATION_PERMISSIONS,
 
@@ -451,5 +434,63 @@ enum ContentSettingsType {
   //        origins to retry a request or load with storage access.
   // BLOCK (default): no effect.
   STORAGE_ACCESS_HEADER_ORIGIN_TRIAL,
+
+  // Whether or not sites can request Hand Tracking data within WebXR Sessions.
+  HAND_TRACKING,
+
+  // Website setting to indicate whether user has opted in to allow web apps to
+  // install other web apps.
+  WEB_APP_INSTALLATION,
+
+  // Content settings for private network access in the context of the
+  // Direct Sockets API.
+  DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+
+  // Content settings for legacy cookie scope.
+  // Checks whether cookies scope is handled according to origin-bound cookies
+  // or legacy behavior.
+  LEGACY_COOKIE_SCOPE,
+
+  // Website setting to indicate whether the user has allowlisted suspicious
+  // notifications for the origin.
+  ARE_SUSPICIOUS_NOTIFICATIONS_ALLOWLISTED_BY_USER,
+
+  // Content settings for access to the Controlled Frame API.
+  CONTROLLED_FRAME,
+
+  // Website setting which is used for RevokedPermissionsService to
+  // store revoked notification permissions of disruptive sites.
+  REVOKED_DISRUPTIVE_NOTIFICATION_PERMISSIONS,
+
+  // Content setting for whether the site is allowed to make local network
+  // requests.
+  LOCAL_NETWORK_ACCESS,
+
+  // Stores information on-device language packs for which a site has
+  // installed using the Web Speech API.
+  ON_DEVICE_SPEECH_RECOGNITION_LANGUAGES_DOWNLOADED,
+
+  // Stores which Translator API language packs the site has initialized.
+  INITIALIZED_TRANSLATIONS,
+
+  // Stores a list of notification ids where content detection found the
+  // notification to be suspicious and a warning has already been shown for the
+  // site. Used for recovering notification contents from the database if the
+  // user decides they would like to see all of these notifications.
+  SUSPICIOUS_NOTIFICATION_IDS,
+
+  // Setting for enabling the Device Attributes API. Spec link:
+  // https://wicg.github.io/WebApiDevice/device_attributes/
+  DEVICE_ATTRIBUTES,
+
+  // Stores per-origin state for permission heuristics. Currently used for
+  // auto-granting geolocation element permission request after repeated
+  // temporary grants.
+  PERMISSION_ACTIONS_HISTORY,
+
+  // Website setting to indicate whether the user has selected "show original"
+  // when suspicious warning is shown. If the user has selected this, the
+  // notification permission will not be revoked based on suspicious verdict.
+  SUSPICIOUS_NOTIFICATION_SHOW_ORIGINAL,
 };
 // LINT.ThenChange(//components/content_settings/core/browser/content_settings_uma_util.cc:kHistogramValue)

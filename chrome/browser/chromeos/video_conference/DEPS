@@ -1,4 +1,29 @@
 include_rules = [
-  "+chrome/browser/ash",
   "+ash",
+
+  # This directory is in //chrome, which violates the rule above. Allow this
+  # directory to #include its own files.
+  "+chrome/browser/chromeos/video_conference",
+
+  # Existing dependencies within //chrome. There is an active effort to
+  # refactor chromeos codes in //chrome to break these dependencies; see
+  # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
+  # this list.
+  "+chrome/browser/ash/video_conference",
+  "+chrome/browser/media/webrtc",
+  "+chrome/browser/ui/tabs/tab_activity_simulator.h",
+  "+chrome/browser/ui/tabs/tab_enums.h",
+  "+chrome/browser/ui/web_applications/app_browser_controller.h",
+  "+chrome/test",
 ]
+
+specific_include_rules = {
+  "video_conference_manager_client_browsertest\\.cc": [
+    "+chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h",
+    "+chrome/browser/ui/browser.h",
+  ],
+  "video_conference_media_listener_browsertest\\.cc": [
+    "+chrome/browser/ui/ash/main_extra_parts/chrome_browser_main_extra_parts_ash.h",
+    "+chrome/browser/ui/browser.h",
+  ],
+}

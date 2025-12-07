@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources>
+  <dimen name="ntp_customization_feed_margin_top">4dp</dimen>
+  <dimen name="ntp_customization_edit_icon_padding">8dp</dimen>
+  <dimen name="ntp_customization_list_item_background_small_radius">4dp</dimen>
+  <dimen name="ntp_customization_list_item_background_large_radius">16dp</dimen>
+  <dimen name="ntp_customization_back_button_clickable_size">48dp</dimen>
+  <dimen name="ntp_customization_back_button_padding">12dp</dimen>
+  <dimen name="ntp_customization_back_button_margin_start">12dp</dimen>
+  <dimen name="ntp_customization_edit_icon_margin">16dp</dimen>
+  <dimen name="ntp_customization_bottom_sheet_layout_padding_bottom">24dp</dimen>
+  <dimen name="ntp_customization_ntp_cards_margin">20dp</dimen>
+  <dimen name="ntp_customization_ntp_cards_title_margin">64dp</dimen>
+  <dimen name="ntp_customization_bottom_sheet_list_item_icon_size">24dp</dimen>
+  <dimen name="ntp_customization_edit_icon_background_size">40dp</dimen>
+  <dimen name="ntp_customization_feed_switch_description_margin_top">8dp</dimen>
+  <dimen name="ntp_customization_feed_list_items_title_margin_top">40dp</dimen>
+  <dimen name="ntp_customization_theme_list_item_margin_top">4dp</dimen>
+  <dimen name="ntp_customization_theme_list_item_padding_vertical">8dp</dimen>
+  <dimen name="ntp_customization_theme_list_item_title_margin_vertical">4dp</dimen>
+  <dimen name="ntp_customization_theme_collections_icon_size">48dp</dimen>
+  <dimen name="ntp_customization_theme_collections_icon_secondary_outer_size">25dp</dimen>
+  <dimen name="ntp_customization_theme_collections_icon_secondary_inner_size">23dp</dimen>
+  <dimen name="ntp_customization_theme_collections_icon_placeholder_size">24dp</dimen>
+  <dimen name="ntp_customization_theme_collections_icon_placeholder_margin">14dp</dimen>
+  <dimen name="ntp_customization_theme_collections_icon_outer_radius">8dp</dimen>
+  <dimen name="ntp_customization_theme_collections_recycle_view_padding_horizontal">18dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_leading_icon_size">48dp</dimen>
+  <dimen name="ntp_customization_chrome_colors_grid_spacing">24dp</dimen>
+  <dimen name="ntp_customization_chrome_colors_grid_half_spacing">12dp</dimen>
+  <dimen name="ntp_customization_chrome_colors_selector_size">64dp</dimen>
+  <dimen name="ntp_customization_pinch_to_resize_icon_size">20dp</dimen>
+  <dimen name="ntp_customization_theme_collections_recycler_view_margin_top">24dp</dimen>
+  <dimen name="ntp_customization_single_theme_collection_recycler_view_margin_top">24dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_background_radius">12dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_selected_background_inner_radius">8dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_selected_background_width">4dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_max_width">156dp</dimen>
+  <dimen name="ntp_customization_theme_collections_list_item_height">84dp</dimen>
+  <dimen name="ntp_customization_theme_collection_list_item_padding_horizontal">6dp</dimen>
+  <dimen name="ntp_customization_theme_collection_list_item_padding_bottom">12dp</dimen>
+  <dimen name="ntp_customization_gradient_toolbar_height">120dp</dimen>
+</resources>

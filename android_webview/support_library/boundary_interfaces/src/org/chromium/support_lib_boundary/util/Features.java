@@ -4,12 +4,16 @@
 
 package org.chromium.support_lib_boundary.util;
 
+import org.jspecify.annotations.NullMarked;
+
 /**
- * Class containing all the features the support library can support.
- * This class lives in the boundary interface directory so that the Android Support Library and
- * Chromium can share its definition.
+ * Class containing all the features the support library can support. This class lives in the
+ * boundary interface directory so that the Android Support Library and Chromium can share its
+ * definition.
  */
+@NullMarked
 public class Features {
+
     // Features suffixed with DEV will only be visible on debug devices.
     public static final String DEV_SUFFIX = ":dev";
 
@@ -105,8 +109,10 @@ public class Features {
     public static final String SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL =
             "SAFE_BROWSING_RESPONSE_SHOW_INTERSTITIAL";
 
-    /** @deprecated Feature was renamed to WEB_MESSAGE_ARRAY_BUFFER. Do not reuse feature name. */
-    @Deprecated()
+    /**
+     * @deprecated Feature was renamed to WEB_MESSAGE_ARRAY_BUFFER. Do not reuse feature name.
+     */
+    @Deprecated
     public static final String WEB_MESSAGE_GET_MESSAGE_PAYLOAD = "WEB_MESSAGE_GET_MESSAGE_PAYLOAD";
 
     // JsReplyProxy.postMessageWithPayload
@@ -206,14 +212,20 @@ public class Features {
     // WebSettingsCompat.getRequestedWithHeaderMode
     // ServiceWorkerWebSettingsCompat.setRequestedWithHeaderMode
     // ServiceWorkerWebSettingsCompat.getRequestedWithHeaderMode
-    /** @deprecated Feature was never launched. Do not reuse feature name. */
-    @Deprecated()
+    /**
+     * @deprecated Feature was never launched. Do not reuse feature name.
+     */
+    @Deprecated
     public static final String REQUESTED_WITH_HEADER_CONTROL = "REQUESTED_WITH_HEADER_CONTROL";
 
     // WebSettingsCompat.setRequestedWithHeaderAllowList
     // WebSettingsCompat.getRequestedWithHeaderAllowList
     // ServiceWorkerWebSettingsCompat.setRequestedWithHeaderAllowList
     // ServiceWorkerWebSettingsCompat.getRequestedWithHeaderAllowList
+    /**
+     * @deprecated API has been disabled since the XRW origin trial ended.
+     */
+    @Deprecated
     public static final String REQUESTED_WITH_HEADER_ALLOW_LIST =
             "REQUESTED_WITH_HEADER_ALLOW_LIST";
 
@@ -252,7 +264,7 @@ public class Features {
     public static final String MULTI_PROFILE = "MULTI_PROFILE";
 
     // WebSettingsCompat.enableRestrictSensitiveWebContent
-    @Deprecated()
+    @Deprecated
     public static final String RESTRICT_SENSITIVE_WEB_CONTENT = "RESTRICT_SENSITIVE_WEB_CONTENT";
 
     // WebSettingsCompat.setUserAgentMetadataFromMap
@@ -281,6 +293,146 @@ public class Features {
     public static final String BACK_FORWARD_CACHE = "BACK_FORWARD_CACHE";
 
     // Profile.prefetchUrl
-    // Profile.clearPrefetchCache
-    public static final String PREFETCH_WITH_URL = "PREFETCH_URL";
+    // Profile.clearPrefetch
+    public static final String PREFETCH_WITH_URL = "PREFETCH_URL_V5";
+
+    // WebviewCompat.setDefaultTrafficStatsTag
+    // WebviewCompat.setDefaultTrafficStatsUid
+    public static final String DEFAULT_TRAFFICSTATS_TAGGING = "DEFAULT_TRAFFICSTATS_TAGGING";
+
+    // WebViewCompat.startUpWebView
+    public static final String ASYNC_WEBVIEW_STARTUP = "ASYNC_WEBVIEW_STARTUP";
+    // WebViewStartUpResult.getAsyncStartUpLocations
+    public static final String ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS =
+            "ASYNC_WEBVIEW_STARTUP_ASYNC_STARTUP_LOCATIONS";
+
+    // WebViewCompat.prerenderUrl
+    // WebViewCompat.clearPrerender
+    public static final String PRERENDER_WITH_URL = "PRERENDER_URL_V3";
+
+    // WebStorageCompat.deleteBrowsingData
+    // WebStorageCompat.deleteBrowsingDataForSite
+    public static final String WEB_STORAGE_DELETE_BROWSING_DATA =
+            "WEB_STORAGE_DELETE_BROWSING_DATA";
+
+    // Profile.setSpeculativeLoadingConfig
+    public static final String SPECULATIVE_LOADING_CONFIG = "SPECULATIVE_LOADING_CONFIG_V2";
+
+    // WebViewCompat.saveState
+    public static final String SAVE_STATE = "SAVE_STATE";
+
+    // Navigation & navigation client set/getter and callbacks:
+    //
+    // WebView.getWebViewNavigation
+    // WebView.getWebViewNavigationClient
+    // WebView.setWebViewNavigationClient
+    //
+    // WebViewNavigationClient.onNavigationStarted()
+    // WebViewNavigationClient.onNavigationRedirected()
+    // WebViewNavigationClient.onNavigationCompleted()
+    // WebViewNavigationClient.onPageDeleted()
+    // WebViewNavigationClient.onPageLoadEventFired()
+    // WebViewNavigationClient.onPageDOMContentLoadedEventFired()
+    // WebViewNavigationClient.onFirstContentfulPaint()
+    //
+    // WebViewNavigation.getUrl()
+    // WebViewNavigation.isPageInitiated()
+    // WebViewNavigation.isSameDocument()
+    // WebViewNavigation.isReload()
+    // WebViewNavigation.isHistory()
+    // WebViewNavigation.isRestore()
+    // WebViewNavigation.isBack()
+    // WebViewNavigation.isForward()
+    // WebViewNavigation.hasCommitted()
+    // WebViewNavigation.didCommitErrorPage()
+    // WebViewNavigation.getStatusCode()
+    public static final String WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE =
+            "WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE";
+
+    // WebView.addWebViewNavigationListener
+    // WebView.removeWebViewNavigationListener
+    //
+    // WebViewNavigationListener.onNavigationStarted()
+    // WebViewNavigationListener.onNavigationRedirected()
+    // WebViewNavigationListener.onNavigationCompleted()
+    // WebViewNavigationListener.onPageDeleted()
+    // WebViewNavigationListener.onPageLoadEventFired()
+    // WebViewNavigationListener.onPageDOMContentLoadedEventFired()
+    // WebViewNavigationListener.onFirstContentfulPaint()
+    public static final String WEB_VIEW_NAVIGATION_LISTENER_V1 = "WEB_VIEW_NAVIGATION_LISTENER_V1";
+
+    // WebViewNavigationListener.onNavigationCompleted() firing on non-committed
+    // navigations
+    public static final String ON_NAVIGATION_COMPLETED_NON_COMMITTED =
+            "ON_NAVIGATION_COMPLETED_NON_COMMITTED";
+
+    // Navigation.getPage() will return a non-null Page for all committed
+    // navigations, including same-document-navigations.
+    public static final String COMMITTED_NAVIGATION_GET_PAGE_NON_NULL =
+            "COMMITTED_NAVIGATION_GET_PAGE_NON_NULL";
+
+    // SupportLibWebViewChromium weakly reference WebView
+    public static final String PROVIDER_WEAKLY_REF_WEBVIEW = "PROVIDER_WEAKLY_REF_WEBVIEW";
+
+    // WebSettingsCompat#setPaymentRequestEnabled
+    // WebSettingsCompat#getPaymentRequestEnabled
+    // WebSettingsCompat#setHasEnrolledInstrumentEnabled
+    // WebSettingsCompat#getHasEnrolledInstrumentEnabled
+    public static final String PAYMENT_REQUEST = "PAYMENT_REQUEST";
+
+    // WebViewBuilder.build
+    public static final String WEBVIEW_BUILDER = "WEBVIEW_BUILDER_V1";
+
+    // WebSettingsCompat.setIncludeCookiesOnIntercept
+    // WebSettingsCompat.getIncludeCookiesOnIntercept
+    // ServiceWorkerWebSettingsCompat.setIncludeCookiesOnIntercept
+    // ServiceWorkerWebSettingsCompat.getIncludeCookiesOnIntercept
+    // WebResourceResponseCompat.setCookieHeaderValues
+    public static final String COOKIE_INTERCEPT = "COOKIE_INTERCEPT";
+
+    // Profile.warmUpRendererProcess
+    public static final String WARM_UP_RENDERER_PROCESS = "WARM_UP_RENDERER_PROCESS";
+
+    // Profile.setExtraHeaderForOrigins
+    // Profile.hasExtraHeaderForOrigins
+    // Profile.clearExtraHeaderForOrigins(String)
+    // Profile.clearAllExtraHeadersForOrigins
+    /**
+     * @deprecated to be replaced by {@link #CUSTOM_REQUEST_HEADERS}
+     */
+    @Deprecated public static final String EXTRA_HEADER_FOR_ORIGINS = "EXTRA_HEADER_FOR_ORIGINS";
+
+    // WebSettingsCompat.setBackForwardCacheSettings
+    // WebSettingsCompat.getBackForwardCacheSettings
+    public static final String BACK_FORWARD_CACHE_SETTINGS = "BACK_FORWARD_CACHE_SETTINGS";
+
+    // WebSettingsCompat.getBackForwardCacheSettings
+    // BackForwardCacheSettings.setTimeoutInSec
+    // BackForwardCacheSettings.setMaxPagesInCache
+    // BackForwardCacheSettings.getTimeoutInSec
+    // BackForwardCacheSettings.getMaxPagesInCache
+    public static final String BACK_FORWARD_CACHE_SETTINGS_V2 = "BACK_FORWARD_CACHE_SETTINGS_V2";
+
+    // Profile.preconnect
+    public static final String PRECONNECT = "PRECONNECT";
+
+    // WebSettingsCompat#setHyperlinkContextMenuItems
+    public static final String HYPERLINK_CONTEXT_MENU_ITEMS = "HYPERLINK_CONTEXT_MENU_ITEMS";
+
+    // Page.isPrerendering
+    public static final String PAGE_IS_PRERENDERING = "PAGE_IS_PRERENDERING";
+
+    // Profile.addCustomHeader
+    // Profile.clearAllCustomHeaders
+    // Profile.clearCustomHeader
+    // Profile.getCustomHeaders
+    // Profile.hasCustomHeader
+    public static final String CUSTOM_REQUEST_HEADERS = "CUSTOM_REQUEST_HEADERS";
+
+    // WebViewCompat#setRendererLibraryPrefetchMode
+    // WebViewCompat#getRendererLibraryPrefetchMode
+    public static final String RENDERER_LIBRARY_PREFETCH_MODE = "RENDERER_LIBRARY_PREFETCH_MODE";
+
+    // Profile.addQuicHints
+    public static final String ADD_QUIC_HINTS_V1 = "ADD_QUIC_HINTS_V1";
 }

@@ -42,15 +42,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
-class TextEncoding;
-}
-
 namespace blink {
 
 class Document;
 class Element;
 class Node;
+class TextEncoding;
 class WebLocalFrame;
 class WebLocalFrameImpl;
 
@@ -99,10 +96,10 @@ class WebFrameSerializerImpl {
     STACK_ALLOCATED();
 
    public:
-    SerializeDomParam(const KURL&, const WTF::TextEncoding&, Document*);
+    SerializeDomParam(const KURL&, const TextEncoding&, Document*);
 
     const KURL& url;
-    const WTF::TextEncoding& text_encoding;
+    const TextEncoding& text_encoding;
     Document* document;
     bool is_html_document;  // document.isHTMLDocument()
     bool have_seen_doc_type;
@@ -120,28 +117,26 @@ class WebFrameSerializerImpl {
 
   // Before we begin serializing open tag of a element, we give the target
   // element a chance to do some work prior to add some additional data.
-  WTF::String PreActionBeforeSerializeOpenTag(const Element*,
-                                              SerializeDomParam*,
-                                              bool* need_skip);
+  String PreActionBeforeSerializeOpenTag(const Element*,
+                                         SerializeDomParam*,
+                                         bool* need_skip);
 
   // After we finish serializing open tag of a element, we give the target
   // element a chance to do some post work to add some additional data.
-  WTF::String PostActionAfterSerializeOpenTag(const Element*,
-                                              SerializeDomParam*);
+  String PostActionAfterSerializeOpenTag(const Element*, SerializeDomParam*);
 
   // Before we begin serializing end tag of a element, we give the target
   // element a chance to do some work prior to add some additional data.
-  WTF::String PreActionBeforeSerializeEndTag(const Element*,
-                                             SerializeDomParam*,
-                                             bool* need_skip);
+  String PreActionBeforeSerializeEndTag(const Element*,
+                                        SerializeDomParam*,
+                                        bool* need_skip);
 
   // After we finish serializing end tag of a element, we give the target
   // element a chance to do some post work to add some additional data.
-  WTF::String PostActionAfterSerializeEndTag(const Element*,
-                                             SerializeDomParam*);
+  String PostActionAfterSerializeEndTag(const Element*, SerializeDomParam*);
 
   // Save generated html content to data buffer.
-  void SaveHTMLContentToBuffer(const WTF::String& content, SerializeDomParam*);
+  void SaveHTMLContentToBuffer(const String& content, SerializeDomParam*);
 
   enum FlushOption {
     kForceFlush,

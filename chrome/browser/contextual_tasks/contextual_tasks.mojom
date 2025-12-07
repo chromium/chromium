@@ -1,0 +1,126 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module contextual_tasks.mojom;
+
+import "mojo/public/mojom/base/uuid.mojom";
+import "url/mojom/url.mojom";
+
+// Represents the visual information needed to display a single thread in the
+// list of threads UI.
+struct Thread {
+  // The task ID associated with the thread.
+  mojo_base.mojom.Uuid task_id;
+
+  // The title of the thread as shown in the list item.
+  string title;
+};
+
+// Represents the visual information needed to display a single tab in the
+// sources menu.
+struct Tab {
+  // The unique identifier of the tab.
+  int32 tab_id;
+
+  // The title of the tab.
+  string title;
+
+  // The URL of the tab.
+  url.mojom.Url url;
+};
+
+// Browser-side handler for requests from the WebUI page.
+// The WebUI page calls these methods to interact with the browser process.
+// (TypeScript -> C++)
+interface PageHandler {
+  // Provides a URL for an AI thread (e.g. with Gemini or search AI mode) to
+  // the WebUI to load in the hosted webview element.
+  GetThreadUrl() => (url.mojom.Url url);
+
+  // Gets a URL for the provided task ID. This method should primarily be used
+  // in the init flow for the feature, after a query is intercepted from UI like
+  // the omnibox and we don't yet have a thread ID.
+  GetUrlForTask(mojo_base.mojom.Uuid uuid) => (url.mojom.Url url);
+
+  // Sets the task ID for the WebUI instance running the feature.
+  SetTaskId(mojo_base.mojom.Uuid uuid);
+
+  // Set the title of the active thread.
+  SetThreadTitle(string title);
+
+  // Closes the side panel if it's open.
+  CloseSidePanel();
+
+  // Invoked when the user clicks Thread History button to show the full list
+  // of threads from history. Initiates a query to the backend to retrieve the
+  // list asynchronously. On receiving the list, a drawer UI will be shown
+  // populated with the threads. Used for thread resumption.
+  ShowThreadHistory() => (array<Thread> threads);
+
+  // Returns whether the WebUI is being shown in a tab. If false, the UI is
+  // shown in the side panel.
+  IsShownInTab() => (bool is_in_tab);
+
+  // Opens the My Activity page in a new tab.
+  OpenMyActivityUi();
+
+  // Opens the Help page in a new tab.
+  OpenHelpUi();
+
+  // Moves the contents of the side panel to a new tab.
+  MoveTaskUiToNewTab();
+
+  // Called when a tab in the sources menu is clicked. This will first attempt
+  // to switch to a tab matching both the provided `tab_id` and `url`. If no
+  // such tab is found, it will then try to switch to a tab matching only the
+  // `url`. If still no matching tab is found, a new foreground tab will be
+  // opened with the provided `url`.
+  OnTabClickedFromSourcesMenu(int32 tab_id, url.mojom.Url url);
+
+  // Called by the WebUI when a 'message' event is received from
+  // the <webview> guest. The 'message' is expected to be a serialized
+  // `lens.AimToClientMessage` protobuf containing a `lens.HandshakeResponse`.
+  // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
+  OnWebviewMessage(array<uint8> message);
+};
+
+// WebUI-side handler for requests from the browser.
+// The browser process calls these methods to interact with the WebUI page.
+// (C++ -> TypeScript)
+interface Page {
+  // Sets the title of the active thread in the UI.
+  SetThreadTitle(string title);
+
+  // A notification that WebUI has moved into or out of the side panel. The UI
+  // code should query the `IsShownInTab` method to get the current state.
+  OnSidePanelStateChanged();
+
+  // Called by the browser process (C++) to send a message to the <webview>
+  // guest. The WebUI is responsible for taking a serialized
+  // `lens.ClientToAimMessage` protobuf and using the <webview> postMessage API
+  // to send it to the guest content.
+  // TODO(crbug.com/462788705): Use `ProtoWrapper` instead of `array<uint8>`
+  PostMessageToWebview(array<uint8> message);
+
+  // Called by the browser process (C++) after receiving a
+  // `lens.HandshakeResponse` from the webview to signal that the handshake is
+  // complete.
+  OnHandshakeComplete();
+
+  // Sets the OAuth token. Can be called multiple times to update the token
+  // if it expires.
+  SetOAuthToken(string oauth_token);
+
+  // Called by the browser process (C++) when the context associated with the
+  // task is updated (e.g. tabs added/removed). This is used for updating the
+  // icon shown on the sources menu entry point.
+  OnContextUpdated(array<Tab> context_tabs);
+};
+
+// Used to bootstrip bi-directional communication between the browser and webui.
+interface PageHandlerFactory {
+  // Create a page handler for the file manager and link it to the UI.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> page_handler);
+};

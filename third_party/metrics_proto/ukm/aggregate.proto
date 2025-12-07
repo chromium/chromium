@@ -56,8 +56,10 @@ message Aggregate {
     optional uint64 total_count = 4;
     optional uint64 dropped_due_to_limits = 5;
     optional uint64 dropped_due_to_sampling = 6;
+
     optional uint64 dropped_due_to_filter = 8;
     optional uint64 dropped_due_to_unconfigured = 9;
   }
+
   repeated Metric metrics = 6;
 }

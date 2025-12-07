@@ -32,7 +32,9 @@ class WebViewScriptsJavaScriptFeature : public base::SupportsUserData::Data,
       web::BrowserState* browser_state);
 
   void SetScripts(std::optional<std::string> all_frames_script,
-                  std::optional<std::string> main_frame_script);
+                  std::optional<std::string> main_frame_script,
+                  std::optional<std::string> all_frames_script_doc_end,
+                  std::optional<std::string> main_frame_script_doc_end);
 
  private:
   std::vector<FeatureScript> GetScripts() const override;
@@ -42,6 +44,8 @@ class WebViewScriptsJavaScriptFeature : public base::SupportsUserData::Data,
 
   std::optional<std::string> all_frames_script_;
   std::optional<std::string> main_frame_script_;
+  std::optional<std::string> all_frames_script_doc_end_;
+  std::optional<std::string> main_frame_script_doc_end_;
 };
 
 #endif  // IOS_WEB_VIEW_INTERNAL_JS_MESSAGING_WEB_VIEW_SCRIPTS_JAVA_SCRIPT_FEATURE_H_

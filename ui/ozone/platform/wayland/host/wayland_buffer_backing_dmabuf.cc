@@ -19,7 +19,11 @@ WaylandBufferBackingDmabuf::WaylandBufferBackingDmabuf(
     uint32_t format,
     uint32_t planes_count,
     uint32_t buffer_id)
-    : WaylandBufferBacking(connection, buffer_id, size, format),
+    : WaylandBufferBacking(connection,
+                           buffer_id,
+                           size,
+                           BufferBackingType::kDmabuf,
+                           format),
       fd_(std::move(fd)),
       strides_(std::move(strides)),
       offsets_(std::move(offsets)),
@@ -38,11 +42,6 @@ void WaylandBufferBackingDmabuf::RequestBufferHandle(
 
   if (UseExplicitSyncRelease())
     auto close = std::move(fd_);
-}
-
-WaylandBufferBacking::BufferBackingType
-WaylandBufferBackingDmabuf::GetBackingType() const {
-  return WaylandBufferBacking::BufferBackingType::kDmabuf;
 }
 
 }  // namespace ui

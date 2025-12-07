@@ -1,79 +1,72 @@
 <!DOCTYPE html>
-<!--
-Create an oscillator of each type and verify that the type is set correctly.
--->
 <html>
   <head>
     <title>
-      oscillator-basic.html
+      Test OscillatorNode basic functionality
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
     <script src="../resources/audit-util.js"></script>
-    <script src="../resources/audit.js"></script>
     <script src="../resources/start-stop-exceptions.js"></script>
   </head>
   <body>
-    <script id="layout-test-code">
-      let sampleRate = 44100;
-      let renderLengthSeconds = 0.25;
+    <script>
+      // Create an oscillator of each type and verify that the type
+      // is set correctly.
+      const sampleRate = 44100;
+      const renderLengthSeconds = 0.25;
 
-      let oscTypes = ['sine', 'square', 'sawtooth', 'triangle', 'custom'];
+      const oscTypes = ['sine', 'square', 'sawtooth', 'triangle', 'custom'];
 
-      let audit = Audit.createTaskRunner();
-
-      audit.define('basic osc tests', (task, should) => {
+      // Basic oscillator type tests (synchronous).
+      test(() => {
         // Create offline audio context.
-        let context = new OfflineAudioContext(
+        const context = new OfflineAudioContext(
             2, sampleRate * renderLengthSeconds, sampleRate);
-        let osc = context.createOscillator();
+        const osc = new OscillatorNode(context);
 
         // Set each possible oscillator type (except CUSTOM) and verify that the
         // type is correct.  Here we're setting the type using WebIDL enum
         // values which are strings.
         for (let k = 0; k < oscTypes.length - 1; ++k) {
           osc.type = oscTypes[k];
-          should(osc.type, 'osc.type = \'' + oscTypes[k] + '\'')
-              .beEqualTo(oscTypes[k]);
+          assert_equals(osc.type, oscTypes[k],
+              `osc.type = "${oscTypes[k]}"`);
         }
 
         // Verify that setting a custom type directly does not set the custom
         // type. This test has to be done before using setPeriodicWave.
-
-        should(function() {
-          osc.type = 'custom';
-        }, 'osc.type = \'custom\'').throw(DOMException, 'InvalidStateError');
+        assert_throws_dom(
+            'InvalidStateError',
+            () => { osc.type = 'custom'; },
+            `osc.type = "custom"`);
 
         // Now set a custom oscillator
-        let coeffA = new Float32Array([0, 1, 0.5]);
-        let coeffB = new Float32Array([0, 0, 0]);
-        let wave = context.createPeriodicWave(coeffA, coeffB);
+        const coeffA = new Float32Array([0, 1, 0.5]);
+        const coeffB = new Float32Array([0, 0, 0]);
+        const wave = new PeriodicWave(context, {real: coeffA, imag: coeffB});
 
-        should(function() {
+        try {
           osc.setPeriodicWave(wave);
-        }, 'osc.setPeriodicWave(wave)').notThrow();
-        should(osc.type, 'After setting periodicWave, osc.type')
-            .beEqualTo('custom');
+        } catch (e) {
+          assert_unreached('osc.setPeriodicWave(wave) threw ' + e);
+        }
+        assert_equals(
+            osc.type, 'custom', 'After setting periodicWave, osc.type');
 
         // Check that numerical values are no longer supported
-        let oldType = osc.type;
+        const oldType = osc.type;
         osc.type = 0;
-        should(osc.type, 'osc.type = 0').notBeEqualTo(0);
-        should(osc.type, 'osc.type').beEqualTo(oldType);
+        assert_not_equals(osc.type, 0, 'osc.type = 0');
+        assert_equals(osc.type, oldType, 'osc.type');
+      }, 'basic osc tests');
 
-        task.done();
-      });
-
-      audit.define('start/stop exceptions', (task, should) => {
-        // We're not going to render anything, so make it simple
-        let context = new OfflineAudioContext(1, 1, sampleRate);
-        let node = new OscillatorNode(context);
-
-        testStartStop(should, node);
-        task.done();
-      });
-
-      audit.run();
+      // Start/stop exceptions test (synchronous).
+      test(() => {
+        const context = new OfflineAudioContext(1, 1, sampleRate);
+        const node = new OscillatorNode(context);
+        testStartStop_W3CTH(node);
+      }, 'start/stop exceptions');
     </script>
   </body>
 </html>

@@ -18,7 +18,7 @@ constexpr double kDefaultTimestamp = 12345.0;
 class MockVideoFrameCallback
     : public VideoFrameRequestCallbackCollection::VideoFrameCallback {
  public:
-  MOCK_METHOD2(Invoke, void(double, const VideoFrameMetadata*));
+  MOCK_METHOD2(Invoke, void(double, const VideoFrameCallbackMetadata*));
 };
 
 class VideoFrameRequestCallbackCollectionTest : public PageTestBase {
@@ -57,7 +57,7 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, AddSingleCallback) {
 }
 
 TEST_F(VideoFrameRequestCallbackCollectionTest, InvokeSingleCallback) {
-  auto* metadata = VideoFrameMetadata::Create();
+  auto* metadata = VideoFrameCallbackMetadata::Create();
   auto callback = CreateCallback();
   collection()->RegisterFrameCallback(callback.Get());
 
@@ -84,7 +84,7 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, CancelSingleCallback) {
   EXPECT_TRUE(collection()->IsEmpty());
 
   collection()->ExecuteFrameCallbacks(kDefaultTimestamp,
-                                      VideoFrameMetadata::Create());
+                                      VideoFrameCallbackMetadata::Create());
   EXPECT_TRUE(collection()->IsEmpty());
 }
 
@@ -98,7 +98,7 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, ExecuteMultipleCallbacks) {
   EXPECT_CALL(*callback_1, Invoke(_, _));
   EXPECT_CALL(*callback_2, Invoke(_, _));
   collection()->ExecuteFrameCallbacks(kDefaultTimestamp,
-                                      VideoFrameMetadata::Create());
+                                      VideoFrameCallbackMetadata::Create());
 
   // All callbacks should have been executed and removed.
   EXPECT_TRUE(collection()->IsEmpty());
@@ -109,17 +109,15 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, CreateCallbackDuringExecution) {
   CallbackId created_id = 0;
 
   auto callback = CreateCallback();
-  EXPECT_CALL(*callback, Invoke(_, _))
-      .WillOnce(testing::WithoutArgs(testing::Invoke([&]() {
-        created_callback = CreateCallback();
-        created_id =
-            collection()->RegisterFrameCallback(created_callback.Get());
-        EXPECT_CALL(*created_callback, Invoke(_, _)).Times(0);
-      })));
+  EXPECT_CALL(*callback, Invoke(_, _)).WillOnce(testing::WithoutArgs([&]() {
+    created_callback = CreateCallback();
+    created_id = collection()->RegisterFrameCallback(created_callback.Get());
+    EXPECT_CALL(*created_callback, Invoke(_, _)).Times(0);
+  }));
 
   collection()->RegisterFrameCallback(callback.Get());
   collection()->ExecuteFrameCallbacks(kDefaultTimestamp,
-                                      VideoFrameMetadata::Create());
+                                      VideoFrameCallbackMetadata::Create());
 
   EXPECT_NE(created_id, 0);
   EXPECT_FALSE(collection()->IsEmpty());
@@ -127,7 +125,7 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, CreateCallbackDuringExecution) {
   // The created callback should be executed the second time around.
   EXPECT_CALL(*created_callback, Invoke(_, _)).Times(1);
   collection()->ExecuteFrameCallbacks(kDefaultTimestamp,
-                                      VideoFrameMetadata::Create());
+                                      VideoFrameCallbackMetadata::Create());
   EXPECT_TRUE(collection()->IsEmpty());
 }
 
@@ -143,8 +141,8 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, CancelCallbackDuringExecution) {
 
   auto cancelling_callback = CreateCallback();
   EXPECT_CALL(*cancelling_callback, Invoke(_, _))
-      .WillOnce(testing::WithoutArgs(testing::Invoke(
-          [&]() { collection()->CancelFrameCallback(expected_target_id); })));
+      .WillOnce(testing::WithoutArgs(
+          [&]() { collection()->CancelFrameCallback(expected_target_id); }));
   collection()->RegisterFrameCallback(cancelling_callback.Get());
 
   auto target_callback = CreateCallback();
@@ -155,7 +153,7 @@ TEST_F(VideoFrameRequestCallbackCollectionTest, CancelCallbackDuringExecution) {
   EXPECT_EQ(expected_target_id, target_callback_id);
 
   collection()->ExecuteFrameCallbacks(kDefaultTimestamp,
-                                      VideoFrameMetadata::Create());
+                                      VideoFrameCallbackMetadata::Create());
 
   // Everything should have been cleared
   EXPECT_TRUE(collection()->IsEmpty());

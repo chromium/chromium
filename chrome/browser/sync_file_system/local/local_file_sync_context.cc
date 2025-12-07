@@ -306,8 +306,7 @@ void LocalFileSyncContext::ApplyRemoteChange(
                               std::move(callback));
       return;
   }
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(SYNC_STATUS_FAILED);
+  NOTREACHED();
 }
 
 void LocalFileSyncContext::HandleRemoteDelete(
@@ -409,7 +408,7 @@ void LocalFileSyncContext::DidRemoveExistingEntryForRemoteAddOrUpdate(
           std::move(operation_callback));
       break;
     case SYNC_FILE_TYPE_UNKNOWN:
-      NOTREACHED_IN_MIGRATION() << "File type unknown for ADD_OR_UPDATE change";
+      NOTREACHED() << "File type unknown for ADD_OR_UPDATE change";
   }
 }
 
@@ -578,8 +577,7 @@ void LocalFileSyncContext::OnWriteEnabled(const FileSystemURL& url) {
   // Nothing to do for now.
 }
 
-LocalFileSyncContext::~LocalFileSyncContext() {
-}
+LocalFileSyncContext::~LocalFileSyncContext() = default;
 
 void LocalFileSyncContext::ScheduleNotifyChangesUpdatedOnIOThread(
     base::OnceClosure callback) {

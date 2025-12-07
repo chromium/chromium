@@ -17,6 +17,8 @@
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -176,42 +178,17 @@ bool StructTraits<attribution_reporting::mojom::EventReportWindowsDataView,
 }
 
 // static
-bool StructTraits<attribution_reporting::mojom::TriggerSpecDataView,
-                  attribution_reporting::TriggerSpec>::
-    Read(attribution_reporting::mojom::TriggerSpecDataView data,
-         attribution_reporting::TriggerSpec* out) {
-  attribution_reporting::EventReportWindows event_report_windows;
-  if (!data.ReadEventReportWindows(&event_report_windows)) {
+bool StructTraits<attribution_reporting::mojom::TriggerDataSetDataView,
+                  attribution_reporting::TriggerDataSet>::
+    Read(attribution_reporting::mojom::TriggerDataSetDataView data,
+         attribution_reporting::TriggerDataSet* out) {
+  std::vector<uint32_t> trigger_data;
+  if (!data.ReadTriggerData(&trigger_data)) {
     return false;
   }
 
-  *out = attribution_reporting::TriggerSpec(std::move(event_report_windows));
-  return true;
-}
-
-// static
-bool StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
-                  attribution_reporting::TriggerSpecs>::
-    Read(attribution_reporting::mojom::TriggerSpecsDataView data,
-         attribution_reporting::TriggerSpecs* out) {
-  std::vector<attribution_reporting::TriggerSpec> specs;
-  if (!data.ReadSpecs(&specs)) {
-    return false;
-  }
-
-  attribution_reporting::TriggerSpecs::TriggerDataIndices trigger_data_indices;
-  if (!data.ReadTriggerDataIndices(&trigger_data_indices)) {
-    return false;
-  }
-
-  attribution_reporting::MaxEventLevelReports max_event_level_reports;
-  if (!max_event_level_reports.SetIfValid(data.max_event_level_reports())) {
-    return false;
-  }
-
-  auto result = attribution_reporting::TriggerSpecs::Create(
-      std::move(trigger_data_indices), std::move(specs),
-      max_event_level_reports);
+  auto result =
+      attribution_reporting::TriggerDataSet::Create(std::move(trigger_data));
   if (!result.has_value()) {
     return false;
   }
@@ -336,6 +313,28 @@ bool StructTraits<attribution_reporting::mojom::AttributionScopesDataDataView,
 }
 
 // static
+bool StructTraits<
+    attribution_reporting::mojom::AggregatableNamedBudgetDefsDataView,
+    attribution_reporting::AggregatableNamedBudgetDefs>::
+    Read(attribution_reporting::mojom::AggregatableNamedBudgetDefsDataView data,
+         attribution_reporting::AggregatableNamedBudgetDefs* out) {
+  attribution_reporting::AggregatableNamedBudgetDefs::BudgetMap budget_map;
+  if (!data.ReadBudgets(&budget_map)) {
+    return false;
+  }
+
+  std::optional<attribution_reporting::AggregatableNamedBudgetDefs> budgets =
+      attribution_reporting::AggregatableNamedBudgetDefs::FromBudgetMap(
+          std::move(budget_map));
+  if (!budgets.has_value()) {
+    return false;
+  }
+
+  *out = *std::move(budgets);
+  return true;
+}
+
+// static
 bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
                   attribution_reporting::SourceRegistration>::
     Read(attribution_reporting::mojom::SourceRegistrationDataView data,
@@ -352,7 +351,16 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
     return false;
   }
 
-  if (!data.ReadTriggerSpecs(&out->trigger_specs)) {
+  if (!data.ReadTriggerData(&out->trigger_data)) {
+    return false;
+  }
+
+  if (!data.ReadEventReportWindows(&out->event_report_windows)) {
+    return false;
+  }
+
+  if (!out->max_event_level_reports.SetIfValid(
+          data.max_event_level_reports())) {
     return false;
   }
 
@@ -365,6 +373,11 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   }
 
   if (!data.ReadAttributionScopesData(&out->attribution_scopes_data)) {
+    return false;
+  }
+
+  if (!data.ReadAggregatableNamedBudgetDefs(
+          &out->aggregatable_named_budget_defs)) {
     return false;
   }
 
@@ -429,14 +442,8 @@ bool StructTraits<attribution_reporting::mojom::AggregatableTriggerDataDataView,
     return false;
   }
 
-  auto aggregatable_trigger_data =
-      attribution_reporting::AggregatableTriggerData::Create(
-          key_piece, std::move(source_keys), std::move(filters));
-  if (!aggregatable_trigger_data) {
-    return false;
-  }
-
-  *out = *std::move(aggregatable_trigger_data);
+  *out = attribution_reporting::AggregatableTriggerData(
+      key_piece, std::move(source_keys), std::move(filters));
   return true;
 }
 
@@ -493,6 +500,27 @@ bool StructTraits<attribution_reporting::mojom::AggregatableValuesDataView,
   return true;
 }
 
+bool StructTraits<
+    attribution_reporting::mojom::AggregatableNamedBudgetCandidateDataView,
+    attribution_reporting::AggregatableNamedBudgetCandidate>::
+    Read(attribution_reporting::mojom::AggregatableNamedBudgetCandidateDataView
+             data,
+         attribution_reporting::AggregatableNamedBudgetCandidate* out) {
+  attribution_reporting::FilterPair filters;
+  if (!data.ReadFilters(&filters)) {
+    return false;
+  }
+
+  std::optional<std::string> name;
+  if (!data.ReadName(&name)) {
+    return false;
+  }
+
+  *out = attribution_reporting::AggregatableNamedBudgetCandidate(
+      std::move(name), std::move(filters));
+  return true;
+}
+
 // static
 bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
                   attribution_reporting::TriggerRegistration>::
@@ -536,6 +564,11 @@ bool StructTraits<attribution_reporting::mojom::TriggerRegistrationDataView,
   }
 
   if (!data.ReadAttributionScopes(&out->attribution_scopes)) {
+    return false;
+  }
+
+  if (!data.ReadAggregatableNamedBudgetCandidates(
+          &out->aggregatable_named_budget_candidates)) {
     return false;
   }
 

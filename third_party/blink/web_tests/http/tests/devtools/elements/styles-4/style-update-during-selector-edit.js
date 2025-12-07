@@ -48,8 +48,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     TestRunner.domModel.addEventListener(SDK.DOMModel.Events.AttrModified, attributeChanged, this);
     // Click "Add new rule".
     Elements.ElementsPanel.ElementsPanel.instance()
-        .stylesWidget.contentElement.querySelector('.styles-pane-toolbar')
-        .shadowRoot.querySelector('[aria-label="New Style Rule"]')
+        .stylesWidget.contentElement
+        .querySelector('[aria-label="New Style Rule"]')
         .click();
     TestRunner.evaluateInPage('addStyleClass()', step2);
   }

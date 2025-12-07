@@ -1,0 +1,20 @@
+Name: Tracing Kotlin Extensions
+Short Name: tracing-ktx
+URL: https://androidx.dev/snapshots/builds/14500233/artifacts/repository/androidx/tracing/tracing-ktx/2.0.0-SNAPSHOT/tracing-ktx-2.0.0-20251126.133552-1.aar
+Version: 2.0.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Android Tracing
+
+See also: https://developer.android.com/jetpack/androidx/releases/tracing#2.0.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.

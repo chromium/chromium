@@ -7,7 +7,7 @@
 <manifest
       xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.chromium.chrome.test.smoke">
-    <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
+    <instrumentation android:name="androidx.test.runner.AndroidJUnitRunner"
         android:targetPackage="org.chromium.chrome.test.smoke"
         android:label="Runner for org.chromium.chrome.test.smoke"/>
 </manifest>

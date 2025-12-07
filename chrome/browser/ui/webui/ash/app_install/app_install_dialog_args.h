@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_ARGS_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_APP_INSTALL_APP_INSTALL_DIALOG_ARGS_H_
 
+#include <variant>
+
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install.mojom.h"
 #include "components/services/app_service/public/cpp/package_id.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace ash::app_install {
 
@@ -40,7 +41,7 @@ struct ConnectionErrorArgs {
 };
 
 using AppInstallDialogArgs =
-    absl::variant<AppInfoArgs, NoAppErrorArgs, ConnectionErrorArgs>;
+    std::variant<AppInfoArgs, NoAppErrorArgs, ConnectionErrorArgs>;
 
 }  // namespace ash::app_install
 

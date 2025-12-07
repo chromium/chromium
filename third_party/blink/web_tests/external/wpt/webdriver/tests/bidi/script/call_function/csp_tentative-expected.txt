@@ -1,0 +1,9 @@
+This is a wdspec test.
+[FAIL] test_default_src_unsafe_inline[promise eval]
+  asyncio.exceptions.CancelledError
+[FAIL] test_default_src_unsafe_inline[async eval]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: EvalError: Evaluating a string as JavaScript violates the following Content Security Policy directive because neither 'unsafe-eval' nor the string's hash are an allowed source of script: default-src 'unsafe-inline'".
+[FAIL] test_default_src_unsafe_inline[async eval from preload script]
+  webdriver.bidi.modules.script.ScriptEvaluateResultException: EvalError: Evaluating a string as JavaScript violates the following Content Security Policy directive because neither 'unsafe-eval' nor the string's hash are an allowed source of script: default-src 'unsafe-inline'".
+Harness: the test ran to completion.
+

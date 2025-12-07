@@ -4,8 +4,7 @@
 
 #include "third_party/blink/renderer/core/permissions_policy/dom_feature_policy.h"
 
-#include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
-#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
+#include "services/network/public/cpp/permissions_policy/permissions_policy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -65,7 +64,8 @@ bool DOMFeaturePolicy::allowsFeature(ScriptState* script_state,
     context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
-        "Invalid origin url for feature '" + feature + "': " + url + "."));
+        StrCat(
+            {"Invalid origin url for feature '", feature, "': ", url, "."})));
     return false;
   }
 
@@ -127,7 +127,7 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
     auto feature_name =
         GetDefaultFeatureNameMap(is_isolated_context).at(feature);
 
-    const PermissionsPolicy::Allowlist allowlist =
+    const network::PermissionsPolicy::Allowlist allowlist =
         GetPolicy()->GetAllowlistForFeature(feature_name);
     const auto& allowed_origins = allowlist.AllowedOrigins();
     if (allowed_origins.empty()) {
@@ -140,11 +140,11 @@ Vector<String> DOMFeaturePolicy::getAllowlistForFeature(
         static_cast<wtf_size_t>(allowlist.SelfIfMatches().has_value()));
     if (allowlist.SelfIfMatches()) {
       result.push_back(
-          WTF::String::FromUTF8(allowlist.SelfIfMatches()->Serialize()));
+          String::FromUTF8(allowlist.SelfIfMatches()->Serialize()));
     }
     for (const auto& origin_with_possible_wildcards : allowed_origins) {
       result.push_back(
-          WTF::String::FromUTF8(origin_with_possible_wildcards.Serialize()));
+          String::FromUTF8(origin_with_possible_wildcards.Serialize()));
     }
     return result;
   }
@@ -158,7 +158,7 @@ void DOMFeaturePolicy::AddWarningForUnrecognizedFeature(
   context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::blink::ConsoleMessageSource::kOther,
       mojom::blink::ConsoleMessageLevel::kWarning,
-      "Unrecognized feature: '" + feature + "'."));
+      StrCat({"Unrecognized feature: '", feature, "'."})));
 }
 
 void DOMFeaturePolicy::Trace(Visitor* visitor) const {

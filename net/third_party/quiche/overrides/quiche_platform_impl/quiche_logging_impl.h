@@ -78,11 +78,26 @@
 #define QUICHE_CHROMIUM_DLOG_IF_0 QUICHE_CHROMIUM_DLOG_IF_ERROR
 #endif
 
-#define QUICHE_NOTREACHED_IMPL() NOTREACHED_IN_MIGRATION()
+namespace quic {
+// TODO(crbug.com/40580068): Make QUICHE CHECK/NOTREACHED failures [[noreturn]]
+// upstream (and clean up dead code), then use NOTREACHED(). The current
+// implementation of CHECK() makes sure that CHECK(false) is [[noreturn]], so we
+// need to trick -Wunreachable-code to avoid dead-code warnings in QUIC.
+// Currently a function call seems to be enough to do that, but this may turn
+// into an arms race. :(
+inline bool LoggingInternalReturnParam(bool param) {
+  return param;
+}
+}  // namespace quic
+
+#define QUICHE_NOTREACHED_IMPL() CHECK(quic::LoggingInternalReturnParam(false))
 
 #define QUICHE_PLOG_IMPL(severity) DVLOG(1)
 
-#define QUICHE_CHECK_IMPL(condition) CHECK(condition)
+// This has a weird ternary to permit only contextual conversion to bool, i.e.
+// no static_cast<bool>().
+#define QUICHE_CHECK_IMPL(condition) \
+  CHECK(quic::LoggingInternalReturnParam((condition) ? true : false))
 #define QUICHE_CHECK_EQ_IMPL(val1, val2) CHECK_EQ(val1, val2)
 #define QUICHE_CHECK_NE_IMPL(val1, val2) CHECK_NE(val1, val2)
 #define QUICHE_CHECK_LE_IMPL(val1, val2) CHECK_LE(val1, val2)

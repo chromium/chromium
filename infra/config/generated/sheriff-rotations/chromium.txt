@@ -38,8 +38,9 @@ ci/Linux MSan Tests
 ci/Linux TSan Builder
 ci/Linux TSan Tests
 ci/Linux Tests
-ci/Linux Tests (Wayland)
 ci/Linux Tests (dbg)(1)
+ci/Linux UBSan Builder
+ci/Linux UBSan Tests
 ci/MSAN Release (chained origins)
 ci/MSAN Release (no origins)
 ci/Mac ASAN Release
@@ -48,7 +49,6 @@ ci/Mac ASan 64 Builder
 ci/Mac ASan 64 Tests (1)
 ci/Mac Builder
 ci/Mac Builder (dbg)
-ci/Mac11 Tests
 ci/Mac12 Tests
 ci/Mac13 Tests
 ci/Network Service Linux
@@ -56,9 +56,6 @@ ci/TSAN Debug
 ci/TSAN Release
 ci/UBSan Release
 ci/UBSan vptr Release
-ci/WebKit Linux ASAN
-ci/WebKit Linux Leak
-ci/WebKit Linux MSAN
 ci/WebKit Win10
 ci/Win ASan Release
 ci/Win ASan Release Media
@@ -67,15 +64,14 @@ ci/Win Builder (dbg)
 ci/Win x64 Builder
 ci/Win x64 Builder (dbg)
 ci/Win10 Tests x64
+ci/Win10 Tests x64 (dbg)
 ci/Win11 Tests x64
 ci/Windows deterministic
-ci/android-archive-rel
-ci/android-arm64-archive-rel
-ci/android-official
+ci/android-desktop-arm64-official
+ci/android-desktop-x64-official
 ci/chromeos-amd64-generic-asan-rel
 ci/chromeos-amd64-generic-cfi-thin-lto-rel
 ci/chromeos-amd64-generic-dbg
-ci/chromeos-amd64-generic-lacros-dbg
 ci/chromeos-amd64-generic-rel
 ci/chromeos-amd64-generic-rel-gtest
 ci/chromeos-arm-generic-dbg
@@ -89,27 +85,27 @@ ci/ios-device
 ci/ios-simulator
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
-ci/lacros-amd64-generic-rel
-ci/lacros-amd64-generic-rel-gtest
-ci/lacros-arm-archive-rel
-ci/lacros-arm-generic-rel
-ci/lacros-arm-generic-rel-skylab
-ci/lacros64-archive-rel
 ci/linux-archive-rel
 ci/linux-bfcache-rel
+ci/linux-blink-asan-rel
+ci/linux-blink-leak-rel
+ci/linux-blink-msan-rel
 ci/linux-blink-web-tests-force-accessibility-rel
+ci/linux-cast-arm-rel
+ci/linux-cast-arm64-rel
+ci/linux-cast-x64-dbg
+ci/linux-cast-x64-rel
 ci/linux-cfm-rel
 ci/linux-chromeos-archive-rel
 ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
 ci/linux-extended-tracing-rel
 ci/linux-gcc-rel
-ci/linux-lacros-builder-rel
-ci/linux-lacros-dbg
-ci/linux-lacros-tester-rel
+ci/linux-oi-rel
 ci/linux-presubmit
-ci/linux-ubsan-vptr
 ci/linux-v4l2-codec-rel
+ci/linux-wayland-mutter-rel-tests
+ci/linux-wayland-weston-rel-tests
 ci/linux-win-cross-rel
 ci/mac-archive-rel
 ci/mac-arm64-archive-rel
@@ -117,10 +113,11 @@ ci/mac-arm64-dbg
 ci/mac-arm64-on-arm64-rel
 ci/mac-arm64-rel
 ci/mac-official
-ci/mac11-arm64-rel-tests
 ci/mac12-arm64-rel-tests
 ci/mac13-arm64-rel-tests
 ci/mac14-arm64-rel-tests
+ci/mac15-arm64-rel-tests
+ci/mac15-x64-rel-tests
 ci/win-archive-rel
 ci/win-arm64-dbg
 ci/win-arm64-rel

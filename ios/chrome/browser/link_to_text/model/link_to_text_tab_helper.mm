@@ -97,7 +97,6 @@ bool LinkToTextTabHelper::ShouldOffer() {
 
   if (!textInputView) {
     LogShouldOfferResult(ShouldOfferResult::kTextInputNotFound);
-    DUMP_WILL_BE_NOTREACHED();
     return false;
   }
 
@@ -145,8 +144,7 @@ bool LinkToTextTabHelper::IsOnlyBoundaryChars(NSString* str) {
     if (error) {
       // We should never get an error from compiling the regex, since it's a
       // literal.
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
     }
   }
   int max_len = MIN(kBoundaryCharSearchLimit, [str length]);
@@ -172,5 +170,3 @@ void LinkToTextTabHelper::WebStateDestroyed(web::WebState* web_state) {
   // so nothing should be done after that point (this is like "delete this;").
   web_state->RemoveUserData(UserDataKey());
 }
-
-WEB_STATE_USER_DATA_KEY_IMPL(LinkToTextTabHelper)

@@ -59,12 +59,10 @@ BOOL IsCompact(UITraitCollection* traitCollection) {
       [_rightImageView.leftAnchor constraintEqualToAnchor:self.leftAnchor],
     ]];
 
-    if (@available(iOS 17, *)) {
-      [self registerForTraitChanges:@[
-        UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self
-      ]
-                         withAction:@selector(updateImagesOnNextFrame)];
-    }
+    [self registerForTraitChanges:@[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
+    ]
+                       withAction:@selector(updateImagesOnNextFrame)];
   }
   return self;
 }
@@ -75,14 +73,6 @@ BOOL IsCompact(UITraitCollection* traitCollection) {
   // Initial layout.
   if (!_leftImageView.image) {
     [self updateImages];
-  }
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-
-  if (!base::ios::IsRunningOnIOS17OrLater()) {
-    [self updateImagesOnNextFrame];
   }
 }
 

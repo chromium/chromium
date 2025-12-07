@@ -4,23 +4,30 @@
 
 package org.chromium.base.task;
 
-import java.util.ArrayDeque;
-import java.util.concurrent.Executor;
+import android.util.Pair;
 
-class SerialExecutor implements Executor {
-    final ArrayDeque<Runnable> mTasks = new ArrayDeque<Runnable>();
-    Runnable mActive;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
+import java.util.ArrayDeque;
+
+@NullMarked
+class SerialExecutor implements LocationAwareExecutor {
+    final ArrayDeque<Pair<Runnable, @Nullable Location>> mTasks = new ArrayDeque<>();
+    @Nullable Pair<Runnable, @Nullable Location> mActive;
 
     @Override
-    public synchronized void execute(final Runnable r) {
+    public synchronized void execute(final Runnable r, @Nullable Location location) {
         mTasks.offer(
-                () -> {
-                    try {
-                        r.run();
-                    } finally {
-                        scheduleNext();
-                    }
-                });
+                new Pair<>(
+                        () -> {
+                            try {
+                                r.run();
+                            } finally {
+                                scheduleNext();
+                            }
+                        },
+                        location));
         if (mActive == null) {
             scheduleNext();
         }
@@ -28,7 +35,7 @@ class SerialExecutor implements Executor {
 
     protected synchronized void scheduleNext() {
         if ((mActive = mTasks.poll()) != null) {
-            AsyncTask.THREAD_POOL_EXECUTOR.execute(mActive);
+            AsyncTask.THREAD_POOL_EXECUTOR.execute(mActive.first, mActive.second);
         }
     }
 }

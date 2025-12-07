@@ -9,7 +9,6 @@
 #include <DXGI1_4.h>
 #include <wrl.h>
 
-#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/command_buffer/common/sync_token.h"
@@ -33,8 +32,12 @@ class D3D11TextureHelper {
   void CleanupNoSubmit();
   void SetSourceAndOverlayVisible(bool source_visible, bool overlay_visible);
 
+  bool CopyToBackBuffer(
+      const scoped_refptr<viz::ContextProvider>& context_provider,
+      Microsoft::WRL::ComPtr<ID3D11Texture2D> source);
   bool CompositeToBackBuffer(
       const scoped_refptr<viz::ContextProvider>& context_provider);
+
   void SetSourceTexture(base::win::ScopedHandle texture_handle,
                         const gpu::SyncToken& sync_token,
                         gfx::RectF left,
@@ -51,8 +54,11 @@ class D3D11TextureHelper {
     force_viewport_ = true;
   }
   gfx::Size BackBufferSize() { return target_size_; }
-  void SetBackbuffer(Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer);
+  void SetBackbuffer(Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer,
+                     bool contains_source = false,
+                     bool y_flipped = false);
   Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> GetDeviceContext();
 
   void SetDefaultSize(gfx::Size size) { default_size_ = size; }
 
@@ -113,6 +119,9 @@ class D3D11TextureHelper {
 
   bool bgra_ = false;
   bool force_viewport_ = false;
+
+  bool backbuffer_contains_source_ = false;
+  bool backbuffer_y_flipped_ = false;
 
   gfx::RectF target_left_;   // 0 to 1 in each direction
   gfx::RectF target_right_;  // 0 to 1 in each direction

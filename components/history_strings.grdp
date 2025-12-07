@@ -15,7 +15,7 @@
     <ph name="RELATIVE_DATE">$1<ex>Today</ex></ph> - <ph name="FULL_DATE">$2<ex>Wednesday, Nov 7, 2007</ex></ph>
   </message>
   <message name="IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON" desc="Text for the button used to confirm the dialog asking if they would like to proceed with deletion.">
-    Remove
+    Delete
   </message>
   <message name="IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING" desc="Warning shown before deleting from the history page">
     Are you sure you want to delete these pages from your history?
@@ -38,8 +38,17 @@
   <message name="IDS_HISTORY_FOUND_SEARCH_RESULTS" desc="Message shown when zero or multiple search results are found.">
     Found <ph name="NUMBER_OF_RESULTS">$1</ph> <ph name="SEARCH_RESULTS"><ex>search results</ex>$2</ph> for '<ph name="SEARCH_STRING">$3</ph>'
   </message>
-  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY" desc="The notification at the top of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
-    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK">&lt;/a&gt;</ph>
+  <!-- Although navigation is handled programmatically, set the href for all -->
+  <!-- `IDS_HISTORY_OTHER_FORMS_OF_HISTORY_*` strings. This is for user -->
+  <!--  transparency, allowing them to see the destination URL on hover. -->
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_ONLY" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity.">
+    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA">&lt;a target="_blank" id="footerGoogleMyActivityLink" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK_GMA">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GAA_ONLY" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Gemini Apps Activity.">
+    Your Google Account may have your <ph name="BEGIN_LINK_GAA">&lt;a target="_blank" id="footerGeminiAppsActivityLink" href="$1"&gt;</ph>Gemini Apps Activity<ph name="END_LINK_GAA">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_HISTORY_OTHER_FORMS_OF_HISTORY_GMA_AND_GAA" desc="The notification at the bottom of the history page indicating that deleting Chrome browsing history will not delete other forms of history stored at Google My Activity and Gemini Apps Activity.">
+    Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA">&lt;a target="_blank" id="footerGoogleMyActivityLink" href="$1"&gt;</ph>myactivity.google.com<ph name="END_LINK_GMA">&lt;/a&gt;</ph>, such as your <ph name="BEGIN_LINK_GAA">&lt;a target="_blank" id="footerGeminiAppsActivityLink" href="$2"&gt;</ph>Gemini Apps Activity<ph name="END_LINK_GAA">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_HISTORY_LOADING" desc="Text shown when we're loading the user's history">
     Loading...
@@ -78,7 +87,7 @@
     </message>
   </if>
   <message name="IDS_HISTORY_REMOVE_BOOKMARK" desc="Tooltip shown when hovered over a history entry's bookmark star. When clicked, removes the bookmark.">
-    Remove bookmark
+    Delete bookmark
   </message>
   <message name="IDS_HISTORY_REMOVE_PAGE" desc="Command in the history entry drop-down menu. Removes a page from the history.">
     Remove from history
@@ -87,7 +96,7 @@
     '<ph name="PAGE_TITLE">$1<ex>Google Store - My Cart</ex></ph>' deleted
   </message>
   <message name="IDS_HISTORY_REMOVE_SELECTED_ITEMS" desc="Title of the button that allows the user to remove the selected history items">
-    Remove selected items
+    Delete selected items
   </message>
   <message name="IDS_HISTORY_SEARCH_BUTTON" desc="Title of the button in the history page that triggers a search">
     Search history
@@ -97,6 +106,18 @@
   </message>
   <message name="IDS_HISTORY_SEARCH_RESULTS" desc="Used when plural/multiple results are found.">
     search results
+  </message>
+  <message name="IDS_HISTORY_SEARCH_EXACT_MATCH_RESULT" desc="Used when a single exact match result is found." translateable="false">
+    exact match
+  </message>
+  <message name="IDS_HISTORY_SEARCH_EXACT_MATCH_RESULTS" desc="Used when plural/multiple exact match results is found." translateable="false">
+    exact matches
+  </message>
+  <message name="IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULT" desc="Used when a single result is found by history search powered by AI." translateable="false">
+    best match
+  </message>
+  <message name="IDS_HISTORY_SEARCH_EMBEDDINGS_MATCH_RESULTS" desc="Used when plural/multiple results are found by history search powered by AI." translateable="false">
+    best matches
   </message>
   <if expr="not use_titlecase">
     <message name="IDS_HISTORY_SHOW_HISTORY" desc="The show history menu in the app menu">
@@ -108,6 +129,9 @@
       &amp;History
     </message>
   </if>
+  <message name="IDS_HISTORY_SHOW_SIDE_PANEL" desc="Label of the item in drop-down menu that allows user to open the history in the side panel.">
+    History
+  </message>
   <message name="IDS_HISTORY_SHOWFULLHISTORY_LINK" desc="The label of the Show Full History link at the bottom of the back/forward menu.">
     Show Full History
   </message>
@@ -120,23 +144,54 @@
   <message name="IDS_HISTORY_UNKNOWN_DEVICE" desc="On the dropdown menu for a history entry, the text that is shown instead of a device name, when the device name is not known.">
     Unknown device
   </message>
+  <message name="IDS_ACTOR_TASK" translateable="false">
+    Gemini task
+  </message>
+
+  <message name="IDS_HISTORY_SYNC_PROMO_TITLE" desc="The title of the history sync promo.">
+    See your history on other devices
+  </message>
+  <message name="IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_OUT" desc="The promo body text for signed out users.">
+    To get your history from your other devices, sign in and sync history. You’ll also get your passwords and more on all your devices. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+  </message>
+  <message name="IDS_HISTORY_SYNC_PROMO_BODY_SIGN_IN_PENDING" desc="The promo body text for pending sign in users with sync history off.">
+    To get your history from your other devices, verify it’s you and sync your history and tabs. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+  </message>
+  <message name="IDS_HISTORY_SYNC_PROMO_BODY_SIGN_IN_PENDING_SYNC_HISTORY_ON" desc="The promo body text for pending sign in users with sync history on.">
+    To get your history from your other devices, verify it’s you. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+  </message>
+  <message name="IDS_HISTORY_SYNC_PROMO_BODY_SIGNED_IN" desc="The promo body text for signed in users with sync history off.">
+    To get your history from your other devices, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>john@google.com</ex></ph>. You can stop syncing anytime in settings. Google may personalize Search and other services based on your history.
+  </message>
 
   <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature.">
     Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature.
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_LABEL" desc="On the history page, the accessiblility label for the promo for history search powered by AI.">
+  <message name="IDS_HISTORY_EMBEDDINGS_DISCLAIMER_LOGGING_OFF" desc="On the history page, the persistent disclaimer text shown below the search box indicating what content is sent to Google for the history search feature when logging is disabled by policy.">
+    Your searches, best matches, and their page contents are sent to Google. It will not be used by human reviewers to improve AI. Your organization may change these settings at any time.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_LABEL" desc="On the history page, the accessiblility label for the promo for history search powered by AI." translateable="false">
     Promo
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE" desc="On the history page, the accessiblility label for the close button for the promo for history search powered by AI.">
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE" desc="On the history page, the accessiblility label for the close button for the history promos." translateable="false">
     Close promo
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI.">
     Search your history, powered by AI
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI.">
-    Using everyday language, you can search your browsing history using phrases like "pizza places near me" or “family-friendly parks downtown". Your searches, best matches, and their page contents are sent to Google and may be seen by human reviewers to improve this feature. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Manage your history search setting<ph name="END_LINK">&lt;/a&gt;</ph>
+  <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI." translateable="false">
+    In a few words, describe what you’re looking for, like "comfortable walking shoes" or "vegetarian pasta recipes." As you visit more sites on this device, you’ll see more results powered by AI.
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL" desc="On the history page, the accessibility label on the menu to select whether to filter results grouped by date or by group.">
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI with answerer." translateable="false">
+    Get answers from your history, powered by AI
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI with answerer." translateable="false">
+    You can ask questions like "what ingredients were in that pasta recipe?" Using question words like "what" or "where" helps Chrome give you better answers. Or describe what you're looking for in a few words. As you visit more sites, you'll see more AI-powered results.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT" desc="On the history page, the text of the link to edit the user's history search setting." translateable="false">
+    Manage your history search setting
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL" desc="On the history page, the accessibility label on the menu to select whether to filter results grouped by date or by group." translateable="false">
     Filter
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE" desc="On the history page, the label on the option to show history results grouped by date.">
@@ -169,36 +224,75 @@
   <message name="IDS_HISTORY_EMBEDDINGS_HEADING_LOADING" desc="Heading for history search results powered by AI while loading.">
     Searching for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_WITH_ANSWERS_RESULTS_HEADING" desc="Heading for history search results powered by AI showing the best matches for a search query when answers are enabled." translateable="false">
+    Best matches from your history
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_FOOTER" desc="Footer text for history search results powered by AI.">
     This is an experimental feature and won’t always get it right.
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_FEEDBACK_PLACEHOLDER" desc="Placeholder text in feedback from for history search">
     Send feedback for history search powered by AI
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_IPH_LABEL" desc="Text for the IPH bubble for searching history using AI and everyday language.">
-    You can enter any phrases or details you remember from pages you browsed in the past, like "comfortable walking shoes"
+  <message name="IDS_HISTORY_EMBEDDINGS_IPH_BODY" desc="Text for the IPH bubble for searching history using AI and everyday language." translateable="false">
+    For a more powerful way to search your browsing history, turn on History search, powered by AI
   </message>
-  <message name="IDS_HISTORY_EMBEDDINGS_IPH_LABEL_SCREENREADER" desc="Screen reader text for the IPH bubble for history search that also notes a keyboard shortcut.">
-    You can enter any phrases or details you remember from pages you browsed in the past, like "comfortable walking shoes". <ph name="SHORTCUT">$1<ex>CTRL+F</ex></ph> to search.
+  <message name="IDS_HISTORY_EMBEDDINGS_IPH_ACTION" desc="Text for the button in the IPH bubble for searching history using AI that takes user to Settings." translateable="false">
+    Turn on
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT" desc="Placeholder text/label for the search input field in the history page when history embeddings is enabled." translateable="false">
+    In a few words, describe what you're searching for
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_1" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what was that square pizza place in Chicago?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_2" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what ingredients were in that pasta recipe?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_3" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what was the time of the comedy show?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_4" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "how much was the cargo bike?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING" desc="Heading for answer section in history search results." translateable="false">
+    Summary
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_LOADING_HEADING" desc="Heading for answer section in history search results when the answer is loading." translateable="false">
+    Searching for a summary...
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL" desc="Label for visited date for answer section in history search results." translateable="false">
+    Visited <ph name="DATE"><ex>Oct 4, 2024</ex>$1</ph>
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_UNANSWERABLE" desc="Error message for when history embeddings answerer determines a question cannot be answered." translateable="false">
+    Sorry, I can't help you with that.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_MODEL_UNAVAILABLE" desc="Error message for when the files necessary for the history embeddings answerer to generate answers to questions are not yet available. User should be encouraged to try again later" translateable="false">
+    Preparing AI-powered summary...check back in a few minutes.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN" desc="Error message for when history embeddings answerer fails and the user can try again later." translateable="false">
+    Something went wrong. Please try again later.
   </message>
 
-  <!-- For Product Specifications -->
-  <message name="IDS_PRODUCT_SPECIFICATIONS_EMPTY" desc="Text shown for product specifications tab when no sets are present." translateable="false">
-    No Product Specifications sets
+  <!-- For Compare -->
+  <message name="IDS_COMPARE_HISTORY_EMPTY" desc="Text shown for comparison tables tab when no sets are present.">
+    No comparison tables
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_HEADER" desc="Header text for product specifications tab in history." translateable="false">
-    Product Specifications lists
+  <message name="IDS_COMPARE_HISTORY_HEADER" desc="Header text for comparison tables tab in history.">
+    Comparison tables
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_HISTORY_REMOVE" desc="Text for deleting a single row in Product Specifications history" translateable="false">
-    Remove from lists
+  <message name="IDS_COMPARE_HISTORY_INFO" desc="Info disclaimer text for comparison tables tab in history.">
+    Tabs you delete from your Chrome history will still show up in your comparison tables
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_INFO" desc="Info disclaimer text for product specifications tab in history." translateable="false">
-    Tabs you delete from your Chrome history will still show up in your product specifications tables
+  <message name="IDS_COMPARE_HISTORY_MENU_ARIA_LABEL" desc="Aria label for menu button for a row in tab compare history">
+    More actions for comparison table <ph name="COMPARE_SET_NAME"><ex>e-bikes</ex>$1</ph>
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_MENU_ARIA_LABEL" desc="Aria label for menu button for a row in Product Specifications history" translateable="false">
-    More actions for product set <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph>
+  <message name="IDS_COMPARE_HISTORY_MENU_ITEM" desc="The title of the link in the history UI that navigates the user to a page showing the tables being maintained by the tab compare feature.">
+    Comparison tables
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_ROW" desc="Text for a single row in Product Specifications history" translateable="false">
-    Analyze <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph> &#183; <ph name="ITEMS"><ex>3</ex>$2</ph> items
+  <message name="IDS_COMPARE_HISTORY_REMOVE" desc="Text for deleting a single row in tab compare history">
+    Remove from tables
+  </message>
+  <message name="IDS_COMPARE_HISTORY_ROW" desc="Text for a single row in tab compare history">
+    Compare <ph name="COMPARE_SET_NAME"><ex>e-bikes</ex>$1</ph> &#183; <ph name="ITEMS"><ex>3</ex>$2</ph> items
   </message>
 </grit-part>

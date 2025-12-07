@@ -12,7 +12,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_manager.h"
@@ -68,14 +68,14 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyZipHash) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->AddListenerForTesting();
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/download_protection/zipfile_two_archives.zip");
   DownloadAndWait(url);
 
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-      WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+      WebUIContentInfoSingleton::GetInstance()->client_download_requests_sent();
 
   ASSERT_EQ(1u, requests.size());
   ASSERT_EQ(2, requests[0]->archived_binary_size());
@@ -93,14 +93,14 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest, VerifyRarHash) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->AddListenerForTesting();
 
   GURL url =
       embedded_test_server()->GetURL("/safe_browsing/rar/has_two_archives.rar");
   DownloadAndWait(url);
 
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-      WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+      WebUIContentInfoSingleton::GetInstance()->client_download_requests_sent();
 
   ASSERT_EQ(1u, requests.size());
   ASSERT_EQ(2, requests[0]->archived_binary_size());
@@ -117,14 +117,14 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->AddListenerForTesting();
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/rar/multipart.part0001.rar");
   DownloadAndWait(url);
 
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-      WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+      WebUIContentInfoSingleton::GetInstance()->client_download_requests_sent();
 
   ASSERT_EQ(1u, requests.size());
   ASSERT_EQ(1, requests[0]->archived_binary_size());
@@ -136,14 +136,14 @@ IN_PROC_BROWSER_TEST_F(DownloadProtectionServiceBrowserTest,
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
+  WebUIContentInfoSingleton::GetInstance()->AddListenerForTesting();
 
   GURL url = embedded_test_server()->GetURL(
       "/safe_browsing/rar/multipart.part0002.rar");
   DownloadAndWait(url);
 
   const std::vector<std::unique_ptr<ClientDownloadRequest>>& requests =
-      WebUIInfoSingleton::GetInstance()->client_download_requests_sent();
+      WebUIContentInfoSingleton::GetInstance()->client_download_requests_sent();
 
   ASSERT_EQ(1u, requests.size());
   ASSERT_EQ(1, requests[0]->archived_binary_size());

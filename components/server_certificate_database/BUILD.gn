@@ -1,0 +1,70 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  sources = [ "server_certificate_database.proto" ]
+}
+
+static_library("server_certificate_database") {
+  sources = [
+    "server_certificate_database.cc",
+    "server_certificate_database.h",
+    "server_certificate_database_service.cc",
+    "server_certificate_database_service.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//net",
+    "//sql",
+    "//third_party/boringssl",
+  ]
+  public_deps = [ ":proto" ]
+
+  if (is_chromeos) {
+    sources += [
+      "server_certificate_database_nss_migrator.cc",
+      "server_certificate_database_nss_migrator.h",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "server_certificate_database_test_util.cc",
+    "server_certificate_database_test_util.h",
+  ]
+  public_deps = [
+    ":server_certificate_database",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "server_certificate_database_service_unittest.cc",
+    "server_certificate_database_unittest.cc",
+  ]
+
+  deps = [
+    ":server_certificate_database",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//crypto:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_chromeos) {
+    sources += [ "server_certificate_database_nss_migrator_unittest.cc" ]
+  }
+}

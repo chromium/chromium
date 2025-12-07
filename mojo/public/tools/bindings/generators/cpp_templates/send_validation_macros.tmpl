@@ -1,0 +1,49 @@
+{#  Adds the appropriate Serialize call based on the compiler setting
+    |compiler_setting| is the setting for Serialize
+      - "runtime" indicates send validation is defined at runtime
+      - "template" indicates send validation is defined at compile time
+      - "default" indicates send validation should be the default version
+    |type| is the serializer type
+    |args| is the list of args, already formatted
+    |declaration| is the optional declaration for send validation. #}
+{%- macro get_serialize_call(compiler_setting, type, args, declaration = "send_validation") -%}
+{%-  if compiler_setting == "runtime" %}
+mojo::internal::SerializeWithSendValidation<{{type}}>({{declaration}},
+{%-  elif compiler_setting == "template" %}
+mojo::internal::Serialize<{{type}}, {{declaration}}>(
+{%-  else %}
+mojo::internal::Serialize<{{type}}>(
+{%-  endif %}
+{%-  for arg in args %}
+{%-    if not loop.last %}
+  {{arg}},
+{%-    else %}
+  {{arg}});
+{%-    endif %}
+{%-  endfor -%}
+{%- endmacro %}
+
+{#  Adds the appropriate Validation Check based on the compiler setting
+    |compiler_setting| is the setting for Serialize
+      - "runtime" indicates send validation is defined at runtime
+      - "template" indicates send validation is defined at compile time
+      - "default" indicates send validation should be the default version
+    |check| is the check
+    |error_code| is the error code
+    |description| is the already formatted description
+    |declaration| is the optional declaration for send validation. #}
+{%- macro get_validation_check(compiler_setting, check, error_code, description, declaration = "send_validation") -%}
+{%-  if compiler_setting == "runtime" %}
+RUNTIME_MOJO_INTERNAL_CHECK_SERIALIZATION(
+  {{declaration}},
+{%-  elif compiler_setting == "template" %}
+MOJO_INTERNAL_CHECK_SERIALIZATION(
+  {{declaration}},
+{%-  else %}
+MOJO_INTERNAL_CHECK_SERIALIZATION(
+  mojo::internal::SendValidation::kDefault,
+{%-  endif %}
+  !({{check}}),
+  {{error_code}},
+  "{{description}}");
+{%- endmacro %}

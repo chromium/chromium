@@ -12,8 +12,6 @@
 #include "url/gurl.h"
 
 class Browser;
-class NetworkPortalSigninWindowLacrosBrowserTest;
-class NetworkPortalSigninWindowAshBrowserTest;
 
 namespace content {
 class WebContents;
@@ -21,8 +19,7 @@ class WebContents;
 
 namespace chromeos {
 
-// Class controlling the captive portal signin window used in Ash and Lacros
-// when the CaptivePortalPopupWindow feature is enabled.
+// Class controlling the captive portal signin window used in Ash and Lacros.
 // See also the NetworkPortalSigninController class.
 class NetworkPortalSigninWindow {
  public:
@@ -39,15 +36,14 @@ class NetworkPortalSigninWindow {
   Browser* GetBrowserForTesting();
   content::WebContents* GetWebContentsForTesting();
 
- protected:
-  friend class base::NoDestructor<NetworkPortalSigninWindow>;
-  friend class NetworkPortalSigninWindowLacrosBrowserTest;
-  friend class NetworkPortalSigninWindowAshBrowserTest;
-  NetworkPortalSigninWindow();
-
   int portal_detection_requested_for_testing() const {
     return portal_detection_requested_for_testing_;
   }
+
+ protected:
+  friend class base::NoDestructor<NetworkPortalSigninWindow>;
+
+  NetworkPortalSigninWindow();
 
  private:
   class WindowObserver;

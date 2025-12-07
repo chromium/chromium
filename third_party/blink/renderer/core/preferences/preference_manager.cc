@@ -6,6 +6,7 @@
 #include "third_party/blink/renderer/core/preferences/preference_names.h"
 #include "third_party/blink/renderer/core/preferences/preference_object.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 

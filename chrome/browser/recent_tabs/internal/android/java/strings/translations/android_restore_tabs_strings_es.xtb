@@ -12,6 +12,7 @@
 <translation id="3983305234037158273">Las pestañas de los dispositivos sincronizados se pueden restaurar con un toque. Desplázate para revisar o restaurar las pestañas seleccionadas del dispositivo actual al tocarlas. Teclado oculto.</translation>
 <translation id="4386361164755260473">{TABS_COUNT,plural, =1{Abrir <ph name="TABS_COUNT_ONE" /> pestaña}other{Abrir <ph name="TABS_COUNT_MANY" /> pestañas}}</translation>
 <translation id="4509609396389120020">Restaurar pestañas de otros dispositivos</translation>
+<translation id="4619615317237390068">Pestañas de otros dispositivos</translation>
 <translation id="4811934403802581334">Se restaurarán todas las pestañas seleccionadas del dispositivo seleccionado.</translation>
 <translation id="5336031759968328813">Revisar todas las pestañas</translation>
 <translation id="5494920125229734069">Seleccionar todo</translation>

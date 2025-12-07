@@ -1013,8 +1013,7 @@
                 test_valid_message_type('license-request');
                 test_valid_message_type('license-renewal');
                 test_valid_message_type('license-release');
-                // TODO(jrummell): Add 'individualization-request' if the final
-                // spec includes it. http://crbug.com/628437.
+                test_valid_message_type('individualization-request');
 
                 // Invalid MediaKeyMessageType values should throw a TypeError.
                 assert_throws_js(TypeError, function() {

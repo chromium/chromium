@@ -1,0 +1,15 @@
+Tests setPressureSourceOverridesEnabled(false) prints info message.
+PASS: Enabling pressure source override
+PASS: Set pressure state override
+[
+    [0] : [
+        [0] : cpu
+        [1] : serious
+        [2] : 0.2
+    ]
+]
+PASS: Removing pressure source override
+Log.onEntryAdded
+level: info
+text: Virtual observers are still running after the virtual source was disconnected. The non-virtual source will have no effect on any observer as long as observers are still running. Stop all the observers and restart them if they want to use the non-virtual source.
+

@@ -25,10 +25,6 @@
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/gfx/geometry/point.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 namespace cssvalue {
@@ -43,7 +39,7 @@ class CSSCursorImageValue : public CSSValue {
   const gfx::Point& HotSpot() const { return hot_spot_; }
   const CSSValue& ImageValue() const { return *image_value_; }
 
-  WTF::String CustomCSSText() const;
+  String CustomCSSText() const;
 
   bool Equals(const CSSCursorImageValue&) const;
 

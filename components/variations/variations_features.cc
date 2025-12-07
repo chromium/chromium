@@ -4,9 +4,6 @@
 
 #include "components/variations/variations_features.h"
 
-namespace variations {
+namespace variations::internal {
 
-namespace internal {
-
-}  // namespace internal
-}  // namespace variations
+}  // namespace variations::internal

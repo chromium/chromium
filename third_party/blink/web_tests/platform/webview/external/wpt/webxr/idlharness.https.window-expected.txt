@@ -1,0 +1,28 @@
+This is a testharness.js-based test.
+Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] WebGLRenderingContext includes WebGLRenderingContextOverloads: member names are unique
+  assert_true: member bufferData is unique expected true got false
+[FAIL] XRFrame interface: attribute predictedDisplayTime
+  assert_true: The prototype object must have a property "predictedDisplayTime" expected true got false
+[FAIL] XRInputSource interface: attribute skipRendering
+  assert_true: The prototype object must have a property "skipRendering" expected true got false
+[FAIL] XRWebGLLayer interface: attribute fixedFoveation
+  assert_true: The prototype object must have a property "fixedFoveation" expected true got false
+[FAIL] XRWebGLLayer interface: xrWebGLLayer must inherit property "fixedFoveation" with the proper type
+  assert_inherits: property "fixedFoveation" not found in prototype chain
+[FAIL] XRPermissionStatus interface: existence and properties of interface object
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface object length
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface object name
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+[FAIL] XRPermissionStatus interface: attribute granted
+  assert_own_property: self does not have own property "XRPermissionStatus" expected property "XRPermissionStatus" missing
+Harness: the test ran to completion.
+

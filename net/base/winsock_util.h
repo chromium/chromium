@@ -8,6 +8,12 @@
 #include <winsock2.h>
 
 #include <stddef.h>
+#include <stdint.h>
+
+#include <algorithm>
+#include <type_traits>
+
+#include "base/containers/span.h"
 
 namespace net {
 
@@ -23,6 +29,22 @@ static const size_t kBluetoothAddressSize = 6;
 // to avoid a context switch in common cases.  This is just a performance
 // optimization.  The code still works if this function simply returns false.
 bool ResetEventIfSignaled(WSAEVENT hEvent);
+
+// OVERLAPPED structs contain unions, and thus should not be initialized by `=
+// {}` lest there still be uninitialized bytes in union members larger than the
+// first. And some platforms, OVERLAPPED structs contain padding, and thus do
+// not meet `std::has_unique_object_representations_v`, so they need to be
+// explicitly allowed for byte spanification. These helpers encapsulate both
+// complexities.
+template <typename T>
+void FillOVERLAPPEDStruct(T& t, uint8_t value) {
+  if constexpr (std::has_unique_object_representations_v<T>) {
+    std::ranges::fill(base::byte_span_from_ref(t), value);
+  } else {
+    std::ranges::fill(base::byte_span_from_ref(base::allow_nonunique_obj, t),
+                      value);
+  }
+}
 
 }  // namespace net
 

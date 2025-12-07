@@ -5,5 +5,5 @@
 
 R8DIR=$(dirname $0)
 set -x
-exec $R8DIR/../jdk/current/bin/java -cp $R8DIR/lib/r8.jar \
+exec $R8DIR/../jdk/current/bin/java -cp $R8DIR/cipd/lib/r8.jar \
   com.android.tools.r8.Disassemble "${@:---help}"

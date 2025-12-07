@@ -21,7 +21,7 @@ namespace syncer {
 class ExtensionsActivity
     : public base::RefCountedThreadSafe<ExtensionsActivity> {
  public:
-  // A data record of activity performed by extension |extension_id|.
+  // A data record of activity performed by extension `extension_id`.
   struct Record {
     // The human-readable ID identifying the extension responsible
     // for the activity reported in this Record.
@@ -36,12 +36,12 @@ class ExtensionsActivity
 
   ExtensionsActivity();
 
-  // Fill |buffer| with all current records and then clear the
+  // Fill `buffer` with all current records and then clear the
   // internal records. Called on sync thread to append records to sync commit
   // message.
   void GetAndClearRecords(Records* buffer);
 
-  // Merge |records| with the current set of records. Called on sync thread to
+  // Merge `records` with the current set of records. Called on sync thread to
   // put back records if sync commit failed.
   void PutRecords(const Records& records);
 

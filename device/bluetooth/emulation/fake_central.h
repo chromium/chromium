@@ -10,9 +10,9 @@
 
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -59,6 +59,11 @@ class FakeCentral final : public mojom::FakeCentral,
       const std::string& address,
       uint16_t code,
       SetNextGATTDiscoveryResponseCallback callback) override;
+  void SimulateGATTOperationResponse(
+      mojom::GATTOperationType type,
+      const std::string& address,
+      uint16_t code,
+      SimulateGATTOperationResponseCallback callback) override;
   bool AllResponsesConsumed();
   void SimulateGATTDisconnection(
       const std::string& address,
@@ -66,6 +71,23 @@ class FakeCentral final : public mojom::FakeCentral,
   void SimulateGATTServicesChanged(
       const std::string& address,
       SimulateGATTServicesChangedCallback callback) override;
+  void SimulateCharacteristicOperationResponse(
+      mojom::CharacteristicOperationType type,
+      const std::string& characteristic_id,
+      const std::string& service_id,
+      const std::string& peripheral_address,
+      uint16_t code,
+      const std::optional<std::vector<uint8_t>>& data,
+      SimulateCharacteristicOperationResponseCallback callback) override;
+  void SimulateDescriptorOperationResponse(
+      mojom::DescriptorOperationType type,
+      const std::string& descriptor_id,
+      const std::string& characteristic_id,
+      const std::string& service_id,
+      const std::string& peripheral_address,
+      uint16_t code,
+      const std::optional<std::vector<uint8_t>>& data,
+      SimulateDescriptorOperationResponseCallback callback) override;
   void AddFakeService(const std::string& peripheral_address,
                       const device::BluetoothUUID& service_uuid,
                       AddFakeServiceCallback callback) override;
@@ -147,6 +169,8 @@ class FakeCentral final : public mojom::FakeCentral,
       const std::string& service_id,
       const std::string& peripheral_address,
       GetLastWrittenDescriptorValueCallback callback) override;
+  void SetClient(::mojo::PendingAssociatedRemote<mojom::FakeCentralClient>
+                     client) override;
 
   // BluetoothAdapter overrides:
   void Initialize(base::OnceClosure callback) override;
@@ -202,6 +226,10 @@ class FakeCentral final : public mojom::FakeCentral,
   void SetServiceAllowList(const UUIDList& uuids,
                            base::OnceClosure callback,
                            ErrorCallback error_callback) override;
+  void SetSimpleSecurePairingEnabled(bool enabled,
+                                     base::OnceClosure callback,
+                                     ErrorCallback error_callback) override;
+
   LowEnergyScanSessionHardwareOffloadingStatus
   GetLowEnergyScanSessionHardwareOffloadingStatus() override;
   std::unique_ptr<device::BluetoothLowEnergyScanSession>
@@ -210,10 +238,8 @@ class FakeCentral final : public mojom::FakeCentral,
       base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
       override;
   std::vector<BluetoothRole> GetSupportedRoles() override;
-#endif  // BUILDFLAG(IS_CHROMEOS)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetStandardChromeOSAdapterName() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   base::WeakPtr<BluetoothAdapter> GetWeakPtr() override;
   bool SetPoweredImpl(bool powered) override;
   void UpdateFilter(
@@ -225,6 +251,18 @@ class FakeCentral final : public mojom::FakeCentral,
   void StopScan(DiscoverySessionResultCallback callback) override;
   void RemovePairingDelegateInternal(
       device::BluetoothDevice::PairingDelegate* pairing_delegate) override;
+
+  void DispatchGATTOperationEvent(mojom::GATTOperationType type,
+                                  const std::string& peripheral_address);
+  void DispatchCharacteristicOperationEvent(
+      mojom::CharacteristicOperationType type,
+      const std::optional<std::vector<uint8_t>>& data,
+      const std::optional<mojom::WriteType> write_type,
+      const std::string& characteristic_id);
+  void DispatchDescriptorOperationEvent(
+      mojom::DescriptorOperationType type,
+      const std::optional<std::vector<uint8_t>>& data,
+      const std::string& descriptor_id);
 
  private:
   ~FakeCentral() override;
@@ -246,6 +284,7 @@ class FakeCentral final : public mojom::FakeCentral,
 
   mojom::CentralState state_;
   mojo::Receiver<mojom::FakeCentral> receiver_;
+  mojo::AssociatedRemote<mojom::FakeCentralClient> client_;
   base::WeakPtrFactory<FakeCentral> weak_ptr_factory_{this};
 };
 

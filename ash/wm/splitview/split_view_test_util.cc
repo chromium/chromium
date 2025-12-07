@@ -4,7 +4,9 @@
 
 #include "ash/wm/splitview/split_view_test_util.h"
 
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -45,13 +47,11 @@ gfx::Rect GetSplitViewDividerBoundsInScreen() {
 }
 
 const gfx::Rect GetWorkAreaBounds() {
-  return display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  return display::Screen::Get()->GetPrimaryDisplay().work_area();
 }
 
 const gfx::Rect GetWorkAreaBoundsForWindow(aura::Window* window) {
-  return display::Screen::GetScreen()
-      ->GetDisplayNearestWindow(window)
-      .work_area();
+  return display::Screen::Get()->GetDisplayNearestWindow(window).work_area();
 }
 
 void SnapOneTestWindow(aura::Window* window,
@@ -84,6 +84,16 @@ void VerifySplitViewOverviewSession(aura::Window* window) {
   gfx::Rect expected_grid_bounds = GetWorkAreaBoundsForWindow(window);
   expected_grid_bounds.Subtract(window->GetBoundsInScreen());
 
+  // In SplitViewOverviewSession, even when set to auto-hide, the shelf remains
+  // visible, the work area calculation doesn't subtract the shelf area, causing
+  // a discrepancy. This is corrected by subtracting the shelf area from the
+  // work area in this case.
+  Shelf* shelf = RootWindowController::ForWindow(window)->shelf();
+  if (shelf->auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
+    const gfx::Rect shelf_bounds = shelf->GetShelfBoundsInScreen();
+    expected_grid_bounds.Subtract(shelf_bounds);
+  }
+
   if (auto* divider = GetSplitViewDivider();
       divider && divider->divider_widget()) {
     expected_grid_bounds.Subtract(GetSplitViewDividerBoundsInScreen());
@@ -104,14 +114,14 @@ void VerifySplitViewOverviewSession(aura::Window* window) {
         std::max(expected_grid_bounds.height(), min_length));
   }
 
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     EXPECT_EQ(expected_grid_bounds, GetOverviewGridBounds(root_window));
   }
 
   EXPECT_TRUE(
       expected_grid_bounds.Contains(GetOverviewGridBounds(root_window)));
 
-  if (!Shell::Get()->IsInTabletMode()) {
+  if (!display::Screen::Get()->InTabletMode()) {
     auto* overview_grid = GetOverviewGridForRoot(window->GetRootWindow());
     EXPECT_TRUE(overview_grid->split_view_setup_widget());
     EXPECT_FALSE(overview_grid->no_windows_widget());

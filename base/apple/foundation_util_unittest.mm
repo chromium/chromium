@@ -14,8 +14,11 @@
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
+
+using testing::ElementsAreArray;
 
 namespace base::apple {
 
@@ -427,13 +430,13 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
     const char* expected_hex;
   } nsinteger_cases[] = {
 #if !defined(ARCH_CPU_64_BITS)
-    {12345678, "12345678", "bc614e"},
-    {-12345678, "-12345678", "ff439eb2"},
+      {12345678, "12345678", "bc614e"},
+      {-12345678, "-12345678", "ff439eb2"},
 #else
-    {12345678, "12345678", "bc614e"},
-    {-12345678, "-12345678", "ffffffffff439eb2"},
-    {137451299150l, "137451299150", "2000bc614e"},
-    {-137451299150l, "-137451299150", "ffffffdfff439eb2"},
+      {12345678, "12345678", "bc614e"},
+      {-12345678, "-12345678", "ffffffffff439eb2"},
+      {137451299150l, "137451299150", "2000bc614e"},
+      {-137451299150l, "-137451299150", "ffffffdfff439eb2"},
 #endif  // !defined(ARCH_CPU_64_BITS)
   };
 
@@ -451,13 +454,13 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
     const char* expected_hex;
   } nsuinteger_cases[] = {
 #if !defined(ARCH_CPU_64_BITS)
-    {12345678u, "12345678", "bc614e"},
-    {4282621618u, "4282621618", "ff439eb2"},
+      {12345678u, "12345678", "bc614e"},
+      {4282621618u, "4282621618", "ff439eb2"},
 #else
-    {12345678u, "12345678", "bc614e"},
-    {4282621618u, "4282621618", "ff439eb2"},
-    {137451299150ul, "137451299150", "2000bc614e"},
-    {18446743936258252466ul, "18446743936258252466", "ffffffdfff439eb2"},
+      {12345678u, "12345678", "bc614e"},
+      {4282621618u, "4282621618", "ff439eb2"},
+      {137451299150ul, "137451299150", "2000bc614e"},
+      {18446743936258252466ul, "18446743936258252466", "ffffffdfff439eb2"},
 #endif  // !defined(ARCH_CPU_64_BITS)
   };
 
@@ -469,23 +472,119 @@ TEST(StringNumberConversionsTest, FormatNSInteger) {
   }
 }
 
+TEST(FoundationUtilTest, NSDataToSpan) {
+  {
+    NSData* data = [NSData data];
+    span<const uint8_t> span = NSDataToSpan(data);
+    EXPECT_TRUE(span.empty());
+  }
+
+  {
+    NSMutableData* data = [NSMutableData data];
+    span<uint8_t> span = NSMutableDataToSpan(data);
+    EXPECT_TRUE(span.empty());
+  }
+
+  const char buffer[4] = {0, CHAR_MAX, 0, CHAR_MAX};
+
+  {
+    NSData* data = [NSData dataWithBytes:buffer length:sizeof(buffer)];
+    span<const uint8_t> span = NSDataToSpan(data);
+    EXPECT_THAT(span, ElementsAreArray(buffer));
+  }
+
+  {
+    NSMutableData* data = [NSMutableData dataWithBytes:buffer
+                                                length:sizeof(buffer)];
+    span<uint8_t> span = NSMutableDataToSpan(data);
+    EXPECT_THAT(span, ElementsAreArray(buffer));
+    span[0] = 123;
+    EXPECT_EQ(static_cast<const char*>(data.bytes)[0], 123);
+  }
+}
+
+TEST(FoundationUtilTest, CFDataToSpan) {
+  {
+    ScopedCFTypeRef<CFDataRef> data(CFDataCreate(nullptr, nullptr, 0));
+    span<const uint8_t> span = CFDataToSpan(data.get());
+    EXPECT_TRUE(span.empty());
+  }
+
+  {
+    ScopedCFTypeRef<CFMutableDataRef> data(CFDataCreateMutable(nullptr, 0));
+    span<uint8_t> span = CFMutableDataToSpan(data.get());
+    EXPECT_TRUE(span.empty());
+  }
+
+  const uint8_t buffer[4] = {0, CHAR_MAX, 0, CHAR_MAX};
+
+  {
+    ScopedCFTypeRef<CFDataRef> data(
+        CFDataCreate(nullptr, buffer, sizeof(buffer)));
+    span<const uint8_t> data_span = CFDataToSpan(data.get());
+    EXPECT_EQ(span(buffer), data_span);
+    EXPECT_THAT(data_span, ElementsAreArray(buffer));
+  }
+
+  {
+    ScopedCFTypeRef<CFMutableDataRef> data(CFDataCreateMutable(nullptr, 0));
+    CFDataAppendBytes(data.get(), buffer, sizeof(buffer));
+    span<uint8_t> data_span = CFMutableDataToSpan(data.get());
+    EXPECT_EQ(span(buffer), data_span);
+    data_span[0] = 123;
+    EXPECT_EQ(CFDataGetBytePtr(data.get())[0], 123);
+  }
+}
+
 #define EXPECT_LOG_EQ(expected, val) \
   EXPECT_EQ(expected, (std::ostringstream() << (val)).str())
 
-TEST(FoundationLoggingTest, ObjCObject) {
-  EXPECT_LOG_EQ("Hello, world!", @"Hello, world!");
+TEST(FoundationLoggingTest, CFErrorRef) {
+  EXPECT_LOG_EQ("(null CFErrorRef)", static_cast<CFErrorRef>(nullptr));
+  ScopedCFTypeRef<CFErrorRef> error(
+      CFErrorCreate(kCFAllocatorDefault, kCFErrorDomainOSStatus, -50, nullptr));
+  EXPECT_LOG_EQ("Code: -50 Domain: NSOSStatusErrorDomain Desc: The operation "
+                "couldn’t be completed. (OSStatus error -50.)",
+                error.get());
 }
 
-TEST(FoundationLoggingTest, ObjCNil) {
-  EXPECT_LOG_EQ("(nil)", static_cast<id>(nil));
+TEST(FoundationLoggingTest, CFStringRef) {
+  EXPECT_LOG_EQ("(null CFStringRef)", static_cast<CFStringRef>(nullptr));
+  EXPECT_LOG_EQ("Hello, world!", CFSTR("Hello, world!"));
 }
 
 TEST(FoundationLoggingTest, CFRange) {
   EXPECT_LOG_EQ("{0, 100}", CFRangeMake(0, 100));
 }
 
+TEST(FoundationLoggingTest, ObjCObject) {
+  EXPECT_LOG_EQ("Hello, world!", @"Hello, world!");
+  NSArray* array = @[ @1, @2, @3 ];
+  EXPECT_LOG_EQ("(\n    1,\n    2,\n    3\n)", array);
+  NSDictionary* dict = @{@"key1" : @"value1", @"key2" : @"value2"};
+  EXPECT_LOG_EQ("{\n    key1 = value1;\n    key2 = value2;\n}", dict);
+}
+
+TEST(FoundationLoggingTest, ObjCNil) {
+  EXPECT_LOG_EQ("(nil)", static_cast<id>(nil));
+}
+
 TEST(FoundationLoggingTest, NSRange) {
   EXPECT_LOG_EQ("{0, 100}", NSMakeRange(0, 100));
 }
+
+#if BUILDFLAG(IS_MAC)
+
+TEST(FoundationLoggingTest, NSPoint) {
+  EXPECT_LOG_EQ("{50, 100}", NSMakePoint(50, 100));
+}
+TEST(FoundationLoggingTest, NSRect) {
+  EXPECT_LOG_EQ("{{10, 20}, {30, 40}}", NSMakeRect(10, 20, 30, 40));
+}
+TEST(FoundationLoggingTest, NSSize) {
+  EXPECT_LOG_EQ("{0, 100}", NSMakeSize(0, 100));
+}
+
+#endif  // IS_MAC
 
 }  // namespace base::apple

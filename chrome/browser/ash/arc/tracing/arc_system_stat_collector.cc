@@ -373,7 +373,7 @@ constexpr int ArcSystemStatCollector::kGemInfoColumns[];
 // static
 constexpr int ArcSystemStatCollector::kOneValueColumns[];
 
-ArcSystemStatCollector::ArcSystemStatCollector() {}
+ArcSystemStatCollector::ArcSystemStatCollector() = default;
 
 ArcSystemStatCollector::~ArcSystemStatCollector() {
   FreeSystemReadersContext();
@@ -544,7 +544,8 @@ std::string ArcSystemStatCollector::SerializeToJson() const {
 }
 
 bool ArcSystemStatCollector::LoadFromJson(const std::string& json_data) {
-  const std::optional<base::Value> root = base::JSONReader::Read(json_data);
+  const std::optional<base::Value> root =
+      base::JSONReader::Read(json_data, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   if (!root) {
     return false;
   }

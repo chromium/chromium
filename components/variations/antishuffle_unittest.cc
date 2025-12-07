@@ -63,6 +63,7 @@ void SetupStudy(VariationsSeed* seed, const TestStudyConfig& config) {
   Study* study = seed->add_study();
   study->set_name(std::string(config.name));
   study->set_consistency(Study_Consistency_PERMANENT);
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
   if (config.add_salt) {
     study->set_randomization_seed(0x1234);
   }
@@ -115,9 +116,11 @@ void ProcessSeed(EntropyProviders&& entropy_providers) {
   auto client_state = CreateDummyClientFilterableState();
   base::FeatureList feature_list;
   VariationsLayers layers(seed, entropy_providers);
-  VariationsSeedProcessor().CreateTrialsFromSeed(
-      seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
-      entropy_providers, layers, &feature_list);
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor(sticky_activation_manager)
+      .CreateTrialsFromSeed(seed, *client_state,
+                            base::BindRepeating(NoopUIStringOverrideCallback),
+                            entropy_providers, layers, &feature_list);
 }
 
 }  // namespace

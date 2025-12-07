@@ -26,7 +26,7 @@ enum class ErrorRetryCommand;
 struct Referrer;
 class NavigationContextImpl;
 class WKBackForwardListItemHolder;
-}
+}  // namespace web
 
 // CRWWKNavigationHandler uses this protocol to interact with its owner.
 @protocol CRWWKNavigationHandlerDelegate <CRWWebViewHandlerDelegate>

@@ -4,12 +4,14 @@
 
 #include <utility>
 
+#include "base/functional/callback.h"
+#include "base/notreached.h"
 #include "build/buildflag.h"
 #include "chrome/browser/permissions/system/platform_handle.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
-static_assert(!BUILDFLAG(IS_CHROMEOS_ASH));
+static_assert(!BUILDFLAG(IS_CHROMEOS));
 static_assert(!BUILDFLAG(IS_MAC));
 
 namespace system_permission_settings {
@@ -31,7 +33,6 @@ class PlatformHandleImpl : public PlatformHandle {
 
   void Request(ContentSettingsType type,
                SystemPermissionResponseCallback callback) override {
-    std::move(callback).Run();
     NOTREACHED();
   }
 

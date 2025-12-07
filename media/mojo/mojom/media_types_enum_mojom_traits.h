@@ -8,6 +8,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "media/base/cdm_factory.h"
+#include "media/base/demuxer.h"
 #include "media/base/renderer_factory_selector.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_transformation.h"
@@ -35,7 +36,7 @@ struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
         return media::mojom::CdmEvent::kHardwareContextReset;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -57,7 +58,7 @@ struct EnumTraits<media::mojom::CdmEvent, ::media::CdmEvent> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 #endif  // BUILDFLAG(IS_WIN)
@@ -80,7 +81,7 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
         return media::mojom::CdmSessionClosedReason::kResourceEvicted;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -105,7 +106,7 @@ struct EnumTraits<media::mojom::CdmSessionClosedReason,
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -123,7 +124,7 @@ struct EnumTraits<media::mojom::EncryptionType, ::media::EncryptionType> {
         return media::mojom::EncryptionType::kEncryptedWithClearLead;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -145,7 +146,7 @@ struct EnumTraits<media::mojom::EncryptionType, ::media::EncryptionType> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -172,55 +173,69 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
         return media::mojom::SVCScalabilityMode::kL3T2;
       case media::SVCScalabilityMode::kL3T3:
         return media::mojom::SVCScalabilityMode::kL3T3;
-      case media::SVCScalabilityMode::kL2T1Key:
-        return media::mojom::SVCScalabilityMode::kL2T1Key;
-      case media::SVCScalabilityMode::kL2T2Key:
-        return media::mojom::SVCScalabilityMode::kL2T2Key;
-      case media::SVCScalabilityMode::kL2T3Key:
-        return media::mojom::SVCScalabilityMode::kL2T3Key;
-      case media::SVCScalabilityMode::kL3T1Key:
-        return media::mojom::SVCScalabilityMode::kL3T1Key;
-      case media::SVCScalabilityMode::kL3T2Key:
-        return media::mojom::SVCScalabilityMode::kL3T2Key;
-      case media::SVCScalabilityMode::kL3T3Key:
-        return media::mojom::SVCScalabilityMode::kL3T3Key;
+      case media::SVCScalabilityMode::kL2T1h:
+        return media::mojom::SVCScalabilityMode::kL2T1h;
+      case media::SVCScalabilityMode::kL2T2h:
+        return media::mojom::SVCScalabilityMode::kL2T2h;
+      case media::SVCScalabilityMode::kL2T3h:
+        return media::mojom::SVCScalabilityMode::kL2T3h;
       case media::SVCScalabilityMode::kS2T1:
         return media::mojom::SVCScalabilityMode::kS2T1;
       case media::SVCScalabilityMode::kS2T2:
         return media::mojom::SVCScalabilityMode::kS2T2;
       case media::SVCScalabilityMode::kS2T3:
         return media::mojom::SVCScalabilityMode::kS2T3;
+      case media::SVCScalabilityMode::kS2T1h:
+        return media::mojom::SVCScalabilityMode::kS2T1h;
+      case media::SVCScalabilityMode::kS2T2h:
+        return media::mojom::SVCScalabilityMode::kS2T2h;
+      case media::SVCScalabilityMode::kS2T3h:
+        return media::mojom::SVCScalabilityMode::kS2T3h;
       case media::SVCScalabilityMode::kS3T1:
         return media::mojom::SVCScalabilityMode::kS3T1;
       case media::SVCScalabilityMode::kS3T2:
         return media::mojom::SVCScalabilityMode::kS3T2;
       case media::SVCScalabilityMode::kS3T3:
         return media::mojom::SVCScalabilityMode::kS3T3;
-      case media::SVCScalabilityMode::kL2T1h:
-      case media::SVCScalabilityMode::kL2T2h:
-      case media::SVCScalabilityMode::kL2T3h:
-      case media::SVCScalabilityMode::kS2T1h:
-      case media::SVCScalabilityMode::kS2T2h:
-      case media::SVCScalabilityMode::kS2T3h:
       case media::SVCScalabilityMode::kS3T1h:
+        return media::mojom::SVCScalabilityMode::kS3T1h;
       case media::SVCScalabilityMode::kS3T2h:
+        return media::mojom::SVCScalabilityMode::kS3T2h;
       case media::SVCScalabilityMode::kS3T3h:
+        return media::mojom::SVCScalabilityMode::kS3T3h;
+      case media::SVCScalabilityMode::kL2T1Key:
+        return media::mojom::SVCScalabilityMode::kL2T1Key;
+      case media::SVCScalabilityMode::kL2T2Key:
+        return media::mojom::SVCScalabilityMode::kL2T2Key;
       case media::SVCScalabilityMode::kL2T2KeyShift:
+        return media::mojom::SVCScalabilityMode::kL2T2KeyShift;
+      case media::SVCScalabilityMode::kL2T3Key:
+        return media::mojom::SVCScalabilityMode::kL2T3Key;
       case media::SVCScalabilityMode::kL2T3KeyShift:
+        return media::mojom::SVCScalabilityMode::kL2T3KeyShift;
+      case media::SVCScalabilityMode::kL3T1Key:
+        return media::mojom::SVCScalabilityMode::kL3T1Key;
+      case media::SVCScalabilityMode::kL3T2Key:
+        return media::mojom::SVCScalabilityMode::kL3T2Key;
       case media::SVCScalabilityMode::kL3T2KeyShift:
+        return media::mojom::SVCScalabilityMode::kL3T2KeyShift;
+      case media::SVCScalabilityMode::kL3T3Key:
+        return media::mojom::SVCScalabilityMode::kL3T3Key;
       case media::SVCScalabilityMode::kL3T3KeyShift:
+        return media::mojom::SVCScalabilityMode::kL3T3KeyShift;
       case media::SVCScalabilityMode::kL3T1h:
+        return media::mojom::SVCScalabilityMode::kL3T1h;
       case media::SVCScalabilityMode::kL3T2h:
+        return media::mojom::SVCScalabilityMode::kL3T2h;
       case media::SVCScalabilityMode::kL3T3h:
-        NOTREACHED_NORETURN();
+        return media::mojom::SVCScalabilityMode::kL3T3h;
     }
+    NOTREACHED();
   }
 
   static bool FromMojom(media::mojom::SVCScalabilityMode input,
                         media::SVCScalabilityMode* output) {
     switch (input) {
-      case media::mojom::SVCScalabilityMode::kUnsupportedMode:
-        NOTREACHED_NORETURN();
       case media::mojom::SVCScalabilityMode::kL1T1:
         *output = media::SVCScalabilityMode::kL1T1;
         return true;
@@ -248,23 +263,14 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
       case media::mojom::SVCScalabilityMode::kL3T3:
         *output = media::SVCScalabilityMode::kL3T3;
         return true;
-      case media::mojom::SVCScalabilityMode::kL2T1Key:
-        *output = media::SVCScalabilityMode::kL2T1Key;
+      case media::mojom::SVCScalabilityMode::kL2T1h:
+        *output = media::SVCScalabilityMode::kL2T1h;
         return true;
-      case media::mojom::SVCScalabilityMode::kL2T2Key:
-        *output = media::SVCScalabilityMode::kL2T2Key;
+      case media::mojom::SVCScalabilityMode::kL2T2h:
+        *output = media::SVCScalabilityMode::kL2T2h;
         return true;
-      case media::mojom::SVCScalabilityMode::kL2T3Key:
-        *output = media::SVCScalabilityMode::kL2T3Key;
-        return true;
-      case media::mojom::SVCScalabilityMode::kL3T1Key:
-        *output = media::SVCScalabilityMode::kL3T1Key;
-        return true;
-      case media::mojom::SVCScalabilityMode::kL3T2Key:
-        *output = media::SVCScalabilityMode::kL3T2Key;
-        return true;
-      case media::mojom::SVCScalabilityMode::kL3T3Key:
-        *output = media::SVCScalabilityMode::kL3T3Key;
+      case media::mojom::SVCScalabilityMode::kL2T3h:
+        *output = media::SVCScalabilityMode::kL2T3h;
         return true;
       case media::mojom::SVCScalabilityMode::kS2T1:
         *output = media::SVCScalabilityMode::kS2T1;
@@ -275,6 +281,15 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
       case media::mojom::SVCScalabilityMode::kS2T3:
         *output = media::SVCScalabilityMode::kS2T3;
         return true;
+      case media::mojom::SVCScalabilityMode::kS2T1h:
+        *output = media::SVCScalabilityMode::kS2T1h;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS2T2h:
+        *output = media::SVCScalabilityMode::kS2T2h;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS2T3h:
+        *output = media::SVCScalabilityMode::kS2T3h;
+        return true;
       case media::mojom::SVCScalabilityMode::kS3T1:
         *output = media::SVCScalabilityMode::kS3T1;
         return true;
@@ -284,9 +299,57 @@ struct EnumTraits<media::mojom::SVCScalabilityMode, media::SVCScalabilityMode> {
       case media::mojom::SVCScalabilityMode::kS3T3:
         *output = media::SVCScalabilityMode::kS3T3;
         return true;
+      case media::mojom::SVCScalabilityMode::kS3T1h:
+        *output = media::SVCScalabilityMode::kS3T1h;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS3T2h:
+        *output = media::SVCScalabilityMode::kS3T2h;
+        return true;
+      case media::mojom::SVCScalabilityMode::kS3T3h:
+        *output = media::SVCScalabilityMode::kS3T3h;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T1Key:
+        *output = media::SVCScalabilityMode::kL2T1Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T2Key:
+        *output = media::SVCScalabilityMode::kL2T2Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T2KeyShift:
+        *output = media::SVCScalabilityMode::kL2T2KeyShift;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T3Key:
+        *output = media::SVCScalabilityMode::kL2T3Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL2T3KeyShift:
+        *output = media::SVCScalabilityMode::kL2T3KeyShift;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T1Key:
+        *output = media::SVCScalabilityMode::kL3T1Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T2Key:
+        *output = media::SVCScalabilityMode::kL3T2Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T2KeyShift:
+        *output = media::SVCScalabilityMode::kL3T2KeyShift;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T3Key:
+        *output = media::SVCScalabilityMode::kL3T3Key;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T3KeyShift:
+        *output = media::SVCScalabilityMode::kL3T3KeyShift;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T1h:
+        *output = media::SVCScalabilityMode::kL3T1h;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T2h:
+        *output = media::SVCScalabilityMode::kL3T2h;
+        return true;
+      case media::mojom::SVCScalabilityMode::kL3T3h:
+        *output = media::SVCScalabilityMode::kL3T3h;
+        return true;
     }
-
-    NOTREACHED_NORETURN();
+    NOTREACHED();
+    return false;
   }
 };
 
@@ -303,7 +366,7 @@ struct EnumTraits<media::mojom::SVCInterLayerPredMode,
       case media::SVCInterLayerPredMode::kOnKeyPic:
         return media::mojom::SVCInterLayerPredMode::kOnKeyPic;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   static bool FromMojom(media::mojom::SVCInterLayerPredMode input,
@@ -319,7 +382,7 @@ struct EnumTraits<media::mojom::SVCInterLayerPredMode,
         *output = media::SVCInterLayerPredMode::kOnKeyPic;
         return true;
     }
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -337,7 +400,7 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
         return media::mojom::VideoRotation::kVideoRotation270;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -359,7 +422,7 @@ struct EnumTraits<media::mojom::VideoRotation, ::media::VideoRotation> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 
@@ -371,8 +434,6 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return media::mojom::RendererType::kRendererImpl;
       case ::media::RendererType::kMojo:
         return media::mojom::RendererType::kMojo;
-      case ::media::RendererType::kMediaPlayer:
-        return media::mojom::RendererType::kMediaPlayer;
       case ::media::RendererType::kCourier:
         return media::mojom::RendererType::kCourier;
       case ::media::RendererType::kFlinging:
@@ -391,7 +452,7 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return media::mojom::RendererType::kTest;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -404,9 +465,6 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return true;
       case media::mojom::RendererType::kMojo:
         *output = ::media::RendererType::kMojo;
-        return true;
-      case media::mojom::RendererType::kMediaPlayer:
-        *output = ::media::RendererType::kMediaPlayer;
         return true;
       case media::mojom::RendererType::kCourier:
         *output = ::media::RendererType::kCourier;
@@ -434,7 +492,62 @@ struct EnumTraits<media::mojom::RendererType, ::media::RendererType> {
         return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
+  }
+};
+
+template <>
+struct EnumTraits<media::mojom::DemuxerType, ::media::DemuxerType> {
+  static media::mojom::DemuxerType ToMojom(::media::DemuxerType input) {
+    switch (input) {
+      case ::media::DemuxerType::kUnknownDemuxer:
+        return media::mojom::DemuxerType::kUnknownDemuxer;
+      case ::media::DemuxerType::kMockDemuxer:
+        return media::mojom::DemuxerType::kMockDemuxer;
+      case ::media::DemuxerType::kFFmpegDemuxer:
+        return media::mojom::DemuxerType::kFFmpegDemuxer;
+      case ::media::DemuxerType::kChunkDemuxer:
+        return media::mojom::DemuxerType::kChunkDemuxer;
+      case ::media::DemuxerType::kFrameInjectingDemuxer:
+        return media::mojom::DemuxerType::kFrameInjectingDemuxer;
+      case ::media::DemuxerType::kStreamProviderDemuxer:
+        return media::mojom::DemuxerType::kStreamProviderDemuxer;
+      case ::media::DemuxerType::kManifestDemuxer:
+        return media::mojom::DemuxerType::kManifestDemuxer;
+    }
+
+    NOTREACHED();
+  }
+
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::mojom::DemuxerType input,
+                        ::media::DemuxerType* output) {
+    switch (input) {
+      case media::mojom::DemuxerType::kUnknownDemuxer:
+        *output = ::media::DemuxerType::kUnknownDemuxer;
+        return true;
+      case media::mojom::DemuxerType::kMockDemuxer:
+        *output = ::media::DemuxerType::kMockDemuxer;
+        return true;
+      case media::mojom::DemuxerType::kFFmpegDemuxer:
+        *output = ::media::DemuxerType::kFFmpegDemuxer;
+        return true;
+      case media::mojom::DemuxerType::kChunkDemuxer:
+        *output = ::media::DemuxerType::kChunkDemuxer;
+        return true;
+      case media::mojom::DemuxerType::kFrameInjectingDemuxer:
+        *output = ::media::DemuxerType::kFrameInjectingDemuxer;
+        return true;
+      case media::mojom::DemuxerType::kStreamProviderDemuxer:
+        *output = ::media::DemuxerType::kStreamProviderDemuxer;
+        return true;
+      case media::mojom::DemuxerType::kManifestDemuxer:
+        *output = ::media::DemuxerType::kManifestDemuxer;
+        return true;
+    }
+
+    NOTREACHED();
   }
 };
 
@@ -448,8 +561,6 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return media::mojom::CreateCdmStatus::kUnknownError;
       case media::CreateCdmStatus::kCdmCreationAborted:
         return media::mojom::CreateCdmStatus::kCdmCreationAborted;
-      case media::CreateCdmStatus::kLoadCdmFailed:
-        return media::mojom::CreateCdmStatus::kLoadCdmFailed;
       case media::CreateCdmStatus::kCreateCdmFuncNotAvailable:
         return media::mojom::CreateCdmStatus::kCreateCdmFuncNotAvailable;
       case media::CreateCdmStatus::kCdmHelperCreationFailed:
@@ -472,8 +583,6 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return media::mojom::CreateCdmStatus::kDisconnectionError;
       case media::CreateCdmStatus::kNotAllowedOnUniqueOrigin:
         return media::mojom::CreateCdmStatus::kNotAllowedOnUniqueOrigin;
-      case media::CreateCdmStatus::kMediaDrmBridgeCreationFailed:
-        return media::mojom::CreateCdmStatus::kMediaDrmBridgeCreationFailed;
       case media::CreateCdmStatus::kMediaCryptoNotAvailable:
         return media::mojom::CreateCdmStatus::kMediaCryptoNotAvailable;
       case media::CreateCdmStatus::kNoMoreInstances:
@@ -484,9 +593,28 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return media::mojom::CreateCdmStatus::kCrOsVerifiedAccessDisabled;
       case media::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed:
         return media::mojom::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed;
+      case media::CreateCdmStatus::kAndroidMediaDrmIllegalArgument:
+        return media::mojom::CreateCdmStatus::kAndroidMediaDrmIllegalArgument;
+      case media::CreateCdmStatus::kAndroidMediaDrmIllegalState:
+        return media::mojom::CreateCdmStatus::kAndroidMediaDrmIllegalState;
+      case media::CreateCdmStatus::kAndroidFailedL1SecurityLevel:
+        return media::mojom::CreateCdmStatus::kAndroidFailedL1SecurityLevel;
+      case media::CreateCdmStatus::kAndroidFailedL3SecurityLevel:
+        return media::mojom::CreateCdmStatus::kAndroidFailedL3SecurityLevel;
+      case media::CreateCdmStatus::kAndroidFailedSecurityOrigin:
+        return media::mojom::CreateCdmStatus::kAndroidFailedSecurityOrigin;
+      case media::CreateCdmStatus::kAndroidFailedMediaCryptoSession:
+        return media::mojom::CreateCdmStatus::kAndroidFailedMediaCryptoSession;
+      case media::CreateCdmStatus::kAndroidFailedToStartProvisioning:
+        return media::mojom::CreateCdmStatus::kAndroidFailedToStartProvisioning;
+      case media::CreateCdmStatus::kAndroidFailedMediaCryptoCreate:
+        return media::mojom::CreateCdmStatus::kAndroidFailedMediaCryptoCreate;
+      case media::CreateCdmStatus::kAndroidUnsupportedMediaCryptoScheme:
+        return media::mojom::CreateCdmStatus::
+            kAndroidUnsupportedMediaCryptoScheme;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 
   // Returning false results in deserialization failure and causes the
@@ -502,9 +630,6 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
         return true;
       case media::mojom::CreateCdmStatus::kCdmCreationAborted:
         *output = media::CreateCdmStatus::kCdmCreationAborted;
-        return true;
-      case media::mojom::CreateCdmStatus::kLoadCdmFailed:
-        *output = media::CreateCdmStatus::kLoadCdmFailed;
         return true;
       case media::mojom::CreateCdmStatus::kCreateCdmFuncNotAvailable:
         *output = media::CreateCdmStatus::kCreateCdmFuncNotAvailable;
@@ -539,9 +664,6 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
       case media::mojom::CreateCdmStatus::kNotAllowedOnUniqueOrigin:
         *output = media::CreateCdmStatus::kNotAllowedOnUniqueOrigin;
         return true;
-      case media::mojom::CreateCdmStatus::kMediaDrmBridgeCreationFailed:
-        *output = media::CreateCdmStatus::kMediaDrmBridgeCreationFailed;
-        return true;
       case media::mojom::CreateCdmStatus::kMediaCryptoNotAvailable:
         *output = media::CreateCdmStatus::kMediaCryptoNotAvailable;
         return true;
@@ -557,9 +679,36 @@ struct EnumTraits<media::mojom::CreateCdmStatus, media::CreateCdmStatus> {
       case media::mojom::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed:
         *output = media::CreateCdmStatus::kCrOsRemoteFactoryCreationFailed;
         return true;
+      case media::mojom::CreateCdmStatus::kAndroidMediaDrmIllegalArgument:
+        *output = media::CreateCdmStatus::kAndroidMediaDrmIllegalArgument;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidMediaDrmIllegalState:
+        *output = media::CreateCdmStatus::kAndroidMediaDrmIllegalState;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedL1SecurityLevel:
+        *output = media::CreateCdmStatus::kAndroidFailedL1SecurityLevel;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedL3SecurityLevel:
+        *output = media::CreateCdmStatus::kAndroidFailedL3SecurityLevel;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedSecurityOrigin:
+        *output = media::CreateCdmStatus::kAndroidFailedSecurityOrigin;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedMediaCryptoSession:
+        *output = media::CreateCdmStatus::kAndroidFailedMediaCryptoSession;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedToStartProvisioning:
+        *output = media::CreateCdmStatus::kAndroidFailedToStartProvisioning;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidFailedMediaCryptoCreate:
+        *output = media::CreateCdmStatus::kAndroidFailedMediaCryptoCreate;
+        return true;
+      case media::mojom::CreateCdmStatus::kAndroidUnsupportedMediaCryptoScheme:
+        *output = media::CreateCdmStatus::kAndroidUnsupportedMediaCryptoScheme;
+        return true;
     }
 
-    NOTREACHED_NORETURN();
+    NOTREACHED();
   }
 };
 

@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<title>:link-to(name) on link</title>
+<link rel="author" title="Morten Stenshorne" href="mailto:mstensho@chromium.org">
+<link rel="help" href="https://issues.chromium.org/issues/436805487">
+<script type="routemap">
+  {
+    "routes": [
+      { "name": "r1",
+        "pattern": { "protocol": "http*" }
+      }
+    ]
+  }
+</script>
+<link rel="match" href="../css/reference/ref-filled-green-100px-square.xht">
+<p>Test passes if there is a filled green square and <strong>no red</strong>.</p>
+<style>
+  :link-to(r1) {
+    background: green;
+  }
+  a {
+    display: block;
+    width: 100px;
+    height: 100px;
+    background: red;
+  }
+</style>
+<a href="route/other.html"></a>

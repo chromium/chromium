@@ -1,0 +1,7 @@
+{
+  "name": "Removing Tab While Part of Group",
+  "manifest_version": 3,
+  "version": "0.1",
+  "permissions": ["tabs"],
+  "background": {"service_worker": "background.js", "type": "module"}
+}

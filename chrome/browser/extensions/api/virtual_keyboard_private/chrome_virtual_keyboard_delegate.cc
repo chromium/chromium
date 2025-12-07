@@ -15,16 +15,16 @@
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
 #include "base/check.h"
-#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
-#include "chrome/browser/ash/login/ui/user_adding_screen.h"
+#include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
+#include "chrome/browser/ui/ash/login/user_adding_screen.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
@@ -73,8 +73,7 @@ keyboard::ContainerType ConvertKeyboardModeToContainerType(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return keyboard::ContainerType::kFullWidth;
+  NOTREACHED();
 }
 
 // Returns the ui::TextInputClient of the active InputMethod or nullptr.
@@ -174,18 +173,6 @@ extensions::EventRouter* GetRouterForEventName(content::BrowserContext* context,
     return nullptr;
   }
   return router;
-}
-
-// Returns whether the `ondevice_handwriting` USE flag has been set.
-// Adapted from
-// `//chromeos/services/machine_learning/cpp/ash/handwriting_model_loader.cc`.
-// This flag is set from the CrOS side in
-// https://crsrc.org/o/src/platform2/login_manager/chrome_setup.cc;l=1014;drc=e44a81d180823c2a0758c52f0520862d0545b98d
-bool IsOndeviceHandwritingEnabledViaCommandLine() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(::switches::kOndeviceHandwritingSwitch) &&
-         command_line->GetSwitchValueASCII(
-             ::switches::kOndeviceHandwritingSwitch) == "use_rootfs";
 }
 
 }  // namespace
@@ -300,7 +287,7 @@ bool ChromeVirtualKeyboardDelegate::ShowLanguageSettings() {
   base::RecordAction(
       base::UserMetricsAction("VirtualKeyboard.OpenLanguageSettings"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
+      profile_util::GetActiveUserProfile(),
       chromeos::settings::mojom::kInputSubpagePath);
   return true;
 }
@@ -314,7 +301,7 @@ bool ChromeVirtualKeyboardDelegate::ShowSuggestionSettings() {
   base::RecordAction(
       base::UserMetricsAction("VirtualKeyboard.OpenSuggestionSettings"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
-      ProfileManager::GetActiveUserProfile(),
+      profile_util::GetActiveUserProfile(),
       chromeos::settings::mojom::kInputSubpagePath);
   return true;
 }
@@ -523,28 +510,17 @@ void ChromeVirtualKeyboardDelegate::OnHasInputDevices(
   features.Append(GenerateFeatureFlag(
       "multiword",
       base::FeatureList::IsEnabled(ash::features::kAssistMultiWord)));
-  features.Append(GenerateFeatureFlag(
-      "stylushandwriting",
-      base::FeatureList::IsEnabled(ash::features::kImeStylusHandwriting)));
-  features.Append(GenerateFeatureFlag(
-      "roundCorners", base::FeatureList::IsEnabled(
-                          ash::features::kVirtualKeyboardRoundCorners)));
-  features.Append(
-      GenerateFeatureFlag("systemjapanesephysicaltyping",
-                          base::FeatureList::IsEnabled(
-                              ash::features::kSystemJapanesePhysicalTyping)));
+  features.Append(GenerateFeatureFlag("stylushandwriting", false));
+  features.Append(GenerateFeatureFlag("roundCorners", false));
   features.Append(GenerateFeatureFlag(
       "autocorrectparamstuning",
       base::FeatureList::IsEnabled(ash::features::kAutocorrectParamsTuning)));
   features.Append(GenerateFeatureFlag("jelly", true));
-  features.Append(GenerateFeatureFlag(
-      "japanesefunctionrow",
-      base::FeatureList::IsEnabled(ash::features::kJapaneseFunctionRow)));
-  features.Append(GenerateFeatureFlag(
-      "usemlservicefornonlongformhandwriting",
-      base::FeatureList::IsEnabled(
-          ash::features::kUseMlServiceForNonLongformHandwritingOnAllBoards) ||
-          IsOndeviceHandwritingEnabledViaCommandLine()));
+  features.Append(GenerateFeatureFlag("japanesefunctionrow", false));
+  features.Append(
+      GenerateFeatureFlag("japaneseinputmodeswitchinvk",
+                          base::FeatureList::IsEnabled(
+                              ash::features::kJapaneseInputModeSwitchInVK)));
 
   results.Set("features", std::move(features));
 

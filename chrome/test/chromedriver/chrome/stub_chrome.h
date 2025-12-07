@@ -7,6 +7,7 @@
 
 #include <list>
 #include <memory>
+#include <string>
 
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
@@ -23,15 +24,22 @@ class StubChrome : public Chrome {
   Status GetAsDesktop(ChromeDesktopImpl** desktop) override;
   const BrowserInfo* GetBrowserInfo() const override;
   bool HasCrashedWebView() override;
-  Status GetWebViewCount(size_t* web_view_count, bool w3c_compliant) override;
+  int GetWebViewCount() const override;
   Status GetWebViewIdForFirstTab(std::string* web_view_id,
                                  bool w3c_compliant) override;
-  Status GetWebViewIds(std::list<std::string>* web_view_ids,
-                       bool w3c_compliant) override;
+  Status GetTopLevelWebViewIds(std::list<std::string>* tab_view_ids,
+                               bool w3c_compliant) override;
   Status GetWebViewById(const std::string& id, WebView** web_view) override;
+  Status GetActivePageByWebViewId(const std::string& id,
+                                  WebView** web_view,
+                                  bool wait_for_page) override;
+  Status NewHiddenTarget(const std::string& target_id,
+                         bool w3c_compliant,
+                         std::string* window_handle) override;
   Status NewWindow(const std::string& target_id,
                    WindowType type,
                    bool is_background,
+                   bool w3c_compliant,
                    std::string* window_handle) override;
   Status GetWindowRect(const std::string& id, WindowRect* rect) override;
   Status SetWindowRect(const std::string& target_id,
@@ -44,12 +52,14 @@ class StubChrome : public Chrome {
   Status SetAcceptInsecureCerts() override;
   Status SetPermission(std::unique_ptr<base::Value::Dict> permission_descriptor,
                        Chrome::PermissionState desired_state,
-                       WebView* current_view) override;
+                       WebView* current_view,
+                       const std::string& current_frame_id) override;
   std::string GetOperatingSystemName() override;
   bool IsMobileEmulationEnabled() const override;
   bool HasTouchScreen() const override;
   std::string page_load_strategy() const override;
   Status Quit() override;
+  DevToolsClient* Client() const override;
 
  private:
   BrowserInfo browser_info_;

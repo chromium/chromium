@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "services/webnn/dml/command_recorder.h"
+
 #include <wrl.h>
 
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "services/webnn/dml/adapter.h"
 #include "services/webnn/dml/command_queue.h"
-#include "services/webnn/dml/command_recorder.h"
 #include "services/webnn/dml/error.h"
 #include "services/webnn/dml/tensor_desc.h"
 #include "services/webnn/dml/test_base.h"
@@ -57,7 +59,7 @@ void WebNNCommandRecorderTest::Upload(CommandRecorder* command_recorder,
       adapter_->d3d12_device(), buffer_size, L"Upload_Buffer", upload_buffer));
   void* upload_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(upload_buffer->Map(0, nullptr, &upload_buffer_data));
-  memcpy(upload_buffer_data, src_buffer, buffer_size);
+  UNSAFE_TODO(memcpy(upload_buffer_data, src_buffer, buffer_size));
   upload_buffer->Unmap(0, nullptr);
 
   // Copy the input data from upload buffer to input buffer.
@@ -88,7 +90,7 @@ void WebNNCommandRecorderTest::Download(CommandRecorder* command_recorder,
   void* readback_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffer->Map(0, nullptr, &readback_buffer_data));
-  memcpy(dst_buffer, readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(dst_buffer, readback_buffer_data, buffer_size));
   readback_buffer->Unmap(0, nullptr);
 }
 
@@ -305,7 +307,7 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
   // Compile the operator.
   ComPtr<IDMLCompiledOperator> compiled_operator;
   ASSERT_HRESULT_SUCCEEDED(adapter_->dml_device()->CompileOperator(
-      dml_operator.Get(), DML_EXECUTION_FLAG_NONE,
+      dml_operator.Get(), DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE,
       IID_PPV_ARGS(&compiled_operator)));
 
   // Relu operator should not require any persistent or temporary resources.
@@ -367,10 +369,12 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteReluOperator) {
   std::vector<DML_BINDING_DESC> output_bindings(
       {{.Type = DML_BINDING_TYPE_BUFFER, .Desc = &output_buffer_binding}});
 
-  // Execute the operator with input and output bindings.
+  // Execute the operator, inputs and outputs will be late bound.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, std::nullopt, std::nullopt));
+      std::move(compiled_operator), descriptor_heap, std::nullopt,
+      std::nullopt));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindInputs(input_bindings));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindOutputs(output_bindings));
 
   // Download the result from output resource.
   std::vector<float> result(buffer_size / sizeof(float));
@@ -407,7 +411,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Compile the operator.
   ComPtr<IDMLCompiledOperator> compiled_operator;
   ASSERT_HRESULT_SUCCEEDED(adapter_->dml_device()->CompileOperator(
-      dml_operator.Get(), DML_EXECUTION_FLAG_NONE,
+      dml_operator.Get(), DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE,
       IID_PPV_ARGS(&compiled_operator)));
 
   // Relu operator should not require any persistent or temporary resources.
@@ -452,7 +456,7 @@ TEST_F(WebNNCommandRecorderTest,
   std::vector<float> input_data({-2.0, -1.0, 1.0, 2.0});
   void* mapped_input_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(input_buffer->Map(0, nullptr, &mapped_input_buffer));
-  memcpy(mapped_input_buffer, input_data.data(), buffer_size);
+  UNSAFE_TODO(memcpy(mapped_input_buffer, input_data.data(), buffer_size));
   input_buffer->Unmap(0, nullptr);
 
   // Bind the custom upload and readback buffers for operator execution.
@@ -465,10 +469,12 @@ TEST_F(WebNNCommandRecorderTest,
   std::vector<DML_BINDING_DESC> output_bindings(
       {{.Type = DML_BINDING_TYPE_BUFFER, .Desc = &output_buffer_binding}});
 
-  // Execute the operator with input and output bindings.
+  // Execute the operator, inputs and outputs will be late bound.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, std::nullopt, std::nullopt));
+      std::move(compiled_operator), descriptor_heap, std::nullopt,
+      std::nullopt));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindInputs(input_bindings));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindOutputs(output_bindings));
 
   // Close, execute and wait for completion.
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
@@ -482,7 +488,7 @@ TEST_F(WebNNCommandRecorderTest,
   void* mapped_output_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       output_buffer->Map(0, nullptr, &mapped_output_buffer));
-  memcpy(result.data(), mapped_output_buffer, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), mapped_output_buffer, buffer_size));
   output_buffer->Unmap(0, nullptr);
 
   // Compare the result against expected.
@@ -507,7 +513,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Compile the operator.
   ComPtr<IDMLCompiledOperator> compiled_operator;
   ASSERT_HRESULT_SUCCEEDED(adapter_->dml_device()->CompileOperator(
-      dml_operator.Get(), DML_EXECUTION_FLAG_NONE,
+      dml_operator.Get(), DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE,
       IID_PPV_ARGS(&compiled_operator)));
 
   // Relu operator should not require any persistent or temporary resources.
@@ -571,10 +577,12 @@ TEST_F(WebNNCommandRecorderTest,
   UploadBufferWithBarrier(command_recorder.get(), std::move(input_buffer),
                           upload_buffer, buffer_size);
 
-  // Record the operator execution with input and output bindings once.
+  // Record the operator execution and late bind input and output bindings once.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, std::nullopt, std::nullopt));
+      std::move(compiled_operator), descriptor_heap, std::nullopt,
+      std::nullopt));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindInputs(input_bindings));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindOutputs(output_bindings));
 
   ComPtr<ID3D12Resource> readback_buffer;
   ASSERT_HRESULT_SUCCEEDED(CreateReadbackBuffer(adapter_->d3d12_device(),
@@ -593,7 +601,7 @@ TEST_F(WebNNCommandRecorderTest,
   std::vector<float> input_data({-2.0, -1.0, 1.0, 2.0});
   void* upload_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(upload_buffer->Map(0, nullptr, &upload_buffer_data));
-  memcpy(upload_buffer_data, input_data.data(), buffer_size);
+  UNSAFE_TODO(memcpy(upload_buffer_data, input_data.data(), buffer_size));
   upload_buffer->Unmap(0, nullptr);
 
   ASSERT_HRESULT_SUCCEEDED(command_recorder->Execute());
@@ -606,7 +614,7 @@ TEST_F(WebNNCommandRecorderTest,
   void* readback_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffer->Map(0, nullptr, &readback_buffer_data));
-  memcpy(result.data(), readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), readback_buffer_data, buffer_size));
   readback_buffer->Unmap(0, nullptr);
   // Compare the result against expected.
   EXPECT_EQ(result, std::vector<float>({0.0, 0.0, 1.0, 2.0}));
@@ -616,7 +624,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Upload new input data to execute.
   input_data = {2.0, 1.0, -1.0, -2.0};
   ASSERT_HRESULT_SUCCEEDED(upload_buffer->Map(0, nullptr, &upload_buffer_data));
-  memcpy(upload_buffer_data, input_data.data(), buffer_size);
+  UNSAFE_TODO(memcpy(upload_buffer_data, input_data.data(), buffer_size));
   upload_buffer->Unmap(0, nullptr);
   ASSERT_HRESULT_SUCCEEDED(command_recorder->Execute());
   ASSERT_HRESULT_SUCCEEDED(adapter_->command_queue()->WaitSync());
@@ -627,7 +635,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Copy the contents from readback buffer to destination buffer.
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffer->Map(0, nullptr, &readback_buffer_data));
-  memcpy(result.data(), readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), readback_buffer_data, buffer_size));
   readback_buffer->Unmap(0, nullptr);
   // Compare the result against expected.
   EXPECT_EQ(result, std::vector<float>({2.0, 1.0, 0.0, 0.0}));
@@ -651,7 +659,7 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   // Compile the operator.
   ComPtr<IDMLCompiledOperator> compiled_operator;
   ASSERT_HRESULT_SUCCEEDED(adapter_->dml_device()->CompileOperator(
-      dml_operator.Get(), DML_EXECUTION_FLAG_NONE,
+      dml_operator.Get(), DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE,
       IID_PPV_ARGS(&compiled_operator)));
 
   // Relu operator should not require any persistent or temporary resources.
@@ -735,16 +743,18 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   Upload(command_recorder.get(), input_data.data(), buffer_size,
          input_buffers[0].Get());
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      compiled_operator, descriptor_heaps[0], input_bindings[0],
-      output_bindings[0], std::nullopt, std::nullopt));
+      compiled_operator, descriptor_heaps[0], std::nullopt, std::nullopt));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindInputs(input_bindings[0]));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindOutputs(output_bindings[0]));
 
   // Upload second input data and execute the operator again.
   input_data = {2.0, 1.0, -1.0, -2.0};
   Upload(command_recorder.get(), input_data.data(), buffer_size,
          input_buffers[1].Get());
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      compiled_operator, descriptor_heaps[1], input_bindings[1],
-      output_bindings[1], std::nullopt, std::nullopt));
+      compiled_operator, descriptor_heaps[1], std::nullopt, std::nullopt));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindInputs(input_bindings[1]));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindOutputs(output_bindings[1]));
 
   // Download result from output resources.
   ComPtr<ID3D12Resource> readback_buffers[2];
@@ -791,14 +801,14 @@ TEST_F(WebNNCommandRecorderTest, ExecuteReluOperatorForMultipleBindings) {
   void* readback_buffer_data = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffers[0]->Map(0, nullptr, &readback_buffer_data));
-  memcpy(result.data(), readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), readback_buffer_data, buffer_size));
   readback_buffers[0]->Unmap(0, nullptr);
   EXPECT_EQ(result, std::vector<float>({0.0, 0.0, 1.0, 2.0}));
 
   // Verify the result of the 2nd execution.
   ASSERT_HRESULT_SUCCEEDED(
       readback_buffers[1]->Map(0, nullptr, &readback_buffer_data));
-  memcpy(result.data(), readback_buffer_data, buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), readback_buffer_data, buffer_size));
   readback_buffers[1]->Unmap(0, nullptr);
   EXPECT_EQ(result, std::vector<float>({2.0, 1.0, 0.0, 0.0}));
 }
@@ -846,7 +856,7 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
   // Compile the operator.
   ComPtr<IDMLCompiledOperator> compiled_operator;
   ASSERT_HRESULT_SUCCEEDED(adapter_->dml_device()->CompileOperator(
-      dml_operator.Get(), DML_EXECUTION_FLAG_NONE,
+      dml_operator.Get(), DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE,
       IID_PPV_ARGS(&compiled_operator)));
 
   // Create filter resource that will be bound for operator initializer.
@@ -967,10 +977,13 @@ TEST_F(WebNNCommandRecorderTest, InitializeAndExecuteConvolutionOperator) {
   std::vector<DML_BINDING_DESC> output_bindings(
       {{.Type = DML_BINDING_TYPE_BUFFER, .Desc = &output_buffer_binding}});
 
-  // Execute the operator with persistent, input and output bindings.
+  // Execute the operator with persistent bindings, as inputs and outputs will
+  // be late bound.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, persistent_buffer_binding_desc, std::nullopt));
+      std::move(compiled_operator), descriptor_heap,
+      persistent_buffer_binding_desc, std::nullopt));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindInputs(input_bindings));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindOutputs(output_bindings));
 
   // Download the result from output resource.
   std::vector<float> result(output_buffer_size / sizeof(float));
@@ -1031,7 +1044,7 @@ TEST_F(WebNNCommandRecorderTest,
   // Compile the operator.
   ComPtr<IDMLCompiledOperator> compiled_operator;
   ASSERT_HRESULT_SUCCEEDED(adapter_->dml_device()->CompileOperator(
-      dml_operator.Get(), DML_EXECUTION_FLAG_NONE,
+      dml_operator.Get(), DML_EXECUTION_FLAG_DESCRIPTORS_VOLATILE,
       IID_PPV_ARGS(&compiled_operator)));
 
   // Create filter resource that will be bound for operator initializer.
@@ -1046,7 +1059,7 @@ TEST_F(WebNNCommandRecorderTest,
   void* mapped_filter_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       filter_buffer->Map(0, nullptr, &mapped_filter_buffer));
-  memcpy(mapped_filter_buffer, weights.data(), filter_buffer_size);
+  UNSAFE_TODO(memcpy(mapped_filter_buffer, weights.data(), filter_buffer_size));
   filter_buffer->Unmap(0, nullptr);
 
   ASSERT_HRESULT_SUCCEEDED(command_recorder->Open());
@@ -1130,7 +1143,8 @@ TEST_F(WebNNCommandRecorderTest,
   std::vector<float> input_data({1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0});
   void* mapped_input_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(input_buffer->Map(0, nullptr, &mapped_input_buffer));
-  memcpy(mapped_input_buffer, input_data.data(), input_buffer_size);
+  UNSAFE_TODO(
+      memcpy(mapped_input_buffer, input_data.data(), input_buffer_size));
   input_buffer->Unmap(0, nullptr);
 
   // Create the input and output resources binding for operator execution.
@@ -1150,10 +1164,13 @@ TEST_F(WebNNCommandRecorderTest,
   std::vector<DML_BINDING_DESC> output_bindings(
       {{.Type = DML_BINDING_TYPE_BUFFER, .Desc = &output_buffer_binding}});
 
-  // Execute the operator with persistent, input and output bindings.
+  // Execute the operator with persistent bindings, as inputs and outputs will
+  // be late bound.
   EXPECT_HRESULT_SUCCEEDED(command_recorder->ExecuteOperator(
-      std::move(compiled_operator), descriptor_heap, input_bindings,
-      output_bindings, persistent_buffer_binding_desc, std::nullopt));
+      std::move(compiled_operator), descriptor_heap,
+      persistent_buffer_binding_desc, std::nullopt));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindInputs(input_bindings));
+  EXPECT_HRESULT_SUCCEEDED(command_recorder->BindOutputs(output_bindings));
 
   // Close, execute and wait for completion.
   ASSERT_HRESULT_SUCCEEDED(command_recorder->CloseAndExecute());
@@ -1167,7 +1184,7 @@ TEST_F(WebNNCommandRecorderTest,
   void* mapped_output_buffer = nullptr;
   ASSERT_HRESULT_SUCCEEDED(
       output_buffer->Map(0, nullptr, &mapped_output_buffer));
-  memcpy(result.data(), mapped_output_buffer, output_buffer_size);
+  UNSAFE_TODO(memcpy(result.data(), mapped_output_buffer, output_buffer_size));
   output_buffer->Unmap(0, nullptr);
 
   // Compare the result against expected.

@@ -61,13 +61,24 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 - (void)orderWindowByShuffling:(NSWindowOrderingMode)place
                     relativeTo:(NSInteger)otherWin;
 
+// "Activation independence" allows the activation of the window to be
+// independent of the activation of the owning app. This is a combination of two
+// different properties:
+//
+// - !NSWindow.canHide
+// - The equivalent of NSWindowStyleMaskNonactivatingPanel being set, if that
+//   were possible on NSWindows.
+- (void)setActivationIndependence:(BOOL)independence;
+
+- (bool)activationIndependence;
+
 // Order the window to the front (space switch if necessary), and ensure that
 // the window maintains its key state. A space switch will normally activate a
 // window, so this function prevents that if the window is currently inactive.
 - (void)orderFrontKeepWindowKeyState;
 
-// Overridden to prevent headless windows to be constrained to the physical
-// screen bounds.
+// Overrides NSWindow's frame constraining to prevent AppKit's adjustments
+// so child windows aren't pushed down due to invisible collision.
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:(NSScreen*)screen;
 
 // Is the window a part of a browser window tree that is currently in an
@@ -95,6 +106,9 @@ REMOTE_COCOA_APP_SHIM_EXPORT
 // Whether this window is currently being added to and removed from parent for
 // ordering.
 @property(assign, nonatomic) BOOL isShufflingForOrdering;
+
+// Prevents the window from becoming the key window.
+@property(assign, nonatomic) BOOL preventKeyWindow;
 
 // Called whenever a child window is added to the receiver.
 @property(nonatomic, copy) void (^childWindowAddedHandler)(NSWindow* child);

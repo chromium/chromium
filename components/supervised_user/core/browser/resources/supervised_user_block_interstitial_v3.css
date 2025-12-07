@@ -1,0 +1,278 @@
+/* Copyright 2025 The Chromium Authors
+   Use of this source code is governed by a BSD-style license that can be
+   found in the LICENSE file. */
+
+body {
+  --custodian-name-color: #333333;
+  --custodian-email-color: #5f6368;
+  --paragraph-color: var(--google-gray-700);
+  font-family: 'Roboto', sans-serif;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+button {
+  background: var(--primary-button-fill-color);
+  border: 0;
+  border-radius: 20px;
+  box-sizing: border-box;
+  color: var(--primary-button-text-color);
+  cursor: pointer;
+  font-size: 0.875em;
+  font-weight: 500;
+  /*
+   * Google accessibility compliance requires a minimum touch target size of 48
+   * dp for all controls on all Android surfaces, including desktops. This
+   * setting is applied to all platforms though for simplicity.
+   */
+  height: 48px;
+  margin: 0;
+  padding: 8px 16px;
+  transition: box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+button:active {
+  background: var(--primary-button-fill-color-active);
+}
+
+[dir='rtl'] button {
+  float: left;
+}
+
+h1 {
+  color: var(--heading-color);
+  font-size: 1.6em;
+  font-weight: normal;
+  margin: 0 0 16px;
+}
+
+p {
+  color: var(--paragraph-color);
+  font-size: 1em;
+  line-height: 1.6em;
+  margin-bottom: 0;
+}
+
+.message-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.illustration {
+  display: inline;
+  width: 120px;
+}
+
+.frame-blocked {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  margin: 14vh auto 0;
+  max-width: 600px;
+  overflow: visible;
+  width: 100%;
+}
+
+#main-message {
+  margin-top: 24px;
+}
+
+.button-container {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: nowrap;
+  justify-content: flex-start;
+  margin: 51px 0;
+}
+
+.go-back-button {
+  float: right;
+  margin-left: 24px;
+}
+
+#custodians-information {
+  margin-top: 0;
+}
+
+.custodian-information {
+  clear: both;
+  display: flex;
+  margin-top: 24px;
+}
+
+.avatar-img {
+  border: none;
+  border-radius: 50%;
+  content: image-set(url(default_100_percent/logo_avatar_circle_blue_color.png) 1x,
+      url(default_200_percent/logo_avatar_circle_blue_color.png) 2x);
+  float: left;
+  height: 40px;
+  margin-inline-end: 12px;
+  user-select: none;
+  width: 40px;
+}
+
+.custodian-contact {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.custodian-name {
+  color: var(--custodian-name-color);
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.custodian-email {
+  color: var(--custodian-email-color);
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  height: 100%;
+  justify-content: center;
+}
+
+.secondary-button {
+  background: var(--background-color);
+  color: var(--google-blue-600);
+  order: 2
+}
+
+.secondary-button:active {
+  background: var(--secondary-button-hover-fill-color);
+}
+
+.primary-button {
+  margin-inline-start: 16px;
+}
+
+/* Remove focus-visible outline for the top level div, which are force focused
+for screen readers. The screen readers will also have their own styling. */
+.frame-blocked:focus-visible {
+  outline: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.supervised-user-block {
+    --custodian-email-color: var(--google-gray-500);
+    --custodian-name-color: var(--google-gray-500);
+    --paragraph-color: var(--google-gray-500);
+  }
+
+  .secondary-button {
+    color: var(--google-blue-300);
+  }
+}
+
+@media (max-width: 700px) {
+  .frame-blocked {
+    padding: 0 10%;
+  }
+}
+
+/* Narrow breakpoint, primarily targeting phones in portrait mode, and
+iframes. */
+@media (max-width: 480px) {
+  html,
+  body,
+  .frame-blocked {
+    height: 100%;
+  }
+
+  body {
+    padding: 0;
+    margin: auto;
+  }
+
+  button,
+  [dir='rtl'] button {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: .933em;
+  }
+
+  .primary-button {
+    margin: 0 0 8px 0;
+  }
+
+  .secondary-button {
+    border: none;
+    margin: 0;
+  }
+
+  .frame-blocked {
+    margin-top: 0;
+    padding: 0 32px;
+  }
+
+  .message-container {
+    margin-top: 10vh;
+  }
+
+  #custodians-information {
+    margin-top: 8px;
+  }
+
+  .custodian-information {
+    margin-top: 8px;
+  }
+
+  .avatar-img {
+    height: 32px;
+    width: 32px;
+  }
+
+  .button-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: auto 0 28px;
+    padding: 16px 0;
+  }
+
+  .go-back-button {
+    margin-left: 4px;
+  }
+}
+
+/* Short version for landscape mode on mobile. */
+@media (min-height: 301px) and (max-height: 400px) and (min-width:481px) {
+  .frame-blocked {
+    margin-top: 6vh;
+  }
+
+  #main-message {
+    margin-top: 6px;
+  }
+
+  .button-container {
+    margin: 8vh 0;
+  }
+}
+
+/* Short version, primarily targeting iframes. */
+@media (max-height: 300px) {
+  #error-page-illustration,
+  #waiting-for-approval-illustration,
+  #custodians-information {
+    display: none;
+  }
+
+  .message-container {
+    margin-top: 0;
+  }
+
+  .button-container {
+    margin: 8vh 0;
+  }
+}
+
+@media (prefers-color-scheme: dark) and (max-width: 480px) {
+  .frame-blocked {
+    background-color: initial;
+  }
+}

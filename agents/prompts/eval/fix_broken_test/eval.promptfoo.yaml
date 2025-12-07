@@ -1,0 +1,22 @@
+description: |
+  Fix a broken DummyTest
+prompts:
+  - 'file://prompt.md'
+providers:
+  - id: python:../../../testing/gemini_provider.py
+    config:
+      timeoutSeconds: 1200
+      changes:
+        - apply: agents/prompts/eval/fix_broken_test/broken_test.patch
+tests:
+  - assert:
+    - type: python
+      value: file://../../../testing/asserts/check_gtests.py
+      config:
+        binary: blink_unittests
+        filter: CSSCalculationValue.DummyTest
+    metadata:
+      tags:
+      - stable
+      precompile_targets:
+      - blink_unittests

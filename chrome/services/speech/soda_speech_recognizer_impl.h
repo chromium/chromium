@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
+class OneShotTimer;
 class SequencedTaskRunner;
 }  // namespace base
 
@@ -66,6 +67,9 @@ class SodaSpeechRecognizerImpl
   // media::mojom::SpeechRecognitionSession implementation.
   void Abort() override;
   void StopCapture() override;
+  void UpdateRecognitionContext(
+      const media::SpeechRecognitionRecognitionContext& recognition_context)
+      override;
 
   // media::mojom::SpeechRecognitionRecognizerClient:
   void OnSpeechRecognitionRecognitionEvent(
@@ -85,6 +89,9 @@ class SodaSpeechRecognizerImpl
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr audio_data);
 
+  // Ends the speech recognition session if a final result is not received.
+  void OnFinalResultTimeout();
+
   // SpeechRecognizerFsm implementation.
   void DispatchEvent(const FSMEventArgs& event_args) override;
   void ProcessAudioPipeline(const FSMEventArgs& event_args) override;
@@ -101,6 +108,7 @@ class SodaSpeechRecognizerImpl
   FSMState AbortWithError(const FSMEventArgs& event_args) override;
   FSMState Abort(const media::mojom::SpeechRecognitionError& error) override;
   FSMState DetectEndOfSpeech(const FSMEventArgs& event_args) override;
+  FSMState UpdateRecognitionContext(const FSMEventArgs& event_args) override;
   FSMState DoNothing(const FSMEventArgs& event_args) const override;
   FSMState NotFeasible(const FSMEventArgs& event_args) override;
 
@@ -129,6 +137,9 @@ class SodaSpeechRecognizerImpl
   mojo::Receiver<media::mojom::SpeechRecognitionAudioForwarder>
       audio_forwarder_;
 
+  // A timer to ensure that the speech recognition session ends if a final
+  // result is not received.
+  base::OneShotTimer final_result_timer_;
   base::WeakPtrFactory<SodaSpeechRecognizerImpl> weak_ptr_factory_{this};
 };
 

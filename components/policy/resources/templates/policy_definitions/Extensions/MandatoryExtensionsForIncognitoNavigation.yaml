@@ -13,7 +13,8 @@ features:
   dynamic_refresh: true
   per_profile: true
 future_on:
-- fuchsia
+- android
+- chrome.*
 supported_on:
 - chrome_os:114-
 owners:

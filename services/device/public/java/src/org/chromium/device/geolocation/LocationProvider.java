@@ -4,18 +4,22 @@
 
 package org.chromium.device.geolocation;
 
+import org.chromium.build.annotations.NullMarked;
+
 /** LocationProvider interface. */
+@NullMarked
 public interface LocationProvider {
     /**
-     * Start listening for location updates. Calling several times before stop() is interpreted
-     * as restart.
+     * Start listening for location updates. Calling several times before stop() is interpreted as
+     * restart.
+     *
      * @param enableHighAccuracy Whether or not to enable high accuracy location.
      */
-    public void start(boolean enableHighAccuracy);
+    void start(boolean enableHighAccuracy);
 
     /** Stop listening for location updates. */
-    public void stop();
+    void stop();
 
     /** Returns true if we are currently listening for location updates, false if not. */
-    public boolean isRunning();
+    boolean isRunning();
 }

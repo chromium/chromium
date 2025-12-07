@@ -28,7 +28,7 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
 
-namespace WTF {
+namespace blink {
 
 class TextCodecLatin1 final : public TextCodec {
  public:
@@ -36,24 +36,17 @@ class TextCodecLatin1 final : public TextCodec {
   static void RegisterCodecs(TextCodecRegistrar);
 
  private:
-  String Decode(const char*,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> data,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;
-  std::string Encode(const UChar*,
-                     wtf_size_t length,
-                     UnencodableHandling) override;
-  std::string Encode(const LChar*,
-                     wtf_size_t length,
-                     UnencodableHandling) override;
+  std::string Encode(base::span<const UChar>, UnencodableHandling) override;
+  std::string Encode(base::span<const LChar>, UnencodableHandling) override;
 
   template <typename CharType>
-  std::string EncodeCommon(const CharType*,
-                           wtf_size_t length,
-                           UnencodableHandling);
+  std::string EncodeCommon(base::span<const CharType>, UnencodableHandling);
 };
 
-}  // namespace WTF
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_TEXT_CODEC_LATIN1_H_

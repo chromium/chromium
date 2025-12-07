@@ -1,0 +1,11 @@
+include_rules = [
+  # Minimize dependencies on internal code, but allow service construction.
+  "+components/collaboration/internal/messaging/configuration.h",
+  "+components/collaboration/internal/messaging/data_sharing_change_notifier_impl.h",
+  "+components/collaboration/internal/messaging/instant_message_processor_impl.h",
+  "+components/collaboration/internal/messaging/messaging_backend_service_impl.h",
+  "+components/collaboration/internal/messaging/storage/empty_messaging_backend_database.h",
+  "+components/collaboration/internal/messaging/storage/messaging_backend_database_impl.h",
+  "+components/collaboration/internal/messaging/storage/messaging_backend_store_impl.h",
+  "+components/collaboration/internal/messaging/tab_group_change_notifier_impl.h",
+]

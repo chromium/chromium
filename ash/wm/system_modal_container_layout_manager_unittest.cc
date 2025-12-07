@@ -27,10 +27,11 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/compositor/layer.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animator_test_controller.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/test/capture_tracking_view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -67,10 +68,31 @@ bool AllRootWindowsHaveModalBackgrounds() {
       kShellWindowId_SystemModalContainer);
 }
 
+class TransientWindowObserver : public aura::WindowObserver {
+ public:
+  TransientWindowObserver() : destroyed_(false) {}
+
+  TransientWindowObserver(const TransientWindowObserver&) = delete;
+  TransientWindowObserver& operator=(const TransientWindowObserver&) = delete;
+
+  ~TransientWindowObserver() override = default;
+
+  bool destroyed() const { return destroyed_; }
+
+  // Overridden from aura::WindowObserver:
+  void OnWindowDestroyed(aura::Window* window) override { destroyed_ = true; }
+
+ private:
+  bool destroyed_;
+};
+
+}  // namespace
+
 class TestWindow : public views::WidgetDelegateView {
  public:
   explicit TestWindow(bool modal) {
-    SetModalType(modal ? ui::MODAL_TYPE_SYSTEM : ui::MODAL_TYPE_NONE);
+    SetModalType(modal ? ui::mojom::ModalType::kSystem
+                       : ui::mojom::ModalType::kNone);
     SetPreferredSize(gfx::Size(50, 50));
   }
 
@@ -120,26 +142,6 @@ class EventTestWindow : public TestWindow {
  private:
   int mouse_presses_;
 };
-
-class TransientWindowObserver : public aura::WindowObserver {
- public:
-  TransientWindowObserver() : destroyed_(false) {}
-
-  TransientWindowObserver(const TransientWindowObserver&) = delete;
-  TransientWindowObserver& operator=(const TransientWindowObserver&) = delete;
-
-  ~TransientWindowObserver() override = default;
-
-  bool destroyed() const { return destroyed_; }
-
-  // Overridden from aura::WindowObserver:
-  void OnWindowDestroyed(aura::Window* window) override { destroyed_ = true; }
-
- private:
-  bool destroyed_;
-};
-
-}  // namespace
 
 class SystemModalContainerLayoutManagerTest : public AshTestBase {
  public:
@@ -839,17 +841,17 @@ TEST_F(SystemModalContainerLayoutManagerTest, UpdateModalType) {
   aura::Window* window = ShowTestWindowWithParent(modal_container, false);
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
 
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   // Setting twice should not cause error.
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_NONE);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kNone);
   EXPECT_FALSE(Shell::IsSystemModalWindowOpen());
 
-  window->SetProperty(aura::client::kModalKey, ui::MODAL_TYPE_SYSTEM);
+  window->SetProperty(aura::client::kModalKey, ui::mojom::ModalType::kSystem);
   EXPECT_TRUE(Shell::IsSystemModalWindowOpen());
 
   window_util::CloseWidgetForWindow(window);
@@ -904,8 +906,9 @@ class InputTestDelegate : public aura::test::TestWindowDelegate {
 
   void RunTest(AshTestBase* test_base) {
     std::unique_ptr<aura::Window> window(
-        test_base->CreateTestWindowInShellWithDelegate(
-            this, 0, gfx::Rect(0, 0, 100, 100)));
+        test_base->CreateTestWindowInShell({.delegate = this,
+                                            .bounds = gfx::Rect(0, 0, 100, 100),
+                                            .window_id = 0}));
     window->Show();
 
     GenerateEvents(window.get());

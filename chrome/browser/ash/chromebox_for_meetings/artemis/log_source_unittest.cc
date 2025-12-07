@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
 
-#include <filesystem>
 #include <fstream>
 #include <map>
 
+#include "base/files/file_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -26,6 +26,9 @@ constexpr base::TimeDelta kDefaultPollFrequency = base::Seconds(0);
 
 // Default to reading all lines in test file.
 constexpr size_t kDefaultBatchSize = kTestFileNumLines;
+
+// Byte cap for each batch read.
+constexpr size_t kBatchByteLimit = 1000;  // 1Kb
 
 // Define a barebones db here that uses a std::map as the backing.
 class PersistentDbForTesting : public PersistentDb {
@@ -63,8 +66,8 @@ class LogSourceForTesting : public LogSource {
  public:
   LogSourceForTesting(const std::string& filepath,
                       base::TimeDelta poll_rate,
-                      size_t batch_size)
-      : LogSource(filepath, poll_rate, batch_size) {}
+                      size_t num_lines_per_batch)
+      : LogSource(filepath, kBatchByteLimit, poll_rate, num_lines_per_batch) {}
   LogSourceForTesting(const LogSourceForTesting&) = delete;
   LogSourceForTesting& operator=(const LogSourceForTesting&) = delete;
   ~LogSourceForTesting() override = default;
@@ -84,8 +87,8 @@ class LogSourceForTesting : public LogSource {
 class ArtemisLogSourceTest : public testing::Test {
  public:
   ArtemisLogSourceTest()
-      : test_file_("test_file.log"),
-        rotated_file_("test_file.log.1"),
+      : test_file_(base::FilePath::FromASCII("test_file.log")),
+        rotated_file_(base::FilePath::FromASCII("test_file.log.1")),
         rotate_log_prefix_("ROTATE: ") {}
   ArtemisLogSourceTest(const ArtemisLogSourceTest&) = delete;
   ArtemisLogSourceTest& operator=(const ArtemisLogSourceTest&) = delete;
@@ -93,21 +96,23 @@ class ArtemisLogSourceTest : public testing::Test {
   void SetUp() override {
     test_db_ = std::make_unique<PersistentDbForTesting>();
     PersistentDb::InitializeForTesting(test_db_.get());
-    AppendNewLines(test_file_, kTestFileNumLines, "");
+    AppendNewLines(test_file_.value(), kTestFileNumLines, "");
   }
 
   void TearDown() override {
-    std::filesystem::remove(test_file_);
-    if (std::filesystem::exists(rotated_file_)) {
-      std::filesystem::remove(rotated_file_);
+    base::DeleteFile(test_file_);
+
+    if (base::PathExists(rotated_file_)) {
+      base::DeleteFile(rotated_file_);
     }
+
     test_db_.reset(nullptr);
     PersistentDb::ShutdownForTesting();
   }
 
   void RotateFile() {
-    std::filesystem::rename(test_file_, rotated_file_);
-    AppendNewLines(test_file_, kTestFileNumLines, rotate_log_prefix_);
+    base::ReplaceFile(test_file_, rotated_file_, nullptr);
+    AppendNewLines(test_file_.value(), kTestFileNumLines, rotate_log_prefix_);
   }
 
   void AppendNewLines(const std::string& filename,
@@ -122,14 +127,14 @@ class ArtemisLogSourceTest : public testing::Test {
   }
 
   int GetFileSize() {
-    std::ifstream tmp_stream(test_file_);
+    std::ifstream tmp_stream(test_file_.value());
     tmp_stream.seekg(0, tmp_stream.end);
     return (int)tmp_stream.tellg();
   }
 
  protected:
-  const std::string test_file_;
-  const std::string rotated_file_;
+  const base::FilePath test_file_;
+  const base::FilePath rotated_file_;
   const std::string rotate_log_prefix_;
 
  private:
@@ -139,8 +144,8 @@ class ArtemisLogSourceTest : public testing::Test {
 // ------- Start LogFile tests -------
 
 TEST_F(ArtemisLogSourceTest, OpenFileAtVariousOffsets) {
-  LogFile logfile_bad(test_file_ + "noexist");
-  LogFile logfile(test_file_);
+  LogFile logfile_bad(test_file_.value() + "noexist");
+  LogFile logfile(test_file_.value());
 
   // File doesn't exist
   EXPECT_FALSE(logfile_bad.OpenAtOffset(0));
@@ -165,7 +170,7 @@ TEST_F(ArtemisLogSourceTest, OpenFileAtVariousOffsets) {
 }
 
 TEST_F(ArtemisLogSourceTest, CheckEOFStateAfterVariousOpens) {
-  LogFile logfile(test_file_);
+  LogFile logfile(test_file_.value());
   int file_size = GetFileSize();
 
   // File opened at beginning
@@ -174,12 +179,12 @@ TEST_F(ArtemisLogSourceTest, CheckEOFStateAfterVariousOpens) {
 
   // File opened at the end yields EOF
   logfile.OpenAtOffset(file_size);
-  logfile.RetrieveNextLogs(1);
+  logfile.RetrieveNextLogs(1, kBatchByteLimit);
   EXPECT_TRUE(logfile.IsAtEOF());
 
   // File opened at high offset yields EOF
   logfile.OpenAtOffset(kLargeOffset);
-  logfile.RetrieveNextLogs(1);
+  logfile.RetrieveNextLogs(1, kBatchByteLimit);
   EXPECT_TRUE(logfile.IsAtEOF());
 
   // File opened just near end yields no EOF
@@ -188,12 +193,12 @@ TEST_F(ArtemisLogSourceTest, CheckEOFStateAfterVariousOpens) {
 }
 
 TEST_F(ArtemisLogSourceTest, RequestVaryingAmountOfLogLines) {
-  LogFile logfile(test_file_);
+  LogFile logfile(test_file_.value());
   logfile.OpenAtOffset(0);
 
   // Read all logs. Note EOF is expected to be false until
   // we try another read, so expect false.
-  auto lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  auto lines = logfile.RetrieveNextLogs(kTestFileNumLines, kBatchByteLimit);
   EXPECT_EQ(lines.size(), kTestFileNumLines);
   EXPECT_FALSE(logfile.IsAtEOF());
   logfile.CloseStream();
@@ -201,7 +206,7 @@ TEST_F(ArtemisLogSourceTest, RequestVaryingAmountOfLogLines) {
   // Try to read more than all logs. Verify result is the same,
   // but this time with EOF == true.
   logfile.OpenAtOffset(0);
-  lines = logfile.RetrieveNextLogs(kTestFileNumLines + 1);
+  lines = logfile.RetrieveNextLogs(kTestFileNumLines + 1, kBatchByteLimit);
   EXPECT_EQ(lines.size(), kTestFileNumLines);
   EXPECT_TRUE(logfile.IsAtEOF());
   logfile.CloseStream();
@@ -209,15 +214,61 @@ TEST_F(ArtemisLogSourceTest, RequestVaryingAmountOfLogLines) {
   // Verify partial reads
   size_t num_to_read = 3;
   logfile.OpenAtOffset(0);
-  lines = logfile.RetrieveNextLogs(num_to_read);
+  lines = logfile.RetrieveNextLogs(num_to_read, kBatchByteLimit);
   EXPECT_EQ(lines.size(), num_to_read);
-  lines = logfile.RetrieveNextLogs(kTestFileNumLines - num_to_read);
+  lines = logfile.RetrieveNextLogs(kTestFileNumLines - num_to_read,
+                                   kBatchByteLimit);
   EXPECT_EQ(lines.size(), kTestFileNumLines - num_to_read);
   logfile.CloseStream();
 }
 
+TEST_F(ArtemisLogSourceTest, CheckByteCapLimitsDataOutput) {
+  // This test fixture normally creates a very basic file where
+  // each line is an incrementing integer starting at 1. This is
+  // insufficient for this particular test, so let's recreate it
+  // and add larger data.
+  base::DeleteFile(test_file_);
+
+  size_t new_file_num_lines = 3;
+  size_t line_size = 100;
+
+  std::ofstream stream;
+  std::string large_line = std::string(line_size, '!');
+
+  stream.open(test_file_.value(), std::ios_base::app);
+  for (unsigned int i = 0; i < new_file_num_lines; i++) {
+    stream << large_line << std::endl;
+  }
+  stream.close();
+
+  LogFile logfile(test_file_.value());
+  logfile.OpenAtOffset(0);
+  size_t byte_cap = line_size;
+
+  // Try to read all logs and verify that we only get one back.
+  auto lines = logfile.RetrieveNextLogs(new_file_num_lines, byte_cap);
+  EXPECT_EQ(lines.size(), 1u);
+  EXPECT_FALSE(logfile.IsAtEOF());
+  logfile.CloseStream();
+
+  // Be even more egregious with our byte cap and confirm that
+  // we drop logs in the worst case.
+  logfile.OpenAtOffset(0);
+  byte_cap = line_size - 1;
+
+  lines = logfile.RetrieveNextLogs(new_file_num_lines, byte_cap);
+  EXPECT_EQ(lines.size(), 0u);
+  EXPECT_FALSE(logfile.IsAtEOF());
+
+  // Now try to read the rest (with a normal byte cap) and confirm
+  // that the first log was abandoned entirely.
+  lines = logfile.RetrieveNextLogs(new_file_num_lines, kBatchByteLimit);
+  EXPECT_EQ(lines.size(), new_file_num_lines - 1);
+  logfile.CloseStream();
+}
+
 TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
-  LogFile logfile(test_file_);
+  LogFile logfile(test_file_.value());
   logfile.OpenAtOffset(0);
 
   // Note for the below tests: there are two cases we need to
@@ -235,19 +286,19 @@ TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
 
   // Exhaust all the lines in the file, then add more. This is
   // case #1 above.
-  logfile.RetrieveNextLogs(kTestFileNumLines + 1);
+  logfile.RetrieveNextLogs(kTestFileNumLines + 1, kBatchByteLimit);
   EXPECT_TRUE(logfile.IsAtEOF());
-  AppendNewLines(test_file_, kTestFileNumLines, "NEW: ");
+  AppendNewLines(test_file_.value(), kTestFileNumLines, "NEW: ");
 
   // Verify no new lines are reported before Refresh()
-  auto new_lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  auto new_lines = logfile.RetrieveNextLogs(kTestFileNumLines, kBatchByteLimit);
   EXPECT_EQ(new_lines.size(), 0u);
   EXPECT_TRUE(logfile.IsAtEOF());
 
   // Verify Refresh() triggers new lines to appear
   logfile.Refresh();
   EXPECT_FALSE(logfile.IsAtEOF());
-  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines, kBatchByteLimit);
   EXPECT_EQ(new_lines.size(), kTestFileNumLines);
 
   // Verify that the lines are the new lines
@@ -259,10 +310,10 @@ TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
   // should be false and newly appended lines should be available
   // immediately. Add more lines and test case #2 above.
   EXPECT_FALSE(logfile.IsAtEOF());
-  AppendNewLines(test_file_, kTestFileNumLines, "NEW2: ");
+  AppendNewLines(test_file_.value(), kTestFileNumLines, "NEW2: ");
 
   // Verify lines are immediately observable.
-  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines);
+  new_lines = logfile.RetrieveNextLogs(kTestFileNumLines, kBatchByteLimit);
   EXPECT_EQ(new_lines.size(), kTestFileNumLines);
   EXPECT_FALSE(logfile.IsAtEOF());
 
@@ -275,14 +326,15 @@ TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRefresh) {
 // ------- Start LogSource tests -------
 
 TEST_F(ArtemisLogSourceTest, TestBatchSizeCorrectlyLimitsOutput) {
-  const size_t batch_size = 2;
-  const size_t expected_num_reads = kTestFileNumLines / batch_size;
+  const size_t num_lines_per_batch = 2;
+  const size_t expected_num_reads = kTestFileNumLines / num_lines_per_batch;
 
-  auto log_source = LogSource(test_file_, kDefaultPollFrequency, batch_size);
+  auto log_source = LogSource(test_file_.value(), kBatchByteLimit,
+                              kDefaultPollFrequency, num_lines_per_batch);
 
   for (size_t i = 0; i < expected_num_reads; ++i) {
     auto data = log_source.GetNextData();
-    EXPECT_EQ(data.size(), batch_size);
+    EXPECT_EQ(data.size(), num_lines_per_batch);
   }
 
   auto data = log_source.GetNextData();
@@ -290,8 +342,8 @@ TEST_F(ArtemisLogSourceTest, TestBatchSizeCorrectlyLimitsOutput) {
 }
 
 TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRotation) {
-  auto log_source =
-      LogSource(test_file_, kDefaultPollFrequency, kDefaultBatchSize);
+  auto log_source = LogSource(test_file_.value(), kBatchByteLimit,
+                              kDefaultPollFrequency, kDefaultBatchSize);
 
   // Initial setup. Read everything from original file
   auto data = log_source.GetNextData();
@@ -300,7 +352,7 @@ TEST_F(ArtemisLogSourceTest, VerifyNewLinesAppearAfterRotation) {
   EXPECT_EQ(data.size(), 0u);
 
   // Add more lines to original file
-  AppendNewLines(test_file_, kTestFileNumLines, "NEW: ");
+  AppendNewLines(test_file_.value(), kTestFileNumLines, "NEW: ");
 
   // Rotate file and verify that next fetch returns lines from new file
   RotateFile();
@@ -318,11 +370,11 @@ TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
   base::test::TaskEnvironment task_environment;
   base::RunLoop run_loop;
 
-  size_t batch_size = 2;
+  size_t num_lines_per_batch = 2;
   auto log_source = std::make_unique<LogSourceForTesting>(
-      test_file_, kDefaultPollFrequency, batch_size);
+      test_file_.value(), kDefaultPollFrequency, num_lines_per_batch);
 
-  // Add <batch_size> lines to internal buffer. Then fetch & drop.
+  // Add <num_lines_per_batch> lines to internal buffer. Then fetch & drop.
   log_source->FillDataBufferForTesting();
   log_source->Fetch(base::DoNothing());
   run_loop.RunUntilIdle();
@@ -338,24 +390,25 @@ TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
   // Tear down and reset the log source. Then add more data.
   log_source.reset(nullptr);
   log_source = std::make_unique<LogSourceForTesting>(
-      test_file_, kDefaultPollFrequency, batch_size);
+      test_file_.value(), kDefaultPollFrequency, num_lines_per_batch);
   log_source->FillDataBufferForTesting();
 
   // Run the next Fetch and expect the data to be continued from the last
   // point. Note that the file we're examining is just filled with integers,
-  // 0 to kTestFileNumLines, so we expect to start at integer <batch_size>.
+  // 0 to kTestFileNumLines, so we expect to start at integer
+  // <num_lines_per_batch>.
   log_source->Fetch(base::BindOnce(
       [](size_t start, const std::vector<std::string>& results) {
         EXPECT_EQ(results[0], base::NumberToString(start));
         EXPECT_EQ(results[1], base::NumberToString(start + 1));
       },
-      batch_size));
+      num_lines_per_batch));
   run_loop.RunUntilIdle();
 
   // Explicitly do not Flush()! Tear down and reset again. Add more data.
   log_source.reset(nullptr);
   log_source = std::make_unique<LogSourceForTesting>(
-      test_file_, kDefaultPollFrequency, batch_size);
+      test_file_.value(), kDefaultPollFrequency, num_lines_per_batch);
   log_source->FillDataBufferForTesting();
 
   // Because Flush() was not called, we assume that the last attempt failed,
@@ -366,13 +419,13 @@ TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
         EXPECT_EQ(results[0], base::NumberToString(start));
         EXPECT_EQ(results[1], base::NumberToString(start + 1));
       },
-      batch_size));
+      num_lines_per_batch));
   run_loop.RunUntilIdle();
 
   // Tear down and reset again.
   log_source.reset(nullptr);
   log_source = std::make_unique<LogSourceForTesting>(
-      test_file_, kDefaultPollFrequency, batch_size);
+      test_file_.value(), kDefaultPollFrequency, num_lines_per_batch);
 
   // This time, before adding data, rotate the file.
   RotateFile();
@@ -392,6 +445,47 @@ TEST_F(ArtemisLogSourceTest, TestCrashRecovery) {
 
   // Expect that the old inode was deleted and replaced with the new one.
   EXPECT_EQ(PersistentDb::Get()->GetSize(), 1u);
+}
+
+// Note: not using fixture here to avoid file creation. We want
+// to test the scenario where the file doesn't exist at first.
+TEST(ArtemisLogSourceTestBadFile, TestFileInitializationIsRetried) {
+  base::test::TaskEnvironment task_environment;
+  base::RunLoop run_loop;
+  const std::string filename = "test.file";
+
+  auto log_source = std::make_unique<LogSourceForTesting>(
+      filename, kDefaultPollFrequency, kDefaultBatchSize);
+
+  // Attempt to fill the buffer. Verify that Fetch() returns nothing
+  // due to inaccessible file.
+  log_source->FillDataBufferForTesting();
+  log_source->Fetch(base::BindOnce([](const std::vector<std::string>& results) {
+    EXPECT_EQ(results.size(), 0u);
+  }));
+  run_loop.RunUntilIdle();
+
+  // Create file and add some junk data.
+  std::ofstream test_file;
+  test_file.open(filename, std::ios_base::app);
+  test_file << "fake data" << std::endl;
+  test_file.close();
+
+  // Fetch() to trigger the file open, then try to fill it.
+  log_source->Fetch(base::DoNothing());
+  log_source->FillDataBufferForTesting();
+
+  // Verify that we now have data.
+  log_source->Fetch(base::BindOnce([](const std::vector<std::string>& results) {
+    EXPECT_EQ(results.size(), 1u);
+    if (results.size() > 0) {
+      EXPECT_EQ(results[0], "fake data");
+    }
+  }));
+  run_loop.RunUntilIdle();
+
+  // Clean up.
+  base::DeleteFile(base::FilePath::FromASCII(filename));
 }
 
 }  // namespace

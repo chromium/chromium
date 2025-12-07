@@ -17,6 +17,8 @@ const char kClientDisconnectedMessageType[] = "clientDisconnected";
 
 const char kIsUvpaaResponseIsAvailableKey[] = "isAvailable";
 const char kGetRemoteStateResponseIsRemotedKey[] = "isRemoted";
+const char kGetRemoteStateResponseDesktopSessionTypeKey[] =
+    "desktopSessionType";
 const char kCancelResponseWasCanceledKey[] = "wasCanceled";
 const char kCreateRequestDataKey[] = "requestData";
 const char kCreateResponseDataKey[] = "responseData";

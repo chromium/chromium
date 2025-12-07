@@ -46,7 +46,7 @@ TEST(CombineAXTreesTest, EmbedChildTree) {
   combiner.AddTree(child_tree, false);
   combiner.Combine();
 
-  const AXTreeUpdate& combined = combiner.combined();
+  AXTreeUpdate combined = std::move(combiner.combined().value());
 
   EXPECT_EQ(1, combined.root_id);
   ASSERT_EQ(6U, combined.nodes.size());
@@ -123,7 +123,7 @@ TEST(CombineAXTreesTest, MapAllIdAttributes) {
   combiner.AddTree(child_tree, false);
   combiner.Combine();
 
-  const AXTreeUpdate& combined = combiner.combined();
+  AXTreeUpdate combined = std::move(combiner.combined().value());
 
   EXPECT_EQ(1, combined.root_id);
   ASSERT_EQ(6U, combined.nodes.size());
@@ -192,7 +192,7 @@ TEST(CombineAXTreesTest, FocusedTree) {
   combiner.AddTree(child_tree, false);
   combiner.Combine();
 
-  const AXTreeUpdate& combined = combiner.combined();
+  AXTreeUpdate combined = std::move(combiner.combined().value());
 
   ASSERT_EQ(6U, combined.nodes.size());
   EXPECT_EQ(6, combined.tree_data.focus_id);
@@ -205,7 +205,7 @@ TEST(CombineAXTreesTest, EmptyTree) {
   combiner.AddTree(tree, true);
   combiner.Combine();
 
-  const AXTreeUpdate& combined = combiner.combined();
+  AXTreeUpdate combined = std::move(combiner.combined().value());
   ASSERT_EQ(0U, combined.nodes.size());
 }
 

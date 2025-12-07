@@ -34,7 +34,6 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/events/before_text_inserted_event.h"
@@ -55,6 +54,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -63,16 +63,6 @@ class DataListIndicatorElement final : public HTMLDivElement {
  private:
   inline HTMLInputElement* HostInput() const {
     return To<HTMLInputElement>(OwnerShadowHost());
-  }
-
-  EventDispatchHandlingState* PreDispatchEventHandler(Event& event) override {
-    // Chromium opens autofill popup in a mousedown event listener
-    // associated to the document. We don't want to open it in this case
-    // because we opens a datalist chooser later.
-    // FIXME: We should dispatch mousedown events even in such case.
-    if (event.type() == event_type_names::kMousedown)
-      event.stopPropagation();
-    return nullptr;
   }
 
   void DefaultEventHandler(Event& event) override {
@@ -143,10 +133,6 @@ bool TextFieldInputType::MayTriggerVirtualKeyboard() const {
   return true;
 }
 
-bool TextFieldInputType::IsTextField() const {
-  return true;
-}
-
 bool TextFieldInputType::ValueMissing(const String& value) const {
   // For text-mode input elements, the value is missing only if it is mutable.
   // https://html.spec.whatwg.org/multipage/input.html#the-required-attribute
@@ -164,6 +150,7 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
                                   TextControlSetValueSelection selection) {
   // We don't use InputType::setValue.  TextFieldInputType dispatches events
   // different way from InputType::setValue.
+  const String old_value = GetElement().Value();
   if (event_behavior == TextFieldEventBehavior::kDispatchNoEvent)
     GetElement().SetNonAttributeValue(sanitized_value);
   else
@@ -187,6 +174,16 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
   // string and update validity.
   if (!value_changed)
     return;
+
+  // Handles programmatic value changes by updating FormControlRanges as a
+  // full-value replace. If the skip flag is set (e.g. by setRangeText), this
+  // automatic update is skipped since the caller issues its own targeted range
+  // update.
+  if (value_changed && RuntimeEnabledFeatures::FormControlRangeEnabled() &&
+      !GetElement().ShouldSkipNextSetValueAutoDiff()) {
+    GetElement().CommitProgrammaticFormControlRangeEdit(
+        old_value, /*old_sel_start=*/0u, /*old_sel_end=*/old_value.length());
+  }
 
   if (selection == TextControlSetValueSelection::kSetSelectionToEnd) {
     unsigned max = VisibleValue().length();
@@ -279,7 +276,8 @@ void TextFieldInputType::ForwardEvent(Event& event) {
           if (PaintLayerScrollableArea* inner_scrollable_area =
                   inner_layer->GetScrollableArea()) {
             inner_scrollable_area->SetScrollOffset(
-                ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic);
+                ScrollOffset(0, 0), mojom::blink::ScrollType::kProgrammatic,
+                cc::ScrollSourceType::kAbsoluteScroll);
           }
         }
       }
@@ -317,8 +315,8 @@ LayoutObject* TextFieldInputType::CreateLayoutObject(
   return MakeGarbageCollected<LayoutTextControlSingleLine>(&GetElement());
 }
 
-ControlPart TextFieldInputType::AutoAppearance() const {
-  return kTextFieldPart;
+AppearanceValue TextFieldInputType::AutoAppearance() const {
+  return AppearanceValue::kTextField;
 }
 
 bool TextFieldInputType::IsInnerEditorValueEmpty() const {
@@ -514,12 +512,17 @@ void TextFieldInputType::HandleBeforeTextInsertedEvent(
     GetElement().GetDocument().UpdateStyleAndLayout(
         DocumentUpdateReason::kEditing);
 
-    selection_length = GetElement()
-                           .GetDocument()
-                           .GetFrame()
-                           ->Selection()
-                           .SelectedText()
-                           .length();
+    FrameSelection& selection =
+        GetElement().GetDocument().GetFrame()->Selection();
+    Element* editable_element =
+        selection.RootEditableElementOrDocumentElement();
+    // If the root editable element of the selection is not a descendant of the
+    // focused element, we don't need to take account of the selection length.
+    if (!RuntimeEnabledFeatures::DelegatesFocusTextControlInputFixEnabled() ||
+        (editable_element &&
+         editable_element->IsDescendantOrShadowDescendantOf(&GetElement()))) {
+      selection_length = selection.SelectedText().length();
+    }
   }
   DCHECK_GE(old_length, selection_length);
 
@@ -560,8 +563,7 @@ bool TextFieldInputType::ShouldRespectListAttribute() {
 
 HTMLElement* TextFieldInputType::UpdatePlaceholderText(
     bool is_suggested_value) {
-  if (!HasCreatedShadowSubtree() &&
-      RuntimeEnabledFeatures::CreateInputShadowTreeDuringLayoutEnabled()) {
+  if (!HasCreatedShadowSubtree()) {
     return nullptr;
   }
   if (!SupportsPlaceholder()) {
@@ -618,6 +620,10 @@ void TextFieldInputType::SubtreeHasChanged() {
   GetElement().PseudoStateChanged(CSSSelector::kPseudoUserInvalid);
   GetElement().PseudoStateChanged(CSSSelector::kPseudoInRange);
   GetElement().PseudoStateChanged(CSSSelector::kPseudoOutOfRange);
+
+  if (RuntimeEnabledFeatures::FormControlRangeEnabled()) {
+    GetElement().CommitFormControlRangeEdit();
+  }
 
   DidSetValueByUserEdit();
 }

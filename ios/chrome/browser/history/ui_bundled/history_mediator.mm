@@ -16,16 +16,15 @@
 @end
 
 @implementation HistoryMediator
-@synthesize browserState = _browserState;
+@synthesize profile = _profile;
 @synthesize faviconLoader = _faviconLoader;
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
-    CHECK(browserState);
-    _browserState = browserState;
-    _faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForBrowserState(_browserState);
+    CHECK(profile);
+    _profile = profile;
+    _faviconLoader = IOSChromeFaviconLoaderFactory::GetForProfile(_profile);
     CHECK(_faviconLoader);
   }
   return self;
@@ -34,11 +33,13 @@
 #pragma mark - TableViewFaviconDataSource
 
 - (void)faviconForPageURL:(CrURL*)URL
-               completion:(void (^)(FaviconAttributes*))completion {
+               completion:(void (^)(FaviconAttributes* attributes,
+                                    bool cached))completion {
   self.faviconLoader->FaviconForPageUrl(
       URL.gurl, kDesiredSmallFaviconSizePt, kMinFaviconSizePt,
-      /*fallback_to_google_server=*/false, ^(FaviconAttributes* attributes) {
-        completion(attributes);
+      /*fallback_to_google_server=*/false,
+      ^(FaviconAttributes* attributes, bool cached) {
+        completion(attributes, cached);
       });
 }
 

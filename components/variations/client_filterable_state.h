@@ -76,6 +76,10 @@ struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   // The restriction applied to Chrome through the "ChromeVariations" policy.
   RestrictionPolicy policy_restriction = RestrictionPolicy::NO_RESTRICTIONS;
 
+  // Whether support for STICKY_AFTER_QUERY activation for studies is enabled.
+  // TODO: crbug.com/435630455 - Fully enable and remove this once ready.
+  bool is_sticky_activation_enabled = false;
+
   explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function,
                                  GoogleGroupsFunction google_groups_function);
 

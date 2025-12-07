@@ -4,12 +4,14 @@
 
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
 
+#include "base/logging.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 
 namespace content {
 namespace {
@@ -35,6 +37,7 @@ void PerWebUIBrowserInterfaceBroker::GetInterface(
     mojo::GenericPendingReceiver receiver) {
   auto name = receiver.interface_name().value();
   if (!binder_map_.TryBind(&*controller_, &receiver)) {
+    LOG(ERROR) << "Per WebUI interface binder missing for: " << name;
     // WebUI page requested an interface that's not registered
     ShutdownWebUIRenderer(*controller_);
   }

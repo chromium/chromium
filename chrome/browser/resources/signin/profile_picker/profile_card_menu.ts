@@ -3,26 +3,20 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
-// clang-format off
-// <if expr="chromeos_lacros">
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-// </if>
-
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {htmlEscape} from 'chrome://resources/js/util.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-// clang-format on
-
-
 
 import type {ManageProfilesBrowserProxy, ProfileState} from './manage_profiles_browser_proxy.js';
 import {ManageProfilesBrowserProxyImpl} from './manage_profiles_browser_proxy.js';
@@ -60,7 +54,6 @@ export interface ProfileCardMenuElement {
     actionMenu: CrActionMenuElement,
     moreActionsButton: HTMLElement,
     removeConfirmationDialog: CrDialogElement,
-    removePrimaryLacrosProfileDialog: CrDialogElement,
   };
 }
 
@@ -98,31 +91,25 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
       moreActionsButtonAriaLabel_: {type: String},
       removeWarningText_: {type: String},
       removeWarningTitle_: {type: String},
-      // <if expr="chromeos_lacros">
-      removePrimaryLacrosProfileWarning_: {type: String},
-      // </if>
     };
   }
 
-  profileState: ProfileState = createDummyProfileState();
-  private statistics_: Statistics = {
+  accessor profileState: ProfileState = createDummyProfileState();
+  private accessor statistics_: Statistics = {
     BrowsingHistory: 0,
     Passwords: 0,
     Bookmarks: 0,
     Autofill: 0,
   };
-  protected moreActionsButtonAriaLabel_: string = '';
-  protected profileStatistics_: ProfileStatistics[] = [
+  protected accessor moreActionsButtonAriaLabel_: string = '';
+  protected accessor profileStatistics_: ProfileStatistics[] = [
     ProfileStatistics.BROWSING_HISTORY,
     ProfileStatistics.PASSWORDS,
     ProfileStatistics.BOOKMARKS,
     ProfileStatistics.AUTOFILL,
   ];
-  protected removeWarningText_: string = '';
-  protected removeWarningTitle_: string = '';
-  // <if expr="chromeos_lacros">
-  protected removePrimaryLacrosProfileWarning_: string;
-  // </if>
+  protected accessor removeWarningText_: string = '';
+  protected accessor removeWarningTitle_: string = '';
   private manageProfilesBrowserProxy_: ManageProfilesBrowserProxy =
       ManageProfilesBrowserProxyImpl.getInstance();
 
@@ -144,55 +131,29 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
       this.moreActionsButtonAriaLabel_ =
           this.computeMoreActionsButtonAriaLabel_();
       this.removeWarningTitle_ = this.computeRemoveWarningTitle_();
-      // <if expr="chromeos_lacros">
-      this.removePrimaryLacrosProfileWarning_ =
-          this.computeRemovePrimaryLacrosProfileWarning_();
-      // </if>
-      // <if expr="not chromeos_lacros">
       this.removeWarningText_ = this.computeRemoveWarningText_();
-      // </if>
     }
   }
 
-  override firstUpdated() {
-    // <if expr="chromeos_lacros">
-    this.shadowRoot!.querySelector('#removeWarningHeader a')!.addEventListener(
-        'click', () => this.onAccountSettingsClicked_());
-    // </if>
-  }
-
   private computeMoreActionsButtonAriaLabel_(): string {
+    // `localProfileName` has to be escaped because it's user-provided and may
+    // contain HTML tags, which makes `i18n()` unhappy. See
+    // https://crbug.com/400338974.
     return this.i18n(
-        'profileMenuAriaLabel', this.profileState.localProfileName);
+        'profileMenuAriaLabel', htmlEscape(this.profileState.localProfileName));
   }
 
-  // <if expr="chromeos_lacros">
-  protected getRemoveWarningTextForLacros_(): TrustedHTML {
-    return this.i18nAdvanced('removeWarningProfileLacros', {attrs: ['is']});
-  }
-  // </if>
-
-  // <if expr="not chromeos_lacros">
   private computeRemoveWarningText_(): string {
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfile' :
                                       'removeWarningLocalProfile');
   }
-  // </if>
 
   private computeRemoveWarningTitle_(): string {
     return this.i18n(
         this.profileState.isSyncing ? 'removeWarningSignedInProfileTitle' :
                                       'removeWarningLocalProfileTitle');
   }
-
-  // <if expr="chromeos_lacros">
-  private computeRemovePrimaryLacrosProfileWarning_(): string {
-    return this.i18n(
-        'lacrosPrimaryProfileDeletionWarning', this.profileState.userName,
-        loadTimeData.getString('deviceType'));
-  }
-  // </if>
 
   protected onMoreActionsButtonClicked_(e: Event) {
     e.stopPropagation();
@@ -208,16 +169,7 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.manageProfilesBrowserProxy_.getProfileStatistics(
         this.profileState.profilePath);
     this.$.actionMenu.close();
-    // <if expr="chromeos_lacros">
-    if (this.profileState.isPrimaryLacrosProfile) {
-      this.$.removePrimaryLacrosProfileDialog.showModal();
-    } else {
-      this.$.removeConfirmationDialog.showModal();
-    }
-    // </if>
-    // <if expr="not chromeos_lacros">
     this.$.removeConfirmationDialog.showModal();
-    // </if>
     chrome.metricsPrivate.recordUserAction('ProfilePicker_RemoveOptionClicked');
   }
 
@@ -261,12 +213,6 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
     this.manageProfilesBrowserProxy_.closeProfileStatistics();
   }
 
-  // <if expr="chromeos_lacros">
-  protected onRemovePrimaryLacrosProfileCancelClicked_() {
-    this.$.removePrimaryLacrosProfileDialog.cancel();
-  }
-  // </if>
-
   /**
    * Ensure any menu is closed on profile list updated.
    */
@@ -289,13 +235,6 @@ export class ProfileCardMenuElement extends ProfileCardMenuElementBase {
         this.profileState.profilePath);
     this.$.actionMenu.close();
   }
-
-  // <if expr="chromeos_lacros">
-  private onAccountSettingsClicked_() {
-    this.manageProfilesBrowserProxy_.openAshAccountSettingsPage();
-    this.$.removeConfirmationDialog.close();
-  }
-  // </if>
 }
 
 declare global {

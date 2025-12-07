@@ -16,11 +16,12 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/compositor.h"
+#include "ui/compositor/compositor_metrics_tracker.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -58,19 +59,40 @@ void SetupThroughputTrackerForAnimationSmoothness(
   if (tracker || !widget)
     return;
 
-  tracker.emplace(widget->GetCompositor()->RequestNewThroughputTracker());
+  tracker.emplace(
+      widget->GetCompositor()->RequestNewCompositorMetricsTracker());
   tracker->Start(ash::metrics_util::ForSmoothnessV3(
       base::BindRepeating(&RecordAnimationSmoothness, histogram_name)));
 }
 
 }  // namespace
 
-void IconizedLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (custom_accessible_name_.empty())
-    return Label::GetAccessibleNodeData(node_data);
+void IconizedLabel::SetCustomAccessibleName(const std::u16string& name) {
+  custom_accessible_name_ = name;
 
-  node_data->role = ax::mojom::Role::kStaticText;
-  node_data->SetNameChecked(custom_accessible_name_);
+  UpdateAccessibleRole();
+  GetViewAccessibility().SetName(custom_accessible_name_);
+}
+
+void IconizedLabel::AdjustAccessibleName(std::u16string& new_name,
+                                         ax::mojom::NameFrom& name_from) {
+  if (!custom_accessible_name_.empty()) {
+    new_name = custom_accessible_name_;
+    name_from = ax::mojom::NameFrom::kAttribute;
+  } else {
+    views::Label::AdjustAccessibleName(new_name, name_from);
+  }
+}
+
+void IconizedLabel::UpdateAccessibleRole() {
+  if (!custom_accessible_name_.empty()) {
+    GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  } else {
+    GetViewAccessibility().SetRole(GetTextContext() ==
+                                           views::style::CONTEXT_DIALOG_TITLE
+                                       ? ax::mojom::Role::kTitleBar
+                                       : ax::mojom::Role::kStaticText);
+  }
 }
 
 BEGIN_METADATA(IconizedLabel)
@@ -96,14 +118,20 @@ void TrayItemView::RemoveObserver(Observer* observer) {
 
 void TrayItemView::CreateLabel() {
   label_ = new IconizedLabel;
-  AddChildView(label_.get());
+  AddChildViewRaw(label_.get());
   PreferredSizeChanged();
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::CreateImageView() {
   image_view_ = new views::ImageView;
-  AddChildView(image_view_.get());
+  AddChildViewRaw(image_view_.get());
   PreferredSizeChanged();
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::DestroyLabel() {
@@ -112,6 +140,10 @@ void TrayItemView::DestroyLabel() {
 
   RemoveChildViewT(label_.get());
   label_ = nullptr;
+
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::DestroyImageView() {
@@ -120,6 +152,10 @@ void TrayItemView::DestroyImageView() {
 
   RemoveChildViewT(image_view_.get());
   image_view_ = nullptr;
+
+  for (auto& observer : observers_) {
+    observer.OnTrayItemChildViewChanged();
+  }
 }
 
 void TrayItemView::UpdateLabelOrImageViewColor(bool active) {
@@ -184,8 +220,8 @@ void TrayItemView::PerformVisibilityAnimation(bool visible) {
   // Immediately progress to the end of the animation if animation is disabled.
   // NOTE: `ScreenRotationAnimator` can set animations to ZERO_DURATION.
   if (!ShouldVisibilityChangeBeAnimated() ||
-      ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
+      gfx::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+          gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION) {
     // Tray items need to stay visible if the notification center tray's hide
     // animation is going to run, so don't hide the tray item here.
     // `StatusAreaAnimationController` will call `ImmediatelyUpdateVisibility()`
@@ -254,10 +290,6 @@ gfx::Size TrayItemView::CalculatePreferredSize(
     size.set_height(std::max(1, static_cast<int>(size.height() * progress)));
   }
   return size;
-}
-
-int TrayItemView::GetHeightForWidth(int width) const {
-  return GetPreferredSize().height();
 }
 
 void TrayItemView::ChildPreferredSizeChanged(views::View* child) {

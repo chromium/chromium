@@ -2217,7 +2217,7 @@ error::Error GLES2DecoderImpl::HandleHint(uint32_t immediate_data_size,
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return error::kNoError;
 }
@@ -4789,27 +4789,6 @@ error::Error GLES2DecoderImpl::HandleMemoryBarrierByRegion(
   return error::kUnknownCommand;
 }
 
-error::Error GLES2DecoderImpl::HandleSwapBuffers(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::SwapBuffers& c =
-      *static_cast<const volatile gles2::cmds::SwapBuffers*>(cmd_data);
-  GLuint64 swap_id = c.swap_id();
-  GLbitfield flags = static_cast<GLbitfield>(c.flags);
-  if (!validators_->swap_buffers_flags.IsValid(flags)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glSwapBuffers",
-                       "flags GL_INVALID_VALUE");
-    return error::kNoError;
-  }
-  if (c.trace_id) {
-    TRACE_EVENT_WITH_FLOW0(TRACE_DISABLED_BY_DEFAULT("gpu_cmd_queue"),
-                           "CommandBufferQueue", c.trace_id,
-                           TRACE_EVENT_FLAG_FLOW_IN);
-  }
-  DoSwapBuffers(swap_id, flags);
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleGetMaxValueInBufferCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -5219,122 +5198,6 @@ error::Error GLES2DecoderImpl::HandleEndSharedImageAccessDirectCHROMIUM(
   return error::kNoError;
 }
 
-error::Error
-GLES2DecoderImpl::HandleConvertRGBAToYUVAMailboxesINTERNALImmediate(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ConvertRGBAToYUVAMailboxesINTERNALImmediate& c =
-      *static_cast<const volatile gles2::cmds::
-                       ConvertRGBAToYUVAMailboxesINTERNALImmediate*>(cmd_data);
-  GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
-  GLenum plane_config = static_cast<GLenum>(c.plane_config);
-  GLenum subsampling = static_cast<GLenum>(c.subsampling);
-  uint32_t mailboxes_size;
-  if (!GLES2Util::ComputeDataSize<GLbyte, 80>(1, &mailboxes_size)) {
-    return error::kOutOfBounds;
-  }
-  if (mailboxes_size > immediate_data_size) {
-    return error::kOutOfBounds;
-  }
-  volatile const GLbyte* mailboxes = GetImmediateDataAs<volatile const GLbyte*>(
-      c, mailboxes_size, immediate_data_size);
-  if (mailboxes == nullptr) {
-    return error::kOutOfBounds;
-  }
-  DoConvertRGBAToYUVAMailboxesINTERNAL(planes_yuv_color_space, plane_config,
-                                       subsampling, mailboxes);
-  return error::kNoError;
-}
-
-error::Error GLES2DecoderImpl::HandleConvertYUVAMailboxesToRGBINTERNALImmediate(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ConvertYUVAMailboxesToRGBINTERNALImmediate& c =
-      *static_cast<const volatile gles2::cmds::
-                       ConvertYUVAMailboxesToRGBINTERNALImmediate*>(cmd_data);
-  GLint src_x = static_cast<GLint>(c.src_x);
-  GLint src_y = static_cast<GLint>(c.src_y);
-  GLsizei width = static_cast<GLsizei>(c.width);
-  GLsizei height = static_cast<GLsizei>(c.height);
-  GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
-  GLenum plane_config = static_cast<GLenum>(c.plane_config);
-  GLenum subsampling = static_cast<GLenum>(c.subsampling);
-  uint32_t mailboxes_size;
-  if (!GLES2Util::ComputeDataSize<GLbyte, 144>(1, &mailboxes_size)) {
-    return error::kOutOfBounds;
-  }
-  if (mailboxes_size > immediate_data_size) {
-    return error::kOutOfBounds;
-  }
-  volatile const GLbyte* mailboxes = GetImmediateDataAs<volatile const GLbyte*>(
-      c, mailboxes_size, immediate_data_size);
-  if (width < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
-                       "width < 0");
-    return error::kNoError;
-  }
-  if (height < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glConvertYUVAMailboxesToRGBINTERNAL",
-                       "height < 0");
-    return error::kNoError;
-  }
-  if (mailboxes == nullptr) {
-    return error::kOutOfBounds;
-  }
-  DoConvertYUVAMailboxesToRGBINTERNAL(src_x, src_y, width, height,
-                                      planes_yuv_color_space, plane_config,
-                                      subsampling, mailboxes);
-  return error::kNoError;
-}
-
-error::Error
-GLES2DecoderImpl::HandleConvertYUVAMailboxesToTextureINTERNALImmediate(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  const volatile gles2::cmds::ConvertYUVAMailboxesToTextureINTERNALImmediate&
-      c = *static_cast<const volatile gles2::cmds::
-                           ConvertYUVAMailboxesToTextureINTERNALImmediate*>(
-          cmd_data);
-  GLuint texture = static_cast<GLuint>(c.texture);
-  GLenum target = static_cast<GLenum>(c.target);
-  GLuint internal_format = static_cast<GLuint>(c.internal_format);
-  GLenum type = static_cast<GLenum>(c.type);
-  GLint src_x = static_cast<GLint>(c.src_x);
-  GLint src_y = static_cast<GLint>(c.src_y);
-  GLsizei width = static_cast<GLsizei>(c.width);
-  GLsizei height = static_cast<GLsizei>(c.height);
-  GLboolean flip_y = static_cast<GLboolean>(c.flip_y);
-  GLenum planes_yuv_color_space = static_cast<GLenum>(c.planes_yuv_color_space);
-  GLenum plane_config = static_cast<GLenum>(c.plane_config);
-  GLenum subsampling = static_cast<GLenum>(c.subsampling);
-  uint32_t mailboxes_size;
-  if (!GLES2Util::ComputeDataSize<GLbyte, 64>(1, &mailboxes_size)) {
-    return error::kOutOfBounds;
-  }
-  if (mailboxes_size > immediate_data_size) {
-    return error::kOutOfBounds;
-  }
-  volatile const GLbyte* mailboxes = GetImmediateDataAs<volatile const GLbyte*>(
-      c, mailboxes_size, immediate_data_size);
-  if (width < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
-                       "glConvertYUVAMailboxesToTextureINTERNAL", "width < 0");
-    return error::kNoError;
-  }
-  if (height < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE,
-                       "glConvertYUVAMailboxesToTextureINTERNAL", "height < 0");
-    return error::kNoError;
-  }
-  if (mailboxes == nullptr) {
-    return error::kOutOfBounds;
-  }
-  DoConvertYUVAMailboxesToTextureINTERNAL(
-      texture, target, internal_format, type, src_x, src_y, width, height,
-      flip_y, planes_yuv_color_space, plane_config, subsampling, mailboxes);
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleCopySharedImageINTERNALImmediate(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
@@ -5348,7 +5211,6 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageINTERNALImmediate(
   GLint y = static_cast<GLint>(c.y);
   GLsizei width = static_cast<GLsizei>(c.width);
   GLsizei height = static_cast<GLsizei>(c.height);
-  GLboolean unpack_flip_y = static_cast<GLboolean>(c.unpack_flip_y);
   uint32_t mailboxes_size;
   if (!GLES2Util::ComputeDataSize<GLbyte, 32>(1, &mailboxes_size)) {
     return error::kOutOfBounds;
@@ -5371,8 +5233,7 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageINTERNALImmediate(
   if (mailboxes == nullptr) {
     return error::kOutOfBounds;
   }
-  DoCopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height,
-                            unpack_flip_y, mailboxes);
+  DoCopySharedImageINTERNAL(xoffset, yoffset, x, y, width, height, mailboxes);
   return error::kNoError;
 }
 
@@ -5390,7 +5251,8 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageToTextureINTERNALImmediate(
   GLint src_y = static_cast<GLint>(c.src_y);
   GLsizei width = static_cast<GLsizei>(c.width);
   GLsizei height = static_cast<GLsizei>(c.height);
-  GLboolean flip_y = static_cast<GLboolean>(c.flip_y);
+  GLboolean is_dst_origin_top_left =
+      static_cast<GLboolean>(c.is_dst_origin_top_left);
   uint32_t src_mailbox_size;
   if (!GLES2Util::ComputeDataSize<GLbyte, 16>(1, &src_mailbox_size)) {
     return error::kOutOfBounds;
@@ -5415,8 +5277,8 @@ error::Error GLES2DecoderImpl::HandleCopySharedImageToTextureINTERNALImmediate(
     return error::kOutOfBounds;
   }
   DoCopySharedImageToTextureINTERNAL(texture, target, internal_format, type,
-                                     src_x, src_y, width, height, flip_y,
-                                     src_mailbox);
+                                     src_x, src_y, width, height,
+                                     is_dst_origin_top_left, src_mailbox);
   return error::kNoError;
 }
 
@@ -6064,8 +5926,7 @@ bool GLES2DecoderImpl::SetCapabilityState(GLenum cap, bool enabled) {
       }
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 #endif  // GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_DECODER_AUTOGEN_H_

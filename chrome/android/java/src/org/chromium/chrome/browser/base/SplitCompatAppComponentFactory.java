@@ -16,15 +16,14 @@ import android.content.Intent;
 import android.os.Build;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.incognito_window.PreAttachIntentObserver;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -38,7 +37,7 @@ import java.lang.annotation.RetentionPolicy;
  * <p>Note: this workaround is not needed for services, since they always uses the base module's
  * ClassLoader, see b/169196314 for more details.
  */
-@RequiresApi(Build.VERSION_CODES.P)
+@NullMarked
 public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static final String TAG = "SplitCompat";
 
@@ -65,41 +64,42 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
     private static @ProcessCreationReason int sProcessCreationReason =
             ProcessCreationReason.UNINITIALIZED;
 
-    @NonNull
     @Override
-    public Activity instantiateActivity(
-            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
+    public Activity instantiateActivity(ClassLoader cl, String className, @Nullable Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.ACTIVITY);
 
         // Activities will not call createContextForSplit() which will normally ensure the preload
         // is finished, so we have to manually ensure that here.
         SplitChromeApplication.finishPreload(CHROME_SPLIT_NAME);
-        return super.instantiateActivity(getComponentClassLoader(cl, className), className, intent);
+
+        var activity =
+                super.instantiateActivity(
+                        getComponentClassLoader(cl, className), className, intent);
+
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
+                && intent != null
+                && activity instanceof PreAttachIntentObserver observer) {
+            observer.onPreAttachIntentAvailable(intent);
+        }
+
+        return activity;
     }
 
-    @NonNull
     @Override
-    public ContentProvider instantiateProvider(@NonNull ClassLoader cl, @NonNull String className)
+    public ContentProvider instantiateProvider(ClassLoader cl, String className)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        // Android always initializes all ContentProviders when it initializes the Application, so
-        // post a task to set the reason asynchronously which will run after Android creates any
-        // other components during the launch.
+        // Android always initializes all ContentProviders when it initializes the Application,
+        // however the process could be started for other reasons. Set to pending for now.
         if (sProcessCreationReason == ProcessCreationReason.UNINITIALIZED) {
             sProcessCreationReason = ProcessCreationReason.PENDING;
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        setProcessCreationReason(ProcessCreationReason.CONTENT_PROVIDER);
-                    });
         }
         return super.instantiateProvider(getComponentClassLoader(cl, className), className);
     }
 
-    @NonNull
     @Override
     public BroadcastReceiver instantiateReceiver(
-            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
+            ClassLoader cl, String className, @Nullable Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.BROADCAST_RECEIVER);
 
@@ -109,10 +109,8 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
         return super.instantiateReceiver(getComponentClassLoader(cl, className), className, intent);
     }
 
-    @NonNull
     @Override
-    public Service instantiateService(
-            @NonNull ClassLoader cl, @NonNull String className, Intent intent)
+    public Service instantiateService(ClassLoader cl, String className, @Nullable Intent intent)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
         setProcessCreationReason(ProcessCreationReason.SERVICE);
         return super.instantiateService(cl, className, intent);
@@ -129,6 +127,14 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
     }
 
     public static @ProcessCreationReason int getProcessCreationReason() {
+        // Determining the ProcessCreationReason is delayed until the first use. Previously it was
+        // set in a task immediately posted from instantiateProvider() because content providers are
+        // always instantiated early. However, since Android 14+ on Pixel 6+ such task happens to
+        // run before other components instantiate. This does not allow the task to discover other
+        // creation reasons.
+        if (sProcessCreationReason <= ProcessCreationReason.PENDING) {
+            setProcessCreationReason(ProcessCreationReason.CONTENT_PROVIDER);
+        }
         return sProcessCreationReason;
     }
 

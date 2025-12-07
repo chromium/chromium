@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/prefs/LocalStatePrefs.java" ]
+}
+
+android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
+  sources =
+      [ "java/src/org/chromium/chrome/browser/prefs/LocalStatePrefs.java" ]
+  deps = [
+    "//base:resetters_java",
+    "//build/android:build_java",
+    "//components/prefs/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}
+
+static_library("jni_cc") {
+  sources = [ "local_state_prefs_android.cc" ]
+  deps = [
+    ":jni_headers",
+    "//chrome/browser:browser_process",
+    "//components/prefs",
+  ]
+}

@@ -5,19 +5,25 @@
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/blink.h"
+#include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink::test {
 
 TaskEnvironment::~TaskEnvironment() {
-  RunUntilIdle();
+  // Since `SimpleFontData` is associated with `v8::isolate`, it must be
+  // destroyed before `main_thread_isolate_.reset()`.
+  FontCache::Get().Invalidate();
 
   // Run a full GC before resetting the main thread overrider. This ensures that
   // we can properly clean up objects like PerformanceMonitor that need to call
   // MainThreadImpl::RemoveTaskTimeObserver().
   ThreadState::Current()->CollectAllGarbageForTesting();
+  RunUntilIdle();
 
   main_thread_overrider_.reset();
   main_thread_isolate_.reset();

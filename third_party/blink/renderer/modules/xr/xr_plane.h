@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "device/vr/public/mojom/plane_id.h"
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -16,6 +17,7 @@
 
 namespace blink {
 
+class V8XRPlaneOrientation;
 class XRSession;
 class XRSpace;
 
@@ -28,12 +30,12 @@ class XRPlane : public ScriptWrappable {
  public:
   enum class Orientation { kHorizontal, kVertical };
 
-  XRPlane(uint64_t id,
+  XRPlane(device::PlaneId id,
           XRSession* session,
           const device::mojom::blink::XRPlaneData& plane_data,
           double timestamp);
 
-  uint64_t id() const;
+  device::PlaneId id() const;
 
   XRSpace* planeSpace() const;
 
@@ -41,7 +43,7 @@ class XRPlane : public ScriptWrappable {
 
   device::mojom::blink::XRNativeOriginInformationPtr NativeOrigin() const;
 
-  String orientation() const;
+  std::optional<V8XRPlaneOrientation> orientation() const;
   const FrozenArray<DOMPointReadOnly>& polygon() const;
   double lastChangedTime() const;
 
@@ -61,14 +63,14 @@ class XRPlane : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
  private:
-  XRPlane(uint64_t id,
+  XRPlane(device::PlaneId id,
           XRSession* session,
           const std::optional<Orientation>& orientation,
           HeapVector<Member<DOMPointReadOnly>> polygon,
           const std::optional<device::Pose>& mojo_from_plane,
           double timestamp);
 
-  const uint64_t id_;
+  const device::PlaneId id_;
   Member<FrozenArray<DOMPointReadOnly>> polygon_;
   std::optional<Orientation> orientation_;
 

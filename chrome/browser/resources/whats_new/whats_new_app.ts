@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -11,7 +11,7 @@ import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {JSTime, TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
+import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {ModulePosition, ScrollDepth} from './whats_new.mojom-webui.js';
@@ -29,6 +29,21 @@ enum EventType {
   TIME_ON_PAGE_MS = 'time_on_page_ms',
   GENERAL_LINK_CLICK = 'general_link_click',
   MODULES_RENDERED = 'modules_rendered',
+  VIDEO_STARTED = 'video_started',
+  VIDEO_ENDED = 'video_ended',
+  PLAY_CLICKED = 'play_clicked',
+  PAUSE_CLICKED = 'pause_clicked',
+  RESTART_CLICKED = 'restart_clicked',
+  // Refresh metrics.
+  QR_CODE_TOGGLE_OPEN = 'qr_code_toggle_open',
+  QR_CODE_TOGGLE_CLOSE = 'qr_code_toggle_close',
+  NAV_CLICK = 'nav_click',
+  FEATURE_TILE_NAVIGATION = 'feature_tile_navigation',
+  CAROUSEL_SCROLL_BUTTON_CLICK = 'carousel_scroll_button_click',
+  EXPEND_MEDIA = 'expand_media',
+  CLOSE_EXPANDED_MEDIA = 'close_expanded_media',
+  CTA_CLICK = 'cta_click',
+  NEXT_BUTTON_CLICK = 'next_button_click',
 }
 
 enum SectionType {
@@ -54,13 +69,7 @@ const kModulePositionsMap: Record<SectionType, ModulePosition[]> = {
   ],
 };
 
-// TODO(crbug.com/342172972): Remove legacy browser command format.
-interface LegacyBrowserCommandData {
-  commandId: number;
-  clickInfo: ClickInfo;
-}
-
-interface BrowserCommandData {
+interface BrowserCommand {
   event: EventType.BROWSER_COMMAND;
   commandId: number;
   clickInfo: ClickInfo;
@@ -121,27 +130,120 @@ interface ModulesRenderedMetric {
   event: EventType.MODULES_RENDERED;
 }
 
+interface VideoStartedMetric {
+  event: EventType.VIDEO_STARTED;
+  module_name?: string;
+  section?: SectionType;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface VideoEndedMetric {
+  event: EventType.VIDEO_ENDED;
+  module_name?: string;
+  section?: SectionType;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface PlayClickedMetric {
+  event: EventType.PLAY_CLICKED;
+  module_name?: string;
+  section?: SectionType;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface PauseClickedMetric {
+  event: EventType.PAUSE_CLICKED;
+  module_name?: string;
+  section?: SectionType;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface RestartClickedMetric {
+  event: EventType.RESTART_CLICKED;
+  module_name?: string;
+  section?: SectionType;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface QrCodeToggleOpenMetric {
+  event: EventType.QR_CODE_TOGGLE_OPEN;
+  // Not a What's New module.
+  module_name?: string;
+}
+
+interface QrCodeToggleCloseMetric {
+  event: EventType.QR_CODE_TOGGLE_CLOSE;
+  // Not a What's New module.
+  module_name?: string;
+}
+
+interface NavClickMetric {
+  event: EventType.NAV_CLICK;
+  // Not a What's New module.
+  module_name?: string;
+  link_text: string;
+  link_url: string;
+  link_type: 'internal'|'external';
+}
+
+interface FeatureTileNavigationMetric {
+  event: EventType.FEATURE_TILE_NAVIGATION;
+  // Not a What's New module.
+  module_name?: string;
+  navigation_label: string;
+  position: string;
+}
+
+interface CarouselScrollButtonClickMetric {
+  event: EventType.CAROUSEL_SCROLL_BUTTON_CLICK;
+  // Not a What's New module.
+  module_name?: string;
+  navigation_label: string;
+  position: string;
+}
+
+interface ExpandMediaMetric {
+  event: EventType.EXPEND_MEDIA;
+  module_name?: string;
+  section: 'spotlight';
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface CloseExpandedMediaMetric {
+  event: EventType.CLOSE_EXPANDED_MEDIA;
+  module_name?: string;
+  section: 'spotlight';
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface CtaClickMetric {
+  event: EventType.CTA_CLICK;
+  module_name?: string;
+  section: 'spotlight';
+  link_text: string;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
+interface NextButtonClickMetric {
+  event: EventType.NEXT_BUTTON_CLICK;
+  module_name?: string;
+  section: 'spotlight';
+  link_text: string;
+  order?: '1'|'2'|'3'|'4'|'5'|'6';
+}
+
 type PageLoadedMetric = VersionPageLoadedMetric|EditionPageLoadedMetric;
-type BrowserCommand = LegacyBrowserCommandData|BrowserCommandData;
 type MetricData = PageLoadedMetric|ModuleImpressionMetric|ExploreMoreOpenMetric|
     ExploreMoreCloseMetric|ScrollDepthMetric|TimeOnPageMetric|
-    GeneralLinkClickMetric|ModulesRenderedMetric;
+    GeneralLinkClickMetric|ModulesRenderedMetric|VideoStartedMetric|
+    VideoEndedMetric|PlayClickedMetric|PauseClickedMetric|RestartClickedMetric|
+    QrCodeToggleOpenMetric|QrCodeToggleCloseMetric|NavClickMetric|
+    FeatureTileNavigationMetric|CarouselScrollButtonClickMetric|
+    ExpandMediaMetric|CloseExpandedMediaMetric|CtaClickMetric|
+    NextButtonClickMetric;
 
 interface EventData {
   data: BrowserCommand|MetricData;
-}
-
-// Narrow the type of the message data. This is necessary for the
-// legacy message format that does not supply an event name.
-function isBrowserCommand(messageData: BrowserCommand|
-                          MetricData): messageData is BrowserCommand {
-  // TODO(crbug.com/342172972): Remove legacy browser command format checks.
-  if (Object.hasOwn(messageData, 'event')) {
-    return (messageData as BrowserCommandData | MetricData).event ===
-        EventType.BROWSER_COMMAND;
-  } else {
-    return Object.hasOwn(messageData, 'commandId');
-  }
 }
 
 function handleBrowserCommand(messageData: BrowserCommand) {
@@ -153,6 +255,8 @@ function handleBrowserCommand(messageData: BrowserCommand) {
   handler.canExecuteCommand(commandId).then(({canExecute}) => {
     if (canExecute) {
       handler.executeCommand(commandId, messageData.clickInfo);
+      const pageHandler = WhatsNewProxyImpl.getInstance().handler;
+      pageHandler.recordBrowserCommandExecuted();
     } else {
       console.warn('Received invalid command: ' + commandId);
     }
@@ -161,7 +265,7 @@ function handleBrowserCommand(messageData: BrowserCommand) {
 
 function handlePageLoadMetric(data: PageLoadedMetric, isAutoOpen: boolean) {
   const {handler} = WhatsNewProxyImpl.getInstance();
-  const now: JSTime = {msec: Date.now()};
+  const now = new Date();
   handler.recordTimeToLoadContent(now);
 
   // Record initial scroll depth as 0%.
@@ -199,6 +303,8 @@ function handleScrollDepthMetric(data: ScrollDepthMetric) {
       break;
     case '100':
       scrollDepth = ScrollDepth.k100;
+      break;
+    default:
       break;
   }
   if (scrollDepth) {
@@ -270,24 +376,56 @@ export function formatModuleName(moduleName: string) {
   return kebabCaseToCamelCase(withoutPrefix);
 }
 
-function handleModuleImpression(data: ModuleImpressionMetric) {
+function handleModuleEvent(
+    data: ModuleImpressionMetric|GeneralLinkClickMetric|VideoStartedMetric|
+    VideoEndedMetric|PlayClickedMetric|PauseClickedMetric|RestartClickedMetric|
+    ExpandMediaMetric|CloseExpandedMediaMetric) {
   // Reject falsy `module_name`, including empty strings.
   if (!data.module_name) {
     return;
   }
   const position = parseOrder(data.section, data.order);
   const {handler} = WhatsNewProxyImpl.getInstance();
-  handler.recordModuleImpression(formatModuleName(data.module_name), position);
-}
-
-function handleModuleLinkClicked(data: GeneralLinkClickMetric) {
-  // Reject falsy `module_name`, including empty strings.
-  if (!data.module_name) {
-    return;
+  switch (data.event) {
+    case EventType.MODULE_IMPRESSION:
+      handler.recordModuleImpression(
+          formatModuleName(data.module_name), position);
+      break;
+    case EventType.GENERAL_LINK_CLICK:
+      handler.recordModuleLinkClicked(
+          formatModuleName(data.module_name), position);
+      break;
+    case EventType.VIDEO_STARTED:
+      handler.recordModuleVideoStarted(
+          formatModuleName(data.module_name), position);
+      break;
+    case EventType.VIDEO_ENDED:
+      handler.recordModuleVideoEnded(
+          formatModuleName(data.module_name), position);
+      break;
+    case EventType.PLAY_CLICKED:
+      handler.recordModulePlayClicked(
+          formatModuleName(data.module_name), position);
+      break;
+    case EventType.PAUSE_CLICKED:
+      handler.recordModulePauseClicked(
+          formatModuleName(data.module_name), position);
+      break;
+    case EventType.RESTART_CLICKED:
+      handler.recordModuleRestartClicked(
+          formatModuleName(data.module_name), position);
+      break;
+    case EventType.EXPEND_MEDIA:
+      WhatsNewProxyImpl.getInstance().handler.recordExpandMediaToggled(
+          data.module_name, true);
+      break;
+    case EventType.CLOSE_EXPANDED_MEDIA:
+      WhatsNewProxyImpl.getInstance().handler.recordExpandMediaToggled(
+          data.module_name, false);
+      break;
+    default:
+      break;
   }
-  const position = parseOrder(data.section, data.order);
-  const {handler} = WhatsNewProxyImpl.getInstance();
-  handler.recordModuleLinkClicked(formatModuleName(data.module_name), position);
 }
 
 function handleTimeOnPageMetric(data: TimeOnPageMetric) {
@@ -320,7 +458,7 @@ export class WhatsNewAppElement extends CrLitElement {
     };
   }
 
-  protected url_: string = '';
+  protected accessor url_: string = '';
 
   private isAutoOpen_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
@@ -341,8 +479,9 @@ export class WhatsNewAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    WhatsNewProxyImpl.getInstance().handler.getServerUrl().then(
-        ({url}: {url: Url}) => this.handleUrlResult_(url.url));
+    WhatsNewProxyImpl.getInstance()
+        .handler.getServerUrl(loadTimeData.getBoolean('isStaging'))
+        .then(({url}: {url: Url}) => this.handleUrlResult_(url.url));
   }
 
   override disconnectedCallback() {
@@ -363,14 +502,9 @@ export class WhatsNewAppElement extends CrLitElement {
 
     const latest = this.isAutoOpen_ && !isChromeOS ? 'true' : 'false';
     url += url.includes('?') ? '&' : '?';
-    if (loadTimeData.getBoolean('isWhatsNewV2')) {
-      // The browser has auto-opened the page due to an upgrade.
-      // Let the embedded page know to display the "up to date" banner.
-      this.url_ = url.concat(`updated=${latest}`);
-    } else {
-      // The latest version of the page is being shown. Do not redirect.
-      this.url_ = url.concat(`latest=${latest}`);
-    }
+    // The browser has auto-opened the page due to an upgrade.
+    // Let the embedded page know to display the "up to date" banner.
+    this.url_ = url.concat(`updated=${latest}`);
 
     this.eventTracker_.add(
         window, 'message',
@@ -392,27 +526,21 @@ export class WhatsNewAppElement extends CrLitElement {
       return;
     }
 
-    if (isBrowserCommand(data)) {
-      handleBrowserCommand(data);
-      return;
-    }
-
-    const {handler} = WhatsNewProxyImpl.getInstance();
     switch (data.event) {
+      case EventType.BROWSER_COMMAND:
+        handleBrowserCommand(data);
+        break;
       case EventType.PAGE_LOADED:
         handlePageLoadMetric(data, this.isAutoOpen_);
-        break;
-      case EventType.MODULE_IMPRESSION:
-        handleModuleImpression(data);
         break;
       case EventType.MODULES_RENDERED:
         // Ignored.
         break;
       case EventType.EXPLORE_MORE_OPEN:
-        handler.recordExploreMoreToggled(true);
+        WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(true);
         break;
       case EventType.EXPLORE_MORE_CLOSE:
-        handler.recordExploreMoreToggled(false);
+        WhatsNewProxyImpl.getInstance().handler.recordExploreMoreToggled(false);
         break;
       case EventType.SCROLL:
         handleScrollDepthMetric(data);
@@ -420,8 +548,38 @@ export class WhatsNewAppElement extends CrLitElement {
       case EventType.TIME_ON_PAGE_MS:
         handleTimeOnPageMetric(data);
         break;
+      case EventType.MODULE_IMPRESSION:
       case EventType.GENERAL_LINK_CLICK:
-        handleModuleLinkClicked(data);
+      case EventType.VIDEO_STARTED:
+      case EventType.VIDEO_ENDED:
+      case EventType.PLAY_CLICKED:
+      case EventType.PAUSE_CLICKED:
+      case EventType.RESTART_CLICKED:
+      case EventType.EXPEND_MEDIA:
+      case EventType.CLOSE_EXPANDED_MEDIA:
+        handleModuleEvent(data);
+        break;
+      case EventType.QR_CODE_TOGGLE_OPEN:
+        WhatsNewProxyImpl.getInstance().handler.recordQrCodeToggled(true);
+        break;
+      case EventType.QR_CODE_TOGGLE_CLOSE:
+        WhatsNewProxyImpl.getInstance().handler.recordQrCodeToggled(false);
+        break;
+      case EventType.NAV_CLICK:
+        WhatsNewProxyImpl.getInstance().handler.recordNavClick();
+        break;
+      case EventType.FEATURE_TILE_NAVIGATION:
+        WhatsNewProxyImpl.getInstance().handler.recordFeatureTileNavigation();
+        break;
+      case EventType.CAROUSEL_SCROLL_BUTTON_CLICK:
+        WhatsNewProxyImpl.getInstance()
+            .handler.recordCarouselScrollButtonClick();
+        break;
+      case EventType.CTA_CLICK:
+        WhatsNewProxyImpl.getInstance().handler.recordCtaClick();
+        break;
+      case EventType.NEXT_BUTTON_CLICK:
+        WhatsNewProxyImpl.getInstance().handler.recordNextButtonClick();
         break;
       default:
         console.warn('Unrecognized message.', data);

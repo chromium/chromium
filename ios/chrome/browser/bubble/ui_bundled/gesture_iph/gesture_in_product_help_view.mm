@@ -8,8 +8,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
-#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_util.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view.h"
@@ -17,6 +15,8 @@
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_gesture_recognizer.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view+subclassing.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -276,7 +276,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
           bubbleBoundingSize:(CGSize)bubbleBoundingSize
               swipeDirection:(UISwipeGestureRecognizerDirection)direction
        voiceOverAnnouncement:(NSString*)voiceOverAnnouncement {
-  if (self = [super initWithFrame:CGRectZero]) {
+  if ((self = [super initWithFrame:CGRectZero])) {
     _text = UIAccessibilityIsVoiceOverRunning() && voiceOverAnnouncement
                 ? voiceOverAnnouncement
                 : text;
@@ -342,6 +342,15 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
     self.alpha = 0;
     self.isAccessibilityElement = YES;
     self.accessibilityViewIsModal = YES;
+
+    __weak __typeof(self) weakSelf = self;
+    NSArray<UITrait>* traits =
+        (@[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf pauseAnimationOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
   }
   return self;
 }
@@ -400,15 +409,6 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
   // This view can expand as large as needed.
   return CGSizeMake(MAX(min_width, targetSize.width),
                     MAX(min_height, targetSize.height));
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (ShouldGestureIndicatorOffsetFromCenter(previousTraitCollection) !=
-      ShouldGestureIndicatorOffsetFromCenter(self.traitCollection)) {
-    [_animator pauseAnimation];
-    _needsRepositionBubbleAndGestureIndicator = YES;
-  }
 }
 
 - (void)layoutSubviews {
@@ -730,6 +730,17 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
       }];
 }
 
+// Pauses the animation if there is a change to the gesture indicator's offset
+// position after a change to the view's trait collection.
+- (void)pauseAnimationOnTraitChange:
+    (UITraitCollection*)previousTraitCollection {
+  if (ShouldGestureIndicatorOffsetFromCenter(previousTraitCollection) !=
+      ShouldGestureIndicatorOffsetFromCenter(self.traitCollection)) {
+    [_animator pauseAnimation];
+    _needsRepositionBubbleAndGestureIndicator = YES;
+  }
+}
+
 @end
 
 @implementation GestureInProductHelpView (Subclassing)
@@ -976,7 +987,7 @@ UIButton* CreateDismissButton(UIAction* primaryAction) {
       }
       completion:^(BOOL completed) {
         [previousBubbleView removeFromSuperview];
-        if (completed) {
+        if (completed && weakSelf.superview) {
           [weakSelf setInitialBubbleViewWithDirection:
                         GetExpectedBubbleArrowDirectionForSwipeDirection(
                             weakSelf.animatingDirection)

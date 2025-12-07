@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_export.h"
@@ -18,13 +18,13 @@
 #include "cc/base/protected_sequence_synchronizer.h"
 #include "cc/trees/mutator_host.h"
 #include "cc/trees/mutator_host_client.h"
-#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
 
 class Animation;
+class AnimationTrigger;
 class AnimationTimeline;
 class ElementAnimations;
 class LayerTreeHost;
@@ -51,6 +51,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
                          scoped_refptr<ElementAnimations>,
                          ElementIdHash>;
   using AnimationsList = std::vector<scoped_refptr<Animation>>;
+  using IdToTriggerMap =
+      std::unordered_map<int, scoped_refptr<AnimationTrigger>>;
 
   static std::unique_ptr<AnimationHost> CreateMainInstance();
   static std::unique_ptr<AnimationHost> CreateForTesting(
@@ -61,14 +63,31 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   AnimationHost& operator=(const AnimationHost&) = delete;
 
+  using IdToTimelineMap =
+      std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
+  const IdToTimelineMap& timelines() const {
+    return id_to_timeline_map_.Read(*this);
+  }
+
   void AddAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+  // Adds an entry to |id_to_trigger_map_|.
+  void AddTrigger(scoped_refptr<AnimationTrigger> trigger);
   void RemoveAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+  // Removes an entry from |id_to_trigger_map_|. This should only be called when
+  // we are not in a protected sequence.
+  void RemoveTrigger(scoped_refptr<AnimationTrigger> trigger);
 
   // Lazy removal of an unused timeline.
   void DetachAnimationTimeline(scoped_refptr<AnimationTimeline> timeline);
+  // Removes an entry from |id_to_trigger_map_|. Defers removal if we are in a
+  // protected sequence.
+  void DetachTrigger(scoped_refptr<AnimationTrigger> trigger);
 
   const AnimationTimeline* GetTimelineById(int timeline_id) const;
   AnimationTimeline* GetTimelineById(int timeline_id);
+
+  scoped_refptr<AnimationTimeline> GetScopedRefTimelineById(int timeline_id);
+  const AnimationTrigger* GetTriggerById(int id) const;
 
   void RegisterAnimationForElement(ElementId element_id, Animation* animation);
   void UnregisterAnimationForElement(ElementId element_id,
@@ -96,6 +115,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
 
   void SetNeedsCommit();
   void SetNeedsPushProperties();
+  void ResetNeedsPushProperties();
   bool needs_push_properties() const {
     return needs_push_properties_.Read(*this);
   }
@@ -117,6 +137,7 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
                         const PropertyTrees& property_trees) override;
 
   void RemoveStaleTimelines() override;
+  void RemoveStaleTriggers() override;
 
   void SetScrollAnimationDurationForTesting(base::TimeDelta duration) override;
   bool NeedsTickAnimations() const override;
@@ -178,12 +199,17 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
       const gfx::Vector2dF& scroll_delta,
       const gfx::PointF& max_scroll_offset,
       base::TimeTicks frame_monotonic_time,
-      base::TimeDelta delayed_by) override;
+      base::TimeDelta delayed_by,
+      ElementId element_id) override;
 
-  void ScrollAnimationAbort() override;
+  void ScrollAnimationAbort(ElementId element_id) override;
 
-  ElementId ImplOnlyScrollAnimatingElement() const override;
-  void ImplOnlyScrollAnimatingElementRemoved() override;
+  bool HasImplOnlyScrollAnimatingElement() const override;
+  bool HasImplOnlyAutoScrollAnimatingElement() const override;
+  bool ElementHasImplOnlyScrollAnimation(ElementId) const override;
+  bool IsElementInPropertyTrees(ElementId element_id,
+                                bool commits_to_active) const;
+  void HandleRemovedScrollAnimatingElements(bool commits_to_active) override;
 
   // This should only be called from the main thread.
   ScrollOffsetAnimations& scroll_offset_animations();
@@ -212,17 +238,17 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool HasNativePropertyAnimation() const override;
   bool CurrentFrameHadRAF() const override;
   bool NextFrameHasPendingRAF() const override;
-  PendingThroughputTrackerInfos TakePendingThroughputTrackerInfos() override;
+  PendingCompositorMetricsTrackerInfos
+  TakePendingCompositorMetricsTrackerInfos() override;
   bool HasCanvasInvalidation() const override;
   bool HasJSAnimation() const override;
   bool HasSmilAnimation() const override;
   bool HasViewTransition() const override;
   bool HasScrollLinkedAnimation(ElementId for_scroller) const override;
-  bool IsAutoScrolling() const override;
 
-  // Starts/stops throughput tracking represented by |sequence_id|.
-  void StartThroughputTracking(TrackedAnimationSequenceId sequence_id);
-  void StopThroughputTracking(TrackedAnimationSequenceId sequnece_id);
+  // Starts/stops metrics tracking represented by `sequence_id`.
+  void StartCompositorMetricsTracking(TrackedAnimationSequenceId sequence_id);
+  void StopCompositorMetricsTracking(TrackedAnimationSequenceId sequence_id);
 
   void SetAnimationCounts(size_t total_animations_count);
   void SetHasCanvasInvalidation(bool has_canvas_invalidation);
@@ -231,6 +257,10 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void SetHasViewTransition(bool has_view_transition);
   void SetCurrentFrameHadRaf(bool current_frame_had_raf);
   void SetNextFrameHasPendingRaf(bool next_frame_has_pending_raf);
+
+  const IdToTriggerMap& GetTriggersForTesting() const {
+    return id_to_trigger_map_.Read(*this);
+  }
 
  private:
   explicit AnimationHost(ThreadInstance thread_instance);
@@ -241,7 +271,11 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
       ElementId element_id);
 
   void PushTimelinesToImplThread(AnimationHost* host_impl) const;
+  void PushTriggersToImplThread(AnimationHost* host_impl) const;
+
   void RemoveTimelinesFromImplThread(AnimationHost* host_impl) const;
+  void RemoveTriggersFromImplThread(AnimationHost* host_impl) const;
+
   void PushPropertiesToImplThread(AnimationHost* host_impl);
 
   void EraseTimeline(scoped_refptr<AnimationTimeline> timeline);
@@ -265,14 +299,19 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   ProtectedSequenceReadable<AnimationsList> ticking_animations_;
 
   // A list of all timelines which this host owns.
-  using IdToTimelineMap =
-      std::unordered_map<int, scoped_refptr<AnimationTimeline>>;
   ProtectedSequenceReadable<IdToTimelineMap> id_to_timeline_map_;
+
+  // A list of animation triggers which this host owns.
+  ProtectedSequenceReadable<IdToTriggerMap> id_to_trigger_map_;
 
   // A list of IDs for detached timelines. A timeline may be detached on the
   // owner thread even during a protected sequence. These timelines are no
   // longer used and should be cleaned up at the next opportune moment.
   ProtectedSequenceForbidden<IdToTimelineMap> detached_timeline_map_;
+
+  // Similar to |detached_timeline_map_|, if detached during a protected
+  // sequence, defer the deletion of a trigger to the next opportunity.
+  ProtectedSequenceForbidden<IdToTriggerMap> detached_trigger_map_;
 
   // AnimationHosts's ProtectedSequenceSynchronizer implementation is
   // implemented using this member. As such the various helpers can not be used
@@ -305,8 +344,8 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   ProtectedSequenceReadable<bool> has_smil_animation_{false};
   ProtectedSequenceReadable<bool> has_view_transition_{false};
 
-  ProtectedSequenceWritable<PendingThroughputTrackerInfos>
-      pending_throughput_tracker_infos_;
+  ProtectedSequenceWritable<PendingCompositorMetricsTrackerInfos>
+      pending_compositor_metrics_tracker_infos_;
 
   base::WeakPtrFactory<AnimationHost> weak_factory_{this};
 };

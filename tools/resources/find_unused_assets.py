@@ -51,11 +51,9 @@ IGNORED_PATHSPECS = [
     ':!**/vectorcanvastest/**',
     ':!**/*unittest/**',
     ':!docs/**',
-    ':!native_client_sdk/**',
     ':!testing/**',
     ':!third_party/**',
     ':!tools/perf/page_sets/**',
-    ':!tools/stats_viewer/**',
 ]
 
 logger = logging.getLogger(__name__)
@@ -177,8 +175,6 @@ def find_usage_of_java_res(fpath: Text,
       'remoting/android',
       'tools/android',
       'ui/android',
-      'weblayer/browser',
-      'weblayer/shell',
   ]
 
   xml_pattern = f'@{res_type}/{basename}'

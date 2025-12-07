@@ -39,8 +39,12 @@ class AndroidNetworkExceptionWrapper extends org.chromium.net.NetworkException {
 
     @Override
     public int getCronetInternalErrorCode() {
-        // TODO(danstahr): Hidden API
-        return -1;
+        // This maps to `NetError.ERR_HTTPENGINE_PROVIDER_IN_USE`. We cannot directly reference that
+        // because it would introduce a dependency between HttpEngineNativeProvider and code that
+        // ships as part of Cronet's impl JAR.
+        // LINT.IfChange(HTTPENGINE_PROVIDER_IN_USE)
+        return -508;
+        // LINT.ThenChange(//net/base/net_error_list.h:HTTPENGINE_PROVIDER_IN_USE)
     }
 
     @Override

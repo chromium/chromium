@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.payments.ui;
 
 import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.autofill.EditableOption;
 
@@ -17,9 +17,10 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * The data to show in a single section where the user can select something, e.g., their
- * shipping address or payment method.
+ * The data to show in a single section where the user can select something, e.g., their shipping
+ * address or payment method.
  */
+@NullMarked
 public class SectionInformation {
     /** This value indicates that the user has not made a selection in this section. */
     public static final int NO_SELECTION = -1;
@@ -29,15 +30,15 @@ public class SectionInformation {
 
     protected final ArrayList<EditableOption> mItems = new ArrayList<>();
 
-    @PaymentRequestUI.DataType private final int mDataType;
+    @PaymentRequestUi.DataType private final int mDataType;
 
     private int mSelectedItem;
     private boolean mDisplayInSingleLineInNormalMode = true;
-    public String mErrorMessage;
-    @Nullable public String mAddditionalText;
+    public @Nullable String mErrorMessage;
+    public @Nullable String mAddditionalText;
 
     /** Builds an empty section without selection. */
-    public SectionInformation(@PaymentRequestUI.DataType int sectionType) {
+    public SectionInformation(@PaymentRequestUi.DataType int sectionType) {
         this(sectionType, null);
     }
 
@@ -47,21 +48,21 @@ public class SectionInformation {
      * @param defaultItem The only item. It is selected by default.
      */
     public SectionInformation(
-            @PaymentRequestUI.DataType int sectionType, @Nullable EditableOption defaultItem) {
+            @PaymentRequestUi.DataType int sectionType, @Nullable EditableOption defaultItem) {
         this(sectionType, 0, defaultItem == null ? null : Arrays.asList(defaultItem));
     }
 
     /**
      * Builds a section.
      *
-     * @param sectionType    Type of data being stored.
-     * @param selection      The index of the currently selected item.
+     * @param sectionType Type of data being stored.
+     * @param selection The index of the currently selected item.
      * @param itemCollection The items in the section.
      */
     public SectionInformation(
-            @PaymentRequestUI.DataType int sectionType,
+            @PaymentRequestUi.DataType int sectionType,
             int selection,
-            Collection<? extends EditableOption> itemCollection) {
+            @Nullable Collection<? extends EditableOption> itemCollection) {
         mDataType = sectionType;
         updateItemsWithCollection(selection, itemCollection);
     }
@@ -217,11 +218,11 @@ public class SectionInformation {
      * @return ID if the user can add a new option, or 0 if they can't.
      */
     public int getAddStringId() {
-        if (mDataType == PaymentRequestUI.DataType.SHIPPING_ADDRESSES) {
+        if (mDataType == PaymentRequestUi.DataType.SHIPPING_ADDRESSES) {
             return R.string.payments_add_address;
-        } else if (mDataType == PaymentRequestUI.DataType.CONTACT_DETAILS) {
+        } else if (mDataType == PaymentRequestUi.DataType.CONTACT_DETAILS) {
             return R.string.payments_add_contact;
-        } else if (mDataType == PaymentRequestUI.DataType.PAYMENT_METHODS) {
+        } else if (mDataType == PaymentRequestUi.DataType.PAYMENT_METHODS) {
             return R.string.payments_add_card;
         }
         return 0;
@@ -234,13 +235,13 @@ public class SectionInformation {
      */
     public int getPreviewStringResourceId() {
         switch (mDataType) {
-            case PaymentRequestUI.DataType.SHIPPING_ADDRESSES:
+            case PaymentRequestUi.DataType.SHIPPING_ADDRESSES:
                 return R.plurals.payment_request_shipping_addresses_preview;
-            case PaymentRequestUI.DataType.SHIPPING_OPTIONS:
+            case PaymentRequestUi.DataType.SHIPPING_OPTIONS:
                 return R.plurals.payment_request_shipping_options_preview;
-            case PaymentRequestUI.DataType.PAYMENT_METHODS:
+            case PaymentRequestUi.DataType.PAYMENT_METHODS:
                 return R.plurals.payment_request_payment_methods_preview;
-            case PaymentRequestUI.DataType.CONTACT_DETAILS:
+            case PaymentRequestUi.DataType.CONTACT_DETAILS:
                 return R.plurals.payment_request_contacts_preview;
             default:
                 assert false : "unknown data type";
@@ -248,13 +249,17 @@ public class SectionInformation {
         }
     }
 
-    /** @param msg The optional error message to display when the selection is invalid. */
-    public void setErrorMessage(String msg) {
+    /**
+     * @param msg The optional error message to display when the selection is invalid.
+     */
+    public void setErrorMessage(@Nullable String msg) {
         mErrorMessage = msg;
     }
 
-    /** @return The optional error message to display when the selection is invalid. */
-    public String getErrorMessage() {
+    /**
+     * @return The optional error message to display when the selection is invalid.
+     */
+    public @Nullable String getErrorMessage() {
         return mErrorMessage;
     }
 

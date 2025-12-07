@@ -6,8 +6,8 @@
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_TEST_PAGE_CONTENT_ANNOTATIONS_SERVICE_H_
 
 #include "base/files/scoped_temp_dir.h"
+#include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
-#include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 
 namespace page_content_annotations {
 
@@ -22,7 +22,10 @@ class TestPageContentAnnotationsService : public PageContentAnnotationsService {
   static std::unique_ptr<TestPageContentAnnotationsService> Create(
       optimization_guide::OptimizationGuideModelProvider*
           optimization_guide_model_provider,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider =
+          nullptr,
+      passage_embeddings::Embedder* embedder = nullptr);
 
   ~TestPageContentAnnotationsService() override;
   TestPageContentAnnotationsService(const TestPageContentAnnotationsService&) =
@@ -34,7 +37,9 @@ class TestPageContentAnnotationsService : public PageContentAnnotationsService {
   TestPageContentAnnotationsService(
       optimization_guide::OptimizationGuideModelProvider*
           optimization_guide_model_provider,
-      history::HistoryService* history_service);
+      history::HistoryService* history_service,
+      passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
+      passage_embeddings::Embedder* embedder);
 
   std::unique_ptr<base::ScopedTempDir> temp_dir_;
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>

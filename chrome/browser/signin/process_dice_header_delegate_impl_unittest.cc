@@ -23,9 +23,11 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,7 +36,7 @@ using signin_metrics::Reason;
 namespace {
 
 signin_metrics::AccessPoint kTestAccessPoint =
-    signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE;
+    signin_metrics::AccessPoint::kSettings;
 
 signin_metrics::PromoAction kTestPromoAction =
     signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
@@ -63,11 +65,13 @@ class TestDiceWebSigninInterceptorDelegate
   ShowOidcInterceptionDialog(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
-      signin::SigninChoiceWithConfirmationCallback callback,
-      base::OnceClosure done_callback) override {
+      signin::SigninChoiceWithConfirmAndRetryCallback callback,
+      base::OnceClosure done_callback,
+      base::RepeatingClosure retry_callback) override {
     std::move(callback)
         .Then(std::move(done_callback))
-        .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
+        .Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing(),
+             base::DoNothing());
     return nullptr;
   }
 
@@ -76,6 +80,9 @@ class TestDiceWebSigninInterceptorDelegate
       const CoreAccountId& account_id,
       WebSigninInterceptor::SigninInterceptionType interception_type) override {
   }
+
+  void ShowSigninError(content::WebContents* web_contents,
+                       const SigninUIError& error) override {}
 };
 
 class MockDiceWebSigninInterceptor : public DiceWebSigninInterceptor {
@@ -106,14 +113,10 @@ class ProcessDiceHeaderDelegateImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ProcessDiceHeaderDelegateImplTest()
-      : enable_sync_called_(false),
-        signin_header_received_(false),
-        show_error_called_(false),
-        email_("foo@bar.com"),
+      : email_("foo@bar.com"),
         auth_error_(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS) {
-    std::string kGaiaId = "12345";
-    account_info_.account_id = CoreAccountId::FromGaiaId(kGaiaId);
-    account_info_.gaia = kGaiaId;
+    account_info_.gaia = GaiaId("12345");
+    account_info_.account_id = CoreAccountId::FromGaiaId(account_info_.gaia);
     account_info_.email = "email@gmail.com";
   }
 
@@ -143,7 +146,8 @@ class ProcessDiceHeaderDelegateImplTest
   CreateDelegateAndNavigateToSignin(
       bool is_sync_signin_tab,
       const GURL& redirect_url,
-      Reason reason = Reason::kSigninPrimaryAccount) {
+      Reason reason = Reason::kSigninPrimaryAccount,
+      signin_metrics::AccessPoint access_point = kTestAccessPoint) {
     signin_reason_ = reason;
     if (!identity_test_environment_profile_adaptor_) {
       InitializeIdentityTestEnvironment();
@@ -158,11 +162,14 @@ class ProcessDiceHeaderDelegateImplTest
       DiceTabHelper* dice_tab_helper =
           DiceTabHelper::FromWebContents(web_contents());
       dice_tab_helper->InitializeSigninFlow(
-          signin_url_, kTestAccessPoint, signin_reason_, kTestPromoAction,
+          signin_url_, access_point, signin_reason_, kTestPromoAction,
           redirect_url,
           /*record_signin_started_metrics=*/true,
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::StartSyncCallback,
+              base::Unretained(this)),
+          base::BindRepeating(
+              &ProcessDiceHeaderDelegateImplTest::OnHistorySyncOptinStarted,
               base::Unretained(this)),
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
@@ -181,9 +188,9 @@ class ProcessDiceHeaderDelegateImplTest
       // error callback.
       return std::make_unique<ProcessDiceHeaderDelegateImpl>(
           web_contents(), /*is_sync_signin_tab=*/false,
-          signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
-          kTestPromoAction, GURL(),
+          signin_metrics::AccessPoint::kWebSignin, kTestPromoAction, GURL(),
           ProcessDiceHeaderDelegateImpl::EnableSyncCallback(),
+          ProcessDiceHeaderDelegateImpl::EnableHistorySyncOptinCallback(),
           base::BindRepeating(
               &ProcessDiceHeaderDelegateImplTest::OnSigninHeaderReceived,
               base::Unretained(this)),
@@ -223,6 +230,17 @@ class ProcessDiceHeaderDelegateImplTest
 
   void OnSigninHeaderReceived() { signin_header_received_ = true; }
 
+  void OnHistorySyncOptinStarted(Profile* profile,
+                                 content::WebContents* contents,
+                                 const CoreAccountInfo& account_info,
+                                 signin_metrics::AccessPoint access_point) {
+    EXPECT_EQ(profile, this->profile());
+    EXPECT_EQ(access_point, kTestAccessPoint);
+    EXPECT_EQ(web_contents(), contents);
+    EXPECT_EQ(account_info_, account_info);
+    history_sync_optin_started_ = true;
+  }
+
   // Callback for the ProcessDiceHeaderDelegateImpl.
   void ShowSigninErrorCallback(Profile* profile,
                                content::WebContents* contents,
@@ -243,9 +261,10 @@ class ProcessDiceHeaderDelegateImplTest
       identity_test_environment_profile_adaptor_;
 
   const GURL signin_url_ = GURL("https://accounts.google.com");
-  bool enable_sync_called_;
-  bool signin_header_received_;
-  bool show_error_called_;
+  bool enable_sync_called_ = false;
+  bool signin_header_received_ = false;
+  bool show_error_called_ = false;
+  bool history_sync_optin_started_ = false;
   CoreAccountInfo account_info_;
   std::string email_;
   GoogleServiceAuthError auth_error_;
@@ -263,7 +282,32 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, CloseTabWhileStartingSync) {
 
   // Check expectations.
   delegate->EnableSync(account_info_);
-  EXPECT_TRUE(enable_sync_called_);
+  EXPECT_NE(
+      enable_sync_called_,
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  EXPECT_EQ(
+      history_sync_optin_started_,
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  EXPECT_FALSE(show_error_called_);
+}
+
+TEST_F(ProcessDiceHeaderDelegateImplTest,
+       UnsupportedAccessPointForHistorySync) {
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+
+  std::unique_ptr<ProcessDiceHeaderDelegateImpl> delegate =
+      CreateDelegateAndNavigateToSignin(
+          /*is_sync_signin_tab=*/true,
+          /*redirect_url=*/GURL(), Reason::kSigninPrimaryAccount,
+          signin_metrics::AccessPoint::kBookmarkBubble);
+
+  // Check expectations.
+  delegate->EnableSync(account_info_);
+
+  // History sync opt-in is not started because the access point is not
+  // supported.
+  EXPECT_FALSE(history_sync_optin_started_);
   EXPECT_FALSE(show_error_called_);
 }
 
@@ -289,7 +333,13 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, NoRedirect) {
       CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
   delegate->EnableSync(account_info_);
-  EXPECT_TRUE(enable_sync_called_);
+  EXPECT_NE(
+      enable_sync_called_,
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  EXPECT_EQ(
+      history_sync_optin_started_,
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+
   // There was no redirect.
   EXPECT_EQ(signin_url_, web_contents()->GetVisibleURL());
   EXPECT_FALSE(show_error_called_);
@@ -308,15 +358,22 @@ TEST_F(ProcessDiceHeaderDelegateImplTest, TabReuse) {
       CreateDelegateAndNavigateToSignin(/*is_sync_signin_tab=*/true,
                                         /*redirect_url=*/GURL());
   delegate->EnableSync(account_info_);
-  EXPECT_TRUE(enable_sync_called_);
+  EXPECT_NE(
+      enable_sync_called_,
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+  EXPECT_EQ(
+      history_sync_optin_started_,
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
   EXPECT_FALSE(show_error_called_);
 
   // Receive another Dice header in the same tab.
   enable_sync_called_ = false;
+  history_sync_optin_started_ = false;
   ProcessDiceHeaderDelegateImpl::Create(web_contents());
   // Calling `EnableSync()` does nothing because the tab has already been used.
   delegate->EnableSync(account_info_);
   EXPECT_FALSE(enable_sync_called_);
+  EXPECT_FALSE(history_sync_optin_started_);
   EXPECT_FALSE(show_error_called_);
 }
 
@@ -370,14 +427,20 @@ TestConfiguration kEnableSyncTestCases[] = {
     {  false,      false,       false,            false},
     {  false,      true,        true,             true},
     {  true,       false,       false,            false},
-    {  true,       true,        false,            false},
+    // If the user is already syncing, the callback is called, but the flow
+    // aborts before actually showing the dialog.
+    {  true,       true,        true,             true},
     // clang-format on
 };
 
 // Parameterized version of ProcessDiceHeaderDelegateImplTest.
 class ProcessDiceHeaderDelegateImplTestEnableSync
     : public ProcessDiceHeaderDelegateImplTest,
-      public ::testing::WithParamInterface<TestConfiguration> {};
+      public ::testing::WithParamInterface<TestConfiguration> {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+};
 
 // Test the EnableSync() method in all configurations.
 TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
@@ -389,7 +452,10 @@ TEST_P(ProcessDiceHeaderDelegateImplTestEnableSync, EnableSync) {
       CreateDelegateAndNavigateToSignin(GetParam().signin_tab,
                                         /*redirect_url=*/kNtpUrl);
   delegate->EnableSync(account_info_);
-  EXPECT_EQ(GetParam().callback_called, enable_sync_called_);
+
+  EXPECT_EQ(GetParam().callback_called, history_sync_optin_started_);
+  EXPECT_FALSE(enable_sync_called_);
+
   GURL expected_url = GetParam().show_ntp ? kNtpUrl : signin_url_;
   EXPECT_EQ(expected_url, web_contents()->GetVisibleURL());
   EXPECT_FALSE(show_error_called_);
@@ -412,14 +478,18 @@ TestConfiguration kHandleTokenExchangeFailureTestCases[] = {
     {  false,      false,       true,             false},
     {  false,      true,        true,             true},
     {  true,       false,       true,             false},
-    {  true,       true,        true,             false},
+    {  true,       true,        true,             true},
     // clang-format on
 };
 
 // Parameterized version of ProcessDiceHeaderDelegateImplTest.
 class ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure
     : public ProcessDiceHeaderDelegateImplTest,
-      public ::testing::WithParamInterface<TestConfiguration> {};
+      public ::testing::WithParamInterface<TestConfiguration> {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      syncer::kReplaceSyncPromosWithSignInPromos};
+};
 
 // Test the HandleTokenExchangeFailure() method in all configurations.
 TEST_P(ProcessDiceHeaderDelegateImplTestHandleTokenExchangeFailure,
@@ -457,25 +527,21 @@ struct TokenExchangeSuccessConfiguration {
   // Expected value for the MaybeInterceptWebSigin call.
   bool sync_signin = false;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
+      signin_metrics::AccessPoint::kUnknown;
 };
 
 TokenExchangeSuccessConfiguration kHandleTokenExchangeSuccessTestCases[] = {
-    // clang-format off
-    // is_reauth | signin_tab |       reason               |
-    //      sync_signin  | access_point
-    {  false,      false,     Reason::kSigninPrimaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN },
-    {  false,      true,      Reason::kSigninPrimaryAccount,
-            true, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
-    {  false,      true,      Reason::kAddSecondaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
-    {  true,       false,     Reason::kSigninPrimaryAccount,
-            false, signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN },
-    {  true,       true,      Reason::kSigninPrimaryAccount,
-            true, signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE },
-
-    // clang-format on
+    {.access_point = signin_metrics::AccessPoint::kWebSignin},
+    {.signin_tab = true, .sync_signin = true, .access_point = kTestAccessPoint},
+    {.signin_tab = true,
+     .reason = Reason::kAddSecondaryAccount,
+     .access_point = kTestAccessPoint},
+    {.is_reauth = true,
+     .access_point = signin_metrics::AccessPoint::kWebSignin},
+    {.is_reauth = true,
+     .signin_tab = true,
+     .sync_signin = true,
+     .access_point = kTestAccessPoint},
 };
 
 // Parameterized version of ProcessDiceHeaderDelegateImplTest.

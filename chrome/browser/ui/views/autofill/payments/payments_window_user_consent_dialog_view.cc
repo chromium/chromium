@@ -4,9 +4,8 @@
 
 #include "chrome/browser/ui/views/autofill/payments/payments_window_user_consent_dialog_view.h"
 
-#include "base/functional/callback_forward.h"
 #include "base/notreached.h"
-#include "chrome/browser/ui/autofill/payments/view_factory.h"
+#include "chrome/browser/ui/autofill/payments/payments_view_factory.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -15,7 +14,10 @@
 #include "components/autofill/core/browser/ui/payments/payments_window_user_consent_dialog_controller.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -55,7 +57,7 @@ PaymentsWindowUserConsentDialogResult GetDialogResultForClosedReason(
       // There is no close button present for the consent dialog, so this should
       // never be reached. It is also a tab-modal dialog, so it should never
       // lose focus.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case views::Widget::ClosedReason::kUnspecified:
       return PaymentsWindowUserConsentDialogResult::kTabOrBrowserClosed;
     case views::Widget::ClosedReason::kEscKeyPressed:
@@ -73,13 +75,14 @@ PaymentsWindowUserConsentDialogView::PaymentsWindowUserConsentDialogView(
     base::WeakPtr<PaymentsWindowUserConsentDialogController> controller)
     : payments_window_user_consent_dialog_controller_(controller) {
   SetButtonLabel(
-      ui::DIALOG_BUTTON_OK,
+      ui::mojom::DialogButton::kOk,
       payments_window_user_consent_dialog_controller_->GetOkButtonLabel());
   SetShowCloseButton(false);
   RegisterWindowWillCloseCallback(
+      RegisterWillCloseCallbackPassKey(),
       base::BindOnce(&PaymentsWindowUserConsentDialogView::OnDialogClosing,
                      weak_ptr_factory_.GetWeakPtr()));
-  SetModalType(ui::MODAL_TYPE_CHILD);
+  SetModalType(ui::mojom::ModalType::kChild);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
@@ -112,8 +115,9 @@ PaymentsWindowUserConsentDialogView::GetWeakPtr() {
 }
 
 void PaymentsWindowUserConsentDialogView::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string PaymentsWindowUserConsentDialogView::GetWindowTitle() const {
@@ -122,8 +126,16 @@ std::u16string PaymentsWindowUserConsentDialogView::GetWindowTitle() const {
 
 void PaymentsWindowUserConsentDialogView::OnDialogClosing() {
   if (payments_window_user_consent_dialog_controller_) {
+    PaymentsWindowUserConsentDialogResult dialog_result =
+        GetDialogResultForClosedReason(GetWidget()->closed_reason());
+    if (dialog_result ==
+        PaymentsWindowUserConsentDialogResult::kAcceptButtonClicked) {
+      GetViewAccessibility().AnnounceText(
+          payments_window_user_consent_dialog_controller_
+              ->GetAcceptanceAccessibilityAnnouncement());
+    }
     payments_window_user_consent_dialog_controller_->OnDialogClosing(
-        GetDialogResultForClosedReason(GetWidget()->closed_reason()));
+        dialog_result);
   }
 }
 

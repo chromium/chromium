@@ -43,6 +43,15 @@
             "items": {"$ref": "BookmarkNodeDataElement"}
           }
         }
+      },
+      {
+        "id": "OpenInNewTabParams",
+        "type": "object",
+        "description": "Parameters for the Open In New Tab method",
+        "properties": {
+          "active": {"type": "boolean", "description": "Whether this tab should be active."},
+          "split": {"type": "boolean", "description": "Whether this tab should enter into a split view alongside the active tab."}
+        }
       }
     ],
     "functions": [
@@ -119,6 +128,21 @@
             "description": "The ID of the folder to paste into."
           }
         ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "name": "isActiveTabInSplit",
+        "type": "function",
+        "description": "Whether the active tab is in a split view.",
+        "parameters": [],
         "returns_async": {
           "name": "callback",
           "parameters": [
@@ -271,9 +295,10 @@
             "type": "string"
           },
           {
-            "name": "active",
-            "description": "Whether this tab should be active.",
-            "type": "boolean"
+            "name": "params",
+            "optional": true,
+            "$ref": "OpenInNewTabParams",
+            "description": "Parameters for the new tab the given bookmark is opened into."
           }
         ]
       },
@@ -293,6 +318,20 @@
             "name": "incognito",
             "description": "Whether the new window should be an incognito window.",
             "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "openInNewTabGroup",
+        "type": "function",
+        "description": "Opens the given bookmarks in a new tab group.",
+        "parameters": [
+          {
+            "name": "idList",
+            "description": "An array of string-valued ids.",
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
           }
         ]
       },

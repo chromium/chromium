@@ -17,6 +17,8 @@
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"  // nogncheck crbug.com/40147906
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
@@ -250,28 +252,34 @@ int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabs(
 
 int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabsWithInflightLoad(
     content::NavigationHandle* navigation_handle) {
-  content::WebContents* this_contents = navigation_handle->GetWebContents();
+  content::WebContents* const this_contents =
+      navigation_handle->GetWebContents();
   int num_loading = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    TabStripModel* model = browser->tab_strip_model();
-    // Note: |this_contents| may not appear in |model|, e.g. for a new
-    // background tab navigation.
-    for (int i = 0; i < model->count(); ++i) {
-      content::WebContents* other_contents = model->GetWebContentsAt(i);
-      if (other_contents != this_contents && other_contents->IsLoading()) {
-        num_loading++;
-      }
-    }
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this_contents, &num_loading](BrowserWindowInterface* browser) {
+        const TabStripModel* const model = browser->GetTabStripModel();
+        // Note: |this_contents| may not appear in |model|, e.g. for a new
+        // background tab navigation.
+        for (int i = 0; i < model->count(); ++i) {
+          content::WebContents* const other_contents =
+              model->GetWebContentsAt(i);
+          if (other_contents != this_contents && other_contents->IsLoading()) {
+            num_loading++;
+          }
+        }
+        return true;
+      });
   return num_loading;
 }
 
 int MultiTabLoadingPageLoadMetricsObserver::NumberOfTabs(
     content::NavigationHandle* navigation_handle) {
   int num_of_tabs = 0;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    num_of_tabs += browser->tab_strip_model()->count();
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&num_of_tabs](BrowserWindowInterface* browser) {
+        num_of_tabs += browser->GetTabStripModel()->count();
+        return true;
+      });
   return num_of_tabs;
 }
 

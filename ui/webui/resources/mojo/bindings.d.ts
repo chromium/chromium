@@ -132,11 +132,19 @@ declare global {
 export namespace mojo {
   namespace internal {
     namespace interfaceSupport {
-      interface Endpoint {}
+      interface Endpoint<T> {
+        // Branding field to discern between different types of Endpoints.
+        // For more information about why branding is neceessary, please see:
+        // https://www.learningtypescript.com/articles/branded-types#branding-values
+        __brand: T;
+      }
 
-      function getEndpointForReceiver(handle: MojoHandle|Endpoint): Endpoint;
+      function getEndpointForReceiver<T>(handle: MojoHandle|
+                                         Endpoint<T>): Endpoint<T>;
+      function acceptBufferForTesting<T>(
+          endpoint: Endpoint<T>, buffer: ArrayBuffer): void;
 
-      function bind(handle: Endpoint, name: string, scope: string): void;
+      function bind<T>(handle: Endpoint<T>, name: string, scope: string): void;
 
       interface ConnectionErrorEventRouter {
         addListener(listener: Function): number;
@@ -144,25 +152,27 @@ export namespace mojo {
         dispatchErrorEvent(): void;
       }
 
-      interface PendingReceiver {
-        readonly handle: Endpoint;
+      interface PendingReceiver<T> {
+        readonly handle: Endpoint<T>;
       }
 
-      type RequestType = new(handle: Endpoint) => PendingReceiver;
+      type RequestType<T> = new(handle: Endpoint<T>) => PendingReceiver<T>;
 
       class InterfaceRemoteBase<T> {
-        constructor(requestType: RequestType, handle: Endpoint|undefined);
-        get endpoint(): Endpoint;
-        bindNewPipeAndPassReceiver(): PendingReceiver;
-        bindHandle(handle: MojoHandle|Endpoint): void;
-        associateAndPassReceiver(): PendingReceiver;
+        constructor(
+            requestType: RequestType<T>,
+            handle: Endpoint<T>|MojoHandle|undefined);
+        get endpoint(): Endpoint<T>;
+        bindNewPipeAndPassReceiver(): PendingReceiver<T>;
+        bindHandle(handle: MojoHandle|Endpoint<T>): void;
+        associateAndPassReceiver(): PendingReceiver<T>;
         unbind(): void;
         close(): void;
         getConnectionErrorEventRouter(): ConnectionErrorEventRouter;
         sendMessage(
             ordinal: number, paramStruct: mojo.internal.MojomType,
-            maybeResponseStruct: mojo.internal.MojomType|null,
-            args: any[]): Promise<any>;
+            maybeResponseStruct: mojo.internal.MojomType|null, args: any[],
+            useResultResponse: boolean): Promise<any>;
       }
 
       class InterfaceRemoteBaseWrapper<T> {
@@ -185,26 +195,28 @@ export namespace mojo {
         createReceiverHandler(expectsResponse: boolean): Function;
       }
 
-      type RemoteType<T> = new(handle: MojoHandle|Endpoint) => T;
+      type RemoteType<T, E> = new(handle: MojoHandle|Endpoint<E>) => T;
 
-      class InterfaceReceiverHelperInternal<T> {
-        constructor(remoteType: RemoteType<T>);
+      class InterfaceReceiverHelperInternal<T, E> {
+        constructor(remoteType: RemoteType<T, E>);
         registerHandler(
             ordinal: number, paramStruct: mojo.internal.MojomType,
-            responseStruct: mojo.internal.MojomType|null,
-            handler: Function): void;
+            responseStruct: mojo.internal.MojomType|null, handler: Function,
+            useResultResponse: boolean): void;
         getConnectionErrorEventRouter(): ConnectionErrorEventRouter;
       }
 
-      class InterfaceReceiverHelper<T> {
-        constructor(helper: InterfaceReceiverHelperInternal<T>);
-        bindHandle(handle: MojoHandle|Endpoint): void;
+      class InterfaceReceiverHelper<T, E> {
+        constructor(helper: InterfaceReceiverHelperInternal<T, E>);
+        bindHandle(handle: MojoHandle|Endpoint<E>): void;
         bindNewPipeAndPassRemote(): T;
         associateAndPassRemote(): T;
         close(): void;
-        flushForTesting(): Promise<void>;
+        flush(): Promise<void>;
       }
     }
+
+    class Decoder {}
 
     interface MojomType {}
     class Bool implements MojomType {}
@@ -233,15 +245,19 @@ export namespace mojo {
       originalFieldName: string;
     }
 
-    interface StructFieldSpec {
+    interface StructFieldSpec<StructType, FieldType> {
       name: string;
       packedOffset: number;
       packedBitOffset: number;
       type: MojomType;
-      defaultValue: any;
+      // defaultValue needs to be nullable because we need to have some sort
+      // of placeholder here. This field should never be used if the following
+      // "nullable" field is set to false.
+      defaultValue: FieldType|null;
       nullable: boolean;
       minVersion: number;
       nullableValueKindProperties?: NullableValueKindProperties;
+      fieldGetter?: (value: StructType) => FieldType;
     }
 
     function createStructDeserializer(structMojomType: mojo.internal.MojomType):
@@ -250,15 +266,36 @@ export namespace mojo {
         };
 
 
-    function StructField(
+    function StructField<StructType, FieldType>(
         name: string, packedOffset: number, packedBitOffset: number,
-        type: MojomType, defaultValue: any, nullable: boolean,
+        type: MojomType, defaultValue: FieldType|null, nullable: boolean,
         minVersion?: number,
-        nullableValueKindProperites?: NullableValueKindProperties):
-        StructFieldSpec;
+        nullableValueKindProperites?: NullableValueKindProperties,
+        fieldGetter?: (value: StructType) => FieldType |
+            null): StructFieldSpec<StructType, FieldType>;
 
-    function Struct(
-        objectToBlessAsType: object, name: string, fields: StructFieldSpec[],
+    function Struct<StructType>(
+        objectToBlessAsType: object, name: string,
+        fields: Array<StructFieldSpec<StructType, any>>,
+        versionData: number[][]): void;
+
+    class TypemapAdapter<MappedType, MojoType> {
+      constructor(
+          toMappedTypeFn: (mojoType: MojoType) => MappedType,
+      );
+    }
+
+    class MojoDataView<StructType> {
+      constructor(
+          decoder: mojo.internal.Decoder, version: number,
+          fieldSpecs: Array<mojo.internal.StructFieldSpec<StructType, any>>);
+    }
+
+    function TypemappedStruct<MappedType, MojoType>(
+        objectToBlessAsType: object, name: string,
+        dataViewType: MojoDataView<MappedType>,
+        adapter: TypemapAdapter<MappedType, MojoType>,
+        fields: Array<StructFieldSpec<MappedType, any>>,
         versionData: number[][]): void;
 
     interface UnionFieldSpec {
@@ -276,5 +313,11 @@ export namespace mojo {
     function InterfaceRequest(type: {name: string}): MojomType;
     function AssociatedInterfaceProxy(type: {name: string}): MojomType;
     function AssociatedInterfaceRequest(type: {name: string}): MojomType;
+    function decodeStructField(
+        decoder: Decoder, fieldSpec: StructFieldSpec<any, any>,
+        version: number): any;
+    function decodeStructNullableValueField(
+        decoder: Decoder, flagFieldSpec: StructFieldSpec<any, any>,
+        fieldSpecs: Array<StructFieldSpec<any, any>>, version: number): any;
   }
 }

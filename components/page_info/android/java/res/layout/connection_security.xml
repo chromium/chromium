@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Copyright 2025 The Chromium Authors
+   Use of this source code is governed by a BSD-style license that can be
+   found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!-- SecurityDescription display-->
+    <LinearLayout
+        android:id="@+id/security_description_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
+        android:paddingVertical="@dimen/page_info_popup_padding_vertical">
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/identity_status_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="24dp"
+            android:importantForAccessibility="no" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/security_description_summary"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:includeFontPadding="false"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/security_description_details"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="2dp"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:leading="@dimen/text_size_medium_leading"
+                android:clickable="true"
+                android:focusable="true" />
+            <org.chromium.ui.widget.TextViewWithLeading
+                android:id="@+id/security_description_reset_decision"
+                android:visibility="gone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="8dp"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                app:leading="@dimen/text_size_medium_leading"
+                android:clickable="true"
+                android:focusable="true" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- QWAC display -->
+    <LinearLayout
+        android:id="@+id/qwac_cert_info"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="fill"
+        android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
+        android:paddingVertical="@dimen/page_info_popup_padding_vertical"
+        android:clickable="true"
+        android:focusable="true">
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/qwac_status_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="24dp"
+                android:importantForAccessibility="no"
+                app:tint="@color/default_icon_color_tint_list"
+                android:src="@drawable/qwac_status" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/qwac_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/page_info_qwac_status_title"
+                    android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+                <org.chromium.ui.widget.TextViewWithLeading
+                    android:id="@+id/qwac_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+                    app:leading="@dimen/text_size_medium_leading" />
+            </LinearLayout>
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/qwac_cert_details_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="24dp"
+                android:layout_gravity="end"
+                android:importantForAccessibility="no"
+                app:tint="@color/default_icon_color_tint_list"
+                android:src="@drawable/open_in_new" />
+    </LinearLayout>
+    <!-- Certificate details button-->
+    <LinearLayout
+        android:id="@+id/certificate_details_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="fill"
+        android:paddingHorizontal="@dimen/page_info_popup_padding_sides"
+        android:paddingVertical="@dimen/page_info_popup_padding_vertical"
+        android:clickable="true"
+        android:focusable="true">
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/certificate_details_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="24dp"
+                android:importantForAccessibility="no"
+                app:tint="@color/default_icon_color_tint_list"
+                android:src="@drawable/sticky_note_2" />
+            <TextView
+                android:id="@+id/certificate_details_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/page_info_certificate_details"
+                android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+            <org.chromium.ui.widget.ChromeImageView
+                android:id="@+id/certificate_details_launch_icon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="24dp"
+                android:layout_gravity="end"
+                android:importantForAccessibility="no"
+                app:tint="@color/default_icon_color_tint_list"
+                android:src="@drawable/open_in_new" />
+    </LinearLayout>
+
+</LinearLayout>

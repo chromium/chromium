@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
-#include "components/safe_browsing/core/common/features.h"
 
 namespace safe_browsing {
 
@@ -36,7 +35,7 @@ void RemoteHostContactedSignalProcessor::ProcessSignal(
   } else {
     // For new signals, create a new store entry with |rhc_id| as the key.
     RemoteHostInfo remote_host_info;
-    remote_host_info.set_url(rhc_signal.remote_host_url().host());
+    remote_host_info.set_url(rhc_signal.remote_host_url().GetHost());
     remote_host_info.set_connection_protocol(rhc_signal.protocol_type());
     remote_host_info.set_contacted_by(rhc_signal.contact_initiator());
     remote_host_info.set_contact_count(1);
@@ -66,10 +65,7 @@ RemoteHostContactedSignalProcessor::GetSignalInfoForReport(
         std::move(remote_host_info);
   }
 
-  if (base::FeatureList::IsEnabled(
-          kExtensionTelemetryInterceptRemoteHostsContactedInRenderer)) {
     remote_host_contacted_info->set_collected_from_new_interception(true);
-  }
 
   // Clear the data in the remote host urls store.
   remote_host_contacted_store_.erase(remote_host_info_store_entry);

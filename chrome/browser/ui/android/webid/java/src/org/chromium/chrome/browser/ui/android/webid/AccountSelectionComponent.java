@@ -4,14 +4,13 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.blink.mojom.RpContext;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
-import org.chromium.chrome.browser.ui.android.webid.data.ClientIdMetadata;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityCredentialTokenError;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderData;
 import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadata;
+import org.chromium.chrome.browser.ui.android.webid.data.RelyingPartyData;
 import org.chromium.content.webid.IdentityRequestDialogDismissReason;
 import org.chromium.content.webid.IdentityRequestDialogLinkType;
 import org.chromium.content_public.browser.WebContents;
@@ -23,6 +22,7 @@ import java.util.List;
  * This component supports accounts selection for WebID. It shows a list of
  * accounts to the user which can select one of them or dismiss it.
  */
+@NullMarked
 public interface AccountSelectionComponent {
     /**
      * This delegate is called when the AccountSelection component is interacted with (e.g.
@@ -30,10 +30,9 @@ public interface AccountSelectionComponent {
      */
     interface Delegate {
         /**
-         * Called when the user select one of the accounts shown in the
-         * AccountSelectionComponent.
+         * Called when the user select one of the accounts shown in the AccountSelectionComponent.
          */
-        void onAccountSelected(GURL idpConfigUrl, Account account);
+        void onAccountSelected(Account account);
 
         /**
          * Called when the user dismisses the AccountSelectionComponent. Not called if a suggestion
@@ -67,41 +66,34 @@ public interface AccountSelectionComponent {
     /**
      * Displays the given accounts in a new bottom sheet.
      *
-     * @param rpEtldPlusOne The {@link String} for the relying party.
-     * @param idpEtldPlusOne The {@link String} for the identity provider.
+     * @param rpData The {@link RelyingPartyData} for the relying party.
      * @param accounts A list of {@link Account}s that will be displayed.
-     * @param idpMetadata Metadata related to identity provider.
-     * @param clientMetadata Metadata related to relying party.
-     * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
-     * @param rpContext is an enum representing the desired text to be used in the title of the
-     *     FedCM prompt: "signin", "continue", etc.
-     * @param requestPermission A {@link boolean} indicating whether we need to request permission
-     *     from the user to share their data with the IDP, if the user is not a returning user.
+     * @param idpDataList The list with information about the identity providers.
+     * @param newAccounts The newly logged in accounts.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showAccounts(
-            String rpEtldPlusOne,
-            String idpEtldPlusOne,
+    boolean showAccounts(
+            RelyingPartyData rpData,
             List<Account> accounts,
-            IdentityProviderMetadata idpMetadata,
-            ClientIdMetadata clientMetadata,
-            boolean isAutoReauthn,
-            @RpContext.EnumType int rpContext,
-            boolean requestPermission,
-            @Nullable IdentityProviderData newAccountsIdp);
+            List<IdentityProviderData> idpDataList,
+            List<Account> newAccounts);
 
     /**
      * Displays a dialog telling the user that they can sign in to an IDP for the purpose of
      * federated login when the IDP sign-in status is signin but no accounts are received from the
      * fetch.
      *
-     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param rpData is the data for the relying party.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is an enum representing the desired text to be used in the title of the
      *     FedCM prompt: "signin", "continue", etc.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showFailureDialog(
-            String rpForDisplay,
+    boolean showFailureDialog(
+            RelyingPartyData rpData,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext);
@@ -110,16 +102,17 @@ public interface AccountSelectionComponent {
      * Displays a dialog telling the user that an error has occurred in their attempt to sign-in to
      * a website with an IDP.
      *
-     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param rpData is the data for the relying party.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param idpMetadata is the metadata of the IDP.
      * @param rpContext is an enum representing the desired text to be used in the title of the
      *     FedCM prompt: "signin", "continue", etc.
-     * @param IdentityCredentialTokenError is contains the error code and url to display in the
-     *     FedCM prompt.
+     * @param error Contains the error code and url to display in the FedCM prompt.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showErrorDialog(
-            String rpForDisplay,
+    boolean showErrorDialog(
+            RelyingPartyData rpData,
             String idpForDisplay,
             IdentityProviderMetadata idpMetadata,
             @RpContext.EnumType int rpContext,
@@ -128,13 +121,24 @@ public interface AccountSelectionComponent {
     /**
      * Displays a dialog with a spinner to indicate that contents are loading.
      *
-     * @param rpForDisplay is the formatted RP URL to display in the FedCM prompt.
+     * @param rpData is the data for the relying party.
      * @param idpForDisplay is the formatted IDP URL to display in the FedCM prompt.
      * @param rpContext is an enum representing the desired text to be used in the title of the
      *     FedCM prompt: "signin", "continue", etc.
+     * @return whether the invocation is successful. If false is returned, the caller must assume
+     *     that onDismiss was called and must return early.
      */
-    void showLoadingDialog(
-            String rpForDisplay, String idpForDisplay, @RpContext.EnumType int rpContext);
+    boolean showLoadingDialog(
+            RelyingPartyData rpData, String idpForDisplay, @RpContext.EnumType int rpContext);
+
+    /**
+     * Displays the verifying UI in a new bottom sheet.
+     *
+     * @param rpData The {@link RelyingPartyData} for the relying party.
+     * @param account An {@link Account} that will be displayed.
+     * @param isAutoReauthn A {@link boolean} that represents whether this is an auto re-authn flow.
+     */
+    boolean showVerifyingDialog(RelyingPartyData rpData, Account account, boolean isAutoReauthn);
 
     /**
      * Closes the outstanding bottom sheet or the popup, depending on what this object corresponds

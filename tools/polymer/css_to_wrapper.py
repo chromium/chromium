@@ -59,6 +59,24 @@ export function getCss() {
   return instance || (instance = [...[%(deps)s], css`%(content)s`]);
 }"""
 
+# TODO(crbug.com/384446045): Remove when the oldest supported iOS version is
+# 16.4 or above. CSSStyleSheet constructor is not supported before that.
+_LIT_VARS_IOS_TEMPLATE = """%(imports)s
+export {};
+
+const css = `%(content)s`;
+
+try {
+  const sheet = new CSSStyleSheet();
+  sheet.replaceSync(css);
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
+} catch (e) {
+  const style = document.createElement('style');
+  style.textContent = css;
+  document.head.appendChild(style);
+}
+"""
+
 # Map holding all the different types of CSS files to generate wrappers for.
 _TEMPLATE_MAP = {
     'style': _POLYMER_STYLE_TEMPLATE,
@@ -68,7 +86,7 @@ _TEMPLATE_MAP = {
 }
 
 # A suffix used for style files that are copies of Polymer styles ported into
-# Lit. It is treated specially below so that the Polymer file acts as a source
+# Lit. It is treated specially below so that the Lit file acts as a source
 # of truth, to avoid duplication while both files styles need to be available.
 # TODO(crbug.com/40943652): Remove special handling when having the same styles
 # available in both Polymer and Lit is no longer needed.
@@ -183,6 +201,7 @@ def main(argv):
   parser.add_argument('--in_files', required=True, nargs="*")
   parser.add_argument('--minify', action='store_true')
   parser.add_argument('--use_js', action='store_true')
+  parser.add_argument('--is_ios', action='store_true')
   args = parser.parse_args(argv)
 
   in_folder = path.normpath(path.join(_CWD, args.in_folder))
@@ -193,24 +212,15 @@ def main(argv):
   wrapper_in_folder = in_folder
 
   if args.minify:
-    # Minify the CSS files with html-minifier before generating the wrapper
+    # Minify the CSS files with a postcss plugin before generating the wrapper
     # .ts files.
-    # Note: Passing all CSS files to html-minifier all at once because
-    # passing them individually takes a lot longer.
     # Storing the output in a temporary folder, which is used further below when
     # creating the final wrapper files.
     tmp_out_dir = tempfile.mkdtemp(dir=out_folder)
     try:
       wrapper_in_folder = tmp_out_dir
-
-      # Using the programmatic Node API to invoke html-minifier, because the
-      # built-in command line API does not support explicitly specifying
-      # multiple files to be processed, and only supports specifying an input
-      # folder, which would lead to potentially processing unnecessary HTML
-      # files that are not part of the build (stale), or handled by other
-      # css_to_wrapper targets.
       node.RunNode(
-          [path.join(_HERE_PATH, 'html_minifier.js'), in_folder, tmp_out_dir] +
+          [path.join(_HERE_PATH, 'css_minifier.js'), in_folder, tmp_out_dir] +
           args.in_files)
     except RuntimeError as err:
       shutil.rmtree(tmp_out_dir)
@@ -256,15 +266,14 @@ def main(argv):
 
     content = ''
 
-    if in_file.endswith(_LIT_SUFFIX):
-      # Treat the _LIT_SUFFIX in a special way, so that the CSS content is
-      # actually extracted from the equivalent Polymer file instead.
-      polymer_in_file = in_file.replace(_LIT_SUFFIX, '.css')
-      assert polymer_in_file in args.in_files
-      polymer_metadata = _extract_metadata(path.join(in_folder,
-                                                     polymer_in_file))
-      content = _extract_content(path.join(wrapper_in_folder, polymer_in_file),
-                                 polymer_metadata, args.minify)
+    lit_in_file = in_file.replace('.css', _LIT_SUFFIX)
+    if metadata['type'] == 'style' and lit_in_file in args.in_files:
+      # When a Polymer file has an equivalent "_lit.css" file, use the latter to
+      # extract the CSS content from, to facilitate migration without having to
+      # duplicate styles, such that the Lit file acts as the canonical source.
+      lit_metadata = _extract_metadata(path.join(in_folder, lit_in_file))
+      content = _extract_content(path.join(wrapper_in_folder, lit_in_file),
+                                 lit_metadata, args.minify)
     else:
       # Extract the CSS content from either the original or the minified files.
       content = _extract_content(path.join(wrapper_in_folder, in_file),
@@ -311,7 +320,12 @@ def main(argv):
       }
 
     assert substitutions
-    wrapper = _TEMPLATE_MAP[metadata['type']] % substitutions
+
+    template = _TEMPLATE_MAP[metadata['type']]
+    if args.is_ios and metadata['type'] == 'vars-lit':
+      template = _LIT_VARS_IOS_TEMPLATE
+
+    wrapper = template % substitutions
 
     out_folder_for_file = path.join(out_folder, path.dirname(in_file))
     makedirs(out_folder_for_file, exist_ok=True)

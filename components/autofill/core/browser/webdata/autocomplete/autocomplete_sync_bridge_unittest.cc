@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
@@ -44,6 +45,7 @@
 using base::ScopedTempDir;
 using base::Time;
 using base::UTF8ToUTF16;
+using base::test::EqualsProto;
 using sync_pb::AutofillSpecifics;
 using sync_pb::DataTypeState;
 using sync_pb::EntityMetadata;
@@ -66,7 +68,6 @@ using testing::Return;
 using testing::SizeIs;
 
 namespace autofill {
-
 namespace {
 
 const char kNameFormat[] = "name %d";
@@ -139,8 +140,6 @@ AutocompleteEntry CreateAutocompleteEntry(
   }
   return AutocompleteEntry(key, date_created, date_last_used);
 }
-
-}  // namespace
 
 class AutocompleteSyncBridgeTest : public testing::Test {
  public:
@@ -440,6 +439,21 @@ TEST_F(AutocompleteSyncBridgeTest, GetAllData) {
   VerifyAllData({specifics1, specifics2, specifics3});
 }
 
+// If has_value() returns true, then the specifics are determined to be valid.
+TEST_F(AutocompleteSyncBridgeTest, IsEntityDataValidHasValue) {
+  AutofillSpecifics input = CreateSpecifics(1, {2, 3});
+  EXPECT_TRUE(bridge()->IsEntityDataValid(SpecificsToEntity(input)));
+}
+
+// If has_value() returns false, then the specifics are determined to be old
+// style and invalid.
+TEST_F(AutocompleteSyncBridgeTest, IsEntityDataValidNoValue) {
+  AutofillSpecifics input = CreateSpecifics(1, {2, 3});
+  input.clear_value();
+
+  EXPECT_FALSE(bridge()->IsEntityDataValid(SpecificsToEntity(input)));
+}
+
 TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesEmpty) {
   // TODO(skym, crbug.com/672619): Ideally would like to verify that the db is
   // not accessed.
@@ -449,7 +463,7 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesEmpty) {
 TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesSimple) {
   AutofillSpecifics specifics1 = CreateSpecifics(1);
   AutofillSpecifics specifics2 = CreateSpecifics(2);
-  ASSERT_NE(specifics1.SerializeAsString(), specifics2.SerializeAsString());
+  ASSERT_THAT(specifics1, Not(EqualsProto(specifics2)));
   ASSERT_NE(GetStorageKey(specifics1), GetStorageKey(specifics2));
 
   EXPECT_CALL(*backend(), CommitChanges());
@@ -460,8 +474,8 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesSimple) {
   EXPECT_CALL(*backend(), CommitChanges());
 
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(
-      EntityChange::CreateDelete(GetStorageKey(specifics1)));
+  entity_change_list.push_back(EntityChange::CreateDelete(
+      GetStorageKey(specifics1), syncer::EntityData()));
   ApplyChanges(std::move(entity_change_list));
   VerifyAllData({specifics2});
 }
@@ -471,8 +485,8 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesSimple) {
 TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesWrongChangeType) {
   AutofillSpecifics specifics = CreateSpecifics(1, {1});
   syncer::EntityChangeList entity_change_list1;
-  entity_change_list1.push_back(
-      EntityChange::CreateDelete(GetStorageKey(specifics)));
+  entity_change_list1.push_back(EntityChange::CreateDelete(
+      GetStorageKey(specifics), syncer::EntityData()));
   ApplyChanges(std::move(entity_change_list1));
   VerifyAllData(std::vector<AutofillSpecifics>());
 
@@ -519,15 +533,6 @@ TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesNoTime) {
   VerifyAllData({CreateSpecifics(1, {0})});
 }
 
-// If has_value() returns false, then the specifics are determined to be old
-// style and ignored.
-TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesNoValue) {
-  AutofillSpecifics input = CreateSpecifics(1, {2, 3});
-  input.clear_value();
-  ApplyAdds({input});
-  VerifyAllData(std::vector<AutofillSpecifics>());
-}
-
 // Should be treated the same as an empty string name. This inconsistency is
 // being perpetuated from the previous sync integration.
 TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesNoName) {
@@ -566,7 +571,8 @@ TEST_F(AutocompleteSyncBridgeTest,
 // runtime by the bridge and not loaded from disk.
 TEST_F(AutocompleteSyncBridgeTest, ApplyIncrementalSyncChangesBadStorageKey) {
   syncer::EntityChangeList entity_change_list;
-  entity_change_list.push_back(EntityChange::CreateDelete("bogus storage key"));
+  entity_change_list.push_back(
+      EntityChange::CreateDelete("bogus storage key", syncer::EntityData()));
   const auto error = bridge()->ApplyIncrementalSyncChanges(
       bridge()->CreateMetadataChangeList(), std::move(entity_change_list));
   EXPECT_TRUE(error);
@@ -795,4 +801,5 @@ TEST_F(AutocompleteSyncBridgeTest, MergeFullSyncDataMixed) {
   VerifyAllData({local1, remote2, specifics3, merged4});
 }
 
+}  // namespace
 }  // namespace autofill

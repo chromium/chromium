@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "skia/ext/skcolorspace_primaries.h"
 
 #include <iomanip>
 #include <sstream>
 
+#include "third_party/skia/include/core/SkColorSpace.h"
+
+#if !defined(SKIA_COLOR_SPACE_PRIMARIES_OPERATOR_EQUAL)
 bool operator==(const SkColorSpacePrimaries& a,
                 const SkColorSpacePrimaries& b) {
   return a.fRX == b.fRX && a.fRY == b.fRY && a.fGX == b.fGX && a.fGY == b.fGY &&
@@ -22,26 +21,29 @@ bool operator!=(const SkColorSpacePrimaries& a,
                 const SkColorSpacePrimaries& b) {
   return !(a == b);
 }
+#endif
 
 namespace skia {
 
 std::string SkColorSpacePrimariesToString(
     const SkColorSpacePrimaries& primaries) {
-  if (primaries == SkNamedPrimariesExt::kInvalid)
+  if (primaries == SkNamedPrimariesExt::kInvalid) {
     return "invalid";
+  }
 
   std::stringstream ss;
   ss << std::fixed << std::setprecision(4);
   ss << "{";
-  if (primaries == SkNamedPrimariesExt::kSRGB)
+  if (primaries == SkNamedPrimariesExt::kSRGB) {
     ss << "name:'srgb', ";
-  else if (primaries == SkNamedPrimariesExt::kP3)
+  } else if (primaries == SkNamedPrimariesExt::kP3) {
     ss << "name:'p3', ";
-  else if (primaries == SkNamedPrimariesExt::kRec2020)
+  } else if (primaries == SkNamedPrimaries::kRec2020) {
     ss << "name:'rec2020', ";
+  }
   ss << "r:[" << primaries.fRX << ", " << primaries.fRY << "], ";
   ss << "g:[" << primaries.fGX << ", " << primaries.fGY << "], ";
-  ss << "b:[" << primaries.fBX << ", " << primaries.fRY << "], ";
+  ss << "b:[" << primaries.fBX << ", " << primaries.fBY << "], ";
   ss << "w:[" << primaries.fWX << ", " << primaries.fWY << "]";
   ss << "}";
   return ss.str();

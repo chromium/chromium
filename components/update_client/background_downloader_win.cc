@@ -13,13 +13,13 @@
 #include <stdint.h>
 #include <winerror.h>
 
+#include <algorithm>
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
-#include "background_downloader_win.h"
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -30,8 +30,10 @@
 #include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/ranges/algorithm.h"
+#include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
@@ -145,9 +147,9 @@ constexpr int kMaxQueuedJobs = 10;
 
 // Prefix used for naming the temporary directories for downloads.
 constexpr base::FilePath::CharType kDownloadDirectoryPrefix[] =
-    FILE_PATH_LITERAL("chrome_BITS_");
+    FILE_PATH_LITERAL("_chrome_BITS_");
 constexpr base::FilePath::CharType kDownloadDirectoryPrefixMatcher[] =
-    FILE_PATH_LITERAL("chrome_BITS_*");
+    FILE_PATH_LITERAL("_chrome_BITS_*");
 
 // Returns the status code from a given BITS error.
 int GetHttpStatusFromBitsError(HRESULT error) {
@@ -428,10 +430,12 @@ void CheckIsMta() {
 }  // namespace
 
 BackgroundDownloader::BackgroundDownloader(
-    scoped_refptr<CrxDownloader> successor)
+    scoped_refptr<CrxDownloader> successor,
+    const std::string& prod_id)
     : CrxDownloader(std::move(successor)),
       com_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          kTaskTraitsBackgroundDownloader)) {
+          kTaskTraitsBackgroundDownloader)),
+      prod_id_(base::UTF8ToWide(prod_id)) {
   DETACH_FROM_SEQUENCE(com_sequence_checker_);
 }
 
@@ -744,7 +748,6 @@ HRESULT BackgroundDownloader::CreateOrOpenJob(
       },
       bits_manager_, &jobs);
   if (SUCCEEDED(hr) && !jobs.empty()) {
-    metrics::RecordBDWExistingJobUsed(true);
     *job = jobs.front();
     return S_FALSE;
   }
@@ -765,7 +768,6 @@ HRESULT BackgroundDownloader::CreateOrOpenJob(
     return hr;
   }
 
-  metrics::RecordBDWExistingJobUsed(false);
   *job = local_job;
   return S_OK;
 }
@@ -777,7 +779,8 @@ HRESULT BackgroundDownloader::InitializeNewJob(
   CheckIsMta();
 
   base::FilePath tempdir;
-  if (!base::CreateNewTempDirectory(kDownloadDirectoryPrefix, &tempdir)) {
+  if (!base::CreateNewTempDirectory(
+          base::StrCat({prod_id_, kDownloadDirectoryPrefix}), &tempdir)) {
     return E_FAIL;
   }
 
@@ -897,7 +900,6 @@ void BackgroundDownloader::CleanupStaleJobs() {
       },
       bits_manager_, &jobs);
 
-  metrics::RecordBDWNumJobsCleaned(jobs.size());
   for (const auto& job : jobs) {
     CleanupJob(job);
   }
@@ -908,13 +910,13 @@ void BackgroundDownloader::CleanupStaleJobs() {
 void BackgroundDownloader::CleanupStaleDownloads() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
   EnumerateDownloadDirs(
-      kDownloadDirectoryPrefixMatcher, [](const base::FilePath& dir) {
+      base::StrCat({prod_id_, kDownloadDirectoryPrefixMatcher}),
+      [](const base::FilePath& dir) {
         const base::Time now = base::Time::Now();
         base::File::Info info;
         if (base::GetFileInfo(dir, &info) &&
             info.creation_time + base::Days(kPurgeStaleJobsAfterDays) < now) {
-          metrics::RecordBDWStaleDownloadAge(now - info.creation_time);
-          RetryDeletePathRecursively(dir);
+          RetryFileOperation(&base::DeletePathRecursively, dir);
         }
       });
 }
@@ -924,19 +926,12 @@ void BackgroundDownloader::EnumerateDownloadDirs(
     base::FunctionRef<void(const base::FilePath& dir)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(com_sequence_checker_);
   base::FilePath dir;
-  std::vector<base::FilePath> dirs;
-  if (base::GetSecureSystemTemp(&dir)) {
-    dirs.push_back(dir);
-  }
-  if (base::GetTempDir(&dir)) {
-    dirs.push_back(dir);
-  }
-  base::ranges::for_each(dirs, [&](const base::FilePath& parent_dir) {
-    base::FileEnumerator(parent_dir,
+  if (base::GetSecureTempDirectory(&dir)) {
+    base::FileEnumerator(dir,
                          /*recursive=*/false, base::FileEnumerator::DIRECTORIES,
                          matcher)
         .ForEach(callback);
-  });
+  }
 }
 
 }  // namespace update_client

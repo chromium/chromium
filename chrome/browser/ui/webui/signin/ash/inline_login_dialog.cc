@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/pref_names.h"
@@ -26,6 +26,7 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/url_util.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -111,8 +112,9 @@ class InlineLoginDialog::ModalDialogManagerCleanup
   void WebContentsDestroyed() override { ResetDelegate(); }
 
   void ResetDelegate() {
-    if (!web_contents())
+    if (!web_contents()) {
       return;
+    }
     web_modal::WebContentsModalDialogManager::FromWebContents(web_contents())
         ->SetDelegate(nullptr);
   }
@@ -175,8 +177,9 @@ InlineLoginDialog::InlineLoginDialog(
 }
 
 InlineLoginDialog::~InlineLoginDialog() {
-  for (auto& observer : modal_dialog_host_observer_list_)
+  for (auto& observer : modal_dialog_host_observer_list_) {
     observer.OnHostDestroying();
+  }
 
   if (!close_dialog_closure_.is_null()) {
     std::move(close_dialog_closure_).Run();
@@ -188,7 +191,7 @@ InlineLoginDialog::~InlineLoginDialog() {
 
 void InlineLoginDialog::GetDialogSize(gfx::Size* size) const {
   const display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(dialog_window());
+      display::Screen::Get()->GetDisplayNearestWindow(dialog_window());
 
   if (ProfileManager::GetActiveUserProfile()->IsChild()) {
     size->SetSize(
@@ -202,8 +205,8 @@ void InlineLoginDialog::GetDialogSize(gfx::Size* size) const {
                 std::min(kSigninDialogHeight, display.work_area().height()));
 }
 
-ui::ModalType InlineLoginDialog::GetDialogModalType() const {
-  return ui::MODAL_TYPE_SYSTEM;
+ui::mojom::ModalType InlineLoginDialog::GetDialogModalType() const {
+  return ui::mojom::ModalType::kSystem;
 }
 
 bool InlineLoginDialog::ShouldShowDialogTitle() const {
@@ -228,13 +231,13 @@ void InlineLoginDialog::OnDialogClosed(const std::string& json_retval) {
 // The args value will be available from JS via
 // chrome.getVariableValue('dialogArguments').
 std::string InlineLoginDialog::GetDialogArgs() const {
-  if (!add_account_options_)
+  if (!add_account_options_) {
     return std::string();
+  }
 
-  std::string json;
-  base::JSONWriter::Write(
-      AccountAdditionOptionsToValue(add_account_options_.value()), &json);
-  return json;
+  return base::WriteJson(
+             AccountAdditionOptionsToValue(add_account_options_.value()))
+      .value_or("");
 }
 
 // static
@@ -261,8 +264,9 @@ void InlineLoginDialog::ShowInternal(
   // get displayed on the lock screen. In this case it is safe to ignore it,
   // since in this case user will get it again after a request to Google
   // properties.
-  if (session_manager::SessionManager::Get()->IsUserSessionBlocked())
+  if (session_manager::SessionManager::Get()->IsUserSessionBlocked()) {
     return;
+  }
 
   if (dialog) {
     dialog->dialog_window()->Focus();

@@ -15,6 +15,9 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/permission_request_id.h"
+#include "components/permissions/resolvers/content_setting_permission_resolver.h"
+#include "content/public/browser/permission_descriptor_util.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -37,15 +40,15 @@ class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
         permission_set_(false),
         permission_granted_(false) {}
 
-  ~TestPermissionContext() override {}
+  ~TestPermissionContext() override = default;
 
   bool permission_granted() { return permission_granted_; }
 
   bool permission_set() { return permission_set_; }
 
-  void TrackPermissionDecision(ContentSetting content_setting) {
+  void TrackPermissionDecision(content::PermissionResult permission_result) {
     permission_set_ = true;
-    permission_granted_ = content_setting == CONTENT_SETTING_ALLOW;
+    permission_granted_ = permission_result.status == PermissionStatus::GRANTED;
   }
 
  private:
@@ -88,8 +91,10 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
       web_contents()->GetPrimaryMainFrame()->GetGlobalId(),
       permissions::PermissionRequestID::RequestLocalId());
   permission_context.RequestPermission(
-      permissions::PermissionRequestData(&permission_context, id,
-                                         /*user_gesture=*/true, url),
+      std::make_unique<permissions::PermissionRequestData>(
+          std::make_unique<permissions::ContentSettingPermissionResolver>(
+              ContentSettingsType::PAYMENT_HANDLER),
+          id, /*user_gesture=*/true, url),
       base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
                      base::Unretained(&permission_context)));
 
@@ -129,19 +134,28 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureQueryingUrl) {
 
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
-                .GetPermissionStatus(nullptr /* render_frame_host */,
-                                     insecure_url, insecure_url)
+                .GetPermissionStatus(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::PAYMENT_HANDLER),
+                    nullptr /* render_frame_host */, insecure_url, insecure_url)
                 .status);
 
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
-                .GetPermissionStatus(nullptr /* render_frame_host */,
-                                     secure_url, insecure_url)
+                .GetPermissionStatus(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::PAYMENT_HANDLER),
+                    nullptr /* render_frame_host */, secure_url, insecure_url)
                 .status);
 
   EXPECT_EQ(PermissionStatus::DENIED,
             permission_context
-                .GetPermissionStatus(nullptr /* render_frame_host */,
-                                     insecure_url, secure_url)
+                .GetPermissionStatus(
+                    content::PermissionDescriptorUtil::
+                        CreatePermissionDescriptorForPermissionType(
+                            blink::PermissionType::PAYMENT_HANDLER),
+                    nullptr /* render_frame_host */, insecure_url, secure_url)
                 .status);
 }

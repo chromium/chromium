@@ -4,6 +4,7 @@
 
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
 
+#include <variant>
 #include <vector>
 
 #include "base/files/scoped_temp_dir.h"
@@ -20,7 +21,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/media_device_salt/media_device_salt_service.h"
-#include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,11 +32,6 @@
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
-
-#if BUILDFLAG(ENABLE_NACL)
-#include "chrome/browser/nacl_host/nacl_browser_delegate_impl.h"
-#include "components/nacl/browser/nacl_browser.h"
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 using ::testing::Contains;
 using ::testing::ElementsAre;
@@ -53,18 +48,6 @@ blink::StorageKey StorageKey2() {
 }
 
 }  // namespace
-
-#if BUILDFLAG(ENABLE_NACL)
-class ScopedNaClBrowserDelegate {
- public:
-  ~ScopedNaClBrowserDelegate() { nacl::NaClBrowser::ClearAndDeleteDelegate(); }
-
-  void Init(ProfileManager* profile_manager) {
-    nacl::NaClBrowser::SetDelegate(
-        std::make_unique<NaClBrowserDelegateImpl>(profile_manager));
-  }
-};
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 class ChromeBrowsingDataModelDelegateTest : public testing::Test {
  public:
@@ -104,11 +87,6 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
                   mock_browsing_topics_service.get();
               return mock_browsing_topics_service;
             }));
-
-#if BUILDFLAG(ENABLE_NACL)
-    // Clearing Cache will clear PNACL cache, which needs this delegate set.
-    nacl_browser_delegate_.Init(profile_manager_->profile_manager());
-#endif  // BUILDFLAG(ENABLE_NACL)
 
 #if !BUILDFLAG(IS_ANDROID)
     if (auto* web_app_provider =
@@ -156,9 +134,6 @@ class ChromeBrowsingDataModelDelegateTest : public testing::Test {
   }
 
  protected:
-#if BUILDFLAG(ENABLE_NACL)
-  ScopedNaClBrowserDelegate nacl_browser_delegate_;
-#endif  // BUILDFLAG(ENABLE_NACL)
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList feature_list_;
@@ -210,7 +185,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, GetAllDataKeysAndGetDataOwner) {
   std::vector<blink::StorageKey> expected_keys = {StorageKey1(), StorageKey2()};
   for (const auto& entry : delegate_entries) {
     const blink::StorageKey* storage_key =
-        absl::get_if<blink::StorageKey>(&entry.data_key);
+        std::get_if<blink::StorageKey>(&entry.data_key);
     ASSERT_TRUE(storage_key);
     EXPECT_THAT(expected_keys, Contains(*storage_key));
     std::erase(expected_keys, *storage_key);
@@ -228,7 +203,7 @@ TEST_F(ChromeBrowsingDataModelDelegateTest, GetAllDataKeysAndGetDataOwner) {
                                     kMediaDeviceSalt));
     ASSERT_TRUE(owner.has_value());
 
-    const std::string* str_owner = absl::get_if<std::string>(&*owner);
+    const std::string* str_owner = std::get_if<std::string>(&*owner);
     ASSERT_TRUE(str_owner);
     EXPECT_EQ(*str_owner, storage_key->origin().host());
   }

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <memory>
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/permission_bubble/permission_prompt.h"
@@ -23,13 +23,16 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_uma_util.h"
+#include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "third_party/blink/public/common/features_generated.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/views/permissions/permission_prompt_notifications_mac.h"
+#include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #endif
 
 namespace {
@@ -38,12 +41,14 @@ bool IsFullScreenMode(Browser* browser) {
   DCHECK(browser);
 
   // PWA uses the title bar as a substitute for LocationBarView.
-  if (web_app::AppBrowserController::IsWebApp(browser))
+  if (web_app::AppBrowserController::IsWebApp(browser)) {
     return false;
+  }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
-  if (!browser_view)
+  if (!browser_view) {
     return false;
+  }
 
   LocationBarView* location_bar = browser_view->GetLocationBarView();
 
@@ -76,35 +81,35 @@ bool ShouldIgnorePermissionRequest(
   }
 
   LocationBarView* location_bar = GetLocationBarView(browser);
-  bool cant_display_prompt = location_bar && location_bar->IsEditingOrEmpty();
+  bool can_display_prompt = !(location_bar && location_bar->IsEditingOrEmpty());
 
   LensOverlayController* lens_overlay_controller =
       browser->tab_strip_model()
           ->GetActiveTab()
-          ->tab_features()
+          ->GetTabFeatures()
           ->lens_overlay_controller();
   // Don't show prompt if Lens Overlay is showing
   // TODO(b/331940245): Refactor to be decoupled from LensOverlayController
   if (lens_overlay_controller && lens_overlay_controller->IsOverlayShowing()) {
-    cant_display_prompt = true;
+    can_display_prompt = false;
   }
 
   permissions::PermissionUmaUtil::RecordPermissionPromptAttempt(
-      delegate->Requests(), cant_display_prompt);
+      delegate->Requests(), can_display_prompt);
 
-  return cant_display_prompt;
+  return !can_display_prompt;
 }
 
 bool ShouldUseChip(permissions::PermissionPrompt::Delegate* delegate) {
   // Permission request chip should not be shown if `delegate->Requests()` were
   // requested without a user gesture.
-  if (!permissions::PermissionUtil::HasUserGesture(delegate))
+  if (!permissions::PermissionUtil::HasUserGesture(delegate)) {
     return false;
+  }
 
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
-  return base::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
+  const auto& requests = delegate->Requests();
+  return std::ranges::all_of(
+      requests, [](const auto& request) {
         return request
             ->GetRequestChipText(
                 permissions::PermissionRequest::ChipTextType::LOUD_REQUEST)
@@ -120,10 +125,9 @@ bool IsLocationBarDisplayed(Browser* browser) {
 
 bool ShouldCurrentRequestUseQuietChip(
     permissions::PermissionPrompt::Delegate* delegate) {
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
-  return base::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
+  const auto& requests = delegate->Requests();
+  return std::ranges::all_of(
+      requests, [](const auto& request) {
         return request->request_type() ==
                    permissions::RequestType::kNotifications ||
                request->request_type() ==
@@ -131,46 +135,35 @@ bool ShouldCurrentRequestUseQuietChip(
       });
 }
 
-bool ShouldCurrentRequestUsePermissionElementSecondaryUI(
-    permissions::PermissionPrompt::Delegate* delegate) {
-  if (!base::FeatureList::IsEnabled(blink::features::kPermissionElement)) {
-    return false;
-  }
-
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
-  return base::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
-        return (request->request_type() ==
-                    permissions::RequestType::kCameraStream ||
-                request->request_type() ==
-                    permissions::RequestType::kGeolocation ||
-                request->request_type() ==
-                    permissions::RequestType::kMicStream) &&
-               request->IsEmbeddedPermissionElementInitiated();
-      });
-}
-
 bool ShouldCurrentRequestUseExclusiveAccessUI(
     permissions::PermissionPrompt::Delegate* delegate) {
-  std::vector<raw_ptr<permissions::PermissionRequest, VectorExperimental>>
-      requests = delegate->Requests();
-  return base::ranges::all_of(
-      requests, [](permissions::PermissionRequest* request) {
-        return request->request_type() ==
-                   permissions::RequestType::kPointerLock ||
-               request->request_type() ==
-                   permissions::RequestType::kKeyboardLock;
-      });
+  const auto& requests = delegate->Requests();
+  return permissions::feature_params::kKeyboardLockPromptUIStyle.Get() &&
+         std::ranges::all_of(
+             requests, [](const auto& request) {
+               return request->request_type() ==
+                          permissions::RequestType::kPointerLock ||
+                      request->request_type() ==
+                          permissions::RequestType::kKeyboardLock;
+             });
+}
+
+bool CanCurrentRequestUseModalUI(content::WebContents* web_contents) {
+  return tabs::TabInterface::GetFromContents(web_contents)->CanShowModalUI();
 }
 
 std::unique_ptr<permissions::PermissionPrompt> CreatePwaPrompt(
     Browser* browser,
     content::WebContents* web_contents,
     permissions::PermissionPrompt::Delegate* delegate) {
-  if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
-    return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
-                                                      delegate);
+  if (permissions::PermissionUtil::
+          ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
+    // Run this check inside the if statement to avoid creating another prompt
+    // type for embedded permission prompts.
+    return CanCurrentRequestUseModalUI(web_contents)
+               ? std::make_unique<EmbeddedPermissionPrompt>(
+                     browser, web_contents, delegate)
+               : nullptr;
   } else if (delegate->ShouldCurrentRequestUseQuietUI()) {
     return std::make_unique<PermissionPromptQuietIcon>(browser, web_contents,
                                                        delegate);
@@ -187,11 +180,19 @@ std::unique_ptr<permissions::PermissionPrompt> CreateNormalPrompt(
   DCHECK(!delegate->ShouldCurrentRequestUseQuietUI());
 
   if (ShouldCurrentRequestUseExclusiveAccessUI(delegate)) {
-    return std::make_unique<ExclusiveAccessPermissionPrompt>(
-        browser, web_contents, delegate);
-  } else if (ShouldCurrentRequestUsePermissionElementSecondaryUI(delegate)) {
-    return std::make_unique<EmbeddedPermissionPrompt>(browser, web_contents,
-                                                      delegate);
+    return CanCurrentRequestUseModalUI(web_contents)
+               ? std::make_unique<ExclusiveAccessPermissionPrompt>(
+                     browser, web_contents, delegate)
+               : nullptr;
+  } else if (permissions::PermissionUtil::
+                 ShouldCurrentRequestUsePermissionElementSecondaryUI(
+                     delegate)) {
+    // Run this check inside the if statement to avoid creating another prompt
+    // type for embedded permission prompts.
+    return CanCurrentRequestUseModalUI(web_contents)
+               ? std::make_unique<EmbeddedPermissionPrompt>(
+                     browser, web_contents, delegate)
+               : nullptr;
   } else if (ShouldUseChip(delegate) && IsLocationBarDisplayed(browser)) {
     return std::make_unique<PermissionPromptChip>(browser, web_contents,
                                                   delegate);
@@ -239,7 +240,6 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
     return nullptr;
   }
 
-  // Auto-ignore the permission request if a user is typing into location bar.
   if (ShouldIgnorePermissionRequest(web_contents, browser, delegate)) {
     return nullptr;
   }
@@ -250,7 +250,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   // this request, try using a OS-native permission prompt. If showing the
   // prompt fails, it will trigger the view to be recreated for the request, at
   // which point we end up in the normal code path below.
-  if (base::FeatureList::IsEnabled(features::kAppShimNotificationAttribution) &&
+  if (web_app::UseNotificationAttributionForWebAppShims() &&
       !delegate->WasCurrentRequestAlreadyDisplayed() &&
       PermissionPromptNotificationsMac::CanHandleRequest(web_contents,
                                                          delegate)) {

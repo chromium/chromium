@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/translate/core/browser/mock_translate_driver.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 
@@ -75,7 +76,7 @@ class FakeTranslateInfoBarDelegateFactory {
 
  private:
   translate::testing::MockTranslateDriver driver_;
-  std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
+  sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<translate::testing::MockTranslateClient> client_;
   std::unique_ptr<translate::testing::MockTranslateRanker> ranker_;
   std::unique_ptr<translate::testing::MockLanguageModel> language_model_;

@@ -38,11 +38,17 @@ class Profile;
 //     CCTLD: Country Code Top Level Domain (e.g. google.com.au)
 class SearchPermissionsService : public KeyedService {
  public:
+  // Use
+  // `SearchPermissionService::Factory::BuildServiceInstanceForBrowserContext`
+  // instead.
+  explicit SearchPermissionsService(Profile* profile);
+  ~SearchPermissionsService() override;
+
   // Delegate for search engine related functionality. Can be overridden for
   // testing.
   class SearchEngineDelegate {
    public:
-    virtual ~SearchEngineDelegate() {}
+    virtual ~SearchEngineDelegate() = default;
 
     // Returns the name of the current DSE.
     virtual std::u16string GetDSEName() = 0;
@@ -68,13 +74,11 @@ class SearchPermissionsService : public KeyedService {
 
     // BrowserContextKeyedServiceFactory
     bool ServiceIsCreatedWithBrowserContext() const override;
-    KeyedService* BuildServiceInstanceFor(
+    std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
         content::BrowserContext* profile) const override;
     void RegisterProfilePrefs(
         user_prefs::PrefRegistrySyncable* registry) override;
   };
-
-  explicit SearchPermissionsService(Profile* profile);
 
   // Returns whether the given origin matches the DSE origin.
   bool IsDseOrigin(const url::Origin& origin);
@@ -88,8 +92,6 @@ class SearchPermissionsService : public KeyedService {
   FRIEND_TEST_ALL_PREFIXES(GeolocationPermissionContextDelegateTests,
                            SearchGeolocationInIncognito);
   struct PrefValue;
-
-  ~SearchPermissionsService() override;
 
   // Restore the setting for an origin before it became the DSE. Returns the
   // setting that the origin was set to before restoring the old value.

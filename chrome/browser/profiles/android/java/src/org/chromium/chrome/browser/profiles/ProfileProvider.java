@@ -4,13 +4,13 @@
 
 package org.chromium.chrome.browser.profiles;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /** Provider of the appropriate Profiles for the given application context. */
+@NullMarked
 public interface ProfileProvider {
     /** Return the original profile. */
-    @NonNull
     Profile getOriginalProfile();
 
     /**
@@ -20,11 +20,25 @@ public interface ProfileProvider {
      *     already exist. If false is passed and the profile has not yet been created, this will
      *     return null.
      */
-    @Nullable
-    Profile getOffTheRecordProfile(boolean createIfNeeded);
+    @Nullable Profile getOffTheRecordProfile(boolean createIfNeeded);
 
-    /** Return whether the OffTheRecord has been created. */
-    boolean hasOffTheRecordProfile();
+    /**
+     * Return the OffTheRecord profile associated with {@link #getOriginalProfile()}, or null if
+     * there isn't one.
+     */
+    default @Nullable Profile getOffTheRecordProfile() {
+        return getOffTheRecordProfile(false);
+    }
+
+    /**
+     * Return the OffTheRecord profile associated with {@link #getOriginalProfile()}, creating one
+     * if there is not one already.
+     */
+    default Profile getOrCreateOffTheRecordProfile() {
+        Profile ret = getOffTheRecordProfile(true);
+        assert ret != null;
+        return ret;
+    }
 
     /**
      * Utility for getting (and creating if necessary) the appropriate {@link Profile} from the
@@ -34,10 +48,10 @@ public interface ProfileProvider {
         assert profileProvider != null;
         Profile profile =
                 incognito
-                        ? profileProvider.getOffTheRecordProfile(true)
+                        ? profileProvider.getOrCreateOffTheRecordProfile()
                         : profileProvider.getOriginalProfile();
         if (incognito != profile.isOffTheRecord()) {
-            throw new IllegalStateException("Incognito mismatch");
+            throw new IllegalStateException();
         }
         return profile;
     }

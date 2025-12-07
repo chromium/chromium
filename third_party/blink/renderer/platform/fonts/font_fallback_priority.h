@@ -15,14 +15,42 @@ enum class FontFallbackPriority {
   // For regular non-symbols text,
   // normal text fallback in FontFallbackIterator
   kText,
-  // For emoji in text presentaiton
+  // For emoji in text presentation
   kEmojiText,
+  // For emoji in text presentation with variation selector 15
+  kEmojiTextWithVS,
   // For emoji in emoji presentation
   kEmojiEmoji,
-  kInvalid
+  // For emoji in emoji presentation with variation selector 16
+  kEmojiEmojiWithVS,
+  kInvalid,
+
+  // When adding values, ensure `kMaxEnumValue` is the largest value to store
+  // (values that can be returned for non-empty inputs).
+  kMaxEnumValue = kEmojiEmojiWithVS,
 };
 
-bool IsNonTextFallbackPriority(FontFallbackPriority);
+inline bool IsNonTextFallbackPriority(FontFallbackPriority fallback_priority) {
+  return fallback_priority == FontFallbackPriority::kEmojiText ||
+         fallback_priority == FontFallbackPriority::kEmojiEmoji ||
+         fallback_priority == FontFallbackPriority::kEmojiTextWithVS ||
+         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVS;
+}
+
+inline bool HasVSFallbackPriority(FontFallbackPriority fallback_priority) {
+  return fallback_priority == FontFallbackPriority::kEmojiTextWithVS ||
+         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVS;
+}
+
+inline bool IsEmojiPresentationEmoji(FontFallbackPriority fallback_priority) {
+  return fallback_priority == FontFallbackPriority::kEmojiEmoji ||
+         fallback_priority == FontFallbackPriority::kEmojiEmojiWithVS;
+}
+
+inline bool IsTextPresentationEmoji(FontFallbackPriority fallback_priority) {
+  return fallback_priority == FontFallbackPriority::kEmojiText ||
+         fallback_priority == FontFallbackPriority::kEmojiTextWithVS;
+}
 
 }  // namespace blink
 

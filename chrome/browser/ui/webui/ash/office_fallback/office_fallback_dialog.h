@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace ash::office_fallback {

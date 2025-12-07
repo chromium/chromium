@@ -12,7 +12,7 @@ void RandBytes(void* bytes, size_t length) {
   base::RandBytes(
       // TODO(crbug.com/40284755): Convert all callers in Nearby to use spans
       // and remove this RandBytes overload.
-      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bytes), length)));
+      UNSAFE_TODO(base::span(static_cast<uint8_t*>(bytes), length)));
 }
 
 void RandBytes(absl::Span<uint8_t> bytes) {

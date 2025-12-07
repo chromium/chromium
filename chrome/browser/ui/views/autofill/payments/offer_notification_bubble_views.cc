@@ -15,14 +15,16 @@
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
 #include "chrome/browser/ui/views/controls/subpage_view.h"
 #include "chrome/grit/theme_resources.h"
-#include "components/autofill/core/browser/data_model/autofill_offer_data.h"
-#include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
+#include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -39,7 +41,7 @@ namespace autofill {
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
 
 OfferNotificationBubbleViews::OfferNotificationBubbleViews(
-    views::View* anchor_view,
+    views::BubbleAnchor anchor_view,
     content::WebContents* web_contents,
     OfferNotificationBubbleController* controller)
     : AutofillLocationBarBubble(anchor_view,
@@ -63,7 +65,7 @@ void OfferNotificationBubbleViews::Hide() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
@@ -76,9 +78,8 @@ void OfferNotificationBubbleViews::Init() {
     case AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER:
       InitWithGPayPromoCodeOfferContent();
       return;
-    case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -86,8 +87,9 @@ void OfferNotificationBubbleViews::AddedToWidget() {
   const AutofillOfferData* offer = controller_->GetOffer();
   CHECK(offer);
 
-    GetBubbleFrameView()->SetTitleView(CreateTitleView(
-        GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_G));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_G));
 }
 
 std::u16string OfferNotificationBubbleViews::GetWindowTitle() const {
@@ -97,7 +99,7 @@ std::u16string OfferNotificationBubbleViews::GetWindowTitle() const {
 void OfferNotificationBubbleViews::WindowClosing() {
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }
@@ -113,8 +115,8 @@ void OfferNotificationBubbleViews::OnWidgetDestroying(views::Widget* widget) {
 
 void OfferNotificationBubbleViews::InitWithCardLinkedOfferContent() {
   // Card-linked offers have a positive CTA button:
-  SetButtons(ui::DIALOG_BUTTON_OK);
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, controller_->GetOkButtonLabel());
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kOk));
+  SetButtonLabel(ui::mojom::DialogButton::kOk, controller_->GetOkButtonLabel());
 
   // Create bubble content:
   views::FlexLayout* layout =
@@ -131,7 +133,7 @@ void OfferNotificationBubbleViews::InitWithCardLinkedOfferContent() {
 
 void OfferNotificationBubbleViews::InitWithGPayPromoCodeOfferContent() {
   // Promo code offers have no CTA buttons:
-  SetButtons(ui::DIALOG_BUTTON_NONE);
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // Create bubble content:
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
@@ -190,4 +192,8 @@ void OfferNotificationBubbleViews::OnPromoCodeSeeDetailsClicked() {
           /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 }
+
+BEGIN_METADATA(OfferNotificationBubbleViews)
+END_METADATA
+
 }  // namespace autofill

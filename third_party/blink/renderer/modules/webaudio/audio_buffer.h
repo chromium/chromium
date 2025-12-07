@@ -29,7 +29,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_BUFFER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_AUDIO_BUFFER_H_
 
-#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -73,11 +72,12 @@ class MODULES_EXPORT AudioBuffer final : public ScriptWrappable {
   // How to initialize the contents of an AudioBuffer.  Default is to
   // zero-initialize (`kZeroInitialize`).  Otherwise, leave the array
   // uninitialized (`kDontInitialize`).
-  enum InitializationPolicy { kZeroInitialize, kDontInitialize };
+  enum class InitializationPolicy { kZeroInitialize, kDontInitialize };
   AudioBuffer(unsigned number_of_channels,
               uint32_t number_of_frames,
               float sample_rate,
-              InitializationPolicy allocation_policy = kZeroInitialize);
+              InitializationPolicy allocation_policy =
+                  InitializationPolicy::kZeroInitialize);
 
   // Format
   uint32_t length() const { return length_; }
@@ -118,7 +118,8 @@ class MODULES_EXPORT AudioBuffer final : public ScriptWrappable {
  private:
   static DOMFloat32Array* CreateFloat32ArrayOrNull(
       uint32_t length,
-      InitializationPolicy allocation_policy = kZeroInitialize);
+      InitializationPolicy allocation_policy =
+          InitializationPolicy::kZeroInitialize);
 
   bool CreatedSuccessfully(unsigned desired_number_of_channels) const;
 

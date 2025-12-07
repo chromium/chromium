@@ -23,22 +23,22 @@ class MODULES_EXPORT MediaStreamSet final
  public:
   static MediaStreamSet* Create(
       ExecutionContext* context,
-      const MediaStreamDescriptorVector& stream_descriptors,
+      const GCedMediaStreamDescriptorVector& stream_descriptors,
       UserMediaRequestType request_type,
       MediaStreamSetInitializedCallback callback);
 
   MediaStreamSet(ExecutionContext* context,
-                 const MediaStreamDescriptorVector& stream_descriptors,
+                 const GCedMediaStreamDescriptorVector& stream_descriptors,
                  UserMediaRequestType request_type,
                  MediaStreamSetInitializedCallback callback);
-  virtual ~MediaStreamSet() = default;
+  ~MediaStreamSet() = default;
 
   void Trace(Visitor*) const override;
 
  private:
   void InitializeGetAllScreensMediaStreams(
       ExecutionContext* context,
-      const MediaStreamDescriptorVector& stream_descriptors);
+      const GCedMediaStreamDescriptorVector& stream_descriptors);
   void OnMediaStreamInitialized(MediaStream*);
   void OnMediaStreamSetInitialized();
 

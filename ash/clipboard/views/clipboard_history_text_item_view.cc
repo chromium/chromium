@@ -12,14 +12,15 @@
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/style/typography.h"
 #include "base/functional/bind.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -35,10 +36,7 @@ gfx::ElideBehavior GetDisplayTextElideBehavior(
 
 // NOTE: Returns default display text max lines if `item` is `nullptr`.
 size_t GetDisplayTextMaxLines(const ClipboardHistoryItem* item) {
-  const size_t default_value =
-      chromeos::features::IsClipboardHistoryRefreshEnabled()
-          ? ClipboardHistoryViews::kTextItemMaxLines
-          : 1u;
+  const size_t default_value = ClipboardHistoryViews::kTextItemMaxLines;
   return item ? item->display_text_max_lines().value_or(default_value)
               : default_value;
 }
@@ -74,22 +72,6 @@ class ClipboardHistoryTextItemView::TextContentsView
                               container->text_, display_text_elide_behavior,
                               display_text_max_lines))
                           .SetID(clipboard_history_util::kDisplayTextLabelID))
-            .AfterBuild(base::BindOnce(
-                [](const ClipboardHistoryItem* item,
-                   views::BoxLayoutView* labels_container) {
-                  if (item && item->secondary_display_text()) {
-                    views::Builder<views::View>(labels_container)
-                        .AddChild(views::Builder<views::Label>(
-                            bubble_utils::CreateLabel(
-                                TypographyToken::kCrosAnnotation2,
-                                *item->secondary_display_text(),
-                                cros_tokens::kCrosSysSecondary)))
-                        .SetID(clipboard_history_util::
-                                   kSecondaryDisplayTextLabelID)
-                        .BuildChildren();
-                  }
-                },
-                item))
             .Build());
   }
 
@@ -100,8 +82,7 @@ class ClipboardHistoryTextItemView::TextContentsView
  private:
   // ContentsView:
   SkPath GetClipPath() override {
-    if (!chromeos::features::IsClipboardHistoryRefreshEnabled() ||
-        !is_delete_button_visible()) {
+    if (!is_delete_button_visible()) {
       return SkPath();
     }
 
@@ -113,7 +94,7 @@ class ClipboardHistoryTextItemView::TextContentsView
     const auto height = std::max(contents_bounds.height(),
                                  ClipboardHistoryViews::kCornerCutoutHeight);
 
-    return SkPath()
+    return SkPathBuilder()
         // Start at the top-left corner.
         .moveTo(0.f, 0.f)
         // Draw a vertical line to the bottom-left corner.
@@ -130,7 +111,8 @@ class ClipboardHistoryTextItemView::TextContentsView
         .rCubicTo(0.f, -3.3f, -2.f, -10.f, -10.f, -10.f)
         // Draw a horizontal line back to the starting point.
         .lineTo(0.f, 0.f)
-        .close();
+        .close()
+        .detach();
   }
 };
 

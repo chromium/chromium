@@ -4,6 +4,8 @@
 
 #include "ui/base/ime/mojom/ime_types_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 #define UI_TO_MOJO_ACTION_CASE(name) \
@@ -192,6 +194,7 @@ bool StructTraits<ui::mojom::ImeTextSpanDataView, ui::ImeTextSpan>::Read(
   out->interim_char_selection = data.interim_char_selection();
   if (!data.ReadSuggestions(&out->suggestions))
     return false;
+  out->should_hide_suggestion_menu = data.should_hide_suggestion_menu();
   return true;
 }
 

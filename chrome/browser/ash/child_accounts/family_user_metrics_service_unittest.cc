@@ -12,6 +12,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -84,7 +85,8 @@ class FamilyUserMetricsServiceTest : public testing::Test {
  private:
   // We need this member variable, even if it's unused, so
   // FamilyUserSessionMetrics doesn't crash.
-  session_manager::SessionManager session_manager_;
+  session_manager::SessionManager session_manager_{
+      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   TestingProfile testing_profile_;
   std::unique_ptr<FamilyUserMetricsService> family_user_metrics_service_;
 };

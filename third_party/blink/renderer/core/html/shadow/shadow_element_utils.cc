@@ -47,4 +47,25 @@ bool IsTextControlPlaceholder(const Node* node) {
   return element->GetIdAttribute() == shadow_element_names::kIdPlaceholder;
 }
 
+namespace shadow_element_utils {
+
+const AtomicString& StringForUAShadowPseudoId(PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdPlaceholder:
+      return shadow_element_names::kPseudoInputPlaceholder;
+    case kPseudoIdFileSelectorButton:
+      return shadow_element_names::kPseudoFileUploadButton;
+    case kPseudoIdDetailsContent:
+      return shadow_element_names::kIdDetailsContent;
+    case kPseudoIdPermissionIcon:
+      return shadow_element_names::kIdPermissionIcon;
+    case kPseudoIdPickerSelect:
+      return shadow_element_names::kPickerSelect;
+    default:
+      return g_null_atom;
+  }
+}
+
+}  // namespace shadow_element_utils
+
 }  // namespace blink

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+[
+<!ENTITY entity_application_xml_external_parsed_entity SYSTEM "http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=application/xml-external-parsed-entity">
+<!ENTITY entity_text_xml_external_parsed_entity SYSTEM "http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=text/xml-external-parsed-entity">
+<!ENTITY entity_application_xml SYSTEM "http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=application/xml">
+<!ENTITY entity_text_xml SYSTEM "http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=text/xml">
+<!ENTITY entity_text_html SYSTEM "http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=text/html">
+<!ENTITY entity_text_javascript SYSTEM "http://127.0.0.1:8000/security/contentTypeOptions/resources/script-with-header.pl?mime=text/javascript">
+]>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <script src="/js-test-resources/js-test.js"></script>
+    <script type="text/javascript"><![CDATA[
+      window.jsTestIsAsync = true;
+      description("Test nosniff when loading XML external entities.");
+      window.onload = () => {
+        finishJSTest();
+      }
+    ]]></script>
+  <script type="text/javascript">&entity_application_xml_external_parsed_entity;</script>
+  <script type="text/javascript">&entity_text_xml_external_parsed_entity;</script>
+  <script type="text/javascript">&entity_application_xml;</script>
+  <script type="text/javascript">&entity_text_xml;</script>
+  <script type="text/javascript">&entity_text_html;</script>
+  <script type="text/javascript">&entity_text_javascript;</script>
+</head>
+</html>

@@ -67,8 +67,10 @@ class SessionSyncBridge : public syncer::DataTypeSyncBridge,
   std::unique_ptr<syncer::DataBatch> GetDataForCommit(
       StorageKeyList storage_keys) override;
   std::unique_ptr<syncer::DataBatch> GetAllDataForDebugging() override;
-  std::string GetClientTag(const syncer::EntityData& entity_data) override;
-  std::string GetStorageKey(const syncer::EntityData& entity_data) override;
+  std::string GetClientTag(
+      const syncer::EntityData& entity_data) const override;
+  std::string GetStorageKey(
+      const syncer::EntityData& entity_data) const override;
   void ApplyDisableSyncChanges(std::unique_ptr<syncer::MetadataChangeList>
                                    delete_metadata_change_list) override;
   void OnSyncPaused() override;
@@ -85,7 +87,7 @@ class SessionSyncBridge : public syncer::DataTypeSyncBridge,
       const std::optional<syncer::ModelError>& error,
       std::unique_ptr<SessionStore> store,
       std::unique_ptr<syncer::MetadataBatch> metadata_batch);
-  void StartLocalSessionEventHandler();
+  void StartLocalSessionEventHandler(bool is_new_session);
   void DeleteForeignSessionFromUI(const std::string& tag);
   void DoGarbageCollection(SessionStore::WriteBatch* write_batch);
   std::unique_ptr<SessionStore::WriteBatch> CreateSessionStoreWriteBatch();
@@ -99,7 +101,12 @@ class SessionSyncBridge : public syncer::DataTypeSyncBridge,
   const raw_ptr<LocalSessionEventRouter> local_session_event_router_;
 
   SessionsGlobalIdMapper global_id_mapper_;
+
   std::unique_ptr<SessionStore> store_;
+  // If `store_` has previously been created, but was cleared during
+  // `ApplyDisableSyncChanges()`, then this callback allows the bridge to
+  // synchronously re-create an empty `SessionStore`.
+  SessionStore::RecreateEmptyStoreCallback recreate_empty_store_callback_;
 
   // All data dependent on sync being starting or started.
   struct SyncingState {
@@ -110,7 +117,7 @@ class SessionSyncBridge : public syncer::DataTypeSyncBridge,
     std::unique_ptr<LocalSessionEventHandlerImpl> local_session_event_handler;
   };
 
-  // TODO(mastiz): We should rather rename this to |syncing_state_|.
+  // Non-empty while sync is active, i.e. started and not paused.
   std::optional<SyncingState> syncing_;
 
   base::WeakPtrFactory<SessionSyncBridge> weak_ptr_factory_{this};

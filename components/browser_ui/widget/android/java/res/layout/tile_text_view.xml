@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- The title / name text view of a tile, with optional icon. -->
+<merge
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" >
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/tile_text_container"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/tile_view_title_margin_top_modern"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Icon to show for pinned shortcut / custom tile. -->
+        <!-- Using sp to properly scale to display size and font size. -->
+        <ImageView
+            android:id="@+id/pinned_shortcut_badge"
+            android:visibility="gone"
+            android:layout_width="6sp"
+            android:layout_height="10sp"
+            android:layout_marginTop="4sp"
+            android:layout_marginEnd="4sp"
+            android:contentDescription="@string/accessibility_ntp_pinned_shortcut_badge"
+            android:scaleType="matrix"
+            android:tint="@macro/default_icon_color_secondary"
+            app:srcCompat="@drawable/ic_keep_24dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tile_view_title"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            tools:ignore="SmallSp"/>
+
+        <!-- The title / name. -->
+        <org.chromium.ui.widget.TextViewWithLeading
+            android:id="@+id/tile_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:lines="2"
+            android:gravity="top|center_horizontal"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
+            app:leading="@dimen/text_size_small_leading"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/pinned_shortcut_badge"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constrainedWidth="true" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</merge>

@@ -26,6 +26,7 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/strings/escape.h"
@@ -41,8 +42,8 @@ namespace {
 // the expanded url.
 struct UriTemplateConfig {
  public:
-  UriTemplateConfig(const char* prefix,
-                    const char* joiner,
+  UriTemplateConfig(std::string_view prefix,
+                    std::string_view joiner,
                     bool requires_variable_assignment,
                     bool allow_reserved_expansion,
                     bool no_variable_assignment_if_empty = false)
@@ -56,7 +57,7 @@ struct UriTemplateConfig {
                    const string& value,
                    bool use_prefix,
                    string* target) const {
-    string joiner = use_prefix ? prefix_ : joiner_;
+    const std::string& joiner = use_prefix ? prefix_ : joiner_;
     if (requires_variable_assignment_) {
       if (value.empty() && no_variable_assignment_if_empty_) {
         target->append(joiner + EscapedValue(variable));
@@ -81,8 +82,8 @@ struct UriTemplateConfig {
     return escaped;
   }
 
-  const char* prefix_;
-  const char* joiner_;
+  std::string prefix_;
+  std::string joiner_;
   bool requires_variable_assignment_;
   bool no_variable_assignment_if_empty_;
   bool allow_reserved_expansion_;

@@ -15,8 +15,9 @@ namespace ios {
 // Returns true if this looks like the type of URL that should be added to the
 // history. This filters out URLs such a JavaScript.
 bool CanAddURLToHistory(const GURL& url) {
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return false;
+  }
 
   // TODO(crbug.com/40649212): Don't store the URL as we aren't persiting the
   // files. Maybe we should start persisting the files and store the URL.
@@ -25,12 +26,14 @@ bool CanAddURLToHistory(const GURL& url) {
   // by a shortcut or menu action.
   if (url.SchemeIs(url::kJavaScriptScheme) ||
       url.SchemeIs(dom_distiller::kDomDistillerScheme) ||
-      url.SchemeIs(kChromeUIScheme) || url.SchemeIs(url::kFileScheme))
+      url.SchemeIs(kChromeUIScheme) || url.SchemeIs(url::kFileScheme)) {
     return false;
+  }
 
   // Allow all about: URLs except about:blank|newtab.
-  if (url == url::kAboutBlankURL || url == kChromeUIAboutNewTabURL)
+  if (url == url::kAboutBlankURL || url == kChromeUIAboutNewTabURL) {
     return false;
+  }
 
   return true;
 }

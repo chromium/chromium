@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/sys_info.h"
 #include "base/trace_event/typed_macros.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "components/onc/onc_constants.h"
@@ -40,7 +41,7 @@ camera_app::mojom::ScreenState ToMojoScreenState(ScreenBacklightState s) {
     case ScreenBacklightState::OFF_AUTO:
       return camera_app::mojom::ScreenState::kOffAuto;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -53,8 +54,7 @@ camera_app::mojom::LidState ToMojoLidState(cros::mojom::LidState state) {
     case cros::mojom::LidState::kNotPresent:
       return camera_app::mojom::LidState::kNotPresent;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected Lid type: " << static_cast<int>(state);
+      NOTREACHED() << "Unexpected Lid type: " << static_cast<int>(state);
   }
 }
 
@@ -68,7 +68,7 @@ camera_app::mojom::FileMonitorResult ToMojoFileMonitorResult(
     case CameraAppUIDelegate::FileMonitorResult::kError:
       return camera_app::mojom::FileMonitorResult::kError;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -100,8 +100,8 @@ std::string FromMojoSecurityType(
     case camera_app::mojom::WifiSecurityType::kWpa:
       return onc::wifi::kWPA_PSK;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected security type: " << static_cast<int>(security_type);
+      NOTREACHED() << "Unexpected security type: "
+                   << static_cast<int>(security_type);
   }
 }
 
@@ -116,8 +116,7 @@ std::string FromMojoEapMethod(camera_app::mojom::WifiEapMethod eap_method) {
     case camera_app::mojom::WifiEapMethod::kPeap:
       return onc::eap::kPEAP;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected EAP method: " << static_cast<int>(eap_method);
+      NOTREACHED() << "Unexpected EAP method: " << static_cast<int>(eap_method);
   }
 }
 
@@ -139,8 +138,8 @@ std::string FromMojoEapPhase2Method(
     case camera_app::mojom::WifiEapPhase2Method::kPap:
       return onc::eap::kPAP;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected EAP Phase2 method: "
-                                << static_cast<int>(eap_phase2_method);
+      NOTREACHED() << "Unexpected EAP Phase2 method: "
+                   << static_cast<int>(eap_phase2_method);
   }
 }
 
@@ -165,7 +164,7 @@ CameraAppUIDelegate::WifiConfig FromMojoWifiConfig(
 }
 
 bool HasExternalScreen() {
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+  for (const auto& display : display::Screen::Get()->GetAllDisplays()) {
     if (!display.IsInternal()) {
       return true;
     }
@@ -257,7 +256,7 @@ void CameraAppHelperImpl::HandleCameraResult(
 }
 
 void CameraAppHelperImpl::IsTabletMode(IsTabletModeCallback callback) {
-  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
+  std::move(callback).Run(display::Screen::Get()->InTabletMode());
 }
 
 void CameraAppHelperImpl::StartPerfEventTrace(const std::string& event) {
@@ -274,7 +273,7 @@ void CameraAppHelperImpl::SetTabletMonitor(
     mojo::PendingRemote<TabletModeMonitor> monitor,
     SetTabletMonitorCallback callback) {
   tablet_mode_monitor_ = mojo::Remote<TabletModeMonitor>(std::move(monitor));
-  std::move(callback).Run(display::Screen::GetScreen()->InTabletMode());
+  std::move(callback).Run(display::Screen::Get()->InTabletMode());
 }
 
 void CameraAppHelperImpl::SetScreenStateMonitor(
@@ -344,7 +343,7 @@ void CameraAppHelperImpl::OpenFeedbackDialog(const std::string& placeholder) {
 }
 
 void CameraAppHelperImpl::OpenUrlInBrowser(const GURL& url) {
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       url, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
 }
@@ -619,6 +618,34 @@ void CameraAppHelperImpl::PerformOcrInline(
 void CameraAppHelperImpl::CreatePdfBuilder(
     mojo::PendingReceiver<camera_app::mojom::PdfBuilder> receiver) {
   return camera_app_ui_->delegate()->CreatePdfBuilder(std::move(receiver));
+}
+
+void CameraAppHelperImpl::GetAspectRatioOrder(
+    GetAspectRatioOrderCallback callback) {
+  base::SysInfo::GetHardwareInfo(base::BindOnce(
+      [](GetAspectRatioOrderCallback callback,
+         base::SysInfo::HardwareInfo hardware_info) {
+        std::string board = base::SysInfo::HardwareModelName();
+        const std::string& model = hardware_info.model;
+        // This customization is added to use the device's maximum resolution by
+        // default. It's not intended for general use and should not be
+        // replicated. Refer to crbug.com/316111545 for more details.
+        if ((board == "REX" && model == "screebo") ||
+            (board == "REX" && model == "screebo4es")) {
+          std::move(callback).Run({
+              camera_app::mojom::AspectRatio::k16To9,
+              camera_app::mojom::AspectRatio::k4To3,
+              camera_app::mojom::AspectRatio::kOthers,
+          });
+        } else {
+          std::move(callback).Run({
+              camera_app::mojom::AspectRatio::k4To3,
+              camera_app::mojom::AspectRatio::k16To9,
+              camera_app::mojom::AspectRatio::kOthers,
+          });
+        }
+      },
+      std::move(callback)));
 }
 
 }  // namespace ash

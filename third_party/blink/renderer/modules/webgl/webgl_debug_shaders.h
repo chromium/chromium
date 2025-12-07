@@ -27,14 +27,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_DEBUG_SHADERS_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
-
-namespace WTF {
-class String;
-}  // namespace WTF
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class WebGLShader;
+class ExecutionContext;
 
 class WebGLDebugShaders final : public WebGLExtension {
   DEFINE_WRAPPERTYPEINFO();
@@ -43,11 +41,11 @@ class WebGLDebugShaders final : public WebGLExtension {
   static bool Supported(WebGLRenderingContextBase*);
   static const char* ExtensionName();
 
-  explicit WebGLDebugShaders(WebGLRenderingContextBase*);
+  WebGLDebugShaders(WebGLRenderingContextBase*, ExecutionContext*);
 
   WebGLExtensionName GetName() const override;
 
-  WTF::String getTranslatedShaderSource(WebGLShader*);
+  String getTranslatedShaderSource(WebGLShader*);
 };
 
 }  // namespace blink

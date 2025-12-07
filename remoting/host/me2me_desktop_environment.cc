@@ -5,23 +5,28 @@
 #include "remoting/host/me2me_desktop_environment.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/environment.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "remoting/base/logging.h"
 #include "remoting/host/action_executor.h"
+#include "remoting/host/base/desktop_environment_options.h"
 #include "remoting/host/base/screen_controls.h"
+#include "remoting/host/basic_desktop_environment.h"
 #include "remoting/host/client_session_control.h"
 #include "remoting/host/curtain_mode.h"
-#include "remoting/host/desktop_resizer.h"
+#include "remoting/host/desktop_environment.h"
+#include "remoting/host/desktop_interaction_strategy.h"
 #include "remoting/host/host_window.h"
 #include "remoting/host/host_window_proxy.h"
 #include "remoting/host/input_monitor/local_input_monitor.h"
-#include "remoting/host/remote_open_url/remote_open_url_util.h"
 #include "remoting/host/resizing_host_observer.h"
 #include "remoting/protocol/capability_names.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
@@ -37,7 +42,7 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 #if defined(REMOTING_USE_X11)
-#include "remoting/host/linux/wayland_utils.h"
+#include "remoting/host/linux/desktop_resizer_x11.h"
 #include "remoting/host/linux/x11_util.h"
 #include "ui/gfx/x/connection.h"
 #endif  // defined(REMOTING_USE_X11)
@@ -55,6 +60,12 @@ bool UsingVideoDummyDriver() {
   return is_using_dummy_driver;
 }
 
+bool RunningUnderWayland() {
+  static bool is_running_under_wayland =
+      webrtc::DesktopCapturer::IsRunningUnderWayland();
+  return is_running_under_wayland;
+}
+
 #endif  // defined(REMOTING_USE_X11)
 
 }  // namespace
@@ -67,7 +78,7 @@ std::unique_ptr<ActionExecutor>
 Me2MeDesktopEnvironment::CreateActionExecutor() {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  return ActionExecutor::Create();
+  return interaction_strategy().CreateActionExecutor();
 }
 
 std::unique_ptr<ScreenControls>
@@ -80,7 +91,7 @@ Me2MeDesktopEnvironment::CreateScreenControls() {
   // resolution automatically when the user logs back in on the console, and on
   // Linux the curtain-mode uses a separate session.
   auto resizer = std::make_unique<ResizingHostObserver>(
-      DesktopResizer::Create(), curtain_ == nullptr);
+      interaction_strategy().CreateDesktopResizer(), curtain_ == nullptr);
   resizer->RegisterForDisplayChanges(*GetDisplayInfoMonitor());
   return resizer;
 }
@@ -91,11 +102,6 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
     capabilities += " ";
   }
   capabilities += protocol::kRateLimitResizeRequests;
-
-  if (desktop_environment_options().enable_file_transfer()) {
-    capabilities += " ";
-    capabilities += protocol::kFileTransferCapability;
-  }
 
 #if BUILDFLAG(IS_WIN)
   capabilities += " ";
@@ -108,26 +114,29 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
   }
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (desktop_environment_options().enable_remote_open_url() &&
-      IsRemoteOpenUrlSupported()) {
-    capabilities += " ";
-    capabilities += protocol::kRemoteOpenUrlCapability;
-  }
-
   if (desktop_environment_options().enable_remote_webauthn()) {
     capabilities += " ";
     capabilities += protocol::kRemoteWebAuthnCapability;
   }
 
 #if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
-  if (!IsRunningWayland()) {
-    capabilities += " ";
-    capabilities += protocol::kMultiStreamCapability;
+  capabilities += " ";
+  capabilities += protocol::kMultiStreamCapability;
+  capabilities += " ";
+  capabilities += protocol::kDefaultResizeCapability;
 
-    // Client-controlled layout is only supported with Xorg+video-dummy.
-    if (UsingVideoDummyDriver()) {
+  if (RunningUnderWayland()) {
+    capabilities += " ";
+    capabilities += protocol::kClientControlledLayoutCapability;
+    capabilities += " ";
+    capabilities += protocol::kHighDpiCapability;
+  } else if (UsingVideoDummyDriver()) {
+    capabilities += " ";
+    capabilities += protocol::kClientControlledLayoutCapability;
+
+    if (DesktopResizerX11::supportsHighDpiResize()) {
       capabilities += " ";
-      capabilities += protocol::kClientControlledLayoutCapability;
+      capabilities += protocol::kHighDpiCapability;
     }
   }
 #elif BUILDFLAG(IS_MAC)
@@ -140,15 +149,13 @@ std::string Me2MeDesktopEnvironment::GetCapabilities() const {
 
 Me2MeDesktopEnvironment::Me2MeDesktopEnvironment(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    std::unique_ptr<DesktopInteractionStrategy> interaction_strategy,
     base::WeakPtr<ClientSessionControl> client_session_control,
     const DesktopEnvironmentOptions& options)
     : BasicDesktopEnvironment(caller_task_runner,
-                              video_capture_task_runner,
-                              input_task_runner,
                               ui_task_runner,
+                              std::move(interaction_strategy),
                               client_session_control,
                               options) {
   DCHECK(caller_task_runner->BelongsToCurrentThread());
@@ -169,12 +176,6 @@ Me2MeDesktopEnvironment::Me2MeDesktopEnvironment(
   // ourselves.
   mutable_desktop_capture_options()->set_detect_updated_region(false);
 #endif
-
-#if BUILDFLAG(IS_LINUX)
-  if (IsRunningWayland()) {
-    mutable_desktop_capture_options()->set_prefer_cursor_embedded(false);
-  }
-#endif
 }
 
 bool Me2MeDesktopEnvironment::InitializeSecurity(
@@ -183,8 +184,7 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
 
   // Detach the session from the local console if the caller requested.
   if (desktop_environment_options().enable_curtaining()) {
-    curtain_ = CurtainMode::Create(caller_task_runner(), ui_task_runner(),
-                                   client_session_control);
+    curtain_ = interaction_strategy().CreateCurtainMode(client_session_control);
     if (!curtain_->Activate()) {
       LOG(ERROR) << "Failed to activate the curtain mode.";
       curtain_ = nullptr;
@@ -213,16 +213,14 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
 
   if (want_user_interface) {
     // Create the local input monitor.
-    local_input_monitor_ = LocalInputMonitor::Create(
-        caller_task_runner(), input_task_runner(), ui_task_runner());
+    local_input_monitor_ = interaction_strategy().CreateLocalInputMonitor();
     local_input_monitor_->StartMonitoringForClientSession(
         client_session_control);
 
     // Create the disconnect window.
 #if BUILDFLAG(IS_WIN)
-    disconnect_window_ =
-        HostWindow::CreateAutoHidingDisconnectWindow(LocalInputMonitor::Create(
-            caller_task_runner(), input_task_runner(), ui_task_runner()));
+    disconnect_window_ = HostWindow::CreateAutoHidingDisconnectWindow(
+        interaction_strategy().CreateLocalInputMonitor());
 #else
     disconnect_window_ = HostWindow::CreateDisconnectWindow();
 #endif
@@ -236,32 +234,47 @@ bool Me2MeDesktopEnvironment::InitializeSecurity(
 
 Me2MeDesktopEnvironmentFactory::Me2MeDesktopEnvironmentFactory(
     scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> video_capture_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> input_task_runner,
-    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
-    : BasicDesktopEnvironmentFactory(caller_task_runner,
-                                     video_capture_task_runner,
-                                     input_task_runner,
-                                     ui_task_runner) {}
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+    std::unique_ptr<DesktopInteractionStrategyFactory>
+        interaction_strategy_factory)
+    : BasicDesktopEnvironmentFactory(std::move(caller_task_runner),
+                                     std::move(ui_task_runner),
+                                     std::move(interaction_strategy_factory)) {}
 
 Me2MeDesktopEnvironmentFactory::~Me2MeDesktopEnvironmentFactory() = default;
 
-std::unique_ptr<DesktopEnvironment> Me2MeDesktopEnvironmentFactory::Create(
+void Me2MeDesktopEnvironmentFactory::Create(
     base::WeakPtr<ClientSessionControl> client_session_control,
     base::WeakPtr<ClientSessionEvents> client_session_events,
-    const DesktopEnvironmentOptions& options) {
+    const DesktopEnvironmentOptions& options,
+    CreateCallback callback) {
   DCHECK(caller_task_runner()->BelongsToCurrentThread());
 
-  std::unique_ptr<Me2MeDesktopEnvironment> desktop_environment(
-      new Me2MeDesktopEnvironment(caller_task_runner(),
-                                  video_capture_task_runner(),
-                                  input_task_runner(), ui_task_runner(),
-                                  client_session_control, options));
-  if (!desktop_environment->InitializeSecurity(client_session_control)) {
-    return nullptr;
-  }
+  auto create_with_interaction_strategy =
+      [](scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
+         scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
+         base::WeakPtr<ClientSessionControl> client_session_control,
+         const DesktopEnvironmentOptions& options,
+         std::unique_ptr<DesktopInteractionStrategy> interaction_strategy)
+      -> std::unique_ptr<DesktopEnvironment> {
+    if (!interaction_strategy) {
+      return nullptr;
+    }
+    auto desktop_environment = base::WrapUnique(new Me2MeDesktopEnvironment(
+        std::move(caller_task_runner), std::move(ui_task_runner),
+        std::move(interaction_strategy), client_session_control, options));
+    if (!desktop_environment->InitializeSecurity(client_session_control)) {
+      return nullptr;
+    }
 
-  return desktop_environment;
+    return desktop_environment;
+  };
+
+  CreateInteractionStrategy(
+      options, base::BindOnce(create_with_interaction_strategy,
+                              caller_task_runner(), ui_task_runner(),
+                              std::move(client_session_control), options)
+                   .Then(std::move(callback)));
 }
 
 }  // namespace remoting

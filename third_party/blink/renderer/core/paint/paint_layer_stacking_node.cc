@@ -49,7 +49,6 @@
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -151,8 +150,14 @@ struct PaintLayerStackingNode::HighestLayers {
     // A negative z-index child will not cause reparent of overlay scrollbars
     // because the ancestor scroller either has auto z-index which is above
     // the child or has negative z-index which is a stacking context.
-    if (!layer.GetLayoutObject().IsStacked() || style.EffectiveZIndex() < 0)
+    if (!layer.GetLayoutObject().IsStacked() || style.EffectiveZIndex() < 0) {
       return;
+    }
+
+    // We should not consider layers that have been omitted from z-order lists.
+    if (!layer.IsZOrderListVisible()) {
+      return;
+    }
 
     UpdateOrderForSubtreeHighestLayers(GetLayerType(layer), &layer);
   }
@@ -178,13 +183,13 @@ struct PaintLayerStackingNode::HighestLayers {
   }
 };
 
-static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
+static LayoutObject* ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(
     const PaintLayer* layer) {
   LayoutObject* parent = layer->GetLayoutObject().Parent();
   if (!parent) {
     return nullptr;
   }
-  if (parent->IsFlexibleBox() || parent->IsLayoutGrid()) {
+  if (parent->IsFlexibleBox() || parent->IsLayoutGridOrGridLanes()) {
     return &layer->GetLayoutObject();
   }
 
@@ -192,7 +197,7 @@ static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
   if (!grandparent) {
     return nullptr;
   }
-  if (grandparent->IsFlexibleBox() || grandparent->IsLayoutGrid()) {
+  if (grandparent->IsFlexibleBox() || grandparent->IsLayoutGridOrGridLanes()) {
     return parent;
   }
   return nullptr;
@@ -201,9 +206,10 @@ static LayoutObject* ChildOfFlexboxOrGridParentOrGrandparent(
 static bool OrderLessThan(const PaintLayer* first, const PaintLayer* second) {
   // TODO(chrishtr): make this work for arbitrary ancestors, not just parent
   // and grandparent.
-  LayoutObject* first_ancestor = ChildOfFlexboxOrGridParentOrGrandparent(first);
+  LayoutObject* first_ancestor =
+      ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(first);
   LayoutObject* second_ancestor =
-      ChildOfFlexboxOrGridParentOrGrandparent(second);
+      ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(second);
   if (!first_ancestor || !second_ancestor) {
     return false;
   }
@@ -229,19 +235,48 @@ static bool OrderLessThan(const PaintLayer* first, const PaintLayer* second) {
   return first_order < second_order;
 }
 
-// Returns the children of |paint_layer|, sorted by the order CSS property
-// if they are the child of a flexbox. See:
+// Returns true if the children of `layer` may need ordering by `OrderLessThan`.
+static bool ChildrenMayBeAffectedByOrder(const PaintLayer& layer) {
+  PaintLayer* child = layer.FirstChild();
+  if (!child || !child->NextSibling()) {
+    // Not enough children to need re-ordering.
+    return false;
+  }
+  for (; child; child = child->NextSibling()) {
+    auto* ancestor = ChildOfFlexboxOrGridOrGridLanesParentOrGrandparent(child);
+    // This is the only case where `OrderLessThan` can return true;
+    if (ancestor && ancestor->StyleRef().Order()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Calls `function` for the children of `layer`, sorted by the order CSS
+// property if they are the child of a flexbox. See:
 // https://www.w3.org/TR/css-flexbox-1/#painting
-static void GetOrderSortedChildren(
-    PaintLayer* paint_layer,
-    PaintLayerStackingNode::PaintLayers& sorted_children) {
-  for (PaintLayer* child = paint_layer->FirstChild(); child;
-       child = child->NextSibling()) {
-    sorted_children.push_back(child);
+static void ForAllChildrenSortedByOrder(
+    PaintLayer& layer,
+    base::FunctionRef<void(PaintLayer&)> function) {
+  // Optimization: `order` is relatively rare and we can avoid needing to
+  // create and sort the vector of children in most cases.
+  if (!ChildrenMayBeAffectedByOrder(layer)) {
+    for (auto* child = layer.FirstChild(); child;
+         child = child->NextSibling()) {
+      function(*child);
+    }
+    return;
   }
 
+  HeapVector<Member<PaintLayer>> sorted_children;
+  for (auto* child = layer.FirstChild(); child; child = child->NextSibling()) {
+    sorted_children.push_back(child);
+  }
   std::stable_sort(sorted_children.begin(), sorted_children.end(),
                    OrderLessThan);
+  for (auto& child : sorted_children) {
+    function(*child);
+  }
 }
 
 void PaintLayerStackingNode::RebuildZOrderLists() {
@@ -251,11 +286,9 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
   DCHECK(z_order_lists_dirty_);
 
   layer_->SetNeedsReorderOverlayOverflowControls(false);
-  PaintLayers order_sorted_children;
-  GetOrderSortedChildren(layer_, order_sorted_children);
-  for (auto& child : order_sorted_children) {
-    CollectLayers(*child, nullptr);
-  }
+
+  ForAllChildrenSortedByOrder(
+      *layer_, [this](PaintLayer& child) { CollectLayers(child, nullptr); });
 
   // Sort the two lists.
   std::stable_sort(pos_z_order_list_.begin(), pos_z_order_list_.end(),
@@ -269,12 +302,6 @@ void PaintLayerStackingNode::RebuildZOrderLists() {
   // order.
   if (layer_->IsRootLayer()) {
     LayoutBlockFlow* root_block = layer_->GetLayoutObject().View();
-    // If the viewport is paginated, everything (including "top-layer" elements)
-    // gets redirected to the flow thread. So that's where we have to look, in
-    // that case.
-    if (LayoutBlockFlow* multi_column_flow_thread =
-            root_block->MultiColumnFlowThread())
-      root_block = multi_column_flow_thread;
     for (LayoutObject* child = root_block->FirstChild(); child;
          child = child->NextSibling()) {
       if (child->IsInTopOrViewTransitionLayer() && child->IsStacked()) {
@@ -300,9 +327,11 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
   const auto& style = object.StyleRef();
 
   if (object.IsStacked()) {
-    auto& list =
-        style.EffectiveZIndex() >= 0 ? pos_z_order_list_ : neg_z_order_list_;
-    list.push_back(paint_layer);
+    if (paint_layer.IsZOrderListVisible()) {
+      auto& list =
+          style.EffectiveZIndex() >= 0 ? pos_z_order_list_ : neg_z_order_list_;
+      list.push_back(paint_layer);
+    }
   }
 
   if (object.IsStackingContext())
@@ -315,11 +344,10 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
   if (has_overlay_overflow_controls || highest_layers)
     subtree_highest_layers.emplace();
 
-  PaintLayers order_sorted_children;
-  GetOrderSortedChildren(&paint_layer, order_sorted_children);
-  for (auto& child : order_sorted_children) {
-    CollectLayers(*child, base::OptionalToPtr(subtree_highest_layers));
-  }
+  ForAllChildrenSortedByOrder(
+      paint_layer, [this, &subtree_highest_layers](PaintLayer& child) {
+        CollectLayers(child, base::OptionalToPtr(subtree_highest_layers));
+      });
 
   if (has_overlay_overflow_controls) {
     DCHECK(subtree_highest_layers);
@@ -338,7 +366,7 @@ void PaintLayerStackingNode::CollectLayers(PaintLayer& paint_layer,
     if (layer_to_paint_overlay_overflow_controls_after) {
       layer_to_overlay_overflow_controls_painting_after_
           .insert(layer_to_paint_overlay_overflow_controls_after,
-                  MakeGarbageCollected<PaintLayers>())
+                  MakeGarbageCollected<GCedPaintLayers>())
           .stored_value->value->push_back(paint_layer);
     }
     paint_layer.SetNeedsReorderOverlayOverflowControls(

@@ -113,6 +113,9 @@ def _CreateExperiment(experiment_data, platforms, form_factors,
   min_os_version_data = experiment_data.get('min_os_version')
   if min_os_version_data:
     experiment['min_os_version'] = min_os_version_data
+  disable_benchmark_data = experiment_data.get('disable_benchmarking')
+  if disable_benchmark_data:
+    experiment['disable_benchmarking'] = disable_benchmark_data
   hardware_classes_data = experiment_data.get('hardware_classes')
   if hardware_classes_data:
     experiment['hardware_classes'] = hardware_classes_data

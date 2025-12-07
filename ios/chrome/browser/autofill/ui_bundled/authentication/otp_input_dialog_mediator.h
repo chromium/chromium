@@ -18,7 +18,7 @@
 @class OtpInputDialogMutatorBridge;
 
 namespace autofill {
-class CardUnmaskOtpInputDialogControllerImpl;
+class CardUnmaskOtpInputDialogController;
 }  // namespace autofill
 
 // Bridge class used to connect Autofill OTP input dialog components with the
@@ -27,7 +27,7 @@ class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView,
                                public OtpInputDialogMutatorBridgeTarget {
  public:
   OtpInputDialogMediator(
-      base::WeakPtr<autofill::CardUnmaskOtpInputDialogControllerImpl>
+      base::WeakPtr<autofill::CardUnmaskOtpInputDialogController>
           model_controller,
       id<OtpInputDialogMediatorDelegate> delegate);
   OtpInputDialogMediator(const OtpInputDialogMediator&) = delete;
@@ -56,8 +56,7 @@ class OtpInputDialogMediator : public autofill::CardUnmaskOtpInputDialogView,
 
  private:
   // The model to provide data to be shown in the IOS view implementation.
-  base::WeakPtr<autofill::CardUnmaskOtpInputDialogControllerImpl>
-      model_controller_;
+  base::WeakPtr<autofill::CardUnmaskOtpInputDialogController> model_controller_;
 
   __weak id<OtpInputDialogConsumer> consumer_;
 

@@ -20,8 +20,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/fill_layout.h"
 
@@ -79,8 +81,8 @@ LockScreenMediaView::LockScreenMediaView(
       hide_media_view_callback_(hide_media_view_callback) {
   // Observe power events and if created in power suspended state, post
   // OnSuspend() call to run after LockContentsView is initialized.
-  if (base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
-          this)) {
+  if (base::PowerMonitor::GetInstance()
+          ->AddPowerSuspendObserverAndReturnSuspendedState(this)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&LockScreenMediaView::OnSuspend,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -107,6 +109,10 @@ LockScreenMediaView::LockScreenMediaView(
           /*device_selector_view=*/nullptr, std::move(dismiss_button),
           media_color_theme,
           global_media_controls::MediaDisplayPage::kLockScreenMediaView));
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kListItem);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF8(
+      IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACCESSIBLE_NAME));
 
   // |service| can be null in tests.
   media_session::MediaSessionService* service =
@@ -137,7 +143,7 @@ LockScreenMediaView::LockScreenMediaView(
 }
 
 LockScreenMediaView::~LockScreenMediaView() {
-  base::PowerMonitor::RemovePowerSuspendObserver(this);
+  base::PowerMonitor::GetInstance()->RemovePowerSuspendObserver(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -146,13 +152,6 @@ LockScreenMediaView::~LockScreenMediaView() {
 gfx::Size LockScreenMediaView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return global_media_controls::kCrOSMediaItemUpdatedUISize;
-}
-
-void LockScreenMediaView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->role = ax::mojom::Role::kListItem;
-  node_data->SetNameChecked(l10n_util::GetStringUTF8(
-      IDS_ASH_LOCK_SCREEN_MEDIA_CONTROLS_ACCESSIBLE_NAME));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -164,12 +163,10 @@ void LockScreenMediaView::MediaSessionInfoChanged(
     return;
   }
 
-  // If the session is marked as sensitive, or it is not controllable, or it
-  // already has a presentation of another cast media session, do not show the
-  // media view.
+  // If the session is not controllable, or it already has a presentation of
+  // another cast media session, do not show the media view.
   if (!media_controls_enabled_callback_.Run() || !session_info ||
-      session_info->is_sensitive || !session_info->is_controllable ||
-      session_info->has_presentation) {
+      !session_info->is_controllable || session_info->has_presentation) {
     Hide();
     return;
   }

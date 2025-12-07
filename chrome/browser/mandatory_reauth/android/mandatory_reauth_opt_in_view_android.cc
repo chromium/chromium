@@ -6,6 +6,7 @@
 
 #include <jni.h>
 
+#include "base/notreached.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 
@@ -62,4 +63,11 @@ void MandatoryReauthOptInViewAndroid::Hide() {
   }
 }
 
+bool MandatoryReauthOptInViewAndroid::IsMouseHovered() const {
+  // This bubble is not managed by `autofill::BubbleManager`.
+  NOTREACHED();
+}
+
 }  // namespace autofill
+
+DEFINE_JNI(MandatoryReauthOptInBottomSheetViewBridge)

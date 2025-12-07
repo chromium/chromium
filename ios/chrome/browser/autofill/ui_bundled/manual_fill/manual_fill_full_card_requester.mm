@@ -6,14 +6,14 @@
 
 #import <vector>
 
-#import "components/autofill/core/browser/browser_autofill_manager.h"
-#import "components/autofill/core/browser/data_model/credit_card.h"
+#import "components/autofill/core/browser/data_model/payments/credit_card.h"
+#import "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #import "components/autofill/core/browser/payments/credit_card_access_manager.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/full_card_request_result_delegate_bridge.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -26,8 +26,8 @@ class CreditCard;
 
 @interface ManualFillFullCardRequester ()
 
-// The ChromeBrowserState instance passed to the initializer.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+// The ProfileIOS instance passed to the initializer.
+@property(nonatomic, readonly) ProfileIOS* profile;
 
 // The WebStateList for this instance. Used to instantiate the child
 // coordinators lazily.
@@ -41,13 +41,13 @@ class CreditCard;
   __weak id<FullCardRequestResultDelegateObserving> _delegate;
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                        webStateList:(WebStateList*)webStateList
-                      resultDelegate:
-                          (id<FullCardRequestResultDelegateObserving>)delegate {
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+                   webStateList:(WebStateList*)webStateList
+                 resultDelegate:
+                     (id<FullCardRequestResultDelegateObserving>)delegate {
   self = [super init];
   if (self) {
-    _browserState = browserState;
+    _profile = profile;
     _webStateList = webStateList;
     _delegate = delegate;
   }
@@ -75,16 +75,13 @@ class CreditCard;
   if (recordType == kVirtualCard) {
     virtualCard = autofill::CreditCard::CreateVirtualCard(card);
   }
-  autofill::CreditCardAccessManager& creditCardAccessManager =
+  autofill::CreditCardAccessManager* creditCardAccessManager =
       autofillManager.GetCreditCardAccessManager();
   __weak __typeof(self) weakSelf = self;
-  creditCardAccessManager.FetchCreditCard(
+  creditCardAccessManager->FetchCreditCard(
       (recordType == kVirtualCard ? &virtualCard : &card),
-      base::BindOnce(^(autofill::CreditCardFetchResult result,
-                       const autofill::CreditCard* fetchedCard) {
-        [weakSelf onCreditCardFetched:result
-                          fetchedCard:fetchedCard
-                            fieldType:fieldType];
+      base::BindOnce(^(const autofill::CreditCard& fetchedCard) {
+        [weakSelf onCreditCardFetched:fetchedCard fieldType:fieldType];
       }));
 
   // TODO(crbug.com/40577448): closing CVC requester doesn't restore icon bar
@@ -96,14 +93,9 @@ class CreditCard;
 // Callback invoked when the card retrieval is finished. It notifies the
 // delegate the result of the card retrieval process and provides the card if
 // the process succeeded.
-- (void)onCreditCardFetched:(autofill::CreditCardFetchResult)result
-                fetchedCard:(const autofill::CreditCard*)fetchedCard
+- (void)onCreditCardFetched:(const autofill::CreditCard&)fetchedCard
                   fieldType:(manual_fill::PaymentFieldType)fieldType {
-  if (result == autofill::CreditCardFetchResult::kSuccess && fetchedCard) {
-    [_delegate onFullCardRequestSucceeded:*fetchedCard fieldType:fieldType];
-  } else {
-    [_delegate onFullCardRequestFailed];
-  }
+  [_delegate onFullCardRequestSucceeded:fetchedCard fieldType:fieldType];
 }
 
 @end

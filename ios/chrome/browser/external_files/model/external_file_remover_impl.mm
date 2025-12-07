@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -46,8 +46,9 @@ void RunCallback(base::ScopedClosureRunner closure_runner) {}
 
 NSSet* ComputeReferencedExternalFiles(Browser* browser) {
   NSMutableSet* referenced_files = [NSMutableSet set];
-  if (!browser)
+  if (!browser) {
     return referenced_files;
+  }
   WebStateList* web_state_list = browser->GetWebStateList();
   // Check the currently open tabs for external files.
   for (int index = 0; index < web_state_list->count(); ++index) {
@@ -73,8 +74,7 @@ NSSet* ComputeReferencedExternalFiles(Browser* browser) {
   }
   // Do the same for the recently closed tabs.
   sessions::TabRestoreService* restore_service =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      IOSChromeTabRestoreServiceFactory::GetForProfile(browser->GetProfile());
   DCHECK(restore_service);
   for (const auto& entry : restore_service->entries()) {
     sessions::tab_restore::Tab* tab =
@@ -93,11 +93,12 @@ NSSet* ComputeReferencedExternalFiles(Browser* browser) {
 
 // Returns the path in the application sandbox of an external file from the
 // URL received for that file.
-NSString* GetInboxDirectoryPath() {
+NSString* GetDefaultInboxDirectoryPath() {
   NSArray* paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                                        NSUserDomainMask, YES);
-  if ([paths count] < 1)
+  if ([paths count] < 1) {
     return nil;
+  }
 
   NSString* documents_directory_path = [paths objectAtIndex:0];
   return [documents_directory_path stringByAppendingPathComponent:kInboxPath];
@@ -106,18 +107,20 @@ NSString* GetInboxDirectoryPath() {
 // Removes all the files in the Inbox directory that are not in
 // `files_to_keep` and that are older than `age_in_days` days.
 // `files_to_keep` may be nil if all files should be removed.
-void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
+void RemoveFilesWithOptions(NSSet* files_to_keep,
+                            NSInteger age_in_days,
+                            NSString* inbox_directory) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   NSFileManager* file_manager = [NSFileManager defaultManager];
-  NSString* inbox_directory = GetInboxDirectoryPath();
   NSArray* external_files =
       [file_manager contentsOfDirectoryAtPath:inbox_directory error:nil];
   for (NSString* filename in external_files) {
     NSString* file_path =
         [inbox_directory stringByAppendingPathComponent:filename];
-    if ([files_to_keep containsObject:filename])
+    if ([files_to_keep containsObject:filename]) {
       continue;
+    }
     // Checks the age of the file and do not remove files that are too recent.
     // Under normal circumstances, e.g. when file purge is not initiated by
     // user action, leave recently downloaded files around to avoid users
@@ -132,8 +135,9 @@ void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
       continue;
     }
     NSDate* date = [attributesDictionary objectForKey:NSFileCreationDate];
-    if (-[date timeIntervalSinceNow] <= (age_in_days * kSecondsPerDay))
+    if (-[date timeIntervalSinceNow] <= (age_in_days * kSecondsPerDay)) {
       continue;
+    }
     // Removes the file.
     [file_manager removeItemAtPath:file_path error:&error];
     if (error) {
@@ -147,10 +151,13 @@ void RemoveFilesWithOptions(NSSet* files_to_keep, NSInteger age_in_days) {
 }  // namespace
 
 ExternalFileRemoverImpl::ExternalFileRemoverImpl(
-    ChromeBrowserState* browser_state,
-    sessions::TabRestoreService* tab_restore_service)
+    ProfileIOS* profile,
+    sessions::TabRestoreService* tab_restore_service,
+    NSString* inbox_directory_path)
     : tab_restore_service_(tab_restore_service),
-      browser_state_(browser_state),
+      profile_(profile),
+      inbox_directory_path_(inbox_directory_path
+                                ?: GetDefaultInboxDirectoryPath()),
       weak_ptr_factory_(this) {
   DCHECK(tab_restore_service_);
   tab_restore_service_->AddObserver(this);
@@ -180,45 +187,23 @@ void ExternalFileRemoverImpl::Shutdown() {
     tab_restore_service_->RemoveObserver(this);
     tab_restore_service_ = nullptr;
   }
-  delayed_file_remove_requests_.clear();
 }
 
 void ExternalFileRemoverImpl::TabRestoreServiceChanged(
     sessions::TabRestoreService* service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (service->IsLoaded())
+  if (service->IsLoaded()) {
     return;
+  }
 
   tab_restore_service_->RemoveObserver(this);
   tab_restore_service_ = nullptr;
-
-  std::vector<DelayedFileRemoveRequest> delayed_file_remove_requests;
-  delayed_file_remove_requests = std::move(delayed_file_remove_requests_);
-  for (DelayedFileRemoveRequest& request : delayed_file_remove_requests) {
-    RemoveFiles(request.remove_all_files, std::move(request.closure_runner));
-  }
 }
 
 void ExternalFileRemoverImpl::TabRestoreServiceDestroyed(
     sessions::TabRestoreService* service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTREACHED_IN_MIGRATION()
-      << "Should never happen as unregistration happen in Shutdown";
-}
-
-void ExternalFileRemoverImpl::Remove(bool all_files,
-                                     base::ScopedClosureRunner closure_runner) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!tab_restore_service_) {
-    RemoveFiles(all_files, std::move(closure_runner));
-    return;
-  }
-  // Removal is delayed until tab restore loading completes.
-  DCHECK(!tab_restore_service_->IsLoaded());
-  DelayedFileRemoveRequest request = {all_files, std::move(closure_runner)};
-  delayed_file_remove_requests_.push_back(std::move(request));
-  if (delayed_file_remove_requests_.size() == 1)
-    tab_restore_service_->LoadTabsFromLastSession();
+  NOTREACHED() << "Should never happen as unregistration happen in Shutdown";
 }
 
 void ExternalFileRemoverImpl::RemoveFiles(
@@ -232,7 +217,8 @@ void ExternalFileRemoverImpl::RemoveFiles(
 
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::BindOnce(&RemoveFilesWithOptions, referenced_files, age_in_days),
+      base::BindOnce(&RemoveFilesWithOptions, referenced_files, age_in_days,
+                     inbox_directory_path_),
       base::BindOnce(&RunCallback, std::move(closure_runner)));
 }
 
@@ -240,10 +226,9 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Add files from all Browsers.
   NSMutableSet* referenced_external_files = [NSMutableSet set];
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state_);
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   const BrowserList::BrowserType browser_types =
-      browser_state_->IsOffTheRecord()
+      profile_->IsOffTheRecord()
           ? BrowserList::BrowserType::kIncognito
           : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
@@ -255,10 +240,11 @@ NSSet* ExternalFileRemoverImpl::GetReferencedExternalFiles() {
   }
 
   bookmarks::BookmarkModel* bookmark_model =
-      ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
+      ios::BookmarkModelFactory::GetForProfile(profile_);
   // Check if the bookmark model is loaded.
-  if (!bookmark_model || !bookmark_model->loaded())
+  if (!bookmark_model || !bookmark_model->loaded()) {
     return referenced_external_files;
+  }
 
   // Add files from Bookmarks.
   for (const auto& bookmark : bookmark_model->GetUniqueUrls()) {

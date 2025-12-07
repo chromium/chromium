@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/fonts/script_run_iterator.h"
 
+#include <utility>
+
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,7 +112,7 @@ class MockScriptData : public ScriptData {
 
   static int TableLookup(int value) {
     for (int i = 0; i < 16; ++i) {
-      if (kTable[i] == value) {
+      if (UNSAFE_TODO(kTable[i]) == value) {
         return i;
       }
     }
@@ -310,7 +308,7 @@ class ScriptRunIteratorTest : public testing::Test {
       text.Append(String::FromUTF8(run.text));
       expect.push_back(ScriptExpectedRun(text.length(), run.code));
     }
-    ScriptRunIterator script_run_iterator(text.Characters16(), text.length());
+    ScriptRunIterator script_run_iterator(text.Span16());
     VerifyRuns(&script_run_iterator, expect);
   }
 
@@ -325,7 +323,7 @@ class ScriptRunIteratorTest : public testing::Test {
       expect.push_back(ScriptExpectedRun(text.length(), run.code));
     }
 
-    ScriptRunIterator script_run_iterator(text.Characters16(), text.length(),
+    ScriptRunIterator script_run_iterator(text.Span16(),
                                           MockScriptData::Instance());
     VerifyRuns(&script_run_iterator, expect);
   }
@@ -343,7 +341,7 @@ class ScriptRunIteratorTest : public testing::Test {
 
 TEST_F(ScriptRunIteratorTest, Empty) {
   String empty(g_empty_string16_bit);
-  ScriptRunIterator script_run_iterator(empty.Characters16(), empty.length());
+  ScriptRunIterator script_run_iterator(empty.Span16());
   unsigned limit = 0;
   UScriptCode code = USCRIPT_INVALID_CODE;
   DCHECK(!script_run_iterator.Consume(&limit, &code));
@@ -351,18 +349,12 @@ TEST_F(ScriptRunIteratorTest, Empty) {
   ASSERT_EQ(code, USCRIPT_INVALID_CODE);
 }
 
-// Some of our compilers cannot initialize a vector from an array yet.
-#define DECLARE_SCRIPT_RUNSVECTOR(...)                   \
-  static const ScriptTestRun kRunsArray[] = __VA_ARGS__; \
-  Vector<ScriptTestRun> runs;                            \
-  runs.Append(kRunsArray, sizeof(kRunsArray) / sizeof(*kRunsArray));
-
-#define CHECK_SCRIPT_RUNS(...)            \
-  DECLARE_SCRIPT_RUNSVECTOR(__VA_ARGS__); \
+#define CHECK_SCRIPT_RUNS(...)              \
+  Vector<ScriptTestRun> runs = __VA_ARGS__; \
   CheckRuns(runs);
 
-#define CHECK_MOCK_SCRIPT_RUNS(...)       \
-  DECLARE_SCRIPT_RUNSVECTOR(__VA_ARGS__); \
+#define CHECK_MOCK_SCRIPT_RUNS(...)         \
+  Vector<ScriptTestRun> runs = __VA_ARGS__; \
   CheckMockRuns(runs);
 
 TEST_F(ScriptRunIteratorTest, Whitespace) {
@@ -374,7 +366,12 @@ TEST_F(ScriptRunIteratorTest, Common) {
 }
 
 TEST_F(ScriptRunIteratorTest, CombiningCircle) {
-  CHECK_SCRIPT_RUNS({{"◌́◌̀◌̈◌̂◌̄◌̊", USCRIPT_COMMON}});
+#if U_ICU_VERSION_MAJOR_NUM >= 76
+  const UScriptCode script = USCRIPT_LATIN;
+#else
+  const UScriptCode script = USCRIPT_COMMON;
+#endif
+  CHECK_SCRIPT_RUNS({{"◌́◌̀◌̈◌̂◌̄◌̊", script}});
 }
 
 TEST_F(ScriptRunIteratorTest, Latin) {
@@ -784,22 +781,34 @@ TEST_F(ScriptRunIteratorTest, CommonMalayalam) {
   CHECK_SCRIPT_RUNS({{"100-ാം", USCRIPT_MALAYALAM}});
 }
 
+std::pair<int, UChar32> MaximumScriptExtensions() {
+  int max_extensions = 0;
+  UChar32 max_extensionscp = 0;
+  for (UChar32 cp = 0; cp < 0x11000; ++cp) {
+    UErrorCode status = U_ZERO_ERROR;
+    int count = uscript_getScriptExtensions(cp, nullptr, 0, &status);
+    if (count > max_extensions) {
+      max_extensions = count;
+      max_extensionscp = cp;
+    }
+  }
+  return std::make_pair(max_extensions, max_extensionscp);
+}
+
+TEST_F(ScriptRunIteratorTest, MaxUnicodeScriptExtensions) {
+  int max_extensions = 0;
+  UChar32 max_extensionscp = 0;
+  std::tie(max_extensions, max_extensionscp) = MaximumScriptExtensions();
+  // If this test fails (as a result of an ICU update, most likely), it means
+  // we need to change kMaxUnicodeScriptExtensions.
+  EXPECT_LE(max_extensions, ScriptRunIterator::kMaxUnicodeScriptExtensions);
+}
+
 class ScriptRunIteratorICUDataTest : public testing::Test {
  public:
-  ScriptRunIteratorICUDataTest()
-      : max_extensions_(0), max_extensions_codepoint_(0xffff) {
-    int max_extensions = 0;
-    UChar32 max_extensionscp = 0;
-    for (UChar32 cp = 0; cp < 0x11000; ++cp) {
-      UErrorCode status = U_ZERO_ERROR;
-      int count = uscript_getScriptExtensions(cp, nullptr, 0, &status);
-      if (count > max_extensions) {
-        max_extensions = count;
-        max_extensionscp = cp;
-      }
-    }
-    max_extensions_ = max_extensions;
-    max_extensions_codepoint_ = max_extensionscp;
+  ScriptRunIteratorICUDataTest() {
+    std::tie(max_extensions_, max_extensions_codepoint_) =
+        MaximumScriptExtensions();
   }
 
  protected:
@@ -820,7 +829,7 @@ class ScriptRunIteratorICUDataTest : public testing::Test {
 TEST_F(ScriptRunIteratorICUDataTest, ValidateICUMaxScriptExtensions) {
   int max_extensions;
   UChar32 cp = GetACharWithMaxExtensions(&max_extensions);
-  ASSERT_LE(max_extensions, ScriptData::kMaxScriptCount)
+  ASSERT_LT(max_extensions, ScriptData::kMaxScriptCount)
       << "char " << std::hex << cp << std::dec;
 }
 

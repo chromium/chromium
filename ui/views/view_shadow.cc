@@ -13,8 +13,9 @@ namespace views {
 
 ViewShadow::ViewShadow(View* view, int elevation)
     : view_(view), shadow_(std::make_unique<ui::Shadow>()) {
-  if (!view_->layer())
+  if (!view_->layer()) {
     view_->SetPaintToLayer();
+  }
   shadow_->Init(elevation);
   view_->AddLayerToRegion(shadow_->layer(), LayerRegion::kBelow);
   shadow_->SetContentBounds(view_->layer()->bounds());
@@ -23,8 +24,9 @@ ViewShadow::ViewShadow(View* view, int elevation)
 }
 
 ViewShadow::~ViewShadow() {
-  if (view_)
+  if (view_) {
     OnViewIsDeleting(view_);
+  }
 }
 
 void ViewShadow::SetRoundedCornerRadius(int corner_radius) {
@@ -32,8 +34,9 @@ void ViewShadow::SetRoundedCornerRadius(int corner_radius) {
 }
 
 void ViewShadow::OnLayerRecreated(ui::Layer* old_layer) {
-  if (!view_)
+  if (!view_) {
     return;
+  }
   view_->RemoveLayerFromRegionsKeepInLayerTree(old_layer);
   view_->AddLayerToRegion(shadow_->layer(), LayerRegion::kBelow);
 }

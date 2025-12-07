@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos_ash)
+assert(is_chromeos)
 
 static_library("net") {
   sources = [
@@ -17,10 +17,10 @@ static_library("net") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
-    "//ash/components/arc",
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/experiences/arc",
     "//components/device_event_log",
     "//content/public/browser",
     "//crypto",

@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "net/websockets/websocket_frame.h"
 
 namespace {
@@ -43,7 +44,7 @@ WebSocketFrameParser::WebSocketFrameParser() = default;
 WebSocketFrameParser::~WebSocketFrameParser() = default;
 
 bool WebSocketFrameParser::Decode(
-    base::span<const uint8_t> data_span,
+    base::span<uint8_t> data_span,
     std::vector<std::unique_ptr<WebSocketFrameChunk>>* frame_chunks) {
   if (websocket_error_ != kWebSocketNormalClosure) {
     return false;
@@ -155,7 +156,7 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
 
   WebSocketMaskingKey masking_key = {};
   const bool masked = (second_byte & kMaskBit) != 0;
-  static constexpr int kMaskingKeyLength =
+  static constexpr size_t kMaskingKeyLength =
       WebSocketFrameHeader::kMaskingKeyLength;
   if (masked) {
     if (data.size() < current + kMaskingKeyLength)
@@ -179,11 +180,11 @@ size_t WebSocketFrameParser::DecodeFrameHeader(base::span<const uint8_t> data) {
 
 std::unique_ptr<WebSocketFrameChunk> WebSocketFrameParser::DecodeFramePayload(
     bool first_chunk,
-    base::span<const uint8_t>* data) {
+    base::span<uint8_t>* data) {
   // The cast here is safe because |payload_length| is already checked to be
   // less than std::numeric_limits<int>::max() when the header is parsed.
-  const int chunk_data_size = static_cast<int>(
-      std::min(static_cast<uint64_t>(data->size()),
+  const auto chunk_data_size = static_cast<uint64_t>(
+      std::min(uint64_t{data->size()},
                current_frame_header_->payload_length - frame_offset_));
 
   auto frame_chunk = std::make_unique<WebSocketFrameChunk>();
@@ -191,9 +192,10 @@ std::unique_ptr<WebSocketFrameChunk> WebSocketFrameParser::DecodeFramePayload(
     frame_chunk->header = current_frame_header_->Clone();
   }
   frame_chunk->final_chunk = false;
-  if (chunk_data_size > 0) {
-    frame_chunk->payload = base::as_chars(data->subspan(0, chunk_data_size));
-    *data = data->subspan(chunk_data_size);
+  if (chunk_data_size) {
+    const auto split_point = base::checked_cast<size_t>(chunk_data_size);
+    frame_chunk->payload = base::as_writable_chars(data->first(split_point));
+    *data = data->subspan(split_point);
     frame_offset_ += chunk_data_size;
   }
 

@@ -5,6 +5,8 @@
 #include "components/history_embeddings/mock_answerer.h"
 
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 
 namespace history_embeddings {
@@ -22,10 +24,23 @@ void MockAnswerer::ComputeAnswer(std::string query,
   optimization_guide::proto::Answer answer;
   answer.set_text(std::string("This is the answer to query '") + query +
                   std::string("'."));
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback),
-                                AnswererResult{ComputeAnswerStatus::SUCCESS,
-                                               query, answer}));
+  AnswererResult result(static_cast<ComputeAnswerStatus>(
+                            GetFeatureParameters().mock_answerer_status),
+                        query, answer, {}, "url.com", {});
+
+  // Set URL and passage citation if available.
+  auto it = context.url_passages_map.begin();
+  if (it != context.url_passages_map.end()) {
+    optimization_guide::proto::Citation* citation =
+        result.answer.add_citations();
+    citation->set_passage_id("0001");
+    result.url = it->first;
+    result.PopulateScrollToTextFragment(it->second);
+  }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)),
+      base::Milliseconds(GetFeatureParameters().mock_answerer_delay_ms));
 }
 
 }  // namespace history_embeddings

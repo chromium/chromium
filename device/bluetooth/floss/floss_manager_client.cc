@@ -51,11 +51,7 @@ const DBusTypeInfo& GetDBusTypeInfo<AdapterWithEnabled>(
 
 // static
 const char FlossManagerClient::kExportedCallbacksPath[] =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    "/org/chromium/bluetooth/manager/callback/lacros";
-#else
     "/org/chromium/bluetooth/manager/callback";
-#endif
 
 // static
 const char FlossManagerClient::kObjectManagerPath[] = "/";
@@ -195,12 +191,6 @@ void FlossManagerClient::SetLLPrivacy(ResponseCallback<bool> callback,
                                enable);
 }
 
-void FlossManagerClient::SetDevCoredump(ResponseCallback<Void> callback,
-                                        const bool enable) {
-  CallExperimentalMethod<Void>(std::move(callback),
-                               experimental::kSetDevCoredump, enable);
-}
-
 // Register manager client against manager.
 void FlossManagerClient::RegisterWithManager() {
   DCHECK(!manager_available_);
@@ -299,33 +289,13 @@ void FlossManagerClient::Init(dbus::Bus* bus,
       service_name, dbus::ObjectPath(kObjectManagerPath));
   object_manager_->RegisterInterface(kManagerInterface, this);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Enable Floss and retry a few times until it is set.
   SetFlossEnabled(floss::features::IsFlossEnabled(), kSetFlossRetryCount,
                   kSetFlossRetryDelayMs,
                   base::BindOnce(&FlossManagerClient::CompleteSetFlossEnabled,
                                  weak_ptr_factory_.GetWeakPtr()));
-
-  SetDevCoredump(base::BindOnce([](DBusResult<Void> ret) {
-                   if (!ret.has_value()) {
-                     LOG(ERROR) << "Fail to set devcoredump.\n";
-                   }
-                 }),
-                 base::FeatureList::IsEnabled(
-                     chromeos::bluetooth::features::kBluetoothFlossCoredump));
-
-  if (floss::features::IsLLPrivacyAvailable()) {
-    SetLLPrivacy(
-        base::BindOnce([](DBusResult<bool> ret) {
-          if (!ret.has_value()) {
-            LOG(ERROR) << "Set LL privacy returned error: " << ret.error();
-          } else if (!ret.value()) {
-            LOG(ERROR) << "Dbus call to set LL privary returned false.\n";
-          }
-        }),
-        base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void FlossManagerClient::HandleGetDefaultAdapter(DBusResult<int32_t> response) {
@@ -558,6 +528,18 @@ void FlossManagerClient::CompleteSetFlossEnabled(DBusResult<bool> ret) {
     LOG(ERROR) << "Floss couldn't be enabled. Error=" << ret.error();
   } else {
     DVLOG(1) << "Completed SetFlossEnabled with value " << *ret;
+    // Set LL privacy if floss is enabled.
+    if (floss::features::IsLLPrivacyAvailable() && ret.value()) {
+      SetLLPrivacy(
+          base::BindOnce([](DBusResult<bool> ret) {
+            if (!ret.has_value()) {
+              LOG(ERROR) << "Set LL privacy returned error: " << ret.error();
+            } else if (!ret.value()) {
+              LOG(ERROR) << "Dbus call to set LL privary returned false.\n";
+            }
+          }),
+          base::FeatureList::IsEnabled(bluez::features::kLinkLayerPrivacy));
+    }
   }
 }
 

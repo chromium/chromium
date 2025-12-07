@@ -163,28 +163,6 @@ def make_assignment_operators(cg_context):
     ])
     defs = ListNode()
 
-    # Migration adapter
-    func_decl = CxxFuncDeclNode(
-        name="operator=",
-        arg_decls=["const String&"],
-        return_type="${class_name}&")
-    func_def = CxxFuncDefNode(
-        name="operator=",
-        arg_decls=["const String& str_value"],
-        return_type="${class_name}&",
-        class_name=cg_context.class_name)
-    decls.append(func_decl)
-    defs.append(func_def)
-
-    func_def.set_base_template_vars(cg_context.template_bindings())
-    func_def.body.append(
-        TextNode("""\
-const auto& index =
-    bindings::FindIndexInEnumStringTable(str_value, string_table_);
-CHECK(index.has_value());
-return operator=(${class_name}(static_cast<Enum>(index.value())));
-"""))
-
     return decls, defs
 
 

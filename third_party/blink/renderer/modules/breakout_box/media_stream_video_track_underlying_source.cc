@@ -24,16 +24,10 @@ constexpr char kScreenPrefix[] = "screen:";
 constexpr char kWindowPrefix[] = "window:";
 
 bool IsScreenOrWindowCapture(const std::string& device_id) {
-  return base::StartsWith(device_id, kScreenPrefix,
-                          base::CompareCase::SENSITIVE) ||
-         base::StartsWith(device_id, kWindowPrefix,
-                          base::CompareCase::SENSITIVE);
+  return device_id.starts_with(kScreenPrefix) ||
+         device_id.starts_with(kWindowPrefix);
 }
 }  // namespace
-
-BASE_FEATURE(kBreakoutBoxFrameLimiter,
-             "BreakoutBoxFrameLimiter",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const int MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount = 20;
 const int MediaStreamVideoTrackUnderlyingSource::kMinMonitoredFrameCount = 2;
@@ -115,9 +109,6 @@ void MediaStreamVideoTrackUnderlyingSource::StopFrameDelivery() {
 // static
 std::string MediaStreamVideoTrackUnderlyingSource::GetDeviceIdForMonitoring(
     const MediaStreamDevice& device) {
-  if (!base::FeatureList::IsEnabled(kBreakoutBoxFrameLimiter))
-    return std::string();
-
   switch (device.type) {
     case mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
       return device.id;

@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FEATURE_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FEATURE_CONTEXT_H_
 
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {

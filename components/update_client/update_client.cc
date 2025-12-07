@@ -17,6 +17,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -67,14 +68,12 @@ UpdateClientImpl::UpdateClientImpl(
     scoped_refptr<Configurator> config,
     scoped_refptr<PingManager> ping_manager,
     UpdateChecker::Factory update_checker_factory)
-    : config_(config),
-      ping_manager_(ping_manager),
-      update_engine_(base::MakeRefCounted<UpdateEngine>(
-          config,
-          update_checker_factory,
-          ping_manager_.get(),
-          base::BindRepeating(&UpdateClientImpl::NotifyObservers,
-                              base::Unretained(this)))) {}
+    : config_(config), ping_manager_(ping_manager) {
+  update_engine_ = base::MakeRefCounted<UpdateEngine>(
+      config, update_checker_factory, ping_manager_.get(),
+      base::BindRepeating(&UpdateClientImpl::NotifyObservers,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 UpdateClientImpl::~UpdateClientImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -93,7 +92,9 @@ base::RepeatingClosure UpdateClientImpl::Install(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (IsUpdating(id)) {
-    std::move(callback).Run(Error::UPDATE_IN_PROGRESS);
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), Error::UPDATE_IN_PROGRESS));
     return base::DoNothing();
   }
 
@@ -139,6 +140,8 @@ void UpdateClientImpl::CheckForUpdate(
 
 void UpdateClientImpl::RunTask(scoped_refptr<Task> task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
+
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&Task::Run, task));
   tasks_.insert(task);
@@ -163,6 +166,9 @@ void UpdateClientImpl::OnTaskComplete(Callback callback,
       FROM_HERE, base::BindOnce(std::move(callback), error));
 
   tasks_.erase(task);
+  VLOG(2) << __func__ << ": tasks_.empty(): " << tasks_.empty()
+          << ", task_queue_.empty(): " << task_queue_.empty()
+          << ", error: " << static_cast<int>(error);
 
   if (is_stopped_) {
     return;
@@ -187,11 +193,10 @@ void UpdateClientImpl::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void UpdateClientImpl::NotifyObservers(Observer::Events event,
-                                       const std::string& id) {
+void UpdateClientImpl::NotifyObservers(const CrxUpdateItem& item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
-    observer.OnEvent(event, id);
+    observer.OnEvent(item);
   }
 }
 
@@ -249,6 +254,7 @@ void UpdateClientImpl::SendPing(const CrxComponent& crx_component,
                                 PingParams ping_params,
                                 Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
 
   RunTask(base::MakeRefCounted<TaskSendPing>(
       update_engine_.get(), crx_component, ping_params,

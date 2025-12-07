@@ -114,6 +114,8 @@ android_library("mojo_javatests") {
     "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTest.java",
     "javatests/src/org/chromium/mojo/bindings/NullableValueTypesTestUtil.java",
     "javatests/src/org/chromium/mojo/bindings/ReadAndDispatchMessageTest.java",
+    "javatests/src/org/chromium/mojo/bindings/ResultBindingsTest.java",
+    "javatests/src/org/chromium/mojo/bindings/ResultTest.java",
     "javatests/src/org/chromium/mojo/bindings/RouterTest.java",
     "javatests/src/org/chromium/mojo/bindings/SerializationTest.java",
     "javatests/src/org/chromium/mojo/bindings/ValidationTest.java",

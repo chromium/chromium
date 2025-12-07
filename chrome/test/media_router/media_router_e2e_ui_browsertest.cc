@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chrome/test/media_router/media_router_cast_ui_for_test.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/test_data_util.h"
@@ -16,8 +15,14 @@
 
 namespace media_router {
 
-IN_PROC_BROWSER_TEST_P(MediaRouterE2EBrowserTest, MANUAL_MirrorHTML5Video) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
+class MediaRouterE2EUIBrowserTest : public MediaRouterE2EBrowserTest {
+ public:
+  MediaRouterE2EUIBrowserTest()
+      : MediaRouterE2EBrowserTest(UiForBrowserTest::kCast) {}
+  ~MediaRouterE2EUIBrowserTest() override = default;
+};
+
+IN_PROC_BROWSER_TEST_F(MediaRouterE2EUIBrowserTest, MANUAL_MirrorHTML5Video) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   test_ui_->ShowDialog();

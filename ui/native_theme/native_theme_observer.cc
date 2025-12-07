@@ -4,8 +4,12 @@
 
 #include "ui/native_theme/native_theme_observer.h"
 
+#include "base/check.h"
+
 namespace ui {
 
-NativeThemeObserver::~NativeThemeObserver() {}
+NativeThemeObserver::~NativeThemeObserver() {
+  CHECK(!IsInObserverList());
+}
 
 }  // namespace ui

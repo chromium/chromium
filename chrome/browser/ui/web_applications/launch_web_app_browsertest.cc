@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
@@ -37,9 +36,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
   content::WebContents* initial_tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   const GURL initial_url = initial_tab->GetLastCommittedURL();
-  ui_test_utils::BrowserChangeObserver browser_change_observer(
-      /*browser=*/nullptr,
-      ui_test_utils::BrowserChangeObserver::ChangeType::kAdded);
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
 
   {
     ui_test_utils::UrlLoadObserver url_observer(start_url);
@@ -53,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppBrowserTest, OpenLinkInWebApp) {
     url_observer.Wait();
   }
 
-  Browser* const app_browser = browser_change_observer.Wait();
+  Browser* const app_browser = browser_created_observer.Wait();
   EXPECT_EQ(num_tabs, browser()->tab_strip_model()->count());
   EXPECT_EQ(++num_browsers, chrome::GetBrowserCount(browser()->profile()));
   EXPECT_NE(browser(), app_browser);

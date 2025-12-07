@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/dbus/menu/menu_property_list.h"
-#include "components/dbus/properties/types.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
@@ -28,7 +27,7 @@ class MenuModel;
 class DbusProperties;
 
 // Implements the com.canonical.dbusmenu interface.
-class COMPONENT_EXPORT(DBUS) DbusMenu {
+class COMPONENT_EXPORT(COMPONENTS_DBUS) DbusMenu {
  public:
   using InitializedCallback = base::OnceCallback<void(bool success)>;
   using MenuItemReference = std::pair<ui::MenuModel*, size_t>;
@@ -75,7 +74,7 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
 
     // The MenuModel corresponding to this MenuItem, or null if this MenuItem is
     // not a submenu.  This can happen for leaf items or an empty root item.
-    const raw_ptr<ui::MenuModel, DanglingUntriaged> menu;
+    const raw_ptr<ui::MenuModel> menu;
     // |containing_menu| will be null for the root item.  If it's null, then
     // |containing_menu_index| is meaningless.
     const raw_ptr<ui::MenuModel, DanglingUntriaged> containing_menu;
@@ -154,7 +153,7 @@ class COMPONENT_EXPORT(DBUS) DbusMenu {
 
   void SendLayoutChangedSignal(int32_t id);
 
-  raw_ptr<dbus::ExportedObject, DanglingUntriaged> menu_ = nullptr;
+  raw_ptr<dbus::ExportedObject> menu_ = nullptr;
 
   base::RepeatingCallback<void(bool)> barrier_;
 

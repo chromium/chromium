@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2025 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <group>
+    <clip-path
+        android:pathData="M3,3.17h18v18h-18z"/>
+    <path
+        android:pathData="M12,17.01C11.83,17.01 11.665,16.98 11.505,16.92C11.355,16.85 11.225,16.755 11.115,16.635L7.245,13.035C6.895,12.715 6.635,12.34 6.465,11.91C6.305,11.48 6.225,11.025 6.225,10.545C6.225,9.565 6.545,8.72 7.185,8.01C7.835,7.29 8.64,6.93 9.6,6.93C10.06,6.93 10.495,7.025 10.905,7.215C11.315,7.405 11.68,7.665 12,7.995C12.31,7.655 12.67,7.395 13.08,7.215C13.5,7.025 13.94,6.93 14.4,6.93C15.36,6.93 16.16,7.29 16.8,8.01C17.45,8.72 17.775,9.565 17.775,10.545C17.775,11.015 17.695,11.465 17.535,11.895C17.375,12.325 17.125,12.7 16.785,13.02L12.885,16.65C12.765,16.77 12.63,16.86 12.48,16.92C12.33,16.98 12.17,17.01 12,17.01Z"
+        android:fillColor="?attr/colorOnSurfaceVariant"/>
+  </group>
+</vector>

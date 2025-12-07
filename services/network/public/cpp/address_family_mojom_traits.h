@@ -5,14 +5,16 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_ADDRESS_FAMILY_MOJOM_TRAITS_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_ADDRESS_FAMILY_MOJOM_TRAITS_H_
 
+#include "base/component_export.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "net/base/address_family.h"
-#include "services/network/public/mojom/address_family.mojom.h"
+#include "services/network/public/mojom/address_family.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<network::mojom::AddressFamily, net::AddressFamily> {
+struct COMPONENT_EXPORT(NETWORK_CPP_IP_ADDRESS)
+    EnumTraits<network::mojom::AddressFamily, net::AddressFamily> {
   static network::mojom::AddressFamily ToMojom(
       net::AddressFamily address_family);
   static bool FromMojom(network::mojom::AddressFamily address_family,

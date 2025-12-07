@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"
 
@@ -14,12 +10,6 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 
 namespace blink {
-
-void LogUserMediaRequestResult(mojom::blink::MediaStreamRequestResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "WebRTC.UserMediaRequest.Result2", result,
-      mojom::blink::MediaStreamRequestResult::NUM_MEDIA_REQUEST_RESULTS);
-}
 
 void UpdateWebRTCMethodCount(RTCAPIName api_name) {
   DVLOG(3) << "Incrementing WebRTC.webkitApiCount for "

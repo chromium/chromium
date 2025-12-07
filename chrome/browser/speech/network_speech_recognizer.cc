@@ -42,7 +42,6 @@ class NetworkSpeechRecognizer::EventListener
   EventListener(const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
                 std::unique_ptr<network::PendingSharedURLLoaderFactory>
                     pending_shared_url_loader_factory,
-                const std::string& accept_language,
                 const std::string& locale);
 
   EventListener(const EventListener&) = delete;
@@ -89,7 +88,6 @@ class NetworkSpeechRecognizer::EventListener
       pending_shared_url_loader_factory_;
   // Initialized from |pending_shared_url_loader_factory_| on first use.
   scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory_;
-  const std::string accept_language_;
   std::string locale_;
   int session_;
   std::u16string last_result_str_;
@@ -101,12 +99,10 @@ NetworkSpeechRecognizer::EventListener::EventListener(
     const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_shared_url_loader_factory,
-    const std::string& accept_language,
     const std::string& locale)
     : delegate_(delegate),
       pending_shared_url_loader_factory_(
           std::move(pending_shared_url_loader_factory)),
-      accept_language_(accept_language),
       locale_(locale),
       session_(kInvalidSessionId) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -143,7 +139,6 @@ void NetworkSpeechRecognizer::EventListener::StartOnIOThread(
   config.interim_results = true;
   config.max_hypotheses = 1;
   config.filter_profanities = filter_profanities;
-  config.accept_language = accept_language_;
   if (!shared_url_loader_factory_) {
     DCHECK(pending_shared_url_loader_factory_);
     shared_url_loader_factory_ = network::SharedURLLoaderFactory::Create(
@@ -266,13 +261,11 @@ NetworkSpeechRecognizer::NetworkSpeechRecognizer(
     const base::WeakPtr<SpeechRecognizerDelegate>& delegate,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_shared_url_loader_factory,
-    const std::string& accept_language,
     const std::string& locale)
     : SpeechRecognizer(delegate),
       speech_event_listener_(
           new EventListener(delegate,
                             std::move(pending_shared_url_loader_factory),
-                            accept_language,
                             locale)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }

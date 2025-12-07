@@ -24,7 +24,7 @@ class ScopedPromiseResolver {
   ~ScopedPromiseResolver();
 
   // Releases the owned |resolver_|. This is to be called by the Mojo response
-  // callback responsible for resolving the corresponding ScriptPromiseUntyped
+  // callback responsible for resolving the corresponding ScriptPromise
   //
   // If this method is not called before |this| goes of scope, it is assumed
   // that a Mojo connection error has occurred, and the response callback was

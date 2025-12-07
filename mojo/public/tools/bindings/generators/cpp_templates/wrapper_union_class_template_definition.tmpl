@@ -3,14 +3,8 @@ template <typename UnionPtrType>
   switch (tag_) {
 {%- for field in union.fields %}
     case Tag::k{{field.name|under_to_camel}}:
-{%-   if field.kind|is_object_kind or
-         field.kind|is_any_handle_or_interface_kind %}
-      return New{{field.name|under_to_camel}}(
-          mojo::Clone(*data_.{{field.name}}));
-{%-   else %}
       return New{{field.name|under_to_camel}}(
           mojo::Clone(data_.{{field.name}}));
-{%-   endif %}
 {%- endfor %}
   }
   return nullptr;
@@ -26,12 +20,7 @@ bool {{union.name}}::Equals(const T& other) const {
   switch (tag_) {
 {%- for field in union.fields %}
     case Tag::k{{field.name|under_to_camel}}:
-{%-   if field.kind|is_object_kind or
-         field.kind|is_any_handle_or_interface_kind %}
-      return mojo::Equals(*(data_.{{field.name}}), *(other.data_.{{field.name}}));
-{%-   else %}
       return mojo::Equals(data_.{{field.name}}, other.data_.{{field.name}});
-{%-   endif %}
 {%- endfor %}
   }
 

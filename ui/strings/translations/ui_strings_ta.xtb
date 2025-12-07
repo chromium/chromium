@@ -9,12 +9,13 @@
 <translation id="1178017578188974117">{DAYS,plural, =1{1 நாளுக்கு முன்பு}other{# நாட்களுக்கு முன்பு}}</translation>
 <translation id="1181037720776840403">அகற்று</translation>
 <translation id="1243314992276662751">பதிவேற்று</translation>
+<translation id="1253734725326687145">டச் டார்கெட் மேல் வலதுபுறத்திற்கு நகர்த்தப்பட்டது. இங்கே தட்டவும்.</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ஐப் பகிர முடியவில்லை</translation>
 <translation id="1269641567813814718">Win</translation>
 <translation id="1291104554099683393">சிறுசிறு பகுதிகளாக உரையைப் பகிர முயலவும்.</translation>
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1368832886055348810">இடமிருந்து வலம்</translation>
-<translation id="1383876407941801731">Search</translation>
+<translation id="1383876407941801731">தேடுக</translation>
 <translation id="1398853756734560583">பெரிதாக்கு</translation>
 <translation id="1432724887402139994">{SECONDS,plural, =1{1 நிமிடத்திற்கு முன்பு}other{# நிமிடங்களுக்கு முன்பு}}</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" />ஐப் பகிர முடியவில்லை</translation>
@@ -38,6 +39,7 @@
 <translation id="19085484004813472">இது ஒரு புதிய அம்சம்</translation>
 <translation id="2006524834898217237">இந்த சாதனம் இணையத்துடன் இணைக்கப்பட்டுள்ளதை உறுதி செய்யவும்.</translation>
 <translation id="208586643495776849">மீண்டும் முயலவும்</translation>
+<translation id="2111134541987263231"><ph name="BEGIN_BOLD" />மறைநிலையில் அனுமதி<ph name="END_BOLD" /> என்பதை இயக்கவும்</translation>
 <translation id="2141853158323869627">{DAYS,plural, =1{1நா}other{#நா}}</translation>
 <translation id="2148716181193084225">இன்று</translation>
 <translation id="2168039046890040389">Page Up</translation>
@@ -48,12 +50,14 @@
 <translation id="2289052229480071835">உங்கள் திரையில் இருக்கும் தொடுவதற்கான இலக்கிடங்களைத் தட்டவும்.</translation>
 <translation id="2295140143284145483">கருத்துக்கணிப்பு</translation>
 <translation id="2297836609126180313"><ph name="QUANTITY" /> டெ.பை/வி</translation>
+<translation id="2312704192806647271">{COUNT,plural, =1{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> எனும் ஐடி உள்ள நீட்டிப்பைக் கண்டறிய முடியவில்லை. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.}other{<ph name="BEGIN_LIST" /><ph name="END_LIST" /> எனும் ஐடிக்கள் உள்ள நீட்டிப்புகளைக் கண்டறிய முடியவில்லை. உங்கள் நிர்வாகியைத் தொடர்புகொள்ளவும்.}}</translation>
 <translation id="2353636109065292463">உங்கள் இணைய இணைப்பைச் சரிபார்க்கிறது</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2388990488038464401">உங்கள் மொபைலிலிருந்து இந்த எண்ணை அழைக்கவா?</translation>
 <translation id="2435457462613246316">கடவுச்சொல்லைக் காண்பி</translation>
 <translation id="24452542372838207">அறிவிப்பை விரிவாக்கு</translation>
 <translation id="2445449901874883781">அதிக அடர்த்தியைப் பயன்படுத்து</translation>
+<translation id="2448407890032181691">டச் டார்கெட் கீழ் வலதுபுறத்திற்கு நகர்த்தப்பட்டது. இங்கே தட்டவும்.</translation>
 <translation id="2482878487686419369">அறிவிப்புகள்</translation>
 <translation id="2497284189126895209">அனைத்து கோப்புகளும்</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -70,6 +74,7 @@
 <translation id="2878511608894704031">அனைத்தையும் நீக்கு</translation>
 <translation id="2907671656515444832">{DAYS,plural, =1{இன்னும் 1நா}other{இன்னும் #நா}}</translation>
 <translation id="2922712708897119705"><ph name="COLUMN_NAME" /> நெடுவரிசை இறங்குவரிசையில் வரிசைப்படுத்தப்பட்டது.</translation>
+<translation id="293972288692056847">{COUNT,plural, =1{நீட்டிப்பைக் கண்டறிய முடியவில்லை}other{நீட்டிப்புகளைக் கண்டறிய முடியவில்லை}}</translation>
 <translation id="3036649622769666520">ஃபைல்களைத் திற</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> மெ.பை</translation>
 <translation id="3087734570205094154">கீழே</translation>
@@ -82,6 +87,7 @@
 <translation id="3295886253693811851">இந்த ஆப்ஸ் மூலம் அழை:</translation>
 <translation id="3306688585798492231">உள்ளமைந்த டிஸ்பிளே</translation>
 <translation id="335581015389089642">பேச்சு</translation>
+<translation id="3372635229069101468"><ph name="BEGIN_BOLD" />விவரங்கள்<ph name="END_BOLD" /> என்பதைக் கிளிக் செய்யவும்</translation>
 <translation id="3389286852084373014">உரையின் அளவு மிகப் பெரியதாக உள்ளது</translation>
 <translation id="3406306243914553062">HTML உள்ளடக்கம்</translation>
 <translation id="3600566671520689681">{DAYS,plural, =1{1 நாள் உள்ளது}other{# நாட்கள் உள்ளன}}</translation>
@@ -102,7 +108,9 @@
 <translation id="3994749195054421561"><ph name="COLUMN_NAME" /> நெடுவரிசை ஏறுவரிசையில் வரிசைப்படுத்தப்பட்டது.</translation>
 <translation id="4031910098617850788">F5</translation>
 <translation id="40579289237549812">{UNREAD_NOTIFICATIONS,plural, =1{1 படிக்காத அறிவிப்பு}other{# படிக்காத அறிவிப்புகள்}}</translation>
+<translation id="41501027364808384">{COUNT,plural, =1{பின்வரும் நீட்டிப்பை மறைநிலையில் இயக்கவும்:}other{பின்வரும் நீட்டிப்புகளை மறைநிலையில் இயக்கவும்:}}</translation>
 <translation id="4266252015790371705">{MONTHS,plural, =1{1 மாதத்திற்கு முன்}other{# மாதங்களுக்கு முன்}}</translation>
+<translation id="4277033906326892359"><ph name="COLUMN_NAME" /> நெடுவரிசை ஏறுவரிசையில் வரிசைப்படுத்தப்பட்டது</translation>
 <translation id="4289300219472526559">பேச்சைத் தொடங்கு</translation>
 <translation id="4289540628985791613">மேலோட்டம்</translation>
 <translation id="4491109536499578614">படம்</translation>
@@ -113,6 +121,8 @@
 <translation id="4729257764711776855">எண்</translation>
 <translation id="4746179598275229723">நீட்டிப்பு அகற்றப்பட்டது</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 மாதம் உள்ளது}other{# மாதங்கள் உள்ளன}}</translation>
+<translation id="4816695657735045067">{COUNT,plural, =1{மறைநிலையைப் பயன்படுத்த உங்கள் நிறுவனத்திற்கு நீட்டிப்பு தேவை}other{மறைநிலையைப் பயன்படுத்த உங்கள் நிறுவனத்திற்குச் சில நீட்டிப்புகள் தேவை}}</translation>
+<translation id="482932175346970750">உலாவியில் <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> என டைப் செய்யவும்</translation>
 <translation id="4888938634149558681">அழை</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4968171027979920686">{SECONDS,plural, =1{1 நொடி}other{# நொடிகள்}}</translation>
@@ -121,6 +131,7 @@
 <translation id="5076340679995252485">&amp;ஒட்டு</translation>
 <translation id="520299402983819650"><ph name="QUANTITY" /> பெ.பை</translation>
 <translation id="5278860589123563674">அனுப்ப முடியவில்லை</translation>
+<translation id="5283101102242354279">நீட்டிப்பை மறைநிலையில் இயக்க:</translation>
 <translation id="528468243742722775">நிறுத்து</translation>
 <translation id="5329858601952122676">&amp;நீக்கு</translation>
 <translation id="5361107212971249203">வார்த்தை</translation>
@@ -129,13 +140,16 @@
 <translation id="5528053674512161860">டெவெலப்பர் UI மாடியூல் (dev_ui) நிறுவப்படாததால் பக்கத்தை ஏற்ற முடியவில்லை</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> சாதனம்</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">இடது அம்பு</translation>
 <translation id="5633029987065897167">எதுவுமில்லை</translation>
+<translation id="5651438382973553530">டச் டார்கெட் கீழ் இடதுபுறத்திற்கு நகர்த்தப்பட்டது. இங்கே தட்டவும்.</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 நிமிடம்}other{# நிமிடங்கள்}}</translation>
 <translation id="5763338081255973061">{DAYS,plural, =0{இன்று பயன்படுத்தியுள்ளார்}=1{நேற்று பயன்படுத்தியுள்ளார்}other{# நாட்களுக்கு முன்பு பயன்படுத்தியுள்ளார்}}</translation>
 <translation id="5768079895599174203">{DAYS,plural, =1{1 நாள், }other{# நாட்கள், }}</translation>
 <translation id="5789643057113097023">.</translation>
 <translation id="5843690142429128814">படம்.</translation>
+<translation id="5860491529813859533">இயக்கு</translation>
 <translation id="5866104238061687188">{YEARS,plural, =1{இன்னும் 1ஆ}other{இன்னும் #ஆ}}</translation>
 <translation id="588258955323874662">முழுத்திரை</translation>
 <translation id="5906667377645263094">{SECONDS,plural, =1{1 நிமிடம் உள்ளது}other{# நிமிடங்கள் உள்ளன}}</translation>
@@ -144,13 +158,14 @@
 <translation id="6007284015834422026">நீட்டிப்பு பின் செய்யப்பட்டது</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6117103120090651229">மையத்தில் உள்ள பட்டன்</translation>
-<translation id="6129953537138746214">இடைவெளி</translation>
+<translation id="6129953537138746214">ஸ்பேஸ்</translation>
 <translation id="6135826906199951471">Del</translation>
 <translation id="6142413573757616983"><ph name="QUANTITY" /> பை/வி</translation>
 <translation id="6237461503717005873"><ph name="ROW_NAME" /> தேர்ந்தெடுக்கப்பட்டது.</translation>
 <translation id="6264365405983206840">அ&amp;னைத்தையும் தேர்ந்தெடு</translation>
 <translation id="6346952829206698721">கிளிப்போர்டிலிருந்து ஒட்டு</translation>
 <translation id="6364916375976753737">இடப்புறம் நகர்த்து</translation>
+<translation id="63712816010840859">தற்போதுள்ள டிஸ்பிளே, டச்ஸ்கிரீன் இல்லை என்றால் Esc அழுத்தவும்.</translation>
 <translation id="6394627529324717982">கமா</translation>
 <translation id="6397363302884558537">பேச்சை நிறுத்து</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 நிமிடம் முன்பு}other{# நிமிடங்கள் முன்பு}}</translation>
@@ -162,6 +177,8 @@
 <translation id="6612467943526193239">அளவுத்திருத்தத்திலிருந்து வெளியேற, Esc எனும் விசையை அழுத்தவும்.</translation>
 <translation id="6620110761915583480">ஃபைலைச் சேமி</translation>
 <translation id="6699343763173986273">ஊடகத்தின் அடுத்த டிராக்</translation>
+<translation id="6738856801552481343">இந்த டிஸ்பிளே, டச்ஸ்கிரீன் இல்லை என்றால் Esc அழுத்தவும்.</translation>
+<translation id="6807086321996342431"><ph name="COLUMN_NAME" /> நெடுவரிசை</translation>
 <translation id="6808150112686056157">ஊடகத்தை நிறுத்து</translation>
 <translation id="6845383723252244143">ஃபோல்டரைத் தேர்ந்தெடு</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{1 மணிநேரம் உள்ளது}other{# மணிநேரம் உள்ளது}}</translation>
@@ -176,6 +193,7 @@
 <translation id="7170202025028120564">உங்கள் ஆப்ஸை மீண்டும் தொடங்கும்போது காட்சி அமைப்புகள் பயன்படுத்தப்படும்.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 நிமிடம் உள்ளது}other{# நிமிடங்கள் உள்ளன}}</translation>
+<translation id="7252604552361840748">மேலே உள்ள நீட்டிப்பைக் கண்டறியவும்</translation>
 <translation id="7363164521834647158">பதிலனுப்பும்</translation>
 <translation id="7365057348334984696">{MINUTES,plural, =1{1 நிமிடம் முன்பு}other{# நிமிடங்கள் முன்பு}}</translation>
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
@@ -192,16 +210,15 @@
 <translation id="7969046989155602842">கமாண்ட்</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{1க்கு மேற்பட்ட அறிவிப்புகள் படிக்கப்படாமல் உள்ளன}other{#க்கு மேற்பட்ட அறிவிப்புகள் படிக்கப்படாமல் உள்ளன}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{இன்னும் 1நி}other{இன்னும் #நி}}</translation>
-<translation id="8087772101393322318"><ph name="KEY_MODIFIER_NAME" />+<ph name="KEY_COMBO_NAME" /></translation>
 <translation id="8090736967111090568"><ph name="ORIGIN" /> தளத்திலிருந்து கிடைத்த எண்</translation>
 <translation id="8106081041558092062">{HOURS,plural, =1{1 மணிநேரம் முன்பு}other{# மணிநேரம் முன்பு}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{1 நொடி உள்ளது}other{# நொடிகள் உள்ளன}}</translation>
 <translation id="8134065097954893699">இந்தப் பக்கம் ரெஃப்ரெஷ் செய்யப்படுகிறது</translation>
+<translation id="813785873406874127"><ph name="COLUMN_NAME" /> நெடுவரிசை வரிசைப்படுத்தப்படவில்லை</translation>
 <translation id="815598010540052116">கீழே நகர்த்து</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">தாவல்</translation>
 <translation id="8259556432390118667">ஹெக்ஸ் வண்ண மதிப்பு</translation>
 <translation id="8328145009876646418">இடதுபுற முனை</translation>
 <translation id="8331626408530291785">மேலே நகர்த்து</translation>
@@ -209,6 +226,7 @@
 <translation id="8393700583063109961">செய்தி அனுப்பு</translation>
 <translation id="8394908167088220973">ஊடகத்தை இயக்கு/இடைநிறுத்து</translation>
 <translation id="8458811141851741261">{YEARS,plural, =1{1ஆ}other{#ஆ}}</translation>
+<translation id="8582972250170726813"><ph name="COLUMN_NAME" /> நெடுவரிசை இறங்குவரிசையில் வரிசைப்படுத்தப்பட்டது</translation>
 <translation id="8598144894266192959"><ph name="NUMBER" />%</translation>
 <translation id="8602707065186045623"><ph name="SAVEAS_EXTENSION_TYPE" />ஃபைல்(.<ph name="SAVEAS_EXTENSION_NAME" />)</translation>
 <translation id="8677655579646609597"><ph name="QUANTITY" /> கி.பை./வி</translation>
@@ -225,6 +243,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 நொடி}other{# நொடிகள்}}</translation>
 <translation id="9059834730836941392">அறிவிப்பைச் சுருக்கு</translation>
 <translation id="9170848237812810038">&amp;செயல்தவிர்</translation>
+<translation id="9195990613383871904">நாளை</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">முகப்பு</translation>
 <translation id="944069440740578670">படிக்காத அறிவிப்புகள்</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 வினாடிக்கு முன்பு}other{# வினாடிகளுக்கு முன்பு}}</translation>

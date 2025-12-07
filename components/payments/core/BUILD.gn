@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
 static_library("core") {
@@ -12,8 +11,6 @@ static_library("core") {
     "android_app_description_tools.cc",
     "android_app_description_tools.h",
     "csp_checker.h",
-    "currency_formatter.cc",
-    "currency_formatter.h",
     "error_logger.cc",
     "error_logger.h",
     "error_message_util.cc",
@@ -57,7 +54,6 @@ static_library("core") {
     "payments_experimental_features.h",
     "payments_validators.cc",
     "payments_validators.h",
-    "pre_purchase_query.h",
     "secure_payment_confirmation_credential.cc",
     "secure_payment_confirmation_credential.h",
     "secure_payment_confirmation_metrics.cc",
@@ -82,11 +78,11 @@ static_library("core") {
   }
 
   deps = [
+    ":currency_formatter",
     ":error_strings",
     ":method_strings",
     "//base",
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//components/autofill/core/browser",
     "//components/keyed_service/core",
     "//components/link_header_util",
@@ -109,9 +105,17 @@ static_library("core") {
 
   public_deps = [
     "//services/network/public/cpp",
-    "//third_party/icu",
     "//third_party/libaddressinput",
   ]
+}
+
+static_library("currency_formatter") {
+  sources = [
+    "currency_formatter.cc",
+    "currency_formatter.h",
+  ]
+  deps = [ "//base" ]
+  public_deps = [ "//third_party/icu" ]
 }
 
 static_library("error_strings") {
@@ -155,7 +159,7 @@ static_library("test_support") {
     "//base",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
-    "//components/leveldb_proto:leveldb_proto",
+    "//components/leveldb_proto",
     "//components/pref_registry",
     "//components/prefs",
     "//net:test_support",
@@ -163,6 +167,10 @@ static_library("test_support") {
     "//services/network/public/cpp",
     "//testing/gmock",
   ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 source_set("unit_tests") {
@@ -171,6 +179,7 @@ source_set("unit_tests") {
     "android_app_description_tools_unittest.cc",
     "const_csp_checker_unittest.cc",
     "currency_formatter_unittest.cc",
+    "error_message_util_unittest.cc",
     "has_enrolled_instrument_query_unittest.cc",
     "journey_logger_unittest.cc",
     "payment_currency_amount_unittest.cc",
@@ -183,7 +192,6 @@ source_set("unit_tests") {
     "payment_request_metrics_unittest.cc",
     "payment_shipping_option_unittest.cc",
     "payments_validators_unittest.cc",
-    "secure_payment_confirmation_credential_unittest.cc",
     "url_util_unittest.cc",
   ]
 
@@ -199,12 +207,13 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":currency_formatter",
     ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
-    "//components/leveldb_proto:leveldb_proto",
+    "//components/leveldb_proto",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/strings:components_strings_grit",

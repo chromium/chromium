@@ -11,12 +11,19 @@
 #import "google_apis/gaia/google_service_auth_error.h"
 
 @class AccountErrorUIInfo;
-class ChromeBrowserState;
+class ProfileIOS;
 @protocol SyncPresenter;
 
 namespace web {
 class WebState;
 }
+
+// Indicates what event triggered displaying the sync error infobar. For now the
+// enum itself is not logged and is just used to identify histogram's suffix.
+enum class SyncErrorInfoBarTrigger {
+  kNewTabOpened,
+  kPasswordFormParsed,
+};
 
 // Gets the top-level description message associated with the sync error state
 // of `syncService`. Returns nil if there is no sync error.
@@ -24,18 +31,16 @@ NSString* GetSyncErrorDescriptionForSyncService(
     syncer::SyncService* syncService);
 
 // Gets the title of the Sync error info bar.
-std::u16string GetSyncErrorInfoBarTitleForBrowserState(
-    ChromeBrowserState* browserState);
+std::u16string GetSyncErrorInfoBarTitleForProfile(ProfileIOS* profile);
 
 // Gets the string message associated with the sync error state of
-// `browserState`. The returned error message does not contain any links.
+// `profile`. The returned error message does not contain any links.
 // Returns nil if there is no sync error.
-NSString* GetSyncErrorMessageForBrowserState(ChromeBrowserState* browserState);
+NSString* GetSyncErrorMessageForProfile(ProfileIOS* profile);
 
-// Gets the title of the button to fix the sync error of `browserState`.
+// Gets the title of the button to fix the sync error of `profile`.
 // Returns nil if there is no sync error or it can't be fixed by a user action.
-NSString* GetSyncErrorButtonTitleForBrowserState(
-    ChromeBrowserState* browserState);
+NSString* GetSyncErrorButtonTitleForProfile(ProfileIOS* profile);
 
 // Returns true if sync settings (or the google services settings when unified
 // consent is enabled) should be displayed based on `error`.
@@ -43,8 +48,13 @@ bool ShouldShowSyncSettings(syncer::SyncService::UserActionableError error);
 
 // Check for sync errors, and display any that ought to be shown to the user.
 // Returns true if an infobar was brought up.
-bool DisplaySyncErrors(ChromeBrowserState* browser_state,
+bool DisplaySyncErrors(ProfileIOS* profile,
                        web::WebState* web_state,
-                       id<SyncPresenter> presenter);
+                       id<SyncPresenter> presenter,
+                       SyncErrorInfoBarTrigger trigger);
+
+// Logs sync error infobar dismissal metric for a given `error`.
+void LogSyncErrorInfobarDismissed(
+    syncer::SyncService::UserActionableError error);
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_MODEL_SYNC_UTILS_SYNC_UTIL_H_

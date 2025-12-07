@@ -19,7 +19,7 @@ pub use foo_dependency::say_foo;
 pub use foo_dependency::say_foo_directly;
 pub use transitive_dep::say_something;
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn print_foo_bar() {
     println!("{}", foo_dependency::say_foo());
     println!("{}", transitive_dep::say_something());

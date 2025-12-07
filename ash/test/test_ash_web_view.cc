@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/unguessable_token.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 

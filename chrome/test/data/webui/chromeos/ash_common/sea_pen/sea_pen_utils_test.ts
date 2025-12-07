@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {isImageDataUrl, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
+import {isImageDataUrl, isNonEmptyFilePath, isUrl} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('isImageDataUrlTest', function() {
   test('invalid types', function() {
     for (const value of [null, undefined, false, 'not_url', 0, 1, {}]) {
-      assertFalse(isImageDataUrl(value), `${value} is not Url`);
+      assertFalse(isUrl(value), `${value} is not Url`);
     }
   });
 

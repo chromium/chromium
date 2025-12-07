@@ -7,17 +7,16 @@
 #include "base/command_line.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_number_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event_switches.h"
 
 namespace ui {
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr bool kDoubleTapAuraSupport = true;
 #else
 constexpr bool kDoubleTapAuraSupport = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class GestureConfigurationAura : public GestureConfiguration {
  public:

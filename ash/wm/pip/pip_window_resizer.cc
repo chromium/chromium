@@ -17,6 +17,7 @@
 #include "ash/wm/toplevel_window_event_handler.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/client/aura_constants.h"
@@ -173,7 +174,7 @@ void PipWindowResizer::Drag(const gfx::PointF& location_in_parent,
     float in_screen_area = in_screen_bounds.width() * in_screen_bounds.height();
     if (bounds_area != 0.f) {
       in_screen_fraction_ = in_screen_area / bounds_area;
-      if (may_dismiss_horizontally_ && features::IsPipTuckEnabled()) {
+      if (may_dismiss_horizontally_) {
         if (bounds_area != 0.f) {
           Shell::Get()->pip_controller()->SetDimOpacity(
               fmin(0.5f, 1 - in_screen_fraction_));
@@ -239,9 +240,12 @@ gfx::Rect PipWindowResizer::CalculateBoundsForPinch(
   gfx::Size size =
       gfx::ScaleToRoundedSize(initial_bounds.size(), accumulated_scale_);
 
-  gfx::Size max_size = GetTarget()->delegate()->GetMaximumSize();
+  std::optional<gfx::Size> max_size = GetTarget()->delegate()->GetMaximumSize();
+  CHECK(!(max_size.has_value() && max_size->IsZero()));
   gfx::Size min_size = GetTarget()->delegate()->GetMinimumSize();
-  size.SetToMin(max_size);
+  if (max_size.has_value()) {
+    size.SetToMin(*max_size);
+  }
   size.SetToMax(min_size);
 
   gfx::SizeF* aspect_ratio_size =
@@ -290,8 +294,7 @@ void PipWindowResizer::CompleteDrag() {
       in_screen_fraction_ < kPipDismissFraction ||
       (in_screen_fraction_ != 1.f &&
        fling_amount >= kPipSwipeToDismissFlingThresholdSquared);
-  bool should_tuck = should_dismiss_or_tuck && may_dismiss_horizontally_ &&
-                     features::IsPipTuckEnabled();
+  bool should_tuck = should_dismiss_or_tuck && may_dismiss_horizontally_;
   bool should_dismiss = should_dismiss_or_tuck && !should_tuck;
 
   if (should_dismiss) {
@@ -300,7 +303,7 @@ void PipWindowResizer::CompleteDrag() {
     window_util::CloseWidgetForWindow(window_state()->window());
   } else if (should_tuck) {
     const gfx::Point display_bounds_center =
-        display::Screen::GetScreen()
+        display::Screen::Get()
             ->GetDisplayMatching(GetTarget()->bounds())
             .bounds()
             .CenterPoint();

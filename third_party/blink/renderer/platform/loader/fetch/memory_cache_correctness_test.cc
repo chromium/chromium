@@ -64,6 +64,10 @@ constexpr base::TimeDelta kOneDay = base::Days(1);
 
 class MemoryCacheCorrectnessTest : public testing::Test {
  protected:
+  MemoryCacheCorrectnessTest()
+      : scoped_memory_cache_(
+            MakeGarbageCollected<MemoryCache>(platform_->test_task_runner())) {}
+
   MockResource* ResourceFromResourceResponse(ResourceResponse response) {
     if (response.CurrentRequestUrl().IsNull())
       response.SetCurrentRequestUrl(KURL(kResourceURL));
@@ -118,10 +122,6 @@ class MemoryCacheCorrectnessTest : public testing::Test {
  private:
   // Overrides testing::Test.
   void SetUp() override {
-    // Save the global memory cache to restore it upon teardown.
-    global_memory_cache_ = ReplaceMemoryCacheForTesting(
-        MakeGarbageCollected<MemoryCache>(platform_->test_task_runner()));
-
     security_origin_ = SecurityOrigin::CreateUniqueOpaque();
     MockFetchContext* context = MakeGarbageCollected<MockFetchContext>();
     auto* properties =
@@ -137,20 +137,15 @@ class MemoryCacheCorrectnessTest : public testing::Test {
     Resource::SetClockForTesting(platform_->test_task_runner()->GetMockClock());
   }
   void TearDown() override {
-    MemoryCache::Get()->EvictResources();
-
     Resource::SetClockForTesting(nullptr);
-
-    // Yield the ownership of the global memory cache back.
-    ReplaceMemoryCacheForTesting(global_memory_cache_.Release());
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  Persistent<MemoryCache> global_memory_cache_;
+  base::test::TaskEnvironment task_environment_;
   scoped_refptr<const SecurityOrigin> security_origin_;
   Persistent<ResourceFetcher> fetcher_;
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>
       platform_;
+  ScopedMemoryCacheForTesting scoped_memory_cache_;
 };
 
 TEST_F(MemoryCacheCorrectnessTest, FreshFromLastModified) {

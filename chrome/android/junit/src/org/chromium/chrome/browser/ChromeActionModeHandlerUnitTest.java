@@ -14,6 +14,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ResolveInfo;
+import android.graphics.Rect;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,11 +22,13 @@ import android.view.MenuItem;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
@@ -35,6 +38,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 import org.chromium.base.Callback;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
@@ -45,10 +49,11 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content.R;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
@@ -56,12 +61,18 @@ import java.util.Random;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ChromeActionModeHandlerUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
     @Mock private ActionModeCallbackHelper mActionModeCallbackHelper;
     @Mock private ActionMode mActionMode;
     @Mock private Menu mMenu;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ReadAloudController mReadAloudController;
+    @Mock private BrowserControlsStateProvider mControlsState;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private WebContents mWebContents;
+    @Mock private WeakReference<Activity> mWeakActivityRef;
+    @Mock private Activity mActivity;
 
     private class TestChromeActionModeCallback
             extends ChromeActionModeHandler.ChromeActionModeCallback {
@@ -72,6 +83,7 @@ public class ChromeActionModeHandlerUnitTest {
                     urlParams -> {},
                     true,
                     () -> mShareDelegate,
+                    mControlsState,
                     () -> mReadAloudController);
         }
 
@@ -85,10 +97,14 @@ public class ChromeActionModeHandlerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mActionModeCallback =
                 Mockito.spy(new TestChromeActionModeCallback(mTab, mActionModeCallbackHelper));
+        Mockito.when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        Mockito.when(mTab.getWebContents()).thenReturn(mWebContents);
+        Mockito.when(mWebContents.isDestroyed()).thenReturn(false);
+        Mockito.when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);
+        Mockito.when(mWindowAndroid.getActivity()).thenReturn(mWeakActivityRef);
+        Mockito.when(mWeakActivityRef.get()).thenReturn(mActivity);
     }
 
     @After
@@ -154,8 +170,8 @@ public class ChromeActionModeHandlerUnitTest {
         List<String> browserPackageNames = new ArrayList<>();
         List<String> launcherPackageNames = new ArrayList<>();
         List<String> otherPackageNames = new ArrayList<>();
-        List<ResolveInfo> browsersList = new LinkedList<>();
-        List<ResolveInfo> launchersList = new LinkedList<>();
+        List<ResolveInfo> browsersList = new ArrayList<>();
+        List<ResolveInfo> launchersList = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             browserPackageNames.add("foo " + i);
             browsersList.add(createResolveInfo(browserPackageNames.get(i)));
@@ -173,7 +189,7 @@ public class ChromeActionModeHandlerUnitTest {
 
         RoboMenu menu = new RoboMenu(RuntimeEnvironment.application);
 
-        List<String> allNames = new LinkedList<>();
+        List<String> allNames = new ArrayList<>();
         allNames.addAll(browserPackageNames);
         allNames.addAll(launcherPackageNames);
         allNames.addAll(otherPackageNames);
@@ -235,6 +251,51 @@ public class ChromeActionModeHandlerUnitTest {
 
         mActionModeCallback.onActionItemClicked(mActionMode, item);
         verify(mReadAloudController).maybePauseForOutgoingIntent(eq(intent));
+    }
+
+    @Test
+    public void testAvoidOverlapWithTopControls() {
+        final int topControlsHeight = 150;
+        final int height = 80;
+        Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
+
+        // Set up for the case where top controls are hidden.
+        Mockito.when(mControlsState.getBrowserControlHiddenRatio()).thenReturn(1.f);
+
+        // If there's enough space between the selected text and the top of the content view for
+        // action mode, the content rect is left untouched.
+        int top = topControlsHeight * 3;
+        Rect outRect = new Rect(20, top, 500, top + height);
+        mActionModeCallback.onGetContentRect(mActionMode, null, outRect);
+        Assert.assertEquals(top, outRect.top);
+        Assert.assertEquals(height, outRect.height());
+
+        // Not enough space for action mode to fit in. The content rect is left untouched.
+        top = topControlsHeight;
+        outRect = new Rect(20, top, 500, top + height);
+        mActionModeCallback.onGetContentRect(mActionMode, null, outRect);
+        Assert.assertEquals(top, outRect.top);
+        Assert.assertEquals(height, outRect.height());
+
+        // Set up for the case where top controls are visible.
+        Mockito.when(mControlsState.getBrowserControlHiddenRatio()).thenReturn(0.f);
+
+        // We have enough space for action mode to fit in. The content rect is left untouched.
+        top = topControlsHeight * 3;
+        outRect = new Rect(20, top, 500, top + height);
+        mActionModeCallback.onGetContentRect(mActionMode, null, outRect);
+        Assert.assertEquals(top, outRect.top);
+        Assert.assertEquals(height, outRect.height());
+
+        // Not enough space for action mode to fit in. Verify that |onGetContentRect| bloated
+        // the content rect (top got taller) so action mode won't fit between the top controls
+        // and the selected text, therefore will be positioned below the text. This helps action
+        // mode avoid overlapping top controls.
+        top = topControlsHeight;
+        outRect = new Rect(20, top, 500, top + height);
+        mActionModeCallback.onGetContentRect(mActionMode, null, outRect);
+        Assert.assertEquals(top - topControlsHeight, outRect.top);
+        Assert.assertEquals(topControlsHeight + height, outRect.height());
     }
 
     private ResolveInfo createResolveInfo(String packageName) {

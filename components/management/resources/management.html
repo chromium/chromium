@@ -6,34 +6,86 @@
   <meta name="viewport" content="initial-scale=1, minimum-scale=1, width=device-width">
   <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
   <link rel="stylesheet" href="management.css">
-    <!-- TODO(crbug.com/41173939): Remove this once injected by web. -->
-  <script src="chrome://resources/js/ios/web_ui.js"></script>
-  <script src="chrome://resources/js/load_time_data_deprecated.js"></script>
-  <script src="strings.js"></script>
-  <script src="management.js"></script>
-
-  <script>
-    /**
-     * Checks whether the browser is managed.
-     * Since the $18n{} can't be in the JS file, the status should be
-     * injected at the loading time.
-     * @return {boolean} True if the browser is managed, false otherwise.
-    */
-    function isManaged() {
-      return $i18n{isManaged};
-    }
-  </script>
 </head>
 <body style="font-size: 75%">
+  <script type="module" src="management.js"></script>
   <div class="content-wrapper">
     <img id="icon" src="images/enterprise_icon.svg">
     <div id="managed-info" class="hidden">
-      <div id="main-message">$i18n{managementMessage}</div>
-      <div id="secondary-message">$i18n{managedInfo}
-        <a id="learn-more-link" target="_blank" href=$i18n{learnMoreURL}>$i18n{learnMore}</a>
+      <div id="main-message" class="heading">$i18n{managementMessage}</div>
+      <div id="secondary-message" class="description-text">$i18n{managedInfo}
+        <a id="learn-more-link" target="_blank" href="$i18n{learnMoreURL}">$i18n{learnMore}</a>
+      </div>
+
+      <div id="browser-reporting-info" class="hidden">
+        <div id="browser-reporting-title" class="heading">
+            $i18n{browserReporting}
+        </div>
+
+        <div id="browser-reporting-explanation" class="description-text">
+          $i18n{browserReportingExplanation}
+        </div>
+
+        <ul id="browser-reporting-list" class="description-text">
+          <li>$i18n{browserReportingOverview}</li>
+          <li>
+            $i18n{browserReportingDeviceInformation}
+            <ul>
+              <li>$i18n{browserReportingDeviceInformationContinued}</li>
+            </ul>
+          </li>
+          <li>
+            $i18n{browserReportingBrowserAndProfiles}
+            <ul>
+              <li>$i18n{browserReportingBrowserAndProfilesContinued}</li>
+            </ul>
+          </li>
+          <li>$i18n{browserReportingPolicy}</li>
+          <li>$i18nRaw{browserReportingLearnMore}</li>
+        </ul>
+      </div>
+
+      <div id="profile-reporting-info" class="hidden">
+        <div id="profile-reporting-title" class="heading">
+          $i18n{browserReporting}
+        </div>
+
+        <div id="profile-reporting-explanation" class="description-text">
+          $i18n{profileReportingExplanation}
+        </div>
+
+        <ul id="profile-reporting-list" class="description-text">
+          <li>$i18n{profileReportingOverview}</li>
+          <li>$i18n{profileReportingUsername}</li>
+          <li>$i18n{profileReportingBrowser}</li>
+          <li>$i18n{profileReportingPolicy}</li>
+          <li>$i18nRaw{profileReportingLearnMore}</li>
+        </ul>
+      </div>
+
+      <div id="connectors-info" class="hidden">
+        <div id="connectors-section-title" class="heading" >$i18n{connectorsSectionTitle}</div>
+
+        <div id="connectors-section-description" class="description-text">
+          $i18n{connectorsDescription}
+        </div>
+
+        <div id="security-event-section" class="event-section hidden">
+          <div class="event-title heading" >$i18n{securityEventTitle}</div>
+          <div class="description-text">
+            $i18n{securityEventData}
+          </div>
+        </div>
+
+        <div id="page-visit-event-section" class="event-section hidden">
+          <div class="event-title heading">$i18n{pageVisitEventTitle}</div>
+          <div class="description-text">
+            $i18n{pageVisitEventData}
+          </div>
+        </div>
       </div>
     </div>
-    <div id="unmanaged-info" class="hidden">$i18n{unmanagedInfo}</div>
+    <div id="unmanaged-info" class="hidden heading">$i18n{unmanagedInfo}</div>
   </div>
 </body>
 </html>

@@ -86,8 +86,8 @@ void WriteSandboxStatisticsToFile(base::FilePath root,
     base::File statistics_file(
         statistics_file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     if (statistics_file.IsValid()) {
-      std::string json_value = json.value();
-      statistics_file.WriteAtCurrentPos(json_value.data(), json_value.size());
+      statistics_file.WriteAtCurrentPos(
+          base::as_bytes(base::span(json.value())));
       statistics_file.Flush();
     } else {
       DLOG(ERROR) << "Statistics file path could not be opened.";

@@ -6,12 +6,13 @@
 #define CHROMEOS_ASH_COMPONENTS_CRYPTOHOME_AUTH_FACTOR_INPUT_H_
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/component_export.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "chromeos/ash/components/login/auth/public/challenge_response_key.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace cryptohome {
 
@@ -29,14 +30,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
 
   struct RecoveryCreation {
     RecoveryCreation(const std::string& pub_key,
-                     const std::string& user_gaia_id,
+                     const GaiaId& user_gaia_id,
                      const std::string& device_user_id,
                      bool ensure_fresh_recovery_id);
     RecoveryCreation(const RecoveryCreation& other);
     RecoveryCreation& operator=(const RecoveryCreation&);
     ~RecoveryCreation();
     std::string pub_key;
-    std::string user_gaia_id;
+    GaiaId user_gaia_id;
     std::string device_user_id;
     bool ensure_fresh_recovery_id;
   };
@@ -47,9 +48,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
   };
 
   struct SmartCard {
-    SmartCard(const std::vector<ChallengeResponseKey::SignatureAlgorithm>
+    SmartCard(std::vector<ChallengeResponseKey::SignatureAlgorithm>
                   signature_algorithms,
-              const std::string key_delegate_dbus_service_name);
+              std::string key_delegate_dbus_service_name);
     SmartCard(const SmartCard& other);
     SmartCard& operator=(const SmartCard&);
     ~SmartCard();
@@ -63,14 +64,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
 
   struct Fingerprint {};
 
-  using InputVariant = absl::variant<Password,
-                                     Pin,
-                                     RecoveryCreation,
-                                     RecoveryAuthentication,
-                                     SmartCard,
-                                     Kiosk,
-                                     LegacyFingerprint,
-                                     Fingerprint>;
+  using InputVariant = std::variant<Password,
+                                    Pin,
+                                    RecoveryCreation,
+                                    RecoveryAuthentication,
+                                    SmartCard,
+                                    Kiosk,
+                                    LegacyFingerprint,
+                                    Fingerprint>;
 
   explicit AuthFactorInput(InputVariant input);
 

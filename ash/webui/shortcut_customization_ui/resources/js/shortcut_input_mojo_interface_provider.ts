@@ -4,7 +4,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {ShortcutInputProvider, ShortcutInputProviderInterface} from '../mojom-webui/shortcut_input_provider.mojom-webui.js';
+import type {ShortcutInputProviderInterface} from '../mojom-webui/shortcut_input_provider.mojom-webui.js';
+import {ShortcutInputProvider} from '../mojom-webui/shortcut_input_provider.mojom-webui.js';
 
 /**
  * @fileoverview

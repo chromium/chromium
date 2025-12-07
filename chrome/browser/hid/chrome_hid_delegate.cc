@@ -300,6 +300,13 @@ bool ChromeHidDelegate::IsFidoAllowedForOrigin(
   return chooser_context && chooser_context->IsFidoAllowedForOrigin(origin);
 }
 
+bool ChromeHidDelegate::IsKnownSecurityKey(
+    content::BrowserContext* browser_context,
+    const device::mojom::HidDeviceInfo& device) {
+  auto* chooser_context = GetChooserContext(browser_context);
+  return chooser_context && chooser_context->IsKnownSecurityKey(device);
+}
+
 bool ChromeHidDelegate::IsServiceWorkerAllowedForOrigin(
     const url::Origin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -4,6 +4,9 @@
 
 #include "components/user_education/views/new_badge_label.h"
 
+#include <string_view>
+
+#include "base/strings/strcat.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -12,6 +15,7 @@
 #include "ui/views/badge_painter.h"
 #include "ui/views/border.h"
 #include "ui/views/metadata/type_conversion.h"
+#include "ui/views/property_effects.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
@@ -24,11 +28,13 @@ NewBadgeLabel::NewBadgeLabel(const std::u16string& text,
                              gfx::DirectionalityMode directionality_mode)
     : Label(text, text_context, text_style, directionality_mode) {
   UpdatePaddingForNewBadge();
+  UpdateAccessibleName();
 }
 
 NewBadgeLabel::NewBadgeLabel(const std::u16string& text, const CustomFont& font)
     : Label(text, font) {
   UpdatePaddingForNewBadge();
+  UpdateAccessibleName();
 }
 
 NewBadgeLabel::~NewBadgeLabel() = default;
@@ -49,6 +55,7 @@ void NewBadgeLabel::SetDisplayNewBadgeImpl(bool display_new_badge) {
     return;
 
   display_new_badge_ = display_new_badge;
+  UpdateAccessibleName();
 
   // At this point we know the display setting has changed, so we must add or
   // remove the relevant padding and insets.
@@ -62,7 +69,7 @@ void NewBadgeLabel::SetDisplayNewBadgeImpl(bool display_new_badge) {
     ClearProperty(views::kInternalPaddingKey);
   }
 
-  OnPropertyChanged(&display_new_badge_, views::kPropertyEffectsLayout);
+  OnPropertyChanged(&display_new_badge_, views::PropertyEffects::kLayout);
 }
 
 void NewBadgeLabel::SetPadAfterNewBadge(bool pad_after_new_badge) {
@@ -71,7 +78,7 @@ void NewBadgeLabel::SetPadAfterNewBadge(bool pad_after_new_badge) {
 
   pad_after_new_badge_ = pad_after_new_badge;
   UpdatePaddingForNewBadge();
-  OnPropertyChanged(&pad_after_new_badge_, views::kPropertyEffectsLayout);
+  OnPropertyChanged(&pad_after_new_badge_, views::PropertyEffects::kLayout);
 }
 
 void NewBadgeLabel::SetBadgePlacement(BadgePlacement badge_placement) {
@@ -80,17 +87,7 @@ void NewBadgeLabel::SetBadgePlacement(BadgePlacement badge_placement) {
 
   badge_placement_ = badge_placement;
   UpdatePaddingForNewBadge();
-  OnPropertyChanged(&badge_placement_, views::kPropertyEffectsPaint);
-}
-
-void NewBadgeLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Label::GetAccessibleNodeData(node_data);
-  std::u16string accessible_name = GetText();
-  if (display_new_badge_) {
-    accessible_name.push_back(' ');
-    accessible_name.append(GetViewAccessibility().GetCachedDescription());
-  }
-  node_data->SetNameChecked(accessible_name);
+  OnPropertyChanged(&badge_placement_, views::PropertyEffects::kPaint);
 }
 
 gfx::Size NewBadgeLabel::CalculatePreferredSize(
@@ -129,6 +126,11 @@ void NewBadgeLabel::OnPaint(gfx::Canvas* canvas) {
 
   views::BadgePainter::PaintBadge(canvas, this, badge_x, GetFontListY(),
                                   new_badge_text_, font_list());
+}
+
+void NewBadgeLabel::SetText(std::u16string_view text) {
+  views::Label::SetText(text);
+  UpdateAccessibleName();
 }
 
 void NewBadgeLabel::UpdatePaddingForNewBadge() {
@@ -173,8 +175,14 @@ std::u16string NewBadgeLabel::GetAccessibleDescription() const {
 }
 
 void NewBadgeLabel::SetBorder(std::unique_ptr<views::Border> b) {
-  NOTREACHED_IN_MIGRATION()
-      << "Calling SetBorder() externally is currently not allowed.";
+  NOTREACHED() << "Calling SetBorder() externally is currently not allowed.";
+}
+
+void NewBadgeLabel::UpdateAccessibleName() {
+  if (display_new_badge_) {
+    GetViewAccessibility().SetName(
+        base::StrCat({GetText(), u" ", GetAccessibleDescription()}));
+  }
 }
 
 BEGIN_METADATA(NewBadgeLabel)

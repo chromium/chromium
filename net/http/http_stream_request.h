@@ -9,11 +9,13 @@
 
 #include "base/memory/raw_ptr.h"
 #include "net/base/load_states.h"
+#include "net/base/load_timing_internal_info.h"
 #include "net/base/net_error_details.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
+#include "net/http/alternate_protocol_usage.h"
+#include "net/http/alternative_service.h"
 #include "net/http/http_response_info.h"
-#include "net/http/http_stream_key.h"
 #include "net/log/net_log_source.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -24,7 +26,6 @@
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_info.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
-#include "url/gurl.h"
 
 namespace net {
 
@@ -110,13 +111,6 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     // Called when finding all QUIC alternative services are marked broken for
     // the origin in this request which advertises supporting QUIC.
     virtual void OnQuicBroken() = 0;
-
-    // Called when the call site should use HttpStreamPool to request an
-    // HttpStream.
-    // TODO(crbug.com/346835898): Remove this method once we figure out a
-    // better way to resolve proxies. This method is needed because currently
-    // HttpStreamFactory::JobController resolves proxies.
-    virtual void OnSwitchesToHttpStreamPool(HttpStreamKey stream_key) = 0;
   };
 
   class NET_EXPORT_PRIVATE Helper {
@@ -135,6 +129,19 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
     // Called when the priority of transaction changes.
     virtual void SetPriority(RequestPriority priority) = 0;
+  };
+
+  struct CompletionDetails {
+    // Protocol negotiated with the server.
+    NextProto negotiated_protocol = NextProto::kProtoUnknown;
+    // The reason why Chrome uses a specific transport protocol for HTTP
+    // semantics.
+    AlternateProtocolUsage alternate_protocol_usage =
+        AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
+    // Indicates whether the request is used an existing H2 or H3 session.
+    std::optional<SessionSource> session_source;
+    // The state of the advertised alternative service.
+    AdvertisedAltSvcState advertised_alt_svc_state;
   };
 
   // Request will notify `helper` when it's destructed.
@@ -161,8 +168,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   void SetPriority(RequestPriority priority);
 
   // Marks completion of the request. Must be called before OnStreamReady().
-  void Complete(NextProto negotiated_protocol,
-                AlternateProtocolUsage alternate_protocol_usage);
+  void Complete(CompletionDetails details);
 
   // Called by |helper_| to record connection attempts made by the socket
   // layer in an attached Job for this stream request.
@@ -178,6 +184,13 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
   // semantics.
   AlternateProtocolUsage alternate_protocol_usage() const;
 
+  // Details of the completion of this request. Should be called after one
+  // of the delegate callback methods. Returns std::nullopt when this didn't
+  // complete successfully.
+  const std::optional<CompletionDetails>& completion_details() const {
+    return completion_details_;
+  }
+
   // Returns socket-layer connection attempts made for this stream request.
   const ConnectionAttempts& connection_attempts() const;
 
@@ -190,7 +203,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
 
   StreamType stream_type() const { return stream_type_; }
 
-  bool completed() const { return completed_; }
+  bool completed() const { return completion_details_.has_value(); }
 
   void SetDnsResolutionTimeOverrides(
       base::TimeTicks dns_resolution_start_time_override,
@@ -203,6 +216,21 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
     return dns_resolution_end_time_override_;
   }
 
+  // Sets a new helper for this request so that the new helper can take over
+  // the responsibility of processing this request.
+  //
+  // This *MUST NOT* be used other than switching from HttpStreamFactory to
+  // HttpStreamPool. (Re)setting the helper is extremetely dangerous and can
+  // cause dangling pointers and/or UAFs very easily. This method only exists to
+  // work around the fact that the HttpStreamFactory::JobController performs
+  // proxy resolution for a request. Ideally we should separate proxy resolution
+  // from HttpStreamFactory::JobController and use HttpStreamPool directly from
+  // HttpNetworkTransaction, instead of setting the helper.
+  //
+  // TODO(crbug.com/346835898): Remove this method once we come up with a way
+  // to separate proxy resolution from the HttpStreamFactory::JobController.
+  void SetHelperForSwitchingToPool(Helper* helper);
+
  private:
   // Unowned. The helper must not be destroyed before this object is.
   raw_ptr<Helper> helper_;
@@ -211,13 +239,7 @@ class NET_EXPORT_PRIVATE HttpStreamRequest {
       websocket_handshake_stream_create_helper_;
   const NetLogWithSource net_log_;
 
-  bool completed_ = false;
-  // Protocol negotiated with the server.
-  NextProto negotiated_protocol_ = kProtoUnknown;
-  // The reason why Chrome uses a specific transport protocol for HTTP
-  // semantics.
-  AlternateProtocolUsage alternate_protocol_usage_ =
-      AlternateProtocolUsage::ALTERNATE_PROTOCOL_USAGE_UNSPECIFIED_REASON;
+  std::optional<CompletionDetails> completion_details_;
   ConnectionAttempts connection_attempts_;
   const StreamType stream_type_;
 

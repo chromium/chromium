@@ -20,7 +20,6 @@
 #include <stdlib.h>
 
 #include "base/compiler_specific.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_native_library.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher.h"

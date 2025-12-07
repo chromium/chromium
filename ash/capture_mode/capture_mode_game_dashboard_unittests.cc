@@ -64,8 +64,7 @@ class GameDashboardCaptureModeTest : public AshTestBase {
  public:
   GameDashboardCaptureModeTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGameDashboard,
-                              features::
+        /*enabled_features=*/{features::
                                   kFeatureManagementGameDashboardRecordGame},
         /*disabled_features=*/{});
   }
@@ -80,7 +79,6 @@ class GameDashboardCaptureModeTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    EXPECT_TRUE(features::IsGameDashboardEnabled());
 
     // Disable the Game Dashboard welcome dialog for all game windows.
     PrefService* active_user_prefs =
@@ -156,14 +154,20 @@ TEST_F(GameDashboardCaptureModeTest, GameDashboardBehavior) {
 // while a Game-Dashboard-initiated session is active without ending the
 // session.
 TEST_F(GameDashboardCaptureModeTest, FullscreenScreenshotKeyCombo) {
-  CaptureModeController* controller = StartGameCaptureModeSession();
+  StartGameCaptureModeSession();
   PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_CONTROL_DOWN);
   WaitForCaptureFileToBeSaved();
-  ASSERT_TRUE(controller->IsActive());
-  CaptureModeBehavior* active_behavior =
-      controller->capture_mode_session()->active_behavior();
-  ASSERT_TRUE(active_behavior);
-  EXPECT_EQ(active_behavior->behavior_type(), BehaviorType::kGameDashboard);
+  VerifyActiveBehavior(BehaviorType::kGameDashboard);
+}
+
+// Tests that if the user presses the shortcut to switch to default capture
+// mode, it is ignored.
+TEST_F(GameDashboardCaptureModeTest, SwitchToDefaultCaptureMode) {
+  StartGameCaptureModeSession();
+  VerifyActiveBehavior(BehaviorType::kGameDashboard);
+  PressAndReleaseKey(ui::VKEY_MEDIA_LAUNCH_APP1,
+                     ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN);
+  VerifyActiveBehavior(BehaviorType::kGameDashboard);
 }
 
 // Tests that when starting the capture mode session from game dashboard, the
@@ -458,7 +462,7 @@ TEST_F(GameDashboardCaptureModeTest, MultiDisplay) {
   EXPECT_EQ(displays[0].size(), gfx::Size(800, 700));
   EXPECT_EQ(displays[1].size(), gfx::Size(900, 800));
 
-  display::Screen* screen = display::Screen::GetScreen();
+  display::Screen* screen = display::Screen::Get();
   auto* controller = StartGameCaptureModeSession();
   BaseCaptureModeSession* capture_mode_session =
       controller->capture_mode_session();

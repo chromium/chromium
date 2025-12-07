@@ -12,6 +12,8 @@ import static org.junit.Assert.fail;
 import android.os.ConditionVariable;
 import android.os.StrictMode;
 
+import org.chromium.net.impl.CronetUrlRequest;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -20,13 +22,13 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Callback that tracks information from different callbacks and and has a
- * method to block thread until the request completes on another thread.
- * Allows to cancel, block request or throw an exception from an arbitrary step.
+ * Callback that tracks information from different callbacks and and has a method to block thread
+ * until the request completes on another thread. Allows to cancel, block request or throw an
+ * exception from an arbitrary step.
  */
 public class TestUrlRequestCallback extends UrlRequest.Callback {
-    public ArrayList<UrlResponseInfo> mRedirectResponseInfoList = new ArrayList<UrlResponseInfo>();
-    public ArrayList<String> mRedirectUrlList = new ArrayList<String>();
+    public ArrayList<UrlResponseInfo> mRedirectResponseInfoList = new ArrayList<>();
+    public ArrayList<String> mRedirectUrlList = new ArrayList<>();
     private UrlResponseInfo mResponseInfo;
     public CronetException mError;
 
@@ -52,7 +54,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
 
     // The executor thread will block on this after reaching a terminal method.
     // Terminal methods are (onSucceeded, onFailed or onCancelled)
-    private ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
+    private final ConditionVariable mBlockOnTerminalState = new ConditionVariable(true);
 
     // Conditionally fail on certain steps.
     private FailureType mFailureType = FailureType.NONE;
@@ -198,7 +200,7 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
             // Termination shouldn't take long. Use 1 min which should be more than enough.
             mExecutorService.awaitTermination(1, TimeUnit.MINUTES);
         } catch (InterruptedException e) {
-            fail("ExecutorService is interrupted while waiting for termination");
+            throw new RuntimeException(e);
         }
         assertThat(mExecutorService.isTerminated()).isTrue();
     }
@@ -266,6 +268,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     @Override
     public void onSucceeded(UrlRequest request, UrlResponseInfo info) {
         checkExecutorThread();
+        if (request instanceof CronetUrlRequest cronetUrlRequest) {
+            assertThat(cronetUrlRequest.getFinishedRequestTimings()).isNotNull();
+        }
         assertThat(request.isDone()).isTrue();
         assertThat(mResponseStep)
                 .isAnyOf(ResponseStep.ON_RESPONSE_STARTED, ResponseStep.ON_READ_COMPLETED);
@@ -286,6 +291,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
         // since the request already did.
         if (error.getCause() instanceof InlineExecutionProhibitedException) {
             mAllowDirectExecutor = true;
+        }
+        if (request instanceof CronetUrlRequest cronetUrlRequest) {
+            assertThat(cronetUrlRequest.getFinishedRequestTimings()).isNotNull();
         }
         checkExecutorThread();
         assertThat(request.isDone()).isTrue();
@@ -315,6 +323,9 @@ public class TestUrlRequestCallback extends UrlRequest.Callback {
     @Override
     public void onCanceled(UrlRequest request, UrlResponseInfo info) {
         checkExecutorThread();
+        if (request instanceof CronetUrlRequest cronetUrlRequest) {
+            assertThat(cronetUrlRequest.getFinishedRequestTimings()).isNotNull();
+        }
         assertThat(request.isDone()).isTrue();
         // Should happen at most once for a single request.
         assertThat(mOnCanceledCalled).isFalse();

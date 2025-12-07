@@ -1,0 +1,20 @@
+Name: gvdb
+URL: https://gitlab.gnome.org/GNOME/gvdb
+Version: N/A
+Revision: 2b42fc75f09dbe1cd1057580b5782b08f2dcb400
+Update Mechanism: Manual (https://crbug.com/422920690)
+License: LGPL-2.1
+License File: LICENSE
+Shipped: no
+Security Critical: no
+
+Description:
+A simple database file format that stores a mapping from strings to GVariant
+values in a way that is extremely efficient for lookups.
+
+This is only used in tests.
+
+This dependency needs to be rolled in-sync with third_party/mutter.
+
+Local Modifications:
+None.

@@ -27,6 +27,7 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
@@ -70,10 +71,8 @@ void InitializePlatformLanguage() {
         String canonicalized = CanonicalizeLanguageIdentifier(
             Platform::Current()->DefaultLocale());
         if (!canonicalized.empty()) {
-          StringImpl* impl = StringImpl::CreateStatic(
-              reinterpret_cast<const char*>(canonicalized.Characters8()),
-              canonicalized.length());
-
+          StringImpl* impl =
+              StringImpl::CreateStatic(base::as_chars(canonicalized.Span8()));
           return AtomicString(impl);
         }
         return AtomicString();

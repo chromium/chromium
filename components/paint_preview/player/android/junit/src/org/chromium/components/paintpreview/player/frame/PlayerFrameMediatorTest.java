@@ -4,6 +4,8 @@
 
 package org.chromium.components.paintpreview.player.frame;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
@@ -85,10 +87,10 @@ public class PlayerFrameMediatorTest {
     }
 
     /** Used for keeping track of all bitmap requests that {@link PlayerFrameMediator} makes. */
-    private class RequestedBitmap {
-        UnguessableToken mFrameGuid;
-        Rect mClipRect;
-        float mScaleFactor;
+    private static class RequestedBitmap {
+        final UnguessableToken mFrameGuid;
+        final Rect mClipRect;
+        final float mScaleFactor;
         Callback<Bitmap> mBitmapCallback;
         Runnable mErrorCallback;
 
@@ -113,11 +115,8 @@ public class PlayerFrameMediatorTest {
 
         @Override
         public boolean equals(Object o) {
-            if (o == null) return false;
-
             if (o == this) return true;
-
-            if (o.getClass() != this.getClass()) return false;
+            if (!(o instanceof RequestedBitmap)) return false;
 
             RequestedBitmap rb = (RequestedBitmap) o;
             return rb.mClipRect.equals(mClipRect)
@@ -136,10 +135,10 @@ public class PlayerFrameMediatorTest {
      * Used for keeping track of all click events that {@link PlayerFrameMediator} sends to {@link
      * PlayerCompositorDelegate}.
      */
-    private class ClickedPoint {
-        UnguessableToken mFrameGuid;
-        int mX;
-        int mY;
+    private static class ClickedPoint {
+        final UnguessableToken mFrameGuid;
+        final int mX;
+        final int mY;
 
         public ClickedPoint(UnguessableToken frameGuid, int x, int y) {
             mFrameGuid = frameGuid;
@@ -149,11 +148,10 @@ public class PlayerFrameMediatorTest {
 
         @Override
         public boolean equals(Object o) {
-            if (o == null) return false;
 
             if (o == this) return true;
 
-            if (o.getClass() != this.getClass()) return false;
+            if (!(o instanceof ClickedPoint)) return false;
 
             ClickedPoint cp = (ClickedPoint) o;
             return cp.mFrameGuid.equals(mFrameGuid) && cp.mX == mX && cp.mY == mY;
@@ -176,9 +174,9 @@ public class PlayerFrameMediatorTest {
      * Mocks {@link PlayerCompositorDelegate}. Stores all bitmap requests as {@link
      * RequestedBitmap}s.
      */
-    private class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
-        List<RequestedBitmap> mRequestedBitmap = new ArrayList<>();
-        List<ClickedPoint> mClickedPoints = new ArrayList<>();
+    private static class TestPlayerCompositorDelegate implements PlayerCompositorDelegate {
+        final List<RequestedBitmap> mRequestedBitmap = new ArrayList<>();
+        final List<ClickedPoint> mClickedPoints = new ArrayList<>();
         Runnable mOnMemoryPressureRunnable;
         private int mNextRequestId;
 
@@ -238,8 +236,8 @@ public class PlayerFrameMediatorTest {
         }
     }
 
-    private class MatrixMatcher implements ArgumentMatcher<Matrix> {
-        private Matrix mLeft;
+    private static class MatrixMatcher implements ArgumentMatcher<Matrix> {
+        private final Matrix mLeft;
 
         MatrixMatcher(Matrix left) {
             mLeft = left;
@@ -300,9 +298,9 @@ public class PlayerFrameMediatorTest {
     }
 
     private static void assertViewportStateIs(Matrix matrix, PlayerFrameViewport viewport) {
-        float matrixValues[] = new float[9];
+        float[] matrixValues = new float[9];
         matrix.getValues(matrixValues);
-        assert matrixValues[Matrix.MSCALE_X] == matrixValues[Matrix.MSCALE_Y];
+        assertThat(matrixValues[Matrix.MSCALE_X]).isEqualTo(matrixValues[Matrix.MSCALE_Y]);
         assertViewportStateIs(
                 matrixValues[Matrix.MSCALE_X],
                 matrixValues[Matrix.MTRANS_X],
@@ -341,9 +339,7 @@ public class PlayerFrameMediatorTest {
         // we should have only one column.
         Bitmap[][] bitmapMatrix = mModel.get(PlayerFrameProperties.BITMAP_MATRIX);
         Assert.assertTrue(Arrays.deepEquals(bitmapMatrix, new Bitmap[4][1]));
-        Assert.assertEquals(
-                new ArrayList<Pair<View, Rect>>(),
-                mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
+        Assert.assertEquals(List.of(), mModel.get(PlayerFrameProperties.SUBFRAME_VIEWS));
     }
 
     /**
@@ -594,7 +590,6 @@ public class PlayerFrameMediatorTest {
         Bitmap bitmap00 = Mockito.mock(Bitmap.class);
         Bitmap bitmap10 = Mockito.mock(Bitmap.class);
         Bitmap bitmap20 = Mockito.mock(Bitmap.class);
-        Bitmap bitmap30 = Mockito.mock(Bitmap.class);
         Bitmap bitmap01 = Mockito.mock(Bitmap.class);
         Bitmap bitmap11 = Mockito.mock(Bitmap.class);
         Bitmap bitmap21 = Mockito.mock(Bitmap.class);

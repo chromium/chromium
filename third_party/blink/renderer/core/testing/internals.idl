@@ -79,6 +79,7 @@ interface Internals {
     // Animation testing.
     [RaisesException] void pauseAnimations(double pauseTime);
     boolean isCompositedAnimation(Animation animation);
+    boolean isMainThreadAnimation(Animation animation);
     void disableCompositedAnimation(Animation animation);
 
     // Advances an animated image. For BitmapImage (e.g., animated gifs) this
@@ -119,7 +120,6 @@ interface Internals {
     [RaisesException] void addActiveSuggestionMarker(Range range, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
     [RaisesException] void addSuggestionMarker(Range range, sequence<DOMString> suggestions, DOMString suggestionHighlightColorValue, DOMString underlineColorValue, DOMString thicknessValue, DOMString backgroundColorValue);
     void setTextMatchMarkersActive(Node node, unsigned long startOffset, unsigned long endOffset, boolean active);
-    void setMarkedTextMatchesAreHighlighted(Document document, boolean highlight);
 
     [RaisesException] DOMString viewportAsText(Document document,
                                                float devicePixelRatio,
@@ -201,9 +201,7 @@ interface Internals {
 
     [RaisesException] DOMString layerTreeAsText(Document document, optional unsigned short flags);
 
-    DOMString scrollingStateTreeAsText(Document document);
     [RaisesException] DOMString mainThreadScrollingReasons(Document document);
-    [RaisesException] DOMRectList nonFastScrollableRects(Document document);
 
     void evictAllResources();
 
@@ -286,8 +284,6 @@ interface Internals {
     long selectPopupItemStyleFontHeight(Node select, long itemIndex);
     void resetTypeAheadSession(HTMLSelectElement select);
 
-    void resetSelectListTypeAheadSession(HTMLSelectListElement selectlist);
-
     StaticSelection getDragCaret();
     [RaisesException] StaticSelection getSelectionInFlatTree(Window window);
     // TODO(editing-dev): We should change |visibleSelection*| to
@@ -309,7 +305,7 @@ interface Internals {
 
     [CallWith=ScriptState] Promise<any> createResolvedPromise(any value);
     [CallWith=ScriptState] Promise<any> createRejectedPromise(any reason);
-    [CallWith=ScriptState] Promise<any> addOneToPromise(Promise<any> promise);
+    [CallWith=ScriptState] Promise<long> addOneToPromise(Promise<long> promise);
     [CallWith=ScriptState, RaisesException] Promise<any> promiseCheck(long arg1, boolean arg2, object arg3, DOMString arg4, sequence<DOMString> arg5);
     [CallWith=ScriptState] Promise<any> promiseCheckWithoutExceptionState(object arg1, DOMString arg2, DOMString... variadic);
     [CallWith=ScriptState] Promise<any> promiseCheckRange([EnforceRange] octet arg1);
@@ -328,9 +324,11 @@ interface Internals {
 
     boolean isInCanvasFontCache(Document document, DOMString fontString);
     unsigned long canvasFontCacheMaxFonts();
-    void forceLoseCanvasContext(HTMLCanvasElement canvas, DOMString contextType);
-    void forceLoseCanvasContext(OffscreenCanvas offscreencanvas, DOMString context_type);
-    void disableCanvasAcceleration(HTMLCanvasElement canvas);
+    void forceLoseCanvasContext(CanvasRenderingContext2D ctx);
+    void forceLoseCanvasContext(OffscreenCanvasRenderingContext2D ctx);
+    void disableCanvasAccelerationForCanvas2D(HTMLCanvasElement canvas);
+    boolean isCanvasImageSourceAccelerated(HTMLCanvasElement imageSource);
+    boolean isCanvasImageSourceAccelerated(OffscreenCanvas imageSource);
 
     DictionaryTest dictionaryTest();
     RecordTest recordTest();
@@ -338,6 +336,10 @@ interface Internals {
     UnionTypesTest unionTypesTest();
     InternalsUkmRecorder initializeUKMRecorder();
     CallbackFunctionTest callbackFunctionTest();
+    // Creates and returns an `NADCAttributeTest` object, which provides test
+    // functions to test attributes with the IDL extended attributei
+    // `NoAllocDirectCall`.
+    NADCAttributeTest nadcAttributeTest();
 
     DOMString selectedHTMLForClipboard();
     DOMString selectedTextForClipboard();
@@ -464,4 +466,7 @@ interface Internals {
     // NetworkContext. Intended to be used to allow remote context executors to
     // continue functioning in fenced frame WPTs after network is revoked.
     [CallWith=ScriptState] Promise<undefined> exemptUrlFromNetworkRevocation(USVString url);
+
+    DOMString lastCompiledScriptFileName(Document document);
+    boolean lastCompiledScriptUsedCodeCache(Document document);
 };

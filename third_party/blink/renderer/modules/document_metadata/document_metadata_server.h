@@ -10,7 +10,6 @@
 #include "third_party/blink/public/mojom/document_metadata/document_metadata.mojom-blink.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -21,9 +20,8 @@ class LocalFrame;
 class DocumentMetadataServer final
     : public GarbageCollected<DocumentMetadataServer>,
       public mojom::blink::DocumentMetadata,
-      public Supplement<Document> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
   static DocumentMetadataServer* From(Document&);
   static void BindReceiver(
       LocalFrame*,
@@ -44,6 +42,7 @@ class DocumentMetadataServer final
  private:
   void Bind(mojo::PendingReceiver<mojom::blink::DocumentMetadata> receiver);
 
+  Member<Document> document_;
   HeapMojoReceiver<mojom::blink::DocumentMetadata, DocumentMetadataServer>
       receiver_;
 };

@@ -1,0 +1,57 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("chrome_labs") {
+  sources = [
+    "chrome_labs_model.cc",
+    "chrome_labs_model.h",
+    "chrome_labs_prefs.cc",
+    "chrome_labs_prefs.h",
+    "chrome_labs_utils.cc",
+    "chrome_labs_utils.h",
+  ]
+
+  deps = [
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:flags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/common:channel_info",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/variations",
+    "//components/webui/flags",
+    "//ui/base",
+  ]
+
+  if (is_chromeos) {
+    deps += [
+      "//ash/constants",
+      "//chrome/browser/ash/profiles",
+    ]
+  }
+
+  public_deps = [
+    "//base",
+    "//components/version_info:channel",
+  ]
+}
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "chrome_labs_model_unittest.cc" ]
+    deps = [
+      ":chrome_labs",
+      "//base",
+      "//base:i18n",
+      "//base/test:test_support",
+      "//chrome/browser:flags",
+      "//chrome/test:test_support",
+      "//components/webui/flags",
+      "//testing/gtest",
+    ]
+  }
+}

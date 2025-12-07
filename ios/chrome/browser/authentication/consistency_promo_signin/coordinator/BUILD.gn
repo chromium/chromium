@@ -1,0 +1,93 @@
+# Copyright 2020 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("coordinator") {
+  sources = [
+    "consistency_promo_signin_coordinator.h",
+    "consistency_promo_signin_coordinator.mm",
+    "consistency_promo_signin_mediator.h",
+    "consistency_promo_signin_mediator.mm",
+  ]
+  deps = [
+    "//components/prefs",
+    "//components/signin/core/browser",
+    "//components/signin/ios/browser:features",
+    "//components/signin/public/browser",
+    "//components/signin/public/identity_manager/objc",
+    "//ios/chrome/app:change_profile_continuation",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/authentication/consistency_promo_signin/ui",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow:request_helper",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_protected",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_account_chooser",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/reauth",
+    "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util/image",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:constants",
+    "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+  public_deps =
+      [ "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "consistency_promo_signin_coordinator_unittest.mm",
+    "consistency_promo_signin_mediator_unittest.mm",
+  ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//components/signin/core/browser",
+    "//components/signin/public/browser",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager/objc",
+    "//components/sync_preferences:test_support",
+    "//components/test/ios",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/authentication/ui_bundled",
+    "//ios/chrome/browser/authentication/ui_bundled:continuation_test",
+    "//ios/chrome/browser/authentication/ui_bundled/authentication_flow",
+    "//ios/chrome/browser/authentication/ui_bundled/signin:signin_in_progress",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_default_account",
+    "//ios/chrome/browser/authentication/ui_bundled/signin/consistency_promo_signin/consistency_sheet",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/signin/model:fake_system_identity_manager",
+    "//ios/chrome/browser/signin/model:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}

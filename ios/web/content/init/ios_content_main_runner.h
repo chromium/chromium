@@ -5,6 +5,9 @@
 #ifndef IOS_WEB_CONTENT_INIT_IOS_CONTENT_MAIN_RUNNER_H_
 #define IOS_WEB_CONTENT_INIT_IOS_CONTENT_MAIN_RUNNER_H_
 
+#import <string>
+#import <vector>
+
 #import "ios/web/public/init/web_main_runner.h"
 
 namespace content {
@@ -23,11 +26,13 @@ class IOSContentMainRunner : public WebMainRunner {
   ~IOSContentMainRunner() override;
 
   // WebMainRunner implementation:
-  int Initialize(WebMainParams params) override;
+  void Initialize(WebMainParams params) override;
+  int Startup() override;
   void ShutDown() override;
 
  private:
   std::unique_ptr<content::ContentMainDelegate> content_main_delegate_;
+  std::vector<std::string> argv_;
   std::unique_ptr<content::ContentMainRunner> content_main_runner_;
 };
 

@@ -10,6 +10,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace webnn::dml {
 
@@ -19,12 +20,14 @@ CommandQueue::PendingWorkDelegate::PendingWorkDelegate(
     std::deque<CommandQueue::QueuedObject> queued_objects,
     Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
     uint64_t last_fence_value,
-    Microsoft::WRL::ComPtr<ID3D12Fence> fence)
+    Microsoft::WRL::ComPtr<ID3D12Fence> fence,
+    base::win::ScopedHandle fence_event)
     : base::win::ObjectWatcher::Delegate(),
       queued_objects_(std::move(queued_objects)),
       command_queue_(std::move(command_queue)),
       last_fence_value_(last_fence_value),
-      fence_(std::move(fence)) {
+      fence_(std::move(fence)),
+      fence_event_(std::move(fence_event)) {
   CHECK(object_watcher_.StartWatchingOnce(fence_event_.get(), this));
 }
 
@@ -63,7 +66,8 @@ void CommandQueue::ScheduleCleanupForPendingWork(
   // It is by design we're not using std::unique_ptr because PendingWorkDelegate
   // deletes itself.
   new PendingWorkDelegate(std::move(queued_objects), std::move(command_queue),
-                          last_fence_value, std::move(fence));
+                          last_fence_value, std::move(fence),
+                          std::move(fence_event));
 }
 
 CommandQueue::CommandQueue(ComPtr<ID3D12CommandQueue> command_queue,
@@ -106,9 +110,11 @@ scoped_refptr<CommandQueue> CommandQueue::Create(ID3D12Device* d3d12_device) {
     return nullptr;
   }
 
+  // WebGPU interop requires WebNN's submission fence to be shared via shared
+  // handle.
   ComPtr<ID3D12Fence> fence;
-  hr =
-      d3d12_device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
+  hr = d3d12_device->CreateFence(0, D3D12_FENCE_FLAG_SHARED,
+                                 IID_PPV_ARGS(&fence));
   if (FAILED(hr)) {
     LOG(ERROR) << "[WebNN] Failed to create ID3D12Fence: "
                << logging::SystemErrorCodeToString(hr);
@@ -155,8 +161,7 @@ HRESULT CommandQueue::WaitSync() {
 
 void CommandQueue::OnObjectSignaled(HANDLE object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_NESTABLE_ASYNC_END0("gpu", "dml::CommandQueue::WaitAsync",
-                                  TRACE_ID_LOCAL(this));
+  TRACE_EVENT_END("gpu", perfetto::Track::FromPointer(this));
   CHECK_EQ(object, fence_event_.get());
   ReleaseCompletedResources();
 
@@ -190,8 +195,8 @@ void CommandQueue::WaitAsync(base::OnceCallback<void(HRESULT hr)> callback) {
     std::move(callback).Run(hr);
     return;
   }
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("gpu", "dml::CommandQueue::WaitAsync",
-                                    TRACE_ID_LOCAL(this));
+  TRACE_EVENT_BEGIN("gpu", "dml::CommandQueue::WaitAsync",
+                    perfetto::Track::FromPointer(this));
   queued_callbacks_.push_back(
       {last_fence_value_, base::BindOnce(std::move(callback), S_OK)});
 }
@@ -224,6 +229,22 @@ CommandQueue::GetQueuedObjectsForTesting() const {
   CHECK_IS_TEST();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return queued_objects_;
+}
+
+HRESULT CommandQueue::WaitForFence(
+    Microsoft::WRL::ComPtr<ID3D12Fence> wait_fence,
+    uint64_t wait_fence_value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  HRESULT hr = command_queue_->Wait(wait_fence.Get(), wait_fence_value);
+  if (FAILED(hr)) {
+    LOG(ERROR) << "[WebNN] Failed to wait for fence : "
+               << logging::SystemErrorCodeToString(hr);
+    return hr;
+  }
+
+  // Keep the fence alive until the wait is satisfied.
+  ReferenceUntilCompleted(std::move(wait_fence));
+  return S_OK;
 }
 
 CommandQueue::QueuedObject::QueuedObject(uint64_t fence_value,

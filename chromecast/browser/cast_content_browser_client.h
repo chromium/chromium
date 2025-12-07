@@ -20,6 +20,8 @@
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/frame_tree_node_id.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/mojom/renderer.mojom.h"
@@ -56,6 +58,10 @@ class MetricsService;
 namespace net {
 class SSLPrivateKey;
 class X509Certificate;
+}  // namespace net
+
+namespace os_crypt_async {
+class OSCryptAsync;
 }
 
 namespace chromecast {
@@ -75,10 +81,9 @@ class CmaBackendFactory;
 class MediaPipelineBackendManager;
 class MediaResourceTracker;
 class VideoGeometrySetterService;
-class VideoPlaneController;
 class VideoModeSwitcher;
 class VideoResolutionPolicy;
-}
+}  // namespace media
 
 namespace shell {
 class CastBrowserMainParts;
@@ -114,7 +119,6 @@ class CastContentBrowserClient
       CastSystemMemoryPressureEvaluatorAdjuster*
           cast_system_memory_pressure_evaluator_adjuster,
       PrefService* pref_service,
-      media::VideoPlaneController* video_plane_controller,
       CastWindowManager* window_manager,
       CastWebService* web_service,
       DisplaySettingsManager* display_settings_manager);
@@ -181,8 +185,9 @@ class CastContentBrowserClient
                                       int child_process_id) override;
   std::string GetAcceptLangs(content::BrowserContext* context) override;
   network::mojom::NetworkContext* GetSystemNetworkContext() override;
-  void OverrideWebkitPrefs(content::WebContents* web_contents,
-                           blink::web_pref::WebPreferences* prefs) override;
+  void OverrideWebPreferences(content::WebContents* web_contents,
+                              content::SiteInstance& main_frame_site,
+                              blink::web_pref::WebPreferences* prefs) override;
   std::string GetApplicationLocale() override;
   void AllowCertificateError(
       content::WebContents* web_contents,
@@ -238,8 +243,8 @@ class CastContentBrowserClient
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
   bool ShouldEnableStrictSiteIsolation() override;
-  std::vector<std::unique_ptr<content::NavigationThrottle>>
-  CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
+  void CreateThrottlesForNavigation(
+      content::NavigationThrottleRegistry& registry) override;
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
@@ -261,14 +266,6 @@ class CastContentBrowserClient
   PrivateNetworkRequestPolicyOverride ShouldOverridePrivateNetworkRequestPolicy(
       content::BrowserContext* browser_context,
       const url::Origin& origin) override;
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
-  CreateURLLoaderThrottles(
-      const network::ResourceRequest& request,
-      content::BrowserContext* browser_context,
-      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
-      content::NavigationUIData* navigation_ui_data,
-      int frame_tree_node_id,
-      std::optional<int64_t> navigation_id) override;
 
   CastFeatureListCreator* GetCastFeatureListCreator() {
     return cast_feature_list_creator_;
@@ -294,9 +291,6 @@ class CastContentBrowserClient
   CastBrowserMainParts* browser_main_parts() {
     return cast_browser_main_parts_;
   }
-
-  void BindMediaRenderer(
-      mojo::PendingReceiver<::media::mojom::Renderer> receiver);
 
   void GetApplicationMediaInfo(std::string* application_session_id,
                                bool* mixer_audio_enabled,
@@ -367,6 +361,7 @@ class CastContentBrowserClient
 
   // Created by CastContentBrowserClient but owned by BrowserMainLoop.
   CastBrowserMainParts* cast_browser_main_parts_;
+  std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
   std::unique_ptr<CastNetworkContexts> cast_network_contexts_;
   std::unique_ptr<media::CmaBackendFactory> cma_backend_factory_;
   std::unique_ptr<GeneralAudienceBrowsingService>

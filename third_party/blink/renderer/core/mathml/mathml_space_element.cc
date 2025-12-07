@@ -32,7 +32,7 @@ bool MathMLSpaceElement::IsPresentationAttribute(
 void MathMLSpaceElement::CollectStyleForPresentationAttribute(
     const QualifiedName& name,
     const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
+    HeapVector<CSSPropertyValue, 8>& style) {
   if (name == mathml_names::kWidthAttr) {
     if (const CSSPrimitiveValue* width_value =
             ParseMathLength(name, AllowPercentages::kNo,
@@ -55,8 +55,8 @@ void MathMLSpaceElement::CollectStyleForPresentationAttribute(
     if (height_value && depth_value) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kHeight,
-          "calc(" + FastGetAttribute(mathml_names::kHeightAttr) + " + " +
-              FastGetAttribute(mathml_names::kDepthAttr) + ")");
+          StrCat({"calc(", FastGetAttribute(mathml_names::kHeightAttr), " + ",
+                  FastGetAttribute(mathml_names::kDepthAttr), ")"}));
     } else if (attribute_value) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
                                               *attribute_value);

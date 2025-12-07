@@ -1,4 +1,0 @@
-CONSOLE WARNING: Listener added for a 'DOMSubtreeModified' mutation event. This event type is deprecated, and will be removed from this browser VERY soon. Usage of this event listener will cause performance issues today, and represents a large risk of imminent site breakage. Consider using MutationObserver instead. See https://chromestatus.com/feature/5083947249172480 for more information.
-Test for http://bugs.webkit.org/show_bug.cgi?id=12353 REGRESSION: Crash on load (mutation event dispatch under the image element constructor deletes the element).
-
-No crash means test PASS.

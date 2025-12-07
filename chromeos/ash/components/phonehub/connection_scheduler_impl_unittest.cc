@@ -15,8 +15,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class ConnectionSchedulerImplTest : public testing::Test {
  protected:
@@ -218,5 +217,4 @@ TEST_F(ConnectionSchedulerImplTest, HostsNotEligible) {
   EXPECT_EQ(1u, fake_connection_manager_->num_attempt_connection_calls());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

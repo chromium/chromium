@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ntlm/ntlm_buffer_reader.h"
 
+#include <array>
+
+#include "base/compiler_specific.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -125,9 +123,9 @@ TEST(NtlmBufferReaderTest, ReadBytes) {
   NtlmBufferReader reader(expected);
 
   ASSERT_TRUE(reader.ReadBytes(actual));
-  ASSERT_EQ(0, memcmp(actual, expected, std::size(actual)));
+  ASSERT_EQ(base::span(actual), base::span(expected));
   ASSERT_TRUE(reader.IsEndOfBuffer());
-  ASSERT_FALSE(reader.ReadBytes(base::make_span(actual, 1u)));
+  ASSERT_FALSE(reader.ReadBytes(base::span(actual).first(1u)));
 }
 
 TEST(NtlmBufferReaderTest, ReadSecurityBuffer) {
@@ -146,7 +144,7 @@ TEST(NtlmBufferReaderTest, ReadSecurityBuffer) {
 }
 
 TEST(NtlmBufferReaderTest, ReadSecurityBufferPastEob) {
-  const uint8_t buf[7] = {0};
+  const uint8_t buf[7] = {};
   NtlmBufferReader reader(buf);
 
   SecurityBuffer sec_buf;
@@ -181,7 +179,7 @@ TEST(NtlmBufferReaderTest, ReadPayloadAsBufferReader) {
 }
 
 TEST(NtlmBufferReaderTest, ReadPayloadBadOffset) {
-  const uint8_t buf[4] = {0};
+  const uint8_t buf[4] = {};
   NtlmBufferReader reader(buf);
 
   NtlmBufferReader sub_reader;
@@ -189,8 +187,18 @@ TEST(NtlmBufferReaderTest, ReadPayloadBadOffset) {
       reader.ReadPayloadAsBufferReader(SecurityBuffer(4, 1), &sub_reader));
 }
 
+TEST(NtlmBufferReaderTest, ReadPayloadBadOffsetZeroLength) {
+  const uint8_t buf[4] = {};
+  NtlmBufferReader reader(buf);
+
+  NtlmBufferReader sub_reader;
+  ASSERT_TRUE(
+      reader.ReadPayloadAsBufferReader(SecurityBuffer(500, 0), &sub_reader));
+  EXPECT_TRUE(sub_reader.IsEndOfBuffer());
+}
+
 TEST(NtlmBufferReaderTest, ReadPayloadBadLength) {
-  const uint8_t buf[4] = {0};
+  const uint8_t buf[4] = {};
   NtlmBufferReader reader(buf);
 
   NtlmBufferReader sub_reader;
@@ -199,7 +207,7 @@ TEST(NtlmBufferReaderTest, ReadPayloadBadLength) {
 }
 
 TEST(NtlmBufferReaderTest, SkipSecurityBuffer) {
-  const uint8_t buf[kSecurityBufferLen] = {0};
+  const uint8_t buf[kSecurityBufferLen] = {};
 
   NtlmBufferReader reader(buf);
   ASSERT_TRUE(reader.SkipSecurityBuffer());
@@ -209,7 +217,7 @@ TEST(NtlmBufferReaderTest, SkipSecurityBuffer) {
 
 TEST(NtlmBufferReaderTest, SkipSecurityBufferPastEob) {
   // The buffer is one byte shorter than security buffer.
-  const uint8_t buf[kSecurityBufferLen - 1] = {0};
+  const uint8_t buf[kSecurityBufferLen - 1] = {};
 
   NtlmBufferReader reader(buf);
   ASSERT_FALSE(reader.SkipSecurityBuffer());
@@ -268,7 +276,7 @@ TEST(NtlmBufferReaderTest,
 }
 
 TEST(NtlmBufferReaderTest, SkipBytes) {
-  const uint8_t buf[8] = {0};
+  const uint8_t buf[8] = {};
 
   NtlmBufferReader reader(buf);
 
@@ -278,7 +286,7 @@ TEST(NtlmBufferReaderTest, SkipBytes) {
 }
 
 TEST(NtlmBufferReaderTest, SkipBytesPastEob) {
-  const uint8_t buf[8] = {0};
+  const uint8_t buf[8] = {};
 
   NtlmBufferReader reader(buf);
 
@@ -286,7 +294,7 @@ TEST(NtlmBufferReaderTest, SkipBytesPastEob) {
 }
 
 TEST(NtlmBufferReaderTest, MatchSignatureTooShort) {
-  const uint8_t buf[7] = {0};
+  const uint8_t buf[7] = {};
 
   NtlmBufferReader reader(buf);
 
@@ -402,7 +410,7 @@ TEST(NtlmBufferReaderTest, ReadTargetInfoFlagsAndEolOnly) {
 
 TEST(NtlmBufferReaderTest, ReadTargetInfoTooSmall) {
   // Target info must least contain enough space for a terminator pair.
-  const uint8_t buf[3] = {0};
+  const uint8_t buf[3] = {};
 
   NtlmBufferReader reader(buf);
 
@@ -436,8 +444,8 @@ TEST(NtlmBufferReaderTest, ReadTargetInfoInvalidTimestampPastEob) {
 TEST(NtlmBufferReaderTest, ReadTargetInfoOtherField) {
   // A domain name AvPair containing the string L'ABCD' followed by
   // a terminating AvPair.
-  const uint8_t buf[16] = {0x02, 0, 0x08, 0, 'A', 0, 'B', 0,
-                           'C',  0, 'D',  0, 0,   0, 0,   0};
+  const std::array<uint8_t, 16> buf = {0x02, 0, 0x08, 0, 'A', 0, 'B', 0,
+                                       'C',  0, 'D',  0, 0,   0, 0,   0};
 
   NtlmBufferReader reader(buf);
 
@@ -449,7 +457,7 @@ TEST(NtlmBufferReaderTest, ReadTargetInfoOtherField) {
   // Verify the domain name AvPair.
   ASSERT_EQ(TargetInfoAvId::kDomainName, av_pairs[0].avid);
   ASSERT_EQ(8, av_pairs[0].avlen);
-  ASSERT_EQ(0, memcmp(buf + 4, av_pairs[0].buffer.data(), 8));
+  ASSERT_EQ(base::span(buf).subspan(4u, 8u), base::span(av_pairs[0].buffer));
 }
 
 TEST(NtlmBufferReaderTest, ReadTargetInfoNoTerminator) {

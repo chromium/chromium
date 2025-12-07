@@ -9,23 +9,22 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/country_data.h"
-#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 #if defined(ANDROID)
-#include "base/android/build_info.h"
+#include "base/android/android_info.h"
 #endif
 
-using autofill::CountryDataMap;
-using base::ASCIIToUTF16;
-using ::i18n::addressinput::AddressField;
-
 namespace autofill {
+namespace {
+
+using ::base::ASCIIToUTF16;
+using ::i18n::addressinput::AddressField;
 
 // Test the constructor and accessors
 TEST(AutofillCountryTest, AutofillCountry) {
@@ -69,6 +68,22 @@ TEST(AutofillCountryTest, CountryCodeForLocale) {
   // "es-419" isn't associated with a country. See base/l10n/l10n_util.cc
   // for details about this locale. Default to US.
   EXPECT_EQ("US", AutofillCountry::CountryCodeForLocale("es-419"));
+}
+
+// Test that the correct country code is retrieved from the app locale if no
+// geo ip country code could be retrieved.
+TEST(AutofillCountryTest, GetDefaultCountryCodeForNewAddressFromAppLocale) {
+  EXPECT_EQ("US", AutofillCountry::GetDefaultCountryCodeForNewAddress(
+                      GeoIpCountryCode(""), "en_US")
+                      .value());
+}
+
+// Test that the country code is is set as the geo ip country code,
+// and that it is not extracted from the app locale.
+TEST(AutofillCountryTest, GetDefaultCountryCodeForNewAddressFromGeoIp) {
+  EXPECT_EQ("DE", AutofillCountry::GetDefaultCountryCodeForNewAddress(
+                      GeoIpCountryCode("DE"), "en_US")
+                      .value());
 }
 
 // Test the address requirement methods for the US.
@@ -152,8 +167,8 @@ TEST(AutofillCountryTest, TrAddressRequirements) {
 TEST(AutofillCountryTest, AllCountryCodesHaveCountryName) {
   std::set<std::string> expected_failures;
 #if defined(ANDROID)
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_KITKAT) {
+  if (base::android::android_info::sdk_int() <
+      base::android::android_info::SDK_VERSION_KITKAT) {
     expected_failures.insert("BQ");
     expected_failures.insert("SS");
     expected_failures.insert("XK");
@@ -228,11 +243,11 @@ TEST(AutofillCountryTest, VerifyAddressFormatExtensions) {
 // Test the address requirement method for Poland.
 TEST(AutofillCountryTest, PLAddressRequirements) {
   AutofillCountry country("PL", "pl_PL");
-  base::test::ScopedFeatureList enabled{features::kAutofillUsePLAddressModel};
 
   EXPECT_FALSE(country.requires_state());
   EXPECT_TRUE(
       country.IsAddressFieldSettingAccessible(FieldType::ADDRESS_HOME_STATE));
 }
 
+}  // namespace
 }  // namespace autofill

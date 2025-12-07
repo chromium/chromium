@@ -1,7 +1,7 @@
 Test that permissions could be granted
 - Granted: ["geolocation"]
 - Granted: ["audioCapture"]
-- Granted: ["geolocation","audioCapture","videoCapturePanTiltZoom"]
+- Granted: ["geolocation","audioCapture","cameraPanTiltZoom"]
 - Failed to grant: ["eee"]  error: Unknown permission type: eee
 - Resetting all permissions
 [

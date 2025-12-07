@@ -21,8 +21,7 @@ std::string AnchorToString(url_pattern_index::flat::AnchorType anchor_type) {
     case url_pattern_index::flat::AnchorType_BOUNDARY:
       return "|";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Class that aids in appending options to a pretty-printed rule.
@@ -186,8 +185,10 @@ std::string FlatUrlRuleToFilterlistString(const flat::UrlRule* flat_rule) {
 
   out += PartyOptionsToString(&options_printer, flat_rule);
 
-  // TODO(csharrison): Consider printing something for case-insensitive /
-  // case-sensitive rules.
+  if (flat_rule->options() &
+      url_pattern_index::flat::OptionFlag_IS_MATCH_CASE) {
+    out += options_printer.PrintOption("match-case");
+  }
 
   out += TypeOptionsToString(&options_printer, flat_rule);
 

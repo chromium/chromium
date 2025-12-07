@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/ensemble_matcher.h"
+#include "components/zucchini/image_utils.h"
 
 namespace zucchini {
 
@@ -21,7 +22,7 @@ namespace zucchini {
 // - Have "minimal distance" among other potential matched pairs.
 class HeuristicEnsembleMatcher : public EnsembleMatcher {
  public:
-  explicit HeuristicEnsembleMatcher(std::ostream* out);
+  HeuristicEnsembleMatcher(offset_t start_scan_at, std::ostream* out);
   HeuristicEnsembleMatcher(const HeuristicEnsembleMatcher&) = delete;
   const HeuristicEnsembleMatcher& operator=(const HeuristicEnsembleMatcher&) =
       delete;
@@ -31,6 +32,9 @@ class HeuristicEnsembleMatcher : public EnsembleMatcher {
   bool RunMatch(ConstBufferView old_image, ConstBufferView new_image) override;
 
  private:
+  // The file offset to start element detection.
+  offset_t start_scan_at_;
+
   // Optional stream to print detailed information during matching.
   raw_ptr<std::ostream> out_ = nullptr;
 };

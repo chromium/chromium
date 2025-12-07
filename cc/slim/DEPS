@@ -9,6 +9,7 @@ include_rules = [
   # after slim compositor no longer wraps cc.
   "+cc/layers/deadline_policy.h",
   "+cc/layers/nine_patch_generator.h",
+  "+cc/layers/texture_layer_client.h",
   "+cc/paint/filter_operation.h",
   "+cc/paint/filter_operations.h",
   "+cc/resources/ui_resource_bitmap.h",

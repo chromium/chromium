@@ -11,7 +11,9 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "net/base/io_buffer.h"
+#include "net/base/request_priority.h"
 #include "net/quic/mock_quic_context.h"
+#include "net/quic/quic_http_utils.h"
 #include "net/quic/quic_test_packet_maker.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/diff_serv_code_point.h"
@@ -41,6 +43,27 @@ class QuicSocketDataProviderTest : public TestWithTaskEnvironment {
     return packet_maker_->Packet(packet_number)
         .AddMessageFrame(base::NumberToString(packet_number))
         .Build();
+  }
+
+  std::unique_ptr<quic::QuicReceivedPacket> TestInitialSettingsPacket(
+      uint64_t packet_number) {
+    return packet_maker_->MakeInitialSettingsPacket(packet_number);
+  }
+
+  // Create a simple request header packet.
+  std::unique_ptr<quic::QuicReceivedPacket>
+  TestHeadersPacket(uint64_t packet_number, std::string path, bool fin) {
+    quiche::HttpHeaderBlock headers;
+    headers[":scheme"] = "https";
+    headers[":path"] = path;
+    spdy::SpdyPriority priority =
+        ConvertRequestPriorityToQuicPriority(DEFAULT_PRIORITY);
+    size_t spdy_headers_frame_len;
+    // Headers frame should be sent with stream 0.
+    auto rv = packet_maker_->MakeRequestHeadersPacket(
+        packet_number, 0, fin, priority, std::move(headers),
+        &spdy_headers_frame_len, /*should_include_priority_frame=*/false);
+    return rv;
   }
 
  protected:
@@ -472,6 +495,57 @@ TEST_F(QuicSocketDataProviderTest, MultipleReadsReady) {
                           TRAFFIC_ANNOTATION_FOR_TESTS));
   EXPECT_CHECK_DEATH(
       socket->Read(buffer.get(), buffer->size(), base::DoNothing()));
+}
+
+// Test an HTTP header packet is decoded by the server session.
+TEST_F(QuicSocketDataProviderTest, PrintHTTPHeadersPacket) {
+  QuicSocketDataProvider socket_data(version_);
+  MockClientSocketFactory socket_factory;
+
+  const std::string path = "/.well-known/masque/udp/www.example.org/443/";
+  socket_data.AddWrite("connect-udp", TestHeadersPacket(2, path, false));
+
+  socket_factory.AddSocketDataProvider(&socket_data);
+  std::unique_ptr<DatagramClientSocket> socket =
+      socket_factory.CreateDatagramClientSocket(
+          DatagramSocket::BindType::DEFAULT_BIND, nullptr,
+          net_log_with_source_.source());
+  socket->Connect(IPEndPoint());
+  std::unique_ptr<quic::QuicReceivedPacket> packet = TestPacket(999);
+  scoped_refptr<StringIOBuffer> buffer = base::MakeRefCounted<StringIOBuffer>(
+      std::string(packet->data(), packet->length()));
+
+  EXPECT_NONFATAL_FAILURE(
+      EXPECT_EQ(ERR_UNEXPECTED,
+                socket->Write(buffer.get(), packet->length(), base::DoNothing(),
+                              TRAFFIC_ANNOTATION_FOR_TESTS)),
+      // Path should be decoded by the server session and appear in the output.
+      std::format(":path={0}", path));
+}
+
+// Test an HTTP's initial settings packet is decoded by the server session.
+TEST_F(QuicSocketDataProviderTest, PrintInitialSettingsPacket) {
+  QuicSocketDataProvider socket_data(version_);
+  MockClientSocketFactory socket_factory;
+
+  socket_data.AddWrite("InitialSettings", TestInitialSettingsPacket(2));
+
+  socket_factory.AddSocketDataProvider(&socket_data);
+  std::unique_ptr<DatagramClientSocket> socket =
+      socket_factory.CreateDatagramClientSocket(
+          DatagramSocket::BindType::DEFAULT_BIND, nullptr,
+          net_log_with_source_.source());
+  socket->Connect(IPEndPoint());
+  std::unique_ptr<quic::QuicReceivedPacket> packet = TestPacket(999);
+  scoped_refptr<StringIOBuffer> buffer = base::MakeRefCounted<StringIOBuffer>(
+      std::string(packet->data(), packet->length()));
+
+  EXPECT_NONFATAL_FAILURE(
+      EXPECT_EQ(ERR_UNEXPECTED,
+                socket->Write(buffer.get(), packet->length(), base::DoNothing(),
+                              TRAFFIC_ANNOTATION_FOR_TESTS)),
+      // Content of the setting frame should be decoded in the output.
+      "SETTINGS_H3_DATAGRAM = 1;");
 }
 
 }  // namespace net::test

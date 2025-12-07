@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.download;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -21,13 +20,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.download.dialogs.DownloadLocationDialogCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.net.ConnectionType;
@@ -38,6 +37,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DownloadDialogBridgeUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final int FAKE_NATIVE_HOLDER = 1;
     private static final long TOTAL_BYTES = 100;
     private static final @ConnectionType int CONNECTION_TYPE = ConnectionType.CONNECTION_3G;
@@ -48,8 +49,6 @@ public class DownloadDialogBridgeUnitTest {
     private static final String NEW_SUGGESTED_PATH = "sdcard/new_download.txt";
 
     private DownloadDialogBridge mBridge;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private DownloadDialogBridge.Natives mNativeMock;
 
@@ -65,9 +64,8 @@ public class DownloadDialogBridgeUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ShadowLog.stream = System.out;
-        mJniMocker.mock(DownloadDialogBridgeJni.TEST_HOOKS, mNativeMock);
+        DownloadDialogBridgeJni.setInstanceForTesting(mNativeMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mBridge = new DownloadDialogBridge(FAKE_NATIVE_HOLDER, mLocationDialog);
     }
@@ -89,22 +87,12 @@ public class DownloadDialogBridgeUnitTest {
                 mProfile);
     }
 
-    private void locationDialogWillReturn(String newPath) {
-        doAnswer(
-                        invocation -> {
-                            mBridge.onDownloadLocationDialogComplete(newPath);
-                            return null;
-                        })
-                .when(mLocationDialog)
-                .showDialog(
-                        any(), any(), eq(TOTAL_BYTES), anyInt(), eq(SUGGESTED_PATH), eq(mProfile));
-    }
-
     @Test
     public void testShowDialog() {
         doAnswer(
                         invocation -> {
-                            mBridge.onDownloadLocationDialogComplete(NEW_SUGGESTED_PATH);
+                            mBridge.onDownloadLocationDialogComplete(
+                                    NEW_SUGGESTED_PATH, /* didUserConfirm= */ true);
                             return null;
                         })
                 .when(mLocationDialog)
@@ -125,7 +113,36 @@ public class DownloadDialogBridgeUnitTest {
                         eq(LOCATION_DIALOG_TYPE),
                         eq(SUGGESTED_PATH),
                         eq(mProfile));
-        verify(mNativeMock).onComplete(anyLong(), any(), eq(NEW_SUGGESTED_PATH));
+        verify(mNativeMock).onComplete(anyLong(), eq(NEW_SUGGESTED_PATH), eq(true));
+    }
+
+    @Test
+    public void testUserDidNotConfirm() {
+        doAnswer(
+                        invocation -> {
+                            mBridge.onDownloadLocationDialogComplete(
+                                    NEW_SUGGESTED_PATH, /* didUserConfirm= */ false);
+                            return null;
+                        })
+                .when(mLocationDialog)
+                .showDialog(
+                        any(),
+                        any(),
+                        eq(TOTAL_BYTES),
+                        eq(LOCATION_DIALOG_TYPE),
+                        eq(SUGGESTED_PATH),
+                        eq(mProfile));
+
+        showDialog();
+        verify(mLocationDialog)
+                .showDialog(
+                        any(),
+                        any(),
+                        eq(TOTAL_BYTES),
+                        eq(LOCATION_DIALOG_TYPE),
+                        eq(SUGGESTED_PATH),
+                        eq(mProfile));
+        verify(mNativeMock).onComplete(anyLong(), eq(NEW_SUGGESTED_PATH), eq(false));
     }
 
     @Test
@@ -151,6 +168,6 @@ public class DownloadDialogBridgeUnitTest {
                         eq(mProfile));
 
         showDialog();
-        verify(mNativeMock).onCanceled(anyLong(), any());
+        verify(mNativeMock).onCanceled(anyLong());
     }
 }

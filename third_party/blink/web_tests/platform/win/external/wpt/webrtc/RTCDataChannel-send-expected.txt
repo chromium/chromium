@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Sending multiple messages simultaneously in unordered mode works reliably
+  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'send' on 'RTCDataChannel': RTCDataChannel.readyState is not 'open'"
+[FAIL] Sending before the other side is open should work
+  promise_test: Unhandled rejection with value: object "ReferenceError: negotiate is not defined"
+Harness: the test ran to completion.
+

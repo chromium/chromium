@@ -5,11 +5,12 @@
 #ifndef MEDIA_FORMATS_HLS_ITEMS_H_
 #define MEDIA_FORMATS_HLS_ITEMS_H_
 
+#include <variant>
+
 #include "media/base/media_export.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
 #include "media/formats/hls/tag_name.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace media::hls {
 
@@ -40,9 +41,6 @@ class MEDIA_EXPORT TagItem {
   // If this is an unknown tag, returns `std::nullopt`.
   std::optional<TagName> GetName() const { return name_; }
 
-  // Returns the name of the tag as a string.
-  std::string_view GetNameStr();
-
   // Returns the line number this tag appeared on.
   size_t GetLineNumber() const { return line_number_; }
 
@@ -70,7 +68,7 @@ struct UriItem {
   SourceString content;
 };
 
-using GetNextLineItemResult = absl::variant<TagItem, UriItem>;
+using GetNextLineItemResult = std::variant<TagItem, UriItem>;
 
 // Returns the next line-level item from the source text. Automatically skips
 // empty lines.

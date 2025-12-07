@@ -76,8 +76,7 @@ class MetricsStateManagerTest : public testing::Test {
   MetricsStateManagerTest(const MetricsStateManagerTest&) = delete;
   MetricsStateManagerTest& operator=(const MetricsStateManagerTest&) = delete;
 
-  std::unique_ptr<MetricsStateManager> CreateStateManager(
-      const std::string& external_client_id = "") {
+  std::unique_ptr<MetricsStateManager> CreateStateManager() {
     std::unique_ptr<MetricsStateManager> state_manager =
         MetricsStateManager::Create(
             &prefs_, enabled_state_provider_.get(), std::wstring(),
@@ -87,8 +86,7 @@ class MetricsStateManagerTest : public testing::Test {
                 base::Unretained(this)),
             base::BindRepeating(
                 &MetricsStateManagerTest::LoadFakeClientInfoBackup,
-                base::Unretained(this)),
-            external_client_id);
+                base::Unretained(this)));
     state_manager->InstantiateFieldTrialList();
     return state_manager;
   }
@@ -213,36 +211,6 @@ TEST_F(MetricsStateManagerTest, EntropySourceUsed_High) {
             state_manager->client_id());
 }
 
-TEST_F(MetricsStateManagerTest, EntropySourceUsed_High_ExternalClientId) {
-  EnableMetricsReporting();
-  const std::string kExternalClientId = "abc";
-  std::unique_ptr<MetricsStateManager> state_manager(
-      CreateStateManager(kExternalClientId));
-  // |enable_limited_entropy_mode| is irrelevant but is set for test coverage.
-  state_manager->CreateEntropyProviders(
-      /*enable_limited_entropy_mode=*/true);
-  EXPECT_EQ(state_manager->entropy_source_returned(),
-            MetricsStateManager::ENTROPY_SOURCE_HIGH);
-  EXPECT_EQ(state_manager->client_id(), kExternalClientId);
-  EXPECT_EQ(state_manager->initial_client_id_for_testing(), kExternalClientId);
-}
-
-TEST_F(MetricsStateManagerTest,
-       EntropySourceUsed_High_ExternalClientId_MetricsReportingDisabled) {
-  const std::string kExternalClientId = "abc";
-  std::unique_ptr<MetricsStateManager> state_manager(
-      CreateStateManager(kExternalClientId));
-  // |enable_limited_entropy_mode| is irrelevant but is set for test coverage.
-  state_manager->CreateEntropyProviders(
-      /*enable_limited_entropy_mode=*/true);
-  EXPECT_TRUE(state_manager->client_id().empty());
-  EXPECT_EQ(state_manager->entropy_source_returned(),
-            MetricsStateManager::ENTROPY_SOURCE_HIGH);
-  EXPECT_EQ(state_manager->initial_client_id_for_testing(), kExternalClientId);
-}
-
-// Check that setting the kMetricsResetIds pref to true causes the client id to
-// be reset. We do not check that the low entropy source is reset because we
 // cannot ensure that metrics state manager won't generate the same id again.
 TEST_F(MetricsStateManagerTest, ResetMetricsIDs) {
   // Set an initial client id in prefs. It should not be possible for the
@@ -604,34 +572,6 @@ TEST_F(MetricsStateManagerTest, CheckProvider) {
   histogram_tester.ExpectTotalCount("UMA.IsClonedInstall", 0);
 }
 
-TEST_F(MetricsStateManagerTest, CheckProviderLogNormal) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  // Set the random seed to have a deterministic test.
-  std::unique_ptr<MetricsProvider> provider =
-      state_manager->GetProviderAndSetRandomSeedForTesting(42);
-
-  base::HistogramTester histogram_tester;
-  ChromeUserMetricsExtension uma_proto;
-  provider->ProvideCurrentSessionData(&uma_proto);
-  histogram_tester.ExpectUniqueSample("UMA.DataValidation.LogNormal", 189, 1);
-}
-
-TEST_F(MetricsStateManagerTest, CheckProviderLogNormalWithParams) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      kNonUniformityValidationFeature, {{"delta", "10.0"}});
-  std::unique_ptr<MetricsStateManager> state_manager(CreateStateManager());
-  // Set the random seed to have a deterministic test.
-  std::unique_ptr<MetricsProvider> provider =
-      state_manager->GetProviderAndSetRandomSeedForTesting(42);
-
-  base::HistogramTester histogram_tester;
-  ChromeUserMetricsExtension uma_proto;
-  provider->ProvideCurrentSessionData(&uma_proto);
-  histogram_tester.ExpectUniqueSample("UMA.DataValidation.LogNormal", 2081, 1);
-}
-
 TEST_F(MetricsStateManagerTest, CheckClientIdWasNotUsedToAssignFieldTrial) {
   EnableMetricsReporting();
   ClientInfo client_info;
@@ -734,7 +674,8 @@ TEST_F(MetricsStateManagerTest, CheckProviderResetIds) {
   // Set the pref through SaveMachineId and expect previous to do nothing and
   // current to log the histogram
   prefs_.SetInteger(prefs::kMetricsMachineId, 2216820);
-  state_manager->cloned_install_detector_.SaveMachineId(&prefs_, "test");
+  state_manager->cloned_install_detector_.SaveMachineId(
+      &prefs_, base::Time::Now(), "test");
   provider->ProvideCurrentSessionData(&uma_proto);
   histogram_tester.ExpectUniqueSample("UMA.IsClonedInstall", 1, 2);
 }
@@ -800,17 +741,6 @@ TEST_F(MetricsStateManagerTest,
               cloned_install_info.first_timestamp());
     EXPECT_NE(cloned_install_info.last_timestamp(), 0);
   }
-}
-
-TEST_F(MetricsStateManagerTest, UseExternalClientId) {
-  base::HistogramTester histogram_tester;
-  std::string external_client_id = "AAAAAAAA-BBBB-CCCC-DDDD-EEEEEEEEEEEE";
-  std::unique_ptr<MetricsStateManager> state_manager(
-      CreateStateManager(external_client_id));
-  EnableMetricsReporting();
-  state_manager->ForceClientIdCreation();
-  EXPECT_EQ(external_client_id, state_manager->client_id());
-  histogram_tester.ExpectUniqueSample("UMA.ClientIdSource", 5, 1);
 }
 
 }  // namespace metrics

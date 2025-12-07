@@ -10,6 +10,7 @@ mojom("mojom") {
     "ax_action_data.mojom",
     "ax_event.mojom",
     "ax_event_intent.mojom",
+    "ax_location_and_scroll_updates.mojom",
     "ax_mode.mojom",
     "ax_node_data.mojom",
     "ax_relative_bounds.mojom",
@@ -36,6 +37,7 @@ mojom("mojom") {
         {
           mojom = "ax.mojom.AXRelativeBounds"
           cpp = "::ui::AXRelativeBounds"
+          move_only = true
         },
       ]
       traits_headers = [ "ax_relative_bounds_mojom_traits.h" ]
@@ -65,7 +67,7 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "ax.mojom.AXEventIntent"
+          mojom = "ax.mojom.EventIntent"
           cpp = "::ui::AXEventIntent"
         },
       ]
@@ -82,6 +84,31 @@ mojom("mojom") {
       ]
       traits_sources = [ "ax_event_mojom_traits.cc" ]
       traits_headers = [ "ax_event_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/accessibility:ax_base" ]
+    },
+    {
+      types = [
+        {
+          mojom = "ax.mojom.AXLocationChange"
+          cpp = "::ui::AXLocationChange"
+        },
+        {
+          mojom = "ax.mojom.AXScrollChange"
+          cpp = "::ui::AXScrollChange"
+        },
+        {
+          mojom = "ax.mojom.AXLocationAndScrollUpdates"
+          cpp = "::ui::AXLocationAndScrollUpdates"
+
+          # This is necessary to avoid expensive copies after this data is
+          # created and passed around. Subsequent methods of the data can
+          # choose to apply const if appropriate. We avoid use move_only here
+          # because it requires the caller copy when passing to the mojo pipe.
+          non_const_ref = true
+        },
+      ]
+      traits_sources = [ "ax_location_and_scroll_updates_mojom_traits.cc" ]
+      traits_headers = [ "ax_location_and_scroll_updates_mojom_traits.h" ]
       traits_public_deps = [ "//ui/accessibility:ax_base" ]
     },
     {
@@ -136,6 +163,8 @@ mojom("mojom") {
         {
           mojom = "ax.mojom.AXTreeData"
           cpp = "::ui::AXTreeData"
+          forward_declaration = "namespace ui { struct AXTreeData; }"
+          move_only = true
         },
       ]
       traits_sources = [ "ax_tree_data_mojom_traits.cc" ]
@@ -186,7 +215,7 @@ mojom("mojom") {
   blink_cpp_typemaps = common_typemaps
 }
 
-if (is_android || is_chromeos_ash) {
+if (is_android || is_chromeos) {
   mojom("ax_assistant_mojom") {
     sources = [ "ax_assistant_structure.mojom" ]
 
@@ -237,6 +266,6 @@ source_set("mojom_traits") {
     "//ui/accessibility/mojom:mojom_shared_cpp_sources",
     "//ui/gfx",
     "//ui/gfx/geometry/mojom:mojom_traits",
-    "//ui/gfx/mojom:mojom",
+    "//ui/gfx/mojom",
   ]
 }

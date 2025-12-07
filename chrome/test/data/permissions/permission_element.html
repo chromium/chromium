@@ -2,28 +2,29 @@
 <html>
 <head>
   <style>
-    permission {
+    permission, usermedia {
       font-size: xxx-large;
       margin: 0px;
+      border: 0px;
+      width: 188px;
+      height: 1.2em;
     }
   </style>
 </head>
 <body>
-  <permission id="geolocation" type="geolocation">
-  <permission id="microphone" type="microphone">
-  <permission id="camera" type="camera">
-  <permission id="invalid" type="invalid microphone">
-  <permission id="camera-microphone" type="camera microphone">
+  <div id="parent">
+    <permission id="geolocation" type="geolocation"></permission>
+    <permission id="microphone" type="microphone"></permission>
+    <permission id="camera" type="camera"></permission>
+    <permission id="invalid" type="invalid microphone"></permission>
+    <usermedia id="camera-microphone" type="camera microphone"></usermedia>
+  </div>
   <script>
-    document.querySelectorAll('permission').forEach(permissionElement => {
-      // Console logs are used to inform the browser test which events
-      // have been seen.
-      permissionElement.addEventListener('resolve', (event) => {
-        console.log(event.target.id + '-resolve');
-      });
-      permissionElement.addEventListener('dismiss', (event) => {
-        console.log(event.target.id + '-dismiss');
-      });
+    document.getElementById('parent').addEventListener('promptaction', (event) => {
+      console.log(event.target.id + '-promptaction');
+    });
+    document.getElementById('parent').addEventListener('promptdismiss', (event) => {
+      console.log(event.target.id + '-promptdismiss');
     });
 
     function clickById(element_id) {
@@ -50,6 +51,11 @@
         el.style.fontSize = 'small';
       });
     }
+
+    window.addEventListener('message', function(event) {
+      setFontSizeSmall();
+      clickById(event.data);
+    });
   </script>
 </body>
 </html>

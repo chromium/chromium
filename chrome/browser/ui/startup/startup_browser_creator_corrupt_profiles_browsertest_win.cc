@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -11,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_file_util.h"
@@ -21,7 +21,9 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/signin/signin_util.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -48,12 +50,14 @@ void CreateAndSwitchToProfile(const std::string& basepath) {
 
 void CheckBrowserWindows(const std::vector<std::string>& expected_basepaths) {
   std::vector<std::string> actual_basepaths;
-  for (const Browser* browser : *BrowserList::GetInstance()) {
-    actual_basepaths.push_back(
-        browser->profile()->GetBaseName().AsUTF8Unsafe());
-  }
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&actual_basepaths](BrowserWindowInterface* browser) {
+        actual_basepaths.push_back(
+            browser->GetProfile()->GetBaseName().AsUTF8Unsafe());
+        return true;
+      });
 
-  if (!base::ranges::is_permutation(actual_basepaths, expected_basepaths)) {
+  if (!std::ranges::is_permutation(actual_basepaths, expected_basepaths)) {
     ADD_FAILURE()
         << "Expected profile paths are different from actual profile paths."
            "\n  Actual profile paths: "
@@ -93,8 +97,9 @@ class StartupBrowserCreatorCorruptProfileTest : public InProcessBrowserTest {
 
   bool DeleteProfileData(const std::string& basepath) {
     base::FilePath user_data_dir;
-    if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir))
+    if (!base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir)) {
       return false;
+    }
 
     base::FilePath dir_to_delete = user_data_dir.AppendASCII(basepath);
     return base::DirectoryExists(dir_to_delete) &&
@@ -120,13 +125,12 @@ class StartupBrowserCreatorCorruptProfileTest : public InProcessBrowserTest {
   bool SetUpUserDataDirectoryForDeletedProfileFallbackToUserManager();
 
   void CloseBrowsersSynchronouslyForProfileBasePath(
-           const std::string& basepath) {
+      const std::string& basepath) {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     ASSERT_TRUE(profile_manager);
 
-    Profile* profile =
-        profile_manager->GetProfileByPath(
-            profile_manager->user_data_dir().AppendASCII(basepath));
+    Profile* profile = profile_manager->GetProfileByPath(
+        profile_manager->user_data_dir().AppendASCII(basepath));
     ASSERT_TRUE(profile);
 
     base::RunLoop run_loop;
@@ -165,16 +169,15 @@ class StartupBrowserCreatorCorruptProfileTest : public InProcessBrowserTest {
 
     // If control goes here, it means SetUpUserDataDirectory is not handled.
     // This is okay for PRE_ tests, but not acceptable for main tests.
-    if (content::IsPreTest())
+    if (content::IsPreTest()) {
       return true;
+    }
 
     ADD_FAILURE() << "SetUpUserDataDirectory is not handled by the test.";
     return false;
   }
 
-  void TearDownOnMainThread() override {
-    test_body_has_run_ = true;
-  }
+  void TearDownOnMainThread() override { test_body_has_run_ = true; }
 
   void TearDown() override {
     EXPECT_EQ(expect_test_body_to_run_, test_body_has_run_);
@@ -210,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorCorruptProfileTest,
 }
 
 bool StartupBrowserCreatorCorruptProfileTest::
-         SetUpUserDataDirectoryForLastOpenedProfileMissing() {
+    SetUpUserDataDirectoryForLastOpenedProfileMissing() {
   return DeleteProfileData("Profile 1") &&
          RemoveCreateDirectoryPermissionForUserDataDirectory();
 }
@@ -255,8 +258,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorCorruptProfileTest,
 
 bool StartupBrowserCreatorCorruptProfileTest::
     SetUpUserDataDirectoryForLastUsedProfileFallbackToUserManager() {
-  return DeleteProfileData("Default") &&
-         DeleteProfileData("Profile 2") &&
+  return DeleteProfileData("Default") && DeleteProfileData("Profile 2") &&
          RemoveCreateDirectoryPermissionForUserDataDirectory();
 }
 
@@ -283,8 +285,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorCorruptProfileTest,
 
 bool StartupBrowserCreatorCorruptProfileTest::
     SetUpUserDataDirectoryForCannotCreateSystemProfile() {
-  return DeleteProfileData("Default") &&
-         DeleteProfileData("Profile 2") &&
+  return DeleteProfileData("Default") && DeleteProfileData("Profile 2") &&
          RemoveCreateDirectoryPermissionForUserDataDirectory();
 }
 
@@ -304,8 +305,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorCorruptProfileTest,
 
 bool StartupBrowserCreatorCorruptProfileTest::
     SetUpUserDataDirectoryForLastUsedProfileFallbackToAnyProfile() {
-  return DeleteProfileData("Default") &&
-         DeleteProfileData("Profile 2") &&
+  return DeleteProfileData("Default") && DeleteProfileData("Profile 2") &&
          RemoveCreateDirectoryPermissionForUserDataDirectory();
 }
 

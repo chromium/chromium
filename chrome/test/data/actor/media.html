@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test page showing a video with media session actions</title>
+</head>
+<body>
+  <video id="video" controls>
+    <source src="video.webm">
+  </video>
+  <script>
+    const video = document.getElementById('video');
+    let event_log = [];
+    setupActionHandlers();
+
+    // Called by the test to start media playback.
+    function play() {
+      video.play();
+    }
+
+    function setupActionHandlers() {
+      navigator.mediaSession.setActionHandler('play', _ => {
+        video.play();
+        event_log.push('play');
+      });
+      navigator.mediaSession.setActionHandler('pause',  _ => {
+        video.pause();
+        event_log.push('pause');
+      });
+      navigator.mediaSession.setActionHandler('seekto', (details) => {
+        video.currentTime = details.seekTime;
+        event_log.push('seek ' + details.seekTime);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -15,6 +15,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "v8/include/cppgc/persistent.h"
 
 namespace content {
 class RenderFrame;
@@ -70,7 +71,7 @@ class JsCommunication
   bool inside_did_clear_window_object_ = false;
 
   std::vector<std::unique_ptr<DocumentStartJavaScript>> scripts_;
-  std::vector<base::WeakPtr<JsBinding>> js_bindings_;
+  std::vector<cppgc::WeakPersistent<JsBinding>> js_bindings_;
 
   // Associated with legacy IPC channel.
   mojo::AssociatedReceiver<mojom::JsCommunication> receiver_{this};

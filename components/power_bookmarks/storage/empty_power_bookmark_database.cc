@@ -77,35 +77,6 @@ bool EmptyPowerBookmarkDatabase::DeletePowersForURL(
   return false;
 }
 
-std::vector<std::unique_ptr<Power>> EmptyPowerBookmarkDatabase::GetAllPowers() {
-  return std::vector<std::unique_ptr<Power>>();
-}
-
-std::vector<std::unique_ptr<Power>>
-EmptyPowerBookmarkDatabase::GetPowersForGUIDs(
-    const std::vector<std::string>& guids) {
-  return std::vector<std::unique_ptr<Power>>();
-}
-
-std::unique_ptr<Power> EmptyPowerBookmarkDatabase::GetPowerForGUID(
-    const std::string& guid) {
-  return nullptr;
-}
-
-bool EmptyPowerBookmarkDatabase::CreateOrMergePowerFromSync(
-    const Power& power) {
-  return false;
-}
-
-bool EmptyPowerBookmarkDatabase::DeletePowerFromSync(const std::string& guid) {
-  return false;
-}
-
-PowerBookmarkSyncMetadataDatabase*
-EmptyPowerBookmarkDatabase::GetSyncMetadataDatabase() {
-  return nullptr;
-}
-
 std::unique_ptr<Transaction> EmptyPowerBookmarkDatabase::BeginTransaction() {
   return std::make_unique<EmptyDatabaseTransaction>();
 }

@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/page_size.h"
+#include "base/types/expected.h"
 
 namespace base {
 namespace subtle {
@@ -21,24 +22,28 @@ static constexpr int kNoWriteOrExec =
     ~(ZX_RIGHT_WRITE | ZX_RIGHT_EXECUTE | ZX_RIGHT_SET_PROPERTY);
 
 // static
-PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Take(
-    zx::vmo handle,
-    Mode mode,
-    size_t size,
-    const UnguessableToken& guid) {
-  if (!handle.is_valid())
+expected<PlatformSharedMemoryRegion, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::TakeOrFail(zx::vmo handle,
+                                       Mode mode,
+                                       size_t size,
+                                       const UnguessableToken& guid) {
+  if (!handle.is_valid()) {
     return {};
+  }
 
-  if (size == 0)
+  if (size == 0) {
     return {};
+  }
 
-  if (size > static_cast<size_t>(std::numeric_limits<int>::max()))
+  if (size > static_cast<size_t>(std::numeric_limits<int>::max())) {
     return {};
+  }
 
-  CHECK(CheckPlatformHandlePermissionsCorrespondToMode(zx::unowned_vmo(handle),
-                                                       mode, size));
-
-  return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+  return CheckPlatformHandlePermissionsCorrespondToMode(zx::unowned_vmo(handle),
+                                                        mode, size)
+      .transform([&] {
+        return PlatformSharedMemoryRegion(std::move(handle), mode, size, guid);
+      });
 }
 
 zx::unowned_vmo PlatformSharedMemoryRegion::GetPlatformHandle() const {
@@ -50,8 +55,9 @@ bool PlatformSharedMemoryRegion::IsValid() const {
 }
 
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return {};
+  }
 
   CHECK_NE(mode_, Mode::kWritable)
       << "Duplicating a writable shared memory region is prohibited";
@@ -68,8 +74,9 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Duplicate() const {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to read-only";
@@ -85,8 +92,9 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly() {
 }
 
 bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
-  if (!IsValid())
+  if (!IsValid()) {
     return false;
+  }
 
   CHECK_EQ(mode_, Mode::kWritable)
       << "Only writable shared memory region can be converted to unsafe";
@@ -98,8 +106,9 @@ bool PlatformSharedMemoryRegion::ConvertToUnsafe() {
 // static
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
-  if (size == 0)
+  if (size == 0) {
     return {};
+  }
 
   // Aligning may overflow so check that the result doesn't decrease.
   size_t rounded_size = bits::AlignUp(size, GetPageSize());
@@ -136,7 +145,8 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
 }
 
 // static
-bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
+expected<void, PlatformSharedMemoryRegion::TakeError>
+PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
@@ -146,23 +156,18 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
   ZX_CHECK(status == ZX_OK, status) << "zx_object_get_info";
 
   if (basic.type != ZX_OBJ_TYPE_VMO) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "Received zircon handle is not a VMO";
-    return false;
+    return unexpected(TakeError::kNotVmo);
   }
 
   bool is_read_only = (basic.rights & (ZX_RIGHT_WRITE | ZX_RIGHT_EXECUTE)) == 0;
   bool expected_read_only = mode == Mode::kReadOnly;
 
   if (is_read_only != expected_read_only) {
-    // TODO(crbug.com/40574272): convert to DLOG when bug fixed.
-    LOG(ERROR) << "VMO object has wrong access rights: it is"
-               << (is_read_only ? " " : " not ") << "read-only but it should"
-               << (expected_read_only ? " " : " not ") << "be";
-    return false;
+    return unexpected(expected_read_only ? TakeError::kExpectedReadOnlyButNot
+                                         : TakeError::kExpectedWritableButNot);
   }
 
-  return true;
+  return ok();
 }
 
 PlatformSharedMemoryRegion::PlatformSharedMemoryRegion(

@@ -7,10 +7,11 @@ import './diagnostics_shared.css.js';
 import './ethernet_info.js';
 import './wifi_info.js';
 
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Network, NetworkType} from './network_health_provider.mojom-webui.js';
+import type {Network} from './network_health_provider.mojom-webui.js';
+import {NetworkType} from './network_health_provider.mojom-webui.js';
 import {getTemplate} from './network_info.html.js';
 
 /**

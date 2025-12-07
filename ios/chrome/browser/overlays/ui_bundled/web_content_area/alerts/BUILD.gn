@@ -15,9 +15,9 @@ source_set("alerts") {
     "//ios/chrome/browser/alert_view/ui_bundled",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
-    "//ios/chrome/browser/ui/presenters",
+    "//ios/chrome/browser/presenters/ui_bundled",
+    "//ios/chrome/browser/shared/ui/elements",
   ]
 }
 
@@ -36,12 +36,12 @@ source_set("unit_tests") {
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/web_content_area",
     "//ios/chrome/browser/overlays/model/test",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
-    "//ios/chrome/browser/shared/model/browser_state:test_support",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/overlays/ui_bundled/test",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/test:test_support",
-    "//ios/web/public/test:test",
+    "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",
   ]

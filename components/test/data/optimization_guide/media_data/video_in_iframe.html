@@ -1,0 +1,18 @@
+<html>
+<head>
+  <title>Test page showing a video in an iframe</title>
+</head>
+<body>
+<iframe id="iframe" src="./video.html"></iframe>
+</body>
+<script>
+  // These functions will be called by the browser test.
+  function play() {
+    document.getElementById('iframe').contentWindow.play();
+  }
+
+  function setupPosition() {
+    document.getElementById('iframe').contentWindow.setupPosition();
+  }
+</script>
+</html>

@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/features.gni")
-
 source_set("compute_pressure") {
   visibility = [ "//services/device:*" ]
 
@@ -22,11 +20,14 @@ source_set("compute_pressure") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  public_deps = [ "//services/device/public/mojom" ]
+  public_deps = [
+    "//services/device/public/cpp/compute_pressure",
+    "//services/device/public/mojom",
+  ]
 
   deps = [
     "//base",
-    "//components/system_cpu:system_cpu",
+    "//components/system_cpu",
     "//mojo/public/cpp/bindings",
     "//services/device/public/cpp:device_features",
   ]

@@ -17,7 +17,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
-#include "base/ranges/algorithm.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
@@ -161,18 +160,18 @@ CredentialManagerPendingRequestTask::~CredentialManagerPendingRequestTask() {
 
 void CredentialManagerPendingRequestTask::OnFetchCompleted() {
   std::vector<std::unique_ptr<PasswordForm>> all_matches;
-  base::ranges::transform(form_fetcher_->GetFederatedMatches(),
-                          std::back_inserter(all_matches),
-                          [](const PasswordForm& form) {
-                            return std::make_unique<PasswordForm>(form);
-                          });
+  std::ranges::transform(form_fetcher_->GetFederatedMatches(),
+                         std::back_inserter(all_matches),
+                         [](const PasswordForm& form) {
+                           return std::make_unique<PasswordForm>(form);
+                         });
   // GetFederatedMatches() comes with duplicates, filter them immediately.
   FilterDuplicatesInFederatedCredentials(all_matches);
-  base::ranges::transform(form_fetcher_->GetBestMatches(),
-                          std::back_inserter(all_matches),
-                          [](const PasswordForm& form) {
-                            return std::make_unique<PasswordForm>(form);
-                          });
+  std::ranges::transform(form_fetcher_->GetBestMatches(),
+                         std::back_inserter(all_matches),
+                         [](const PasswordForm& form) {
+                           return std::make_unique<PasswordForm>(form);
+                         });
   FilterIrrelevantForms(all_matches, include_passwords_, federations_);
   ProcessForms(std::move(all_matches));
 }

@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_INITIATOR_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_INITIATOR_INFO_H_
 
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
@@ -49,6 +50,10 @@ struct FetchInitiatorInfo {
   // Should only be set when |is_imported_module| or when |name| is
   // fetch_initiator_type_names::kCSS or fetch_initiator_type_names::kUaCSS.
   String referrer;
+
+  // Url of the initiator, calculated from some fields above.
+  // TODO(crbug.com/422626353): Refactor and consolidate FetchInitiatorInfo.
+  KURL initiator_url;
 };
 
 }  // namespace blink

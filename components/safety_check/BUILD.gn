@@ -2,6 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/features.gni")
+
+source_set("pref_names") {
+  sources = [ "safety_check_pref_names.h" ]
+}
+
+source_set("prefs") {
+  sources = [
+    "safety_check_prefs.cc",
+    "safety_check_prefs.h",
+  ]
+  deps = [
+    ":pref_names",
+    "//components/prefs",
+  ]
+}
+
 source_set("safety_check") {
   sources = [
     "safety_check.cc",
@@ -22,17 +39,28 @@ source_set("safety_check") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "update_check_helper_unittest.cc" ]
-
-  deps = [
-    ":safety_check",
-    "//content/test:test_support",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
-    "//testing/gtest",
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
   ]
+
+  deps = [ "//base" ]
+}
+
+if (use_blink) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "update_check_helper_unittest.cc" ]
+
+    deps = [
+      ":safety_check",
+      "//content/test:test_support",
+      "//services/network:test_support",
+      "//services/network/public/cpp",
+      "//testing/gtest",
+    ]
+  }
 }
 
 source_set("test_support") {

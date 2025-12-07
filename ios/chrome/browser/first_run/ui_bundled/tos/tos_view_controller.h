@@ -7,16 +7,23 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol TOSCommands;
+@class TOSViewController;
+
+@protocol TOSViewControllerPresentationDelegate
+
+- (void)TOSViewControllerWantsToBeClosed:(TOSViewController*)viewController;
+
+@end
 
 // View controller used to display the ToS.
 @interface TOSViewController : UIViewController
 
+@property(nonatomic, weak) id<TOSViewControllerPresentationDelegate> delegate;
+
 // Initiates a TOSViewController with
 // `TOSView` UIView with ToS page in it;
 // `handler` to handle user action.
-- (instancetype)initWithContentView:(UIView*)TOSView
-                            handler:(id<TOSCommands>)handler;
+- (instancetype)initWithContentView:(UIView*)TOSView;
 
 // Closes the TOS.
 - (void)close;

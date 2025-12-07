@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/c/system/thunks.h"
 
 #include <cstddef>
@@ -29,14 +24,6 @@
 #include "mojo/public/c/system/macros.h"
 #include "mojo/public/c/system/message_pipe.h"
 
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_FUCHSIA)
-#include "base/environment.h"
-#include "base/files/file_path.h"
-#include "base/scoped_native_library.h"
-#include "base/threading/thread_restrictions.h"
-#endif
-
 namespace {
 
 typedef void (*MojoGetSystemThunksFunction)(MojoSystemThunks2* thunks);
@@ -50,10 +37,8 @@ MojoResult NotImplemented(const char* name) {
     return MOJO_RESULT_UNIMPLEMENTED;
   }
 
-  LOG(FATAL)
-      << "Mojo has not been initialized in this process. You must call "
-      << "either mojo::core::Init() as an embedder, or |MojoInitialize()| if "
-      << "using the mojo_core shared library.";
+  LOG(FATAL) << "Mojo has not been initialized in this process. You must call "
+             << "mojo::core::Init() as an embedder.";
 }
 
 }  // namespace
@@ -63,117 +48,10 @@ MojoResult NotImplemented(const char* name) {
       ? g_thunks.name(__VA_ARGS__)                  \
       : NotImplemented(#name)
 
-namespace mojo {
-
-// NOTE: This is defined within the global mojo namespace so that it can be
-// referenced as a friend to base::ScopedAllowBlocking when library support is
-// enabled.
-class CoreLibraryInitializer {
- public:
-  CoreLibraryInitializer() = default;
-  CoreLibraryInitializer(const CoreLibraryInitializer&) = delete;
-  CoreLibraryInitializer& operator=(const CoreLibraryInitializer&) = delete;
-  ~CoreLibraryInitializer() = delete;
-
-  MojoResult LoadLibrary(base::FilePath library_path) {
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_FUCHSIA)
-    if (library_ && library_->is_valid())
-      return MOJO_RESULT_OK;
-
-    if (library_path.empty()) {
-      auto environment = base::Environment::Create();
-      std::string library_path_value;
-      const char kLibraryPathEnvironmentVar[] = "MOJO_CORE_LIBRARY_PATH";
-      if (environment->GetVar(kLibraryPathEnvironmentVar, &library_path_value))
-        library_path = base::FilePath::FromUTF8Unsafe(library_path_value);
-    }
-
-    if (library_path.empty()) {
-      // Default to looking for the library in the current working directory.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-      const base::FilePath::CharType kDefaultLibraryPathValue[] =
-          FILE_PATH_LITERAL("./libmojo_core.so");
-#elif BUILDFLAG(IS_FUCHSIA)
-      const base::FilePath::CharType kDefaultLibraryPathValue[] =
-          FILE_PATH_LITERAL("libmojo_core.so");
-#elif BUILDFLAG(IS_WIN)
-      const base::FilePath::CharType kDefaultLibraryPathValue[] =
-          FILE_PATH_LITERAL("mojo_core.dll");
-#endif
-      library_path = base::FilePath(kDefaultLibraryPathValue);
-    }
-
-    // NOTE: |prefer_own_symbols| on POSIX implies that the library is loaded
-    // with RTLD_DEEPBIND, which is critical given that libmojo_core.so links
-    // against base's allocator shim. Essentially, this ensures that mojo_core
-    // internals get their own heap, and this is OK since heap pointer ownership
-    // is never passed across the ABI boundary.
-    base::ScopedAllowBlocking allow_blocking;
-    base::NativeLibraryOptions library_options;
-#if !defined(ADDRESS_SANITIZER) && !defined(THREAD_SANITIZER) && \
-    !defined(MEMORY_SANITIZER) && !defined(LEAK_SANITIZER)
-    // Sanitizer builds cannnot support RTLD_DEEPBIND, but they also disable
-    // allocator shims, so it's unnecessary there.
-    library_options.prefer_own_symbols = true;
-#endif
-    base::ScopedNativeLibrary library(base::LoadNativeLibraryWithOptions(
-        library_path, library_options, nullptr));
-    if (!library.is_valid())
-      return MOJO_RESULT_NOT_FOUND;
-
-    const char kGetThunksFunctionName[] = "MojoGetSystemThunks";
-
-    MojoGetSystemThunksFunction g_get_thunks =
-        reinterpret_cast<MojoGetSystemThunksFunction>(
-            library.GetFunctionPointer(kGetThunksFunctionName));
-    if (!g_get_thunks)
-      return MOJO_RESULT_NOT_FOUND;
-
-    DCHECK_EQ(g_thunks.size, 0u);
-    g_thunks.size = sizeof(g_thunks);
-    g_get_thunks(&g_thunks);
-    if (g_thunks.size == 0)
-      return MOJO_RESULT_NOT_FOUND;
-
-    library_ = std::move(library);
-    return MOJO_RESULT_OK;
-#else   // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_FUCHSIA)
-    return MOJO_RESULT_UNIMPLEMENTED;
-#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
-        // BUILDFLAG(IS_FUCHSIA)
-  }
-
- private:
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_FUCHSIA)
-  std::optional<base::ScopedNativeLibrary> library_;
-#endif
-};
-
-}  // namespace mojo
-
 extern "C" {
 
 MojoResult MojoInitialize(const struct MojoInitializeOptions* options) {
-  static base::NoDestructor<mojo::CoreLibraryInitializer> initializer;
-
-  std::string_view library_path_utf8;
-  if (options) {
-    if (!MOJO_IS_STRUCT_FIELD_PRESENT(options, mojo_core_path_length))
-      return MOJO_RESULT_INVALID_ARGUMENT;
-    library_path_utf8 = std::string_view(options->mojo_core_path,
-                                         options->mojo_core_path_length);
-  }
-
-  MojoResult load_result = initializer->LoadLibrary(
-      base::FilePath::FromUTF8Unsafe(library_path_utf8));
-  if (load_result != MOJO_RESULT_OK)
-    return load_result;
-
-  DCHECK(g_thunks.Initialize);
-  return INVOKE_THUNK(Initialize, options);
+  return MOJO_RESULT_UNIMPLEMENTED;
 }
 
 MojoTimeTicks MojoGetTimeTicksNow() {
@@ -501,7 +379,7 @@ MojoResult MojoQueryQuota(MojoHandle handle,
 }
 
 MojoResult MojoShutdown(const MojoShutdownOptions* options) {
-  return INVOKE_THUNK(Shutdown, options);
+  return MOJO_RESULT_UNIMPLEMENTED;
 }
 
 MojoResult MojoSetDefaultProcessErrorHandler(
@@ -680,7 +558,7 @@ MojoResult MojoAppendMessageData32(MojoMessageHandle message,
                                    uint32_t* buffer_size) {
   std::vector<MojoHandle> handles64(num_handles);
   for (size_t i = 0; i < num_handles; ++i) {
-    handles64[i] = handles[i];
+    handles64[i] = UNSAFE_TODO(handles[i]);
   }
   return MojoAppendMessageData(message, payload_size, handles64.data(),
                                num_handles, options, buffer, buffer_size);
@@ -697,7 +575,7 @@ MojoResult MojoGetMessageData32(MojoMessageHandle message,
                                          handles64.data(), num_handles);
   if (result == MOJO_RESULT_OK && num_handles) {
     for (size_t i = 0; i < *num_handles; ++i) {
-      handles[i] = static_cast<MojoHandle32>(handles64[i]);
+      UNSAFE_TODO(handles[i]) = static_cast<MojoHandle32>(handles64[i]);
     }
   }
   return result;
@@ -887,7 +765,8 @@ void MojoEmbedderSetSystemThunks(const MojoSystemThunks2* thunks) {
   // This should only have to check that the |g_thunks->size| is zero, but we
   // have multiple Mojo Core initializations in some test suites still. For now
   // we allow double calls as long as they're the same thunks as before.
-  DCHECK(g_thunks.size == 0 || !memcmp(&g_thunks, thunks, sizeof(g_thunks)))
+  UNSAFE_TODO(DCHECK(g_thunks.size == 0 ||
+                     !memcmp(&g_thunks, thunks, sizeof(g_thunks))))
       << "Cannot set embedder thunks after Mojo API calls have been made.";
 
   g_thunks = *thunks;

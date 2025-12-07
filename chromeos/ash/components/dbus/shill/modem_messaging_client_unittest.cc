@@ -54,7 +54,7 @@ class ModemMessagingClientTest : public testing::Test {
     // Create a mock bus.
     dbus::Bus::Options options;
     options.bus_type = dbus::Bus::SYSTEM;
-    mock_bus_ = new dbus::MockBus(options);
+    mock_bus_ = new dbus::MockBus(std::move(options));
 
     // Create a mock proxy.
     mock_proxy_ = new dbus::MockObjectProxy(mock_bus_.get(), kServiceName,
@@ -62,10 +62,9 @@ class ModemMessagingClientTest : public testing::Test {
 
     // Set an expectation so mock_proxy's ConnectToSignal() will use
     // OnConnectToSignal() to run the callback.
-    EXPECT_CALL(
-        *mock_proxy_.get(),
-        DoConnectToSignal(modemmanager::kModemManager1MessagingInterface,
-                          modemmanager::kSMSAddedSignal, _, _))
+    EXPECT_CALL(*mock_proxy_.get(),
+                ConnectToSignal(modemmanager::kModemManager1MessagingInterface,
+                                modemmanager::kSMSAddedSignal, _, _))
         .WillRepeatedly(
             Invoke(this, &ModemMessagingClientTest::OnConnectToSignal));
 
@@ -91,7 +90,7 @@ class ModemMessagingClientTest : public testing::Test {
   // Handles Delete method call.
   void OnDelete(dbus::MethodCall* method_call,
                 int timeout_ms,
-                dbus::ObjectProxy::ResponseCallback* callback) {
+                dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(modemmanager::kModemManager1MessagingInterface,
               method_call->GetInterface());
     EXPECT_EQ(modemmanager::kSMSDeleteFunction, method_call->GetMember());
@@ -102,13 +101,13 @@ class ModemMessagingClientTest : public testing::Test {
     EXPECT_FALSE(reader.HasMoreData());
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), response_));
+        FROM_HERE, base::BindOnce(std::move(callback), response_));
   }
 
   // Handles List method call.
   void OnList(dbus::MethodCall* method_call,
               int timeout_ms,
-              dbus::ObjectProxy::ResponseCallback* callback) {
+              dbus::ObjectProxy::ResponseCallback callback) {
     EXPECT_EQ(modemmanager::kModemManager1MessagingInterface,
               method_call->GetInterface());
     EXPECT_EQ(modemmanager::kSMSListFunction, method_call->GetMember());
@@ -116,7 +115,7 @@ class ModemMessagingClientTest : public testing::Test {
     EXPECT_FALSE(reader.HasMoreData());
 
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*callback), response_));
+        FROM_HERE, base::BindOnce(std::move(callback), response_));
   }
 
  protected:
@@ -141,11 +140,11 @@ class ModemMessagingClientTest : public testing::Test {
       const std::string& interface_name,
       const std::string& signal_name,
       const dbus::ObjectProxy::SignalCallback& signal_callback,
-      dbus::ObjectProxy::OnConnectedCallback* on_connected_callback) {
+      dbus::ObjectProxy::OnConnectedCallback on_connected_callback) {
     sms_received_callback_ = signal_callback;
     const bool success = true;
     task_environment_.GetMainThreadTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(*on_connected_callback),
+        FROM_HERE, base::BindOnce(std::move(on_connected_callback),
                                   interface_name, signal_name, success));
   }
 };
@@ -183,7 +182,7 @@ TEST_F(ModemMessagingClientTest, Delete) {
   // Set expectations.
   const dbus::ObjectPath kSmsPath("/SMS/0");
   expected_sms_path_ = kSmsPath;
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethod(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethod(_, _, _))
       .WillOnce(Invoke(this, &ModemMessagingClientTest::OnDelete));
 
   // Create response.
@@ -199,7 +198,7 @@ TEST_F(ModemMessagingClientTest, Delete) {
 
 TEST_F(ModemMessagingClientTest, List) {
   // Set expectations.
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethod(_, _, _))
+  EXPECT_CALL(*mock_proxy_.get(), CallMethod(_, _, _))
       .WillOnce(Invoke(this, &ModemMessagingClientTest::OnList));
 
   const std::vector<dbus::ObjectPath> kExpectedResult{

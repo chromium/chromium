@@ -370,8 +370,6 @@ export async function cropSquare(blob: Blob): Promise<Blob> {
     ctx.drawImage(
         img, Math.floor((img.width - side) / 2),
         Math.floor((img.height - side) / 2), side, side, 0, 0, side, side);
-    // TODO(b/174190121): Patch important exif entries from input blob to
-    // result blob.
     const croppedBlob = await canvasToJpegBlob(canvas);
     return croppedBlob;
   } finally {
@@ -405,7 +403,7 @@ export function extractBackgroundImageValueUrl(element: HTMLElement): string|
   if (imageValue === null || imageValue === undefined) {
     return null;
   }
-  const match = imageValue.toString().match(/url\(['"](.*)['"]\)/);
+  const match = /url\(['"](.*)['"]\)/.exec(imageValue.toString());
   return match?.[1] ?? null;
 }
 
@@ -432,7 +430,7 @@ export async function loadImage(
  * value and value to name, which most of the time isn't what we want.
  */
 export function getNumberEnumMapping<T extends number>(
-    enumType: {[key: string]: T|string}): {[key: string]: T} {
+    enumType: Record<string, T|string>): Record<string, T> {
   return Object.fromEntries(Object.entries(enumType).flatMap(([k, v]) => {
     if (typeof v === 'string') {
       return [];

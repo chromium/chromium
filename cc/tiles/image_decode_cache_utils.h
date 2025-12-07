@@ -16,7 +16,7 @@ namespace cc {
 class CC_EXPORT ImageDecodeCacheUtils {
  public:
   static bool ShouldEvictCaches(
-      base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
+      base::MemoryPressureLevel memory_pressure_level);
 
   // Returns budget bytes for decoded images that may be different depending
   // whether it's for renderer or for the ui compositor.

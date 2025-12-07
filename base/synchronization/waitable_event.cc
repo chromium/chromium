@@ -5,14 +5,14 @@
 #include "base/synchronization/waitable_event.h"
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/trace_event/base_tracing.h"
+#include "base/trace_event/trace_event.h"
 #include "base/tracing_buildflags.h"
 
 namespace base {
 
 WaitableEvent::~WaitableEvent() {
-#if BUILDFLAG(ENABLE_BASE_TRACING)
   // As requested in the documentation of perfetto::Flow::FromPointer, we should
   // emit a TerminatingFlow(this) from our destructor if we ever emitted a
   // Flow(this) which may be unmatched since the ptr value of `this` may be
@@ -29,7 +29,6 @@ WaitableEvent::~WaitableEvent() {
                           perfetto::TerminatingFlow::FromPointer(this));
     }
   }
-#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 }
 
 void WaitableEvent::Signal() {
@@ -48,8 +47,9 @@ void WaitableEvent::Wait() {
 }
 
 bool WaitableEvent::TimedWait(TimeDelta wait_delta) {
-  if (wait_delta <= TimeDelta())
+  if (wait_delta <= TimeDelta()) {
     return IsSignaled();
+  }
 
   // Consider this thread blocked for scheduling purposes. Ignore this for
   // non-blocking WaitableEvents.
@@ -70,14 +70,13 @@ bool WaitableEvent::TimedWait(TimeDelta wait_delta) {
   return result;
 }
 
-size_t WaitableEvent::WaitMany(base::span<WaitableEvent*> waitables) {
-  DCHECK(!waitables.empty()) << "Cannot wait on no events";
-
+size_t WaitableEvent::WaitMany(base::span<WaitableEvent*> events) {
+  DCHECK(!events.empty()) << "Cannot wait on no events";
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
       FROM_HERE, BlockingType::MAY_BLOCK);
 
-  const size_t signaled_id = WaitManyImpl(waitables);
-  WaitableEvent* const signaled_event = waitables[signaled_id];
+  const size_t signaled_id = WaitManyImpl(events);
+  WaitableEvent* const signaled_event = events[signaled_id];
   if (!signaled_event->only_used_while_idle_) {
     TRACE_EVENT_INSTANT("wakeup.flow,toplevel.flow",
                         "WaitableEvent::WaitMany Complete",

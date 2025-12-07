@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] div: Tests Set
+  Failed to set a named property 'foo豈' on 'DOMStringMap': 'data-foo豈' is not a valid attribute name.
+[FAIL] svg:circle: Tests Set
+  Failed to set a named property 'foo豈' on 'DOMStringMap': 'data-foo豈' is not a valid attribute name.
+Harness: the test ran to completion.
+

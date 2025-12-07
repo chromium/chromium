@@ -1,0 +1,69 @@
+Tests shared storage events with private aggregation configs.
+Events: [
+    [0] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : addModule
+        ownerOrigin : https://127.0.0.1:8443
+        ownerSite : https://127.0.0.1
+        params : {
+            scriptSourceUrl : https://127.0.0.1:8443/inspector-protocol/shared-storage-private-aggregation/resources/shared-storage-module.js
+            workletOrdinal : <number>
+            workletTargetId : <string>
+        }
+        scope : window
+    }
+    [1] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : run
+        ownerOrigin : https://127.0.0.1:8443
+        ownerSite : https://127.0.0.1
+        params : {
+            keepAlive : true
+            operationId : 0
+            operationName : contribute-to-histogram
+            privateAggregationConfig : {
+                filteringIdMaxBytes : 8
+                maxContributions : 20
+            }
+            serializedData : <string>
+            workletTargetId : <string>
+        }
+        scope : window
+    }
+    [2] : {
+        accessTime : <number>
+        mainFrameId : <string>
+        method : selectURL
+        ownerOrigin : https://127.0.0.1:8443
+        ownerSite : https://127.0.0.1
+        params : {
+            keepAlive : false
+            operationId : 1
+            operationName : contribute-to-histogram
+            privateAggregationConfig : {
+                aggregationCoordinatorOrigin : https://127.0.0.1:8443
+                contextId : example_context_id
+                filteringIdMaxBytes : 1
+            }
+            serializedData : <string>
+            urlsWithMetadata : [
+                [0] : {
+                    reportingMetadata : [
+                    ]
+                    url : https://google.com/
+                }
+                [1] : {
+                    reportingMetadata : [
+                    ]
+                    url : https://chromium.org/
+                }
+            ]
+            urnUuid : <string>
+            workletTargetId : <string>
+        }
+        scope : window
+    }
+]
+

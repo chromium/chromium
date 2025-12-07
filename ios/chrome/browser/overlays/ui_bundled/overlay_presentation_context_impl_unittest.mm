@@ -7,22 +7,23 @@
 #import "base/functional/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presentation_context_observer.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_contained_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/test_modality/test_presented_overlay_request_config.h"
-#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_impl_delegate.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_presentation_context_util.h"
 #import "ios/chrome/browser/overlays/ui_bundled/test/test_overlay_presentation_context.h"
+#import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/platform_test.h"
 
-using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForUIElementTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 @class FakeOverlayPresenationContextDelegate;
 
@@ -80,8 +81,9 @@ class OverlayPresentationContextImplTest;
 class OverlayPresentationContextImplTest : public PlatformTest {
  public:
   OverlayPresentationContextImplTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    FullscreenController::CreateForBrowser(browser_.get());
     context_ = std::make_unique<TestOverlayPresentationContext>(browser_.get());
     delegate_ = [[FakeOverlayPresenationContextDelegate alloc] init];
     root_view_controller_ = [[UIViewController alloc] init];
@@ -106,8 +108,9 @@ class OverlayPresentationContextImplTest : public PlatformTest {
   // Setter for whether the presentation context should support overlay UI
   // implemented using child UIViewControllers.
   void SetSupportsContainedOverlayUI() {
-    if (supports_contained_ui_)
+    if (supports_contained_ui_) {
       return;
+    }
 
     // Updating the support for contained overlay UI will notifiy the observer
     // of this change.
@@ -131,8 +134,9 @@ class OverlayPresentationContextImplTest : public PlatformTest {
   // Setter for whether the presentation context should support overlay UI
   // implemented using presented UIViewControllers.
   void SetSupportsPresentedOverlayUI() {
-    if (supports_presented_ui_)
+    if (supports_presented_ui_) {
       return;
+    }
 
     // Updating the support for presented overlay UI will notifiy the observer
     // of this change.
@@ -188,7 +192,7 @@ class OverlayPresentationContextImplTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestOverlayPresentationContext> context_;
   MockOverlayPresentationContextImplObserver observer_;

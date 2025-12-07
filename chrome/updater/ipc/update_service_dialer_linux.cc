@@ -10,6 +10,7 @@
 #include <cstdio>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -38,8 +39,8 @@ bool DialUpdateService(UpdaterScope scope) {
 
   struct sockaddr_un remote;
   remote.sun_family = AF_UNIX;
-  snprintf(remote.sun_path, sizeof(remote.sun_path), "%s",
-           activation_socket_path.AsUTF8Unsafe().c_str());
+  UNSAFE_TODO(snprintf(remote.sun_path, sizeof(remote.sun_path), "%s",
+                       activation_socket_path.AsUTF8Unsafe().c_str()));
   int len = strlen(remote.sun_path) + sizeof(remote.sun_family);
   if (connect(sock_fd.get(), (struct sockaddr*)&remote, len) == -1) {
     VPLOG(1) << "Could not connect to activation socket";
@@ -54,8 +55,8 @@ bool DialUpdateInternalService(UpdaterScope scope) {
   if (updater) {
     base::CommandLine command(*updater);
     command.AppendSwitch(kServerSwitch);
-    command.AppendSwitchASCII(kServerServiceSwitch,
-                              kServerUpdateServiceInternalSwitchValue);
+    command.AppendSwitchUTF8(kServerServiceSwitch,
+                             kServerUpdateServiceInternalSwitchValue);
     if (scope == UpdaterScope::kSystem) {
       command.AppendSwitch(kSystemSwitch);
     }

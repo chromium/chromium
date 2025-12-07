@@ -19,8 +19,7 @@ std::string ClusterActionToString(ClusterAction action) {
     case ClusterAction::kVisitClicked:
       return "VisitClicked";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string VisitActionToString(VisitAction action) {
@@ -32,8 +31,7 @@ std::string VisitActionToString(VisitAction action) {
     case VisitAction::kDeleted:
       return "Deleted";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string VisitTypeToString(VisitType action) {
@@ -43,8 +41,7 @@ std::string VisitTypeToString(VisitType action) {
     case VisitType::kNonSRP:
       return "nonSRP";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string RelatedSearchActionToString(RelatedSearchAction action) {
@@ -52,8 +49,7 @@ std::string RelatedSearchActionToString(RelatedSearchAction action) {
     case RelatedSearchAction::kClicked:
       return "Clicked";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace history_clusters

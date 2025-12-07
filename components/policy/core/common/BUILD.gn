@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 group("policy_namespace") {
@@ -46,22 +44,22 @@ source_set("util") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
+    "//net",
   ]
 
   if (is_chromeos) {
-    deps += [ "//components/user_manager" ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup:startup" ]
-  }
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/system" ]
+    deps += [
+      "//chromeos/ash/components/system",
+      "//components/user_manager",
+    ]
   }
 }
 
 source_set("internal") {
-  visibility = [ "//components/policy/*" ]
+  visibility = [
+    "//components/policy/*",
+    "//components/privacy_sandbox/*",
+  ]
 
   configs += [ "//components/policy:component_implementation" ]
 
@@ -84,6 +82,8 @@ source_set("internal") {
     "cloud/cloud_policy_client.h",
     "cloud/cloud_policy_client_registration_helper.cc",
     "cloud/cloud_policy_client_registration_helper.h",
+    "cloud/cloud_policy_client_types.cc",
+    "cloud/cloud_policy_client_types.h",
     "cloud/cloud_policy_core.cc",
     "cloud/cloud_policy_core.h",
     "cloud/cloud_policy_manager.cc",
@@ -150,8 +150,6 @@ source_set("internal") {
     "config_dir_policy_loader.h",
     "configuration_policy_provider.cc",
     "configuration_policy_provider.h",
-    "device_local_account_type.cc",
-    "device_local_account_type.h",
     "external_data_fetcher.cc",
     "external_data_fetcher.h",
     "external_data_manager.h",
@@ -196,12 +194,12 @@ source_set("internal") {
     "proxy_policy_provider.h",
     "remote_commands/remote_command_job.cc",
     "remote_commands/remote_command_job.h",
+    "remote_commands/remote_commands_constants.h",
     "remote_commands/remote_commands_factory.cc",
     "remote_commands/remote_commands_factory.h",
+    "remote_commands/remote_commands_fetch_reason.h",
     "remote_commands/remote_commands_invalidator.cc",
     "remote_commands/remote_commands_invalidator.h",
-    "remote_commands/remote_commands_invalidator_impl.cc",
-    "remote_commands/remote_commands_invalidator_impl.h",
     "remote_commands/remote_commands_queue.cc",
     "remote_commands/remote_commands_queue.h",
     "remote_commands/remote_commands_service.cc",
@@ -225,8 +223,7 @@ source_set("internal") {
     ":common_constants",
     ":policy_namespace",
     ":util",
-    "//components/invalidation:invalidation",
-    "//components/invalidation/public",
+    "//components/invalidation",
     "//components/policy:generated",
     "//components/policy/proto",
     "//components/reporting/proto:record_constants",
@@ -235,9 +232,12 @@ source_set("internal") {
 
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
+    "//build:android_buildflags",
     "//components/account_id",
     "//components/enterprise/common:strings",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core:constants",
     "//components/prefs",
     "//components/signin/public/identity_manager",
     "//components/strings",
@@ -252,20 +252,6 @@ source_set("internal") {
     "//ui/base",
     "//url",
   ]
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "management/platform_management_status_provider_lacros.cc",
-      "management/platform_management_status_provider_lacros.h",
-      "policy_loader_lacros.cc",
-      "policy_loader_lacros.h",
-    ]
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/startup:startup",
-    ]
-  }
 
   allow_circular_includes_from = [
     # Generated files use policy_details.h and policy_map.h from this target.
@@ -348,14 +334,13 @@ source_set("internal") {
     deps += [ "//components/policy/android:jni_headers" ]
   }
   if (is_chromeos) {
+    deps += [
+      "//chromeos/ash/components/policy/device_local_account",
+      "//chromeos/ash/components/system",
+    ]
     sources += [
       "default_chrome_apps_migrator.cc",
       "default_chrome_apps_migrator.h",
-    ]
-  }
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/system" ]
-    sources += [
       "policy_scheduler.cc",
       "policy_scheduler.h",
     ]
@@ -392,6 +377,8 @@ source_set("internal") {
 
     if (is_ios) {
       sources += [
+        "management/platform_management_status_provider_ios.h",
+        "management/platform_management_status_provider_ios.mm",
         "policy_loader_ios.h",
         "policy_loader_ios.mm",
       ]
@@ -442,7 +429,7 @@ static_library("test_support") {
     "remote_commands/test_support/testing_remote_commands_server.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources -= [
       "cloud/mock_user_cloud_policy_store.cc",
       "cloud/mock_user_cloud_policy_store.h",
@@ -463,6 +450,13 @@ static_library("test_support") {
     ]
   }
 
+  if (is_linux || is_win || is_mac || is_chromeos) {
+    sources += [
+      "field_validation_test_utils.cc",
+      "field_validation_test_utils.h",
+    ]
+  }
+
   public_deps = [
     ":common",
     "//base",
@@ -472,6 +466,7 @@ static_library("test_support") {
     # so it will be linked to dependent targets. Otherwise in component
     # build, it will be hidden inside the policy component.
     "//components/account_id",
+    "//components/enterprise/common/proto:upload_request_response",
     "//components/policy:generated",
     "//components/policy/proto",
     "//components/reporting/proto:record_constants",
@@ -484,29 +479,23 @@ static_library("test_support") {
     "//testing/gtest",
   ]
 
-  deps = [
-    "//build:chromeos_buildflags",
-    "//services/network:test_support",
-  ]
+  deps = [ "//services/network:test_support" ]
 }
 
 source_set("common_constants") {
   configs += [ "//components/policy:component_implementation" ]
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
   sources = [
     "../../policy_export.h",
     "cloud/cloud_policy_constants.cc",
     "cloud/cloud_policy_constants.h",
-    "policy_pref_names.cc",
     "policy_pref_names.h",
     "policy_switches.cc",
     "policy_switches.h",
     "policy_types.h",
     "proxy_settings_constants.cc",
     "proxy_settings_constants.h",
+    "system_features_disable_list_constants.h",
   ]
 
   if (is_ios) {
@@ -554,7 +543,6 @@ source_set("unit_tests") {
     "policy_statistics_collector_unittest.cc",
     "proxy_policy_provider_unittest.cc",
     "remote_commands/remote_commands_invalidator_unittest.cc",
-    "remote_commands/remote_commands_invalidator_with_listener_unittest.cc",
     "remote_commands/remote_commands_queue_unittest.cc",
     "remote_commands/remote_commands_service_unittest.cc",
     "schema_map_unittest.cc",
@@ -575,7 +563,7 @@ source_set("unit_tests") {
   if (is_win || is_linux || is_chromeos) {
     sources += [ "registry_dict_unittest.cc" ]
   }
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "default_chrome_apps_migrator_unittest.cc",
       "policy_scheduler_unittest.cc",
@@ -651,22 +639,20 @@ source_set("unit_tests") {
       "scoped_critical_policy_section_unittest.cc",
     ]
   }
-  if (is_chromeos_lacros) {
-    sources += [ "policy_loader_lacros_unittest.cc" ]
-  }
-
   deps = [
     ":common_constants",
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//components/account_id",
+    "//components/enterprise/common/proto:browser_events_proto",
+    "//components/enterprise/common/proto:chrome_reporting_entity",
+    "//components/enterprise/common/proto:upload_request_response",
+    "//components/enterprise/connectors/core:constants",
     "//components/invalidation:test_support",
-    "//components/invalidation/impl:test_support",
     "//components/policy:generated",
     "//components/prefs:test_support",
-    "//components/version_info:version_info",
+    "//components/version_info",
     "//extensions/buildflags",
     "//google_apis",
     "//net:test_support",
@@ -676,21 +662,16 @@ source_set("unit_tests") {
     "//third_party/libxml:xml_reader",
     "//ui/base",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/system" ]
   }
   if (is_android) {
     deps += [ "//components/policy/android:test_jni_headers" ]
   }
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chrome/browser",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//chromeos/lacros:test_support",
-      "//chromeos/startup:startup",
-    ]
-  }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 fuzzer_test("policy_schema_fuzzer") {

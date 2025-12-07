@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ui") {
+  sources = [
+    "synced_set_up_animator.h",
+    "synced_set_up_animator.mm",
+    "synced_set_up_consumer.h",
+    "synced_set_up_view_controller.h",
+    "synced_set_up_view_controller.mm",
+  ]
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/synced_set_up/ui/resources",
+    "//ios/chrome/common/ui/animations:radial_wipe_animation",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "synced_set_up_view_controller_unittest.mm" ]
+  deps = [
+    ":ui",
+    "//base/test:test_support",
+  ]
+}

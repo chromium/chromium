@@ -4,7 +4,8 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import androidx.annotation.Nullable;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Provides an interface for detecting and forcing translation on a Contextual Search Request.
@@ -14,6 +15,7 @@ import androidx.annotation.Nullable;
  * from a given source language, or forcing translation on a request using an auto-detection for
  * to determine whether the source and destination are different.
  */
+@NullMarked
 public interface ContextualSearchTranslation {
     /**
      * Force translation from the given language for the given search request.

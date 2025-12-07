@@ -6,6 +6,7 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_TOOLS_RULE_PARSER_RULE_PARSER_H_
 
 #include <stddef.h>
+
 #include <ostream>
 #include <string>
 #include <string_view>

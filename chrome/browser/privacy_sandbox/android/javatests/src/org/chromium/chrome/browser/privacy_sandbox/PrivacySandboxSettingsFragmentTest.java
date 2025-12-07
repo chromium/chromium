@@ -53,13 +53,16 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public final class PrivacySandboxSettingsFragmentTest {
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
+    private static final int RENDER_TEST_REVISION = 1;
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setBugComponent(RenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setRevision(RENDER_TEST_REVISION)
+                    .setBugComponent(RenderTestRule.Component.UI_BROWSER_PRIVACY_SANDBOX)
                     .build();
 
     @Rule
@@ -99,6 +102,7 @@ public final class PrivacySandboxSettingsFragmentTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testRenderPrivacySandboxSettingsV4() throws IOException {
         startPrivacySandboxSettingsV4();
         mRenderTestRule.render(
@@ -130,6 +134,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testFledgePrefDisabledDescription() {
         runOnUiThreadBlocking(
                 () -> setFledgePrefEnabled(ProfileManager.getLastUsedRegularProfile(), false));
@@ -152,6 +157,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testAdMeasurementPrefDisabledDescription() {
         runOnUiThreadBlocking(
                 () ->
@@ -165,6 +171,7 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testAdMeasurementPrefEnabledDescription() {
         runOnUiThreadBlocking(
                 () ->
@@ -178,20 +185,8 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
+    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testNavigateToTopicsPage() {
-        startPrivacySandboxSettingsV4();
-        onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
-
-        onViewWaiting(withText(R.string.settings_topics_page_toggle_sub_label));
-        assertThat(
-                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Topics.Opened"));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PROACTIVE_TOPICS_BLOCKING)
-    public void testNavigateToTopicsPageV2() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
 
@@ -202,17 +197,31 @@ public final class PrivacySandboxSettingsFragmentTest {
 
     @Test
     @SmallTest
-    public void testNavigateToFledgePage() {
+    @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    public void testNavigateToTopicsPageAdTopicsContentParity() {
+        startPrivacySandboxSettingsV4();
+        onView(withText(R.string.ad_privacy_page_topics_link_row_label)).perform(click());
+
+        onViewWaiting(withText(R.string.settings_ad_topics_page_toggle_sub_label));
+        assertThat(
+                mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Topics.Opened"));
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
+    public void testNavigateToFledgePageV2() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_fledge_link_row_label)).perform(click());
 
-        onViewWaiting(withText(R.string.settings_fledge_page_toggle_sub_label));
+        onViewWaiting(withText(R.string.settings_site_suggested_ads_page_toggle_sub_label_v2));
         assertThat(
                 mUserActionTester.getActions(), hasItems("Settings.PrivacySandbox.Fledge.Opened"));
     }
 
     @Test
     @SmallTest
+    @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
     public void testNavigateToAdMeasurementPage() {
         startPrivacySandboxSettingsV4();
         onView(withText(R.string.ad_privacy_page_ad_measurement_link_row_label)).perform(click());

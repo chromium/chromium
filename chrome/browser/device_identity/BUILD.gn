@@ -1,0 +1,88 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("device_identity") {
+  sources = [
+    "device_identity_provider.cc",
+    "device_identity_provider.h",
+    "device_oauth2_token_service.cc",
+    "device_oauth2_token_service.h",
+    "device_oauth2_token_service_factory.cc",
+    "device_oauth2_token_service_factory.h",
+    "device_oauth2_token_store.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/invalidation:legacy_topics_cleanup",
+    "//google_apis",
+  ]
+
+  deps = [
+    "//components/policy/proto",
+    "//components/prefs",
+    "//content/public/browser",
+    "//services/network/public/cpp",
+  ]
+
+  if (!is_chromeos) {
+    sources += [
+      "device_oauth2_token_store_desktop.cc",
+      "device_oauth2_token_store_desktop.h",
+    ]
+    public_deps += [ "//components/os_crypt/async/common" ]
+    deps += [
+      "//chrome/common:constants",
+      "//components/os_crypt/async/browser",
+      "//components/policy/core/common:common_constants",
+    ]
+  } else {
+    sources += [
+      "chromeos/device_oauth2_token_store_chromeos.cc",
+      "chromeos/device_oauth2_token_store_chromeos.h",
+      "chromeos/token_encryptor.cc",
+      "chromeos/token_encryptor.h",
+    ]
+    public_deps += [ "//chromeos/ash/components/settings" ]
+    deps += [
+      "//chrome/common:constants",
+      "//chromeos/ash/components/cryptohome",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "device_oauth2_token_service_unittest.cc" ]
+  deps = [
+    ":device_identity",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/prefs:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//google_apis:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  if (is_chromeos) {
+    sources += [
+      "chromeos/device_oauth2_token_store_chromeos_unittest.cc",
+      "chromeos/token_encryptor_unittest.cc",
+    ]
+    deps += [ "//chromeos/ash/components/policy/device_policy:test_support" ]
+  } else {
+    sources += [ "device_oauth2_token_store_desktop_unittest.cc" ]
+    deps += [
+      "//base/test:test_support",
+      "//components/os_crypt/async/browser",
+      "//components/os_crypt/async/browser:test_support",
+      "//components/policy/core/common:common_constants",
+      "//components/prefs",
+    ]
+  }
+}

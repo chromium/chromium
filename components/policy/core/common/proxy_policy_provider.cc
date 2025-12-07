@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/check_op.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -71,20 +72,20 @@ void ProxyPolicyProvider::OnUpdatePolicy(
 }
 
 ConfigurationPolicyProvider* ProxyPolicyProvider::delegate() {
-  return absl::holds_alternative<OwnedDelegate>(delegate_)
-             ? absl::get<OwnedDelegate>(delegate_).get()
-             : absl::get<UnownedDelegate>(delegate_).get();
+  return std::holds_alternative<OwnedDelegate>(delegate_)
+             ? std::get<OwnedDelegate>(delegate_).get()
+             : std::get<UnownedDelegate>(delegate_).get();
 }
 
 const ConfigurationPolicyProvider* ProxyPolicyProvider::delegate() const {
-  return absl::holds_alternative<OwnedDelegate>(delegate_)
-             ? absl::get<OwnedDelegate>(delegate_).get()
-             : absl::get<UnownedDelegate>(delegate_).get();
+  return std::holds_alternative<OwnedDelegate>(delegate_)
+             ? std::get<OwnedDelegate>(delegate_).get()
+             : std::get<UnownedDelegate>(delegate_).get();
 }
 
 void ProxyPolicyProvider::ResetDelegate() {
-  if (absl::holds_alternative<OwnedDelegate>(delegate_)) {
-    absl::get<OwnedDelegate>(delegate_)->Shutdown();
+  if (std::holds_alternative<OwnedDelegate>(delegate_)) {
+    std::get<OwnedDelegate>(delegate_)->Shutdown();
   }
 
   if (delegate()) {

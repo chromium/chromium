@@ -1,6 +1,11 @@
-# TODO(crbug.com/40488637): Remove once the pref service is always used.
 specific_include_rules = {
   "profile_pref_store_manager\.cc": [
+    "+services/preferences/tracked",
+  ],
+  "chrome_pref_service_factory\.cc": [
+    "+services/preferences/tracked",
+  ],
+  "pref_hash_browsertest\.cc":[
     "+services/preferences/tracked",
   ],
 }

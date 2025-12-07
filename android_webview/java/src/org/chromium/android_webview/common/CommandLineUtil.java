@@ -6,13 +6,15 @@ package org.chromium.android_webview.common;
 
 import android.os.StrictMode;
 
-import org.chromium.base.BuildInfo;
+import org.chromium.base.AndroidInfo;
 import org.chromium.base.CommandLine;
+import org.chromium.build.annotations.NullMarked;
 
 /**
  * Utility class for WebView's CommandLine - this is compiled into a separate target that can be
  * reached from WebView's separate minidump-uploading Services.
  */
+@NullMarked
 public final class CommandLineUtil {
     private CommandLineUtil() {}
 
@@ -23,7 +25,7 @@ public final class CommandLineUtil {
      * we subsequently access CommandLine.
      */
     public static void initCommandLine() {
-        if (BuildInfo.isDebugAndroid()) {
+        if (AndroidInfo.isDebugAndroid()) {
             // Suppress the StrictMode violation as this codepath is only hit on debuggable builds.
             StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
             CommandLine.initFromFile(CommandLineUtil.WEBVIEW_COMMAND_LINE_FILE);

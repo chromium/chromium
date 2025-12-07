@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 
+#include <algorithm>
 #include <memory>
 #include <set>
 #include <utility>
@@ -15,12 +16,15 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
@@ -29,12 +33,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/desktop_media_id.h"
-#include "content/public/common/content_client.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
-#include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace {
@@ -60,39 +62,28 @@ namespace content {
 // Class used for queuing request for starting a device.
 class VideoCaptureManager::CaptureDeviceStartRequest {
  public:
-  CaptureDeviceStartRequest(
-      VideoCaptureController* controller,
-      const media::VideoCaptureSessionId& session_id,
-      const media::VideoCaptureParams& params,
-      mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-          video_effects_processor);
-  VideoCaptureController* controller() const { return controller_; }
+  CaptureDeviceStartRequest(scoped_refptr<VideoCaptureController> controller,
+                            const media::VideoCaptureSessionId& session_id,
+                            const media::VideoCaptureParams& params);
+  scoped_refptr<VideoCaptureController> controller() const {
+    return controller_;
+  }
   const base::UnguessableToken& session_id() const { return session_id_; }
   media::VideoCaptureParams params() const { return params_; }
 
-  mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>&&
-  TakeVideoEffectsProcessor() {
-    return std::move(video_effects_processor_);
-  }
-
  private:
-  const raw_ptr<VideoCaptureController> controller_;
+  const scoped_refptr<VideoCaptureController> controller_;
   const base::UnguessableToken session_id_;
   const media::VideoCaptureParams params_;
-  mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-      video_effects_processor_;
 };
 
 VideoCaptureManager::CaptureDeviceStartRequest::CaptureDeviceStartRequest(
-    VideoCaptureController* controller,
+    scoped_refptr<VideoCaptureController> controller,
     const media::VideoCaptureSessionId& session_id,
-    const media::VideoCaptureParams& params,
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor)
-    : controller_(controller),
+    const media::VideoCaptureParams& params)
+    : controller_(std::move(controller)),
       session_id_(session_id),
-      params_(params),
-      video_effects_processor_(std::move(video_effects_processor)) {}
+      params_(params) {}
 
 VideoCaptureManager::VideoCaptureManager(
     std::unique_ptr<VideoCaptureProvider> video_capture_provider,
@@ -130,7 +121,7 @@ void VideoCaptureManager::RegisterListener(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(listener);
   listeners_.AddObserver(listener);
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
   application_state_has_running_activities_ = true;
   app_status_listener_ =
       base::android::ApplicationStatusListener::New(base::BindRepeating(
@@ -258,14 +249,12 @@ void VideoCaptureManager::ApplySubCaptureTarget(
 
 void VideoCaptureManager::QueueStartDevice(
     const media::VideoCaptureSessionId& session_id,
-    VideoCaptureController* controller,
-    const media::VideoCaptureParams& params,
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor) {
+    scoped_refptr<VideoCaptureController> controller,
+    const media::VideoCaptureParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(lock_time_.is_null());
-  device_start_request_queue_.push_back(CaptureDeviceStartRequest(
-      controller, session_id, params, std::move(video_effects_processor)));
+  device_start_request_queue_.push_back(
+      CaptureDeviceStartRequest(std::move(controller), session_id, params));
   if (device_start_request_queue_.size() == 1)
     ProcessDeviceStartRequestQueue();
 }
@@ -311,7 +300,8 @@ void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
   if (request == device_start_request_queue_.end())
     return;
 
-  VideoCaptureController* const controller = request->controller();
+  scoped_refptr<VideoCaptureController> const controller =
+      request->controller();
 
   EmitLogMessage("VideoCaptureManager::ProcessDeviceStartRequestQueue", 3);
   // The unit test VideoCaptureManagerTest.OpenNotExisting requires us to fail
@@ -329,7 +319,7 @@ void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
         GetDeviceInfoById(controller->device_id());
     if (!device_info) {
       OnDeviceLaunchFailed(
-          controller,
+          controller.get(),
           media::VideoCaptureError::
               kVideoCaptureManagerProcessDeviceStartQueueDeviceInfoNotFound);
       return;
@@ -350,8 +340,7 @@ void VideoCaptureManager::ProcessDeviceStartRequestQueue() {
       base::BindOnce([](scoped_refptr<VideoCaptureManager>,
                         scoped_refptr<VideoCaptureController>) {},
                      scoped_refptr<VideoCaptureManager>(this),
-                     GetControllerSharedRef(controller)),
-      request->TakeVideoEffectsProcessor());
+                     std::move(controller)));
 }
 
 void VideoCaptureManager::OnDeviceLaunched(VideoCaptureController* controller) {
@@ -416,13 +405,30 @@ void VideoCaptureManager::OnDeviceConnectionLost(
       media::VideoCaptureError::kVideoCaptureManagerDeviceConnectionLost);
 }
 
+void VideoCaptureManager::OpenNativeScreenCapturePicker(
+    DesktopMediaID::Type type,
+    base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+    base::OnceCallback<void(webrtc::DesktopCapturer::Source)> picker_callback,
+    base::OnceCallback<void()> cancel_callback,
+    base::OnceCallback<void()> error_callback) {
+  video_capture_provider_->OpenNativeScreenCapturePicker(
+      type, std::move(created_callback), std::move(picker_callback),
+      std::move(cancel_callback), std::move(error_callback));
+}
+
+void VideoCaptureManager::CloseNativeScreenCapturePicker(
+    DesktopMediaID device_id) {
+  video_capture_provider_->CloseNativeScreenCapturePicker(device_id);
+}
+
 void VideoCaptureManager::ConnectClient(
     const media::VideoCaptureSessionId& session_id,
     const media::VideoCaptureParams& params,
     VideoCaptureControllerID client_id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
     VideoCaptureControllerEventHandler* client_handler,
-    DoneCB done_cb,
-    BrowserContext* browser_context) {
+    std::optional<url::Origin> origin,
+    DoneCB done_cb) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureManager::ConnectClient");
@@ -435,41 +441,40 @@ void VideoCaptureManager::ConnectClient(
     EmitLogMessage(string_stream.str(), 1);
   }
 
-  VideoCaptureController* controller =
+  scoped_refptr<VideoCaptureController> controller =
       GetOrCreateController(session_id, params);
   if (!controller) {
     std::move(done_cb).Run(nullptr);
     return;
   }
 
+  bool client_exist =
+      controller->HasActiveClient() || controller->HasPausedClient();
+  base::UmaHistogramBoolean("Media.VideoCapture.StreamShared", client_exist);
+  if (client_exist) {
+    std::optional<url::Origin> first_client_origin =
+        controller->GetFirstClientOrigin();
+    bool same_origin = first_client_origin.has_value() && origin.has_value() &&
+                       *first_client_origin == *origin;
+    base::UmaHistogramBoolean("Media.VideoCapture.StreamSharedSameOrigin",
+                              same_origin);
+  }
+
   // First client starts the device. Device can't be started while the screen is
   // locked.
-  if (!controller->HasActiveClient() && !controller->HasPausedClient() &&
-      lock_time_.is_null()) {
+  if (!client_exist && lock_time_.is_null()) {
     std::ostringstream string_stream;
     string_stream
         << "VideoCaptureManager queueing device start for device_id = "
         << controller->device_id();
     EmitLogMessage(string_stream.str(), 1);
-    mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
-        video_effects_processor;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-    if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
-      auto* content_client = GetContentClient();
-      if (browser_context && content_client && content_client->browser()) {
-        content_client->browser()->BindVideoEffectsProcessor(
-            controller->device_id(), browser_context,
-            video_effects_processor.InitWithNewPipeAndPassReceiver());
-      }
-    }
-#endif
-    QueueStartDevice(session_id, controller, params,
-                     std::move(video_effects_processor));
+    QueueStartDevice(session_id, controller, params);
   }
 
   // Run the callback first, as AddClient() may trigger OnFrameInfo().
   std::move(done_cb).Run(controller->GetWeakPtrForIOThread());
-  controller->AddClient(client_id, client_handler, session_id, params);
+  controller->AddClient(client_id, render_frame_host_id, client_handler,
+                        session_id, params, origin);
 }
 
 void VideoCaptureManager::DisconnectClient(
@@ -521,8 +526,9 @@ void VideoCaptureManager::PauseCaptureForClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(controller);
   DCHECK(client_handler);
-  if (!IsControllerPointerValid(controller))
-    NOTREACHED_IN_MIGRATION() << "Got Null controller while pausing capture";
+  if (!IsControllerPointerValid(controller)) {
+    NOTREACHED() << "Got Null controller while pausing capture";
+  }
 
   const bool had_active_client = controller->HasActiveClient();
   controller->PauseClient(client_id, client_handler);
@@ -543,13 +549,13 @@ void VideoCaptureManager::ResumeCaptureForClient(
   DCHECK(controller);
   DCHECK(client_handler);
 
-  if (!IsControllerPointerValid(controller))
-    NOTREACHED_IN_MIGRATION() << "Got Null controller while resuming capture";
+  if (!IsControllerPointerValid(controller)) {
+    NOTREACHED() << "Got Null controller while resuming capture";
+  }
 
-  const bool had_active_client = controller->HasActiveClient();
-  controller->ResumeClient(client_id, client_handler);
-  if (had_active_client || !controller->HasActiveClient())
+  if (!controller->ResumeClient(client_id, client_handler)) {
     return;
+  }
   if (!controller->IsDeviceAlive())
     return;
   controller->Resume();
@@ -840,6 +846,11 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
                   << ", device_id = " << controller->device_id() << ")";
     EmitLogMessage(string_stream.str(), 1);
 
+    // Close the native OS picker as the associated VideoCaptureDevice is being
+    // closed.
+    CloseNativeScreenCapturePicker(
+        DesktopMediaID::Parse(controller->device_id()));
+
     // The VideoCaptureController is removed from |controllers_| immediately.
     // The controller is deleted immediately, and the device is freed
     // asynchronously. After this point, subsequent requests to open this same
@@ -847,7 +858,7 @@ void VideoCaptureManager::DestroyControllerIfNoClients(
     // VideoCaptureController, and VideoCaptureDevice.
     DoStopDevice(controller);
     // TODO(mcasas): use a helper function https://crbug.com/624854.
-    auto controller_iter = base::ranges::find(
+    auto controller_iter = std::ranges::find(
         controllers_, controller, &scoped_refptr<VideoCaptureController>::get);
     controllers_.erase(controller_iter);
     // Check if there are any associated pending callbacks and delete them.
@@ -885,7 +896,8 @@ VideoCaptureManager::LookupControllerByMediaTypeAndDeviceId(
 bool VideoCaptureManager::IsControllerPointerValid(
     const VideoCaptureController* controller) const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  return base::Contains(controllers_, controller);
+  return base::Contains(controllers_, controller,
+                        &scoped_refptr<VideoCaptureController>::get);
 }
 
 scoped_refptr<VideoCaptureController>
@@ -909,7 +921,8 @@ media::VideoCaptureDeviceInfo* VideoCaptureManager::GetDeviceInfoById(
   return nullptr;
 }
 
-VideoCaptureController* VideoCaptureManager::GetOrCreateController(
+scoped_refptr<VideoCaptureController>
+VideoCaptureManager::GetOrCreateController(
     const media::VideoCaptureSessionId& capture_session_id,
     const media::VideoCaptureParams& params) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -931,14 +944,16 @@ VideoCaptureController* VideoCaptureManager::GetOrCreateController(
     return existing_device;
   }
 
-  VideoCaptureController* new_controller = new VideoCaptureController(
-      device_info.id, device_info.type, params,
-      video_capture_provider_->CreateDeviceLauncher(), emit_log_message_cb_);
-  controllers_.emplace_back(new_controller);
+  scoped_refptr<VideoCaptureController> new_controller =
+      base::MakeRefCounted<VideoCaptureController>(
+          device_info.id, device_info.type, params,
+          video_capture_provider_->CreateDeviceLauncher(),
+          emit_log_message_cb_);
+  controllers_.push_back(new_controller);
   return new_controller;
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_DESKTOP_ANDROID)
 void VideoCaptureManager::OnApplicationStateChange(
     base::android::ApplicationState state) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -993,7 +1008,7 @@ void VideoCaptureManager::ResumeDevices() {
       // Session ID is only valid for Screen capture. So we can fake it to
       // resume video capture devices here.
       QueueStartDevice(FakeSessionId(), controller.get(),
-                       controller->parameters(), {});
+                       controller->parameters());
     }
   }
 }
@@ -1024,7 +1039,7 @@ void VideoCaptureManager::OnScreenLocked() {
   for (auto session_id : desktopcapture_session_ids) {
     Close(session_id);
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void VideoCaptureManager::OnScreenUnlocked() {

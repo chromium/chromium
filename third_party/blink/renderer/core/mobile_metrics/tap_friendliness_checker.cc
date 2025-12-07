@@ -23,6 +23,7 @@ namespace {
 // Considers the |target| is a tap-able element which TapFriendlinessChecker
 // focus.
 bool ShouldRegister(Element* target) {
+  // TODO(crbug.com/369219144): Should this be DynamicTo<HTMLAnchorElementBase>?
   if (const auto* anchor = DynamicTo<HTMLAnchorElement>(target)) {
     return !anchor->Href().IsEmpty();
   } else if (auto* element = DynamicTo<HTMLElement>(target);

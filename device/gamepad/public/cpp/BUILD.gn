@@ -15,7 +15,6 @@
 # of any uncertainty.
 component("shared_with_blink") {
   sources = [
-    "gamepad.cc",
     "gamepad.h",
     "gamepads.cc",
     "gamepads.h",

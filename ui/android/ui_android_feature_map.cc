@@ -17,19 +17,24 @@ namespace {
 
 // Array of features exposed through the Java UiAndroidFeatureMap API.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &features::kDragDropFiles,
-    &ui::kConvertTrackpadEventsToMouse,
+    &ui::kAndroidUseCorrectDisplayWorkArea,
+    &ui::kAndroidUseCorrectWindowBounds,
+    &ui::kAndroidUseDisplayTopology,
+    &ui::kAndroidWindowOcclusion,
+    &ui::kCheckIntentCallerPermission,
     &ui::kDeprecatedExternalPickerFunction,
-    &ui::kMirrorBackForwardGesturesInRTL,
-    &ui::kReportAllAvailablePointerTypes,
+    &ui::kDisablePhotoPickerForVideoCapture,
+    &ui::kRefactorMinWidthContextOverride,
+    &ui::kReportBottomOverscrolls,
     &ui::kRequireLeadingInTextViewWithLeading,
     &ui::kSelectFileOpenDocument,
+    &ui::kAndroidTouchpadOverscrollHistoryNavigation,
 };
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
-  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(std::vector(
-      std::begin(kFeaturesExposedToJava), std::end(kFeaturesExposedToJava)));
+  static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
+      kFeaturesExposedToJava);
   return kFeatureMap.get();
 }
 
@@ -40,3 +45,5 @@ static jlong JNI_UiAndroidFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 }  // namespace ui
+
+DEFINE_JNI(UiAndroidFeatureMap)

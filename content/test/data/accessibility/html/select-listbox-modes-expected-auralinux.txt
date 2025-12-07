@@ -1,0 +1,23 @@
+[document web]
+++[heading] name='no attributes:'
+++++[static] name='no attributes:'
+++[combo box]
+++++[menu]
+++++++[menu item] name='one' selectable selected
+++++++[menu item] name='two' selectable
+++[heading] name='multiple:'
+++++[static] name='multiple:'
+++[list box] multiselectable
+++++[list item] name='one' selectable
+++++[list item] name='two' selectable
+++[heading] name='size=4:'
+++++[static] name='size=4:'
+++[list box]
+++++[list item] name='one' selectable
+++++[list item] name='two' selectable
+++[heading] name='multiple size=1:'
+++++[static] name='multiple size=1:'
+++[combo box] multiselectable
+++++[menu]
+++++++[menu item] name='one' selectable
+++++++[menu item] name='two' selectable

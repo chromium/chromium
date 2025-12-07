@@ -7,8 +7,10 @@
 #include <assert.h>
 #include <string.h>
 
+#include <string_view>
 #include <type_traits>
 
+#include "base/compiler_specific.h"
 #include "base/version_info/version_info_values.h"
 #include "chrome/chrome_elf/nt_registry/nt_registry.h"
 #include "chrome/install_static/install_modes.h"
@@ -37,7 +39,7 @@ std::wstring InstallDetails::GetClientStateMediumKeyPath() const {
 bool InstallDetails::VersionMismatch() const {
   // Check the product version and the size of the mode structure.
   return payload_->size != sizeof(Payload) ||
-         strcmp(payload_->product_version, &kProductVersion[0]) != 0 ||
+         std::string_view(payload_->product_version) != kProductVersion ||
          payload_->mode->size != sizeof(InstallConstants);
 }
 
@@ -60,9 +62,13 @@ void InstallDetails::SetForProcess(
 // static
 const InstallDetails::Payload* InstallDetails::GetPayload() {
   assert(g_module_details);
-  static_assert(std::is_pod<Payload>::value, "Payload must be a POD-struct");
-  static_assert(std::is_pod<InstallConstants>::value,
-                "InstallConstants must be a POD-struct");
+
+  // We're handing a pointer to a struct created in one module
+  // to a different module, with distinct allocation domains.
+  static_assert(std::is_standard_layout<Payload>::value,
+                "Payload must have standard layout");
+  static_assert(std::is_standard_layout<InstallConstants>::value,
+                "InstallConstants must have standard layout");
   return g_module_details->payload_;
 }
 

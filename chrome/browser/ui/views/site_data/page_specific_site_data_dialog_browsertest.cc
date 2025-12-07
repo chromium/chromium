@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
+
 #include <stddef.h>
 
 #include "base/memory/raw_ptr.h"
@@ -10,7 +12,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/browser/ui/views/site_data/site_data_row_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,10 +47,7 @@ const char kDeleteBrowsingDataActionName[] =
     "Privacy.DeleteBrowsingData.Action";
 
 void ClickButton(views::Button* button) {
-  views::test::ButtonTestApi test_api(button);
-  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-                   ui::EventTimeForNow(), 0, 0);
-  test_api.NotifyClick(e);
+  views::test::ButtonTestApi(button).NotifyDefaultMouseClick();
 }
 
 }  // namespace

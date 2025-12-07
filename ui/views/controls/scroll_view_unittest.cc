@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/timer/timer.h"
@@ -28,11 +29,11 @@
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/scoped_animation_duration_scale_mode.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
@@ -125,12 +126,30 @@ class FixedView : public View {
 
   ~FixedView() override = default;
 
+  std::optional<bool> did_show_tooltip_in_viewport() const {
+    return did_show_tooltip_in_viewport_;
+  }
+
   void Layout(PassKey) override {
     gfx::Size pref = GetPreferredSize({});
     SetBounds(x(), y(), pref.width(), pref.height());
   }
 
+  void UpdateTooltipForFocus() override {
+    View::UpdateTooltipForFocus();
+
+    // To verify `UpdateTooltipForFocus()` is called after the view scrolled, we
+    // can set `did_show_tooltip_in_viewport_` as true only when this view is in
+    // the visible rect.
+    did_show_tooltip_in_viewport_ = !GetVisibleBounds().IsEmpty();
+  }
+
   void SetFocus() { Focus(); }
+
+ private:
+  // True if this view is in the viewport of its parent scroll view to show the
+  // tooltip.
+  std::optional<bool> did_show_tooltip_in_viewport_;
 };
 
 BEGIN_METADATA(FixedView)
@@ -389,8 +408,9 @@ class WidgetScrollViewTest : public test::WidgetTest,
     // use them for impl-side scrolling. Note that simply RunUntilIdle() works
     // when tests are run in isolation, but compositor scheduling can interact
     // between test runs in the general case.
-    if (commit_layers)
+    if (commit_layers) {
       WaitForCommit();
+    }
     return scroll_view;
   }
 
@@ -499,8 +519,9 @@ class WidgetScrollViewTestRTLAndLayers
         IsTestingRtl() ? gfx::Point(kDefaultWidth - 1, 1) : gfx::Point(1, 1);
     gfx::Point point = test_mouse_point_in_root;
     View::ConvertPointToTarget(widget()->GetRootView(), target, &point);
-    if (flip_result)
+    if (flip_result) {
       return gfx::Point(target->GetMirroredXInView(point.x()), point.y());
+    }
     return point;
   }
 
@@ -520,7 +541,7 @@ std::string UiConfigToString(const testing::TestParamInfo<UiConfig>& info) {
     case UiConfig::kRtlWithLayers:
       return "RTL_LAYERS";
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // Verifies the viewport is sized to fit the available space.
@@ -541,6 +562,17 @@ TEST_F(ScrollViewTest, BoundedViewportSizedToFit) {
   // Make sure the width of |contents| is set properly not to overflow the
   // viewport.
   EXPECT_EQ(96, contents->width());
+}
+
+// Verifies that the scroll view calls post-layout callback on every layout.
+TEST_F(ScrollViewTest, LayoutCallbackCalledOnEveryLayout) {
+  auto mock_post_layout_cb_ =
+      base::MockCallback<base::RepeatingCallback<void(ScrollView*)>>();
+  scroll_view_->RegisterPostLayoutCallback(mock_post_layout_cb_.Get());
+  EXPECT_CALL(mock_post_layout_cb_, Run(scroll_view_.get())).Times(1);
+  InstallContents();
+  ASSERT_FALSE(scroll_view_->GetContentsBounds().IsEmpty());
+  views::test::RunScheduledLayout(scroll_view_.get());
 }
 
 // Verifies that the vertical scrollbar does not unnecessarily appear for a
@@ -599,6 +631,15 @@ TEST_F(ScrollViewTest, VerticallScrollbarDoesNotAppearIfDisabled) {
   views::test::RunScheduledLayout(scroll_view_.get());
   EXPECT_FALSE(scroll_view_->vertical_scroll_bar()->GetVisible());
   EXPECT_FALSE(scroll_view_->horizontal_scroll_bar()->GetVisible());
+}
+
+TEST_F(ScrollViewTest, AccessibleProperties) {
+  ScrollViewTestApi test_api(scroll_view_.get());
+  InstallContents();
+
+  ui::AXNodeData data;
+  scroll_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kScrollView);
 }
 
 // Verifies the scrollbars are added as necessary.
@@ -705,6 +746,30 @@ TEST_F(ScrollViewTest, ScrollBars) {
   EXPECT_EQ(kTopPadding, bounds.y());
   EXPECT_EQ(100 - kBottomPadding - HorizontalScrollBarHeight(),
             bounds.bottom());
+}
+
+// Tests that after scrolling the child (which was gained the focus) into the
+// viewport of the scroll view, the tooltip should be shown up.
+TEST_F(WidgetScrollViewTest, ScrollChildToVisibleOnFocusWithTooltip) {
+  // Create a scroll view and its contents view.
+  auto contents_ptr = std::make_unique<CustomView>();
+  contents_ptr->SetPreferredSize(gfx::Size(100, 200));
+  auto* contents = contents_ptr.get();
+  AddScrollViewWithContents(std::move(contents_ptr));
+
+  // Create a child view into the contents view, and set it position outside of
+  // the visible rect.
+  auto child = std::make_unique<FixedView>();
+  child->SetPreferredSize(gfx::Size(10, 10));
+  child->SetPosition(gfx::Point(50, 110));
+  auto* child_ptr = contents->AddChildView(std::move(child));
+
+  // Bring a focus to this child view which should scroll it into the visible
+  // rect of the scroll view.
+  child_ptr->SetFocus();
+
+  ASSERT_TRUE(child_ptr->did_show_tooltip_in_viewport().has_value());
+  EXPECT_TRUE(child_ptr->did_show_tooltip_in_viewport().value());
 }
 
 // Assertions around adding a header.
@@ -1382,8 +1447,9 @@ TEST_F(WidgetScrollViewTest, ChildWithLayerTest) {
   ScrollView* scroll_view = AddScrollViewWithContents(std::move(contents_ptr));
   ScrollViewTestApi test_api(scroll_view);
 
-  if (test_api.contents_viewport()->layer())
+  if (test_api.contents_viewport()->layer()) {
     return;
+  }
 
   View* child = contents->AddChildView(std::make_unique<View>());
   child->SetPaintToLayer(ui::LAYER_TEXTURED);
@@ -1412,8 +1478,9 @@ TEST_F(ScrollViewTest, DontCreateLayerOnViewportIfLayerOnScrollViewCreated) {
   View* contents = InstallContents();
   ScrollViewTestApi test_api(scroll_view_.get());
 
-  if (test_api.contents_viewport()->layer())
+  if (test_api.contents_viewport()->layer()) {
     return;
+  }
 
   scroll_view_->SetPaintToLayer();
 
@@ -1632,8 +1699,8 @@ TEST_F(ScrollViewTest, CocoaOverlayScrollBars) {
 TEST_F(WidgetScrollViewTest,
        OverlayScrollBarsCannotProcessEventsWhenTransparent) {
   // Allow expectations to distinguish between fade outs and immediate changes.
-  ui::ScopedAnimationDurationScaleMode really_animate(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode really_animate(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   SetUseOverlayScrollers();
 
@@ -1658,8 +1725,8 @@ TEST_F(WidgetScrollViewTest,
 // Test overlay scrollbar behavior when just resting fingers on the trackpad.
 TEST_F(WidgetScrollViewTest, ScrollersOnRest) {
   // Allow expectations to distinguish between fade outs and immediate changes.
-  ui::ScopedAnimationDurationScaleMode really_animate(
-      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  gfx::ScopedAnimationDurationScaleMode really_animate(
+      gfx::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
   const float kMaxOpacity = 0.8f;  // Constant from cocoa_scroll_bar.mm.
 
@@ -2210,15 +2277,17 @@ TEST_F(ScrollViewTest, CustomOverflowIndicator) {
   View* left_indicator = scroll_view_->SetCustomOverflowIndicator(
       OverflowIndicatorAlignment::kLeft, std::make_unique<View>(), 1, true);
   EXPECT_EQ(gfx::Rect(0, 0, 1, 100), left_indicator->bounds());
-  if (left_indicator->layer())
+  if (left_indicator->layer()) {
     EXPECT_TRUE(left_indicator->layer()->fills_bounds_opaquely());
+  }
 
   // A larger, but still reasonable, indicator that is not opaque.
   View* top_indicator = scroll_view_->SetCustomOverflowIndicator(
       OverflowIndicatorAlignment::kTop, std::make_unique<View>(), 20, false);
   EXPECT_EQ(gfx::Rect(0, 0, 100, 20), top_indicator->bounds());
-  if (top_indicator->layer())
+  if (top_indicator->layer()) {
     EXPECT_FALSE(top_indicator->layer()->fills_bounds_opaquely());
+  }
 
   // Negative thickness doesn't make sense. It should be treated like zero.
   View* right_indicator = scroll_view_->SetCustomOverflowIndicator(
@@ -2499,7 +2568,7 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetWithoutLayers) {
     SCOPED_TRACE(testing::Message("Nesting = ") << i);
     View* child = new View;
     child->SetBoundsRect(kCellRect);
-    deepest_view->AddChildView(child);
+    deepest_view->AddChildViewRaw(child);
     deepest_view = child;
 
     // Add a view in one quadrant. Scrolling just this view should only scroll
@@ -2508,14 +2577,16 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetWithoutLayers) {
     // scroll bars, the scroll offset needs to go "a bit more".
     View* partial_view = new View;
     partial_view->SetSize(gfx::Size(kCellWidth / 3, kCellHeight / 3));
-    deepest_view->AddChildView(partial_view);
+    deepest_view->AddChildViewRaw(partial_view);
     partial_view->ScrollViewToVisible();
     int x_offset_in_cell = kCellWidth - partial_view->width();
-    if (!scroll_view->horizontal_scroll_bar()->OverlapsContent())
+    if (!scroll_view->horizontal_scroll_bar()->OverlapsContent()) {
       x_offset_in_cell -= scroll_view->horizontal_scroll_bar()->GetThickness();
+    }
     int y_offset_in_cell = kCellHeight - partial_view->height();
-    if (!scroll_view->vertical_scroll_bar()->OverlapsContent())
+    if (!scroll_view->vertical_scroll_bar()->OverlapsContent()) {
       y_offset_in_cell -= scroll_view->vertical_scroll_bar()->GetThickness();
+    }
     EXPECT_EQ(gfx::PointF(kCellWidth * i - x_offset_in_cell,
                           kCellHeight * i - y_offset_in_cell),
               test_api.CurrentOffset());
@@ -2559,8 +2630,9 @@ TEST_P(WidgetScrollViewTestRTLAndLayers, ScrollOffsetUsingLayers) {
   // The following only makes sense when layered scrolling is enabled.
   View* container = scroll_view->contents();
   EXPECT_EQ(IsTestingLayers(), !!container->layer());
-  if (!container->layer())
+  if (!container->layer()) {
     return;
+  }
 
   // Container and viewport should have layers.
   EXPECT_TRUE(container->layer());

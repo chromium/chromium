@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -47,12 +47,12 @@ export class SigninErrorAppElement extends SigninErrorAppElementBase {
     };
   }
 
-  protected fromProfilePicker_: boolean =
+  protected accessor fromProfilePicker_: boolean =
       loadTimeData.getBoolean('fromProfilePicker');
-  protected switchButtonUnavailable_: boolean = false;
-  protected hideNormalError_: boolean =
+  protected accessor switchButtonUnavailable_: boolean = false;
+  protected accessor hideNormalError_: boolean =
       loadTimeData.getString('signinErrorMessage').length === 0;
-  protected hideProfileBlockingErrors_: boolean[];
+  protected accessor hideProfileBlockingErrors_: boolean[];
 
   constructor() {
     super();
@@ -79,7 +79,7 @@ export class SigninErrorAppElement extends SigninErrorAppElementBase {
       await this.updateComplete;
       // Move focus to the only displayed button in this case.
       const button =
-          this.shadowRoot!.querySelector<HTMLElement>('#confirmButton');
+          this.shadowRoot.querySelector<HTMLElement>('#confirmButton');
       assert(button);
       button.focus();
     });

@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
+#include <array>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -38,7 +35,8 @@ struct TestEntry {
   const char* title;
   const int days_ago;
   base::Time time;  // Filled by SetUp.
-} test_entries[] = {
+};
+auto test_entries = std::to_array<TestEntry>({
     // This one is visited super long ago so it will be in a different database
     // from the next appearance of it at the end.
     {"http://example.com/", "Other", 180},
@@ -69,7 +67,7 @@ struct TestEntry {
     {"http://evil.test/example", "Host Evil domain", 18},
     {"http://evil.com/example.test", "Host Evil path", 19},
     {"https://random.test/", "Host random example.test", 20},
-};
+});
 
 // Returns true if the nth result in the given results set matches. It will
 // return false on a non-match or if there aren't enough results.
@@ -119,15 +117,14 @@ class HistoryQueryTest : public testing::Test {
   // Defined here so code can be shared for the text search and the non-text
   // seach versions.
   void TestPaging(const std::string& query_text,
-                  const int* expected_results,
-                  int results_length) {
+                  base::span<const int> expected_results) {
     ASSERT_TRUE(history_.get());
 
     QueryOptions options;
     QueryResults results;
 
     options.max_count = 1;
-    for (int i = 0; i < results_length; i++) {
+    for (size_t i = 0; i < expected_results.size(); i++) {
       SCOPED_TRACE(testing::Message() << "i = " << i);
       QueryHistory(query_text, options, &results);
       ASSERT_EQ(1U, results.size());
@@ -140,7 +137,7 @@ class HistoryQueryTest : public testing::Test {
     // Try with a max_count > 1.
     options.max_count = 2;
     options.end_time = base::Time();
-    for (int i = 0; i < results_length / 2; i++) {
+    for (size_t i = 0; i < expected_results.size() / 2; i++) {
       SCOPED_TRACE(testing::Message() << "i = " << i);
       QueryHistory(query_text, options, &results);
       ASSERT_EQ(2U, results.size());
@@ -184,7 +181,8 @@ class HistoryQueryTest : public testing::Test {
 
     history_->AddPage(url, entry.time, context_id, nav_entry_id_++, GURL(),
                       history::RedirectList(), ui::PAGE_TRANSITION_LINK,
-                      history::SOURCE_BROWSED, false);
+                      history::SOURCE_BROWSED,
+                      VisitResponseCodeCategory::kNot404, false);
     history_->SetPageTitle(url, base::UTF8ToUTF16(entry.title));
   }
 
@@ -456,12 +454,16 @@ TEST_F(HistoryQueryTest, TextSearchIDN) {
   struct QueryEntry {
     std::string query;
     size_t results_size;
-  } queries[] = {
-    { "bad query", 0 },
-    { std::string("xn--d1abbgf6aiiy.xn--p1ai"), 1 },
-    { base::WideToUTF8(L"\u043f\u0440\u0435\u0437"
-                       L"\u0438\u0434\u0435\u043d\u0442.\u0440\u0444"), 1, },
   };
+  auto queries = std::to_array<QueryEntry>({
+      {"bad query", 0},
+      {std::string("xn--d1abbgf6aiiy.xn--p1ai"), 1},
+      {
+          base::WideToUTF8(L"\u043f\u0440\u0435\u0437"
+                           L"\u0438\u0434\u0435\u043d\u0442.\u0440\u0444"),
+          1,
+      },
+  });
 
   for (size_t i = 0; i < std::size(queries); ++i) {
     QueryHistory(queries[i].query, options, &results);
@@ -474,15 +476,15 @@ TEST_F(HistoryQueryTest, Paging) {
   // Since results are fetched 1 and 2 at a time, entry #0 and #6 will not
   // be de-duplicated.
   int expected_results[] = {4, 2, 3, 1, 7, 6, 5, 8, 9, 10, 11, 12, 13, 14, 0};
-  TestPaging(std::string(), expected_results, std::size(expected_results));
+  TestPaging(std::string(), expected_results);
 }
 
 TEST_F(HistoryQueryTest, TextSearchPaging) {
   // Since results are fetched 1 and 2 at a time, entry #0 and #6 will not
   // be de-duplicated. Entry #4 does not contain the text "title", so it
   // shouldn't appear.
-  int expected_results[] = { 2, 3, 1, 7, 6, 5 };
-  TestPaging("title", expected_results, std::size(expected_results));
+  int expected_results[] = {2, 3, 1, 7, 6, 5};
+  TestPaging("title", expected_results);
 }
 
 }  // namespace history

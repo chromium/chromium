@@ -13,17 +13,21 @@
 #import "ios/chrome/browser/infobars/model/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_placeholder_request_config.h"
+#import "ios/chrome/browser/overlays/model/public/overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue_util.h"
-#import "ios/chrome/browser/overlays/model/test/overlay_test_macros.h"
 #import "ios/chrome/browser/passwords/model/test/mock_ios_chrome_save_passwords_infobar_delegate.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/translate/model/fake_translate_infobar_delegate.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 
 namespace {
-DEFINE_TEST_OVERLAY_REQUEST_CONFIG(FakeConfig);
+DEFINE_STATELESS_OVERLAY_REQUEST_CONFIG(FakeConfig);
 
 // Creates a matcher callback for ConfigType and config's InfoBar.
 template <class ConfigType>
@@ -43,8 +47,21 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
     : public PlatformTest {
  public:
   TranslateInfobarOverlayTranslateOverlayTabHelperTest() {
+    TestProfileIOS::Builder test_profile_builder;
+
+    test_profile_builder.AddTestingFactory(
+        TipsManagerIOSFactory::GetInstance(),
+        TipsManagerIOSFactory::GetDefaultFactory());
+
+    profile_ = std::move(test_profile_builder).Build();
+
+    // Set up WebState
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
+
+    // Associate the WebState with the Profile
+    web_state_.SetBrowserState(profile_.get());
+
     OverlayRequestQueue::CreateForWebState(&web_state_);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
     InfobarOverlayRequestInserter::CreateForWebState(
@@ -61,9 +78,7 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
         ->AddInfoBar(std::move(infobar));
   }
 
-  ~TranslateInfobarOverlayTranslateOverlayTabHelperTest() override {
-    InfoBarManagerImpl::FromWebState(&web_state_)->ShutDown();
-  }
+  ~TranslateInfobarOverlayTranslateOverlayTabHelperTest() override = default;
 
   // Returns the front request of `web_state_`'s OverlayRequestQueue.
   OverlayRequest* front_request() {
@@ -73,10 +88,13 @@ class TranslateInfobarOverlayTranslateOverlayTabHelperTest
   }
 
  protected:
+  web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   FakeTranslateInfoBarDelegateFactory delegate_factory_;
-  raw_ptr<FakeTranslateInfoBarDelegate> delegate_ = nullptr;
-  raw_ptr<InfoBarIOS> infobar_ = nullptr;
+  raw_ptr<FakeTranslateInfoBarDelegate, DanglingUntriaged> delegate_ = nullptr;
+  raw_ptr<InfoBarIOS, DanglingUntriaged> infobar_ = nullptr;
 };
 
 // Tests that the inserter adds a placeholder request when Translate begins.

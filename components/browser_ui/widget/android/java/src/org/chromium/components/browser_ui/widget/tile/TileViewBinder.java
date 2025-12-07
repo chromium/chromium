@@ -11,11 +11,13 @@ import android.widget.TextView;
 
 import androidx.core.widget.ImageViewCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Binder wiring for the TileView. */
+@NullMarked
 public class TileViewBinder {
     /** @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object) */
     public static void bind(PropertyModel model, TileView view, PropertyKey propertyKey) {
@@ -32,10 +34,12 @@ public class TileViewBinder {
         } else if (propertyKey == TileViewProperties.ICON_TINT) {
             final ImageView iconView = view.findViewById(R.id.tile_view_icon);
             ImageViewCompat.setImageTintList(iconView, model.get(TileViewProperties.ICON_TINT));
-        } else if (propertyKey == TileViewProperties.BADGE_VISIBLE) {
-            final View badgeView = view.findViewById(R.id.offline_badge);
-            final boolean isVisible = model.get(TileViewProperties.BADGE_VISIBLE);
-            badgeView.setVisibility(isVisible ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == TileViewProperties.OFFLINE_BADGE_VISIBLE) {
+            final boolean isVisible = model.get(TileViewProperties.OFFLINE_BADGE_VISIBLE);
+            view.setOfflineBadgeVisibility(isVisible);
+        } else if (propertyKey == TileViewProperties.PINNED_SHORTCUT_BADGE_VISIBLE) {
+            final boolean isVisible = model.get(TileViewProperties.PINNED_SHORTCUT_BADGE_VISIBLE);
+            view.togglePinnedShortcutBadge(isVisible);
         } else if (propertyKey == TileViewProperties.SHOW_LARGE_ICON) {
             final boolean useLargeIcon = model.get(TileViewProperties.SHOW_LARGE_ICON);
             final int iconEdgeSize = getIconEdgeSizePx(view.getResources(), useLargeIcon);

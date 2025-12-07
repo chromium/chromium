@@ -15,22 +15,10 @@ if (!defined(partition_alloc_remove_configs)) {
   partition_alloc_remove_configs = []
 }
 
-# Enables compilation of the freelist dispatcher, which we'll use to
-# carry out runtime evaluation of PartitionAlloc's two freelist
-# implementations: the existing encoded-next freelist and the new
-# pool offset freelist. When false, the latter is not built.
-use_freelist_dispatcher = has_64_bit_pointers
-
-assert(has_64_bit_pointers || !use_freelist_dispatcher,
-       "freelist dispatcher can't be used without 64-bit pointers")
-
 record_alloc_info = false
 
 # GWP-ASan is tied to BRP's enablement.
 enable_gwp_asan_support = enable_backup_ref_ptr_support
-
-# Pools are a logical concept when address space is 32-bit.
-glue_core_pools = glue_core_pools && has_64_bit_pointers
 
 # Pointer compression requires 64-bit pointers.
 enable_pointer_compression =
@@ -38,7 +26,8 @@ enable_pointer_compression =
 
 # Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`, but avails it
 # as a buildflag.
-dchecks_are_on = is_debug || dcheck_always_on
+partition_alloc_dchecks_are_on =
+    partition_alloc_is_debug || partition_alloc_dcheck_always_on
 
 # Building PartitionAlloc for Windows component build.
 # Currently use build_with_chromium not to affect any third_party code,
@@ -83,6 +72,7 @@ config("dependants_extra_warnings") {
       "-Wduplicate-enum",
       "-Wextra-semi",
       "-Wextra-semi-stmt",
+      "-Widiomatic-parentheses",
       "-Wimplicit-fallthrough",
       "-Winconsistent-missing-destructor-override",
       "-Winvalid-offsetof",
@@ -124,12 +114,33 @@ source_set("buildflag_macro") {
   public_configs = [ ":public_includes" ]
 }
 
+# When developers are repeatedly growing a buffer with `realloc`, they are
+# expected to request a new size that is larger than the current size by
+# some growth factor. This growth factor allows to amortize the cost of
+# memcpy. Unfortunately, some nVidia drivers have a bug where they repeatedly
+# increase the buffer by 4144 byte only.
+#
+# In particular, most Skia Linux bots are using the affected nVidia driver. So
+# this flag is used as a workaround for Skia standalone, not in production.
+#
+# External link:
+#   https://forums.developer.nvidia.com/t/550-54-14-very-bad-performance-due-to-bunch-of-reallocations-during-glcore-initialization/287027
+#
+# Internal discussion at @chrome-memory-safety:
+#   https://groups.google.com/a/google.com/d/msgid/chrome-memory-safety/CAAzos5HrexY2njz2YzWrffTq1xEfkx15GVpSvHUyQED6wBSXvA%40mail.gmail.com?utm_medium=email&utm_source=footer
+declare_args() {
+  partition_alloc_realloc_growth_factor_mitigation = false
+}
+
 pa_buildflag_header("buildflags") {
   header = "buildflags.h"
   flags = [
-    "ASSERT_CPP_20=$assert_cpp20",
     "BACKUP_REF_PTR_EXTRA_OOB_CHECKS=$backup_ref_ptr_extra_oob_checks",
     "BACKUP_REF_PTR_POISON_OOB_PTR=$backup_ref_ptr_poison_oob_ptr",
+    "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
+    "DCHECKS_ARE_ON=$partition_alloc_dchecks_are_on",
+    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+    "ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=$enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support",
     "ENABLE_BACKUP_REF_PTR_FEATURE_FLAG=$enable_backup_ref_ptr_feature_flag",
     "ENABLE_BACKUP_REF_PTR_INSTANCE_TRACER=$enable_backup_ref_ptr_instance_tracer",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$enable_backup_ref_ptr_slow_checks",
@@ -137,42 +148,45 @@ pa_buildflag_header("buildflags") {
     "ENABLE_DANGLING_RAW_PTR_CHECKS=$enable_dangling_raw_ptr_checks",
     "ENABLE_DANGLING_RAW_PTR_FEATURE_FLAG=$enable_dangling_raw_ptr_feature_flag",
     "ENABLE_GWP_ASAN_SUPPORT=$enable_gwp_asan_support",
+    "ENABLE_PARTITION_LOCK_REENTRANCY_CHECK=$enable_partition_lock_reentrancy_check",
+    "ENABLE_PARTITION_LOCK_PRIORITY_INHERITANCE=$enable_partition_lock_priority_inheritance",
     "ENABLE_PKEYS=$enable_pkeys",
     "ENABLE_POINTER_ARITHMETIC_TRAIT_CHECK=$enable_pointer_arithmetic_trait_check",
     "ENABLE_POINTER_COMPRESSION=$enable_pointer_compression",
     "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
-    "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
+    "MOVE_METADATA_OUT_OF_GIGACAGE_FOR_64_BITS_POINTERS=$move_metadata_outside_gigacage",
+    "ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL=$enable_move_metadata_outside_gigacage_trial",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
+    "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+    "FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=$force_disable_backup_ref_ptr_feature",
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
     "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
-    "GLUE_CORE_POOLS=$glue_core_pools",
     "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
     "HAS_MEMORY_TAGGING=$has_memory_tagging",
+    "IS_ANDROID=$is_android",
     "IS_CASTOS=$is_castos",
     "IS_CAST_ANDROID=$is_cast_android",
     "IS_CHROMEOS=$is_chromeos",
-    "IS_DEBUG=$is_debug",
+    "IS_DEBUG=$partition_alloc_is_debug",
+    "IS_HWASAN=$is_hwasan",
     "RAW_PTR_ZERO_ON_CONSTRUCT=$raw_ptr_zero_on_construct",
     "RAW_PTR_ZERO_ON_DESTRUCT=$raw_ptr_zero_on_destruct",
     "RAW_PTR_ZERO_ON_MOVE=$raw_ptr_zero_on_move",
+    "REALLOC_GROWTH_FACTOR_MITIGATION=$partition_alloc_realloc_growth_factor_mitigation",
     "RECORD_ALLOC_INFO=$record_alloc_info",
+    "SHIM_SUPPORTS_SIZED_DEALLOC=$shim_supports_sized_dealloc",
+    "SMALLER_PARTITION_COOKIE=$smaller_partition_cookie",
     "STACK_SCAN_SUPPORTED=$stack_scan_supported",
     "USE_ALLOCATOR_SHIM=$use_allocator_shim",
     "USE_ASAN_BACKUP_REF_PTR=$use_asan_backup_ref_ptr",
-    "USE_FREELIST_DISPATCHER=$use_freelist_dispatcher",
-    "USE_FREESLOT_BITMAP=$use_freeslot_bitmap",
     "USE_FULL_MTE=$use_full_mte",
     "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
     "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
+    "USE_PARTITION_COOKIE=$use_partition_cookie",
     "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",
-    "ENABLE_ALLOCATOR_SHIM_PARTITION_ALLOC_DISPATCH_WITH_ADVANCED_CHECKS_SUPPORT=$enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support",
-    "DCHECKS_ARE_ON=$dchecks_are_on",
-    "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
-    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
-    "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
   ]
 }
 
@@ -232,11 +246,13 @@ component("raw_ptr") {
     sources += [ "pointers/raw_ptr_noop_impl.h" ]
     sources += [ "pointers/empty.cc" ]
   }
-  public_deps = [ ":build_config" ]
+  public_deps = [
+    ":build_config",
+    ":buildflags",
+  ]
   if (use_partition_alloc) {
     public_deps += [ ":partition_alloc" ]
   }
-  deps = [ ":buildflags" ]
 
   # See also: `partition_alloc_base/component_export.h`
   defines = [ "IS_RAW_PTR_IMPL" ]
@@ -263,7 +279,7 @@ if (is_clang_or_gcc) {
   }
 
   config("memory_tagging") {
-    if (current_cpu == "arm64" &&
+    if (current_cpu == "arm64" && is_clang &&
         (is_linux || is_chromeos || is_android || is_fuchsia)) {
       # base/ has access to the MTE intrinsics because it needs to use them,
       # but they're not backwards compatible. Use base::CPU::has_mte()
@@ -281,6 +297,7 @@ if (is_clang_or_gcc) {
   # Used to shim malloc symbols on Android. see //base/allocator/README.md.
   config("wrap_malloc_symbols") {
     ldflags = [
+      "-Wl,-wrap,aligned_alloc",
       "-Wl,-wrap,calloc",
       "-Wl,-wrap,free",
       "-Wl,-wrap,malloc",
@@ -326,7 +343,7 @@ if (is_clang_or_gcc) {
     }
   }
 
-  if (enable_pkeys && is_debug) {
+  if (enable_pkeys && partition_alloc_is_debug) {
     config("no_stack_protector") {
       cflags = [ "-fno-stack-protector" ]
     }
@@ -337,6 +354,7 @@ if (is_clang_or_gcc) {
       ":allocator_base",
       ":allocator_core",
       ":allocator_shim",
+      ":buildflags",
     ]
   }
 
@@ -382,21 +400,21 @@ if (is_clang_or_gcc) {
       "address_space_stats.h",
       "allocation_guard.cc",
       "allocation_guard.h",
+      "allocator_config.cc",
+      "allocator_config.h",
+      "bucket_lookup.h",
       "compressed_pointer.cc",
       "compressed_pointer.h",
       "dangling_raw_ptr_checks.cc",
       "dangling_raw_ptr_checks.h",
       "flags.h",
-      "freeslot_bitmap.h",
-      "freeslot_bitmap_constants.h",
       "gwp_asan_support.cc",
       "gwp_asan_support.h",
+      "in_slot_metadata.cc",
       "in_slot_metadata.h",
       "internal_allocator.cc",
       "internal_allocator.h",
       "internal_allocator_forward.h",
-      "lightweight_quarantine.cc",
-      "lightweight_quarantine.h",
       "memory_reclaimer.cc",
       "memory_reclaimer.h",
       "oom.cc",
@@ -421,7 +439,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_hooks.h",
       "partition_bucket.cc",
       "partition_bucket.h",
-      "partition_bucket_lookup.h",
+      "partition_cookie.cc",
       "partition_cookie.h",
       "partition_dcheck_helper.cc",
       "partition_dcheck_helper.h",
@@ -445,6 +463,12 @@ if (is_clang_or_gcc) {
       "reservation_offset_table.cc",
       "reservation_offset_table.h",
       "reverse_bytes.h",
+      "scheduler_loop_quarantine.cc",
+      "scheduler_loop_quarantine.h",
+      "scheduler_loop_quarantine_support.cc",
+      "scheduler_loop_quarantine_support.h",
+      "slot_start.cc",
+      "slot_start.h",
       "spinning_mutex.cc",
       "spinning_mutex.h",
       "stack/stack.cc",
@@ -494,18 +518,21 @@ if (is_clang_or_gcc) {
     } else if (current_cpu == "riscv64") {
       assert(stack_scan_supported)
       sources += [ "stack/asm/riscv64/push_registers_asm.cc" ]
+    } else if (current_cpu == "loong64") {
+      assert(stack_scan_supported)
+      sources += [ "stack/asm/loong64/push_registers_asm.cc" ]
     } else {
       # To support a trampoline for another arch, please refer to v8/src/heap/base.
       assert(!stack_scan_supported)
     }
 
-    # TODO(crbug.com/40274683): once we evaluate pool offset freelists,
-    # we should erase the dispatcher and compile (& use) exactly one
-    # freelist implementation.
-    if (use_freelist_dispatcher) {
+    # Pool-offset encoding has better security characteristics, but requires
+    # contiguous pool hence limited to 64-bit systems.
+    if (has_64_bit_pointers) {
       sources += [ "pool_offset_freelist.h" ]
+    } else {
+      sources += [ "encoded_next_freelist.h" ]
     }
-    sources += [ "encoded_next_freelist.h" ]
 
     public_deps = [
       ":build_config",
@@ -521,7 +548,7 @@ if (is_clang_or_gcc) {
     if (use_partition_alloc_as_malloc_on_win_component_build) {
       # We need to add explicit libc++ dependency here because of
       # no_default_deps=true.
-      deps += [ "//buildtools/third_party/libc++:libc++" ]
+      deps += [ "//buildtools/third_party/libc++" ]
     }
 
     public_configs = []
@@ -560,8 +587,21 @@ if (is_clang_or_gcc) {
 
     # We want to be able to test pkey mode without access to the default pkey.
     # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
-    if (enable_pkeys && is_debug) {
+    if (enable_pkeys && partition_alloc_is_debug) {
       configs += [ ":no_stack_protector" ]
+
+      if (defined(is_debug) && is_debug) {
+        # Chromium debug build uses -fstack-protector for libc++ modules and the
+        # flag is not compatible with "no_stack_protector" config.
+        #
+        # Note that `is_debug`, `libcxx_modules` and `use_clang_modules`
+        # arguments are not part of partition_alloc. They are part of Chromium.
+        # They may be undefined or unused respectively.
+        use_libcxx_modules = false
+        if (!defined(use_clang_modules)) {
+          not_needed([ "use_libcxx_modules" ])
+        }
+      }
     }
   }
 
@@ -585,14 +625,18 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/check.h",
       "partition_alloc_base/compiler_specific.h",
       "partition_alloc_base/component_export.h",
+      "partition_alloc_base/containers/flat_map.h",
+      "partition_alloc_base/containers/flat_tree.h",
       "partition_alloc_base/cpu.cc",
       "partition_alloc_base/cpu.h",
-      "partition_alloc_base/cxx20_is_constant_evaluated.h",
+      "partition_alloc_base/cxx_wrapper/algorithm.h",
+      "partition_alloc_base/cxx_wrapper/optional.h",
       "partition_alloc_base/debug/alias.cc",
       "partition_alloc_base/debug/alias.h",
       "partition_alloc_base/debug/stack_trace.cc",
       "partition_alloc_base/debug/stack_trace.h",
       "partition_alloc_base/export_template.h",
+      "partition_alloc_base/files/platform_file.h",
       "partition_alloc_base/immediate_crash.h",
       "partition_alloc_base/log_message.cc",
       "partition_alloc_base/log_message.h",
@@ -603,6 +647,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/memory/ref_counted.h",
       "partition_alloc_base/memory/scoped_policy.h",
       "partition_alloc_base/memory/scoped_refptr.h",
+      "partition_alloc_base/memory/stack_allocated.h",
       "partition_alloc_base/no_destructor.h",
       "partition_alloc_base/notreached.h",
       "partition_alloc_base/numerics/checked_math.h",
@@ -630,6 +675,7 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/strings/stringprintf.cc",
       "partition_alloc_base/strings/stringprintf.h",
       "partition_alloc_base/system/sys_info.h",
+      "partition_alloc_base/template_util.h",
       "partition_alloc_base/thread_annotations.h",
       "partition_alloc_base/threading/platform_thread.cc",
       "partition_alloc_base/threading/platform_thread.h",
@@ -638,11 +684,14 @@ if (is_clang_or_gcc) {
       "partition_alloc_base/time/time.h",
       "partition_alloc_base/time/time_override.cc",
       "partition_alloc_base/time/time_override.h",
+      "partition_alloc_base/types/same_as_any.h",
       "partition_alloc_base/types/strong_alias.h",
       "partition_alloc_base/win/win_handle_types.h",
       "partition_alloc_base/win/win_handle_types_list.inc",
+      "partition_alloc_base/win/windows_handle_util.h",
       "partition_alloc_base/win/windows_types.h",
     ]
+    libs = []
 
     if (is_win) {
       sources += [
@@ -653,6 +702,9 @@ if (is_clang_or_gcc) {
         "partition_alloc_base/scoped_clear_last_error_win.cc",
         "partition_alloc_base/threading/platform_thread_win.cc",
         "partition_alloc_base/time/time_win.cc",
+      ]
+      libs += [
+        "winmm.lib",  # For timeGetTime.
       ]
     }
 
@@ -757,7 +809,7 @@ if (is_clang_or_gcc) {
     if (use_partition_alloc_as_malloc_on_win_component_build) {
       # We need to add explicit libc++ dependency here because of
       # no_default_deps=true.
-      deps += [ "//buildtools/third_party/libc++:libc++" ]
+      deps += [ "//buildtools/third_party/libc++" ]
     }
     if (is_fuchsia) {
       public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/fit" ]
@@ -777,8 +829,6 @@ if (is_clang_or_gcc) {
   }
 
   component("allocator_shim") {
-    visibility = [ ":*" ]
-
     sources = []
     deps = []
     all_dependent_configs = []
@@ -833,7 +883,7 @@ if (is_clang_or_gcc) {
       shim_headers += [
         "shim/allocator_shim_override_apple_default_zone.h",
         "shim/allocator_shim_override_apple_symbols.h",
-        "shim/early_zone_registration_constants.h",
+        "shim/early_zone_registration_utils_apple.h",
         "shim/allocator_interception_apple.h",
         "shim/malloc_zone_functions_apple.h",
       ]
@@ -923,16 +973,31 @@ if (is_clang_or_gcc) {
 # TODO(crbug.com/40158212): Consider supporting building tests outside of
 # chromium and having a dedicated 'partition_alloc_unittests' target.
 if (build_with_chromium) {
+  if (is_linux || is_chromeos || is_android) {
+    source_set("debug_proc_maps") {
+      testonly = true
+
+      sources = [
+        "partition_alloc_base/debug/proc_maps_linux.cc",
+        "partition_alloc_base/debug/proc_maps_linux.h",
+      ]
+
+      deps = [
+        ":allocator_base",
+        ":allocator_core",
+        ":buildflags",
+      ]
+    }
+  }
+
   source_set("unittests") {
     testonly = true
 
     sources = [ "partition_alloc_base/test/gtest_util.h" ]
+    deps = []
 
     if (is_linux || is_chromeos || is_android) {
-      sources += [
-        "partition_alloc_base/debug/proc_maps_linux.cc",
-        "partition_alloc_base/debug/proc_maps_linux.h",
-      ]
+      deps += [ ":debug_proc_maps" ]
     }
 
     if (is_android) {
@@ -947,13 +1012,10 @@ if (build_with_chromium) {
         "address_pool_manager_unittest.cc",
         "address_space_randomization_unittest.cc",
         "compressed_pointer_unittest.cc",
-        "freeslot_bitmap_unittest.cc",
-        "hardening_unittest.cc",
-        "lightweight_quarantine_unittest.cc",
         "memory_reclaimer_unittest.cc",
-        "page_allocator_unittest.cc",
         "partition_alloc_base/bits_pa_unittest.cc",
         "partition_alloc_base/component_export_pa_unittest.cc",
+        "partition_alloc_base/containers/flat_map_pa_unittest.cc",
         "partition_alloc_base/cpu_pa_unittest.cc",
         "partition_alloc_base/logging_pa_unittest.cc",
         "partition_alloc_base/no_destructor_pa_unittest.cc",
@@ -964,13 +1026,15 @@ if (build_with_chromium) {
         "partition_alloc_base/strings/string_util_pa_unittest.cc",
         "partition_alloc_base/strings/stringprintf_pa_unittest.cc",
         "partition_alloc_base/thread_annotations_pa_unittest.cc",
-        "partition_alloc_unittest.cc",
         "partition_lock_unittest.cc",
         "reverse_bytes_unittest.cc",
-        "slot_start_unittest.cc",
+        "scheduler_loop_quarantine_unittest.cc",
         "thread_cache_unittest.cc",
-        "use_death_tests.h",
       ]
+
+      if (!is_android) {
+        deps += [ ":death_unittests" ]
+      }
     }
 
     if (is_fuchsia) {
@@ -1004,7 +1068,7 @@ if (build_with_chromium) {
       ]
     }
 
-    if (enable_pkeys && is_debug && !is_component_build) {
+    if (enable_pkeys && partition_alloc_is_debug && !is_component_build) {
       # This test requires RELRO, which is not enabled in component builds.
       # Also, require a debug build, since we only disable stack protectors in
       # debug builds in PartitionAlloc (see below why it's needed).
@@ -1016,6 +1080,19 @@ if (build_with_chromium) {
       # value from the TLS which won't be pkey-tagged, hence disabling it for
       # the test.
       configs += [ ":no_stack_protector" ]
+
+      if (defined(is_debug) && is_debug) {
+        # Chromium debug build uses -fstack-protector for libc++ modules and the
+        # flag is not compatible with "no_stack_protector" config.
+        #
+        # Note that `is_debug`, `libcxx_modules` and `use_clang_modules`
+        # arguments are not part of partition_alloc. They are part of Chromium.
+        # They may be undefined or unused respectively.
+        use_libcxx_modules = false
+        if (!defined(use_clang_modules)) {
+          not_needed([ "use_libcxx_modules" ])
+        }
+      }
     }
 
     frameworks = []
@@ -1026,7 +1103,7 @@ if (build_with_chromium) {
       ]
     }
 
-    deps = [
+    deps += [
       ":partition_alloc",
       ":test_support",
       "//testing/gmock",
@@ -1035,6 +1112,55 @@ if (build_with_chromium) {
 
     configs -= partition_alloc_remove_configs
     configs += partition_alloc_add_configs
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+  }
+
+  source_set("death_unittests") {
+    testonly = true
+
+    sources = [ "partition_alloc_base/test/gtest_util.h" ]
+    deps = []
+
+    if (is_linux || is_chromeos || is_android) {
+      deps += [ ":debug_proc_maps" ]
+    }
+
+    if (use_partition_alloc) {
+      sources += [
+        "hardening_unittest.cc",
+        "page_allocator_unittest.cc",
+        "partition_alloc_base/containers/flat_tree_pa_unittest.cc",
+        "partition_alloc_unittest.cc",
+        "slot_start_unittest.cc",
+        "use_death_tests.h",
+      ]
+    }
+
+    if ((is_android || is_linux) && target_cpu == "arm64") {
+      cflags = [
+        "-Xclang",
+        "-target-feature",
+        "-Xclang",
+        "+mte",
+      ]
+    }
+
+    deps += [
+      ":partition_alloc",
+      ":test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+
+    configs -= partition_alloc_remove_configs
+    configs += partition_alloc_add_configs
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -1044,8 +1170,10 @@ source_set("test_support") {
   sources = [
     "extended_api.cc",
     "extended_api.h",
+    "partition_alloc_base/test/move_only_int.h",
     "partition_alloc_base/threading/platform_thread_for_testing.h",
     "partition_alloc_for_testing.h",
+    "pointers/raw_ptr_counting_impl_for_test.cc",
     "pointers/raw_ptr_counting_impl_for_test.h",
   ]
   if (is_posix) {

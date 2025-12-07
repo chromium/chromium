@@ -14,7 +14,7 @@
 #include "components/services/storage/privileged/mojom/indexed_db_control_test.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-namespace content {
+namespace content::indexed_db {
 
 class LevelDBDirectTransaction;
 class LevelDBScope;
@@ -65,6 +65,6 @@ class MockBrowserTestIndexedDBClassFactory
   mojo::Receiver<storage::mojom::MockFailureInjector> receiver_{this};
 };
 
-}  // namespace content
+}  // namespace content::indexed_db
 
 #endif  // CONTENT_BROWSER_INDEXED_DB_MOCK_BROWSERTEST_INDEXED_DB_CLASS_FACTORY_H_

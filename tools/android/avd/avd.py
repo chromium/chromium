@@ -4,36 +4,81 @@
 # found in the LICENSE file.
 
 import argparse
+import dataclasses
 import os
 import logging
+import json
 import pathlib
+import signal
 import sys
 
 _SRC_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 
-sys.path.append(
-    os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
+sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
 from devil.android.tools import script_common
+from devil.android.sdk import adb_wrapper
 from devil.utils import logging_common
 
-sys.path.append(
-    os.path.join(_SRC_ROOT, 'build', 'android'))
+sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
 import devil_chromium
 from pylib.local.emulator import avd
 
+# From .vpython
+import psutil
+import tabulate
 
-def _add_avd_config_argument(parser):
+
+@dataclasses.dataclass(frozen=True)
+class _Process:
+  pid: int
+  port: int
+  cmd: str
+
+
+def _detect_emulator_processes():
+  serials = [adb.GetDeviceSerial() for adb in adb_wrapper.AdbWrapper.Devices()]
+  emulator_ports = {
+      int(s.split('-')[-1])
+      for s in serials if s.startswith('emulator-')
+  }
+  if not emulator_ports:
+    return []
+  found = {(p.pid, p.laddr.port)
+           for p in psutil.net_connections()
+           if p.status == psutil.CONN_LISTEN and p.laddr.port in emulator_ports}
+  return [
+      _Process(x[0], x[1],
+               psutil.Process(x[0]).cmdline()[0]) for x in found
+  ]
+
+
+def _avd_procs_for_config(path, avd_procs):
+  # Example: /usr/local/google/code/clankium1/src/.android_emulator/android_34_google_apis_x64_local/emulator/qemu/linux-x86_64/qemu-system-x86_64
+  avd_name = os.path.basename(path).removesuffix('.textpb')
+  key = f'{avd_name}{os.path.sep}'
+  return [p for p in avd_procs if key in p.cmd]
+
+
+def _add_avd_config_argument(parser, required=True):
   parser.add_argument('--avd-config',
                       type=os.path.realpath,
                       metavar='PATH',
-                      required=True,
+                      required=required,
                       help='Path to an AVD config text protobuf.')
 
 
 def _add_common_arguments(parser):
   logging_common.AddLoggingArguments(parser)
   script_common.AddEnvironmentArguments(parser)
+
+
+def get_avd_configs():
+  """Returns a list of AvdConfig objects for all avd configs."""
+  configs = []
+  for path_obj in pathlib.Path(__file__).parent.glob('proto/*.textpb'):
+    configs.append(avd.AvdConfig(str(path_obj)))
+  return configs
 
 
 def main(raw_args):
@@ -71,12 +116,19 @@ def main(raw_args):
   _add_common_arguments(subparser)
   _add_avd_config_argument(subparser)
   subparser.add_argument(
+      '--avd-variant',
+      help='The name of the AVD variant to use during creation. Will error out '
+      'if the name is set but avd config has no variants or the name is not '
+      'found in the avd config.')
+  subparser.add_argument(
       '--snapshot',
       action='store_true',
       help='Snapshot the AVD before creating the CIPD package.')
-  subparser.add_argument('--force',
-                         action='store_true',
-                         help='Pass --force to AVD creation.')
+  subparser.add_argument(
+      '--force',
+      action='store_true',
+      help='Pass --force to AVD creation. This is useful when an AVD with '
+      'the same name already exists.')
   subparser.add_argument('--keep',
                          action='store_true',
                          help='Keep the AVD after creating the CIPD package.')
@@ -111,7 +163,9 @@ def main(raw_args):
       help='Skip the CIPD package creation after creating the AVD.')
 
   def create_cmd(args):
-    avd.AvdConfig(args.avd_config).Create(
+    avd_config = avd.AvdConfig(args.avd_config)
+    avd_config.Create(
+        avd_variant_name=args.avd_variant,
         force=args.force,
         snapshot=args.snapshot,
         keep=args.keep,
@@ -182,9 +236,8 @@ def main(raw_args):
   subparser.add_argument(
       '--require-fast-start',
       action='store_true',
-      help='Shortens the start-up timeout and turns off the customization for '
-      'local AVD run, e.g. larger disk space. Should be set when used by bots '
-      'for AVD create or start.')
+      help='Deprecated and will be removed soon. Please use '
+      '"proto/*_local.textpb" avd config files for local development.')
 
   def start_cmd(args):
     avd_config = avd.AvdConfig(args.avd_config)
@@ -205,8 +258,7 @@ def main(raw_args):
                wipe_data=args.wipe_data,
                debug_tags=debug_tags,
                disk_size=args.disk_size,
-               enable_network=args.enable_network,
-               require_fast_start=args.require_fast_start)
+               enable_network=args.enable_network)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
 
@@ -217,25 +269,83 @@ def main(raw_args):
       help='Shows possible values for --avd-config.',
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   _add_common_arguments(subparser)
+  _add_avd_config_argument(subparser, required=False)
+  subparser.add_argument(
+      '--avd-config-dir',
+      type=os.path.realpath,
+      metavar='DIR_PATH',
+      help='Path to the dir that contains the avd config files. '
+      'Default to the sibling dir "proto" of this "avd.py" script, if neither '
+      '"--avd-config-path" nor this argument is set.')
+  subparser.add_argument('--json-output',
+                         type=os.path.realpath,
+                         metavar='PATH',
+                         help='Dump json output to the given path.')
 
   def list_cmd(args):
-    files = pathlib.Path(__file__).parent.glob('proto/*.textpb')
-    avd_configs = [avd.AvdConfig(os.path.relpath(f)) for f in files]
+    if args.avd_config:
+      avd_configs = [avd.AvdConfig(args.avd_config)]
+    elif args.avd_config_dir:
+      avd_configs = []
+      for path_obj in pathlib.Path(args.avd_config_dir).glob('*.textpb'):
+        avd_configs.append(avd.AvdConfig(str(path_obj)))
+    else:
+      avd_configs = get_avd_configs()
+
+    if not avd_configs:
+      print('No avd config files found.')
+      return 0
+
+    avd_procs = _detect_emulator_processes()
+
     avd_configs.sort(key=lambda c: c.avd_proto_path)
-    fmt_string = '{:70} {:40} {}'
-    print(
-        fmt_string.format('Possible values for --avd-config:', 'Name',
-                          'Active & Up-to-date'))
-    for avd_config in avd_configs:
-      print(
-          fmt_string.format(avd_config.avd_proto_path, avd_config.avd_name,
-                            avd_config.IsAvailable()))
-    print()
-    print('Warning: playstore images currently require --wipe-data. '
-          'See: https://crbug.com/1116196')
+    metadata = [config.GetMetadata() for config in avd_configs]
+    for row in metadata:
+      cur_avd_procs = _avd_procs_for_config(row['avd_proto_path'], avd_procs)
+      row['active_pids'] = ', '.join(str(p.pid) for p in cur_avd_procs)
+      row['active_serials'] = ', '.join(f'emulator-{p.port}'
+                                        for p in cur_avd_procs)
+    if args.json_output:
+      with open(args.json_output, 'w') as json_file:
+        json.dump(metadata, json_file, indent=2)
+    else:
+      # Import tabulate only when needed, in case it is not listed in .vpython3.
+      print(tabulate.tabulate(metadata, headers='keys'))
     return 0
 
   subparser.set_defaults(func=list_cmd)
+
+  subparser = subparsers.add_parser(
+      'stop',
+      help='Stops emulators for the given avd config (or all emulators if no '
+      'config is given)',
+      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  _add_common_arguments(subparser)
+  _add_avd_config_argument(subparser, required=False)
+
+  def stop_cmd(args):
+    avd_procs = _detect_emulator_processes()
+
+    if args.avd_config:
+      avd_procs = _avd_procs_for_config(args.avd_config, avd_procs)
+      if not avd_procs:
+        print('No emulators found for avd config:', args.avd_config)
+        return
+    elif not avd_procs:
+      print('No emulators found.')
+      return
+
+    for proc in avd_procs:
+      os.kill(proc.pid, signal.SIGINT)
+
+    print(f'Sent SIGINT to {len(avd_procs)} emulator(s).')
+    for proc in avd_procs:
+      try:
+        psutil.Process(proc.pid).wait()
+      except psutil.NoSuchProcess:
+        pass
+
+  subparser.set_defaults(func=stop_cmd)
 
   if len(sys.argv) == 1:
     parser.print_help()

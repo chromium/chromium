@@ -13,6 +13,7 @@
 namespace system_media_permissions {
 
 namespace {
+using ::system_permission_settings::SystemPermission;
 
 const char kSystemPermissionMicFirstBlockedTimePref[] =
     "system_permission.mic.first_blocked_time";
@@ -137,11 +138,13 @@ void RegisterSystemMediaPermissionStatesPrefs(PrefRegistrySimple* registry) {
 }
 
 void LogSystemMediaPermissionsStartupStats() {
-  const SystemPermission audio_permission = CheckSystemAudioCapturePermission();
+  const system_permission_settings::SystemPermission audio_permission =
+      system_permission_settings::CheckSystemAudioCapturePermission();
   LogStartupMicSystemPermission(audio_permission);
   MaybeLogAdditionalMicSystemPermissionStats(audio_permission);
 
-  const SystemPermission video_permission = CheckSystemVideoCapturePermission();
+  const system_permission_settings::SystemPermission video_permission =
+      system_permission_settings::CheckSystemVideoCapturePermission();
   LogStartupCameraSystemPermission(video_permission);
   MaybeLogAdditionalCameraSystemPermissionStats(video_permission);
 

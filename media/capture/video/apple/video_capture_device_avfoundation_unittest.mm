@@ -56,16 +56,15 @@ TEST(VideoCaptureDeviceAVFoundationMacTest,
     base::RunLoop first_frame_received(
         base::RunLoop::Type::kNestableTasksAllowed);
     EXPECT_CALL(frame_receiver, ReceiveExternalGpuMemoryBufferFrame)
-        .WillRepeatedly(
-            testing::Invoke(WithArg<0>([&](CapturedExternalVideoBuffer frame) {
-              if (has_received_first_frame) {
-                // Ignore subsequent frames.
-                return;
-              }
-              EXPECT_EQ(frame.format.pixel_format, PIXEL_FORMAT_NV12);
-              has_received_first_frame = true;
-              first_frame_received.Quit();
-            })));
+        .WillRepeatedly(WithArg<0>([&](CapturedExternalVideoBuffer frame) {
+          if (has_received_first_frame) {
+            // Ignore subsequent frames.
+            return;
+          }
+          EXPECT_EQ(frame.format.pixel_format, PIXEL_FORMAT_NV12);
+          has_received_first_frame = true;
+          first_frame_received.Quit();
+        }));
     first_frame_received.Run();
 
     [captureDevice stopCapture];

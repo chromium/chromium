@@ -8,7 +8,6 @@
 #include "ash/webui/vc_background_ui/url_constants.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
-#include "components/manta/features.h"
 #include "content/public/test/browser_test.h"
 
 namespace ash::vc_background_ui {
@@ -17,7 +16,7 @@ class VcBackgroundUIBrowserTest : public WebUIMochaBrowserTest {
  protected:
   VcBackgroundUIBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kVcBackgroundReplace, manta::features::kMantaService,
+        {features::kVcBackgroundReplace,
          features::kFeatureManagementVideoConference},
         {});
     set_test_loader_host(std::string(kChromeUIVcBackgroundHost));

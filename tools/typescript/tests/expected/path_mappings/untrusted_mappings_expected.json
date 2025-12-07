@@ -1,4 +1,7 @@
 {
+  "/strings.m.js": [
+    "../../../../../tests/tools/typescript/definitions/strings.d.ts"
+  ],
   "//resources/js/*": [
     "./../../../../ui/webui/resources/tsc/js/*"
   ],

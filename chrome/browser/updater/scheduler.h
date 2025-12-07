@@ -17,6 +17,9 @@ void SchedulePeriodicTasks();
 // Do the periodic tasks right away, invoking `callback` when done.
 void DoPeriodicTasks(base::OnceClosure callback);
 
+// Wake up all existing updater instances. May block.
+void WakeAllUpdaters();
+
 }  // namespace updater
 
 #endif  // CHROME_BROWSER_UPDATER_SCHEDULER_H_

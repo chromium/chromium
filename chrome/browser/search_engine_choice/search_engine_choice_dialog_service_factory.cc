@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service_factory.h"
 
+#include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
@@ -28,6 +29,8 @@
 #endif
 
 namespace {
+using search_engines::SearchEngineChoiceScreenConditions;
+
 // Stores whether this is a Google Chrome-branded build.
 bool g_is_chrome_build =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -36,20 +39,25 @@ bool g_is_chrome_build =
     false;
 #endif
 
-search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
-    Profile& profile) {
-  if (!search_engines::IsChoiceScreenFlagEnabled(
-          search_engines::ChoicePromo::kAny)) {
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kFeatureSuppressed;
-  }
-
-  bool is_regular_or_guest_profile =
-      profile.IsRegularProfile() || profile.IsGuestSession();
+bool IsSupportedProfileType(Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS)
-  is_regular_or_guest_profile &=
-      !chromeos::IsKioskSession() && !profiles::IsChromeAppKioskSession();
+  if (chromeos::IsKioskSession() || profiles::IsChromeAppKioskSession()) {
+    return false;
+  }
 #endif
+
+  // Guest sessions (including child guest) don't count as "regular" but can be
+  // eligible.
+  return profile.IsRegularProfile() || profile.IsGuestSession();
+}
+
+SearchEngineChoiceScreenConditions ComputeProfileEligibility(Profile& profile) {
+  if (!IsSupportedProfileType(profile)) {
+    // Naming not exactly accurate, but still reflect the fact that incognito,
+    // kiosk, etc. are not supported and belongs in this bucked more than in
+    // `kProfileOutOfScope` for example.
+    return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
+  }
 
   search_engines::SearchEngineChoiceService* search_engine_choice_service =
       search_engines::SearchEngineChoiceServiceFactory::GetForProfile(&profile);
@@ -59,25 +67,11 @@ search_engines::SearchEngineChoiceScreenConditions ComputeProfileEligibility(
     // Some unit tests using `BrowserWithTestWindowTest` create browser windows
     // without fully instantiating profiles.
     CHECK_IS_TEST();
-    return search_engines::SearchEngineChoiceScreenConditions::
-        kUnsupportedBrowserType;
+    return SearchEngineChoiceScreenConditions::kUnsupportedBrowserType;
   }
 
   return search_engine_choice_service->GetStaticChoiceScreenConditions(
-      CHECK_DEREF(g_browser_process->policy_service()),
-      is_regular_or_guest_profile, *template_url_service);
-}
-
-bool IsProfileEligibleForChoiceScreen(Profile& profile) {
-  auto eligibility_conditions = ComputeProfileEligibility(profile);
-  // TODO(b/312755450): Move metrics recording outside of this function or
-  // rename it to not appear like a simple getter.
-  RecordChoiceScreenProfileInitCondition(eligibility_conditions);
-  DVLOG(1) << "Choice screen eligibility condition for profile "
-           << profile.GetBaseName() << ": "
-           << static_cast<int>(eligibility_conditions);
-  return eligibility_conditions ==
-         search_engines::SearchEngineChoiceScreenConditions::kEligible;
+      CHECK_DEREF(g_browser_process->policy_service()), *template_url_service);
 }
 }  // namespace
 
@@ -119,10 +113,11 @@ SearchEngineChoiceDialogServiceFactory::ScopedChromeBuildOverrideForTesting(
 }
 
 // static
-bool SearchEngineChoiceDialogServiceFactory::
-    IsProfileEligibleForChoiceScreenForTesting(Profile& profile) {
+SearchEngineChoiceScreenConditions
+SearchEngineChoiceDialogServiceFactory::ComputeProfileEligibilityForTesting(
+    Profile& profile) {
   CHECK_IS_TEST();
-  return IsProfileEligibleForChoiceScreen(profile);
+  return ComputeProfileEligibility(profile);
 }
 
 std::unique_ptr<KeyedService>
@@ -151,7 +146,12 @@ SearchEngineChoiceDialogServiceFactory::BuildServiceInstanceForBrowserContext(
           search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
               &profile));
 
-  if (!IsProfileEligibleForChoiceScreen(profile)) {
+  SearchEngineChoiceScreenConditions eligibility_conditions =
+      ComputeProfileEligibility(profile);
+  search_engine_choice_service.RecordProfileLoadEligibility(
+      eligibility_conditions);
+
+  if (eligibility_conditions != SearchEngineChoiceScreenConditions::kEligible) {
     return nullptr;
   }
 

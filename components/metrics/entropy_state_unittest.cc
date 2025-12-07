@@ -168,53 +168,6 @@ TEST_F(EntropyStateTest, CorruptOldLowEntropySources) {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(EntropyStateTest, ClearPrefs) {
-  // On Lacros we expect that there will be no clearing of prefs.
-  prefs_.SetInteger(prefs::kMetricsLowEntropySource, 1234);
-  prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, 5678);
-  prefs_.SetInteger(prefs::kMetricsPseudoLowEntropySource, 4321);
-  prefs_.SetString(prefs::kMetricsLimitedEntropyRandomizationSource,
-                   "00000000000000000000000000000001");
-
-  EntropyState::ClearPrefs(&prefs_);
-
-  EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsLowEntropySource));
-  EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsOldLowEntropySource));
-  EXPECT_TRUE(prefs_.HasPrefPath(prefs::kMetricsPseudoLowEntropySource));
-  EXPECT_TRUE(
-      prefs_.HasPrefPath(prefs::kMetricsLimitedEntropyRandomizationSource));
-}
-
-TEST_F(EntropyStateTest, SetExternalPrefs) {
-  prefs_.ClearPref(prefs::kMetricsLowEntropySource);
-  prefs_.ClearPref(prefs::kMetricsOldLowEntropySource);
-  prefs_.ClearPref(prefs::kMetricsPseudoLowEntropySource);
-  prefs_.ClearPref(prefs::kMetricsLimitedEntropyRandomizationSource);
-
-  std::string limited_entropy_randomization_source =
-      "00000000000000000000000000000001";
-  EntropyState::SetExternalPrefs(&prefs_, 1234, 4567, 3456,
-                                 limited_entropy_randomization_source);
-
-  EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsLowEntropySource), 1234);
-  EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsOldLowEntropySource), 4567);
-  EXPECT_EQ(prefs_.GetInteger(prefs::kMetricsPseudoLowEntropySource), 3456);
-  EXPECT_EQ(prefs_.GetString(prefs::kMetricsLimitedEntropyRandomizationSource),
-            limited_entropy_randomization_source);
-}
-
-TEST_F(EntropyStateTest, SetEmptyStringToLimitedEntropyRandomizationSource) {
-  prefs_.ClearPref(prefs::kMetricsLimitedEntropyRandomizationSource);
-
-  EntropyState::SetExternalPrefs(&prefs_, 1234, 4567, 3456, std::string_view());
-
-  EXPECT_FALSE(
-      prefs_.HasPrefPath(prefs::kMetricsLimitedEntropyRandomizationSource));
-}
-
-#else
-
 TEST_F(EntropyStateTest, ClearPrefs) {
   prefs_.SetInteger(prefs::kMetricsLowEntropySource, 1234);
   prefs_.SetInteger(prefs::kMetricsOldLowEntropySource, 5678);
@@ -230,7 +183,6 @@ TEST_F(EntropyStateTest, ClearPrefs) {
   EXPECT_FALSE(
       prefs_.HasPrefPath(prefs::kMetricsLimitedEntropyRandomizationSource));
 }
-#endif
 
 TEST_F(EntropyStateTest, ClearingPrefWillNotResetValuesDuringSession) {
   // Setting test values in prefs;

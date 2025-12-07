@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -88,9 +89,7 @@ std::unique_ptr<ScopedFunctionOverride<Fun>> OverrideFunctionForScope(
 std::vector<uint8_t> ReadFileContentsToVector(base::File* file) {
   size_t length = base::checked_cast<size_t>(file->GetLength());
   std::vector<uint8_t> contents(length);
-  static_assert(sizeof(uint8_t) == sizeof(char), "Expected char = byte.");
-  file->Read(0, reinterpret_cast<char*>(contents.data()),
-             base::checked_cast<int>(length));
+  file->Read(0, contents);
   return contents;
 }
 
@@ -275,9 +274,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
                                       background_task_runner_));
   }
 
-  void ClearRulesetService() {
-    service_.reset();
-  }
+  void ClearRulesetService() { service_.reset(); }
 
   // Creates a new file with the given license |contents| at a unique temporary
   // path, which is returned in |path|.
@@ -332,16 +329,13 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
         .Times(1)
         .WillOnce(Return(unindexed_ruleset));
 
-    // Suppress "uninteresting mock function call" warning output that would
-    // occur as part of resource bundle initialization.
-    EXPECT_CALL(resource_bundle_delegate, GetPathForLocalePack(_, _))
-        .WillRepeatedly(Return(base::FilePath()));
+    // A ResourceBundle that uses the test's mock delegate.
+    ui::ResourceBundle resource_bundle_with_mock_delegate{
+        &resource_bundle_delegate};
 
-    ui::ResourceBundle* orig_resource_bundle =
-        ui::ResourceBundle::SwapSharedInstanceForTesting(nullptr);
-    ui::ResourceBundle::InitSharedInstanceWithLocale(
-        "en-US", &resource_bundle_delegate,
-        ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+    // Swap in the test ResourceBundle for the lifetime of the test.
+    ui::ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper{
+        &resource_bundle_with_mock_delegate};
 
     // Now that everything has been set up, do the actual indexing.
     service()->IndexAndStoreAndPublishRulesetIfNeeded(ruleset_info);
@@ -350,9 +344,6 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
     RunBackgroundUntilIdle();
     // Wait for file to be opened on blocking task runner.
     RunBlockingUntilIdle();
-
-    ui::ResourceBundle::CleanupSharedInstance();
-    ui::ResourceBundle::SwapSharedInstanceForTesting(orig_resource_bundle);
   }
 
   // Mark the initialization complete and run task queues until all are empty.
@@ -368,7 +359,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
     return RulesetService::WriteRuleset(
                GetExpectedVersionDirPath(indexed_version), license_path,
                test_ruleset_pair.indexed.contents) ==
-           RulesetService::IndexAndWriteRulesetResult::SUCCESS;
+           RulesetService::IndexAndWriteRulesetResult::kSuccess;
   }
 
   void DeleteObsoleteRulesets(const base::FilePath& indexed_ruleset_base_dir,
@@ -422,8 +413,9 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
   }
 
   void RunBackgroundPendingTasksNTimes(size_t n) {
-    while (n--)
+    while (n--) {
       background_task_runner_->RunPendingTasks();
+    }
   }
 
   void AssertValidRulesetFileWithContents(
@@ -436,7 +428,7 @@ class SubresourceFilteringRulesetServiceTest : public ::testing::Test {
   void AssertReadonlyRulesetFile(base::File* file) {
     const char kTest[] = "t";
     ASSERT_TRUE(file->IsValid());
-    ASSERT_EQ(-1, file->Write(0, kTest, sizeof(kTest)));
+    ASSERT_FALSE(file->Write(0, base::as_byte_span(kTest)).has_value());
   }
 
   base::TestSimpleTaskRunner* blocking_task_runner() const {
@@ -500,10 +492,10 @@ class SubresourceFilteringRulesetServiceDeathTest
 
  protected:
   void SetUpTempDir() override {
-    if (environment_->HasVar(kInheritedTempDirKey)) {
-      std::string value;
-      ASSERT_TRUE(environment_->GetVar(kInheritedTempDirKey, &value));
-      inherited_temp_dir_ = base::FilePath::FromUTF8Unsafe(value);
+    std::optional<std::string> value =
+        environment_->GetVar(kInheritedTempDirKey);
+    if (value.has_value()) {
+      inherited_temp_dir_ = base::FilePath::FromUTF8Unsafe(value.value());
     } else {
       SubresourceFilteringRulesetServiceTest::SetUpTempDir();
       environment_->SetVar(kInheritedTempDirKey,
@@ -513,27 +505,25 @@ class SubresourceFilteringRulesetServiceDeathTest
 
   void TearDown() override {
     SubresourceFilteringRulesetServiceTest::TearDown();
-    if (inherited_temp_dir_.empty())
+    if (inherited_temp_dir_.empty()) {
       environment_->UnSetVar(kInheritedTempDirKey);
+    }
   }
 
   base::FilePath effective_temp_dir() const override {
-    if (!inherited_temp_dir_.empty())
+    if (!inherited_temp_dir_.empty()) {
       return inherited_temp_dir_;
+    }
     return SubresourceFilteringRulesetServiceTest::effective_temp_dir();
   }
 
  private:
-  static const char kInheritedTempDirKey[];
+  static constexpr char kInheritedTempDirKey[] =
+      "SUBRESOURCE_FILTERING_RULESET_SERVICE_DEATH_TEST_TEMP_DIR";
 
   std::unique_ptr<base::Environment> environment_;
   base::FilePath inherited_temp_dir_;
 };
-
-// static
-const char SubresourceFilteringRulesetServiceDeathTest::kInheritedTempDirKey[] =
-    "SUBRESOURCE_FILTERING_RULESET_SERVICE_DEATH_TEST_TEMP_DIR";
-
 
 TEST_F(SubresourceFilteringRulesetServiceTest, PathsAreSane) {
   IndexedRulesetVersion indexed_version(
@@ -822,7 +812,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_Persisted) {
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::SUCCESS), 1);
+      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::kSuccess),
+      1);
 }
 
 // Test the scenario where a faulty copy of the ruleset resides on disk, that
@@ -887,7 +878,8 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::SUCCESS), 1);
+      static_cast<int>(RulesetService::IndexAndWriteRulesetResult::kSuccess),
+      1);
 }
 
 TEST_F(SubresourceFilteringRulesetServiceTest,
@@ -919,7 +911,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest,
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           FAILED_OPENING_UNINDEXED_RULESET),
+                           kFailedOpeningUnindexedRuleset),
       1);
 }
 
@@ -952,7 +944,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_ParseFailure) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           FAILED_PARSING_UNINDEXED_RULESET),
+                           kFailedParsingUnindexedRuleset),
       1);
 }
 
@@ -1004,7 +996,7 @@ TEST_F(SubresourceFilteringRulesetServiceDeathTest, NewRuleset_IndexingCrash) {
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
       static_cast<int>(RulesetService::IndexAndWriteRulesetResult::
-                           ABORTED_BECAUSE_SENTINEL_FILE_PRESENT),
+                           kAbortedBecauseSentinelFilePresent),
       1);
 }
 
@@ -1037,7 +1029,7 @@ TEST_F(SubresourceFilteringRulesetServiceTest, NewRuleset_WriteFailure) {
       "SubresourceFilter.IndexRuleset.NumUnsupportedRules", 0, 1);
   histogram_tester.ExpectUniqueSample(
       "SubresourceFilter.WriteRuleset.Result",
-      static_cast<int>(IndexAndWriteRulesetResult::FAILED_REPLACE_FILE), 1);
+      static_cast<int>(IndexAndWriteRulesetResult::kFailedReplaceFile), 1);
 }
 
 TEST_F(SubresourceFilteringRulesetServiceTest,

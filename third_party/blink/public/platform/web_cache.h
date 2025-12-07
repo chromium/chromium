@@ -39,9 +39,6 @@ namespace blink {
 // An interface to query and configure Blink's resource cache.
 class BLINK_PLATFORM_EXPORT WebCache {
  public:
-  // Sets the capacities of the resource cache, evicting objects as necessary.
-  static void SetCapacity(size_t);
-
   // Clears the cache (as much as possible; some resources may not be
   // cleared if they are actively referenced). Note that this method
   // only removes resources from live list, w/o releasing cache memory.

@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.usage_stats;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 
 /** Recorder for usage-stats related metrics events. */
+@NullMarked
 public class UsageStatsMetricsReporter {
     public static void reportMetricsEvent(@UsageStatsMetricsEvent int event) {
         RecordHistogram.recordEnumeratedHistogram(

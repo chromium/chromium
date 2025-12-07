@@ -1,0 +1,10 @@
+{
+  "name": "depot-tools",
+  "version": "1.0.0",
+  "mcpServers": {
+    "depot_tools": {
+      "command": "vpython3",
+      "args": ["third_party/depot_tools/mcp/server.py"]
+    }
+  }
+}

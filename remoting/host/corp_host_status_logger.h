@@ -8,11 +8,17 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "remoting/base/local_session_policies_provider.h"
 #include "remoting/protocol/session.h"
 #include "remoting/protocol/session_observer.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace net {
+class ClientCertStore;
+}  // namespace net
 
 namespace remoting {
 namespace protocol {
@@ -20,17 +26,27 @@ class SessionManager;
 }  // namespace protocol
 
 class LoggingServiceClient;
+class OAuthTokenGetter;
 
 // A class that reports host status changes to the corp logging service. This is
 // not used for external users. For internal details, see go/crd-corp-logging.
 class CorpHostStatusLogger final : public protocol::SessionObserver {
  public:
-  CorpHostStatusLogger(
+  static std::unique_ptr<CorpHostStatusLogger> CreateForRemoteAccess(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store,
+      const LocalSessionPoliciesProvider* local_session_policies_provider,
       const std::string& service_account_email,
       const std::string& refresh_token);
-  explicit CorpHostStatusLogger(
-      std::unique_ptr<LoggingServiceClient> service_client);
+  static std::unique_ptr<CorpHostStatusLogger> CreateForRemoteSupport(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<net::ClientCertStore> client_cert_store,
+      const LocalSessionPoliciesProvider* local_session_policies_provider,
+      base::WeakPtr<OAuthTokenGetter> oauth_token_getter);
+
+  CorpHostStatusLogger(
+      std::unique_ptr<LoggingServiceClient> service_client,
+      const LocalSessionPoliciesProvider* local_session_policies_provider);
   ~CorpHostStatusLogger() override;
   CorpHostStatusLogger(const CorpHostStatusLogger&) = delete;
   CorpHostStatusLogger& operator=(const CorpHostStatusLogger&) = delete;
@@ -43,6 +59,7 @@ class CorpHostStatusLogger final : public protocol::SessionObserver {
                             protocol::Session::State state) override;
 
   std::unique_ptr<LoggingServiceClient> service_client_;
+  raw_ptr<const LocalSessionPoliciesProvider> local_session_policies_provider_;
   Subscription observer_subscription_;
 };
 

@@ -71,22 +71,26 @@ std::vector<std::string> GetManyRules() {
 
   for (size_t i = 0; i != kNumberOfUrlRules; ++i) {
     std::string text_rule;
-    if (!(i & 3))
+    if (!(i & 3)) {
       text_rule += "@@";
-    if (i & 1)
+    }
+    if (i & 1) {
       text_rule += "sub.";
+    }
     text_rule += "example" + base::NumberToString(i) + ".com";
     text_rule += '$';
     text_rule += (i & 7) ? "script" : "image";
-    if (i & 1)
+    if (i & 1) {
       text_rule += ",domain=example.com|~but_not.example.com";
+    }
     text_rules.push_back(text_rule);
   }
 
   for (size_t i = 0; i != kNumberOfCssRules; ++i) {
     std::string text_rule = "domain.com";
-    if (i & 1)
+    if (i & 1) {
       text_rule += ",~but_not.domain.com";
+    }
     text_rule += (i & 3) ? "##" : "#@#";
     text_rule += "#id" + base::NumberToString(i);
     text_rules.push_back(text_rule);
@@ -112,13 +116,15 @@ void ReadHalfRulesOfTestRulesetAndExpectContents(
   while ((rule_type = input->FetchNextRule()) !=
          url_pattern_index::proto::RULE_TYPE_UNSPECIFIED) {
     if (rule_type == url_pattern_index::proto::RULE_TYPE_URL) {
-      if (take_url_rule)
+      if (take_url_rule) {
         contents.url_rules.push_back(input->GetUrlRule());
+      }
       take_url_rule = !take_url_rule;
     } else {
       ASSERT_EQ(url_pattern_index::proto::RULE_TYPE_CSS, rule_type);
-      if (take_css_rule)
+      if (take_css_rule) {
         contents.css_rules.push_back(input->GetCssRule());
+      }
       take_css_rule = !take_css_rule;
     }
   }
@@ -131,10 +137,11 @@ void ReadHalfRulesOfTestRulesetAndExpectContents(
 TEST(RuleStreamTest, WriteAndReadRuleset) {
   for (int small_or_big = 0; small_or_big < 2; ++small_or_big) {
     TestRulesetContents contents;
-    if (small_or_big)
+    if (small_or_big) {
       contents.AppendRules(GetManyRules());
-    else
+    } else {
       contents.AppendRules(GetSomeRules());
+    }
 
     TestRulesetContents only_url_rules;
     only_url_rules.url_rules = contents.url_rules;
@@ -156,10 +163,12 @@ TEST(RuleStreamTest, WriteAndReadHalfRuleset) {
   contents.AppendRules(GetManyRules());
 
   TestRulesetContents half_contents;
-  for (size_t i = 0, size = contents.url_rules.size(); i < size; i += 2)
+  for (size_t i = 0, size = contents.url_rules.size(); i < size; i += 2) {
     half_contents.url_rules.push_back(contents.url_rules[i]);
-  for (size_t i = 0, size = contents.css_rules.size(); i < size; i += 2)
+  }
+  for (size_t i = 0, size = contents.css_rules.size(); i < size; i += 2) {
     half_contents.css_rules.push_back(contents.css_rules[i]);
+  }
 
   TestRulesetContents half_url_rules;
   half_url_rules.url_rules = half_contents.url_rules;
@@ -296,8 +305,9 @@ TEST(RuleStreamTest, TransferRulesChromeVersion) {
   for (int chrome_version : {0, 54, 59}) {
     TestRulesetContents expected_contents;
     for (url_pattern_index::proto::UrlRule url_rule : contents.url_rules) {
-      if (DeleteUrlRuleOrAmend(&url_rule, chrome_version))
+      if (DeleteUrlRuleOrAmend(&url_rule, chrome_version)) {
         continue;
+      }
       expected_contents.url_rules.push_back(url_rule);
     }
 
@@ -375,10 +385,11 @@ TEST(RuleStreamTest, DeleteUrlRuleOrAmend) {
 
   auto get_target_rule = [](const TestCase& test, std::string target_rule) {
     RuleParser parser;
-    if (target_rule == "#0")
+    if (target_rule == "#0") {
       target_rule = test.rule;
-    else if (target_rule == "#54")
+    } else if (target_rule == "#54") {
       target_rule = test.chrome_54_rule;
+    }
     EXPECT_EQ(url_pattern_index::proto::RULE_TYPE_URL,
               parser.Parse(target_rule));
     return parser.url_rule().ToProtobuf();

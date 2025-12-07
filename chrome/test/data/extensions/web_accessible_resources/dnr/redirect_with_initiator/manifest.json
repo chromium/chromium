@@ -1,0 +1,22 @@
+{
+  "name": "DNR redirect extension to WAR with an initiator condition",
+  "version": "0.1",
+  "manifest_version": 3,
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": ["<all_urls>"],
+  "web_accessible_resources": [
+    {
+      "resources": ["war.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "path": "rules_1.json",
+        "enabled": true
+      }
+    ]
+  }
+}

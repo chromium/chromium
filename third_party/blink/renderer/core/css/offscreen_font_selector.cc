@@ -20,10 +20,6 @@ OffscreenFontSelector::OffscreenFontSelector(WorkerGlobalScope* worker)
 
 OffscreenFontSelector::~OffscreenFontSelector() = default;
 
-FontMatchingMetrics* OffscreenFontSelector::GetFontMatchingMetrics() const {
-  return worker_->GetFontMatchingMetrics();
-}
-
 UseCounter* OffscreenFontSelector::GetUseCounter() const {
   return GetExecutionContext();
 }
@@ -56,17 +52,7 @@ const FontData* OffscreenFontSelector::GetFontData(
     return nullptr;
   }
 
-  ReportFontFamilyLookupByGenericFamily(
-      family_name, font_description.GetScript(),
-      font_description.GenericFamily(), settings_family_name);
-
-  const auto* font_data =
-      FontCache::Get().GetFontData(font_description, settings_family_name);
-
-  ReportFontLookupByUniqueOrFamilyName(settings_family_name, font_description,
-                                       font_data);
-
-  return font_data;
+  return FontCache::Get().GetFontData(font_description, settings_family_name);
 }
 
 void OffscreenFontSelector::FontCacheInvalidated() {

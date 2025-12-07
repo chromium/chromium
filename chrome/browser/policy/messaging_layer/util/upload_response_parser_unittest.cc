@@ -30,8 +30,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using std::literals::string_view_literals::operator""sv;
-
 using ::testing::AllOf;
 using ::testing::Eq;
 using ::testing::IsEmpty;
@@ -46,12 +44,12 @@ constexpr Priority kPriority = Priority::FAST_BATCH;
 constexpr int64_t kSequencingId = 10L;
 constexpr int64_t kGenerationId = 1234L;
 
-constexpr std::string_view kEncryptionKey = "Encryption_Key"sv;
+constexpr std::string_view kEncryptionKey = "Encryption_Key";
 constexpr int kPublicKeyId = 12345;
-constexpr std::string_view kEncryptionSignature = "Encryption_Signature"sv;
+constexpr std::string_view kEncryptionSignature = "Encryption_Signature";
 
 constexpr int kConfigVersion = 11;
-constexpr std::string_view kConfigSignature = "Config_Signature"sv;
+constexpr std::string_view kConfigSignature = "Config_Signature";
 
 base::Value::Dict ComposeSequencingInfo(
     std::optional<Priority> priority,

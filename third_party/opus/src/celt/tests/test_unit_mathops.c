@@ -1,6 +1,7 @@
 /* Copyright (c) 2008-2011 Xiph.Org Foundation, Mozilla Corporation,
                            Gregory Maxwell
-   Written by Jean-Marc Valin, Gregory Maxwell, and Timothy B. Terriberry */
+   Written by Jean-Marc Valin, Gregory Maxwell, Timothy B. Terriberry,
+   and Yunho Huh */
 /*
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
@@ -41,6 +42,8 @@
 
 #ifdef FIXED_POINT
 #define WORD "%d"
+#define FIX_INT_TO_DOUBLE(x,q) ((double)(x) / (double)(1L << q))
+#define DOUBLE_TO_FIX_INT(x,q) (((double)x * (double)(1L << q)))
 #else
 #define WORD "%f"
 #endif
@@ -143,45 +146,107 @@ void testbitexactlog2tan(void)
 void testlog2(void)
 {
    float x;
+   float error_threshold = 2.2e-06;
+   float max_error = 0;
    for (x=0.001f;x<1677700.0;x+=(x/8.0))
    {
       float error = fabs((1.442695040888963387*log(x))-celt_log2(x));
-      if (error>0.0009)
+      if (max_error < error)
       {
-         fprintf (stderr, "celt_log2 failed: fabs((1.442695040888963387*log(x))-celt_log2(x))>0.001 (x = %f, error = %f)\n", x,error);
+         max_error = error;
+      }
+
+      if (error > error_threshold)
+      {
+         fprintf (stderr,
+                  "celt_log2 failed: "
+                  "fabs((1.442695040888963387*log(x))-celt_log2(x))>%15.25e "
+                  "(x = %f, error = %15.25e)\n", error_threshold, x, error);
          ret = 1;
       }
    }
+   fprintf (stdout, "celt_log2 max_error: %15.25e\n", max_error);
 }
 
 void testexp2(void)
 {
    float x;
+   float error_threshold = 2.3e-07;
+   float max_error = 0;
    for (x=-11.0;x<24.0;x+=0.0007f)
    {
       float error = fabs(x-(1.442695040888963387*log(celt_exp2(x))));
-      if (error>0.0002)
+      if (max_error < error)
       {
-         fprintf (stderr, "celt_exp2 failed: fabs(x-(1.442695040888963387*log(celt_exp2(x))))>0.0005 (x = %f, error = %f)\n", x,error);
+         max_error = error;
+      }
+
+      if (error > error_threshold)
+      {
+         fprintf (stderr,
+                  "celt_exp2 failed: "
+                  "fabs(x-(1.442695040888963387*log(celt_exp2(x))))>%15.25e "
+                  "(x = %f, error = %15.25e)\n", error_threshold, x, error);
          ret = 1;
       }
    }
+   fprintf (stdout, "celt_exp2 max_error: %15.25e\n", max_error);
 }
 
 void testexp2log2(void)
 {
    float x;
+   float error_threshold = 2.0e-06;
+   float max_error = 0;
    for (x=-11.0;x<24.0;x+=0.0007f)
    {
       float error = fabs(x-(celt_log2(celt_exp2(x))));
-      if (error>0.001)
+      if (max_error < error)
       {
-         fprintf (stderr, "celt_log2/celt_exp2 failed: fabs(x-(celt_log2(celt_exp2(x))))>0.001 (x = %f, error = %f)\n", x,error);
+         max_error = error;
+      }
+
+      if (error > error_threshold)
+      {
+         fprintf (stderr,
+                  "celt_log2/celt_exp2 failed: "
+                  "fabs(x-(celt_log2(celt_exp2(x))))>%15.25e "
+                  "(x = %f, error = %15.25e)\n", error_threshold, x, error);
          ret = 1;
       }
    }
+   fprintf (stdout, "celt_exp2, celt_log2 max_error: %15.25e\n", max_error);
 }
 #else
+
+void testlog2_db(void)
+{
+#if defined(ENABLE_QEXT)
+   /* celt_log2_db test */
+   float error = -1;
+   float max_error = -2;
+   float error_threshold = 2.e-07;
+   opus_int32 x = 0;
+   int q_input = 14;
+   for (x = 8; x < 1073741824; x += (x >> 3))
+   {
+      error = fabs((1.442695040888963387*log(FIX_INT_TO_DOUBLE(x, q_input))) -
+                   FIX_INT_TO_DOUBLE(celt_log2_db(x), DB_SHIFT));
+      if (error > max_error)
+      {
+         max_error = error;
+      }
+      if (error > error_threshold)
+      {
+         fprintf(stderr, "celt_log2_db failed: error: [%.5e > %.5e] (x = %f)\n",
+                 error, error_threshold, FIX_INT_TO_DOUBLE(x, DB_SHIFT));
+         ret = 1;
+      }
+   }
+   fprintf(stdout, "celt_log2_db max_error: %.7e\n", max_error);
+#endif  /* defined(ENABLE_QEXT) */
+}
+
 void testlog2(void)
 {
    opus_val32 x;
@@ -209,6 +274,42 @@ void testexp2(void)
          ret = 1;
       }
    }
+}
+
+void testexp2_db(void)
+{
+#if defined(ENABLE_QEXT)
+   float absolute_error = -1;
+   float absolute_error_threshold = FIX_INT_TO_DOUBLE(2, 16);
+   float relative_error_threshold = -2;
+   float fx;
+   float quantized_fx;
+   opus_val32 x_32;
+
+   for (fx = -32.0; fx < 15.0; fx += 0.0007)
+   {
+      double ground_truth;
+      x_32 = DOUBLE_TO_FIX_INT(fx, DB_SHIFT);
+      quantized_fx = FIX_INT_TO_DOUBLE(x_32, DB_SHIFT);
+
+      ground_truth = (exp(0.6931471805599453094 * quantized_fx));
+      absolute_error = fabs(ground_truth -
+                            FIX_INT_TO_DOUBLE(celt_exp2_db(x_32), 16));
+
+      relative_error_threshold = 1.24e-7 * ground_truth;
+      if (absolute_error > absolute_error_threshold &&
+          absolute_error > relative_error_threshold)
+      {
+         fprintf(stderr,
+                 "celt_exp2_db failed: "
+                 "absolute_error: [%.5e > %.5e] "
+                 "relative_error: [%.5e > %.5e] (x = %f)\n",
+                 absolute_error, absolute_error_threshold,
+                 absolute_error, relative_error_threshold, quantized_fx);
+         ret = 1;
+      }
+   }
+#endif  /* defined(ENABLE_QEXT) */
 }
 
 void testexp2log2(void)
@@ -261,6 +362,8 @@ int main(void)
    testexp2log2();
 #ifdef FIXED_POINT
    testilog2();
+   testlog2_db();
+   testexp2_db();
 #endif
    return ret;
 }

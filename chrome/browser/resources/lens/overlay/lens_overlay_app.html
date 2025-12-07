@@ -1,15 +1,25 @@
-<style>
+<style include="searchbox-shared-style">
+  :host {
+    --cr-searchbox-min-width: 250px;
+  }
+
+  :host([is-searchbox-focused]) {
+    --cr-searchbox-min-width: 306px;
+  }
+
+  :host(:not([is-translate-button-enabled])) {
+    --cr-searchbox-min-width: 306px;
+  }
+
   .app-container {
     height: 100%;
     width: 100%;
   }
 
-  .hidden {
-    display: none;
-  }
-
   #backgroundScrim {
     background-color: rgba(0, 0 ,0, 0.3);
+    cursor: default;
+    forced-color-adjust: none;
     inset: 0;
     position: absolute;
   }
@@ -20,27 +30,128 @@
     position: absolute;
   }
 
-  :host(:not([initial-flash-animation-has-ended])) .button-container {
+  :host(:not([enable-csb-motion-tweaks])) .button-container,
+  :host(:not([enable-csb-motion-tweaks])) #searchboxContainer {
+    transition: opacity 150ms, visibility 150ms;
+  }
+
+  .button-container, #searchboxContainer {
+    z-index: 6; /* Keep aligned with cursor and context menu. */
+  }
+
+  #searchboxContainer {
+    animation: searchboxGrow 300ms ease forwards;
+    transform-origin: right;
+    animation-delay: 350ms;
+  }
+
+  :host([enable-csb-motion-tweaks]) #searchboxContainer {
+    animation: searchboxEnter 483ms cubic-bezier(0, 0, 0, 1) forwards;
+    animation-delay: 0ms;
+    border-bottom-left-radius: 26px;
+    border-bottom-right-radius: 26px;
+    height: 100%;
+    overflow: clip;
+    /* 26px is the width of the searchbox box shadow. Adding this prevents the
+       box shadow from being clipped out. */
+    overflow-clip-margin: 26px;
+    opacity: 0;
+    padding-bottom: 8px;
+    transform-origin: top;
+  }
+
+  :host([enable-csb-motion-tweaks]) cr-searchbox {
+    display: block;
+  }
+
+  /* Keyframes for the searchbox grow animation */
+  @keyframes searchboxGrow {
+    0% {
+      transform: scaleX(.5);
+    }
+    100% {
+      transform: scaleX(1);
+    }
+  }
+
+  /* Keyframes for the searchbox enter animation */
+  @keyframes searchboxEnter {
+    0% {
+      opacity: 0;
+      transform: scale(0.9, 0.75);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1, 1);
+    }
+  }
+
+  :host([should-fade-out-buttons]) .button-container,
+  :host(:not([initial-flash-animation-has-ended]):not([enable-csb-motion-tweaks])) .button-container,
+  :host(:not([initial-flash-animation-has-ended]):not([enable-csb-motion-tweaks])) #searchboxContainer {
     opacity: 0;
     visibility: hidden;
   }
 
   #optionsButtonContainer {
     gap: 12px;
-    inset-block-start: 28px;
-    inset-inline-end: 30px;
+    inset-block-start: 34px;
+    inset-inline-end: 28px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #optionsButtonContainer {
+    inset-block-start: 40px;
+  }
+
+  :host([side-panel-opened]) #optionsButtonContainer {
+    inset-inline-end: 24px;
   }
 
   #translateButtonContainer {
-    inset-block-start: 21px;
-    inset-inline-start: 25px;
+    inset-block-start: 28px;
+    inset-inline-end: 135px;
+  }
+
+  :host([side-panel-opened]) #translateButtonContainer {
+    inset-inline-end: 84px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateButtonContainer {
+    inset-inline-end: 84px;
+    inset-block-start: 40px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][side-panel-opened]) #translateButtonContainer {
+    inset-inline-end: 24px;
+  }
+
+  :host(:not([is-translate-button-enabled])) #translateButtonContainer {
+    display: none;
+  }
+
+  :host([is-searchbox-focused]) #translateButtonContainer {
+    /*
+      Instead of using visibility: hidden, hide the translate button behind
+      the searchbox. This allows for the corerct tab order, instead of the
+      translate button being skipped over when the searchbox is blurred because
+      it is hidden. Additionally, don't use opacity: 0 because that will cause
+      the button opacity transitions to break.
+    */
+    z-index: -1;
+  }
+
+  #translateButtonContainer.searchbox-unfocused {
+    transition: opacity 50ms linear, visibility 50ms linear;
+    transition-delay: 80ms;
   }
 
   .action-button {
-    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-icon-size: 24px;
     --cr-icon-button-size: 36px;
     --cr-icon-button-fill-color: var(--color-overlay-icon);
     background-color: rgba(var(--color-scrim-rgb), 0.6);
+    margin-inline-end: 0;
+    margin-inline-start: 0;
     pointer-events: all;
   }
 
@@ -48,12 +159,65 @@
     --cr-icon-image: url("icon_clear.svg");
   }
 
-  :host([close-button-hidden]) #closeButton {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #closeButton {
+    background-color: var(--color-selection-element);
+    height: 48px;
+    width: 48px;
+    --cr-icon-button-fill-color: var(--color-primary);
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-csb-motion-tweaks]) #closeButton {
+     /* Set opacity to 0 so it can animate in with the searchbox. */
+     transition: none;
+     opacity: 0;
+  }
+
+  :host([can-animate-in-close-button][enable-csb-motion-tweaks]) #closeButton {
+    animation: closeButtonEnter 483ms cubic-bezier(0, 0, 0, 1) forwards;
+    /* The above removes the transition so it the close button can animate in.
+     * Now that its animating, add the transition back so it can fade out when
+     * the overlay is closed. */
+    transition: inherit;
+  }
+
+  /* Keyframes for the close button enter animation */
+  @keyframes closeButtonEnter {
+    0% {
+      opacity: 0;
+      transform: scale(0.85);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-close-button-tweaks]) #closeButton {
+    --cr-icon-button-icon-size: 20px;
+    --cr-icon-button-size: 36px;
+    --cr-icon-button-fill-color: white;
+    background-color: #00000099;
+    height: 36px;
+    width: 36px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-close-button-tweaks])
+    #optionsButtonContainer {
+    inset-block-start: 58px;
+    inset-inline-end: 26px;
+  }
+
+  :host([side-panel-opened]) #closeButton {
     display: none;
   }
 
-  #copyToast {
+  #toast {
     justify-content: space-between;
+    z-index: 7;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #moreOptions {
+    display: none;
   }
 
   #moreOptions {
@@ -125,6 +289,14 @@
     mask-image: url("learn_more.svg");
   }
 
+  :host(:not([is-image-rendered])) lens-selection-overlay {
+    display: none;
+  }
+
+  :host([overlay-reshow-in-progress]) lens-selection-overlay {
+    opacity: 0;
+  }
+
   .app-container :not(lens-selection-overlay) {
     transition: opacity 150ms linear;
   }
@@ -151,15 +323,215 @@
   initial-gradient {
     pointer-events: none;
   }
+
+  #privacyNotice {
+    display: flex;
+    inset-block-start: 118px;
+    inset-inline-end: 72px;
+    padding: 16px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    border-radius: 24px;
+    background: #FFF;
+    /* Elevation Light/2 */
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.30), 0 2px 6px 2px rgba(0, 0, 0, 0.15);
+    position: absolute;
+    width: 266px;
+    z-index: 6;  /* Keep aligned with cursor and context menu. */
+  }
+
+  :host(:not([is-lens-overlay-contextual-searchbox-enabled])) #privacyNotice {
+    inset-block-start: 34px;
+    inset-inline-end: 124px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][enable-csb-motion-tweaks]) #privacyNotice {
+    /* Set opacity to 0 so it can animate in with the searchbox. */
+    transition: none;
+    opacity: 0;
+  }
+
+  /* Keyframes for the privacy notice enter animation */
+  @keyframes privacyNoticeEnter {
+    0% {
+      opacity: 0;
+      transform: scale(0.9, 0.75);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1, 1);
+    }
+  }
+
+  :host([can-animate-in-close-button][enable-csb-motion-tweaks]) #privacyNotice {
+    animation: privacyNoticeEnter 483ms cubic-bezier(0, 0, 0, 1) forwards;
+    /* The above removes the transition so the privacy notice can animate in.
+     * Now that its animating, add the transition back so it can fade out when
+     * the overlay is closed. */
+    transition: inherit;
+  }
+
+  :host([search-box-hidden]) #privacyNotice {
+    /* Hide when initiating a drag. */
+    display: none;
+  }
+
+  #privacyNoticeHeader {
+    color: #1f1f1f;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 24px;
+  }
+
+  #privacyNoticeBody {
+    color: #1f1f1f;
+    font-family: Roboto, Arial, sans-serif;
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+
+  #searchboxContainer {
+    --color-searchbox-background: #FFFFFF;
+    --color-searchbox-background-hovered: #FFFFFF;
+    --color-searchbox-results-background: #ffffffff;
+    --color-searchbox-google-g-background: var(--color-primary);
+    --cr-searchbox-height: 48px;
+    --cr-searchbox-icon-size-in-searchbox: 28px;
+    --cr-searchbox-icon-top-position: 0px;
+    /* Colors for searchbox ghost loader */
+    --color-searchbox-ghost-loader-loading-bar-1: #F1F3F4;
+    --color-searchbox-ghost-loader-loading-bar-2: #ECEDEF;
+    /* The size of the searchbox container doesn't match the searchbox and ghost
+       loader, so don't allow pointer events on the searchbox container. Only
+       allow pointer events on the searchbox and ghost loader. */
+    pointer-events: none;
+    position: absolute;
+    inset-block-start: 40px;
+    inset-inline-end: 140px;
+  }
+
+  #searchboxContainer > * {
+    /* Allow pointer events on the searchbox and ghost loader. */
+    pointer-events: all;
+  }
+
+  :host(:not([is-translate-button-enabled])) #searchboxContainer {
+    inset-inline-end: 84px;
+  }
+
+  :host([show-ghost-loader]) #searchboxContainer {
+    --color-searchbox-background: var(--color-searchbox-results-background);
+  }
+
+  :host([is-searchbox-focused]) #searchboxContainer {
+    inset-inline-end: 84px;
+    --cr-searchbox-height: 52px;
+    inset-block-start: 38px;
+  }
+
+  :host(:not([enable-csb-motion-tweaks])) #searchboxContainer {
+    transition: inset-inline-end 200ms ease;
+  }
+
+  #searchbox {
+    transition: width 200ms ease;
+  }
+
+  :host(:not([is-lens-overlay-contextual-searchbox-visible])) #searchboxContainer,
+  :host([search-box-hidden]) #searchboxContainer {
+    display: none;
+  }
+
+  :host([enable-close-button-tweaks]) #searchboxContainer {
+    inset-block-start: 48px;
+    inset-inline-end: 72px;
+    --cr-searchbox-height: 52px;
+  }
+
+  cr-searchbox-ghost-loader {
+    display: none;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    top: 0;
+  }
+
+  /* Used for text that should only be visible to screen readers. */
+  .sr-only {
+    height: 1px;
+    left: -10000px;
+    overflow: hidden;
+    position: absolute;
+    top: auto;
+    width: 1px;
+  }
+
+  /**
+   * Show the ghost loader when the searchbox is focused and the searchbox
+   * dropdown isn't showing (no results available).
+   */
+  :host([show-ghost-loader]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+    display: block;
+  }
+
+  /**
+   * When CSB motion tweaks are enabled, show the ghost loader when the
+   * searchbox is focused.
+   */
+  :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox-ghost-loader {
+    display: block;
+  }
+
+  /**
+   * Slide in the ghost loader when the searchbox is not already manually
+   * focused (e.g., on initial invocation). Once it has been manually focused,
+   * subsequent focus events will not trigger the slide in animation.
+   */
+  :host([enable-csb-motion-tweaks]:not([is-searchbox-focused])) cr-searchbox-ghost-loader {
+    animation: ghost-loader-enter-animation 483ms cubic-bezier(0, 0, 0, 1) forwards;
+  }
+
+  @keyframes ghost-loader-enter-animation {
+    0% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+
+  /* Default values for the searchbox dropdown that enable the fade in animation. */
+  :host([enable-csb-motion-tweaks][show-ghost-loader]) cr-searchbox::part(searchbox-dropdown) {
+    opacity: 0;
+    display: block;
+  }
+
+  /* Fade in the searchbox dropdown once the dropdown becomes visible. */
+  :host([enable-csb-motion-tweaks][show-ghost-loader])
+    #searchboxContainer:has(cr-searchbox[dropdown-is-visible]) cr-searchbox::part(searchbox-dropdown) {
+    transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 1;
+  }
+
+  /* Set styles for high contrast mode in Windows. */
+  @media (forced-colors: active) {
+    .menu-item-icon {
+      /* Set the icon color to hcm (high contrast mode) value. */
+      background-color: ButtonText;
+    }
+  }
 </style>
 <div class="app-container"
     on-initial-flash-animation-end="onInitialFlashAnimationEnd"
     on-screenshot-rendered="onScreenshotRendered"
-    on-selection-overlay-clicked="handleSelectionOverlayClicked"
-    on-pointer-released="handlePointerReleased"
-    on-text-copied="showTextCopiedToast"
+    on-selection-started="handleSelectionStarted"
+    on-selection-finished="handleSelectionFinished"
     on-pointerenter="handlePointerEnter"
     on-pointerleave="handlePointerLeave"
+    on-escape-searchbox="handleEscapeSearchbox"
     style="
     --color-primary: [[skColorToHex_(theme.primary)]];
     --color-shader-layer-1: [[skColorToHex_(theme.shaderLayer1)]];
@@ -173,9 +545,11 @@
     --color-surface-container-highest-dark: [[skColorToHex_(theme.surfaceContainerHighestDark)]];
     --color-selection-element: [[skColorToHex_(theme.selectionElement)]];
     --color-overlay-icon: white;
-    --color-overlay-button-label: white;">
-  <cr-toast id="copyToast" duration="4000">
-    <div>$i18n{copyToastMessage}</div>
+    --color-overlay-button-label: white;
+    --color-text-highlight: white;
+    --color-text-highlight-actioned: #A6C8FF99">
+  <cr-toast id="toast" duration="4000">
+    <div>[[toastMessage]]</div>
     <cr-button on-click="onHideToastClick">
       $i18n{dismiss}
     </cr-button>
@@ -184,18 +558,41 @@
       hidden$="[[!isImageRendered]]"
       on-pointerenter="handlePointerEnterBackgroundScrim"
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
+  <template is="dom-if" if="[[isPrivacyNoticeVisible]]">
+    <div id="privacyNotice" aria-live="polite" tabindex="-1">
+      <div id="privacyNoticeHeader">$i18n{privacyNoticeHeader}
+      </div>
+      <div id="privacyNoticeBody">$i18nRaw{privacyNoticeBody}</div>
+      <div class="sr-only" tabindex="0">$i18n{tabToContinue}</div>
+    </div>
+  </template>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
-      screenshot-data-uri="[[screenshotDataUri]]"
-      class$="[[getSelectionOverlayClass(screenshotDataUri)]]"
+      is-searchbox-focused="[[isSearchboxFocused]]"
+      are-language-pickers-open="[[areLanguagePickersOpen]]"
       on-pointerenter="handlePointerEnterSelectionOverlay"
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
-  <template is="dom-if" if="[[isTranslateButtonVisible]]">
-    <div id="translateButtonContainer" class="button-container">
-      <translate-button></translate-button>
-    </div>
-  </template>
+  <div id="searchboxContainer" on-focusout="handleSearchboxBlurred">
+    <cr-searchbox
+      id="searchbox"
+      on-focusin="handleSearchboxFocused"
+      placeholder-text="{{placeholderText}}"
+      searchbox-aria-description="[[getSearchboxAriaDescription(showErrorState, showGhostLoader)]]">
+    </cr-searchbox>
+    <cr-searchbox-ghost-loader
+      id="searchboxGhostLoader"
+      tabindex="-1"
+      show-error-state="{{showErrorState}}"
+      page-content-type="[[pageContentType]]"
+      suggestion-count="[[searchboxSuggestionCount]]">
+    </cr-searchbox-ghost-loader>
+  </div>
+  <div id="translateButtonContainer" class="button-container">
+    <translate-button id="translateButton"
+      is-lens-overlay-contextual-searchbox-enabled="[[isLensOverlayContextualSearchboxEnabled]]">
+    </translate-button>
+  </div>
   <div id="optionsButtonContainer" class="button-container">
     <div id="moreOptions">
       <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"

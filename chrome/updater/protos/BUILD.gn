@@ -20,6 +20,7 @@ proto_library("proto") {
   sources = [
     "message_set.proto",
     "omaha_settings.proto",
+    "omaha_usage_stats_event.proto",
   ]
   visibility = [ ":omaha_proto" ]
 }

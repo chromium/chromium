@@ -11,6 +11,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
@@ -52,8 +53,8 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   void SetVolume(float volume) override;
   void SetLatencyHint(std::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetWasPlayedWithUserActivation(
-      bool was_played_with_user_activation) override;
+  void SetWasPlayedWithUserActivationAndHighMediaEngagement(
+      bool was_played_with_user_activation_and_high_media_engagement) override;
 
   // TimeSource implementation.
   void StartTicking() override;
@@ -187,12 +188,12 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
 
   double playback_rate_ = 1.0;
 
-  media::CdmContext* cdm_context_ = nullptr;
-  media::DemuxerStream* demuxer_stream_ = nullptr;
+  raw_ptr<media::CdmContext> cdm_context_ = nullptr;
+  raw_ptr<media::DemuxerStream> demuxer_stream_ = nullptr;
   bool is_demuxer_read_pending_ = false;
   bool drop_next_demuxer_read_result_ = false;
 
-  media::RendererClient* client_ = nullptr;
+  raw_ptr<media::RendererClient> client_ = nullptr;
 
   // Initialize() completion callback.
   media::PipelineStatusCallback init_cb_;

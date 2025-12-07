@@ -8,6 +8,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include <optional>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -22,25 +23,31 @@ using AXOptionalNSObject = AXOptional<id>;
 // A wrapper around either AXUIElement or NSAccessibilityElement object.
 class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
  public:
+  enum class AXType { kNSAccessibilityElement = 0, kAXUIElement };
+
+  // Returns type of the node.
+  static AXType TypeOf(id node);
+
   // Returns true if the object is either NSAccessibilityElement or
   // AXUIElement.
-  static bool IsValidElement(const id node);
+  static bool IsValidElement(id node);
 
   // Return true if the object is internal BrowserAccessibilityCocoa.
-  static bool IsNSAccessibilityElement(const id node);
+  static bool IsNSAccessibilityElement(id node);
 
   // Returns true if the object is AXUIElement.
-  static bool IsAXUIElement(const id node);
+  static bool IsAXUIElement(id node);
 
   // Returns the children of an accessible object, either AXUIElement or
   // BrowserAccessibilityCocoa.
-  static NSArray* ChildrenOf(const id node);
+  static std::vector<gfx::NativeViewAccessible> ChildrenOf(
+      const gfx::NativeViewAccessible node);
 
   // Returns the DOM id of a given node (either AXUIElement or
   // BrowserAccessibilityCocoa).
-  static std::string DOMIdOf(const id node);
+  static std::string DOMIdOf(const gfx::NativeViewAccessible node);
 
-  explicit AXElementWrapper(const id node) : node_(node) {}
+  explicit AXElementWrapper(id node);
 
   // Returns true if the object is either an NSAccessibilityElement or
   // AXUIElement.
@@ -102,9 +109,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
 
   // Invokes a method of the given signature.
   template <typename ReturnType, typename... Args>
-  typename std::enable_if<!std::is_same<ReturnType, void>::value,
-                          ReturnType>::type
-  Invoke(SEL selector, Args... args) const {
+    requires(!std::is_same_v<ReturnType, void>)
+  ReturnType Invoke(SEL selector, Args... args) const {
     NSInvocation* invocation = InvokeInternal(selector, args...);
     ReturnType return_value;
     [invocation getReturnValue:&return_value];
@@ -112,8 +118,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXElementWrapper final {
   }
 
   template <typename ReturnType, typename... Args>
-  typename std::enable_if<std::is_same<ReturnType, void>::value, void>::type
-  Invoke(SEL selector, Args... args) const {
+    requires(std::is_same_v<ReturnType, void>)
+  void Invoke(SEL selector, Args... args) const {
     InvokeInternal(selector, args...);
   }
 

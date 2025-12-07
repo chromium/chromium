@@ -9,8 +9,9 @@
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
+#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -59,7 +60,8 @@ void NetworkHintsHandlerImpl::PrefetchDNS(
     gurls.emplace_back(url.GetURL());
   }
   preconnect_manager_->StartPreresolveHosts(
-      gurls, GetPendingNetworkAnonymizationKey(render_frame_host));
+      gurls, GetPendingNetworkAnonymizationKey(render_frame_host),
+      kNetworkHintsTrafficAnnotation, /*storage_partition_config=*/nullptr);
 }
 
 void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
@@ -81,12 +83,14 @@ void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
 
   preconnect_manager_->StartPreconnectUrl(
       url.GetURL(), allow_credentials,
-      GetPendingNetworkAnonymizationKey(render_frame_host));
+      GetPendingNetworkAnonymizationKey(render_frame_host),
+      kNetworkHintsTrafficAnnotation, /*storage_partition_config=*/nullptr,
+      /*keepalive_config=*/std::nullopt, mojo::NullRemote());
 }
 
 NetworkHintsHandlerImpl::NetworkHintsHandlerImpl(
     content::RenderFrameHost* frame_host)
-    : render_process_id_(frame_host->GetProcess()->GetID()),
+    : render_process_id_(frame_host->GetProcess()->GetDeprecatedID()),
       render_frame_id_(frame_host->GetRoutingID()) {
   // Get the PreconnectManager for this process.
   auto* render_process_host = frame_host->GetProcess();

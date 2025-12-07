@@ -1,0 +1,12 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Lab performance tests
+group("performance_tests") {
+  testonly = true
+  deps = [
+    "//chrome/test/media/performance:openscreen_cast_performance_test",
+    "//chrome/test/media/performance:videostack_performance_test",
+  ]
+}

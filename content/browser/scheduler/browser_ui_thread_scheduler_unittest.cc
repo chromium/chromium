@@ -12,48 +12,19 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/task/task_features.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "content/common/features.h"
 #include "content/public/browser/browser_thread.h"
+#include "partition_alloc/extended_api.h"
+#include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/scheduler_loop_quarantine_support.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
-
-namespace features {
-BASE_FEATURE(kBrowserDeferUIThreadTasks,
-             "BrowserDeferUIThreadTasks",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-}
-
-class BrowserUIThreadSchedulerTest : public testing::Test {
- protected:
-  BrowserUIThreadSchedulerTest() = default;
-
-  void EnablePostFeatureListSetup() {
-    browser_ui_thread_scheduler_->Get()->PostFeatureListSetup();
-  }
-
-  void SetUp() override {
-    browser_ui_thread_scheduler_ = std::make_unique<BrowserUIThreadScheduler>();
-    browser_ui_thread_scheduler_->GetHandle()->OnStartupComplete();
-  }
-
-  void SetDeferringExperimentEnabled() {
-    auto defer_browser_ui_tasks = base::test::FeatureRefAndParams(
-        features::kBrowserDeferUIThreadTasks,
-        {{"defer_normal_or_less_priority_tasks", "true"},
-         {"defer_known_long_running_tasks", "true"}});
-    feature_list_.InitWithFeaturesAndParameters({defer_browser_ui_tasks}, {});
-  }
-
-  base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler_;
-};
-
-// namespace features
-
 namespace {
 
 using StrictMockTask =
@@ -76,10 +47,13 @@ base::OnceClosure PostOnDestruction(
       std::move(task), task_queue));
 }
 
-TEST_F(BrowserUIThreadSchedulerTest, DestructorPostChainDuringShutdown) {
+TEST(BrowserUIThreadSchedulerTest, DestructorPostChainDuringShutdown) {
+  auto browser_ui_thread_scheduler_ =
+      std::make_unique<BrowserUIThreadScheduler>();
+  browser_ui_thread_scheduler_->GetHandle()->OnStartupComplete();
   auto task_queue =
       browser_ui_thread_scheduler_->GetHandle()->GetBrowserTaskRunner(
-          BrowserUIThreadScheduler::QueueType::kUserBlocking);
+          BrowserUIThreadScheduler::QueueType::kDefault);
 
   bool run = false;
   task_queue->PostTask(
@@ -96,91 +70,64 @@ TEST_F(BrowserUIThreadSchedulerTest, DestructorPostChainDuringShutdown) {
   EXPECT_TRUE(run);
 }
 
-TEST_F(BrowserUIThreadSchedulerTest,
-       TaskPostedWithThreadHandleRunBeforeQueuesAreEnabled) {
-  StrictMockTask task;
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
-                                                              task.Get());
+class BrowserUIThreadSchedulerLoopQuarantineTest : public testing::Test {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::
+          kPartitionAllocSchedulerLoopQuarantineTaskObserverForBrowserUIThread};
+};
 
-  EXPECT_CALL(task, Run);
-  base::RunLoop().RunUntilIdle();
-}
+TEST_F(BrowserUIThreadSchedulerLoopQuarantineTest,
+       TestAllocationGetPurgedFromQuarantineAfterTaskCompletion) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
+      BrowserUIThreadScheduler::CreateForTesting();
+  browser_ui_thread_scheduler->GetHandle()->OnStartupComplete();
 
-TEST_F(BrowserUIThreadSchedulerTest, TestPostedTasksDeferredDuringScroll) {
-  // Setup
-  SetDeferringExperimentEnabled();
-  bool did_run_task = false;
+  // Pick up a queue.
+  auto task_queue =
+      browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
+          BrowserUIThreadScheduler::QueueType::kUserBlocking);
 
-  // Loop has to run after setting up as experiment is enabled after
-  // startup via post task.
-  EnablePostFeatureListSetup();
-  base::RunLoop().RunUntilIdle();
+  // Prepare PA root for testing.
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
 
-  // Post a user blocking task and pump the RunLoop.
-  browser_ui_thread_scheduler_->OnScrollStateUpdate(
-      BrowserUIThreadScheduler::ScrollState::kFlingActive);
-  browser_ui_thread_scheduler_->GetHandle()
-      ->GetBrowserTaskRunner(BrowserTaskQueues::QueueType::kUserBlocking)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce([](bool* did_run_task) { *did_run_task = true; },
-                         &did_run_task));
-  base::RunLoop().RunUntilIdle();
+  // Disables ThreadCache for the default allocator and enables it for the
+  // testing allocator.
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
 
-  // Assert that task didn't run during a scroll.
-  EXPECT_FALSE(did_run_task);
-  browser_ui_thread_scheduler_->OnScrollStateUpdate(
-      BrowserUIThreadScheduler::ScrollState::kNone);
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(did_run_task);
-}
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
 
-TEST_F(BrowserUIThreadSchedulerTest, TestPostedTasksNotDeferredWithoutScroll) {
-  // Setup
-  SetDeferringExperimentEnabled();
-  bool did_run_task = false;
+  void* ptr = root.Alloc(16);
 
-  // Loop has to run after setting up as experiment is enabled after
-  // startup via post task.
-  EnablePostFeatureListSetup();
-  base::RunLoop().RunUntilIdle();
+  base::test::TestFuture<void> future;
+  task_queue->PostTaskAndReply(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_FALSE(branch_accessor.IsQuarantined(ptr));
+        root.Free<
+            partition_alloc::internal::FreeFlags::kSchedulerLoopQuarantine>(
+            ptr);
+        EXPECT_TRUE(branch_accessor.IsQuarantined(ptr));
+      }),
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
-  // Post a user blocking task and pump the RunLoop.
-  browser_ui_thread_scheduler_->GetHandle()
-      ->GetBrowserTaskRunner(BrowserTaskQueues::QueueType::kUserBlocking)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce([](bool* did_run_task) { *did_run_task = true; },
-                         &did_run_task));
-  base::RunLoop().RunUntilIdle();
-
-  // Assert that task was run as there is no scroll.
-  EXPECT_TRUE(did_run_task);
-}
-
-TEST_F(BrowserUIThreadSchedulerTest,
-       TestPostedTasksNotDeferredDuringScrollExperimentDisabled) {
-  // Setup
-  bool did_run_task = false;
-
-  // Loop has to run after setting up as experiment is enabled after
-  // startup via post task.
-  EnablePostFeatureListSetup();
-  base::RunLoop().RunUntilIdle();
-
-  // Post a user blocking task and pump the RunLoop.
-  browser_ui_thread_scheduler_->OnScrollStateUpdate(
-      BrowserUIThreadScheduler::ScrollState::kFlingActive);
-  browser_ui_thread_scheduler_->GetHandle()
-      ->GetBrowserTaskRunner(BrowserTaskQueues::QueueType::kUserBlocking)
-      ->PostTask(
-          FROM_HERE,
-          base::BindOnce([](bool* did_run_task) { *did_run_task = true; },
-                         &did_run_task));
-  base::RunLoop().RunUntilIdle();
-
-  // Assert that task was run during scroll as experiment is disabled.
-  EXPECT_TRUE(did_run_task);
+  // `ptr` must not be in the quarantine as the scheduler finished its loop.
+  EXPECT_FALSE(branch_accessor.IsQuarantined(ptr));
+#endif
 }
 
 }  // namespace

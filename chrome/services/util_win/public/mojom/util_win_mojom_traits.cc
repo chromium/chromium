@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/services/util_win/public/mojom/util_win_mojom_traits.h"
+
+#include <limits.h> /* UINT_MAX */
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_math.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/shortcut.h"
@@ -41,8 +40,7 @@ chrome::mojom::SelectFileDialogType EnumTraits<
     case ui::SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE:
       return chrome::mojom::SelectFileDialogType::kOpenMultiFile;
   }
-  NOTREACHED_IN_MIGRATION();
-  return chrome::mojom::SelectFileDialogType::kNone;
+  NOTREACHED();
 }
 
 // static
@@ -73,8 +71,7 @@ bool EnumTraits<chrome::mojom::SelectFileDialogType,
       *output = ui::SelectFileDialog::Type::SELECT_OPEN_MULTI_FILE;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -89,8 +86,7 @@ EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::ToMojom(
     case CertificateInfo::Type::CERTIFICATE_IN_CATALOG:
       return chrome::mojom::CertificateType::kCertificateInCatalog;
   }
-  NOTREACHED_IN_MIGRATION();
-  return chrome::mojom::CertificateType::kNoCertificate;
+  NOTREACHED();
 }
 
 // static
@@ -126,8 +122,7 @@ bool EnumTraits<chrome::mojom::ShortcutOperation,
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -153,8 +148,7 @@ bool EnumTraits<chrome::mojom::CertificateType, CertificateInfo::Type>::
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
@@ -226,8 +220,8 @@ bool StructTraits<
 // static
 base::span<const uint8_t> StructTraits<chrome::mojom::ClsIdDataView,
                                        ::CLSID>::bytes(const ::CLSID& input) {
-  return base::make_span(reinterpret_cast<const uint8_t*>(&input),
-                         sizeof(input));
+  return UNSAFE_TODO(
+      base::span(reinterpret_cast<const uint8_t*>(&input), sizeof(input)));
 }
 
 // static
@@ -240,7 +234,7 @@ bool StructTraits<chrome::mojom::ClsIdDataView, ::CLSID>::Read(
 
   const ::CLSID* cls_id = reinterpret_cast<const ::CLSID*>(bytes_view.data());
 
-  memcpy(out, cls_id, sizeof(*out));
+  UNSAFE_TODO(memcpy(out, cls_id, sizeof(*out)));
   return true;
 }
 
@@ -250,7 +244,6 @@ bool StructTraits<chrome::mojom::ShortcutPropertiesDataView,
     Read(chrome::mojom::ShortcutPropertiesDataView input,
          base::win::ShortcutProperties* out) {
   out->icon_index = input.icon_index();
-  out->dual_mode = input.dual_mode();
   out->options = input.options();
 
   // out->toast_activator_clsid
@@ -287,6 +280,43 @@ bool StructTraits<chrome::mojom::AntiVirusProductDataView,
     return false;
   if (!product_version.empty())
     output->set_product_version(std::move(product_version));
+
+  return true;
+}
+
+// static
+bool StructTraits<chrome::mojom::TpmIdentifierDataView,
+                  metrics::SystemProfileProto_TpmIdentifier>::
+    Read(chrome::mojom::TpmIdentifierDataView input,
+         metrics::SystemProfileProto_TpmIdentifier* output) {
+  if (input.manufacturer_id() == 0u) {
+    // If manufacturer_id is it's default value metrics will not be
+    // reported.
+    return false;
+  }
+  output->set_manufacturer_id(input.manufacturer_id());
+
+  std::optional<std::string> manufacturer_version;
+  if (input.ReadManufacturerVersion(&manufacturer_version)) {
+    if (manufacturer_version.has_value()) {
+      output->set_manufacturer_version(std::move(manufacturer_version.value()));
+    }
+  }
+
+  std::optional<std::string> manufacturer_version_info;
+  if (input.ReadManufacturerVersionInfo(&manufacturer_version_info)) {
+    if (manufacturer_version_info.has_value()) {
+      output->set_manufacturer_version_info(
+          std::move(manufacturer_version_info.value()));
+    }
+  }
+
+  std::optional<std::string> tpm_specific_version;
+  if (input.ReadTpmSpecificVersion(&tpm_specific_version)) {
+    if (tpm_specific_version.has_value()) {
+      output->set_tpm_specific_version(std::move(tpm_specific_version.value()));
+    }
+  }
 
   return true;
 }

@@ -26,8 +26,7 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
           cache_storage_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy->RegisterClient(
       std::move(cache_storage_client_remote),
-      storage::QuotaClientType::kServiceWorkerCache,
-      {blink::mojom::StorageType::kTemporary});
+      storage::QuotaClientType::kServiceWorkerCache);
   mojo::PendingRemote<storage::mojom::QuotaClient>
       background_fetch_client_remote;
   mojo::PendingReceiver<storage::mojom::QuotaClient>
@@ -35,8 +34,7 @@ CacheStorageControlWrapper::CacheStorageControlWrapper(
           background_fetch_client_remote.InitWithNewPipeAndPassReceiver();
   quota_manager_proxy->RegisterClient(
       std::move(background_fetch_client_remote),
-      storage::QuotaClientType::kBackgroundFetch,
-      {blink::mojom::StorageType::kTemporary});
+      storage::QuotaClientType::kBackgroundFetch);
 
   cache_storage_context_ = base::SequenceBound<CacheStorageContextImpl>(
       CacheStorageContextImpl::CreateSchedulerTaskRunner(),
@@ -66,6 +64,8 @@ void CacheStorageControlWrapper::AddReceiver(
     mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
         coep_reporter_remote,
     const network::DocumentIsolationPolicy& document_isolation_policy,
+    mojo::PendingRemote<network::mojom::DocumentIsolationPolicyReporter>
+        dip_reporter_remote,
     const storage::BucketLocator& bucket,
     storage::mojom::CacheStorageOwner owner,
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
@@ -75,7 +75,8 @@ void CacheStorageControlWrapper::AddReceiver(
     storage_policy_observer_->StartTrackingOrigin(bucket.storage_key.origin());
   cache_storage_control_->AddReceiver(
       cross_origin_embedder_policy, std::move(coep_reporter_remote),
-      document_isolation_policy, bucket, owner, std::move(receiver));
+      document_isolation_policy, std::move(dip_reporter_remote), bucket, owner,
+      std::move(receiver));
 }
 
 void CacheStorageControlWrapper::AddObserver(

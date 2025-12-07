@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_DRIVE_FILE_PICKER_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_DRIVE_FILE_PICKER_COMMANDS_H_
 
+@protocol SystemIdentity;
+
 namespace web {
 class WebState;
 }
@@ -17,6 +19,9 @@ class WebState;
 
 // Hides the Drive file picker.
 - (void)hideDriveFilePicker;
+
+// Updates the identity of the root drive folder.
+- (void)setDriveFilePickerSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
 
 @end
 

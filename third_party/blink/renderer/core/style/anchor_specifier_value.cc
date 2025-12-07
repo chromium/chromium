@@ -34,8 +34,8 @@ bool AnchorSpecifierValue::operator==(const AnchorSpecifierValue& other) const {
 
 unsigned AnchorSpecifierValue::GetHash() const {
   unsigned hash = 0;
-  WTF::AddIntToHash(hash, WTF::HashInt(type_));
-  WTF::AddIntToHash(hash, name_ ? name_->GetHash() : 0);
+  AddIntToHash(hash, HashInt(type_));
+  AddIntToHash(hash, name_ ? name_->GetHash() : 0);
   return hash;
 }
 

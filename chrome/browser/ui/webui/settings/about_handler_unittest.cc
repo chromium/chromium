@@ -12,6 +12,8 @@
 #include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/ash/extended_updates/test/mock_extended_updates_controller.h"
 #include "chrome/browser/ash/extended_updates/test/scoped_extended_updates_controller.h"
+#include "chrome/browser/ash/ownership/fake_owner_settings_service.h"
+#include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -60,7 +62,13 @@ class AboutHandlerTest : public testing::Test {
         ash::UpdateEngineClient::InitializeFakeForTest();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
-    handler_ = std::make_unique<TestAboutHandler>(&profile_);
+    subscription_ = ash::FakeOwnerSettingsService::SetUpTestingFactory(
+        test_cros_settings_.device_settings(),
+        ash::OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil());
+
+    profile_ = std::make_unique<TestingProfile>();
+
+    handler_ = std::make_unique<TestAboutHandler>(profile_.get());
     handler_->set_web_ui(&web_ui_);
     handler_->RegisterMessages();
     handler_->AllowJavascriptForTesting();
@@ -72,7 +80,10 @@ class AboutHandlerTest : public testing::Test {
   void TearDown() override {
     handler_.reset();
     fake_update_engine_client_ = nullptr;
-    TestingBrowserProcess::GetGlobal()->SetLocalState(nullptr);
+
+    profile_.reset();
+    subscription_ = {};
+
     ash::ConciergeClient::Shutdown();
     ash::UpdateEngineClient::Shutdown();
   }
@@ -125,7 +136,8 @@ class AboutHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   ash::ScopedTestingCrosSettings test_cros_settings_;
   ash::ScopedStubInstallAttributes test_install_attributes_;
-  TestingProfile profile_;
+  base::CallbackListSubscription subscription_;
+  std::unique_ptr<TestingProfile> profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<TestAboutHandler> handler_;
   raw_ptr<ash::FakeUpdateEngineClient> fake_update_engine_client_;
@@ -160,9 +172,12 @@ TEST_F(AboutHandlerTest, DeferredUpdateMessageInAboutPage) {
   fake_update_engine_client_->set_default_status(status);
   fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
 
-  EXPECT_EQ(0, fake_update_engine_client_->apply_deferred_update_count());
-  web_ui_.HandleReceivedMessage("applyDeferredUpdate", base::Value::List());
-  EXPECT_EQ(1, fake_update_engine_client_->apply_deferred_update_count());
+  EXPECT_EQ(0,
+            fake_update_engine_client_->apply_deferred_update_advanced_count());
+  web_ui_.HandleReceivedMessage("applyDeferredUpdateAdvanced",
+                                base::Value::List());
+  EXPECT_EQ(1,
+            fake_update_engine_client_->apply_deferred_update_advanced_count());
 }
 
 TEST_F(AboutHandlerTest, GetEndOfLifeInfoWithoutExtendedUpdatesDate) {
@@ -263,7 +278,7 @@ TEST_F(AboutHandlerTest, ObservesExtendedUpdatesSettingChanges) {
       .WillOnce(Return(true));
 
   EXPECT_EQ(web_ui_.call_data().size(), 0u);
-  EXPECT_TRUE(mock_controller.OptIn(&profile_));
+  EXPECT_TRUE(mock_controller.OptIn(profile_.get()));
 
   ASSERT_EQ(web_ui_.call_data().size(), 1u);
   const auto& call_data = web_ui_.call_data()[0];
@@ -283,7 +298,7 @@ TEST_F(AboutHandlerTest, ObservesExtendedUpdatesSettingChangesAfterRefresh) {
       .WillOnce(Return(true));
 
   EXPECT_EQ(web_ui_.call_data().size(), 0u);
-  EXPECT_TRUE(mock_controller.OptIn(&profile_));
+  EXPECT_TRUE(mock_controller.OptIn(profile_.get()));
 
   ASSERT_EQ(web_ui_.call_data().size(), 1u);
   const auto& call_data = web_ui_.call_data()[0];

@@ -42,8 +42,7 @@ WKUserScriptInjectionTime InjectionTimeToWKUserScriptInjectionTime(
     case JavaScriptFeature::FeatureScript::InjectionTime::kDocumentEnd:
       return WKUserScriptInjectionTimeAtDocumentEnd;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WKUserScriptInjectionTimeAtDocumentStart;
+  NOTREACHED();
 }
 
 // Returns the WKUserContentController associated with `browser_state`.
@@ -171,8 +170,7 @@ void JavaScriptContentWorld::AddFeature(const JavaScriptFeature* feature) {
     std::optional<std::string> message_handler_name =
         feature->GetScriptMessageHandlerName();
     if (feature != java_script_features::GetBaseJavaScriptFeature() &&
-        feature != java_script_features::GetCommonJavaScriptFeature() &&
-        feature != java_script_features::GetMessageJavaScriptFeature()) {
+        feature != java_script_features::GetCommonJavaScriptFeature()) {
       if (!message_handler_name) {
         return;
       }

@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_UNIFIED_GLANCEABLE_TRAY_CHILD_BUBBLE_H_
 
 #include "ash/ash_export.h"
-#include "ash/glanceables/common/glanceables_error_message_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 

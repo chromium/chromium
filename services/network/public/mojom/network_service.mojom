@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
@@ -19,6 +18,7 @@ import "services/network/public/mojom/first_party_sets.mojom";
 import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/http_raw_headers.mojom";
 import "services/network/public/mojom/ip_address_space.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/key_pinning.mojom";
 import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
 import "services/network/public/mojom/net_log.mojom";
@@ -33,8 +33,10 @@ import "services/network/public/mojom/network_service_test.mojom";
 import "services/network/public/mojom/parsed_headers.mojom";
 import "services/network/public/mojom/proxy_config.mojom";
 import "services/network/public/mojom/schemeful_site.mojom";
+import "services/network/public/mojom/source_type.mojom";
 import "services/network/public/mojom/system_dns_resolution.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/url_loader.mojom";
 import "services/network/public/mojom/url_loader_network_service_observer.mojom";
 import "services/network/public/mojom/url_response_head.mojom";
 import "url/mojom/origin.mojom";
@@ -135,11 +137,6 @@ struct NetworkServiceParams {
   // A SystemDnsResolver to provide out-of-process system DNS resolution, in
   // case the system DNS resolver cannot always run sandboxed.
   pending_remote<SystemDnsResolver>? system_dns_resolver;
-
-  // The policy used for bypassing requests that are eligible for IP Protection.
-  // Even if a domain is part of the masked domain list, the bypass policy can
-  // be used to bypass certain network requests from IP Protection.
-  IpProtectionProxyBypassPolicy ip_protection_proxy_bypass_policy;
 };
 
 // Configuration settings for SCT Auditing.
@@ -204,7 +201,8 @@ interface NetworkService {
   StartNetLog(mojo_base.mojom.File file,
               uint64 max_total_size,
               NetLogCaptureMode capture_mode,
-              mojo_base.mojom.DictionaryValue constants);
+              mojo_base.mojom.DictionaryValue constants,
+              mojo_base.mojom.TimeDelta? duration);
 
   // Attaches an external source of NetLog events. Control events will be sent
   // to the |proxy_source| pipe indicating when netlogging is active, the
@@ -248,10 +246,20 @@ interface NetworkService {
   // e.g. HTTPS (DNS type 65) will be allowed besides the traditional A and AAAA
   // queries when a request is being made via insecure DNS. Has no effect on
   // Secure DNS which always allows additional types.
+  //
+  // `happy_eyeballs_v3_enabled` controls whether the Happy Eyeballs V3 is
+  //  enabled.
+  //
+  // `fallback_doh_nameservers` may be used in AUTOMATIC mode if falling back to
+  // DoH is preferred to falling back to insecure DNS. If these nameservers are
+  // successfully upgraded to DoH, they are used in the order defined by
+  // `net::ResolveContext::GetDohIterator`.
   ConfigureStubHostResolver(bool insecure_dns_client_enabled,
+                            bool happy_eyeballs_v3_enabled,
                             SecureDnsMode secure_dns_mode,
                             DnsOverHttpsConfig dns_over_https_config,
-                            bool additional_dns_types_enabled);
+                            bool additional_dns_types_enabled,
+                            array<IPEndPoint> fallback_doh_nameservers);
 
   // Disables QUIC for the NetworkService. Affects all existing NetworkContexts,
   // and all new ones that are created. Once called, QUIC cannot be re-enabled.
@@ -282,10 +290,9 @@ interface NetworkService {
   SetRawHeadersAccess(int32 process_id, array<url.mojom.Origin> origins);
 
   // Sets the maximum number of connections for a proxy chain.
-  //   * Negative values will set the default proxy connection limit (32)
   //   * Values larger than 99 will saturate to 99.
   //   * Values smaller than 6 will saturate to 6.
-  SetMaxConnectionsPerProxyChain(int32 max_connections);
+  SetMaxConnectionsPerProxyChain(uint32 max_connections);
 
   // Gets the NetworkChangeManager.
   GetNetworkChangeManager(
@@ -377,19 +384,6 @@ interface NetworkService {
   // be restricted.
   SetExplicitlyAllowedPorts(array<uint16> ports);
 
-  // Updates the Masked Domain List data used to generate custom proxy configs
-  // for the Privacy Proxy. Any existing NetworkContexts that are using the
-  // custom proxy configs will have their configs updated.
-  //
-  // `masked_domain_list` wraps a MaskedDomainList proto. See the definition at
-  // //components/privacy_sandbox/masked_domain_list/masked_domain_list.proto.
-  //
-  // |exclusion_list| contains the list of domains which should be excluded
-  // from the MDL. Subdomains of entries on this list should be excluded from
-  // the MDL as well.
-  UpdateMaskedDomainList(mojo_base.mojom.ProtoWrapper masked_domain_list,
-    array<string> exclusion_list);
-
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when
   // the URLLoader didn't provide ParsedHeader in the first place. This happens
@@ -427,4 +421,46 @@ interface NetworkService {
   // service with that of the browser.
   SetTpcdMetadataGrants(
       array<content_settings.mojom.ContentSettingPatternSource> settings);
+
+  // Set up a content decoding interceptor for an existing URLLoader connection.
+  // This is typically used by the browser process when client-side decoding was
+  // initially requested, but the final consumer of the response body resides in
+  // the browser process (e.g., for downloads or Signed Exchanges) rather than
+  // the renderer.
+  //
+  // The interceptor reads the encoded data from the `source_body` pipe, decodes
+  // it according to the specified `content_encoding_types`, and writes the
+  // decoded data to the `dest_body` pipe. It manages the communication flow
+  // between the original URLLoader/URLLoaderClient pair (`source_url_loader`,
+  // `source_url_loader_client`) and presents a new pair (`dest_url_loader`,
+  // `dest_url_loader_client`) for the ultimate consumer to interact with.
+  InterceptUrlLoaderForBodyDecoding(
+      array<SourceType> content_encoding_types,
+      handle<data_pipe_consumer> source_body,
+      handle<data_pipe_producer> dest_body,
+      pending_remote<URLLoader> source_url_loader,
+      pending_receiver<URLLoaderClient> source_url_loader_client,
+      pending_receiver<URLLoader> dest_url_loader,
+      pending_remote<URLLoaderClient> dest_url_loader_client);
+
+  // Decodes a data stream with the specified content encodings. This is a
+  // utility function for decoding a stream of bytes. It reads from
+  // `source_body`, decodes the data according to `content_encoding_types`, and
+  // writes the result to `dest_body`. Returns net::OK on success, or a net
+  // error code on failure (e.g. a decoding error).
+  // If a decoding error occurs mid-stream, `dest_body` will contain the data
+  // that was successfully decoded before the failure, and the callback will be
+  // called with net::ERR_CONTENT_DECODING_FAILED.
+  //
+  // This is used when ResourceRequest.client_side_content_decoding_enabled is
+  // true, which prevents the response body from being decoded on the network
+  // service side, and there is a need to check the decoded response body on the
+  // browser process side (e.g. DevTools).
+  DecodeContentEncoding(
+      array<SourceType> content_encoding_types,
+      handle<data_pipe_consumer> source_body,
+      handle<data_pipe_producer> dest_body) => (int32 error_code);
+
+  // Enables or disables TLS 1.3 Early Data.
+  SetTLS13EarlyDataEnabled(bool enabled);
 };

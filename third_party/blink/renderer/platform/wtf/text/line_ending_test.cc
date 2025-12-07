@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-namespace WTF {
+namespace blink {
 
 TEST(LineEndingTest, NormalizeLineEndingsToCRLF) {
   EXPECT_EQ(String(""), NormalizeLineEndingsToCRLF(""));
@@ -18,4 +18,4 @@ TEST(LineEndingTest, NormalizeLineEndingsToCRLF) {
   EXPECT_EQ(String("abc\r\ndef\r\n"), NormalizeLineEndingsToCRLF("abc\rdef\n"));
 }
 
-}  // namespace WTF
+}  // namespace blink

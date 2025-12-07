@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+package customtabs.branding;
+option java_package = "org.chromium.chrome.browser.customtabs.features.branding.proto";
+
+option optimize_for = LITE_RUNTIME;
+
+// How the sign-in prompt UI was closed.
+enum CloseType {
+  UNKNOWN = 0;  // Prompt was not (yet) shown/visible
+  ACCEPTED = 1;
+  DISMISSED = 2;
+  TIMED_OUT = 3;
+}
+
+// Top-level message containing the account mismatch notification data for all
+// apps and accounts.
+message AllAccounts {
+  repeated Account account_data = 1;
+}
+
+message Account {
+  // A cropped hash of Gaia ID
+  optional string obfuscated_gaia = 1;
+
+  repeated App app_data = 2;
+}
+
+message App {
+  // ID of the app - package path
+  optional string id = 1;
+
+  // How many times the UI was shown to user.
+  optional int32 show_count = 2;
+
+  // How the sign-in UI was closed.
+  optional CloseType close_type = 3;
+
+  // How many times the UI was actively dismissed/accepted.
+  optional int32 user_act_count = 4;
+}

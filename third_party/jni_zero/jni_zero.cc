@@ -45,13 +45,16 @@ jclass LazyGetClassInternal(JNIEnv* env,
                             const char* split_name,
                             std::atomic<jclass>* atomic_class_id) {
   jclass ret = nullptr;
-  ScopedJavaGlobalRef<jclass> clazz(
+  auto local_ref = ScopedJavaLocalRef<jclass>::Adopt(
       env, GetClassInternal(env, class_name, split_name));
-  if (atomic_class_id->compare_exchange_strong(ret, clazz.obj(),
+  jclass global_ref = static_cast<jclass>(env->NewGlobalRef(local_ref.obj()));
+  if (atomic_class_id->compare_exchange_strong(ret, global_ref,
                                                std::memory_order_acq_rel)) {
     // We intentionally leak the global ref since we are now storing it as a raw
     // pointer in |atomic_class_id|.
-    ret = clazz.Release();
+    ret = global_ref;
+  } else {
+    env->DeleteGlobalRef(global_ref);
   }
   return ret;
 }
@@ -64,6 +67,9 @@ jclass GetSystemClassGlobalRef(JNIEnv* env, const char* class_name) {
 
 jclass g_object_class = nullptr;
 jclass g_string_class = nullptr;
+LeakedJavaGlobalRef<jstring> g_empty_string = nullptr;
+LeakedJavaGlobalRef<jobject> g_empty_list = nullptr;
+LeakedJavaGlobalRef<jobject> g_empty_map = nullptr;
 
 JNIEnv* AttachCurrentThread() {
   JNI_ZERO_DCHECK(g_jvm);
@@ -119,10 +125,16 @@ void DetachFromVM() {
 }
 
 void InitVM(JavaVM* vm) {
+  if (g_jvm) {
+    JNI_ZERO_CHECK(vm == g_jvm);
+    return;
+  }
   g_jvm = vm;
   JNIEnv* env = AttachCurrentThread();
   g_object_class = GetSystemClassGlobalRef(env, "java/lang/Object");
   g_string_class = GetSystemClassGlobalRef(env, "java/lang/String");
+  g_empty_string.Reset(
+      env, ScopedJavaLocalRef<jstring>::Adopt(env, env->NewString(nullptr, 0)));
 #if defined(JNI_ZERO_MULTIPLEXING_ENABLED)
   Java_JniInit_crashIfMultiplexingMisaligned(env, kJniZeroHashWhole,
                                              kJniZeroHashPriority);
@@ -130,7 +142,13 @@ void InitVM(JavaVM* vm) {
   // Mark as used when multiplexing not enabled.
   (void)&Java_JniInit_crashIfMultiplexingMisaligned;
 #endif
-  CheckException(env);
+  ScopedJavaLocalRef<jobjectArray> globals = Java_JniInit_init(env);
+  g_empty_list.Reset(env,
+                     ScopedJavaLocalRef<jobject>::Adopt(
+                         env, env->GetObjectArrayElement(globals.obj(), 0)));
+  g_empty_map.Reset(env,
+                    ScopedJavaLocalRef<jobject>::Adopt(
+                        env, env->GetObjectArrayElement(globals.obj(), 1)));
 }
 
 void DisableJvmForTesting() {
@@ -170,6 +188,7 @@ void CheckException(JNIEnv* env) {
   if (g_exception_handler_callback) {
     return g_exception_handler_callback(env);
   }
+  env->ExceptionDescribe();
   JNI_ZERO_FLOG("jni_zero crashing due to uncaught Java exception");
 }
 
@@ -180,12 +199,13 @@ void SetClassResolver(jclass (*resolver)(JNIEnv*, const char*, const char*)) {
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env,
                                     const char* class_name,
                                     const char* split_name) {
-  return ScopedJavaLocalRef<jclass>(
+  return ScopedJavaLocalRef<jclass>::Adopt(
       env, GetClassInternal(env, class_name, split_name));
 }
 
 ScopedJavaLocalRef<jclass> GetClass(JNIEnv* env, const char* class_name) {
-  return ScopedJavaLocalRef<jclass>(env, GetClassInternal(env, class_name, ""));
+  return ScopedJavaLocalRef<jclass>::Adopt(
+      env, GetClassInternal(env, class_name, ""));
 }
 
 template <MethodID::Type type>
@@ -274,3 +294,5 @@ jclass LazyGetClass(JNIEnv* env,
 
 }  // namespace internal
 }  // namespace jni_zero
+
+DEFINE_JNI(JniInit)

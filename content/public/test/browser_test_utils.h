@@ -5,11 +5,13 @@
 #ifndef CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_BROWSER_TEST_UTILS_H_
 
+#include <compare>
 #include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -21,12 +23,16 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
 #include "base/types/to_address.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
 #include "content/public/browser/commit_deferring_condition.h"
@@ -36,13 +42,13 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_contents_media_capture_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/test_utils.h"
-#include "ipc/message_filter.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
@@ -61,9 +67,12 @@
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom.h"
 #include "third_party/blink/public/mojom/keyboard_lock/keyboard_lock.mojom-shared.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-test-utils.h"
+#include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -77,6 +86,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
+
+namespace base::test {
+class ScopedFeatureList;
+}
 
 namespace gfx {
 class Point;
@@ -151,8 +164,11 @@ class RenderWidgetHost;
 class RenderWidgetHostImpl;
 class RenderWidgetHostView;
 class ScopedAllowRendererCrashes;
+class ScreenOrientationDelegate;
 class ToRenderFrameHost;
 class WebContents;
+
+double GetPendingZoomLevel(RenderWidgetHost* render_widget_host);
 
 // This encapsulates the pattern of waiting for an event and returning whether
 // that event was received from `Wait`. This makes it easy to do the right thing
@@ -309,6 +325,16 @@ void NotifyCopyableViewInWebContents(WebContents* web_contents,
 void NotifyCopyableViewInFrame(RenderFrameHost* render_frame_host,
                                base::OnceClosure done_callback);
 
+// Blocks the current execution until the renderer main thread in the main frame
+// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
+// against the current `WebContents`.
+void WaitForCopyableViewInWebContents(WebContents* web_contents);
+
+// Blocks the current execution until the renderer main thread in the subframe
+// is in a steady state, so the caller can issue an `viz::CopyOutputRequest`
+// against its view.
+void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host);
+
 // Allows tests to set the last committed origin of |render_frame_host|, to
 // simulate a scenario that might happen with a compromised renderer or might
 // not otherwise be possible.
@@ -317,6 +343,11 @@ void OverrideLastCommittedOrigin(RenderFrameHost* render_frame_host,
 
 // Causes the specified web_contents to crash. Blocks until it is crashed.
 void CrashTab(WebContents* web_contents);
+
+// Causes the specified web_contents to crash after hanging. Blocks until it is
+// crashed.
+void SimulateUnresponsivePrimaryMainFrameAndWaitForExit(
+    WebContents* web_contents);
 
 // Sets up a commit interceptor to alter commits for |target_url| to change
 // their commit URL to |new_url| and origin to |new_origin|. This will happen
@@ -341,8 +372,12 @@ void SimulateUnresponsiveRenderer(WebContents* web_contents,
 // RenderWidgetHostInputEventRouter and thus can target OOPIFs. If an OOPIF is
 // the intended target, ensure that its hit test data is available for routing,
 // using `WaitForHitTestData`, first.
-// Note: For simulating clicks inside a fenced frame tree, this function does
-// not work. Use `SimulateClickInFencedFrameTree` in
+//
+// Notes:
+// - Input events to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
+// - For simulating clicks inside a fenced frame tree, this function does not
+// work. Use `SimulateClickInFencedFrameTree` in
 // `content/public/test/fenced_frame_test_util.cc`
 void SimulateMouseClick(WebContents* web_contents,
                         int modifiers,
@@ -353,8 +388,12 @@ void SimulateMouseClick(WebContents* web_contents,
 // through RenderWidgetHostInputEventRouter and thus can target OOPIFs. If an
 // OOPIF is the intended target, ensure that its hit test data is available for
 // routing, using `WaitForHitTestData`, first.
-// Note: For simulating clicks inside a fenced frame tree, this function does
-// not work. Use `SimulateClickInFencedFrameTree` in
+//
+// Notes:
+// - Input events to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
+// - For simulating clicks inside a fenced frame tree, this function does not
+// work. Use `SimulateClickInFencedFrameTree` in
 // `content/public/test/fenced_frame_test_util.cc`
 void SimulateMouseClickAt(WebContents* web_contents,
                           int modifiers,
@@ -375,11 +414,17 @@ gfx::PointF GetCenterCoordinatesOfElementWithId(
 
 // Retrieves the center coordinates of the element with id |id| and simulates a
 // mouse click there using SimulateMouseClickAt().
+//
+// Note: Input events to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateMouseClickOrTapElementWithId(content::WebContents* web_contents,
                                           std::string_view id);
 
 // Simulates asynchronously a mouse enter/move/leave event. The mouse event is
 // routed through RenderWidgetHostInputEventRouter and thus can target OOPIFs.
+//
+// Note: Input events to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateMouseEvent(WebContents* web_contents,
                         blink::WebInputEvent::Type type,
                         const gfx::Point& point);
@@ -389,6 +434,9 @@ void SimulateMouseEvent(WebContents* web_contents,
                         const gfx::Point& point);
 
 // Simulate a mouse wheel event.
+//
+// Note: Input events to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateMouseWheelEvent(WebContents* web_contents,
                              const gfx::Point& point,
                              const gfx::Vector2d& delta,
@@ -409,34 +457,42 @@ void SimulateTouchscreenPinch(WebContents* web_contents,
 #endif  // !BUILDFLAG(IS_MAC)
 
 // Sends a GesturePinch Begin/Update/End sequence.
+//
+// Note: Input events to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateGesturePinchSequence(RenderWidgetHost* render_widget_host,
                                   const gfx::Point& point,
                                   float scale,
                                   blink::WebGestureDevice source_device);
-
 void SimulateGesturePinchSequence(WebContents* web_contents,
                                   const gfx::Point& point,
                                   float scale,
                                   blink::WebGestureDevice source_device);
 
 // Sends a simple, three-event (Begin/Update/End) gesture scroll.
+//
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateGestureScrollSequence(RenderWidgetHost* render_widget_host,
                                    const gfx::Point& point,
                                    const gfx::Vector2dF& delta);
-
 void SimulateGestureScrollSequence(WebContents* web_contents,
                                    const gfx::Point& point,
                                    const gfx::Vector2dF& delta);
 
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateGestureEvent(RenderWidgetHost* render_widget_host,
                           const blink::WebGestureEvent& gesture_event,
                           const ui::LatencyInfo& latency);
-
 void SimulateGestureEvent(WebContents* web_contents,
                           const blink::WebGestureEvent& gesture_event,
                           const ui::LatencyInfo& latency);
 
 // Taps the screen at |point|, using gesture Tap or TapDown.
+//
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateTapAt(WebContents* web_contents, const gfx::Point& point);
 void SimulateTapDownAt(WebContents* web_contents, const gfx::Point& point);
 
@@ -447,10 +503,15 @@ void SimulateTouchGestureAt(WebContents* web_contents,
 
 #if defined(USE_AURA)
 // Generates a TouchEvent of |event_type| at |point|.
+//
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateTouchEventAt(WebContents* web_contents,
                           ui::EventType event_type,
                           const gfx::Point& point);
 
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateLongTapAt(WebContents* web_contents, const gfx::Point& point);
 
 // Can be used to wait for the caret bounds associated with `web_contents` to
@@ -500,6 +561,9 @@ class BoundingBoxUpdateWaiter {
 #endif
 
 // Taps the screen with modifires at |point|.
+//
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateTapWithModifiersAt(WebContents* web_contents,
                                 unsigned Modifiers,
                                 const gfx::Point& point);
@@ -512,6 +576,9 @@ void SimulateTapWithModifiersAt(WebContents* web_contents,
 // or the keyboard layout.
 // If set to true, the modifiers |control|, |shift|, |alt|, and |command| are
 // pressed down first before the key event, and released after.
+//
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateKeyPress(WebContents* web_contents,
                       ui::DomKey key,
                       ui::DomCode code,
@@ -524,6 +591,9 @@ void SimulateKeyPress(WebContents* web_contents,
 // Like SimulateKeyPress(), but does not send the char (AKA keypress) event.
 // This is useful for arrow keys and other key presses that do not generate
 // characters.
+//
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
 void SimulateKeyPressWithoutChar(WebContents* web_contents,
                                  ui::DomKey key,
                                  ui::DomCode code,
@@ -563,6 +633,17 @@ BindFakeFrameWidgetInterfaces(RenderFrameHost* frame);
 // Set |active| state for a RenderWidgetHost associated with a given
 // RenderFrameHost
 void SimulateActiveStateForWidget(RenderFrameHost* frame, bool active);
+
+// Simulates the end of paint-holding on the primary main frame of
+// `web_contents`. Paint-holding is the browser feature to continue to show a
+// snapshot of the pre-navigation page (instead of a blank page) until the
+// renderer for the post-navigation page has pushed content to the GPU.  The
+// input events received during paint-holding should not be processed by the
+// post-navigation renderer because the users haven't yet seen the new page.
+//
+// Tests that are paint-holding agnostic need to call this method to be able to
+// send input events to a page right after the page is loaded.
+void SimulateEndOfPaintHoldingOnPrimaryMainFrame(WebContents* web_contents);
 
 // Return the value set for VisitedLinkSalt in the navigation's commit_params.
 std::optional<uint64_t> GetVisitedLinkSaltForNavigation(
@@ -663,6 +744,12 @@ struct JsLiteralHelper {
   }
 
   static base::Value Convert(const base::Value& value) { return value.Clone(); }
+  static base::Value Convert(const base::Value::List& value) {
+    return base::Value(value.Clone());
+  }
+  static base::Value Convert(const base::Value::Dict& value) {
+    return base::Value(value.Clone());
+  }
 };
 
 // Specialization allowing GURL to be passed to StringifyJsLiteral.
@@ -706,7 +793,8 @@ base::Value ListValueOf(Args&&... args) {
 // Each |arg| can be any type explicitly convertible to base::Value
 // (including int/string/std::string_view/char*/double/bool), or any type that
 // JsLiteralHelper is specialized for -- like URL and url::Origin, which emit
-// string literals. |args| can be a mix of different types.
+// string literals. Note that base::Value::Type::BINARY is not supported.
+// |args| can be a mix of different types.
 //
 // Example 1:
 //
@@ -759,120 +847,119 @@ std::string JsReplace(std::string_view script_template, Args&&... args) {
 //      by calling ExtractString(), ExtractInt(), etc. This will produce a
 //      CHECK failure if the execution didn't result in the appropriate type
 //      of result, or if an exception was thrown.
-struct EvalJsResult {
-  const base::Value value;  // Value; if things went well.
-  const std::string error;  // Error; if things went badly.
-
+class EvalJsResult {
+ public:
   // Creates an EvalJs result. If |error| is non-empty, |value| will be
   // ignored.
   EvalJsResult(base::Value value, std::string_view error);
 
-  // Copy ctor.
   EvalJsResult(const EvalJsResult& value);
+  EvalJsResult& operator=(const EvalJsResult&);
+  EvalJsResult(EvalJsResult&&);
+  EvalJsResult& operator=(EvalJsResult&&);
+
+  ~EvalJsResult();
 
   // Matchers for successful & unsuccessful runs.
-  static auto IsOk() {
-    return testing::Field(&EvalJsResult::error, testing::Eq(""));
+  static auto IsOk() { return testing::Property(&EvalJsResult::is_ok, true); }
+  template <typename M>
+  static auto IsOkAndHolds(M m) {
+    return testing::Field("data_", &EvalJsResult::data_,
+                          testing::VariantWith<base::Value>(m));
   }
   static auto IsError() { return testing::Not(IsOk()); }
+  template <typename M>
+  static auto ErrorIs(M m) {
+    return testing::Field("data_", &EvalJsResult::data_,
+                          testing::VariantWith<std::string>(m));
+  }
 
-  // Extract a result value of the requested type, or die trying.
+  // Extract a result value of the requested type, or die trying. Note that
+  // non-trivial values are not copied; use `TakeValue()` or
+  // `ExtractFoo().Clone()` if you need ownership of the result value.
   //
   // If there was an error, or if returned value is of a different type, these
   // will fail with a CHECK. Use Extract methods only when accessing the
   // result value is necessary; prefer operator== and EXPECT_EQ() instead:
   // they don't CHECK, and give better error messages.
-  [[nodiscard]] const std::string& ExtractString() const;
+  [[nodiscard]] const std::string& ExtractString() const LIFETIME_BOUND;
   [[nodiscard]] int ExtractInt() const;
   [[nodiscard]] bool ExtractBool() const;
   [[nodiscard]] double ExtractDouble() const;
-  [[nodiscard]] base::Value ExtractList() const;
+  [[nodiscard]] const base::Value::List& ExtractList() const LIFETIME_BOUND;
+  [[nodiscard]] const base::Value::Dict& ExtractDict() const LIFETIME_BOUND;
+  [[nodiscard]] const std::string& ExtractError() const LIFETIME_BOUND;
+
+  [[nodiscard]] bool is_ok() const {
+    return std::holds_alternative<base::Value>(data_);
+  }
+
+  [[nodiscard]] bool is_string() const {
+    return is_ok() && value()->is_string();
+  }
+  [[nodiscard]] bool is_bool() const { return is_ok() && value()->is_bool(); }
+  [[nodiscard]] bool is_list() const { return is_ok() && value()->is_list(); }
+  [[nodiscard]] bool is_dict() const { return is_ok() && value()->is_dict(); }
+
+  // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
+  //
+  //    ASSERT_EQ("ab", EvalJs(rfh, "'a' + 'b'"))
+  //    ASSERT_EQ(2, EvalJs(rfh, "1 + 1"))
+  //    ASSERT_EQ(base::Value(), EvalJs(rfh, "var a = 1 + 1"))
+  //
+  // Error values are incomparable to other values (including other errors).
+  template <typename T>
+  bool operator==(const T& t) const {
+    return JsLiteralHelper<T>::Convert(t) == value();
+  }
+
+  template <typename T>
+  std::partial_ordering operator<=>(const T& t) const {
+    if (!is_ok()) {
+      return std::partial_ordering::unordered;
+    }
+    return value() <=> JsLiteralHelper<T>::Convert(t);
+  }
+
+  // Takes the underlying `base::Value`, presuming no error occurred.
+  [[nodiscard]] base::Value TakeValue() && {
+    CHECK(is_ok());
+    return std::get<base::Value>(std::move(data_));
+  }
+
+ private:
+  base::optional_ref<const base::Value> value() const {
+    return std::get_if<base::Value>(&data_);
+  }
+
+  base::optional_ref<const std::string> error() const {
+    return std::get_if<std::string>(&data_);
+  }
+
+  // Provides informative failure messages when the result of EvalJs() is
+  // used in a failing ASSERT_EQ or EXPECT_EQ.
+  friend std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar);
+
+  // Either the error that occurred, or the result value of the script.
+  std::variant<std::string, base::Value> data_;
 };
-
-// Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
-//
-//    ASSERT_EQ("ab", EvalJs(rfh, "'a' + 'b'"))
-//    ASSERT_EQ(2, EvalJs(rfh, "1 + 1"))
-//    ASSERT_EQ(nullptr, EvalJs(rfh, "var a = 1 + 1"))
-//
-// Error values never return true for any comparison operator.
-template <typename T>
-bool operator==(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) == b.value);
-}
-template <typename T>
-bool operator==(const EvalJsResult& a, const T& b) {
-  return b == a;
-}
-
-template <typename T>
-bool operator!=(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) != b.value);
-}
-template <typename T>
-bool operator!=(const EvalJsResult& a, const T& b) {
-  return b != a;
-}
-
-template <typename T>
-bool operator>=(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) >= b.value);
-}
-template <typename T>
-bool operator>=(const EvalJsResult& a, const T& b) {
-  return b < a;
-}
-
-template <typename T>
-bool operator<=(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) <= b.value);
-}
-template <typename T>
-bool operator<=(const EvalJsResult& a, const T& b) {
-  return b > a;
-}
-
-template <typename T>
-bool operator<(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) < b.value);
-}
-template <typename T>
-bool operator<(const EvalJsResult& a, const T& b) {
-  return b >= a;
-}
-
-template <typename T>
-bool operator>(const T& a, const EvalJsResult& b) {
-  return b.error.empty() && (JsLiteralHelper<T>::Convert(a) > b.value);
-}
-template <typename T>
-bool operator>(const EvalJsResult& a, const T& b) {
-  return b <= a;
-}
-
-inline bool operator==(std::nullptr_t a, const EvalJsResult& b) {
-  return b.error.empty() && (base::Value() == b.value);
-}
-template <typename T>
-inline bool operator==(const EvalJsResult& a, std::nullptr_t b) {
-  return nullptr == a;
-}
-
-// Provides informative failure messages when the result of EvalJs() is
-// used in a failing ASSERT_EQ or EXPECT_EQ.
-std::ostream& operator<<(std::ostream& os, const EvalJsResult& bar);
 
 enum EvalJsOptions {
   EXECUTE_SCRIPT_DEFAULT_OPTIONS = 0,
 
-  // By default, EvalJs runs with a user gesture. This bit flag disables
-  // that.
+  // By default, EvalJs() runs with a user gesture. This bit flag disables that.
   EXECUTE_SCRIPT_NO_USER_GESTURE = (1 << 0),
 
   // By default, when the script passed to EvalJs evaluates to a Promise, the
   // execution continues until the Promise resolves, and the resolved value is
   // returned. Setting this bit disables such Promise resolution.
   EXECUTE_SCRIPT_NO_RESOLVE_PROMISES = (1 << 1),
+
+  // Content settings are a mechanism that allows users to disable various
+  // functions of the browser. One content setting disables javascript. By
+  // default, EvalJs() ignores this setting. This bit flag causes it to instead
+  // honor JS content settings.
+  EXECUTE_SCRIPT_HONOR_JS_CONTENT_SETTINGS = (1 << 2),
 };
 
 // EvalJs() -- run |script| in |execution_target| and return its value or error.
@@ -1004,7 +1091,7 @@ std::vector<RenderFrameHost*> CollectAllRenderFrameHosts(
 // BrowserContext.
 std::vector<WebContents*> GetAllWebContents();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Executes the WebUI resource tests. Injects the test runner script prior to
 // executing the tests.
 //
@@ -1033,12 +1120,14 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
 // Sets a cookie for the given url. Uses inclusive SameSiteCookieContext by
 // default, which gets cookies regardless of their SameSite attribute. The
 // cookie is unpartitioned by default. Returns true on success.
-bool SetCookie(BrowserContext* browser_context,
-               const GURL& url,
-               const std::string& value,
-               net::CookieOptions::SameSiteCookieContext context =
-                   net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
-               net::CookiePartitionKey* cookie_partition_key = nullptr);
+[[nodiscard]] bool SetCookie(
+    BrowserContext* browser_context,
+    const GURL& url,
+    const std::string& value,
+    net::CookieOptions::SameSiteCookieContext context =
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+    base::optional_ref<const net::CookiePartitionKey> cookie_partition_key =
+        base::optional_ref<const net::CookiePartitionKey>(std::nullopt));
 
 // Deletes cookies matching the provided filter. Returns the number of cookies
 // that were deleted.
@@ -1092,6 +1181,11 @@ ui::AXNodeData GetFocusedAccessibilityNodeInfo(WebContents* web_contents);
 // the exact ordering of events received while getting there. Blocks
 // until any change happens to the accessibility tree.
 void WaitForAccessibilityTreeToChange(WebContents* web_contents);
+
+// Waits for any change to the accessibility tree, with a timeout.
+// Returns true if a change occurred, false if the timeout was reached.
+bool WaitForAccessibilityTreeToChange(WebContents* web_contents,
+                                      base::TimeDelta timeout);
 
 // Searches the accessibility tree to see if any node's accessible name
 // is equal to the given name. If not, repeatedly calls
@@ -1179,10 +1273,13 @@ WebContents* GetFocusedWebContents(WebContents* web_contents);
 // set.
 class TitleWatcher : public WebContentsObserver {
  public:
-  // |web_contents| must be non-NULL and needs to stay alive for the
-  // entire lifetime of |this|. |expected_title| is the title that |this|
-  // will wait for.
-  TitleWatcher(WebContents* web_contents, const std::u16string& expected_title);
+  // `web_contents` must be non-NULL and needs to stay alive for the
+  // entire lifetime of |this|. `expected_title` is the title that |this|
+  // will wait for. `include_nestable_tasks` allows processing of
+  // application tasks while waiting for a title change.
+  TitleWatcher(WebContents* web_contents,
+               std::u16string_view expected_title,
+               bool include_nestable_tasks = false);
 
   TitleWatcher(const TitleWatcher&) = delete;
   TitleWatcher& operator=(const TitleWatcher&) = delete;
@@ -1190,7 +1287,7 @@ class TitleWatcher : public WebContentsObserver {
   ~TitleWatcher() override;
 
   // Adds another title to watch for.
-  void AlsoWaitForTitle(const std::u16string& expected_title);
+  void AlsoWaitForTitle(std::u16string_view expected_title);
 
   // Waits until the title matches either expected_title or one of the titles
   // added with AlsoWaitForTitle. Returns the value of the most recently
@@ -1313,9 +1410,10 @@ class RenderProcessHostBadMojoMessageWaiter {
   [[nodiscard]] std::optional<std::string> Wait();
 
  private:
-  void OnBadMojoMessage(int render_process_id, const std::string& error);
+  void OnBadMojoMessage(ChildProcessId render_process_id,
+                        const std::string& error);
 
-  int monitored_render_process_id_;
+  ChildProcessId monitored_render_process_id_;
   std::optional<std::string> observed_mojo_error_;
   RenderProcessHostKillWaiter kill_waiter_;
 };
@@ -1370,7 +1468,7 @@ class DOMMessageQueue {
 
   void OnDomMessageReceived(const std::string& message);
   void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status);
-  void RenderFrameDeleted(RenderFrameHost* render_frame_host);
+  void RenderFrameDeleted();
 
   void OnWebContentsCreated(WebContents* contents);
   void OnBackingWebContentsDestroyed(MessageObserver* observer);
@@ -1380,7 +1478,6 @@ class DOMMessageQueue {
   base::queue<std::string> message_queue_;
   base::OnceClosure callback_;
   bool renderer_crashed_ = false;
-  raw_ptr<RenderFrameHost, DanglingUntriaged> render_frame_host_ = nullptr;
 };
 
 // Used to wait for a new WebContents to be created. Instantiate this object
@@ -1490,8 +1587,8 @@ class RenderFrameSubmissionObserver
   // OnRenderFrameMetadataChangedAfterActivation.
   bool break_on_any_frame_ = false;
 
-  raw_ptr<RenderFrameMetadataProviderImpl> render_frame_metadata_provider_ =
-      nullptr;
+  const base::WeakPtr<RenderFrameMetadataProviderImpl>
+      render_frame_metadata_provider_;
   base::OnceClosure quit_closure_;
   // If non-null, run when metadata changes.
   base::OnceClosure metadata_change_closure_;
@@ -1563,11 +1660,13 @@ class InputMsgWatcher : public RenderWidgetHost::InputEventObserver {
 
  private:
   // Overridden InputEventObserver methods.
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override;
 
-  void OnInputEvent(const blink::WebInputEvent&) override;
+  void OnInputEvent(const RenderWidgetHost& widget,
+                    const blink::WebInputEvent&) override;
 
   raw_ptr<RenderWidgetHost> render_widget_host_;
   blink::WebInputEvent::Type last_sent_event_type_ =
@@ -1604,7 +1703,8 @@ class InputEventAckWaiter : public RenderWidgetHost::InputEventObserver {
   void Reset();
 
   // RenderWidgetHost::InputEventObserver:
-  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+  void OnInputEventAck(const RenderWidgetHost& widget,
+                       blink::mojom::InputEventResultSource source,
                        blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent& event) override;
 
@@ -1674,7 +1774,7 @@ class FrameDeletedObserver {
 
   bool IsDeleted() const;
 
-  int GetFrameTreeNodeId() const;
+  FrameTreeNodeId GetFrameTreeNodeId() const;
 
  private:
   // Private impl struct which hides non public types including FrameTreeNode.
@@ -1714,7 +1814,7 @@ class TestNavigationManager : public WebContentsObserver {
   // don't use ResumeNavigation() after this call since it assumes we paused
   // from the TestNavigationManagerThrottle. Returns false if the waiting was
   // terminated before reaching DidStartNavigation (e.g. timeout).
-  bool WaitForFirstYieldAfterDidStartNavigation();
+  [[nodiscard]] bool WaitForFirstYieldAfterDidStartNavigation();
 
   // Waits until the navigation request is ready to be sent to the network
   // stack. This will wait until all NavigationThrottles have proceeded through
@@ -1738,6 +1838,11 @@ class TestNavigationManager : public WebContentsObserver {
   // WillProcessResponse. Returns false if the request was aborted before
   // getting a response.
   [[nodiscard]] bool WaitForResponse();
+
+  // Waits until the navigation fails. This will wait until all
+  // NavigationThrottles have proceeded through WillFailRequest. Returns false
+  // if the request did not fail.
+  [[nodiscard]] bool WaitForRequestFailed();
 
   // Waits until the navigation has been finished. Will automatically resume
   // navigations paused before this point. Returns false if the waiting was
@@ -1787,7 +1892,8 @@ class TestNavigationManager : public WebContentsObserver {
     LOADER_STARTED = 3,
     REDIRECTED = 4,
     RESPONSE = 5,
-    FINISHED = 6,
+    REQUEST_FAILED = 6,
+    FINISHED = 7,
   };
 
   // WebContentsObserver:
@@ -1808,6 +1914,10 @@ class TestNavigationManager : public WebContentsObserver {
   // Called when the NavigationThrottle pauses the navigation in
   // WillProcessResponse.
   void OnWillProcessResponse();
+
+  // Called when the NavigationThrottle pauses the navigation in
+  // WillFailRequest.
+  void OnWillFailRequest();
 
   // Waits for the desired state. Returns false if the desired state cannot be
   // reached (eg the navigation finishes before reaching this state).
@@ -2043,20 +2153,53 @@ class WebContentsConsoleObserver : public WebContentsObserver {
   std::vector<Message> messages_;
 };
 
-// A helper class to get DevTools inspector log messages (e.g. network errors).
+// A helper class to get DevTools inspector messages for `Domain` (e.g. network
+// errors, media logs).
 class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
  public:
-  explicit DevToolsInspectorLogWatcher(WebContents* web_contents);
+  enum class Domain {
+    Log,
+    Media,
+  };
+
+  explicit DevToolsInspectorLogWatcher(WebContents* web_contents,
+                                       Domain domain = Domain::Log);
   ~DevToolsInspectorLogWatcher() override;
 
   void FlushAndStopWatching();
   std::string last_message() { return last_message_; }
   GURL last_url() { return last_url_; }
 
+  std::string last_media_notification() { return last_media_notification_; }
+  void ClearLastMediaNotification() { last_media_notification_.clear(); }
+
+  std::string last_auto_picture_in_picture_event_info() {
+    return last_auto_picture_in_picture_event_info_;
+  }
+  void ClearLastAutoPictureInPictureEventInfo() {
+    last_auto_picture_in_picture_event_info_.clear();
+  }
+
   // DevToolsAgentHostClient:
   void DispatchProtocolMessage(DevToolsAgentHost* host,
                                base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* host) override;
+
+  class DevToolsInspectorLogWatcherObserver : public base::CheckedObserver {
+   public:
+    virtual void OnLastAutoPipEventInfoSet() = 0;
+  };
+
+  void AddObserver(DevToolsInspectorLogWatcherObserver* observer) {
+    observers_.AddObserver(observer);
+  }
+  void RemoveObserver(DevToolsInspectorLogWatcherObserver* observer) {
+    observers_.RemoveObserver(observer);
+  }
+
+  // Notifies observers that the last auto picture in picture event information
+  // was set.
+  void NotifyLastAutoPipEventInfoSet();
 
  private:
   scoped_refptr<DevToolsAgentHost> host_;
@@ -2064,6 +2207,10 @@ class DevToolsInspectorLogWatcher : public DevToolsAgentHostClient {
   base::RunLoop run_loop_disable_log_;
   std::string last_message_;
   GURL last_url_;
+  Domain domain_;
+  std::string last_media_notification_;
+  std::string last_auto_picture_in_picture_event_info_;
+  base::ObserverList<DevToolsInspectorLogWatcherObserver> observers_;
 };
 
 // Static methods that simulates Mojo methods as if they were called by a
@@ -2127,9 +2274,6 @@ class BlobURLStoreInterceptor
   void Register(
       mojo::PendingRemote<blink::mojom::Blob> blob,
       const GURL& url,
-      // TODO(crbug.com/40775506): Remove these once experiment is over.
-      const base::UnguessableToken& unsafe_agent_cluster_id,
-      const std::optional<net::SchemefulSite>& unsafe_top_level_site,
       RegisterCallback callback) override;
 
  private:
@@ -2407,24 +2551,23 @@ class SpeculativeRenderFrameHostObserver : public content::WebContentsObserver {
   GURL url_;
 };
 
-class SpareRenderProcessObserver {
+class SpareRenderProcessHostStartedObserver
+    : public SpareRenderProcessHostManager::Observer {
  public:
-  SpareRenderProcessObserver();
+  SpareRenderProcessHostStartedObserver();
+  ~SpareRenderProcessHostStartedObserver() override;
 
-  void SpareRenderProcessHostChanged(RenderProcessHost* render_process_host);
+  // SpareRenderProcessHostManager::Observer:
+  void OnSpareRenderProcessHostReady(RenderProcessHost* host) override;
 
-  RenderProcessHost* spare_render_process_host();
-
-  void WaitForSpareRenderProcessCreation();
-
-  ~SpareRenderProcessObserver();
+  RenderProcessHost* WaitForSpareRenderProcessStarted();
 
  private:
+  base::ScopedObservation<SpareRenderProcessHostManager,
+                          SpareRenderProcessHostManager::Observer>
+      scoped_observation_{this};
   raw_ptr<RenderProcessHost> spare_render_process_host_ = nullptr;
   base::OnceClosure quit_closure_;
-  base::CallbackListSubscription subscription_;
-
-  base::WeakPtrFactory<SpareRenderProcessObserver> weak_factory_{this};
 };
 
 [[nodiscard]] base::CallbackListSubscription
@@ -2446,15 +2589,171 @@ RegisterWebContentsCreationCallback(
 // and/or main. This can be useful to enable when the process hosting the window
 // is a standalone executable without an Info.plist.
 bool EnableNativeWindowActivation();
+
+// Ensures that if no key window is set (can happen in apps that are not
+// frontmost), we simulate the frontmost window becoming key, which triggers
+// any logic that would normally run in this case.
+void HandleMissingKeyWindow();
 #endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Set the length of the window of opportunity for conditional focus.
+void SetConditionalFocusWindowForTesting(base::TimeDelta window);
+
 // Set the global factory for CapturedSurfaceController objects.
 void SetCapturedSurfaceControllerFactoryForTesting(
     base::RepeatingCallback<std::unique_ptr<MockCapturedSurfaceController>(
         GlobalRenderFrameHostId,
         WebContentsMediaCaptureId)> factory);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void InitAndEnableRenderDocumentForAllFrames(
+    base::test::ScopedFeatureList* feature_list);
+
+// Returns the DOMNodeId of the node matched by the given CSS query selector,
+// or std::nullopt if no node matches.
+// Note: This method makes multiple renderer IPC calls (via the devtools
+// protocol) and waits for a result (an IPC back from the renderer) each time.
+std::optional<int> GetDOMNodeId(content::RenderFrameHost& rfh,
+                                std::string_view query_selector);
+
+// Returns the DOMNodeId of the node matched by the given CSS query selector
+// inside the iframe (must be a direct child of main frame, i.e. no nested
+// iframes) identified by subframe_query_selector or std::nullopt if no node
+// matches. Note: This method makes multiple renderer IPC calls (via the
+// devtools protocol) and waits for a result (an IPC back from the renderer)
+// each time.
+std::optional<int> GetDOMNodeIdFromSubframe(
+    RenderFrameHost& rfh,
+    std::string_view subframe_query_selector,
+    std::string_view query_selector);
+
+// Suspends execution in the current thread until the DOMContentLoaded event
+// fires in the given RenderFrameHost. Note, this will only observe the
+// Document associated with the given RenderFrameHost at the time of the
+// call.
+[[nodiscard]] bool WaitForDOMContentLoaded(RenderFrameHost* rfh);
+
+// Returns a list of the `RenderWidgetHost` for popups in the `web_contents`.
+std::vector<RenderWidgetHost*> GetPopupWidgets(WebContents* web_contents);
+
+// One-shot helper that listens for creation of a new popup widget.
+class CreateNewPopupWidgetInterceptor
+    : public blink::mojom::LocalFrameHostInterceptorForTesting {
+ public:
+  explicit CreateNewPopupWidgetInterceptor(
+      RenderFrameHost* rfh,
+      base::OnceCallback<void(RenderWidgetHost*)> did_create_callback);
+
+  ~CreateNewPopupWidgetInterceptor() override;
+
+  // LocalFrameHost overrides:
+  void CreateNewPopupWidget(
+      mojo::PendingAssociatedReceiver<blink::mojom::PopupWidgetHost>
+          blink_popup_widget_host,
+      mojo::PendingAssociatedReceiver<blink::mojom::WidgetHost>
+          blink_widget_host,
+      mojo::PendingAssociatedRemote<blink::mojom::Widget> blink_widget)
+      override;
+
+  // LocalFrameHostInterceptorForTesting overrides:
+  blink::mojom::LocalFrameHost* GetForwardingInterface() override;
+
+ private:
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalFrameHost>
+      swapped_impl_;
+  base::OnceCallback<void(RenderWidgetHost*)> did_create_callback_;
+};
+
+class ShowPopupWidgetWaiter
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
+ public:
+  ShowPopupWidgetWaiter(WebContents* web_contents, RenderFrameHost* frame_host);
+
+  ShowPopupWidgetWaiter(const ShowPopupWidgetWaiter&) = delete;
+  ShowPopupWidgetWaiter& operator=(const ShowPopupWidgetWaiter&) = delete;
+
+  ~ShowPopupWidgetWaiter() override;
+
+  gfx::Rect last_initial_rect() const { return initial_rect_; }
+
+  int last_routing_id() const { return routing_id_; }
+
+  // Waits until a popup request is received.
+  void Wait();
+
+ private:
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+  // Helper that waits for a `ShowPopupMenu()` call and then invokes the
+  // observer callback with the requested bounds.  The actual call to show the
+  // popup menu is treated as if it were cancelled.
+  class ShowPopupMenuInterceptor
+      : public blink::mojom::LocalFrameHostInterceptorForTesting {
+   public:
+    explicit ShowPopupMenuInterceptor(RenderFrameHost* rfh,
+                                      base::OnceCallback<void(const gfx::Rect&)>
+                                          did_show_popup_menu_callback);
+    ~ShowPopupMenuInterceptor() override;
+
+    // LocalFrameHost overrides:
+    void ShowPopupMenu(
+        mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client,
+        const gfx::Rect& bounds,
+        double font_size,
+        int32_t selected_item,
+        std::vector<blink::mojom::MenuItemPtr> menu_items,
+        bool right_aligned,
+        bool allow_multiple_selection) override;
+
+    // LocalFrameHostInterceptorForTesting overrides:
+    blink::mojom::LocalFrameHost* GetForwardingInterface() override;
+
+   private:
+    mojo::test::ScopedSwapImplForTesting<blink::mojom::LocalFrameHost>
+        swapped_impl_;
+    base::OnceCallback<void(const gfx::Rect&)> did_show_popup_menu_callback_;
+  };
+
+  void DidShowPopupMenu(const gfx::Rect& bounds);
+#endif
+
+  // Callback bound for creating a popup widget.
+  void DidCreatePopupWidget(RenderWidgetHost* render_widget_host);
+
+  // blink::mojom::PopupWidgetHostInterceptorForTesting:
+  blink::mojom::PopupWidgetHost* GetForwardingInterface() override;
+  void ShowPopup(const gfx::Rect& initial_rect,
+                 const gfx::Rect& initial_anchor_rect,
+                 ShowPopupCallback callback) override;
+
+  CreateNewPopupWidgetInterceptor create_new_popup_widget_interceptor_;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
+  ShowPopupMenuInterceptor show_popup_menu_interceptor_;
+#endif
+  base::RunLoop run_loop_;
+  gfx::Rect initial_rect_;
+  int32_t routing_id_ = IPC::mojom::kRoutingIdNone;
+  int32_t process_id_ = 0;
+  const raw_ptr<RenderFrameHost> frame_host_;
+};
+
+// Intercepts `RequestClosePopup()` method. By default `RequestClosePopup()`
+// discards the message. Individual test should override `RequestClosePopup()`
+// to customize the behavior.
+class RequestCloseWidgetInterceptor
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
+ public:
+  explicit RequestCloseWidgetInterceptor(RenderWidgetHost* render_widget_host);
+  ~RequestCloseWidgetInterceptor() override;
+
+  // `blink::mojom::PopupWidgetHostInterceptorForTesting`:
+  blink::mojom::PopupWidgetHost* GetForwardingInterface() override;
+  void RequestClosePopup() override;
+
+ private:
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::PopupWidgetHost>
+      swapped_impl_;
+};
 
 }  // namespace content
 

@@ -18,11 +18,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_local_storage.h"
 #include "build/build_config.h"
+#include "components/url_formatter/spoof_checks/skeleton_generator.h"
+#include "components/url_formatter/spoof_checks/top_domains/domains-trie.h"
 #include "net/base/lookup_string_in_fixed_set.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/extras/preload_data/decoder.h"
 #include "third_party/icu/source/common/unicode/schriter.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
-#include "third_party/icu/source/i18n/unicode/translit.h"
 #include "third_party/icu/source/i18n/unicode/uspoof.h"
 #include "url/url_features.h"
 
@@ -46,32 +49,37 @@ class TopDomainPreloadDecoder : public net::extras::PreloadDecoder {
 
     bool is_same_skeleton;
 
-    if (!reader->Next(&is_same_skeleton))
+    if (!reader->Next(&is_same_skeleton)) {
       return false;
+    }
 
     TopDomainEntry top_domain;
     if (!reader->Next(&top_domain.is_top_bucket)) {
       return false;
     }
     uint32_t skeletontype_value;
-    if (!reader->Read(kSkeletonTypeBitLength, &skeletontype_value))
+    if (!reader->Read(kSkeletonTypeBitLength, &skeletontype_value)) {
       return false;
+    }
     top_domain.skeleton_type =
         static_cast<url_formatter::SkeletonType>(skeletontype_value);
     if (is_same_skeleton) {
       top_domain.domain = search;
     } else {
       bool has_com_suffix = false;
-      if (!reader->Next(&has_com_suffix))
+      if (!reader->Next(&has_com_suffix)) {
         return false;
+      }
 
       for (char c;; top_domain.domain += c) {
         huffman_decoder().Decode(reader, &c);
-        if (c == net::extras::PreloadDecoder::kEndOfTable)
+        if (c == net::extras::PreloadDecoder::kEndOfTable) {
           break;
+        }
       }
-      if (has_com_suffix)
+      if (has_com_suffix) {
         top_domain.domain += ".com";
+      }
     }
     if (current_search_offset == 0) {
       *out_found = true;
@@ -143,22 +151,25 @@ bool IsSubdomainOf(std::u16string_view hostname,
                         base::CompareCase::INSENSITIVE_ASCII);
 }
 
-#include "components/url_formatter/spoof_checks/top_domains/domains-trie-inc.cc"
-
 // All the domains in the above file have 4 or fewer labels.
 const size_t kNumberOfLabelsToCheck = 4;
-
-IDNSpoofChecker::HuffmanTrieParams g_trie_params{
-    kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
-    kTopDomainsTrieBits, kTopDomainsRootPosition};
 
 // Allow these common words that are whole script confusables. They aren't
 // confusable with any words in Latin scripts.
 const char16_t* kAllowedWholeScriptConfusableWords[] = {
-    u"секс",  u"как",   u"коса",    u"курс",    u"парк",
-    u"такий", u"укроп", u"сахарок", u"покраска"};
+    u"секс",  u"как",     u"коса",     u"курс",  u"парк",  u"такий",
+    u"укроп", u"сахарок", u"покраска", u"театр", u"астро", u"пхукет"};
+
+IDNSpoofChecker::HuffmanTrieParams& GetTrieParams() {
+  static base::NoDestructor<IDNSpoofChecker::HuffmanTrieParams> params{
+      kTopDomainsHuffmanTree, kTopDomainsTrie, kTopDomainsTrieBits,
+      kTopDomainsRootPosition};
+  return *params;
+}
 
 }  // namespace
+
+IDNSpoofChecker::HuffmanTrieParams::~HuffmanTrieParams() = default;
 
 IDNSpoofChecker::WholeScriptConfusable::WholeScriptConfusable(
     std::unique_ptr<icu::UnicodeSet> arg_all_letters,
@@ -231,7 +242,7 @@ IDNSpoofChecker::IDNSpoofChecker() {
        {"am"}},
       {// Cyrillic
        "[[:Cyrl:]]",
-       "[аысԁеԍһіюкјӏорԗԛѕԝхуъьҽпгѵѡ]",
+       "[аысԁеԍһіюкјӏорԗԛѕтԝхуъьҽпгѵѡ]",
        // TLDs containing most of the Cyrillic domains.
        {"bg", "by", "kz", "pyc", "ru", "su", "ua", "uz"}},
       {// Ethiopic (Ge'ez). Variants of these characters such as ሁ and ሡ could
@@ -356,7 +367,7 @@ IDNSpoofChecker::~IDNSpoofChecker() {
   uspoof_close(checker_);
 }
 
-IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
+IDNSpoofCheckerResult IDNSpoofChecker::SafeToDisplayAsUnicode(
     std::u16string_view label,
     std::string_view top_level_domain,
     std::u16string_view top_level_domain_unicode) {
@@ -367,27 +378,11 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // If uspoof_check fails (due to library failure), or if any of the checks
   // fail, treat the IDN as unsafe.
   if (U_FAILURE(status) || (result & USPOOF_ALL_CHECKS)) {
-    return Result::kICUSpoofChecks;
+    return IDNSpoofCheckerResult::kICUSpoofChecks;
   }
 
   icu::UnicodeString label_string(false /* isTerminated */, label.data(),
                                   base::checked_cast<int32_t>(label.size()));
-
-  // A punycode label with 'xn--' prefix is not subject to the URL
-  // canonicalization and is stored as it is in GURL. If it encodes a deviation
-  // character (UTS 46; e.g. U+00DF/sharp-s), it should be still shown in
-  // punycode instead of Unicode. Without this check, xn--fu-hia for
-  // 'fu<sharp-s>' would be converted to 'fu<sharp-s>' for display because
-  // "UTS 46 section 4 Processing step 4" applies validity criteria for
-  // non-transitional processing (i.e. do not map deviation characters) to any
-  // punycode labels regardless of whether transitional or non-transitional is
-  // chosen. On the other hand, 'fu<sharp-s>' typed or copy and pasted
-  // as Unicode would be canonicalized to 'fuss' by GURL and is displayed as
-  // such. See http://crbug.com/595263 .
-  if (!url::IsUsingIDNA2008NonTransitional() &&
-      deviation_characters_.containsSome(label_string)) {
-    return Result::kDeviationCharacters;
-  }
 
   // Disallow Icelandic confusables for domains outside Icelandic and Faroese
   // ccTLD (.is, .fo). Faroese keyboard layout doesn't contain letter ⟨þ⟩, but
@@ -397,18 +392,18 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   if (label_string.length() > 1 && top_level_domain != "is" &&
       top_level_domain != "fo" &&
       icelandic_characters_.containsSome(label_string)) {
-    return Result::kTLDSpecificCharacters;
+    return IDNSpoofCheckerResult::kTLDSpecificCharacters;
   }
 
   // Disallow Latin Schwa (U+0259) for domains outside Azerbaijan's ccTLD (.az).
   if (label_string.length() > 1 && top_level_domain != "az" &&
       label_string.indexOf("ə") != -1) {
-    return Result::kTLDSpecificCharacters;
+    return IDNSpoofCheckerResult::kTLDSpecificCharacters;
   }
 
   // Disallow middle dot (U+00B7) when unsafe.
   if (HasUnsafeMiddleDot(label_string, top_level_domain)) {
-    return Result::kUnsafeMiddleDot;
+    return IDNSpoofCheckerResult::kUnsafeMiddleDot;
   }
 
   // If there's no script mixing, the input is regarded as safe without any
@@ -423,8 +418,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   //  - Japanese: Han, Hiragana, Katakana, Common
   //  - Korean: Hangul, Han, Common
   result &= USPOOF_RESTRICTION_LEVEL_MASK;
-  if (result == USPOOF_ASCII)
-    return Result::kSafe;
+  if (result == USPOOF_ASCII) {
+    return IDNSpoofCheckerResult::kSafe;
+  }
 
   if (result == USPOOF_SINGLE_SCRIPT_RESTRICTIVE &&
       kana_letters_exceptions_.containsNone(label_string) &&
@@ -434,15 +430,16 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
           !IsWholeScriptConfusableAllowedForTLD(*script, top_level_domain,
                                                 top_level_domain_unicode) &&
           !base::Contains(kAllowedWholeScriptConfusableWords, label)) {
-        return Result::kWholeScriptConfusable;
+        return IDNSpoofCheckerResult::kWholeScriptConfusable;
       }
     }
     // Disallow domains that contain only numbers and number-spoofs.
     // This check is reached if domain characters come from single script.
-    if (IsDigitLookalike(label_string))
-      return Result::kDigitLookalikes;
+    if (IsDigitLookalike(label_string)) {
+      return IDNSpoofCheckerResult::kDigitLookalikes;
+    }
 
-    return Result::kSafe;
+    return IDNSpoofCheckerResult::kSafe;
   }
 
   // Disallow domains that contain only numbers and number-spoofs.
@@ -450,8 +447,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // This is generally rare. An example case when it would return true is when
   // the domain contains Latin + Japanese characters that are also digit
   // lookalikes.
-  if (IsDigitLookalike(label_string))
-    return Result::kDigitLookalikes;
+  if (IsDigitLookalike(label_string)) {
+    return IDNSpoofCheckerResult::kDigitLookalikes;
+  }
 
   // Additional checks for |label| with multiple scripts, one of which is Latin.
   // Disallow non-ASCII Latin letters to mix with a non-Latin script.
@@ -461,7 +459,7 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   if (non_ascii_latin_letters_.containsSome(label_string) &&
       !(skeleton_generator_ &&
         skeleton_generator_->ShouldRemoveDiacriticsFromLabel(label_string))) {
-    return Result::kNonAsciiLatinCharMixedWithNonLatin;
+    return IDNSpoofCheckerResult::kNonAsciiLatinCharMixedWithNonLatin;
   }
 
   icu::RegexMatcher* dangerous_pattern =
@@ -509,13 +507,22 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
             R"([^\p{scx=kana}\p{scx=hira}]\u30fc|^\u30fc|)"
             R"([a-z]\u30fb|\u30fb[a-z]|)"
 
-            // Disallow these CJK ideographs if they are next to non-CJK
-            // characters. These characters can be used to spoof Latin
-            // characters or punctuation marks:
+            // Disallow these CJK ideographs and Kangxi Radicals if they are
+            // next to non-CJK characters. These characters can be used to spoof
+            // Latin characters or punctuation marks:
             // U+4E00 (一), U+3127 (ㄧ), U+4E28 (丨), U+4E5B (乛), U+4E03 (七),
             // U+4E05 (丅), U+5341 (十), U+3007 (〇), U+3112 (ㄒ), U+311A (ㄚ),
             // U+311F (ㄟ), U+3128 (ㄨ), U+3129 (ㄩ), U+3108 (ㄈ), U+31BA (ㆺ),
-            // U+31B3 (ㆳ), U+5DE5 (工), U+31B2 (ㆲ), U+8BA0 (讠), U+4E01 (丁)
+            // U+31B3 (ㆳ), U+5DE5 (工), U+31B2 (ㆲ), U+8BA0 (讠), U+4E01 (丁),
+            // U+4E36 (丶), U+2F05 (⼅) normalized to U+4E85,
+            // U+2F06 (⼆) normalized to U+4E8C,
+            // U+2F07 (⼇) normalized to U+4EA0,
+            // U+2F0D (⼍) normalized to U+5196,
+            // U+2F27 (⼧) normalized to U+5B80,
+            // U+2F2E (⼮) normalized to U+5DDB.
+            // (There are potentially more Latin lookalike characters in the
+            // Kangxi Radicals block, but we don't want to be overly strict.)
+            //
             // These characters are already blocked:
             // U+2F00 (⼀) (normalized to U+4E00), U+3192 (㆒), U+2F02 (⼂),
             // U+2F17 (⼗) and U+3038 (〸) (both normalized to U+5341 (十)).
@@ -524,12 +531,12 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
             R"([^\p{scx=kana}\p{scx=hira}\p{scx=hani}\p{scx=bopo}])"
             R"([\u4e00\u3127\u4e28\u4e5b\u4e03\u4e05\u5341\u3007\u3112)"
             R"(\u311a\u311f\u3128\u3129\u3108\u31ba\u31b3\u5dE5)"
-            R"(\u31b2\u8ba0\u4e01]|)"
+            R"(\u31b2\u8ba0\u4e01\u4e36\u4e85\u4e8c\u4ea0\u5196\u5b80\u5ddb]|)"
             // Check if there is non-{Hiragana, Katagana, Han, Bopomofo} on the
-            // right.
+            // right. This must be synced with the previous pattern.
             R"([\u4e00\u3127\u4e28\u4e5b\u4e03\u4e05\u5341\u3007\u3112)"
             R"(\u311a\u311f\u3128\u3129\u3108\u31ba\u31b3\u5de5)"
-            R"(\u31b2\u8ba0\u4e01])"
+            R"(\u31b2\u8ba0\u4e01\u4e36\u4e85\u4e8c\u4ea0\u5196\u5b80\u5ddb])"
             R"([^\p{scx=kana}\p{scx=hira}\p{scx=hani}\p{scx=bopo}]|)"
 
             // Disallow combining diacritical mark (U+0300-U+0339) after a
@@ -553,9 +560,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   }
   dangerous_pattern->reset(label_string);
   if (dangerous_pattern->find()) {
-    return Result::kDangerousPattern;
+    return IDNSpoofCheckerResult::kDangerousPattern;
   }
-  return Result::kSafe;
+  return IDNSpoofCheckerResult::kSafe;
 }
 
 TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
@@ -585,16 +592,64 @@ Skeletons IDNSpoofChecker::GetSkeletons(std::u16string_view hostname) const {
                              : Skeletons();
 }
 
+bool IDNSpoofChecker::IsTopDomain(const GURL& url) {
+  if (!url.is_valid() || !url.has_host()) {
+    return false;
+  }
+  std::string domain_and_registry =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          url.GetHost(),
+          net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
+  return IsDomainAndRegistryATopDomain(domain_and_registry);
+}
+
+bool IDNSpoofChecker::IsDomainAndRegistryATopDomain(
+    const std::string& domain_and_registry) {
+  if (domain_and_registry.empty()) {
+    return false;
+  }
+
+  // Convert the hostname to std::u16string_view as GetSkeletons expects it.
+  std::u16string domain16;
+  if (!base::UTF8ToUTF16(domain_and_registry.data(),
+                         domain_and_registry.length(), &domain16)) {
+    // Failed to convert, which is unlikely for a valid GURL host.
+    // Treat as not a top domain.
+    return false;
+  }
+
+  // Top domains are only accessible through their skeletons, so query the top
+  // domains trie for each skeleton of this domain.
+  for (const std::string& skeleton : GetSkeletons(domain16)) {
+    if (skeleton.empty()) {
+      continue;
+    }
+    const TopDomainEntry top_domain = LookupSkeletonInTopDomains(
+        skeleton, url_formatter::SkeletonType::kFull);
+    if (top_domain.domain.empty()) {
+      continue;
+    }
+
+    const std::u16string top_domain_utf16 =
+        base::UTF8ToUTF16(top_domain.domain);
+    if (domain16 == top_domain_utf16 ||
+        IsSubdomainOf(domain16, top_domain_utf16)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
     const std::string& skeleton,
     SkeletonType skeleton_type) {
   DCHECK(!skeleton.empty());
   // There are no other guarantees about a skeleton string such as not including
   // a dot. Skeleton of certain characters are dots (e.g. "۰" (U+06F0)).
+  IDNSpoofChecker::HuffmanTrieParams& trie_params = GetTrieParams();
   TopDomainPreloadDecoder preload_decoder(
-      g_trie_params.huffman_tree, g_trie_params.huffman_tree_size,
-      g_trie_params.trie, g_trie_params.trie_bits,
-      g_trie_params.trie_root_position);
+      trie_params.huffman_tree, trie_params.trie, trie_params.trie_bits,
+      trie_params.trie_root_position);
   auto labels = base::SplitStringPiece(skeleton, ".", base::KEEP_WHITESPACE,
                                        base::SPLIT_WANT_ALL);
 
@@ -612,11 +667,13 @@ TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
     bool match = false;
     bool decoded = preload_decoder.Decode(partial_skeleton, &match);
     DCHECK(decoded);
-    if (!decoded)
+    if (!decoded) {
       return TopDomainEntry();
+    }
 
-    if (match)
+    if (match) {
       return preload_decoder.matching_top_domain();
+    }
 
     labels.erase(labels.begin());
   }
@@ -630,26 +687,10 @@ std::u16string IDNSpoofChecker::MaybeRemoveDiacritics(
              : hostname;
 }
 
-IDNA2008DeviationCharacter IDNSpoofChecker::GetDeviationCharacter(
-    std::u16string_view hostname) const {
-  if (hostname.find(u"\u00df") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kEszett;
-  }
-  if (hostname.find(u"\u03c2") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kGreekFinalSigma;
-  }
-  if (hostname.find(u"\u200d") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kZeroWidthJoiner;
-  }
-  if (hostname.find(u"\u200c") != std::u16string_view::npos) {
-    return IDNA2008DeviationCharacter::kZeroWidthNonJoiner;
-  }
-  return IDNA2008DeviationCharacter::kNone;
-}
-
 void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {
-  if (U_FAILURE(*status))
+  if (U_FAILURE(*status)) {
     return;
+  }
 
   // The recommended set is a set of characters for identifiers in a
   // security-sensitive environment taken from UTR 39
@@ -729,15 +770,6 @@ void IDNSpoofChecker::SetAllowedUnicodeSet(UErrorCode* status) {
   allowed_set.remove(0xA640u, 0xA69Fu);  // Cyrillic Extended-B
   allowed_set.remove(0xA720u, 0xA7FFu);  // Latin Extended-D
 
-#if U_ICU_VERSION_MAJOR_NUM < 72
-  // Unicode 15 changes ZWJ and ZWNJ from allowed to restricted. Restrict them
-  // in lower versions too. This only relevant in Non-Transitional Mode as
-  // Transitional Mode maps these characters out.
-  // TODO(crbug.com/40879611): Remove these after ICU 72 is rolled out.
-  allowed_set.remove(0x200Cu);  // Zero Width Non-Joiner
-  allowed_set.remove(0x200Du);  // Zero Width Joiner
-#endif
-
   uspoof_setAllowedUnicodeSet(checker_, &allowed_set, status);
 }
 
@@ -800,14 +832,14 @@ bool IDNSpoofChecker::IsLabelWholeScriptConfusableForScript(
 // static
 void IDNSpoofChecker::SetTrieParamsForTesting(
     const HuffmanTrieParams& trie_params) {
-  g_trie_params = trie_params;
+  GetTrieParams() = trie_params;
 }
 
 // static
 void IDNSpoofChecker::RestoreTrieParamsForTesting() {
-  g_trie_params = HuffmanTrieParams{
-      kTopDomainsHuffmanTree, sizeof(kTopDomainsHuffmanTree), kTopDomainsTrie,
-      kTopDomainsTrieBits, kTopDomainsRootPosition};
+  GetTrieParams() =
+      HuffmanTrieParams{kTopDomainsHuffmanTree, kTopDomainsTrie,
+                        kTopDomainsTrieBits, kTopDomainsRootPosition};
 }
 
 }  // namespace url_formatter

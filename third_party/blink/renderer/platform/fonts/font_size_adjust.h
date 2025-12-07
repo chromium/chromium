@@ -6,10 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_SIZE_ADJUST_H_
 
 #include "third_party/blink/renderer/platform/platform_export.h"
-
-namespace WTF {
-class String;
-}
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
@@ -36,19 +33,16 @@ class PLATFORM_EXPORT FontSizeAdjust {
     return value_ == other.Value() && metric_ == other.GetMetric() &&
            IsFromFont() == other.IsFromFont();
   }
-  bool operator!=(const FontSizeAdjust& other) const {
-    return !operator==(other);
-  }
 
   bool IsFromFont() const { return type_ == ValueType::kFromFont; }
   float Value() const { return value_; }
   Metric GetMetric() const { return metric_; }
 
   unsigned GetHash() const;
-  WTF::String ToString() const;
+  String ToString() const;
 
  private:
-  WTF::String ToString(Metric metric) const;
+  String ToString(Metric metric) const;
 
   float value_{kFontSizeAdjustNone};
   Metric metric_{Metric::kExHeight};

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -77,8 +75,9 @@ void RoundTripAndVerifyLogMessages(
       messages_expected.erase(message);
       continue;
     }
-    if (base::Contains(messages_not_expected, message))
+    if (base::Contains(messages_not_expected, message)) {
       ADD_FAILURE() << "Saw anti-expected message: " << message;
+    }
   }
   EXPECT_THAT(messages_expected, ::testing::IsEmpty())
       << "Missing expected messages.";
@@ -105,7 +104,7 @@ class SafeBrowsingTriggeredPopupBlockerBrowserTest
   SafeBrowsingTriggeredPopupBlockerBrowserTest& operator=(
       const SafeBrowsingTriggeredPopupBlockerBrowserTest&) = delete;
 
-  ~SafeBrowsingTriggeredPopupBlockerBrowserTest() override {}
+  ~SafeBrowsingTriggeredPopupBlockerBrowserTest() override = default;
 
   void SetUp() override {
     FinalizeFeatures();
@@ -201,7 +200,7 @@ class SafeBrowsingTriggeredInterceptingBrowserTest
   SafeBrowsingTriggeredInterceptingBrowserTest& operator=(
       const SafeBrowsingTriggeredInterceptingBrowserTest&) = delete;
 
-  ~SafeBrowsingTriggeredInterceptingBrowserTest() override {}
+  ~SafeBrowsingTriggeredInterceptingBrowserTest() override = default;
 
   // SafeBrowsingTriggeredPopupBlockerBrowserTest:
   void SetUp() override {
@@ -667,7 +666,7 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerBrowserTest,
                                              ->tab_strip_model()
                                              ->GetActiveWebContents()
                                              ->GetPrimaryMainFrame();
-  int main_frame_process_id = main_frame->GetProcess()->GetID();
+  int main_frame_process_id = main_frame->GetProcess()->GetDeprecatedID();
   int main_frame_routing_id = main_frame->GetRoutingID();
 
   // Navigate away from the abusive page. This should block bfcache.
@@ -741,8 +740,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
                                   {blocked_content::kAbusiveWarnMessage},
                                   {blocked_content::kAbusiveEnforceMessage});
     EXPECT_GE(console_observer.messages().size(), 1u);
-    for (auto& message : console_observer.messages())
+    for (auto& message : console_observer.messages()) {
       EXPECT_EQ(message.source_frame, web_contents()->GetPrimaryMainFrame());
+    }
   }
 
   // Load prerendering and ensure that the source frame for console logs in
@@ -751,7 +751,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
   {
     ConfigureAsAbusiveWarn(prerendering_url);
     content::WebContentsConsoleObserver console_observer(web_contents());
-    int host_id = prerender_helper_.AddPrerender(prerendering_url);
+    content::FrameTreeNodeId host_id =
+        prerender_helper_.AddPrerender(prerendering_url);
     content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                        host_id);
     auto* prerendered_frame_host =
@@ -760,8 +761,9 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
                                   {blocked_content::kAbusiveWarnMessage},
                                   {blocked_content::kAbusiveEnforceMessage});
     EXPECT_GE(console_observer.messages().size(), 1u);
-    for (auto& message : console_observer.messages())
+    for (auto& message : console_observer.messages()) {
       EXPECT_EQ(message.source_frame, prerendered_frame_host);
+    }
   }
   // When prerendering activation, OnSafeBrowsingChecksComplete() is not called.
   // So SubresourceFilterLevel is not set on DidFinishNavigation() and the
@@ -785,7 +787,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingTriggeredPopupBlockerPrerenderingBrowserTest,
   ConfigureAsAbusive(prerendering_url);
 
   // Loads a page in the prerender.
-  int host_id = prerender_helper_.AddPrerender(prerendering_url);
+  content::FrameTreeNodeId host_id =
+      prerender_helper_.AddPrerender(prerendering_url);
   auto* prerendered_frame_host =
       prerender_helper_.GetPrerenderedMainFrameHost(host_id);
   // openWindow() is ignored in prerendering and the popup UI is not shown since

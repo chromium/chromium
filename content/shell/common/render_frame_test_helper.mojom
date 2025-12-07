@@ -4,7 +4,9 @@
 
 module content.mojom;
 
+import "third_party/blink/public/mojom/fingerprinting_protection/noise_token.mojom";
 import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
 
 // Helper to facilitate testing of renderer-side state in content_browsertests.
 interface RenderFrameTestHelper {

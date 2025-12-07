@@ -1,0 +1,347 @@
+/* Copyright 2025 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_icons_lit.css.js
+ * #import=./searchbox_dropdown_shared_style.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit cr-icons-lit searchbox-dropdown-shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  outline: none;
+}
+
+#actions-focus-border {
+  overflow: hidden;
+}
+
+#actions-focus-border:focus-within,
+/* Keep outline when chip receives active state after being focused. */
+#actions-focus-border:focus-within:has(#action:active),
+#actions-focus-border:has(#action.selected),
+#actions-focus-border:has(#keyword.selected) {
+  outline: 2px solid var(--color-searchbox-results-action-chip-focus-outline);
+  border-radius: 10px;
+  margin-inline-start: -2px;
+}
+
+#actions-focus-border:has(#action:active) {
+  outline: none;
+}
+
+.container {
+  align-items: center;
+  cursor: default;
+  display: flex;
+  overflow: hidden;
+  padding-bottom: var(--cr-searchbox-match-padding, 6px);
+  padding-inline-end: 16px;
+  padding-inline-start: var(--cr-searchbox-match-padding-inline-start, 12px);
+  padding-top: var(--cr-searchbox-match-padding, 6px);
+  position: relative;
+}
+
+.container + .container {
+  flex-direction: row;
+  margin-inline-start: 40px; /* icon width + text padding */
+  padding-top: 0;
+  padding-bottom: 12px;
+}
+
+:host([has-action]) .container {
+  height: 38px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+:host([is-top-chrome-searchbox_]:is([has-action],[has-keyword])) .container {
+  height: 40px;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+:host(:not([is-lens-searchbox_])) .container:not(.actions) {
+  margin-inline-end: 16px;
+  border-start-end-radius: 24px;
+  border-end-end-radius: 24px;
+}
+
+:host-context([has-secondary-side]):host-context([can-show-secondary-side]) .container:not(.actions) {
+  margin-inline-end: 0px;
+}
+
+.container:not(.actions):hover {
+  background-color: var(--color-searchbox-results-background-hovered);
+}
+
+:host(:is(:focus-visible, [selected]))  .container:not(.actions) {
+  background-color: var(--color-searchbox-results-background-selected,
+      var(--color-searchbox-results-background-hovered));
+}
+
+:host([enable-csb-motion-tweaks_][is-lens-searchbox_]) .container {
+  height: 48px;
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.actions.container {
+  align-self: center;
+  flex-grow: 1;
+  flex-shrink: 0;
+  padding-bottom: 0;
+  padding-inline-end: 0px;
+  padding-inline-start: 0px;
+  padding-top: 0;
+  display: none;
+}
+
+:host-context(.vertical) .actions.container {
+  display: flex;
+}
+
+:host([has-action]) .actions.container {
+  padding-inline-end: 8px;
+  padding-inline-start: 8px;
+}
+
+#contents,
+#description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#ellipsis {
+  inset-inline-end: 0;
+  position: absolute;
+}
+
+:host([show-thumbnail]) #ellipsis {
+  position: relative;
+}
+
+#focus-indicator {
+  --searchbox-match-focus-indicator-width_: 7px;
+  background-color: var(--color-searchbox-results-focus-indicator);
+  border-radius: 3px;
+  display: none;
+  height: 100%;
+  inset-inline-start: round(up, calc(-1 * var(--searchbox-match-focus-indicator-width_) / 2), 1px);
+  position: absolute;
+  width: var(--searchbox-match-focus-indicator-width_);
+}
+
+/* Focus indicator only shown for vertically rendered matches. */
+:host-context(.vertical):host(:is(:focus-visible, [selected]:not(:focus-within))) #focus-indicator:not(.selected-within) {
+  display: block;
+}
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #icon {
+  --color-searchbox-search-icon-background:
+      var(--color-searchbox-results-dim-selected);
+}
+
+#prefix {
+  opacity: 0;
+}
+
+#separator {
+  white-space: pre;
+}
+
+#tail-suggest-prefix {
+   position: relative;
+}
+
+#text-container {
+  align-items: center;
+  display: flex;
+  flex-grow: 0;
+  overflow: hidden;
+  padding-inline-end: 8px;
+  padding-inline-start: var(--cr-searchbox-match-text-padding-inline-start, 8px);
+  white-space: nowrap;
+<if expr="is_win">
+  /* Unlike other platforms, the text in the WebUI omnibox popup appears 2px
+     lower than the Views omnibox. See http://crbug.com/452732795. */
+  transform: translateY(-2px);
+</if>
+}
+
+#suggestion {
+  display: inherit;
+  overflow: inherit;
+  flex-direction: inherit;
+  max-width: 100%;
+}
+
+:host([is-top-chrome-searchbox_]) #text-container #suggestion {
+  display: inline-block;
+  min-width: 0;
+  flex: 1 1 auto;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+:host([is-lens-searchbox_]) #text-container {
+  display: -webkit-box;
+  line-clamp: 2;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+}
+
+:host([has-action]) #text-container {
+  padding-inline-end: 4px;
+}
+
+:host([is-rich-suggestion]) #text-container {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+:host([is-rich-suggestion]) #separator {
+  display: none;
+}
+
+:host([is-rich-suggestion]) #contents,
+:host([is-rich-suggestion]) #description {
+  width: 100%;
+}
+
+/* Deemphasizes description for rich suggestions. */
+:host([is-rich-suggestion]) #description {
+  font-size: .875em;
+}
+
+.match {
+  font-weight: var(--cr-searchbox-match-font-weight, 600);
+}
+
+/* In the lens side panel searchbox, the typed prefix of the match should
+ * have a different color than the rest of the autocomplete suggestion. */
+:host(:not([is-top-chrome-searchbox_])) #contents span:not(.match),
+#ellipsis {
+  color: var(--color-searchbox-results-typed-prefix, --color-searchbox-results-foreground);
+}
+
+/* Used to override contents color in zero prefix matches */
+:host-context([has-empty-input]) #contents span,
+:host-context([has-empty-input]) #ellipsis {
+  color: var(--color-searchbox-results-foreground);
+}
+
+/* Use dimmed color for descriptions. */
+#description,
+.dim {
+  color: var(--color-searchbox-results-foreground-dimmed);
+}
+
+/* Uses a dimmed color for description for entities. */
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host([is-entity-suggestion]) #description,
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .dim {
+  color: var(--color-searchbox-results-dim-selected);
+}
+
+/* URL ellipsis color to match the URL text color */
+#description:has(.url),
+.url {
+  color: var(--color-searchbox-results-url);
+}
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) .url {
+  color: var(--color-searchbox-results-url-selected);
+}
+
+#remove {
+  display: none;
+  margin-inline-end: 1px;
+}
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #remove {
+  --cr-icon-button-fill-color: var(--color-searchbox-results-icon-selected);
+}
+
+
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])) #remove:hover {
+  --cr-icon-button-hover-background-color:
+      var(--color-searchbox-results-button-selected-hover);
+}
+
+:host-context(.vertical) .container:hover #remove,
+:host-context(cr-searchbox-match:-webkit-any(:focus-within, [selected])):host-context(.vertical) #remove {
+  display: inline-flex;
+}
+
+.selected:not(#action):not(#keyword) {
+  box-shadow: inset 0 0 0 2px
+      var(--color-searchbox-results-icon-focused-outline);
+}
+
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]),
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image]) .container {
+  border-radius: 16px;
+}
+
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
+    .container {
+  box-sizing: border-box;
+  flex-direction: column;
+  margin-inline-end: 0;
+  padding: 6px;
+  padding-block-end: 16px;
+  width: 102px;
+  height: auto;
+}
+
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
+    .focus-indicator {
+  display: none;
+}
+
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
+    #icon {
+  --cr-searchbox-icon-border-radius: 12px;
+  /* Disable placeholder dominant color as the images are large and the
+   * placeholder color looks like a flash of unstyled content. */
+  --color-searchbox-results-icon-container-background: transparent;
+  height: 90px;
+  margin-block-end: 8px;
+  width: 90px;
+}
+
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
+    #text-container {
+  padding: 0;
+  white-space: normal;
+  width: 100%;
+}
+
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
+    #contents,
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
+    #description {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  font-weight: 400;
+  overflow: hidden;
+}
+
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
+    #contents {
+  font-size: 13px;
+  line-height: 20px;
+  margin-block-end: 4px;
+}
+
+:host-context(.secondary-side):host-context(.horizontal):host([is-entity-suggestion][has-image])
+    #description {
+  font-size: 12px;
+  line-height: 16px;
+}

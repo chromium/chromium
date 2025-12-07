@@ -64,6 +64,11 @@ chromium-metrics-reviews@google.com.
     A new session was created for the same text field before the previous one
     was inserted. The FRE/MSBB wasn't acknowledged/accepted.
   </int>
+  <int value="5" label="Session expired">
+    The existing session was destroyed for exceeding the maximum allowed session
+    lifetime, and was replaced by a new session. The FRE/MSBB wasn't
+    acknowledged/accepted.
+  </int>
 </enum>
 
 <enum name="ComposeInnerTextNodeOffset">
@@ -71,7 +76,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Inner Text Node Offset found"/>
 </enum>
 
-<enum name="ComposeProactiveNudgeCtrEvent">
+<enum name="ComposeNudgeCtrEvent">
   <int value="0" label="Nudge shown"/>
   <int value="1" label="Dialog opened from nudge"/>
   <int value="2" label="Globally disabled from nudge"/>
@@ -87,13 +92,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ComposeRequestReason">
-  <int value="0" label="Create button"/>
+  <int value="0" label="DEPRECATED: Create button">Removed in M131</int>
   <int value="1" label="Retry button"/>
   <int value="2" label="Update button"/>
   <int value="3" label="Shorten modifier"/>
   <int value="4" label="Elaborate modifier"/>
   <int value="5" label="Casual modifier"/>
   <int value="6" label="Formal modifier"/>
+  <int value="7" label="Create button using Polish mode"/>
+  <int value="8" label="Create button using Elaborate mode"/>
+  <int value="9" label="Create button using Formalize mode"/>
 </enum>
 
 <enum name="ComposeRequestStatus">
@@ -145,7 +153,20 @@ chromium-metrics-reviews@google.com.
     could be inserted.
   </int>
   <int value="4" label="Closed while waiting response">
-    Session was closed while waiting for a model response.
+    Dialog close button was clicked while waiting for a model response.
+  </int>
+  <int value="5" label="Session expired">
+    The existing session was destroyed for exceeding the maximum allowed session
+    lifetime, and was replaced by a new session.
+  </int>
+  <int value="6" label="Ended At FRE">
+    Session never progressed past the FRE. Added in M130.
+  </int>
+  <int value="7" label="FRE acknowledged ened at MSBB">
+    The FRE was seen and acknowledged but session ended at MSBB. Added in M130.
+  </int>
+  <int value="8" label="Ended At MSBB">
+    Session never progressed past the MSBB. Added in M130.
   </int>
 </enum>
 
@@ -182,9 +203,9 @@ chromium-metrics-reviews@google.com.
   <int value="22" label="Redo Clicked"/>
   <int value="23" label="Result Edited"/>
   <int value="24" label="Edited Result Inserted"/>
-  <int value="25" label="Has successful request">Added in M128</int>
-  <int value="26" label="Has failed request">Added in M128</int>
-  <int value="27" label="Compose Dialog Opened">Added in M128</int>
+  <int value="25" label="Has successful request">Added in M127</int>
+  <int value="26" label="Has failed request">Added in M127</int>
+  <int value="27" label="Compose Dialog Opened">Added in M127</int>
 </enum>
 
 <enum name="ComposeShowStatus">

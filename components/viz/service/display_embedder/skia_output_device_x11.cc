@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
+#include "gpu/command_buffer/service/graphite_shared_context.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
@@ -89,11 +90,11 @@ bool SkiaOutputDeviceX11::Reshape(const ReshapeParams& params) {
   if (!SkiaOutputDeviceOffscreen::Reshape(params)) {
     return false;
   }
-  auto ii =
+  auto image_info =
       SkImageInfo::MakeN32(params.image_info.width(),
                            params.image_info.height(), kOpaque_SkAlphaType);
-  std::vector<uint8_t> mem(ii.computeMinByteSize());
-  pixels_ = base::RefCountedBytes::TakeVector(&mem);
+  pixels_ = base::MakeRefCounted<base::RefCountedBytes>(
+      image_info.computeMinByteSize());
   return true;
 }
 
@@ -109,18 +110,19 @@ void SkiaOutputDeviceX11::Present(const std::optional<gfx::Rect>& update_rect,
     DCHECK_GE(pixels_->size(), dst_info.computeMinByteSize());
     SkPixmap dst_pixmap(dst_info, pixels_->data(), dst_info.minRowBytes());
 
-    if (gr_context_) {
+    if (context_state_->gr_context()) {
       bool result = sk_surface_->readPixels(dst_pixmap, rect.x(), rect.y());
       LOG_IF(FATAL, !result)
           << "Failed to read pixels from offscreen SkSurface.";
     } else {
-      CHECK(graphite_context_);
+      auto* graphite_shared_context = context_state_->graphite_shared_context();
+      CHECK(graphite_shared_context);
       ReadPixelsContext context;
-      graphite_context_->asyncRescaleAndReadPixels(
+      graphite_shared_context->asyncRescaleAndReadPixels(
           sk_surface_.get(), dst_info, gfx::RectToSkIRect(rect),
           SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
-          &OnReadPixelsDone, &context);
-      graphite_context_->submit(skgpu::graphite::SyncToCpu::kYes);
+          base::BindOnce(&OnReadPixelsDone), &context);
+      graphite_shared_context->submit(skgpu::graphite::SyncToCpu::kYes);
       LOG_IF(FATAL, !context.async_result)
           << "Failed to read pixels from offscreen SkSurface.";
       libyuv::CopyPlane(

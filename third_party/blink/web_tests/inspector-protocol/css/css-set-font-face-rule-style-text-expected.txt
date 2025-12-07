@@ -1,0 +1,13 @@
+Test that @font-face rules can be edited
+==== Style sheet text ====
+
+  div {
+    font-family: Bixa;
+  }
+
+  @font-face {
+    font-family: Bixa;
+    src: local(Papyrus);
+  }
+  
+

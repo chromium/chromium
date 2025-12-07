@@ -14,7 +14,7 @@
 
 namespace remoting {
 
-class ProtobufHttpStatus;
+class HttpStatus;
 
 // An interface to send messages and receive messages from FTL messaging
 // service.
@@ -26,8 +26,7 @@ class MessagingClient {
                                    const ftl::ChromotingMessage& message)>;
   using MessageCallbackList = base::RepeatingCallbackList<
       void(const ftl::Id&, const std::string&, const ftl::ChromotingMessage&)>;
-  using DoneCallback =
-      base::OnceCallback<void(const ProtobufHttpStatus& status)>;
+  using DoneCallback = base::OnceCallback<void(const HttpStatus& status)>;
 
   virtual ~MessagingClient() = default;
 

@@ -5,10 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_SHARED_STORAGE_MODULE_SCRIPT_DOWNLOADER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_SHARED_STORAGE_MODULE_SCRIPT_DOWNLOADER_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+
 #include "base/functional/callback.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/common_export.h"
 
@@ -25,7 +28,7 @@ class BLINK_COMMON_EXPORT ModuleScriptDownloader {
   // Passes in nullptr for `response_body` on failure. Always invoked
   // asynchronously.
   using ModuleScriptDownloaderCallback =
-      base::OnceCallback<void(std::unique_ptr<std::string> response_body,
+      base::OnceCallback<void(std::optional<std::string> response_body,
                               std::string error_message,
                               network::mojom::URLResponseHeadPtr)>;
 
@@ -43,7 +46,7 @@ class BLINK_COMMON_EXPORT ModuleScriptDownloader {
   ~ModuleScriptDownloader();
 
  private:
-  void OnBodyReceived(std::unique_ptr<std::string> body);
+  void OnBodyReceived(std::optional<std::string> body);
 
   void OnRedirect(const GURL& url_before_redirect,
                   const net::RedirectInfo& redirect_info,

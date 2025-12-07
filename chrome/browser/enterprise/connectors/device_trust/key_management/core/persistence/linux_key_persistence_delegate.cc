@@ -155,22 +155,18 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
         "Device trust key rotation failed. Could not format signing key "
         "information for storage.");
   }
-
-  if (file.WriteAtCurrentPos(keyinfo_str.c_str(), keyinfo_str.length()) > 0) {
-    return true;
+  if (!file.WriteAtCurrentPosAndCheck(base::as_byte_span(keyinfo_str))) {
+    return RecordFailure(KeyPersistenceOperation::kStoreKeyPair,
+                         KeyPersistenceError::kWritePersistenceStorageFailed,
+                         "Device trust key rotation failed. Could not write to "
+                         "the signing key storage.");
   }
-
-  return RecordFailure(KeyPersistenceOperation::kStoreKeyPair,
-                       KeyPersistenceError::kWritePersistenceStorageFailed,
-                       "Device trust key rotation failed. Could not write to "
-                       "the signing key storage.");
+  return true;
 }
 
 scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
     KeyStorageType type,
     LoadPersistedKeyResult* result) {
-  // TODO(b/301644429): Verify if the errors should be finer grained for "not
-  // found" versus other error types.
   std::string file_content;
   if (!base::ReadFileToStringWithMaxSize(GetSigningKeyFilePath(), &file_content,
                                          kMaxBufferSize) ||
@@ -184,8 +180,9 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
   }
 
   // Get dictionary key info.
-  auto keyinfo = base::JSONReader::Read(file_content);
-  if (!keyinfo || !keyinfo->is_dict()) {
+  auto keyinfo = base::JSONReader::ReadDict(
+      file_content, base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+  if (!keyinfo) {
     RecordFailure(
         KeyPersistenceOperation::kLoadKeyPair,
         KeyPersistenceError::kInvalidSigningKeyPairFormat,
@@ -195,7 +192,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
   }
 
   // Get the trust level.
-  auto stored_trust_level = keyinfo->GetDict().FindInt(kSigningKeyTrustLevel);
+  auto stored_trust_level = keyinfo->FindInt(kSigningKeyTrustLevel);
   if (!stored_trust_level.has_value()) {
     RecordFailure(KeyPersistenceOperation::kLoadKeyPair,
                   KeyPersistenceError::kKeyPairMissingTrustLevel,
@@ -213,7 +210,7 @@ scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(
   }
 
   // Get the key.
-  std::string* encoded_key = keyinfo->GetDict().FindString(kSigningKeyName);
+  std::string* encoded_key = keyinfo->FindString(kSigningKeyName);
   std::string decoded_key;
   if (!encoded_key) {
     RecordFailure(

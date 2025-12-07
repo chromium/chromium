@@ -8,7 +8,6 @@
 #include <ostream>
 
 #include "base/observer_list.h"
-#include "third_party/abseil-cpp/absl/base/attributes.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_observer.h"
 #include "ui/events/platform/scoped_event_dispatcher.h"
@@ -20,7 +19,7 @@ namespace {
 // PlatformEventSource singleton is thread local so that different instances
 // can be used on different threads (e.g. browser thread should be able to
 // access PlatformEventSource owned by the UI Service's thread).
-ABSL_CONST_INIT thread_local PlatformEventSource* event_source = nullptr;
+constinit thread_local PlatformEventSource* event_source = nullptr;
 
 }  // namespace
 
@@ -33,9 +32,7 @@ PlatformEventSource::PlatformEventSource()
 
 PlatformEventSource::~PlatformEventSource() {
   CHECK_EQ(this, event_source);
-  for (PlatformEventObserver& observer : observers_) {
-    observer.PlatformEventSourceDestroying();
-  }
+  observers_.Notify(&PlatformEventObserver::PlatformEventSourceDestroying);
 }
 
 PlatformEventSource* PlatformEventSource::GetInstance() {
@@ -85,8 +82,7 @@ void PlatformEventSource::RemovePlatformEventObserver(
 uint32_t PlatformEventSource::DispatchEvent(PlatformEvent platform_event) {
   uint32_t action = POST_DISPATCH_PERFORM_DEFAULT;
 
-  for (PlatformEventObserver& observer : observers_)
-    observer.WillProcessEvent(platform_event);
+  observers_.Notify(&PlatformEventObserver::WillProcessEvent, platform_event);
   // Give the overridden dispatcher a chance to dispatch the event first.
   if (overridden_dispatcher_)
     action = overridden_dispatcher_->DispatchEvent(platform_event);
@@ -99,8 +95,7 @@ uint32_t PlatformEventSource::DispatchEvent(PlatformEvent platform_event) {
         break;
     }
   }
-  for (PlatformEventObserver& observer : observers_)
-    observer.DidProcessEvent(platform_event);
+  observers_.Notify(&PlatformEventObserver::DidProcessEvent, platform_event);
 
   overridden_dispatcher_restored_ = false;
 

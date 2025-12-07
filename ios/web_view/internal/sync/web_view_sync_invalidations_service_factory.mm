@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
+#import "ios/web_view/internal/sync/web_view_sync_invalidations_service_factory.h"
 
-#include "base/no_destructor.h"
-#include "components/gcm_driver/gcm_profile_service.h"
-#include "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/sync/invalidations/sync_invalidations_service_impl.h"
-#include "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"
-#include "ios/web_view/internal/sync/web_view_instance_id_profile_service_factory.h"
-#include "ios/web_view/internal/web_view_browser_state.h"
+#import "base/no_destructor.h"
+#import "components/gcm_driver/gcm_profile_service.h"
+#import "components/gcm_driver/instance_id/instance_id_profile_service.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/sync/invalidations/sync_invalidations_service_impl.h"
+#import "ios/web_view/internal/sync/web_view_gcm_profile_service_factory.h"
+#import "ios/web_view/internal/sync/web_view_instance_id_profile_service_factory.h"
+#import "ios/web_view/internal/web_view_browser_state.h"
 
 namespace ios_web_view {
 

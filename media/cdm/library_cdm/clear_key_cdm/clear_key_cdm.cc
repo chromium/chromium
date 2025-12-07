@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cstring>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <utility>
 
@@ -22,6 +23,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -66,22 +68,45 @@ const char kDummyIndividualizationRequest[] = "dummy individualization request";
 
 static bool g_is_cdm_module_initialized = false;
 
-// Copies |input_buffer| into a DecoderBuffer. If the |input_buffer| is
-// empty, an empty (end-of-stream) DecoderBuffer is returned.
-static scoped_refptr<media::DecoderBuffer> CopyDecoderBufferFrom(
+namespace {
+
+class CdmInputBufferExternalMemory
+    : public media::DecoderBuffer::ExternalMemory {
+ public:
+  explicit CdmInputBufferExternalMemory(base::span<const uint8_t> data)
+      : data_(data) {}
+  CdmInputBufferExternalMemory() = delete;
+  CdmInputBufferExternalMemory(const CdmInputBufferExternalMemory&) = delete;
+  CdmInputBufferExternalMemory& operator=(const CdmInputBufferExternalMemory&) =
+      delete;
+
+  const base::span<const uint8_t> Span() const override { return data_; }
+
+ private:
+  base::raw_span<const uint8_t> data_;
+};
+
+}  // namespace
+
+// Creates a DecoderBuffer from |input_buffer|. If the |input_buffer| is empty,
+// an empty (end-of-stream) DecoderBuffer is returned.
+static scoped_refptr<media::DecoderBuffer> DecoderBufferFrom(
     const cdm::InputBuffer_2& input_buffer) {
   if (!input_buffer.data) {
-    DCHECK(!input_buffer.data_size);
+    CHECK(!input_buffer.data_size);
     return media::DecoderBuffer::CreateEOSBuffer();
   }
 
-  // TODO(xhwang): Get rid of this copy.
+  // Take |input_buffer|'s underlying memory and store it into |output_buffer|.
+  // This is safe because this method is only used in Decrypt(). Decrypt() is
+  // called synchronously and |input_buffer| and |output_buffer| will get
+  // destroyed when Decrypt() goes out of scope.
+  auto external_memory = std::make_unique<CdmInputBufferExternalMemory>(
+      // SAFETY: `data` and `data_size` from `input_buffer` must be
+      // consistent.
+      UNSAFE_BUFFERS(base::span(input_buffer.data, input_buffer.data_size)));
   scoped_refptr<media::DecoderBuffer> output_buffer =
-      media::DecoderBuffer::CopyFrom(
-          // SAFETY: `data` and `data_size` from `input_buffer` must be
-          // consistent.
-          UNSAFE_BUFFERS(
-              base::span(input_buffer.data, input_buffer.data_size)));
+      media::DecoderBuffer::FromExternalMemory(std::move(external_memory));
   output_buffer->set_timestamp(base::Microseconds(input_buffer.timestamp));
 
   if (input_buffer.encryption_scheme == cdm::EncryptionScheme::kUnencrypted)
@@ -125,13 +150,13 @@ static std::string GetUnitTestResultMessage(bool success) {
 // |keys_vector| is only valid for the lifetime of |keys_info| because it
 // contains pointers into the latter.
 void ConvertCdmKeysInfo(const media::CdmKeysInfo& keys_info,
-                        std::vector<cdm::KeyInformation>* keys_vector) {
+                        std::vector<cdm::KeyInformation_2>* keys_vector) {
   keys_vector->reserve(keys_info.size());
   for (const auto& key_info : keys_info) {
-    cdm::KeyInformation key = {};
+    cdm::KeyInformation_2 key = {};
     key.key_id = key_info->key_id.data();
     key.key_id_size = key_info->key_id.size();
-    key.status = ToCdmKeyStatus(key_info->status);
+    key.status = ToCdmKeyStatus_2(key_info->status);
     key.system_code = key_info->system_code;
     keys_vector->push_back(key);
   }
@@ -177,11 +202,14 @@ void* CreateCdmInstance(int cdm_interface_version,
     return nullptr;
   }
 
-  // We support CDM_10 and CDM_11.
+  // We support CDM_10, CDM_11, and CDM_12.
   using CDM_10 = cdm::ContentDecryptionModule_10;
   using CDM_11 = cdm::ContentDecryptionModule_11;
+  using CDM_12 = cdm::ContentDecryptionModule_12;
 
   if (cdm_interface_version == CDM_10::kVersion) {
+    static_assert(CDM_10::kVersion == CDM_10::Host::kVersion,
+                  "CDM host version mismatch");
     CDM_10::Host* host = static_cast<CDM_10::Host*>(
         get_cdm_host_func(CDM_10::Host::kVersion, user_data));
     if (!host)
@@ -193,6 +221,8 @@ void* CreateCdmInstance(int cdm_interface_version,
   }
 
   if (cdm_interface_version == CDM_11::kVersion) {
+    static_assert(CDM_11::kVersion == CDM_11::Host::kVersion,
+                  "CDM host version mismatch");
     CDM_11::Host* host = static_cast<CDM_11::Host*>(
         get_cdm_host_func(CDM_11::Host::kVersion, user_data));
     if (!host)
@@ -200,6 +230,18 @@ void* CreateCdmInstance(int cdm_interface_version,
 
     DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_11::Host.";
     return static_cast<CDM_11*>(
+        new media::ClearKeyCdm(host, key_system_string));
+  }
+
+  if (cdm_interface_version == CDM_12::kVersion) {
+    CDM_12::Host* host = static_cast<CDM_12::Host*>(
+        get_cdm_host_func(CDM_12::Host::kVersion, user_data));
+    if (!host) {
+      return nullptr;
+    }
+
+    DVLOG(1) << __func__ << ": Create ClearKeyCdm with CDM_12::Host.";
+    return static_cast<CDM_12*>(
         new media::ClearKeyCdm(host, key_system_string));
   }
 
@@ -233,18 +275,17 @@ bool VerifyCdmHost_0(const cdm::HostFile* host_files, uint32_t num_files) {
 
   int num_opened_files = 0;
   for (uint32_t i = 0; i < num_files; ++i) {
-    const int kBytesToRead = 10;
-    std::vector<char> buffer(kBytesToRead);
-
     base::File file(static_cast<base::PlatformFile>(host_files[i].file));
     if (!file.IsValid())
       continue;
 
     num_opened_files++;
 
-    int bytes_read = file.Read(0, buffer.data(), buffer.size());
-    if (bytes_read != kBytesToRead) {
-      LOG(ERROR) << "File bytes read: " << bytes_read;
+    constexpr int kBytesToRead = 10;
+    uint8_t buffer[kBytesToRead];
+    if (const std::optional<size_t> bytes_read = file.Read(0, buffer);
+        bytes_read != kBytesToRead) {
+      LOG(ERROR) << "File bytes read: " << bytes_read.value_or(-1);
       g_verify_host_files_result = false;
       return true;
     }
@@ -330,7 +371,7 @@ ClearKeyCdm::ClearKeyCdm(HostInterface* host, const std::string& key_system)
           base::BindRepeating(&ClearKeyCdm::OnSessionExpirationUpdate,
                               base::Unretained(this)))),
       key_system_(key_system) {
-  DCHECK(g_is_cdm_module_initialized);
+  CHECK(g_is_cdm_module_initialized);
 }
 
 ClearKeyCdm::~ClearKeyCdm() = default;
@@ -351,12 +392,13 @@ void ClearKeyCdm::GetStatusForPolicy(uint32_t promise_id,
   const cdm::HdcpVersion kDeviceHdcpVersion = cdm::kHdcpVersion2_0;
 
   if (policy.min_hdcp_version <= kDeviceHdcpVersion) {
-    cdm_host_proxy_->OnResolveKeyStatusPromise(promise_id, cdm::kUsable);
+    cdm_host_proxy_->OnResolveKeyStatusPromise(promise_id,
+                                               cdm::KeyStatus_2::kUsable);
     return;
   }
 
-  cdm_host_proxy_->OnResolveKeyStatusPromise(promise_id,
-                                             cdm::kOutputRestricted);
+  cdm_host_proxy_->OnResolveKeyStatusPromise(
+      promise_id, cdm::KeyStatus_2::kOutputRestricted);
 }
 
 void ClearKeyCdm::CreateSessionAndGenerateRequest(
@@ -378,6 +420,7 @@ void ClearKeyCdm::CreateSessionAndGenerateRequest(
                      promise_id),
       base::BindOnce(&ClearKeyCdm::OnPromiseFailed, base::Unretained(this),
                      promise_id));
+  cdm_host_proxy_->ReportMetrics(cdm::kSdkVersion, 12345);
   cdm_->CreateSessionAndGenerateRequest(
       ToMediaSessionType(session_type), ToEmeInitDataType(init_data_type),
       std::vector<uint8_t>(init_data, init_data + init_data_size),
@@ -405,7 +448,7 @@ void ClearKeyCdm::LoadSession(uint32_t promise_id,
                               uint32_t session_id_length) {
   DVLOG(1) << __func__;
   DCHECK_EQ(session_type, cdm::kPersistentLicense);
-  DCHECK(allow_persistent_state_);
+  CHECK(allow_persistent_state_);
   std::string web_session_str(session_id, session_id_length);
 
   auto promise = std::make_unique<CdmCallbackPromise<std::string>>(
@@ -521,7 +564,7 @@ void ClearKeyCdm::SetServerCertificate(uint32_t promise_id,
 
 void ClearKeyCdm::TimerExpired(void* context) {
   DVLOG(1) << __func__;
-  DCHECK(has_set_timer_);
+  CHECK(has_set_timer_);
   std::string renewal_message;
 
   if (key_system_ == kExternalClearKeyMessageTypeTestKeySystem) {
@@ -555,20 +598,22 @@ static void CopyDecryptResults(Decryptor::Status* status_copy,
 cdm::Status ClearKeyCdm::Decrypt(const cdm::InputBuffer_2& encrypted_buffer,
                                  cdm::DecryptedBlock* decrypted_block) {
   DVLOG(1) << __func__;
-  DCHECK(encrypted_buffer.data);
+  CHECK(encrypted_buffer.data);
 
   scoped_refptr<DecoderBuffer> buffer;
   cdm::Status status = DecryptToMediaDecoderBuffer(encrypted_buffer, &buffer);
 
-  if (status != cdm::kSuccess)
+  if (status != cdm::kSuccess) {
     return status;
+  }
 
-  DCHECK(buffer->data());
+  auto buffer_span = base::span(*buffer);
+  CHECK(!buffer_span.empty());
   decrypted_block->SetDecryptedBuffer(
-      cdm_host_proxy_->Allocate(buffer->size()));
+      cdm_host_proxy_->Allocate(buffer_span.size()));
   memcpy(reinterpret_cast<void*>(decrypted_block->DecryptedBuffer()->Data()),
-         buffer->data(), buffer->size());
-  decrypted_block->DecryptedBuffer()->SetSize(buffer->size());
+         buffer_span.data(), buffer_span.size());
+  decrypted_block->DecryptedBuffer()->SetSize(buffer_span.size());
   decrypted_block->SetTimestamp(buffer->timestamp().InMicroseconds());
 
   return cdm::kSuccess;
@@ -630,7 +675,7 @@ void ClearKeyCdm::ResetDecoder(cdm::StreamType decoder_type) {
       audio_decoder_->Reset();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "ResetDecoder(): invalid cdm::StreamType";
+      NOTREACHED() << "ResetDecoder(): invalid cdm::StreamType";
   }
 #endif  // CLEAR_KEY_CDM_USE_FFMPEG_DECODER
 }
@@ -647,8 +692,7 @@ void ClearKeyCdm::DeinitializeDecoder(cdm::StreamType decoder_type) {
 #endif
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "DeinitializeDecoder(): invalid cdm::StreamType";
+      NOTREACHED() << "DeinitializeDecoder(): invalid cdm::StreamType";
   }
 }
 
@@ -684,7 +728,7 @@ cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
   // that the session is properly closed.
   if (!last_session_id_.empty() &&
       key_system_ == kExternalClearKeyCrashKeySystem) {
-    CHECK(false) << "Crash in decrypt-and-decode with crash key system.";
+    NOTREACHED() << "Crash in decrypt-and-decode with crash key system.";
   }
 
   scoped_refptr<DecoderBuffer> buffer;
@@ -694,12 +738,13 @@ cdm::Status ClearKeyCdm::DecryptAndDecodeSamples(
     return status;
 
 #if defined(CLEAR_KEY_CDM_USE_FFMPEG_DECODER)
-  const uint8_t* data = NULL;
+  const uint8_t* data = nullptr;
   int32_t size = 0;
   int64_t timestamp = 0;
   if (!buffer->end_of_stream()) {
-    data = buffer->data();
-    size = buffer->size();
+    auto buffer_span = base::span(*buffer);
+    data = buffer_span.data();
+    size = buffer_span.size();
     timestamp = encrypted_buffer.timestamp;
   }
 
@@ -736,9 +781,9 @@ void ClearKeyCdm::ScheduleNextTimer() {
 cdm::Status ClearKeyCdm::DecryptToMediaDecoderBuffer(
     const cdm::InputBuffer_2& encrypted_buffer,
     scoped_refptr<DecoderBuffer>* decrypted_buffer) {
-  DCHECK(decrypted_buffer);
+  CHECK(decrypted_buffer);
 
-  scoped_refptr<DecoderBuffer> buffer = CopyDecoderBufferFrom(encrypted_buffer);
+  scoped_refptr<DecoderBuffer> buffer = DecoderBufferFrom(encrypted_buffer);
 
   // EOS and unencrypted streams can be returned as-is.
   if (buffer->end_of_stream() || !buffer->decrypt_config()) {
@@ -771,9 +816,7 @@ void ClearKeyCdm::OnPlatformChallengeResponse(
   DVLOG(1) << __func__;
 
   if (!is_running_platform_verification_test_) {
-    NOTREACHED_IN_MIGRATION()
-        << "OnPlatformChallengeResponse() called unexpectedly.";
-    return;
+    NOTREACHED() << "OnPlatformChallengeResponse() called unexpectedly.";
   }
 
   is_running_platform_verification_test_ = false;
@@ -792,9 +835,7 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
            << ", output_protection_mask:" << output_protection_mask;
 
   if (!is_running_output_protection_test_) {
-    NOTREACHED_IN_MIGRATION()
-        << "OnQueryOutputProtectionStatus() called unexpectedly.";
-    return;
+    NOTREACHED() << "OnQueryOutputProtectionStatus() called unexpectedly.";
   }
 
   // A session ID is needed, so use |last_session_id_|. However, if this is
@@ -817,13 +858,15 @@ void ClearKeyCdm::OnQueryOutputProtectionStatus(
   // Note that this does not modify any keys, so if the caller does not check
   // the 'keystatuschange' event, nothing will happen as decoding will continue
   // to work.
-  cdm::KeyStatus key_status = cdm::kInternalError;
+  cdm::KeyStatus_2 key_status = cdm::KeyStatus_2::kInternalError;
   if (result == cdm::kQuerySucceeded) {
-    key_status = (link_mask & cdm::kLinkTypeNetwork) ? cdm::kOutputRestricted
-                                                     : cdm::kUsable;
+    key_status = (link_mask & cdm::kLinkTypeNetwork)
+                     ? cdm::KeyStatus_2::kOutputRestricted
+                     : cdm::KeyStatus_2::kUsable;
   }
+
   const uint8_t kDummyKeyId[] = {'d', 'u', 'm', 'm', 'y'};
-  std::vector<cdm::KeyInformation> keys_vector = {
+  std::vector<cdm::KeyInformation_2> keys_vector = {
       {kDummyKeyId, std::size(kDummyKeyId), key_status, 0}};
   cdm_host_proxy_->OnSessionKeysChange(last_session_id_.data(),
                                        last_session_id_.length(), false,
@@ -834,8 +877,7 @@ void ClearKeyCdm::OnStorageId(uint32_t version,
                               const uint8_t* storage_id,
                               uint32_t storage_id_size) {
   if (!is_running_storage_id_test_) {
-    NOTREACHED_IN_MIGRATION() << "OnStorageId() called unexpectedly.";
-    return;
+    NOTREACHED() << "OnStorageId() called unexpectedly.";
   }
 
   is_running_storage_id_test_ = false;
@@ -872,11 +914,13 @@ void ClearKeyCdm::OnSessionKeysChange(const std::string& session_id,
   // Crash if the special key ID "crash" is present.
   const std::vector<uint8_t> kCrashKeyId{'c', 'r', 'a', 's', 'h'};
   for (const auto& key_info : keys_info) {
-    if (key_info->key_id == kCrashKeyId)
-      CHECK(false) << "Crash on special crash key ID.";
+    if (key_info->key_id == kCrashKeyId) {
+      DVLOG(1) << __func__ << "Crash on special crash key ID.";
+      base::ImmediateCrash();
+    }
   }
 
-  std::vector<cdm::KeyInformation> keys_vector;
+  std::vector<cdm::KeyInformation_2> keys_vector;
   ConvertCdmKeysInfo(keys_info, &keys_vector);
   cdm_host_proxy_->OnSessionKeysChange(session_id.data(), session_id.length(),
                                        has_additional_usable_key,

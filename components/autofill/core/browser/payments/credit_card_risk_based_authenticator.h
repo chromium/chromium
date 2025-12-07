@@ -10,7 +10,7 @@
 
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 
 namespace autofill {
 
@@ -40,7 +40,10 @@ class CreditCardRiskBasedAuthenticator {
       kAuthenticationCancelled = 3,
       // The authentication failed. Also known as red path.
       kError = 4,
-      kMaxValue = kError,
+      // The retrieval failed for virtual card. This is different from kError
+      // to support virtual card specific failure logging.
+      kVirtualCardRetrievalError = 5,
+      kMaxValue = kVirtualCardRetrievalError,
     };
 
     RiskBasedAuthenticationResponse& with_result(Result r) {
@@ -60,6 +63,11 @@ class CreditCardRiskBasedAuthenticator {
       context_token = std::move(s);
       return *this;
     }
+    RiskBasedAuthenticationResponse& with_card_unmask_challenge_options(
+        std::vector<CardUnmaskChallengeOption> c) {
+      card_unmask_challenge_options = std::move(c);
+      return *this;
+    }
 
     // The `result` will be used to notify requesters of the outcome of the
     // risk-based authentication.
@@ -77,6 +85,9 @@ class CreditCardRiskBasedAuthenticator {
     // Stores the latest version of the context token, passed between Payments
     // calls and unmodified by Chrome.
     std::string context_token;
+    // Available card unmask challenge options. This is populated when the card
+    // unmasking requires further authentication.
+    std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
   };
 
   class Requester {
@@ -84,14 +95,6 @@ class CreditCardRiskBasedAuthenticator {
     virtual ~Requester() = default;
     virtual void OnRiskBasedAuthenticationResponseReceived(
         const RiskBasedAuthenticationResponse& response) = 0;
-    // Callback function invoked when an unmask response for a virtual card has
-    // been received.
-    // TODO(crbug.com/40934051): Merge virtual card authentication response
-    // handling logic with OnRiskBasedAuthenticationResponseReceived().
-    virtual void OnVirtualCardRiskBasedAuthenticationResponseReceived(
-        payments::PaymentsAutofillClient::PaymentsRpcResult result,
-        const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-            response_details) = 0;
   };
 
   explicit CreditCardRiskBasedAuthenticator(AutofillClient* client);
@@ -119,8 +122,7 @@ class CreditCardRiskBasedAuthenticator {
 
   void OnUnmaskResponseReceivedForTesting(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-          response_details) {
+      const payments::UnmaskResponseDetails& response_details) {
     OnUnmaskResponseReceived(result, response_details);
   }
 
@@ -131,11 +133,18 @@ class CreditCardRiskBasedAuthenticator {
   // Callback function invoked when an unmask response has been received.
   void OnUnmaskResponseReceived(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-          response_details);
+      const payments::UnmaskResponseDetails& response_details);
+
+  // Util method to evaluate if server returned CVC should be used.
+  bool ShouldUseServerProvidedCvc(const CreditCard card);
 
   // Reset the authenticator to its initial state.
   virtual void Reset();
+
+  payments::PaymentsNetworkInterface& GetPaymentsNetworkInterface() {
+    return *autofill_client_->GetPaymentsAutofillClient()
+                ->GetPaymentsNetworkInterface();
+  }
 
   // The associated autofill client.
   const raw_ref<AutofillClient> autofill_client_;
@@ -148,8 +157,7 @@ class CreditCardRiskBasedAuthenticator {
 
   // This contains the details of the card unmask request to be sent to the
   // server.
-  std::unique_ptr<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
-      unmask_request_details_;
+  std::unique_ptr<payments::UnmaskRequestDetails> unmask_request_details_;
 
   // The timestamp when the unmask request is sent. Used for logging.
   std::optional<base::TimeTicks> unmask_card_request_timestamp_;

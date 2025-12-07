@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit-part>
+  <message name="IDS_FACEGAZE_CONFIRMATION_DIALOG_TITLE" desc="The visible title of a confirmation dialog that is shown when FaceGaze is enabled.">
+    Enable face control?
+  </message>
+  <message name="IDS_FACEGAZE_CONFIRMATION_DIALOG_DESC" desc="The visible description of a confirmation dialog that is shown when FaceGaze is enabled.">
+    Face control gives you cursor control with face pointing and ability to perform actions, such as left clicking with facial gestures like smile
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_CUSTOM_KEY_COMBO" desc="This text describes an action to perform a custom key combination.">
+    Custom key combination: <ph name="KEY_COMBINATION">$1<ex>ctrl + c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_DOWN" desc="This text describes an action to press the down arrow key.">
+    Press the down arrow key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_LEFT" desc="This text describes an action to press the left arrow key.">
+    Press the left arrow key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MEDIA_PLAY_PAUSE" desc="This text describes an action to play or pause media.">
+    Play or pause media
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_RIGHT" desc="This text describes an action to press the right arrow key.">
+    Press the right arrow key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_SCREENSHOT" desc="This text describes an action that a user can take on their computer to take a screenshot.">
+    Take a screenshot
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_SPACE" desc="This text describes an action to press the space key.">
+    Press the space key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_OVERVIEW" desc="This text describes an action to show or hide the overview of current windows.">
+    Show or hide overview of windows
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_UP" desc="This text describes an action to press the up arrow key.">
+    Press the up arrow key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_LEFT" desc="This text describes an action to left-click the mouse.">
+    Left-click the mouse
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_LEFT_DOUBLE" desc="This text describes an action to double click the mouse.">
+    Double-click the mouse
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_LEFT_TRIPLE" desc="This text describes an action to triple click the mouse.">
+    Triple-click the mouse
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_RIGHT" desc="This text describes an action to right-click the mouse.">
+    Right-click the mouse
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_LONG_CLICK_LEFT_ON" desc="This text describes an action to start a drag and drop action.">
+    Start drag and drop
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_LONG_CLICK_LEFT_OFF" desc="This text describes an action to end a drag and drop action.">
+    End drag and drop
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_RESET_CURSOR" desc="This text describes an action to reset the cursor to the center of the screen.">
+    Reset cursor to center
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_DICTATION_ON" desc="This text describes an action to start the Dictation feature.">
+    Start dictation
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_DICTATION_OFF" desc="This text describes an action to stop the Dictation feature.">
+    Stop dictation
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_FACEGAZE_ON" desc="This text describes an action to resume FaceGaze.">
+    Resume face control
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_FACEGAZE_OFF" desc="This text describes an action to pause FaceGaze.">
+    Pause face control
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_SCROLL_MODE_ON" desc="This text describes an action to enter FaceGaze scroll mode.">
+    Enter scroll mode
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_SCROLL_MODE_OFF" desc="This text describes an action to exit FaceGaze scroll mode.">
+    Exit scroll mode
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_VIRTUAL_KEYBOARD" desc="This text describes an action to show or hide the on-screen keyboard.">
+    Show or hide on-screen keyboard
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEYBOARD_COMBO_ONE_MODIFIER" desc="The text for a custom key combination containing a key and one modifier key. For example, ctrl + c.">
+    <ph name="MODIFIER">$1<ex>ctrl</ex></ph> + <ph name="KEY">$2<ex>c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEYBOARD_COMBO_TWO_MODIFIERS" desc="The text for a custom key combination containing a key and two modifier keys. For example, ctrl + alt + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="KEY">$3<ex>c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEYBOARD_COMBO_THREE_MODIFIERS" desc="The text for a custom key combination containing a key and three modifier keys. For example, ctrl + alt + shift + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="MODIFIER_THREE">$3<ex>shift</ex></ph> + <ph name="KEY">$4<ex>c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEYBOARD_COMBO_FOUR_MODIFIERS" desc="The text for a custom key combination containing a key and four modifier keys. For example, ctrl + alt + shift + search + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="MODIFIER_THREE">$3<ex>shift</ex></ph> + <ph name="MODIFIER_FOUR">$4<ex>shift</ex></ph> + <ph name="KEY">$5<ex>c</ex></ph>
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_CTRL" desc="The text for the ctrl key in a custom key combination.">
+    ctrl
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_ALT" desc="The text for the alt key in a custom key combination.">
+    alt
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_SHIFT" desc="The text for the shift key in a custom key combination.">
+    shift
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_SEARCH" desc="The text for the search key in a custom key combination.">
+    search
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_BROW_INNER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should raise their eyebrows.">
+    Raise eyebrows
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_BROWS_DOWN" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should lower their eyebrows.">
+    Lower eyebrows
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYE_SQUINT_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should squint their left eye.">
+    Squint left eye
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYE_SQUINT_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should squint their right eye.">
+    Squint right eye
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYES_BLINK" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should briefly close then open both eyes.">
+    Briefly close both eyes
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYES_LOOK_DOWN" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should look down.">
+    Look down
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYES_LOOK_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should look left.">
+    Look left
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYES_LOOK_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should look right.">
+    Look right
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_EYES_LOOK_UP" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should look up.">
+    Look up
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_JAW_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should shift their jaw to the left.">
+    Shift jaw left
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_JAW_OPEN" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should open their mouth.">
+    Open your mouth wide
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_JAW_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should shift their jaw to the right.">
+    Shift jaw right
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_FUNNEL" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should make a circle with their lips.">
+    Make a circle with your lips
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should move their mouth left.">
+    Move your mouth left
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_PUCKER" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should pucker their lips.">
+    Pucker by squeezing lips together
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should move their mouth right.">
+    Move your mouth right
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_SMILE" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should smile.">
+    Smile
+  </message>
+  <message name="IDS_FACEGAZE_GESTURE_TEXT_MOUTH_UPPER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. For this gesture, the user should show all of their teeth.">
+    Show all of your teeth
+  </message>
+  <message name="IDS_FACEGAZE_DISPLAY_TEXT" desc="This text is the finalized text that shows up in the FaceGaze bubble UI when a gesture triggers an action. It contains the facial gesture that was recognized and the action that it triggered.">
+    <ph name="action">$1<ex>Left-click the mouse</ex></ph> (<ph name="gesture">$2<ex>Smile</ex></ph>)
+  </message>
+  <message name="IDS_FACEGAZE_STATE_PAUSED" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze is currently paused, that other gestures cannot currently be triggered, and how to resume FaceGaze.">
+    Face control paused. <ph name="gesture">$1<ex>Smile</ex></ph> to resume. Other gestures temporarily unavailable.
+  </message>
+  <message name="IDS_FACEGAZE_STATE_SCROLL_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that scroll mode is currently active, that other gestures cannot currently be triggered, and how to exit scroll mode.">
+    Scroll mode active. <ph name="gesture">$1<ex>Smile</ex></ph> to exit. Other gestures temporarily unavailable.
+  </message>
+  <message name="IDS_FACEGAZE_STATE_LONG_CLICK_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that a drag and drop action is currently in progress, that other gestures cannot currently be triggered, and how to end the drag and drop action.">
+    Drag and drop in progress. <ph name="gesture">$1<ex>Smile</ex></ph> to end. Other gestures temporarily unavailable.
+  </message>
+  <message name="IDS_FACEGAZE_STATE_DICTATION_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that dictation is currently active, that other gestures cannot currently be triggered, and how to stop Dictation.">
+    Dictation active. <ph name="gesture">$1<ex>Smile</ex></ph> to stop. Other gestures temporarily unavailable.
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_PRECISION_ON" desc="This text describes an action to start precision click.">
+    Start precision click
+  </message>
+  <message name="IDS_FACEGAZE_STATE_PRECISION_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that precision click is currently active.">
+    Mouse speed reduced, <ph name="gesture">$1<ex>Smile</ex></ph> again to click
+  </message>
+  <message name="IDS_FACEGAZE_ACTIVE" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze is active. This is meant to be informational text that is shown when nothing else populates the bubble UI.">
+    Face control active
+  </message>
+  <message name="IDS_FACEGAZE_INVALID_RESULT" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze couldn't process the most recent camera frame.">
+    Can’t access camera. Turn on camera and make sure it isn’t blocked.
+  </message>
+  <message name="IDS_FACEGAZE_CAMERA_MUTED" desc="A message displayed in the FaceGaze bubble UI informing the user that the camera is temporarily disconnected.">
+    Camera unavailable. Make sure you are signed in and camera is on.
+  </message>
+  <message name="IDS_FACEGAZE_CONNECT_TO_CAMERA" desc="A message displayed in the FaceGaze bubble UI informing the user that FaceGaze couldn't connect to the camera and that it will be turned off soon.">
+    Trying to connect to camera. Face control will turn off in <ph name="seconds">$1<ex>10</ex></ph> seconds.
+  </message>
+</grit-part>

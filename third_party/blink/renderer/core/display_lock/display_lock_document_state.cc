@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -121,7 +122,7 @@ IntersectionObserver& DisplayLockDocumentState::EnsureIntersectionObserver() {
     // results in overflow-clip-margin not being painted in certain scenarios.
     intersection_observer_ = IntersectionObserver::Create(
         *document_,
-        WTF::BindRepeating(
+        BindRepeating(
             &DisplayLockDocumentState::ProcessDisplayLockActivationObservation,
             WrapWeakPersistent(this)),
         LocalFrameUkmAggregator::kDisplayLockIntersectionObserver,
@@ -147,12 +148,12 @@ void DisplayLockDocumentState::ProcessDisplayLockActivationObservation(
     if (context->HadAnyViewportIntersectionNotifications()) {
       if (entry->isIntersecting()) {
         document_->View()->EnqueueStartOfLifecycleTask(
-            WTF::BindOnce(&DisplayLockContext::NotifyIsIntersectingViewport,
-                          WrapWeakPersistent(context)));
+            BindOnce(&DisplayLockContext::NotifyIsIntersectingViewport,
+                     WrapWeakPersistent(context)));
       } else {
         document_->View()->EnqueueStartOfLifecycleTask(
-            WTF::BindOnce(&DisplayLockContext::NotifyIsNotIntersectingViewport,
-                          WrapWeakPersistent(context)));
+            BindOnce(&DisplayLockContext::NotifyIsNotIntersectingViewport,
+                     WrapWeakPersistent(context)));
       }
       had_asynchronous_notifications = true;
     } else {
@@ -172,8 +173,8 @@ void DisplayLockDocumentState::ProcessDisplayLockActivationObservation(
     // lifecycle).
     document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
         ->PostTask(FROM_HERE,
-                   WTF::BindOnce(&DisplayLockDocumentState::ScheduleAnimation,
-                                 WrapWeakPersistent(this)));
+                   BindOnce(&DisplayLockDocumentState::ScheduleAnimation,
+                            WrapWeakPersistent(this)));
   }
 }
 
@@ -316,7 +317,7 @@ void DisplayLockDocumentState::EndForcedScope(
     }
   }
   // We should always find a scope to erase.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DisplayLockDocumentState::EnsureMinimumForcedPhase(
@@ -351,38 +352,11 @@ void DisplayLockDocumentState::ForcedNodeInfo::ForceLockIfNeeded(
 
 void DisplayLockDocumentState::ForcedRangeInfo::ForceLockIfNeeded(
     Element* new_locked_element) {
-  // TODO(crbug.com/1256849): Combine this with the range loop in
-  //   DisplayLockUtilities::ScopedForcedUpdate::Impl::Impl.
-  // Ranges use NodeTraversal::Next to go in between their start and end nodes,
-  // and will access the layout information of each of those nodes. In order to
-  // ensure that each of these nodes has unlocked layout information, we have to
-  // do a scoped unlock for each of those nodes by unlocking all of their flat
-  // tree ancestors.
-  for (Node* node = range_->FirstNode(); node != range_->PastLastNode();
-       node = NodeTraversal::Next(*node)) {
-    if (node->IsChildOfShadowHost()) {
-      // This node may be slotted into another place in the flat tree, so we
-      // have to do a flat tree parent traversal for it.
-      for (Node* ancestor = node; ancestor;
-           ancestor = FlatTreeTraversal::Parent(*ancestor)) {
-        if (ancestor == new_locked_element) {
-          chain_->AddForcedUpdateScopeForContext(
-              new_locked_element->GetDisplayLockContext());
-          return;
-        }
-      }
-    } else if (node == new_locked_element) {
+  for (Element* element :
+       DisplayLockUtilities::InclusiveAncestorsOfRange(*range_)) {
+    if (element == new_locked_element) {
       chain_->AddForcedUpdateScopeForContext(
           new_locked_element->GetDisplayLockContext());
-      return;
-    }
-  }
-  for (Node* node = range_->FirstNode(); node;
-       node = FlatTreeTraversal::Parent(*node)) {
-    if (node == new_locked_element) {
-      chain_->AddForcedUpdateScopeForContext(
-          new_locked_element->GetDisplayLockContext());
-      return;
     }
   }
 }
@@ -396,7 +370,9 @@ DisplayLockDocumentState::ScopedForceActivatableDisplayLocks::
       if (context->HasElement()) {
         context->DidForceActivatableDisplayLocks();
       } else {
-        DUMP_WILL_BE_NOTREACHED()
+        // This used to be a DUMP_WILL_BE_NOTREACHED(), but the crash volume was
+        // too high. See crbug.com/41494130
+        DCHECK(false)
             << "The DisplayLockContext's element has been garbage collected or"
             << " otherwise deleted, but the DisplayLockContext is still alive!"
             << " This shouldn't happen and could cause a crash. See"

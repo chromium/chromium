@@ -6,16 +6,16 @@
 
 #include "base/functional/callback.h"
 
-namespace content {
+namespace content::indexed_db {
 
-IndexedDBExternalObjectChangeRecord ::IndexedDBExternalObjectChangeRecord(
+IndexedDBExternalObjectChangeRecord::IndexedDBExternalObjectChangeRecord(
     const std::string& object_store_data_key)
     : object_store_data_key_(object_store_data_key) {}
 
-IndexedDBExternalObjectChangeRecord ::~IndexedDBExternalObjectChangeRecord() =
+IndexedDBExternalObjectChangeRecord::~IndexedDBExternalObjectChangeRecord() =
     default;
 
-void IndexedDBExternalObjectChangeRecord ::SetExternalObjects(
+void IndexedDBExternalObjectChangeRecord::SetExternalObjects(
     std::vector<IndexedDBExternalObject>* external_objects) {
   external_objects_.clear();
   if (external_objects)
@@ -23,7 +23,7 @@ void IndexedDBExternalObjectChangeRecord ::SetExternalObjects(
 }
 
 std::unique_ptr<IndexedDBExternalObjectChangeRecord>
-IndexedDBExternalObjectChangeRecord ::Clone() const {
+IndexedDBExternalObjectChangeRecord::Clone() const {
   auto record = std::make_unique<IndexedDBExternalObjectChangeRecord>(
       object_store_data_key_);
   record->external_objects_ = external_objects_;
@@ -31,4 +31,4 @@ IndexedDBExternalObjectChangeRecord ::Clone() const {
   return record;
 }
 
-}  // namespace content
+}  // namespace content::indexed_db

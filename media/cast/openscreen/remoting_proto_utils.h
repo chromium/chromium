@@ -5,9 +5,7 @@
 #ifndef MEDIA_CAST_OPENSCREEN_REMOTING_PROTO_UTILS_H_
 #define MEDIA_CAST_OPENSCREEN_REMOTING_PROTO_UTILS_H_
 
-#include <cstdint>
-#include <vector>
-
+#include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/audio_decoder_config.h"
@@ -46,7 +44,7 @@ namespace media::cast {
 //};
 
 // Converts DecoderBufferSegment into byte array.
-std::vector<uint8_t> DecoderBufferToByteArray(
+base::HeapArray<uint8_t> DecoderBufferToByteArray(
     const media::DecoderBuffer& decoder_buffer);
 
 // Converts byte array into DecoderBufferSegment.

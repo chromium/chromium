@@ -3,15 +3,13 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/features.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
-import("//components/metrics/generate_allowlist_from_histograms_file.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//skia/features.gni")
 import("//testing/test.gni")
+import("//tools/metrics/generate_allowlist_from_histograms_file.gni")
 import("//ui/base/ui_features.gni")
 import("//ui/views/features.gni")
 
@@ -25,6 +23,8 @@ aggregate_vector_icons("views_vector_icons") {
   icon_directory = "vector_icons"
 
   sources = [
+    "account_box.icon",
+    "arrow_drop_down.icon",
     "checkbox_active.icon",
     "checkbox_check_cr2023.icon",
     "checkbox_normal.icon",
@@ -42,7 +42,8 @@ aggregate_vector_icons("views_vector_icons") {
     "linux_high_density.icon",
     "linux_low_density.icon",
     "menu_check.icon",
-    "menu_drop_arrow.icon",
+    "menu_close.icon",
+    "menu_open.icon",
     "menu_radio_empty.icon",
     "menu_radio_selected.icon",
     "new_incognito_window.icon",
@@ -50,7 +51,9 @@ aggregate_vector_icons("views_vector_icons") {
     "new_window.icon",
     "open.icon",
     "options.icon",
+    "password_change.icon",
     "pin.icon",
+    "psychiatry.icon",
     "radio_button_active.icon",
     "radio_button_normal.icon",
     "uninstall.icon",
@@ -60,7 +63,7 @@ aggregate_vector_icons("views_vector_icons") {
 
 generate_allowlist_from_histograms_file("bubble_histograms_variant") {
   namespace = "views_metrics"
-  input_xml_file = "//tools/metrics/histograms/metadata/views/histograms.xml"
+  input_xml_file = "//tools/metrics/histograms/metadata/ui/histograms.xml"
   tag = "variant"
   output_file = "bubble_histograms_variant.h"
   allow_list_name = "BubbleName"
@@ -80,12 +83,15 @@ component("views") {
   public = [
     "accessibility/accessibility_paint_checks.h",
     "accessibility/atomic_view_ax_tree_manager.h",
-    "accessibility/ax_event_manager.h",
-    "accessibility/ax_event_observer.h",
+    "accessibility/ax_attribute_changed_callbacks.h",
+    "accessibility/ax_update_notifier.h",
+    "accessibility/ax_update_observer.h",
     "accessibility/ax_virtual_view.h",
+    "accessibility/tree/view_accessibility_ax_tree_source.h",
+    "accessibility/tree/widget_ax_manager.h",
+    "accessibility/tree/widget_view_ax_cache.h",
     "accessibility/view_accessibility.h",
     "accessibility/view_accessibility_utils.h",
-    "accessibility/widget_ax_tree_id_map.h",
     "accessible_pane_view.h",
     "actions/action_view_controller.h",
     "actions/action_view_interface.h",
@@ -114,6 +120,7 @@ component("views") {
     "animation/ink_drop_stub.h",
     "animation/ink_drop_util.h",
     "animation/pulsing_ink_drop_mask.h",
+    "animation/pulsing_path_ink_drop_mask.h",
     "animation/scroll_animator.h",
     "animation/slide_out_controller.h",
     "animation/slide_out_controller_delegate.h",
@@ -132,7 +139,6 @@ component("views") {
     "bubble/tooltip_icon.h",
     "button_drag_utils.h",
     "cascading_property.h",
-    "color_chooser/color_chooser_listener.h",
     "context_menu_controller.h",
     "controls/animated_image_view.h",
     "controls/badge.h",
@@ -147,6 +153,8 @@ component("views") {
     "controls/button/label_button_border.h",
     "controls/button/label_button_image_container.h",
     "controls/button/md_text_button.h",
+    "controls/button/md_text_button_with_down_arrow.h",
+    "controls/button/md_text_button_with_spinner.h",
     "controls/button/menu_button.h",
     "controls/button/menu_button_controller.h",
     "controls/button/radio_button.h",
@@ -213,6 +221,7 @@ component("views") {
     "controls/textfield/textfield.h",
     "controls/textfield/textfield_controller.h",
     "controls/textfield/textfield_model.h",
+    "controls/theme_tracking_animated_image_view.h",
     "controls/theme_tracking_image_view.h",
     "controls/throbber.h",
     "controls/tree/tree_view.h",
@@ -230,7 +239,7 @@ component("views") {
     "focus/focus_manager_delegate.h",
     "focus/focus_manager_factory.h",
     "focus/focus_search.h",
-    "focus/widget_focus_manager.h",
+    "focus/native_view_focus_manager.h",
     "input_event_activation_protector.h",
     "interaction/element_tracker_views.h",
     "interaction/interaction_sequence_views.h",
@@ -259,9 +268,9 @@ component("views") {
     "mouse_watcher.h",
     "mouse_watcher_view_host.h",
     "native_theme_delegate.h",
-    "native_window_tracker.h",
     "paint_info.h",
     "painter.h",
+    "property_effects.h",
     "rect_based_targeting_utils.h",
     "repeat_controller.h",
     "round_rect_painter.h",
@@ -300,19 +309,21 @@ component("views") {
     "widget/widget.h",
     "widget/widget_delegate.h",
     "widget/widget_deletion_observer.h",
+    "widget/widget_enumerator.h",
     "widget/widget_observer.h",
     "widget/widget_removals_observer.h",
     "widget/widget_utils.h",
     "window/caption_button_layout_constants.h",
     "window/caption_button_types.h",
     "window/client_view.h",
-    "window/custom_frame_view.h",
+    "window/default_frame_view.h",
     "window/dialog_client_view.h",
     "window/dialog_delegate.h",
     "window/dialog_observer.h",
     "window/frame_background.h",
     "window/frame_buttons.h",
     "window/frame_caption_button.h",
+    "window/frame_view.h",
     "window/hit_test_utils.h",
     "window/native_frame_view.h",
     "window/non_client_view.h",
@@ -326,9 +337,13 @@ component("views") {
   sources = [
     "accessibility/accessibility_paint_checks.cc",
     "accessibility/atomic_view_ax_tree_manager.cc",
-    "accessibility/ax_event_manager.cc",
-    "accessibility/ax_event_observer.cc",
+    "accessibility/ax_attribute_changed_callbacks.cc",
+    "accessibility/ax_update_notifier.cc",
+    "accessibility/ax_update_observer.cc",
     "accessibility/ax_virtual_view.cc",
+    "accessibility/tree/view_accessibility_ax_tree_source.cc",
+    "accessibility/tree/widget_ax_manager.cc",
+    "accessibility/tree/widget_view_ax_cache.cc",
     "accessibility/view_accessibility.cc",
     "accessibility/view_accessibility_utils.cc",
     "accessible_pane_view.cc",
@@ -356,6 +371,7 @@ component("views") {
     "animation/ink_drop_stub.cc",
     "animation/ink_drop_util.cc",
     "animation/pulsing_ink_drop_mask.cc",
+    "animation/pulsing_path_ink_drop_mask.cc",
     "animation/scroll_animator.cc",
     "animation/slide_out_controller.cc",
     "animation/square_ink_drop_ripple.cc",
@@ -387,6 +403,8 @@ component("views") {
     "controls/button/label_button_border.cc",
     "controls/button/label_button_image_container.cc",
     "controls/button/md_text_button.cc",
+    "controls/button/md_text_button_with_down_arrow.cc",
+    "controls/button/md_text_button_with_spinner.cc",
     "controls/button/menu_button.cc",
     "controls/button/menu_button_controller.cc",
     "controls/button/radio_button.cc",
@@ -443,6 +461,7 @@ component("views") {
     "controls/textfield/textfield.cc",
     "controls/textfield/textfield_controller.cc",
     "controls/textfield/textfield_model.cc",
+    "controls/theme_tracking_animated_image_view.cc",
     "controls/theme_tracking_image_view.cc",
     "controls/throbber.cc",
     "controls/tree/tree_view.cc",
@@ -456,7 +475,7 @@ component("views") {
     "focus/focus_manager.cc",
     "focus/focus_manager_factory.cc",
     "focus/focus_search.cc",
-    "focus/widget_focus_manager.cc",
+    "focus/native_view_focus_manager.cc",
     "input_event_activation_protector.cc",
     "interaction/element_tracker_views.cc",
     "interaction/interaction_sequence_views.cc",
@@ -479,7 +498,6 @@ component("views") {
     "masked_targeter_delegate.cc",
     "metadata/type_conversion.cc",
     "metadata/view_factory_internal.cc",
-    "metrics.cc",
     "mouse_watcher.cc",
     "mouse_watcher_view_host.cc",
     "paint_info.cc",
@@ -492,7 +510,6 @@ component("views") {
     "style/typography_provider.cc",
     "view.cc",
     "view_class_properties.cc",
-    "view_constants.cc",
     "view_model.cc",
     "view_model_utils.cc",
     "view_shadow.cc",
@@ -502,7 +519,6 @@ component("views") {
     "view_utils.cc",
     "views_delegate.cc",
     "views_features.cc",
-    "views_switches.cc",
     "widget/any_widget_observer.cc",
     "widget/any_widget_observer_singleton.cc",
     "widget/drop_helper.cc",
@@ -516,14 +532,16 @@ component("views") {
     "widget/widget_aura_utils.cc",
     "widget/widget_delegate.cc",
     "widget/widget_deletion_observer.cc",
+    "widget/widget_enumerator.cc",
     "widget/widget_utils.cc",
     "window/caption_button_layout_constants.cc",
     "window/client_view.cc",
-    "window/custom_frame_view.cc",
+    "window/default_frame_view.cc",
     "window/dialog_client_view.cc",
     "window/dialog_delegate.cc",
     "window/frame_background.cc",
     "window/frame_caption_button.cc",
+    "window/frame_view.cc",
     "window/hit_test_utils.cc",
     "window/native_frame_view.cc",
     "window/non_client_view.cc",
@@ -555,17 +573,18 @@ component("views") {
 
   deps = [
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//cc/paint",
     "//components/url_formatter",
     "//mojo/public/cpp/bindings",
     "//skia",
     "//third_party/icu",
     "//ui/accessibility",
+    "//ui/accessibility/platform",
     "//ui/actions",
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
+    "//ui/base/interaction",
     "//ui/color",
     "//ui/color:mixers",
     "//ui/compositor_extra",
@@ -574,7 +593,6 @@ component("views") {
     "//ui/latency",
     "//ui/lottie",
     "//ui/native_theme",
-    "//ui/native_theme:native_theme_browser",
     "//ui/resources",
     "//ui/strings",
     "//ui/touch_selection",
@@ -599,6 +617,8 @@ component("views") {
     "//ui/base/emoji",
     "//ui/base/ime/init",
     "//ui/base/metadata",
+    "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/compositor",
     "//ui/display",
     "//ui/events",
@@ -607,41 +627,27 @@ component("views") {
     "//ui/gfx",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
+    "//ui/menus",
     "//ui/touch_selection/vector_icons",
     "//ui/views/resources",
     "//ui/views/window/vector_icons",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//ui/base/ime/ash",
-    ]
-  }
-
   if (is_chromeos) {
     public += [ "highlight_border.h" ]
     sources += [ "highlight_border.cc" ]
     deps += [
+      "//ash/constants",
       "//chromeos/constants",
+      "//ui/base/ime/ash",
       "//ui/chromeos/styles:cros_tokens_color_mappings_generator",
     ]
   }
 
   if (is_linux) {
     public_deps += [ "//ui/linux:linux_ui" ]
-  }
-
-  if (is_linux || is_chromeos || is_fuchsia) {
-    public += [ "color_chooser/color_chooser_view.h" ]
-    sources += [ "color_chooser/color_chooser_view.cc" ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
     deps += [ "//ui/base/ime/linux" ]
-    if (!is_chromeos_lacros) {
-      sources += [ "controls/menu/menu_config_linux.cc" ]
-    }
+    sources += [ "controls/menu/menu_config_linux.cc" ]
   }
 
   if (is_chromeos) {
@@ -676,8 +682,6 @@ component("views") {
       "cocoa/native_widget_mac_event_monitor.h",
       "cocoa/native_widget_mac_event_monitor.mm",
       "cocoa/native_widget_mac_ns_window_host.mm",
-      "cocoa/native_window_tracker_cocoa.h",
-      "cocoa/native_window_tracker_cocoa.mm",
       "cocoa/text_input_host.h",
       "cocoa/text_input_host.mm",
       "cocoa/tooltip_manager_mac.h",
@@ -696,6 +700,8 @@ component("views") {
       "controls/views_text_services_context_menu_mac.mm",
       "drag_utils_mac.mm",
       "event_monitor_mac.mm",
+      "event_monitor_remote_cocoa.h",
+      "event_monitor_remote_cocoa.mm",
       "metrics_mac.cc",
       "style/platform_style_mac.mm",
       "widget/native_widget_mac.mm",
@@ -734,6 +740,7 @@ component("views") {
       "win/pen_id_handler.h",
       "win/scoped_enable_unadjusted_mouse_events_win.h",
       "win/scoped_fullscreen_visibility.h",
+      "win/user_resize_detector.h",
     ]
     sources += [
       "controls/menu/menu_config_win.cc",
@@ -747,6 +754,7 @@ component("views") {
       "win/pen_id_handler.cc",
       "win/scoped_enable_unadjusted_mouse_events_win.cc",
       "win/scoped_fullscreen_visibility.cc",
+      "win/user_resize_detector.cc",
     ]
     libs = [
       "dwmapi.lib",
@@ -761,7 +769,8 @@ component("views") {
       "/DELAYLOAD:user32.dll",
     ]
     deps += [
-      "//services/tracing/public/cpp:cpp",
+      "//components/stylus_handwriting/win",
+      "//services/tracing/public/cpp",
       "//third_party/iaccessible2",
       "//third_party/wtl",
     ]
@@ -778,13 +787,15 @@ component("views") {
       "accessibility/ax_virtual_view_wrapper.h",
       "accessibility/ax_widget_obj_wrapper.h",
       "accessibility/ax_window_obj_wrapper.h",
+      "accessibility/tree/browser_views_ax_manager.h",
+      "accessibility/tree/views_ax_manager.h",
       "controls/native/native_view_host_aura.h",
       "corewm/tooltip.h",
+      "corewm/tooltip_aura.h",
       "corewm/tooltip_controller.h",
       "corewm/tooltip_state_manager.h",
       "corewm/tooltip_view_aura.h",
       "event_monitor_aura.h",
-      "native_window_tracker_aura.h",
       "touchui/touch_selection_controller_impl.h",
       "view_constants_aura.h",
       "widget/focus_manager_event_handler.h",
@@ -805,16 +816,18 @@ component("views") {
       "accessibility/ax_virtual_view_wrapper.cc",
       "accessibility/ax_widget_obj_wrapper.cc",
       "accessibility/ax_window_obj_wrapper.cc",
+      "accessibility/tree/browser_views_ax_manager.cc",
+      "accessibility/tree/views_ax_manager.cc",
       "controls/menu/menu_pre_target_handler_aura.cc",
       "controls/menu/menu_pre_target_handler_aura.h",
       "controls/native/native_view_host_aura.cc",
+      "corewm/tooltip_aura.cc",
       "corewm/tooltip_controller.cc",
       "corewm/tooltip_state_manager.cc",
       "corewm/tooltip_view_aura.cc",
       "drag_utils_aura.cc",
       "event_monitor_aura.cc",
       "metrics_aura.cc",
-      "native_window_tracker_aura.cc",
       "touchui/touch_selection_controller_impl.cc",
       "view_constants_aura.cc",
       "widget/focus_manager_event_handler.cc",
@@ -823,17 +836,8 @@ component("views") {
       "widget/window_reorderer.cc",
       "windows_stationarity_monitor_aura.cc",
     ]
-    if (!is_chromeos_ash) {
-      sources += [ "accessibility/widget_ax_tree_id_map.cc" ]
-    }
-    if (is_chromeos_lacros) {
-      public += [ "corewm/tooltip_lacros.h" ]
-      sources += [ "corewm/tooltip_lacros.cc" ]
-    } else {
-      public += [ "corewm/tooltip_aura.h" ]
-      sources += [ "corewm/tooltip_aura.cc" ]
-    }
     deps += [
+      "//components/crash/core/common:crash_key",
       "//ui/aura",
       "//ui/base/cursor/mojom:cursor_type_shared",
       "//ui/events",
@@ -842,7 +846,7 @@ component("views") {
       "//ui/wm",
       "//ui/wm/public",
     ]
-    if (enable_desktop_aura || is_chromeos_ash) {
+    if (enable_desktop_aura || is_chromeos) {
       public += [
         "touchui/touch_selection_menu_runner_views.h",
         "touchui/touch_selection_menu_views.h",
@@ -883,9 +887,12 @@ component("views") {
           "widget/desktop_aura/desktop_native_cursor_manager_win.h",
           "widget/desktop_aura/desktop_screen_win.cc",
           "widget/desktop_aura/desktop_screen_win.h",
+          "widget/desktop_aura/desktop_screen_win_headless.cc",
+          "widget/desktop_aura/desktop_screen_win_headless.h",
           "widget/desktop_aura/desktop_window_tree_host_win.cc",
         ]
         deps += [
+          "//components/headless/screen_info",
           "//ui/events:dom_keyboard_layout",
           "//ui/events:keyboard_hook",
         ]
@@ -906,19 +913,7 @@ component("views") {
           "//ui/base:ozone_buildflags",
         ]
       }
-      if (is_chromeos_lacros) {
-        public += [ "widget/desktop_aura/desktop_window_tree_host_lacros.h" ]
-        sources += [
-          "widget/desktop_aura/desktop_window_tree_host_lacros.cc",
-          "widget/desktop_aura/window_event_filter_lacros.cc",
-          "widget/desktop_aura/window_event_filter_lacros.h",
-        ]
-        deps += [
-          "//chromeos/ui/base",
-          "//ui/base:hit_test",
-        ]
-      }
-      if (is_linux || is_chromeos_lacros || is_fuchsia) {
+      if (is_linux || is_fuchsia) {
         public += [
           "widget/desktop_aura/desktop_window_tree_host_platform.h",
           "widget/desktop_aura/window_move_client_platform.h",
@@ -1007,6 +1002,8 @@ if (is_win || is_mac || is_linux || is_chromeos) {
 source_set("test_support") {
   testonly = true
   sources = [
+    "accessibility/tree/view_accessibility_ax_tree_source_test_api.h",
+    "accessibility/tree/widget_ax_manager_test_api.h",
     "animation/test/flood_fill_ink_drop_ripple_test_api.cc",
     "animation/test/flood_fill_ink_drop_ripple_test_api.h",
     "animation/test/ink_drop_highlight_test_api.cc",
@@ -1042,6 +1039,8 @@ source_set("test_support") {
     "interaction/interactive_views_test_internal.cc",
     "interaction/interactive_views_test_internal.h",
     "interaction/polling_view_observer.h",
+    "interaction/view_focus_observer.cc",
+    "interaction/view_focus_observer.h",
     "interaction/widget_focus_observer.cc",
     "interaction/widget_focus_observer.h",
     "layout/animating_layout_manager_test_util.cc",
@@ -1054,6 +1053,10 @@ source_set("test_support") {
     "test/capture_tracking_view.h",
     "test/combobox_test_api.cc",
     "test/combobox_test_api.h",
+    "test/configurable_test_custom_frame_view.cc",
+    "test/configurable_test_custom_frame_view.h",
+    "test/configurable_test_native_frame_view.cc",
+    "test/configurable_test_native_frame_view.h",
     "test/desktop_test_views_delegate.h",
     "test/dialog_test.cc",
     "test/dialog_test.h",
@@ -1084,6 +1087,8 @@ source_set("test_support") {
     "test/test_views.cc",
     "test/test_views.h",
     "test/test_views_delegate.h",
+    "test/test_widget_builder.cc",
+    "test/test_widget_builder.h",
     "test/test_widget_observer.cc",
     "test/test_widget_observer.h",
     "test/view_metadata_test_utils.cc",
@@ -1119,9 +1124,7 @@ source_set("test_support") {
     ":views",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//gpu/ipc/service",
-    "//ipc:test_support",
     "//mojo/core/embedder",
     "//skia",
     "//ui/accessibility:test_support",
@@ -1132,6 +1135,7 @@ source_set("test_support") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
     "//ui/base/ime/init",
+    "//ui/base/interaction:test_support",
     "//ui/compositor",
     "//ui/compositor:test_support",
     "//ui/events",
@@ -1141,10 +1145,13 @@ source_set("test_support") {
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/gl:test_support",
+    "//ui/native_window_tracker",
   ]
   public_deps = [
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
   ]
 
   if (is_win) {
@@ -1164,7 +1171,6 @@ source_set("test_support") {
       "test/event_generator_delegate_mac.mm",
       "test/scoped_views_test_helper_cocoa.mm",
       "test/test_views_delegate_mac.mm",
-      "test/views_test_base_mac.mm",
       "test/views_test_helper_mac.h",
       "test/views_test_helper_mac.mm",
       "test/widget_test_mac.mm",
@@ -1176,12 +1182,10 @@ source_set("test_support") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
-  }
-
   if (use_aura) {
     sources += [
+      "corewm/test/tooltip_aura_test_api.cc",
+      "corewm/test/tooltip_aura_test_api.h",
       "corewm/tooltip_controller_test_helper.cc",
       "corewm/tooltip_controller_test_helper.h",
       "test/desktop_test_views_delegate_aura.cc",
@@ -1190,12 +1194,6 @@ source_set("test_support") {
       "test/views_test_helper_aura.h",
       "test/widget_test_aura.cc",
     ]
-    if (!is_chromeos_lacros) {
-      sources += [
-        "corewm/test/tooltip_aura_test_api.cc",
-        "corewm/test/tooltip_aura_test_api.h",
-      ]
-    }
     deps += [
       "//ui/aura",
       "//ui/aura:test_support",
@@ -1215,6 +1213,10 @@ source_set("test_support") {
     ]
     deps += [ "//ui/ozone:ui_test_support" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 test("views_unittests") {
@@ -1254,6 +1256,7 @@ test("views_unittests") {
     "controls/button/label_button_label_unittest.cc",
     "controls/button/label_button_unittest.cc",
     "controls/button/md_text_button_unittest.cc",
+    "controls/button/md_text_button_with_spinner_unittest.cc",
     "controls/button/menu_button_controller_unittest.cc",
     "controls/button/menu_button_unittest.cc",
     "controls/button/radio_button_unittest.cc",
@@ -1261,6 +1264,7 @@ test("views_unittests") {
     "controls/combobox/combobox_unittest.cc",
     "controls/editable_combobox/editable_combobox_unittest.cc",
     "controls/editable_combobox/editable_password_combobox_unittest.cc",
+    "controls/focus_ring_unittest.cc",
     "controls/image_view_unittest.cc",
     "controls/label_unittest.cc",
     "controls/link_fragment_unittest.cc",
@@ -1293,6 +1297,7 @@ test("views_unittests") {
     "controls/textfield/textfield_model_unittest.cc",
     "controls/textfield/textfield_unittest.cc",
     "controls/textfield/textfield_unittest.h",
+    "controls/theme_tracking_animated_image_view_unittest.cc",
     "controls/theme_tracking_image_view_unittest.cc",
     "controls/tree/tree_view_unittest.cc",
     "event_monitor_unittest.cc",
@@ -1302,6 +1307,7 @@ test("views_unittests") {
     "interaction/interaction_sequence_views_unittest.cc",
     "interaction/interaction_test_util_views_unittest.cc",
     "interaction/interactive_views_test_unittest.cc",
+    "interaction/view_focus_observer_unittest.cc",
     "interaction/widget_focus_observer_unittest.cc",
     "layout/animating_layout_manager_unittest.cc",
     "layout/box_layout_unittest.cc",
@@ -1336,7 +1342,7 @@ test("views_unittests") {
     "widget/unique_widget_ptr_unittest.cc",
     "widget/widget_delegate_unittest.cc",
     "widget/widget_unittest.cc",
-    "window/custom_frame_view_unittest.cc",
+    "window/default_frame_view_unittest.cc",
     "window/dialog_client_view_unittest.cc",
     "window/dialog_delegate_unittest.cc",
     "window/frame_caption_button_unittest.cc",
@@ -1351,7 +1357,6 @@ test("views_unittests") {
     "//base",
     "//base:i18n",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//cc/paint",
     "//components/vector_icons",
@@ -1372,6 +1377,8 @@ test("views_unittests") {
     "//ui/base/dragdrop/mojom",
     "//ui/base/emoji",
     "//ui/base/ime/init",
+    "//ui/base/mojom",
+    "//ui/base/mojom:ui_base_types",
     "//ui/color",
     "//ui/color:mixers",
     "//ui/compositor:test_support",
@@ -1384,6 +1391,7 @@ test("views_unittests") {
     "//ui/gfx:test_support",
     "//ui/gfx/geometry",
     "//ui/gl:test_support",
+    "//ui/menus",
     "//ui/native_theme",
     "//ui/native_theme:test_support",
     "//ui/platform_window/wm",
@@ -1406,7 +1414,10 @@ test("views_unittests") {
       "//third_party/wtl",
     ]
 
-    deps += [ "//ui/base:data_exchange" ]
+    deps += [
+      "//components/stylus_handwriting/win",
+      "//ui/base:data_exchange",
+    ]
 
     libs = [
       "imm32.lib",
@@ -1416,7 +1427,6 @@ test("views_unittests") {
     ]
 
     sources += [
-      "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/test_list_grid_view.cc",
       "accessibility/test_list_grid_view.h",
       "accessibility/view_ax_platform_node_delegate_win_unittest.cc",
@@ -1426,16 +1436,21 @@ test("views_unittests") {
   }
 
   if (is_linux) {
-    deps += [ "//ui/linux:test_support" ]
-  }
-
-  if (is_linux || is_chromeos_lacros) {
-    deps += [ "//ui/base/ime/linux" ]
+    deps += [
+      "//ui/base/ime/linux",
+      "//ui/linux:test_support",
+    ]
   }
 
   if (has_native_accessibility) {
     sources += [
+      "accessibility/atomic_view_ax_tree_manager_unittest.cc",
       "accessibility/ax_virtual_view_unittest.cc",
+      "accessibility/tree/view_accessibility_ax_tree_source_unittest.cc",
+      "accessibility/tree/widget_ax_manager_test_api.cc",
+      "accessibility/tree/widget_ax_manager_unittest.cc",
+      "accessibility/tree/widget_view_ax_cache_unittest.cc",
+      "accessibility/view_accessibility_unittest.cc",
       "accessibility/view_ax_platform_node_delegate_unittest.cc",
     ]
   }
@@ -1515,8 +1530,12 @@ test("views_unittests") {
           [ "widget/desktop_aura/desktop_window_tree_host_win_unittest.cc" ]
     }
 
-    if (enable_desktop_aura || is_chromeos_ash) {
+    if (enable_desktop_aura || is_chromeos) {
       sources += [ "touchui/touch_selection_menu_runner_views_unittest.cc" ]
+    }
+
+    if (!is_chromeos) {
+      sources += [ "accessibility/tree/browser_views_ax_manager_unittest.cc" ]
     }
 
     if (enable_desktop_aura) {
@@ -1530,7 +1549,7 @@ test("views_unittests") {
           "widget/desktop_aura/desktop_window_tree_host_platform_unittest.cc",
         ]
         if (is_linux || is_chromeos) {
-          deps += [ "//ui/platform_window/stub:stub" ]
+          deps += [ "//ui/platform_window/stub" ]
         }
       }
       if (is_linux || is_chromeos) {
@@ -1544,7 +1563,7 @@ test("views_unittests") {
     }
   }
 
-  if ((is_linux || is_chromeos_lacros) && use_ozone) {
+  if (is_linux) {
     data_deps +=
         [ "//testing/buildbot/filters:linux_ozone_views_unittests_filters" ]
   }
@@ -1562,10 +1581,6 @@ test("views_unittests") {
     ]
   }
 
-  if (is_linux || is_chromeos) {
-    sources += [ "color_chooser/color_chooser_unittest.cc" ]
-  }
-
   if (is_win || is_mac || is_linux || is_chromeos) {
     sources += [ "test/view_skia_gold_pixel_diff_unittest.cc" ]
     deps += [ "//ui/views:view_pixel_diff_test_support" ]
@@ -1574,6 +1589,10 @@ test("views_unittests") {
   if (enable_nocompile_tests) {
     deps += [ ":views_nocompile_tests" ]
   }
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
 if (enable_nocompile_tests) {
@@ -1588,14 +1607,16 @@ if (enable_nocompile_tests) {
 source_set("views_interactive_ui_tests") {
   testonly = true
 
-  sources = [ "widget/widget_interactive_uitest.cc" ]
+  sources = [
+    "widget/any_widget_observer_uitest.cc",
+    "widget/widget_interactive_uitest.cc",
+  ]
 
   deps = [
     ":test_support",
     ":views",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
@@ -1609,13 +1630,21 @@ source_set("views_interactive_ui_tests") {
     "//ui/strings",
   ]
 
+  public_deps = [ "//ui/base/mojom" ]
+
   if (is_win) {
-    sources += [ "accessibility/ax_system_caret_win_interactive_uitest.cc" ]
+    sources += [
+      "accessibility/ax_system_caret_win_interactive_uitest.cc",
+      "win/hwnd_message_handler_interactive_uitest.cc",
+    ]
   }
 
   if (is_mac) {
     sources += [
       "cocoa/bridged_native_widget_interactive_uitest.mm",
+      "controls/native/native_view_host_mac_interactive_uitest.mm",
+      "controls/native/native_view_host_test_base.cc",
+      "controls/native/native_view_host_test_base.h",
       "widget/native_widget_mac_interactive_uitest.mm",
     ]
     deps += [ "//components/remote_cocoa/app_shim" ]
@@ -1635,7 +1664,7 @@ source_set("views_interactive_ui_tests") {
       "//ui/wm/public",
     ]
 
-    if (is_linux || is_chromeos_lacros) {
+    if (is_linux) {
       sources += [ "widget/desktop_aura/desktop_window_tree_host_platform_impl_interactive_uitest.cc" ]
     }
 
@@ -1652,7 +1681,7 @@ source_set("views_interactive_ui_tests") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources -= [ "corewm/desktop_capture_controller_unittest.cc" ]
   }
 }
@@ -1667,7 +1696,7 @@ test("views_perftests") {
     ":test_support",
     ":views",
     "//base/test:test_support",
-    "//cc/base:base",
+    "//cc/base",
     "//mojo/core/embedder",
     "//testing/perf",
     "//ui/resources:ui_test_pak",

@@ -1,0 +1,35 @@
+<!--
+@EXECUTE-AND-WAIT-FOR:setOwnerAndFocusDescendant()
+-->
+<html>
+<body>
+<div role="main">
+  <div aria-hidden="true">
+    <div id="will-be-owned">
+      <div role="none">
+        <div role="none">
+          <div>
+            <div role="none">
+              <div>
+                <button id="button1">Button 1</button>
+                <button id="button2">Button 2</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="glossary" role="doc-glossary">
+</div>
+<script>
+function setOwnerAndFocusDescendant() {
+  document.getElementById('glossary').setAttribute('aria-owns', 'will-be-owned');
+  document.getElementById("button2").focus();
+  document.title = 'setOwnerAndFocusDescendant';
+  return 'setOwnerAndFocusDescendant';
+}
+</script>
+</body>
+</html>

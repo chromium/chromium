@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/external_pref_loader.h"
 
+#include <algorithm>
 #include <set>
 #include <utility>
 
@@ -18,7 +19,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
-#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -31,8 +31,9 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_file_task_runner.h"
+#include "extensions/buildflags/buildflags.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -46,6 +47,8 @@
 #include "components/sync_preferences/pref_service_syncable_observer.h"
 #endif
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 using content::BrowserThread;
 
 namespace {
@@ -57,7 +60,7 @@ constexpr base::FilePath::CharType kExternalExtensionJson[] =
 // is a bit complicated.
 // TODO(crbug.com/40658053) This is a temporary measure and should be replaced.
 bool SkipInstallForChromeOSTablet(const base::FilePath& file_path) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::switches::IsTabletFormFactor())
     return false;
 
@@ -117,7 +120,7 @@ std::set<base::FilePath> GetPrefsCandidateFilesFromFolder(
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Helper class to wait for priority pref sync to be ready.
 class ExternalPrefLoader::PrioritySyncReadyWaiter
     : public sync_preferences::PrefServiceSyncableObserver,
@@ -205,7 +208,7 @@ class ExternalPrefLoader::PrioritySyncReadyWaiter
   base::ScopedObservation<syncer::SyncService, syncer::SyncServiceObserver>
       sync_service_observation_{this};
 };
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 ExternalPrefLoader::ExternalPrefLoader(int base_path_id,
                                        int options,
@@ -217,8 +220,7 @@ ExternalPrefLoader::ExternalPrefLoader(int base_path_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
-ExternalPrefLoader::~ExternalPrefLoader() {
-}
+ExternalPrefLoader::~ExternalPrefLoader() = default;
 
 const base::FilePath ExternalPrefLoader::GetBaseCrxFilePath() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -229,7 +231,7 @@ const base::FilePath ExternalPrefLoader::GetBaseCrxFilePath() {
 
 void ExternalPrefLoader::StartLoading() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if ((options_ & DELAY_LOAD_UNTIL_PRIORITY_SYNC) &&
       (profile_ && SyncServiceFactory::IsSyncAllowed(profile_))) {
     pending_waiter_list_.push_back(
@@ -239,24 +241,24 @@ void ExternalPrefLoader::StartLoading() {
                                      this, waiter_ptr));
     return;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadOnFileThread, this));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ExternalPrefLoader::OnPrioritySyncReady(
     ExternalPrefLoader::PrioritySyncReadyWaiter* waiter) {
   // Delete |waiter| from |pending_waiter_list_|.
   pending_waiter_list_.erase(
-      base::ranges::find(pending_waiter_list_, waiter,
-                         &std::unique_ptr<PrioritySyncReadyWaiter>::get));
+      std::ranges::find(pending_waiter_list_, waiter,
+                        &std::unique_ptr<PrioritySyncReadyWaiter>::get));
   // Continue loading.
   GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ExternalPrefLoader::LoadOnFileThread, this));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static.
 base::Value::Dict ExternalPrefLoader::ExtractExtensionPrefs(
@@ -334,7 +336,7 @@ void ExternalPrefLoader::ReadExternalExtensionPrefFile(
     // The only platform that uses this check is Mac OS.  If you add one,
     // you need to implement base::VerifyPathControlledByAdmin() for
     // that platform.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif  // BUILDFLAG(IS_MAC)
   }
 

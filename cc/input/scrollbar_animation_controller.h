@@ -69,9 +69,7 @@ class CC_EXPORT ScrollbarAnimationController {
   bool visibility_changed() const { return visibility_changed_; }
   void ClearVisibilityChanged() { visibility_changed_ = false; }
 
-  // `fade_out_only` is set to true if and only if Animate advanced fade out
-  // animation and no other animation.
-  bool Animate(base::TimeTicks now, bool& fade_out_only);
+  bool Animate(base::TimeTicks now);
 
   // WillUpdateScroll expects to be called even if the scroll position won't
   // change as a result of the scroll. Only effect Aura Overlay Scrollbar.
@@ -138,8 +136,7 @@ class CC_EXPORT ScrollbarAnimationController {
 
   bool Captured() const;
 
-  // Returns whether opacity changed which requires a redraw.
-  bool ApplyOpacityToScrollbars(float opacity);
+  void ApplyOpacityToScrollbars(float opacity);
 
   raw_ptr<ScrollbarAnimationControllerClient> client_;
 

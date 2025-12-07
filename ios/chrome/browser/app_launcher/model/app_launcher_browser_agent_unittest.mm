@@ -21,7 +21,7 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/app_launcher_overlay.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
@@ -32,6 +32,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 #import "url/gurl.h"
 
 using app_launcher_overlays::AllowAppLaunchResponse;
@@ -69,12 +70,11 @@ class FakeAppLauncherTabHelper : public AppLauncherTabHelper {
 class AppLauncherBrowserAgentTest : public PlatformTest {
  protected:
   AppLauncherBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     app_state_ = [[AppState alloc] initWithStartupInformation:nil];
     scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     browser_->GetSceneState().activationLevel =
         SceneActivationLevelForegroundActive;
     AppLauncherBrowserAgent::CreateForBrowser(browser_.get());
@@ -85,7 +85,10 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
   ~AppLauncherBrowserAgentTest() override {
     [application_ stopMocking];
     CloseAllWebStates(*browser_->GetWebStateList(),
-                      WebStateList::CLOSE_NO_FLAGS);
+                      WebStateList::ClosingReason::kDefault);
+    EXPECT_OCMOCK_VERIFY(
+        app_launcher_tab_helper_browser_presentation_provider_);
+    EXPECT_OCMOCK_VERIFY(application_);
   }
 
   // Returns the AppLauncherBrowserAgent.
@@ -161,7 +164,7 @@ class AppLauncherBrowserAgentTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   AppState* app_state_;
   SceneState* scene_state_;
   std::unique_ptr<TestBrowser> browser_;

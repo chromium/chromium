@@ -1,0 +1,14 @@
+include_rules = [
+  "+components/lens/lens_metrics.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/first_run/public/best_features_item.h",
+  "+ios/chrome/browser/welcome_back/model/features.h",
+  "+ios/chrome/browser/intents/model/intents_donation_helper.h",
+  "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
+  "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/tabs/model/tabs_dependency_installer_bridge.h",
+  "+ios/chrome/browser/tips_manager/model",
+  "+ios/chrome/browser/url_loading/model",
+  "+ios/chrome/browser/web/model/web_navigation_util.h",
+]

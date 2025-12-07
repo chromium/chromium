@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_sentinel.h"
 
@@ -110,7 +106,7 @@ TEST(WakeLockSentinelTest, MultipleReleaseCalls) {
   EXPECT_EQ(nullptr, sentinel->manager_);
   EXPECT_TRUE(sentinel->released());
 
-  event_listener = MakeGarbageCollected<SyncEventListener>(WTF::BindOnce([]() {
+  event_listener = MakeGarbageCollected<SyncEventListener>(BindOnce([]() {
     EXPECT_TRUE(false) << "This event handler should not be reached.";
   }));
   sentinel->addEventListener(event_type_names::kRelease, event_listener);
@@ -143,10 +139,9 @@ TEST(WakeLockSentinelTest, ContextDestruction) {
       context.GetScriptState()->GetIsolate(), screen_promise);
   ASSERT_TRUE(sentinel);
 
-  auto* event_listener =
-      MakeGarbageCollected<SyncEventListener>(WTF::BindOnce([]() {
-        EXPECT_TRUE(false) << "This event handler should not be reached.";
-      }));
+  auto* event_listener = MakeGarbageCollected<SyncEventListener>(BindOnce([]() {
+    EXPECT_TRUE(false) << "This event handler should not be reached.";
+  }));
   sentinel->addEventListener(event_type_names::kRelease, event_listener);
   EXPECT_TRUE(sentinel->HasPendingActivity());
 

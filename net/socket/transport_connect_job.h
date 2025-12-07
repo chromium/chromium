@@ -9,6 +9,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -26,7 +27,6 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/connection_attempts.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
 namespace net {
@@ -42,7 +42,7 @@ class NET_EXPORT_PRIVATE TransportSocketParams
   // socket/connection. Unlike ConnectJobFactory::Endpoint, this does not have a
   // `using_ssl` field for schemeless endpoints because that has no meaning for
   // transport parameters.
-  using Endpoint = absl::variant<url::SchemeHostPort, HostPortPair>;
+  using Endpoint = std::variant<url::SchemeHostPort, HostPortPair>;
 
   // `host_resolution_callback` will be invoked after the the hostname is
   // resolved. `network_anonymization_key` is passed to the HostResolver to

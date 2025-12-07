@@ -69,6 +69,8 @@ extern const char kPermissionTypeLoadPlugin[];
 extern const char kPermissionTypeMedia[];
 extern const char kPermissionTypeNewWindow[];
 extern const char kPermissionTypePointerLock[];
+extern const char kPermissionTypeClipboardReadWrite[];
+extern const char kPermissionTypeClipboardSanitizedWrite[];
 extern const char kOldWidth[];
 extern const char kProcessId[];
 extern const char kProgress[];
@@ -89,7 +91,6 @@ extern const char kPersistPrefix[];
 extern const char kStoragePartitionId[];
 
 inline constexpr unsigned int kMaxOutstandingPermissionRequests = 1024;
-inline constexpr int kInvalidPermissionRequestID = 0;
 
 // ClearData API constants.
 inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_CACHE = 1 << 0;
@@ -97,9 +98,8 @@ inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_COOKIES = 1 << 1;
 inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_FILE_SYSTEMS = 1 << 2;
 inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_INDEXEDDB = 1 << 3;
 inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_LOCAL_STORAGE = 1 << 4;
-inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_WEBSQL = 1 << 5;
-inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_SESSION_COOKIES = 1 << 6;
-inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_PERSISTENT_COOKIES = 1 << 7;
+inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_SESSION_COOKIES = 1 << 5;
+inline constexpr uint32_t WEB_VIEW_REMOVE_DATA_MASK_PERSISTENT_COOKIES = 1 << 6;
 
 // Other.
 extern const char kWebViewContentScriptManagerKeyName[];

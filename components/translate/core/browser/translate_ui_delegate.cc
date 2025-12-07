@@ -8,6 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language_detection/core/constants.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/browser/translate_driver.h"
@@ -41,32 +42,23 @@ TranslateUIDelegate::TranslateUIDelegate(
 
   translate_ui_languages_manager_ =
       std::make_unique<TranslateUILanguagesManager>(
-          translate_manager, language_codes, source_language, target_language);
+          language_codes, source_language, target_language);
 
-  if (base::FeatureList::IsEnabled(
-          language::kContentLanguagesInLanguagePicker)) {
-    MaybeSetContentLanguages();
+  MaybeSetContentLanguages();
 
-    if (!base::GetFieldTrialParamByFeatureAsBool(
-            language::kContentLanguagesInLanguagePicker,
-            language::kContentLanguagesDisableObserversParam,
-            false /* default */)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      const std::string& pref_name = language::prefs::kPreferredLanguages;
+  // Also start listening for changes in the accept languages.
+#if BUILDFLAG(IS_CHROMEOS)
+  const std::string& pref_name = language::prefs::kPreferredLanguages;
 #else
-      const std::string& pref_name = language::prefs::kAcceptLanguages;
+  const std::string& pref_name = language::prefs::kAcceptLanguages;
 #endif
 
-      // Also start listening for changes in the accept languages.
-      PrefService* pref_service =
-          translate_manager->translate_client()->GetPrefs();
-      pref_change_registrar_.Init(pref_service);
-      pref_change_registrar_.Add(
-          pref_name,
-          base::BindRepeating(&TranslateUIDelegate::MaybeSetContentLanguages,
-                              base::Unretained(this)));
-    }
-  }
+  PrefService* pref_service = translate_manager->translate_client()->GetPrefs();
+  pref_change_registrar_.Init(pref_service);
+  pref_change_registrar_.Add(
+      pref_name,
+      base::BindRepeating(&TranslateUIDelegate::MaybeSetContentLanguages,
+                          base::Unretained(this)));
 }
 
 TranslateUIDelegate::~TranslateUIDelegate() = default;
@@ -363,8 +355,9 @@ bool TranslateUIDelegate::ShouldAutoAlwaysTranslate() {
   const std::string& source_language =
       translate_ui_languages_manager_->GetSourceLanguageCode();
   // Don't trigger for unknown source language.
-  if (source_language == kUnknownLanguageCode)
+  if (source_language == language_detection::kUnknownLanguageCode) {
     return false;
+  }
 
   bool always_translate =
       (prefs_->GetTranslationAcceptedCount(source_language) >=

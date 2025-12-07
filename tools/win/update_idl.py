@@ -46,7 +46,6 @@ class IDLUpdater:
         contents = (f'target_cpu="{self.target_cpu}"\n'
                     f'is_chrome_branded={self.is_chrome_branded}\n'
                     f'is_debug=true\n'
-                    f'enable_nacl=false\n'
                     f'blink_symbol_level=0\n'
                     f'v8_symbol_level=0\n').format()
         if os.path.exists(gn_args_path):
@@ -83,27 +82,33 @@ class IDLUpdater:
             print('No update is needed.\n')
             return
 
-        cmd = self._extract_update_command(proc.stdout)
+        cmd = self._extract_update_command(proc.stdout, proc.stderr)
         print('Updating IDL COM headers/TLB by running: [', cmd, ']...')
         subprocess.run(cmd, shell=True, capture_output=True, check=True)
         print('Done.\n')
 
-    def _extract_update_command(self, stdout: str) -> str:
+    def _extract_update_command(self, stdout: str, stderr: str) -> str:
         # Exclude blank lines.
         lines = list(filter(None, stdout.splitlines()))
 
-        if (len(lines) < 3
-                or 'ninja: build stopped: subcommand failed.' not in lines[-1]
+        if (len(lines) < 3 or 'build stopped' not in lines[-1]
                 or 'copy /y' not in lines[-2]
                 or 'To rebaseline:' not in lines[-3]):
             print('-' * 80)
             print('STDOUT:')
             print(stdout)
             print('-' * 80)
+            print('STDERR:')
+            print(stderr)
+            print('-' * 80)
+            print('LINE:')
+            print(lines[-1])
+            print(lines[-2])
+            print(lines[-3])
 
             raise IDLUpdateError(
-                'Unexpected autoninja error, or update this tool if the output '
-                'format is changed.')
+                'Unexpected autoninja error (see output above). Update this '
+                'tool if the output format has changed.')
 
         return lines[-2].strip().replace('..\\..\\', '')
 
@@ -138,22 +143,24 @@ def main():
 
     for target_cpu in ['arm64', 'x64', 'x86']:
         for idl_target in [
-                'updater_idl',
-                'updater_idl_user',
-                'updater_idl_system',
-                'updater_internal_idl',
-                'updater_internal_idl_user',
-                'updater_internal_idl_system',
-                'updater_legacy_idl',
-                'updater_legacy_idl_user',
-                'updater_legacy_idl_system',
-                'google_update',
+                'chrome/windows_services/elevated_tracing_service:' + \
+                'tracing_service_idl',
+                'chrome/windows_services/service_program:test_service_idl',
                 'elevation_service_idl',
                 'gaia_credential_provider_idl',
                 'iaccessible2',
                 'ichromeaccessible',
                 'isimpledom',
                 'remoting_lib_idl',
+                'updater_idl',
+                'updater_idl_system',
+                'updater_idl_user',
+                'updater_internal_idl',
+                'updater_internal_idl_system',
+                'updater_internal_idl_user',
+                'updater_legacy_idl',
+                'updater_legacy_idl_system',
+                'updater_legacy_idl_user',
         ]:
             IDLUpdater(idl_target + '_idl_action', target_cpu, False).update()
 

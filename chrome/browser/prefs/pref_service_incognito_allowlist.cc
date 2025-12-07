@@ -2,17 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/prefs/pref_service_incognito_allowlist.h"
 
 #include <vector>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -24,16 +18,16 @@
 #include "chrome/browser/accessibility/animation_policy_prefs.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_pref_names.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
 // List of keys that can be changed in the user prefs file by the incognito
 // profile.
 const char* const kPersistentPrefNames[] = {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Accessibility preferences should be persisted if they are changed in
     // incognito mode.
     ash::prefs::kAccessibilityLargeCursorEnabled,
@@ -73,18 +67,27 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityColorVisionCorrectionAmount,
     ash::prefs::kAccessibilityColorVisionCorrectionType,
     ash::prefs::kAccessibilityReducedAnimationsEnabled,
+    ash::prefs::kAccessibilityAlwaysShowScrollbarsEnabled,
+    ash::prefs::kAccessibilityFaceGazeAcceleratorDialogHasBeenAccepted,
     ash::prefs::kAccessibilityFaceGazeEnabled,
     ash::prefs::kAccessibilityFaceGazeCursorSpeedUp,
     ash::prefs::kAccessibilityFaceGazeCursorSpeedDown,
     ash::prefs::kAccessibilityFaceGazeCursorSpeedLeft,
     ash::prefs::kAccessibilityFaceGazeCursorSpeedRight,
-    ash::prefs::kAccessibilityFaceGazeCursorSmoothing,
     ash::prefs::kAccessibilityFaceGazeCursorUseAcceleration,
+    ash::prefs::kAccessibilityFaceGazeGesturesToKeyCombos,
     ash::prefs::kAccessibilityFaceGazeGesturesToMacros,
     ash::prefs::kAccessibilityFaceGazeGesturesToConfidence,
     ash::prefs::kAccessibilityFaceGazeActionsEnabled,
     ash::prefs::kAccessibilityFaceGazeCursorControlEnabled,
     ash::prefs::kAccessibilityFaceGazeAdjustSpeedSeparately,
+    ash::prefs::kAccessibilityFaceGazeVelocityThreshold,
+    ash::prefs::kAccessibilityFaceGazePrecisionClick,
+    ash::prefs::kAccessibilityFaceGazePrecisionClickSpeedFactor,
+    ash::prefs::kAccessibilityFaceGazeEnabledSentinel,
+    ash::prefs::kAccessibilityFaceGazeEnabledSentinelShowDialog,
+    ash::prefs::kAccessibilityFaceGazeCursorControlEnabledSentinel,
+    ash::prefs::kAccessibilityFaceGazeActionsEnabledSentinel,
     ash::prefs::kAccessibilityFlashNotificationsEnabled,
     ash::prefs::kAccessibilityFlashNotificationsColor,
     ash::prefs::kAccessibilityHighContrastEnabled,
@@ -102,6 +105,8 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityAutoclickRevertToLeftClick,
     ash::prefs::kAccessibilityAutoclickStabilizePosition,
     ash::prefs::kAccessibilityAutoclickMovementThreshold,
+    ash::prefs::kAccessibilityBounceKeysEnabled,
+    ash::prefs::kAccessibilityBounceKeysDelayMs,
     ash::prefs::kAccessibilityMouseKeysEnabled,
     ash::prefs::kAccessibilityMouseKeysAcceleration,
     ash::prefs::kAccessibilityMouseKeysMaxSpeed,
@@ -114,6 +119,8 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kAccessibilityCursorColor,
     ash::prefs::kAccessibilityFocusHighlightEnabled,
     ash::prefs::kAccessibilitySelectToSpeakEnabled,
+    ash::prefs::kAccessibilitySlowKeysEnabled,
+    ash::prefs::kAccessibilitySlowKeysDelayMs,
     ash::prefs::kAccessibilitySwitchAccessEnabled,
     ash::prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes,
     ash::prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes,
@@ -132,7 +139,8 @@ const char* const kPersistentPrefNames[] = {
     ash::prefs::kScreenMagnifierAcceleratorDialogHasBeenAccepted,
     ash::prefs::kShouldAlwaysShowAccessibilityMenu,
     ash::prefs::kAccessibilityDisableTrackpadEnabled,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    ash::prefs::kAccessibilityDisableTrackpadMode,
+#endif  // BUILDFLAG(IS_CHROMEOS)
 #if !BUILDFLAG(IS_ANDROID)
     kAnimationPolicyAllowed,
     kAnimationPolicyOnce,
@@ -220,8 +228,8 @@ namespace prefs {
 
 std::vector<const char*> GetIncognitoPersistentPrefsAllowlist() {
   std::vector<const char*> allowlist;
-  allowlist.insert(allowlist.end(), kPersistentPrefNames,
-                   kPersistentPrefNames + std::size(kPersistentPrefNames));
+  allowlist.insert(allowlist.end(), std::begin(kPersistentPrefNames),
+                   std::end(kPersistentPrefNames));
   return allowlist;
 }
 

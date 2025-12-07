@@ -274,7 +274,7 @@ void TapSuppressDialogsButton() {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   NSError* errorOK = nil;
   NSError* errorCancel = nil;
 
@@ -291,7 +291,7 @@ void TapSuppressDialogsButton() {
   if (!errorOK || !errorCancel) {
     GREYFail(@"There are still alerts");
   }
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -438,7 +438,7 @@ void TapSuppressDialogsButton() {
 // waits for the dismiss of the settings.
 - (void)MAYBE_testShowJavaScriptBehindSettings {
 // TODO(crbug.com/40182086): test failing on ipad device
-#if !TARGET_IPHONE_SIMULATOR
+#if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"This test doesn't pass on iPad device.");
   }
@@ -480,9 +480,7 @@ void TapSuppressDialogsButton() {
 }
 
 // Tests that an alert is presented after displaying the share menu.
-// TODO(crbug.com/41334973): re-enable this test once earl grey can interact
-// with the share menu.
-- (void)DISABLED_testShowJavaScriptAfterShareMenu {
+- (void)testShowJavaScriptAfterShareMenu {
   // Load the blank test page.
   const GURL kURL = self.testServer->GetURL(kAlertURLPath);
   [ChromeEarlGrey loadURL:kURL];
@@ -492,10 +490,7 @@ void TapSuppressDialogsButton() {
   [ChromeEarlGreyUI openShareMenu];
 
   // Copy URL, dismissing the share menu.
-  id<GREYMatcher> printButton =
-      grey_allOf(grey_accessibilityLabel(@"Copy"),
-                 grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
-  [[EarlGrey selectElementWithMatcher:printButton] performAction:grey_tap()];
+  [ChromeEarlGrey tapButtonInActivitySheetWithID:@"Copy"];
 
   // Show an alert and assert it is present.
   [ChromeEarlGrey tapWebStateElementWithID:@(kTestPageLinkID)];

@@ -3,23 +3,23 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/cocoa/renderer_context_menu/render_view_context_menu_mac_cocoa.h"
-#include "base/memory/raw_ptr.h"
 
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/mac/mac_util.h"
 #import "base/mac/scoped_sending_event.h"
+#include "base/memory/raw_ptr.h"
 #import "base/message_loop/message_pump_apple.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "chrome/browser/headless/headless_mode_util.h"
 #import "components/remote_cocoa/app_shim/menu_controller_cocoa_delegate_impl.h"
 #include "content/public/browser/web_contents.h"
-#import "ui/base/cocoa/menu_controller.h"
 #include "ui/base/cocoa/menu_utils.h"
 #include "ui/base/interaction/element_tracker_mac.h"
 #include "ui/color/color_provider.h"
+#import "ui/menus/cocoa/menu_controller.h"
 #include "ui/views/controls/menu/menu_controller_cocoa_delegate_params.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/widget/widget.h"
@@ -36,15 +36,17 @@ NSMenuItem* GetMenuItemByID(ui::MenuModel* model,
                             int command_id) {
   for (size_t i = 0; i < model->GetItemCount(); ++i) {
     NSMenuItem* item = [menu itemAtIndex:i];
-    if (model->GetCommandIdAt(i) == command_id)
+    if (model->GetCommandIdAt(i) == command_id) {
       return item;
+    }
 
     ui::MenuModel* submenu = model->GetSubmenuModelAt(i);
     if (submenu && [item hasSubmenu]) {
       NSMenuItem* subitem =
           GetMenuItemByID(submenu, [item submenu], command_id);
-      if (subitem)
+      if (subitem) {
         return subitem;
+      }
     }
   }
   return nil;
@@ -59,12 +61,12 @@ RenderViewContextMenuMacCocoa::RenderViewContextMenuMacCocoa(
     const content::ContextMenuParams& params,
     NSView* parent_view)
     : RenderViewContextMenuMac(render_frame_host, params),
-      parent_view_(parent_view) {
-}
+      parent_view_(parent_view) {}
 
 RenderViewContextMenuMacCocoa::~RenderViewContextMenuMacCocoa() {
-  if (menu_controller_)
+  if (menu_controller_) {
     [menu_controller_ cancel];
+  }
 }
 
 void RenderViewContextMenuMacCocoa::Show() {
@@ -79,8 +81,7 @@ void RenderViewContextMenuMacCocoa::Show() {
       initWithParams:MenuControllerParamsForWidget(widget)];
   menu_controller_ =
       [[MenuControllerCocoa alloc] initWithModel:&menu_model_
-                                        delegate:menu_controller_delegate_
-                          useWithPopUpButtonCell:NO];
+                                        delegate:menu_controller_delegate_];
 
   NSPoint position =
       NSMakePoint(params_.x, NSHeight(parent_view_.bounds) - params_.y);
@@ -104,8 +105,9 @@ void RenderViewContextMenuMacCocoa::UpdateToolkitMenuItem(
     const std::u16string& title) {
   NSMenuItem* item =
       GetMenuItemByID(&menu_model_, [menu_controller_ menu], command_id);
-  if (!item)
+  if (!item) {
     return;
+  }
 
   // Update the returned NSMenuItem directly so we can update it immediately.
   item.enabled = enabled;

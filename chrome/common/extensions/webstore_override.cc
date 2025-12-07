@@ -11,10 +11,11 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/no_destructor.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/initialize_extensions_client.h"
 #include "extensions/common/context_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/features/feature.h"
@@ -28,8 +29,9 @@ namespace {
 // which correspond to the features used by the webstore.
 constexpr static std::array<std::string_view, 2> kWebstoreOverrideFeatureList =
     {
-        "webstorePrivate",
-        "management",
+        // LINT.IfChange
+        "webstorePrivate", "management",
+        // LINT.ThenChange(chrome/common/extensions/extension_test_util.cc)
 };
 
 // Returns true if the "apps-gallery-url" command line flag has been used to
@@ -86,15 +88,15 @@ bool AreWebstoreFeaturesAvailable(const std::string& api_full_name,
 
   // We only consider the scheme, domain and port of the supplied override URL,
   // which must match the current URL.
-  if (!url.SchemeIs(override_url->scheme())) {
+  if (!url.SchemeIs(override_url->GetScheme())) {
     return false;
   }
-  if (!url.DomainIs(override_url->host())) {
+  if (!url.DomainIs(override_url->GetHost())) {
     return false;
   }
   // We only compare port if one was supplied in the override URL, otherwise we
   // ignore it completely.
-  if (override_url->has_port() && url.port() != override_url->port()) {
+  if (override_url->has_port() && url.GetPort() != override_url->GetPort()) {
     return false;
   }
   return true;

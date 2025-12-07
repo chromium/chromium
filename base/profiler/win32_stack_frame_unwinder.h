@@ -61,7 +61,7 @@ class BASE_EXPORT Win32StackFrameUnwinder {
     UnwindFunctions();
   };
 
-  explicit Win32StackFrameUnwinder();
+  Win32StackFrameUnwinder();
 
   Win32StackFrameUnwinder(const Win32StackFrameUnwinder&) = delete;
   Win32StackFrameUnwinder& operator=(const Win32StackFrameUnwinder&) = delete;

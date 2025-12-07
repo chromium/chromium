@@ -2,16 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "net/ntlm/ntlm.h"
 
 #include <string.h>
 
+#include <algorithm>
+#include <array>
+
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -79,8 +78,7 @@ void UpdateTargetInfoAvPairs(bool is_mic_enabled,
         // the list. Additionally |kChannelBindings| and |kTargetName| pairs
         // would have been rejected during the initial parsing. See
         // |NtlmBufferReader::ReadTargetInfo|.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       default:
         // Ignore entries we don't care about.
         break;
@@ -97,13 +95,11 @@ void UpdateTargetInfoAvPairs(bool is_mic_enabled,
   }
 
   if (is_epa_enabled) {
-    std::vector<uint8_t> channel_bindings_hash(kChannelBindingsHashLen, 0);
+    std::array<uint8_t, kChannelBindingsHashLen> channel_bindings_hash = {};
 
     // Hash the channel bindings if they exist otherwise they remain zeros.
     if (!channel_bindings.empty()) {
-      GenerateChannelBindingHashV2(
-          channel_bindings,
-          base::make_span<kChannelBindingsHashLen>(channel_bindings_hash));
+      GenerateChannelBindingHashV2(channel_bindings, channel_bindings_hash);
     }
 
     av_pairs->emplace_back(TargetInfoAvId::kChannelBindings,
@@ -173,7 +169,7 @@ void Create3DesKeysFromNtlmHash(
   keys[16] = ntlm_hash[14];
   keys[17] = ntlm_hash[14] << 7 | ntlm_hash[15] >> 1;
   keys[18] = ntlm_hash[15] << 6;
-  memset(keys.data() + 19, 0, 5);
+  std::ranges::fill(keys.subspan(19u, 5u), 0);
 }
 
 void GenerateNtlmHashV1(const std::u16string& password,
@@ -198,19 +194,24 @@ void GenerateResponseDesl(base::span<const uint8_t, kNtlmHashLen> hash,
   static_assert(kResponseLenV1 == block_count * block_size,
                 "kResponseLenV1 must equal block_count * block_size");
 
+  // Safety: Covers the same memory as `response`; DES_cblock contains an 8-char
+  // array so alignment should be fine, too.
+  base::span<DES_cblock> response_as_cblock =
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<DES_cblock*>(response.data()),
+                                response.size() / sizeof(DES_cblock)));
+
   const DES_cblock* challenge_block =
       reinterpret_cast<const DES_cblock*>(challenge.data());
-  uint8_t keys[block_count * block_size];
+  std::array<DES_cblock, block_count> keys;
 
   // Map the NTLM hash to three 8 byte DES keys, with 7 bits of the key in each
   // byte and the least significant bit set with odd parity. Then encrypt the
   // 8 byte challenge with each of the three keys. This produces three 8 byte
   // encrypted blocks into |response|.
-  Create3DesKeysFromNtlmHash(hash, keys);
-  for (size_t ix = 0; ix < block_count * block_size; ix += block_size) {
-    DES_cblock* key_block = reinterpret_cast<DES_cblock*>(keys + ix);
-    DES_cblock* response_block =
-        reinterpret_cast<DES_cblock*>(response.data() + ix);
+  Create3DesKeysFromNtlmHash(hash, base::as_writable_byte_span(keys));
+  for (size_t i = 0; i < block_count; ++i) {
+    DES_cblock* key_block = &keys[i];
+    DES_cblock* response_block = &response_as_cblock[i];
 
     DES_key_schedule key_schedule;
     DES_set_odd_parity(key_block);
@@ -238,7 +239,7 @@ void GenerateResponsesV1(
 
   // In NTLM v1 (with LMv1 disabled), the lm_response and ntlm_response are the
   // same. So just copy the ntlm_response into the lm_response.
-  memcpy(lm_response.data(), ntlm_response.data(), kResponseLenV1);
+  lm_response.copy_from(ntlm_response);
 }
 
 void GenerateLMResponseV1WithSessionSecurity(
@@ -246,8 +247,9 @@ void GenerateLMResponseV1WithSessionSecurity(
     base::span<uint8_t, kResponseLenV1> lm_response) {
   // In NTLM v1 with Session Security (aka NTLM2) the lm_response is 8 bytes of
   // client challenge and 16 bytes of zeros. (See 3.3.1)
-  memcpy(lm_response.data(), client_challenge.data(), kChallengeLen);
-  memset(lm_response.data() + kChallengeLen, 0, kResponseLenV1 - kChallengeLen);
+  auto [out_challenge, out_zeroes] = lm_response.split_at(kChallengeLen);
+  out_challenge.copy_from(client_challenge);
+  std::ranges::fill(out_zeroes, 0);
 }
 
 void GenerateSessionHashV1WithSessionSecurity(
@@ -275,9 +277,9 @@ void GenerateNtlmResponseV1WithSessionSecurity(
   GenerateSessionHashV1WithSessionSecurity(server_challenge, client_challenge,
                                            session_hash);
 
-  GenerateResponseDesl(
-      ntlm_hash, base::make_span(session_hash).subspan<0, kChallengeLen>(),
-      ntlm_response);
+  GenerateResponseDesl(ntlm_hash,
+                       base::span(session_hash).first<kChallengeLen>(),
+                       ntlm_response);
 }
 
 void GenerateResponsesV1WithSessionSecurity(
@@ -303,7 +305,7 @@ void GenerateNtlmHashV2(const std::u16string& domain,
   // uppercase ASCII characters, so the hash does not change depending on the
   // user's locale.
   std::u16string upper_username;
-  bool result = ToUpper(username, &upper_username);
+  bool result = ToUpperUsingLocale(username, &upper_username);
   DCHECK(result);
 
   uint8_t v1_hash[kNtlmHashLen];
@@ -323,7 +325,7 @@ void GenerateNtlmHashV2(const std::u16string& domain,
   DCHECK_EQ(sizeof(v1_hash), outlen);
 }
 
-std::vector<uint8_t> GenerateProofInputV2(
+std::array<uint8_t, kProofInputLenV2> GenerateProofInputV2(
     uint64_t timestamp,
     base::span<const uint8_t, kChallengeLen> client_challenge) {
   NtlmBufferWriter writer(kProofInputLenV2);
@@ -333,7 +335,9 @@ std::vector<uint8_t> GenerateProofInputV2(
                 writer.IsEndOfBuffer();
 
   DCHECK(result);
-  return writer.Pass();
+  std::array<uint8_t, kProofInputLenV2> ret;
+  std::ranges::copy(writer.Pass(), ret.begin());
+  return ret;
 }
 
 void GenerateNtlmProofV2(

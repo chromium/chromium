@@ -7,12 +7,14 @@ package org.chromium.chrome.browser.share.screenshot;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.share.SaveBitmapDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** ScreenshotShareSheetSaveDelegate is in charge of download the current bitmap. */
+@NullMarked
 class ScreenshotShareSheetSaveDelegate {
     private final PropertyModel mModel;
     private final Context mContext;

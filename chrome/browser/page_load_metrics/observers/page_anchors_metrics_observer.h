@@ -51,7 +51,7 @@ class PageAnchorsMetricsObserver
   void UpdateRenderFrameHostAndSourceId(
       content::NavigationHandle* navigation_handle);
 
-  void RecordDataToUkm();
+  void RecordDataToUkm(bool reset_source);
   void RecordAnchorElementMetricsDataToUkm();
 
   content::RenderFrameHost* render_frame_host() const {

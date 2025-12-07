@@ -12,13 +12,11 @@ import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.G
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -32,27 +30,16 @@ import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.Googl
 import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /** This class creates a {@link BottomBarConfig} based on provided params. */
+@NullMarked
 public class BottomBarConfigCreator {
     private static final String TAG = "GoogleBottomBar";
-    private static final String BUTTON_LIST_PARAM = "google_bottom_bar_button_list";
-    private static final String VARIANT_LAYOUT_PARAM = "google_bottom_bar_variant_layout";
-    private static final String NO_VARIANT_HEIGHT_DP_PARAM =
-            "google_bottom_bar_no_variant_height_dp";
-    private static final String SINGLE_DECKER_HEIGHT_DP_PARAM =
-            "google_bottom_bar_single_decker_height_dp";
-    private static final String IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED_PARAM =
-            "google_bottom_bar_variant_is_google_default_search_engine_check_enabled";
 
-    @VisibleForTesting static final int DEFAULT_NO_VARIANT_HEIGHT_DP = 64;
-    @VisibleForTesting static final int DEFAULT_SINGLE_DECKER_HEIGHT_DP = 62;
     @VisibleForTesting static final int DOUBLE_DECKER_HEIGHT_DP = 110;
     @VisibleForTesting static final int SINGLE_DECKER_WITH_RIGHT_BUTTONS_HEIGHT_DP = 64;
 
@@ -79,57 +66,6 @@ public class BottomBarConfigCreator {
     private static final List<Integer> DEFAULT_RIGHT_BUTTON_ID_LIST = List.of(ButtonId.SHARE);
 
     private final Context mContext;
-
-    /**
-     * A cached parameter representing the order of Google Bottom Bar buttons based on experiment
-     * configuration.
-     */
-    public static final StringCachedFieldTrialParameter GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST =
-            ChromeFeatureList.newStringCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM, "");
-
-    /**
-     * A cached boolean parameter to decide whether to check if Google is Chrome's default search
-     * engine.
-     */
-    public static final BooleanCachedFieldTrialParameter
-            IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED =
-                    ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                            ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
-                            IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED_PARAM,
-                            false);
-
-    /**
-     * A cached parameter representing the Google Bottom Bar layout variants value based on
-     * experiment configuration.
-     */
-    public static final IntCachedFieldTrialParameter GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE =
-            ChromeFeatureList.newIntCachedFieldTrialParameter(
-                    ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
-                    VARIANT_LAYOUT_PARAM,
-                    DOUBLE_DECKER);
-
-    /**
-     * A cached parameter used for specifying the height of the Google Bottom Bar in DP, when its
-     * variant is NO_VARIANT.
-     */
-    public static final IntCachedFieldTrialParameter
-            GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE =
-                    ChromeFeatureList.newIntCachedFieldTrialParameter(
-                            ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR,
-                            NO_VARIANT_HEIGHT_DP_PARAM,
-                            DEFAULT_NO_VARIANT_HEIGHT_DP);
-
-    /**
-     * A cached parameter used for specifying the height of the Google Bottom Bar in DP, when its
-     * variant is SINGLE_DECKER.
-     */
-    public static final IntCachedFieldTrialParameter
-            GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE =
-                    ChromeFeatureList.newIntCachedFieldTrialParameter(
-                            ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS,
-                            SINGLE_DECKER_HEIGHT_DP_PARAM,
-                            DEFAULT_SINGLE_DECKER_HEIGHT_DP);
 
     /** Returns true if the id of the custom button param is supported. */
     static boolean shouldAddToGoogleBottomBar(int customButtonParamsId) {
@@ -214,16 +150,14 @@ public class BottomBarConfigCreator {
                 // EncodedButtonIdList = {0, SHARE, CUSTOM}
                 // SupportedCustomButtonParamIds = {101 - SHARE, 105 - CUSTOM}
                 // As a result SAVE button will be added to the toolbar.
-                List<Integer> supportedCustomButtonParamIdList =
-                        new ArrayList<>(CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet());
                 List<Integer> encodedButtonIdList = getEncodedLayoutList(intentParams);
-                return supportedCustomButtonParamIdList.stream()
-                        .filter(
-                                customButtonParamId ->
-                                        encodedButtonIdList.contains(
-                                                CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(
-                                                        customButtonParamId)))
-                        .collect(Collectors.toSet());
+                Set<Integer> ret = new HashSet<>();
+                for (var entry : CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.entrySet()) {
+                    if (encodedButtonIdList.contains(entry.getValue())) {
+                        ret.add(entry.getKey());
+                    }
+                }
+                return ret;
             }
         }
         return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet();
@@ -297,7 +231,7 @@ public class BottomBarConfigCreator {
 
         for (CustomButtonParams params : customButtonParams) {
             Integer buttonId = getButtonId(params.getId());
-            if (buttonId == id) {
+            if (buttonId != null && buttonId == id) {
                 return getButtonConfigFromCustomButtonParams(mContext, buttonId, params);
             }
         }
@@ -393,11 +327,12 @@ public class BottomBarConfigCreator {
             case DOUBLE_DECKER -> DOUBLE_DECKER_HEIGHT_DP;
             case SINGLE_DECKER -> intentParams.getSingleDeckerHeightDp() > 0
                     ? intentParams.getSingleDeckerHeightDp()
-                    : GOOGLE_BOTTOM_BAR_SINGLE_DECKER_HEIGHT_DP_PARAM_VALUE.getValue();
+                    : ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp
+                            .getValue();
             case SINGLE_DECKER_WITH_RIGHT_BUTTONS -> SINGLE_DECKER_WITH_RIGHT_BUTTONS_HEIGHT_DP;
             default -> intentParams.getNoVariantHeightDp() > 0
                     ? intentParams.getNoVariantHeightDp()
-                    : GOOGLE_BOTTOM_BAR_NO_VARIANT_HEIGHT_DP_PARAM_VALUE.getValue();
+                    : ChromeFeatureList.sCctGoogleBottomBarNoVariantHeightDp.getValue();
         };
     }
 
@@ -419,7 +354,8 @@ public class BottomBarConfigCreator {
 
     private static @GoogleBottomBarVariantLayoutType int
             convertFinchParamToGoogleBottomBarVariantLayoutType() {
-        int finchParam = GOOGLE_BOTTOM_BAR_VARIANT_LAYOUT_VALUE.getValue();
+        int finchParam =
+                ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsVariantLayout.getValue();
         return switch (finchParam) {
             case SINGLE_DECKER -> SINGLE_DECKER;
             case SINGLE_DECKER_WITH_RIGHT_BUTTONS -> SINGLE_DECKER_WITH_RIGHT_BUTTONS;
@@ -439,7 +375,8 @@ public class BottomBarConfigCreator {
         // otherwise fall back on encoded string provided in Finch param
         return intentParams.getEncodedButtonCount() != 0
                 ? intentParams.getEncodedButtonList()
-                : getEncodedListFromString(GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST.getValue());
+                : getEncodedListFromString(
+                        ChromeFeatureList.sCctGoogleBottomBarButtonList.getValue());
     }
 
     /**
@@ -541,13 +478,13 @@ public class BottomBarConfigCreator {
             return false;
         }
 
-        long validButtonListSize =
-                buttonIdList.stream().filter(BottomBarConfigCreator::isValidButtonId).count();
-
-        if (validButtonListSize != buttonIdList.size()) {
-            Log.e(TAG, "The list has non-valid button ids");
-            return false;
+        for (int buttonId : buttonIdList) {
+            if (!isValidButtonId(buttonId)) {
+                Log.e(TAG, "The list has non-valid button ids");
+                return false;
+            }
         }
+
         return true;
     }
 
@@ -570,7 +507,7 @@ public class BottomBarConfigCreator {
      *       <li>If an error occurs during processing: Returns null.
      *     </ul>
      */
-    private Integer getSpotlightButtonFromParams(
+    private @Nullable Integer getSpotlightButtonFromParams(
             List<Integer> encodedLayoutList,
             @GoogleBottomBarVariantLayoutType int variantLayoutType) {
         if (variantLayoutType == SINGLE_DECKER) {
@@ -602,8 +539,7 @@ public class BottomBarConfigCreator {
         }
     }
 
-    @Nullable
-    private static @ButtonId Integer createSpotlight(int code) {
+    private static @Nullable @ButtonId Integer createSpotlight(int code) {
         return code != 0 ? code : null;
     }
 
@@ -620,7 +556,7 @@ public class BottomBarConfigCreator {
     }
 
     private static boolean shouldPerformIsGoogleDefaultSearchEngineCheck() {
-        return IS_GOOGLE_DEFAULT_SEARCH_ENGINE_CHECK_ENABLED.getValue();
+        return ChromeFeatureList.sCctGoogleBottomBarVariantLayoutsGoogleDseCheckEnabled.getValue();
     }
 
     private static boolean isGoogleBottomBarVariantLayoutsSupported() {
@@ -638,22 +574,20 @@ public class BottomBarConfigCreator {
     }
 
     private static List<Integer> getEncodedListFromString(String encodedConfig) {
-        List<Integer> result;
+        List<Integer> result = new ArrayList<>();
 
         try {
-            result =
-                    Arrays.stream(encodedConfig.split(","))
-                            .mapToInt(Integer::parseInt)
-                            .boxed()
-                            .collect(Collectors.toList());
+            for (String value : encodedConfig.split(",")) {
+                result.add(Integer.parseInt(value));
+            }
         } catch (NumberFormatException e) {
-            result = Collections.emptyList();
+            result.clear();
         }
 
         return result;
     }
 
-    private static @ButtonId Integer getButtonId(int customButtonParamId) {
+    private static @ButtonId @Nullable Integer getButtonId(int customButtonParamId) {
         return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(customButtonParamId);
     }
 

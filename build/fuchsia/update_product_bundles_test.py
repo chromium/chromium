@@ -16,12 +16,13 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__),
                                              'test')))
 
 import common
+import compatible_utils
 
 
 class TestUpdateProductBundles(unittest.TestCase):
   def setUp(self):
     # By default, test in attended mode.
-    os.environ.pop('SWARMING_SERVER', None)
+    compatible_utils.force_running_attended()
     ffx_mock = mock.Mock()
     ffx_mock.returncode = 0
     self._ffx_patcher = mock.patch('common.run_ffx_command',
@@ -60,10 +61,10 @@ class TestUpdateProductBundles(unittest.TestCase):
     update_product_bundles.remove_repositories(['foo', 'bar', 'fizz', 'buzz'])
 
     ffx_mock.assert_has_calls([
-        mock.call(cmd=('repository', 'remove', 'foo'), check=True),
-        mock.call(cmd=('repository', 'remove', 'bar'), check=True),
-        mock.call(cmd=('repository', 'remove', 'fizz'), check=True),
-        mock.call(cmd=('repository', 'remove', 'buzz'), check=True),
+        mock.call(cmd=('repository', 'remove', 'foo')),
+        mock.call(cmd=('repository', 'remove', 'bar')),
+        mock.call(cmd=('repository', 'remove', 'fizz')),
+        mock.call(cmd=('repository', 'remove', 'buzz')),
     ])
 
   @mock.patch('os.path.exists')
@@ -97,13 +98,12 @@ class TestUpdateProductBundles(unittest.TestCase):
 
       self._ffx_mock.assert_has_calls([
           mock.call(cmd=('--machine', 'json', 'repository', 'list'),
-                    capture_output=True,
-                    check=True),
+                    capture_output=True),
           mock.call(cmd=('repository', 'remove',
-                         'workstation-eng.chromebook-x64'),
-                    check=True)
+                         'workstation-eng.chromebook-x64'))
       ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_product_bundles.running_unattended', return_value=True)
   # Disallow reading sdk_override.
   @mock.patch('os.path.isfile', return_value=False)
@@ -133,16 +133,15 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--base-url', f'gs://fuchsia-sdk/development/1.1.1', '--auth',
             auth_file
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64'),
             '--auth', auth_file
-        ],
-                  check=True)
+        ])
     ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='2.2.2')
@@ -158,6 +157,7 @@ class TestUpdateProductBundles(unittest.TestCase):
       update_product_bundles.main()
     self.assertFalse(self._ffx_mock.called)
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='0.0')
@@ -184,15 +184,14 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--machine', 'json', 'product', 'lookup', 'terminal.x64', '2.2.2',
             '--base-url', 'gs://fuchsia/development/2.2.2'
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.IMAGES_ROOT, 'terminal', 'x64')
-        ],
-                  check=True)
+        ])
     ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_sdk.GetSDKOverrideGCSPath',
               return_value='gs://my-bucket/sdk')
   @mock.patch('common.get_hash_from_sdk', return_value='2.2.2')
@@ -218,15 +217,14 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--machine', 'json', 'product', 'lookup', 'terminal.x64', '2.2.2',
             '--base-url', 'gs://my-bucket'
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.IMAGES_ROOT, 'terminal', 'x64')
-        ],
-                  check=True)
+        ])
     ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='1.1.1')
@@ -243,6 +241,7 @@ class TestUpdateProductBundles(unittest.TestCase):
       update_product_bundles.main()
     self.assertFalse(self._ffx_mock.called)
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_product_bundles.get_current_signature',
               return_value='0.0')
   @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
@@ -270,15 +269,14 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--machine', 'json', 'product', 'lookup', 'terminal.x64', '1.1.1',
             '--base-url', 'gs://fuchsia-sdk/development/1.1.1'
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64')
-        ],
-                  check=True)
+        ])
     ])
 
+  @mock.patch('common.make_clean_directory')
   @mock.patch('update_sdk.GetSDKOverrideGCSPath',
               return_value='gs://my-bucket/sdk')
   @mock.patch('update_product_bundles.internal_hash', return_value='1.1.1')
@@ -306,13 +304,11 @@ class TestUpdateProductBundles(unittest.TestCase):
             '--machine', 'json', 'product', 'lookup', 'terminal.x64', '1.1.1',
             '--base-url', 'gs://fuchsia-sdk/development/1.1.1'
         ],
-                  check=True,
                   capture_output=True),
         mock.call(cmd=[
             'product', 'download', 'http://download-url',
             os.path.join(common.INTERNAL_IMAGES_ROOT, 'terminal', 'x64')
-        ],
-                  check=True)
+        ])
     ])
 
 

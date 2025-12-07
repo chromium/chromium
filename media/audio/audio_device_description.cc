@@ -8,6 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/localized_strings.h"
@@ -18,8 +20,14 @@ const char AudioDeviceDescription::kCommunicationsDeviceId[] = "communications";
 const char AudioDeviceDescription::kLoopbackInputDeviceId[] = "loopback";
 const char AudioDeviceDescription::kLoopbackWithMuteDeviceId[] =
     "loopbackWithMute";
+const char AudioDeviceDescription::kLoopbackWithMuteDeviceIdCast[] =
+    "loopbackWithMuteCast";
 const char AudioDeviceDescription::kLoopbackWithoutChromeId[] =
     "loopbackWithoutChrome";
+const char AudioDeviceDescription::kLoopbackAllDevicesId[] =
+    "loopbackAllDevices";
+const char AudioDeviceDescription::kApplicationLoopbackDeviceId[] =
+    "applicationLoopback";
 
 namespace {
 // Sanitize names which are known to contain the user's name, such as AirPods'
@@ -52,28 +60,37 @@ void RedactDeviceName(std::string& name) {
 }  // namespace
 
 // static
-bool AudioDeviceDescription::IsDefaultDevice(const std::string& device_id) {
+bool AudioDeviceDescription::IsDefaultDevice(std::string_view device_id) {
   return device_id.empty() ||
          device_id == AudioDeviceDescription::kDefaultDeviceId;
 }
 
 // static
 bool AudioDeviceDescription::IsCommunicationsDevice(
-    const std::string& device_id) {
+    std::string_view device_id) {
   return device_id == AudioDeviceDescription::kCommunicationsDeviceId;
 }
 
 // static
-bool AudioDeviceDescription::IsLoopbackDevice(const std::string& device_id) {
+bool AudioDeviceDescription::IsLoopbackDevice(std::string_view device_id) {
   return device_id == kLoopbackInputDeviceId ||
          device_id == kLoopbackWithMuteDeviceId ||
-         device_id == kLoopbackWithoutChromeId;
+         device_id == kLoopbackWithMuteDeviceIdCast ||
+         device_id == kLoopbackWithoutChromeId ||
+         device_id == kLoopbackAllDevicesId ||
+         IsApplicationLoopbackDevice(device_id);
+}
+
+// static
+bool AudioDeviceDescription::IsApplicationLoopbackDevice(
+    std::string_view device_id) {
+  return base::StartsWith(device_id, kApplicationLoopbackDeviceId);
 }
 
 // static
 bool AudioDeviceDescription::UseSessionIdToSelectDevice(
     const base::UnguessableToken& session_id,
-    const std::string& device_id) {
+    std::string_view device_id) {
   return !session_id.is_empty() && device_id.empty();
 }
 
@@ -91,28 +108,32 @@ std::string AudioDeviceDescription::GetCommunicationsDeviceName() {
   // is deprecated.
   return "";
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 
 // static
 std::string AudioDeviceDescription::GetDefaultDeviceName(
-    const std::string& real_device_name) {
-  if (real_device_name.empty())
+    std::string_view real_device_name) {
+  if (real_device_name.empty()) {
     return GetDefaultDeviceName();
+  }
   // TODO(guidou): Put the names together in a localized manner.
   // http://crbug.com/788767
-  return GetDefaultDeviceName() + " - " + real_device_name;
+  return base::StringPrintf("%s - %s", GetDefaultDeviceName(),
+                            real_device_name);
 }
 
 // static
 std::string AudioDeviceDescription::GetCommunicationsDeviceName(
-    const std::string& real_device_name) {
-  if (real_device_name.empty())
+    std::string_view real_device_name) {
+  if (real_device_name.empty()) {
     return GetCommunicationsDeviceName();
+  }
   // TODO(guidou): Put the names together in a localized manner.
   // http://crbug.com/788767
-  return GetCommunicationsDeviceName() + " - " + real_device_name;
+  return base::StringPrintf("%s - %s", GetCommunicationsDeviceName(),
+                            real_device_name);
 }
 
 // static
@@ -152,9 +173,9 @@ AudioDeviceDescription::AudioDeviceDescription(std::string device_name,
                                                std::string group_id,
                                                bool is_system_default,
                                                bool is_communications_device)
-    : device_name(device_name),
-      unique_id(unique_id),
-      group_id(group_id),
+    : device_name(std::move(device_name)),
+      unique_id(std::move(unique_id)),
+      group_id(std::move(group_id)),
       is_system_default(is_system_default),
       is_communications_device(is_communications_device) {}
 

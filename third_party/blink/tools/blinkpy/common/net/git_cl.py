@@ -16,6 +16,7 @@ from typing import Mapping, NamedTuple, Optional, Set
 from blinkpy.common.checkout.git import Git
 from blinkpy.common.net.results_fetcher import filter_latest_builds
 from blinkpy.common.net.rpc import Build, BuildStatus, BuildbucketClient
+from blinkpy.common.system.executive import ScriptError
 
 _log = logging.getLogger(__name__)
 
@@ -119,16 +120,21 @@ class GitCL:
             builders_by_bucket[bucket].append(builder)
         return dict(builders_by_bucket)
 
-    def get_issue_number(self):
-        """Returns the issue number as a string, or "None"."""
+    def get_issue_number(self) -> int | None:
+        """Parse the issue number, if available."""
         # Expected output of git cl issue looks like:
         # "<Optional message> Issue number: 1234 (<url>)".
         # Note: git cl gets the number from local git config, e.g.
         #   by running `git config branch.<branchname>.gerritissue`.
-        output = self.run(['issue']).split()
-        if 'number:' in output:
-            return output[output.index('number:') + 1]
-        return 'None'
+        try:
+            output = self.run(['issue']).split()
+            if 'number:' in output:
+                return int(output[output.index('number:') + 1])
+        except (ScriptError, ValueError):
+            pass
+        # `git cl issue` is internally implemented with `git config`, so it
+        # won't work in non-Git environments like cogfs.
+        return None
 
     def get_cl_status(self, issue: Optional[int] = None) -> Optional[CLStatus]:
         """Get the status of a CL.

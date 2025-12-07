@@ -147,8 +147,9 @@ OrderSummaryViewController::OrderSummaryViewController(
 }
 
 OrderSummaryViewController::~OrderSummaryViewController() {
-  if (spec())
+  if (spec()) {
     spec()->RemoveObserver(this);
+  }
 
   state()->RemoveObserver(this);
 }
@@ -170,8 +171,9 @@ std::u16string OrderSummaryViewController::GetSheetTitle() {
 }
 
 void OrderSummaryViewController::FillContentView(views::View* content_view) {
-  if (!spec())
+  if (!spec()) {
     return;
+  }
 
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical);
@@ -195,7 +197,7 @@ void OrderSummaryViewController::FillContentView(views::View* content_view) {
       currency = base::UTF8ToUTF16((*display_items[i])->amount->currency);
     }
 
-    content_view->AddChildView(
+    content_view->AddChildViewRaw(
         CreateLineItemView(
             base::UTF8ToUTF16((*display_items[i])->label), currency,
             spec()->GetFormattedCurrencyAmount((*display_items[i])->amount),
@@ -210,7 +212,7 @@ void OrderSummaryViewController::FillContentView(views::View* content_view) {
       spec()->GetFormattedCurrencyAmount(
           spec()->GetTotal(state()->selected_app())->amount));
 
-  content_view->AddChildView(
+  content_view->AddChildViewRaw(
       CreateLineItemView(
           base::UTF8ToUTF16(spec()->GetTotal(state()->selected_app())->label),
           base::UTF8ToUTF16(

@@ -41,7 +41,7 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     for (var i = 0; i < tabs.length; ++i) {
       var text = (i + 1) + ': ';
       text += tabs[i].title;
-      if (tabs[i] === tabbedPane.currentTab)
+      if (tabs[i].selected)
         text += ' [selected]';
       TestRunner.addResult('    ' + text);
     }

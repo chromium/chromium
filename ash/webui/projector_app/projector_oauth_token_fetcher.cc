@@ -4,6 +4,7 @@
 
 #include "ash/webui/projector_app/projector_oauth_token_fetcher.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "base/containers/contains.h"
@@ -26,10 +27,6 @@ const base::TimeDelta kBufferTime = base::Seconds(4);
 
 signin::IdentityManager* GetIdentityManager() {
   return ash::ProjectorAppClient::Get()->GetIdentityManager();
-}
-
-OAuth2AccessTokenManager::ScopeSet GetScopeSet() {
-  return OAuth2AccessTokenManager::ScopeSet{GaiaConstants::kDriveOAuth2Scope};
 }
 
 }  // namespace
@@ -96,7 +93,7 @@ void ProjectorOAuthTokenFetcher::InvalidateToken(const std::string& token) {
   });
   GetIdentityManager()->RemoveAccessTokenFromCache(
       GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
-      GetScopeSet(), token);
+      signin::OAuthConsumerId::kProjectorTokenFetcher, token);
 }
 
 bool ProjectorOAuthTokenFetcher::HasCachedTokenForTest(
@@ -126,7 +123,7 @@ void ProjectorOAuthTokenFetcher::InitiateAccessTokenFetchFor(
       identity_manager->CreateAccessTokenFetcherForAccount(
           identity_manager->FindExtendedAccountInfoByEmailAddress(email)
               .account_id,
-          /*oauth_consumer_name=*/"ProjectorOAuthTokenFetcher", GetScopeSet(),
+          signin::OAuthConsumerId::kProjectorTokenFetcher,
           base::BindOnce(
               &ProjectorOAuthTokenFetcher::OnAccessTokenRequestCompleted,
               // It is safe to use base::Unretained as |this| owns

@@ -22,9 +22,10 @@ suite('StaticTypesTest', function() {
   });
 
   test('returns Trusted Types', () => {
-    assertEquals(getTrustedHTML`test` instanceof TrustedHTML, true);
-    assertEquals(getTrustedScript`test` instanceof TrustedScript, true);
-    assertEquals(getTrustedScriptURL`test` instanceof TrustedScriptURL, true);
+    assertEquals(getTrustedHTML`test` instanceof window.TrustedHTML, true);
+    assertEquals(getTrustedScript`test` instanceof window.TrustedScript, true);
+    assertEquals(
+        getTrustedScriptURL`test` instanceof window.TrustedScriptURL, true);
   });
 
   test('accepts single and mutiple lines', () => {

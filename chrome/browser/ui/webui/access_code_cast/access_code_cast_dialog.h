@@ -13,11 +13,10 @@
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
-#include "url/gurl.h"
 
 namespace content {
 class WebContents;

@@ -11,7 +11,7 @@
 #include "base/observer_list.h"
 #include "ui/events/event.h"
 #include "ui/events/event_handler.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 class GestureEvent;

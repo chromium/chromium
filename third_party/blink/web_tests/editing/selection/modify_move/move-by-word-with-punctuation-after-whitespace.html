@@ -1,0 +1,49 @@
+<!doctype html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../assert_selection.js"></script>
+<script>
+if (window.internals) {
+  internals.settings.setEditingBehavior('win');
+  internals.settings.setSelectTrailingWhitespaceEnabled(true);
+}
+
+// Test punctuation with preceding whitespace
+selection_test(
+  '<div contenteditable>abc| ...</div>',
+  selection => selection.modify('move', 'forward', 'word'),
+  '<div contenteditable>abc |...</div>',
+  'cursor stops at whitespace-punctuation boundary with ellipsis');
+
+selection_test(
+  '<div contenteditable>abc| .more</div>',
+  selection => selection.modify('move', 'forward', 'word'),
+  '<div contenteditable>abc |.more</div>',
+  'cursor stops at whitespace-punctuation boundary with dot');
+
+selection_test(
+  '<div contenteditable>abc| ???</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable>abc |???</div>',
+  'cursor stops at whitespace-punctuation boundary with question marks');
+
+selection_test(
+  '<div contenteditable>abc| !more</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable>abc |!more</div>',
+  'cursor stops at whitespace-punctuation boundary with exclamation');
+
+// Test punctuation without preceding whitespace
+selection_test(
+  '<div contenteditable>abc|.more</div>',
+  selection => selection.modify('move', 'forward', 'word'),
+  '<div contenteditable>abc.|more</div>',
+  'cursor moves through punctuation when no whitespace boundary exists');
+
+selection_test(
+  '<div contenteditable>abc|...more</div>',
+  selection => selection.modify('move', 'right', 'word'),
+  '<div contenteditable>abc...|more</div>',
+  'cursor moves through multiple punctuation marks without whitespace boundary');
+
+</script>

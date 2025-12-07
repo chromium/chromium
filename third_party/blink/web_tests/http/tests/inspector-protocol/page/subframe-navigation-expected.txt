@@ -1,0 +1,5 @@
+Tests that a local subframe is not detached upon navigation
+Page.frameRequestedNavigation http://127.0.0.1:8000/inspector-protocol/resources/empty.html?2
+Page.frameStartedNavigating http://127.0.0.1:8000/inspector-protocol/resources/empty.html?2
+Page.frameNavigated http://127.0.0.1:8000/inspector-protocol/resources/empty.html?2
+

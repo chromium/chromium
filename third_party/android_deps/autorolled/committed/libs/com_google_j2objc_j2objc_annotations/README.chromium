@@ -1,0 +1,19 @@
+Name: J2ObjC Annotations
+Short Name: j2objc-annotations
+URL: https://repo.maven.apache.org/maven2/com/google/j2objc/j2objc-annotations/3.1/j2objc-annotations-3.1.jar
+Version: 3.1
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+
+Description:
+A set of annotations that provide additional information to the J2ObjC translator to modify the result of translation.
+
+See also: https://github.com/google/j2objc/
+
+
+Local Modifications:
+No modifications.

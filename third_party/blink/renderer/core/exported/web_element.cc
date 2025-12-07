@@ -30,13 +30,17 @@
 
 #include "third_party/blink/public/web/web_element.h"
 
+#include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink.h"
 #include "third_party/blink/public/web/web_label_element.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_element.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_behavior.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_to_options.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -48,17 +52,27 @@
 #include "third_party/blink/renderer/core/events/text_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect_list.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -127,13 +141,18 @@ WebString WebElement::TextContentAbridged(const unsigned int max_length) const {
 }
 
 WebString WebElement::InnerHTML() const {
-  return ConstUnwrap<Element>()->innerHTML();
+  return ConstUnwrap<Element>()->GetInnerHTMLString();
+}
+
+void WebElement::Focus() {
+  return Unwrap<Element>()->Focus();
+}
+
+void WebElement::Blur() {
+  return Unwrap<Element>()->blur();
 }
 
 bool WebElement::WritingSuggestions() const {
-  if (!RuntimeEnabledFeatures::WritingSuggestionsEnabled()) {
-    return true;
-  }
   const auto* html_element =
       blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());
   return html_element &&
@@ -257,7 +276,7 @@ void WebElement::PasteText(const WebString& text, bool replace_all) {
                                           /*should_smart_replace=*/true));
 }
 
-WebVector<WebLabelElement> WebElement::Labels() const {
+std::vector<WebLabelElement> WebElement::Labels() const {
   auto* html_element = blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());
   if (!html_element)
     return {};
@@ -265,7 +284,7 @@ WebVector<WebLabelElement> WebElement::Labels() const {
       const_cast<HTMLElement*>(html_element)->labels();
   if (!html_labels)
     return {};
-  Vector<WebLabelElement> labels;
+  std::vector<WebLabelElement> labels;
   for (unsigned i = 0; i < html_labels->length(); i++) {
     if (auto* label_element =
             blink::DynamicTo<HTMLLabelElement>(html_labels->item(i))) {
@@ -308,10 +327,73 @@ gfx::Rect WebElement::BoundsInWidget() const {
   return ConstUnwrap<Element>()->BoundsInWidget();
 }
 
+gfx::Rect WebElement::VisibleBoundsInWidget() const {
+  const Element* element = ConstUnwrap<Element>();
+  LocalFrame* frame = element->GetDocument().GetFrame();
+  if (!frame || !frame->View()) {
+    return gfx::Rect();
+  }
+
+  gfx::Rect bounds_in_local_root =
+      element->VisibleBoundsRespectingClipsInLocalRoot();
+
+  if (!frame->IsOutermostMainFrame()) {
+    return bounds_in_local_root;
+  }
+
+  // In the outermost main frame the widget includes the viewport transform
+  // (i.e. pinch-zoom). VisibleBoundsRespectingClipsInLocalRoot should already
+  // have clipped to the visual viewport (but then transforms back into local
+  // root space).
+  VisualViewport& visual_viewport =
+      element->GetDocument().GetPage()->GetVisualViewport();
+  gfx::Rect bounds_in_viewport =
+      visual_viewport.RootFrameToViewport(bounds_in_local_root);
+  bounds_in_viewport.Intersect(gfx::Rect(visual_viewport.Size()));
+  return bounds_in_viewport;
+}
+
+std::vector<gfx::Rect> WebElement::ClientRectsInWidget() {
+  Element* element = Unwrap<Element>();
+  LocalFrameView* view = element->GetDocument().View();
+  if (!view) {
+    return {};
+  }
+
+  std::vector<gfx::Rect> result;
+  Vector<gfx::RectF> rects = element->GetClientRectsNoAdjustment();
+  for (const gfx::RectF& rect : rects) {
+    result.emplace_back(view->FrameToViewport(gfx::ToEnclosingRect(rect)));
+  }
+  return result;
+}
+
 SkBitmap WebElement::ImageContents() {
   Image* image = GetImage();
   if (!image)
     return {};
+  scoped_refptr<SVGImageForContainer> svg_image_for_container;
+  if (RuntimeEnabledFeatures::SvgFallBackToContainerSizeEnabled()) {
+    if (auto* svg_image = blink::DynamicTo<SVGImage>(*image)) {
+      // Adapted from ImageElementBase::GetSourceImageFromCanvas.
+      Element* element = Unwrap<Element>();
+      const ComputedStyle* style = element->GetComputedStyle();
+      auto preferred_color_scheme = element->GetDocument()
+                                        .GetStyleEngine()
+                                        .ResolveColorSchemeForEmbedding(style);
+      const SVGImageViewInfo* view_info =
+          SVGImageForContainer::CreateViewInfo(*svg_image, *element);
+      const gfx::SizeF image_size = SVGImageForContainer::ConcreteObjectSize(
+          *svg_image, view_info, gfx::SizeF(GetClientSize()));
+      if (!image_size.IsEmpty()) {
+        svg_image_for_container = SVGImageForContainer::Create(
+            *svg_image, image_size, 1, view_info, preferred_color_scheme);
+      }
+    }
+  }
+  if (svg_image_for_container) {
+    image = svg_image_for_container.get();
+  }
   return image->AsSkBitmapForCurrentFrame(kRespectImageOrientation);
 }
 
@@ -322,11 +404,12 @@ std::vector<uint8_t> WebElement::CopyOfImageData() {
   return image->Data()->CopyAs<std::vector<uint8_t>>();
 }
 
-std::string WebElement::ImageExtension() {
+WebString WebElement::ImageMimeType() {
   Image* image = GetImage();
-  if (!image)
-    return std::string();
-  return image->FilenameExtension().Utf8();
+  if (!image) {
+    return WebString();
+  }
+  return image->MimeType();
 }
 
 gfx::Size WebElement::GetImageSize() {
@@ -344,6 +427,83 @@ gfx::Size WebElement::GetClientSize() const {
 gfx::Size WebElement::GetScrollSize() const {
   Element* element = const_cast<Element*>(ConstUnwrap<Element>());
   return gfx::Size(element->scrollWidth(), element->scrollHeight());
+}
+
+gfx::Vector2dF WebElement::GetScrollOffset() const {
+  Element* element = const_cast<Element*>(ConstUnwrap<Element>());
+  return gfx::Vector2dF(element->scrollLeft(), element->scrollTop());
+}
+
+bool WebElement::SetScrollOffset(const gfx::Vector2dF& offset) {
+  Element* element = Unwrap<Element>();
+  ScrollToOptions* scroll_to_options = ScrollToOptions::Create();
+  scroll_to_options->setLeft(offset.x());
+  scroll_to_options->setTop(offset.y());
+  scroll_to_options->setBehavior(V8ScrollBehavior::Enum::kInstant);
+  return element->SetScrollOffset(scroll_to_options);
+}
+
+void WebElement::ScrollIntoViewIfNeeded() {
+  Element* element = Unwrap<Element>();
+  LayoutObject* layout_object = element->GetLayoutObject();
+  if (!layout_object) {
+    return;
+  }
+
+  mojom::blink::ScrollIntoViewParamsPtr params =
+      mojom::blink::ScrollIntoViewParams::New();
+  // Match ScrollAlignment::CenterIfNeeded().
+  params->align_x = mojom::blink::ScrollAlignment::New();
+  params->align_x->rect_visible =
+      mojom::blink::ScrollAlignment::Behavior::kNoScroll;
+  params->align_x->rect_hidden =
+      mojom::blink::ScrollAlignment::Behavior::kCenter;
+  params->align_x->rect_partial =
+      mojom::blink::ScrollAlignment::Behavior::kClosestEdge;
+  params->align_y = mojom::blink::ScrollAlignment::New();
+  params->align_y->rect_visible =
+      mojom::blink::ScrollAlignment::Behavior::kNoScroll;
+  params->align_y->rect_hidden =
+      mojom::blink::ScrollAlignment::Behavior::kCenter;
+  params->align_y->rect_partial =
+      mojom::blink::ScrollAlignment::Behavior::kClosestEdge;
+  params->behavior = blink::mojom::ScrollBehavior::kInstant;
+  // User scrolling to ensure only user scrollable scrollers are affected.
+  params->type = mojom::blink::ScrollType::kUser;
+  scroll_into_view_util::ScrollRectToVisible(
+      *layout_object, layout_object->AbsoluteBoundingBoxRectForScrollIntoView(),
+      std::move(params));
+}
+
+bool WebElement::HasScrollBehaviorSmooth() const {
+  return GetScrollingBox()->StyleRef().GetScrollBehavior() ==
+         mojom::blink::ScrollBehavior::kSmooth;
+}
+
+bool WebElement::IsUserScrollableX() const {
+  LayoutBox* box = GetScrollingBox();
+  if (!box) {
+    return false;
+  }
+
+  return box->HasScrollableOverflowX();
+}
+
+bool WebElement::IsUserScrollableY() const {
+  LayoutBox* box = GetScrollingBox();
+  if (!box) {
+    return false;
+  }
+
+  return box->HasScrollableOverflowY();
+}
+
+float WebElement::GetEffectiveZoom() const {
+  const Element* element = ConstUnwrap<Element>();
+  if (const auto* layout_object = element->GetLayoutObject()) {
+    return layout_object->StyleRef().EffectiveZoom();
+  }
+  return 1.0f;
 }
 
 WebString WebElement::GetComputedValue(const WebString& property_name) {
@@ -379,6 +539,18 @@ Image* WebElement::GetImage() {
   if (IsNull())
     return nullptr;
   return Unwrap<Element>()->ImageContents();
+}
+
+LayoutBox* WebElement::GetScrollingBox() const {
+  Element* element = const_cast<Element*>(ConstUnwrap<Element>());
+
+  // The viewport is a special case as it is scrolled by the layout view, rather
+  // than body or html elements.
+  if (element == element->GetDocument().scrollingElement()) {
+    return element->GetDocument().GetLayoutView();
+  }
+
+  return blink::DynamicTo<LayoutBox>(element->GetLayoutObject());
 }
 
 }  // namespace blink

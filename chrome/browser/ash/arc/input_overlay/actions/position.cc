@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/position.h"
 
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 
@@ -122,8 +123,7 @@ bool Position::ParseFromJson(const base::Value::Dict& value) {
     case PositionType::kDependent:
       return ParseDependentFromJson(value);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -135,8 +135,7 @@ gfx::PointF Position::CalculatePosition(
     case PositionType::kDependent:
       return CalculateDependentPosition(content_bounds);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::PointF();
+      NOTREACHED();
   }
 }
 
@@ -264,10 +263,6 @@ bool Position::operator==(const Position& other) const {
     return false;
   }
   return true;
-}
-
-bool Position::operator!=(const Position& other) const {
-  return !(*this == other);
 }
 
 }  // namespace arc::input_overlay

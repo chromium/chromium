@@ -83,7 +83,7 @@ void PaintWorkletPaintDispatcher::DispatchWorklets(
 
   scoped_refptr<base::SingleThreadTaskRunner> runner =
       GetCompositorTaskRunner();
-  WTF::CrossThreadClosure on_done = CrossThreadBindRepeating(
+  CrossThreadClosure on_done = CrossThreadBindRepeating(
       [](base::WeakPtr<PaintWorkletPaintDispatcher> dispatcher,
          scoped_refptr<base::SingleThreadTaskRunner> runner) {
         PostCrossThreadTask(

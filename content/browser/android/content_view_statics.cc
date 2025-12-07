@@ -11,7 +11,6 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/not_fatal_until.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -21,7 +20,7 @@
 
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
-using base::android::JavaParamRef;
+using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
@@ -59,7 +58,7 @@ class SuspendedProcessWatcher : public content::RenderProcessHostObserver {
             content::RenderProcessHost::AllHostsIterator());
          !i.IsAtEnd(); i.Advance()) {
       content::RenderProcessHost* host = i.GetCurrentValue();
-      if (suspended_processes_.insert(host->GetID()).second) {
+      if (suspended_processes_.insert(host->GetDeprecatedID()).second) {
         host->AddObserver(this);
         host->GetRendererInterface()->SetWebKitSharedTimersSuspended(true);
       }
@@ -79,8 +78,8 @@ class SuspendedProcessWatcher : public content::RenderProcessHostObserver {
 
  private:
   void StopWatching(content::RenderProcessHost* host) {
-    auto pos = suspended_processes_.find(host->GetID());
-    CHECK(pos != suspended_processes_.end(), base::NotFatalUntil::M130);
+    auto pos = suspended_processes_.find(host->GetDeprecatedID());
+    CHECK(pos != suspended_processes_.end());
     host->RemoveObserver(this);
     suspended_processes_.erase(pos);
   }
@@ -102,3 +101,5 @@ static void JNI_ContentViewStaticsImpl_SetWebKitSharedTimersSuspended(
     g_suspended_processes_watcher.Pointer()->ResumeWebkitSharedTimers();
   }
 }
+
+DEFINE_JNI(ContentViewStaticsImpl)

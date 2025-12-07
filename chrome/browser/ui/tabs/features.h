@@ -9,24 +9,20 @@
 
 namespace tabs {
 
-// TODO(346837232) move all flags to this file.
+// TODO(crbug.com/346837232): move all flags to this file.
 
-BASE_DECLARE_FEATURE(kSplitTabStrip);
+BASE_DECLARE_FEATURE(kDebugUITabStrip);
 
-BASE_DECLARE_FEATURE(kScrollableTabStrip);
-extern const char kMinimumTabWidthFeatureParameterName[];
-
-BASE_DECLARE_FEATURE(kScrollableTabStripWithDragging);
-extern const char kTabScrollingWithDraggingModeName[];
-
-BASE_DECLARE_FEATURE(kScrollableTabStripOverflow);
-extern const char kScrollableTabStripOverflowModeName[];
+BASE_DECLARE_FEATURE(kTabGroupHome);
 
 BASE_DECLARE_FEATURE(kTabSearchPositionSetting);
 
-BASE_DECLARE_FEATURE(kTabStripCollectionStorage);
+BASE_DECLARE_FEATURE(kVerticalTabs);
 
-extern bool CanShowTabSearchPositionSetting();
+BASE_DECLARE_FEATURE(kTabSelectionByPointer);
+
+bool CanShowTabSearchPositionSetting();
+bool IsVerticalTabsFeatureEnabled();
 
 }  // namespace tabs
 

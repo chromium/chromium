@@ -5,9 +5,9 @@
 #include "components/subresource_filter/core/common/indexed_ruleset.h"
 
 #include "base/check.h"
+#include "base/functional/callback.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "components/subresource_filter/core/common/first_party_origin.h"
@@ -55,12 +55,12 @@ VerifyStatus GetVerifyStatus(base::span<const uint8_t> buffer,
 
 // RulesetIndexer --------------------------------------------------------------
 
-const int RulesetIndexer::kIndexedFormatVersion = 36;
+const int RulesetIndexer::kIndexedFormatVersion = 37;
 
 // This static assert is meant to catch cases where
 // url_pattern_index::kUrlPatternIndexFormatVersion is incremented without
 // updating RulesetIndexer::kIndexedFormatVersion.
-static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 15,
+static_assert(url_pattern_index::kUrlPatternIndexFormatVersion == 16,
               "kUrlPatternIndexFormatVersion has changed, make sure you've "
               "also updated RulesetIndexer::kIndexedFormatVersion above.");
 
@@ -74,18 +74,21 @@ bool RulesetIndexer::AddUrlRule(const proto::UrlRule& rule) {
       url_pattern_index::SerializeUrlRule(rule, &builder_, &domain_map_);
   // Note: A zero offset.o means a "nullptr" offset. It is returned when the
   // rule has not been serialized.
-  if (!offset.o)
+  if (!offset.o) {
     return false;
+  }
 
   if (rule.semantics() == proto::RULE_SEMANTICS_BLOCKLIST) {
     blocklist_.IndexUrlRule(offset);
   } else {
     const auto* flat_rule = flatbuffers::GetTemporaryPointer(builder_, offset);
-    CHECK(flat_rule, base::NotFatalUntil::M129);
-    if (flat_rule->element_types())
+    CHECK(flat_rule);
+    if (flat_rule->element_types()) {
       allowlist_.IndexUrlRule(offset);
-    if (flat_rule->activation_types())
+    }
+    if (flat_rule->activation_types()) {
       deactivation_.IndexUrlRule(offset);
+    }
   }
 
   return true;
@@ -147,16 +150,24 @@ LoadPolicy IndexedRulesetMatcher::GetLoadPolicyForResourceLoad(
     const GURL& url,
     const FirstPartyOrigin& first_party,
     proto::ElementType element_type,
-    bool disable_generic_rules) const {
+    bool disable_generic_rules,
+    const url_pattern_index::flat::UrlRule** out_rule) const {
   const url_pattern_index::flat::UrlRule* rule =
       MatchedUrlRule(url, first_party, element_type, disable_generic_rules);
 
-  if (!rule)
-    return LoadPolicy::ALLOW;
+  LoadPolicy policy = LoadPolicy::DISALLOW;
+  if (!rule) {
+    policy = LoadPolicy::ALLOW;
+  } else if (rule->options() &
+             url_pattern_index::flat::OptionFlag_IS_ALLOWLIST) {
+    policy = LoadPolicy::EXPLICITLY_ALLOW;
+  }
 
-  return rule->options() & url_pattern_index::flat::OptionFlag_IS_ALLOWLIST
-             ? LoadPolicy::EXPLICITLY_ALLOW
-             : LoadPolicy::DISALLOW;
+  if (policy == LoadPolicy::DISALLOW && out_rule) {
+    *out_rule = rule;
+  }
+
+  return policy;
 }
 
 const url_pattern_index::flat::UrlRule* IndexedRulesetMatcher::MatchedUrlRule(
@@ -186,16 +197,18 @@ const url_pattern_index::flat::UrlRule* IndexedRulesetMatcher::MatchedUrlRule(
   // allowlist rule was not matched.
   if (element_type == proto::ELEMENT_TYPE_SUBDOCUMENT) {
     auto* allowlist_rule = find_match(allowlist_);
-    if (allowlist_rule)
+    if (allowlist_rule) {
       return allowlist_rule;
+    }
     return find_match(blocklist_);
   }
 
   // For non-subdocument elements, only check the allowlist if there is a
   // matched blocklist rule to prevent unnecessary lookups.
   auto* blocklist_rule = find_match(blocklist_);
-  if (!blocklist_rule)
+  if (!blocklist_rule) {
     return nullptr;
+  }
   auto* allowlist_rule = find_match(allowlist_);
   return allowlist_rule ? allowlist_rule : blocklist_rule;
 }

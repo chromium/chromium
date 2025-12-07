@@ -28,7 +28,7 @@ class DesktopCapturer : public webrtc::DesktopCapturer {
 
   // Whether capturer can notify the callback interface of the available frames
   // immediately.
-  virtual bool SupportsFrameCallbacks();
+  virtual bool SupportsFrameCallbacks() const;
 
 #if defined(WEBRTC_USE_GIO)
   virtual void GetMetadataAsync(

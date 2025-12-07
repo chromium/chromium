@@ -4,15 +4,20 @@
 
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 
+#include <memory>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/test/ash_test_base.h"
+#include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "chrome/browser/ash/magic_boost/mock_editor_panel_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/test/base/chrome_ash_test_base.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
-#include "chromeos/crosapi/mojom/editor_panel.mojom-shared.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -57,7 +62,7 @@ class TestMagicBoostStateObserver : public MagicBoostState::Observer {
 
 }  // namespace
 
-class MagicBoostStateAshTest : public AshTestBase {
+class MagicBoostStateAshTest : public ChromeAshTestBase {
  protected:
   MagicBoostStateAshTest() = default;
   MagicBoostStateAshTest(const MagicBoostStateAshTest&) = delete;
@@ -66,12 +71,13 @@ class MagicBoostStateAshTest : public AshTestBase {
 
   // ChromeAshTestBase:
   void SetUp() override {
-    AshTestBase::SetUp();
+    ChromeAshTestBase::SetUp();
 
     prefs_ = static_cast<TestingPrefServiceSimple*>(
         ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
 
-    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>();
+    magic_boost_state_ = std::make_unique<MagicBoostStateAsh>(
+        base::BindRepeating([]() { return static_cast<Profile*>(nullptr); }));
     magic_boost_state_->set_editor_panel_manager_for_test(
         &mock_editor_manager_);
 
@@ -82,7 +88,7 @@ class MagicBoostStateAshTest : public AshTestBase {
     observer_.reset();
     magic_boost_state_.reset();
     prefs_ = nullptr;
-    AshTestBase::TearDown();
+    ChromeAshTestBase::TearDown();
   }
 
   TestingPrefServiceSimple* prefs() { return prefs_; }
@@ -108,6 +114,7 @@ TEST_F(MagicBoostStateAshTest, UpdateMagicBoostEnabledState) {
   // Both HMR and Orca should be disabled when `kMagicBoostEnabled` is false.
   EXPECT_FALSE(MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_FALSE(prefs()->GetBoolean(ash::prefs::kOrcaEnabled));
+  EXPECT_FALSE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
 
   // The observer class should get a notification when the pref value
   // changes.
@@ -119,6 +126,7 @@ TEST_F(MagicBoostStateAshTest, UpdateMagicBoostEnabledState) {
   // Both HMR and Orca should be enabled when `kMagicBoostEnabled` is true.
   EXPECT_TRUE(MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_TRUE(prefs()->GetBoolean(ash::prefs::kOrcaEnabled));
+  EXPECT_TRUE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
 
   // The observer class should get a notification when the pref value
   // changes.
@@ -225,11 +233,76 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentWindowDismissCount) {
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_window_dismiss_count(), 2);
 }
 
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInFunctionCall) {
+  // `ShouldIncludeOrcaInOptIn` should fetch panel context from
+  // `EditorPanelManagerImpl` to see if opt-in is needed for Orca.
+  EXPECT_CALL(mock_editor_manager(), GetEditorPanelContext);
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(
+      base::BindOnce([](bool result) {}));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInBlocked) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault(
+          [](base::OnceCallback<void(
+                 const chromeos::editor_menu::EditorContext&)> callback) {
+            std::move(callback).Run(chromeos::editor_menu::EditorContext(
+                chromeos::editor_menu::EditorMode::kHardBlocked,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
+                /*consent_status_settled=*/false, {}));
+          });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `EditorPanelMode` is `kHardBlocked`, Orca should not be included in
+    // opt-in flow.
+    EXPECT_FALSE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInConsentStatusSettled) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault(
+          [](base::OnceCallback<void(
+                 const chromeos::editor_menu::EditorContext&)> callback) {
+            std::move(callback).Run(chromeos::editor_menu::EditorContext(
+                chromeos::editor_menu::EditorMode::kWrite,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
+                /*consent_status_settled=*/true, {}));
+          });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `consent_status_settled`, Orca should not be included in opt-in flow.
+    EXPECT_FALSE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest,
+       ShouldIncludeOrcaInOptInConsentStatusNotSettled) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault(
+          [](base::OnceCallback<void(
+                 const chromeos::editor_menu::EditorContext&)> callback) {
+            std::move(callback).Run(chromeos::editor_menu::EditorContext(
+                chromeos::editor_menu::EditorMode::kWrite,
+                chromeos::editor_menu::EditorTextSelectionMode::kNoSelection,
+                /*consent_status_settled=*/false, {}));
+          });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `consent_status_settled` is false, Orca should be included in opt-in
+    // flow.
+    EXPECT_TRUE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
 TEST_F(MagicBoostStateAshTest, DisableOrcaFeature) {
   // `DisableOrcaFeature` should trigger the correct functions from
-  // `EditorPanelManager`.
-  EXPECT_CALL(mock_editor_manager(), OnConsentRejected);
-  EXPECT_CALL(mock_editor_manager(), OnPromoCardDeclined);
+  // `EditorPanelManagerImpl`.
+  EXPECT_CALL(mock_editor_manager(), OnMagicBoostPromoCardDeclined);
 
   magic_boost_state()->DisableOrcaFeature();
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
@@ -237,11 +310,97 @@ TEST_F(MagicBoostStateAshTest, DisableOrcaFeature) {
 
 TEST_F(MagicBoostStateAshTest, EnableOrcaFeature) {
   // `EnableOrcaFeature` should trigger the correct functions from
-  // `EditorPanelManager`.
+  // `EditorPanelManagerImpl`.
   EXPECT_CALL(mock_editor_manager(), OnConsentApproved);
 
   magic_boost_state()->EnableOrcaFeature();
   testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
 }
+
+TEST_F(MagicBoostStateAshTest, DisableLobsterSettings) {
+  ASSERT_TRUE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
+
+  magic_boost_state()->DisableLobsterSettings();
+
+  EXPECT_FALSE(prefs()->GetBoolean(ash::prefs::kLobsterEnabled));
+}
+
+struct MagicBoostHmrCardShowConditionTestCase {
+  std::string test_name;
+  bool magic_boost_revamp_enabled;
+  HMRConsentStatus hmr_consent_status;
+  bool expected_hmr_card_shown;
+};
+
+class MagicBoostHmrCardShowConditionTest
+    : public MagicBoostStateAshTest,
+      public testing::WithParamInterface<
+          MagicBoostHmrCardShowConditionTestCase> {};
+
+TEST_P(MagicBoostHmrCardShowConditionTest, ShouldShowHmrCard) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(chromeos::features::kMagicBoostRevamp,
+                                    GetParam().magic_boost_revamp_enabled);
+
+  MagicBoostState::Get()->AsyncWriteConsentStatus(
+      GetParam().hmr_consent_status);
+
+  EXPECT_EQ(MagicBoostState::Get()->ShouldShowHmrCard(),
+            GetParam().expected_hmr_card_shown);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    MagicBoostHmrCardShowConditionTest,
+    testing::ValuesIn<MagicBoostHmrCardShowConditionTestCase>(
+        {// magic_boost_revamp_enabled = false
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"NoMagicBoostRevamp_ConsentStatusUnset",
+             /*magic_boost_revamp_enabled=*/false,
+             /*hmr_consent_status=*/HMRConsentStatus::kUnset,
+             /*expected_hmr_card_shown=*/false},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"NoMagicBoostRevamp_ConsentStatusDeclined",
+             /*magic_boost_revamp_enabled=*/false,
+             /*hmr_consent_status=*/HMRConsentStatus::kDeclined,
+             /*expected_hmr_card_shown=*/false},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"NoMagicBoostRevamp_ConsentStatusApproved",
+             /*magic_boost_revamp_enabled=*/false,
+             /*hmr_consent_status=*/HMRConsentStatus::kApproved,
+             /*expected_hmr_card_shown=*/true},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"NoMagicBoostRevamp_"
+                           "ConsentStatusPendingDisclaimer",
+             /*magic_boost_revamp_enabled=*/false,
+             /*hmr_consent_status=*/HMRConsentStatus::kPendingDisclaimer,
+             /*expected_hmr_card_shown=*/true},
+
+         // magic_boost_revamp_enabled = true
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"MagicBoostRevamp_ConsentStatusUnset",
+             /*magic_boost_revamp_enabled=*/true,
+             /*hmr_consent_status=*/HMRConsentStatus::kUnset,
+             /*expected_hmr_card_shown=*/true},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"MagicBoostRevamp_ConsentStatusDeclined",
+             /*magic_boost_revamp_enabled=*/true,
+             /*hmr_consent_status=*/HMRConsentStatus::kDeclined,
+             /*expected_hmr_card_shown=*/false},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"MagicBoostRevamp_ConsentStatusApproved",
+             /*magic_boost_revamp_enabled=*/true,
+             /*hmr_consent_status=*/HMRConsentStatus::kApproved,
+             /*expected_hmr_card_shown=*/true},
+         MagicBoostHmrCardShowConditionTestCase{
+             /*test_name=*/"MagicBoostRevamp_"
+                           "ConsentStatusPendingDisclaimer",
+             /*magic_boost_revamp_enabled=*/true,
+             /*hmr_consent_status=*/HMRConsentStatus::kPendingDisclaimer,
+             /*expected_hmr_card_shown=*/true}}),
+    [](const testing::TestParamInfo<
+        MagicBoostHmrCardShowConditionTest::ParamType>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace ash

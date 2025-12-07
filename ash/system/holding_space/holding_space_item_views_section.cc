@@ -4,6 +4,8 @@
 
 #include "ash/system/holding_space/holding_space_item_views_section.h"
 
+#include <algorithm>
+
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
@@ -12,7 +14,6 @@
 #include "ash/system/holding_space/holding_space_view_delegate.h"
 #include "base/auto_reset.h"
 #include "base/containers/contains.h"
-#include "base/ranges/algorithm.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -110,10 +111,12 @@ class HoldingSpaceScrollView : public views::ScrollView,
   }
 
   void OnViewVisibilityChanged(views::View* observed_view,
-                               views::View* starting_view) override {
+                               views::View* starting_view,
+                               bool visible) override {
     // Sync scroll view visibility with contents visibility.
-    if (GetVisible() != observed_view->GetVisible())
+    if (GetVisible() != observed_view->GetVisible()) {
       SetVisible(observed_view->GetVisible());
+    }
   }
 
   void OnViewIsDeleting(View* observed_view) override {
@@ -147,7 +150,7 @@ void HoldingSpaceItemViewsSection::Init() {
 
   SetVisible(false);
 
-  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+  SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical, gfx::Insets(),
       kHoldingSpaceSectionChildSpacing));
 
@@ -170,7 +173,6 @@ void HoldingSpaceItemViewsSection::Init() {
     scroll->ClipHeightTo(0, INT_MAX);
     scroll->SetDrawOverflowIndicator(false);
     scroll->SetVerticalScrollBarMode(ScrollBarMode::kHiddenButEnabled);
-    layout->SetFlexForView(scroll, 1);
     container_ = scroll->SetContents(CreateContainer());
     scroll_view_ = scroll;
   }
@@ -292,7 +294,7 @@ void HoldingSpaceItemViewsSection::ViewHierarchyChanged(
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
     const std::vector<const HoldingSpaceItem*>& items) {
   const bool needs_update =
-      base::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
+      std::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
         return item->IsInitialized() &&
                base::Contains(section_->supported_types, item->type());
       });
@@ -303,7 +305,7 @@ void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsAdded(
 void HoldingSpaceItemViewsSection::OnHoldingSpaceItemsRemoved(
     const std::vector<const HoldingSpaceItem*>& items) {
   const bool needs_update =
-      base::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
+      std::ranges::any_of(items, [this](const HoldingSpaceItem* item) {
         return base::Contains(views_by_item_id_, item->id());
       });
   if (needs_update)
@@ -327,19 +329,6 @@ void HoldingSpaceItemViewsSection::RemoveAllHoldingSpaceItemViews() {
 
 std::unique_ptr<views::View> HoldingSpaceItemViewsSection::CreatePlaceholder() {
   return nullptr;
-}
-
-void HoldingSpaceItemViewsSection::DestroyPlaceholder() {
-  if (!placeholder_)
-    return;
-
-  RemoveChildViewT(placeholder_.get());
-  placeholder_ = nullptr;
-
-  // In the absence of `placeholder_`, the `header_` should only be visible
-  // when `container_` is non-empty.
-  if (header_->GetVisible() && container_->children().empty())
-    header_->SetVisible(false);
 }
 
 bool HoldingSpaceItemViewsSection::IsExpanded() {
@@ -438,7 +427,7 @@ void HoldingSpaceItemViewsSection::AnimateOut(
   if (animate_out_header) {
     HoldingSpaceModel* model = HoldingSpaceController::Get()->model();
     if (model) {
-      animate_out_header = base::ranges::none_of(
+      animate_out_header = std::ranges::none_of(
           section_->supported_types,
           [&model](HoldingSpaceItem::Type supported_type) {
             return model->ContainsInitializedItemOfType(supported_type);

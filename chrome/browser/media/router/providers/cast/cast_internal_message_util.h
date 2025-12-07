@@ -20,12 +20,12 @@ class MediaSinkInternal;
 
 // Values in the "supportedMediaCommands" list in media status messages
 // sent to the Cast sender SDK.
-constexpr char kMediaCommandPause[] = "pause";
-constexpr char kMediaCommandSeek[] = "seek";
-constexpr char kMediaCommandStreamVolume[] = "stream_volume";
-constexpr char kMediaCommandStreamMute[] = "stream_mute";
-constexpr char kMediaCommandQueueNext[] = "queue_next";
-constexpr char kMediaCommandQueuePrev[] = "queue_prev";
+inline constexpr char kMediaCommandPause[] = "pause";
+inline constexpr char kMediaCommandSeek[] = "seek";
+inline constexpr char kMediaCommandStreamVolume[] = "stream_volume";
+inline constexpr char kMediaCommandStreamMute[] = "stream_mute";
+inline constexpr char kMediaCommandQueueNext[] = "queue_next";
+inline constexpr char kMediaCommandQueuePrev[] = "queue_prev";
 
 // Values in the "supportedMediaCommands" bit array in media status messages
 // received from Cast receivers. They are converted to string values by
@@ -44,7 +44,6 @@ enum class MediaCommand {
 // PresentationConnection.
 class CastInternalMessage {
  public:
-  // TODO(crbug.com/40561499): Add other types of messages.
   enum class Type {
     kClientConnect,   // Initial message sent by SDK client to connect to MRP.
     kAppMessage,      // App messages to pass through between SDK client and the
@@ -139,6 +138,8 @@ class CastInternalMessage {
   const std::string namespace_or_v2_type_;
   const base::Value message_body_;
 };
+
+std::string CastInternalMessageTypeToString(CastInternalMessage::Type type);
 
 // Represents a Cast session on a Cast device. Cast sessions are derived from
 // RECEIVER_STATUS messages sent by Cast devices.

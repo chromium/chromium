@@ -33,7 +33,6 @@ using ::base::test::EqualsProto;
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
-using ::testing::Invoke;
 using ::testing::SizeIs;
 using ::testing::WithArgs;
 

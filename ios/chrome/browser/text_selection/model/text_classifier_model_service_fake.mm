@@ -6,22 +6,27 @@
 
 #import <memory>
 
+#import "base/functional/bind.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/text_selection/model/text_classifier_model_service.h"
 
+namespace {
+
+// Returns a new instance of TextClassifierModelServiceFake.
+std::unique_ptr<KeyedService> BuildInstance(ProfileIOS* profile) {
+  OptimizationGuideService* opt_guide =
+      OptimizationGuideServiceFactory::GetForProfile(profile);
+  return std::make_unique<TextClassifierModelServiceFake>(opt_guide);
+}
+
+}  // anonymous namespace
+
 // static
-std::unique_ptr<KeyedService>
-TextClassifierModelServiceFake::CreateTextClassifierModelService(
-    web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  auto* opt_guide =
-      OptimizationGuideServiceFactory::GetForBrowserState(browser_state);
-  auto service =
-      base::WrapUnique(new TextClassifierModelServiceFake(opt_guide));
-  return service;
+TextClassifierModelServiceFake::TestingFactory
+TextClassifierModelServiceFake::GetTestingFactory() {
+  return base::BindOnce(BuildInstance);
 }
 
 TextClassifierModelServiceFake::~TextClassifierModelServiceFake() {}

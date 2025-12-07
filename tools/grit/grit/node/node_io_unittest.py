@@ -16,6 +16,7 @@ if __name__ == '__main__':
 from grit.node import misc
 from grit.node import node_io
 from grit.node import empty
+from grit import constants
 from grit import grd_reader
 from grit import util
 
@@ -51,7 +52,9 @@ class FileNodeUnittest(unittest.TestCase):
   def VerifyCliquesContainEnglishAndFrenchAndNothingElse(self, cliques):
     self.assertEqual(2, len(cliques))
     for clique in cliques:
-      self.assertEqual({'en', 'fr'}, set(clique.clique.keys()))
+      self.assertEqual(
+          {('en', constants.DEFAULT_GENDER), ('fr', constants.DEFAULT_GENDER)},
+          set(clique.clique.keys()))
 
   def testLoadTranslations(self):
     xml = '''<?xml version="1.0" encoding="UTF-8"?>
@@ -92,7 +95,8 @@ class FileNodeUnittest(unittest.TestCase):
     cliques = _GetAllCliques(grd)
     self.assertEqual(2, len(cliques))
     for clique in cliques:
-      self.assertEqual({'en'}, set(clique.clique.keys()))
+      self.assertEqual({('en', constants.DEFAULT_GENDER)},
+                       set(clique.clique.keys()))
 
     grd.SetOutputLanguage('fr')
     grd.RunGatherers()
@@ -173,6 +177,98 @@ class FileNodeUnittest(unittest.TestCase):
     grd.SetOutputLanguage('en')
     grd.RunGatherers()
     self.assertEqual([], _GetAllCliques(grd))
+
+  def testGenderOutput(self):
+    xml = '''<?xml version="1.0" encoding="UTF-8"?>
+      <grit latest_public_release="2" source_lang_id="en-US" current_release="3"
+            base_dir=".">
+        <outputs>
+          <output filename="resource.h" type="rc_header" />
+          <output filename="en/generated_resources.rc" type="rc_all"
+                  lang="en" />
+          <output filename="translation_en.pak" type="data_package"
+                  lang="en" />
+          <output filename="resources/es.pak" type="data_package"
+                  lang="en" />
+          <output filename="java/res/values-en/translation.xml" type="android"
+                  lang="en" />
+        </outputs>
+        <release seq="3">
+          <messages>
+            <message name="ID_HELLO">Hello!</message>
+          </messages>
+        </release>
+      </grit>'''
+    grd = grd_reader.Parse(io.StringIO(xml),
+                           util.PathFromRoot('grit/testdata'),
+                           translate_genders=True)
+    grd.SetOutputLanguage('en')
+    grd.RunGatherers()
+
+    expected_files = [
+        {
+            'filename': 'resource.h',
+            'gender': None
+        },
+        {
+            'filename': 'en/generated_resources.rc',
+            'gender': None
+        },
+        {
+            'filename': 'translation_en.pak',
+            'gender': 'OTHER'
+        },
+        {
+            'filename': 'translation_en_MASCULINE.pak',
+            'gender': 'MASCULINE'
+        },
+        {
+            'filename': 'translation_en_FEMININE.pak',
+            'gender': 'FEMININE'
+        },
+        {
+            'filename': 'translation_en_NEUTER.pak',
+            'gender': 'NEUTER'
+        },
+        {
+            'filename': 'resources/es.pak',
+            'gender': 'OTHER'
+        },
+        {
+            'filename': 'resources/es_MASCULINE.pak',
+            'gender': 'MASCULINE'
+        },
+        {
+            'filename': 'resources/es_FEMININE.pak',
+            'gender': 'FEMININE'
+        },
+        {
+            'filename': 'resources/es_NEUTER.pak',
+            'gender': 'NEUTER'
+        },
+        {
+            'filename': 'java/res/values-en/translation.xml',
+            'gender': 'OTHER'
+        },
+        {
+            'filename': 'java/res/values-en-MASCULINE/translation.xml',
+            'gender': 'MASCULINE'
+        },
+        {
+            'filename': 'java/res/values-en-FEMININE/translation.xml',
+            'gender': 'FEMININE'
+        },
+        {
+            'filename': 'java/res/values-en-NEUTER/translation.xml',
+            'gender': 'NEUTER'
+        },
+    ]
+
+    for (expected_file, actual_file) in zip(expected_files,
+                                            grd.GetOutputFiles()):
+      self.assertEqual(expected_file['filename'],
+                       actual_file.GetOutputFilename())
+      self.assertEqual(expected_file['gender'], actual_file.GetGender())
 
 
 if __name__ == '__main__':

@@ -95,8 +95,8 @@ class LibsecretLoader {
  private:
   struct FunctionInfo {
     const char* name;
-    // This field is not a raw_ptr<> because it was filtered by the rewriter
-    // for: #global-scope
+    // This field is not a raw_ptr<> because it only every points at statically-
+    // allocated memory which is never freed, so it cannot dangle.
     RAW_PTR_EXCLUSION void** pointer;
   };
 

@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/web_applications/generated_icon_fix_util.h"
 #include "chrome/browser/web_applications/locks/shared_web_contents_with_app_lock.h"
@@ -31,7 +30,7 @@ namespace web_app {
 
 GeneratedIconFixCommand::GeneratedIconFixCommand(
     webapps::AppId app_id,
-    GeneratedIconFixSource source,
+    proto::GeneratedIconFixSource source,
     base::OnceCallback<void(GeneratedIconFixResult)> callback)
     : WebAppCommand<SharedWebContentsWithAppLock, GeneratedIconFixResult>(
           "GeneratedIconFixCommand",
@@ -40,8 +39,6 @@ GeneratedIconFixCommand::GeneratedIconFixCommand(
           GeneratedIconFixResult::kShutdown),
       app_id_(std::move(app_id)),
       source_(source) {
-  CHECK(base::FeatureList::IsEnabled(
-      features::kWebAppSyncGeneratedIconBackgroundFix));
   GetMutableDebugValue().Set("app_id", app_id_);
   GetMutableDebugValue().Set("source", base::ToString(source_));
   GetMutableDebugValue().Set("stop_location", stop_location_.ToString());
@@ -78,7 +75,11 @@ void GeneratedIconFixCommand::StartWithLock(
   // Set title and start_url for PopulateProductIcons() in case it tries to
   // generate icons again.
   install_info_->title = base::UTF8ToUTF16(app->untranslated_name());
+  install_info_->trusted_icons = app->trusted_icons();
   for (const apps::IconInfo& icon_info : install_info_->manifest_icons) {
+    icon_urls.emplace(IconUrlWithSize::CreateForUnspecifiedSize(icon_info.url));
+  }
+  for (const apps::IconInfo& icon_info : install_info_->trusted_icons) {
     icon_urls.emplace(IconUrlWithSize::CreateForUnspecifiedSize(icon_info.url));
   }
   icon_downloader_->Start(
@@ -97,14 +98,16 @@ void GeneratedIconFixCommand::OnIconsDownloaded(
   }
 
   PopulateProductIcons(install_info_.get(), &icons_map);
+  PopulateTrustedIconBitmaps(*install_info_.get(), icons_map);
+
   if (install_info_->is_generated_icon) {
     Stop(GeneratedIconFixResult::kStillGenerated, FROM_HERE);
     return;
   }
 
-  // Note: Empty params are noops, WriteData() never deletes icons.
   lock_->icon_manager().WriteData(
-      app_id_, install_info_->icon_bitmaps, /*shortcuts_menu_icons=*/{},
+      app_id_, install_info_->icon_bitmaps, install_info_->trusted_icon_bitmaps,
+      /*shortcuts_menu_icons=*/{},
       /*other_icons_map=*/{},
       base::BindOnce(&GeneratedIconFixCommand::OnIconsWritten,
                      weak_factory_.GetWeakPtr()));
@@ -118,7 +121,8 @@ void GeneratedIconFixCommand::OnIconsWritten(bool success) {
 
   {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
-    SetWebAppProductIconFields(*install_info_, *update->UpdateApp(app_id_));
+    WebApp* web_app = update->UpdateApp(app_id_);
+    SetWebAppProductIconFields(*install_info_, *web_app);
   }
   lock_->install_manager().NotifyWebAppManifestUpdated(app_id_);
   Stop(GeneratedIconFixResult::kSuccess, FROM_HERE);

@@ -21,7 +21,6 @@
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/metrics_rotation_scheduler.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
-#include "components/ukm/ukm_entry_filter.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "components/ukm/ukm_reporting_service.h"
 
@@ -73,8 +72,7 @@ class UkmService : public UkmRecorderImpl {
   UkmService(PrefService* pref_service,
              metrics::MetricsServiceClient* client,
              std::unique_ptr<metrics::UkmDemographicMetricsProvider>
-                 demographics_provider,
-             uint64_t external_client_id = 0);
+                 demographics_provider);
 
   UkmService(const UkmService&) = delete;
   UkmService& operator=(const UkmService&) = delete;
@@ -122,17 +120,11 @@ class UkmService : public UkmRecorderImpl {
   virtual void RegisterMetricsProvider(
       std::unique_ptr<metrics::MetricsProvider> provider);
 
-  // Registers the |filter| that is guaranteed to be applied to all subsequent
-  // events that are recorded via this UkmService.
-  void RegisterEventFilter(std::unique_ptr<UkmEntryFilter> filter);
-
   // Registers the names of all of the preferences used by UkmService in
   // the provided PrefRegistry.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   int32_t report_count() const { return report_count_; }
-
-  uint64_t client_id() const { return client_id_; }
 
   ukm::UkmReportingService& reporting_service_for_testing() {
     return reporting_service_;
@@ -210,10 +202,6 @@ class UkmService : public UkmRecorderImpl {
 
   // The UKM client id stored in prefs.
   uint64_t client_id_ = 0;
-
-  // External client id. If specified client_id will be set to this
-  // instead of generated. This is currently only used in Lacros.
-  uint64_t external_client_id_ = 0;
 
   // The UKM session id stored in prefs.
   int32_t session_id_ = 0;

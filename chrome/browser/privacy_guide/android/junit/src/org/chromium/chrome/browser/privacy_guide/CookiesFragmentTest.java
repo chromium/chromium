@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -43,7 +42,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 @RunWith(BaseRobolectricTestRunner.class)
 public class CookiesFragmentTest {
     // TODO(crbug.com/40860773): Use Espresso for view interactions
-    @Rule public JniMocker mMocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -58,10 +56,10 @@ public class CookiesFragmentTest {
 
     @Before
     public void setUp() {
-        mMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
 
-        mMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceNativesMock);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceNativesMock);
     }
 
     @After
@@ -100,19 +98,21 @@ public class CookiesFragmentTest {
         mScenario.onFragment(
                 fragment -> {
                     mBlockThirdPartyIncognito =
-                            fragment.getView().findViewById(R.id.block_third_party_incognito);
+                            fragment.getView().findViewById(R.id.allow_third_party);
                     mBlockThirdParty = fragment.getView().findViewById(R.id.block_third_party);
                 });
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testInitWhenCookiesAllowed() {
-        initFragmentWithCookiesState(CookieControlsMode.OFF, true);
     }
 
     @Test
     public void testInitWhenBlockThirdPartyIncognito() {
         initFragmentWithCookiesState(CookieControlsMode.INCOGNITO_ONLY, true);
+        assertTrue(mBlockThirdPartyIncognito.isChecked());
+        assertFalse(mBlockThirdParty.isChecked());
+    }
+
+    @Test
+    public void blockThirdPartyIncognitoCheckedWhenOff() {
+        initFragmentWithCookiesState(CookieControlsMode.OFF, true);
         assertTrue(mBlockThirdPartyIncognito.isChecked());
         assertFalse(mBlockThirdParty.isChecked());
     }
@@ -135,8 +135,6 @@ public class CookiesFragmentTest {
         mBlockThirdPartyIncognito.performClick();
         verify(mPrefServiceMock)
                 .setInteger(PrefNames.COOKIE_CONTROLS_MODE, CookieControlsMode.INCOGNITO_ONLY);
-        verify(mWebsitePreferenceNativesMock)
-                .setContentSettingEnabled(mProfile, ContentSettingsType.COOKIES, true);
     }
 
     @Test
@@ -145,8 +143,14 @@ public class CookiesFragmentTest {
         mBlockThirdParty.performClick();
         verify(mPrefServiceMock)
                 .setInteger(PrefNames.COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
-        verify(mWebsitePreferenceNativesMock)
-                .setContentSettingEnabled(mProfile, ContentSettingsType.COOKIES, true);
+    }
+
+    @Test
+    public void selectBlockThirdPartyAlwaysWhenOff_updatesPrefToBlockThirdPartyAlways() {
+        initFragmentWithCookiesState(CookieControlsMode.OFF, true);
+        mBlockThirdParty.performClick();
+        verify(mPrefServiceMock)
+                .setInteger(PrefNames.COOKIE_CONTROLS_MODE, CookieControlsMode.BLOCK_THIRD_PARTY);
     }
 
     @Test
@@ -162,6 +166,14 @@ public class CookiesFragmentTest {
     @Test
     public void testSelectBlockThirdPartyAlways_changeCookiesBlock3PUserAction() {
         initFragmentWithCookiesState(CookieControlsMode.INCOGNITO_ONLY, true);
+        mBlockThirdParty.performClick();
+        assertTrue(
+                mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeCookiesBlock3P"));
+    }
+
+    @Test
+    public void selectBlockThirdPartyAlwaysFromOff_changeCookiesBlock3PUserAction() {
+        initFragmentWithCookiesState(CookieControlsMode.OFF, true);
         mBlockThirdParty.performClick();
         assertTrue(
                 mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeCookiesBlock3P"));

@@ -5,14 +5,8 @@
 #ifndef CHROME_BROWSER_DEV_UI_ANDROID_DEV_UI_LOADER_THROTTLE_H_
 #define CHROME_BROWSER_DEV_UI_ANDROID_DEV_UI_LOADER_THROTTLE_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
-
-namespace content {
-class NavigationHandle;
-}  // namespace content
 
 class GURL;
 
@@ -29,10 +23,9 @@ class DevUiLoaderThrottle : public content::NavigationThrottle {
   // Creates a throttle if the DevUI DFM needs to be installed. If the DevUI DFM
   // will be used, is installed, but is not loaded, then resource load takes
   // place as a side effect.
-  static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
-      content::NavigationHandle* handle);
+  static void MaybeCreateAndAdd(content::NavigationThrottleRegistry& registry);
 
-  explicit DevUiLoaderThrottle(content::NavigationHandle* navigation_handle);
+  explicit DevUiLoaderThrottle(content::NavigationThrottleRegistry& registry);
   ~DevUiLoaderThrottle() override;
   DevUiLoaderThrottle(const DevUiLoaderThrottle&) = delete;
   const DevUiLoaderThrottle& operator=(const DevUiLoaderThrottle&) = delete;

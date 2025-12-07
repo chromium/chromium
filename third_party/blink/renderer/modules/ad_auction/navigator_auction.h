@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -42,15 +41,13 @@ class V8UnionFencedFrameConfigOrUSVString;
 
 class MODULES_EXPORT NavigatorAuction final
     : public GarbageCollected<NavigatorAuction>,
-      public Supplement<Navigator> {
+      public GarbageCollectedMixin {
  public:
   class AuctionHandle;
-  static const char kSupplementName[];
 
   explicit NavigatorAuction(Navigator&);
 
   // Gets, or creates, NavigatorAuction supplement on Navigator.
-  // See platform/Supplementable.h
   static NavigatorAuction& From(ExecutionContext*, Navigator&);
 
   // TODO(crbug.com/1441988): Make `const AuctionAdInterestGroup*` after rename.
@@ -89,8 +86,8 @@ class MODULES_EXPORT NavigatorAuction final
 
   ScriptPromise<IDLUndefined> clearOriginJoinedAdInterestGroups(
       ScriptState*,
-      const String,
-      const Vector<String>,
+      const String&,
+      Vector<String>,
       ExceptionState&);
   static ScriptPromise<IDLUndefined> clearOriginJoinedAdInterestGroups(
       ScriptState*,
@@ -214,7 +211,7 @@ class MODULES_EXPORT NavigatorAuction final
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ad_auction_service_);
     visitor->Trace(protected_audience_);
-    Supplement<Navigator>::Trace(visitor);
+    visitor->Trace(navigator_);
   }
 
  private:
@@ -265,12 +262,9 @@ class MODULES_EXPORT NavigatorAuction final
                      ScriptPromiseResolver<IDLUndefined>* resolver,
                      bool failed_well_known_check);
 
-  // Completion callback for createAuctionNonce() Mojo call.
-  void CreateAuctionNonceComplete(ScriptPromiseResolver<IDLString>*,
-                                  const base::Uuid& nonce);
   // Completion callback for createAdRequest() Mojo call.
   void AdsRequested(ScriptPromiseResolver<Ads>* resolver,
-                    const WTF::String& ads_guid);
+                    const String& ads_guid);
   // Completion callback for finalizeAd() Mojo call.
   void FinalizeAdComplete(ScriptPromiseResolver<IDLString>* resolver,
                           const std::optional<KURL>& creative_url);
@@ -282,10 +276,12 @@ class MODULES_EXPORT NavigatorAuction final
 
   void GetInterestGroupAdAuctionDataComplete(
       base::TimeTicks start_time,
+      bool is_single_seller,
       ScriptPromiseResolver<AdAuctionData>* resolver,
-      mojo_base::BigBuffer request,
-      const std::optional<base::Uuid>& request_id,
-      const WTF::String& error_message);
+      Vector<mojom::blink::AdAuctionPerSellerRequestPtr> requests,
+      const std::optional<base::Uuid>& request_id);
+
+  Member<Navigator> navigator_;
 
   // Manage queues of cross-site join and leave operations that have yet to be
   // sent to the browser process.
@@ -294,10 +290,9 @@ class MODULES_EXPORT NavigatorAuction final
   JoinLeaveQueue<PendingClear> queued_cross_site_clears_;
 
   // The next available auction nonce suffix, used alongside the
-  // base_auction_nonce provided by the Browser process to create unique auction
-  // nonces when createAuctionNonce is called and
-  // FledgeCreateAuctionNonceSynchronousResolution is enabled. Though this
-  // counter has 32 bits, only the least significant 24 bits are used.
+  // `base_auction_nonce` provided by the Browser process to create unique
+  // auction nonces when createAuctionNonce. Though this counter has 32 bits,
+  // only the least significant 24 bits are used.
   uint32_t auction_nonce_counter_ = 0;
 
   HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;

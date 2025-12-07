@@ -1,0 +1,33 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+static_library("vm_data_migration") {
+  sources = [
+    "arc_vm_data_migration_confirmation_dialog.cc",
+    "arc_vm_data_migration_confirmation_dialog.h",
+  ]
+  public_deps = [
+    "//base",
+    "//ui/views",
+  ]
+  deps = [
+    "//ash",
+    "//ash/public/cpp",
+    "//ash/style",
+    "//chromeos/ash/experiences/arc:arc_base_utils",
+    "//chromeos/ash/experiences/arc:prefs",
+    "//chromeos/ash/experiences/arc/vector_icons",
+    "//components/prefs",
+    "//components/strings:components_strings",
+    "//ui/base",
+    "//ui/base/mojom:mojom_shared",
+    "//ui/base/mojom:mojom_shared_cpp_sources",
+    "//ui/base/mojom:ui_base_types",
+    "//ui/color:color_headers",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}

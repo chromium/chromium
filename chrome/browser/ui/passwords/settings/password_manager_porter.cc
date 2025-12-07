@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -18,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_manager_exporter.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
@@ -25,9 +25,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"
-
-#if BUILDFLAG(IS_WIN)
-#endif
 
 namespace {
 
@@ -113,7 +110,8 @@ void PasswordManagerPorter::Import(
   if (!import_results_callback_.is_null() ||
       (importer_ &&
        (importer_->IsState(password_manager::PasswordImporter::kInProgress) ||
-        importer_->IsState(password_manager::PasswordImporter::kConflicts)))) {
+        importer_->IsState(
+            password_manager::PasswordImporter::kUserInteractionRequired)))) {
     // Early return to prevent crashes due to already active import process in
     // other window.
     password_manager::ImportResults results;
@@ -136,7 +134,8 @@ void PasswordManagerPorter::ContinueImport(
     const std::vector<int>& selected_ids,
     ImportResultsCallback results_callback) {
   if (importer_ &&
-      importer_->IsState(password_manager::PasswordImporter::kConflicts)) {
+      importer_->IsState(
+          password_manager::PasswordImporter::kUserInteractionRequired)) {
     importer_->ContinueImport(selected_ids, std::move(results_callback));
     return;
   }
@@ -162,8 +161,8 @@ void PasswordManagerPorter::ContinueImport(
 }
 
 void PasswordManagerPorter::ResetImporter(bool delete_file) {
-  // Importer can be reset only in kNotStarted, kFinished, kConflicts states,
-  // but not in kInProgress.
+  // Importer can be reset only in kNotStarted, kFinished,
+  // kUserInteractionRequired states, but not in kInProgress.
   if (!importer_ ||
       importer_->IsState(password_manager::PasswordImporter::kInProgress)) {
     return;

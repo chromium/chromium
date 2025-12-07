@@ -10,7 +10,7 @@
 #include "components/cast_streaming/common/public/features.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/media_util.h"
-#include "third_party/openscreen/src/cast/streaming/encoded_frame.h"
+#include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
 namespace cast_streaming {
 

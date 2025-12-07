@@ -1,0 +1,65 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/jni_zero/jni_zero.gni")
+
+source_set("timestamped_pref_value") {
+  sources = [ "timestamped_pref_value.h" ]
+  deps = [ "//base" ]
+  if (is_android) {
+    sources += [
+      "android/timestamped_pref_value_bridge_android.cc",
+      "android/timestamped_pref_value_bridge_android.h",
+    ]
+    deps += [ "android:jni_headers" ]
+  }
+}
+
+source_set("cross_device_pref_tracker") {
+  sources = [
+    "common_cross_device_pref_provider.cc",
+    "common_cross_device_pref_provider.h",
+    "cross_device_pref_provider.h",
+    "cross_device_pref_tracker.cc",
+    "cross_device_pref_tracker.h",
+    "cross_device_pref_tracker_impl.cc",
+    "cross_device_pref_tracker_impl.h",
+  ]
+  deps = [
+    ":timestamped_pref_value",
+    "//base",
+    "//components/commerce/core:pref_names",
+    "//components/keyed_service/core",
+    "//components/ntp_tiles:pref_names",
+    "//components/omnibox/browser:pref_names",
+    "//components/prefs",
+    "//components/safety_check:pref_names",
+    "//components/sync_device_info",
+  ]
+
+  if (is_android) {
+    deps += [
+      "android:jni_headers",
+      "//third_party/jni_zero",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "cross_device_pref_tracker_impl_unittest.cc" ]
+  deps = [
+    ":cross_device_pref_tracker",
+    "//base/test:test_support",
+    "//components/prefs:test_support",
+    "//components/sync:test_support",
+    "//components/sync_device_info:test_support",
+    "//testing/gtest",
+  ]
+  if (is_android) {
+    deps += [
+      "//components/sync_preferences/cross_device_pref_tracker/android:java",
+    ]
+  }
+}

@@ -47,6 +47,10 @@ std::string GetLogSourceValue(const PolicyLogger::Log::Source log_source) {
       return "Device Trust";
     case PolicyLogger::Log::Source::kOidcEnrollment:
       return "OIDC Enrollment";
+    case PolicyLogger::Log::Source::kExtensibleSSO:
+      return "Extensible SSO";
+    case PolicyLogger::Log::Source::kReporting:
+      return "Reporting";
   }
 }
 
@@ -78,7 +82,7 @@ int GetLogSeverityInt(const PolicyLogger::Log::Severity log_severity) {
 
 // Constructs the URL for Chromium Code Search that points to the line of code
 // that generated the log and the Chromium git revision hash.
-std::string GetLineURL(const char* file, int line) {
+std::string GetLineURL(std::string_view file, int line) {
   std::string last_change(version_info::GetLastChange());
 
   // The substring separates the last change commit hash from the branch name on
@@ -98,7 +102,7 @@ bool IsLogExpired(PolicyLogger::Log& log) {
 PolicyLogger::Log::Log(const Severity log_severity,
                        const Source log_source,
                        const std::string& message,
-                       const std::string_view file,
+                       std::string_view file,
                        const int line)
     : log_severity_(log_severity),
       log_source_(log_source),
@@ -116,7 +120,7 @@ PolicyLogger::LogHelper::LogHelper(
     const PolicyLogger::Log::Severity log_severity,
     const int log_verbosity,
     const PolicyLogger::Log::Source log_source,
-    const std::string_view file,
+    std::string_view file,
     const int line)
     : log_type_(log_type),
       log_severity_(log_severity),
@@ -136,6 +140,9 @@ void PolicyLogger::LogHelper::StreamLog() const {
   if (log_type_ == LogHelper::LogType::kDLog) {
     return;
   }
+#else
+  // Suppress a -Wunused-private-field warning.
+  (void)log_type_;
 #endif
 
   // Check for verbose logging.
@@ -161,7 +168,7 @@ base::Value::Dict PolicyLogger::Log::GetAsDict() const {
   log_dict.Set("message", base::EscapeForHTML(message_));
   log_dict.Set("logSeverity", GetLogSeverity(log_severity_));
   log_dict.Set("logSource", GetLogSourceValue(log_source_));
-  log_dict.Set("location", GetLineURL(file_.data(), line_));
+  log_dict.Set("location", GetLineURL(file_, line_));
   log_dict.Set("timestamp", base::TimeFormatHTTP(timestamp_));
   return log_dict;
 }
@@ -201,6 +208,9 @@ void PolicyLogger::DeleteOldLogs() {
 }
 
 void PolicyLogger::ScheduleOldLogsDeletion() {
+  if (!base::SequencedTaskRunner::HasCurrentDefault()) {
+    return;
+  }
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&PolicyLogger::DeleteOldLogs, weak_factory_.GetWeakPtr()),

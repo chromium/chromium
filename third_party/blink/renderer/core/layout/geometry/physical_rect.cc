@@ -7,7 +7,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/box_strut.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -148,8 +148,7 @@ bool PhysicalRect::InclusiveIntersect(const PhysicalRect& other) {
 }
 
 String PhysicalRect::ToString() const {
-  return String::Format("%s %s", offset.ToString().Ascii().c_str(),
-                        size.ToString().Ascii().c_str());
+  return StrCat({offset.ToString(), " ", size.ToString()});
 }
 
 PhysicalRect UnionRect(const Vector<PhysicalRect>& rects) {
@@ -173,18 +172,6 @@ PhysicalRect UnionRectEvenIfEmpty(const Vector<PhysicalRect>& rects) {
 
 std::ostream& operator<<(std::ostream& os, const PhysicalRect& value) {
   return os << value.ToString();
-}
-
-WTF::TextStream& operator<<(WTF::TextStream& ts, const PhysicalRect& r) {
-  // This format is required by some layout tests.
-  ts << "at ("
-     << WTF::TextStream::FormatNumberRespectingIntegers(r.X().ToFloat());
-  ts << "," << WTF::TextStream::FormatNumberRespectingIntegers(r.Y().ToFloat());
-  ts << ") size "
-     << WTF::TextStream::FormatNumberRespectingIntegers(r.Width().ToFloat());
-  ts << "x"
-     << WTF::TextStream::FormatNumberRespectingIntegers(r.Height().ToFloat());
-  return ts;
 }
 
 }  // namespace blink

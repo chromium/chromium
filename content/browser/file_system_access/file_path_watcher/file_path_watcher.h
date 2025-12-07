@@ -12,6 +12,7 @@
 #include <string>
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
@@ -125,7 +126,7 @@ class CONTENT_EXPORT FilePathWatcher {
     Type type = Type::kNonRecursive;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     // The callback will return the full path to a changed file instead of
     // the watched path supplied as |path| when Watch is called.
     // So the full path can be different from the watched path when a folder is
@@ -133,6 +134,7 @@ class CONTENT_EXPORT FilePathWatcher {
     bool report_modified_path = false;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
+        // || BUILDFLAG(IS_MAC)
   };
 
   // Callback type for Watch(). |path| points to the file that was updated,
@@ -145,6 +147,10 @@ class CONTENT_EXPORT FilePathWatcher {
   using CallbackWithChangeInfo = base::RepeatingCallback<
       void(const ChangeInfo&, const base::FilePath& path, bool error)>;
 
+  // Callback that receives the changes in the underlying OS resource usage.
+  using UsageChangeCallback =
+      base::RepeatingCallback<void(size_t old_usage, size_t new_usage)>;
+
   // Used internally to encapsulate different members on different platforms.
   class PlatformDelegate {
    public:
@@ -155,6 +161,8 @@ class CONTENT_EXPORT FilePathWatcher {
     PlatformDelegate(const PlatformDelegate&) = delete;
     PlatformDelegate& operator=(const PlatformDelegate&) = delete;
     virtual ~PlatformDelegate();
+
+    virtual size_t current_usage() const;
 
     // Start watching for the given |path| and notify |delegate| about changes.
     [[nodiscard]] virtual bool Watch(const base::FilePath& path,
@@ -172,7 +180,8 @@ class CONTENT_EXPORT FilePathWatcher {
     [[nodiscard]] virtual bool WatchWithChangeInfo(
         const base::FilePath& path,
         const WatchOptions& options,
-        const CallbackWithChangeInfo& callback);
+        const CallbackWithChangeInfo& callback,
+        const UsageChangeCallback& usage_callback);
 
     // Stop watching. This is called from FilePathWatcher's dtor in order to
     // allow to shut down properly while the object is still alive.
@@ -211,6 +220,9 @@ class CONTENT_EXPORT FilePathWatcher {
   FilePathWatcher& operator=(const FilePathWatcher&) = delete;
   ~FilePathWatcher();
 
+  static size_t quota_limit();
+  size_t current_usage() const;
+
   // Returns true if the platform and OS version support recursive watches.
   static bool RecursiveWatchAvailable();
 
@@ -236,10 +248,13 @@ class CONTENT_EXPORT FilePathWatcher {
 
   // Same as above, but `callback` includes more information about the change,
   // if known. On platforms for which change information is not supported,
-  // `callback` is called with a dummy `ChangeInfo`.
-  bool WatchWithChangeInfo(const base::FilePath& path,
-                           const WatchOptions& options,
-                           const CallbackWithChangeInfo& callback);
+  // `callback` is called with a dummy `ChangeInfo`. It returns the current
+  // usage on success and std::nullopt on failure.
+  std::optional<size_t> WatchWithChangeInfo(
+      const base::FilePath& path,
+      const WatchOptions& options,
+      const CallbackWithChangeInfo& callback,
+      const UsageChangeCallback& usage_callback);
 
 #if BUILDFLAG(IS_WIN)
   // Gets the Lock associated with the content::FilePathWatcher implementation's
@@ -248,8 +263,19 @@ class CONTENT_EXPORT FilePathWatcher {
   base::Lock& GetWatchThreadLockForTest();
 #endif
 
+  static base::AutoReset<size_t> SetQuotaLimitForTesting(
+      size_t quota_limit_override) {
+    return base::AutoReset<size_t>(&quota_limit_override_for_testing_,
+                                   quota_limit_override);
+  }
+
  private:
+  // The quota limit returned by `quota_limit()` in tests if it is non-zero.
+  static size_t quota_limit_override_for_testing_;
+
   explicit FilePathWatcher(std::unique_ptr<PlatformDelegate> delegate);
+
+  static size_t GetQuotaLimitImpl();
 
   std::unique_ptr<PlatformDelegate> impl_;
 

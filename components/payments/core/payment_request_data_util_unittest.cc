@@ -13,8 +13,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/payments/core/payment_address.h"
 #include "components/payments/core/payment_method_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,8 +40,7 @@ TEST(PaymentRequestDataUtilTest, GetPaymentAddressFromAutofillProfile) {
   base::Value::Dict address_value = payments::PaymentAddressToValueDict(
       *payments::data_util::GetPaymentAddressFromAutofillProfile(address,
                                                                  "en-US"));
-  std::string json_address;
-  base::JSONWriter::Write(address_value, &json_address);
+  std::string json_address = base::WriteJson(address_value).value_or("");
   EXPECT_EQ(
       "{\"addressLine\":[\"666 Erebus St.\",\"Apt 8\"],"
       "\"city\":\"Elysium\","

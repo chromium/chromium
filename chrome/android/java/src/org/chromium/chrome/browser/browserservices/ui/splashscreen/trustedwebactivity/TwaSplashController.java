@@ -8,6 +8,9 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static androidx.browser.trusted.TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,42 +26,43 @@ import androidx.browser.trusted.TrustedWebActivityIntentBuilder;
 import androidx.browser.trusted.splashscreens.SplashScreenParamKey;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
 import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
-import javax.inject.Inject;
+import java.util.function.Supplier;
 
 /**
  * Orchestrates the flow of showing and removing splash screens for apps based on Trusted Web
  * Activities.
  *
- * The flow is as follows:
+ * <p>The flow is as follows: <br>
  * - TWA client app verifies conditions for showing splash screen. If the checks pass, it shows the
- * splash screen immediately.
- * - The client passes the URI to a file with the splash image to
- * {@link androidx.browser.customtabs.CustomTabsService}. The image is decoded and put into
- * {@link SplashImageHolder}.
- * - The client then launches a TWA, at which point the Bitmap is already available.
- * - ChromeLauncherActivity calls {@link #handleIntent}, which starts
- * {@link TranslucentCustomTabActivity} - a CustomTabActivity with translucent style. The
- * translucency is necessary in order to avoid a flash that might be seen when starting the activity
- * before the splash screen is attached.
+ * splash screen immediately. <br>
+ * - The client passes the URI to a file with the splash image to {@link
+ * androidx.browser.customtabs.CustomTabsService}. The image is decoded and put into {@link
+ * SplashImageHolder}. <br>
+ * - The client then launches a TWA, at which point the Bitmap is already available. <br>
+ * - ChromeLauncherActivity calls {@link #handleIntent}, which starts {@link
+ * TranslucentCustomTabActivity} <br>
+ * - a CustomTabActivity with translucent style. The translucency is necessary in order to avoid a
+ * flash that might be seen when starting the activity before the splash screen is attached. <br>
  * - {@link TranslucentCustomTabActivity} creates an instance of {@link TwaSplashController} which
- * immediately displays the splash screen in an ImageView on top of the rest of view hierarchy.
+ * immediately displays the splash screen in an ImageView on top of the rest of view hierarchy. <br>
  * - It also immediately removes the translucency. See comment in {@link SplashController} for more
- * details.
+ * details. <br>
  * - It waits for the page to load, and removes the splash image once first paint (or a failure)
  * occurs.
  *
- * Lifecycle: this class is resolved only once when CustomTabActivity is launched, and is
- * gc-ed when it finishes its job.
- * If these lifecycle assumptions change, consider whether @ActivityScope needs to be added.
+ * <p>Lifecycle: this class is resolved only once when CustomTabActivity is launched, and is gc-ed
+ * when it finishes its job.
  */
+@NullMarked
 public class TwaSplashController implements SplashDelegate {
     // TODO(pshmakov): move this to AndroidX.
     private static final String KEY_SHOWN_IN_CLIENT =
@@ -66,32 +70,27 @@ public class TwaSplashController implements SplashDelegate {
 
     private final SplashController mSplashController;
     private final Activity mActivity;
-    private final SplashImageHolder mSplashImageCache;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
-    @Inject
     public TwaSplashController(
-            SplashController splashController,
             Activity activity,
-            ActivityWindowAndroid activityWindowAndroid,
-            SplashImageHolder splashImageCache,
+            Supplier<SplashController> splashController,
             BrowserServicesIntentDataProvider intentDataProvider) {
-        mSplashController = splashController;
+        mSplashController = splashController.get();
         mActivity = activity;
-        mSplashImageCache = splashImageCache;
         mIntentDataProvider = intentDataProvider;
 
         long splashHideAnimationDurationMs =
                 IntentUtils.safeGetInt(
-                        getSplashScreenParamsFromIntent(),
+                        assertNonNull(getSplashScreenParamsFromIntent()),
                         SplashScreenParamKey.KEY_FADE_OUT_DURATION_MS,
                         0);
-        mSplashController.setConfig(this, splashHideAnimationDurationMs);
+        mSplashController.setConfigAndShowSplash(this, splashHideAnimationDurationMs);
     }
 
     @Override
-    public View buildSplashView() {
-        Bitmap bitmap = mSplashImageCache.takeImage(mIntentDataProvider.getSession());
+    public @Nullable View buildSplashView() {
+        Bitmap bitmap = SplashImageHolder.getInstance().takeImage(mIntentDataProvider.getSession());
         if (bitmap == null) {
             return null;
         }
@@ -112,6 +111,7 @@ public class TwaSplashController implements SplashDelegate {
 
     private void applyCustomizationsToSplashScreenView(ImageView imageView) {
         Bundle params = getSplashScreenParamsFromIntent();
+        assert params != null;
 
         int backgroundColor =
                 IntentUtils.safeGetInt(
@@ -139,8 +139,9 @@ public class TwaSplashController implements SplashDelegate {
         imageView.setImageMatrix(matrix);
     }
 
-    private Bundle getSplashScreenParamsFromIntent() {
-        return mIntentDataProvider.getIntent().getBundleExtra(EXTRA_SPLASH_SCREEN_PARAMS);
+    private @Nullable Bundle getSplashScreenParamsFromIntent() {
+        return assumeNonNull(mIntentDataProvider.getIntent())
+                .getBundleExtra(EXTRA_SPLASH_SCREEN_PARAMS);
     }
 
     /** Returns true if the intent corresponds to a TWA with a splash screen. */
@@ -165,6 +166,7 @@ public class TwaSplashController implements SplashDelegate {
         Bundle params =
                 IntentUtils.safeGetBundleExtra(
                         intent, TrustedWebActivityIntentBuilder.EXTRA_SPLASH_SCREEN_PARAMS);
+        assert params != null;
         boolean shownInClient = IntentUtils.safeGetBoolean(params, KEY_SHOWN_IN_CLIENT, true);
         // shownInClient is "true" by default for the following reasons:
         // - For compatibility with older clients which don't use this bundle key.

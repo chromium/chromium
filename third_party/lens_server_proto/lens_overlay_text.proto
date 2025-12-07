@@ -17,6 +17,13 @@ enum WritingDirection {
   WRITING_DIRECTION_TOP_TO_BOTTOM = 2;
 }
 
+// The text alignment.
+enum Alignment {
+  DEFAULT_LEFT_ALIGNED = 0;
+  RIGHT_ALIGNED = 1;
+  CENTER_ALIGNED = 2;
+}
+
 message Text {
   // Optional. Information describing the text.
   TextLayout text_layout = 1;
@@ -50,6 +57,7 @@ message TextLayout {
     enum Type {
       // Printed text.
       TEXT = 0;
+
       // Formula type, including mathematical or chemical formulas.
       FORMULA = 1;
     }

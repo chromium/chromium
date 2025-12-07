@@ -6,11 +6,12 @@ package org.chromium.content_public.browser;
 
 import android.graphics.Bitmap;
 
-import androidx.annotation.NonNull;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.url.GURL;
 
 /** Represents one entry in the navigation history of a page. */
+@NullMarked
 public class NavigationEntry {
 
     private final int mIndex;
@@ -18,19 +19,19 @@ public class NavigationEntry {
     private final GURL mOriginalUrl;
     private final GURL mVirtualUrl;
     private final String mTitle;
-    private Bitmap mFavicon;
-    private int mTransition;
-    private long mTimestamp;
+    private @Nullable Bitmap mFavicon;
+    private final int mTransition;
+    private final long mTimestamp;
     private final boolean mIsInitialEntry;
 
     /** Default constructor. */
     public NavigationEntry(
             int index,
-            @NonNull GURL url,
-            @NonNull GURL virtualUrl,
-            @NonNull GURL originalUrl,
+            GURL url,
+            GURL virtualUrl,
+            GURL originalUrl,
             String title,
-            Bitmap favicon,
+            @Nullable Bitmap favicon,
             int transition,
             long timestamp,
             boolean isInitialEntry) {
@@ -57,7 +58,7 @@ public class NavigationEntry {
      *         scary data: URL or something like that. Use GetVirtualURL() for
      *         showing to the user.
      */
-    public @NonNull GURL getUrl() {
+    public GURL getUrl() {
         return mUrl;
     }
 
@@ -72,14 +73,14 @@ public class NavigationEntry {
      *         cases, so if there is no overridden display URL, it will return
      *         the actual one.
      */
-    public @NonNull GURL getVirtualUrl() {
+    public GURL getVirtualUrl() {
         return mVirtualUrl;
     }
 
     /**
      * @return The URL that caused this NavigationEntry to be created.
      */
-    public @NonNull GURL getOriginalUrl() {
+    public GURL getOriginalUrl() {
         return mOriginalUrl;
     }
 
@@ -96,7 +97,7 @@ public class NavigationEntry {
     /**
      * @return The favicon of the page. This may be null.
      */
-    public Bitmap getFavicon() {
+    public @Nullable Bitmap getFavicon() {
         return mFavicon;
     }
 

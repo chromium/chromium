@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/xr/webxr_internals/webxr_internals_ui.h"
 
 #include "base/feature_list.h"
@@ -35,8 +30,7 @@ void CreateAndAddWebXrInternalsHTMLSource(BrowserContext* browser_context) {
 
   // Add required resources.
   source->UseStringsJs();
-  source->AddResourcePaths(
-      base::make_span(kWebxrInternalsResources, kWebxrInternalsResourcesSize));
+  source->AddResourcePaths(kWebxrInternalsResources);
   source->AddResourcePath("", IDR_WEBXR_INTERNALS_WEBXR_INTERNALS_HTML);
 }
 

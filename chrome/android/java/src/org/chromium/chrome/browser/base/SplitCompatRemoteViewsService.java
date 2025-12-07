@@ -8,14 +8,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViewsService;
 
-import org.chromium.base.BundleUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * RemoteViewsService base class which will call through to the given {@link Impl}. This class must
  * be present in the base module, while the Impl can be in the chrome module.
  */
+@NullMarked
 public class SplitCompatRemoteViewsService extends RemoteViewsService {
-    private String mServiceClassName;
+    private final String mServiceClassName;
     private Impl mImpl;
 
     public SplitCompatRemoteViewsService(String serviceClassName) {
@@ -23,15 +25,17 @@ public class SplitCompatRemoteViewsService extends RemoteViewsService {
     }
 
     @Override
-    protected void attachBaseContext(Context context) {
-        context = SplitCompatApplication.createChromeContext(context);
-        mImpl = (Impl) BundleUtils.newInstance(context, mServiceClassName);
+    protected void attachBaseContext(Context baseContext) {
+        mImpl =
+                (Impl)
+                        SplitCompatUtils.loadClassAndAdjustContextChrome(
+                                baseContext, mServiceClassName);
         mImpl.setService(this);
-        super.attachBaseContext(context);
+        super.attachBaseContext(baseContext);
     }
 
     @Override
-    public RemoteViewsFactory onGetViewFactory(Intent intent) {
+    public @Nullable RemoteViewsFactory onGetViewFactory(Intent intent) {
         return mImpl.onGetViewFactory(intent);
     }
 
@@ -40,16 +44,16 @@ public class SplitCompatRemoteViewsService extends RemoteViewsService {
      * SplitCompatRemoteViewsService}.
      */
     public abstract static class Impl {
-        private SplitCompatRemoteViewsService mService;
+        private @Nullable SplitCompatRemoteViewsService mService;
 
         protected final void setService(SplitCompatRemoteViewsService service) {
             mService = service;
         }
 
-        protected final SplitCompatRemoteViewsService getService() {
+        protected final @Nullable SplitCompatRemoteViewsService getService() {
             return mService;
         }
 
-        public abstract RemoteViewsFactory onGetViewFactory(Intent intent);
+        public abstract @Nullable RemoteViewsFactory onGetViewFactory(Intent intent);
     }
 }

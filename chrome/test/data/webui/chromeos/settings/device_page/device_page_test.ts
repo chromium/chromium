@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/os_settings.js';
+import 'chrome://os-settings/lazy_load.js';
 
-import {CrIconButtonElement, crosAudioConfigMojom, CrSliderElement, CrToggleElement, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Route, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting, SettingsAudioElement, SettingsDevicePageElement, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/os_settings.js';
-import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
+import type {SettingsAudioElement, SettingsPerDeviceKeyboardElement} from 'chrome://os-settings/lazy_load.js';
+import type {ControlledRadioButtonElement, CrIconButtonElement, CrSliderElement, CrToggleElement, Route, SettingsDevicePageElement, SettingsRadioGroupElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {crosAudioConfigMojom, DevicePageBrowserProxyImpl, fakeCrosAudioConfig, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeTouchpads, Router, routes, setCrosAudioConfigForTesting, setDisplayApiForTesting, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockController} from 'chrome://webui-test/mock_controller.js';
@@ -19,8 +21,6 @@ import {getFakePrefs, pressArrowLeft, pressArrowRight, simulateSliderClicked} fr
 import {TestDevicePageBrowserProxy} from './test_device_page_browser_proxy.js';
 
 suite('<settings-device-page>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let devicePage: SettingsDevicePageElement;
   let fakeSystemDisplay: FakeSystemDisplay;
   let browserProxy: TestDevicePageBrowserProxy;
@@ -38,7 +38,7 @@ suite('<settings-device-page>', () => {
     return page;
   }
 
-  setup(async () => {
+  setup(() => {
     fakeSystemDisplay = new FakeSystemDisplay();
     setDisplayApiForTesting(fakeSystemDisplay);
 
@@ -46,7 +46,6 @@ suite('<settings-device-page>', () => {
 
     browserProxy = new TestDevicePageBrowserProxy();
     DevicePageBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    setDeviceSplitEnabled(true);
   });
 
   async function init(): Promise<void> {
@@ -62,16 +61,7 @@ suite('<settings-device-page>', () => {
   });
 
   /**
-   * Set enableInputDeviceSettingsSplit feature flag to true for split tests.
-   */
-  function setDeviceSplitEnabled(isEnabled: boolean): void {
-    loadTimeData.overrideValues({
-      enableInputDeviceSettingsSplit: isEnabled,
-    });
-  }
-
-  /**
-   * Set enablePeripheralCustomization feature flag to true for split tests.
+   * Set enablePeripheralCustomization feature flag to true for tests.
    */
   function setPeripheralCustomizationEnabled(isEnabled: boolean): void {
     loadTimeData.overrideValues({
@@ -80,14 +70,13 @@ suite('<settings-device-page>', () => {
   }
 
   /**
-   * Set enableAudioHfpMicSRToggle feature flag to true for tests.
+   * Set enableSpatialAudioToggle feature flag to true for tests.
    */
-  function setEnableAudioHfpMicSRToggleEnabled(isEnabled: boolean): void {
+  function setEnableSpatialAudioToggleEnabled(isEnabled: boolean): void {
     loadTimeData.overrideValues({
-      enableAudioHfpMicSRToggle: isEnabled,
+      enableSpatialAudioToggle: isEnabled,
     });
   }
-
 
   test('device page', async () => {
     const provider = new FakeInputDeviceSettingsProvider();
@@ -101,7 +90,6 @@ suite('<settings-device-page>', () => {
     assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#displayRow')));
     assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#audioRow')));
 
-    // enableInputDeviceSettingsSplit feature flag by default is turned on.
     assertTrue(
         isVisible(devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
     assertTrue(isVisible(
@@ -110,48 +98,9 @@ suite('<settings-device-page>', () => {
         devicePage.shadowRoot!.querySelector('#perDevicePointingStickRow')));
     assertTrue(isVisible(
         devicePage.shadowRoot!.querySelector('#perDeviceKeyboardRow')));
-    assertFalse(
-        isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-    assertFalse(
-        isVisible(devicePage.shadowRoot!.querySelector('#keyboardRow')));
 
     // enablePeripheralCustomization feature flag by default is turned on.
     assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
-
-    // Turn off the enableInputDeviceSettingsSplit feature flag.
-    setDeviceSplitEnabled(false);
-    await init();
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#keyboardRow')));
-
-    webUIListenerCallback('has-mouse-changed', false);
-    await flushTasks();
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-pointing-stick-changed', false);
-    await flushTasks();
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-touchpad-changed', false);
-    await flushTasks();
-    assertFalse(
-        isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-
-    webUIListenerCallback('has-mouse-changed', true);
-    await flushTasks();
-    assertTrue(isVisible(devicePage.shadowRoot!.querySelector('#pointersRow')));
-
-    // Turn off the enablePeripheralCustomization feature flag.
-    setPeripheralCustomizationEnabled(false);
-    await init();
-    assertFalse(isVisible(devicePage.shadowRoot!.querySelector('#tabletRow')));
-  });
-
-  test('per-device-mouse row visibility', async () => {
-    setDeviceSplitEnabled(false);
-    await init();
-    assertFalse(
-        isVisible(devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
   });
 
   test(
@@ -160,8 +109,6 @@ suite('<settings-device-page>', () => {
         const provider = new FakeInputDeviceSettingsProvider();
         setInputDeviceSettingsProviderForTesting(provider);
 
-        // Tests with flag on.
-        setDeviceSplitEnabled(true);
         await init();
 
         provider.setFakeMice(fakeMice);
@@ -178,28 +125,7 @@ suite('<settings-device-page>', () => {
         await flushTasks();
         assertTrue(isVisible(
             devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
-
-        // Tests with flag off.
-        setDeviceSplitEnabled(false);
-        await init();
-
-        webUIListenerCallback('has-mouse-changed', true);
-        await init();
-        assertFalse(isVisible(
-            devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
-
-        webUIListenerCallback('has-mouse-changed', false);
-        await flushTasks();
-        assertFalse(isVisible(
-            devicePage.shadowRoot!.querySelector('#perDeviceMouseRow')));
       });
-
-  test('per-device-touchpad row visibility', async () => {
-    setDeviceSplitEnabled(false);
-    await init();
-    assertFalse(isVisible(
-        devicePage.shadowRoot!.querySelector('#perDeviceTouchpadRow')));
-  });
 
   test(
       'per-device-touchpad row visiblity based on connected devices',
@@ -207,8 +133,6 @@ suite('<settings-device-page>', () => {
         const provider = new FakeInputDeviceSettingsProvider();
         setInputDeviceSettingsProviderForTesting(provider);
 
-        // Tests with flag on.
-        setDeviceSplitEnabled(true);
         await init();
 
         provider.setFakeTouchpads(fakeTouchpads);
@@ -225,28 +149,7 @@ suite('<settings-device-page>', () => {
         await flushTasks();
         assertTrue(isVisible(
             devicePage.shadowRoot!.querySelector('#perDeviceTouchpadRow')));
-
-        // Tests with flag off.
-        setDeviceSplitEnabled(false);
-        await init();
-
-        webUIListenerCallback('has-touchpad-changed', true);
-        await flushTasks();
-        assertFalse(isVisible(
-            devicePage.shadowRoot!.querySelector('#perDeviceTouchpadRow')));
-
-        webUIListenerCallback('has-touchpad-changed', false);
-        await flushTasks();
-        assertFalse(isVisible(
-            devicePage.shadowRoot!.querySelector('#perDeviceTouchpadRow')));
       });
-
-  test('per-device-pointing-stick row visibility', async () => {
-    setDeviceSplitEnabled(false);
-    await init();
-    assertFalse(isVisible(
-        devicePage.shadowRoot!.querySelector('#perDevicePointingStickRow')));
-  });
 
   test(
       'per-device-pointing-stick row visibility based on devices connected',
@@ -254,8 +157,6 @@ suite('<settings-device-page>', () => {
         const provider = new FakeInputDeviceSettingsProvider();
         setInputDeviceSettingsProviderForTesting(provider);
 
-        // Tests with flag on.
-        setDeviceSplitEnabled(true);
         await init();
 
         provider.setFakePointingSticks(fakePointingSticks);
@@ -272,28 +173,7 @@ suite('<settings-device-page>', () => {
         await flushTasks();
         assertTrue(isVisible(devicePage.shadowRoot!.querySelector(
             '#perDevicePointingStickRow')));
-
-        // Tests with flag off.
-        setDeviceSplitEnabled(false);
-        await init();
-
-        webUIListenerCallback('has-pointing-stick-stick-changed', true);
-        await flushTasks();
-        assertFalse(isVisible(devicePage.shadowRoot!.querySelector(
-            '#perDevicePointingStickRow')));
-
-        webUIListenerCallback('has-pointing-stick-changed', false);
-        await flushTasks();
-        assertFalse(isVisible(devicePage.shadowRoot!.querySelector(
-            '#perDevicePointingStickRow')));
       });
-
-  test('per-device-keyboard row visibility', async () => {
-    setDeviceSplitEnabled(false);
-    await init();
-    assertFalse(isVisible(
-        devicePage.shadowRoot!.querySelector('#perDeviceKeyboardRow')));
-  });
 
   suite('graphics tablet subpage', () => {
     function queryTabletRow(): HTMLElement|null {
@@ -357,6 +237,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const minVolumePercentFakeAudioSystemProperties:
@@ -370,6 +252,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const mutedByUserFakeAudioSystemProperties:
@@ -385,6 +269,8 @@ suite('<settings-device-page>', () => {
         fakeCrosAudioConfig.fakeInternalMicActive,
       ],
       inputGainPercent: 0,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const mutedByPolicyFakeAudioSystemProperties:
@@ -400,6 +286,8 @@ suite('<settings-device-page>', () => {
         fakeCrosAudioConfig.fakeInternalMicActive,
       ],
       inputGainPercent: 0,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const mutedExternallyFakeAudioSystemProperties:
@@ -415,6 +303,8 @@ suite('<settings-device-page>', () => {
         fakeCrosAudioConfig.fakeInternalMicActive,
       ],
       inputGainPercent: 0,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const emptyOutputDevicesFakeAudioSystemProperties:
@@ -427,6 +317,8 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const emptyInputDevicesFakeAudioSystemProperties:
@@ -440,6 +332,8 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const activeSpeakerFakeAudioSystemProperties:
@@ -453,9 +347,11 @@ suite('<settings-device-page>', () => {
       inputDevices: [],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
-    const noiseCancellationNotSupportedAudioSystemProperties:
+    const effectNoneAudioSystemProperties:
         crosAudioConfigMojom.AudioSystemProperties = {
       outputVolumePercent: 0,
       outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
@@ -465,9 +361,25 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
-    const styleTransferSupportedAudioSystemProperties:
+    const effectNoiseCancellationAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalFrontMic,
+      ],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceNC,
+    };
+
+    const effectStyleTransferAudioSystemProperties:
         crosAudioConfigMojom.AudioSystemProperties = {
       outputVolumePercent: 0,
       outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
@@ -477,31 +389,50 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceST,
     };
 
-    const styleTransferNotSupportedAudioSystemProperties:
+    const effectBeamformingAudioSystemProperties:
         crosAudioConfigMojom.AudioSystemProperties = {
       outputVolumePercent: 0,
       outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
       outputDevices: [],
       inputDevices: [
-        fakeCrosAudioConfig.fakeInternalMicActive,
+        fakeCrosAudioConfig.fakeInternalFrontMic,
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceBF,
     };
 
-
-    const hfpMicSrNotSupportedAudioSystemProperties:
+    const effectModeOptionsAudioSystemProperties:
         crosAudioConfigMojom.AudioSystemProperties = {
       outputVolumePercent: 0,
       outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
       outputDevices: [],
       inputDevices: [
-        fakeCrosAudioConfig.fakeBluetoothMic,
+        fakeCrosAudioConfig.fakeInternalFrontMic,
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceEffectMode,
+    };
+
+    const effectFallbackMessageAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [],
+      inputDevices: [
+        fakeCrosAudioConfig.fakeInternalFrontMic,
+      ],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearanceFallback,
     };
 
     const hfpMicSrSupportedAudioSystemProperties:
@@ -515,6 +446,8 @@ suite('<settings-device-page>', () => {
       ],
       inputGainPercent: 0,
       inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     const muteByHardwareAudioSystemProperties:
@@ -527,6 +460,8 @@ suite('<settings-device-page>', () => {
       ],
       inputMuteState: crosAudioConfigMojom.MuteState.kMutedExternally,
       inputGainPercent: 0,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
     };
 
     setup(async () => {
@@ -559,35 +494,25 @@ suite('<settings-device-page>', () => {
       const inputSectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputTitle');
       assertTrue(!!inputSectionHeader);
-      assertEquals('Input', inputSectionHeader.textContent!.trim());
+      assertEquals('Input', inputSectionHeader.textContent.trim());
       const inputDeviceSubsectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputDeviceLabel');
       assertTrue(!!inputDeviceSubsectionHeader);
       assertEquals(
-          'Microphone', inputDeviceSubsectionHeader.textContent!.trim());
+          'Microphone', inputDeviceSubsectionHeader.textContent.trim());
       const inputDeviceSubsectionDropdown =
           audioPage.shadowRoot!.querySelector('#audioInputDeviceDropdown');
       assertTrue(isVisible(inputDeviceSubsectionDropdown));
       const inputGainSubsectionHeader =
           audioPage.shadowRoot!.querySelector('#audioInputGainLabel');
       assertTrue(!!inputGainSubsectionHeader, 'audioInputGainLabel');
-      assertEquals('Volume', inputGainSubsectionHeader.textContent!.trim());
+      assertEquals('Volume', inputGainSubsectionHeader.textContent.trim());
       const inputVolumeButton =
           audioPage.shadowRoot!.querySelector('#audioInputGainMuteButton');
       assertTrue(isVisible(inputVolumeButton), 'audioInputGainMuteButton');
       const inputVolumeSlider =
           audioPage.shadowRoot!.querySelector('#audioInputGainVolumeSlider');
       assertTrue(isVisible(inputVolumeSlider), 'audioInputGainVolumeSlider');
-      const noiseCancellationSubsectionHeader =
-          audioPage.shadowRoot!.querySelector(
-              '#audioInputNoiseCancellationLabel');
-      assertTrue(!!noiseCancellationSubsectionHeader);
-      assertEquals(
-          'Noise cancellation',
-          noiseCancellationSubsectionHeader.textContent!.trim());
-      const noiseCancellationToggle = audioPage.shadowRoot!.querySelector(
-          '#audioInputNoiseCancellationToggle');
-      assertTrue(isVisible(noiseCancellationToggle));
     });
 
     test('output volume mojo test', async () => {
@@ -635,7 +560,7 @@ suite('<settings-device-page>', () => {
           minOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
       );
-      assertEquals('settings20:volume-zero', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-zero', outputMuteButton.ironIcon);
 
       // Test clicking to max volume case.
       const maxOutputVolumePercent = 100;
@@ -644,7 +569,7 @@ suite('<settings-device-page>', () => {
           maxOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
       );
-      assertEquals('settings20:volume-up', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-up', outputMuteButton.ironIcon);
 
       // Test clicking to non-boundary volume case.
       const nonBoundaryOutputVolumePercent = 50;
@@ -653,7 +578,7 @@ suite('<settings-device-page>', () => {
           nonBoundaryOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
       );
-      assertEquals('settings20:volume-up', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-up', outputMuteButton.ironIcon);
 
       // Ensure value clamps to min.
       outputSlider.value = -1;
@@ -663,7 +588,7 @@ suite('<settings-device-page>', () => {
       assertEquals(
           minOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent);
-      assertEquals('settings20:volume-zero', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-zero', outputMuteButton.ironIcon);
 
       // Ensure value clamps to max.
       outputSlider.value = 101;
@@ -673,7 +598,7 @@ suite('<settings-device-page>', () => {
       assertEquals(
           maxOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent);
-      assertEquals('settings20:volume-up', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-up', outputMuteButton.ironIcon);
 
       // Test clicking to a small icon volume case.
       const smallIconOutputVolumePercent = 10;
@@ -682,7 +607,7 @@ suite('<settings-device-page>', () => {
           smallIconOutputVolumePercent,
           audioPage.get('audioSystemProperties_').outputVolumePercent,
       );
-      assertEquals('settings20:volume-down', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-down', outputMuteButton.ironIcon);
     });
 
     test('output mute state changes slider disabled state', async () => {
@@ -863,7 +788,7 @@ suite('<settings-device-page>', () => {
           crosAudioConfigMojom.MuteState.kMutedByUser,
           audioPage.get('audioSystemProperties_').outputMuteState);
       assertTrue(audioPage.get('isOutputMuted_'));
-      assertEquals('settings20:volume-up-off', outputMuteButton.ironIcon);
+      assertEquals('os-settings:volume-up-off', outputMuteButton.ironIcon);
 
       outputMuteButton.click();
       await flushTasks();
@@ -887,7 +812,7 @@ suite('<settings-device-page>', () => {
       await flushTasks();
 
       assertTrue(audioPage.getIsInputMutedForTest());
-      assertEquals('settings:mic-off', inputMuteButton.ironIcon);
+      assertEquals('os-settings:mic-off', inputMuteButton.ironIcon);
     });
 
     test('simulate setting input gain slider', async () => {
@@ -940,156 +865,214 @@ suite('<settings-device-page>', () => {
           maximumValue);
     });
 
-    test('simulate noise cancellation', async () => {
-      const mockController = new MockController();
-      const setNoiseCancellationEnabled = mockController.createFunctionMock(
-          crosAudioConfig, 'setNoiseCancellationEnabled');
+    suite('voice isolation', () => {
+      let voiceIsolationToggleSection: SettingsToggleButtonElement;
 
-      const noiseCancellationSubsection =
-          audioPage.shadowRoot!.querySelector<HTMLDivElement>(
-              '#audioInputNoiseCancellationSubsection');
-      const noiseCancellationToggle =
-          audioPage.shadowRoot!.querySelector<CrToggleElement>(
-              '#audioInputNoiseCancellationToggle');
+      setup(() => {
+        const toggleSection =
+            audioPage.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+                '#audioInputVoiceIsolationToggleSection');
+        assertTrue(!!toggleSection);
+        voiceIsolationToggleSection = toggleSection;
+      });
 
-      assertTrue(!!noiseCancellationSubsection);
-      assertTrue(isVisible(noiseCancellationSubsection));
-      assertTrue(!!noiseCancellationToggle);
-      assertFalse(noiseCancellationToggle.checked);
+      async function assertVoiceIsolationVisibilityForSystemProperties(
+          properties: crosAudioConfigMojom.AudioSystemProperties,
+          visible: boolean) {
+        crosAudioConfig.setAudioSystemProperties(properties);
+        await flushTasks();
+        assertEquals(isVisible(voiceIsolationToggleSection), visible);
+      }
 
-      await noiseCancellationToggle.click();
-      await flushTasks();
+      function getEffectModeSection(): SettingsRadioGroupElement|null {
+        return audioPage.shadowRoot!.querySelector<SettingsRadioGroupElement>(
+            '#voiceIsolationEffectModeOptions');
+      }
 
-      assertTrue(isVisible(noiseCancellationSubsection));
-      assertTrue(noiseCancellationToggle.checked);
-      assertEquals(
-          /* expected_call_count */ 1,
-          setNoiseCancellationEnabled['calls_'].length);
+      function getEffectModeRadioButton(id: string):
+          ControlledRadioButtonElement {
+        const radioButton: ControlledRadioButtonElement|null =
+            audioPage.shadowRoot!.querySelector<ControlledRadioButtonElement>(
+                id);
+        assertTrue(!!radioButton);
+        return radioButton;
+      }
 
-      // Clicking on the row should toggle the noise cancellation toggle.
-      noiseCancellationSubsection.click();
-      assertEquals(
-          /* expected_call_count */ 2,
-          setNoiseCancellationEnabled['calls_'].length);
-      const argsPassedToSetNoiseCancellationEnabled =
-          setNoiseCancellationEnabled['calls_'][1];
-      assertTrue(!!argsPassedToSetNoiseCancellationEnabled);
-      // "setNoiseCancellationEnabled" should have been called with "false"
-      // after the row was clicked on.
-      assertFalse(argsPassedToSetNoiseCancellationEnabled[0]);
+      test('section visibility - style transfer', () => {
+        assertVoiceIsolationVisibilityForSystemProperties(
+            effectStyleTransferAudioSystemProperties, /*visible*/ true);
+      });
+      test('section visibility - beamforming', () => {
+        assertVoiceIsolationVisibilityForSystemProperties(
+            effectBeamformingAudioSystemProperties, /*visible*/ true);
+      });
+      test('section visibility - noise cancellation', () => {
+        assertVoiceIsolationVisibilityForSystemProperties(
+            effectNoiseCancellationAudioSystemProperties, /*visible*/ true);
+      });
+      test('section visibility - no effects', () => {
+        assertVoiceIsolationVisibilityForSystemProperties(
+            effectNoneAudioSystemProperties, /*visible*/ false);
+      });
 
-      crosAudioConfig.setAudioSystemProperties(
-          noiseCancellationNotSupportedAudioSystemProperties);
-      await flushTasks();
+      test('toggle click', async () => {
+        const mockController = new MockController();
+        const recordVoiceIsolationEnabledChange =
+            mockController.createFunctionMock(
+                crosAudioConfig, 'recordVoiceIsolationEnabledChange');
 
-      assertFalse(isVisible(noiseCancellationSubsection));
+        // Set system properties with Style Transfer.
+        crosAudioConfig.setAudioSystemProperties(
+            effectStyleTransferAudioSystemProperties);
+        assertFalse(voiceIsolationToggleSection.checked);
+
+        // Toggle on
+        await voiceIsolationToggleSection.click();
+        await flushTasks();
+        assertTrue(voiceIsolationToggleSection.checked);
+        assertEquals(
+            /* expected_call_count */ 1,
+            recordVoiceIsolationEnabledChange['calls_'].length);
+
+        // Toggle off
+        await voiceIsolationToggleSection.click();
+        await flushTasks();
+        assertFalse(voiceIsolationToggleSection.checked);
+        assertEquals(
+            /* expected_call_count */ 2,
+            recordVoiceIsolationEnabledChange['calls_'].length);
+      });
+
+      test('system properties change', async () => {
+        // System properties change should not trigger setVoiceIsolationEnabled
+        // to be called.
+        const mockController = new MockController();
+        const setVoiceIsolationEnabled = mockController.createFunctionMock(
+            crosAudioConfig, 'setVoiceIsolationEnabled');
+
+        assertEquals(
+            /* expected_call_count */ 0,
+            setVoiceIsolationEnabled['calls_'].length);
+
+        crosAudioConfig.setAudioSystemProperties(
+            effectNoiseCancellationAudioSystemProperties);
+        await flushTasks();
+
+        assertEquals(
+            /* expected_call_count */ 0,
+            setVoiceIsolationEnabled['calls_'].length);
+
+        crosAudioConfig.setAudioSystemProperties(
+            effectNoneAudioSystemProperties);
+        await flushTasks();
+
+        assertEquals(
+            /* expected_call_count */ 0,
+            setVoiceIsolationEnabled['calls_'].length);
+      });
+
+      test('effect mode - visibility', async () => {
+        crosAudioConfig.setAudioSystemProperties(
+            effectModeOptionsAudioSystemProperties);
+        await flushTasks();
+
+        // The section is visible only when the toggle is on.
+        assertFalse(voiceIsolationToggleSection.checked);
+        let effectModeSection = getEffectModeSection();
+        assertFalse(!!effectModeSection);
+        assertFalse(isVisible(effectModeSection));
+        // Turn on voice isolation.
+        await voiceIsolationToggleSection.click();
+        assertTrue(voiceIsolationToggleSection.checked);
+        effectModeSection = getEffectModeSection();
+        assertTrue(!!effectModeSection);
+        assertTrue(isVisible(effectModeSection));
+
+        // Change to properties that shouldn't show the effect mode options.
+        crosAudioConfig.setAudioSystemProperties(
+            effectStyleTransferAudioSystemProperties);
+        await flushTasks();
+        assertFalse(isVisible(effectModeSection));
+      });
+
+      test('effect mode - select', async () => {
+        crosAudioConfig.setAudioSystemProperties(
+            effectModeOptionsAudioSystemProperties);
+        await flushTasks();
+        await voiceIsolationToggleSection.click();
+        const effectModeSection = getEffectModeSection();
+        assertTrue(!!effectModeSection);
+        assertTrue(isVisible(effectModeSection));
+
+        // Pref is default 0.
+        // effectModeSection should be connected with pref.
+        assertEquals(
+            effectModeSection.selected,
+            String(crosAudioConfigMojom.AudioEffectType.kNone));
+        // cras_audio_handler would set default to Style Transfer when the
+        // effect mode section becomes visible. But this test is not using
+        // cras_audio_handler. Manually set pref to Style Transfer.
+        audioPage.setPrefValue(
+            'ash.input_voice_isolation_preferred_effect',
+            crosAudioConfigMojom.AudioEffectType.kStyleTransfer);
+        assertEquals(
+            effectModeSection.selected,
+            String(crosAudioConfigMojom.AudioEffectType.kStyleTransfer));
+
+        // Click Beamforming radio button.
+        const beamformingRadioButton =
+            getEffectModeRadioButton('#voiceIsolationEffectModeBeamforming');
+        await beamformingRadioButton.click();
+        assertEquals(
+            audioPage.getPref('ash.input_voice_isolation_preferred_effect')
+                .value,
+            crosAudioConfigMojom.AudioEffectType.kBeamforming);
+        // Click Style Transfer radio button.
+        const styleTransferRadioButton =
+            getEffectModeRadioButton('#voiceIsolationEffectModeStyleTransfer');
+        await styleTransferRadioButton.click();
+        assertEquals(
+            audioPage.getPref('ash.input_voice_isolation_preferred_effect')
+                .value,
+            crosAudioConfigMojom.AudioEffectType.kStyleTransfer);
+      });
+
+      test('effect fallback message visibility', async () => {
+        // The fallback message section should be shown only when
+        // the corresponding flag in system properties is on, and
+        // the voice isolation toggle is on.
+
+        // Set system properties with fallback flag.
+        crosAudioConfig.setAudioSystemProperties(
+            effectFallbackMessageAudioSystemProperties);
+        await flushTasks();
+
+        const fallbackMessageSection =
+            audioPage.shadowRoot!.querySelector<HTMLElement>(
+                '#voiceIsolationEffectFallbackMessageSection');
+        assertTrue(!!fallbackMessageSection);
+
+        // The fallback message is hidden when the toggle is off.
+        assertFalse(voiceIsolationToggleSection.checked);
+        assertFalse(isVisible(fallbackMessageSection));
+
+        // Turn on the toggle, the fallback message is shown.
+        await voiceIsolationToggleSection.click();
+        assertTrue(voiceIsolationToggleSection.checked);
+        assertTrue(isVisible(fallbackMessageSection));
+
+        // Change the system properties to without fallback flag.
+        crosAudioConfig.setAudioSystemProperties(
+            effectStyleTransferAudioSystemProperties);
+        await flushTasks();
+
+        // The fallback message should be hidden.
+        assertTrue(voiceIsolationToggleSection.checked);
+        assertFalse(isVisible(fallbackMessageSection));
+      });
     });
 
-    test('simulate style transfer', async () => {
-      const mockController = new MockController();
-      const setStyleTransferEnabled = mockController.createFunctionMock(
-          crosAudioConfig, 'setStyleTransferEnabled');
-      crosAudioConfig.setAudioSystemProperties(
-          styleTransferSupportedAudioSystemProperties);
-
-      const styleTransferSubsection =
-          audioPage.shadowRoot!.querySelector<HTMLDivElement>(
-              '#audioInputStyleTransferSubsection');
-      const styleTransferToggle =
-          audioPage.shadowRoot!.querySelector<CrToggleElement>(
-              '#audioInputStyleTransferToggle');
-
-      assertTrue(!!styleTransferSubsection);
-      assertTrue(isVisible(styleTransferSubsection));
-      assertTrue(!!styleTransferToggle);
-      assertFalse(styleTransferToggle.checked);
-
-      await styleTransferToggle.click();
-      await flushTasks();
-
-      assertTrue(isVisible(styleTransferSubsection));
-      assertTrue(styleTransferToggle.checked);
-      assertEquals(
-          /* expected_call_count */ 1,
-          setStyleTransferEnabled['calls_'].length);
-
-      // Clicking on the row should toggle the style transfer toggle.
-      styleTransferSubsection.click();
-      assertEquals(
-          /* expected_call_count */ 2,
-          setStyleTransferEnabled['calls_'].length);
-      const argsPassedToSetStyleTransferEnabled =
-          setStyleTransferEnabled['calls_'][1];
-      assertTrue(!!argsPassedToSetStyleTransferEnabled);
-      // "setStyleTransferEnabled" should have been called with "false"
-      // after the row was clicked on.
-      assertFalse(argsPassedToSetStyleTransferEnabled[0]);
-
-      crosAudioConfig.setAudioSystemProperties(
-          styleTransferNotSupportedAudioSystemProperties);
-      await flushTasks();
-
-      assertFalse(isVisible(styleTransferSubsection));
-    });
-
-    test(
-        'simulate hfp mic sr with flag off and unsupported state', async () => {
-          const audioHfpMicSrSubsection =
-              audioPage.shadowRoot!.querySelector<HTMLElement>(
-                  '#audioInputHfpMicSrSubsection');
-          const audioInputHfpMicSrToggle =
-              audioPage.shadowRoot!.querySelector<CrToggleElement>(
-                  '#audioInputHfpMicSrToggle');
-
-          // default
-          assertTrue(!!audioHfpMicSrSubsection);
-          assertTrue(audioHfpMicSrSubsection.hidden);
-          assertTrue(!!audioInputHfpMicSrToggle);
-          assertFalse(audioInputHfpMicSrToggle.checked);
-
-          // toggle flag off && not supported
-          setEnableAudioHfpMicSRToggleEnabled(false);
-          await init();
-          crosAudioConfig.setAudioSystemProperties(
-              hfpMicSrNotSupportedAudioSystemProperties);
-          await flushTasks();
-
-          assertTrue(!!audioHfpMicSrSubsection);
-          assertTrue(audioHfpMicSrSubsection.hidden);
-          assertFalse(audioInputHfpMicSrToggle.checked);
-        });
-
-    test('simulate hfp mic sr with flag on and unsupported state', async () => {
-      const audioHfpMicSrSubsection =
-          audioPage.shadowRoot!.querySelector<HTMLElement>(
-              '#audioInputHfpMicSrSubsection');
-
-      setEnableAudioHfpMicSRToggleEnabled(true);
-      await init();
-      crosAudioConfig.setAudioSystemProperties(
-          hfpMicSrNotSupportedAudioSystemProperties);
-      await flushTasks();
-
-      assertTrue(!!audioHfpMicSrSubsection);
-      assertTrue(audioHfpMicSrSubsection.hidden);
-    });
-
-    test('simulate hfp mic sr with flag off and supported state', async () => {
-      const audioHfpMicSrSubsection =
-          audioPage.shadowRoot!.querySelector<HTMLElement>(
-              '#audioInputHfpMicSrSubsection');
-
-      setEnableAudioHfpMicSRToggleEnabled(false);
-      await init();
-      crosAudioConfig.setAudioSystemProperties(
-          hfpMicSrSupportedAudioSystemProperties);
-      await flushTasks();
-
-      assertTrue(!!audioHfpMicSrSubsection);
-      assertTrue(audioHfpMicSrSubsection.hidden);
-    });
-
-    test('simulate hfp mic sr with flag on and supported state', async () => {
+    test('simulate hfp mic sr with unsupported state', () => {
       const audioHfpMicSrSubsection =
           audioPage.shadowRoot!.querySelector<HTMLElement>(
               '#audioInputHfpMicSrSubsection');
@@ -1097,7 +1080,21 @@ suite('<settings-device-page>', () => {
           audioPage.shadowRoot!.querySelector<CrToggleElement>(
               '#audioInputHfpMicSrToggle');
 
-      setEnableAudioHfpMicSRToggleEnabled(true);
+      // default
+      assertTrue(!!audioHfpMicSrSubsection);
+      assertTrue(audioHfpMicSrSubsection.hidden);
+      assertTrue(!!audioInputHfpMicSrToggle);
+      assertFalse(audioInputHfpMicSrToggle.checked);
+    });
+
+    test('simulate hfp mic sr with supported state', async () => {
+      const audioHfpMicSrSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLElement>(
+              '#audioInputHfpMicSrSubsection');
+      const audioInputHfpMicSrToggle =
+          audioPage.shadowRoot!.querySelector<CrToggleElement>(
+              '#audioInputHfpMicSrToggle');
+
       await init();
       crosAudioConfig.setAudioSystemProperties(
           hfpMicSrSupportedAudioSystemProperties);
@@ -1112,7 +1109,6 @@ suite('<settings-device-page>', () => {
     test(
         'simulate hfp mic sr with active device and enabled state',
         async () => {
-          setEnableAudioHfpMicSRToggleEnabled(true);
           await init();
           crosAudioConfig.setAudioSystemProperties(
               hfpMicSrSupportedAudioSystemProperties);
@@ -1206,62 +1202,6 @@ suite('<settings-device-page>', () => {
       assertTrue(outputSlider.disabled);
     });
 
-    test('noise cancellation after system properties change', async () => {
-      // System properties change should not trigger setNoiseCancellationEnabled
-      // to be called.
-      const mockController = new MockController();
-      const setNoiseCancellationEnabled = mockController.createFunctionMock(
-          crosAudioConfig, 'setNoiseCancellationEnabled');
-
-      assertEquals(
-          /* expected_call_count */ 0,
-          setNoiseCancellationEnabled['calls_'].length);
-
-      crosAudioConfig.setAudioSystemProperties(
-          {...fakeCrosAudioConfig.defaultFakeAudioSystemProperties});
-      await flushTasks();
-
-      assertEquals(
-          /* expected_call_count */ 0,
-          setNoiseCancellationEnabled['calls_'].length);
-
-      crosAudioConfig.setAudioSystemProperties(
-          noiseCancellationNotSupportedAudioSystemProperties);
-      await flushTasks();
-
-      assertEquals(
-          /* expected_call_count */ 0,
-          setNoiseCancellationEnabled['calls_'].length);
-    });
-
-    test('style transfer after system properties change', async () => {
-      // System properties change should not trigger setStyleTransferEnabled
-      // to be called.
-      const mockController = new MockController();
-      const setStyleTransferEnabled = mockController.createFunctionMock(
-          crosAudioConfig, 'setStyleTransferEnabled');
-
-      assertEquals(
-          /* expected_call_count */ 0,
-          setStyleTransferEnabled['calls_'].length);
-
-      crosAudioConfig.setAudioSystemProperties(
-          styleTransferSupportedAudioSystemProperties);
-      await flushTasks();
-
-      assertEquals(
-          /* expected_call_count */ 0,
-          setStyleTransferEnabled['calls_'].length);
-
-      crosAudioConfig.setAudioSystemProperties(
-          styleTransferNotSupportedAudioSystemProperties);
-      await flushTasks();
-
-      assertEquals(
-          /* expected_call_count */ 0,
-          setStyleTransferEnabled['calls_'].length);
-    });
-
     test('slider keypress correct increments', () => {
       // The audio sliders are expected to increment in intervals of 10.
       const outputVolumeSlider =
@@ -1310,10 +1250,10 @@ suite('<settings-device-page>', () => {
       // Default state should be unmuted so show the toggle mute tooltip.
       assertEquals(
           loadTimeData.getString('audioToggleToMuteTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioToggleToMuteTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted by user case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1321,10 +1261,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioToggleToUnmuteTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioToggleToUnmuteTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted by policy case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1332,10 +1272,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioMutedByPolicyTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioMutedByPolicyTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
 
       // Test muted externally case.
       crosAudioConfig.setAudioSystemProperties(
@@ -1343,10 +1283,10 @@ suite('<settings-device-page>', () => {
       await flushTasks();
       assertEquals(
           loadTimeData.getString('audioMutedExternallyTooltip'),
-          outputMuteTooltip.textContent!.trim());
+          outputMuteTooltip.textContent.trim());
       assertEquals(
           loadTimeData.getString('audioMutedExternallyTooltip'),
-          inputMuteTooltip.textContent!.trim());
+          inputMuteTooltip.textContent.trim());
     });
 
     test(
@@ -1415,58 +1355,146 @@ suite('<settings-device-page>', () => {
         });
   });
 
-  if (!isRevampWayfindingEnabled) {
-    // When the revamp is enabled, the power settings exist under the
-    // System Preferences page.
-    suite('power', () => {
-      setup(async () => {
-        await init();
-      });
+  suite('simulate spatial audio', () => {
+    let audioPage: SettingsAudioElement;
+    let crosAudioConfig: fakeCrosAudioConfig.FakeCrosAudioConfig;
 
-      test('power subpage visibility', () => {
-        const row = devicePage.shadowRoot!.querySelector<HTMLButtonElement>(
-            `#main #powerRow`);
-        assertTrue(!!row);
-        row.click();
-        assertEquals(routes.POWER, Router.getInstance().currentRoute);
-        const powerPage =
-            devicePage.shadowRoot!.querySelector('settings-power');
-        assertTrue(!!powerPage);
-      });
+    const spatialAudioSupportedAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [
+        fakeCrosAudioConfig.fakeSpeakerActive,
+      ],
+      inputDevices: [],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
+    };
+
+    const spatialAudioNotSupportedAudioSystemProperties:
+        crosAudioConfigMojom.AudioSystemProperties = {
+      outputVolumePercent: 0,
+      outputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      outputDevices: [
+        fakeCrosAudioConfig.fakeMicJackInactive,
+      ],
+      inputDevices: [],
+      inputGainPercent: 0,
+      inputMuteState: crosAudioConfigMojom.MuteState.kNotMuted,
+      voiceIsolationUiAppearance:
+          fakeCrosAudioConfig.fakeVoiceIsolationUIAppearance,
+    };
+
+    setup(async () => {
+      setEnableSpatialAudioToggleEnabled(true);
+      await init();
+
+      // FakeAudioConfig must be set before audio subpage is loaded.
+      crosAudioConfig = new fakeCrosAudioConfig.FakeCrosAudioConfig();
+      setCrosAudioConfigForTesting(crosAudioConfig);
+      // Ensure data reset to fresh state.
+      crosAudioConfig.setAudioSystemProperties(
+          {...fakeCrosAudioConfig.defaultFakeAudioSystemProperties});
+      audioPage = showAndGetDeviceSubpage('audio', routes.AUDIO) as
+          SettingsAudioElement;
+      await flushTasks();
     });
-  }
+
+    teardown(() => {
+      audioPage.remove();
+    });
+
+    test('simulate click toggle switch spatial audio', async () => {
+      crosAudioConfig.setAudioSystemProperties(
+          spatialAudioSupportedAudioSystemProperties);
+
+      const spatialAudioToggle =
+          audioPage.shadowRoot!.querySelector<CrToggleElement>(
+              '#audioOutputSpatialAudioToggle');
+      const activeDevice = crosAudioConfig.getDeviceByIdForTesting(
+          fakeCrosAudioConfig.fakeSpeakerActive.id);
+
+      assertTrue(!!spatialAudioToggle);
+      assertFalse(spatialAudioToggle.checked);
+      assertTrue(!!activeDevice);
+
+      spatialAudioToggle.click();
+      await flushTasks();
+
+      assertTrue(spatialAudioToggle.checked);
+      assertEquals(
+          crosAudioConfigMojom.AudioEffectState.kEnabled,
+          activeDevice.spatialAudioState);
+
+      spatialAudioToggle.click();
+      await flushTasks();
+
+      assertFalse(spatialAudioToggle.checked);
+      assertEquals(
+          crosAudioConfigMojom.AudioEffectState.kNotEnabled,
+          activeDevice.spatialAudioState);
+    });
+
+    test('simulate click row switch spatial audio', () => {
+      crosAudioConfig.setAudioSystemProperties(
+          spatialAudioSupportedAudioSystemProperties);
+
+      const spatialAudioSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLElement>(
+              '#audioOutputSpatialAudioSubsection');
+      const activeDevice = crosAudioConfig.getDeviceByIdForTesting(
+          fakeCrosAudioConfig.fakeSpeakerActive.id);
+
+      assertTrue(!!spatialAudioSubsection);
+      assertTrue(!!activeDevice);
+
+      // Clicking on the row should toggle the spatial audio toggle.
+      spatialAudioSubsection.click();
+      assertEquals(
+          crosAudioConfigMojom.AudioEffectState.kEnabled,
+          activeDevice.spatialAudioState);
+
+      spatialAudioSubsection.click();
+      assertEquals(
+          crosAudioConfigMojom.AudioEffectState.kNotEnabled,
+          activeDevice.spatialAudioState);
+    });
+
+    test('simulate spatial audio visibility', async () => {
+      crosAudioConfig.setAudioSystemProperties(
+          spatialAudioSupportedAudioSystemProperties);
+
+      const spatialAudioSubsection =
+          audioPage.shadowRoot!.querySelector<HTMLElement>(
+              '#audioOutputSpatialAudioSubsection');
+      const spatialAudioToggle =
+          audioPage.shadowRoot!.querySelector<CrToggleElement>(
+              '#audioOutputSpatialAudioToggle');
+
+      assertTrue(!!spatialAudioSubsection);
+      assertTrue(isVisible(spatialAudioSubsection));
+      assertTrue(!!spatialAudioToggle);
+      assertTrue(isVisible(spatialAudioToggle));
+
+      crosAudioConfig.setAudioSystemProperties(
+          spatialAudioNotSupportedAudioSystemProperties);
+      await flushTasks();
+
+      assertFalse(isVisible(spatialAudioSubsection));
+      assertFalse(isVisible(spatialAudioToggle));
+    });
+  });
 
   suite('keyboard subpage', () => {
     function queryKeyboardRow(): HTMLElement|null {
       return devicePage.shadowRoot!.querySelector('#keyboardRow');
     }
 
-    test('Keyboard row is not visible if device split is enabled', async () => {
-      setDeviceSplitEnabled(true);
-
+    test('Keyboard row is not visible', async () => {
       await init();
       assertFalse(isVisible(queryKeyboardRow()));
-    });
-
-    test('Keyboard row is visible if device split is disabled', async () => {
-      setDeviceSplitEnabled(false);
-
-      await init();
-      assertTrue(isVisible(queryKeyboardRow()));
-    });
-
-    test('Clicking keyboard row goes to keyboard subpage', async () => {
-      setDeviceSplitEnabled(false);
-      await init();
-
-      const keyboardRow = queryKeyboardRow();
-      assertTrue(!!keyboardRow);
-      keyboardRow.click();
-
-      assertEquals(routes.KEYBOARD, Router.getInstance().currentRoute);
-      const subpage = devicePage.shadowRoot!.querySelector<HTMLElement>(
-          'settings-keyboard');
-      assertTrue(!!subpage);
     });
   });
 
@@ -1515,32 +1543,9 @@ suite('<settings-device-page>', () => {
       return devicePage.shadowRoot!.querySelector('#pointersRow');
     }
 
-    test('Pointers row is not visible if device split is enabled', async () => {
-      setDeviceSplitEnabled(true);
-
+    test('Pointers row is not visible', async () => {
       await init();
       assertFalse(isVisible(queryPointersRow()));
-    });
-
-    test('Pointers row is visible if device split is disabled', async () => {
-      setDeviceSplitEnabled(false);
-
-      await init();
-      assertTrue(isVisible(queryPointersRow()));
-    });
-
-    test('Clicking pointers row goes to pointers subpage', async () => {
-      setDeviceSplitEnabled(false);
-      await init();
-
-      const pointersRow = queryPointersRow();
-      assertTrue(!!pointersRow);
-      pointersRow.click();
-
-      assertEquals(routes.POINTERS, Router.getInstance().currentRoute);
-      const subpage = devicePage.shadowRoot!.querySelector<HTMLElement>(
-          'settings-pointers');
-      assertTrue(!!subpage);
     });
   });
 
@@ -1637,24 +1642,22 @@ suite('<settings-device-page>', () => {
     });
   });
 
-  if (isRevampWayfindingEnabled) {
-    test('Power row is not visible', async () => {
-      await init();
-      const powerRow = devicePage.shadowRoot!.querySelector('#powerRow');
-      assertFalse(isVisible(powerRow));
-    });
+  test('Power row is not visible', async () => {
+    await init();
+    const powerRow = devicePage.shadowRoot!.querySelector('#powerRow');
+    assertFalse(isVisible(powerRow));
+  });
 
-    test('Storage row is not visible', async () => {
-      await init();
-      const storageRow = devicePage.shadowRoot!.querySelector('#storageRow');
-      assertFalse(isVisible(storageRow));
-    });
+  test('Storage row is not visible', async () => {
+    await init();
+    const storageRow = devicePage.shadowRoot!.querySelector('#storageRow');
+    assertFalse(isVisible(storageRow));
+  });
 
-    test('Printing settings card is visible', async () => {
-      await init();
-      const printingSettingsCard =
-          devicePage.shadowRoot!.querySelector('printing-settings-card');
-      assertTrue(isVisible(printingSettingsCard));
-    });
-  }
+  test('Printing settings card is visible', async () => {
+    await init();
+    const printingSettingsCard =
+        devicePage.shadowRoot!.querySelector('printing-settings-card');
+    assertTrue(isVisible(printingSettingsCard));
+  });
 });

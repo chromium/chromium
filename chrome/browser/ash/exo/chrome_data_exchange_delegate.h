@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_EXO_CHROME_DATA_EXCHANGE_DELEGATE_H_
 
 #include "base/files/file_path.h"
-#include "base/functional/callback.h"
 #include "components/exo/data_exchange_delegate.h"
 #include "storage/browser/file_system/file_system_url.h"
 

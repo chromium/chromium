@@ -92,7 +92,7 @@ bool IsSameSite(const GURL& url1, const GURL& url2) {
   // subframe are under default SiteInstance on low-end Android environment, and
   // it treats them as same-site even though the passed url is actually not a
   // same-site.
-  return url1.SchemeIs(url2.scheme()) &&
+  return url1.SchemeIs(url2.GetScheme()) &&
          net::registry_controlled_domains::SameDomainOrHost(
              url1, url2,
              net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
@@ -178,8 +178,7 @@ std::string ContentfulPaintTimingInfo::TextOrImageInString() const {
     case LargestContentTextOrImage::kImage:
       return "image";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "NOT_REACHED";
+      NOTREACHED();
   }
 }
 
@@ -486,7 +485,8 @@ void LargestContentfulPaintHandler::OnDidFinishSubFrameNavigation(
       navigation_handle->GetFrameTreeNodeId(), navigation_delta));
 }
 
-void LargestContentfulPaintHandler::OnSubFrameDeleted(int frame_tree_node_id) {
+void LargestContentfulPaintHandler::OnSubFrameDeleted(
+    content::FrameTreeNodeId frame_tree_node_id) {
   subframe_navigation_start_offset_.erase(frame_tree_node_id);
 }
 

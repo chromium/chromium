@@ -1,9 +1,9 @@
 {
   "name": "Popup with iframe",
   "version": "0.1",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description": "Test a browser action popup with an iframe",
-  "browser_action": {
+  "action": {
     "default_popup": "popup.html"
   }
 }

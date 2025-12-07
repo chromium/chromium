@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<title>Overscroll Area Parsing Test - computed</title>
+<meta name="assert" content="overscroll-area supports the full grammar 'none | <dashed-ident>#'.">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/css/support/computed-testcommon.js"></script>
+
+<div id=target></div>
+
+<script>
+test_computed_value("overscroll-area", "none", "none");
+test_computed_value("overscroll-area", "nOnE", "none");
+test_computed_value("overscroll-area", "--foo", "--foo");
+test_computed_value("overscroll-area", "--foo, --bar", "--foo, --bar");
+test_computed_value("overscroll-area",
+                    "--foo, --bar, --baz, --bar, --baq",
+                    "--foo, --bar, --baz, --baq");
+</script>
+
+

@@ -1,6 +1,7 @@
 include_rules = [
   "+cc/input",
   "+cc/trees",
+  '+components/crash/core/common/crash_key.h',
   "+components/viz/common",
   "+mojo/public/cpp",
   "+services/tracing/public/cpp",

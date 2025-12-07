@@ -1,0 +1,127 @@
+<style include="cr-shared-style settings-shared cr-icons">
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .list-item {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .start {
+    overflow: hidden;
+  }
+
+  #entries {
+    margin-block-end: 0;
+    margin-block-start: 0;
+  }
+
+  /* TODO(crbug.com/454617005): this is a quick fix, remove */
+  h2 {
+    align-self: auto;
+    padding-bottom: 0;
+    padding-top: 12px;
+  }
+
+  .cr-row {
+    border-top: none;
+  }
+</style>
+
+<div id="entriesHeader" class="cr-row">
+  <h2 class="flex">
+    [[listTitle]]
+  </h2>
+  <!-- Disabled: If the user is not eligible for Autofill with Ai or if the
+       user opted out by switching the toggle, the user should not be able to
+       add entity instances. -->
+  <cr-button id="addEntityInstance" class="header-aligned-button"
+      disabled$="[[!allowEditing_]]" on-click="onAddEntityInstanceClick_">
+    $i18n{add}
+    <cr-icon icon="cr:arrow-drop-down" class="arrow-icon-down"></cr-icon>
+  </cr-button>
+</div>
+<ul id="entries" class="list-frame vertical-list">
+  <template is="dom-repeat" items="[[entityInstances_]]">
+    <li class="list-item">
+      <div class="start">
+        <div class="ellipses">[[item.entityInstanceLabel]]</div>
+        <div class="ellipses cr-secondary-text">
+          [[item.entityInstanceSubLabel]]
+        </div>
+      </div>
+      <div id="walletIndicator" hidden$="[[!item.storedInWallet]]">
+<if expr="_google_chrome">
+        <cr-icon aria-hidden="true"
+            icon="settings-internal:google-wallet">
+        </cr-icon>
+</if>
+<if expr="not _google_chrome">
+        <span class="sub-label">$i18n{googleWallet}</span>
+</if>
+      </div>
+      <template is="dom-if" if="[[item.storedInWallet]]" restamp>
+        <cr-icon-button class="icon-external" id="remoteWalletPassesLink"
+            title="$i18n{remoteWalletPassesLinkLabel}" role="link"
+            on-click="onRemoteWalletPassesLinkClick_"
+            aria-description="$i18n{opensInNewTab}">
+        </cr-icon-button>
+      </template>
+      <template is="dom-if" if="[[!item.storedInWallet]]" restamp>
+        <cr-icon-button id="moreButton" class="icon-more-vert"
+            on-click="onMoreButtonClick_"
+            title="[[i18n('autofillAiMoreActionsForEntityInstance',
+                item.entityInstanceLabel, item.entityInstanceSubLabel)]]">
+        </cr-icon-button>
+      </template>
+    </li>
+  </template>
+  <li id="entriesNone" class="list-item" hidden="[[entityInstances_.length]]">
+    $i18n{autofillAiEntityInstancesNone}
+  </li>
+</ul>
+
+<cr-lazy-render id="addMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <template is="dom-repeat" items="[[completeEntityTypesList_]]">
+        <button id="addSpecificEntityType" class="dropdown-item"
+            on-click="onAddEntityInstanceFromDropdownClick_">
+          <div>[[item.typeNameAsString]]</div>
+        </button>
+      </template>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{menu}">
+      <button id="menuEditEntityInstance" class="dropdown-item"
+          on-click="onMenuEditEntityInstanceClick_">$i18n{edit}</button>
+      <button id="menuRemoveEntityInstance" class="dropdown-item"
+          on-click="onMenuRemoveEntityInstanceClick_">$i18n{delete}</button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+
+<template is="dom-if" if="[[showAddOrEditEntityInstanceDialog_]]" restamp>
+  <settings-autofill-ai-add-or-edit-dialog id="addOrEditEntityInstanceDialog"
+      entity-instance="[[activeEntityInstance_]]"
+      dialog-title="[[addOrEditEntityInstanceDialogTitle_]]"
+      on-autofill-ai-add-or-edit-done="onAutofillAiAddOrEditDone_"
+      on-close="onAddOrEditEntityInstanceDialogClose_">
+  </settings-autofill-ai-add-or-edit-dialog>
+</template>
+<template is="dom-if" if="[[showRemoveEntityInstanceDialog_]]" restamp>
+  <settings-simple-confirmation-dialog id="removeEntityInstanceDialog"
+      title-text="[[activeEntityInstance_.type.deleteEntityTypeString]]"
+      body-text="$i18n{autofillAiDeleteEntityInstanceDialogText}"
+      confirm-text="$i18n{delete}"
+      on-close="onRemoveEntityInstanceDialogClose_">
+  </settings-simple-confirmation-dialog>
+</template>

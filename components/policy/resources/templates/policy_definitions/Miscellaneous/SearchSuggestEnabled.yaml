@@ -5,6 +5,7 @@ desc: |-
         Suggestions based on bookmarks or history are unaffected by the policy.
 
         If you set the policy, users can't change it. If not set, search suggestions are on at first, but users can turn them off any time.
+default: null
 example_value: true
 features:
   can_be_recommended: true
@@ -17,6 +18,8 @@ items:
   value: true
 - caption: Disable search suggestions
   value: false
+- caption: Allow the user to decide
+  value: null
 owners:
 - chrome-desktop-search@google.com
 - jdonnelly@google.com

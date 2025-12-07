@@ -4,10 +4,10 @@
 
 // Custom binding for the action API.
 
-var getSetIconHandler = require('setIcon').getSetIconHandler;
+const getSetIconHandler = require('setIcon').getSetIconHandler;
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
+  const apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setHandleRequest('setIcon', getSetIconHandler('action.setIcon'));
 });

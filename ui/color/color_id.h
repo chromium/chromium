@@ -8,7 +8,6 @@
 #include "base/check_op.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 
 // clang-format off
 #define CROSS_PLATFORM_COLOR_IDS \
@@ -186,6 +185,7 @@
   E_CPONLY(kColorSysStateRippleNeutralOnSubtle) \
   E_CPONLY(kColorSysStateRipplePrimary) \
   E_CPONLY(kColorSysStateFocusRing) \
+  E_CPONLY(kColorSysStateFocusRingInverse) \
   E_CPONLY(kColorSysStateTextHighlight) \
   E_CPONLY(kColorSysStateOnTextHighlight) \
   E_CPONLY(kColorSysStateFocusHighlight) \
@@ -203,6 +203,27 @@
   E_CPONLY(kColorSysShadow) \
   E_CPONLY(kColorSysGradientPrimary) \
   E_CPONLY(kColorSysGradientTertiary) \
+  /* Illustration */ \
+  E_CPONLY(kColorSysIlloPrimaryMin) \
+  E_CPONLY(kColorSysIlloPrimaryLow) \
+  E_CPONLY(kColorSysIlloPrimaryMid) \
+  E_CPONLY(kColorSysIlloPrimaryHigh) \
+  E_CPONLY(kColorSysIlloPrimaryMax) \
+  E_CPONLY(kColorSysIlloSecondaryMin) \
+  E_CPONLY(kColorSysIlloSecondaryLow) \
+  E_CPONLY(kColorSysIlloSecondaryMid) \
+  E_CPONLY(kColorSysIlloSecondaryHigh) \
+  E_CPONLY(kColorSysIlloSecondaryMax) \
+  E_CPONLY(kColorSysIlloTertiaryMin) \
+  E_CPONLY(kColorSysIlloTertiaryLow) \
+  E_CPONLY(kColorSysIlloTertiaryMid) \
+  E_CPONLY(kColorSysIlloTertiaryHigh) \
+  E_CPONLY(kColorSysIlloTertiaryMax) \
+  E_CPONLY(kColorSysIlloNeutralMin) \
+  E_CPONLY(kColorSysIlloNeutralLow) \
+  E_CPONLY(kColorSysIlloNeutralMid) \
+  E_CPONLY(kColorSysIlloNeutralHigh) \
+  E_CPONLY(kColorSysIlloNeutralMax) \
   /* AI. */ \
   E_CPONLY(kColorSysAiIllustrationShapeSurface1) \
   E_CPONLY(kColorSysAiIllustrationShapeSurface2) \
@@ -246,7 +267,6 @@
   E_CPONLY(kColorAppMenuRowBackgroundHovered) \
   E_CPONLY(kColorAppMenuUpgradeRowBackground) \
   E_CPONLY(kColorAppMenuUpgradeRowSubstringForeground) \
-  E_CPONLY(kColorAvatarHeaderArt) \
   E_CPONLY(kColorAvatarIconGuest) \
   E_CPONLY(kColorAvatarIconIncognito) \
   E_CPONLY(kColorBadgeBackground) \
@@ -300,14 +320,19 @@
   /* These colors correspond to the system colors defined in */ \
   /* ui::NativeTheme::SystemThemeColor. They are used to support */ \
   /* CSS system colors. */ \
+  E_CPONLY(kColorCssSystemActiveText) \
   E_CPONLY(kColorCssSystemBtnFace) \
   E_CPONLY(kColorCssSystemBtnText) \
+  E_CPONLY(kColorCssSystemField) \
+  E_CPONLY(kColorCssSystemFieldText) \
   E_CPONLY(kColorCssSystemGrayText) \
   E_CPONLY(kColorCssSystemHighlight) \
   E_CPONLY(kColorCssSystemHighlightText) \
   E_CPONLY(kColorCssSystemHotlight) \
+  E_CPONLY(kColorCssSystemLinkText) \
   E_CPONLY(kColorCssSystemMenuHilight) \
   E_CPONLY(kColorCssSystemScrollbar) \
+  E_CPONLY(kColorCssSystemVisitedText) \
   E_CPONLY(kColorCssSystemWindow) \
   E_CPONLY(kColorCssSystemWindowText) \
   E_CPONLY(kColorCustomFrameCaptionForeground) \
@@ -357,6 +382,7 @@
   E_CPONLY(kColorListItemFolderIconForeground) \
   E_CPONLY(kColorListItemUrlFaviconBackground) \
   E_CPONLY(kColorLiveCaptionBubbleBackgroundDefault) \
+  E_CPONLY(kColorLiveCaptionBubbleButtonBackground) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIcon) \
   E_CPONLY(kColorLiveCaptionBubbleButtonIconDisabled) \
   E_CPONLY(kColorLiveCaptionBubbleForegroundDefault) \
@@ -437,6 +463,7 @@
   E_CPONLY(kColorTabBackgroundHighlightedFocused) \
   E_CPONLY(kColorTabBorderSelected) \
   E_CPONLY(kColorTabContentSeparator) \
+  E_CPONLY(kColorTabForegroundDisabled) \
   E_CPONLY(kColorTabForeground) \
   E_CPONLY(kColorTabForegroundSelected) \
   E_CPONLY(kColorTableBackground) \
@@ -450,6 +477,8 @@
   E_CPONLY(kColorTableHeaderBackground) \
   E_CPONLY(kColorTableHeaderForeground) \
   E_CPONLY(kColorTableHeaderSeparator) \
+  E_CPONLY(kColorTableIconBackground) \
+  E_CPONLY(kColorTableRowHighlight) \
   E_CPONLY(kColorSuggestionChipBorder) \
   E_CPONLY(kColorSuggestionChipIcon) \
   E_CPONLY(kColorTextfieldBackground) \
@@ -481,6 +510,7 @@
   E_CPONLY(kColorThrobber) \
   E_CPONLY(kColorThrobberPreconnect) \
   E_CPONLY(kColorToastBackground) \
+  E_CPONLY(kColorToastBackgroundProminent) \
   E_CPONLY(kColorToastButton) \
   E_CPONLY(kColorToastForeground) \
   E_CPONLY(kColorToggleButtonHover) \
@@ -516,8 +546,6 @@
   E_CPONLY(kColorWebNativeControlAccentHovered) \
   E_CPONLY(kColorWebNativeControlAccentPressed) \
   E_CPONLY(kColorWebNativeControlAutoCompleteBackground) \
-  E_CPONLY(kColorWebNativeControlBackground) \
-  E_CPONLY(kColorWebNativeControlBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlBorder) \
   E_CPONLY(kColorWebNativeControlBorderDisabled) \
   E_CPONLY(kColorWebNativeControlBorderHovered) \
@@ -530,30 +558,36 @@
   E_CPONLY(kColorWebNativeControlButtonFillDisabled) \
   E_CPONLY(kColorWebNativeControlButtonFillHovered) \
   E_CPONLY(kColorWebNativeControlButtonFillPressed) \
+  E_CPONLY(kColorWebNativeControlCheckboxBackground) \
+  E_CPONLY(kColorWebNativeControlCheckboxBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlFill) \
   E_CPONLY(kColorWebNativeControlFillDisabled) \
   E_CPONLY(kColorWebNativeControlFillHovered) \
   E_CPONLY(kColorWebNativeControlFillPressed) \
   E_CPONLY(kColorWebNativeControlLightenLayer) \
   E_CPONLY(kColorWebNativeControlProgressValue) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundDisabled) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundHovered) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowBackgroundPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForeground) \
+  E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundDisabled) \
   E_CPONLY(kColorWebNativeControlScrollbarArrowForegroundPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarCorner) \
   E_CPONLY(kColorWebNativeControlScrollbarThumb) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbHovered) \
-  E_CPONLY(kColorWebNativeControlScrollbarThumbInactive) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbOverlayMinimalMode) \
   E_CPONLY(kColorWebNativeControlScrollbarThumbPressed) \
   E_CPONLY(kColorWebNativeControlScrollbarTrack) \
   E_CPONLY(kColorWebNativeControlSlider) \
+  E_CPONLY(kColorWebNativeControlSliderBorder) \
+  E_CPONLY(kColorWebNativeControlSliderBorderHovered) \
+  E_CPONLY(kColorWebNativeControlSliderBorderPressed) \
   E_CPONLY(kColorWebNativeControlSliderDisabled) \
   E_CPONLY(kColorWebNativeControlSliderHovered) \
   E_CPONLY(kColorWebNativeControlSliderPressed) \
   E_CPONLY(kColorWindowBackground)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define CHROMEOS_ASH_COLOR_IDS \
   /* Colors for illustrations */ \
   E_CPONLY(kColorNativeColor1) \
@@ -571,10 +605,6 @@
   E_CPONLY(kColorNativeMutedColor) \
   E_CPONLY(kColorNativeComplementColor) \
   E_CPONLY(kColorNativeOnGradientColor)
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#define CHROMEOS_ASH_COLOR_IDS
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
   CHROMEOS_ASH_COLOR_IDS \
   /* NOTE: Nearly all of the following CrOS color ids will need to be re- */ \
@@ -620,10 +650,11 @@
   E_CPONLY(kColorCrosSystemHighlightBorder1) \
   \
   E_CPONLY(kColorCrosSysPositive) \
-  E_CPONLY(kColorCrosSysComplementVariant)
+  E_CPONLY(kColorCrosSysComplementVariant) \
+  E_CPONLY(kColorCrosSysInputFieldOnBase)
 #elif BUILDFLAG(IS_LINUX)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
-  E_CPONLY(kColorNativeButtonBorder)\
+  E_CPONLY(kColorNativeBoxFrameBorder)\
   E_CPONLY(kColorNativeHeaderButtonBorderActive) \
   E_CPONLY(kColorNativeHeaderButtonBorderInactive) \
   E_CPONLY(kColorNativeHeaderSeparatorBorderActive) \
@@ -635,35 +666,17 @@
   E_CPONLY(kColorNativeToolbarBackground)
 #elif BUILDFLAG(IS_WIN)
 #define PLATFORM_SPECIFIC_COLOR_IDS \
-  E_CPONLY(kColorNative3dDkShadow) \
-  E_CPONLY(kColorNative3dLight) \
-  E_CPONLY(kColorNativeActiveBorder) \
-  E_CPONLY(kColorNativeActiveCaption) \
-  E_CPONLY(kColorNativeAppWorkspace) \
-  E_CPONLY(kColorNativeBackground) \
   E_CPONLY(kColorNativeBtnFace) \
   E_CPONLY(kColorNativeBtnHighlight) \
   E_CPONLY(kColorNativeBtnShadow) \
   E_CPONLY(kColorNativeBtnText) \
-  E_CPONLY(kColorNativeCaptionText) \
-  E_CPONLY(kColorNativeGradientActiveCaption) \
-  E_CPONLY(kColorNativeGradientInactiveCaption) \
   E_CPONLY(kColorNativeGrayText) \
   E_CPONLY(kColorNativeHighlight) \
   E_CPONLY(kColorNativeHighlightText) \
   E_CPONLY(kColorNativeHotlight) \
-  E_CPONLY(kColorNativeInactiveBorder) \
-  E_CPONLY(kColorNativeInactiveCaption) \
-  E_CPONLY(kColorNativeInactiveCaptionText) \
-  E_CPONLY(kColorNativeInfoBk) \
-  E_CPONLY(kColorNativeInfoText) \
-  E_CPONLY(kColorNativeMenu) \
-  E_CPONLY(kColorNativeMenuBar) \
   E_CPONLY(kColorNativeMenuHilight) \
-  E_CPONLY(kColorNativeMenuText) \
   E_CPONLY(kColorNativeScrollbar) \
   E_CPONLY(kColorNativeWindow) \
-  E_CPONLY(kColorNativeWindowFrame) \
   E_CPONLY(kColorNativeWindowText)
 #else
 #define PLATFORM_SPECIFIC_COLOR_IDS

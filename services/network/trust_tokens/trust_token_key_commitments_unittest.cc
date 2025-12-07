@@ -2,20 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/network/trust_tokens/trust_token_key_commitments.h"
 
+#include <algorithm>
+#include <array>
+
 #include "base/base64.h"
-#include "base/ranges/algorithm.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/public/mojom/trust_tokens.mojom-forward.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/trust_tokens/suitable_trust_token_origin.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
@@ -116,15 +112,15 @@ TEST(TrustTokenKeyCommitments, CantRetrieveRecordForOriginNotPresent) {
 TEST(TrustTokenKeyCommitments, MultipleOrigins) {
   TrustTokenKeyCommitments commitments;
 
-  SuitableTrustTokenOrigin origins[] = {
+  auto origins = std::to_array<SuitableTrustTokenOrigin>({
       *SuitableTrustTokenOrigin::Create(GURL("https://an-origin.example")),
       *SuitableTrustTokenOrigin::Create(GURL("https://another-origin.example")),
-  };
+  });
 
-  mojom::TrustTokenKeyCommitmentResultPtr expectations[] = {
+  auto expectations = std::to_array<mojom::TrustTokenKeyCommitmentResultPtr>({
       mojom::TrustTokenKeyCommitmentResult::New(),
       mojom::TrustTokenKeyCommitmentResult::New(),
-  };
+  });
 
   expectations[0]->protocol_version =
       mojom::TrustTokenProtocolVersion::kTrustTokenV3Pmb;
@@ -220,7 +216,7 @@ TEST(TrustTokenKeyCommitments, FiltersKeys) {
 
   auto result = GetCommitmentForOrigin(commitments, origin);
   EXPECT_EQ(result->keys.size(), max_keys);
-  EXPECT_TRUE(base::ranges::all_of(
+  EXPECT_TRUE(std::ranges::all_of(
       result->keys, [](const mojom::TrustTokenVerificationKeyPtr& key) {
         return key->expiry == base::Time::Now() + base::Minutes(1);
       }));

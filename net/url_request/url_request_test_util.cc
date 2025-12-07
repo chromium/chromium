@@ -14,6 +14,7 @@
 #include "base/supports_user_data.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/do_nothing_ct_verifier.h"
@@ -27,7 +28,9 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/quic_context.h"
+#include "net/url_request/redirect_info.h"
 #include "net/url_request/static_http_user_agent_settings.h"
+#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_job.h"
@@ -218,6 +221,10 @@ void TestDelegate::OnResponseStarted(URLRequest* request, int net_error) {
   DCHECK_NE(ERR_IO_PENDING, net_error);
   EXPECT_FALSE(request->is_redirecting());
 
+  if (net_error == OK) {
+    response_code_ = request->GetResponseCode();
+  }
+
   response_started_count_++;
   request_status_ = net_error;
   if (cancel_in_rs_) {
@@ -359,7 +366,8 @@ int TestNetworkDelegate::OnHeadersReceived(
     const HttpResponseHeaders* original_response_headers,
     scoped_refptr<HttpResponseHeaders>* override_response_headers,
     const IPEndPoint& endpoint,
-    std::optional<GURL>* preserve_fragment_on_redirect_url) {
+    std::optional<GURL>* preserve_fragment_on_redirect_url,
+    const std::optional<net::SSLInfo>& ssl_info) {
   EXPECT_FALSE(preserve_fragment_on_redirect_url->has_value());
   int req_id = GetRequestId(request);
   bool is_first_response =
@@ -506,8 +514,9 @@ bool TestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 
   if (!allow) {
     blocked_annotate_cookies_count_++;
-    ExcludeAllCookies(CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-                      maybe_included_cookies, excluded_cookies);
+    ExcludeAllCookies(
+        CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
+        maybe_included_cookies, excluded_cookies);
   }
 
   return allow;
@@ -558,7 +567,9 @@ int TestNetworkDelegate::GetRequestId(URLRequest* request) {
 }
 
 std::optional<cookie_util::StorageAccessStatus>
-TestNetworkDelegate::OnGetStorageAccessStatus(const URLRequest& request) const {
+TestNetworkDelegate::OnGetStorageAccessStatus(
+    const URLRequest& request,
+    base::optional_ref<const RedirectInfo> redirect_info) const {
   return storage_access_status_;
 }
 
@@ -612,21 +623,24 @@ bool FilteringTestNetworkDelegate::OnAnnotateAndMoveUserBlockedCookies(
 
   if (!allowed) {
     ++blocked_annotate_cookies_count_;
-    ExcludeAllCookies(net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES,
-                      maybe_included_cookies, excluded_cookies);
+    ExcludeAllCookies(
+        net::CookieInclusionStatus::ExclusionReason::EXCLUDE_USER_PREFERENCES,
+        maybe_included_cookies, excluded_cookies);
   }
 
   if (allowed && block_get_cookies_by_name_ && !cookie_name_filter_.empty()) {
     for (auto& cookie : maybe_included_cookies) {
       if (cookie.cookie.Name().find(cookie_name_filter_) != std::string::npos) {
         cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+            net::CookieInclusionStatus::ExclusionReason::
+                EXCLUDE_USER_PREFERENCES);
       }
     }
     for (auto& cookie : excluded_cookies) {
       if (cookie.cookie.Name().find(cookie_name_filter_) != std::string::npos) {
         cookie.access_result.status.AddExclusionReason(
-            net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+            net::CookieInclusionStatus::ExclusionReason::
+                EXCLUDE_USER_PREFERENCES);
       }
     }
 

@@ -12,9 +12,8 @@
 
 #include "base/component_export.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/gpu_extra_info.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace base {
 class TimeDelta;
@@ -23,7 +22,6 @@ class TimeDelta;
 namespace display {
 class Display;
 class DisplayObserver;
-enum class TabletState;
 }  // namespace display
 
 namespace gfx {
@@ -139,14 +137,8 @@ class COMPONENT_EXPORT(OZONE_BASE) PlatformScreen {
   virtual std::optional<float> GetPreferredScaleFactorForAcceleratedWidget(
       gfx::AcceleratedWidget widget) const;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Called when tablet state is changed.
-  virtual void OnTabletStateChanged(display::TabletState tablet_state) {}
-
-  // Returns tablet state. If a platform does not support this, returns
-  // display::TabletState::kInClamshellMode.
-  virtual display::TabletState GetTabletState() const = 0;
-#endif
+  // Returns true when running in headless mode.
+  virtual bool IsHeadless() const;
 
  protected:
   void StorePlatformNameIntoListOfValues(base::Value::List& values,

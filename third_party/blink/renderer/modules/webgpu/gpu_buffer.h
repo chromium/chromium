@@ -20,6 +20,8 @@ class GPUBufferDescriptor;
 class GPUMappedDOMArrayBuffer;
 struct BoxedMappableWGPUBufferHandles;
 class ScriptState;
+class V8GPUBufferMapState;
+class WebGPUMailboxBuffer;
 
 class GPUBuffer : public DawnObject<wgpu::Buffer> {
   DEFINE_WRAPPERTYPEINFO();
@@ -32,6 +34,10 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
             uint64_t size,
             wgpu::Buffer buffer,
             const String& label);
+  GPUBuffer(GPUDevice* device,
+            uint64_t size,
+            scoped_refptr<WebGPUMailboxBuffer> mailbox_buffer,
+            const String& label);
   ~GPUBuffer() override;
 
   GPUBuffer(const GPUBuffer&) = delete;
@@ -39,7 +45,7 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
 
   void Trace(Visitor* visitor) const override;
 
-  // gpu_buffer.idl
+  // gpu_buffer.idl {{{
   ScriptPromise<IDLUndefined> mapAsync(ScriptState* script_state,
                                        uint32_t mode,
                                        uint64_t offset,
@@ -60,9 +66,14 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   void destroy(v8::Isolate* isolate);
   uint64_t size() const;
   uint32_t usage() const;
-  String mapState() const;
+  V8GPUBufferMapState mapState() const;
+  // }}} End of WebIDL binding implementation.
 
   void DetachMappedArrayBuffers(v8::Isolate* isolate);
+
+  void DissociateMailbox();
+
+  scoped_refptr<WebGPUMailboxBuffer> GetMailboxBuffer();
 
  private:
   ScriptPromise<IDLUndefined> MapAsyncImpl(ScriptState* script_state,
@@ -77,14 +88,14 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
 
   void OnMapAsyncCallback(ScriptPromiseResolver<IDLUndefined>* resolver,
                           wgpu::MapAsyncStatus status,
-                          const char* message);
+                          wgpu::StringView message);
 
   DOMArrayBuffer* CreateArrayBufferForMappedData(v8::Isolate* isolate,
                                                  void* data,
                                                  size_t data_length);
   void ResetMappingState(v8::Isolate* isolate);
 
-  void setLabelImpl(const String& value) override {
+  void SetLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetHandle().SetLabel(utf8_label.c_str());
   }
@@ -102,6 +113,9 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
 
   // List of ranges currently returned by getMappedRange, to avoid overlaps.
   Vector<std::pair<size_t, size_t>> mapped_ranges_;
+
+  // Buffer created from a shared image.
+  scoped_refptr<WebGPUMailboxBuffer> mailbox_buffer_;
 };
 
 }  // namespace blink

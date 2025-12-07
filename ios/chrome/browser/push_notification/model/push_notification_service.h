@@ -9,11 +9,14 @@
 
 #import <memory>
 
+class GaiaId;
+
 namespace user_prefs {
 class PrefRegistrySyncable;
 }  // namespace user_prefs
-class ChromeBrowserStateManager;
+
 class PrefRegistrySimple;
+
 @class PushNotificationAccountContextManager;
 enum class PushNotificationClientId;
 class PushNotificationClientManager;
@@ -46,7 +49,8 @@ class PushNotificationService {
   // Returns the representative target ID for the given Gaia ID. Returns null if
   // the user with the associated gaia_id is not registered for push
   // notifications.
-  virtual std::string GetRepresentativeTargetIdForGaiaId(NSString* gaia_id);
+  virtual std::string GetRepresentativeTargetIdForGaiaId(
+      const GaiaId& gaia_id) = 0;
 
   // Returns PushNotificationService's PushNotificationClientManager.
   PushNotificationClientManager* GetPushNotificationClientManager();
@@ -56,34 +60,32 @@ class PushNotificationService {
 
   // Enables/disables `client_id` ability to send push notifications to the
   // primary account signed into Chrome across synced iOS devices.
-  void SetPreference(NSString* account_id,
+  void SetPreference(const GaiaId& account_id,
                      PushNotificationClientId client_id,
                      bool enabled);
 
   // Registers the new account to the push notification server. In a multi
-  // BrowserState environment, the PushNotificationService tracks the signed in
-  // account across BrowserStates.
-  void RegisterAccount(NSString* account_id,
+  // Profile environment, the PushNotificationService tracks the signed in
+  // account across Profiles.
+  void RegisterAccount(const GaiaId& account_id,
                        CompletionHandler completion_handler);
 
   // Unregisters the account from the push notification server. In a multi
-  // BrowserState environment, the account will not be signed out until it's
-  // signed out across BrowserStates.
-  void UnregisterAccount(NSString* account_id,
+  // Profile environment, the account will not be signed out until it's
+  // signed out across Profiles.
+  void UnregisterAccount(const GaiaId& account_id,
                          CompletionHandler completion_handler);
 
   // Registers each PushNotificationClient's prefs. Each
   // PushNotificationClient's ability to send push notifications to the user is
   // disabled by default.
-  static void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry);
+  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Registers the push notification settings status stored in the device's iOS
   // settings.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  protected:
-  PushNotificationService(ChromeBrowserStateManager* manager);
   // Registers the device with the push notification server. By supplying a list
   // of the GAIA IDs currently logged into Chrome on the device and the device's
   // APNS token, the server associates the GAIA IDs to the device, which allows
@@ -98,7 +100,7 @@ class PushNotificationService {
 
   // Updates the current user's push notification preferences with the push
   // notification server.
-  virtual void SetPreferences(NSString* account_id,
+  virtual void SetPreferences(const GaiaId& account_id,
                               PreferenceMap preference_map,
                               CompletionHandler completion_handler) = 0;
 
@@ -110,7 +112,7 @@ class PushNotificationService {
   // Stores a mapping of each account's GAIA ID signed into the device to its
   // context object. This object contains the account's pref service values
   // pertaining to push notification supported features and the number of times
-  // the given account is signed in across multiple browser states.
+  // the given account is signed in across multiple profiles.
   __strong PushNotificationAccountContextManager* context_manager_;
 };
 

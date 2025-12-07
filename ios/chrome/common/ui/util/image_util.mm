@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import <CoreImage/CoreImage.h>
-
 #import "ios/chrome/common/ui/util/image_util.h"
+
+#import <CoreImage/CoreImage.h>
 
 #import "ui/gfx/image/resize_image_dimensions.h"
 
@@ -24,8 +24,9 @@ UIImage* ResizeImage(UIImage* image,
   CalculateProjection([image size], targetSize, projectionMode,
                       revisedTargetSize, projectTo);
 
-  if (CGRectEqualToRect(projectTo, CGRectZero))
+  if (CGRectEqualToRect(projectTo, CGRectZero)) {
     return nil;
+  }
 
   // Resize photo. Use UIImage drawing methods because they respect
   // UIImageOrientation as opposed to CGContextDrawImage().
@@ -84,8 +85,10 @@ UIImage* ImageFromView(UIView* view,
       [[UIGraphicsImageRenderer alloc] initWithBounds:imageBounds];
   return [renderer imageWithActions:^(UIGraphicsImageRendererContext* context) {
     // Draw background.
-    [backgroundColor set];
-    UIRectFill(imageBounds);
+    if (backgroundColor) {
+      [backgroundColor set];
+      UIRectFill(imageBounds);
+    }
 
     // Draw view.
     [view drawViewHierarchyInRect:contentBounds afterScreenUpdates:YES];
@@ -100,10 +103,12 @@ void CalculateProjection(CGSize originalSize,
                          CGRect& projectTo) {
   targetSize = desiredTargetSize;
   projectTo = CGRectZero;
-  if (originalSize.height < 1 || originalSize.width < 1)
+  if (originalSize.height < 1 || originalSize.width < 1) {
     return;
-  if (targetSize.height < 1 || targetSize.width < 1)
+  }
+  if (targetSize.height < 1 || targetSize.width < 1) {
     return;
+  }
 
   CGFloat aspectRatio = originalSize.width / originalSize.height;
   CGFloat targetAspectRatio = targetSize.width / targetSize.height;
@@ -179,8 +184,9 @@ UIImage* BlurredImageWithImage(UIImage* image, CGFloat blurRadius) {
                 forKey:@"inputRadius"];
 
   CIContext* context = [CIContext contextWithOptions:nil];
-  UIImage* blurredImage =
-      [UIImage imageWithCGImage:[context createCGImage:blurFilter.outputImage
-                                              fromRect:inputImage.extent]];
+  CGImageRef cgImage = [context createCGImage:blurFilter.outputImage
+                                     fromRect:inputImage.extent];
+  UIImage* blurredImage = [UIImage imageWithCGImage:cgImage];
+  CGImageRelease(cgImage);
   return blurredImage;
 }

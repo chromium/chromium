@@ -18,6 +18,7 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/allocator/partition_alloc_support.h"
 #include "base/functional/callback.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -436,7 +437,7 @@ TEST_F(BindTest, OnceCallbackBasicTest) {
   // After running via the rvalue-reference, the value of the OnceCallback
   // is undefined. The implementation simply clears the instance after the
   // invocation.
-  EXPECT_TRUE(c0.is_null());
+  EXPECT_TRUE(c0.is_null());  // NOLINT(bugprone-use-after-move)
 
   c0 = BindOnce(&Sum, 2, 3, 5, 7, 11);
 
@@ -1161,7 +1162,7 @@ TYPED_TEST(BindVariantsTest, ScopedRefptr) {
 }
 
 TYPED_TEST(BindVariantsTest, UniquePtrReceiver) {
-  std::unique_ptr<StrictMock<NoRef>> no_ref(new StrictMock<NoRef>);
+  auto no_ref = std::make_unique<StrictMock<NoRef>>();
   EXPECT_CALL(*no_ref, VoidMethod0()).Times(1);
   TypeParam::Bind(&NoRef::VoidMethod0, std::move(no_ref)).Run();
 }
@@ -1639,7 +1640,7 @@ TEST_F(BindTest, OnceCallback) {
   cb = cb3;
   std::move(cb).Run();
 
-  cb = std::move(cb2);
+  cb = std::move(cb2);  // NOLINT(bugprone-use-after-move)
 
   OnceCallback<void(int)> cb4 =
       BindOnce(&VoidPolymorphic<std::unique_ptr<int>, int>::Run,
@@ -1908,7 +1909,7 @@ void HandleOOM(size_t unused_size) {
 // Basic set of options to mostly only enable `BackupRefPtr::kEnabled`.
 // This avoids the boilerplate of having too much options enabled for simple
 // testing purpose.
-static constexpr auto kOnlyEnableBackupRefPtrOptions = []() {
+static constexpr auto kOnlyEnableBackupRefPtrOptions = [] {
   partition_alloc::PartitionOptions opts;
   opts.backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled;
   return opts;

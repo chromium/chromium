@@ -1,0 +1,51 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/fuzzing/in_process_fuzzer.gni")
+import("//testing/libfuzzer/research/domatolpm/domatolpm.gni")
+import("//third_party/blink/renderer/bindings/bindings.gni")
+
+group("test") {
+  testonly = true
+}
+
+if (!is_android && !is_msan && fuzzing_engine_supports_custom_main) {
+  action("webidl_grammar_generator") {
+    script =
+        "//chrome/test/fuzzing/webidl_fuzzing/grammar_generator/generator.py"
+    args = [
+      "-p",
+      rebase_path(web_idl_database_filepath, root_build_dir),
+      "-o",
+      rebase_path("${target_gen_dir}/webidl.txt", root_build_dir),
+      "-i",
+      rebase_path(
+          "//chrome/test/fuzzing/webidl_in_process_fuzzer_grammar/webidlhelpers.txt",
+          target_gen_dir),
+    ]
+    deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
+    outputs = [ "${target_gen_dir}/webidl.txt" ]
+  }
+
+  domatolpm_fuzzer("webidl_fuzzer_grammar") {
+    stabilize_grammar = true
+    template_file =
+        "//chrome/test/fuzzing/webidl_in_process_fuzzer_grammar/template.js"
+    grammars = [ "webidlfuzzer:${target_gen_dir}/webidl.txt" ]
+    deps = [ ":webidl_grammar_generator" ]
+  }
+
+  in_process_fuzzer("webidl_in_process_fuzzer") {
+    sources = [ "webidl_in_process_fuzzer.cc" ]
+
+    centipede_options = [ "batch_size=100" ]
+
+    deps = [
+      ":webidl_fuzzer_grammar",
+      "//chrome/test/fuzzing:in_process_proto_fuzzer_runner",
+      "//testing/libfuzzer/research/domatolpm:domatolpm_context",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
+}

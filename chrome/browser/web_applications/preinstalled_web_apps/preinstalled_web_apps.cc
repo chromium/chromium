@@ -10,6 +10,8 @@
 
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -18,6 +20,7 @@
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/web_applications/preinstalled_web_apps/gmail.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_docs.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_drive.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_sheets.h"
@@ -25,17 +28,17 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/youtube.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/web_app_id_constants.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps/app_mall.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps/container.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/gemini.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
-#include "chrome/browser/web_applications/preinstalled_web_apps/google_chat.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_meet.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/messages_dogfood.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/notebook_lm.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/vids.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "extensions/common/constants.h"
@@ -52,6 +55,16 @@ std::vector<ExternalInstallOptions>* g_preinstalled_app_data_for_testing =
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+#if !BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kChatPreinstalledWebApp, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(bool,
+                   kOnlyForNewUsers,
+                   &kChatPreinstalledWebApp,
+                   "only_for_new_users",
+                   false);
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS)
 bool IsGoogleInternalAccount() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -61,11 +74,11 @@ bool IsGoogleInternalAccount() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+
 std::vector<ExternalInstallOptions> GetChromeBrandedApps(
     Profile& profile,
     const std::optional<DeviceInfo>& device_info) {
-  bool is_standalone_tabbed =
-      IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(profile);
+  bool is_standalone_tabbed = IsPreinstalledWorkspaceStandaloneTabbed(profile);
   // TODO(crbug.com/40705277): Replace these C++ configs with JSON configs like
   // those seen in: chrome/test/data/web_app_default_apps/good_json
   // This requires:
@@ -75,7 +88,6 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
   // - Validating everything works on all OSs (Mac bundles things differently).
   // - Ensure that these resources are correctly installed by our Chrome
   //   installers on every desktop platform.
-  // clang-format off
   std::vector<ExternalInstallOptions> apps = {
       GetConfigForGmail(),
       GetConfigForGoogleDocs(is_standalone_tabbed),
@@ -83,21 +95,30 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(
       GetConfigForGoogleSheets(is_standalone_tabbed),
       GetConfigForGoogleSlides(is_standalone_tabbed),
       GetConfigForYouTube(),
-  };
 #if BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kPreinstalledWebAppsCoreOnly)) {
-    apps.insert(apps.end(), {
-      GetConfigForAppMall(),
       GetConfigForCalculator(),
-      GetConfigForContainer(device_info),
+      GetConfigForGemini(device_info),
+      GetConfigForNotebookLm(),
       GetConfigForGoogleCalendar(),
-      GetConfigForGoogleChat(),
+      GetConfigForGoogleChat(/*is_standalone=*/true,
+                             /*only_for_new_users=*/false),
       GetConfigForGoogleMeet(),
-    });
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  };
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(chromeos::features::kVidsAppPreinstall)) {
+    apps.push_back(GetConfigForVids(is_standalone_tabbed));
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  // clang-format on
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kChatPreinstalledWebApp)) {
+    apps.insert(apps.end(), GetConfigForGoogleChat(
+                                /*is_standalone=*/false,
+                                /*only_for_new_users=*/kOnlyForNewUsers.Get()));
+  }
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   return apps;
 }
@@ -117,9 +138,21 @@ DeviceInfo& DeviceInfo::operator=(DeviceInfo&&) = default;
 
 DeviceInfo::~DeviceInfo() = default;
 
+PreinstallUrlAllowList& GetPreinstallUrlAllowListForTesting() {
+  static base::NoDestructor<PreinstallUrlAllowList> preinstall_url_allow_list;
+  return *preinstall_url_allow_list;
+}
+
+ScopedPreinstallUrlAllowList SetPreinstallUrlAllowListForTesting(
+    PreinstallUrlAllowList preinstall_url_allow_list) {
+  return {&GetPreinstallUrlAllowListForTesting(),
+          std::move(preinstall_url_allow_list)};
+}
+
 bool PreinstalledWebAppsDisabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ::switches::kDisableDefaultApps);
+             ::switches::kDisableDefaultApps) &&
+         !GetPreinstallUrlAllowListForTesting().has_value();
 }
 
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps(
@@ -134,9 +167,7 @@ std::vector<ExternalInstallOptions> GetPreinstalledWebApps(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40854011): replace with config in admin console.
-  if (IsGoogleInternalAccount() &&
-      !base::FeatureList::IsEnabled(
-          chromeos::features::kPreinstalledWebAppsCoreOnly)) {
+  if (IsGoogleInternalAccount()) {
     std::vector<ExternalInstallOptions> apps =
         GetChromeBrandedApps(profile, device_info);
     apps.push_back(GetConfigForMessagesDogfood());
@@ -178,8 +209,8 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
     if (options.uninstall_and_replace.size() != 1)
       continue;
 
-    if (options.gate_on_feature && !IsPreinstalledAppInstallFeatureEnabled(
-                                       *options.gate_on_feature, profile)) {
+    if (options.gate_on_feature &&
+        !IsPreinstalledAppInstallFeatureEnabled(*options.gate_on_feature)) {
       continue;
     }
 
@@ -203,7 +234,7 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
       PreinstalledWebAppMigration keep_migration;
       keep_migration.install_url =
           GURL("https://keep.google.com/installwebapp?usp=chrome_default");
-      keep_migration.expected_web_app_id = kGoogleKeepAppId;
+      keep_migration.expected_web_app_id = ash::kGoogleKeepAppId;
       keep_migration.old_chrome_app_id = extension_misc::kGoogleKeepAppId;
       migrations.push_back(std::move(keep_migration));
     }
@@ -213,14 +244,14 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
       PreinstalledWebAppMigration books_migration;
       books_migration.install_url =
           GURL("https://play.google.com/books/installwebapp?usp=chromedefault");
-      books_migration.expected_web_app_id = kPlayBooksAppId;
+      books_migration.expected_web_app_id = ash::kPlayBooksAppId;
       books_migration.old_chrome_app_id = extension_misc::kGooglePlayBooksAppId;
       migrations.push_back(std::move(books_migration));
 
       PreinstalledWebAppMigration maps_migration;
       maps_migration.install_url =
           GURL("https://www.google.com/maps/preview/pwa/ttinstall.html");
-      maps_migration.expected_web_app_id = kGoogleMapsAppId;
+      maps_migration.expected_web_app_id = ash::kGoogleMapsAppId;
       maps_migration.old_chrome_app_id = extension_misc::kGoogleMapsAppId;
       migrations.push_back(std::move(maps_migration));
 
@@ -228,7 +259,7 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
       movies_migration.install_url = GURL(
           "https://play.google.com/store/movies/"
           "installwebapp?usp=chrome_default");
-      movies_migration.expected_web_app_id = kGoogleMoviesAppId;
+      movies_migration.expected_web_app_id = ash::kGoogleMoviesAppId;
       movies_migration.old_chrome_app_id =
           extension_misc::kGooglePlayMoviesAppId;
       migrations.push_back(std::move(movies_migration));

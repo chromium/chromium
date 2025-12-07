@@ -2,14 +2,16 @@
 # dependencies to a minimal set.
 include_rules = [
   "-components",
+  "+components/country_codes",
+  "+components/regional_capabilities",
   "+components/component_updater",
-  "+components/flags_ui",
   "+components/keep_alive_registry",
   "+components/metrics",
   "+components/network_time",
   "+components/prefs",
   "+components/variations",
   "+components/version_info",
+  "+components/webui/flags",
   "+content/public/test",
   "+crypto",
   "+extensions/buildflags",
@@ -19,6 +21,7 @@ include_rules = [
   "+third_party/metrics_proto",
   "+third_party/zlib/google",
   "-net",
+  "+ui/base",
   "+url",
 ]
 

@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <functional>
 #include <iterator>
 #include <limits>
@@ -20,12 +21,11 @@
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
-#include "base/ranges/algorithm.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "extensions/browser/api/device_permissions_manager.h"
+#include "extensions/browser/event_router_factory.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -71,7 +71,7 @@ bool IsReportIdProtected(const device::mojom::HidDeviceInfo& device,
     // an error in the device's report descriptor, but the device may still be
     // usable. Consider the report protected if `device` has any collection with
     // a protected usage.
-    return base::ranges::any_of(device.collections, [](const auto& collection) {
+    return std::ranges::any_of(device.collections, [](const auto& collection) {
       return IsAlwaysProtected(*collection->usage, HidReportType::kInput) ||
              IsAlwaysProtected(*collection->usage, HidReportType::kOutput) ||
              IsAlwaysProtected(*collection->usage, HidReportType::kFeature);
@@ -100,11 +100,11 @@ void PopulateHidDeviceInfo(hid::HidDeviceInfo* output,
 
     // Omit IDs only used by protected reports.
     std::vector<int> filtered_report_ids;
-    base::ranges::copy_if(collection->report_ids,
-                          std::back_inserter(filtered_report_ids),
-                          [&input](int report_id) {
-                            return !IsReportIdProtected(input, report_id);
-                          });
+    std::ranges::copy_if(collection->report_ids,
+                         std::back_inserter(filtered_report_ids),
+                         [&input](int report_id) {
+                           return !IsReportIdProtected(input, report_id);
+                         });
 
     hid::HidCollectionInfo api_collection;
     api_collection.usage_page = collection->usage->usage_page;
@@ -130,7 +130,8 @@ bool WillDispatchDeviceEvent(
     const Extension* extension,
     const base::Value::Dict* listener_filter,
     std::optional<base::Value::List>& event_args_out,
-    mojom::EventFilteringInfoPtr& event_filtering_info_out) {
+    mojom::EventFilteringInfoPtr& event_filtering_info_out,
+    bool* dispatch_separate_event_out) {
   if (device_manager && extension) {
     return device_manager->HasPermission(extension, device_info, false);
   }
@@ -176,6 +177,12 @@ HidDeviceManager::GetFactoryInstance() {
   static base::LazyInstance<BrowserContextKeyedAPIFactory<HidDeviceManager>>::
       DestructorAtExit factory = LAZY_INSTANCE_INITIALIZER;
   return &factory.Get();
+}
+
+template <>
+void BrowserContextKeyedAPIFactory<
+    HidDeviceManager>::DeclareFactoryDependencies() {
+  DependsOn(EventRouterFactory::GetInstance());
 }
 
 void HidDeviceManager::GetApiDevices(
@@ -294,10 +301,10 @@ void HidDeviceManager::DeviceAdded(device::mojom::HidDeviceInfoPtr device) {
 void HidDeviceManager::DeviceRemoved(device::mojom::HidDeviceInfoPtr device) {
   DCHECK(thread_checker_.CalledOnValidThread());
   const auto& resource_entry = resource_ids_.find(device->guid);
-  CHECK(resource_entry != resource_ids_.end(), base::NotFatalUntil::M130);
+  CHECK(resource_entry != resource_ids_.end());
   int resource_id = resource_entry->second;
   const auto& device_entry = devices_.find(resource_id);
-  CHECK(device_entry != devices_.end(), base::NotFatalUntil::M130);
+  CHECK(device_entry != devices_.end());
   resource_ids_.erase(resource_entry);
   devices_.erase(device_entry);
 
@@ -320,7 +327,7 @@ void HidDeviceManager::DeviceChanged(device::mojom::HidDeviceInfoPtr device) {
   // Find |device| in |devices_|.
   DCHECK(thread_checker_.CalledOnValidThread());
   const auto& resource_entry = resource_ids_.find(device->guid);
-  CHECK(resource_entry != resource_ids_.end(), base::NotFatalUntil::M130);
+  CHECK(resource_entry != resource_ids_.end());
   int resource_id = resource_entry->second;
   DCHECK(base::Contains(devices_, resource_id));
 

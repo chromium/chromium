@@ -13,7 +13,9 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/child_accounts/child_user_service.h"
+#include "chrome/browser/ash/child_accounts/constants/child_account_constants.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_ui.h"
+#include "chromeos/ash/experiences/arc/app/arc_app_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -62,8 +64,8 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
       apps::AppServiceProxyFactory::GetForProfile(profile_);
 
   apps::AppRegistryCache& registry = proxy->AppRegistryCache();
-  const std::string app_id = arc::ArcPackageNameToAppId(
-      ChildUserService::kFamilyLinkHelperAppPackageName, profile_);
+  const std::string app_id =
+      arc::ArcPackageNameToAppId(kFamilyLinkHelperAppPackageName, profile_);
   if (registry.GetAppType(app_id) != apps::AppType::kUnknown) {
     // Launch FLH app since it is available.
     proxy->Launch(
@@ -74,15 +76,14 @@ void ParentalControlsHandler::HandleLaunchFamilyLinkSettings(
 
   // No FLH app installed, so try to launch Play Store to FLH app install page.
   if (registry.GetAppType(arc::kPlayStoreAppId) != apps::AppType::kUnknown) {
-    proxy->LaunchAppWithUrl(
-        arc::kPlayStoreAppId, ui::EF_NONE,
-        GURL(ChildUserService::kFamilyLinkHelperAppPlayStoreURL),
-        apps::LaunchSource::kFromChromeInternal);
+    proxy->LaunchAppWithUrl(arc::kPlayStoreAppId, ui::EF_NONE,
+                            GURL(kFamilyLinkHelperAppPlayStoreURL),
+                            apps::LaunchSource::kFromChromeInternal);
     return;
   }
 
   // As a last resort, launch browser to the family link site.
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  NewWindowDelegate::GetInstance()->OpenUrl(
       GURL(kFamilyLinkSiteURL),
       NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewWindow);

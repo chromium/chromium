@@ -26,6 +26,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -48,11 +49,11 @@
 
 // FFmpeg forward declarations.
 struct AVFormatContext;
-struct AVRational;
 struct AVStream;
 
 namespace media {
 
+class DataSource;
 class MediaLog;
 class FFmpegBitstreamConverter;
 class FFmpegDemuxer;
@@ -95,18 +96,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 
   base::TimeDelta duration() const { return duration_; }
 
-  // Enables fixes for files with negative timestamps.  Normally all timestamps
-  // are rebased against FFmpegDemuxer::start_time() whenever that value is
-  // negative.  When this fix is enabled, only AUDIO stream packets will be
-  // rebased to time zero, all other stream types will use the muxed timestamp.
-  //
-  // Further, when no codec delay is present, all AUDIO packets which originally
-  // had negative timestamps will be marked for post-decode discard.  When codec
-  // delay is present, it is assumed the decoder will handle discard and does
-  // not need the AUDIO packets to be marked for discard; just rebased to zero.
-  void enable_negative_timestamp_fixups() {
-    fixup_negative_timestamps_ = true;
-  }
   void enable_chained_ogg_fixups() { fixup_chained_ogg_ = true; }
 
   // DemuxerStream implementation.
@@ -138,8 +127,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 
   AVStream* av_stream() const { return stream_; }
 
-  base::TimeDelta start_time() const { return start_time_; }
-  void set_start_time(base::TimeDelta time) { start_time_ = time; }
+  base::TimeDelta stream_start_time() const { return stream_start_time_; }
 
  private:
   friend class FFmpegDemuxerTest;
@@ -157,10 +145,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // NotifyCapacityAvailable() if capacity is still available.
   void SatisfyPendingRead();
 
-  // Converts an FFmpeg stream timestamp into a base::TimeDelta.
-  static base::TimeDelta ConvertStreamTimestamp(const AVRational& time_base,
-                                                int64_t timestamp);
-
   // Resets any currently active bitstream converter.
   void ResetBitstreamConverter();
 
@@ -170,20 +154,21 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   raw_ptr<FFmpegDemuxer> demuxer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<AVStream> stream_;
-  base::TimeDelta start_time_;
+  base::TimeDelta stream_start_time_ = kNoTimestamp;
+  std::optional<base::TimeDelta> initial_start_padding_;
   std::unique_ptr<AudioDecoderConfig> audio_config_;
   std::unique_ptr<VideoDecoderConfig> video_config_;
   raw_ptr<MediaLog> media_log_;
   Type type_ = UNKNOWN;
   StreamLiveness liveness_ = StreamLiveness::kUnknown;
   base::TimeDelta duration_;
-  bool end_of_stream_;
-  base::TimeDelta last_packet_timestamp_;
-  base::TimeDelta last_packet_duration_;
+  bool end_of_stream_ = false;
+  base::TimeDelta last_packet_timestamp_ = kNoTimestamp;
+  base::TimeDelta last_packet_duration_ = kNoTimestamp;
   Ranges<base::TimeDelta> buffered_ranges_;
-  bool is_enabled_;
-  bool waiting_for_keyframe_;
-  bool aborted_;
+  bool is_enabled_ = true;
+  bool waiting_for_keyframe_ = false;
+  bool aborted_ = false;
 
   DecoderBufferQueue buffer_queue_;
   ReadCB read_cb_;
@@ -193,10 +178,9 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
 #endif
 
   std::string encryption_key_id_;
-  bool fixup_negative_timestamps_;
-  bool fixup_chained_ogg_;
+  bool fixup_chained_ogg_ = false;
 
-  int num_discarded_packet_warnings_;
+  int num_discarded_packet_warnings_ = 0;
   int64_t last_packet_pos_;
   int64_t last_packet_dts_;
   // Requested buffer count. The actual returned buffer count could be less
@@ -248,18 +232,13 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   // Allow FFmpegDemxuerStream to notify us about an error.
   void NotifyDemuxerError(PipelineStatus error);
 
-  void OnEnabledAudioTracksChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
-
-  void OnSelectedVideoTrackChanged(const std::vector<MediaTrack::Id>& track_ids,
-                                   base::TimeDelta curr_time,
-                                   TrackChangeCB change_completed_cb) override;
+  void OnTracksChanged(DemuxerStream::Type track_type,
+                       std::optional<MediaTrack::Id> track_id,
+                       base::TimeDelta curr_time,
+                       TrackChangeCB change_completed_cb) override;
   void SetPlaybackRate(double rate) override {}
 
-  // The lowest demuxed timestamp.  If negative, DemuxerStreams must use this to
-  // adjust packet timestamps such that external clients see a zero-based
-  // timeline.
+  // The lowest demuxed timestamp.
   base::TimeDelta start_time() const { return start_time_; }
 
   // Task runner used to execute blocking FFmpeg operations.
@@ -275,14 +254,6 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
  private:
   // To allow tests access to privates.
   friend class FFmpegDemuxerTest;
-
-  // Helper for video and audio track changing. For the `track_type`, enables
-  // tracks associated with `track_ids` and disables the rest. Fires
-  // `change_completed_cb` when the operation is completed.
-  void FindAndEnableProperTracks(const std::vector<MediaTrack::Id>& track_ids,
-                                 base::TimeDelta curr_time,
-                                 DemuxerStream::Type track_type,
-                                 TrackChangeCB change_completed_cb);
 
   // FFmpeg callbacks during initialization.
   void OnOpenContextDone(bool result);
@@ -330,13 +301,9 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   void SeekInternal(base::TimeDelta time,
                     base::OnceCallback<void(int)> seek_cb);
-  void OnVideoSeekedForTrackChange(DemuxerStream* video_stream,
-                                   base::OnceClosure seek_completed_cb,
-                                   int result);
-  void SeekOnVideoTrackChange(base::TimeDelta seek_to_time,
-                              TrackChangeCB seek_completed_cb,
-                              DemuxerStream::Type stream_type,
-                              const std::vector<DemuxerStream*>& streams);
+  void OnTrackChangeSeekComplete(base::OnceClosure seek_completed_cb,
+                                 FFmpegDemuxerStream* needs_flush,
+                                 int result);
 
   // Executes |init_cb_| with |status| and closes out the async trace.
   void RunInitCB(PipelineStatus status);
@@ -410,7 +377,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   const MediaTracksUpdatedCB media_tracks_updated_cb_;
 
-  base::flat_map<MediaTrack::Id, FFmpegDemuxerStream*>
+  base::flat_map<MediaTrack::Id, raw_ptr<FFmpegDemuxerStream, CtnExperimental>>
       track_id_to_demux_stream_map_;
 
   const bool is_local_file_;

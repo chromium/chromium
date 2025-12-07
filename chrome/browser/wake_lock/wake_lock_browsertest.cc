@@ -31,8 +31,9 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithJS(
     base::OnceClosure done_callback,
     const net::test_server::HttpRequest& request) {
   GURL request_url = request.GetURL();
-  if (request_url.path() != path)
+  if (request_url.GetPath() != path) {
     return nullptr;
+  }
 
   auto response = std::make_unique<net::test_server::BasicHttpResponse>();
   response->set_content_type("text/javascript");

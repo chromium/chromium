@@ -826,7 +826,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   /* Query Objects */
   WebGLQuery* createQuery();
   void deleteQuery(WebGLQuery*);
-  GLboolean isQuery(WebGLQuery*);
+  bool isQuery(WebGLQuery*);
   void beginQuery(GLenum, WebGLQuery*);
   void endQuery(GLenum);
   ScriptValue getQuery(ScriptState*, GLenum, GLenum);
@@ -835,7 +835,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   /* Sampler Objects */
   WebGLSampler* createSampler();
   void deleteSampler(WebGLSampler*);
-  GLboolean isSampler(WebGLSampler*);
+  bool isSampler(WebGLSampler*);
   void bindSampler(GLuint, WebGLSampler*);
   void samplerParameteri(WebGLSampler*, GLenum, GLint);
   void samplerParameterf(WebGLSampler*, GLenum, GLfloat);
@@ -843,7 +843,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
 
   /* Sync objects */
   WebGLSync* fenceSync(GLenum, GLbitfield);
-  GLboolean isSync(WebGLSync*);
+  bool isSync(WebGLSync*);
   void deleteSync(WebGLSync*);
   GLenum clientWaitSync(WebGLSync*, GLbitfield, GLuint64);
   void waitSync(WebGLSync*, GLbitfield, GLint64);
@@ -853,7 +853,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   /* Transform Feedback */
   WebGLTransformFeedback* createTransformFeedback();
   void deleteTransformFeedback(WebGLTransformFeedback*);
-  GLboolean isTransformFeedback(WebGLTransformFeedback*);
+  bool isTransformFeedback(WebGLTransformFeedback*);
   void bindTransformFeedback(GLenum, WebGLTransformFeedback*);
   void beginTransformFeedback(GLenum);
   void endTransformFeedback();
@@ -887,7 +887,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   /* Vertex Array Objects */
   WebGLVertexArrayObject* createVertexArray();
   void deleteVertexArray(WebGLVertexArrayObject*);
-  GLboolean isVertexArray(WebGLVertexArrayObject*);
+  bool isVertexArray(WebGLVertexArrayObject*);
   void bindVertexArray(WebGLVertexArrayObject*);
 
   /* Reading */
@@ -930,9 +930,6 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   void RestoreCurrentFramebuffer() override;
   void useProgram(WebGLProgram*) override;
 
-  /* Helpers */
-  GLint GetMaxTransformFeedbackSeparateAttribs() const;
-
   void Trace(Visitor*) const override;
 
  protected:
@@ -942,9 +939,9 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   WebGL2RenderingContextBase(
       CanvasRenderingContextHost*,
       std::unique_ptr<WebGraphicsContext3DProvider>,
-      const Platform::GraphicsInfo&,
+      const Platform::WebGLContextInfo&,
       const CanvasContextCreationAttributesCore& requested_attributes,
-      Platform::ContextType context_type);
+      Platform::WebGLContextType context_type);
 
   // DrawingBuffer::Client implementation.
   void DrawingBufferClientRestorePixelUnpackBufferBinding() override;
@@ -1091,11 +1088,6 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   GLint pack_skip_rows_;
   GLint unpack_image_height_;
   GLint unpack_skip_images_;
-
- private:
-  void RecordInternalFormatParameter(GLenum internalformat,
-                                     GLint* values,
-                                     GLint length);
 };
 
 }  // namespace blink

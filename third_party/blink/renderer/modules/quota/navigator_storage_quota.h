@@ -33,7 +33,6 @@
 
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_quota.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
@@ -43,10 +42,8 @@ class StorageManager;
 
 class NavigatorStorageQuota final
     : public GarbageCollected<NavigatorStorageQuota>,
-      public Supplement<NavigatorBase> {
+      public GarbageCollectedMixin {
  public:
-  static const char kSupplementName[];
-
   // Web-exposed on window only.
   static DeprecatedStorageQuota* webkitTemporaryStorage(Navigator&);
   static DeprecatedStorageQuota* webkitPersistentStorage(Navigator&);
@@ -54,7 +51,7 @@ class NavigatorStorageQuota final
   // Web-exposed on both window and worker.
   static StorageManager* storage(NavigatorBase&);
 
-  explicit NavigatorStorageQuota(NavigatorBase&);
+  NavigatorStorageQuota() = default;
 
   void Trace(Visitor*) const override;
 

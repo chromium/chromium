@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 
 #include <memory>
@@ -25,6 +20,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/bind_post_task.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,11 +32,18 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/btm_service.h"
 #include "content/public/test/browser_test.h"
-#include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "content/public/test/browser_test_utils.h"
+#include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/btm_service_test_utils.h"
+#include "crypto/scoped_fake_unexportable_key_provider.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/gaia_switches.h"
 #include "net/cookies/canonical_cookie.h"
@@ -54,22 +58,26 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-using net::CanonicalCookie;
-using testing::AllOf;
-using testing::AssertionFailure;
-using testing::AssertionResult;
-using testing::AssertionSuccess;
-using testing::ElementsAre;
-using testing::Eq;
-using testing::Field;
-using testing::IsEmpty;
-using testing::Not;
-using testing::Pointee;
-using testing::UnorderedElementsAre;
+using ::net::CanonicalCookie;
+using ::testing::AllOf;
+using ::testing::AssertionFailure;
+using ::testing::AssertionResult;
+using ::testing::AssertionSuccess;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
+using ::testing::Gt;
+using ::testing::IsEmpty;
+using ::testing::Not;
+using ::testing::Pointee;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 using HeaderVector = net::HttpRequestHeaders::HeaderVector;
 
 constexpr std::string_view kDomain = "google.com";
 constexpr std::string_view kSubdomain = "accounts.google.com";
+constexpr std::string_view kBouncerDomain = "bounce.com";
+constexpr std::string_view kOtherDomain = "other.com";
 constexpr std::string_view KTriggerRegistrationPath = "/TriggerRegistration";
 constexpr base::cstring_view kChallenge = "test_challenge";
 
@@ -195,9 +203,10 @@ struct CookieRotationResponseParams {
             .block_server_response_ = block_server_response};
   }
 
-  static CookieRotationResponseParams CreateServerPersistentError() {
+  static CookieRotationResponseParams CreateServerPersistentError(
+      bool block_server_response = true) {
     return {.status_code = net::HttpStatusCode::HTTP_FORBIDDEN,
-            .block_server_response_ = true};
+            .block_server_response_ = block_server_response};
   }
 
   HeaderVector headers;
@@ -380,9 +389,8 @@ class FakeServer {
              << "Failed to decode the public key: " << *encoded_pubkey;
     }
 
-    return signin::VerifyJwtSignature(
-        jwt, *algorithm,
-        base::as_bytes(base::make_span(pubkey.begin(), pubkey.end())));
+    return signin::VerifyJwtSignature(jwt, *algorithm,
+                                      base::as_byte_span(pubkey));
   }
 
   const Params server_params_;
@@ -478,6 +486,56 @@ std::unique_ptr<FakeServerHost> CreateAndInitializeHealthyFakeServerHost(
   return fake_server_host;
 }
 
+void SetBlockThirdPartyCookies(Profile* profile, bool value) {
+  profile->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(
+          value ? content_settings::CookieControlsMode::kBlockThirdParty
+                : content_settings::CookieControlsMode::kOff));
+}
+
+testing::AssertionResult SimulateBtmBounce(BrowserWindowInterface* browser,
+                                           const GURL& initial_url,
+                                           const GURL& bounce_url,
+                                           const GURL& final_url) {
+  if (!ui_test_utils::NavigateToURLWithDisposition(
+          browser, initial_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
+              ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP)) {
+    return testing::AssertionFailure()
+           << "Failed to navigate to " << initial_url;
+  }
+  content::WebContents* web_contents =
+      browser->GetTabStripModel()->GetActiveWebContents();
+
+  if (!content::NavigateToURLFromRenderer(web_contents, bounce_url)) {
+    return testing::AssertionFailure()
+           << "Failed to navigate to " << bounce_url;
+  }
+
+  content::CookieChangeObserver cookie_observer(web_contents);
+  testing::AssertionResult js_result =
+      content::ExecJs(web_contents, "document.cookie = 'bounce=stateful';",
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  if (!js_result) {
+    return js_result;
+  }
+  cookie_observer.Wait();
+
+  content::BtmRedirectChainObserver final_observer(
+      content::BtmService::Get(web_contents->GetBrowserContext()), final_url);
+  if (!content::NavigateToURLFromRendererWithoutUserGesture(web_contents,
+                                                            final_url)) {
+    return testing::AssertionFailure() << "Failed to navigate to " << final_url;
+  }
+
+  // End redirect chain by closing the tab.
+  web_contents->Close();
+  final_observer.Wait();
+
+  return testing::AssertionSuccess();
+}
+
 }  // namespace
 
 class BoundSessionCookieRefreshServiceImplBrowserTest
@@ -486,7 +544,10 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
  public:
   void SetUp() override {
     embedded_https_test_server().SetCertHostnames(
-        {std::string(kDomain), std::string(kSubdomain)});
+        {std::string(kDomain), std::string(kSubdomain),
+         std::string(kBouncerDomain), std::string(kOtherDomain)});
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        GetChromeTestDataDir());
     CHECK(embedded_https_test_server().InitializeAndListen());
     InProcessBrowserTest::SetUp();
   }
@@ -531,6 +592,15 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
+    // This callback is set after the service is initialized and sends the
+    // initial throttler params update.
+
+    // If the list of sessions is not empty on startup, this
+    // callback might be set before or after the service gets a cookie list from
+    // the cookie jar. Such tests should be ready to handle extra
+    // `SessionParamsUpdated()` events.
+    // TODO(alexilin): find a better solution for preparing the test state on
+    // startup.
     service()->SetBoundSessionParamsUpdatedCallbackForTesting(
         base::BindRepeating(&BoundSessionCookieRefreshServiceImplBrowserTest::
                                 SessionParamsUpdated,
@@ -618,11 +688,14 @@ class BoundSessionCookieRefreshServiceImplBrowserTest
         embedded_https_test_server().StartAcceptingConnectionsAndReturnHandle();
   }
 
-  void SessionParamsUpdated() { params_updated_callback_.Run(); }
+  void SessionParamsUpdated() {
+    CHECK(params_updated_callback_);
+    params_updated_callback_.Run();
+  }
 
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableBoundSessionCredentials};
-  crypto::ScopedMockUnexportableKeyProvider scoped_key_provider_;
+  crypto::ScopedFakeUnexportableKeyProvider scoped_key_provider_;
   // `server_host_` must outlive `embedded_test_server_handle_`.
   std::vector<std::unique_ptr<FakeServerHost>> server_hosts_;
   net::test_server::EmbeddedTestServerHandle embedded_test_server_handle_;
@@ -638,26 +711,96 @@ IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
                        CookieRotationOnStartup) {
-  std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr> throttler_params =
-      service()->GetBoundSessionThrottlerParams();
-  ASSERT_EQ(throttler_params.size(), 1U);
-  EXPECT_EQ(throttler_params[0]->domain, kDomain);
-  EXPECT_EQ(throttler_params[0]->path, "/");
-  base::Time cookie_expiration = throttler_params[0]->cookie_expiry_date;
+  base::Time cookie_expiration;
+  {
+    std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+        throttler_params = service()->GetBoundSessionThrottlerParams();
+    ASSERT_EQ(throttler_params.size(), 1U);
+    EXPECT_EQ(throttler_params[0]->domain, kDomain);
+    EXPECT_EQ(throttler_params[0]->path, "/");
+    cookie_expiration = throttler_params[0]->cookie_expiry_date;
+  }
+
+  if (cookie_expiration.is_null()) {
+    // The PRE_ test should have set the bound cookie, so the expiration time
+    // should not be null. `cookie_expiration` is populated asynchronously with
+    // the information from the cookie jar, and it might be not populated yet.
+    // Wait until `cookie_expiration` is populated to reduce the test flakiness:
+    // https://crbug.com/352744596
+    base::RunLoop bound_session_params_update;
+    ExpectSessionParamsUpdate(bound_session_params_update.QuitClosure());
+    bound_session_params_update.Run();
+    std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
+        throttler_params = service()->GetBoundSessionThrottlerParams();
+    ASSERT_EQ(throttler_params.size(), 1U);
+    EXPECT_EQ(throttler_params[0]->domain, kDomain);
+    EXPECT_EQ(throttler_params[0]->path, "/");
+    cookie_expiration = throttler_params[0]->cookie_expiry_date;
+    ASSERT_FALSE(cookie_expiration.is_null());
+  }
 
   // Cookie rotation is set to happen on startup, as soon as the service
   // is created.
   server_host().WaitOnServerCookieRotationResponseBlocked();
-
   base::RunLoop bound_session_params_update;
   ExpectSessionParamsUpdate(bound_session_params_update.QuitClosure());
-
   ASSERT_TRUE(server_host().UnblockServerCookieRotationResponse());
   bound_session_params_update.Run();
+
   std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
       new_throttler_params = service()->GetBoundSessionThrottlerParams();
   ASSERT_EQ(new_throttler_params.size(), 1U);
+  EXPECT_EQ(new_throttler_params[0]->domain, kDomain);
+  EXPECT_EQ(new_throttler_params[0]->path, "/");
   EXPECT_GT(new_throttler_params[0]->cookie_expiry_date, cookie_expiration);
+}
+
+// Verifies that a bound session is deleted when the user cleares site data.
+IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
+                       ClearBrowsingDataDeletesSession) {
+  // Initialize a new session.
+  RegisterNewSession();
+  ASSERT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
+
+  // Clear all site data.
+  content::BrowsingDataRemover* remover =
+      browser()->profile()->GetBrowsingDataRemover();
+  content::BrowsingDataRemoverCompletionObserver observer(remover);
+  remover->RemoveAndReply(
+      base::Time(), base::Time::Max(),
+      chrome_browsing_data_remover::DATA_TYPE_SITE_DATA,
+      content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB, &observer);
+  observer.BlockUntilCompletion();
+
+  // The session should have been terminated.
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), IsEmpty());
+}
+
+// Verifies that unrelated BTM deletions do not terminate a bound session.
+// Regression test for https://crbug.com/445561475.
+IN_PROC_BROWSER_TEST_F(BoundSessionCookieRefreshServiceImplBrowserTest,
+                       BtmDeletionDoesNotDeleteSession) {
+  // Enable third-party cookie blocking to activate the BTM deletion.
+  SetBlockThirdPartyCookies(browser()->profile(), true);
+
+  // Initialize a new session.
+  RegisterNewSession();
+  ASSERT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
+
+  // Perform a stateful bounce to make the storage eligible for BTM deletion.
+  ASSERT_TRUE(SimulateBtmBounce(
+      browser(), embedded_https_test_server().GetURL(kDomain, "/empty.html"),
+      embedded_https_test_server().GetURL(kBouncerDomain, "/title1.html"),
+      embedded_https_test_server().GetURL(kOtherDomain, "/empty.html")));
+
+  // Trigger BTM deletion.
+  base::test::TestFuture<const std::vector<std::string>&> deleted_sites;
+  content::BtmService::Get(browser()->profile())
+      ->DeleteEligibleSitesImmediately(deleted_sites.GetCallback());
+  EXPECT_THAT(deleted_sites.Get(), SizeIs(Gt(0)));
+
+  // The session should not be terminated.
+  EXPECT_THAT(service()->GetBoundSessionThrottlerParams(), Not(IsEmpty()));
 }
 
 class BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest
@@ -677,6 +820,10 @@ class BoundSessionCookieRefreshServiceImplFailingRotationBrowserTest
     base::queue<CookieRotationResponseParams> rotation_responses_params;
     rotation_responses_params.push(
         CookieRotationResponseParams::CreateServerPersistentError());
+    // Response to the session termination debug report.
+    rotation_responses_params.push(
+        CookieRotationResponseParams::CreateServerPersistentError(
+            /*block_server_response=*/false));
 
     fake_server_host->Initialize(embedded_test_server,
                                  std::move(rotation_responses_params));

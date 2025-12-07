@@ -16,9 +16,9 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/bind_post_task.h"
-#import "base/task/sequenced_task_runner.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/common/notifications/notification_constants.h"
 #include "chrome/common/notifications/notification_operation.h"
@@ -57,8 +57,7 @@ NotificationOperation GetNotificationOperationFromAction(
           isEqualToString:mac_notifications::kNotificationSettingsButtonTag]) {
     return NotificationOperation::kSettings;
   }
-  NOTREACHED_IN_MIGRATION();
-  return NotificationOperation::kClick;
+  NOTREACHED();
 }
 
 int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
@@ -253,8 +252,8 @@ void MacNotificationServiceUN::DoDisplayNotification(
   if (should_replace && can_replace && !is_new_notification) {
     // If the notification has been delivered before, it will get updated in the
     // notification center. We should only call this if the notification is
-    // currently displayed, as since macOS 12 this method will no longer deliver
-    // a notification that isn't already delivered.
+    // currently displayed, as this method will not deliver a notification that
+    // isn't already delivered.
     [notification_center_
         replaceContentForRequestWithIdentifier:notification_id_ns
                             replacementContent:content

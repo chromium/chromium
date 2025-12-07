@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Este sitio no puede solicitarte permiso</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Activa Bluetooth<ph name="END_LINK" /> para permitir la sincronización</translation>
+<translation id="3878792656892132392"><ph name="APP_NAME" /> necesita permiso para hacer un seguimiento de tus manos</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Obtener ayuda<ph name="END_LINK" /> mientras se buscan dispositivos…</translation>
 <translation id="4925793601605263825"><ph name="APP_NAME" /> necesita permiso para acceder a tu micrófono para este sitio.</translation>
 <translation id="5230560987958996918"><ph name="SITE" /> quiere detectar dispositivos Bluetooth cercanos. Se encontraron los siguientes dispositivos:</translation>

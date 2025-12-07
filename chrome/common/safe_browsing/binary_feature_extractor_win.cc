@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/common/safe_browsing/binary_feature_extractor.h"
 
 #include <windows.h>
@@ -14,7 +9,6 @@
 #include <softpub.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <wintrust.h>
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -22,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/win/pe_image_reader.h"
+#include "base/win/wintrust_shim.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
 namespace safe_browsing {
@@ -34,8 +29,7 @@ constexpr size_t kMaxDebugDataBytes = 1 * 1024 * 1024;
 // An EnumCertificatesCallback that collects each SignedData blob.
 bool OnCertificateEntry(uint16_t revision,
                         uint16_t certificate_type,
-                        const uint8_t* certificate_data,
-                        size_t certificate_data_size,
+                        base::span<const uint8_t> certificate_data,
                         void* context) {
   google::protobuf::RepeatedPtrField<std::string>* signed_data =
       reinterpret_cast<google::protobuf::RepeatedPtrField<std::string>*>(
@@ -43,8 +37,8 @@ bool OnCertificateEntry(uint16_t revision,
 
   if (revision == WIN_CERT_REVISION_2_0 &&
       certificate_type == WIN_CERT_TYPE_PKCS_SIGNED_DATA) {
-    signed_data->Add()->assign(certificate_data,
-                               certificate_data + certificate_data_size);
+    signed_data->Add()->assign(certificate_data.begin(),
+                               certificate_data.end());
   }
   return true;
 }
@@ -99,19 +93,25 @@ void BinaryFeatureExtractor::CheckSignature(
     if (prov_data->csSigners > 0) {
       signature_info->set_trusted(result == ERROR_SUCCESS);
     }
-    for (DWORD i = 0; i < prov_data->csSigners; ++i) {
-      const CERT_CHAIN_CONTEXT* cert_chain_context =
-          prov_data->pasSigners[i].pChainContext;
+    // SAFETY: CRYPT_PROVIDER_DATA is defined by Windows and guarantees
+    // pasSigners has csSsigners elements.
+    for (CRYPT_PROVIDER_SGNR pas_signer : UNSAFE_BUFFERS(
+             base::span(prov_data->pasSigners, prov_data->csSigners))) {
+      const CERT_CHAIN_CONTEXT* cert_chain_context = pas_signer.pChainContext;
       if (!cert_chain_context)
         break;
-      for (DWORD j = 0; j < cert_chain_context->cChain; ++j) {
-        CERT_SIMPLE_CHAIN* simple_chain = cert_chain_context->rgpChain[j];
+      // SAFETY: CERT_CHAIN_CONTEXT is defined by Windows and guarantees
+      // rgpChain has cChain elements.
+      for (CERT_SIMPLE_CHAIN* simple_chain : UNSAFE_BUFFERS(base::span(
+               cert_chain_context->rgpChain, cert_chain_context->cChain))) {
         ClientDownloadRequest_CertificateChain* chain =
             signature_info->add_certificate_chain();
         if (!simple_chain)
           break;
-        for (DWORD k = 0; k < simple_chain->cElement; ++k) {
-          CERT_CHAIN_ELEMENT* element = simple_chain->rgpElement[k];
+        // SAFETY: CERT_SIMPLE_CHAIN is defined by Windows and
+        // guarantees rgpElement has cElement elements.
+        for (CERT_CHAIN_ELEMENT* element : UNSAFE_BUFFERS(base::span(
+                 simple_chain->rgpElement, simple_chain->cElement))) {
           chain->add_element()->set_certificate(
               element->pCertContext->pbCertEncoded,
               element->pCertContext->cbCertEncoded);
@@ -127,12 +127,12 @@ void BinaryFeatureExtractor::CheckSignature(
 }
 
 bool BinaryFeatureExtractor::ExtractImageFeaturesFromData(
-    const uint8_t* data, size_t data_size,
+    base::span<const uint8_t> data,
     ExtractHeadersOption options,
     ClientDownloadRequest_ImageHeaders* image_headers,
     google::protobuf::RepeatedPtrField<std::string>* signed_data) {
   base::win::PeImageReader pe_image;
-  if (!pe_image.Initialize(base::make_span(data, data_size))) {
+  if (!pe_image.Initialize(data)) {
     return false;
   }
 

@@ -30,8 +30,6 @@ LLVM_BOOTSTRAP_INSTALL_DIR = os.path.join(THIRD_PARTY_DIR,
                                           'llvm-bootstrap-install')
 LLVM_BUILD_DIR = os.path.join(THIRD_PARTY_DIR, 'llvm-build')
 LLVM_RELEASE_DIR = os.path.join(LLVM_BUILD_DIR, 'Release+Asserts')
-EU_STRIP = os.path.join(BUILDTOOLS_DIR, 'third_party', 'eu-strip', 'bin',
-                        'eu-strip')
 
 DEFAULT_GCS_BUCKET = 'chromium-browser-clang-staging'
 
@@ -190,18 +188,9 @@ def main():
       '--bucket',
       default=DEFAULT_GCS_BUCKET,
       help='Google Cloud Storage bucket where the target archive is uploaded')
-  parser.add_argument('--build-mac-arm', action='store_true',
-                      help='Build arm binaries. Only valid on macOS.')
   parser.add_argument('--revision',
                       help='LLVM revision to use. Default: based on update.py')
   args = parser.parse_args()
-
-  if args.build_mac_arm and sys.platform != 'darwin':
-    print('--build-mac-arm only valid on macOS')
-    return 1
-  if args.build_mac_arm and platform.machine() == 'arm64':
-    print('--build-mac-arm only valid on intel to cross-build arm')
-    return 1
 
   if args.revision:
     # Use upload_revision.py to set the revision first.
@@ -226,7 +215,7 @@ def main():
     # 'Mac_arm64' here when there's no flag and 'Mac' when --build-mac-intel is
     # passed. Also update the build script to explicitly pass a default triple
     # then.
-    if args.build_mac_arm or platform.machine() == 'arm64':
+    if platform.machine() == 'arm64':
       gcs_platform = 'Mac_arm64'
     else:
       gcs_platform = 'Mac'
@@ -245,11 +234,15 @@ def main():
 
     build_cmd = [
         sys.executable,
-        os.path.join(THIS_DIR, 'build.py'), '--bootstrap', '--disable-asserts',
-        '--run-tests', '--pgo'
+        os.path.join(THIS_DIR, 'build.py'),
+        '--bootstrap',
+        '--disable-asserts',
+        '--run-tests',
     ]
-    if args.build_mac_arm:
-      build_cmd.append('--build-mac-arm')
+    # PGO drastically increases packaging time and x86-64 macs are almost
+    # obsolete while being slow, so don't PGO-optimize x86-64 mac toolchains.
+    if sys.platform != 'darwin' or platform.machine() == 'arm64':
+      build_cmd.append('--pgo')
     if sys.platform != 'darwin':
       build_cmd.append('--thinlto')
     if sys.platform.startswith('linux'):
@@ -319,6 +312,7 @@ def main():
     runtime_package_name = 'clang-mac-runtime-library'
     runtime_packages = set([
         # AddressSanitizer runtime.
+        'lib/clang/$V/lib/darwin/libclang_rt.asan_ios_dynamic.dylib',
         'lib/clang/$V/lib/darwin/libclang_rt.asan_iossim_dynamic.dylib',
         'lib/clang/$V/lib/darwin/libclang_rt.asan_osx_dynamic.dylib',
 
@@ -326,6 +320,8 @@ def main():
         'lib/clang/$V/lib/darwin/libclang_rt.ios.a',
         'lib/clang/$V/lib/darwin/libclang_rt.iossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.osx.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.tvos.a',
+        'lib/clang/$V/lib/darwin/libclang_rt.tvossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.watchos.a',
         'lib/clang/$V/lib/darwin/libclang_rt.watchossim.a',
         'lib/clang/$V/lib/darwin/libclang_rt.xros.a',
@@ -355,14 +351,24 @@ def main():
         'bin/llvm-nm',
 
         # AddressSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan.a',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan.a.syms',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.asan.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.asan.a.syms',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan.a.syms',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan_static.a',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan_static.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.asan_static.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan_static.a',
 
         # AddressSanitizer C++ runtime.
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan_cxx.a',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.asan_cxx.a.syms',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.asan_cxx.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.asan_cxx.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.asan_cxx.a.syms',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan_cxx.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.asan_cxx.a.syms',
 
@@ -370,10 +376,12 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.asan-aarch64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-arm-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-i686-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.asan-x86_64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan-riscv64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.asan_static-aarch64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.asan_static-arm-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.asan_static-i686-android.a',
+        'lib/clang/$V/lib/linux/libclang_rt.asan_static-x86_64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.asan_static-riscv64-android.a',
 
         # Builtins for Android.
@@ -383,17 +391,20 @@ def main():
         'lib/clang/$V/lib/linux/libclang_rt.builtins-x86_64-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.builtins-riscv64-android.a',
 
-        # Builtins for Linux and Lacros.
+        # Builtins for Linux.
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.builtins.a',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.builtins.a',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.builtins.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.builtins.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.builtins.a',
 
-        # crtstart/crtend for Linux and Lacros.
+        # crtstart/crtend for Linux.
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtbegin.o',
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/clang_rt.crtend.o',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/clang_rt.crtbegin.o',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/clang_rt.crtend.o',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/clang_rt.crtbegin.o',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/clang_rt.crtend.o',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/clang_rt.crtbegin.o',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/clang_rt.crtend.o',
 
@@ -415,6 +426,7 @@ def main():
         'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.profile.a',
         'lib/clang/$V/lib/armv7-unknown-linux-gnueabihf/libclang_rt.profile.a',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.profile.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.profile.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.profile.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-i686-android.a',
         'lib/clang/$V/lib/linux/libclang_rt.profile-x86_64-android.a',
@@ -431,18 +443,28 @@ def main():
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.tsan_cxx.a.syms',
 
         # UndefinedBehaviorSanitizer C runtime (pure C won't link with *_cxx).
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a.syms',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.ubsan_standalone.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a.syms',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone.a.syms',
 
         # UndefinedBehaviorSanitizer C++ runtime.
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a',
+        'lib/clang/$V/lib/aarch64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a.syms',
         'lib/clang/$V/lib/i386-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a',
+        'lib/clang/$V/lib/riscv64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a.syms',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a',
         'lib/clang/$V/lib/x86_64-unknown-linux-gnu/libclang_rt.ubsan_standalone_cxx.a.syms',
 
         # UndefinedBehaviorSanitizer Android runtime, needed for CFI.
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-aarch64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-arm-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-i686-android.so',
+        'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-x86_64-android.so',
         'lib/clang/$V/lib/linux/libclang_rt.ubsan_standalone-riscv64-android.so',
 
         # Ignorelist for MemorySanitizer (used on Linux only).
@@ -452,25 +474,20 @@ def main():
     ])
   elif sys.platform == 'win32':
     runtime_package_name = 'clang-win-runtime-library'
+
     runtime_packages = set([
         # pylint: disable=line-too-long
         'bin/llvm-symbolizer.exe',
 
-        # AddressSanitizer C runtime (pure C won't link with *_cxx).
-        'lib/clang/$V/lib/windows/clang_rt.asan-x86_64.lib',
-
-        # AddressSanitizer C++ runtime.
-        'lib/clang/$V/lib/windows/clang_rt.asan_cxx-x86_64.lib',
-
-        # Thunk for AddressSanitizer needed for static build of a shared lib.
-        'lib/clang/$V/lib/windows/clang_rt.asan_dll_thunk-x86_64.lib',
-
-        # AddressSanitizer runtime for component build.
+        # AddressSanitizer runtime.
         'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.dll',
         'lib/clang/$V/lib/windows/clang_rt.asan_dynamic-x86_64.lib',
 
-        # Thunk for AddressSanitizer for component build of a shared lib.
+        # Thunk for AddressSanitizer for component builds.
         'lib/clang/$V/lib/windows/clang_rt.asan_dynamic_runtime_thunk-x86_64.lib',
+
+        # Thunk for AddressSanitizer for static builds.
+        'lib/clang/$V/lib/windows/clang_rt.asan_static_runtime_thunk-x86_64.lib',
 
         # Builtins for C/C++.
         'lib/clang/$V/lib/windows/clang_rt.builtins-i386.lib',
@@ -556,6 +573,7 @@ def main():
     if wanted_files:
       # Guaranteed to not yet exist at this point:
       os.makedirs(os.path.join(pdir, rel_root))
+    llvm_strip = os.path.join(LLVM_RELEASE_DIR, 'bin', 'llvm-strip')
     for f in sorted(wanted_files):
       src = os.path.join(LLVM_RELEASE_DIR, f)
       dest = os.path.join(pdir, f)
@@ -568,7 +586,7 @@ def main():
         subprocess.call(['strip', '-x', dest])
       elif (sys.platform.startswith('linux') and
             os.path.splitext(f)[1] in ['.so', '.a']):
-        subprocess.call([EU_STRIP, '-g', dest])
+        subprocess.call([llvm_strip, '--keep-file-symbols', '-g', dest])
       # If this is an reclient input, add it to the inputs file(s).
       for tool, inputs in reclient_inputs.items():
         if any(fnmatch.fnmatch(f, i) for i in inputs):
@@ -734,6 +752,8 @@ def main():
   py_bindings_dir = os.path.join(LLVM_DIR, 'clang', 'bindings', 'python',
                                  'clang')
   for filename in os.listdir(py_bindings_dir):
+    if filename == "__pycache__":
+      continue
     shutil.copy(os.path.join(py_bindings_dir, filename),
                 os.path.join(libclang_dir, 'bindings', 'python', 'clang'))
   PackageInArchive(libclang_dir, libclang_dir)

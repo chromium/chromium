@@ -1,0 +1,39 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(enterprise_watermark)
+
+static_library("watermark") {
+  sources = [
+    "watermark_page_handler.cc",
+    "watermark_page_handler.h",
+    "watermark_ui.cc",
+    "watermark_ui.h",
+  ]
+
+  deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/enterprise/watermark:watermark_view_lib",
+    "//chrome/browser/resources/watermark:resources_grit",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/toasts",
+    "//chrome/browser/ui/toasts/api:toasts",
+    "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/watermark:mojo_bindings",
+    "//chrome/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//ui/webui",
+  ]
+}
+
+mojom("mojo_bindings") {
+  sources = [ "watermark.mojom" ]
+  webui_module_path = "/"
+}

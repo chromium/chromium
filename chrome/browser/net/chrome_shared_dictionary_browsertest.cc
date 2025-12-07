@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -36,6 +37,7 @@
 #include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -202,13 +204,6 @@ std::string FetchUrlWithNoCorsModeScript(const GURL& url) {
 class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
  public:
   ChromeSharedDictionaryBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {network::features::kCompressionDictionaryTransportBackend,
-         network::features::kCompressionDictionaryTransport,
-         network::features::kSharedZstd},
-        /*disabled_features=*/{});
-
     embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&ChromeSharedDictionaryBrowserTest::RequestHandler,
                             base::Unretained(this)));
@@ -396,7 +391,6 @@ class ChromeSharedDictionaryBrowserTest : public InProcessBrowserTest {
     return nullptr;
   }
   std::unique_ptr<net::EmbeddedTestServer> cross_origin_server_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest, BlockWriting) {
@@ -504,6 +498,39 @@ IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_TRUE(TryRegisterDictionary(*embedded_test_server()));
+  WaitForDictionaryReady(*embedded_test_server());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  base::HistogramTester histograms;
+
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/path/brotli_compressed")));
+  EXPECT_EQ(kCompressedDataOriginalString,
+            EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                   "document.body.innerText")
+                .ExtractString());
+
+  // Navigate away in order to flush use counters.
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  CheckSharedDictionaryUseCounter(
+      histograms,
+      /*expected_used_count_with_sbr=*/1,
+      /*expected_used_count_with_zstd_d=*/0,
+      /*expected_used_for_navigation_count=*/1,
+      /*expected_used_for_main_frame_navigation_count=*/1,
+      /*expected_used_for_sub_frame_navigation_count=*/0,
+      /*expected_used_for_subresource_count=*/0);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeSharedDictionaryBrowserTest,
+                       UseCounterMainFrameNavigationAsDictionary) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/dictionary")));
   WaitForDictionaryReady(*embedded_test_server());
 
   // Navigate away in order to flush use counters.
@@ -729,14 +756,14 @@ class SharedDictionaryDevToolsBrowserTest
     if (enable_feature) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {network::features::kCompressionDictionaryTransportBackend,
-           network::features::kCompressionDictionaryTransport},
+          {network::features::kCompressionDictionaryTransport,
+           network::features::kCompressionDictionaryTTL},
           /*disabled_features=*/
           {});
     } else {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/
-          {network::features::kCompressionDictionaryTransportBackend},
+          {},
           /*disabled_features=*/
           {network::features::kCompressionDictionaryTransport});
     }
@@ -748,6 +775,12 @@ class SharedDictionaryDevToolsBrowserTest
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     embedded_https_test_server().ServeFilesFromSourceDirectory(
         "content/test/data");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        network::switches::kDisableSharedDictionaryStorageCleanupForTesting);
   }
   void TearDownOnMainThread() override {
     DetachProtocolClient();
@@ -1013,17 +1046,6 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
-                       WriteErrorNavigationRequest) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  NavigateAndEnableAudits(
-      embedded_test_server()->GetURL("/shared_dictionary/blank.html"));
-  EXPECT_TRUE(NavigateToURL(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      embedded_test_server()->GetURL("/shared_dictionary/test_dict.html")));
-  WaitForSharedDictionaryIssueAdded("WriteErrorNavigationRequest");
-}
-
-IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
                        WriteErrorNoMatchField) {
   RunCustomHeaderTest("WriteErrorNoMatchField", "id=\"dict_id\"");
 }
@@ -1067,6 +1089,17 @@ IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
                        WriteErrorNonTokenTypeField) {
   RunCustomHeaderTest("WriteErrorNonTokenTypeField",
                       "match=\"/test/*\", type=\"raw\"");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorNonIntegerTTLField) {
+  RunCustomHeaderTest("WriteErrorNonIntegerTTLField",
+                      "match=\"/test/*\", ttl=token");
+}
+
+IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
+                       WriteErrorInvalidTTLField) {
+  RunCustomHeaderTest("WriteErrorInvalidTTLField", "match=\"/test/*\", ttl=0");
 }
 
 IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,

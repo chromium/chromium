@@ -11,15 +11,14 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gl/gl_implementation.h"
-
-class SkBitmap;
 
 namespace base {
 namespace test {
@@ -30,6 +29,7 @@ class ScopedFeatureList;
 namespace viz {
 class CopyOutputRequest;
 class CopyOutputResult;
+class TestInProcessContextProvider;
 }
 
 namespace cc {
@@ -137,6 +137,7 @@ class LayerTreePixelTest : public LayerTreeTest {
   int pending_texture_mailbox_callbacks_;
   gfx::Size enlarge_texture_amount_;
   int max_texture_size_ = 0;
+  scoped_refptr<viz::TestInProcessContextProvider> context_provider_sw_;
 
   // Used to create SkiaOutputSurfaceImpl.
   std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;

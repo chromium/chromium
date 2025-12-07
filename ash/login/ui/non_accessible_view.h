@@ -28,7 +28,6 @@ class ASH_EXPORT NonAccessibleView : public views::View {
 
   // views::View:
   std::string GetObjectName() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   const std::string name_;

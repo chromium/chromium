@@ -1,0 +1,4 @@
+Tests browser window minimize, restore and focus.
+Initial: normal visible hasFocus=true
+Minimized: minimized hidden hasFocus=false
+Restored: normal visible hasFocus=true

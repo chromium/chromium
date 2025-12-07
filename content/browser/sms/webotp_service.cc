@@ -47,7 +47,7 @@ namespace {
 // A.com -> B.com -> A.com (calls WebOTP API)
 // A.com -> B.com -> C.com (calls WebOTP API)
 bool ValidateAndCollectUniqueOrigins(RenderFrameHost& rfh,
-                                     OriginList& origin_list) {
+                                     WebOTPService::OriginList& origin_list) {
   url::Origin current_origin = rfh.GetLastCommittedOrigin();
   origin_list.push_back(current_origin);
 
@@ -88,8 +88,7 @@ Outcome FailureTypeToOutcome(SmsFetchFailureType failure_type) {
     case SmsFetchFailureType::kCrossDeviceFailure:
       return Outcome::kCrossDeviceFailure;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Outcome::kTimeout;
+      NOTREACHED();
   }
 }
 
@@ -296,7 +295,7 @@ void WebOTPService::OnFailure(FailureType failure_type) {
       CompleteRequest(SmsStatus::kBackendNotAvailable);
       return;
     case FailureType::kNoFailure:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Records Sms parsing failures.

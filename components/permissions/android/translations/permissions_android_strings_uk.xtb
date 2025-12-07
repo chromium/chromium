@@ -11,6 +11,7 @@
 <translation id="2987449669841041897">Цей сайт не може запитувати у вас дозвіл</translation>
 <translation id="3036750288708366620"><ph name="BEGIN_LINK" />Довідка<ph name="END_LINK" /></translation>
 <translation id="3773755127849930740"><ph name="BEGIN_LINK" />Увімкніть Bluetooth<ph name="END_LINK" />, щоб підключити</translation>
+<translation id="3878792656892132392">Додатку <ph name="APP_NAME" /> потрібен дозвіл на відстеження ваших рук.</translation>
 <translation id="4915549754973153784"><ph name="BEGIN_LINK" />Довідка<ph name="END_LINK" /> під час пошуку пристроїв…</translation>
 <translation id="4925793601605263825">Додаток <ph name="APP_NAME" /> запитує доступ до мікрофона для цього сайту.</translation>
 <translation id="5230560987958996918">Сайт <ph name="SITE" /> хоче шукати пристрої Bluetooth поруч. Виявлено такі пристрої:</translation>

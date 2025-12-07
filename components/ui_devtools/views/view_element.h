@@ -10,7 +10,7 @@
 #include "components/ui_devtools/ui_element.h"
 #include "components/ui_devtools/views/ui_element_with_metadata.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -40,6 +40,7 @@ class ViewElement : public views::ViewObserver, public UIElementWithMetaData {
   std::vector<std::string> GetAttributes() const override;
   std::pair<gfx::NativeWindow, gfx::Rect> GetNodeWindowAndScreenBounds()
       const override;
+  gfx::Rect GetNodeBoundsInScreen() const override;
   static views::View* From(const UIElement* element);
   void PaintRect() const override;
   bool FindMatchByElementID(const ui::ElementIdentifier& identifier) override;

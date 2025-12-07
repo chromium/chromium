@@ -11,8 +11,6 @@ found in the LICENSE file.
     android:id="@+id/button"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:paddingStart="@dimen/default_list_row_padding"
-    android:paddingEnd="@dimen/default_list_row_padding"
     android:focusable="true"
     android:background="@null"
     android:src="@drawable/ic_more_vert_24dp"

@@ -37,7 +37,7 @@ export class SharePasswordDialogHeaderElement extends PolymerElement {
     };
   }
 
-  isError: boolean;
+  declare isError: boolean;
 
   private onHelpClick_() {
     recordPasswordSharingInteraction(

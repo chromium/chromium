@@ -52,8 +52,9 @@ NSString* GenerateClientId() {
   // generating a new one.
   if (!client_id || [client_id isEqualToString:kZeroUUID]) {
     client_id = [[[UIDevice currentDevice] identifierForVendor] UUIDString];
-    if ([client_id isEqualToString:kZeroUUID])
+    if ([client_id isEqualToString:kZeroUUID]) {
       client_id = base::SysUTF8ToNSString(ios::device_util::GetRandomId());
+    }
   }
   return client_id;
 }
@@ -105,13 +106,14 @@ std::string GetMacAddress(const std::string& interface_name) {
         // the length of the name, that is, |found_address_struct->sdl_nlen|.
         const unsigned char* found_address =
             reinterpret_cast<const unsigned char*>(
-                &found_address_struct->sdl_data[
-                    found_address_struct->sdl_nlen]);
+                &found_address_struct
+                     ->sdl_data[found_address_struct->sdl_nlen]);
 
         int found_address_length = found_address_struct->sdl_alen;
         for (int i = 0; i < found_address_length; ++i) {
-          if (i != 0)
+          if (i != 0) {
             mac_string.push_back(':');
+          }
           base::StringAppendF(&mac_string, "%02X", found_address[i]);
         }
         break;
@@ -179,4 +181,15 @@ std::string GetSaltedString(const std::string& in_string,
   return base::SysCFStringRefToUTF8(device_id.get());
 }
 
+base::expected<task_vm_info, kern_return_t> GetTaskVMInfo() {
+  task_vm_info task_vm_info_data = {0};
+  mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+  kern_return_t result =
+      task_info(mach_task_self(), TASK_VM_INFO,
+                reinterpret_cast<task_info_t>(&task_vm_info_data), &count);
+  if (result == KERN_SUCCESS) {
+    return task_vm_info_data;
+  }
+  return base::unexpected(result);
+}
 }  // namespace ios::device_util

@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
 #include "base/strings/string_util.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
@@ -65,7 +66,7 @@ CGaiaCredentialProviderModule::CGaiaCredentialProviderModule()
       gcpw_extension_check_performed_(0),
       crashpad_initialized_(0) {}
 
-CGaiaCredentialProviderModule::~CGaiaCredentialProviderModule() {}
+CGaiaCredentialProviderModule::~CGaiaCredentialProviderModule() = default;
 
 // static
 HRESULT WINAPI
@@ -136,7 +137,7 @@ void CGaiaCredentialProviderModule::InitializeCrashReporting() {
 }
 
 void CGaiaCredentialProviderModule::LogProcessDetails() {
-  wchar_t process_name[MAX_PATH] = {0};
+  wchar_t process_name[MAX_PATH] = {};
   GetModuleFileName(nullptr, process_name, MAX_PATH);
 
   LOGFN(INFO) << "GCPW Initialized in " << process_name

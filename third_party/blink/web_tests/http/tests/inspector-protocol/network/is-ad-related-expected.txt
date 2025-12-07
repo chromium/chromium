@@ -1,0 +1,4 @@
+Tests that ad-related requests are marked as such.
+ad-script.js isAdRelated: true
+script-1.js isAdRelated: undefined
+

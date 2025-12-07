@@ -8,22 +8,18 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 // DocumentParserTiming is responsible for tracking parser-related timings for a
 // given document.
 class DocumentParserTiming final
-    : public GarbageCollected<DocumentParserTiming>,
-      public Supplement<Document> {
+    : public GarbageCollected<DocumentParserTiming> {
  public:
-  static const char kSupplementName[];
-
   explicit DocumentParserTiming(Document&);
   DocumentParserTiming(const DocumentParserTiming&) = delete;
   DocumentParserTiming& operator=(const DocumentParserTiming&) = delete;
-  virtual ~DocumentParserTiming() = default;
+  ~DocumentParserTiming() = default;
 
   static DocumentParserTiming& From(Document&);
 
@@ -97,11 +93,12 @@ class DocumentParserTiming final
     return parser_blocked_on_script_execution_from_document_write_duration_;
   }
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   void NotifyDocumentParserTimingChanged();
 
+  Member<Document> document_;
   base::TimeTicks parser_start_;
   base::TimeTicks parser_stop_;
   base::TimeDelta parser_blocked_on_script_load_duration_;

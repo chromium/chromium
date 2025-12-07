@@ -140,7 +140,8 @@ TEST_P(DataTransferTest, NodeImageUnderScrollOffset) {
   const int scroll_amount = 10;
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   // The first div should be offset by the scroll offset.
   Element& first = *GetDocument().getElementById(AtomicString("first"));
@@ -179,7 +180,8 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactor) {
   const int scroll_amount = 10;
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   const auto image_with_offset = DataTransfer::NodeImage(GetFrame(), node);
   EXPECT_EQ(gfx::Size(node_width * page_scale_factor,
                       node_height * page_scale_factor),
@@ -210,7 +212,8 @@ TEST_P(DataTransferTest, NodeImageSizeWithPageScaleFactorTooLarge) {
   const int scroll_amount = 10;
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
   const auto image_with_offset = DataTransfer::NodeImage(GetFrame(), node);
   EXPECT_EQ(gfx::Size(node_width * page_scale_factor,
                       node_height * page_scale_factor),
@@ -276,7 +279,8 @@ TEST_P(DataTransferTest, NodeImageFullyOffscreen) {
   const int scroll_amount = 800;
   LocalFrameView* frame_view = GetDocument().View();
   frame_view->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, scroll_amount), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   Element& target = *GetDocument().getElementById(AtomicString("target"));
   const auto image = DataTransfer::NodeImage(GetFrame(), target);
@@ -411,7 +415,8 @@ TEST_P(DataTransferTest, NodeImageFixedChild) {
   )HTML");
 
   GetDocument().View()->LayoutViewport()->SetScrollOffset(
-      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic);
+      ScrollOffset(0, 100), mojom::blink::ScrollType::kProgrammatic,
+      cc::ScrollSourceType::kNone);
 
   auto image = DataTransfer::NodeImage(
       GetFrame(), *GetDocument().getElementById(AtomicString("drag")));
@@ -480,6 +485,52 @@ TEST_P(DataTransferTest, NodeImageTranslatedOutOfView) {
       EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(x, y));
     }
   }
+}
+
+TEST_P(DataTransferTest, DragImageWithVeryLargeWidthAndHeight) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #drag {
+        width: 30000px;
+        height: 30000px;
+        background: #F00;
+      }
+    </style>
+      <div id="drag" draggable="true"></div>
+  )HTML");
+  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  const auto image = DataTransfer::NodeImage(GetFrame(), drag);
+  const int scale_dimension = 64 * 128;
+  const int drag_width = image->Size().width() > scale_dimension
+                             ? scale_dimension
+                             : image->Size().width();
+  const int drag_height = image->Size().height() > scale_dimension
+                              ? scale_dimension
+                              : image->Size().height();
+  EXPECT_EQ(gfx::Size(drag_width, drag_height), image->Size());
+}
+
+TEST_P(DataTransferTest, DragImageWithVeryLargeWidth) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #drag {
+        width: 50000px;
+        height: 300px;
+        background: #F00;
+      }
+    </style>
+      <div id="drag" draggable="true"></div>
+  )HTML");
+  Element& drag = *GetDocument().getElementById(AtomicString("drag"));
+  const auto image = DataTransfer::NodeImage(GetFrame(), drag);
+  const int scale_dimension = 64 * 128;
+  const int drag_width = image->Size().width() > scale_dimension
+                             ? scale_dimension
+                             : image->Size().width();
+  const int drag_height = image->Size().height() > scale_dimension
+                              ? scale_dimension
+                              : image->Size().height();
+  EXPECT_EQ(gfx::Size(drag_width, drag_height), image->Size());
 }
 
 }  // namespace blink

@@ -6,12 +6,11 @@
 
 namespace data_controls {
 
-BASE_FEATURE(kEnableDesktopDataControls,
-             "EnableDesktopDataControls",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kEnableClipboardDataControlsAndroid,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
-BASE_FEATURE(kEnableScreenshotProtection,
-             "EnableScreenshotProtection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableDownloadDataControls, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace data_controls

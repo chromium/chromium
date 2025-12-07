@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
@@ -26,7 +26,7 @@ Profiler* Profiler::Create(ScriptState* script_state,
   if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
     can_profile = ProfilerGroup::CanProfile(window, &exception_state,
                                             ReportOptions::kReportOnFailure);
-    performance = DOMWindowPerformance::performance(*window);
+    performance = GlobalPerformance::performance(*window);
   }
 
   if (!can_profile) {

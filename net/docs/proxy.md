@@ -312,7 +312,7 @@ credentials.
 In addition to specifying three lists of [proxy server
 identifiers](#proxy-server-identifiers), Chrome's [manual proxy
 settings](#Manual-proxy-settings) lets you specify a list of "proxy bypass
-rules".
+rules" using URL patterns.
 
 This ruleset determines whether a given URL should skip use of a proxy all
 together, even when a proxy is otherwise defined for it.
@@ -327,14 +327,22 @@ When manual proxy settings are specified from the command line, the
 `--proxy-bypass-list="RULES"` switch can be used, where `RULES` is a semicolon
 or comma separated list of bypass rules.
 
-Following are the string constructions for the bypass rules that Chrome
-supports. They can be used when defining a Chrome manual proxy settings from
-command line flags, extensions, or policy.
+See [proxy config URL patterns](#Proxy-config-URL-patterns) for the URL patterns
+format that Chrome supports for proxy bypass rules.
 
 When using system proxy settings, one should use the platform's rule format and
 not Chrome's.
 
-### Bypass rule: Hostname
+## Proxy config URL patterns
+
+This section describes string constructions that Chrome supports for specifying
+URL patterns in the context of proxy configuration - e.g.
+[proxy bypass rules](#Proxy-bypass-rules) or for the `DestinationMatchers` value
+of the [ProxyOverrideRules](https://chromeenterprise.google/intl/en_ca/policies/#ProxyOverrideRules)
+policy. These patterns can be used when defining a Chrome manual proxy settings
+from command line flags, extensions, or policy.
+
+### Proxy config URL patterns: Hostname
 
 ```
 [ URL_SCHEME "://" ] HOSTNAME_PATTERN [ ":" <port> ]
@@ -354,7 +362,7 @@ Examples:
 * `https://x.*.y.com:99` - Matches https:// URLs on port 99 whose normalized
   hostname matches `x.*.y.com`
 
-### Bypass rule: Subdomain
+### Proxy config URL patterns: Subdomain
 
 ```
 [ URL_SCHEME "://" ] "." HOSTNAME_SUFFIX_PATTERN [ ":" PORT ]
@@ -369,7 +377,7 @@ Examples:
   not `google.com`.
 * `http://.google.com` - Matches only http:// URLs that are a subdomain of `google.com`.
 
-### Bypass rule: IP literal
+### Proxy config URL patterns: IP literal
 
 ```
 [ SCHEME "://" ] IP_LITERAL [ ":" PORT ]
@@ -388,7 +396,7 @@ Examples:
 * `[0:0::1]` - Same as above
 * `http://[::1]:99` - Matches any http:// URL to the IPv6 loopback on port 99
 
-### Bypass rule: IPv4 address range
+### Proxy config URL patterns: IPv4 address range
 
 ```
 IPV4_LITERAL "/" PREFIX_LENGTH_IN_BITS
@@ -404,7 +412,7 @@ Examples:
 
 * `192.168.1.1/16`
 
-### Bypass rule: IPv6 address range
+### Proxy config URL patterns: IPv6 address range
 
 ```
 IPV6_LITERAL "/" PREFIX_LENGTH_IN_BITS
@@ -421,7 +429,7 @@ Examples:
 * `fefe:13::abc/33`
 * `[fefe::]/40` -- WRONG! IPv6 literals must not be bracketed.
 
-### Bypass rule: Simple hostnames
+### Proxy config URL patterns: Simple hostnames
 
 ```
 <local>
@@ -439,7 +447,7 @@ of localhost. However the two concepts are completely orthogonal. In practice
 one wouldn't add rules to bypass localhost, as it is [already done
 implicitly](#Implicit-bypass-rules).
 
-### Bypass rule: Subtract implicit rules
+### Proxy config URL patterns: Subtract implicit rules
 
 ```
 <-loopback>
@@ -506,7 +514,7 @@ Windows we will also recognize `loopback`.
 This concept of implicit proxy bypass rules is consistent with the
 platform-level proxy support on Windows and macOS (albeit with some differences
 due to their implementation quirks - see compatibility notes in
-`net::ProxyBypassRules::MatchesImplicitRules`)
+`net::ProxyHostMatchingRules::MatchesImplicitRules`)
 
 Why apply implicit proxy bypass rules in the first place? Certainly there are
 considerations around ergonomics and user expectation, but the bigger problem

@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -39,7 +38,6 @@ class MockCanvasAsyncBlobCreator : public CanvasAsyncBlobCreator {
             nullptr,
             base::TimeTicks(),
             document->GetExecutionContext(),
-            0,
             nullptr) {
     if (fail_encoder_initialization)
       fail_encoder_initialization_for_test_ = true;
@@ -114,7 +112,7 @@ class MockCanvasAsyncBlobCreatorWithoutComplete
   void ScheduleInitiateEncoding(double quality) override {
     PostDelayedTaskToCurrentThread(
         FROM_HERE,
-        WTF::BindOnce(
+        blink::BindOnce(
             &MockCanvasAsyncBlobCreatorWithoutComplete::InitiateEncoding,
             WrapPersistent(this), quality, base::TimeTicks::Max()),
         /*delay_ms=*/0);

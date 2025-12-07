@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/timer/timer.h"
 #include "net/base/io_buffer.h"
@@ -160,7 +161,7 @@ void SecurityKeySocket::OnDataRead(int result) {
   // and some of request #2).  We should consider using the request header to
   // determine the request length and only read that amount from buffer.
   request_data_.insert(request_data_.end(), read_buffer_->data(),
-                       read_buffer_->data() + result);
+                       UNSAFE_TODO(read_buffer_->data() + result));
   if (IsRequestComplete()) {
     waiting_for_request_ = false;
     std::move(request_received_callback_).Run();

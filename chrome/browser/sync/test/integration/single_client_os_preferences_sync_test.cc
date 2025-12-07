@@ -31,12 +31,14 @@ class SingleClientOsPreferencesSyncTest : public SyncTest {
   SingleClientOsPreferencesSyncTest() : SyncTest(SINGLE_CLIENT) {}
   ~SingleClientOsPreferencesSyncTest() override = default;
 
+  // This test suite is ChromeOS specific, where there's only Sync-the-feature.
+  SyncTest::SetupSyncMode GetSetupSyncMode() const override {
+    return SetupSyncMode::kSyncTheFeature;
+  }
+
  protected:
   static std::string ConvertToSyncedPrefValue(const base::Value& value) {
-    std::string result;
-    bool success = base::JSONWriter::Write(value, &result);
-    DCHECK(success);
-    return result;
+    return base::WriteJson(value).value();
   }
 
   sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
@@ -52,8 +54,7 @@ class SingleClientOsPreferencesSyncTest : public SyncTest {
       case syncer::DataType::OS_PRIORITY_PREFERENCES:
         return specifics.mutable_os_priority_preference()->mutable_preference();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return specifics.mutable_preference();
+        NOTREACHED();
     }
   }
   void InjectPreferenceToFakeServer(syncer::DataType data_type,
@@ -80,7 +81,7 @@ class SingleClientOsPreferencesSyncTest : public SyncTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   // Shelf alignment is a Chrome OS only preference.
   ChangeStringPref(/*index=*/0, ash::prefs::kShelfAlignment,
@@ -92,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest, Sanity) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
                        OSPreferencesAreUploaded) {
-  ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
+  ASSERT_TRUE(SetupClients());
   ASSERT_NE(GetPrefs(0)->GetValue(kOsPreferenceKey), kOsPreferenceNewValue);
   ASSERT_NE(GetPrefs(0)->GetValue(kOsPriorityPreferenceKey),
             kOsPriorityPreferenceNewValue);
@@ -124,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientOsPreferencesSyncTest,
                                kOsPriorityPreferenceKey,
                                kOsPriorityPreferenceNewValue);
 
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(SetupSync());
 
   EXPECT_TRUE(GetPrefs(/*index=*/0)
                   ->FindPreference(kOsPreferenceKey)

@@ -8,24 +8,20 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
 class UserActivation;
 
 class CORE_EXPORT NavigatorUserActivation final
-    : public GarbageCollected<NavigatorUserActivation>,
-      public Supplement<Navigator> {
+    : public GarbageCollected<NavigatorUserActivation> {
  public:
-  static const char kSupplementName[];
-
   static UserActivation* userActivation(Navigator& navigator);
   UserActivation* userActivation();
 
   explicit NavigatorUserActivation(Navigator&);
 
-  void Trace(Visitor*) const override;
+  void Trace(Visitor*) const;
 
  private:
   static NavigatorUserActivation& From(Navigator&);

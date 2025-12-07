@@ -73,7 +73,7 @@ ReferrerScriptInfo ReferrerScriptInfo::FromV8HostDefinedOptions(
     return Default(script_origin_resource_name);
   }
 
-  v8::Isolate* isolate = context->GetIsolate();
+  v8::Isolate* isolate = v8::Isolate::GetCurrent();
   v8::Local<v8::Primitive> base_url_value =
       host_defined_options->Get(isolate, kBaseURL);
   SECURITY_CHECK(base_url_value->IsString());

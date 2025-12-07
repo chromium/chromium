@@ -67,6 +67,27 @@ TEST(HeapProfilingSwitches, GetModeForStartup_Commandline) {
         kMemlogMode, kMemlogModeRendererSampling);
     EXPECT_EQ(Mode::kRendererSampling, GetModeForStartup());
   }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        kMemlogMode, kMemlogModeUtilityAndBrowser);
+    EXPECT_EQ(Mode::kUtilityAndBrowser, GetModeForStartup());
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        kMemlogMode, kMemlogModeUtilitySampling);
+    EXPECT_EQ(Mode::kUtilitySampling, GetModeForStartup());
+  }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        kMemlogMode, kMemlogModeAllUtilities);
+    EXPECT_EQ(Mode::kAllUtilities, GetModeForStartup());
+  }
 }
 
 #else

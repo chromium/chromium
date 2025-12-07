@@ -26,19 +26,28 @@
         optional GPUSize64 byteSize);
 
     [CallWith=ScriptState, RaisesException] void writeTexture(
-        GPUImageCopyTexture destination,
+        GPUTexelCopyTextureInfo destination,
         [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView data,
-        GPUImageDataLayout dataLayout,
+        GPUTexelCopyBufferLayout dataLayout,
         GPUExtent3D size);
     [CallWith=ScriptState, RaisesException] void writeTexture(
-        GPUImageCopyTexture destination,
+        GPUTexelCopyTextureInfo destination,
         [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBuffer data,
-        GPUImageDataLayout dataLayout,
+        GPUTexelCopyBufferLayout dataLayout,
         GPUExtent3D size);
 
     [RaisesException] void copyExternalImageToTexture(
         GPUImageCopyExternalImage source,
         GPUImageCopyTextureTagged destination,
         GPUExtent3D copySize);
+
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] void copyElementImageToTexture(
+        Element source,
+        GPUImageCopyTextureTagged destination);
+    [RuntimeEnabled=CanvasDrawElement, RaisesException] void copyElementImageToTexture(
+        Element source,
+        GPUIntegerCoordinate width,
+        GPUIntegerCoordinate height,
+        GPUImageCopyTextureTagged destination);
 };
 GPUQueue includes GPUObjectBase;

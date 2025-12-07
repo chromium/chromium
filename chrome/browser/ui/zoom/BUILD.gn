@@ -43,6 +43,7 @@ if (!is_android) {
     deps = [
       ":zoom",
       "//base/test:test_support",
+      "//chrome/browser/ui/webui/signin:test_support_ui",
       "//chrome/test:test_support",
       "//components/prefs",
       "//components/zoom",

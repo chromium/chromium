@@ -245,16 +245,18 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
   } else {
     space_.GetExclusionSpace().MoveDerivedGeometry(builder->exclusion_space_);
   }
-  if (builder->lines_until_clamp_)
+  if (builder->lines_until_clamp_) {
     EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
-  if (builder->has_content_after_line_clamp_) {
-    EnsureRareData()->set_has_content_after_line_clamp();
   }
-  if (builder->is_block_start_trimmed_) {
-    EnsureRareData()->set_is_block_start_trimmed();
+  if (builder->is_block_end_trimmable_line_) {
+    EnsureRareData()->set_is_block_end_trimmable_line();
   }
-  if (builder->is_block_end_trimmed_) {
-    EnsureRareData()->set_is_block_end_trimmed();
+  if (builder->would_be_last_line_if_not_for_ellipsis_) {
+    EnsureRareData()->set_would_be_last_line_if_not_for_ellipsis();
+  }
+  if (builder->line_clamp_after_layout_object_) {
+    EnsureRareData()->line_clamp_after_layout_object =
+        builder->line_clamp_after_layout_object_;
   }
 
   if (builder->tallest_unbreakable_block_size_ >= LayoutUnit()) {
@@ -280,8 +282,7 @@ LayoutResult::LayoutResult(const PhysicalFragment* physical_fragment,
   }
 
   if (builder->column_spanner_path_) {
-    EnsureRareData()->EnsureBlockData()->column_spanner_path =
-        builder->column_spanner_path_;
+    EnsureRareData()->column_spanner_path = builder->column_spanner_path_;
     bitfields_.is_empty_spanner_parent = builder->is_empty_spanner_parent_;
   }
 
@@ -329,23 +330,37 @@ void LayoutResult::CopyMutableOutOfFlowData(const LayoutResult& other) const {
       other.OutOfFlowPositionedOffset());
 }
 
+void LayoutResult::MutableForOutOfFlow::SetAccessibilityAnchor(
+    Element* anchor) {
+  if (layout_result_->rare_data_ || anchor) {
+    layout_result_->EnsureRareData()->accessibility_anchor = anchor;
+  }
+}
+
 void LayoutResult::MutableForOutOfFlow::SetDisplayLocksAffectedByAnchors(
-    HeapHashSet<Member<Element>>* display_locks) {
+    GCedHeapHashSet<Member<Element>>* display_locks) {
   if (layout_result_->rare_data_ || display_locks) {
     layout_result_->EnsureRareData()->display_locks_affected_by_anchors =
         display_locks;
   }
 }
 
+void LayoutResult::MutableForLayoutBoxCachedResults::
+    SetFragmentChildrenInvalid() {
+  if (const auto* box_fragment = DynamicTo<PhysicalBoxFragment>(
+          layout_result_->physical_fragment_.Get())) {
+    box_fragment->SetChildrenInvalid();
+  }
+}
+
 #if DCHECK_IS_ON()
 void LayoutResult::CheckSameForSimplifiedLayout(
     const LayoutResult& other,
-    bool check_same_block_size,
     bool check_no_fragmentation) const {
   To<PhysicalBoxFragment>(*physical_fragment_)
       .CheckSameForSimplifiedLayout(
           To<PhysicalBoxFragment>(*other.physical_fragment_),
-          check_same_block_size, check_no_fragmentation);
+          check_no_fragmentation);
 
   DCHECK(LinesUntilClamp() == other.LinesUntilClamp());
   GetExclusionSpace().CheckSameForSimplifiedLayout(other.GetExclusionSpace());
@@ -392,6 +407,7 @@ void LayoutResult::AssertSoleBoxFragment() const {
 #endif
 
 void LayoutResult::Trace(Visitor* visitor) const {
+  visitor->Trace(space_);
   visitor->Trace(physical_fragment_);
   visitor->Trace(rare_data_);
 }
@@ -399,10 +415,10 @@ void LayoutResult::Trace(Visitor* visitor) const {
 void LayoutResult::RareData::Trace(Visitor* visitor) const {
   visitor->Trace(early_break);
   visitor->Trace(non_overflowing_scroll_ranges);
-  // This will not cause TOCTOU issue because data_union_type is set in the
-  // constructor and never changed.
-  if (const BlockData* data = GetBlockData())
-    visitor->Trace(data->column_spanner_path);
+  visitor->Trace(column_spanner_path);
+  visitor->Trace(exclusion_space);
+  visitor->Trace(line_clamp_after_layout_object);
+  visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
 }
 

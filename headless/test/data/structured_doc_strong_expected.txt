@@ -1,0 +1,24 @@
+{
+   "lang": "en",
+   "type": "Document",
+   "~children": [ {
+      "type": "NonStruct",
+      "~children": [ {
+         "type": "NonStruct"
+      }, {
+         "type": "Strong",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      }, {
+         "type": "NonStruct"
+      }, {
+         "type": "Strong",
+         "~children": [ {
+            "type": "NonStruct"
+         } ]
+      }, {
+         "type": "NonStruct"
+      } ]
+   } ]
+}

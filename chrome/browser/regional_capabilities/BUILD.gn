@@ -1,0 +1,130 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("regional_capabilities") {
+  sources = [
+    "regional_capabilities_metrics_provider.h",
+    "regional_capabilities_service_client.cc",
+    "regional_capabilities_service_client.h",
+    "regional_capabilities_service_factory.cc",
+    "regional_capabilities_service_factory.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//components/country_codes",
+    "//components/metrics",
+    "//components/regional_capabilities",
+    "//components/variations/service",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/regional_capabilities_service_factory_android.cc",
+      "regional_capabilities_service_client_android.cc",
+      "regional_capabilities_service_client_android.h",
+    ]
+
+    deps += [ "//chrome/browser/regional_capabilities/android:jni_headers" ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "regional_capabilities_service_client_chromeos.cc",
+      "regional_capabilities_service_client_chromeos.h",
+    ]
+
+    deps += [ "//chromeos/ash/components/system" ]
+  }
+
+  if (is_linux) {
+    sources += [
+      "regional_capabilities_service_client_linux.cc",
+      "regional_capabilities_service_client_linux.h",
+    ]
+  }
+}
+
+source_set("metrics_provider_impl") {
+  sources = [ "regional_capabilities_metrics_provider.cc" ]
+  deps = [
+    ":regional_capabilities",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:data",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "regional_capabilities_metrics_provider_unittest.cc",
+    "regional_capabilities_service_client_unittest.cc",
+    "regional_capabilities_test_environment.cc",
+    "regional_capabilities_test_environment.h",
+  ]
+
+  deps = [
+    ":regional_capabilities",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/country_codes",
+    "//components/metrics",
+    "//components/metrics:test_support",
+    "//components/prefs:test_support",
+    "//components/regional_capabilities",
+    "//components/regional_capabilities:test_support",
+    "//components/search_engines:search_engines_switches",
+    "//components/sync_preferences:test_support",
+    "//components/variations:test_support",
+    "//testing/gtest",
+  ]
+
+  if (is_android) {
+    sources += [ "regional_capabilities_service_client_android_unittest.cc" ]
+
+    # Note: "//components/regional_capabilities/android:test_utils_java" is also
+    # also needed, but it seems that for now it needs to be added in the `deps`
+    # of `//components:components_unittests`.
+    deps += [
+      "//chrome/browser/regional_capabilities/android:test_utils_jni_headers",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "regional_capabilities_service_client_chromeos_unittest.cc" ]
+
+    deps += [ "//chromeos/ash/components/system" ]
+  }
+
+  if (is_linux) {
+    sources += [ "regional_capabilities_service_client_linux_unittest.cc" ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    sources = [ "regional_capabilities_service_factory_browsertest.cc" ]
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    deps = [
+      ":regional_capabilities",
+      "//base",
+      "//chrome/test:test_support",
+      "//components/country_codes",
+      "//components/regional_capabilities",
+      "//components/variations/service",
+      "//testing/gtest",
+    ]
+  }
+}

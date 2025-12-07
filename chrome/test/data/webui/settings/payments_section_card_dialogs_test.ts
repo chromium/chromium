@@ -83,7 +83,7 @@ suite('PaymentsSectionCardDialogs', function() {
     const oldCreditCardDialog = createCreditCardDialog(oldCreditCard);
 
     function getTitle(dialog: SettingsCreditCardEditDialogElement): string {
-      return dialog.shadowRoot!.querySelector('[slot=title]')!.textContent!;
+      return dialog.shadowRoot!.querySelector('[slot=title]')!.textContent;
     }
 
     const oldTitle = getTitle(oldCreditCardDialog);
@@ -117,10 +117,10 @@ suite('PaymentsSectionCardDialogs', function() {
                   '#year');
           const yearOptions = yearInput!.options;
 
-          assertEquals('2015', yearOptions[0]!.textContent!.trim());
+          assertEquals('2015', yearOptions[0]!.textContent.trim());
           assertEquals(
               maxYear.toString(),
-              yearOptions[yearOptions.length - 1]!.textContent!.trim());
+              yearOptions[yearOptions.length - 1]!.textContent.trim());
           assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
@@ -143,11 +143,10 @@ suite('PaymentsSectionCardDialogs', function() {
           const yearOptions = yearInput!.options;
 
           assertEquals(
-              now.getFullYear().toString(),
-              yearOptions[0]!.textContent!.trim());
+              now.getFullYear().toString(), yearOptions[0]!.textContent.trim());
           assertEquals(
               farFutureYear.toString(),
-              yearOptions[yearOptions.length - 1]!.textContent!.trim());
+              yearOptions[yearOptions.length - 1]!.textContent.trim());
           assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
@@ -171,75 +170,58 @@ suite('PaymentsSectionCardDialogs', function() {
           const yearOptions = yearInput!.options;
 
           assertEquals(
-              now.getFullYear().toString(),
-              yearOptions[0]!.textContent!.trim());
+              now.getFullYear().toString(), yearOptions[0]!.textContent.trim());
           assertEquals(
               maxYear.toString(),
-              yearOptions[yearOptions.length - 1]!.textContent!.trim());
+              yearOptions[yearOptions.length - 1]!.textContent.trim());
           assertEquals(creditCard.expirationYear, yearInput!.value);
         });
   });
 
-  [true, false].forEach((requireValidLocalCardsEnabled) => {
-    const testSuffix = requireValidLocalCardsEnabled ?
-        'requireValidLocalCards' :
-        'doNotRequireValidLocalCards';
-    test(`verifySaveNewCreditCard_${testSuffix}`, async function() {
-      loadTimeData.overrideValues({
-        cvcStorageAvailable: true,
-        requireValidLocalCards: requireValidLocalCardsEnabled,
-      });
-
-      const creditCard = createEmptyCreditCardEntry();
-      const creditCardDialog = createCreditCardDialogWithPrefs(
-          creditCard, {payment_cvc_storage: {value: true}});
-      await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
-
-      // Not expired, but still can't be saved, because there's no
-      // name or card number.
-      const expiredError =
-          creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
-              '#expiredError');
-      assertEquals('hidden', getComputedStyle(expiredError!).visibility);
-
-      const saveButton =
-          creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
-              '#saveButton');
-      assertTrue(saveButton!.disabled);
-
-      if (requireValidLocalCardsEnabled) {
-        // Add a card number to enable saving.
-        creditCardDialog.set('rawCardNumber_', '4444333322221111');
-      } else {
-        // Add a card name to enable saving.
-        creditCardDialog.set('name_', 'Jane Doe');
-      }
-      flush();
-
-      assertEquals('hidden', getComputedStyle(expiredError!).visibility);
-      assertFalse(saveButton!.disabled);
-
-      const cvcInput =
-          creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
-              '#cvcInput');
-      assertTrue(!!cvcInput);
-      assertTrue(isVisible(cvcInput));
-      cvcInput.value = '123';
-
-      const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
-      saveButton!.click();
-      const event = await savedPromise;
-
-      assertEquals(creditCard.guid, event.detail.guid);
-      assertEquals(creditCard.cvc, event.detail.cvc);
+  test('verifySaveNewCreditCard', async function() {
+    loadTimeData.overrideValues({
+      cvcStorageAvailable: true,
     });
+
+    const creditCard = createEmptyCreditCardEntry();
+    const creditCardDialog = createCreditCardDialogWithPrefs(
+        creditCard, {payment_cvc_storage: {value: true}});
+    await whenAttributeIs(creditCardDialog.$.dialog, 'open', '');
+
+    // Not expired, but still can't be saved, because there's no card number.
+    const expiredError =
+        creditCardDialog.shadowRoot!.querySelector<HTMLElement>(
+            '#expiredError');
+    assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+
+    const saveButton =
+        creditCardDialog.shadowRoot!.querySelector<CrButtonElement>(
+            '#saveButton');
+    assertTrue(saveButton!.disabled);
+
+    // Add a card number to enable saving.
+    creditCardDialog.set('rawCardNumber_', '4444333322221111');
+    flush();
+
+    assertEquals('hidden', getComputedStyle(expiredError!).visibility);
+    assertFalse(saveButton!.disabled);
+
+    const cvcInput =
+        creditCardDialog.shadowRoot!.querySelector<HTMLInputElement>(
+            '#cvcInput');
+    assertTrue(!!cvcInput);
+    assertTrue(isVisible(cvcInput));
+    cvcInput.value = '123';
+
+    const savedPromise = eventToPromise('save-credit-card', creditCardDialog);
+    saveButton!.click();
+    const event = await savedPromise;
+
+    assertEquals(creditCard.guid, event.detail.guid);
+    assertEquals(creditCard.cvc, event.detail.cvc);
   });
 
   test('verifyOnlyValidCardNumbersAllowed_ValidCases', async function() {
-    loadTimeData.overrideValues({
-      requireValidLocalCards: true,
-    });
-
     const creditCard = createCreditCardEntry();
     const creditCardDialog = createCreditCardDialog(creditCard);
 
@@ -277,7 +259,7 @@ suite('PaymentsSectionCardDialogs', function() {
           numberInput.invalid,
           'Precondition failed: numberInput should initially be invalid');
       assertTrue(
-          saveButton!.disabled,
+          saveButton.disabled,
           'Precondition failed: saveButton should initially be disabled');
 
       // Now check the test case.
@@ -285,7 +267,7 @@ suite('PaymentsSectionCardDialogs', function() {
       flush();
       assertFalse(numberInput.invalid, `Expected ${cardNumber} to be valid`);
       assertFalse(
-          saveButton!.disabled,
+          saveButton.disabled,
           `Expected save button to be enabled for ${cardNumber}`);
 
       // Blur the input; the card should continue to be considered valid.
@@ -293,7 +275,7 @@ suite('PaymentsSectionCardDialogs', function() {
       assertFalse(
           numberInput.invalid, `Expected ${cardNumber} to be valid after blur`);
       assertFalse(
-          saveButton!.disabled,
+          saveButton.disabled,
           `Expected save button to be enabled for ${cardNumber} after blur`);
     }
   });
@@ -301,10 +283,6 @@ suite('PaymentsSectionCardDialogs', function() {
   test(
       'verifyOnlyValidCardNumbersAllowed_InvalidCasesWithNoError',
       async function() {
-        loadTimeData.overrideValues({
-          requireValidLocalCards: true,
-        });
-
         const creditCard = createCreditCardEntry();
         const creditCardDialog = createCreditCardDialog(creditCard);
 
@@ -337,7 +315,7 @@ suite('PaymentsSectionCardDialogs', function() {
               numberInput.invalid,
               'Precondition failed: numberInput should initially be valid');
           assertFalse(
-              saveButton!.disabled,
+              saveButton.disabled,
               'Precondition failed: saveButton should initially be enabled');
 
           // Now check the test case.
@@ -346,7 +324,7 @@ suite('PaymentsSectionCardDialogs', function() {
           assertFalse(
               numberInput.invalid, `Expected ${cardNumber} to be valid`);
           assertTrue(
-              saveButton!.disabled,
+              saveButton.disabled,
               `Expected save button to be disabled for ${cardNumber}`);
 
           // Blur the input; this should do full verification and change the
@@ -356,17 +334,13 @@ suite('PaymentsSectionCardDialogs', function() {
               numberInput.invalid,
               `Expected ${cardNumber} to be invalid after blur`);
           assertTrue(
-              saveButton!.disabled,
+              saveButton.disabled,
               `Expected save button to be disabled for ${
                   cardNumber} after blur`);
         }
       });
 
   test('verifyOnlyValidCardNumbersAllowed_InvalidCases', async function() {
-    loadTimeData.overrideValues({
-      requireValidLocalCards: true,
-    });
-
     const creditCard = createCreditCardEntry();
     const creditCardDialog = createCreditCardDialog(creditCard);
 
@@ -399,7 +373,7 @@ suite('PaymentsSectionCardDialogs', function() {
           numberInput.invalid,
           'Precondition failed: numberInput should initially be valid');
       assertFalse(
-          saveButton!.disabled,
+          saveButton.disabled,
           'Precondition failed: saveButton should initially be enabled');
 
       // Now check the test case.
@@ -407,7 +381,7 @@ suite('PaymentsSectionCardDialogs', function() {
       flush();
       assertTrue(numberInput.invalid, `Expected ${cardNumber} to be invalid`);
       assertTrue(
-          saveButton!.disabled,
+          saveButton.disabled,
           `Expected save button to be disabled for ${cardNumber}`);
 
       // Blur the input; the card number should remain invalid.
@@ -416,7 +390,7 @@ suite('PaymentsSectionCardDialogs', function() {
           numberInput.invalid,
           `Expected ${cardNumber} to still be invalid after blur`);
       assertTrue(
-          saveButton!.disabled,
+          saveButton.disabled,
           `Expected save button to still be disabled for ${
               cardNumber} after blur`);
     }
@@ -481,7 +455,8 @@ suite('PaymentsSectionCardDialogs', function() {
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
@@ -528,7 +503,8 @@ suite('PaymentsSectionCardDialogs', function() {
     creditCard.metadata!.isVirtualCardEnrolled = false;
 
     const section = await createPaymentsSection(
-        [creditCard], /*ibans=*/[], /*prefValues=*/ {});
+        [creditCard], /*ibans=*/[], /*payOverTimeIssuers=*/[],
+        /*prefValues=*/ {});
     assertEquals(1, getLocalAndServerCreditCardListItems().length);
 
     const rowShadowRoot = getCardRowShadowRoot(section.$.paymentsList);
@@ -627,15 +603,15 @@ suite('PaymentsSectionCardDialogs', function() {
     assertTrue(isVisible(cvcInput));
 
     const cvcInputTitle =
-        cvcInput.shadowRoot!.querySelector<HTMLDivElement>(
-                                '#label')!.textContent!.trim();
+        cvcInput.shadowRoot!.querySelector<HTMLElement>(
+                                '#label')!.textContent.trim();
     assertTrue(!!cvcInputTitle);
     assertEquals(
         loadTimeData.getString('creditCardCvcInputTitle'), cvcInputTitle);
 
     const cvcInputBoxPlaceholder =
         cvcInput.shadowRoot!.querySelector<HTMLInputElement>(
-                                '#input')!.placeholder!.trim();
+                                '#input')!.placeholder.trim();
     assertTrue(!!cvcInputBoxPlaceholder);
     assertEquals(
         loadTimeData.getString('creditCardCvcInputPlaceholder'),

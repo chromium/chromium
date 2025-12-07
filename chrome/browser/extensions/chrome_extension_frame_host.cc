@@ -9,15 +9,21 @@
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/crx_file/id_util.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
+#include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/extension_urls.h"
 #include "third_party/blink/public/common/logging/logging_utils.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -32,6 +38,17 @@ void ChromeExtensionFrameHost::RequestScriptInjectionPermission(
     mojom::InjectionType script_type,
     mojom::RunLocation run_location,
     RequestScriptInjectionPermissionCallback callback) {
+  if (!crx_file::id_util::IdIsValid(extension_id)) {
+    content::RenderProcessHost* render_process =
+        receivers_.GetCurrentTargetFrame()->GetProcess();
+    if (render_process) {
+      bad_message::ReceivedBadMessage(
+          render_process,
+          bad_message::CEFH_INVALID_EXTENSION_ID_FOR_SCRIPT_INJECT_REQUEST);
+    }
+    return;
+  }
+
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents_);
   if (!runner) {
@@ -81,7 +98,7 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
       receivers_.GetCurrentTargetFrame();
   ExtensionId extension_id = util::GetExtensionIdFromFrame(render_frame_host);
   if (extension_id.empty())
-    extension_id = GURL(source).host();
+    extension_id = GURL(source).GetHost();
 
   content::BrowserContext* browser_context = web_contents_->GetBrowserContext();
   ErrorConsole::Get(browser_context)
@@ -90,7 +107,7 @@ void ChromeExtensionFrameHost::DetailedConsoleMessageAdded(
           stack_trace, web_contents_->GetLastCommittedURL(),
           blink::ConsoleMessageLevelToLogSeverity(level),
           render_frame_host->GetRoutingID(),
-          render_frame_host->GetProcess()->GetID())));
+          render_frame_host->GetProcess()->GetDeprecatedID())));
 }
 
 void ChromeExtensionFrameHost::ContentScriptsExecuting(

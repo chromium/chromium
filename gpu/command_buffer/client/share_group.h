@@ -2,23 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef GPU_COMMAND_BUFFER_CLIENT_SHARE_GROUP_H_
 #define GPU_COMMAND_BUFFER_CLIENT_SHARE_GROUP_H_
 
 #include <GLES2/gl2.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/synchronization/lock.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"
-#include "gpu/command_buffer/client/client_discardable_texture_manager.h"
 #include "gpu/command_buffer/client/ref_counted.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 
@@ -51,7 +47,7 @@ class ShareGroupContextData {
   };
 
   IdHandlerData* id_handler_data(int namespace_id) {
-    return &id_handler_data_[namespace_id];
+    return UNSAFE_TODO(&id_handler_data_[namespace_id]);
   }
 
  private:
@@ -65,10 +61,10 @@ class IdHandlerInterface {
   IdHandlerInterface() = default;
   virtual ~IdHandlerInterface() = default;
 
-  // Makes some ids at or above id_offset.
-  virtual void MakeIds(
-      GLES2Implementation* gl_impl,
-      GLuint id_offset, GLsizei n, GLuint* ids) = 0;
+  // Generates some ids.
+  virtual void MakeIds(GLES2Implementation* gl_impl,
+                       GLsizei n,
+                       GLuint* ids) = 0;
 
   // Frees some ids.
   virtual bool FreeIds(
@@ -127,14 +123,10 @@ class RangeIdHandlerInterface {
 class GLES2_IMPL_EXPORT ShareGroup
     : public gpu::RefCountedThreadSafe<ShareGroup> {
  public:
-  ShareGroup(bool bind_generates_resource, uint64_t tracing_guid);
+  explicit ShareGroup(uint64_t tracing_guid);
 
   ShareGroup(const ShareGroup&) = delete;
   ShareGroup& operator=(const ShareGroup&) = delete;
-
-  bool bind_generates_resource() const {
-    return bind_generates_resource_;
-  }
 
   IdHandlerInterface* GetIdHandler(SharedIdNamespaces namespace_id) const {
     return id_handlers_[static_cast<int>(namespace_id)].get();
@@ -161,10 +153,6 @@ class GLES2_IMPL_EXPORT ShareGroup
 
   uint64_t TracingGUID() const { return tracing_guid_; }
 
-  ClientDiscardableTextureManager* discardable_texture_manager() {
-    return &discardable_texture_manager_;
-  }
-
   // Mark the ShareGroup as lost when an error occurs on any context in the
   // group. This is thread safe as contexts may be on different threads.
   void Lose();
@@ -180,14 +168,14 @@ class GLES2_IMPL_EXPORT ShareGroup
   // Install a new program info manager. Used for testing only;
   void SetProgramInfoManagerForTesting(ProgramInfoManager* manager);
 
-  std::unique_ptr<IdHandlerInterface> id_handlers_[static_cast<int>(
-      SharedIdNamespaces::kNumSharedIdNamespaces)];
-  std::unique_ptr<RangeIdHandlerInterface>
-      range_id_handlers_[id_namespaces::kNumRangeIdNamespaces];
+  std::array<std::unique_ptr<IdHandlerInterface>,
+             static_cast<int>(SharedIdNamespaces::kNumSharedIdNamespaces)>
+      id_handlers_;
+  std::array<std::unique_ptr<RangeIdHandlerInterface>,
+             id_namespaces::kNumRangeIdNamespaces>
+      range_id_handlers_;
   std::unique_ptr<ProgramInfoManager> program_info_manager_;
-  ClientDiscardableTextureManager discardable_texture_manager_;
 
-  bool bind_generates_resource_;
   uint64_t tracing_guid_;
 
   mutable base::Lock lost_lock_;

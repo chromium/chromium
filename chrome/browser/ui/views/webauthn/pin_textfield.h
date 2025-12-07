@@ -6,9 +6,11 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_PIN_TEXTFIELD_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
@@ -46,7 +48,6 @@ class PinTextfield : public views::Textfield {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void OnThemeChanged() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  protected:
   // views::Textfield:
@@ -60,6 +61,11 @@ class PinTextfield : public views::Textfield {
   // Updates the current selection and notifies that it changed along with the
   // pin value.
   void UpdateAccessibilityAfterPinChange();
+
+  void UpdatePinAccessibleValue();
+
+  // Updates text color based on the current state of `disabled_`.
+  void UpdateTextColor();
 
   // Render text for each of the pin cells.
   std::vector<std::unique_ptr<gfx::RenderText>> render_texts_;

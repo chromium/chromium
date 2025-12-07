@@ -4,6 +4,8 @@
 
 package org.chromium.webapk.shell_apk;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -14,43 +16,43 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkConstants;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 
 import java.util.ArrayList;
 import java.util.Locale;
 
 /** Convenience wrapper for parameters to {@link HostBrowserLauncher} methods. */
+@NullMarked
 public class HostBrowserLauncherParams {
-    private boolean mIsNewStyleWebApk;
-    private String mHostBrowserPackageName;
-    private int mHostBrowserMajorChromiumVersion;
-    private boolean mDialogShown;
-    private Intent mOriginalIntent;
-    private String mStartUrl;
-    private int mSource;
-    private boolean mForceNavigation;
-    private long mLaunchTimeMs;
-    private long mSplashShownTimeMs;
-    private String mSelectedShareTargetActivityClassName;
+    private final boolean mIsArcChromeOs;
+    private final PackageNameAndComponentName mHostBrowserPackageNameAndComponentName;
+    private final boolean mDialogShown;
+    private final Intent mOriginalIntent;
+    private final String mStartUrl;
+    private final int mSource;
+    private final boolean mForceNavigation;
+    private final long mLaunchTimeMs;
+    private final long mSplashShownTimeMs;
+    private final @Nullable String mSelectedShareTargetActivityClassName;
 
     /**
      * Constructs a HostBrowserLauncherParams object from the passed in Intent and from <meta-data>
      * in the Android Manifest.
      */
-    public static HostBrowserLauncherParams createForIntent(
+    public static @Nullable HostBrowserLauncherParams createForIntent(
             Context context,
             Intent intent,
-            String hostBrowserPackageName,
+            PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
             boolean dialogShown,
             long launchTimeMs,
             long splashShownTimeMs) {
         Bundle metadata = WebApkUtils.readMetaData(context);
         if (metadata == null) return null;
 
-        int hostBrowserMajorChromiumVersion =
-                HostBrowserUtils.queryHostBrowserMajorChromiumVersion(
-                        context, hostBrowserPackageName);
         long intentLaunchTimeMs = intent.getLongExtra(WebApkConstants.EXTRA_WEBAPK_LAUNCH_TIME, -1);
         if (intentLaunchTimeMs > 0) {
             launchTimeMs = intentLaunchTimeMs;
@@ -69,6 +71,7 @@ public class HostBrowserLauncherParams {
 
         if (Intent.ACTION_SEND.equals(intent.getAction())
                 || Intent.ACTION_SEND_MULTIPLE.equals(intent.getAction())) {
+            assumeNonNull(intent.getComponent());
             selectedShareTargetActivityClassName = intent.getComponent().getClassName();
         }
 
@@ -102,12 +105,11 @@ public class HostBrowserLauncherParams {
         // Ignore deep links which came with non HTTP/HTTPS schemes and which were not rewritten.
         if (!doesUrlUseHttpOrHttpsScheme(startUrl)) return null;
 
-        boolean isNewStyleWebApk = metadata.getBoolean(WebApkMetaDataKeys.IS_NEW_STYLE_WEBAPK);
+        boolean isArcChromeos = metadata.getBoolean(WebApkMetaDataKeys.IS_ARC_CHROMEOS);
 
         return new HostBrowserLauncherParams(
-                isNewStyleWebApk,
-                hostBrowserPackageName,
-                hostBrowserMajorChromiumVersion,
+                isArcChromeos,
+                hostBrowserPackageNameAndComponentName,
                 dialogShown,
                 intent,
                 startUrl,
@@ -118,7 +120,7 @@ public class HostBrowserLauncherParams {
                 selectedShareTargetActivityClassName);
     }
 
-    private static Bundle fetchActivityMetaData(
+    private static @Nullable Bundle fetchActivityMetaData(
             Context context, ComponentName shareTargetComponentName) {
         ActivityInfo shareActivityInfo;
         try {
@@ -149,8 +151,8 @@ public class HostBrowserLauncherParams {
      * @param shareTargetMetaData Meta data for the share target activity selected by the user.
      * @param intent Share intent.
      */
-    protected static String computeStartUrlForShareTarget(
-            Bundle shareTargetMetaData, Intent intent) {
+    protected static @Nullable String computeStartUrlForShareTarget(
+            @Nullable Bundle shareTargetMetaData, Intent intent) {
         if (shareTargetMetaData == null) {
             return null;
         }
@@ -167,7 +169,7 @@ public class HostBrowserLauncherParams {
      * @param shareTargetMetaData Meta data for the share target activity selected by the user.
      * @param intent Share intent.
      */
-    private static String computeStartUrlForGETShareTarget(
+    private static @Nullable String computeStartUrlForGETShareTarget(
             Bundle shareTargetMetaData, Intent intent) {
         String shareAction = shareTargetMetaData.getString(WebApkMetaDataKeys.SHARE_ACTION);
         if (TextUtils.isEmpty(shareAction)) {
@@ -229,9 +231,8 @@ public class HostBrowserLauncherParams {
     }
 
     private HostBrowserLauncherParams(
-            boolean isNewStyleWebApk,
-            String hostBrowserPackageName,
-            int hostBrowserMajorChromiumVersion,
+            boolean isArcChromeOs,
+            PackageNameAndComponentName hostBrowserPackageNameAndComponentName,
             boolean dialogShown,
             Intent originalIntent,
             String startUrl,
@@ -239,10 +240,9 @@ public class HostBrowserLauncherParams {
             boolean forceNavigation,
             long launchTimeMs,
             long splashShownTimeMs,
-            String selectedShareTargetActivityClassName) {
-        mIsNewStyleWebApk = isNewStyleWebApk;
-        mHostBrowserPackageName = hostBrowserPackageName;
-        mHostBrowserMajorChromiumVersion = hostBrowserMajorChromiumVersion;
+            @Nullable String selectedShareTargetActivityClassName) {
+        mIsArcChromeOs = isArcChromeOs;
+        mHostBrowserPackageNameAndComponentName = hostBrowserPackageNameAndComponentName;
         mDialogShown = dialogShown;
         mOriginalIntent = originalIntent;
         mStartUrl = startUrl;
@@ -258,20 +258,17 @@ public class HostBrowserLauncherParams {
      * enabled for new-style WebAPKs.
      */
     public boolean isNewStyleWebApk() {
-        return mIsNewStyleWebApk;
+        return !mIsArcChromeOs;
     }
 
-    /** Returns the chosen host browser. */
+    /** Returns the chosen host browser Package Name. */
     public String getHostBrowserPackageName() {
-        return mHostBrowserPackageName;
+        return mHostBrowserPackageNameAndComponentName.getPackageName();
     }
 
-    /**
-     * Returns the major version of the host browser. Currently, only Chromium host browsers (Chrome
-     * Canary, Chrome Dev ...) are supported.
-     */
-    public int getHostBrowserMajorChromiumVersion() {
-        return mHostBrowserMajorChromiumVersion;
+    /** Returns the chosen host browser Component Name. */
+    public @Nullable ComponentName getHostBrowserComponentName() {
+        return mHostBrowserPackageNameAndComponentName.getComponentName();
     }
 
     /** Returns whether the choose-host-browser dialog was shown. */
@@ -319,7 +316,7 @@ public class HostBrowserLauncherParams {
     }
 
     /** Returns the class name of the share activity that the user selected. */
-    public String getSelectedShareTargetActivityClassName() {
+    public @Nullable String getSelectedShareTargetActivityClassName() {
         return mSelectedShareTargetActivityClassName;
     }
 }

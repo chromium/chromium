@@ -27,8 +27,7 @@
 
 #include <cstdlib>
 
-namespace WTF {
-namespace tree_test_helpers {
+namespace blink::tree_test_helpers {
 
 void InitRandom(const int32_t seed) {
   srand(seed);
@@ -39,5 +38,4 @@ int32_t NextRandom(const int32_t maximum_value) {
   return rand() % maximum_value;
 }
 
-}  // namespace tree_test_helpers
-}  // namespace WTF
+}  // namespace blink::tree_test_helpers

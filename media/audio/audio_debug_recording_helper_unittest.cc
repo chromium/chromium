@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 
 #include "media/audio/audio_debug_recording_helper.h"
 
@@ -19,7 +15,6 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -63,12 +58,8 @@ class MockAudioDebugFileWriter : public AudioDebugFileWriter {
     CHECK(reference_data_);
     EXPECT_EQ(reference_data_->channels(), data.channels());
     EXPECT_EQ(reference_data_->frames(), data.frames());
-    for (int i = 0; i < data.channels(); ++i) {
-      const float* data_ptr = data.channel(i);
-      float* ref_data_ptr = reference_data_->channel(i);
-      for (int j = 0; j < data.frames(); ++j, ++data_ptr, ++ref_data_ptr) {
-        EXPECT_EQ(*ref_data_ptr, *data_ptr);
-      }
+    for (int ch = 0; ch < data.channels(); ++ch) {
+      EXPECT_EQ(data.channel_span(ch), reference_data_->channel_span(ch));
     }
     DoWrite(data);
   }

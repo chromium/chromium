@@ -53,7 +53,6 @@ class CORE_EXPORT OffscreenFontSelector : public CSSFontSelectorBase {
   void DispatchInvalidationCallbacks();
 
   // `CSSFontSelectorBase` overrides
-  FontMatchingMetrics* GetFontMatchingMetrics() const override;
   UseCounter* GetUseCounter() const override;
 
  private:

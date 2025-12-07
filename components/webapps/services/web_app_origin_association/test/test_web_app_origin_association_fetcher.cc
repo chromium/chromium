@@ -27,8 +27,8 @@ void TestWebAppOriginAssociationFetcher::FetchWebAppOriginAssociationFile(
     file_content = search->second;
 
   std::move(callback).Run(file_content.empty()
-                              ? nullptr
-                              : std::make_unique<std::string>(file_content));
+                              ? std::nullopt
+                              : std::make_optional(std::move(file_content)));
 }
 
 void TestWebAppOriginAssociationFetcher::SetData(

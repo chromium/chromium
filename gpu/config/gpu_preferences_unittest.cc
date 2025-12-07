@@ -6,9 +6,9 @@
 #include <cstring>
 
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/message_loop/message_pump_type.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/ipc/common/gpu_preferences.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -47,8 +47,6 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
             right.enable_gpu_driver_debug_logging);
   EXPECT_EQ(left.disable_gpu_program_cache, right.disable_gpu_program_cache);
   EXPECT_EQ(left.enforce_gl_minimums, right.enforce_gl_minimums);
-  EXPECT_EQ(left.force_gpu_mem_available_bytes,
-            right.force_gpu_mem_available_bytes);
   EXPECT_EQ(left.force_gpu_mem_discardable_limit_bytes,
             right.force_gpu_mem_discardable_limit_bytes);
   EXPECT_EQ(left.gpu_program_cache_size, right.gpu_program_cache_size);
@@ -57,12 +55,12 @@ void CheckGpuPreferencesEqual(GpuPreferences left, GpuPreferences right) {
   EXPECT_EQ(left.enable_threaded_texture_mailboxes,
             right.enable_threaded_texture_mailboxes);
   EXPECT_EQ(left.gl_shader_interm_output, right.gl_shader_interm_output);
+  EXPECT_EQ(left.perform_graphite_precompilation,
+            right.perform_graphite_precompilation);
   EXPECT_EQ(left.enable_gpu_service_logging, right.enable_gpu_service_logging);
   EXPECT_EQ(left.enable_gpu_service_tracing, right.enable_gpu_service_tracing);
   EXPECT_EQ(left.use_passthrough_cmd_decoder,
             right.use_passthrough_cmd_decoder);
-  EXPECT_EQ(left.disable_biplanar_gpu_memory_buffers_for_video_frames,
-            right.disable_biplanar_gpu_memory_buffers_for_video_frames);
   EXPECT_EQ(left.ignore_gpu_blocklist, right.ignore_gpu_blocklist);
   EXPECT_EQ(left.watchdog_starts_backgrounded,
             right.watchdog_starts_backgrounded);
@@ -144,18 +142,16 @@ TEST(GpuPreferencesTest, EncodeDecode) {
     GPU_PREFERENCES_FIELD(enable_gpu_driver_debug_logging, true)
     GPU_PREFERENCES_FIELD(disable_gpu_program_cache, true)
     GPU_PREFERENCES_FIELD(enforce_gl_minimums, true)
-    GPU_PREFERENCES_FIELD(force_gpu_mem_available_bytes, 4096)
     GPU_PREFERENCES_FIELD(force_gpu_mem_discardable_limit_bytes, 8092)
     GPU_PREFERENCES_FIELD(gpu_program_cache_size,
                           kDefaultMaxProgramCacheMemoryBytes - 1)
     GPU_PREFERENCES_FIELD(disable_gpu_shader_disk_cache, true)
     GPU_PREFERENCES_FIELD(enable_threaded_texture_mailboxes, true)
     GPU_PREFERENCES_FIELD(gl_shader_interm_output, true)
+    GPU_PREFERENCES_FIELD(perform_graphite_precompilation, true)
     GPU_PREFERENCES_FIELD(enable_gpu_service_logging, true)
     GPU_PREFERENCES_FIELD(enable_gpu_service_tracing, true)
     GPU_PREFERENCES_FIELD(use_passthrough_cmd_decoder, true)
-    GPU_PREFERENCES_FIELD(disable_biplanar_gpu_memory_buffers_for_video_frames,
-                          true)
     GPU_PREFERENCES_FIELD(ignore_gpu_blocklist, true)
     GPU_PREFERENCES_FIELD(watchdog_starts_backgrounded, true)
     GPU_PREFERENCES_FIELD_ENUM(gr_context_type, GrContextType::kVulkan,
@@ -209,51 +205,50 @@ TEST(GpuPreferencesTest, DISABLED_DecodePreferences) {
 #define PRINT_INT(key) \
   printf("  %s: %d\n", #key, static_cast<uint32_t>(gpu_preferences.key))
 
-  PRINT_BOOL(disable_accelerated_video_decode);
-  PRINT_BOOL(disable_accelerated_video_encode);
-  PRINT_BOOL(gpu_startup_dialog);
-  PRINT_BOOL(disable_gpu_watchdog);
-  PRINT_BOOL(gpu_sandbox_start_early);
-  PRINT_BOOL(enable_low_latency_dxva);
-  PRINT_BOOL(enable_zero_copy_dxgi_video);
-  PRINT_BOOL(enable_nv12_dxgi_video);
-  PRINT_BOOL(disable_software_rasterizer);
-  PRINT_BOOL(log_gpu_control_list_decisions);
-  PRINT_BOOL(compile_shader_always_succeeds);
-  PRINT_BOOL(disable_gl_error_limit);
-  PRINT_BOOL(disable_glsl_translator);
-  PRINT_BOOL(disable_shader_name_hashing);
-  PRINT_BOOL(enable_gpu_command_logging);
-  PRINT_BOOL(enable_gpu_debugging);
-  PRINT_BOOL(enable_gpu_service_logging_gpu);
-  PRINT_BOOL(enable_gpu_driver_debug_logging);
-  PRINT_BOOL(disable_gpu_program_cache);
-  PRINT_BOOL(enforce_gl_minimums);
-  PRINT_INT(force_gpu_mem_available_bytes);
+  UNSAFE_TODO(PRINT_BOOL(disable_accelerated_video_decode));
+  UNSAFE_TODO(PRINT_BOOL(disable_accelerated_video_encode));
+  UNSAFE_TODO(PRINT_BOOL(gpu_startup_dialog));
+  UNSAFE_TODO(PRINT_BOOL(disable_gpu_watchdog));
+  UNSAFE_TODO(PRINT_BOOL(gpu_sandbox_start_early));
+  UNSAFE_TODO(PRINT_BOOL(enable_low_latency_dxva));
+  UNSAFE_TODO(PRINT_BOOL(enable_zero_copy_dxgi_video));
+  UNSAFE_TODO(PRINT_BOOL(enable_nv12_dxgi_video));
+  UNSAFE_TODO(PRINT_BOOL(disable_software_rasterizer));
+  UNSAFE_TODO(PRINT_BOOL(log_gpu_control_list_decisions));
+  UNSAFE_TODO(PRINT_BOOL(compile_shader_always_succeeds));
+  UNSAFE_TODO(PRINT_BOOL(disable_gl_error_limit));
+  UNSAFE_TODO(PRINT_BOOL(disable_glsl_translator));
+  UNSAFE_TODO(PRINT_BOOL(disable_shader_name_hashing));
+  UNSAFE_TODO(PRINT_BOOL(enable_gpu_command_logging));
+  UNSAFE_TODO(PRINT_BOOL(enable_gpu_debugging));
+  UNSAFE_TODO(PRINT_BOOL(enable_gpu_service_logging_gpu));
+  UNSAFE_TODO(PRINT_BOOL(enable_gpu_driver_debug_logging));
+  UNSAFE_TODO(PRINT_BOOL(disable_gpu_program_cache));
+  UNSAFE_TODO(PRINT_BOOL(enforce_gl_minimums));
   PRINT_INT(force_gpu_mem_discardable_limit_bytes);
   PRINT_INT(gpu_program_cache_size);
-  PRINT_BOOL(disable_gpu_shader_disk_cache);
-  PRINT_BOOL(enable_threaded_texture_mailboxes);
-  PRINT_BOOL(gl_shader_interm_output);
-  PRINT_BOOL(enable_gpu_service_logging);
-  PRINT_BOOL(enable_gpu_service_tracing);
-  PRINT_BOOL(use_passthrough_cmd_decoder);
-  PRINT_BOOL(disable_biplanar_gpu_memory_buffers_for_video_frames);
-  PRINT_BOOL(ignore_gpu_blocklist);
-  PRINT_BOOL(watchdog_starts_backgrounded);
+  UNSAFE_TODO(PRINT_BOOL(disable_gpu_shader_disk_cache));
+  UNSAFE_TODO(PRINT_BOOL(enable_threaded_texture_mailboxes));
+  UNSAFE_TODO(PRINT_BOOL(gl_shader_interm_output));
+  UNSAFE_TODO(PRINT_BOOL(perform_graphite_precompilation));
+  UNSAFE_TODO(PRINT_BOOL(enable_gpu_service_logging));
+  UNSAFE_TODO(PRINT_BOOL(enable_gpu_service_tracing));
+  UNSAFE_TODO(PRINT_BOOL(use_passthrough_cmd_decoder));
+  UNSAFE_TODO(PRINT_BOOL(ignore_gpu_blocklist));
+  UNSAFE_TODO(PRINT_BOOL(watchdog_starts_backgrounded));
   PRINT_INT(gr_context_type);
   PRINT_INT(use_vulkan);
   PRINT_INT(vulkan_heap_memory_limit);
   PRINT_INT(vulkan_sync_cpu_memory_limit);
-  PRINT_BOOL(enable_gpu_benchmarking_extension);
-  PRINT_BOOL(enable_webgpu);
+  UNSAFE_TODO(PRINT_BOOL(enable_gpu_benchmarking_extension));
+  UNSAFE_TODO(PRINT_BOOL(enable_webgpu));
   PRINT_INT(enable_dawn_backend_validation);
-  PRINT_BOOL(enable_perf_data_collection);
+  UNSAFE_TODO(PRINT_BOOL(enable_perf_data_collection));
 #if BUILDFLAG(IS_OZONE)
   PRINT_INT(message_pump_type);
 #endif
-  PRINT_BOOL(enable_native_gpu_memory_buffers);
-  PRINT_BOOL(force_separate_egl_display_for_webgl_testing);
+  UNSAFE_TODO(PRINT_BOOL(enable_native_gpu_memory_buffers));
+  UNSAFE_TODO(PRINT_BOOL(force_separate_egl_display_for_webgl_testing));
   printf("}\n");
 }
 

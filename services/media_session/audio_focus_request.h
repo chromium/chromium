@@ -85,6 +85,8 @@ class AudioFocusRequest : public mojom::AudioFocusRequestClient {
   const base::UnguessableToken& group_id() const { return group_id_; }
   const base::UnguessableToken& identity() const { return identity_; }
 
+  void FlushForTesting();
+
  private:
   void SetSessionInfo(mojom::MediaSessionInfoPtr session_info);
   void OnConnectionError();

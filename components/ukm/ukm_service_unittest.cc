@@ -4,6 +4,7 @@
 
 #include "components/ukm/ukm_service.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <set>
@@ -18,9 +19,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/hash/hash.h"
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
-#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -43,12 +42,12 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/observers/ukm_consent_state_observer.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/ukm/ukm_entry_filter.h"
 #include "components/ukm/ukm_pref_names.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "components/ukm/ukm_recorder_observer.h"
 #include "components/ukm/unsent_log_store_metrics_impl.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
+#include "services/metrics/public/cpp/test_recording_helper.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_entry_builder.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -81,39 +80,6 @@ const size_t kWebDXFeatureNumberOfFeaturesForTesting = 5;
 SourceId ConvertSourceIdToAllowlistedType(SourceId id, SourceIdType type) {
   return ukm::SourceIdObj::FromOtherId(id, type).ToInt64();
 }
-
-// A small shim exposing UkmRecorder methods to tests.
-class TestRecordingHelper {
- public:
-  explicit TestRecordingHelper(UkmRecorder* recorder) : recorder_(recorder) {
-    recorder_->SetSamplingForTesting(1);
-  }
-
-  TestRecordingHelper(const TestRecordingHelper&) = delete;
-  TestRecordingHelper& operator=(const TestRecordingHelper&) = delete;
-
-  void UpdateSourceURL(SourceId source_id, const GURL& url) {
-    recorder_->UpdateSourceURL(source_id, url);
-  }
-
-  void RecordNavigation(SourceId source_id,
-                        const UkmSource::NavigationData& navigation_data) {
-    recorder_->RecordNavigation(source_id, navigation_data);
-  }
-
-  void MarkSourceForDeletion(SourceId source_id) {
-    recorder_->MarkSourceForDeletion(source_id);
-  }
-
-  void RecordWebDXFeatures(SourceId source_id,
-                           const std::set<int32_t>& features,
-                           const size_t max_feature_value) {
-    recorder_->RecordWebDXFeatures(source_id, features, max_feature_value);
-  }
-
- private:
-  raw_ptr<UkmRecorder> recorder_;
-};
 
 class TestMetricsServiceClientWithClonedInstallDetector
     : public metrics::TestMetricsServiceClient {
@@ -226,7 +192,7 @@ class ScopedUkmFeatureParams {
   ScopedUkmFeatureParams(const ScopedUkmFeatureParams&) = delete;
   ScopedUkmFeatureParams& operator=(const ScopedUkmFeatureParams&) = delete;
 
-  ~ScopedUkmFeatureParams() {}
+  ~ScopedUkmFeatureParams() = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -235,7 +201,7 @@ class ScopedUkmFeatureParams {
 class MockDemographicMetricsProvider
     : public metrics::UkmDemographicMetricsProvider {
  public:
-  ~MockDemographicMetricsProvider() override {}
+  ~MockDemographicMetricsProvider() override = default;
 
   // DemographicMetricsProvider:
   MOCK_METHOD1(ProvideSyncedUserNoisedBirthYearAndGenderToReport,
@@ -339,18 +305,8 @@ class UkmReduceAddEntryIpcTest : public testing::Test {
 };
 }  // namespace
 
-TEST_F(UkmServiceTest, ClientIdMigration) {
-  prefs_.SetInt64(prefs::kUkmClientId, -1);
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  service.Initialize();
-  uint64_t migrated_id = prefs_.GetUint64(prefs::kUkmClientId);
-  // -1 migrates to the max UInt 64 value.
-  EXPECT_EQ(migrated_id, 18446744073709551615ULL);
-}
-
 TEST_F(UkmServiceTest, ClientIdClonedInstall) {
-  prefs_.SetInt64(prefs::kUkmClientId, 123);
+  prefs_.SetUint64(prefs::kUkmClientId, 123);
   UkmService service(&prefs_, &client_,
                      std::make_unique<MockDemographicMetricsProvider>());
 
@@ -1881,126 +1837,6 @@ TEST_F(UkmServiceTest, PurgeNonCarriedOverSources) {
   EXPECT_EQ(app_id, proto_report.sources(1).id());
 }
 
-TEST_F(UkmServiceTest, IdentifiabilityMetricsDontExplode) {
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  TestRecordingHelper recorder(&service);
-  ASSERT_EQ(0, GetPersistedLogCount());
-  service.Initialize();
-  task_runner_->RunUntilIdle();
-  service.UpdateRecording({UkmConsentType::MSBB});
-  service.EnableReporting();
-
-  SourceId id = GetAllowlistedSourceId(0);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
-
-  builders::Identifiability(id).SetStudyGeneration_626(0).Record(&service);
-  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-  ASSERT_EQ(1, GetPersistedLogCount());
-  Report proto_report = GetPersistedReport();
-  EXPECT_EQ(1, proto_report.entries_size());
-}
-
-TEST_F(UkmServiceTest, FilterCanRemoveMetrics) {
-  class TestEntryFilter : public UkmEntryFilter {
-   public:
-    // This implementation removes the last metric in an event and returns it in
-    // |filtered_metric_hashes|.
-    bool FilterEntry(
-        mojom::UkmEntry* entry,
-        base::flat_set<uint64_t>* filtered_metric_hashes) override {
-      EXPECT_FALSE(entry->metrics.empty());
-      auto last_iter = --entry->metrics.end();
-      filtered_metric_hashes->insert(last_iter->first);
-      entry->metrics.erase(last_iter);
-      return !entry->metrics.empty();
-    }
-  };
-
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  service.RegisterEventFilter(std::make_unique<TestEntryFilter>());
-  TestRecordingHelper recorder(&service);
-  ASSERT_EQ(0, GetPersistedLogCount());
-  service.Initialize();
-  task_runner_->RunUntilIdle();
-  service.UpdateRecording({UkmConsentType::MSBB});
-  service.EnableReporting();
-
-  SourceId id = GetAllowlistedSourceId(0);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
-
-  // This event sticks around albeit with a single metric instead of two.
-  TestEvent1(id).SetCpuTime(1).SetNet_CacheBytes2(0).Record(&service);
-
-  // This event is discarded because its only metric gets stripped out.
-  TestEvent1(id).SetNet_CacheBytes2(0).Record(&service);
-
-  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-  ASSERT_EQ(1, GetPersistedLogCount());
-  Report proto_report = GetPersistedReport();
-  ASSERT_EQ(1, proto_report.entries_size());
-  EXPECT_EQ(1, proto_report.entries(0).metrics_size());
-  ASSERT_EQ(1, proto_report.aggregates().size());
-  EXPECT_EQ(1u, proto_report.aggregates(0).dropped_due_to_filter());
-  EXPECT_EQ(2, proto_report.aggregates(0).metrics_size());
-  EXPECT_EQ(0u, proto_report.aggregates(0).metrics(0).dropped_due_to_filter());
-  EXPECT_EQ(2u, proto_report.aggregates(0).metrics(1).dropped_due_to_filter());
-}
-
-TEST_F(UkmServiceTest, FilterRejectsEvent) {
-  static const auto kTestEvent1EntryNameHash =
-      base::HashMetricName(TestEvent1::kEntryName);
-
-  class TestEntryFilter : public UkmEntryFilter {
-   public:
-    // This filter rejects all events that are not TestEvent1.
-    bool FilterEntry(
-        mojom::UkmEntry* entry,
-        base::flat_set<uint64_t>* filtered_metric_hashes) override {
-      if (entry->event_hash == kTestEvent1EntryNameHash) {
-        return true;
-      }
-
-      filtered_metric_hashes->replace(base::ToVector(
-          entry->metrics, &decltype(entry->metrics)::value_type::first));
-
-      // Note that the event still contains metrics.
-      return false;
-    }
-  };
-
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>());
-  service.RegisterEventFilter(std::make_unique<TestEntryFilter>());
-  TestRecordingHelper recorder(&service);
-  ASSERT_EQ(0, GetPersistedLogCount());
-  service.Initialize();
-  task_runner_->RunUntilIdle();
-  service.UpdateRecording({UkmConsentType::MSBB});
-  service.EnableReporting();
-
-  SourceId id = GetAllowlistedSourceId(0);
-  recorder.UpdateSourceURL(id, GURL("https://google.com/foobar"));
-
-  TestEvent1(id).SetCpuTime(0).Record(&service);
-  TestEvent2(id).SetDownloadService(3).Record(&service);
-
-  service.Flush(metrics::MetricsLogsEventManager::CreateReason::kUnknown);
-  ASSERT_EQ(1, GetPersistedLogCount());
-  Report proto_report = GetPersistedReport();
-  EXPECT_EQ(1, proto_report.entries_size());
-  EXPECT_EQ(kTestEvent1EntryNameHash, proto_report.entries(0).event_hash());
-  ASSERT_EQ(2, proto_report.aggregates_size());
-  EXPECT_EQ(1u, proto_report.aggregates(0).dropped_due_to_filter());
-  ASSERT_EQ(1, proto_report.aggregates(0).metrics_size());
-
-  // No dropped_due_to_filter due to the value being equal to the entry's
-  // droppeddropped_due_to_filter.
-  EXPECT_FALSE(
-      proto_report.aggregates(0).metrics(0).has_dropped_due_to_filter());
-}
-
 TEST_F(UkmServiceTest, PruneOldSources) {
   const GURL kURL("https://google.com/foobar");
 
@@ -2089,17 +1925,6 @@ TEST_F(UkmServiceTest, PruneOldSources) {
   EXPECT_EQ(ids[2], proto_report.sources(0).id());
   EXPECT_EQ(ids[3], proto_report.sources(1).id());
   EXPECT_EQ(ids[4], proto_report.sources(2).id());
-}
-
-TEST_F(UkmServiceTest, UseExternalClientID) {
-  prefs_.SetUint64(prefs::kUkmClientId, 1234);
-  uint64_t external_client_id = 5678;
-  UkmService service(&prefs_, &client_,
-                     std::make_unique<MockDemographicMetricsProvider>(),
-                     external_client_id);
-  service.Initialize();
-  EXPECT_EQ(external_client_id, service.client_id());
-  EXPECT_EQ(external_client_id, prefs_.GetUint64(prefs::kUkmClientId));
 }
 
 // Verifies that when a cloned install is detected, logs are purged.
@@ -2213,9 +2038,7 @@ TEST_F(UkmServiceTest, NotifyObserverOnShutdown) {
   ukm::UkmRecorder::Get()->AddObserver(&observer);
   EXPECT_CALL(observer, OnStartingShutdown()).Times(1);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
 
 class UkmServiceTestWithIndependentAppKM
@@ -2402,7 +2225,7 @@ INSTANTIATE_TEST_SUITE_P(
       }
     });
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class MockUkmRecorder : public ukm::UkmRecorder {
  public:
@@ -2555,9 +2378,9 @@ TEST_F(UkmReduceAddEntryIpcTest, AddRemoveUkmObserver) {
     // and the mock method AddEntry would be called once.
     EXPECT_CALL(mock_recorder, AddEntry)
         .Times(1)
-        .WillOnce(testing::Invoke([&](mojom::UkmEntryPtr entry) {
+        .WillOnce([&](mojom::UkmEntryPtr entry) {
           observed_ukm_entry = std::move(entry);
-        }));
+        });
 
     builder.Record(mojo_recorder.get());
     run_loop.RunUntilIdle();
@@ -2588,9 +2411,9 @@ TEST_F(UkmReduceAddEntryIpcTest, AddRemoveUkmObserver) {
 
     EXPECT_CALL(mock_recorder, AddEntry)
         .Times(1)
-        .WillOnce(testing::Invoke([&](mojom::UkmEntryPtr entry) {
+        .WillOnce([&](mojom::UkmEntryPtr entry) {
           observed_ukm_entry = std::move(entry);
-        }));
+        });
     builder3.Record(mojo_recorder.get());
     run_loop.RunUntilIdle();
     EXPECT_EQ(expected_ukm_entry, observed_ukm_entry);

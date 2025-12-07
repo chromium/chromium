@@ -5,13 +5,11 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_ENCRYPTED_REPORTING_JOB_CONFIGURATION_H_
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_ENCRYPTED_REPORTING_JOB_CONFIGURATION_H_
 
-#include <memory>
 #include <string>
 
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "base/time/time.h"
 #include "base/values.h"
-#include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/policy_export.h"
@@ -92,8 +90,8 @@ class POLICY_EXPORT EncryptedReportingJobConfiguration
       scoped_refptr<network::SharedURLLoaderFactory> factory,
       const std::string& server_url,
       base::Value::Dict merging_payload,
-      const std::string dm_token,
-      const std::string client_id,
+      const std::string& dm_token,
+      const std::string& client_id,
       UploadResponseCallback response_cb,
       UploadCompleteCallback complete_cb);
   ~EncryptedReportingJobConfiguration() override;

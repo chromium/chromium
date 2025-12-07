@@ -27,6 +27,14 @@ blink::mojom::InputEventResultState MockInputRouterClient::FilterInputEvent(
     const ui::LatencyInfo& latency_info) {
   filter_input_event_called_ = true;
   last_filter_event_ = input_event.Clone();
+
+  // Mimic filtering behavior in production code during paint-holding, see
+  // `RenderInputRouter::FilterInputEvent`.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kDropInputEventsWhilePaintHolding) &&
+      input_router_ && !input_router_->IsActive()) {
+    return blink::mojom::InputEventResultState::kNoConsumerExists;
+  }
   return filter_state_;
 }
 
@@ -39,12 +47,12 @@ void MockInputRouterClient::DecrementInFlightEventCount(
   --in_flight_event_count_;
 }
 
-void MockInputRouterClient::NotifyUISchedulerOfGestureEventUpdate(
-    blink::WebInputEvent::Type gesture_event) {}
-
 void MockInputRouterClient::DidOverscroll(
-    const ui::DidOverscrollParams& params) {
-  overscroll_ = params;
+    blink::mojom::DidOverscrollParamsPtr params) {
+  overscroll_ = ui::DidOverscrollParams(
+      params->accumulated_overscroll, params->latest_overscroll_delta,
+      params->current_fling_velocity, params->causal_event_viewport_point,
+      params->overscroll_behavior);
 }
 
 void MockInputRouterClient::OnSetCompositorAllowedTouchAction(
@@ -57,9 +65,13 @@ void MockInputRouterClient::DidStartScrollingViewport() {}
 void MockInputRouterClient::ForwardGestureEventWithLatencyInfo(
     const blink::WebGestureEvent& gesture_event,
     const ui::LatencyInfo& latency_info) {
-  if (input_router_)
+  if (input_router_) {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        GetDispatchToRendererCallback());
     input_router_->SendGestureEvent(
-        input::GestureEventWithLatencyInfo(gesture_event, latency_info));
+        input::GestureEventWithLatencyInfo(gesture_event, latency_info),
+        dispatch_callback.callback);
+  }
 
   if (gesture_event.SourceDevice() != blink::WebGestureDevice::kTouchpad)
     return;
@@ -76,8 +88,11 @@ void MockInputRouterClient::ForwardWheelEventWithLatencyInfo(
     const blink::WebMouseWheelEvent& wheel_event,
     const ui::LatencyInfo& latency_info) {
   if (input_router_) {
+    input::ScopedDispatchToRendererCallback dispatch_callback(
+        GetDispatchToRendererCallback());
     input_router_->SendWheelEvent(
-        input::MouseWheelEventWithLatencyInfo(wheel_event, latency_info));
+        input::MouseWheelEventWithLatencyInfo(wheel_event, latency_info),
+        dispatch_callback.callback);
   }
 }
 
@@ -112,8 +127,8 @@ MockInputRouterClient::GetAndResetCompositorAllowedTouchAction() {
   return allowed;
 }
 
-bool MockInputRouterClient::NeedsBeginFrameForFlingProgress() {
-  return false;
+bool MockInputRouterClient::ProgressFlingOnFlingStart() {
+  return true;
 }
 
 bool MockInputRouterClient::ShouldUseMobileFlingCurve() {
@@ -141,6 +156,11 @@ input::StylusInterface* MockInputRouterClient::GetStylusInterface() {
 
 void MockInputRouterClient::OnStartStylusWriting() {
   on_start_stylus_writing_called_ = true;
+}
+
+input::DispatchToRendererCallback
+MockInputRouterClient::GetDispatchToRendererCallback() {
+  return base::DoNothing();
 }
 
 }  // namespace content

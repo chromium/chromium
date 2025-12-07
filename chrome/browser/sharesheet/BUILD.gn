@@ -1,0 +1,25 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+source_set("sharesheet") {
+  sources = [
+    "sharesheet_controller.h",
+    "sharesheet_metrics.h",
+    "sharesheet_service.h",
+    "sharesheet_service_factory.h",
+    "sharesheet_types.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chromeos/components/sharesheet:constants",
+    "//components/keyed_service/core",
+    "//components/services/app_service",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}

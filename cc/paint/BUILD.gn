@@ -17,6 +17,8 @@ cc_component("paint") {
     "decode_stashing_image_provider.h",
     "decoded_draw_image.cc",
     "decoded_draw_image.h",
+    "deferred_paint_record.cc",
+    "deferred_paint_record.h",
     "directly_composited_image_info.h",
     "discardable_image_map.cc",
     "discardable_image_map.h",
@@ -116,6 +118,8 @@ cc_component("paint") {
     "target_color_params.cc",
     "target_color_params.h",
     "texture_backing.h",
+    "tone_map_util.cc",
+    "tone_map_util.h",
     "transfer_cache_deserialize_helper.h",
     "transfer_cache_entry.cc",
     "transfer_cache_entry.h",
@@ -144,6 +148,7 @@ cc_component("paint") {
     "//base",
     "//components/crash/core/common:crash_key",
     "//gpu/command_buffer/common:mailbox",
+    "//ui/gfx:gfx_skia",
     "//ui/gfx/animation",
   ]
 
@@ -175,6 +180,7 @@ fuzzer_test("paint_op_raster_fuzzer") {
     "//cc/paint",
     "//components/viz/test:test_support",
     "//gpu/command_buffer/service:gles2",
+    "//gpu/skia_bindings",
   ]
 }
 

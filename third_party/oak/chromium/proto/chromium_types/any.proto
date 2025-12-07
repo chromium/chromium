@@ -1,0 +1,21 @@
+// Copyright 2025 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package oak;
+
+option go_package = "proto/oak";
+option java_multiple_files = true;
+option java_package = "com.google.oak";
+
+// TODO(crbug.com/441088489): //third_party/protobuf/src/google/protobuf/any.proto cannot be
+// directly imported because it is not in the `protobuf_lite` source and the
+// `protobuf_full` source cannot be included because of its large size.
+// Therefore, we copy the single proto we need from protobuf_full which is small
+// (and stable), this is commonly done in other Chromium directories.
+message Any {
+  string type_url = 1;
+  bytes value = 2;
+}

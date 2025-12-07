@@ -1,0 +1,729 @@
+rootWebArea htmlTag='#document' name='Material Web Text Fields'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Filled text field'
+++++++++++++++++++++++++++inlineTextBox name='Filled text field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Filled text field'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Outlined text field'
+++++++++++++++++++++++++++inlineTextBox name='Outlined text field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Outlined text field'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  floating ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With value'
+++++++++++++++++++++++++++inlineTextBox name='With value'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With value' value='Default text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++staticText name='Default text'
+++++++++++++++++++++++++++++++inlineTextBox name='Default text'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Required field*'
+++++++++++++++++++++++++++inlineTextBox name='Required field*'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField required className='input' htmlTag='input' name='Required field'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Disabled field'
+++++++++++++++++++++++++++inlineTextBox name='Disabled field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Disabled field' restriction=disabled
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Password'
+++++++++++++++++++++++++++inlineTextBox name='Password'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField protected className='input' htmlTag='input' name='Password'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Email'
+++++++++++++++++++++++++++inlineTextBox name='Email'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Email'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Number'
+++++++++++++++++++++++++++inlineTextBox name='Number'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++spinButton className='input' htmlTag='input' name='Number'
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With prefix text'
+++++++++++++++++++++++++++inlineTextBox name='With prefix text'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='$'
+++++++++++++++++++++++++++++inlineTextBox name='$'
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With prefix text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With suffix text'
+++++++++++++++++++++++++++inlineTextBox name='With suffix text'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With suffix text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='.com'
+++++++++++++++++++++++++++++inlineTextBox name='.com'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Text Fields'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Filled text field'
+++++++++++++++++++++++++++inlineTextBox name='Filled text field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Filled text field' value='Hello'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++staticText name='Hello'
+++++++++++++++++++++++++++++++inlineTextBox name='Hello'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Outlined text field'
+++++++++++++++++++++++++++inlineTextBox name='Outlined text field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Outlined text field'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  floating ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With value'
+++++++++++++++++++++++++++inlineTextBox name='With value'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With value' value='Default text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++staticText name='Default text'
+++++++++++++++++++++++++++++++inlineTextBox name='Default text'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Required field*'
+++++++++++++++++++++++++++inlineTextBox name='Required field*'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField required className='input' htmlTag='input' name='Required field'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Disabled field'
+++++++++++++++++++++++++++inlineTextBox name='Disabled field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Disabled field' restriction=disabled
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Password'
+++++++++++++++++++++++++++inlineTextBox name='Password'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField protected className='input' htmlTag='input' name='Password'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Email'
+++++++++++++++++++++++++++inlineTextBox name='Email'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Email'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Number'
+++++++++++++++++++++++++++inlineTextBox name='Number'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++spinButton className='input' htmlTag='input' name='Number'
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With prefix text'
+++++++++++++++++++++++++++inlineTextBox name='With prefix text'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='$'
+++++++++++++++++++++++++++++inlineTextBox name='$'
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With prefix text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With suffix text'
+++++++++++++++++++++++++++inlineTextBox name='With suffix text'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With suffix text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='.com'
+++++++++++++++++++++++++++++inlineTextBox name='.com'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Text Field Set to Hello'
+++++++++++++inlineTextBox name='Text Field Set to Hello'
+=== Start Continuation ===
+rootWebArea htmlTag='#document' name='Material Web Text Fields'
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer htmlTag='div' name='Ready'
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label floating' htmlTag='span'
+++++++++++++++++++++++++staticText name='Filled text field'
+++++++++++++++++++++++++++inlineTextBox name='Filled text field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Filled text field' value='Hello World'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++staticText name='Hello World'
+++++++++++++++++++++++++++++++inlineTextBox name='Hello World'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Outlined text field'
+++++++++++++++++++++++++++inlineTextBox name='Outlined text field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Outlined text field'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  floating ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With value'
+++++++++++++++++++++++++++inlineTextBox name='With value'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With value' value='Default text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++++++staticText name='Default text'
+++++++++++++++++++++++++++++++inlineTextBox name='Default text'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Required field*'
+++++++++++++++++++++++++++inlineTextBox name='Required field*'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField required className='input' htmlTag='input' name='Required field'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Disabled field'
+++++++++++++++++++++++++++inlineTextBox name='Disabled field'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Disabled field' restriction=disabled
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Password'
+++++++++++++++++++++++++++inlineTextBox name='Password'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField protected className='input' htmlTag='input' name='Password'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Email'
+++++++++++++++++++++++++++inlineTextBox name='Email'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='Email'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='Number'
+++++++++++++++++++++++++++inlineTextBox name='Number'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++spinButton className='input' htmlTag='input' name='Number'
+++++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='background' htmlTag='div'
+++++++++++++++++genericContainer className='active-indicator' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With prefix text'
+++++++++++++++++++++++++++inlineTextBox name='With prefix text'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='$'
+++++++++++++++++++++++++++++inlineTextBox name='$'
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With prefix text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer ignored
+++++++++++none ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer className='container-overflow' htmlTag='div'
+++++++++++++++++genericContainer className='outline' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-start' htmlTag='div'
+++++++++++++++++++genericContainer className='outline-notch' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-inactive' htmlTag='div'
+++++++++++++++++++++genericContainer className='outline-panel-active' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='outline-end' htmlTag='div'
+++++++++++++++++genericContainer className='container' htmlTag='div'
+++++++++++++++++++genericContainer className='start' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer className='middle' htmlTag='div'
+++++++++++++++++++++genericContainer className='label-wrapper' htmlTag='div'
+++++++++++++++++++++++genericContainer className='label  resting ' htmlTag='span'
+++++++++++++++++++++++++staticText name='With suffix text'
+++++++++++++++++++++++++++inlineTextBox name='With suffix text'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++textField className='input' htmlTag='input' name='With suffix text'
+++++++++++++++++++++++++++genericContainer htmlTag='div'
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='.com'
+++++++++++++++++++++++++++++inlineTextBox name='.com'
+++++++++++++++++++genericContainer className='end' htmlTag='div'
+++++++++++++++++++++genericContainer ignored
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Text Field Set to Hello'
+++++++++++++inlineTextBox name='Text Field Set to Hello'
+++++++++genericContainer htmlTag='div'
+++++++++++staticText name='Text Field Set to Hello World'
+++++++++++++inlineTextBox name='Text Field Set to Hello World'

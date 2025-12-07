@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -357,7 +358,7 @@ TEST_F(PushNotificationServerClientDesktopImplTest,
     base::test::TestFuture<
         PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError>
         future2;
-    EXPECT_DCHECK_DEATH(client_->RegisterWithPushNotificationService(
+    EXPECT_CHECK_DEATH(client_->RegisterWithPushNotificationService(
         push_notification::proto::NotificationsMultiLoginUpdateRequest(),
         base::BindOnce(
             &NotCalledConstRef<push_notification::proto::
@@ -426,7 +427,7 @@ TEST_F(PushNotificationServerClientDesktopImplTest,
     base::test::TestFuture<
         PushNotificationDesktopApiCallFlow::PushNotificationApiCallFlowError>
         future;
-    EXPECT_DCHECK_DEATH(client_->RegisterWithPushNotificationService(
+    EXPECT_CHECK_DEATH(client_->RegisterWithPushNotificationService(
         push_notification::proto::NotificationsMultiLoginUpdateRequest(),
         base::BindOnce(
             &NotCalledConstRef<push_notification::proto::

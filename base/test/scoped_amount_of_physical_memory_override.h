@@ -9,17 +9,18 @@
 
 #include <optional>
 
+#include "base/byte_count.h"
+
 namespace base::test {
 
-// Sets the amount of physical memory in MB override on construction, and
-// removes it when the object goes out of scope. This class is intended to be
-// used by tests that need to override the amount of physical memory on the
-// system to validate different system conditions.
+// Sets the amount of physical memory override on construction, and removes it
+// when the object goes out of scope. This class is intended to be used by tests
+// that need to override the amount of physical memory on the system to validate
+// different system conditions.
 class ScopedAmountOfPhysicalMemoryOverride {
  public:
-  // Constructor that initializes the amount of memory override. Memory is
-  // specified in MB.
-  explicit ScopedAmountOfPhysicalMemoryOverride(uint64_t amount_of_memory_mb);
+  // Constructor that initializes the amount of memory override.
+  explicit ScopedAmountOfPhysicalMemoryOverride(ByteCount amount_of_memory);
 
   ScopedAmountOfPhysicalMemoryOverride(
       const ScopedAmountOfPhysicalMemoryOverride&) = delete;
@@ -29,7 +30,7 @@ class ScopedAmountOfPhysicalMemoryOverride {
   ~ScopedAmountOfPhysicalMemoryOverride();
 
  private:
-  std::optional<uint64_t> old_amount_of_physical_memory_mb_;
+  std::optional<ByteCount> old_amount_of_physical_memory_;
 };
 
 }  // namespace base::test

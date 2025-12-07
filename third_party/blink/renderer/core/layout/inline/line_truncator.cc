@@ -32,10 +32,13 @@ bool IsRightMostOffset(const ShapeResult& shape_result, unsigned offset) {
 
 }  // namespace
 
-LineTruncator::LineTruncator(const LineInfo& line_info)
+LineTruncator::LineTruncator(const LineInfo& line_info,
+                             bool is_ellipsis_caused_by_line_clamp)
     : line_style_(&line_info.LineStyle()),
       available_width_(line_info.AvailableWidth() - line_info.TextIndent()),
-      line_direction_(line_info.BaseDirection()) {}
+      line_direction_(line_info.BaseDirection()),
+      use_first_line_style_(line_info.UseFirstLineStyle()),
+      is_ellipsis_caused_by_line_clamp_(is_ellipsis_caused_by_line_clamp) {}
 
 const ComputedStyle& LineTruncator::EllipsisStyle() const {
   // The ellipsis is styled according to the line style.
@@ -44,18 +47,26 @@ const ComputedStyle& LineTruncator::EllipsisStyle() const {
   return *line_style_;
 }
 
+String LineTruncator::ComputeEllipsisText() const {
+  const ComputedStyle& style = EllipsisStyle();
+  const TextOverflowData& text_overflow = style.TextOverflow();
+  if (text_overflow.IsString() && !is_ellipsis_caused_by_line_clamp_) {
+    return text_overflow.StringValue();
+  }
+  return ellipsis_font_data_ && ellipsis_font_data_->GlyphForCharacter(
+                                    uchar::kHorizontalEllipsis)
+             ? String(base::span_from_ref(uchar::kHorizontalEllipsis))
+             : String(u"...");
+}
+
 void LineTruncator::SetupEllipsis() {
-  const Font& font = EllipsisStyle().GetFont();
-  ellipsis_font_data_ = font.PrimaryFont();
+  const Font* font = EllipsisStyle().GetFont();
+  ellipsis_font_data_ = font->PrimaryFont();
   DCHECK(ellipsis_font_data_);
-  ellipsis_text_ =
-      ellipsis_font_data_ && ellipsis_font_data_->GlyphForCharacter(
-                                 kHorizontalEllipsisCharacter)
-          ? String(&kHorizontalEllipsisCharacter, 1u)
-          : String(u"...");
+  ellipsis_text_ = ComputeEllipsisText();
   HarfBuzzShaper shaper(ellipsis_text_);
   ellipsis_shape_result_ =
-      ShapeResultView::Create(shaper.Shape(&font, line_direction_));
+      ShapeResultView::Create(shaper.Shape(font, line_direction_));
   ellipsis_width_ = ellipsis_shape_result_->SnappedWidth();
 }
 
@@ -87,7 +98,9 @@ LayoutUnit LineTruncator::PlaceEllipsisNextTo(
   DCHECK(ellipsis_text_);
   DCHECK(ellipsis_shape_result_);
   line_box->AddChild(
-      *ellipsized_layout_object, StyleVariant::kEllipsis,
+      *ellipsized_layout_object,
+      use_first_line_style_ ? StyleVariant::kFirstLineEllipsis
+                            : StyleVariant::kStandardEllipsis,
       ellipsis_shape_result_, ellipsis_text_,
       LogicalRect(ellipsis_inline_offset, -ellipsis_metrics.ascent,
                   ellipsis_width_, ellipsis_metrics.LineHeight()),
@@ -214,7 +227,7 @@ LayoutUnit LineTruncator::TruncateLineInTheMiddle(
         break;
       continue;
     }
-    // Skip pseudo elements like ::before.
+    // Skip pseudo-elements like ::before.
     if (!child.GetNode())
       continue;
 
@@ -427,7 +440,7 @@ void LineTruncator::HideChild(LogicalLineItem* child) {
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Return the offset to place the ellipsis.

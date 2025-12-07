@@ -4,14 +4,15 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {CrCheckboxWithPolicyElement, InputsShortcutReminderState, LanguageHelper, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
-import {AcceleratorAction, CrCheckboxElement, CrSettingsPrefs, IronListElement, Router, routes, settingMojom, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
-import {StandardAcceleratorProperties} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_info.mojom-webui.js';
+import type {LanguageHelper, OsSettingsAddItemsDialogElement, OsSettingsInputPageElement, SettingsLanguagesElement} from 'chrome://os-settings/lazy_load.js';
+import {InputsShortcutReminderState, LanguagesBrowserProxyImpl, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from 'chrome://os-settings/lazy_load.js';
+import type {CrCheckboxElement, IronListElement, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {AcceleratorAction, CrSettingsPrefs, Router, routes, settingMojom} from 'chrome://os-settings/os_settings.js';
+import type {StandardAcceleratorProperties} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_info.mojom-webui.js';
 import {VKey} from 'chrome://resources/ash/common/shortcut_input_ui/accelerator_keys.mojom-webui.js';
 import {FakeAcceleratorFetcher} from 'chrome://resources/ash/common/shortcut_input_ui/fake_accelerator_fetcher.js';
 import {Modifier} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {AcceleratorKeyState} from 'chrome://resources/mojo/ui/base/accelerators/mojom/accelerator.mojom-webui.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -21,7 +22,8 @@ import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js'
 import {fakeDataBind, flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
-import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from '../fake_language_settings_private.js';
+import type {FakeLanguageSettingsPrivate} from '../fake_language_settings_private.js';
+import {getFakeLanguagePrefs} from '../fake_language_settings_private.js';
 import {clearBody} from '../utils.js';
 
 import {TestLanguagesBrowserProxy} from './test_os_languages_browser_proxy.js';
@@ -45,8 +47,8 @@ suite('<os-settings-input-page>', () => {
      * behavior of SpellcheckService as it relies on a C++ PrefChangeRegistrar
      * to listen to pref changes - which do not work when the prefs are mocked.
      */
-    async function spellCheckServiceListener(
-        prefs: chrome.settingsPrivate.PrefObject[]): Promise<void> {
+    function spellCheckServiceListener(
+        prefs: chrome.settingsPrivate.PrefObject[]) {
       for (const pref of prefs) {
         switch (pref.key) {
           case 'spellcheck.dictionaries':
@@ -57,6 +59,8 @@ suite('<os-settings-input-page>', () => {
               settingsPrivate.setPref(
                   'browser.enable_spellchecking', false, '');
             }
+            break;
+          default:
             break;
         }
       }
@@ -114,9 +118,6 @@ suite('<os-settings-input-page>', () => {
 
   setup(() => {
     clearBody();
-    loadTimeData.overrideValues({
-      allowEmojiSuggestion: true,
-    });
     Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
   });
 
@@ -244,8 +245,8 @@ suite('<os-settings-input-page>', () => {
     });
 
     test('shows managed input methods label', () => {
-      const inputMethodsManagedbyPolicy =
-          inputPage.shadowRoot!.querySelector('#inputMethodsManagedbyPolicy');
+      const inputMethodsManagedbyPolicy = inputPage.shadowRoot!.querySelector(
+          '#inputMethodsManagedbyPolicyIcon');
       assertNull(inputMethodsManagedbyPolicy);
 
       inputPage.setPrefValue(
@@ -253,7 +254,7 @@ suite('<os-settings-input-page>', () => {
       flush();
 
       assertTrue(!!inputPage.shadowRoot!.querySelector(
-          '#inputMethodsManagedbyPolicy'));
+          '#inputMethodsManagedbyPolicyIcon'));
     });
   });
 
@@ -302,6 +303,23 @@ suite('<os-settings-input-page>', () => {
       assertEquals(
           subpageTrigger, inputPage.shadowRoot!.activeElement,
           `${triggerSelector} should be focused.`);
+    });
+
+    test('add input removed when input methods are enabled by policy', () => {
+      const addInputMethodButton =
+          inputPage.shadowRoot!.querySelector<HTMLButtonElement>(
+              '#addInputMethod');
+      assertTrue(!!addInputMethodButton);
+      assertFalse(addInputMethodButton.disabled);
+
+
+      inputPage.setPrefValue(
+          'settings.language.allowed_input_methods', ['xkb:us::eng']);
+      inputPage.setPrefValue(
+          'settings.language.allowed_input_methods_force_enabled', true);
+      flush();
+
+      assertTrue(addInputMethodButton.disabled);
     });
   });
 
@@ -402,23 +420,23 @@ suite('<os-settings-input-page>', () => {
           policyIcon: false,
         },
         {
-          name: 'US International keyboard',
-          checkboxDisabled: true,
-          checkboxChecked: false,
-          policyIcon: true,
-        },
-        {
           name: 'Vietnamese keyboard',
           checkboxDisabled: false,
           checkboxChecked: false,
           policyIcon: false,
         },
+        {
+          name: 'US International keyboard',
+          checkboxDisabled: true,
+          checkboxChecked: false,
+          policyIcon: true,
+        },
       ];
 
       for (let i = 0; i < allItems.length; i++) {
-        const checkbox = allItems[i]!.shadowRoot!.querySelector('cr-checkbox');
+        const checkbox = allItems[i] as CrCheckboxElement;
         assertTrue(!!checkbox);
-        assertStringContains(allItems[i]!.textContent!, expectedItems[i]!.name);
+        assertStringContains(allItems[i]!.textContent, expectedItems[i]!.name);
         assertEquals(
             expectedItems[i]!.checkboxDisabled, checkbox.disabled,
             `expect ${expectedItems[i]!.name}'s checkbox disabled state to be ${
@@ -427,15 +445,10 @@ suite('<os-settings-input-page>', () => {
             expectedItems[i]!.checkboxChecked, checkbox.checked,
             `expect ${expectedItems[i]!.name}'s checkbox checked state to be ${
                 expectedItems[i]!.checkboxChecked}`);
-        assertEquals(
-            expectedItems[i]!.policyIcon,
-            !!allItems[i]!.shadowRoot!.querySelector('iron-icon'),
-            `expect ${expectedItems[i]!.name}'s policy icon presence to be ${
-                expectedItems[i]!.policyIcon}`);
       }
 
       // selecting Vietnamese keyboard
-      const checkbox = allItems[3]!.shadowRoot!.querySelector('cr-checkbox');
+      const checkbox = allItems[2] as CrCheckboxElement;
       assertTrue(!!checkbox);
       checkbox.click();
 
@@ -502,13 +515,13 @@ suite('<os-settings-input-page>', () => {
       searchInput.setValue('vietnamese');
       flush();
       assertEquals(1, getItems().length);
-      assertStringContains(getItems()[0]!.textContent!, 'Vietnamese');
+      assertStringContains(getItems()[0]!.textContent, 'Vietnamese');
 
       // Search input methods' language
       searchInput.setValue('Turkmen');
       flush();
       assertEquals(1, getItems().length);
-      assertStringContains(getItems()[0]!.textContent!, 'Swahili keyboard');
+      assertStringContains(getItems()[0]!.textContent, 'Swahili keyboard');
     });
 
     test('has escape key behavior working correctly', () => {
@@ -588,7 +601,7 @@ suite('<os-settings-input-page>', () => {
 
     test('dismissing shortcut reminder with accelerator provider', async () => {
       const expectedLastUsedImeAccelerator: StandardAcceleratorProperties = {
-        keyDisplay: stringToMojoString16('m'),
+        keyDisplay: 'm',
         accelerator: {
           modifiers: Modifier.CONTROL,
           keyCode: VKey.kKeyM,
@@ -625,7 +638,7 @@ suite('<os-settings-input-page>', () => {
           expectedLastUsedImeAccelerator.keyDisplay);
 
       const updatedLastUsedImeAccelerator: StandardAcceleratorProperties = {
-        keyDisplay: stringToMojoString16('k'),
+        keyDisplay: 'k',
         accelerator: {
           modifiers: Modifier.CONTROL + Modifier.SHIFT,
           keyCode: VKey.kKeyK,
@@ -646,7 +659,7 @@ suite('<os-settings-input-page>', () => {
       assertTrue(!!inputPage.get('lastUsedImeAccelerator_'));
       assertEquals(
           (inputPage.get('lastUsedImeAccelerator_'))!.keyDisplay,
-          updatedLastUsedImeAccelerator!.keyDisplay);
+          updatedLastUsedImeAccelerator.keyDisplay);
 
       let element =
           inputPage.shadowRoot!.querySelector('keyboard-shortcut-banner');
@@ -805,8 +818,8 @@ suite('<os-settings-input-page>', () => {
       spellCheckList = spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, spellCheckList.length);
       assertStringContains(
-          spellCheckList[0]!.textContent!, 'English (United States)');
-      assertStringContains(spellCheckList[1]!.textContent!, 'Add languages');
+          spellCheckList[0]!.textContent, 'English (United States)');
+      assertStringContains(spellCheckList[1]!.textContent, 'Add languages');
     });
 
     test('can remove enabled language from spell check list', () => {
@@ -840,9 +853,9 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should have en-US, nb and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
       assertStringContains(
-          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
+          newSpellCheckList[1]!.textContent, 'Norwegian Bokmål');
 
       // Remove nb.
       const icon = newSpellCheckList[1]!.querySelector('cr-icon-button');
@@ -855,7 +868,7 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should have en-US and "add languages".
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
 
       assertDeepEquals(
           ['en-US'], inputPage.prefs.spellcheck.dictionaries.value);
@@ -875,7 +888,7 @@ suite('<os-settings-input-page>', () => {
       const forceEnabledEnUSLanguageRow = newSpellCheckList[0];
       assertTrue(!!forceEnabledEnUSLanguageRow);
       assertStringContains(
-          forceEnabledEnUSLanguageRow.textContent!, 'English (United States)');
+          forceEnabledEnUSLanguageRow.textContent, 'English (United States)');
       assertTrue(!!forceEnabledEnUSLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       // Polymer sometimes hides the old enabled element by using a
@@ -899,11 +912,11 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should have en-US, sw and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
 
       const forceEnabledSwLanguageRow = newSpellCheckList[1];
       assertTrue(!!forceEnabledSwLanguageRow);
-      assertStringContains(forceEnabledSwLanguageRow.textContent!, 'Swahili');
+      assertStringContains(forceEnabledSwLanguageRow.textContent, 'Swahili');
       assertTrue(!!forceEnabledSwLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       const managedButton =
@@ -924,12 +937,12 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should have en-US, nb and "add languages".
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
 
       const forceEnabledNbLanguageRow = newSpellCheckList[1];
       assertTrue(!!forceEnabledNbLanguageRow);
       assertStringContains(
-          forceEnabledNbLanguageRow.textContent!, 'Norwegian Bokmål');
+          forceEnabledNbLanguageRow.textContent, 'Norwegian Bokmål');
       assertTrue(!!forceEnabledNbLanguageRow.querySelector(
           'cr-policy-pref-indicator'));
       const managedButton =
@@ -960,7 +973,7 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
     });
 
     test('does not show force-off non-enabled spell check language', () => {
@@ -973,7 +986,7 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
     });
 
     test('toggle off disables buttons', () => {
@@ -1008,12 +1021,12 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(4 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (Canada)');
+          newSpellCheckList[0]!.textContent, 'English (Canada)');
       assertStringContains(
-          newSpellCheckList[1]!.textContent!, 'English (United States)');
+          newSpellCheckList[1]!.textContent, 'English (United States)');
       assertStringContains(
-          newSpellCheckList[2]!.textContent!, 'Norwegian Bokmål');
-      assertStringContains(newSpellCheckList[3]!.textContent!, 'Swahili');
+          newSpellCheckList[2]!.textContent, 'Norwegian Bokmål');
+      assertStringContains(newSpellCheckList[3]!.textContent, 'Swahili');
     });
 
     test('removing all languages, then adding enabled language works', () => {
@@ -1051,7 +1064,7 @@ suite('<os-settings-input-page>', () => {
       // The spell check list should now have en-US.
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
       // Spell check should still be enabled.
       assertTrue(spellCheckToggle.checked);
     });
@@ -1067,7 +1080,7 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(1 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
 
       // Add a spell check language not in Accept-Language.
       languageHelper.toggleSpellCheck('nb', true);
@@ -1078,9 +1091,9 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
       assertStringContains(
-          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
+          newSpellCheckList[1]!.textContent, 'Norwegian Bokmål');
 
       // Add an arbitrary language to Accept-Language.
       languageHelper.enableLanguage('tk');
@@ -1091,9 +1104,9 @@ suite('<os-settings-input-page>', () => {
           spellCheckListContainer.querySelectorAll('.list-item');
       assertEquals(2 + 1, newSpellCheckList.length);
       assertStringContains(
-          newSpellCheckList[0]!.textContent!, 'English (United States)');
+          newSpellCheckList[0]!.textContent, 'English (United States)');
       assertStringContains(
-          newSpellCheckList[1]!.textContent!, 'Norwegian Bokmål');
+          newSpellCheckList[1]!.textContent, 'Norwegian Bokmål');
     });
 
     // TODO(crbug.com/1201540): Add test to ensure that it is impossible to
@@ -1187,8 +1200,7 @@ suite('<os-settings-input-page>', () => {
     /**
      * Returns the list items in the dialog.
      */
-    function getAllLanguagesCheckboxWithPolicies():
-        CrCheckboxWithPolicyElement[] {
+    function getAllLanguagesCheckboxes(): CrCheckboxElement[] {
       // If an element (the <iron-list> in this case) is hidden in Polymer,
       // Polymer will intelligently not update the DOM of the hidden element
       // to prevent DOM updates that the user can't see. However, this means
@@ -1201,22 +1213,8 @@ suite('<os-settings-input-page>', () => {
         return [];
       }
       return [
-        ...allLangsList.querySelectorAll('cr-checkbox-with-policy'),
+        ...allLangsList.querySelectorAll('cr-checkbox'),
       ].filter(checkbox => isVisible(checkbox));
-    }
-
-    /**
-     * Returns the internal cr-checkboxes in allLanguages.
-     */
-    function getAllLanguagesCheckboxes(): CrCheckboxElement[] {
-      const checkboxWithPolicies = getAllLanguagesCheckboxWithPolicies();
-      return checkboxWithPolicies.map(checkboxWithPolicy => {
-        const checkBox =
-            checkboxWithPolicy.shadowRoot!.querySelector<CrCheckboxElement>(
-                '#checkbox');
-        assertTrue(!!checkBox);
-        return checkBox;
-      });
     }
 
     setup(async () => {
@@ -1287,16 +1285,16 @@ suite('<os-settings-input-page>', () => {
       // language.
       const suggestedItems = suggestedList.querySelectorAll('cr-checkbox');
       assertEquals(1, suggestedItems.length);
-      assertStringContains(suggestedItems[0]!.textContent!, 'Swahili');
+      assertStringContains(suggestedItems[0]!.textContent, 'Swahili');
 
       // There are four languages with spell check enabled in
       // fake_language_settings_private.js: en-US, en-CA, sw, nb.
       // en-US shouldn't be displayed as it is already enabled.
-      const allItems = getAllLanguagesCheckboxWithPolicies();
+      const allItems = getAllLanguagesCheckboxes();
       assertEquals(3, allItems.length);
-      assertStringContains(allItems[0]!.textContent!, 'English (Canada)');
-      assertStringContains(allItems[1]!.textContent!, 'Swahili');
-      assertStringContains(allItems[2]!.textContent!, 'Norwegian Bokmål');
+      assertStringContains(allItems[0]!.textContent, 'English (Canada)');
+      assertStringContains(allItems[1]!.textContent, 'Swahili');
+      assertStringContains(allItems[2]!.textContent, 'Norwegian Bokmål');
 
       // By default, all checkboxes should not be disabled, and should not be
       // checked.
@@ -1366,19 +1364,13 @@ suite('<os-settings-input-page>', () => {
       assertFalse(dialog.$.dialog.open);
     });
 
-    test('policy disabled languages cannot be selected and show icon', () => {
+    test('policy disabled languages cannot be selected', () => {
       // Force-disable sw.
       inputPage.setPrefValue('spellcheck.blocked_dictionaries', ['sw']);
       flush();
 
-      const swCheckboxWithPolicy = getAllLanguagesCheckboxWithPolicies()[1];
-      assertTrue(!!swCheckboxWithPolicy);
-      const swCheckbox =
-          swCheckboxWithPolicy.shadowRoot!.querySelector('cr-checkbox');
+      const swCheckbox = getAllLanguagesCheckboxes()[1];
       assertTrue(!!swCheckbox);
-      const swPolicyIcon =
-          swCheckboxWithPolicy.shadowRoot!.querySelector('iron-icon');
-      assertTrue(!!swPolicyIcon);
 
       assertTrue(swCheckbox.disabled);
       assertFalse(swCheckbox.checked);
@@ -1406,8 +1398,8 @@ suite('<os-settings-input-page>', () => {
       const suggestedListItems = suggestedList.querySelectorAll('.list-item');
       assertEquals(2, suggestedListItems.length);
       assertStringContains(
-          suggestedListItems[0]!.textContent!, 'English (United States)');
-      assertStringContains(suggestedListItems[1]!.textContent!, 'Swahili');
+          suggestedListItems[0]!.textContent, 'English (United States)');
+      assertStringContains(suggestedListItems[1]!.textContent, 'Swahili');
 
       // en-US should also appear in the all languages list now.
       assertEquals(4, allLangsList.querySelectorAll('.list-item').length);
@@ -1417,25 +1409,24 @@ suite('<os-settings-input-page>', () => {
       const searchInput = dialog.shadowRoot!.querySelector('cr-search-field');
       assertTrue(!!searchInput);
       // Expecting a few languages to be displayed when no query exists.
-      assertGE(getAllLanguagesCheckboxWithPolicies().length, 1);
+      assertGE(getAllLanguagesCheckboxes().length, 1);
 
       // Issue query that matches the |displayedName| in lowercase.
       searchInput.setValue('norwegian');
       flush();
-      assertEquals(1, getAllLanguagesCheckboxWithPolicies().length);
+      assertEquals(1, getAllLanguagesCheckboxes().length);
       assertStringContains(
-          getAllLanguagesCheckboxWithPolicies()[0]!.textContent!,
-          'Norwegian Bokmål');
+          getAllLanguagesCheckboxes()[0]!.textContent, 'Norwegian Bokmål');
 
       // Issue query that matches the |nativeDisplayedName|.
       searchInput.setValue('norsk');
       flush();
-      assertEquals(1, getAllLanguagesCheckboxWithPolicies().length);
+      assertEquals(1, getAllLanguagesCheckboxes().length);
 
       // Issue query that does not match any language.
       searchInput.setValue('egaugnal');
       flush();
-      assertEquals(0, getAllLanguagesCheckboxWithPolicies().length);
+      assertEquals(0, getAllLanguagesCheckboxes().length);
       assertTrue(
           isVisible(dialog.shadowRoot!.querySelector('#no-search-results')));
     });
@@ -1455,97 +1446,6 @@ suite('<os-settings-input-page>', () => {
       searchInput.setValue('');
       keyDownOn(searchInput, 19, [], 'Escape');
       assertFalse(dialog.$.dialog.open);
-    });
-  });
-
-  suite('Suggestions', () => {
-    suite('when emoji suggestions are not available', () => {
-      setup(() => {
-        loadTimeData.overrideValues({allowEmojiSuggestion: false});
-      });
-    });
-
-    test('Emoji suggestion toggle is visible', async () => {
-      await createInputPage();
-      const emojiSuggestionToggle =
-          inputPage.shadowRoot!.querySelector('#emojiSuggestionToggle');
-      assertTrue(isVisible(emojiSuggestionToggle));
-    });
-
-    test('Deep link to emoji suggestion toggle', async () => {
-      await createInputPage();
-
-      const params = new URLSearchParams();
-      const setting = settingMojom.Setting.kShowEmojiSuggestions;
-      params.append('settingId', setting.toString());
-      Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
-      flush();
-
-      const deepLinkElement = inputPage.shadowRoot!.querySelector<HTMLElement>(
-          '#emojiSuggestionToggle');
-      assertTrue(!!deepLinkElement);
-      await waitAfterNextRender(deepLinkElement);
-      assertEquals(
-          deepLinkElement, inputPage.shadowRoot!.activeElement,
-          `Emoji suggestion toggle should be focused for settingId=${
-              setting}.`);
-    });
-
-    suite('when allowOrca is false', () => {
-      setup(() => {
-        loadTimeData.overrideValues({allowOrca: false});
-      });
-
-      test('Orca toggle should be hidden', async () => {
-        await createInputPage();
-        const orcaToggle = inputPage.shadowRoot!.querySelector('#orcaToggle');
-        assertFalse(isVisible(orcaToggle));
-      });
-    });
-
-    suite('when allowOrca is true', () => {
-      setup(() => {
-        loadTimeData.overrideValues({allowOrca: true});
-      });
-
-      test('Orca toggle should be visible', async () => {
-        await createInputPage();
-        const orcaToggle = inputPage.shadowRoot!.querySelector('#orcaToggle');
-        assertTrue(isVisible(orcaToggle));
-      });
-
-      test('Deep link to orca suggestion toggle', async () => {
-        await createInputPage();
-
-        const params = new URLSearchParams();
-        const setting = settingMojom.Setting.kShowOrca;
-        params.append('settingId', setting.toString());
-        Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT, params);
-        flush();
-
-        const deepLinkElement =
-            inputPage.shadowRoot!.querySelector<HTMLElement>('#orcaToggle');
-        assertTrue(!!deepLinkElement);
-        await waitAfterNextRender(deepLinkElement);
-        assertEquals(
-            deepLinkElement, inputPage.shadowRoot!.activeElement,
-            `Orca suggestion toggle should be focused for settingId=${
-                setting}.`);
-      });
-    });
-
-    suite('when both the emoji suggestions and orca are not allowed', () => {
-      setup(() => {
-        loadTimeData.overrideValues(
-            {allowEmojiSuggestion: false, allowOrca: false});
-      });
-
-      test('Suggestions section is not visible', async () => {
-        await createInputPage();
-        const suggestionsSection =
-            inputPage.shadowRoot!.querySelector('#suggestionsSection');
-        assertFalse(isVisible(suggestionsSection));
-      });
     });
   });
 });

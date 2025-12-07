@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_FIELD_PROMO_VIEW_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_AUTOFILL_FIELD_PROMO_VIEW_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -37,6 +38,8 @@ class AutofillFieldPromoViewImpl : public AutofillFieldPromoView,
   bool OverlapsWithPictureInPictureWindow() const override;
 
   void Close() override;
+
+  void MakeInvisible() override;
 
   base::WeakPtr<AutofillFieldPromoView> GetWeakPtr() override;
 

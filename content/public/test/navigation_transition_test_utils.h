@@ -12,8 +12,8 @@
 namespace content {
 class NavigationController;
 
-// If set in `SetNavScreenshotCallbackForTesting`, this callback is invoked
-// for each committed navigation when kBackForwardTransitions is enabled.
+// If set in `SetNavScreenshotCallbackForTesting`, this callback is invoked for
+// each committed navigation.
 // nav_entry_index: Index for the entry the user is navigating away from.
 // bitmap: The screenshot for the entry the
 // user is navigating away from. This can be empty if no screenshot request
@@ -48,7 +48,8 @@ struct NavigationTransitionTestUtils {
 class ScopedScreenshotCapturedObserverForTesting {
  public:
   explicit ScopedScreenshotCapturedObserverForTesting(
-      int expected_nav_entry_index);
+      int expected_nav_entry_index,
+      bool expected_requested = true);
   ScopedScreenshotCapturedObserverForTesting(
       const ScopedScreenshotCapturedObserverForTesting&) = delete;
   ScopedScreenshotCapturedObserverForTesting& operator=(

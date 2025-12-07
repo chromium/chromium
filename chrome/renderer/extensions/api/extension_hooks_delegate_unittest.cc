@@ -30,13 +30,13 @@ namespace extensions {
 class ExtensionHooksDelegateTest
     : public NativeExtensionBindingsSystemUnittest {
  public:
-  ExtensionHooksDelegateTest() {}
+  ExtensionHooksDelegateTest() = default;
 
   ExtensionHooksDelegateTest(const ExtensionHooksDelegateTest&) = delete;
   ExtensionHooksDelegateTest& operator=(const ExtensionHooksDelegateTest&) =
       delete;
 
-  ~ExtensionHooksDelegateTest() override {}
+  ~ExtensionHooksDelegateTest() override = default;
 
   // NativeExtensionBindingsSystemUnittest:
   void SetUp() override {
@@ -287,17 +287,17 @@ TEST_F(ExtensionHooksDelegateTest, GetURL) {
           GURL(extension()->url().spec() + "https://www.google.com"));
 }
 
-class ExtensionHooksDelegateMV3Test : public ExtensionHooksDelegateTest {
+class ExtensionHooksDelegateModernTest : public ExtensionHooksDelegateTest {
  public:
-  ExtensionHooksDelegateMV3Test() = default;
-  ~ExtensionHooksDelegateMV3Test() override = default;
+  ExtensionHooksDelegateModernTest() = default;
+  ~ExtensionHooksDelegateModernTest() override = default;
 
   scoped_refptr<const Extension> BuildExtension() override {
-    return ExtensionBuilder("foo").SetManifestVersion(3).Build();
+    return ExtensionBuilder("foo").Build();
   }
 };
 
-TEST_F(ExtensionHooksDelegateMV3Test, AliasesArentAvailableInMV3) {
+TEST_F(ExtensionHooksDelegateModernTest, AliasesArentAvailable) {
   v8::HandleScope handle_scope(isolate());
   v8::Local<v8::Context> context = MainContext();
 

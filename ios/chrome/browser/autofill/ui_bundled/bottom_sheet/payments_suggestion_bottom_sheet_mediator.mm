@@ -4,34 +4,55 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
-#import "components/autofill/core/browser/payments_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager.h"
-#import "components/autofill/core/browser/personal_data_manager_observer.h"
+#import "base/time/time.h"
+#import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#import "components/autofill/core/browser/data_manager/personal_data_manager_observer.h"
+#import "components/autofill/core/browser/foundations/autofill_manager.h"
+#import "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/credit_card/credit_card_data.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_ui_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
 
 using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
+
+namespace {
+
+// Returns true if the payments bottom sheet is at V3.
+bool IsV3() {
+  return base::FeatureList::IsEnabled(kStatelessFormSuggestionController) &&
+         base::FeatureList::IsEnabled(kAutofillPaymentsSheetV3Ios);
+}
+
+}  // namespace
 
 @interface PaymentsSuggestionBottomSheetMediator () <
     CRWWebStateObserver,
@@ -73,6 +94,17 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 
   // Information regarding the triggering form for this bottom sheet.
   autofill::FormActivityParams _params;
+
+  // Timestamp recorded when the bottom sheet view did appear which corresponds
+  // to when the presentation animation is done. Countdowns start once this
+  // timestamp is set with a value.
+  std::optional<base::TimeTicks> _viewDidAppearTimestamp;
+
+  // Counter that counts the number of attempts made to fill a suggestion before
+  // it actually happened. If the count is bigger than 1 it means that filling a
+  // suggestion was rejected at least once for some reason. The most common
+  // reason is that filling wasn't allowed yet, to prevent clickjacking.
+  int _fillAttemptsCount;
 }
 
 #pragma mark - Properties
@@ -85,10 +117,12 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                               params:(const autofill::FormActivityParams&)params
                  personalDataManager:
                      (autofill::PersonalDataManager*)personalDataManager {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _params = params;
     _hasCreditCards = NO;
     _webStateList = webStateList;
+    _fillAttemptsCount = 0;
+
     if (personalDataManager) {
       _personalDataManager = personalDataManager;
       _personalDataManagerObserver.reset(
@@ -123,12 +157,9 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 }
 
 - (void)disconnect {
-  if (_personalDataManager && _personalDataManagerObserver.get()) {
-    _personalDataManager->RemoveObserver(_personalDataManagerObserver.get());
-    _personalDataManagerObserver.reset();
-  }
-
   _scopedPersonalDataManagerObservation.reset();
+  _personalDataManagerObserver.reset();
+  _personalDataManager = nullptr;
 
   _webStateListObservation.reset();
   _webStateListObserver.reset();
@@ -137,11 +168,14 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
   _webStateList = nullptr;
 }
 
-- (autofill::CreditCard*)creditCardForIdentifier:(NSString*)identifier {
+- (std::optional<autofill::CreditCard>)creditCardForIdentifier:
+    (NSString*)identifier {
   CHECK(identifier);
   CHECK(_personalDataManager);
-  return _personalDataManager->payments_data_manager().GetCreditCardByGUID(
-      base::SysNSStringToUTF8(identifier));
+  const autofill::CreditCard* card =
+      _personalDataManager->payments_data_manager().GetCreditCardByGUID(
+          base::SysNSStringToUTF8(identifier));
+  return card ? std::make_optional(*card) : std::nullopt;
 }
 
 - (BOOL)hasCreditCards {
@@ -151,6 +185,14 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 - (void)logExitReason:(PaymentsSuggestionBottomSheetExitReason)exitReason {
   base::UmaHistogramEnumeration("IOS.PaymentsBottomSheet.ExitReason",
                                 exitReason);
+  if (exitReason ==
+      PaymentsSuggestionBottomSheetExitReason::kUsePaymentsSuggestion) {
+    base::UmaHistogramCounts100("IOS.PaymentsBottomSheet.AcceptAttempts.Accept",
+                                _fillAttemptsCount);
+  } else {
+    base::UmaHistogramCounts100(
+        "IOS.PaymentsBottomSheet.AcceptAttempts.Dismiss", _fillAttemptsCount);
+  }
 }
 
 #pragma mark - Accessors
@@ -167,8 +209,8 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
     return;
   }
 
-  const auto& creditCards =
-      _personalDataManager->payments_data_manager().GetCreditCardsToSuggest();
+  const auto& creditCards = autofill::GetCreditCardsToSuggest(
+      _personalDataManager->payments_data_manager());
   if (creditCards.empty()) {
     [_consumer dismiss];
     return;
@@ -182,10 +224,8 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
     // If the current card is enrolled to be a virtual card, create the virtual
     // card and add it to creditCardData array directly before the original
     // card.
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableVirtualCards) &&
-        creditCard->virtual_card_enrollment_state() ==
-            autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+    if (creditCard->virtual_card_enrollment_state() ==
+        autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       const autofill::CreditCard virtualCard =
           autofill::CreditCard::CreateVirtualCard(*creditCard);
       [creditCardData
@@ -207,65 +247,114 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 
 #pragma mark - PaymentsSuggestionBottomSheetDelegate
 
-- (void)didSelectCreditCard:(CreditCardData*)creditCardData {
-  if (!_webStateList) {
-    return;
-  }
-
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+- (void)didSelectCreditCard:(CreditCardData*)creditCardData
+                    atIndex:(NSInteger)index {
+  web::WebState* activeWebState = [self getActiveWebState];
   if (!activeWebState) {
     return;
   }
 
-  FormSuggestionTabHelper* tabHelper =
+  if (_viewDidAppearTimestamp) {
+    base::UmaHistogramTimes("IOS.PaymentsBottomSheet.TimeToSelection",
+                            base::TimeTicks::Now() - *_viewDidAppearTimestamp);
+  }
+
+  FormSuggestionTabHelper* formSuggestionTabHelper =
       FormSuggestionTabHelper::FromWebState(activeWebState);
-  DCHECK(tabHelper);
+  CHECK(formSuggestionTabHelper);
 
-  id<FormInputSuggestionsProvider> provider =
-      tabHelper->GetAccessoryViewProvider();
-  DCHECK(provider);
+  id<FormInputSuggestionsProvider> crossProvider =
+      formSuggestionTabHelper->GetAccessoryViewProvider();
+  CHECK(crossProvider);
 
-  if (provider.type != SuggestionProviderTypeAutofill) {
-    // Last resort safety exit: On the unlikely event that the provider was set
-    // incorrectly (for example if local predictions and server predictions are
-    // different), simply exit and open the keyboard.
+  if (crossProvider.type != SuggestionProviderTypeAutofill && !IsV3()) {
+    // Last resort safety exit: On the unlikely event that the provider was
+    // set incorrectly (for example if local predictions and server
+    // predictions are different), simply exit and open the keyboard.
+    // That last resort exit is only required before V3 where the type of the
+    // current provider matters.
     [self disableBottomSheetAndRefocus:YES];
     [self logExitReason:kBadProvider];
     return;
   }
+
   [self disableBottomSheetAndRefocus:NO];
 
-  // Create a form suggestion containing the selected credit card's backend id
-  // so that the suggestion provider can properly fill the form.
+  // Create a form suggestion containing the selected credit card's backend
+  // id so that the suggestion provider can properly fill the form.
   FormSuggestion* suggestion = [FormSuggestion
-             suggestionWithValue:nil
-                      minorValue:nil
-              displayDescription:nil
-                            icon:nil
-                            type:((base::FeatureList::IsEnabled(
-                                       autofill::features::
-                                           kAutofillEnableVirtualCards) &&
-                                   ([creditCardData recordType] ==
-                                    autofill::CreditCard::RecordType::
-                                        kVirtualCard))
-                                      ? autofill::SuggestionType::
-                                            kVirtualCreditCardEntry
-                                      : autofill::SuggestionType::
-                                            kCreditCardEntry)
-               backendIdentifier:[creditCardData backendIdentifier]
-                  requiresReauth:NO
-      acceptanceA11yAnnouncement:
-          base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
+              suggestionWithValue:nil
+                       minorValue:nil
+               displayDescription:nil
+                             icon:nil
+                             type:([creditCardData recordType] ==
+                                           autofill::CreditCard::RecordType::
+                                               kVirtualCard
+                                       ? autofill::SuggestionType::
+                                             kVirtualCreditCardEntry
+                                       : autofill::SuggestionType::
+                                             kCreditCardEntry)
+                          payload:autofill::Suggestion::Guid(
+                                      base::SysNSStringToUTF8(
+                                          [creditCardData backendIdentifier]))
+      fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
+                   requiresReauth:NO
+       acceptanceA11yAnnouncement:
+           base::SysUTF16ToNSString(l10n_util::GetStringUTF16(
+               IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM))];
 
-  [provider didSelectSuggestion:suggestion params:_params];
+  // Attach the extra contextual information to the suggestion when using the
+  // V3 sheet which will be used once the FormSuggestionController becomes
+  // stateless.
+  if (IsV3()) {
+    AutofillTabHelper* autofillTabHelper = [self autofillTabHelper];
+    // At this point we know that there is a valid active webstate so there must
+    // be an autofill tab helper. Also, the bottom sheet can only be triggered
+    // when this helper exists.
+    CHECK(autofillTabHelper);
+
+    // Attach
+    id<FormSuggestionProvider> autofillProvider =
+        autofillTabHelper->GetSuggestionProvider();
+    suggestion = [FormSuggestion copy:suggestion
+                         andSetParams:_params
+                             provider:autofillProvider];
+  }
+  [crossProvider didSelectSuggestion:suggestion atIndex:index params:_params];
 }
 
-- (void)disableBottomSheetAndRefocus:(BOOL)refocus {
-  if (_webStateList) {
-    web::WebState* activeWebState = _webStateList->GetActiveWebState();
-    AutofillBottomSheetTabHelper::FromWebState(activeWebState)
-        ->DetachPaymentsListenersForAllFrames(refocus);
+- (void)disableBottomSheetAndRefocus:(BOOL)shouldRefocus {
+  bool useV2 = base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios);
+  if (useV2) {
+    // Do not remove the listeners for the bottom sheet (aka disable) in V2
+    // since the listeners were already removed, as soon as the presentation
+    // started. Hence, just refocus if needed.
+    if (shouldRefocus) {
+      [self refocus];
+    }
+    return;
+  }
+
+  CHECK(!useV2);
+
+  if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
+    tabHelper->DetachPaymentsListenersForAllFrames(shouldRefocus);
+  }
+}
+
+- (void)paymentsBottomSheetViewDidAppear {
+  // Start countdown for being able to select suggestions.
+  _viewDidAppearTimestamp = base::TimeTicks::Now();
+}
+
+- (void)didTapOnPrimaryButton {
+  ++_fillAttemptsCount;
+
+  // Allow the action if past the delay for accepting suggestions.
+  if (_viewDidAppearTimestamp &&
+      base::TimeTicks::Now() - *_viewDidAppearTimestamp >=
+          autofill_ui_constants::kSelectSuggestionDelay) {
+    [self.consumer activatePrimaryButton];
   }
 }
 
@@ -321,7 +410,7 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
 // credit card suggestion is selected.
 // TODO(crbug.com/40929827): Remove this dependency on suggestions.
 - (void)setupSuggestionsProvider {
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  web::WebState* activeWebState = [self getActiveWebState];
   if (!activeWebState) {
     return;
   }
@@ -350,9 +439,9 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
   GURL cardArtURL =
       _personalDataManager->payments_data_manager().GetCardArtURL(*creditCard);
   if (!cardArtURL.is_empty() && cardArtURL.is_valid()) {
-    gfx::Image* image = _personalDataManager->payments_data_manager()
-                            .GetCreditCardArtImageForUrl(cardArtURL);
-    if (image) {
+    if (const gfx::Image* const image =
+            _personalDataManager->payments_data_manager()
+                .GetCachedCardArtImageForUrl(cardArtURL)) {
       return image->ToUIImage();
     }
   }
@@ -365,6 +454,36 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                    .GetNativeImageNamed(
                        autofill::CreditCard::IconResourceId(icon))
                    .ToUIImage();
+}
+
+// Returns the AutofillBottomSheetTabHelper for the active webstate or nil if
+// it can't be retrieved.
+- (AutofillBottomSheetTabHelper*)tabHelper {
+  web::WebState* activeWebState = [self getActiveWebState];
+  return activeWebState
+             ? AutofillBottomSheetTabHelper::FromWebState(activeWebState)
+             : nullptr;
+}
+
+// Refocuses the field that was blurred to show the payments suggestion
+// bottom sheet, if deemded needed.
+- (void)refocus {
+  if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
+    tabHelper->RefocusElementIfNeeded(_params.frame_id);
+  }
+}
+
+// Returns the currently active WebState. Returns nullptr if there is none.
+- (web::WebState*)getActiveWebState {
+  return _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+}
+
+// Returns the AutofillTabHelper for the active webstate or nil if
+// it can't be retrieved.
+- (AutofillTabHelper*)autofillTabHelper {
+  web::WebState* activeWebState = [self getActiveWebState];
+  return activeWebState ? AutofillTabHelper::FromWebState(activeWebState)
+                        : nullptr;
 }
 
 @end

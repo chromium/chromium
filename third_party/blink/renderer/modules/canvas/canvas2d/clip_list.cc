@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 
 #include "cc/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/skia/include/core/SkClipOp.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/pathops/SkPathOps.h"
@@ -26,8 +20,7 @@ void ClipList::ClipPath(const SkPath& path,
                         const SkMatrix& ctm) {
   ClipOp new_clip;
   new_clip.anti_aliasing_mode_ = anti_aliasing_mode;
-  new_clip.path_ = path;
-  new_clip.path_.transform(ctm);
+  new_clip.path_ = path.makeTransform(ctm);
   clip_list_.push_back(new_clip);
 }
 

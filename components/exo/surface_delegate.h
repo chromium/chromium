@@ -127,7 +127,7 @@ class SurfaceDelegate {
   virtual SecurityDelegate* GetSecurityDelegate() = 0;
 
  protected:
-  virtual ~SurfaceDelegate() {}
+  virtual ~SurfaceDelegate() = default;
 };
 
 }  // namespace exo

@@ -6,9 +6,9 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
-#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_ui_constants.h"
+#import "ios/chrome/browser/bookmarks/public/bookmarks_ui_constants.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
+#import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -30,7 +30,7 @@
 
 #pragma mark TableViewItem
 
-- (void)configureCell:(TableViewCell*)tableCell
+- (void)configureCell:(LegacyTableViewCell*)tableCell
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:tableCell withStyler:styler];
 
@@ -53,7 +53,7 @@
 #pragma mark UIControlEventEditingChanged
 
 - (void)textFieldDidChange:(UITextField*)textField {
-  DCHECK_EQ(textField.tag, self.type);
+  CHECK_EQ(textField.tag, self.type, base::NotFatalUntil::M152);
   self.text = textField.text;
   [self.delegate textDidChangeForItem:self];
 }
@@ -130,15 +130,12 @@
 
   [self applyContentSizeCategoryStyles];
 
-  return self;
-}
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+      @[ UITraitPreferredContentSizeCategory.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(applyContentSizeCategoryStyles)];
 
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (self.traitCollection.preferredContentSizeCategory !=
-      previousTraitCollection.preferredContentSizeCategory) {
-    [self applyContentSizeCategoryStyles];
-  }
+  return self;
 }
 
 - (void)applyContentSizeCategoryStyles {

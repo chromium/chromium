@@ -59,6 +59,11 @@ std::unique_ptr<SessionCommand> CreateAddExtraDataCommand(
     const std::string& key,
     const std::string& data);
 
+// Creates a SessionCommand storing the platform session id.
+std::unique_ptr<SessionCommand> CreateSetPlatformSessionIdCommand(
+    SessionCommand::id_type command_id,
+    const std::string& platform_session_id);
+
 // Converts a SessionCommand previously created by
 // CreateUpdateTabNavigationCommand into a
 // SerializedNavigationEntry. Returns true on success. If
@@ -108,6 +113,11 @@ bool RestoreAddExtraDataCommand(const SessionCommand& command,
                                 SessionID* session_id,
                                 std::string* key,
                                 std::string* data);
+
+// Extracts a SessionCommand as previously created by
+// CreateSetPlatformSessionIdCommand into platform_session_id.
+bool RestoreSetPlatformSessionIdCommand(const SessionCommand& command,
+                                        std::string* platform_session_id);
 
 }  // namespace sessions
 

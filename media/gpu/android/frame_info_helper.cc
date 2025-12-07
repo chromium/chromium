@@ -5,6 +5,7 @@
 #include "media/gpu/android/frame_info_helper.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -155,6 +156,8 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
     class FrameInfoHelperHolder
         : public base::RefCountedThreadSafe<FrameInfoHelperHolder> {
      public:
+      REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();
+
       explicit FrameInfoHelperHolder(raw_ptr<OnGpu> frame_info_helper_on_gpu)
           : frame_info_helper_on_gpu_(frame_info_helper_on_gpu) {
         DCHECK(frame_info_helper_on_gpu_);
@@ -243,11 +246,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
     waiting_for_real_frame_info_ = false;
 
     if (coded_size && visible_rect) {
-      const bool guessed_coded_size_correctly =
-          guessed_coded_size == *coded_size;
-      base::UmaHistogramBoolean("Media.FrameInfo.GuessedCodedSizeChangeSuccess",
-                                guessed_coded_size_correctly);
-      if (!guessed_coded_size_correctly) {
+      if (guessed_coded_size != *coded_size) {
         DisableCodedSizeGuessing(guessed_coded_size, frame_info_->coded_size);
       }
 
@@ -339,6 +338,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
 
         // To avoid glitches during size changes, guess a likely coded size.
         auto info = GuessFrameInfo(*request.buffer_renderer);
+        info.ycbcr_info = frame_info_->ycbcr_info;
         waiting_for_real_frame_info_ = true;
 
         // Ensure we get the real coded size for the next frame.
@@ -374,8 +374,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
   std::optional<FrameInfo> frame_info_;
   gfx::Size visible_size_;
   bool waiting_for_real_frame_info_ = false;
-  bool disable_coded_size_guessing_ =
-      !base::FeatureList::IsEnabled(kMediaCodecCodedSizeGuessing);
+  bool disable_coded_size_guessing_ = false;
 
   base::WeakPtrFactory<FrameInfoHelperImpl> weak_factory_{this};
 };

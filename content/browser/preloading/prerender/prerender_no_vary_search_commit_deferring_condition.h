@@ -11,6 +11,11 @@
 #include "base/functional/callback_forward.h"
 #include "content/browser/renderer_host/navigation_type.h"
 #include "content/public/browser/commit_deferring_condition.h"
+#include "content/public/browser/frame_tree_node_id.h"
+
+namespace base {
+class TimeTicks;
+}
 
 namespace content {
 
@@ -23,14 +28,21 @@ class PrerenderNoVarySearchCommitDeferringCondition
   static std::unique_ptr<CommitDeferringCondition> MaybeCreate(
       NavigationRequest& navigation_request,
       NavigationType navigation_type,
-      std::optional<int> candidate_prerender_frame_tree_node_id);
+      std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
+
+  // Called upon the renderer confirmed that the prerender URL has been updated.
+  static void OnUrlUpdated(base::TimeTicks defer_start_time,
+                           std::string histogram_suffix,
+                           base::OnceClosure resume);
+
   Result WillCommitNavigation(base::OnceClosure resume) override;
+  const char* TraceEventName() const override;
 
  private:
   PrerenderNoVarySearchCommitDeferringCondition(
       NavigationRequest& navigation_request,
-      int candidate_prerender_frame_tree_node_id);
-  const int candidate_prerender_frame_tree_node_id_;
+      FrameTreeNodeId candidate_prerender_frame_tree_node_id);
+  const FrameTreeNodeId candidate_prerender_frame_tree_node_id_;
 };
 
 }  // namespace content

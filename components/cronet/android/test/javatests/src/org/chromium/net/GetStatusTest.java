@@ -25,7 +25,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.net.CronetTestRule.CronetImplementation;
+import org.chromium.net.CronetTestFramework.CronetImplementation;
 import org.chromium.net.CronetTestRule.IgnoreFor;
 import org.chromium.net.TestUrlRequestCallback.ResponseStep;
 import org.chromium.net.UrlRequest.Status;
@@ -47,23 +47,24 @@ public class GetStatusTest {
     @Rule public final CronetTestRule mTestRule = CronetTestRule.withAutomaticEngineStartup();
     @Rule public ExpectedException thrown = ExpectedException.none();
 
+    private NativeTestServer mNativeTestServer;
+
     @Before
     public void setUp() throws Exception {
-        assertThat(
-                        NativeTestServer.startNativeTestServer(
-                                mTestRule.getTestFramework().getContext()))
-                .isTrue();
+        mNativeTestServer =
+                NativeTestServer.createNativeTestServer(mTestRule.getTestFramework().getContext());
+        mNativeTestServer.start();
     }
 
     @After
     public void tearDown() throws Exception {
-        NativeTestServer.shutdownNativeTestServer();
+        mNativeTestServer.close();
     }
 
     @Test
     @SmallTest
     public void testSimpleGet() throws Exception {
-        String url = NativeTestServer.getEchoMethodURL();
+        String url = mNativeTestServer.getEchoMethodURL();
         TestUrlRequestCallback callback = new TestUrlRequestCallback();
         callback.setAutoAdvance(false);
         UrlRequest.Builder builder =
@@ -145,7 +146,7 @@ public class GetStatusTest {
                         .getTestFramework()
                         .getEngine()
                         .newUrlRequestBuilder(
-                                NativeTestServer.getEchoBodyURL(),
+                                mNativeTestServer.getEchoBodyURL(),
                                 callback,
                                 callback.getExecutor());
 

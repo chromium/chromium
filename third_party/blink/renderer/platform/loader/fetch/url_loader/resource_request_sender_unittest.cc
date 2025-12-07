@@ -15,11 +15,16 @@
 
 #include "base/containers/span.h"
 #include "base/feature_list.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "components/persistent_cache/pending_backend.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -125,14 +130,17 @@ mojo::ScopedDataPipeConsumerHandle CreateDataPipeConsumerHandleFilledWithString(
 
 class TestPlatformForRedirects final : public TestingPlatformSupport {
  public:
-  bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) override {
+  bool IsRedirectSafe(
+      const GURL& from_url,
+      const GURL& to_url,
+      const std::optional<url::Origin>& request_initiator) override {
     return true;
   }
 };
 
 void RegisterURLSchemeAsCodeCacheWithHashing() {
 #if DCHECK_IS_ON()
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+  SetIsBeforeThreadCreatedForTest();  // Required for next operation:
 #endif
   SchemeRegistry::RegisterURLSchemeAsCodeCacheWithHashing(
       "codecachewithhashing");
@@ -244,8 +252,6 @@ class MockLoader : public network::mojom::URLLoader {
   }
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
-  void PauseReadingBodyFromNet() override {}
-  void ResumeReadingBodyFromNet() override {}
 
   void SetFollowRedirectCallback(RepeatingFollowRedirectCallback callback) {
     follow_redirect_callback_ = std::move(callback);
@@ -269,11 +275,15 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
     mojo::PendingRemote<mojom::blink::CodeCacheHost> pending_remote;
     receiver_ = std::make_unique<mojo::Receiver<mojom::blink::CodeCacheHost>>(
         this, pending_remote.InitWithNewPipeAndPassReceiver());
-    host_ = std::make_unique<blink::CodeCacheHost>(
+    host_ = blink::CodeCacheHost::Create(
         mojo::Remote<mojom::blink::CodeCacheHost>(std::move(pending_remote)));
   }
 
   // mojom::blink::CodeCacheHost implementations
+  void GetPendingBackend(mojom::blink::CodeCacheType cache_type,
+                         GetPendingBackendCallback callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
   void DidGenerateCacheableMetadata(mojom::blink::CodeCacheType cache_type,
                                     const KURL& url,
                                     base::Time expected_response_time,
@@ -292,7 +302,7 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
       const KURL& url,
       base::Time expected_response_time,
       mojo_base::BigBuffer data,
-      const WTF::String& cache_storage_cache_name) override {}
+      const String& cache_storage_cache_name) override {}
 
   blink::CodeCacheHost* GetCodeCacheHost() { return host_.get(); }
   bool did_clear_code_cache_entry() const {
@@ -307,13 +317,15 @@ class DummyCodeCacheHost final : public mojom::blink::CodeCacheHost {
 };
 
 // Sets up the message sender override for the unit test.
-class ResourceRequestSenderTest : public testing::Test,
-                                  public network::mojom::URLLoaderFactory {
+class ResourceRequestSenderTestBase : public testing::Test,
+                                      public network::mojom::URLLoaderFactory {
  public:
-  explicit ResourceRequestSenderTest()
-      : resource_request_sender_(new ResourceRequestSender()) {}
+  explicit ResourceRequestSenderTestBase(
+      std::unique_ptr<base::test::TaskEnvironment> task_environment)
+      : task_environment_(std::move(task_environment)),
+        resource_request_sender_(new ResourceRequestSender()) {}
 
-  ~ResourceRequestSenderTest() override {
+  ~ResourceRequestSenderTestBase() override {
     resource_request_sender_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -330,7 +342,7 @@ class ResourceRequestSenderTest : public testing::Test,
 
   void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
       override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  protected:
@@ -363,13 +375,20 @@ class ResourceRequestSenderTest : public testing::Test,
   std::vector<std::pair<mojo::PendingReceiver<network::mojom::URLLoader>,
                         mojo::PendingRemote<network::mojom::URLLoaderClient>>>
       loader_and_clients_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   std::unique_ptr<ResourceRequestSender> resource_request_sender_;
 
   scoped_refptr<MockRequestClient> mock_client_;
 
  private:
   ScopedTestingPlatformSupport<TestPlatformForRedirects> platform_;
+};
+
+class ResourceRequestSenderTest : public ResourceRequestSenderTestBase {
+ public:
+  ResourceRequestSenderTest()
+      : ResourceRequestSenderTestBase(
+            std::make_unique<base::test::SingleThreadTaskEnvironment>()) {}
 };
 
 // Tests the generation of unique request ids.
@@ -534,7 +553,7 @@ TEST_F(ResourceRequestSenderTest, RedirectSyncCancel) {
       base::BindRepeating([](const std::vector<std::string>& removed_headers,
                              const net::HttpRequestHeaders& modified_headers) {
         // FollowRedirect() must not be called.
-        CHECK(false);
+        NOTREACHED();
       }));
 
   mock_client_->SetOnReceivedRedirectCallback(base::BindLambdaForTesting(
@@ -723,7 +742,7 @@ TEST_F(ResourceRequestSenderTest, RedirectAsyncFollowAfterCancel) {
       base::BindRepeating([](const std::vector<std::string>& removed_headers,
                              const net::HttpRequestHeaders& modified_headers) {
         // FollowRedirect() must not be called.
-        CHECK(false);
+        NOTREACHED();
       }));
 
   net::RedirectInfo redirect_info;
@@ -1656,7 +1675,7 @@ TEST_F(ResourceRequestSenderTest, KeepaliveRequest) {
       std::make_unique<DummyCodeCacheHost>(base::BindLambdaForTesting(
           [&](mojom::blink::CodeCacheType cache_type, const KURL& url,
               FetchCachedCodeCallback callback) {
-            CHECK(false) << "FetchCachedCode shouold not be called";
+            NOTREACHED() << "FetchCachedCode shouold not be called";
           }));
 
   StartAsync(std::move(request), mock_client_,
@@ -1971,7 +1990,7 @@ TEST_F(ResourceRequestSenderSyncTest, SendSyncRedirectCancel) {
                    const std::vector<std::string>& removed_headers,
                    const net::HttpRequestHeaders& modified_headers) {
                   // FollowRedirect() must not be called.
-                  CHECK(false);
+                  NOTREACHED();
                 },
                 std::move(refcounted_client)));
           }));
@@ -2126,6 +2145,154 @@ TEST_F(CompletionTimeConversionTest, Convert) {
               base::Milliseconds(15));
 
   EXPECT_EQ(completion_time(), request_start() + base::Milliseconds(3));
+}
+
+class TestingPlatformForWebUIBundledCodeCache : public TestingPlatformSupport {
+ public:
+  TestingPlatformForWebUIBundledCodeCache()
+      : resource_data_(base::MakeRefCounted<base::RefCountedBytes>(
+            std::vector<uint8_t>{1, 2, 3})) {}
+  ~TestingPlatformForWebUIBundledCodeCache() override = default;
+
+  // TestingPlatformSupport:
+  base::RefCountedMemory* GetDataResourceBytes(int resource_id) override {
+    return resource_data_.get();
+  }
+  std::optional<int> GetWebUIBundledCodeCacheResourceId(
+      const GURL& resource_url) override {
+    return resource_url == webui_bundled_code_cache_url_ ? std::optional<int>(1)
+                                                         : std::nullopt;
+  }
+
+  void set_webui_bundled_code_cache_url(
+      const GURL& webui_bundled_code_cache_url) {
+    webui_bundled_code_cache_url_ = webui_bundled_code_cache_url;
+  }
+  void reset_resource_data() { resource_data_ = nullptr; }
+
+ private:
+  GURL webui_bundled_code_cache_url_;
+  scoped_refptr<base::RefCountedMemory> resource_data_;
+};
+
+// Fixture to test the WebUI bundled code cache feature.
+class WebUIBundledCodeCacheResourceRequestSenderTest
+    : public ResourceRequestSenderTestBase {
+ public:
+  WebUIBundledCodeCacheResourceRequestSenderTest()
+      : ResourceRequestSenderTestBase(
+            std::make_unique<base::test::TaskEnvironment>(
+                base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
+  ~WebUIBundledCodeCacheResourceRequestSenderTest() override = default;
+
+  // ResourceRequestSenderTestBase:
+  void SetUp() override {
+    ResourceRequestSenderTestBase::SetUp();
+#if DCHECK_IS_ON()
+    SetIsBeforeThreadCreatedForTest();
+#endif
+    SchemeRegistry::RegisterURLSchemeAsWebUIBundledBytecode("chrome");
+  }
+
+  void TearDown() override {
+#if DCHECK_IS_ON()
+    SetIsBeforeThreadCreatedForTest();
+#endif
+    SchemeRegistry::RemoveURLSchemeAsWebUIBundledBytecodeForTest("chrome");
+    ResourceRequestSenderTestBase::TearDown();
+  }
+
+  // Loads a resource and checks the status of the code cache.
+  void LoadResourceAndCheck(const GURL& resource_url, bool expect_code_cache) {
+    scoped_refptr<MockRequestClient> mock_client =
+        base::MakeRefCounted<MockRequestClient>();
+
+    std::unique_ptr<network::ResourceRequest> request = CreateResourceRequest();
+    request->url = resource_url;
+    request->destination = network::mojom::RequestDestination::kScript;
+
+    StartAsync(std::move(request), mock_client);
+    EXPECT_EQ(1u, loader_and_clients_.size());
+    mojo::Remote<network::mojom::URLLoaderClient> client(
+        std::move(loader_and_clients_[0].second));
+    loader_and_clients_.clear();
+
+    // Send a response and wait for acknowledgement.
+    client->OnReceiveResponse(
+        CreateResponse(), mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return mock_client->received_response(); }));
+
+    // Check the code cache received by the client.
+    if (expect_code_cache) {
+      EXPECT_TRUE(mock_client->cached_metadata());
+      EXPECT_GT(mock_client->cached_metadata()->size(), 0u);
+    } else {
+      EXPECT_FALSE(mock_client->cached_metadata());
+    }
+  }
+
+ protected:
+  ScopedTestingPlatformSupport<TestingPlatformForWebUIBundledCodeCache>
+      platform_;
+};
+
+TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
+       FetchesCodeCacheFromPlatformWhenAvailable) {
+  base::HistogramTester histogram_tester;
+
+  // Define URLs that support the webui bundled code cache.
+  const GURL test_url("chrome://example/script.js");
+
+  // Configure the platform to serve webui code cache for only one of the test
+  // URLs.
+  platform_->set_webui_bundled_code_cache_url(test_url);
+  EXPECT_TRUE(platform_->GetWebUIBundledCodeCacheResourceId(test_url));
+
+  // Assert code cache is fetched for the URL for which the webui bundled code
+  // cache is available.
+  LoadResourceAndCheck(test_url, /*expect_code_cache=*/true);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      true, 1);
+}
+
+TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
+       FetchesCodeCacheFromPlatformWhenUnavailable) {
+  base::HistogramTester histogram_tester;
+
+  // Define URLs that doesn't support the webui bundled code cache.
+  const GURL test_url("chrome://example/script.js");
+
+  EXPECT_FALSE(platform_->GetWebUIBundledCodeCacheResourceId(test_url));
+
+  LoadResourceAndCheck(test_url, /*expect_code_cache=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      true, 0);
+}
+
+TEST_F(WebUIBundledCodeCacheResourceRequestSenderTest,
+       HandlesMissingPlatformCodeCache) {
+  base::HistogramTester histogram_tester;
+
+  // Define a URL that supports the webui bundled code cache.
+  const GURL test_url("chrome://example/script.js");
+
+  // Configure the platform to serve webui code cache for the test URL.
+  platform_->set_webui_bundled_code_cache_url(test_url);
+  EXPECT_TRUE(platform_->GetWebUIBundledCodeCacheResourceId(test_url));
+
+  // Update the platform such that fetching the code cache resource metadata
+  // will fail.
+  platform_->reset_resource_data();
+
+  // Assert attempting to fetch the code cache is handled correctly and the
+  // client's code cache remains unset.
+  LoadResourceAndCheck(test_url, /*expect_code_cache=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.ResourceRequest.WebUIBundledCodeCacheFetcher.DidReceiveCachedCode",
+      false, 1);
 }
 
 }  // namespace

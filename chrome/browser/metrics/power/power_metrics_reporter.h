@@ -9,7 +9,9 @@
 #include <optional>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/power_monitor/battery_level_provider.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"

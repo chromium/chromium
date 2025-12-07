@@ -245,14 +245,14 @@ TEST_F(ImageDecodingStoreTest, OnMemoryPressure) {
   EXPECT_EQ(4u, image_decoding_store_.MemoryUsageInBytes());
 
   base::MemoryPressureListener::SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_MODERATE);
+      base::MEMORY_PRESSURE_LEVEL_MODERATE);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1, image_decoding_store_.CacheEntries());
   EXPECT_EQ(4u, image_decoding_store_.MemoryUsageInBytes());
 
   base::MemoryPressureListener::SimulatePressureNotification(
-      base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(0, image_decoding_store_.CacheEntries());

@@ -4,6 +4,8 @@
 
 #include "components/viz/service/display/overlay_processor_surface_control.h"
 
+#include <variant>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
@@ -19,7 +21,7 @@ TEST(OverlayCandidateValidatorSurfaceControlTest, NoClipOrNegativeOffset) {
   candidates.push_back(candidate);
 
   OverlayProcessorSurfaceControl processor;
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
   EXPECT_RECTF_EQ(candidates.at(0).display_rect, gfx::RectF(10.f, 10.f));
 }
@@ -35,7 +37,7 @@ TEST(OverlayProcessorSurfaceControlTest, Clipped) {
   candidates.push_back(candidate);
 
   OverlayProcessorSurfaceControl processor;
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
   EXPECT_RECTF_EQ(candidates.at(0).display_rect,
                   gfx::RectF(2.f, 2.f, 5.f, 5.f));
@@ -52,7 +54,7 @@ TEST(OverlayProcessorSurfaceControlTest, NegativeOffset) {
   candidates.push_back(candidate);
 
   OverlayProcessorSurfaceControl processor;
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
   EXPECT_RECTF_EQ(candidates.at(0).display_rect,
                   gfx::RectF(0.f, 0.f, 8.f, 6.f));
@@ -70,7 +72,7 @@ TEST(OverlayProcessorSurfaceControlTest, ClipAndNegativeOffset) {
   candidates.push_back(candidate);
 
   OverlayProcessorSurfaceControl processor;
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
   EXPECT_RECTF_EQ(candidates.at(0).display_rect,
                   gfx::RectF(0.f, 0.f, 5.f, 5.f));
@@ -92,10 +94,10 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlayVFlip) {
 
   candidates.back().transform =
       gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_90;
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
 
-  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidates.back().transform),
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidates.back().transform),
             gfx::OVERLAY_TRANSFORM_FLIP_VERTICAL);
   EXPECT_RECTF_EQ(candidates.back().display_rect, gfx::RectF(10, 40, 100, 50));
 }
@@ -115,30 +117,28 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlay) {
   // First use a different transform than the display transform, the overlay is
   // rejected.
   candidates.back().transform = gfx::OVERLAY_TRANSFORM_NONE;
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
   EXPECT_FALSE(candidates.back().overlay_handled);
 
   candidates.back().transform = gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90;
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
-  EXPECT_EQ(absl::get<gfx::OverlayTransform>(candidates.back().transform),
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidates.back().transform),
             gfx::OVERLAY_TRANSFORM_NONE);
   EXPECT_RECTF_EQ(candidates.back().display_rect, gfx::RectF(10, 40, 100, 50));
 }
 
 TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOutputSurfaceOverlay) {
-  OverlayProcessorInterface::OutputSurfaceOverlayPlane candidate;
+  OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(100, 200);
   candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
-  std::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
-      overlay_plane = candidate;
 
   OverlayProcessorSurfaceControl processor;
   processor.SetViewportSize(gfx::Size(100, 200));
   processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
-  processor.AdjustOutputSurfaceOverlay(&overlay_plane);
-  EXPECT_RECTF_EQ(overlay_plane.value().display_rect, gfx::RectF(200, 100));
-  EXPECT_EQ(overlay_plane.value().transform,
+  processor.AdjustPrimaryPlaneForDisplayTransformForTesting(candidate);
+  EXPECT_RECTF_EQ(candidate.display_rect, gfx::RectF(200, 100));
+  EXPECT_EQ(std::get<gfx::OverlayTransform>(candidate.transform),
             gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_90);
 }
 
@@ -154,7 +154,7 @@ TEST(OverlayCandidateValidatorTest, OverlayDamageRectForOutputSurface) {
 
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
-  processor.CheckOverlaySupport(nullptr, &candidates);
+  processor.CheckOverlaySupport(std::nullopt, &candidates);
   EXPECT_TRUE(candidates.back().overlay_handled);
   EXPECT_RECTF_EQ(candidates.back().display_rect, gfx::RectF(10, 40, 100, 50));
   EXPECT_EQ(processor.GetOverlayDamageRectForOutputSurface(candidates.back()),

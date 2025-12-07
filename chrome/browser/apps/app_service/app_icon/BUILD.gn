@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 assert(!is_android)
@@ -18,31 +17,35 @@ source_set("app_icon") {
   deps = [
     ":util",
     "//base",
-    "//chrome/app/theme:chrome_unscaled_resources_grit",
+    "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/favicon",
     "//chrome/browser/icon_transcoder",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/resources:app_icon_resources_grit",
+    "//chrome/browser/resources:app_icon_resources",
     "//chrome/browser/web_applications",
     "//chrome/common",
     "//components/app_constants",
     "//components/favicon/core",
+    "//components/favicon_base",
     "//components/keyed_service/content",
     "//components/services/app_service",
     "//components/webapps/common",
+    "//content/public/browser",
   ]
 
   if (enable_extensions) {
     deps += [
-      "//extensions:extensions_browser_resources_grit",
+      "//extensions:extensions_browser_resources",
       "//extensions/browser",
       "//extensions/common",
     ]
   }
 
-  if (is_chromeos_ash) {
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  if (is_chromeos) {
     sources += [
       "app_icon_decoder.cc",
       "app_icon_decoder.h",
@@ -56,16 +59,15 @@ source_set("app_icon") {
     ]
 
     deps += [
-      "//ash/components/arc/mojom",
       "//ash/public/cpp",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
       "//chrome/browser/image_decoder",
-      "//chrome/browser/resources:component_extension_resources_grit",
-      "//components/arc/common",
+      "//chrome/browser/resources:component_extension_resources",
+      "//chromeos/ash/experiences/arc/mojom",
     ]
+    public_deps += [ "//chromeos/ash/experiences/arc/intent_helper" ]
   }
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 }
 
 source_set("util") {
@@ -85,7 +87,7 @@ source_set("util") {
     "//ui/gfx",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/public/cpp" ]
   }
 }
@@ -105,7 +107,6 @@ source_set("unit_tests") {
     ":util",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser/apps:icon_standardizer",
@@ -131,7 +132,7 @@ source_set("unit_tests") {
     deps += [ "//chrome/browser/extensions" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "app_icon_decoder_unittest.cc",
       "arc_apps_icon_unittest.cc",
@@ -139,11 +140,16 @@ source_set("unit_tests") {
     ]
 
     deps += [
-      "//ash/components/arc:arc_test_support",
-      "//chrome/browser/ash:test_support",
+      "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
+      "//chrome/browser/ash/app_list/arc:test_support",
       "//chrome/browser/ash/arc",
       "//chrome/browser/ash/crostini:test_support",
+      "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/dbus/chunneld",
+      "//chromeos/ash/components/dbus/seneschal",
+      "//chromeos/ash/experiences/arc:arc_app_constants",
+      "//chromeos/ash/experiences/arc:arc_test_support",
     ]
   }
 }
@@ -162,14 +168,10 @@ source_set("test_support") {
 
   deps = [
     ":app_icon",
-    "//build:chromeos_buildflags",
     "//chrome/browser/apps:icon_standardizer",
+    "//chrome/browser/apps/app_service/publishers",
     "//chrome/test:test_support",
     "//components/services/app_service",
     "//skia",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ash:test_support" ]
-  }
 }

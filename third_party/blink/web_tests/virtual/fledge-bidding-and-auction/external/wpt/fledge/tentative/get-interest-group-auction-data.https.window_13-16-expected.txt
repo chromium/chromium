@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] getInterestGroupAdAuctionData() requests k-anon.
+  assert_own_property: expected property "enforceKAnon" missing
+Harness: the test ran to completion.
+

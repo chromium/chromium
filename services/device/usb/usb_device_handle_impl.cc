@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "services/device/usb/usb_device_handle_impl.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -54,8 +50,7 @@ uint8_t ConvertTransferDirection(UsbTransferDirection direction) {
     case UsbTransferDirection::OUTBOUND:
       return LIBUSB_ENDPOINT_OUT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 uint8_t CreateRequestType(UsbTransferDirection direction,
@@ -114,8 +109,7 @@ static UsbTransferStatus ConvertTransferStatus(
     case LIBUSB_TRANSFER_CANCELLED:
       return UsbTransferStatus::CANCELLED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UsbTransferStatus::TRANSFER_ERROR;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -375,7 +369,8 @@ UsbDeviceHandleImpl::Transfer::CreateIsochronousTransfer(
       &Transfer::PlatformCallback, transfer.get(), timeout);
 
   for (size_t i = 0; i < packet_lengths.size(); ++i)
-    transfer->platform_transfer_->iso_packet_desc[i].length = packet_lengths[i];
+    UNSAFE_TODO(transfer->platform_transfer_->iso_packet_desc[i]).length =
+        packet_lengths[i];
 
   return transfer;
 }
@@ -472,8 +467,7 @@ void UsbDeviceHandleImpl::Transfer::ProcessCompletion() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid usb transfer type";
-      break;
+      NOTREACHED() << "Invalid usb transfer type";
   }
 }
 
@@ -495,7 +489,8 @@ void UsbDeviceHandleImpl::Transfer::TransferComplete(UsbTransferStatus status,
         platform_transfer_->num_iso_packets);
     for (size_t i = 0; i < packets.size(); ++i) {
       packets[i] = mojom::UsbIsochronousPacket::New();
-      packets[i]->length = platform_transfer_->iso_packet_desc[i].length;
+      packets[i]->length =
+          UNSAFE_TODO(platform_transfer_->iso_packet_desc[i]).length;
       packets[i]->transferred_length = 0;
       packets[i]->status = status;
     }
@@ -516,11 +511,12 @@ void UsbDeviceHandleImpl::Transfer::IsochronousTransferComplete() {
       platform_transfer_->num_iso_packets);
   for (size_t i = 0; i < packets.size(); ++i) {
     packets[i] = mojom::UsbIsochronousPacket::New();
-    packets[i]->length = platform_transfer_->iso_packet_desc[i].length;
+    packets[i]->length =
+        UNSAFE_TODO(platform_transfer_->iso_packet_desc[i]).length;
     packets[i]->transferred_length =
-        platform_transfer_->iso_packet_desc[i].actual_length;
-    packets[i]->status =
-        ConvertTransferStatus(platform_transfer_->iso_packet_desc[i].status);
+        UNSAFE_TODO(platform_transfer_->iso_packet_desc[i]).actual_length;
+    packets[i]->status = ConvertTransferStatus(
+        UNSAFE_TODO(platform_transfer_->iso_packet_desc[i]).status);
   }
   task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&UsbDeviceHandleImpl::TransferComplete,
@@ -539,6 +535,9 @@ void UsbDeviceHandleImpl::Close() {
   if (!device_)
     return;
 
+  // Cancelling transfers may run or destroy callbacks holding the last
+  // reference to this object so hold a reference for the rest of this method.
+  scoped_refptr<UsbDeviceHandleImpl> self(this);
   // Cancel all the transfers, their callbacks will be called some time later.
   for (Transfer* transfer : transfers_)
     transfer->Cancel();
@@ -1037,7 +1036,7 @@ UsbDeviceHandleImpl::GetClaimedInterfaceForEndpoint(uint8_t endpoint_address) {
 
 void UsbDeviceHandleImpl::ReportIsochronousTransferError(
     UsbDeviceHandle::IsochronousTransferCallback callback,
-    const std::vector<uint32_t> packet_lengths,
+    const std::vector<uint32_t>& packet_lengths,
     UsbTransferStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

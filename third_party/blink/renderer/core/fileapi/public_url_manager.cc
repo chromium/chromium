@@ -29,7 +29,6 @@
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/types/pass_key.h"
-#include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -46,7 +45,6 @@
 #include "third_party/blink/renderer/platform/blob/blob_url.h"
 #include "third_party/blink/renderer/platform/blob/blob_url_null_origin_map.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/network/blink_schemeful_site.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/task_type_names.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -120,7 +118,7 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
           execution_context->GetTaskRunner(TaskType::kFileReading));
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -160,23 +158,7 @@ String PublicURLManager::RegisterURL(URLRegistrable* registrable) {
     mojo::PendingReceiver<mojom::blink::Blob> blob_receiver =
         blob_remote.InitWithNewPipeAndPassReceiver();
 
-    // Determining the top-level site for workers is non-trivial. We assume
-    // usage of blob URLs in workers is much lower than in windows, so we
-    // should still get useful metrics even while ignoring workers.
-    std::optional<BlinkSchemefulSite> top_level_site;
-    if (GetExecutionContext()->IsWindow()) {
-      auto* window = To<LocalDOMWindow>(GetExecutionContext());
-      if (window->top() && window->top()->GetFrame()) {
-        top_level_site = BlinkSchemefulSite(window->top()
-                                                ->GetFrame()
-                                                ->GetSecurityContext()
-                                                ->GetSecurityOrigin());
-      }
-    }
-
-    GetBlobURLStore().Register(std::move(blob_remote), url,
-                               GetExecutionContext()->GetAgentClusterID(),
-                               top_level_site);
+    GetBlobURLStore().Register(std::move(blob_remote), url);
 
     mojo_urls_.insert(url_string);
     registrable->CloneMojoBlob(std::move(blob_receiver));
@@ -226,73 +208,20 @@ void PublicURLManager::Resolve(
 
   DCHECK(url.ProtocolIs("blob"));
 
-  auto metrics_callback = [](ExecutionContext* execution_context,
-                             const std::optional<base::UnguessableToken>&
-                                 unsafe_agent_cluster_id,
-                             const std::optional<BlinkSchemefulSite>&
-                                 unsafe_top_level_site) {
-    if (execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
-      execution_context->CountUse(
-          WebFeature::
-              kBlobStoreAccessAcrossAgentClustersInResolveAsURLLoaderFactory);
-    }
-    // Determining top-level site in a worker is non-trivial. Since this is only
-    // used to calculate metrics it should be okay to not track top-level site
-    // in that case, as long as the count for unknown top-level sites ends up
-    // low enough compared to overall usage.
-    std::optional<BlinkSchemefulSite> top_level_site;
-    if (execution_context->IsWindow()) {
-      auto* window = To<LocalDOMWindow>(execution_context);
-      if (window->top() && window->top()->GetFrame()) {
-        top_level_site = BlinkSchemefulSite(window->top()
-                                                ->GetFrame()
-                                                ->GetSecurityContext()
-                                                ->GetSecurityOrigin());
-      }
-    }
-    if ((!top_level_site || !unsafe_top_level_site) &&
-        execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
-      // Either the registration or resolve happened in a context where it's not
-      // easy to determine the top-level site, and agent cluster doesn't match
-      // either (if agent cluster matches, by definition top-level site would
-      // also match, so this only records page loads where there is a chance
-      // that top-level site doesn't match).
-      execution_context->CountUse(
-          WebFeature::kBlobStoreAccessUnknownTopLevelSite);
-    } else if (top_level_site != unsafe_top_level_site) {
-      // Blob URL lookup happened with a different top-level site than Blob URL
-      // registration.
-      execution_context->CountUse(
-          WebFeature::kBlobStoreAccessAcrossTopLevelSite);
-    }
-  };
-
-  GetBlobURLStore().ResolveAsURLLoaderFactory(
-      url, std::move(factory_receiver),
-      WTF::BindOnce(metrics_callback, WrapPersistent(GetExecutionContext())));
+  GetBlobURLStore().ResolveAsURLLoaderFactory(url, std::move(factory_receiver));
 }
 
-void PublicURLManager::Resolve(
+void PublicURLManager::ResolveAsBlobURLToken(
     const KURL& url,
-    mojo::PendingReceiver<mojom::blink::BlobURLToken> token_receiver) {
+    mojo::PendingReceiver<mojom::blink::BlobURLToken> token_receiver,
+    bool is_top_level_navigation) {
   if (is_stopped_)
     return;
 
   DCHECK(url.ProtocolIs("blob"));
 
-  auto metrics_callback = [](ExecutionContext* execution_context,
-                             const std::optional<base::UnguessableToken>&
-                                 unsafe_agent_cluster_id) {
-    if (execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
-      execution_context->CountUse(
-          WebFeature::
-              kBlobStoreAccessAcrossAgentClustersInResolveForNavigation);
-    }
-  };
-
-  GetBlobURLStore().ResolveForNavigation(
-      url, std::move(token_receiver),
-      WTF::BindOnce(metrics_callback, WrapPersistent(GetExecutionContext())));
+  GetBlobURLStore().ResolveAsBlobURLToken(url, std::move(token_receiver),
+                                          is_top_level_navigation);
 }
 
 void PublicURLManager::ContextDestroyed() {

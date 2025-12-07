@@ -18,8 +18,6 @@ namespace optimization_guide {
 
 namespace {
 
-constexpr char kOptGuideOAuthConsumerName[] = "optimization_guide";
-
 void RecordAccessTokenResultHistogram(
     OptimizationGuideAccessTokenResult result) {
   base::UmaHistogramEnumeration("OptimizationGuide.AccessTokenHelper.Result",
@@ -50,10 +48,15 @@ void OnAccessTokenRequestCompleted(
 
 }  // namespace
 
-void RequestAccessToken(signin::IdentityManager* identity_manager,
-                        const std::set<std::string>& oauth_scopes,
-                        AccessTokenReceivedCallback callback) {
-  DCHECK(!oauth_scopes.empty());
+void HandleTokenRequestFlow(bool require_token,
+                            signin::IdentityManager* identity_manager,
+                            signin::OAuthConsumerId oauth_consumer_id,
+                            AccessTokenReceivedCallback callback) {
+  if (!require_token) {
+    std::move(callback).Run(std::string());
+    return;
+  }
+
   if (!identity_manager) {
     RecordAccessTokenResultHistogram(
         OptimizationGuideAccessTokenResult::kUserNotSignedIn);
@@ -68,7 +71,7 @@ void RequestAccessToken(signin::IdentityManager* identity_manager,
   }
   auto access_token_fetcher =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-          kOptGuideOAuthConsumerName, identity_manager, oauth_scopes,
+          oauth_consumer_id, identity_manager,
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
           signin::ConsentLevel::kSignin);
   auto* access_token_fetcher_ptr = access_token_fetcher.get();

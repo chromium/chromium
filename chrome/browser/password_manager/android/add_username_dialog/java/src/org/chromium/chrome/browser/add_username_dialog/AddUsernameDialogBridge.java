@@ -4,35 +4,39 @@
 
 package org.chromium.chrome.browser.add_username_dialog;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 
-import androidx.annotation.NonNull;
-
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.base.WindowAndroid;
 
+@NullMarked
 public class AddUsernameDialogBridge implements AddUsernameDialogController.Delegate {
     private long mNativeAddUsernameDialogBridge;
     private final WindowAndroid mWindowAndroid;
-    private AddUsernameDialogController mController;
+    private @Nullable AddUsernameDialogController mController;
 
     @CalledByNative
     public AddUsernameDialogBridge(
-            long nativeAddUsernameDialogBridge, @NonNull WindowAndroid windowAndroid) {
+            long nativeAddUsernameDialogBridge, WindowAndroid windowAndroid) {
         mNativeAddUsernameDialogBridge = nativeAddUsernameDialogBridge;
         mWindowAndroid = windowAndroid;
     }
 
     @CalledByNative
-    public void showAddUsernameDialog(String password) {
+    public void showAddUsernameDialog(@JniType("std::u16string") String password) {
         Context context = mWindowAndroid.getContext().get();
         if (context == null) return;
 
         mController =
                 new AddUsernameDialogController(
-                        context, mWindowAndroid.getModalDialogManager(), this);
+                        context, assumeNonNull(mWindowAndroid.getModalDialogManager()), this);
         mController.showAddUsernameDialog(password);
     }
 
@@ -58,7 +62,8 @@ public class AddUsernameDialogBridge implements AddUsernameDialogController.Dele
 
     @NativeMethods
     interface Natives {
-        void onDialogAccepted(long nativeAddUsernameDialogBridge, String username);
+        void onDialogAccepted(
+                long nativeAddUsernameDialogBridge, @JniType("std::u16string") String username);
 
         void onDialogDismissed(long nativeAddUsernameDialogBridge);
     }

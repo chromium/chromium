@@ -14,7 +14,7 @@ export class TestPluginProxy extends TestBrowserProxy implements PluginProxy {
   private loadCompleteCallback_: ((success: boolean) => void)|null = null;
   private preloadCallback_: (() => void)|null = null;
   private viewportChangedCallback_: ViewportChangedCallback|null = null;
-  private fakePlugin_: HTMLDivElement|null = null;
+  private fakePlugin_: HTMLElement|null = null;
 
   constructor() {
     super(['loadPreviewPage']);
@@ -25,7 +25,7 @@ export class TestPluginProxy extends TestBrowserProxy implements PluginProxy {
     this.loadCompleteCallback_ = loadCompleteCallback;
   }
 
-  setPreloadCallback(preloadCallback: (() => void)|null) {
+  setPreloadCallback(preloadCallback: () => void) {
     this.preloadCallback_ = preloadCallback;
   }
 

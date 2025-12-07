@@ -1293,8 +1293,8 @@
 #define __NR_eventfd (__NR_Linux + 319)
 #endif
 
-#if !defined(__NR_eventfd)
-#define __NR_eventfd (__NR_Linux + 320)
+#if !defined(__NR_fallocate)
+#define __NR_fallocate (__NR_Linux + 320)
 #endif
 
 #if !defined(__NR_timerfd_create)
@@ -1695,6 +1695,66 @@
 
 #if !defined(__NR_landlock_restrict_self)
 #define __NR_landlock_restrict_self (__NR_Linux + 446)
+#endif
+
+#if !defined(__NR_process_mrelease)
+#define __NR_process_mrelease (__NR_Linux + 448)
+#endif
+
+#if !defined(__NR_futex_waitv)
+#define __NR_futex_waitv (__NR_Linux + 449)
+#endif
+
+#if !defined(__NR_set_mempolicy_home_node)
+#define __NR_set_mempolicy_home_node (__NR_Linux + 450)
+#endif
+
+#if !defined(__NR_cachestat)
+#define __NR_cachestat (__NR_Linux + 451)
+#endif
+
+#if !defined(__NR_fchmodat2)
+#define __NR_fchmodat2 (__NR_Linux + 452)
+#endif
+
+#if !defined(__NR_map_shadow_stack)
+#define __NR_map_shadow_stack (__NR_Linux + 453)
+#endif
+
+#if !defined(__NR_futex_wake)
+#define __NR_futex_wake (__NR_Linux + 454)
+#endif
+
+#if !defined(__NR_futex_wait)
+#define __NR_futex_wait (__NR_Linux + 455)
+#endif
+
+#if !defined(__NR_futex_requeue)
+#define __NR_futex_requeue (__NR_Linux + 456)
+#endif
+
+#if !defined(__NR_statmount)
+#define __NR_statmount (__NR_Linux + 457)
+#endif
+
+#if !defined(__NR_listmount)
+#define __NR_listmount (__NR_Linux + 458)
+#endif
+
+#if !defined(__NR_lsm_get_self_attr)
+#define __NR_lsm_get_self_attr (__NR_Linux + 459)
+#endif
+
+#if !defined(__NR_lsm_set_self_attr)
+#define __NR_lsm_set_self_attr (__NR_Linux + 460)
+#endif
+
+#if !defined(__NR_lsm_list_modules)
+#define __NR_lsm_list_modules (__NR_Linux + 461)
+#endif
+
+#if !defined(__NR_mseal)
+#define __NR_mseal (__NR_Linux + 462)
 #endif
 
 #endif  // SANDBOX_LINUX_SYSTEM_HEADERS_MIPS_LINUX_SYSCALLS_H_

@@ -4,26 +4,57 @@
 
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
 
+#include <memory>
 #include <optional>
+#include <string>
+#include <utility>
 
+#include "base/check_deref.h"
+#include "base/notreached.h"
 #include "base/syslog_logging.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_launcher.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/startup_app_launcher.h"
-#include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_service_launcher.h"
+#include "chrome/browser/ash/app_mode/web_app/kiosk_web_app_service_launcher.h"
 
 namespace ash {
 
-CrashRecoveryLauncher::CrashRecoveryLauncher(Profile& profile,
-                                             const KioskAppId& kiosk_app_id)
-    : kiosk_app_id_(kiosk_app_id), profile_(profile) {
-  if (kiosk_app_id.type == KioskAppType::kChromeApp) {
-    app_launcher_ = std::make_unique<StartupAppLauncher>(
-        &profile, *kiosk_app_id.app_id, /*should_skip_install=*/true,
-        /*network_delegate=*/this);
-  } else {
-    app_launcher_ = std::make_unique<WebKioskAppServiceLauncher>(
-        &profile, kiosk_app_id.account_id, /*network_delegate=*/this);
+namespace {
+std::unique_ptr<KioskAppLauncher> CreateAppLauncher(
+    Profile& profile,
+    const KioskAppId& kiosk_app_id,
+    KioskAppLauncher::NetworkDelegate* network_delegate) {
+  switch (kiosk_app_id.type) {
+    case KioskAppType::kChromeApp:
+      return std::make_unique<StartupAppLauncher>(
+          &profile, kiosk_app_id.app_id.value(), /*should_skip_install=*/true,
+          network_delegate);
+    case KioskAppType::kWebApp:
+      return std::make_unique<KioskWebAppServiceLauncher>(
+          &profile, kiosk_app_id.account_id, network_delegate);
+    case KioskAppType::kIsolatedWebApp:
+      return std::make_unique<KioskIwaLauncher>(
+          &profile, kiosk_app_id.account_id, network_delegate);
+    case KioskAppType::kArcvmApp:
+      // TODO(crbug.com/418950200): Verify and fix behavior for ARCVM kiosk app
+      // crash recovery.
+      NOTREACHED();
   }
+
+  NOTREACHED();
+}
+}  // namespace
+
+CrashRecoveryLauncher::CrashRecoveryLauncher(PrefService* local_state,
+                                             Profile& profile,
+                                             const KioskAppId& kiosk_app_id)
+    : local_state_(CHECK_DEREF(local_state)),
+      kiosk_app_id_(kiosk_app_id),
+      profile_(profile) {
+  app_launcher_ =
+      CreateAppLauncher(profile, kiosk_app_id, /*network_delegate=*/this);
   observation_.Observe(app_launcher_.get());
 }
 
@@ -32,13 +63,6 @@ CrashRecoveryLauncher::~CrashRecoveryLauncher() = default;
 void CrashRecoveryLauncher::Start(OnDoneCallback callback) {
   done_callback_ = std::move(callback);
   SYSLOG(INFO) << "Starting crash recovery flow for app " << kiosk_app_id_;
-  lacros_launcher_ = std::make_unique<app_mode::LacrosLauncher>();
-  lacros_launcher_->Start(
-      base::BindOnce(&CrashRecoveryLauncher::OnLacrosLaunchComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CrashRecoveryLauncher::OnLacrosLaunchComplete() {
   app_launcher_->Initialize();
 }
 
@@ -76,7 +100,7 @@ void CrashRecoveryLauncher::OnAppWindowCreated(
 void CrashRecoveryLauncher::OnLaunchFailed(KioskAppLaunchError::Error error) {
   SYSLOG(WARNING) << "Crash recovery flow failed with error "
                   << static_cast<int>(error);
-  KioskAppLaunchError::Save(error);
+  KioskAppLaunchError::Save(local_state_.get(), error);
   InvokeDoneCallback(false, std::nullopt);
 }
 

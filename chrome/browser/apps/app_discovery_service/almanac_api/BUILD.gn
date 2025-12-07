@@ -8,7 +8,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "launcher_app.proto" ]
 
-  link_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+  deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }
 
 # Note that unlike the .cc and .h pb files the descriptor is generated in
@@ -22,5 +22,5 @@ proto_library("launcher_app_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "launcher_app.descriptor"
-  proto_deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
+  deps = [ "//chrome/browser/apps/almanac_api_client/proto" ]
 }

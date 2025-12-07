@@ -3,7 +3,7 @@
 <translationbundle lang="te">
 <translation id="1340068511406764697">మీరు తప్పనిసరిగా పోస్టల్ కోడ్‌ను అందించాలి. ఉదాహరణకు <ph name="EXAMPLE" />. మీ పోస్టల్ కోడ్ తెలియదా? దాన్ని <ph name="BEGIN_LINK" />ఇక్కడ<ph name="END_LINK" /> కనుగొనండి.</translation>
 <translation id="2053553514270667976">జిప్ కోడ్</translation>
-<translation id="2096368010154057602">శాఖ</translation>
+<translation id="2096368010154057602">విభాగం</translation>
 <translation id="2577522251608256362">పరిసరాలు</translation>
 <translation id="3050787670591910834">మీరు తప్పనిసరిగా పోస్టల్ కోడ్‌ను అందించాలి. ఉదాహరణకు <ph name="EXAMPLE" />.</translation>
 <translation id="3174168572213147020">దీవి</translation>
@@ -17,7 +17,7 @@
 <translation id="5095208057601539847">ప్రావిన్స్</translation>
 <translation id="5327248766486351172">పేరు</translation>
 <translation id="5937097533660449554">ఒబ్లాస్ట్</translation>
-<translation id="6132429659673988671">నగర సమీపము</translation>
+<translation id="6132429659673988671">నగర శివారు (సబర్బన్)</translation>
 <translation id="6207937957461833379">దేశం/ప్రాంతం</translation>
 <translation id="6247152910634872706">సంస్థ</translation>
 <translation id="6271429879296260742">PIN కోడ్</translation>
@@ -25,7 +25,7 @@
 <translation id="6327653052522436195">నగరం</translation>
 <translation id="6403469950615936250">ఈ పోస్టల్ కోడ్ ఆకృతి గుర్తించబడలేదు. ఇది చెల్లుబాటు అయ్యే పోస్టల్ కోడ్‌కు ఉదాహరణ: <ph name="EXAMPLE" />. మీ పోస్టల్ కోడ్ తెలియదా? దాన్ని <ph name="BEGIN_LINK" />ఇక్కడ<ph name="END_LINK" /> కనుగొనండి.</translation>
 <translation id="6735419622867539268"><ph name="FIELD_VALUE" /> అనేది ఈ ఫీల్డ్‌కు తగిన విలువలుగా తెలిసిన వాటిలో లేదు.</translation>
-<translation id="6768780634682399515">ఈర్‌కోడ్</translation>
+<translation id="6768780634682399515">ఎయిర్‌కోడ్</translation>
 <translation id="6777217372746654521">ఈ అడ్రస్‌ పంక్తి తపాలా కార్యాలయ పెట్టెను కలిగి ఉన్నట్లుగా కనిపిస్తోంది. దయచేసి వీధి లేదా భవన అడ్రస్‌ను ఉపయోగించండి.</translation>
 <translation id="6839929833149231406">ప్రాంతం</translation>
 <translation id="684852933191805996">పట్టణ ప్రాంతం</translation>

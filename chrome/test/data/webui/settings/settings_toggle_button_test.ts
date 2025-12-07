@@ -5,17 +5,32 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE} from 'chrome://settings/settings.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {DEFAULT_CHECKED_VALUE, DEFAULT_UNCHECKED_VALUE, loadTimeData} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for settings-toggle-button. */
 suite('SettingsToggleButton', () => {
   let testElement: SettingsToggleButtonElement;
+
+  function createNoToggleOnClickElement(): SettingsToggleButtonElement {
+    // Pref for noToggleOnClick disabled tests
+    const noTogglePref = {
+      key: 'noToggleOnClickTest',
+      type: chrome.settingsPrivate.PrefType.BOOLEAN,
+      value: true,
+    };
+    const noToggleTestElement =
+        document.createElement('settings-toggle-button');
+    noToggleTestElement.set('pref', noTogglePref);
+    noToggleTestElement.noToggleOnHostClick = true;
+    document.body.appendChild(noToggleTestElement);
+    flush();
+    return noToggleTestElement;
+  }
 
   // Initialize a checked control before each test.
   setup(() => {
@@ -49,13 +64,17 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.pref!.value);
   });
 
-  test('fires a change event', (done) => {
-    testElement.addEventListener('change', () => {
-      assertFalse(testElement.checked);
-      done();
-    });
+  test('fires a change event', async () => {
     assertTrue(testElement.checked);
+    let changeEventPromise = eventToPromise('change', testElement);
     testElement.click();
+    let changeEvent = await changeEventPromise;
+    assertFalse(changeEvent.detail);
+
+    changeEventPromise = eventToPromise('change', testElement);
+    testElement.click();
+    changeEvent = await changeEventPromise;
+    assertTrue(changeEvent.detail);
   });
 
   test('fires a change event for label', (done) => {
@@ -67,13 +86,16 @@ suite('SettingsToggleButton', () => {
     testElement.$.labelWrapper.click();
   });
 
-  test('fires a change event for toggle', (done) => {
-    testElement.addEventListener('change', () => {
-      assertFalse(testElement.checked);
-      done();
-    });
+  test('fires a change event for toggle', async () => {
     assertTrue(testElement.checked);
+    const toggleChangeEventPromise =
+        eventToPromise('change', testElement.$.control);
+    const hostChangeEventPromise = eventToPromise('change', testElement);
     testElement.$.control.click();
+    const toggleChangeEvent = await toggleChangeEventPromise;
+    const hostChangeEvent = await hostChangeEventPromise;
+    assertNotEquals(toggleChangeEvent, hostChangeEvent);
+    assertEquals(testElement, hostChangeEvent.target);
   });
 
   test('fires a single change event per tap', async () => {
@@ -107,6 +129,50 @@ suite('SettingsToggleButton', () => {
     testElement.click();
     assertFalse(testElement.checked);
     assertFalse(testElement.$.control.checked);
+  });
+
+  test('clicking the host does not toggle pref', async () => {
+    const noToggleTestElement = createNoToggleOnClickElement();
+    assertTrue(noToggleTestElement.checked);
+    assertTrue(noToggleTestElement.pref!.value);
+    const changeEventPromise =
+        eventToPromise('change', noToggleTestElement).catch(() => {
+          // Expect a rejection if 'change' is not fired
+          return null;
+        });
+    // Simulate clicking the host element, not the cr-toggle itself.
+    noToggleTestElement.$.labelWrapper.click();
+    // Ensure no 'change' event was fired
+    const changeEvent = await Promise.race([
+      changeEventPromise,
+      new Promise(resolve => setTimeout(resolve, 50)),
+    ]);  // Small delay to confirm no event
+    assertFalse(!!changeEvent, 'Change event should not have fired');
+    // Verify the toggle state and pref value remain unchanged
+    assertTrue(noToggleTestElement.checked);
+    assertTrue(noToggleTestElement.pref!.value);
+  });
+
+  test('clicking the control still toggles the pref', async () => {
+    const noToggleTestElement = createNoToggleOnClickElement();
+    assertTrue(noToggleTestElement.checked);
+    assertTrue(noToggleTestElement.pref!.value);
+    let changeEventPromise = eventToPromise('change', noToggleTestElement);
+    // Click specifically on the internal cr-toggle control
+    noToggleTestElement.$.control.click();
+    // Wait for the change event
+    let changeEvent = await changeEventPromise;
+    assertFalse(changeEvent.detail);
+    // Verify the toggle state and pref value have changed
+    assertFalse(noToggleTestElement.checked);
+    assertFalse(noToggleTestElement.pref!.value);
+    // Click again to toggle back
+    changeEventPromise = eventToPromise('change', noToggleTestElement);
+    noToggleTestElement.$.control.click();
+    changeEvent = await changeEventPromise;
+    assertTrue(changeEvent.detail);
+    assertTrue(noToggleTestElement.checked);
+    assertTrue(noToggleTestElement.pref!.value);
   });
 
   test('inverted', () => {
@@ -279,7 +345,7 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
-    learnMoreLink!.click();
+    learnMoreLink.click();
     assertTrue(testElement.checked);
   });
 
@@ -300,11 +366,11 @@ suite('SettingsToggleButton', () => {
 
     const crToggle = testElement.shadowRoot!.querySelector('#control');
     assertTrue(!!crToggle);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelText);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
 
     const testLabelTextAlt = 'test label text alt';
     testElement.setAttribute('label', testLabelTextAlt);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelTextAlt);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelTextAlt);
   });
 
   test('set aria-label attribute should override aria-label of toggle', () => {
@@ -313,11 +379,11 @@ suite('SettingsToggleButton', () => {
 
     const crToggle = testElement.shadowRoot!.querySelector('#control');
     assertTrue(!!crToggle);
-    assertEquals(crToggle!.getAttribute('aria-label'), testLabelText);
+    assertEquals(crToggle.getAttribute('aria-label'), testLabelText);
 
     const testAriaLabel = 'test aria label';
     testElement.setAttribute('aria-label', testAriaLabel);
-    assertEquals(crToggle!.getAttribute('aria-label'), testAriaLabel);
+    assertEquals(crToggle.getAttribute('aria-label'), testAriaLabel);
   });
 
   test('sub label with action link should have proper role', () => {
@@ -329,7 +395,7 @@ suite('SettingsToggleButton', () => {
             '#sub-label-text-with-link');
     assertTrue(!!subLabelTextWithLink);
 
-    const actionLink = subLabelTextWithLink!.querySelector('a');
+    const actionLink = subLabelTextWithLink.querySelector('a');
     assertTrue(!!actionLink);
     assertEquals(actionLink.getAttribute('role'), 'link');
   });
@@ -348,7 +414,23 @@ suite('SettingsToggleButton', () => {
     assertEquals(actionLink.getAttribute('aria-label'), 'Label');
   });
 
-  // <if expr="chromeos_ash">
+  test('shows more-actions-after slot content', () => {
+    const slottedContent = document.createElement('div');
+    slottedContent.setAttribute('slot', 'more-actions-after');
+    slottedContent.textContent = 'Slotted content';
+    testElement.appendChild(slottedContent);
+    flush();
+
+    const slot = testElement.shadowRoot!.querySelector<HTMLSlotElement>(
+        'slot[name="more-actions-after"]');
+    assertTrue(!!slot);
+    const assignedNodes = slot.assignedNodes({flatten: true});
+    assertEquals(1, assignedNodes.length);
+    assertEquals(slottedContent, assignedNodes[0]);
+    assertEquals('Slotted content', assignedNodes[0]!.textContent!.trim());
+  });
+
+  // <if expr="is_chromeos">
   test('click on sub label link should not toggle the button', () => {
     let subLabelTextWithLink =
         testElement.shadowRoot!.querySelector('#sub-label-text-with-link');
@@ -384,7 +466,7 @@ suite('SettingsToggleButton', () => {
     assertTrue(testElement.checked);
     flush();
 
-    subLabelTextWithLink!.click();
+    subLabelTextWithLink.click();
     assertFalse(testElement.checked);
   });
   // </if>

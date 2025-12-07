@@ -17,6 +17,7 @@ class MockPaymentsWindowManager : public PaymentsWindowManager {
   ~MockPaymentsWindowManager() override;
 
   MOCK_METHOD(void, InitVcn3dsAuthentication, (Vcn3dsContext), (override));
+  MOCK_METHOD(void, InitBnplFlow, (BnplContext), (override));
 };
 
 }  // namespace autofill::payments

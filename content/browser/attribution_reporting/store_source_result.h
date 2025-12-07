@@ -6,13 +6,13 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORE_SOURCE_RESULT_H_
 
 #include <optional>
+#include <variant>
 
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
 
@@ -69,24 +69,36 @@ class CONTENT_EXPORT StoreSourceResult {
     explicit ExceedsMaxChannelCapacity(double limit) : limit(limit) {}
   };
 
+  struct ExceedsMaxScopesChannelCapacity {
+    double limit;
+    explicit ExceedsMaxScopesChannelCapacity(double limit) : limit(limit) {}
+  };
+
   struct ExceedsMaxTriggerStateCardinality {
     uint32_t limit;
     explicit ExceedsMaxTriggerStateCardinality(uint32_t limit) : limit(limit) {}
   };
 
-  using Result = absl::variant<Success,
-                               InternalError,
-                               InsufficientSourceCapacity,
-                               InsufficientUniqueDestinationCapacity,
-                               ExcessiveReportingOrigins,
-                               ProhibitedByBrowserPolicy,
-                               DestinationReportingLimitReached,
-                               DestinationGlobalLimitReached,
-                               DestinationBothLimitsReached,
-                               ReportingOriginsPerSiteLimitReached,
-                               ExceedsMaxChannelCapacity,
-                               ExceedsMaxTriggerStateCardinality,
-                               DestinationPerDayReportingLimitReached>;
+  struct ExceedsMaxEventStatesLimit {
+    uint32_t limit;
+    explicit ExceedsMaxEventStatesLimit(uint32_t limit) : limit(limit) {}
+  };
+
+  using Result = std::variant<Success,
+                              InternalError,
+                              InsufficientSourceCapacity,
+                              InsufficientUniqueDestinationCapacity,
+                              ExcessiveReportingOrigins,
+                              ProhibitedByBrowserPolicy,
+                              DestinationReportingLimitReached,
+                              DestinationGlobalLimitReached,
+                              DestinationBothLimitsReached,
+                              ReportingOriginsPerSiteLimitReached,
+                              ExceedsMaxChannelCapacity,
+                              ExceedsMaxScopesChannelCapacity,
+                              ExceedsMaxTriggerStateCardinality,
+                              ExceedsMaxEventStatesLimit,
+                              DestinationPerDayReportingLimitReached>;
 
   StoreSourceResult(StorableSource,
                     bool is_noised,

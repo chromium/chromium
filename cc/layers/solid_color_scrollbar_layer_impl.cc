@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "cc/input/scroll_utils.h"
 #include "cc/trees/occlusion.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 
@@ -71,11 +72,9 @@ int SolidColorScrollbarLayerImpl::ThumbThickness() const {
 }
 
 int SolidColorScrollbarLayerImpl::ThumbLength() const {
-  float thumb_length = TrackLength();
-  if (scroll_layer_length())
-    thumb_length *= clip_layer_length() / scroll_layer_length();
-
-  return std::max(static_cast<int>(thumb_length), ThumbThickness());
+  return ScrollUtils::CalculateScrollbarThumbLength(
+      scroll_layer_length(), clip_layer_length(), TrackLength(),
+      ThumbThickness());
 }
 
 float SolidColorScrollbarLayerImpl::TrackLength() const {
@@ -93,6 +92,7 @@ bool SolidColorScrollbarLayerImpl::IsThumbResizable() const {
 }
 
 void SolidColorScrollbarLayerImpl::AppendQuads(
+    const AppendQuadsContext& context,
     viz::CompositorRenderPass* render_pass,
     AppendQuadsData* append_quads_data) {
   viz::SharedQuadState* shared_quad_state =

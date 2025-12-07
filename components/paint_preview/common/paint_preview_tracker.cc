@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/paint_preview/common/paint_preview_tracker.h"
 
 #include <stdint.h>
@@ -15,8 +10,8 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
-#include "base/not_fatal_until.h"
 #include "components/paint_preview/common/glyph_usage.h"
 #include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -136,7 +131,7 @@ void PaintPreviewTracker::AddGlyphs(const SkTextBlob* blob) {
     }
     const uint16_t* glyphs = run.fGlyphIndices;
     for (int i = 0; i < run.fGlyphCount; ++i)
-      typeface_glyph_usage_[typeface->uniqueID()]->Set(glyphs[i]);
+      typeface_glyph_usage_[typeface->uniqueID()]->Set(UNSAFE_TODO(glyphs[i]));
   }
 }
 
@@ -167,7 +162,7 @@ void PaintPreviewTracker::CustomDataToSkPictureCallback(SkCanvas* canvas,
   auto it = subframe_pics_.find(content_id);
   // DCHECK is sufficient as |subframe_pics_| has same entries as
   // |content_id_to_proxy_id|.
-  CHECK(it != subframe_pics_.end(), base::NotFatalUntil::M130);
+  CHECK(it != subframe_pics_.end());
 
   SkRect rect = it->second->cullRect();
   SkMatrix subframe_offset = SkMatrix::Translate(rect.x(), rect.y());

@@ -7,6 +7,8 @@ package org.chromium.components.minidump_uploader;
 import androidx.annotation.IntDef;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
 
 import java.io.File;
@@ -20,9 +22,10 @@ import java.util.concurrent.Callable;
 /**
  * This class tries to upload a minidump to the crash server.
  *
- * It is implemented as a Callable<Boolean> and returns true on successful uploads,
- * and false otherwise.
+ * It is implemented as a Callable<Boolean> and returns true on successful uploads, and false
+ * otherwise.
  */
+@NullMarked
 public class MinidumpUploadCallable implements Callable<Integer> {
     private static final String TAG = "MDUploadCallable";
 
@@ -150,7 +153,8 @@ public class MinidumpUploadCallable implements Callable<Integer> {
      * @param localId The local ID when crash happened.
      * @param uploadId The crash ID return from the server.
      */
-    private void appendUploadedEntryToLog(String localId, String uploadId) throws IOException {
+    private void appendUploadedEntryToLog(@Nullable String localId, String uploadId)
+            throws IOException {
         FileWriter writer = new FileWriter(mLogfile, /* append= */ true);
 
         // The log entries are formated like so:

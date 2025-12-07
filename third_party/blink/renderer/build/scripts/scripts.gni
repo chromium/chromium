@@ -5,6 +5,7 @@
 import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//third_party/blink/renderer/config.gni")
+import("//third_party/jinja2/jinja2.gni")
 
 if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
@@ -16,24 +17,27 @@ if (is_ios) {
 # them without worrying about the current directory.
 _scripts_dir = "//third_party/blink/renderer/build/scripts"
 
-scripts_for_json5_files = [
-  # jinja2/__init__.py contains version string, so sufficient as
-  # dependency for whole jinja2 package
-  "//third_party/jinja2/__init__.py",
-  "//third_party/markupsafe/__init__.py",  # jinja2 dep
-  "//third_party/pyjson5/src/json5/__init__.py",
-  "$_scripts_dir/blinkbuild/name_style_converter.py",
-  "$_scripts_dir/json5_generator.py",
-  "$_scripts_dir/license.py",
-  "$_scripts_dir/name_utilities.py",
-  "$_scripts_dir/template_expander.py",
-  "$_scripts_dir/templates/macros.tmpl",
-  "$_scripts_dir/core/css/field_alias_expander.py",
-  "$_scripts_dir/core/css/properties/templates/style_builder_functions.tmpl",
-]
+scripts_for_json5_files = jinja2_sources + [
+                            "//third_party/pyjson5/src/json5/__init__.py",
+                            "//third_party/pyjson5/src/json5/lib.py",
+                            "//third_party/pyjson5/src/json5/parser.py",
+                            "//third_party/pyjson5/src/json5/version.py",
+                            "$_scripts_dir/blinkbuild/name_style_converter.py",
+                            "$_scripts_dir/json5_generator.py",
+                            "$_scripts_dir/license.py",
+                            "$_scripts_dir/name_utilities.py",
+                            "$_scripts_dir/template_expander.py",
+                            "$_scripts_dir/templates/macros.tmpl",
+                            "$_scripts_dir/core/css/field_alias_expander.py",
+                            "$_scripts_dir/core/css/properties/templates/style_builder_functions.tmpl",
+                          ]
 
-css_properties_files =
-    scripts_for_json5_files + [ "$_scripts_dir/core/css/css_properties.py" ]
+css_properties_files = scripts_for_json5_files + [
+                         "$_scripts_dir/core/css/css_properties.py",
+                         "$_scripts_dir/make_origin_trials.py",
+                         "$_scripts_dir/make_runtime_features_utilities.py",
+                         "$_scripts_dir/make_runtime_features.py",
+                       ]
 
 make_event_factory_files = scripts_for_json5_files + [
                              "$_scripts_dir/make_event_factory.py",
@@ -48,6 +52,7 @@ make_names_files = scripts_for_json5_files + [
 
 make_qualified_names_files =
     scripts_for_json5_files + [
+      "$_scripts_dir/aria_properties.py",
       "$_scripts_dir/make_qualified_names.py",
       "$_scripts_dir/templates/make_qualified_names.cc.tmpl",
       "$_scripts_dir/templates/make_qualified_names.h.tmpl",

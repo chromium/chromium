@@ -30,8 +30,8 @@
         "fuchsia.hwinfo.Product",
         "fuchsia.intl.PropertyProvider",
         "fuchsia.kernel.VmexResource",
-        "fuchsia.logger.LogSink",
         "fuchsia.media.ProfileProvider",
+        "fuchsia.scheduler.RoleManager",
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.settings.Display",
@@ -64,7 +64,6 @@
 
     {
       protocol: [
-        "fuchsia.logger.LogSink",
         "fuchsia.scheduler.ProfileProvider",
         "fuchsia.sysmem.Allocator",
         "fuchsia.sysmem2.Allocator",

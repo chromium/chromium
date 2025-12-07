@@ -4,6 +4,7 @@
 
 #include "components/autofill/content/renderer/page_passwords_analyser.h"
 
+#include <algorithm>
 #include <map>
 #include <stack>
 #include <string>
@@ -12,7 +13,6 @@
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,17 +37,16 @@ using blink::WebLabelElement;
 using blink::WebLocalFrame;
 using blink::WebNode;
 using blink::WebString;
-using blink::WebVector;
 
 namespace autofill {
 
 namespace {
 
-const char kDocumentationUrl[] = "https://goo.gl/9p2vKq";
-const char* kTypeAttributes[] = {"text", "email", "tel", "password"};
-const char* kTypeTextAttributes[] = {"text", "email", "tel"};
-char kTextFieldSignature = 'T';
-char kPasswordFieldSignature = 'P';
+constexpr const char kDocumentationUrl[] = "https://goo.gl/9p2vKq";
+constexpr const char* kTypeAttributes[] = {"text", "email", "tel", "password"};
+constexpr const char* kTypeTextAttributes[] = {"text", "email", "tel"};
+constexpr char kTextFieldSignature = 'T';
+constexpr char kPasswordFieldSignature = 'P';
 
 // Produce a relevant link to developer documentation regarding the warning or
 // error. If no particular reference is given, the default URL will be provided.
@@ -257,20 +256,6 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
         text_input, form_util::GetFieldRendererId(input_element),
         skip_control_ids, &nodes_for_id);
   }
-  // Warn against elements sharing an id attribute. Duplicate id attributes both
-  // are against the HTML specification and can cause issues with password
-  // saving/filling, as the Password Manager makes the assumption that ids may
-  // be used as a unique identifier for nodes.
-  for (const auto& pair : nodes_for_id) {
-    const std::string& id_attr = pair.first;
-    const std::vector<WebNode>& nodes = pair.second;
-    if (nodes.size() <= 1)
-      continue;
-    logger->Send(LinkDocumentation(base::StringPrintf(
-                     "Found %zu elements with non-unique id #%s:", nodes.size(),
-                     id_attr.c_str())),
-                 PageFormAnalyserLogger::kWarning, nodes);
-  }
 
   return form_input_collections;
 }
@@ -301,7 +286,7 @@ void InferUsernameField(
     WebElement control(label.CorrespondingControl());
     if (control && control.IsFormControlElement()) {
       WebFormControlElement form_control(control.To<WebFormControlElement>());
-      auto found = base::ranges::find(inputs, form_control);
+      auto found = std::ranges::find(inputs, form_control);
       if (found != inputs.end()) {
         std::string label_content(
             base::UTF16ToUTF8(form_util::FindChildText(label)));

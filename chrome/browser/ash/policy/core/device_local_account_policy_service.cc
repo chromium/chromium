@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
@@ -26,14 +27,11 @@
 #include "chrome/browser/ash/policy/core/device_local_account_policy_store.h"
 #include "chrome/browser/ash/policy/core/file_util.h"
 #include "chrome/browser/ash/policy/external_data/device_local_account_external_data_service.h"
-#include "chrome/browser/ash/policy/invalidation/affiliated_cloud_policy_invalidator.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/settings/cros_settings_provider.h"
-#include "components/invalidation/impl/fcm_invalidation_listener.h"
-#include "components/invalidation/invalidation_factory.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -85,10 +83,9 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
     ash::SessionManagerClient* session_manager_client,
     ash::DeviceSettingsService* device_settings_service,
     ash::CrosSettings* cros_settings,
-    std::variant<AffiliatedInvalidationServiceProvider*,
-                 invalidation::InvalidationListener*>
-        invalidation_service_provider_or_listener,
+    invalidation::InvalidationListener* invalidation_listener,
     scoped_refptr<base::SequencedTaskRunner> store_background_task_runner,
+    scoped_refptr<base::SequencedTaskRunner> store_first_load_task_runner,
     scoped_refptr<base::SequencedTaskRunner> extension_cache_task_runner,
     scoped_refptr<base::SequencedTaskRunner>
         external_data_service_backend_task_runner,
@@ -96,13 +93,12 @@ DeviceLocalAccountPolicyService::DeviceLocalAccountPolicyService(
     : session_manager_client_(session_manager_client),
       device_settings_service_(device_settings_service),
       cros_settings_(cros_settings),
-      invalidation_service_provider_or_listener_(
-          invalidation::PointerVariantToRawPointer(
-              invalidation_service_provider_or_listener)),
+      invalidation_listener_(invalidation_listener),
       device_management_service_(nullptr),
       waiting_for_cros_settings_(false),
       orphan_extension_cache_deletion_state_(NOT_STARTED),
       store_background_task_runner_(store_background_task_runner),
+      store_first_load_task_runner_(store_first_load_task_runner),
       extension_cache_task_runner_(extension_cache_task_runner),
       resource_cache_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
@@ -130,10 +126,9 @@ void DeviceLocalAccountPolicyService::Shutdown() {
   cros_settings_ = nullptr;
   device_management_service_ = nullptr;
 
-  // Drop the reference to `invalidation_service_provider_or_listener_` as it
+  // Drop the reference to `invalidation_listener_` as it
   // may be destroyed sooner than `DeviceLocalAccountPolicyService`.
-  std::visit([](auto& v) { v = nullptr; },
-             invalidation_service_provider_or_listener_);
+  invalidation_listener_ = nullptr;
 
   DeleteBrokers(&policy_brokers_);
 }
@@ -151,17 +146,17 @@ void DeviceLocalAccountPolicyService::Connect(
 }
 
 DeviceLocalAccountPolicyBroker*
-DeviceLocalAccountPolicyService::GetBrokerForUser(const std::string& user_id) {
-  PolicyBrokerMap::iterator entry = policy_brokers_.find(user_id);
-  if (entry == policy_brokers_.end()) {
+DeviceLocalAccountPolicyService::GetBrokerForUser(std::string_view user_id) {
+  PolicyBrokerMap::iterator iter = policy_brokers_.find(user_id);
+  if (iter == policy_brokers_.end()) {
     return nullptr;
   }
 
-  return entry->second.get();
+  return iter->second.get();
 }
 
 bool DeviceLocalAccountPolicyService::IsPolicyAvailableForUser(
-    const std::string& user_id) {
+    std::string_view user_id) {
   DeviceLocalAccountPolicyBroker* broker = GetBrokerForUser(user_id);
   return broker && broker->core()->store()->is_managed();
 }
@@ -297,11 +292,15 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
     } else {
       auto store = std::make_unique<DeviceLocalAccountPolicyStore>(
           device_local_account.account_id, session_manager_client_,
-          device_settings_service_, store_background_task_runner_);
+          device_settings_service_, store_background_task_runner_,
+          store_first_load_task_runner_);
       scoped_refptr<DeviceLocalAccountExternalDataManager>
           external_data_manager =
               external_data_service_->GetExternalDataManager(
                   device_local_account.account_id, store.get());
+      // TODO(b/336629900): Remove the log when the root cause is identified.
+      SYSLOG(INFO) << "Creating the broker for account: "
+                   << device_local_account.account_id;
       broker = std::make_unique<DeviceLocalAccountPolicyBroker>(
           device_local_account,
           component_policy_cache_root_.Append(GetUniqueSubDirectoryForAccountID(
@@ -311,9 +310,7 @@ void DeviceLocalAccountPolicyService::UpdateAccountList() {
               &DeviceLocalAccountPolicyService::NotifyPolicyUpdated,
               base::Unretained(this), device_local_account.user_id),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          resource_cache_task_runner_,
-          invalidation::RawPointerVariantToPointer(
-              invalidation_service_provider_or_listener_));
+          resource_cache_task_runner_, invalidation_listener_);
     }
 
     // Fire up the cloud connection for fetching policy for the account from

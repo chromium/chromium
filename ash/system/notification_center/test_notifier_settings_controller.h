@@ -10,6 +10,8 @@
 
 namespace ash {
 
+struct NotifierMetadata;
+
 class TestNotifierSettingsController : public NotifierSettingsController {
  public:
   TestNotifierSettingsController();
@@ -30,6 +32,8 @@ class TestNotifierSettingsController : public NotifierSettingsController {
   void AddNotifierSettingsObserver(NotifierSettingsObserver* observer) override;
   void RemoveNotifierSettingsObserver(
       NotifierSettingsObserver* observer) override;
+
+  std::vector<NotifierMetadata> GetTestNotifiersMetadata() const;
 
  private:
   bool no_notifiers_ = false;

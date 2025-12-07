@@ -17,6 +17,13 @@ ClientOverview::ClientOverview(ImpressionDetail impression_detail,
 
 ClientOverview::ClientOverview(const ClientOverview& other) = default;
 
+ClientOverview::ClientOverview(ClientOverview&& other) = default;
+
+ClientOverview& ClientOverview::operator=(const ClientOverview& other) =
+    default;
+
+ClientOverview& ClientOverview::operator=(ClientOverview&& other) = default;
+
 ClientOverview::~ClientOverview() = default;
 
 bool ClientOverview::operator==(const ClientOverview& other) const {

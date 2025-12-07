@@ -77,8 +77,7 @@ int PowerSourceToDisplayId(
     case power_manager::PowerSupplyProperties_PowerSource_Port_BACK_RIGHT:
       return IDS_POWER_SOURCE_PORT_BACK_RIGHT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -116,6 +115,9 @@ const char PowerHandler::kHasLidKey[] = "hasLid";
 const char PowerHandler::kAdaptiveChargingKey[] = "adaptiveCharging";
 const char PowerHandler::kAdaptiveChargingManagedKey[] =
     "adaptiveChargingManaged";
+const char PowerHandler::kChargeLimitKey[] = "chargeLimit";
+const char PowerHandler::kOptimizedChargingStrategyKey[] =
+    "optimizedChargingStrategy";
 const char PowerHandler::kBatterySaverFeatureEnabledKey[] =
     "batterySaverFeatureEnabled";
 
@@ -148,9 +150,18 @@ void PowerHandler::TestAPI::SetAdaptiveCharging(bool enabled) {
   handler_->HandleSetAdaptiveCharging(args);
 }
 
+void PowerHandler::TestAPI::SetOptimizedCharging(
+    PowerPolicyController::OptimizedChargingStrategy strategy,
+    bool enabled) {
+  base::Value::List args;
+  args.Append(strategy);
+  args.Append(enabled);
+  handler_->HandleSetOptimizedCharging(args);
+}
+
 PowerHandler::PowerHandler(PrefService* prefs) : prefs_(prefs) {}
 
-PowerHandler::~PowerHandler() {}
+PowerHandler::~PowerHandler() = default;
 
 void PowerHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -175,6 +186,10 @@ void PowerHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setAdaptiveCharging",
       base::BindRepeating(&PowerHandler::HandleSetAdaptiveCharging,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setOptimizedCharging",
+      base::BindRepeating(&PowerHandler::HandleSetOptimizedCharging,
                           base::Unretained(this)));
 }
 
@@ -202,8 +217,11 @@ void PowerHandler::OnJavascriptAllowed() {
   pref_change_registrar_->Add(ash::prefs::kPowerBatteryScreenLockDelayMs,
                               callback);
   pref_change_registrar_->Add(ash::prefs::kPowerLidClosedAction, callback);
+  pref_change_registrar_->Add(ash::prefs::kPowerOptimizedChargingStrategy,
+                              callback);
   pref_change_registrar_->Add(ash::prefs::kPowerAdaptiveChargingEnabled,
                               callback);
+  pref_change_registrar_->Add(ash::prefs::kPowerChargeLimitEnabled, callback);
 }
 
 void PowerHandler::OnJavascriptDisallowed() {
@@ -292,7 +310,7 @@ void PowerHandler::HandleSetIdleBehavior(const base::Value::List& args) {
       prefs_->SetInteger(screen_lock_delay_pref, 0);
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid idle behavior " << value;
+      NOTREACHED() << "Invalid idle behavior " << value;
   }
 }
 
@@ -311,7 +329,7 @@ void PowerHandler::HandleSetLidClosedBehavior(const base::Value::List& args) {
                          PowerPolicyController::ACTION_DO_NOTHING);
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported lid-closed behavior " << value;
+      NOTREACHED() << "Unsupported lid-closed behavior " << value;
   }
 }
 
@@ -322,6 +340,36 @@ void PowerHandler::HandleSetAdaptiveCharging(const base::Value::List& args) {
   bool enabled = args[0].GetBool();
 
   prefs_->SetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled, enabled);
+}
+
+void PowerHandler::HandleSetOptimizedCharging(const base::Value::List& args) {
+  using OptimizedChargingStrategy =
+      PowerPolicyController::OptimizedChargingStrategy;
+  AllowJavascript();
+
+  CHECK_GE(args.size(), 2u);
+
+  int strategy_arg = args[0].GetInt();
+  CHECK(strategy_arg == OptimizedChargingStrategy::STRATEGY_ADAPTIVE_CHARGING ||
+        strategy_arg == OptimizedChargingStrategy::STRATEGY_CHARGE_LIMIT);
+
+  auto strategy = static_cast<OptimizedChargingStrategy>(strategy_arg);
+  bool enabled = args[1].GetBool();
+
+  switch (strategy) {
+    case OptimizedChargingStrategy::STRATEGY_ADAPTIVE_CHARGING:
+      prefs_->SetBoolean(ash::prefs::kPowerChargeLimitEnabled, false);
+      prefs_->SetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled, enabled);
+      break;
+    case OptimizedChargingStrategy::STRATEGY_CHARGE_LIMIT:
+      prefs_->SetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled, false);
+      prefs_->SetBoolean(ash::prefs::kPowerChargeLimitEnabled, enabled);
+      break;
+    default:
+      NOTREACHED()
+          << "HandleSetOptimizedCharging called with an unknown strategy: "
+          << strategy;
+  }
 }
 
 void PowerHandler::SendBatteryStatus() {
@@ -342,7 +390,11 @@ void PowerHandler::SendBatteryStatus() {
   }
 
   std::u16string status_text;
-  if (show_time) {
+  if (features::IsBatteryChargeLimitAvailable() && proto->charge_limited()) {
+    status_text =
+        l10n_util::GetStringFUTF16(IDS_SETTINGS_BATTERY_STATUS_CHARGING_ON_HOLD,
+                                   base::NumberToString16(percent));
+  } else if (show_time) {
     status_text = l10n_util::GetStringFUTF16(
         charging ? IDS_SETTINGS_BATTERY_STATUS_CHARGING
                  : IDS_SETTINGS_BATTERY_STATUS,
@@ -407,6 +459,10 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
       prefs_->GetBoolean(ash::prefs::kPowerAdaptiveChargingEnabled);
   const bool adaptive_charging_managed =
       prefs_->IsManagedPreference(ash::prefs::kPowerAdaptiveChargingEnabled);
+  const bool charge_limit =
+      prefs_->GetBoolean(ash::prefs::kPowerChargeLimitEnabled);
+  const int optimized_charging_strategy =
+      prefs_->GetInteger(ash::prefs::kPowerOptimizedChargingStrategy);
   const bool battery_saver_feature_enabled =
       ash::features::IsBatterySaverAvailable();
   // Don't notify the UI if nothing changed.
@@ -417,6 +473,8 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
       has_lid == last_has_lid_ &&
       adaptive_charging == last_adaptive_charging_ &&
       adaptive_charging_managed == last_adaptive_charging_managed_ &&
+      charge_limit == last_charge_limit_ &&
+      optimized_charging_strategy == last_optimized_charging_strategy_ &&
       battery_saver_feature_enabled == last_battery_saver_feature_enabled_) {
     return;
   }
@@ -434,6 +492,8 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
           .Set(kHasLidKey, has_lid)
           .Set(kAdaptiveChargingKey, adaptive_charging)
           .Set(kAdaptiveChargingManagedKey, adaptive_charging_managed)
+          .Set(kChargeLimitKey, charge_limit)
+          .Set(kOptimizedChargingStrategyKey, optimized_charging_strategy)
           .Set(kBatterySaverFeatureEnabledKey, battery_saver_feature_enabled);
 
   base::Value::List* list = dict.EnsureList(kPossibleAcIdleBehaviorsKey);
@@ -455,6 +515,8 @@ void PowerHandler::SendPowerManagementSettings(bool force) {
   last_has_lid_ = has_lid;
   last_adaptive_charging_ = adaptive_charging;
   last_adaptive_charging_managed_ = adaptive_charging_managed;
+  last_charge_limit_ = charge_limit;
+  last_optimized_charging_strategy_ = optimized_charging_strategy;
   last_battery_saver_feature_enabled_ = battery_saver_feature_enabled;
 }
 
@@ -603,11 +665,9 @@ PowerHandler::IdleBehaviorInfo PowerHandler::GetAllowedIdleBehaviors(
                                  ? IdleBehavior::DISPLAY_OFF
                                  : IdleBehavior::DISPLAY_ON);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Idle behavior is set to a enterprise-only value, but "
-        << "the setting is not enterprise managed. Defaulting to "
-        << "DISPLAY_OFF_SLEEP behavior.";
-    current_idle_behavior = IdleBehavior::DISPLAY_OFF_SLEEP;
+    NOTREACHED() << "Idle behavior is set to a enterprise-only value, but "
+                 << "the setting is not enterprise managed. Defaulting to "
+                 << "DISPLAY_OFF_SLEEP behavior.";
   }
 
   return IdleBehaviorInfo(possible_behaviors, current_idle_behavior,

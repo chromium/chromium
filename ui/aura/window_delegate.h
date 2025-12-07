@@ -5,11 +5,12 @@
 #ifndef UI_AURA_WINDOW_DELEGATE_H_
 #define UI_AURA_WINDOW_DELEGATE_H_
 
+#include "base/memory/safety_checks.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_handler.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 class SkPath;
 
@@ -27,12 +28,16 @@ namespace aura {
 
 // Delegate interface for aura::Window.
 class AURA_EXPORT WindowDelegate : public ui::EventHandler {
+  // TODO(crbug.com/429093189): Remove this macro once it gets fixed.
+  ADVANCED_MEMORY_SAFETY_CHECKS();
+
  public:
   // Returns the window's minimum size, or size 0,0 if there is no limit.
   virtual gfx::Size GetMinimumSize() const = 0;
 
-  // Returns the window's maximum size, or size 0,0 if there is no limit.
-  virtual gfx::Size GetMaximumSize() const = 0;
+  // Returns the window's maximum size, or (size 0,0 or std::nullopt) if there
+  // is no limit.
+  virtual std::optional<gfx::Size> GetMaximumSize() const = 0;
 
   // Called when the Window's position and/or size changes.
   virtual void OnBoundsChanged(const gfx::Rect& old_bounds,

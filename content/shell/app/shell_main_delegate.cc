@@ -5,8 +5,10 @@
 #include "content/shell/app/shell_main_delegate.h"
 
 #include <iostream>
+#include <memory>
 #include <tuple>
 #include <utility>
+#include <variant>
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -14,10 +16,12 @@
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/logging/logging_settings.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/current_process.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
@@ -31,28 +35,20 @@
 #include "content/public/common/url_constants.h"
 #include "content/shell/app/shell_crash_reporter_client.h"
 #include "content/shell/browser/shell_content_browser_client.h"
-#include "content/shell/browser/shell_paths.h"
 #include "content/shell/common/shell_content_client.h"
+#include "content/shell/common/shell_paths.h"
 #include "content/shell/common/shell_switches.h"
 #include "content/shell/gpu/shell_content_gpu_client.h"
 #include "content/shell/renderer/shell_content_renderer_client.h"
 #include "content/shell/utility/shell_content_utility_client.h"
-#include "ipc/ipc_buildflags.h"
 #include "net/cookies/cookie_monster.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/resource/resource_bundle.h"
-
-#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
-#define IPC_MESSAGE_MACROS_LOG_ENABLED
-#include "content/public/common/content_ipc_logging.h"
-#define IPC_LOG_TABLE_ADD_ENTRY(msg_id, logger) \
-    content::RegisterIPCLogger(msg_id, logger)
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/web_test/browser/web_test_browser_main_runner.h"  // nogncheck
 #include "content/web_test/browser/web_test_content_browser_client.h"  // nogncheck
 #include "content/web_test/renderer/web_test_content_renderer_client.h"  // nogncheck
+#include "ui/native_theme/mock_os_settings_provider.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -67,7 +63,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "content/shell/app/paths_mac.h"
+#include "content/shell/app/paths_apple.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -92,6 +88,12 @@
 #include "content/shell/app/ios/shell_application_ios.h"
 #endif
 
+#if BUILDFLAG(IS_IOS_TVOS)
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+#include "content/shell/common/shell_switches.h"
+#endif
+
 namespace {
 
 enum class LoggingDest {
@@ -103,8 +105,11 @@ enum class LoggingDest {
 };
 
 #if !BUILDFLAG(IS_FUCHSIA)
-base::LazyInstance<content::ShellCrashReporterClient>::Leaky
-    g_shell_crash_client = LAZY_INSTANCE_INITIALIZER;
+content::ShellCrashReporterClient& GetShellCrashReporterClient() {
+  static base::NoDestructor<content::ShellCrashReporterClient>
+      shell_crash_client;
+  return *shell_crash_client;
+}
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -222,6 +227,8 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   logging::LogEventProvider::Initialize(kContentShellProviderName);
 
   v8_crashpad_support::SetUp();
+
+  base::win::EnableStrictHandleCheckingForCurrentProcess();
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -233,6 +240,12 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
 
 #if !BUILDFLAG(IS_ANDROID)
   if (switches::IsRunWebTestsSwitchPresent()) {
+    // Instantiating `ui::OsSettingsProvider` will both provide sane default
+    // behavior and prevent `ui::OsSettingsProvider::Get()` from instantiating a
+    // platform-specific subclass.
+    os_settings_provider_ = std::make_unique<ui::OsSettingsProvider>(
+        ui::OsSettingsProvider::PriorityLevel::kTesting);
+
     const bool browser_process =
         command_line.GetSwitchValueASCII(switches::kProcessType).empty();
     if (browser_process) {
@@ -242,13 +255,31 @@ std::optional<int> ShellMainDelegate::BasicStartupComplete() {
   }
 #endif
 
+#if BUILDFLAG(IS_IOS_TVOS)
+  // On tvOS, local storage is limited and data cannot be written anywhere
+  // other than the cache directory, so `base::DIR_CACHE` is used for
+  // the user data directory.
+  //
+  // The exception is when a different user data directory has been specified
+  // (for example by content's WrapperTestLauncherDelegate::GetCommandLine()
+  // when running browser tests). In this case, we prefer the value has been
+  // passed, otherwise multiple tests running at the same time will try to use
+  // the same temporary files and fail.
+  base::FilePath path;
+  if (!command_line.HasSwitch(switches::kContentShellUserDataDir) &&
+      base::PathService::Get(base::DIR_CACHE, &path) && !path.empty()) {
+    command_line.AppendSwitchASCII(switches::kContentShellUserDataDir,
+                                   path.MaybeAsASCII());
+  }
+#endif
+
   RegisterShellPathProvider();
 
   return std::nullopt;
 }
 
 bool ShellMainDelegate::ShouldCreateFeatureList(InvokedIn invoked_in) {
-  return absl::holds_alternative<InvokedInChildProcess>(invoked_in);
+  return std::holds_alternative<InvokedInChildProcess>(invoked_in);
 }
 
 bool ShellMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
@@ -256,13 +287,6 @@ bool ShellMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 }
 
 void ShellMainDelegate::PreSandboxStartup() {
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-  // Create an instance of the CPU class to parse /proc/cpuinfo and cache
-  // cpu_brand info.
-  base::CPU cpu_info;
-#endif
-
 // Disable platform crash handling and initialize the crash reporter, if
 // requested.
 // TODO(crbug.com/40188745): Implement crash reporter integration for Fuchsia.
@@ -272,7 +296,7 @@ void ShellMainDelegate::PreSandboxStartup() {
     std::string process_type =
         base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
             switches::kProcessType);
-    crash_reporter::SetCrashReporterClient(g_shell_crash_client.Pointer());
+    crash_reporter::SetCrashReporterClient(&GetShellCrashReporterClient());
     // Reporting for sub-processes will be initialized in ZygoteForked.
     if (process_type != switches::kZygoteProcess) {
       crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
@@ -289,7 +313,7 @@ void ShellMainDelegate::PreSandboxStartup() {
   InitializeResourceBundle();
 }
 
-absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
+std::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
     const std::string& process_type,
     MainFunctionParams main_function_params) {
   // For non-browser process, return and have the caller run the main loop.
@@ -298,8 +322,6 @@ absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
 
   base::CurrentProcess::GetInstance().SetProcessType(
       base::CurrentProcessType::PROCESS_BROWSER);
-  base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
-      kTraceEventBrowserProcessSortIndex);
 
 #if !BUILDFLAG(IS_ANDROID)
   if (switches::IsRunWebTestsSwitchPresent()) {

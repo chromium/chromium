@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_mediator.h"
 
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_presenter.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 
 @interface UserPolicyPromptMediator ()
 
@@ -22,7 +22,7 @@
 
 - (instancetype)initWithPresenter:(id<UserPolicyPromptPresenter>)presenter
                       authService:(AuthenticationService*)authService {
-  if (self = [super init]) {
+  if ((self = [super init])) {
     _presenter = presenter;
     _authService = authService;
   }

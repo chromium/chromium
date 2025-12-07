@@ -91,6 +91,9 @@ void glBlitFramebufferFn(GLint srcX0,
                          GLint dstY1,
                          GLbitfield mask,
                          GLenum filter) override;
+void glBlobCacheCallbacksANGLEFn(GLSETBLOBPROCANGLE set,
+                                 GLGETBLOBPROCANGLE get,
+                                 const void* userData) override;
 void glBufferDataFn(GLenum target,
                     GLsizeiptr size,
                     const void* data,

@@ -4,6 +4,7 @@
 
 #include "net/dns/host_cache.h"
 
+#include <algorithm>
 #include <map>
 #include <memory>
 #include <optional>
@@ -18,7 +19,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -93,8 +93,8 @@ IPAddress MakeIP(std::string_view literal) {
 
 std::vector<IPEndPoint> MakeEndpoints(std::vector<std::string> my_addresses) {
   std::vector<IPEndPoint> out(my_addresses.size());
-  base::ranges::transform(my_addresses, out.begin(),
-                          [](auto& s) { return IPEndPoint(MakeIP(s), 0); });
+  std::ranges::transform(my_addresses, out.begin(),
+                         [](auto& s) { return IPEndPoint(MakeIP(s), 0); });
   return out;
 }
 
@@ -1817,7 +1817,7 @@ TEST(HostCacheTest, DeserializeNoEndpointNoAliase) {
       (base::Time::Now() + ttl).since_origin().InMicroseconds());
 
   auto dict = base::JSONReader::Read(base::StringPrintf(
-      R"(
+                                         R"(
  [ {
    "dns_query_type": 1,
    "expiration": "%s",
@@ -1830,7 +1830,8 @@ TEST(HostCacheTest, DeserializeNoEndpointNoAliase) {
    "secure": false
 } ]
 )",
-      expiration_time_str.c_str()));
+                                         expiration_time_str.c_str()),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict);
 
   HostCache restored_cache(kMaxCacheEntries);
@@ -1858,7 +1859,7 @@ TEST(HostCacheTest, DeserializeLegacyAddresses) {
       (base::Time::Now() + ttl).since_origin().InMicroseconds());
 
   auto dict = base::JSONReader::Read(base::StringPrintf(
-      R"(
+                                         R"(
  [ {
    "addresses": [ "2000::", "1.2.3.4" ],
    "dns_query_type": 1,
@@ -1872,7 +1873,8 @@ TEST(HostCacheTest, DeserializeLegacyAddresses) {
    "secure": false
 } ]
 )",
-      expiration_time_str.c_str()));
+                                         expiration_time_str.c_str()),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict);
 
   HostCache restored_cache(kMaxCacheEntries);
@@ -1902,7 +1904,7 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeIntegrity) {
 
   // RestoreFromListValue doesn't support dns_query_type=6 (INTEGRITY).
   auto dict = base::JSONReader::Read(base::StringPrintf(
-      R"(
+                                         R"(
  [ {
    "addresses": [ "2000::", "1.2.3.4" ],
    "dns_query_type": 6,
@@ -1916,7 +1918,8 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeIntegrity) {
    "secure": false
 } ]
 )",
-      expiration_time_str.c_str()));
+                                         expiration_time_str.c_str()),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict);
 
   HostCache restored_cache(kMaxCacheEntries);
@@ -1933,7 +1936,7 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeHttpsExperimental) {
 
   // RestoreFromListValue doesn't support dns_query_type=8 (HTTPS_EXPERIMENTAL).
   auto dict = base::JSONReader::Read(base::StringPrintf(
-      R"(
+                                         R"(
  [ {
    "addresses": [ "2000::", "1.2.3.4" ],
    "dns_query_type": 8,
@@ -1947,7 +1950,8 @@ TEST(HostCacheTest, DeserializeInvalidQueryTypeHttpsExperimental) {
    "secure": false
 } ]
 )",
-      expiration_time_str.c_str()));
+                                         expiration_time_str.c_str()),
+                                     base::JSON_PARSE_CHROMIUM_EXTENSIONS);
   ASSERT_TRUE(dict);
 
   HostCache restored_cache(kMaxCacheEntries);
@@ -2509,7 +2513,7 @@ TEST(HostCacheTest, ConvertFromInternalMetadataResult) {
   const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
       kMetadatas{{1, ConnectionEndpointMetadata({"h2", "h3"},
                                                 /*ech_config_list=*/{},
-                                                "target.test")}};
+                                                "target.test", {})}};
   constexpr base::TimeDelta kTtl1 = base::Minutes(45);
   constexpr base::TimeDelta kTtl2 = base::Minutes(40);
   constexpr base::TimeDelta kTtl3 = base::Minutes(55);
@@ -2534,15 +2538,13 @@ TEST(HostCacheTest, ConvertFromInternalMetadataResult) {
   // Expect kTtl2 because it is the min TTL.
   HostCache::Entry expected(OK, kMetadatas, HostCache::Entry::SOURCE_DNS,
                             kTtl2);
-  expected.set_https_record_compatibility(std::vector<bool>{true});
 
   EXPECT_EQ(converted, expected);
 }
 
 // Test the case of compatible HTTPS records but no metadata of use to Chrome.
 // Represented in internal result type as an empty metadata result. Represented
-// in HostCache::Entry as empty metadata with at least one true in
-// `https_record_compatibility_`.
+// in HostCache::Entry as empty metadata.
 TEST(HostCacheTest, ConvertFromCompatibleOnlyInternalMetadataResult) {
   const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
       kMetadatas;
@@ -2570,7 +2572,6 @@ TEST(HostCacheTest, ConvertFromCompatibleOnlyInternalMetadataResult) {
   // Expect kTtl2 because it is the min TTL.
   HostCache::Entry expected(ERR_NAME_NOT_RESOLVED, kMetadatas,
                             HostCache::Entry::SOURCE_DNS, kTtl2);
-  expected.set_https_record_compatibility(std::vector<bool>{true});
 
   EXPECT_EQ(converted, expected);
 }
@@ -2660,6 +2661,195 @@ TEST(HostCacheTest, ConvertFromEmptyInternalResult) {
   HostCache::Entry converted({}, base::Time(), base::TimeTicks());
   HostCache::Entry expected(ERR_NAME_NOT_RESOLVED,
                             HostCache::Entry::SOURCE_UNKNOWN);
+
+  EXPECT_EQ(converted, expected);
+}
+
+// Tests that a ConnectionEndpointMetadata containing Trust Anchor IDs can be
+// serialized and deserialized.
+TEST(HostCacheTest, SerializeTrustAnchorIDs) {
+  base::TimeTicks now;
+  base::TimeDelta ttl = base::Seconds(99);
+  HostCache::Key key(url::SchemeHostPort(url::kHttpsScheme, "example.com", 443),
+                     DnsQueryType::A, 0, HostResolverSource::DNS,
+                     NetworkAnonymizationKey());
+  std::string ipv6_alias = "ipv6_alias.test";
+
+  ConnectionEndpointMetadata metadata;
+  metadata.supported_protocol_alpns = {"h3", "h2"};
+  metadata.ech_config_list = {'f', 'o', 'o'};
+  metadata.target_name = ipv6_alias;
+  metadata.trust_anchor_ids = {{0x01, 0x02, 0x03}, {0x02, 0x02}};
+
+  HostCache::Entry metadata_entry(
+      OK,
+      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
+          {1u, metadata}},
+      HostCache::Entry::SOURCE_DNS);
+
+  HostCache cache(kMaxCacheEntries);
+  cache.Set(key, metadata_entry, now, ttl);
+  ASSERT_EQ(1u, cache.size());
+
+  base::Value::List serialized_cache;
+  cache.GetList(serialized_cache, false /* include_staleness */,
+                HostCache::SerializationType::kRestorable);
+  HostCache restored_cache(kMaxCacheEntries);
+  ASSERT_TRUE(restored_cache.RestoreFromListValue(serialized_cache));
+
+  ASSERT_EQ(1u, restored_cache.size());
+  HostCache::EntryStaleness stale;
+  const std::pair<const HostCache::Key, HostCache::Entry>* result =
+      restored_cache.LookupStale(key, now, &stale);
+
+  ASSERT_TRUE(result);
+  EXPECT_THAT(result->second.GetMetadatas(),
+              testing::ElementsAre(ExpectConnectionEndpointMetadata(
+                  testing::ElementsAre("h3", "h2"),
+                  testing::ElementsAre('f', 'o', 'o'), ipv6_alias,
+                  testing::ElementsAre(std::vector<uint8_t>({0x01, 0x02, 0x03}),
+                                       std::vector<uint8_t>({0x02, 0x02})))));
+}
+
+TEST(HostCacheTest, ConvertFromInternalMergedResult) {
+  const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+      kMetadatas{{1, ConnectionEndpointMetadata({"h2", "h3"},
+                                                /*ech_config_list=*/{},
+                                                "target.test", {})}};
+  const IPEndPoint kIpv4 =
+      IPEndPoint(IPAddress::FromIPLiteral("192.168.1.20").value(), 46);
+  const IPEndPoint kIpv6 =
+      IPEndPoint(IPAddress::FromIPLiteral("2001:db8:1::").value(), 46);
+  constexpr base::TimeDelta kMinTtl = base::Minutes(30);
+  constexpr base::TimeDelta kOtherTtl = base::Minutes(40);
+
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalDataResult>(
+      "endpoint.test", DnsQueryType::AAAA, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      std::vector<IPEndPoint>{kIpv6}, std::vector<std::string>{},
+      std::vector<HostPortPair>{}));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+  results.insert(std::make_unique<HostResolverInternalDataResult>(
+      "endpoint.test", DnsQueryType::A, base::TimeTicks() + kMinTtl,
+      base::Time() + kMinTtl, HostResolverInternalResult::Source::kDns,
+      std::vector<IPEndPoint>{kIpv4}, std::vector<std::string>{},
+      std::vector<HostPortPair>{}));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::A, base::TimeTicks() + kMinTtl,
+      base::Time() + kMinTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+  results.insert(std::make_unique<HostResolverInternalMetadataResult>(
+      "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      kMetadatas));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  HostCache::Entry expected(OK, kMetadatas, HostCache::Entry::SOURCE_DNS,
+                            kMinTtl);
+  expected.set_ip_endpoints({kIpv6, kIpv4});
+  expected.set_canonical_names(std::set<std::string>{"endpoint.test"});
+  expected.set_aliases({"endpoint.test", "domain1.test"});
+
+  EXPECT_EQ(converted, expected);
+}
+
+TEST(HostCacheTest, ConvertFromInternalMergedResultWithPartialError) {
+  const std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+      kMetadatas{{1, ConnectionEndpointMetadata({"h2", "h3"},
+                                                /*ech_config_list=*/{},
+                                                "target.test", {})}};
+  const IPEndPoint kIpv6 =
+      IPEndPoint(IPAddress::FromIPLiteral("2001:db8:1::").value(), 46);
+  constexpr base::TimeDelta kMinTtl = base::Minutes(30);
+  constexpr base::TimeDelta kOtherTtl = base::Minutes(40);
+
+  // Positive AAAA and HTTPS results, but NODATA A result.
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalDataResult>(
+      "endpoint.test", DnsQueryType::AAAA, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      std::vector<IPEndPoint>{kIpv6}, std::vector<std::string>{},
+      std::vector<HostPortPair>{}));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
+      "endpoint.test", DnsQueryType::A, base::TimeTicks() + kMinTtl,
+      base::Time() + kMinTtl, HostResolverInternalResult::Source::kDns,
+      ERR_NAME_NOT_RESOLVED));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::A, base::TimeTicks() + kMinTtl,
+      base::Time() + kMinTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+  results.insert(std::make_unique<HostResolverInternalMetadataResult>(
+      "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      kMetadatas));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  // ERR_NAME_NOT_RESOLVED for A is ignored other than contributing minimum TTL.
+  HostCache::Entry expected(OK, kMetadatas, HostCache::Entry::SOURCE_DNS,
+                            kMinTtl);
+  expected.set_ip_endpoints({kIpv6});
+  expected.set_canonical_names(std::set<std::string>{"endpoint.test"});
+  expected.set_aliases({"endpoint.test", "domain1.test"});
+
+  EXPECT_EQ(converted, expected);
+}
+
+TEST(HostCacheTest, ConvertFromInternalMergedNodata) {
+  constexpr base::TimeDelta kMinTtl = base::Minutes(30);
+  constexpr base::TimeDelta kOtherTtl = base::Minutes(40);
+
+  // NODATA result for all query types.
+  std::set<std::unique_ptr<HostResolverInternalResult>> results;
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
+      "endpoint.test", DnsQueryType::AAAA, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      ERR_NAME_NOT_RESOLVED));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::AAAA, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
+      "endpoint.test", DnsQueryType::A, /*expiration=*/std::nullopt,
+      /*timed_expiration=*/std::nullopt,
+      HostResolverInternalResult::Source::kDns, ERR_NAME_NOT_RESOLVED));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::A, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+  results.insert(std::make_unique<HostResolverInternalErrorResult>(
+      "endpoint.test", DnsQueryType::HTTPS, base::TimeTicks() + kMinTtl,
+      base::Time() + kMinTtl, HostResolverInternalResult::Source::kDns,
+      ERR_NAME_NOT_RESOLVED));
+  results.insert(std::make_unique<HostResolverInternalAliasResult>(
+      "domain1.test", DnsQueryType::HTTPS, base::TimeTicks() + kOtherTtl,
+      base::Time() + kOtherTtl, HostResolverInternalResult::Source::kDns,
+      "endpoint.test"));
+
+  HostCache::Entry converted(std::move(results), base::Time(),
+                             base::TimeTicks());
+
+  HostCache::Entry expected(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS,
+                            kMinTtl);
 
   EXPECT_EQ(converted, expected);
 }

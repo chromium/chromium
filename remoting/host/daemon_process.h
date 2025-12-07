@@ -16,7 +16,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "base/time/time.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "mojo/public/cpp/system/message_pipe.h"

@@ -6,9 +6,10 @@
 
 namespace media_router {
 
-CastSessionClient::CastSessionClient(const std::string& client_id,
-                                     const url::Origin& origin,
-                                     int frame_tree_node_id)
+CastSessionClient::CastSessionClient(
+    const std::string& client_id,
+    const url::Origin& origin,
+    content::FrameTreeNodeId frame_tree_node_id)
     : client_id_(client_id),
       origin_(origin),
       frame_tree_node_id_(frame_tree_node_id) {}

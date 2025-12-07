@@ -28,38 +28,16 @@ if (!window.internals) {
 }
 internals.settings.setScrollAnimatorEnabled(true);
 
-function smoothScrollPromise(container) {
-  let firstScrollPosition = undefined;
-  let lastScrollPosition = undefined;
-  return new Promise((resolve, reject) => {
-    const scrollendListener = () => {
-      container.removeEventListener('scroll', scrollListener);
-      if (lastScrollPosition == firstScrollPosition) {
-        reject('expected multiple scroll events with a smooth scroll');
-      } else {
-        resolve();
-      }
-    }
-    container.addEventListener('scrollend', scrollendListener, { once: true });
-    const scrollListener = () => {
-      if (firstScrollPosition == undefined) {
-        firstScrollPosition = container.scrollTop;
-      }
-      lastScrollPosition = container.scrollTop;
-    }
-    container.addEventListener('scroll', scrollListener);
-  });
-}
-
 promise_test(async () => {
   const container = document.getElementById("container");
   await waitForCompositorCommit();
   await waitForScrollReset(container);
-  const animatedScroll = smoothScrollPromise(container);
   const pos = elementCenter(container);
   await mouseClick(pos.x, pos.y);
-  await keyboardScroll("PageDown", container);
-  await animatedScroll;
+  await Promise.all([
+    animatedScrollPromise(container),
+    keyboardScroll("PageDown", container),
+  ]);
   assert_true(container.scrollTop > 0);
 }, 'Overflow scrolls are animated');
 

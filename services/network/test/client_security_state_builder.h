@@ -5,7 +5,6 @@
 #ifndef SERVICES_NETWORK_TEST_CLIENT_SECURITY_STATE_BUILDER_H_
 #define SERVICES_NETWORK_TEST_CLIENT_SECURITY_STATE_BUILDER_H_
 
-#include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 
 namespace network {

@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
@@ -62,7 +61,7 @@ class ExtensionAPI {
   // "permission", or "api". The second part is the full name of the feature.
   //
   // TODO(kalman): ExtensionAPI isn't really the right place for this function.
-  static void SplitDependencyName(const std::string& full_name,
+  static void SplitDependencyName(std::string_view full_name,
                                   std::string* feature_type,
                                   std::string* feature_name);
 
@@ -89,23 +88,23 @@ class ExtensionAPI {
   void RegisterDependencyProvider(const std::string& name,
                                   const FeatureProvider* provider);
 
-  // Returns true if the API item called |api_full_name| and all of its
-  // dependencies are available in |context|.
+  // Returns true if the API item called `api_full_name` and all of its
+  // dependencies are available in `context`.
   //
-  // |api_full_name| can be either a namespace name (like "bookmarks") or a
+  // `api_full_name` can be either a namespace name (like "bookmarks") or a
   // member name (like "bookmarks.create").
   //
-  // Depending on the configuration of |api| (in _api_features.json), either
-  // |extension| or |url| (or both) may determine its availability, but this is
+  // Depending on the configuration of `api` (in _api_features.json), either
+  // `extension` or `url` (or both) may determine its availability, but this is
   // up to the configuration of the individual feature.
   //
-  // |check_alias| determines whether it should be tested whether the API
+  // `check_alias` determines whether it should be tested whether the API
   // is available through an alias.
   //
   // TODO(kalman): This is just an unnecessary combination of finding a Feature
   // then calling Feature::IsAvailableToContext(..) on it. Just provide that
   // FindFeature function and let callers compose if they want.
-  Feature::Availability IsAvailable(const std::string& api_full_name,
+  Feature::Availability IsAvailable(std::string_view api_full_name,
                                     const Extension* extension,
                                     mojom::ContextType context,
                                     const GURL& url,
@@ -114,9 +113,9 @@ class ExtensionAPI {
                                     const ContextData& context_data);
 
   // Determines whether an API, or any parts of that API, can be exposed to
-  // |context|.
+  // `context`.
   //
-  // |check_alias| determines whether it should be tested whether the API
+  // `check_alias` determines whether it should be tested whether the API
   // is available through an alias.
   //
   bool IsAnyFeatureAvailableToContext(const Feature& api,
@@ -127,10 +126,10 @@ class ExtensionAPI {
                                       int context_id,
                                       const ContextData& context_data);
 
-  // Gets the string_view for the schema specified by |api_name|.
+  // Gets the string_view for the schema specified by `api_name`.
   std::string_view GetSchemaStringPiece(const std::string& api_name);
 
-  // Gets the schema for the extension API with namespace |full_name|.
+  // Gets the schema for the extension API with namespace `full_name`.
   // Ownership remains with this object.
   // TODO(devlin): Now that we use GetSchemaStringPiece() in the renderer, we
   // may not really need this anymore.
@@ -144,27 +143,26 @@ class ExtensionAPI {
   // "storage.sync.set" -> ("storage", "sync.get")
   // "<unknown-api>.monkey" -> ("", "")
   //
-  // The |child_name| parameter can be be NULL if you don't need that part.
-  std::string GetAPINameFromFullName(const std::string& full_name,
+  // The `child_name` parameter can be be NULL if you don't need that part.
+  std::string GetAPINameFromFullName(std::string_view full_name,
                                      std::string* child_name);
 
   // Gets a feature from any dependency provider registered with ExtensionAPI.
   // Returns NULL if the feature could not be found.
-  const Feature* GetFeatureDependency(const std::string& dependency_name);
+  const Feature* GetFeatureDependency(std::string_view dependency_name);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtensionAPITest, DefaultConfigurationFeatures);
-  friend struct base::DefaultSingletonTraits<ExtensionAPI>;
 
   void InitDefaultConfiguration();
 
-  // Returns true if there exists an API with |name|. Declared virtual for
+  // Returns true if there exists an API with `name`. Declared virtual for
   // testing purposes.
   virtual bool IsKnownAPI(const std::string& name, ExtensionsClient* client);
 
-  // Checks if |full_name| is available to provided context and extension under
+  // Checks if `full_name` is available to provided context and extension under
   // associated API's alias name.
-  Feature::Availability IsAliasAvailable(const std::string& full_name,
+  Feature::Availability IsAliasAvailable(std::string_view full_name,
                                          const Feature& feature,
                                          const Extension* extension,
                                          mojom::ContextType context,
@@ -175,11 +173,11 @@ class ExtensionAPI {
   // Loads a schema.
   void LoadSchema(const std::string& name, std::string_view schema);
 
-  // Same as GetSchemaStringPiece() but doesn't acquire |lock_|.
+  // Same as GetSchemaStringPiece() but doesn't acquire `lock_`.
   std::string_view GetSchemaStringPieceUnsafe(const std::string& api_name);
 
-  // Same as GetAPINameFromFullName() but doesn't acquire |lock_|.
-  std::string GetAPINameFromFullNameUnsafe(const std::string& full_name,
+  // Same as GetAPINameFromFullName() but doesn't acquire `lock_`.
+  std::string GetAPINameFromFullNameUnsafe(std::string_view full_name,
                                            std::string* child_name);
 
   bool default_configuration_initialized_ = false;
@@ -191,7 +189,8 @@ class ExtensionAPI {
   SchemaMap schemas_ GUARDED_BY(lock_);
 
   // FeatureProviders used for resolving dependencies.
-  using FeatureProviderMap = std::map<std::string, const FeatureProvider*>;
+  using FeatureProviderMap =
+      std::map<std::string, raw_ptr<const FeatureProvider, CtnExperimental>>;
   FeatureProviderMap dependency_providers_;
 };
 

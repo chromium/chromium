@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
+#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -50,7 +51,7 @@ void LayoutTable::Trace(Visitor* visitor) const {
 // would perform inlinification of its children), then an inline-table box must
 // be generated; otherwise it must be a table box.
 bool LayoutTable::ShouldCreateInlineAnonymous(const LayoutObject& parent) {
-  return parent.IsLayoutInline() || parent.IsRubyBase() || parent.IsRubyText();
+  return parent.IsLayoutInline();
 }
 
 LayoutTable* LayoutTable::CreateAnonymousWithParent(
@@ -212,7 +213,7 @@ bool LayoutTable::HasBackgroundForPaint() const {
   if (StyleRef().HasBackground())
     return true;
   DCHECK_GT(PhysicalFragmentCount(), 0u);
-  const TableFragmentData::ColumnGeometries* column_geometries =
+  const GCedTableColumnGeometries* column_geometries =
       GetPhysicalFragment(0)->TableColumnGeometries();
   if (column_geometries) {
     for (const auto& column_geometry : *column_geometries) {
@@ -226,16 +227,12 @@ bool LayoutTable::HasBackgroundForPaint() const {
 void LayoutTable::AddChild(LayoutObject* child, LayoutObject* before_child) {
   NOT_DESTROYED();
   TableGridStructureChanged();
-  // Only TablesNG table parts are allowed.
-  // TODO(1229581): Change this DCHECK to caption || column || section.
-  DCHECK(child->IsLayoutNGObject() ||
-         (!child->IsTableCaption() && !child->IsLayoutTableCol() &&
-          !child->IsTableSection()));
-  bool wrap_in_anonymous_section = !child->IsTableCaption() &&
-                                   !child->IsLayoutTableCol() &&
-                                   !child->IsTableSection();
 
-  if (!wrap_in_anonymous_section) {
+  const bool can_be_direct_child = child->IsTableCaption() ||
+                                   child->IsLayoutTableCol() ||
+                                   child->IsTableSection();
+
+  if (can_be_direct_child) {
     if (before_child && before_child->Parent() != this)
       before_child = SplitAnonymousBoxesAroundChild(before_child);
     LayoutBox::AddChild(child, before_child);
@@ -285,8 +282,10 @@ void LayoutTable::RemoveChild(LayoutObject* child) {
   LayoutBlock::RemoveChild(child);
 }
 
-void LayoutTable::StyleDidChange(StyleDifference diff,
-                                 const ComputedStyle* old_style) {
+void LayoutTable::StyleDidChange(
+    StyleDifference diff,
+    const ComputedStyle* old_style,
+    const StyleChangeContext& style_change_context) {
   NOT_DESTROYED();
   // StyleDifference handles changes in table-layout, border-spacing.
   if (old_style) {
@@ -300,7 +299,7 @@ void LayoutTable::StyleDidChange(StyleDifference diff,
     if (borders_changed || collapse_changed)
       GridBordersChanged();
   }
-  LayoutBlock::StyleDidChange(diff, old_style);
+  LayoutBlock::StyleDidChange(diff, old_style, style_change_context);
 }
 
 LayoutBox* LayoutTable::CreateAnonymousBoxWithSameTypeAs(
@@ -315,7 +314,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
   NOT_DESTROYED();
   PhysicalRect clip_rect;
   if (StyleRef().BorderCollapse() == EBorderCollapse::kCollapse) {
-    clip_rect = PhysicalRect(location, Size());
+    clip_rect = PhysicalRect(location, StitchedSize());
     const auto overflow_clip = GetOverflowClipAxes();
     gfx::Rect infinite_rect = InfiniteIntRect();
     if ((overflow_clip & kOverflowClipX) == kNoOverflowClip) {
@@ -342,7 +341,7 @@ PhysicalRect LayoutTable::OverflowClipRect(
   while (child) {
     if (child->IsTableCaption()) {
       // If there are captions, we cannot clip to content box.
-      clip_rect.Unite(PhysicalRect(location, Size()));
+      clip_rect.Unite(PhysicalRect(location, StitchedSize()));
       break;
     }
     child = child->NextSiblingBox();
@@ -424,8 +423,7 @@ unsigned LayoutTable::AbsoluteColumnToEffectiveColumn(
     unsigned absolute_column_index) const {
   NOT_DESTROYED();
   if (!cached_table_columns_) {
-    NOTREACHED_IN_MIGRATION();
-    return absolute_column_index;
+    NOTREACHED();
   }
   unsigned effective_column_index = 0;
   unsigned column_count = cached_table_columns_.get()->data.size();

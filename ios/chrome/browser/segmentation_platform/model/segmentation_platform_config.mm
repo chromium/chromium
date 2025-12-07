@@ -10,9 +10,11 @@
 #import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/time/time.h"
+#import "components/segmentation_platform/embedder/default_model/chrome_user_engagement.h"
 #import "components/segmentation_platform/embedder/default_model/cross_device_user_segment.h"
 #import "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
 #import "components/segmentation_platform/embedder/default_model/feed_user_segment.h"
+#import "components/segmentation_platform/embedder/default_model/ios_default_browser_promo.h"
 #import "components/segmentation_platform/embedder/default_model/ios_module_ranker.h"
 #import "components/segmentation_platform/embedder/default_model/low_user_engagement_model.h"
 #import "components/segmentation_platform/embedder/default_model/most_visited_tiles_user.h"
@@ -21,6 +23,8 @@
 #import "components/segmentation_platform/embedder/default_model/shopping_user_model.h"
 #import "components/segmentation_platform/embedder/default_model/tab_resumption_ranker.h"
 #import "components/segmentation_platform/embedder/default_model/url_visit_resumption_ranker.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/ephemeral_home_module_backend.h"
 #import "components/segmentation_platform/internal/stats.h"
 #import "components/segmentation_platform/public/config.h"
 #import "components/segmentation_platform/public/features.h"
@@ -38,7 +42,8 @@ using ::segmentation_platform::proto::SegmentId;
 
 using proto::SegmentId;
 
-std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
+std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig(
+    home_modules::HomeModulesCardRegistry* homeModulesCardRegistry) {
   std::vector<std::unique_ptr<Config>> configs;
   configs.emplace_back(FeedUserSegment::GetConfig());
   configs.emplace_back(CrossDeviceUserSegment::GetConfig());
@@ -48,14 +53,24 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   configs.emplace_back(TabResumptionRanker::GetConfig());
   configs.emplace_back(PasswordManagerUserModel::GetConfig());
   configs.emplace_back(ShoppingUserModel::GetConfig());
+  configs.emplace_back(ChromeUserEngagement::GetConfig());
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "test-ios-module-ranker")) {
     configs.emplace_back(TestIosModuleRanker::GetConfig());
   } else {
     configs.emplace_back(IosModuleRanker::GetConfig());
   }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kEphemeralModuleBackendRankerTestOverride)) {
+    configs.emplace_back(
+        home_modules::TestEphemeralHomeModuleBackend::GetConfig());
+  } else {
+    configs.emplace_back(home_modules::EphemeralHomeModuleBackend::GetConfig(
+        homeModulesCardRegistry));
+  }
   configs.emplace_back(MostVisitedTilesUser::GetConfig());
   configs.emplace_back(URLVisitResumptionRanker::GetConfig());
+  configs.emplace_back(IosDefaultBrowserPromo::GetConfig());
 
   // Add new configs here.
   std::erase_if(configs, [](const auto& config) { return !config.get(); });

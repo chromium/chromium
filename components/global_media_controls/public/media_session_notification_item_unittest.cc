@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -45,7 +46,8 @@ class MediaSessionNotificationItemTest : public testing::Test {
     session_info->is_controllable = true;
     item_ = std::make_unique<MediaSessionNotificationItem>(
         &delegate_, kRequestId, std::string(), source_id_,
-        controller_.CreateMediaControllerRemote(), std::move(session_info));
+        controller_.CreateMediaControllerRemote(), std::move(session_info),
+        /*always_hidden=*/false);
     item_->SetView(&view_);
   }
 
@@ -176,12 +178,11 @@ TEST_F(MediaSessionNotificationItemTest, Freezing_DisableInteraction) {
 
 TEST_F(MediaSessionNotificationItemTest, UpdatesViewWithActions) {
   EXPECT_CALL(view(), UpdateWithMediaActions(_))
-      .WillOnce(testing::Invoke(
-          [](const base::flat_set<MediaSessionAction>& actions) {
-            EXPECT_EQ(2u, actions.size());
-            EXPECT_TRUE(actions.contains(MediaSessionAction::kPlay));
-            EXPECT_TRUE(actions.contains(MediaSessionAction::kPause));
-          }));
+      .WillOnce([](const base::flat_set<MediaSessionAction>& actions) {
+        EXPECT_EQ(2u, actions.size());
+        EXPECT_TRUE(actions.contains(MediaSessionAction::kPlay));
+        EXPECT_TRUE(actions.contains(MediaSessionAction::kPause));
+      });
   item().MediaSessionActionsChanged(
       {MediaSessionAction::kPlay, MediaSessionAction::kPause});
 }
@@ -307,8 +308,8 @@ TEST_F(MediaSessionNotificationItemTest, SemiUnfreezesWithoutArtwork_Timeout) {
   // Once the freeze timer fires, the artwork should unfreeze even if there's no
   // artwork. Since we've received no artwork, the artwork should be null.
   EXPECT_CALL(view(), UpdateWithMediaArtwork(_))
-      .WillOnce(testing::Invoke(
-          [](const gfx::ImageSkia& image) { EXPECT_TRUE(image.isNull()); }));
+      .WillOnce(
+          [](const gfx::ImageSkia& image) { EXPECT_TRUE(image.isNull()); });
   AdvanceClockMilliseconds(2600);
   testing::Mock::VerifyAndClearExpectations(&view());
 }
@@ -587,6 +588,18 @@ TEST_F(MediaSessionNotificationItemTest, ShouldShowNotification) {
           /* is_encrypted_media */ false);
   item().MediaSessionInfoChanged(mojo::Clone(session_info));
   EXPECT_TRUE(item().ShouldShowNotification());
+
+  // Check always hidden item.
+  media_session::test::TestMediaController controller2;
+  auto session_info2 = media_session::mojom::MediaSessionInfo::New();
+  session_info2->is_controllable = true;
+  auto item2 = std::make_unique<MediaSessionNotificationItem>(
+      &delegate(), kRequestId, std::string(),
+      /*source_id=*/base::UnguessableToken::Create(),
+      controller2.CreateMediaControllerRemote(), std::move(session_info2),
+      /*always_hidden=*/true);
+  item2->SetView(&view());
+  EXPECT_FALSE(item2->ShouldShowNotification());
 }
 
 }  // namespace global_media_controls

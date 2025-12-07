@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_INVALIDATION_MODEL_IOS_CHROME_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_
 #define IOS_CHROME_BROWSER_INVALIDATION_MODEL_IOS_CHROME_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_
 
-#include <memory>
+#import <memory>
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
+#import "base/no_destructor.h"
+#import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
-class ChromeBrowserState;
+class ProfileIOS;
 
 namespace invalidation {
 class ProfileInvalidationProvider;
@@ -19,19 +19,11 @@ class ProfileInvalidationProvider;
 // A BrowserContextKeyedServiceFactory to construct InvalidationServices wrapped
 // in ProfileInvalidationProviders.
 class IOSChromeProfileInvalidationProviderFactory
-    : public BrowserStateKeyedServiceFactory {
+    : public ProfileKeyedServiceFactoryIOS {
  public:
-  // Returns the ProfileInvalidationProvider for the given `browser_state`,
-  // lazily creating one first if required.
-  static invalidation::ProfileInvalidationProvider* GetForBrowserState(
-      ChromeBrowserState* browser_state);
-
+  static invalidation::ProfileInvalidationProvider* GetForProfile(
+      ProfileIOS* profile);
   static IOSChromeProfileInvalidationProviderFactory* GetInstance();
-
-  IOSChromeProfileInvalidationProviderFactory(
-      const IOSChromeProfileInvalidationProviderFactory&) = delete;
-  IOSChromeProfileInvalidationProviderFactory& operator=(
-      const IOSChromeProfileInvalidationProviderFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromeProfileInvalidationProviderFactory>;
@@ -39,11 +31,9 @@ class IOSChromeProfileInvalidationProviderFactory
   IOSChromeProfileInvalidationProviderFactory();
   ~IOSChromeProfileInvalidationProviderFactory() override;
 
-  // BrowserStateKeyedServiceFactory:
+  // ProfileKeyedServiceFactoryIOS:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
-      web::BrowserState* context) const override;
-  void RegisterBrowserStatePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
+      ProfileIOS* profile) const override;
 };
 
 #endif  // IOS_CHROME_BROWSER_INVALIDATION_MODEL_IOS_CHROME_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_

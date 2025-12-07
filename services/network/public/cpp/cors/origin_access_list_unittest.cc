@@ -158,7 +158,7 @@ TEST_F(OriginAccessListTest, IsAccessAllowedForIsolatedWorldOrigin) {
   // Adding access for https://example.com should work, but should not grant
   // access to different ports for the same scheme:host pair.
   GURL target("https://example.com");
-  SetAllowListEntry(target.scheme(), target.host(), kHttpsPort,
+  SetAllowListEntry(target.GetScheme(), target.GetHost(), kHttpsPort,
                     kDisallowSubdomains, kAllowOnlySpecifiedPort);
 
   // When request is made by a Chrome Extension background page,

@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/task/bind_post_task.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_frame.h"
 
@@ -25,8 +26,13 @@ VideoThumbnailDecoder::VideoThumbnailDecoder(
 VideoThumbnailDecoder::~VideoThumbnailDecoder() = default;
 
 void VideoThumbnailDecoder::Start(VideoFrameCallback video_frame_callback) {
-  video_frame_callback_ = std::move(video_frame_callback);
-  DCHECK(video_frame_callback_);
+  DCHECK(video_frame_callback);
+
+  // Always post this task since NotifyComplete() can destruct this class and
+  // `decoder_` may crash if destructed during OutputCB.
+  video_frame_callback_ =
+      base::BindPostTaskToCurrentDefault(std::move(video_frame_callback));
+
   decoder_->Initialize(
       config_, false, nullptr,
       base::BindOnce(&VideoThumbnailDecoder::OnVideoDecoderInitialized,
@@ -50,6 +56,11 @@ void VideoThumbnailDecoder::OnVideoDecoderInitialized(DecoderStatus status) {
 }
 
 void VideoThumbnailDecoder::OnVideoBufferDecoded(DecoderStatus status) {
+  if (!video_frame_callback_) {
+    // OutputCB may run before DecodeCB, so skip EOS handling if so.
+    return;
+  }
+
   if (!status.is_ok()) {
     NotifyComplete(nullptr);
     return;
@@ -62,13 +73,23 @@ void VideoThumbnailDecoder::OnVideoBufferDecoded(DecoderStatus status) {
 }
 
 void VideoThumbnailDecoder::OnEosBufferDecoded(DecoderStatus status) {
-  if (!status.is_ok())
+  if (!video_frame_callback_) {
+    // OutputCB may run before DecodeCB, so skip this step if so.
+    return;
+  }
+
+  if (!status.is_ok()) {
     NotifyComplete(nullptr);
+  }
 }
 
 void VideoThumbnailDecoder::OnVideoFrameDecoded(
     scoped_refptr<VideoFrame> frame) {
-  NotifyComplete(std::move(frame));
+  // Some codecs may generate multiple outputs per input packet.
+  if (video_frame_callback_) {
+    NotifyComplete(std::move(frame));
+    return;
+  }
 }
 
 void VideoThumbnailDecoder::NotifyComplete(scoped_refptr<VideoFrame> frame) {

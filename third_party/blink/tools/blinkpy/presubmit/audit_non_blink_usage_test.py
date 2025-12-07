@@ -101,6 +101,31 @@ class TestAuditNonBlinkUsageTest(unittest.TestCase):
                 'allowed': True,
                 'path': 'third_party/blink/renderer/core/scheduler/'
             },
+            {
+                'type': 'WTF::BindOnce',
+                'allowed': False,
+                'path': 'third_party/blink/renderer/'
+            },
+            {
+                'type': 'WTF::Vector',
+                'allowed': True,
+                'path': 'third_party/blink/renderer/platform/wtf/'
+            },
+            {
+                'type': 'liburlpattern::Part',
+                'allowed': True,
+                'path': 'third_party/blink/renderer/modules/manifest/'
+            },
+            {
+                'type': 'liburlpattern::Part',
+                'allowed': True,
+                'path': 'third_party/blink/public/common/safe_url_pattern.h'
+            },
+            {
+                'type': 'liburlpattern::Part',
+                'allowed': True,
+                'path': 'third_party/blink/common/safe_url_pattern.cc'
+            },
         ]
         for item in check_list:
             # Make sure that the identifier we're testing is parsed

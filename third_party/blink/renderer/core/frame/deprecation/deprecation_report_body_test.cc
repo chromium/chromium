@@ -22,13 +22,10 @@ TEST(DeprecationReportBodyJSONTest, noAnticipatedRemoval) {
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
   body->BuildJSONValue(builder);
-  ScriptValue json_object = builder.GetScriptValue();
-  EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(scope.GetContext(),
-                          json_object.V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(), builder.V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
 
@@ -47,13 +44,10 @@ TEST(DeprecationReportBodyJSONTest, actualAnticipatedRemoval) {
   ScriptState* script_state = scope.GetScriptState();
   V8ObjectBuilder builder(script_state);
   body->BuildJSONValue(builder);
-  ScriptValue json_object = builder.GetScriptValue();
-  EXPECT_TRUE(json_object.IsObject());
 
   String json_string = ToBlinkString<String>(
       scope.GetIsolate(),
-      v8::JSON::Stringify(scope.GetContext(),
-                          json_object.V8Value().As<v8::Object>())
+      v8::JSON::Stringify(scope.GetContext(), builder.V8Object())
           .ToLocalChecked(),
       kDoNotExternalize);
 

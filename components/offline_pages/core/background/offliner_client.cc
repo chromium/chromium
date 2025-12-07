@@ -38,8 +38,9 @@ bool OfflinerClient::LoadAndSave(const SavePageRequest& request,
 }
 
 void OfflinerClient::Stop(Offliner::RequestStatus status) {
-  if (!active_request_ || stopping_)
+  if (!active_request_ || stopping_) {
     return;
+  }
   if (offliner_->Cancel(base::BindOnce(&OfflinerClient::CancelComplete,
                                        base::Unretained(this), status))) {
     stopping_ = true;

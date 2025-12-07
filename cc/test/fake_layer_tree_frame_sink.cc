@@ -10,14 +10,19 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "cc/test/fake_layer_context.h"
+#include "cc/test/test_client_shared_image_interface.h"
 #include "cc/tiles/image_decode_cache_utils.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
-#include "cc/trees/raster_context_provider_wrapper.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
+#include "gpu/ipc/client/gpu_channel_host.h"
+#include "gpu/ipc/common/gpu_channel.mojom.h"
+#include "gpu/ipc/common/mock_gpu_channel.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -42,19 +47,10 @@ FakeLayerTreeFrameSink::FakeLayerTreeFrameSink(
     scoped_refptr<viz::RasterContextProvider> worker_context_provider)
     : LayerTreeFrameSink(
           std::move(context_provider),
-          worker_context_provider
-              ? base::MakeRefCounted<RasterContextProviderWrapper>(
-                    std::move(worker_context_provider),
-                    /*dark_mode_filter=*/nullptr,
-                    ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
-                        /*for_renderer=*/false))
-              : nullptr,
+          std::move(worker_context_provider),
           base::SingleThreadTaskRunner::GetCurrentDefault(),
-          nullptr,
-          /*shared_image_interface=*/nullptr) {
-  gpu_memory_buffer_manager_ =
-      context_provider_ ? &test_gpu_memory_buffer_manager_ : nullptr;
-}
+          base::MakeRefCounted<TestClientSharedImageInterface>(
+              base::MakeRefCounted<gpu::TestSharedImageInterface>())) {}
 
 FakeLayerTreeFrameSink::~FakeLayerTreeFrameSink() = default;
 
@@ -95,21 +91,15 @@ void FakeLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
 void FakeLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                                 FrameSkippedReason reason) {}
 
-void FakeLayerTreeFrameSink::DidAllocateSharedBitmap(
-    base::ReadOnlySharedMemoryRegion region,
-    const viz::SharedBitmapId& id) {
-  DCHECK(!base::Contains(shared_bitmaps_, id));
-  shared_bitmaps_.push_back(id);
-}
-
-void FakeLayerTreeFrameSink::DidDeleteSharedBitmap(
-    const viz::SharedBitmapId& id) {
-  DCHECK(base::Contains(shared_bitmaps_, id));
-  std::erase(shared_bitmaps_, id);
+std::unique_ptr<LayerContext> FakeLayerTreeFrameSink::CreateLayerContext(
+    LayerTreeHostImpl& host_impl) {
+  return std::make_unique<FakeLayerContext>();
 }
 
 void FakeLayerTreeFrameSink::DidReceiveCompositorFrameAck() {
-  client_->DidReceiveCompositorFrameAck();
+  if (!base::FeatureList::IsEnabled(features::kNoCompositorFrameAcks)) {
+    client_->DidReceiveCompositorFrameAck();
+  }
 }
 
 void FakeLayerTreeFrameSink::ReturnResourcesHeldByParent() {

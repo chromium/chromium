@@ -23,6 +23,9 @@
 // Directory containing the favicons to be used by widgets.
 + (NSURL*)widgetsFaviconsFolder;
 
+// Directory containing the profile avatar to be used by widgets.
++ (NSURL*)widgetsAvatarFolder;
+
 @end
 
 #endif  // IOS_CHROME_COMMON_APP_GROUP_APP_GROUP_HELPER_H_

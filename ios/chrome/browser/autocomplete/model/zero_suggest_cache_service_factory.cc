@@ -4,21 +4,19 @@
 
 #include "ios/chrome/browser/autocomplete/model/zero_suggest_cache_service_factory.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/zero_suggest_cache_service.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_provider_client_impl.h"
 #include "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
-#include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 namespace ios {
 
 // static
-ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForBrowserState(
-    ChromeBrowserState* browser_state) {
-  return static_cast<ZeroSuggestCacheService*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true));
+ZeroSuggestCacheService* ZeroSuggestCacheServiceFactory::GetForProfile(
+    ProfileIOS* profile) {
+  return GetInstance()->GetServiceForProfileAs<ZeroSuggestCacheService>(
+      profile, /*create=*/true);
 }
 
 // static
@@ -28,20 +26,15 @@ ZeroSuggestCacheServiceFactory* ZeroSuggestCacheServiceFactory::GetInstance() {
 }
 
 ZeroSuggestCacheServiceFactory::ZeroSuggestCacheServiceFactory()
-    : BrowserStateKeyedServiceFactory(
-          "ZeroSuggestCacheService",
-          BrowserStateDependencyManager::GetInstance()) {}
+    : ProfileKeyedServiceFactoryIOS("ZeroSuggestCacheService") {}
 
 ZeroSuggestCacheServiceFactory::~ZeroSuggestCacheServiceFactory() = default;
 
 std::unique_ptr<KeyedService>
 ZeroSuggestCacheServiceFactory::BuildServiceInstanceFor(
-    web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+    ProfileIOS* profile) const {
   return std::make_unique<ZeroSuggestCacheService>(
-      std::make_unique<AutocompleteSchemeClassifierImpl>(),
-      browser_state->GetPrefs(),
+      std::make_unique<AutocompleteSchemeClassifierImpl>(), profile->GetPrefs(),
       OmniboxFieldTrial::kZeroSuggestCacheMaxSize.Get());
 }
 

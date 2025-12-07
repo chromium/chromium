@@ -4,16 +4,28 @@
 
 #include "components/invalidation/invalidation_listener.h"
 
+#include <stdint.h>
+
 #include <memory>
+#include <utility>
 
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/invalidation_listener_impl.h"
 
 namespace invalidation {
 
-std::string DirectInvalidation::type() const {
-  return invalidation::Invalidation::topic();
-}
+DirectInvalidation::DirectInvalidation(std::string type,
+                                       int64_t version,
+                                       std::string payload)
+    : type_(std::move(type)), version_(version), payload_(std::move(payload)) {}
+
+DirectInvalidation::DirectInvalidation(const DirectInvalidation& other) =
+    default;
+
+DirectInvalidation& DirectInvalidation::operator=(
+    const DirectInvalidation& other) = default;
+
+DirectInvalidation::~DirectInvalidation() = default;
 
 base::Time DirectInvalidation::issue_timestamp() const {
   return base::Time::UnixEpoch() + base::Microseconds(version());
@@ -23,7 +35,7 @@ base::Time DirectInvalidation::issue_timestamp() const {
 std::unique_ptr<InvalidationListener> InvalidationListener::Create(
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
-    std::string project_number,
+    int64_t project_number,
     std::string log_prefix) {
   return std::make_unique<InvalidationListenerImpl>(
       gcm_driver, instance_id_driver, std::move(project_number),

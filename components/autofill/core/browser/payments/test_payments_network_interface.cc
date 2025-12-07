@@ -12,7 +12,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,8 +45,7 @@ TestPaymentsNetworkInterface::TestPaymentsNetworkInterface(
 TestPaymentsNetworkInterface::~TestPaymentsNetworkInterface() = default;
 
 void TestPaymentsNetworkInterface::GetUnmaskDetails(
-    base::OnceCallback<void(PaymentsRpcResult,
-                            PaymentsNetworkInterface::UnmaskDetails&)> callback,
+    base::OnceCallback<void(PaymentsRpcResult, UnmaskDetails&)> callback,
     const std::string& app_locale) {
   if (should_return_unmask_details_)
     std::move(callback).Run(PaymentsRpcResult::kSuccess, unmask_details_);
@@ -70,7 +69,7 @@ void TestPaymentsNetworkInterface::GetCardUploadDetails(
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
-    PaymentsNetworkInterface::UploadCardSource upload_card_source) {
+    UploadCardSource upload_card_source) {
   upload_details_addresses_ = addresses;
   detected_values_ = detected_values;
   client_behavior_signals_ = client_behavior_signals;
@@ -85,26 +84,14 @@ void TestPaymentsNetworkInterface::GetCardUploadDetails(
 }
 
 void TestPaymentsNetworkInterface::UploadCard(
-    const payments::PaymentsNetworkInterface::UploadCardRequestDetails&
-        request_details,
-    base::OnceCallback<void(
-        PaymentsRpcResult,
-        const PaymentsNetworkInterface::UploadCardResponseDetails&)> callback) {
+    const payments::UploadCardRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult,
+                            const UploadCardResponseDetails&)> callback) {
   upload_card_addresses_ = request_details.profiles;
   client_behavior_signals_ = request_details.client_behavior_signals;
   std::move(callback).Run(PaymentsRpcResult::kSuccess,
                           upload_card_response_details_);
 }
-
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-void TestPaymentsNetworkInterface::MigrateCards(
-    const MigrationRequestDetails& details,
-    const std::vector<MigratableCreditCard>& migratable_credit_cards,
-    MigrateCardsCallback callback) {
-  std::move(callback).Run(PaymentsRpcResult::kSuccess, std::move(save_result_),
-                          "this is display text");
-}
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void TestPaymentsNetworkInterface::SelectChallengeOption(
     const SelectChallengeOptionRequestDetails& details,
@@ -124,15 +111,13 @@ void TestPaymentsNetworkInterface::SelectChallengeOption(
 void TestPaymentsNetworkInterface::GetVirtualCardEnrollmentDetails(
     const GetDetailsForEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(PaymentsRpcResult,
-                            const payments::PaymentsNetworkInterface::
-                                GetDetailsForEnrollmentResponseDetails&)>
+                            const GetDetailsForEnrollmentResponseDetails&)>
         callback) {
   get_details_for_enrollment_request_details_ = std::move(request_details);
 }
 
 void TestPaymentsNetworkInterface::UpdateVirtualCardEnrollment(
-    const TestPaymentsNetworkInterface::
-        UpdateVirtualCardEnrollmentRequestDetails& request_details,
+    const UpdateVirtualCardEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(PaymentsRpcResult)> callback) {
   update_virtual_card_enrollment_request_details_ = std::move(request_details);
   std::move(callback).Run(update_virtual_card_enrollment_result_.value_or(
@@ -144,16 +129,18 @@ void TestPaymentsNetworkInterface::ShouldReturnUnmaskDetailsImmediately(
   should_return_unmask_details_ = should_return_unmask_details;
 }
 
-void TestPaymentsNetworkInterface::AllowFidoRegistration(bool offer_fido_opt_in) {
+void TestPaymentsNetworkInterface::AllowFidoRegistration(
+    bool server_denotes_fido_eligible_but_not_opted_in) {
   should_return_unmask_details_ = true;
-  unmask_details_.offer_fido_opt_in = offer_fido_opt_in;
+  unmask_details_.server_denotes_fido_eligible_but_not_opted_in =
+      server_denotes_fido_eligible_but_not_opted_in;
 }
 
 void TestPaymentsNetworkInterface::AddFidoEligibleCard(std::string server_id,
                                              std::string credential_id,
                                              std::string relying_party_id) {
   should_return_unmask_details_ = true;
-  unmask_details_.offer_fido_opt_in = false;
+  unmask_details_.server_denotes_fido_eligible_but_not_opted_in = false;
   unmask_details_.unmask_auth_method =
       PaymentsAutofillClient::UnmaskAuthMethod::kFido;
   unmask_details_.fido_eligible_card_ids.insert(server_id);
@@ -190,14 +177,8 @@ void TestPaymentsNetworkInterface::SetFidoRequestOptionsInUnmaskDetails(
 }
 
 void TestPaymentsNetworkInterface::SetUploadCardResponseDetailsForUploadCard(
-    const PaymentsNetworkInterface::UploadCardResponseDetails&
-        upload_card_response_details) {
+    const UploadCardResponseDetails& upload_card_response_details) {
   upload_card_response_details_ = upload_card_response_details;
-}
-
-void TestPaymentsNetworkInterface::SetSaveResultForCardsMigration(
-    std::unique_ptr<std::unordered_map<std::string, std::string>> save_result) {
-  save_result_ = std::move(save_result);
 }
 
 void TestPaymentsNetworkInterface::SetSupportedBINRanges(
@@ -228,7 +209,8 @@ std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() 
         "        \"display_text\": \"bear\""
         "     } ]"
         "  } ]"
-        "}");
+        "}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(parsed_json);
   } else if (use_legal_message_with_multiple_lines_) {
     parsed_json = base::JSONReader::Read(
@@ -261,7 +243,8 @@ std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() 
         "      ]"
         "    }"
         "  ]"
-        "}");
+        "}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(parsed_json);
   } else {
     parsed_json = base::JSONReader::Read(
@@ -276,7 +259,8 @@ std::unique_ptr<base::Value::Dict> TestPaymentsNetworkInterface::LegalMessage() 
         "        \"url\": \"http://www.example.com/pp\""
         "     } ]"
         "  } ]"
-        "}");
+        "}",
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS);
     DCHECK(parsed_json);
   }
   // TODO(crbug.com/40826246): Refactor when `base::JSONReader::Read` is updated

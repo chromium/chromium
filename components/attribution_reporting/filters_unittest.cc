@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_expected_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
@@ -169,13 +168,60 @@ const struct {
             TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid),
     },
     {
-        "lookback_window_not_positive",
+        "lookback_window_string",
+        base::test::ParseJson(R"json({"_lookback_window": "1"})json"),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersLookbackWindowValueInvalid),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid),
+    },
+    {
+        "lookback_window_zero",
         base::test::ParseJson(R"json({"_lookback_window": 0})json"),
         base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
         base::unexpected(
             TriggerRegistrationError::kFiltersLookbackWindowValueInvalid),
         base::unexpected(
             TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid),
+    },
+    {
+        "lookback_window_negative",
+        base::test::ParseJson(R"json({"_lookback_window": -1})json"),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersLookbackWindowValueInvalid),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid),
+    },
+    {
+        "lookback_window_not_integer",
+        base::test::ParseJson(R"json({"_lookback_window": 1.5})json"),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersLookbackWindowValueInvalid),
+        base::unexpected(
+            TriggerRegistrationError::kFiltersListLookbackWindowValueInvalid),
+    },
+    {
+        "lookback_window_integer_trailing_zero",
+        base::test::ParseJson(R"json({"_lookback_window": 1.0})json"),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        FiltersDisjunction(
+            {*FilterConfig::Create({}, /*lookback_window=*/base::Seconds(1))}),
+        FiltersDisjunction(
+            {*FilterConfig::Create({}, /*lookback_window=*/base::Seconds(1))}),
+    },
+    {
+        "lookback_window_gt_int_max",
+        base::test::ParseJson(R"json({"_lookback_window": 2147483648})json"),
+        base::unexpected(SourceRegistrationError::kFilterDataKeyReserved),
+        FiltersDisjunction({*FilterConfig::Create(
+            {},
+            /*lookback_window=*/base::Seconds(2147483648))}),
+        FiltersDisjunction({*FilterConfig::Create(
+            {},
+            /*lookback_window=*/base::Seconds(2147483648))}),
     },
     {
         "wrong_type",
@@ -302,28 +348,6 @@ TEST(FilterDataTest, FromJSON) {
     base::Value json = MakeFilterValuesWithValueLength(25);
     EXPECT_TRUE(FilterData::FromJSON(&json).has_value());
   }
-}
-
-TEST(FilterDataTest, FromJSON_RecordsMetrics) {
-  using ::base::Bucket;
-  using ::testing::ElementsAre;
-
-  std::optional<base::Value> json = base::test::ParseJson(R"json({
-      "a": ["1", "2", "3"],
-      "b": [],
-      "c": ["4"],
-      "d": ["5"],
-    })json");
-  ASSERT_TRUE(json);
-
-  base::HistogramTester histograms;
-  ASSERT_TRUE(FilterData::FromJSON(base::OptionalToPtr(json)).has_value());
-
-  EXPECT_THAT(histograms.GetAllSamples("Conversions.FiltersPerFilterData"),
-              ElementsAre(Bucket(4, 1)));
-
-  EXPECT_THAT(histograms.GetAllSamples("Conversions.ValuesPerFilter"),
-              ElementsAre(Bucket(0, 1), Bucket(1, 2), Bucket(3, 1)));
 }
 
 TEST(FiltersTest, FromJSON) {

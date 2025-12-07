@@ -5,6 +5,7 @@
 #import "ios/chrome/credential_provider_extension/ui/new_password_footer_view.h"
 
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
@@ -29,7 +30,7 @@ const CGFloat kLabelSpacing = 8;
 }
 
 - (instancetype)initWithReuseIdentifier:(NSString*)reuseIdentifier {
-  if (self = [super initWithReuseIdentifier:reuseIdentifier]) {
+  if ((self = [super initWithReuseIdentifier:reuseIdentifier])) {
     _footerTextLabel = [[UILabel alloc] init];
     _footerTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
     _footerTextLabel.numberOfLines = 0;
@@ -65,10 +66,11 @@ const CGFloat kLabelSpacing = 8;
 #pragma mark - Private
 
 - (NSString*)footerText {
-  NSString* userEmail = [app_group::GetGroupUserDefaults()
-      stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+  NSString* userEmail = app_group::UserDefaultsStringForKey(
+      AppGroupUserDefaultsCredentialProviderUserEmail(),
+      /*default_value=*/@"");
 
-  if (userEmail) {
+  if (userEmail.length) {
     NSString* baseLocalizedString = NSLocalizedString(
         @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_BRANDED_SYNC",
         @"Disclaimer telling users what will happen to their passwords");

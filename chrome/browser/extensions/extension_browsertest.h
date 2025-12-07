@@ -1,150 +1,85 @@
-// Copyright 2012 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_BROWSERTEST_H_
 
-#include <optional>
-#include <string>
-
-#include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/files/scoped_temp_dir.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/install_verifier.h"
+#include "chrome/browser/extensions/extension_browser_test_util.h"
+#include "chrome/browser/extensions/extension_browsertest_platform_delegate.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/browser/web_contents.h"
+#include "chrome/test/base/platform_browser_test.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_creator.h"
-#include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
-#include "extensions/browser/extension_system.h"
+#include "extensions/browser/install_verifier.h"
 #include "extensions/browser/sandboxed_unpacker.h"
-#include "extensions/browser/scoped_ignore_content_verifier_for_test.h"
-#include "extensions/common/extension.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
-#include "extensions/common/manifest.h"
-#include "extensions/common/mojom/manifest.mojom-shared.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
+class BrowserWindowInterface;
+class OwningTestTabModel;
 class Profile;
 
 namespace content {
-class BrowserContext;
+class RenderFrameHost;
 class ServiceWorkerContext;
+class WebContents;
 }  // namespace content
 
 namespace extensions {
-class ChromeExtensionTestNotificationObserver;
-class ExtensionCacheFake;
+class Extension;
+class ExtensionCache;
+class ExtensionHost;
+class ExtensionRegistrar;
 class ExtensionService;
 class ExtensionSet;
+class ExtensionTestNotificationObserver;
 class ProcessManager;
+class ScopedIgnoreContentVerifierForTest;
 
-// Base class for extension browser tests. Provides utilities for loading,
-// unloading, and installing extensions.
-class ExtensionBrowserTest : virtual public InProcessBrowserTest,
+// A cross-platform base class for extensions-related browser tests.
+// `PlatformBrowserTest` inherits from different test suites based on the
+// platform; `ExtensionBrowserTest` provides additional functionality
+// that is available on all platforms.
+class ExtensionBrowserTest : public PlatformBrowserTest,
                              public ExtensionRegistryObserver {
  public:
-  // Different types of extension's lazy background contexts used in some tests.
-  enum class ContextType {
-    // TODO(crbug.com:/1241220): Get rid of this value when we can use
-    // std::optional in the LoadOptions struct.
-    // No specific context type.
-    kNone,
-    // A non-persistent background page/JS based extension.
-    kEventPage,
-    // A Service Worker based extension.
-    kServiceWorker,
-    // A Service Worker based extension that uses MV2.
-    kServiceWorkerMV2,
-    // An extension with a persistent background page.
-    kPersistentBackground,
-    // Use the value from the manifest. This is used when the test
-    // has been parameterized but the particular extension should
-    // be loaded without using the parameterized type. Typically,
-    // this is used when a test loads another extension that is
-    // not parameterized.
-    kFromManifest,
-  };
-
-  ExtensionBrowserTest(const ExtensionBrowserTest&) = delete;
-  ExtensionBrowserTest& operator=(const ExtensionBrowserTest&) = delete;
-
-  // ExtensionRegistryObserver:
-  void OnExtensionLoaded(content::BrowserContext* browser_context,
-                         const Extension* extension) override;
-  void OnShutdown(ExtensionRegistry* registry) override;
-
-  static bool IsServiceWorkerContext(ContextType context_type) {
-    return context_type == ContextType::kServiceWorker ||
-           context_type == ContextType::kServiceWorkerMV2;
-  }
-
-  bool IsContextTypeForServiceWorker() const {
-    return IsServiceWorkerContext(context_type_);
-  }
-
- protected:
-  struct LoadOptions {
-    // Allows the extension to run in incognito mode.
-    bool allow_in_incognito = false;
-
-    // Allows file access for the extension.
-    bool allow_file_access = false;
-
-    // Doesn't fail when the loaded manifest has warnings (should only be used
-    // when testing deprecated features).
-    bool ignore_manifest_warnings = false;
-
-    // Waits for extension renderers to fully load.
-    bool wait_for_renderers = true;
-
-    // An optional install param.
-    const char* install_param = nullptr;
-
-    // If this is a Service Worker-based extension, wait for the
-    // Service Worker's registration to be stored before returning.
-    bool wait_for_registration_stored = false;
-
-    // Loads the extension with location COMPONENT.
-    bool load_as_component = false;
-
-    // Changes the "manifest_version" manifest key to 3. Note as of now, this
-    // doesn't make any other changes to convert the extension to MV3 other than
-    // changing the integer value in the manifest.
-    bool load_as_manifest_version_3 = false;
-
-    // Used to force loading the extension with a particular background type.
-    // Currently this only support loading an extension as using a service
-    // worker.
-    ContextType context_type = ContextType::kNone;
-  };
+  using LoadOptions = extensions::browser_test_util::LoadOptions;
+  using ContextType = extensions::browser_test_util::ContextType;
 
   explicit ExtensionBrowserTest(ContextType context_type = ContextType::kNone);
+  ExtensionBrowserTest(const ExtensionBrowserTest&) = delete;
+  ExtensionBrowserTest& operator=(const ExtensionBrowserTest&) = delete;
   ~ExtensionBrowserTest() override;
 
-  // Useful accessors.
-  ExtensionService* extension_service();
+ protected:
+  // Specifies the type of UI (if any) to show during installation and what
+  // user action to simulate.
+  enum class InstallUIType {
+    kNone,
+    kCancel,
+    kNormal,
+    kAutoConfirm,
+  };
 
-  ExtensionRegistry* extension_registry();
-
-  const extensions::ExtensionId& last_loaded_extension_id() {
-    return last_loaded_extension_id_;
-  }
-
-  // Get the profile to use.
-  virtual Profile* profile();
+  // The platform delegate is an implementation detail of the test harness
+  // and should be able to access anything any general test would access.
+  friend class ExtensionBrowserTestPlatformDelegate;
 
   // Extensions used in tests are typically not from the web store and will have
   // missing content verification hashes. The default implementation disables
@@ -162,57 +97,139 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // (since many tests are parameterized to exercise both MV2 + MV3 logic).
   virtual bool ShouldAllowMV2Extensions();
 
+  // Returns the extension in `extensions` with the given `path`, if one exists.
+  static const Extension* GetExtensionByPath(const ExtensionSet& extensions,
+                                             const base::FilePath& path);
+
+  // content::BrowserTestBase:
+  void SetUp() override;
+  void SetUpCommandLine(base::CommandLine* command_line) override;
+  void SetUpOnMainThread() override;
+  void TearDown() override;
+  void TearDownOnMainThread() override;
+
+  // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
+  void OnShutdown(ExtensionRegistry* registry) override;
+
+  // Lower-case to match ExtensionBrowserTest.
+  ExtensionRegistry* extension_registry();
+  ExtensionRegistrar* extension_registrar();
+
   // Returns the path of the directory from which to serve resources when they
   // are prefixed with "_test_resources/".
   // The default is chrome/test/data/extensions/.
   virtual base::FilePath GetTestResourcesParentDir();
 
-  static const Extension* GetExtensionByPath(const ExtensionSet& extensions,
-                                             const base::FilePath& path);
-
-  // InProcessBrowserTest
-  void SetUp() override;
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-  void SetUpOnMainThread() override;
-  void TearDownOnMainThread() override;
-
   const Extension* LoadExtension(const base::FilePath& path);
-
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
 
-  // Loads unpacked extension from |path| with manifest |manifest_relative_path|
+  // Loads unpacked extension from `path` with manifest `manifest_relative_path`
   // and imitates that it is a component extension.
-  // |manifest_relative_path| is relative to |path|.
+  // `manifest_relative_path` is relative to `path`.
   const Extension* LoadExtensionAsComponentWithManifest(
       const base::FilePath& path,
       const base::FilePath::CharType* manifest_relative_path);
 
-  // Loads unpacked extension from |path| and imitates that it is a component
+  // Loads unpacked extension from `path` and imitates that it is a component
   // extension. Equivalent to
-  // LoadExtensionAsComponentWithManifest(path, kManifestFilename).
+  // `LoadExtensionAsComponentWithManifest(path, kManifestFilename)`.
   const Extension* LoadExtensionAsComponent(const base::FilePath& path);
 
-  // Loads and launches the app from |path|, and returns it. Waits until the
-  // launched app's WebContents has been created and finished loading. If the
-  // app uses a guest view this will create two WebContents (one for the host
-  // and one for the guest view). `uses_guest_view` is used to wait for the
-  // second WebContents.
-  const Extension* LoadAndLaunchApp(const base::FilePath& path,
-                                    bool uses_guest_view = false);
+  // `expected_change` indicates how many extensions should be installed (or
+  // disabled, if negative).
+  // 1 means you expect a new install, 0 means you expect an upgrade, -1 means
+  // you expect a failed upgrade.
+  const Extension* InstallExtension(const base::FilePath& path,
+                                    std::optional<int> expected_change);
 
-  // Launches |extension| as a window and returns the browser.
-  Browser* LaunchAppBrowser(const Extension* extension);
+  // Same as above, but an install source other than
+  // mojom::ManifestLocation::kInternal can be specified.
+  const Extension* InstallExtension(const base::FilePath& path,
+                                    std::optional<int> expected_change,
+                                    mojom::ManifestLocation install_source);
 
-  // Pack the extension in |dir_path| into a crx file and return its path.
+  // Installs an extension and grants it the permissions it requests.
+  // TODO(devlin): It seems like this is probably the desired outcome most of
+  // the time - otherwise the extension installs in a disabled state.
+  const Extension* InstallExtensionWithPermissionsGranted(
+      const base::FilePath& file_path,
+      std::optional<int> expected_change);
+
+  // Installs extension as if it came from the Chrome Webstore.
+  const Extension* InstallExtensionFromWebstore(
+      const base::FilePath& path,
+      std::optional<int> expected_change);
+
+  // Same as InstallExtensionFromWebstore(), but sets the install as triggered
+  // by user download.
+  const Extension* InstallExtensionFromWebstoreTriggeredByUserDownload(
+      const base::FilePath& path,
+      std::optional<int> expected_change);
+
+  const Extension* InstallExtensionWithUIAutoConfirm(
+      const base::FilePath& path,
+      std::optional<int> expected_change);
+
+  const Extension* InstallExtensionWithSourceAndFlags(
+      const base::FilePath& path,
+      std::optional<int> expected_change,
+      mojom::ManifestLocation install_source,
+      Extension::InitFromValueFlags creation_flags);
+
+  // Begins install process but simulates a user cancel.
+  const Extension* StartInstallButCancel(const base::FilePath& path);
+
+  // Same as above but passes an id to CrxInstaller and does not allow a
+  // privilege increase.
+  const Extension* UpdateExtension(const extensions::ExtensionId& id,
+                                   const base::FilePath& path,
+                                   std::optional<int> expected_change);
+
+  // Same as UpdateExtension but waits for the extension to be idle first.
+  const Extension* UpdateExtensionWaitForIdle(
+      const extensions::ExtensionId& id,
+      const base::FilePath& path,
+      std::optional<int> expected_change);
+
+  void DisableExtension(const ExtensionId& extension_id);
+  void DisableExtension(const ExtensionId& extension_id,
+                        const DisableReasonSet& disable_reasons);
+
+  // Unloads the extension with the given `extension_id`.
+  void UnloadExtension(const ExtensionId& extension_id);
+
+  // Uninstalls the extension with the given `extension_id`.
+  void UninstallExtension(const ExtensionId& extension_id);
+
+  // Enables the extension with the given `extension_id`.
+  void EnableExtension(const ExtensionId& extension_id);
+
+  // Reloads the extension with the given `extension_id`.
+  void ReloadExtension(const ExtensionId& extension_id);
+
+  // Returns the WebContents of the currently active tab.
+  // Note that when the test first launches, this will be the same as the
+  // default tab's web_contents(). However, if the test creates new tabs and
+  // switches the active tab, this will return the WebContents of the new active
+  // tab.
+  content::WebContents* GetActiveWebContents();
+
+  // Returns the WebContents at the specified index, or nullptr if there is
+  // none.
+  content::WebContents* GetWebContentsAt(int index);
+
+  // Pack the extension in `dir_path` into a crx file and return its path.
   // Return an empty FilePath if there were errors.
   base::FilePath PackExtension(
       const base::FilePath& dir_path,
       int extra_run_flags = ExtensionCreator::kNoRunFlags);
 
-  // Pack the extension in |dir_path| into a crx file at |crx_path|, using the
-  // key |pem_path|. If |pem_path| does not exist, create a new key at
-  // |pem_out_path|.
+  // Pack the extension in `dir_path` into a crx file at `crx_path`, using the
+  // key `pem_path`. If `pem_path` does not exist, create a new key at
+  // `pem_out_path`.
   // Return the path to the crx file, or an empty FilePath if there were errors.
   base::FilePath PackExtensionWithOptions(
       const base::FilePath& dir_path,
@@ -221,107 +238,33 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
       const base::FilePath& pem_out_path,
       int extra_run_flags = ExtensionCreator::kNoRunFlags);
 
-  // |expected_change| indicates how many extensions should be installed (or
-  // disabled, if negative).
-  // 1 means you expect a new install, 0 means you expect an upgrade, -1 means
-  // you expect a failed upgrade.
-  const Extension* InstallExtension(const base::FilePath& path,
-                                    std::optional<int> expected_change) {
-    return InstallOrUpdateExtension(std::string(), path, InstallUIType::kNone,
-                                    std::move(expected_change));
-  }
+  // Navigates `web_contents` to a `url` in and waits until the load stops.
+  // Returns true on success.
+  [[nodiscard]] bool NavigateToURL(content::WebContents* web_contents,
+                                   const GURL& url);
 
-  // Same as above, but an install source other than
-  // mojom::ManifestLocation::kInternal can be specified.
-  const Extension* InstallExtension(const base::FilePath& path,
-                                    std::optional<int> expected_change,
-                                    mojom::ManifestLocation install_source) {
-    return InstallOrUpdateExtension(std::string(), path, InstallUIType::kNone,
-                                    std::move(expected_change), install_source);
-  }
+  // Navigates the active tab in `browser_window` to a `url` in and waits until
+  // the load stops. Returns true on success.
+  // NOTE: Only supported on Win/Mac/Linux/ChromeOS. Intentionally fails on
+  // Android.
+  [[nodiscard]] bool NavigateToURL(BrowserWindowInterface* browser_window,
+                                   const GURL& url);
 
-  // Installs an extension and grants it the permissions it requests.
-  // TODO(devlin): It seems like this is probably the desired outcome most of
-  // the time - otherwise the extension installs in a disabled state.
-  const Extension* InstallExtensionWithPermissionsGranted(
-      const base::FilePath& file_path,
-      std::optional<int> expected_change) {
-    return InstallOrUpdateExtension(
-        std::string(), file_path, InstallUIType::kNone,
-        std::move(expected_change), mojom::ManifestLocation::kInternal,
-        browser(), Extension::NO_FLAGS, false, true);
-  }
+  // Puts the current tab title in |title|. Returns true on success.
+  bool GetCurrentTabTitle(std::u16string* title);
 
-  // Installs extension as if it came from the Chrome Webstore.
-  const Extension* InstallExtensionFromWebstore(
-      const base::FilePath& path,
-      std::optional<int> expected_change);
+  // Opens `url` in an incognito browser window with the incognito profile of
+  // `profile`, blocking until the navigation finishes. Returns the WebContents
+  // for `url`.
+  content::WebContents* PlatformOpenURLOffTheRecord(Profile* profile,
+                                                    const GURL& url);
 
-  // Same as above but passes an id to CrxInstaller and does not allow a
-  // privilege increase.
-  const Extension* UpdateExtension(const extensions::ExtensionId& id,
-                                   const base::FilePath& path,
-                                   std::optional<int> expected_change) {
-    return InstallOrUpdateExtension(id, path, InstallUIType::kNone,
-                                    std::move(expected_change));
-  }
-
-  // Same as UpdateExtension but waits for the extension to be idle first.
-  const Extension* UpdateExtensionWaitForIdle(
-      const extensions::ExtensionId& id,
-      const base::FilePath& path,
-      std::optional<int> expected_change);
-
-  const Extension* InstallExtensionWithUIAutoConfirm(
-      const base::FilePath& path,
-      std::optional<int> expected_change,
-      Browser* browser) {
-    return InstallOrUpdateExtension(
-        std::string(), path, InstallUIType::kAutoConfirm,
-        std::move(expected_change), browser, Extension::NO_FLAGS);
-  }
-
-  const Extension* InstallExtensionWithSourceAndFlags(
-      const base::FilePath& path,
-      std::optional<int> expected_change,
-      mojom::ManifestLocation install_source,
-      Extension::InitFromValueFlags creation_flags) {
-    return InstallOrUpdateExtension(std::string(), path, InstallUIType::kNone,
-                                    std::move(expected_change), install_source,
-                                    browser(), creation_flags, false, false);
-  }
-
-  // Begins install process but simulates a user cancel.
-  const Extension* StartInstallButCancel(const base::FilePath& path) {
-    return InstallOrUpdateExtension(std::string(), path, InstallUIType::kCancel,
-                                    0);
-  }
-
-  void ReloadExtension(const extensions::ExtensionId& extension_id);
-
-  void UnloadExtension(const extensions::ExtensionId& extension_id);
-
-  void UninstallExtension(const extensions::ExtensionId& extension_id);
-
-  void DisableExtension(const extensions::ExtensionId& extension_id);
-
-  void EnableExtension(const extensions::ExtensionId& extension_id);
-
-  // Wait for the number of visible page actions to change to |count|.
-  bool WaitForPageActionVisibilityChangeTo(int count);
-
-  // Wait for all extension views to load.
-  bool WaitForExtensionViewsToLoad();
-
-  // Wait for the extension to be idle.
-  bool WaitForExtensionIdle(const extensions::ExtensionId& extension_id);
-
-  // Wait for the extension to not be idle.
-  bool WaitForExtensionNotIdle(const extensions::ExtensionId& extension_id);
+  // Opens `url` in a new tab, blocking until the navigation finishes.
+  content::RenderFrameHost* NavigateToURLInNewTab(const GURL& url);
 
   // Simulates a page calling window.open on an URL and waits for the
   // navigation.
-  // |should_succeed| indicates whether the navigation should succeed, in which
+  // `should_succeed` indicates whether the navigation should succeed, in which
   // case the last committed url should match the passed url and the page should
   // not be an error or interstitial page.
   void OpenWindow(content::WebContents* contents,
@@ -342,6 +285,22 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
                                   const std::string& path,
                                   int expected_hosts);
 
+  // Get the ServiceWorkerContext for the default browser's profile.
+  content::ServiceWorkerContext* GetServiceWorkerContext();
+
+  // Get the ServiceWorkerContext for the `browser_context`.
+  static content::ServiceWorkerContext* GetServiceWorkerContext(
+      content::BrowserContext* browser_context);
+
+  // Returns the number of tabs in the current window.
+  int GetTabCount();
+
+  // Returns whether the tab at `index` is selected.
+  bool IsTabSelected(int index);
+
+  // Closes the tab associated with `web_contents`.
+  void CloseTabForWebContents(content::WebContents* web_contents);
+
   // Waits until `script` calls "chrome.test.sendScriptResult(result)",
   // where `result` is a serializable value, and returns `result`. Fails
   // the test and returns an empty base::Value if `extension_id` isn't
@@ -354,11 +313,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate);
 
-  // Waits until |script| calls "window.domAutomationController.send(result)",
-  // where |result| is a string, and returns |result|. Fails the test and
-  // returns an empty base::Value if |extension_id| isn't installed in test's
+  // Waits until `script` calls "window.domAutomationController.send(result)",
+  // where `result` is a string, and returns `result`. Fails the test and
+  // returns an empty base::Value if `extension_id` isn't installed in test's
   // profile or doesn't have a background page, or if executing the script
-  // fails. The argument |script_user_activation| determines if the script
+  // fails. The argument `script_user_activation` determines if the script
   // should be executed after a user activation.
   std::string ExecuteScriptInBackgroundPageDeprecated(
       const extensions::ExtensionId& extension_id,
@@ -372,73 +331,121 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
       browsertest_util::ScriptUserActivation script_user_activation =
           browsertest_util::ScriptUserActivation::kDontActivate);
 
-  // Get the ServiceWorkerContext for the default browser's profile.
-  content::ServiceWorkerContext* GetServiceWorkerContext();
+  // Sets up `test_protocol_handler_` so that
+  // chrome-extensions://<extension_id>/_test_resources/foo maps to
+  // chrome/test/data/extensions/foo.
+  void SetUpTestProtocolHandler();
 
-  // Get the ServiceWorkerContext for the `browser_context`.
-  static content::ServiceWorkerContext* GetServiceWorkerContext(
-      content::BrowserContext* browser_context);
+  // Tears down test protocol handler.
+  void TearDownTestProtocolHandler();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // True if the command line should be tweaked as if ChromeOS user is
-  // already logged in.
-  bool set_chromeos_user_;
-#endif
+  // Wait for all extension views to load.
+  bool WaitForExtensionViewsToLoad();
+
+  // Wait for the extension to be idle.
+  bool WaitForExtensionIdle(const ExtensionId& extension_id);
+
+  // Wait for the extension to not be idle.
+  bool WaitForExtensionNotIdle(const ExtensionId& extension_id);
+
+  // These match the methods in ExtensionBrowserTestPlatformDelegate:
+  const Extension* LoadAndLaunchApp(const base::FilePath& path,
+                                    bool uses_guest_view = false);
+
+  // Waits for the number of visible page actions to change to `count`.
+  bool WaitForPageActionVisibilityChangeTo(int count);
+
+  // Lower case to match the style of InProcessBrowserTest.
+  virtual Profile* profile();
+
+  // WebContents* of the default tab or nullptr if the default tab is destroyed.
+  content::WebContents* web_contents();
+
+  // Returns the BrowserWindowInterface for the initially-created browser.
+  // TODO(crbug.com/465157755): Convert callers of NavigateToURL() to use this
+  // method.
+  BrowserWindowInterface* browser_window_interface();
+
+  const ExtensionId& last_loaded_extension_id() {
+    return last_loaded_extension_id_;
+  }
+  void set_last_loaded_extension_id(ExtensionId id) {
+    last_loaded_extension_id_ = std::move(id);
+  }
+
+  ExtensionTestNotificationObserver* test_notification_observer() {
+    return test_notification_observer_.get();
+  }
+
+  ExtensionBrowserTestPlatformDelegate& platform_delegate() {
+    return platform_delegate_;
+  }
+
+  ExtensionService* extension_service();
+
+  // Creates a new secure test server that can be used in place of the default
+  // HTTP embedded_test_server defined in BrowserTestBase. The new test server
+  // can then be retrieved using the same embedded_test_server() method used
+  // to get the BrowserTestBase HTTP server.
+  void UseHttpsTestServer(
+      net::EmbeddedTestServer::ServerCertificate server_certificate =
+          net::EmbeddedTestServer::ServerCertificate::CERT_TEST_NAMES);
+
+  // This will return either the https test server or the
+  // default one specified in BrowserTestBase, depending on if an https test
+  // server was created by calling UseHttpsTestServer().
+  const net::EmbeddedTestServer* embedded_test_server() const {
+    return (https_test_server_) ? https_test_server_.get()
+                                : BrowserTestBase::embedded_test_server();
+  }
+  net::EmbeddedTestServer* embedded_test_server() {
+    return const_cast<net::EmbeddedTestServer*>(
+        const_cast<const ExtensionBrowserTest&>(*this).embedded_test_server());
+  }
 
   // Set to "chrome/test/data/extensions". Derived classes may override.
-  // TODO(michaelpg): Don't override protected data members.
   base::FilePath test_data_dir_;
-
-  std::unique_ptr<ChromeExtensionTestNotificationObserver> observer_;
 
   const ContextType context_type_;
 
+  // An override so that chrome-extensions://<extension_id>/_test_resources/foo
+  // maps to chrome/test/data/extensions/foo.
+  ExtensionProtocolTestHandler test_protocol_handler_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // True if the command line should be tweaked as if ChromeOS user is
+  // already logged in.
+  bool set_chromeos_user_ = true;
+#endif
+
  private:
-  // Modifies extension at `input_path` as dictated by `options`. On success,
-  // returns true and populates `out_path`. On failure, false is returned.
-  bool ModifyExtensionIfNeeded(const LoadOptions& options,
-                               const base::FilePath& input_path,
-                               base::FilePath* out_path);
-
-  // Temporary directory for testing.
-  base::ScopedTempDir temp_dir_;
-
-  // Specifies the type of UI (if any) to show during installation and what
-  // user action to simulate.
-  enum class InstallUIType {
-    kNone,
-    kCancel,
-    kNormal,
-    kAutoConfirm,
-  };
-
-  const Extension* InstallOrUpdateExtension(const extensions::ExtensionId& id,
-                                            const base::FilePath& path,
-                                            InstallUIType ui_type,
-                                            std::optional<int> expected_change);
-  const Extension* InstallOrUpdateExtension(
-      const extensions::ExtensionId& id,
-      const base::FilePath& path,
-      InstallUIType ui_type,
-      std::optional<int> expected_change,
-      Browser* browser,
-      Extension::InitFromValueFlags creation_flags);
-  const Extension* InstallOrUpdateExtension(
-      const extensions::ExtensionId& id,
-      const base::FilePath& path,
-      InstallUIType ui_type,
-      std::optional<int> expected_change,
-      mojom::ManifestLocation install_source);
+  // Common implementation for all our various install and update methods.
   const Extension* InstallOrUpdateExtension(
       const extensions::ExtensionId& id,
       const base::FilePath& path,
       InstallUIType ui_type,
       std::optional<int> expected_change,
       mojom::ManifestLocation install_source,
-      Browser* browser,
+      content::WebContents* active_web_contents,
       Extension::InitFromValueFlags creation_flags,
       bool wait_for_idle,
-      bool grant_permissions);
+      bool grant_permissions,
+      bool was_triggered_by_user_download);
+
+  ExtensionBrowserTestPlatformDelegate platform_delegate_;
+
+  // Temporary directory for testing.
+  base::ScopedTempDir temp_dir_;
+
+  // WebContents* of the default tab or nullptr if the default tab is destroyed.
+  base::WeakPtr<content::WebContents> web_contents_;
+
+  ExtensionId last_loaded_extension_id_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Tab model used for incognito tab support.
+  std::unique_ptr<OwningTestTabModel> incognito_tab_model_;
+#endif
 
   // Used for setting the default scoped current channel for extension browser
   // tests to UNKNOWN (trunk), in order to enable channel restricted features.
@@ -461,23 +468,15 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   base::ScopedPathOverride common_start_menu_override_;
 #endif
 
-  // The default profile to be used.
-  raw_ptr<Profile, AcrossTasksDanglingUntriaged> profile_;
-
-  // Cache cache implementation.
-  std::unique_ptr<ExtensionCacheFake> test_extension_cache_;
-
-  // An override so that chrome-extensions://<extension_id>/_test_resources/foo
-  // maps to chrome/test/data/extensions/foo.
-  ExtensionProtocolTestHandler test_protocol_handler_;
-
-  // Conditionally disable content verification.
-  std::unique_ptr<ScopedIgnoreContentVerifierForTest>
-      ignore_content_verification_;
+  std::unique_ptr<ExtensionCache> test_extension_cache_;
 
   // Conditionally disable install verification.
   std::unique_ptr<ScopedInstallVerifierBypassForTest>
       ignore_install_verification_;
+
+  // Conditionally disable content verification.
+  std::unique_ptr<ScopedIgnoreContentVerifierForTest>
+      ignore_content_verification_;
 
   // Used to disable CRX publisher signature checking.
   SandboxedUnpacker::ScopedVerifierFormatOverrideForTest
@@ -488,11 +487,16 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   // Allows MV2 extensions to be loaded.
   std::optional<ScopedTestMV2Enabler> mv2_enabler_;
 
+  std::unique_ptr<ExtensionTestNotificationObserver>
+      test_notification_observer_;
+
+  // Secure test server, isn't created by default. Needs to be created using
+  // UseHttpsTestServer() and then called with embedded_test_server().
+  std::unique_ptr<net::EmbeddedTestServer> https_test_server_;
+
   // Listens to extension loaded notifications.
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
-
-  extensions::ExtensionId last_loaded_extension_id_;
 };
 
 }  // namespace extensions

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/shell_integration_win.h"
 
 #include <objbase.h>
@@ -25,8 +20,8 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -38,7 +33,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
-#include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/win/registry.h"
@@ -50,6 +44,7 @@
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/shortcuts/platform_util_win.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/win/registry_watcher.h"
 #include "chrome/browser/win/settings_app_monitor.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/chrome_constants.h"
@@ -169,30 +164,26 @@ bool IsValidCustomScheme(const std::wstring& scheme) {
 // Windows 8 introduced a new scheme->executable binding system which cannot
 // be retrieved in the HKCR registry subkey method implemented below. We call
 // AssocQueryString with the new Win8-only flag ASSOCF_IS_PROTOCOL instead.
-std::u16string GetAppForSchemeUsingAssocQuery(const GURL& url) {
-  const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
+std::u16string GetForSchemeUsingAssocQuery(const GURL& url,
+                                           ASSOCSTR assoc_str) {
+  const std::wstring url_scheme = base::ASCIIToWide(url.GetScheme());
   if (!IsValidCustomScheme(url_scheme)) {
     return std::u16string();
   }
 
-  // Query AssocQueryString for a human-readable description of the program
-  // that will be invoked given the provided URL spec. This is used only to
-  // populate the external scheme dialog box the user sees when invoking
-  // an unknown external scheme.
   wchar_t out_buffer[1024];
   DWORD buffer_size = std::size(out_buffer);
   HRESULT hr =
-      AssocQueryString(ASSOCF_IS_PROTOCOL, ASSOCSTR_FRIENDLYAPPNAME,
-                       url_scheme.c_str(), NULL, out_buffer, &buffer_size);
+      AssocQueryString(ASSOCF_IS_PROTOCOL, assoc_str, url_scheme.c_str(), NULL,
+                       out_buffer, &buffer_size);
   if (FAILED(hr)) {
-    DLOG(WARNING) << "AssocQueryString failed!";
     return std::u16string();
   }
   return base::AsString16(std::wstring(out_buffer));
 }
 
 std::u16string GetAppForSchemeUsingRegistry(const GURL& url) {
-  const std::wstring url_scheme = base::ASCIIToWide(url.scheme());
+  const std::wstring url_scheme = base::ASCIIToWide(url.GetScheme());
   if (!IsValidCustomScheme(url_scheme)) {
     return std::u16string();
   }
@@ -232,8 +223,7 @@ DefaultWebClientState GetDefaultWebClientStateFromShellUtilDefaultState(
     case ShellUtil::OTHER_MODE_IS_DEFAULT:
       return DefaultWebClientState::OTHER_MODE_IS_DEFAULT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return DefaultWebClientState::UNKNOWN_DEFAULT;
+  NOTREACHED();
 }
 
 // A recorder of user actions in the Windows Settings app.
@@ -330,7 +320,7 @@ class OpenSystemSettingsHelper {
   // Begin the monitoring and will call |on_finished_callback| when done.
   // Takes in a null-terminated array of |schemes| whose registry keys must be
   // watched. The array must contain at least one element.
-  static void Begin(const wchar_t* const schemes[],
+  static void Begin(base::span<const std::wstring_view> schemes,
                     base::OnceClosure on_finished_callback) {
     delete instance_;
     instance_ =
@@ -338,17 +328,17 @@ class OpenSystemSettingsHelper {
   }
 
  private:
-  OpenSystemSettingsHelper(const wchar_t* const schemes[],
+  OpenSystemSettingsHelper(base::span<const std::wstring_view> schemes,
                            base::OnceClosure on_finished_callback)
       : on_finished_callback_(std::move(on_finished_callback)) {
-    for (const wchar_t* const* scan = &schemes[0]; *scan != nullptr; ++scan) {
-      AddRegistryKeyWatcher(base::StrCat({L"SOFTWARE\\Microsoft\\Windows\\Shell"
-                                          L"\\Associations\\UrlAssociations\\",
-                                          *scan, L"\\UserChoice"})
-                                .c_str());
+    for (const std::wstring_view scheme : schemes) {
+      AddRegistryWatcher(base::StrCat({L"SOFTWARE\\Microsoft\\Windows\\Shell"
+                                       L"\\Associations\\UrlAssociations\\",
+                                       scheme, L"\\UserChoice"})
+                             .c_str());
     }
-    // Only the watchers that were succesfully initialized are counted.
-    registry_watcher_count_ = registry_key_watchers_.size();
+    // Only the watchers that were successfully initialized are counted.
+    registry_watcher_count_ = registry_watchers_.size();
 
     timer_.Start(FROM_HERE, base::Minutes(2),
                  base::BindOnce(&OpenSystemSettingsHelper::ConcludeInteraction,
@@ -389,16 +379,23 @@ class OpenSystemSettingsHelper {
 
   // Helper function to create a registry watcher for a given |key_path|. Do
   // nothing on initialization failure.
-  void AddRegistryKeyWatcher(const wchar_t* key_path) {
+  void AddRegistryWatcher(const wchar_t* key_path) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     auto reg_key = std::make_unique<base::win::RegKey>(HKEY_CURRENT_USER,
                                                        key_path, KEY_NOTIFY);
 
-    if (reg_key->Valid() && reg_key->StartWatching(base::BindOnce(
-                                &OpenSystemSettingsHelper::OnRegistryKeyChanged,
-                                weak_ptr_factory_.GetWeakPtr()))) {
-      registry_key_watchers_.push_back(std::move(reg_key));
+    if (reg_key->Valid()) {
+      std::vector<std::wstring> key_paths = {key_path};
+      auto registry_watcher = std::make_unique<RegistryWatcher>(
+          key_paths,
+          base::BindOnce(&OpenSystemSettingsHelper::OnRegistryKeyChanged,
+                         weak_ptr_factory_.GetWeakPtr()));
+
+      // Verify that the watcher is watching at least one registry key.
+      if (registry_watcher->GetRegistryKeyCount() >= 1u) {
+        registry_watchers_.push_back(std::move(registry_watcher));
+      }
     }
   }
 
@@ -415,7 +412,7 @@ class OpenSystemSettingsHelper {
   // There can be multiple registry key watchers as some settings modify
   // multiple scheme associations. e.g. Changing the default browser modifies
   // the http and https associations.
-  std::vector<std::unique_ptr<base::win::RegKey>> registry_key_watchers_;
+  std::vector<std::unique_ptr<RegistryWatcher>> registry_watchers_;
 
   base::OneShotTimer timer_;
 
@@ -654,58 +651,29 @@ std::wstring GetHttpSchemeUserChoiceProgId() {
 }  // namespace
 
 bool SetAsDefaultBrowser() {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    LOG(ERROR) << "Error getting app exe path";
-    return false;
-  }
-
-  // From UI currently we only allow setting default browser for current user.
-  if (!ShellUtil::MakeChromeDefault(ShellUtil::CURRENT_USER, chrome_exe,
-                                    true /* elevate_if_not_admin */)) {
-    LOG(ERROR) << "Chrome could not be set as default browser.";
-    return false;
-  }
-
-  VLOG(1) << "Chrome registered as default browser.";
-  return true;
+  return false;
 }
 
 bool SetAsDefaultClientForScheme(const std::string& scheme) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
-  if (scheme.empty()) {
-    return false;
-  }
-
-  base::FilePath chrome_exe;
-  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    LOG(ERROR) << "Error getting app exe path";
-    return false;
-  }
-
-  std::wstring wscheme(base::UTF8ToWide(scheme));
-  if (!ShellUtil::MakeChromeDefaultProtocolClient(chrome_exe, wscheme)) {
-    LOG(ERROR) << "Chrome could not be set as default handler for " << scheme
-               << ".";
-    return false;
-  }
-
-  VLOG(1) << "Chrome registered as default handler for " << scheme << ".";
-  return true;
+  return false;
 }
 
 std::u16string GetApplicationNameForScheme(const GURL& url) {
-  std::u16string application_name = GetAppForSchemeUsingAssocQuery(url);
+  // Query AssocQueryString for a human-readable description of the program
+  // that will be invoked given the provided URL spec. This is used only to
+  // populate the external scheme dialog box the user sees when invoking
+  // an unknown external scheme.
+  std::u16string application_name =
+      GetForSchemeUsingAssocQuery(url, ASSOCSTR_FRIENDLYAPPNAME);
   if (!application_name.empty()) {
     return application_name;
   }
 
   return GetAppForSchemeUsingRegistry(url);
+}
+
+std::u16string GetProgIdForScheme(const GURL& url) {
+  return GetForSchemeUsingAssocQuery(url, ASSOCSTR_PROGID);
 }
 
 DefaultWebClientState GetDefaultBrowser() {
@@ -742,6 +710,17 @@ DefaultWebClientState IsDefaultClientForScheme(const std::string& scheme) {
       ShellUtil::GetChromeDefaultProtocolClientState(base::UTF8ToWide(scheme)));
 }
 
+DefaultWebClientState IsDefaultHandlerForFileExtension(
+    const std::string& file_extension) {
+  return GetDefaultWebClientStateFromShellUtilDefaultState(
+      ShellUtil::GetChromeDefaultFileHandlerState(
+          base::UTF8ToWide(file_extension)));
+}
+
+std::string GetDirectLaunchUrlScheme() {
+  return install_static::GetDirectLaunchUrlScheme();
+}
+
 namespace internal {
 
 DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
@@ -749,11 +728,7 @@ DefaultWebClientSetPermission GetPlatformSpecificDefaultWebClientSetPermission(
   if (!install_static::SupportsSetAsDefaultBrowser()) {
     return SET_DEFAULT_NOT_ALLOWED;
   }
-  if (ShellUtil::CanMakeChromeDefaultUnattended()) {
-    return SET_DEFAULT_UNATTENDED;
-  }
-  // Setting the default web client generally requires user interaction in
-  // Windows 8+ with permitted exceptions above.
+  // Setting the default web client generally requires user interaction.
   return SET_DEFAULT_INTERACTIVE;
 }
 
@@ -765,9 +740,7 @@ void SetAsDefaultBrowserUsingSystemSettings(
     base::OnceClosure on_finished_callback) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION() << "Error getting app exe path";
-    std::move(on_finished_callback).Run();
-    return;
+    NOTREACHED() << "Error getting app exe path";
   }
 
   // Create an action recorder that will open the settings app once it has
@@ -780,7 +753,7 @@ void SetAsDefaultBrowserUsingSystemSettings(
   // The helper manages its own lifetime. Bind the action recorder
   // into the finished callback to keep it alive throughout the
   // interaction.
-  static const wchar_t* const kSchemes[] = {L"http", L"https", nullptr};
+  static constexpr std::wstring_view kSchemes[] = {L"http", L"https"};
   OpenSystemSettingsHelper::Begin(
       kSchemes, base::BindOnce(&OnSettingsAppFinished, std::move(recorder),
                                std::move(on_finished_callback)));
@@ -791,15 +764,12 @@ void SetAsDefaultClientForSchemeUsingSystemSettings(
     base::OnceClosure on_finished_callback) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION() << "Error getting app exe path";
-    std::move(on_finished_callback).Run();
-    return;
+    NOTREACHED() << "Error getting app exe path";
   }
 
   // The helper manages its own lifetime.
-  std::wstring wscheme(base::UTF8ToWide(scheme));
-  const wchar_t* const kSchemes[] = {wscheme.c_str(), nullptr};
-  OpenSystemSettingsHelper::Begin(kSchemes, std::move(on_finished_callback));
+  const std::wstring wscheme(base::UTF8ToWide(scheme));
+  OpenSystemSettingsHelper::Begin({wscheme}, std::move(on_finished_callback));
 
   ShellUtil::ShowMakeChromeDefaultProtocolClientSystemUI(chrome_exe, wscheme);
 }
@@ -947,8 +917,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
         property_store->GetValue(PKEY_AppUserModel_ID, propvariant.Receive()) !=
             S_OK) {
       // When in doubt, prefer not updating the shortcut.
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     } else {
       switch (propvariant.get().vt) {
         case VT_EMPTY:
@@ -961,27 +930,7 @@ int MigrateShortcutsInPathInternal(const base::FilePath& chrome_exe,
             updated_properties.set_app_id(expected_app_id);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          continue;
-      }
-    }
-
-    // Clear dual_mode property from any shortcuts that previously had it (it
-    // was only ever installed on shortcuts with the
-    // |default_chromium_model_id|).
-    std::wstring default_chromium_model_id(
-        ShellUtil::GetBrowserModelId(is_per_user_install));
-    if (expected_app_id == default_chromium_model_id) {
-      propvariant.Reset();
-      if (property_store->GetValue(PKEY_AppUserModel_IsDualMode,
-                                   propvariant.Receive()) != S_OK) {
-        // When in doubt, prefer to not update the shortcut.
-        NOTREACHED_IN_MIGRATION();
-        continue;
-      }
-      if (propvariant.get().vt == VT_BOOL &&
-                 !!propvariant.get().boolVal) {
-        updated_properties.set_dual_mode(false);
+          NOTREACHED();
       }
     }
 

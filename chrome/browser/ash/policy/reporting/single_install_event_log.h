@@ -7,10 +7,14 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <deque>
 #include <memory>
 #include <string>
+
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 
 namespace policy {
@@ -89,7 +93,7 @@ SingleInstallEventLog<T>::SingleInstallEventLog(const std::string& id)
     : id_(id) {}
 
 template <typename T>
-SingleInstallEventLog<T>::~SingleInstallEventLog() {}
+SingleInstallEventLog<T>::~SingleInstallEventLog() = default;
 
 template <typename T>
 void SingleInstallEventLog<T>::Add(const T& event) {
@@ -110,31 +114,27 @@ bool SingleInstallEventLog<T>::Store(base::File* file) const {
   }
 
   ssize_t size = id_.size();
-  if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&size),
-                              sizeof(size)) != sizeof(size)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(size))) {
     return false;
   }
 
-  if (file->WriteAtCurrentPos(id_.data(), size) != size) {
+  if (!file->WriteAtCurrentPosAndCheck(base::as_byte_span(id_))) {
     return false;
   }
 
   const int64_t incomplete = incomplete_;
-  if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&incomplete),
-                              sizeof(incomplete)) != sizeof(incomplete)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(incomplete))) {
     return false;
   }
 
   const ssize_t entries = events_.size();
-  if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&entries),
-                              sizeof(entries)) != sizeof(entries)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(entries))) {
     return false;
   }
 
   for (const T& event : events_) {
-    size = event.ByteSizeLong();
     base::HeapArray<char> buffer;
-
+    size = event.ByteSizeLong();
     if (size > kMaxBufferSize) {
       // Log entry too large. Skip it.
       size = 0;
@@ -145,14 +145,15 @@ bool SingleInstallEventLog<T>::Store(base::File* file) const {
         size = 0;
       }
     }
-
-    if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&size),
-                                sizeof(size)) != sizeof(size) ||
-        (size && file->WriteAtCurrentPos(buffer.data(), size) != size)) {
+    if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(size))) {
       return false;
     }
+    if (size) {
+      if (!file->WriteAtCurrentPosAndCheck(base::as_bytes(buffer.as_span()))) {
+        return false;
+      }
+    }
   }
-
   return true;
 }
 
@@ -174,14 +175,15 @@ bool SingleInstallEventLog<T>::ParseIdFromFile(
     base::HeapArray<char>* package_buffer) {
   if (!file->IsValid())
     return false;
-  if (file->ReadAtCurrentPos(reinterpret_cast<char*>(size), sizeof(*size)) !=
-          sizeof(*size) ||
+  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(size),
+                                         sizeof(*size))) != sizeof(*size) ||
       *size < 0 || *size > kMaxBufferSize) {
     return false;
   }
   *package_buffer = base::HeapArray<char>::Uninit(*size);
 
-  if (file->ReadAtCurrentPos((*package_buffer).data(), *size) != *size) {
+  if (UNSAFE_TODO(file->ReadAtCurrentPos((*package_buffer).data(), *size)) !=
+      *size) {
     return false;
   }
   return true;
@@ -192,20 +194,21 @@ bool SingleInstallEventLog<T>::LoadEventLogFromFile(
     base::File* file,
     SingleInstallEventLog<T>* log) {
   int64_t incomplete;
-  if (file->ReadAtCurrentPos(reinterpret_cast<char*>(&incomplete),
-                             sizeof(incomplete)) != sizeof(incomplete)) {
+  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&incomplete),
+                                         sizeof(incomplete))) !=
+      sizeof(incomplete)) {
     return false;
   }
   log->incomplete_ = incomplete;
   ssize_t entries;
-  if (file->ReadAtCurrentPos(reinterpret_cast<char*>(&entries),
-                             sizeof(entries)) != sizeof(entries)) {
+  if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&entries),
+                                         sizeof(entries))) != sizeof(entries)) {
     return false;
   }
   for (ssize_t i = 0; i < entries; ++i) {
     ssize_t size;
-    if (file->ReadAtCurrentPos(reinterpret_cast<char*>(&size), sizeof(size)) !=
-            sizeof(size) ||
+    if (UNSAFE_TODO(file->ReadAtCurrentPos(reinterpret_cast<char*>(&size),
+                                           sizeof(size))) != sizeof(size) ||
         size < 0 || size > kMaxBufferSize) {
       log->incomplete_ = true;
       return false;
@@ -219,7 +222,7 @@ bool SingleInstallEventLog<T>::LoadEventLogFromFile(
     }
 
     auto buffer = base::HeapArray<char>::Uninit(size);
-    if (file->ReadAtCurrentPos(buffer.data(), size) != size) {
+    if (UNSAFE_TODO(file->ReadAtCurrentPos(buffer.data(), size)) != size) {
       log->incomplete_ = true;
       return false;
     }

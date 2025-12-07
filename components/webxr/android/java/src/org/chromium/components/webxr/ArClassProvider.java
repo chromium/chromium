@@ -4,9 +4,8 @@
 
 package org.chromium.components.webxr;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
 
 /**
@@ -15,10 +14,11 @@ import org.chromium.content_public.browser.WebContents;
  * Any method that you add or update the signature of here needs to also be updated in the
  * corresponding /stubs/ version of this class.
  */
+@NullMarked
 /*package*/ class ArClassProvider {
-    /*package*/ static @Nullable XrImmersiveOverlay.Delegate getOverlayDelegate(
-            @NonNull ArCompositorDelegate compositorDelegate,
-            @NonNull final WebContents webContents,
+    /*package*/ static XrImmersiveOverlay.@Nullable Delegate getOverlayDelegate(
+            ArCompositorDelegate compositorDelegate,
+            final WebContents webContents,
             boolean useOverlay,
             boolean canRenderDomContent) {
         return new ArOverlayDelegate(

@@ -4,23 +4,25 @@
 
 package org.chromium.components.sync;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 import org.json.JSONArray;
 import org.json.JSONException;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils.ThreadChecker;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.base.GoogleServiceAuthError;
+import org.chromium.google_apis.gaia.GoogleServiceAuthError;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -36,6 +38,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * components/sync/service/sync_service_impl.h for more details.
  */
 @JNINamespace("syncer")
+@NullMarked
 public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     // Pointer to the C++ counterpart object. Set on construction and reset on destroy() to avoid
     // a dangling pointer.
@@ -56,8 +59,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         mSyncServiceAndroidBridge = ptr;
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
         accountManagerFacade.addObserver(this);
-        Promise<List<CoreAccountInfo>> accountsPromise =
-                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos();
+        var accountsPromise = AccountManagerFacadeProvider.getInstance().getAccounts();
         if (accountsPromise.isFulfilled()) {
             // The promise is already fulfilled - call immediately. If the promise is not fulfilled,
             // `keepSettingsOnlyForAccountManagerAccounts` will be invoked by
@@ -81,13 +83,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public boolean isTransportStateActive() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().isTransportStateActive(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public boolean isSyncFeatureEnabled() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -102,14 +97,10 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public @GoogleServiceAuthError.State int getAuthError() {
+    public GoogleServiceAuthError getAuthError() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
-        int authErrorCode = SyncServiceImplJni.get().getAuthError(mSyncServiceAndroidBridge);
-        if (authErrorCode < 0 || authErrorCode >= GoogleServiceAuthError.State.NUM_ENTRIES) {
-            throw new IllegalArgumentException("No state for code: " + authErrorCode);
-        }
-        return authErrorCode;
+        return SyncServiceImplJni.get().getAuthError(mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -117,20 +108,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
         return SyncServiceImplJni.get().isSyncDisabledByEnterprisePolicy(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public boolean hasUnrecoverableError() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().hasUnrecoverableError(mSyncServiceAndroidBridge);
-    }
-
-    @Override
-    public boolean requiresClientUpgrade() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        return SyncServiceImplJni.get().requiresClientUpgrade(mSyncServiceAndroidBridge);
     }
 
     @Override
@@ -248,13 +225,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
-    public void setSyncRequested() {
-        mThreadChecker.assertOnValidThread();
-        assert mSyncServiceAndroidBridge != 0;
-        SyncServiceImplJni.get().setSyncRequested(mSyncServiceAndroidBridge);
-    }
-
-    @Override
     public SyncSetupInProgressHandle getSetupInProgressHandle() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -325,10 +295,23 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
+    public @TransportState int getTransportState() {
+        mThreadChecker.assertOnValidThread();
+        assert mSyncServiceAndroidBridge != 0;
+        return SyncServiceImplJni.get().getTransportState(mSyncServiceAndroidBridge);
+    }
+
+    @Override
+    public @UserActionableError int getUserActionableError() {
+        mThreadChecker.assertOnValidThread();
+        assert mSyncServiceAndroidBridge != 0;
+        return SyncServiceImplJni.get().getUserActionableError(mSyncServiceAndroidBridge);
+    }
+
+    @Override
     public boolean isUsingExplicitPassphrase() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
-        assert isEngineInitialized();
         return SyncServiceImplJni.get().isUsingExplicitPassphrase(mSyncServiceAndroidBridge);
     }
 
@@ -417,6 +400,13 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     }
 
     @Override
+    public void acknowledgeBookmarksLimitExceededError() {
+        mThreadChecker.assertOnValidThread();
+        assert mSyncServiceAndroidBridge != 0;
+        SyncServiceImplJni.get().acknowledgeBookmarksLimitExceededError(mSyncServiceAndroidBridge);
+    }
+
+    @Override
     public boolean shouldOfferTrustedVaultOptIn() {
         mThreadChecker.assertOnValidThread();
         assert mSyncServiceAndroidBridge != 0;
@@ -452,14 +442,17 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     @Override
     /* AccountsChangeObserver implementation. */
     public void onCoreAccountInfosChanged() {
-        Promise<List<CoreAccountInfo>> accountsPromise =
-                AccountManagerFacadeProvider.getInstance().getCoreAccountInfos();
+        var accountsPromise = AccountManagerFacadeProvider.getInstance().getAccounts();
         assert accountsPromise.isFulfilled();
         keepSettingsOnlyForAccountManagerAccounts(accountsPromise.getResult());
     }
 
-    private void keepSettingsOnlyForAccountManagerAccounts(List<CoreAccountInfo> accounts) {
-        String[] gaiaIds = accounts.stream().map(CoreAccountInfo::getGaiaId).toArray(String[]::new);
+    private void keepSettingsOnlyForAccountManagerAccounts(List<AccountInfo> accounts) {
+        int size = accounts.size();
+        String[] gaiaIds = new String[size];
+        for (int i = 0; i < size; ++i) {
+            gaiaIds[i] = accounts.get(i).getGaiaId().toString();
+        }
         SyncServiceImplJni.get()
                 .keepAccountSettingsPrefsOnlyForUsers(mSyncServiceAndroidBridge, gaiaIds);
     }
@@ -534,7 +527,7 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
     @NativeMethods
     interface Natives {
         // Please keep all methods below in the same order as sync_service_android_bridge.h.
-        void setSyncRequested(long nativeSyncServiceAndroidBridge);
+        void acknowledgeBookmarksLimitExceededError(long nativeSyncServiceAndroidBridge);
 
         boolean isSyncFeatureEnabled(long nativeSyncServiceAndroidBridge);
 
@@ -543,8 +536,6 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
         boolean isSyncDisabledByEnterprisePolicy(long nativeSyncServiceAndroidBridge);
 
         boolean isEngineInitialized(long nativeSyncServiceAndroidBridge);
-
-        boolean isTransportStateActive(long nativeSyncServiceAndroidBridge);
 
         void setSetupInProgress(long nativeSyncServiceAndroidBridge, boolean inProgress);
 
@@ -597,6 +588,10 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         int getPassphraseType(long nativeSyncServiceAndroidBridge);
 
+        int getTransportState(long nativeSyncServiceAndroidBridge);
+
+        int getUserActionableError(long nativeSyncServiceAndroidBridge);
+
         void setEncryptionPassphrase(long nativeSyncServiceAndroidBridge, String passphrase);
 
         boolean setDecryptionPassphrase(long nativeSyncServiceAndroidBridge, String passphrase);
@@ -605,14 +600,10 @@ public class SyncServiceImpl implements SyncService, AccountsChangeObserver {
 
         void getAllNodes(long nativeSyncServiceAndroidBridge, Callback<JSONArray> callback);
 
-        int getAuthError(long nativeSyncServiceAndroidBridge);
+        @JniType("GoogleServiceAuthError")
+        GoogleServiceAuthError getAuthError(long nativeSyncServiceAndroidBridge);
 
-        boolean hasUnrecoverableError(long nativeSyncServiceAndroidBridge);
-
-        boolean requiresClientUpgrade(long nativeSyncServiceAndroidBridge);
-
-        @Nullable
-        CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
+        @Nullable CoreAccountInfo getAccountInfo(long nativeSyncServiceAndroidBridge);
 
         boolean hasSyncConsent(long nativeSyncServiceAndroidBridge);
 

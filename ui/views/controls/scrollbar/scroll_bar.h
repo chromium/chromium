@@ -10,7 +10,9 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+#include "ui/menus/simple_menu_model.h"
+#include "ui/native_theme/native_theme.h"
 #include "ui/views/animation/scroll_animator.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/image_button.h"
@@ -139,15 +141,17 @@ class VIEWS_EXPORT ScrollBar : public View,
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+  void OnThemeChanged() override;
 
   // ScrollDelegate:
   bool OnScroll(float dx, float dy) override;
   void OnFlingScrollEnded() override;
 
   // ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // ui::SimpleMenuModel::Delegate:
   bool IsCommandIdChecked(int id) const override;
@@ -195,6 +199,8 @@ class VIEWS_EXPORT ScrollBar : public View,
   explicit ScrollBar(Orientation orientation);
 
   BaseScrollBarThumb* GetThumb() const;
+
+  ui::NativeTheme::PreferredColorScheme GetColorScheme() const;
 
   // Wrapper functions that calls the controller. We need this since native
   // scrollbars wrap around a different scrollbar. When calling the controller

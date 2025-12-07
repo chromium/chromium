@@ -8,6 +8,7 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -19,12 +20,14 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Properties of account picker bottom sheet. */
+@NullMarked
 class AccountPickerBottomSheetProperties {
     /**
      * View states of account picker. Different account picker view state correspond to different
      * account picker bottom sheet configuration.
      */
     @IntDef({
+        ViewState.NONE,
         ViewState.NO_ACCOUNTS,
         ViewState.COLLAPSED_ACCOUNT_LIST,
         ViewState.EXPANDED_ACCOUNT_LIST,
@@ -35,6 +38,15 @@ class AccountPickerBottomSheetProperties {
     })
     @Retention(RetentionPolicy.SOURCE)
     @interface ViewState {
+        /**
+         * Sentinel value for ViewState, indicating no specific active view state. It's used as the
+         * initial value for seamless sign-in flow's previous view state or to signal that the
+         * bottom sheet should be dismissed when the back button is pressed.
+         *
+         * <p>TODO(crbug.com/462087276): Decouple seamless sign-in ViewState from the account picker
+         */
+        int NONE = -1;
+
         /**
          * When there is no account on device, the user sees only one blue button
          * |Add account to device|.
@@ -154,6 +166,28 @@ class AccountPickerBottomSheetProperties {
                 .with(ON_DISMISS_CLICKED, onDismissClicked)
                 .with(VIEW_STATE, ViewState.NO_ACCOUNTS)
                 .with(BOTTOM_SHEET_STRINGS, accountPickerBottomSheetStrings)
+                .build();
+    }
+
+    /**
+     * Creates a default model for the seamless sign-in bottom sheet. This defines the state and
+     * actions for the bottom sheet that is only shown on error or for management notice
+     * confirmation (along with subsequent loading state after user accepts management notice).
+     *
+     * <p>In most cases, the bottom sheet remains hidden.
+     *
+     * <p>TODO(crbug.com/462087276): Decouple seamless sign-in from the account picker properties.
+     * The seamless sign-in flow currently reuses the account picker's PropertyModel, which can lead
+     * to invalid view states. A dedicated set of ViewStates should be created for seamless sign-in.
+     */
+    public static PropertyModel createModelForSeamlessSignin(
+            Runnable onContinueAsClicked, AccountPickerBottomSheetStrings strings) {
+        return new PropertyModel.Builder(ALL_KEYS)
+                .with(
+                        AccountPickerBottomSheetProperties.ON_CONTINUE_AS_CLICKED,
+                        v -> onContinueAsClicked.run())
+                .with(AccountPickerBottomSheetProperties.BOTTOM_SHEET_STRINGS, strings)
+                .with(AccountPickerBottomSheetProperties.VIEW_STATE, ViewState.NONE)
                 .build();
     }
 

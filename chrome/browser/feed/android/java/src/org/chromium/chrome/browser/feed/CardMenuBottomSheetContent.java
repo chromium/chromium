@@ -4,15 +4,19 @@
 
 package org.chromium.chrome.browser.feed;
 
+import android.content.Context;
 import android.view.View;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Provide data that the bottom sheet manager needs to show a bottom sheet. */
+@NullMarked
 public class CardMenuBottomSheetContent implements BottomSheetContent {
-    private View mContentView;
+    private final View mContentView;
 
     public CardMenuBottomSheetContent(View view) {
         mContentView = view;
@@ -23,9 +27,8 @@ public class CardMenuBottomSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return null;
     }
 
@@ -48,32 +51,27 @@ public class CardMenuBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getPeekHeight() {
-        return BottomSheetContent.HeightMode.DISABLED;
-    }
-
-    @Override
     public float getFullHeightRatio() {
         return BottomSheetContent.HeightMode.WRAP_CONTENT;
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.feed_card_menu_description;
+    public String getSheetContentDescription(Context context) {
+        return context.getString(R.string.feed_card_menu_description);
     }
 
     @Override
-    public int getSheetHalfHeightAccessibilityStringId() {
+    public @StringRes int getSheetHalfHeightAccessibilityStringId() {
         return R.string.feed_card_menu_opened_half;
     }
 
     @Override
-    public int getSheetFullHeightAccessibilityStringId() {
+    public @StringRes int getSheetFullHeightAccessibilityStringId() {
         return R.string.feed_card_menu_opened_full;
     }
 
     @Override
-    public int getSheetClosedAccessibilityStringId() {
+    public @StringRes int getSheetClosedAccessibilityStringId() {
         return R.string.feed_card_menu_closed;
     }
 }

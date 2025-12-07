@@ -60,7 +60,7 @@ void BadClockUI::PopulateClockStrings(base::Value::Dict& load_time_data) {
       heading_string = IDS_CLOCK_ERROR_BEHIND_HEADING;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   load_time_data.Set("tabTitle",
                      l10n_util::GetStringUTF16(IDS_CLOCK_ERROR_TITLE));
@@ -93,9 +93,9 @@ void BadClockUI::HandleCommand(SecurityInterstitialCommand command) {
           security_interstitials::MetricsHelper::SHOW_ADVANCED);
       break;
     case CMD_OPEN_DATE_SETTINGS:
-      if (!controller_->CanLaunchDateAndTimeSettings())
-        NOTREACHED_IN_MIGRATION()
-            << "This platform does not support date settings";
+      if (!controller_->CanLaunchDateAndTimeSettings()) {
+        NOTREACHED() << "This platform does not support date settings";
+      }
       controller_->metrics_helper()->RecordUserInteraction(
           security_interstitials::MetricsHelper::OPEN_TIME_SETTINGS);
       controller_->LaunchDateAndTimeSettings();
@@ -111,6 +111,7 @@ void BadClockUI::HandleCommand(SecurityInterstitialCommand command) {
           security_interstitials::MetricsHelper::OPEN_ENHANCED_PROTECTION);
       controller_->OpenEnhancedProtectionSettings();
       break;
+    case CMD_SHOW_CERTIFICATE_VIEWER:
     case CMD_PROCEED:
     case CMD_OPEN_HELP_CENTER:
     case CMD_RELOAD:
@@ -119,9 +120,14 @@ void BadClockUI::HandleCommand(SecurityInterstitialCommand command) {
     case CMD_REPORT_PHISHING_ERROR:
     case CMD_CLOSE_INTERSTITIAL_WITHOUT_UI:
     case CMD_REQUEST_SITE_ACCESS_PERMISSION:
+    case CMD_OPEN_ANDROID_ADVANCED_PROTECTION_SETTINGS:
+    case CMD_OPEN_HELP_CENTER_IN_NEW_TAB:
+    case CMD_OPEN_DIAGNOSTIC_IN_NEW_TAB:
+    case CMD_OPEN_REPORTING_PRIVACY_IN_NEW_TAB:
+    case CMD_OPEN_WHITEPAPER_IN_NEW_TAB:
+    case CMD_REPORT_PHISHING_ERROR_IN_NEW_TAB:
       // Not supported by the bad clock error page.
-      NOTREACHED_IN_MIGRATION() << "Unsupported command: " << command;
-      break;
+      NOTREACHED() << "Unsupported command: " << command;
     case CMD_ERROR:
     case CMD_TEXT_FOUND:
     case CMD_TEXT_NOT_FOUND:
@@ -130,4 +136,4 @@ void BadClockUI::HandleCommand(SecurityInterstitialCommand command) {
   }
 }
 
-}  // security_interstitials
+}  // namespace security_interstitials

@@ -20,18 +20,19 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.IntentHandler;
@@ -45,11 +46,14 @@ import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 
+import java.util.function.Supplier;
+
 /** Robolectric tests for {@link IncognitoRestoreAppLaunchDrawBlocker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @LooperMode(Mode.LEGACY)
 public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Bundle mSavedInstanceStateMock;
     @Mock private Intent mIntentMock;
     @Mock private CipherFactory mCipherFactoryMock;
@@ -61,18 +65,18 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverArgumentCaptor;
 
-    private ObservableSupplierImpl<TabModelSelector> mTabModelSelectorObservableSupplier =
+    private final ObservableSupplierImpl<TabModelSelector> mTabModelSelectorObservableSupplier =
             new ObservableSupplierImpl<>();
-    private Supplier<Intent> mIntentSupplier =
-            new Supplier<Intent>() {
+    private final Supplier<Intent> mIntentSupplier =
+            new Supplier<>() {
                 @Nullable
                 @Override
                 public Intent get() {
                     return mIntentMock;
                 }
             };
-    private Supplier<Boolean> mShouldIgnoreIntentSupplier =
-            new Supplier<Boolean>() {
+    private final Supplier<Boolean> mShouldIgnoreIntentSupplier =
+            new Supplier<>() {
                 @Nullable
                 @Override
                 public Boolean get() {
@@ -91,10 +95,8 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(
                 /* isAvailable= */ false);
-        CipherFactory.resetInstanceForTesting(mCipherFactoryMock);
         mTabModelSelectorObservableSupplier.set(mTabModelSelectorMock);
         mIncognitoRestoreAppLaunchDrawBlocker =
                 new IncognitoRestoreAppLaunchDrawBlocker(
@@ -103,7 +105,8 @@ public class IncognitoRestoreAppLaunchDrawBlockerUnitTest {
                         mIntentSupplier,
                         mShouldIgnoreIntentSupplier,
                         mActivityLifecycleDispatcherMock,
-                        mUnblockDrawRunnableMock);
+                        mUnblockDrawRunnableMock,
+                        mCipherFactoryMock);
 
         // Check that the we added the native init observer.
         verify(mActivityLifecycleDispatcherMock, times(1))

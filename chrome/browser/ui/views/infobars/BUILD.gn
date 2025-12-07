@@ -1,0 +1,66 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("infobars") {
+  sources = [
+    "alternate_nav_infobar_view.h",
+    "confirm_infobar.h",
+    "infobar_container_view.h",
+    "infobar_view.h",
+  ]
+
+  public_deps = [
+    "//components/infobars/core",
+    "//ui/base/interaction",
+    "//ui/views",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "alternate_nav_infobar_view.cc",
+    "confirm_infobar.cc",
+    "infobar_container_view.cc",
+    "infobar_view.cc",
+  ]
+
+  deps = [
+    ":infobars",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/omnibox",
+    "//components/infobars/core",
+    "//components/strings:components_strings_grit",
+    "//ui/accessibility:ax_base",
+    "//ui/native_theme",
+    "//ui/views",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "infobar_container_view_browsertest.cc",
+    "infobar_view_browsertest.cc",
+  ]
+
+  deps = [
+    ":impl",
+    ":infobars",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/infobars/content",
+    "//components/infobars/core",
+    "//content/test:test_support",
+    "//ui/base",
+    "//ui/views",
+    "//ui/views:test_support",
+  ]
+}

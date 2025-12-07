@@ -2,6 +2,7 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script src="../../resources/gesture-util.js"></script>
+<script src="../../animations/web-animations/resources/testcommon.js"></script>
 <style>
 div {
   position: absolute;
@@ -54,22 +55,26 @@ function MakeScrollable() {
   scroller.appendChild(space);
 }
 promise_test (async () => {
-  scroller.scrollTo(0, 0);
+  await waitForScrollReset(scroller);
+  await waitForCompositorCommit();
   const scrollPromise = waitForScrollEvent(scroller);
   await swipe(100, 200, 200, 'upleft', 1000);
   await scrollPromise;
   MakeUnscrollable();
-  await waitForAnimationEndTimeBased(scrollLeft);
+  // Wait a little to see if we crash.
+  await waitForAnimationFrames(2);
   MakeScrollable();
 }, "Should not crash if the scroller becomes unscrollable during fling.");
 
 promise_test (async () => {
-  scroller.scrollTo(0, 0);
+  await waitForScrollReset(scroller);
+  await waitForCompositorCommit();
   const scrollPromise = waitForScrollEvent(scroller);
   await swipe(100, 200, 200, 'upleft', 1000);
   await scrollPromise;
   body.removeChild(scroller);
-  await waitForAnimationEndTimeBased(scrollLeft);
+  // Wait a little to see if we crash.
+  await waitForAnimationFrames(2);
   body.appendChild(scroller);
 }, "Should not crash if the scroller is removed during fling.");
 </script>

@@ -35,6 +35,31 @@ namespace {
 constexpr int kButtonHighlightRadiusDp = 18;
 constexpr int kButtonHighlightWidthDp = 1;
 
+ui::ColorId GetBackgroundColorId(bool is_active,
+                                 ShelfBackgroundType background_type) {
+  if (is_active) {
+    return cros_tokens::kCrosSysSystemPrimaryContainer;
+  }
+  if (background_type == ShelfBackgroundType::kLoginNonBlurredWallpaper) {
+    return cros_tokens::kCrosSysSystemOnBase;
+  }
+  return cros_tokens::kCrosSysSystemBaseElevated;
+}
+
+ui::ColorId GetIconColorId(bool is_active) {
+  if (is_active) {
+    return cros_tokens::kCrosSysOnPrimary;
+  }
+  return cros_tokens::kCrosSysOnSurface;
+}
+
+ui::ColorId GetEnabledTextColorId(bool is_active) {
+  if (is_active) {
+    return cros_tokens::kCrosSysSystemOnPrimaryContainer;
+  }
+  return cros_tokens::kCrosSysOnSurface;
+}
+
 }  // namespace
 
 LoginShelfButton::LoginShelfButton(PressedCallback callback,
@@ -52,22 +77,20 @@ LoginShelfButton::LoginShelfButton(PressedCallback callback,
   SetFocusPainter(nullptr);
 
   views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
-  SetBorder(views::CreateThemedRoundedRectBorder(
-      kButtonHighlightWidthDp, kButtonHighlightRadiusDp,
-      ui::kColorCrosSystemHighlight));
+  SetBorder(views::CreateRoundedRectBorder(kButtonHighlightWidthDp,
+                                           kButtonHighlightRadiusDp,
+                                           ui::kColorCrosSystemHighlight));
+  // PillButton has some custom tooltip logic that runs, but we don't want here.
+  SetUseLabelAsDefaultTooltip(false);
+  UpdateTooltipText(label());
+  label()->AddDisplayTextTruncationCallback(base::BindRepeating(
+      &LoginShelfButton::UpdateTooltipText, weak_ptr_factory_.GetWeakPtr()));
 }
 
 LoginShelfButton::~LoginShelfButton() = default;
 
 int LoginShelfButton::text_resource_id() const {
   return text_resource_id_;
-}
-
-std::u16string LoginShelfButton::GetTooltipText(const gfx::Point& p) const {
-  if (label()->IsDisplayTextTruncated()) {
-    return GetText();
-  }
-  return std::u16string();
 }
 
 void LoginShelfButton::OnFocus() {
@@ -98,16 +121,9 @@ void LoginShelfButton::OnBackgroundTypeChanged(
 }
 
 void LoginShelfButton::OnActiveChanged() {
-  if (is_active_) {
-    SetBackgroundColorId(cros_tokens::kCrosSysSystemPrimaryContainer);
-    SetEnabledTextColorIds(cros_tokens::kCrosSysSystemOnPrimaryContainer);
-    SetIconColorId(cros_tokens::kCrosSysSystemOnPrimaryContainer);
-  } else {
-    // Switch the pillbutton to the default background color.
-    SetBackgroundColor(gfx::kPlaceholderColor);
-    SetEnabledTextColorIds(cros_tokens::kCrosSysOnSurface);
-    SetIconColor(gfx::kPlaceholderColor);
-  }
+  SetBackgroundColor(GetBackgroundColorId(is_active_, background_type_));
+  SetEnabledTextColors(GetEnabledTextColorId(is_active_));
+  SetIconColor(GetIconColorId(is_active_));
 }
 
 void LoginShelfButton::SetIsActive(bool is_active) {
@@ -120,6 +136,14 @@ void LoginShelfButton::SetIsActive(bool is_active) {
 
 bool LoginShelfButton::GetIsActive() const {
   return is_active_;
+}
+
+void LoginShelfButton::UpdateTooltipText(views::Label* label) {
+  if (label->IsDisplayTextTruncated()) {
+    SetTooltipText(std::u16string(GetText()));
+  } else {
+    SetTooltipText(std::u16string());
+  }
 }
 
 BEGIN_METADATA(LoginShelfButton)

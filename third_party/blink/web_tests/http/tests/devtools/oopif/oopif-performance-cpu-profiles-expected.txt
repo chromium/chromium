@@ -1,11 +1,5 @@
-Test CPU profiles are recorded for OOPIFs.
+Test that OOPIF processes and threads are recorded.
 
-name: CrRendererMain
-url: http://127.0.0.1:8000/devtools/oopif/resources/page.html
-has CpuProfile: true
-
-name: CrRendererMain
-url: http://devtools.oopif.test:8000/devtools/oopif/resources/inner-iframe.html?second
-has CpuProfile: true
-
+MATCH FOUND: http://127.0.0.1:8000/devtools/resources/inspected-page.html - isOnMainFrame: true
+MATCH FOUND: http://devtools.oopif.test:8000/devtools/oopif/resources/iframe.html?second - isOnMainFrame: false
 

@@ -72,12 +72,12 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   step1();
 
   function step1() {
-    TestRunner.mainTarget.logAgent().startViolationsReport([{name: 'blockedEvent', threshold: 30000}]);
+    TestRunner.mainTarget.logAgent().invoke_startViolationsReport({config: [{name: 'blockedEvent', threshold: 30000}]});
     TestRunner.evaluateInPage('dispatchEvents()', step2);
   }
 
   function step2() {
-    TestRunner.mainTarget.logAgent().startViolationsReport([{name: 'blockedEvent', threshold: 0.001}]);
+    TestRunner.mainTarget.logAgent().invoke_startViolationsReport({config: [{name: 'blockedEvent', threshold: 0.001}]});
     TestRunner.addResult('There should be no warnings above this line');
     TestRunner.evaluateInPage('dispatchEvents()', () => TestRunner.completeTest());
   }

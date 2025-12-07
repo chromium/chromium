@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "components/webrtc/net_address_utils.h"
+#include "net/base/address_family.h"
 
 namespace sharing {
 
@@ -23,7 +24,7 @@ P2PAsyncAddressResolver::~P2PAsyncAddressResolver() {
   DCHECK(state_ == STATE_CREATED || state_ == STATE_FINISHED);
 }
 
-void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
+void P2PAsyncAddressResolver::Start(const webrtc::SocketAddress& host_name,
                                     std::optional<int> address_family,
                                     DoneCallback done_callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -31,17 +32,16 @@ void P2PAsyncAddressResolver::Start(const rtc::SocketAddress& host_name,
 
   state_ = STATE_SENT;
   done_callback_ = std::move(done_callback);
+
+  std::optional<net::AddressFamily> family = std::nullopt;
   if (address_family.has_value()) {
-    socket_manager_->GetHostAddressWithFamily(
-        host_name.hostname(), address_family.value(), /*enable_mdns=*/true,
-        base::BindOnce(&P2PAsyncAddressResolver::OnResponse,
-                       base::Unretained(this)));
-  } else {
-    socket_manager_->GetHostAddress(
-        host_name.hostname(), /*enable_mdns=*/true,
-        base::BindOnce(&P2PAsyncAddressResolver::OnResponse,
-                       base::Unretained(this)));
+    family = net::ToAddressFamily(*address_family);
   }
+
+  socket_manager_->GetHostAddress(
+      host_name.hostname(), family, /*enable_mdns=*/true,
+      base::BindOnce(&P2PAsyncAddressResolver::OnResponse,
+                     base::Unretained(this)));
 }
 
 void P2PAsyncAddressResolver::Cancel() {

@@ -15,7 +15,7 @@
 #include "ui/base/ime/ime_key_event_dispatcher.h"
 #include "ui/base/ime/input_method_base.h"
 #include "ui/events/fuchsia/input_event_sink.h"
-#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/native_ui_types.h"
 
 namespace ui {
 

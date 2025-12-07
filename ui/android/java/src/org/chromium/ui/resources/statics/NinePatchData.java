@@ -8,11 +8,15 @@ import android.graphics.Bitmap;
 import android.graphics.NinePatch;
 import android.graphics.Rect;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+
 import java.nio.BufferUnderflowException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 /** A helper class to decode and expose relevant 9-patch data from a Bitmap. */
+@NullMarked
 public class NinePatchData {
     private final int mWidth;
     private final int mHeight;
@@ -20,7 +24,7 @@ public class NinePatchData {
     private final int[] mDivX;
     private final int[] mDivY;
 
-    private Rect mAperture;
+    private final Rect mAperture;
 
     /**
      * Creates a {@link NinePatchData} that stores 9-patch metadata.
@@ -76,7 +80,7 @@ public class NinePatchData {
      *               encoded in {@code bitmap} or {@code null} if the {@link Bitmap} wasn't a
      *               9-patch.
      */
-    public static NinePatchData create(Bitmap bitmap) {
+    public static @Nullable NinePatchData create(Bitmap bitmap) {
         if (bitmap == null) return null;
 
         try {

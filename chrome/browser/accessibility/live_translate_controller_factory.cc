@@ -5,13 +5,10 @@
 #include "chrome/browser/accessibility/live_translate_controller_factory.h"
 
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/live_caption/live_translate_controller.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#endif
+#include "components/live_caption/translation_dispatcher.h"
+#include "google_apis/google_api_keys.h"
 
 namespace captions {
 
@@ -54,7 +51,8 @@ LiveTranslateControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
   return std::make_unique<LiveTranslateController>(
       Profile::FromBrowserContext(browser_context)->GetPrefs(),
-      browser_context);
+      std::make_unique<TranslationDispatcher>(google_apis::GetAPIKey(),
+                                              browser_context));
 }
 
 }  // namespace captions

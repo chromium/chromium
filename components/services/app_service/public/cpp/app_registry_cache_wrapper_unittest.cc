@@ -22,7 +22,7 @@ class AppRegistryCacheWrapperTest : public testing::Test,
   }
 
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void VerifyAccountId(AccountId account_id) {

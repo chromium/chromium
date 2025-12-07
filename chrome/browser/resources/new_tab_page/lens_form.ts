@@ -83,7 +83,6 @@ export class LensFormElement extends CrLitElement {
       supportedFileTypes_: {type: String},
       renderingEnvironment_: {type: String},
       chromiumSurface_: {type: String},
-      useDirectUpload_: {type: Boolean},
       uploadFileAction_: {type: String},
       uploadUrlAction_: {type: String},
       uploadUrl_: {type: String},
@@ -94,19 +93,18 @@ export class LensFormElement extends CrLitElement {
     };
   }
 
-  protected supportedFileTypes_: string = SUPPORTED_FILE_TYPES.join(',');
-  protected renderingEnvironment_: string = RENDERING_ENVIRONMENT;
-  protected chromiumSurface_: string = CHROMIUM_SURFACE;
-  protected language_: string = window.navigator.language;
-  protected uploadFileAction_: string = SCOTTY_UPLOAD_FILE_ACTION;
-  protected uploadUrlAction_: string = UPLOAD_BY_URL_ACTION;
-  protected uploadUrl_: string = '';
-  protected uploadUrlEntrypoint_: string = UPLOAD_URL_ENTRYPOINT;
-  protected startTime_: string|null = null;
-  protected clientData_: string =
-      loadTimeData.getString('realboxLensVariations');
-  private useDirectUpload_: boolean =
-      loadTimeData.getBoolean('realboxLensDirectUpload');
+  protected accessor supportedFileTypes_: string =
+      SUPPORTED_FILE_TYPES.join(',');
+  protected accessor renderingEnvironment_: string = RENDERING_ENVIRONMENT;
+  protected accessor chromiumSurface_: string = CHROMIUM_SURFACE;
+  protected accessor language_: string = window.navigator.language;
+  protected accessor uploadFileAction_: string = SCOTTY_UPLOAD_FILE_ACTION;
+  protected accessor uploadUrlAction_: string = UPLOAD_BY_URL_ACTION;
+  protected accessor uploadUrl_: string = '';
+  protected accessor uploadUrlEntrypoint_: string = UPLOAD_URL_ENTRYPOINT;
+  protected accessor startTime_: string|null = null;
+  protected accessor clientData_: string =
+      loadTimeData.getString('searchboxLensVariations');
 
   openSystemFilePicker() {
     this.$.fileInput.click();
@@ -144,17 +142,13 @@ export class LensFormElement extends CrLitElement {
       return;
     }
 
-    if (this.useDirectUpload_) {
-      this.uploadFileAction_ = DIRECT_UPLOAD_FILE_ACTION;
-    }
+    this.uploadFileAction_ = DIRECT_UPLOAD_FILE_ACTION;
 
     this.startTime_ = Date.now().toString();
 
     let processedFile: ProcessedFile = {processedFile: file};
 
-    if (this.useDirectUpload_) {
-      processedFile = await processFile(file);
-    }
+    processedFile = await processFile(file);
 
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(processedFile.processedFile);

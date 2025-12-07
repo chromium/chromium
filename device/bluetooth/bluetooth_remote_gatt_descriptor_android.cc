@@ -11,16 +11,14 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service_android.h"
-
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "device/bluetooth/jni_headers/ChromeBluetoothRemoteGattDescriptor_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaParamRef;
 using base::android::JavaRef;
 
 namespace device {
@@ -106,7 +104,7 @@ void BluetoothRemoteGattDescriptorAndroid::ReadRemoteDescriptor(
 }
 
 void BluetoothRemoteGattDescriptorAndroid::WriteRemoteDescriptor(
-    const std::vector<uint8_t>& new_value,
+    base::span<const uint8_t> new_value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   if (read_pending_ || write_pending_) {
@@ -135,9 +133,8 @@ void BluetoothRemoteGattDescriptorAndroid::WriteRemoteDescriptor(
 
 void BluetoothRemoteGattDescriptorAndroid::OnRead(
     JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
     int32_t status,
-    const JavaParamRef<jbyteArray>& value) {
+    const JavaRef<jbyteArray>& value) {
   read_pending_ = false;
 
   // Clear callbacks before calling to avoid reentrancy issues.
@@ -156,10 +153,8 @@ void BluetoothRemoteGattDescriptorAndroid::OnRead(
   }
 }
 
-void BluetoothRemoteGattDescriptorAndroid::OnWrite(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jcaller,
-    int32_t status) {
+void BluetoothRemoteGattDescriptorAndroid::OnWrite(JNIEnv* env,
+                                                   int32_t status) {
   write_pending_ = false;
 
   // Clear callbacks before calling to avoid reentrancy issues.
@@ -181,3 +176,5 @@ BluetoothRemoteGattDescriptorAndroid::BluetoothRemoteGattDescriptorAndroid(
     : instance_id_(instance_id) {}
 
 }  // namespace device
+
+DEFINE_JNI(ChromeBluetoothRemoteGattDescriptor)

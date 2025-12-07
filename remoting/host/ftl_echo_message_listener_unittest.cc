@@ -49,6 +49,11 @@ ftl::ChromotingMessage CreateEchoMessageWithPayload(
   return message;
 }
 
+bool CheckAccessPermission(std::string host_owner,
+                           std::string_view email_to_check) {
+  return email_to_check == host_owner;
+}
+
 }  // namespace
 
 class FtlEchoMessageListenerTest : public testing::Test {
@@ -71,7 +76,8 @@ class FtlEchoMessageListenerTest : public testing::Test {
     unknown_sender_id_.set_id(kUnknownEmail);
 
     ftl_echo_message_listener_ = std::make_unique<FtlEchoMessageListener>(
-        kOwnerEmail, &signal_strategy_);
+        base::BindRepeating(&CheckAccessPermission, kOwnerEmail),
+        &signal_strategy_);
   }
 
   void TearDown() override {

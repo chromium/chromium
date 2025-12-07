@@ -4,6 +4,13 @@
 
 #include "chrome/browser/ui/webauthn/transport_hover_list_model.h"
 
+#include <cstddef>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/containers/span.h"
+#include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
@@ -60,7 +67,10 @@ bool TransportHoverListModel::IsButtonEnabled(int item_tag) const {
 }
 
 void TransportHoverListModel::OnListItemSelected(int item_tag) {
-  dialog_model_observation_.GetSource()->mechanisms[item_tag].callback.Run();
+  const auto& mech =
+      dialog_model_observation_.GetSource()->mechanisms[item_tag];
+  webauthn::user_actions::RecordMechanismClick(mech);
+  mech.callback.Run();
 }
 
 size_t TransportHoverListModel::GetPreferredItemCount() const {

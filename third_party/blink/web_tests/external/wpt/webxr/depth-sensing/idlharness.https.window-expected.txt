@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] XRWebGLDepthInformation interface: attribute textureType
+  assert_true: The prototype object must have a property "textureType" expected true got false
+[FAIL] XRWebGLDepthInformation interface: attribute imageIndex
+  assert_true: The prototype object must have a property "imageIndex" expected true got false
+Harness: the test ran to completion.
+

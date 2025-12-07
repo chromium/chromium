@@ -37,6 +37,10 @@ template("cc_test_static_library") {
 
     # Not needed in test code.
     configs -= [ "//build/config/compiler:wexit_time_destructors" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }
 
@@ -51,5 +55,9 @@ template("cc_test") {
 
     # Not needed in test code.
     configs -= [ "//build/config/compiler:wexit_time_destructors" ]
+
+    # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+    # enable the diagnostic by removing this line.
+    configs += [ "//build/config/compiler:no_exit_time_destructors" ]
   }
 }

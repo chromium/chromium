@@ -232,7 +232,6 @@ inputview_sources = rebase_path(
           "third_party/closure_library/closure/goog/ui/decorate.js",
           "third_party/closure_library/closure/goog/ui/idgenerator.js",
           "third_party/closure_library/closure/goog/ui/registry.js",
-          "third_party/closure_library/closure/goog/uri/utils.js",
           "third_party/closure_library/closure/goog/useragent/product.js",
           "third_party/closure_library/closure/goog/useragent/product_isversion.js",
           "third_party/closure_library/closure/goog/useragent/useragent.js",

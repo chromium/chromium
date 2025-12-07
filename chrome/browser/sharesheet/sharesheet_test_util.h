@@ -13,13 +13,13 @@ class Profile;
 
 namespace sharesheet {
 
-const char kTestText[] = "text";
-const char kTestTitle[] = "title";
-const char kTestUrl[] = "https://fake-url.com/fake";
-const char kTestTextFile[] = "path/to/text.txt";
-const char kTestPdfFile[] = "path/to/file.pdf";
-const char kMimeTypeText[] = "text/plain";
-const char kMimeTypePdf[] = "application/pdf";
+inline constexpr char kTestText[] = "text";
+inline constexpr char kTestTitle[] = "title";
+inline constexpr char kTestUrl[] = "https://fake-url.com/fake";
+inline constexpr char kTestTextFile[] = "path/to/text.txt";
+inline constexpr char kTestPdfFile[] = "path/to/file.pdf";
+inline constexpr char kMimeTypeText[] = "text/plain";
+inline constexpr char kMimeTypePdf[] = "application/pdf";
 
 apps::IntentPtr CreateValidTextIntent();
 

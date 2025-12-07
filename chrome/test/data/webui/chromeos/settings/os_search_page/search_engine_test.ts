@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CrLinkRowElement, Router, SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SettingsSearchEngineElement} from 'chrome://os-settings/os_settings.js';
+import type {CrLinkRowElement, SearchEngine, SearchEnginesInfo} from 'chrome://os-settings/os_settings.js';
+import {Router, SearchEnginesBrowserProxyImpl, SettingsSearchEngineElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
@@ -11,8 +12,6 @@ import {clearBody} from '../utils.js';
 import {TestSearchEnginesBrowserProxy} from './test_search_engines_browser_proxy.js';
 
 suite(`<${SettingsSearchEngineElement.is}>`, () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let searchEngineElement: SettingsSearchEngineElement;
   let browserProxy: TestSearchEnginesBrowserProxy;
   let searchEngineInfo: SearchEnginesInfo;
@@ -88,12 +87,7 @@ suite(`<${SettingsSearchEngineElement.is}>`, () => {
     assertTrue(!!linkRow);
     assertTrue(linkRow.external);
 
-    if (isRevampWayfindingEnabled) {
-      assertEquals(
-          'Set search engine in Chrome browser settings', linkRow.label);
-    } else {
-      assertEquals('Preferred search engine', linkRow.label);
-    }
+    assertEquals('Set search engine in Chrome browser settings', linkRow.label);
 
     // Sublabel should display the default search engine name.
     assertEquals('SearchEngine0', linkRow.subLabel);

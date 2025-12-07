@@ -6,10 +6,13 @@
 
 #include <utility>
 
+namespace {
+
 using ::testing::_;
-using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
+
+}  // namespace
 
 namespace device {
 
@@ -19,26 +22,26 @@ FakePlatformSensor::FakePlatformSensor(
     base::WeakPtr<PlatformSensorProvider> provider)
     : PlatformSensor(type, reading_buffer, std::move(provider)) {
   ON_CALL(*this, StartSensor(_))
-      .WillByDefault(
-          Invoke([this](const PlatformSensorConfiguration& configuration) {
-            SensorReading reading;
-            // Only mocking the shared memory update for AMBIENT_LIGHT and
-            // PRESSURE type is enough.
-            // Set the shared buffer value as frequency for testing purpose.
-            switch (GetType()) {
-              case mojom::SensorType::AMBIENT_LIGHT:
-                reading.als.value = configuration.frequency();
-                AddNewReading(reading);
-                break;
-              case mojom::SensorType::PRESSURE:
-                reading.pressure.value = configuration.frequency();
-                AddNewReading(reading);
-                break;
-              default:
-                break;
-            }
-            return true;
-          }));
+      .WillByDefault([this](const PlatformSensorConfiguration& configuration) {
+        SensorReading reading;
+        // Only mocking the shared memory update for AMBIENT_LIGHT and
+        // ACCELEROMETER types is enough.
+        // Set the shared buffer value as frequency for testing purpose.
+        switch (GetType()) {
+          case mojom::SensorType::AMBIENT_LIGHT:
+            reading.als.value = configuration.frequency();
+            AddNewReading(reading);
+            break;
+          case mojom::SensorType::ACCELEROMETER:
+            reading.accel.x = reading.accel.y = reading.accel.z =
+                configuration.frequency();
+            AddNewReading(reading);
+            break;
+          default:
+            break;
+        }
+        return true;
+      });
 }
 
 FakePlatformSensor::~FakePlatformSensor() = default;
@@ -74,14 +77,14 @@ void FakePlatformSensor::AddNewReading(const SensorReading& reading) {
 FakePlatformSensorProvider::FakePlatformSensorProvider() {
   ON_CALL(*this, CreateSensorInternal)
       .WillByDefault(
-          Invoke([this](mojom::SensorType type,
-                        PlatformSensorProvider::CreateSensorCallback callback) {
+          [this](mojom::SensorType type,
+                 PlatformSensorProvider::CreateSensorCallback callback) {
             DCHECK(type >= mojom::SensorType::kMinValue &&
                    type <= mojom::SensorType::kMaxValue);
             std::move(callback).Run(
                 base::MakeRefCounted<NiceMock<FakePlatformSensor>>(
                     type, GetSensorReadingBuffer(type), AsWeakPtr()));
-          }));
+          });
 }
 
 FakePlatformSensorProvider::~FakePlatformSensorProvider() = default;

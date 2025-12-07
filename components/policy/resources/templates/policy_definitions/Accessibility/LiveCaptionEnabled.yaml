@@ -1,0 +1,33 @@
+caption: Enable Live Caption
+default: null
+desc: |-
+  Enable the Live Caption feature.
+
+  If this policy is set to Enabled, Live Caption will always be turned on.
+
+  If this policy is set to Disabled, Live Caption will always be turned off.
+
+  If you set this policy as mandatory, users cannot change or override it.
+
+  If this policy is left unset, Live Caption is disabled initially but can be enabled by the user anytime.
+example_value: true
+features:
+  can_be_recommended: true
+  dynamic_refresh: true
+  per_profile: true
+items:
+- caption: Enable Live Caption
+  value: true
+- caption: Disable Live Caption
+  value: false
+- caption: Allow the user to decide
+  value: null
+owners:
+- evliu@google.com
+- chrome-media-ux@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome.*:140-
+tags: []
+type: main

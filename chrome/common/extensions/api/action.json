@@ -29,6 +29,17 @@
         "description": "The collection of user-specified settings relating to an extension's action."
       },
       {
+        "id": "UserSettingsChange",
+        "type": "object",
+        "properties": {
+          "isOnToolbar": {
+            "type": "boolean",
+            "description": "Whether the extension's action icon is visible on browser windows' top-level toolbar (i.e., whether the extension has been 'pinned' by the user).",
+            "optional": true
+          }
+        }
+      },
+      {
         "id": "OpenPopupOptions",
         "type": "object",
         "properties": {
@@ -90,7 +101,7 @@
         "properties": {
           "imageData": {
             "choices": [{
-              "$ref": "browserAction.ImageDataType"
+              "$ref": "extensionTypes.ImageDataType"
             }, {
               "type": "object",
               "additionalProperties": { "type": "any" }
@@ -218,7 +229,9 @@
             "description": "An array of four integers in the range [0,255] that make up the RGBA color of the badge. For example, opaque red is <code>[255, 0, 0, 255]</code>. Can also be a string with a CSS value, with opaque red being <code>#FF0000</code> or <code>#F00</code>.",
             "choices": [
               {"type": "string"},
-              {"$ref": "browserAction.ColorArray"}
+              {
+                "$ref": "extensionTypes.ColorArray"
+              }
             ]
           },
           "tabId": {
@@ -246,7 +259,7 @@
         "name": "callback",
         "parameters": [{
           "name": "result",
-          "$ref": "browserAction.ColorArray"
+          "$ref": "extensionTypes.ColorArray"
         }]
       }
     }, {
@@ -265,7 +278,7 @@
                   "type": "string"
                 },
                 {
-                  "$ref": "browserAction.ColorArray"
+                  "$ref": "extensionTypes.ColorArray"
                 }
               ]
             },
@@ -298,7 +311,7 @@
         "parameters": [
           {
             "name": "result",
-            "$ref": "browserAction.ColorArray"
+            "$ref": "extensionTypes.ColorArray"
           }
         ]
       }
@@ -391,6 +404,14 @@
       "parameters": [{
         "name": "tab",
         "$ref": "tabs.Tab"
+      }]
+    }, {
+      "name": "onUserSettingsChanged",
+      "type": "function",
+      "description": "Fired when user-specified settings relating to an extension's action change.",
+      "parameters": [{
+        "name": "change",
+        "$ref": "UserSettingsChange"
       }]
     }]
   }

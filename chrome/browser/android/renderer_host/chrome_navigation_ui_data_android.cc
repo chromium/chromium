@@ -7,14 +7,15 @@
 #include "content/public/browser/navigation_ui_data.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/chrome_jni_headers/ChromeNavigationUIData_jni.h"
+#include "chrome/android/chrome_jni_headers/ChromeNavigationUiData_jni.h"
 
-static jlong JNI_ChromeNavigationUIData_CreateUnownedNativeCopy(
+static jlong JNI_ChromeNavigationUiData_CreateUnownedNativeCopy(
     JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& obj,
     jlong bookmark_id) {
   ChromeNavigationUIData* ui_data = new ChromeNavigationUIData();
   ui_data->set_bookmark_id(bookmark_id);
   return reinterpret_cast<intptr_t>(
       static_cast<content::NavigationUIData*>(ui_data));
 }
+
+DEFINE_JNI(ChromeNavigationUiData)

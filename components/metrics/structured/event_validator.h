@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 #include "components/metrics/structured/enums.h"
 #include "components/metrics/structured/event.h"

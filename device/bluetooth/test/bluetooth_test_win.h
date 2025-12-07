@@ -91,17 +91,27 @@ typedef BluetoothTestWin BluetoothTest;
 struct BluetoothTestWinrtParam {
   // The feature state of |kNewBLEGattSessionHandling|.
   bool new_gatt_session_handling_enabled;
+  // The feature state of |kUncachedGattDiscoveryForGattConnection|.
+  bool uncached_gatt_discovery_for_gatt_connection;
 
   friend std::ostream& operator<<(std::ostream& os,
                                   const BluetoothTestWinrtParam& p) {
     return os << "{new_gatt_session_handling_enabled="
-              << p.new_gatt_session_handling_enabled << "}";
+              << p.new_gatt_session_handling_enabled << "}"
+              << "{uncached_gatt_discovery_for_gatt_connection="
+              << p.uncached_gatt_discovery_for_gatt_connection << "}";
   }
 };
 
 constexpr BluetoothTestWinrtParam kBluetoothTestWinrtParam[] = {
-    {true},
-    {false},
+    {/*new_gatt_session_handling_enabled=*/true,
+     /*uncached_gatt_discovery_for_gatt_connection=*/true},
+    {/*new_gatt_session_handling_enabled=*/true,
+     /*uncached_gatt_discovery_for_gatt_connection=*/false},
+    {/*new_gatt_session_handling_enabled=*/false,
+     /*uncached_gatt_discovery_for_gatt_connection=*/true},
+    {/*new_gatt_session_handling_enabled=*/false,
+     /*uncached_gatt_discovery_for_gatt_connection=*/false},
 };
 
 // This test suite represents tests that are parameterized on Windows. This
@@ -126,6 +136,7 @@ class BluetoothTestWinrt
   ~BluetoothTestWinrt() override;
 
   bool UsesNewGattSessionHandling() const;
+  bool UncachedGattDiscoveryForGattConnection() const;
 
   // Simulate a fake adapter whose power status cannot be
   // controlled because of a Windows Privacy setting.
@@ -218,6 +229,8 @@ class BluetoothTestWinrt
 
   void OnFakeBluetoothDeviceConnectGattAttempt();
   void OnFakeBluetoothDeviceGattServiceDiscoveryAttempt();
+  void OnFakeBluetoothDeviceGattServiceDiscoveryAttemptWithCacheMode(
+      ABI::Windows::Devices::Bluetooth::BluetoothCacheMode cache_mode);
   void OnFakeBluetoothGattDisconnect();
   void OnFakeBluetoothCharacteristicReadValue();
   void OnFakeBluetoothCharacteristicWriteValue(std::vector<uint8_t> value);
@@ -225,9 +238,14 @@ class BluetoothTestWinrt
   void OnFakeBluetoothDescriptorReadValue();
   void OnFakeBluetoothDescriptorWriteValue(std::vector<uint8_t> value);
 
+  int gatt_discovery_attempts_with_uncached_mode() const {
+    return gatt_discovery_attempts_with_uncached_mode_;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   base::win::ScopedWinrtInitializer scoped_winrt_initializer_;
+  int gatt_discovery_attempts_with_uncached_mode_ = 0;
 };
 
 }  // namespace device

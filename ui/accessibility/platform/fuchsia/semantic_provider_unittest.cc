@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/containers/adapters.h"
 #include "base/fuchsia/fidl_event_handler.h"
 #include "base/fuchsia/scoped_service_binding.h"
 #include "base/fuchsia/test_component_context_for_process.h"
@@ -122,7 +123,7 @@ class AXFuchsiaSemanticProviderTest
 
     delegate_ = std::make_unique<AXFuchsiaSemanticProviderDelegate>();
 
-    semantic_provider_ = std::make_unique<ui::AXFuchsiaSemanticProviderImpl>(
+    semantic_provider_ = std::make_unique<AXFuchsiaSemanticProviderImpl>(
         fidl::HLCPPToNatural(std::move(view_ref)), delegate_.get());
 
     // Spin the loop to allow registration with the SemanticsManager to be
@@ -204,7 +205,7 @@ class AXFuchsiaSemanticProviderTest
       fidl::ServerBinding<fuchsia_accessibility_semantics::SemanticTree>>
       semantic_tree_binding_;
   std::unique_ptr<AXFuchsiaSemanticProviderDelegate> delegate_;
-  std::unique_ptr<ui::AXFuchsiaSemanticProviderImpl> semantic_provider_;
+  std::unique_ptr<AXFuchsiaSemanticProviderImpl> semantic_provider_;
 
   // Node updates batched per API call to UpdateSemanticNodes().
   std::vector<std::vector<fuchsia_accessibility_semantics::Node>> node_updates_;
@@ -300,8 +301,7 @@ TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromRootToLeaves) {
 
 TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromLeavesToRoot) {
   auto nodes = TreeNodes();
-  std::reverse(nodes.begin(), nodes.end());
-  for (auto& node : nodes) {
+  for (auto& node : base::Reversed(nodes)) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
 

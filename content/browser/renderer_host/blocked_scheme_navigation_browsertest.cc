@@ -22,6 +22,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/buildflags.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -131,27 +132,25 @@ void RegisterFakePlugin() {
   const char kPdfMimeType[] = "application/pdf";
   const char kPdfFileType[] = "pdf";
   WebPluginInfo plugin_info;
-  plugin_info.type = WebPluginInfo::PLUGIN_TYPE_PEPPER_OUT_OF_PROCESS;
+  plugin_info.type = WebPluginInfo::PLUGIN_TYPE_BROWSER_INTERNAL_PLUGIN;
   plugin_info.name = kPluginName;
   plugin_info.mime_types.emplace_back(kPdfMimeType, kPdfFileType,
                                       std::string());
   auto* plugin_service = PluginService::GetInstance();
-  plugin_service->RegisterInternalPlugin(plugin_info, false);
-  plugin_service->RefreshPlugins();
+  plugin_service->RegisterInternalPlugin(plugin_info);
+  plugin_service->GetPlugins();
 }
 
 void UnregisterFakePlugin() {
   auto* plugin_service = PluginService::GetInstance();
-  std::vector<WebPluginInfo> plugins;
-  plugin_service->GetInternalPlugins(&plugins);
-  EXPECT_EQ(1u, plugins.size());
+  const std::vector<WebPluginInfo> plugins =
+      plugin_service->GetInternalPluginsForTesting();
+  ASSERT_EQ(1u, plugins.size());
 
   plugin_service->UnregisterInternalPlugin(plugins[0].path);
-  plugin_service->RefreshPlugins();
+  plugin_service->GetPlugins();
 
-  plugins.clear();
-  plugin_service->GetInternalPlugins(&plugins);
-  EXPECT_TRUE(plugins.empty());
+  EXPECT_TRUE(plugin_service->GetInternalPluginsForTesting().empty());
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
@@ -268,7 +267,8 @@ class BlockedSchemeNavigationBrowserTest
 
   // Adds an iframe to |rfh| pointing to |url|.
   void AddIFrame(RenderFrameHost* rfh, const GURL& url) {
-    content::DOMMessageQueue message_queue(rfh);
+    content::DOMMessageQueue message_queue(
+        WebContents::FromRenderFrameHost(rfh));
     const std::string javascript = base::StringPrintf(
         "f = document.createElement('iframe'); f.src = '%s';"
         "document.body.appendChild(f);",
@@ -401,7 +401,7 @@ class BlockedSchemeNavigationBrowserTest
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -432,7 +432,7 @@ class BlockedSchemeNavigationBrowserTest
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

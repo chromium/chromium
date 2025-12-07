@@ -4,6 +4,7 @@
 
 #include "chromecast/media/cma/test/mock_frame_consumer.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -84,7 +85,7 @@ void MockFrameConsumer::OnNewFrame(
     EXPECT_EQ(buffer->timestamp(), ref_buffer->timestamp());
     ASSERT_EQ(buffer->data_size(), ref_buffer->data_size());
     for (size_t k = 0; k < ref_buffer->data_size(); k++)
-      EXPECT_EQ(buffer->data()[k], ref_buffer->data()[k]);
+      UNSAFE_TODO(EXPECT_EQ(buffer->data()[k], ref_buffer->data()[k]));
   }
 
   bool delayed = delayed_task_pattern_[pattern_idx_];

@@ -11,19 +11,11 @@
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/feature_list.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
-#include "content/common/features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
-
-using features::kMacWebContentsOcclusion;
-
-// Experiment features.
-const base::FeatureParam<bool> kEnhancedWindowOcclusionDetection{
-    &kMacWebContentsOcclusion, "EnhancedWindowOcclusionDetection", false};
 
 namespace {
 
@@ -79,7 +71,7 @@ bool IsBrowserProcess() {
 }
 
 + (BOOL)manualOcclusionDetectionSupportedForPackedVersion:(int)version {
-  if (version >= 13'00'00 && version < 13'03'00) {
+  if ((version >= 13'00'00 && version < 13'03'00) || version >= 26'00'00) {
     return NO;
   }
 
@@ -98,7 +90,6 @@ bool IsBrowserProcess() {
 - (instancetype)init {
   self = [super init];
 
-  DCHECK(base::FeatureList::IsEnabled(kMacWebContentsOcclusion));
   DCHECK(IsBrowserProcess());
   if (!IsBrowserProcess()) {
     static auto* const crash_key = base::debug::AllocateCrashKeyString(
@@ -134,8 +125,7 @@ bool IsBrowserProcess() {
 
 - (BOOL)isManualOcclusionDetectionEnabled {
   return [WebContentsOcclusionCheckerMac
-             manualOcclusionDetectionSupportedForCurrentMacOSVersion] &&
-         kEnhancedWindowOcclusionDetection.Get();
+      manualOcclusionDetectionSupportedForCurrentMacOSVersion];
 }
 
 // Alternative implementation of orderWindow:relativeTo:. Replaces
@@ -391,8 +381,12 @@ bool IsBrowserProcess() {
 - (void)performOcclusionStateUpdates {
   _occlusionStateUpdatesAreScheduled = NO;
 
-  if (content::GetContentClient()->browser() &&
-      content::GetContentClient()->browser()->IsShuttingDown()) {
+  auto* content_client = content::GetContentClient();
+  if (!content_client) {
+    return;
+  }
+  auto* browser = content_client->browser();
+  if (browser && browser->IsShuttingDown()) {
     return;
   }
 

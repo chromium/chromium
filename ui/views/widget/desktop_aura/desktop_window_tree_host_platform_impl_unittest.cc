@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
-
+#include <memory>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
 #include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/hit_test.h"
@@ -14,8 +14,10 @@
 #include "ui/compositor/compositor.h"
 #include "ui/display/display_switches.h"
 #include "ui/platform_window/platform_window.h"
+#include "ui/views/test/configurable_test_custom_frame_view.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -24,72 +26,6 @@ namespace views {
 // DesktopWindowTreeHostPlatform.
 
 namespace {
-// A NonClientFrameView with a window mask with the bottom right corner cut out.
-class ShapedNonClientFrameView : public NonClientFrameView {
- public:
-  ShapedNonClientFrameView() = default;
-
-  ShapedNonClientFrameView(const ShapedNonClientFrameView&) = delete;
-  ShapedNonClientFrameView& operator=(const ShapedNonClientFrameView&) = delete;
-
-  ~ShapedNonClientFrameView() override = default;
-
-  // NonClientFrameView:
-  gfx::Rect GetBoundsForClientView() const override { return bounds(); }
-  gfx::Rect GetWindowBoundsForClientBounds(
-      const gfx::Rect& client_bounds) const override {
-    return client_bounds;
-  }
-  int NonClientHitTest(const gfx::Point& point) override {
-    // Fake bottom for non client event test.
-    if (point == gfx::Point(500, 500))
-      return HTBOTTOM;
-    return HTNOWHERE;
-  }
-  void GetWindowMask(const gfx::Size& size, SkPath* window_mask) override {
-    int right = size.width();
-    int bottom = size.height();
-
-    window_mask->moveTo(0, 0);
-    window_mask->lineTo(0, bottom);
-    window_mask->lineTo(right, bottom);
-    window_mask->lineTo(right, 10);
-    window_mask->lineTo(right - 10, 10);
-    window_mask->lineTo(right - 10, 0);
-    window_mask->close();
-  }
-  void ResetWindowControls() override {}
-  void UpdateWindowIcon() override {}
-  void UpdateWindowTitle() override {}
-  void SizeConstraintsChanged() override {}
-
-  bool GetAndResetLayoutRequest() {
-    bool layout_requested = layout_requested_;
-    layout_requested_ = false;
-    return layout_requested;
-  }
-
- private:
-  void Layout(PassKey) override { layout_requested_ = true; }
-
-  bool layout_requested_ = false;
-};
-
-class ShapedWidgetDelegate : public WidgetDelegateView {
- public:
-  ShapedWidgetDelegate() = default;
-
-  ShapedWidgetDelegate(const ShapedWidgetDelegate&) = delete;
-  ShapedWidgetDelegate& operator=(const ShapedWidgetDelegate&) = delete;
-
-  ~ShapedWidgetDelegate() override = default;
-
-  // WidgetDelegateView:
-  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView(
-      Widget* widget) override {
-    return std::make_unique<ShapedNonClientFrameView>();
-  }
-};
 
 class MouseEventRecorder : public ui::EventHandler {
  public:
@@ -116,6 +52,50 @@ class MouseEventRecorder : public ui::EventHandler {
 };
 
 }  // namespace
+
+class ShapedWidgetDelegate : public WidgetDelegateView {
+ public:
+  ShapedWidgetDelegate() = default;
+
+  ShapedWidgetDelegate(const ShapedWidgetDelegate&) = delete;
+  ShapedWidgetDelegate& operator=(const ShapedWidgetDelegate&) = delete;
+
+  ~ShapedWidgetDelegate() override = default;
+
+  // WidgetDelegateView:
+  std::unique_ptr<FrameView> CreateFrameView(Widget* widget) override {
+    // Create a FrameView with a window mask with the bottom right
+    // corner cut out.
+    auto frame_view = std::make_unique<test::ConfigurableTestCustomFrameView>();
+    frame_view->SetWindowMaskCallback(
+        base::BindRepeating([](const gfx::Size& size, SkPath* window_mask) {
+          int right = size.width();
+          int bottom = size.height();
+
+          *window_mask = SkPath::Polygon(
+              {
+                  SkPoint(0, 0),
+                  SkPoint(0, bottom),
+                  SkPoint(right, bottom),
+                  SkPoint(right, 10),
+                  SkPoint(right - 10, 10),
+                  SkPoint(right - 10, 0),
+              },
+              /*isClosed=*/true);
+        }));
+
+    frame_view->SetHitTestCallback(
+        base::BindRepeating([](const gfx::Point& point) -> int {
+          if (point == gfx::Point(500, 500)) {
+            return HTBOTTOM;
+          }
+
+          return HTNOWHERE;
+        }));
+
+    return std::move(frame_view);
+  }
+};
 
 class DesktopWindowTreeHostPlatformImplTest : public ViewsTestBase {
  public:
@@ -164,7 +144,7 @@ TEST_F(DesktopWindowTreeHostPlatformImplTest,
   // Sanity check that the two widgets each have their own XID.
   ASSERT_NE(parent_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget(),
             child_widget.GetNativeWindow()->GetHost()->GetAcceleratedWidget());
-  Widget::CloseAllSecondaryWidgets();
+  Widget::CloseAllWidgets();
   EXPECT_TRUE(DesktopWindowTreeHostPlatform::GetAllOpenWindows().empty());
 }
 
