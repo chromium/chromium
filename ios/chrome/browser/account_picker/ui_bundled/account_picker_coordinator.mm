@@ -103,13 +103,7 @@
   _navigationController.delegate = nil;
   _navigationController.transitioningDelegate = nil;
   _navigationController = nil;
-
-  [_accountPickerSelectionScreenCoordinator stop];
-  _accountPickerSelectionScreenCoordinator = nil;
-  [_accountPickerConfirmationScreenCoordinator stop];
-  _accountPickerConfirmationScreenCoordinator = nil;
-  [self stopAddAccountSigninCoordinator];
-  [self stopReauthCoordinator];
+  [self stopChildrenCoordinators];
   [super stop];
 }
 
@@ -182,6 +176,27 @@
 
 #pragma mark - Private
 
+- (void)stopAccountPickerSelectionScreenCoordinator {
+  _accountPickerSelectionScreenCoordinator.delegate = nil;
+  _accountPickerSelectionScreenCoordinator.layoutDelegate = nil;
+  [_accountPickerSelectionScreenCoordinator stop];
+  _accountPickerSelectionScreenCoordinator = nil;
+}
+
+- (void)stopAccountPickerConfirmationScreenCoordinator {
+  _accountPickerConfirmationScreenCoordinator.delegate = nil;
+  _accountPickerConfirmationScreenCoordinator.layoutDelegate = nil;
+  [_accountPickerConfirmationScreenCoordinator stop];
+  _accountPickerConfirmationScreenCoordinator = nil;
+}
+
+- (void)stopChildrenCoordinators {
+  [self stopAccountPickerSelectionScreenCoordinator];
+  [self stopAccountPickerConfirmationScreenCoordinator];
+  [self stopAddAccountSigninCoordinator];
+  [self stopReauthCoordinator];
+}
+
 - (void)stopAddAccountSigninCoordinator {
   [_addAccountSigninCoordinator stop];
   _addAccountSigninCoordinator = nil;
@@ -204,7 +219,7 @@
 - (void)openAddAccountCoordinator {
   // Up to iOS 18, due to crbug.com/395959814, the add account view may
   // disappear without the signinCompletion being called.
-  [_addAccountSigninCoordinator stop];
+  [self stopChildrenCoordinators];
   self.openAddAccountOperationInProgress = YES;
   __weak __typeof(self) weakSelf = self;
   SigninContextStyle contextStyle = SigninContextStyle::kDefault;
@@ -249,7 +264,7 @@
     // In case of double tap, let the first reauth proceed.
     return;
   }
-  [self stopReauthCoordinator];
+  [self stopChildrenCoordinators];
   _reauthCoordinator = [[SigninReauthCoordinator alloc]
       initWithBaseViewController:_navigationController
                          browser:self.browser
@@ -335,8 +350,7 @@
   if (_navigationController.viewControllers.count == 1 &&
       _accountPickerSelectionScreenCoordinator) {
     // AccountChooserCoordinator has been removed by "Back" button.
-    [_accountPickerSelectionScreenCoordinator stop];
-    _accountPickerSelectionScreenCoordinator = nil;
+    [self stopAccountPickerSelectionScreenCoordinator];
     [self.logger logAccountPickerSelectionScreenClosed];
   }
 }
@@ -351,8 +365,7 @@
   }
   _accountPickerConfirmationScreenCoordinator.selectedIdentity =
       _accountPickerSelectionScreenCoordinator.selectedIdentity;
-  [_accountPickerSelectionScreenCoordinator stop];
-  _accountPickerSelectionScreenCoordinator = nil;
+  [self stopAccountPickerSelectionScreenCoordinator];
   [_navigationController popViewControllerAnimated:YES];
 }
 
